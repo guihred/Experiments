@@ -5,15 +5,16 @@
  */
 package fxproexercises.ch04;
 
+import static others.CommonsFX.newButton;
+import static others.CommonsFX.newVBox;
+
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonBuilder;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.DropShadowBuilder;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -21,18 +22,14 @@ import javafx.scene.layout.FlowPaneBuilder;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.StackPaneBuilder;
 import javafx.scene.layout.TilePane;
-import javafx.scene.layout.TilePaneBuilder;
-import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.EllipseBuilder;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextBuilder;
 import javafx.stage.Stage;
+import others.SimpleTextBuilder;
 
 /**
  *
@@ -69,9 +66,9 @@ public class ReversiMain extends Application {
     }
 
     private Node restart() {
-        return ButtonBuilder.create().text("Restart").onAction((ActionEvent t) -> {
+		return newButton("Restart", (ActionEvent t) -> {
             model.restart();
-        }).build();
+		});
     }
 
     private Node createTitle() {
@@ -124,13 +121,9 @@ public class ReversiMain extends Application {
 
   
     private Node createScoreBoxes() {
-        TilePane tiles = TilePaneBuilder.create()
-                .snapToPixel(false)
-                .prefColumns(2)
-                .children(
-                        createScore(Owner.BLACK),
-                        createScore(Owner.WHITE))
-                .build();
+		TilePane tiles = new TilePane(createScore(Owner.BLACK), createScore(Owner.WHITE));
+		tiles.setSnapToPixel(false);
+		tiles.setPrefColumns(2);
         tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(),
                 "width").divide(2));
         return tiles;
@@ -138,46 +131,30 @@ public class ReversiMain extends Application {
 
     private StackPane createScore(Owner owner) {
         Region background;
-        Ellipse piece;
-        Text score;
-        Text remaining;
+		Ellipse piece = new Ellipse(32, 20);
+		piece.setEffect(new DropShadow(10, Color.DODGERBLUE));
+		piece.setFill(owner.getColor());
+
+		Text score = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 100)).text("").build();
+		Text remaining = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 12)).text("").build();
 
         background = new Region();
-        background.setStyle(("-fx-background-color: " + owner.opposite().getColorStyle()));
+        background.setStyle("-fx-background-color: " + owner.opposite().getColorStyle());
 
-        StackPane stack = StackPaneBuilder.create()
-                .prefHeight(40)
-                .children(
+		StackPane stack = new StackPane(
                         background,
                         FlowPaneBuilder.create()
                         .hgap(20)
                         .vgap(10)
                         .alignment(Pos.CENTER)
                         .children(
-                                score = TextBuilder.create()
-                                .font(Font.font(null, FontWeight.BOLD, 100))
-                                .fill(owner.getColor())
-                                .build(),
-                                VBoxBuilder.create()
-                                .alignment(Pos.CENTER)
-                                .spacing(10)
-                                .children(
-                                        piece = EllipseBuilder.create()
-                                        .effect(DropShadowBuilder.create().color(Color.DODGERBLUE).spread(0.2).build())
-                                        .radiusX(32)
-                                        .radiusY(20)
-                                        .fill(owner.getColor())
-                                        .build(),
-                                        remaining = TextBuilder.create()
-                                        .font(Font.font(null, FontWeight.BOLD, 12))
-                                        .fill(owner.getColor())
-                                        .build()
-                                )
-                                .build()
+										score,
+								newVBox(Pos.CENTER, 10, piece, remaining)
+
                         )
                         .build()
-                )
-                .build();
+		);
+		stack.setPrefHeight(40);
         InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
         background.effectProperty().bind(Bindings.when(model.turn.isEqualTo(owner))
                 .then(innerShadow)

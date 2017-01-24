@@ -1,24 +1,20 @@
 package fxproexercises.ch02;
 
+import static others.CommonsFX.*;
+
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
-import javafx.animation.PathTransitionBuilder;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.SceneBuilder;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBuilder;
-import javafx.scene.layout.HBoxBuilder;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcToBuilder;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.EllipseBuilder;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
-import javafx.scene.shape.PathBuilder;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -28,34 +24,12 @@ public class FxProCH2d extends Application {
     Button pauseButton;
     Button resumeButton;
     Button stopButton;
-    Ellipse ellipse = EllipseBuilder.create()
-            .centerX(100)
-            .centerY(50)
-            .radiusX(4)
-            .radiusY(8)
-            .fill(Color.BLUE)
-            .build();
-    Path path = PathBuilder.create()
-            .elements(
-                    new MoveTo(100, 50),
-                    ArcToBuilder.create()
-                    .x(300)
-                    .y(50)
-                    .radiusX(350)
-                    .radiusY(350)
-                    .sweepFlag(true)
-                    .build()
-            )
-            .build();
-    PathTransition anim = PathTransitionBuilder.create()
-            .duration(new Duration(1000.0))
-            .node(ellipse)
-            .path(path)
-            .orientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT)
-            .interpolator(Interpolator.LINEAR)
-            .autoReverse(true)
-            .cycleCount(Timeline.INDEFINITE)
-            .build();
+	Ellipse ellipse = newEllipse(100, 50, 4, 8, Color.BLUE);
+
+	Path path = new Path(new MoveTo(100, 50), newArcTo(300, 50, 350, 350, true));
+
+	PathTransition anim = newPathTransistion(new Duration(1000.0), path, ellipse,
+			PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT, Interpolator.LINEAR, true, Timeline.INDEFINITE);
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -63,42 +37,12 @@ public class FxProCH2d extends Application {
 
     @Override
     public void start(Stage stage) {
-        stopButton = ButtonBuilder.create()
-                .text("Stop")
-                .onAction((e) -> {
-                    anim.stop();
-                })
-                .build();
-        resumeButton = ButtonBuilder.create()
-                .text("Resume")
-                .onAction((e) -> {
-                    anim.play();
-                })
-                .build();
-        pauseButton = ButtonBuilder.create()
-                .text("Pause")
-                .onAction((e) -> {
-                    anim.pause();
-                })
-                .build();
-        startButton = ButtonBuilder.create()
-                .text("Start")
-                .onAction((e) -> {
-                    anim.playFromStart();
-                })
-                .build();
-        Scene scene = SceneBuilder.create()
-                .width(400)
-                .height(500)
-                .root(
-                        new Group(
-                                ellipse, HBoxBuilder.create()
-                                .layoutX(60).layoutY(420)
-                                .spacing(10)
-                                .children(startButton, pauseButton, resumeButton, stopButton).build()
-                        )
-                )
-                .build();
+		stopButton = newButton("Stop", (e) -> anim.stop());
+		resumeButton = newButton("Resume", (e) -> anim.play());
+		pauseButton = newButton("Pause", (e) -> anim.pause());
+		startButton = newButton("Start", (e) -> anim.playFromStart());
+		HBox hbox = newHBox(60, 420, 10, startButton, pauseButton, resumeButton, stopButton);
+		Scene scene = new Scene(new Group(ellipse, hbox), 400, 500);
 
         startButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.STOPPED));
         pauseButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.RUNNING));

@@ -2,7 +2,14 @@ package dots;
 
 import static dots.StreamHelp.*;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -41,6 +48,7 @@ public class DotsModel {
 	Color[] colors = { Color.RED, Color.BLUE };
 	Random random = new Random();
 
+	@SuppressWarnings("unchecked")
 	public DotsModel(Group gridPane, BorderPane borderPane) {
 		this.gridPane = gridPane;
 		points.put("EU", FXCollections.observableSet());

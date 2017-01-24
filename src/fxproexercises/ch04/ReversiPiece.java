@@ -13,7 +13,7 @@ import javafx.scene.layout.Region;
 
 public class ReversiPiece extends Region {
 
-    private ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>(this, "owner", Owner.BLACK.NONE);
+	private ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>(this, "owner", Owner.NONE);
 
     public ReversiPiece() {
         styleProperty().bind(Bindings.when(ownerProperty.isEqualTo(Owner.NONE))

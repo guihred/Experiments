@@ -1,5 +1,8 @@
 package javaexercises.graphs;
 
+import static others.CommonsFX.newButton;
+import static others.CommonsFX.newSelect;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,13 +20,9 @@ import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -183,19 +182,8 @@ public class GraphModelLauncher extends Application {
 		return words;
 	}
 
-	private Button newButton(String nome, EventHandler<ActionEvent> onAction) {
-		Button button = new Button(nome);
-		button.setOnAction(onAction);
-		return button;
-	}
 
-	private <T> ChoiceBox<T> newSelect(ObservableList<T> nome, StringConverter<T> converter, String string) {
-		ChoiceBox<T> choiceBox = new ChoiceBox<>(nome);
-		Tooltip arg0 = new Tooltip(string);
-		choiceBox.setTooltip(arg0);
-		choiceBox.setConverter(converter);
-		return choiceBox;
-	}
+
 
 	private CheckBox newCheck(String name, BooleanProperty property) {
 		CheckBox checkBox = new CheckBox(name);

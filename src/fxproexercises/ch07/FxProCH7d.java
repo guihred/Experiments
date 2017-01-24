@@ -27,7 +27,7 @@ public class FxProCH7d extends Application {
     public void start(Stage primaryStage) {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
-        LineChart lineChart = new LineChart(xAxis, yAxis);
+        LineChart<String,Number> lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setData(getChartData());
         lineChart.setTitle("speculations");
         primaryStage.setTitle("LineChart example");
@@ -37,27 +37,29 @@ public class FxProCH7d extends Application {
         primaryStage.show();
     }
 
-    private ObservableList<XYChart.Series<String, Double>> getChartData() {
+    private ObservableList<XYChart.Series<String, Number>> getChartData() {
         double javaValue = 17.56;
         double cValue = 17.06;
         double cppValue = 8.25;
-        ObservableList<XYChart.Series<String, Double>> answer
+        ObservableList<XYChart.Series<String, Number>> answer
                 = FXCollections.observableArrayList();
-        Series<String, Double> java = new Series<>();
-        Series<String, Double> c = new Series<>();
-        Series<String, Double> cpp = new Series<>();
+        Series<String, Number> java = new Series<>();
+        Series<String, Number> c = new Series<>();
+        Series<String, Number> cpp = new Series<>();
         java.setName("java");
         c.setName("C");
         cpp.setName("C++");
         for (int i = 2011; i < 2021; i++) {
-            java.getData().add(new XYChart.Data(Integer.toString(i), javaValue));
+            java.getData().add(new XYChart.Data<>(Integer.toString(i), javaValue));
             javaValue = javaValue + 4 * Math.random() - .2;
-            c.getData().add(new XYChart.Data(Integer.toString(i), cValue));
+            c.getData().add(new XYChart.Data<>(Integer.toString(i), cValue));
             cValue = cValue + 4 * Math.random() - 2;
-            cpp.getData().add(new XYChart.Data(Integer.toString(i), cppValue));
+            cpp.getData().add(new XYChart.Data<>(Integer.toString(i), cppValue));
             cppValue = cppValue + 4 * Math.random() - 2;
         }
-        answer.addAll(java, c, cpp);
+        answer.add(java);
+        answer.add(c);
+        answer.add(cpp);
         return answer;
     }
 }

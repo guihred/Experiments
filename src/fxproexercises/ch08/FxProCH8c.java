@@ -8,7 +8,6 @@ package fxproexercises.ch08;
 import java.io.File;
 import java.net.URL;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.collections.MapChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;

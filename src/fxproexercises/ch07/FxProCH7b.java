@@ -34,7 +34,7 @@ public class FxProCH7b extends Application {
         xAxis.setLowerBound(2011);
         xAxis.setUpperBound(2021);
         NumberAxis yAxis = new NumberAxis();
-        ScatterChart<Integer, Double> scatterChart = new ScatterChart(xAxis, yAxis);
+        ScatterChart<Number, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
         scatterChart.setData(getChartData());
         scatterChart.setTitle("Speculations");
         primaryStage.setTitle("Chart App 3");
@@ -44,16 +44,16 @@ public class FxProCH7b extends Application {
         primaryStage.show();
     }
 
-    private ObservableList<XYChart.Series<Integer, Double>> getChartData() {
+    private ObservableList<XYChart.Series<Number, Number>> getChartData() {
         double javaValue = 17.56;
         double cValue = 17.06;
         double cppValue = 8.25;
-        ObservableList<XYChart.Series<Integer, Double>> answer = FXCollections.observableArrayList();
-        Series<Integer, Double> java = new Series<>();
+        ObservableList<XYChart.Series<Number, Number>> answer = FXCollections.observableArrayList();
+        Series<Number, Number> java = new Series<>();
         java.setName("java");
-        Series<Integer, Double> c = new Series<>();
+        Series<Number, Number> c = new Series<>();
         c.setName("C");
-        Series<Integer, Double> cpp = new Series<>();
+        Series<Number, Number> cpp = new Series<>();
         cpp.setName("C++");
         for (int i = 2011; i < 2021; i++) {
             java.getData().add(new XYChart.Data<>(i, javaValue));

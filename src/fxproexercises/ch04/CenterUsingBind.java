@@ -5,30 +5,28 @@
  */
 package fxproexercises.ch04;
 
+import static others.CommonsFX.newVBox;
+
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.SceneBuilder;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.DropShadowBuilder;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.FlowPaneBuilder;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.StackPaneBuilder;
 import javafx.scene.layout.TilePane;
-import javafx.scene.layout.TilePaneBuilder;
-import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.EllipseBuilder;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextBuilder;
 import javafx.stage.Stage;
+import others.SimpleTextBuilder;
 
 public class CenterUsingBind extends Application {
 
@@ -39,18 +37,8 @@ public class CenterUsingBind extends Application {
     @Override
     public void start(Stage primaryStage) {
         Scene scene;
-        TilePane tiles;
-        primaryStage.setScene(scene = SceneBuilder.create()
-                .width(600)
-                .height(120)
-                .root(
-                        tiles = TilePaneBuilder.create()
-                        .children(
-                                createScore(Owner.BLACK),
-                                createScore(Owner.WHITE))
-                        .build()
-                )
-                .build());
+		TilePane tiles = new TilePane(createScore(Owner.BLACK), createScore(Owner.WHITE));
+		primaryStage.setScene(scene = new Scene(tiles, 600, 120));
         tiles.prefTileWidthProperty().bind(scene.widthProperty().divide(2));
         tiles.prefTileHeightProperty().bind(scene.heightProperty());
         primaryStage.show();
@@ -58,48 +46,22 @@ public class CenterUsingBind extends Application {
 
     private StackPane createScore(Owner owner) {
         Region background;
-        Ellipse piece;
-        Text score;
-        Text remaining;
+		Ellipse piece = EllipseBuilder.create()
+				.effect(DropShadowBuilder.create().color(Color.DODGERBLUE).spread(0.2).build()).radiusX(32).radiusY(20)
+				.fill(owner.getColor()).build();
+		Text score = new SimpleTextBuilder().font(Font.font(null, FontWeight.BOLD, 100)).fill(owner.getColor()).build();
+		Text remaining = new SimpleTextBuilder().font(Font.font(null, FontWeight.BOLD, 12)).fill(owner.getColor())
+				.build();
         ReversiModel model = ReversiModel.getInstance();
 
         background = new Region();
-        background.setStyle(("-fx-background-color: " + owner.opposite().getColorStyle()));
+        background.setStyle("-fx-background-color: " + owner.opposite().getColorStyle());
 
-        StackPane stack = StackPaneBuilder.create()
-                .prefHeight(1000)
-                .children(
-                        background ,
-                        FlowPaneBuilder.create()
-                        .hgap(20)
-                        .vgap(10)
-                        .alignment(Pos.CENTER)
-                        .children(
-                                score = TextBuilder.create()
-                                .font(Font.font(null, FontWeight.BOLD, 100))
-                                .fill(owner.getColor())
-                                .build(),
-                                VBoxBuilder.create()
-                                .alignment(Pos.CENTER)
-                                .spacing(10)
-                                .children(
-                                        piece = EllipseBuilder.create()
-                                        .effect(DropShadowBuilder.create().color(Color.DODGERBLUE).spread(0.2).build())
-                                        .radiusX(32)
-                                        .radiusY(20)
-                                        .fill(owner.getColor())
-                                        .build(),
-                                        remaining = TextBuilder.create()
-                                        .font(Font.font(null, FontWeight.BOLD, 12))
-                                        .fill(owner.getColor())
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .build();
-        InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
+		FlowPane flowPane = FlowPaneBuilder.create().hgap(20).vgap(10).alignment(Pos.CENTER)
+				.children(score, newVBox(Pos.CENTER, 10, piece, remaining)).build();
+		StackPane stack = new StackPane(background, flowPane);
+		stack.setPrefHeight(1000);
+		InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
         background.effectProperty().bind(Bindings.when(model.turn.isEqualTo(owner))
                 .then(innerShadow)
                 .otherwise((InnerShadow) null));

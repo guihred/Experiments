@@ -7,7 +7,6 @@ package fxproexercises.ch08;
 
 import java.io.File;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.scene.Scene;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;

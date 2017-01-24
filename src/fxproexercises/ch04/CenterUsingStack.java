@@ -6,7 +6,6 @@
 package fxproexercises.ch04;
 
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;

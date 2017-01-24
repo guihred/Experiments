@@ -22,7 +22,7 @@ public class FxProCH7a extends Application {
 	public void start(Stage primaryStage) {
 		NumberAxis xAxis = new NumberAxis();
 		NumberAxis yAxis = new NumberAxis();
-		ScatterChart<Integer, Double> scatterChart = new ScatterChart(xAxis, yAxis);
+		ScatterChart<Number, Number> scatterChart = new ScatterChart<Number, Number>(xAxis, yAxis);
 		scatterChart.setData(getChartData());
 		primaryStage.setTitle("Chart App 3");
 		StackPane root = new StackPane();
@@ -31,14 +31,14 @@ public class FxProCH7a extends Application {
 		primaryStage.show();
 	}
 
-	private ObservableList<XYChart.Series<Integer, Double>> getChartData() {
+	private ObservableList<XYChart.Series<Number, Number>> getChartData() {
 		double javaValue = 17.56;
 		double cValue = 17.06;
 		double cppValue = 8.25;
-		ObservableList<XYChart.Series<Integer, Double>> answer = FXCollections.observableArrayList();
-		Series<Integer, Double> java = new Series<>();
-		Series<Integer, Double> c = new Series<>();
-		Series<Integer, Double> cpp = new Series<>();
+		ObservableList<XYChart.Series<Number, Number>> answer = FXCollections.observableArrayList();
+		Series<Number, Number> java = new Series<>();
+		Series<Number, Number> c = new Series<>();
+		Series<Number, Number> cpp = new Series<>();
 		for (int i = 2011; i < 2021; i++) {
 			java.getData().add(new XYChart.Data<>(i, javaValue));
 			javaValue = javaValue + 4 * Math.random() - 2;

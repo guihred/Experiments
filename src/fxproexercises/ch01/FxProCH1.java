@@ -47,7 +47,8 @@ public class FxProCH1 extends Application {
         textRef.setWrappingWidth(400);
         textRef.setFill(Color.rgb(187, 195, 107));
         textRef.setFont(Font.font("SansSerif", FontWeight.BOLD, 24));
-
+ 
+        
         TranslateTransition transTransition = new TranslateTransition(new Duration(75000), textRef);
         transTransition.setToY(-820);
         transTransition.setInterpolator(Interpolator.LINEAR);

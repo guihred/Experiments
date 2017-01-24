@@ -4,7 +4,6 @@ package gaming.ex06;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.animation.TimelineBuilder;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -34,10 +33,11 @@ public class MoleculeSampleApp extends Application {
     final Xform cameraXform3 = new Xform();
     final double cameraDistance = 450;
     final Xform moleculeGroup = new Xform();
-    private Timeline timeline = TimelineBuilder.create()
-            .keyFrames(new KeyFrame(Duration.minutes(1), new KeyValue(world.ry.angleProperty(), 360.0)))
-            .cycleCount(Timeline.INDEFINITE)
-            .build();
+    private Timeline timeline = new Timeline(new KeyFrame(Duration.minutes(1), new KeyValue(world.ry.angleProperty(), 360.0)));
+    {
+    	timeline.setCycleCount(Timeline.INDEFINITE);
+
+    }
     boolean timelinePlaying = false;
     double ONE_FRAME = 1.0 / 24.0;
     double DELTA_MULTIPLIER = 200.0;
@@ -297,6 +297,8 @@ public class MoleculeSampleApp extends Application {
                         cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER);  // -
                     }
                     break;
+			default:
+				break;
             }
         });
     }

@@ -1,10 +1,18 @@
 package log.analyze;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.LongSummaryStatistics;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -13,7 +21,6 @@ import java.util.function.ToLongFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("resource")
 public class StatsLogAccess {
 
 	public static void main(String[] args) throws IOException {

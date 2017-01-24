@@ -6,45 +6,26 @@
 package fxproexercises.ch04;
 
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.scene.Node;
-import javafx.scene.SceneBuilder;
+import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPaneBuilder;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class ReversiPieceTest extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
 
-    @Override
-    public void start(Stage primaryStage) {
-        Node white, black;
-        primaryStage.setScene(SceneBuilder.create()
-                .root(HBoxBuilder.create()
-                        .snapToPixel(false)
-                        .children(
-                                white = StackPaneBuilder.create()
-                                .children(
-                                        new ReversiSquare(),
-                                        new ReversiPiece(Owner.WHITE)
-                                )
-                                .build(),
-                                black = StackPaneBuilder.create()
-                                .children(
-                                        new ReversiSquare(),
-                                        new ReversiPiece(Owner.BLACK)
-                                )
-                                .build()
-                        )
-                        .build())
-                .build());
-        HBox.setHgrow(white, Priority.ALWAYS);
-        HBox.setHgrow(black, Priority.ALWAYS);
-        primaryStage.show();
-    }
+	@Override
+	public void start(Stage primaryStage) {
+		Node white = new StackPane(new ReversiSquare(), new ReversiPiece(Owner.WHITE));
+		Node black = new StackPane(new ReversiSquare(), new ReversiPiece(Owner.BLACK));
+		primaryStage.setScene(new Scene(new HBox(white, black)));
+		HBox.setHgrow(white, Priority.ALWAYS);
+		HBox.setHgrow(black, Priority.ALWAYS);
+		primaryStage.show();
+	}
 }

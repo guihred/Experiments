@@ -29,7 +29,7 @@ public class AudioConfigModel {
     /**
      * List of some musical genres
      */
-    public ObservableList genres = FXCollections.observableArrayList(
+    public ObservableList<String> genres = FXCollections.observableArrayList(
             "Chamber",
             "Country",
             "Cowbell",
@@ -40,7 +40,7 @@ public class AudioConfigModel {
     /**
      * A reference to the selection model used by the Slider
      */
-    public SingleSelectionModel genreSelectionModel;
+    public SingleSelectionModel<String> genreSelectionModel;
 
     /**
      * Adds a change listener to the selection model of the ChoiceBox, and

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Random;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 
 /**

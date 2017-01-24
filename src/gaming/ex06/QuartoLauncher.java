@@ -170,6 +170,8 @@ public class QuartoLauncher extends Application {
                         cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER);  // -
                     }
                     break;
+			default:
+				break;
             }
         });
     }

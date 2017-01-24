@@ -56,7 +56,7 @@ public class FxProCH3a {
 
     private static void addAndRemoveChangeListener() {
         System.out.println();
-        final ChangeListener changeListener = (observableValue, oldValue, newValue) -> {
+        final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> {
             System.out.println("The observableValue has changed: oldValue = "
                     + oldValue + ", newValue = " + newValue
             );
