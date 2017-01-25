@@ -1,6 +1,7 @@
 package fxproexercises.ch05;
 
 import java.util.Arrays;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -97,12 +98,15 @@ public class StarterAppMain extends Application {
             System.out.println(e.getEventType()
                     + " occurred on MenuItem New");
         });
-        final Menu fileMenu = new Menu("File", null, newMenuItem,
+		final Menu fileMenu = new Menu("File");
+		fileMenu.getItems().addAll(newMenuItem,
                 new MenuItem("Save")
         );
-        MenuBar menuBar = new MenuBar(
-                fileMenu,
-                new Menu("Edit", null, new MenuItem("Cut"), new MenuItem("Copy"), new MenuItem("Paste")));
+		MenuBar menuBar = new MenuBar();
+
+		Menu editMenu = new Menu("Edit");
+		editMenu.getItems().addAll(new MenuItem("Cut"), new MenuItem("Copy"), new MenuItem("Paste"));
+		menuBar.getMenus().addAll(fileMenu, editMenu);
         return menuBar;
     }
 
@@ -213,23 +217,29 @@ public class StarterAppMain extends Application {
 
     TabPane createTabs() {
 
-        final Tab tableView = new Tab("TableView", createTableDemoNode());
+		final Tab tableView = new Tab("TableView");
+		tableView.setContent(createTableDemoNode());
         tableView.setClosable(false);
 
-        final Tab accordionTitledPane = new Tab("Accordion/TitledPane", createAccordionTitledDemoNode());
+		final Tab accordionTitledPane = new Tab("Accordion/TitledPane");
+		accordionTitledPane.setContent(createAccordionTitledDemoNode());
         accordionTitledPane.setClosable(false);
 
-        final Tab splitPaneTreeListView = new Tab("SplitPane/TreeView/ListView", createSplitTreeListDemoNode());
+		final Tab splitPaneTreeListView = new Tab("SplitPane/TreeView/ListView");
+		splitPaneTreeListView.setContent(createSplitTreeListDemoNode());
         splitPaneTreeListView.setClosable(false);
 
-        final Tab scrollMisc = new Tab("ScrollPane/Miscellaneous", createScrollMiscDemoNode());
+		final Tab scrollMisc = new Tab("ScrollPane/Miscellaneous");
+		splitPaneTreeListView.setContent(createScrollMiscDemoNode());
         scrollMisc.setClosable(false);
 
-        final Tab htmlEditor = new Tab("HTMLEditor", createHtmlEditorDemoNode());
+		final Tab htmlEditor = new Tab("HTMLEditor");
+		splitPaneTreeListView.setContent(createHtmlEditorDemoNode());
         htmlEditor.setClosable(false);
 
         final WebView webView = new WebView();
-        Tab webViewTab = new Tab("WebView", webView);
+		Tab webViewTab = new Tab("WebView");
+		splitPaneTreeListView.setContent(webView);
         webViewTab.setClosable(false);
         webViewTab.setOnSelectionChanged((Event evt) -> {
             String randomWebSite = model.getRandomWebSite();
@@ -240,7 +250,9 @@ public class StarterAppMain extends Application {
             }
         });
 
-        TabPane tabPane = new TabPane(tableView, accordionTitledPane, splitPaneTreeListView, scrollMisc, htmlEditor, webViewTab);
+		TabPane tabPane = new TabPane();
+		tabPane.getTabs().addAll(tableView, accordionTitledPane, splitPaneTreeListView, scrollMisc, htmlEditor,
+				webViewTab);
         return tabPane;
     }
 
@@ -271,7 +283,8 @@ public class StarterAppMain extends Application {
         TitledPane firstPane = new TitledPane("TitledPane A", new TextArea("TitledPane A content"));
         final TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
         final TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
-        Accordion accordion = new Accordion(firstPane, secondPane, thirdPane);
+		Accordion accordion = new Accordion();
+		accordion.getPanes().addAll(firstPane, secondPane, thirdPane);
         accordion.setExpandedPane(firstPane);
         return accordion;
     }
@@ -302,7 +315,8 @@ public class StarterAppMain extends Application {
         treeView.setEditable(false);
 
         ListView<String> listView = new ListView<>(model.listViewItems);
-        SplitPane splitPane = new SplitPane(treeView, listView);
+		SplitPane splitPane = new SplitPane();
+		splitPane.getItems().addAll(treeView, listView);
         treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         treeView.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
@@ -395,7 +409,8 @@ public class StarterAppMain extends Application {
                     + " occurred on Menu Item A");
         });
 
-        final MenuButton menuButton = new MenuButton("MenuButton", null, menItemA,
+		final MenuButton menuButton = new MenuButton("MenuButton");
+		menuButton.getItems().addAll(menItemA,
                 new MenuItem("MenuItem B")
         );
 

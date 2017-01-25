@@ -1,6 +1,7 @@
 package rosario;
 
 import java.io.File;
+
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -8,7 +9,11 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -45,7 +50,7 @@ public class RosarioComparadorArquivos extends Application {
 
 		FileChooser fileChooserRosario = new FileChooser();
 		fileChooserRosario.setTitle("Carregar Arquivo Rosário");
-		fileChooserRosario.getExtensionFilters().addAll(new ExtensionFilter("Excel", "*.xlsx"));
+		fileChooserRosario.getExtensionFilters().addAll(new ExtensionFilter("PDF", "*.pdf"));
 		Button buttonEstoque = new Button("Carregar Arquivo Rosário");
 		final TableView<Medicamento> medicamentosEstoqueTable = tabelaMedicamentos();
 		buttonEstoque.setOnAction(e -> {
@@ -68,6 +73,9 @@ public class RosarioComparadorArquivos extends Application {
 			File selectedFile = fileChooserSNGPC.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
 				medicamentosEstoqueSNGPCTable.setItems(getMedicamentosSNGPC(selectedFile));
+				// atualizarPorCodigo(medicamentosEstoqueTable.getItems(),
+				// medicamentosEstoqueSNGPCTable);
+				atualizarPorCodigo(medicamentosEstoqueSNGPCTable.getItems(), medicamentosEstoqueTable);
 			}
 		});
 		gridpane.getChildren().add(new VBox(estoqueSNGPC, buttonEstoqueSNGPC, medicamentosEstoqueSNGPCTable));
@@ -94,14 +102,17 @@ public class RosarioComparadorArquivos extends Application {
 
 			try {
 
+				ObservableList<Medicamento> items0 = medicamentosEstoqueTable.getItems();
 				ObservableList<Medicamento> items = medicamentosEstoqueSNGPCTable.getItems();
 				ObservableList<Medicamento> items2 = medicamentosAnvisaTable.getItems();
+				items0.stream().peek(m -> m.quantidadeCodigoValidoProperty(items))
+						.forEach(m -> m.codigoValidoProperty(items));
 				items.stream().peek(m -> m.registroValidoProperty(items2)).peek(m -> m.loteValidoProperty(items2))
 						.forEach(m -> m.quantidadeValidoProperty(items2));
 				items2.stream().peek(m -> m.registroValidoProperty(items)).peek(m -> m.loteValidoProperty(items))
 						.forEach(m -> m.quantidadeValidoProperty(items));
 
-				LeitorArquivos.exportarArquivo(items, items2);
+				LeitorArquivos.exportarArquivo(items0, items, items2);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -185,48 +196,7 @@ public class RosarioComparadorArquivos extends Application {
 	private void atualizarPorCodigo(ObservableList<Medicamento> medicamentos,
 			final TableView<Medicamento> medicamentosAnvisaTable) {
 		ObservableList<TableColumn<Medicamento, ?>> columns = medicamentosAnvisaTable.getColumns();
-		TableColumn<Medicamento, String> tableColumn = (TableColumn<Medicamento, String>) columns.get(0);
-		tableColumn.setCellFactory(param -> {
-			return new TableCell<Medicamento, String>() {
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
-					int index = getIndex();
-					int size = getTableView().getItems().size();
-					if (index >= 0 && index < size) {
-						Medicamento auxMed = getTableView().getItems().get(index);
-						setText(auxMed.getRegistro());
 
-						styleProperty().bind(
-								Bindings.when(auxMed.registroValidoProperty(medicamentos)).then("")
-										.otherwise("-fx-background-color:lightcoral"));
-					}
-				}
-
-			};
-		});
-
-		TableColumn<Medicamento, String> colunaLote = (TableColumn<Medicamento, String>) columns
-				.get(columns.size() - 3);
-		colunaLote.setCellFactory(param -> {
-			return new TableCell<Medicamento, String>() {
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
-					int index = getIndex();
-					int size = getTableView().getItems().size();
-					if (index >= 0 && index < size) {
-						Medicamento auxMed = getTableView().getItems().get(index);
-						setText(auxMed.getLote());
-						styleProperty().bind(
-								Bindings.when(auxMed.loteValidoProperty(medicamentos)).then("")
-										.otherwise("-fx-background-color:lightcoral"));
-
-					}
-				}
-
-			};
-		});
 		TableColumn<Medicamento, Integer> colunaQntd = (TableColumn<Medicamento, Integer>) columns
 				.get(columns.size() - 2);
 		colunaQntd.setCellFactory(param -> {
@@ -240,7 +210,27 @@ public class RosarioComparadorArquivos extends Application {
 						Medicamento auxMed = getTableView().getItems().get(index);
 						setText(Integer.toString(auxMed.getQuantidade()));
 						styleProperty().bind(
-								Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
+								Bindings.when(auxMed.quantidadeCodigoValidoProperty(medicamentos)).then("")
+										.otherwise("-fx-background-color:lightcoral"));
+					}
+				}
+
+			};
+		});
+		TableColumn<Medicamento, Integer> colunaCodigo = (TableColumn<Medicamento, Integer>) columns
+				.get(columns.size() - 1);
+		colunaCodigo.setCellFactory(param -> {
+			return new TableCell<Medicamento, Integer>() {
+				@Override
+				protected void updateItem(Integer item, boolean empty) {
+					super.updateItem(item, empty);
+					int index = getIndex();
+					int size = getTableView().getItems().size();
+					if (index >= 0 && index < size) {
+						Medicamento auxMed = getTableView().getItems().get(index);
+						setText(Integer.toString(auxMed.getCodigo()));
+						styleProperty().bind(
+								Bindings.when(auxMed.codigoValidoProperty(medicamentos)).then("")
 										.otherwise("-fx-background-color:lightcoral"));
 					}
 				}
@@ -262,34 +252,36 @@ public class RosarioComparadorArquivos extends Application {
 
 		registroMedicamento.setSortable(true);
 
-		registroMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 5);
+		registroMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 		TableColumn<Medicamento, String> nomeMedicamento = new TableColumn<>("Nome");
 
 		nomeMedicamento.setSortable(true);
 		nomeMedicamento.setCellValueFactory(new PropertyValueFactory<>("nome"));
-		nomeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 5);
+		nomeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 
-		TableColumn<Medicamento, String> apresentacaoMedicamento = new TableColumn<>("Apresentacao");
-		apresentacaoMedicamento.setSortable(true);
-		apresentacaoMedicamento.setCellValueFactory(new PropertyValueFactory<>("apresentacao"));
+		// TableColumn<Medicamento, String> apresentacaoMedicamento = new
+		// TableColumn<>("Apresentacao");
+		// apresentacaoMedicamento.setSortable(true);
+		// apresentacaoMedicamento.setCellValueFactory(new
+		// PropertyValueFactory<>("apresentacao"));
 
 		TableColumn<Medicamento, String> loteMedicamento = new TableColumn<>("Lote");
 		loteMedicamento.setSortable(true);
 		loteMedicamento.setCellValueFactory(new PropertyValueFactory<>("lote"));
 		loteMedicamento
 
-		.setPrefWidth(medicamentosTable.getPrefWidth() / 5);
+		.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 		TableColumn<Medicamento, String> quantidadeMedicamento = new TableColumn<>("Quantidade");
 		quantidadeMedicamento.setSortable(true);
 		quantidadeMedicamento.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-		quantidadeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 5);
+		quantidadeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 
-		TableColumn<Medicamento, String> codigoMedicamento = new TableColumn<>("C�digo");
+		TableColumn<Medicamento, String> codigoMedicamento = new TableColumn<>("Código");
 		codigoMedicamento.setSortable(true);
 		codigoMedicamento.setCellValueFactory(new PropertyValueFactory<>("codigo"));
-		codigoMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 5);
+		codigoMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 
-		medicamentosTable.getColumns().setAll(registroMedicamento, nomeMedicamento, apresentacaoMedicamento,
+		medicamentosTable.getColumns().setAll(registroMedicamento, nomeMedicamento,
 				loteMedicamento, quantidadeMedicamento, codigoMedicamento);
 		return medicamentosTable;
 	}

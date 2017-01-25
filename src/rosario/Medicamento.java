@@ -1,11 +1,13 @@
 package rosario;
 
+import java.util.Objects;
+
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ObservableList;
 
 public class Medicamento {
 	private String registro;
-	private String codigo;
+	private Integer codigo;
 	private String nome;
 	private String apresentacao;
 	private String lote;
@@ -13,6 +15,7 @@ public class Medicamento {
 	private BooleanBinding registroValido;
 	private BooleanBinding loteValido;
 	private BooleanBinding quantidadeValido;
+	private BooleanBinding codigoValido;
 
 	public Medicamento clonar() {
 		Medicamento medicamento2 = new Medicamento();
@@ -24,53 +27,6 @@ public class Medicamento {
 		medicamento2.setQuantidade(quantidade);
 
 		return medicamento2;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (lote == null ? 0 : lote.hashCode());
-		result = prime * result
-				+ (quantidade == null ? 0 : quantidade.hashCode());
-		result = prime * result + (registro == null ? 0 : registro.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Medicamento other = (Medicamento) obj;
-		if (lote == null) {
-			if (other.lote != null) {
-				return false;
-			}
-		} else if (!lote.equals(other.lote)) {
-			return false;
-		}
-		if (quantidade == null) {
-			if (other.quantidade != null) {
-				return false;
-			}
-		} else if (!quantidade.equals(other.quantidade)) {
-			return false;
-		}
-		if (registro == null) {
-			if (other.registro != null) {
-				return false;
-			}
-		} else if (!registro.equals(other.registro)) {
-			return false;
-		}
-		return true;
 	}
 
 	@Override
@@ -116,7 +72,7 @@ public class Medicamento {
 
 				@Override
 				protected boolean computeValue() {
-					return medicamentos.stream().anyMatch(m -> m.getRegistro().equals(registro));
+					return medicamentos.stream().anyMatch(m -> Objects.equals(m.getRegistro(), registro));
 				}
 			};
 		}
@@ -135,7 +91,7 @@ public class Medicamento {
 				@Override
 				protected boolean computeValue() {
 					return medicamentos.stream().anyMatch(
-							m -> m.getRegistro().equals(registro) && m.getLote().equals(lote));
+							m -> Objects.equals(m.getRegistro(), registro) && Objects.equals(m.getLote(), lote));
 				}
 			};
 		}
@@ -153,13 +109,61 @@ public class Medicamento {
 				@Override
 				protected boolean computeValue() {
 					return medicamentos.stream().anyMatch(
-							m -> m.getRegistro().equals(registro) && m.getLote().equals(lote)
-									&& m.getQuantidade().equals(quantidade));
+							m -> Objects.equals(m.getRegistro(), registro) && Objects.equals(m.getLote(), lote)
+									&& Objects.equals(m.getQuantidade(), quantidade));
 				}
 			};
 		}
 
 		return quantidadeValido;
+	}
+
+	public BooleanBinding quantidadeCodigoValidoProperty(ObservableList<Medicamento> medicamentos) {
+		if (quantidadeValido == null) {
+			quantidadeValido = new BooleanBinding() {
+				{
+					bind(medicamentos);
+				}
+
+				@Override
+				protected boolean computeValue() {
+					int sum = medicamentos.stream()
+							.filter(m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo)))
+							.mapToInt(c -> c.getQuantidade()).sum();
+					return sum == quantidade;
+
+				}
+			};
+		}
+
+		return quantidadeValido;
+	}
+
+	public BooleanBinding codigoValidoProperty(ObservableList<Medicamento> medicamentos) {
+		if (codigoValido == null) {
+			codigoValido = new BooleanBinding() {
+				{
+					bind(medicamentos);
+				}
+
+				@Override
+				protected boolean computeValue() {
+					return medicamentos.stream().anyMatch(
+							m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo)));
+				}
+			};
+		}
+
+		return codigoValido;
+	}
+
+	public boolean isCodigoValido() {
+		if (codigoValido == null) {
+			return false;
+		}
+
+		return codigoValido.get();
+
 	}
 
 	public void setRegistro(String registro) {
@@ -198,11 +202,11 @@ public class Medicamento {
 		this.quantidade = quantidade;
 	}
 
-	public String getCodigo() {
+	public Integer getCodigo() {
 		return codigo;
 	}
 
-	public void setCodigo(String codigo) {
+	public void setCodigo(Integer codigo) {
 		this.codigo = codigo;
 	}
 }
