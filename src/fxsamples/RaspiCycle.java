@@ -1,7 +1,6 @@
 package fxsamples;
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -36,7 +35,7 @@ public class RaspiCycle extends Application {
 
 	public enum Direction {
 		LEFT, RIGHT, UP, DOWN
-	};
+	}
 
 	private Direction curDir = Direction.UP;
 	private AnimationTimer animTimer;
@@ -213,6 +212,8 @@ public class RaspiCycle extends Application {
 			// Y doesn't change, only X
 			newY = curPos.getY();
 			newX = curPos.getX() + SPEED;
+			break;
+		default:
 			break;
 		}
 		newPos = new Point2D(newX, newY);

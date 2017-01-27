@@ -32,7 +32,7 @@ public class PhotoViewer extends Application {
 	// Enumeration of next and previous button directions
 	public enum ButtonMove {
 		NEXT, PREV
-	};
+	}
 
 	// Current image view display
 	private ImageView currentImageView;

@@ -40,7 +40,7 @@ public class Experiment3DMouseControl extends Application {
 		final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
 		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
-		public Cube(float size, Color color, double shade) {
+		public Cube(float size, Color color) {
 			getTransforms().addAll(rz, ry, rx);
 			PhongMaterial value = new PhongMaterial(color);
 			value.setDiffuseMap(WALL_IMAGE);
@@ -259,7 +259,7 @@ public class Experiment3DMouseControl extends Application {
 	private static Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 	private static Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 
-	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();;
+	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
 
 	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
 
@@ -295,7 +295,7 @@ public class Experiment3DMouseControl extends Application {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube wall = new Cube(SIZE, Color.BLUE, 1);
+				Cube wall = new Cube(SIZE, Color.BLUE);
 				wall.setTranslateX(i * SIZE);
 				wall.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {

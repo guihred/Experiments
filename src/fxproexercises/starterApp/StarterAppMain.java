@@ -8,6 +8,7 @@ package fxproexercises.starterApp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -168,7 +169,7 @@ class MazeModel {
 		};
 		final KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.005), eventHandler);
 		timeline.getKeyFrames().add(keyFrame);
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 
 

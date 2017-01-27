@@ -199,7 +199,7 @@ public class Model {
 		Map<Cell, Integer> indegree = new HashMap<>();
 		Map<Cell, Integer> topNum = new HashMap<>();
 
-		Queue<Cell> q = new LinkedList<Cell>();
+		Queue<Cell> q = new LinkedList<>();
 		for (Cell v : allCells) {
 			for (Cell w : adjacents(v)) {
 				indegree.put(w, indegree.getOrDefault(w, 0) + 1);
@@ -231,7 +231,7 @@ public class Model {
 	public Map<Cell, Integer> weightedNegative(String s) {
 		Cell source = cellMap.get(s);
 		Map<Cell, Integer> distance = new HashMap<>();
-		Queue<Cell> q = new LinkedList<Cell>();
+		Queue<Cell> q = new LinkedList<>();
 
 		for (Cell v : allCells) {
 			distance.put(v, Integer.MAX_VALUE);

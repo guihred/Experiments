@@ -32,7 +32,7 @@ public class FxProCH2c extends Application {
 			new KeyFrame(new Duration(1000.0), new KeyValue(startXVal, 300.0, Interpolator.LINEAR)));
 	{
 		anim.setAutoReverse(true);
-		anim.setCycleCount(Timeline.INDEFINITE);
+		anim.setCycleCount(Animation.INDEFINITE);
 	}
 
 	public static void main(String[] args) {

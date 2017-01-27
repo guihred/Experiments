@@ -54,7 +54,7 @@ public class Experiment3DGhosts extends Application {
 		for (int i = mapa.length - 1; i >= 0; i--) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube rectangle = new Cube(SIZE, Color.BLUE, 1);
+				Cube rectangle = new Cube(SIZE, Color.BLUE);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {
@@ -267,7 +267,7 @@ public class Experiment3DGhosts extends Application {
 		final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
 		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
-		public Cube(float size, Color color, double shade) {
+		public Cube(float size, Color color) {
 			getTransforms().addAll(rz, ry, rx);
 			PhongMaterial value = new PhongMaterial(color);
 

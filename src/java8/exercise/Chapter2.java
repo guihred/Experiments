@@ -49,10 +49,10 @@ public class Chapter2 {
 	}
 
 	/*
-	 * Write a parallel version of the for loop in Section 2.1, “From Iteration
-	 * to Stream Operations,” on page 22. Obtain the number of processors. Make
+	 * Write a parallel version of the for loop in Section 2.1, ï¿½From Iteration
+	 * to Stream Operations,ï¿½ on page 22. Obtain the number of processors. Make
 	 * that many separate threads, each working on a segment of the list, and
-	 * total up the results as they come in. (You don’t want the threads to
+	 * total up the results as they come in. (You donï¿½t want the threads to
 	 * update a single counter. Why?)
 	 */
 	public static void ex1() throws IOException, InterruptedException, ExecutionException {
@@ -113,7 +113,7 @@ public class Chapter2 {
 	}
 
 	/*
-	 * Using Stream.iterate, make an infinite stream of random numbers—not by
+	 * Using Stream.iterate, make an infinite stream of random numbersï¿½not by
 	 * calling Math.random but by directly implementing a linear congruential
 	 * generator. In such a generator, you start with x0 = seed and then produce
 	 * xn + 1 = (a xn + c) % m, for appropriate values of a, c, and m. You
@@ -127,8 +127,8 @@ public class Chapter2 {
 	}
 
 	/*
-	 * The characterStream method in Section 2.3, “The filter, map, and flatMap
-	 * Methods,” on page 25, was a bit clumsy, first filling an array list and
+	 * The characterStream method in Section 2.3, ï¿½The filter, map, and flatMap
+	 * Methods,ï¿½ on page 25, was a bit clumsy, first filling an array list and
 	 * then turning it into a stream. Write a stream-based one-liner instead.
 	 * One approach is to make a stream of integers from 0 to s.length() - 1 and
 	 * map that with the s::charAt method reference.
@@ -158,17 +158,17 @@ public class Chapter2 {
 	 * to do this with the three forms of reduce.
 	 */
 	public static void ex9() {
-		Stream<ArrayList<String>> of = Stream.of(new ArrayList<String>(Arrays.asList("A", "B")), new ArrayList<String>(Arrays.asList("D", "C")));
+		Stream<ArrayList<String>> of = Stream.of(new ArrayList<>(Arrays.asList("A", "B")), new ArrayList<>(Arrays.asList("D", "C")));
 		System.out.println(of.reduce((a, b) -> {
 			a.addAll(b);
 			return a;
 		}).get());
-		Stream<ArrayList<String>> of2 = Stream.of(new ArrayList<String>(Arrays.asList("A", "B")), new ArrayList<String>(Arrays.asList("D", "C")));
+		Stream<ArrayList<String>> of2 = Stream.of(new ArrayList<>(Arrays.asList("A", "B")), new ArrayList<>(Arrays.asList("D", "C")));
 		System.out.println(of2.reduce(new ArrayList<String>(), (a, b) -> {
 			a.addAll(b);
 			return a;
 		}));
-		Stream<ArrayList<String>> of3 = Stream.of(new ArrayList<String>(Arrays.asList("A", "B")), new ArrayList<String>(Arrays.asList("D", "C")));
+		Stream<ArrayList<String>> of3 = Stream.of(new ArrayList<>(Arrays.asList("A", "B")), new ArrayList<>(Arrays.asList("D", "C")));
 		System.out.println(of3.reduce(new ArrayList<String>(), (a, b) -> {
 			a.addAll(b);
 			return a;
@@ -181,7 +181,7 @@ public class Chapter2 {
 
 	/*
 	 * Write a call to reduce that can be used to compute the average of a
-	 * Stream<Double>. Why can’t you simply compute the sum and divide by
+	 * Stream<Double>. Why canï¿½t you simply compute the sum and divide by
 	 * count()?
 	 * 
 	 * You can't compute sum and divide by count because both sum() and count()
@@ -209,7 +209,7 @@ public class Chapter2 {
 	/*
 	 * It should be possible to concurrently collect stream results in a single
 	 * ArrayList, instead of merging multiple array lists, provided it has been
-	 * constructed with the stream’s size, since concurrent set operations at
+	 * constructed with the streamï¿½s size, since concurrent set operations at
 	 * disjoint positions are threadsafe. How can you achieve that?
 	 */
 
@@ -219,7 +219,7 @@ public class Chapter2 {
 
 	/*
 	 * Count all short words in a parallel Stream<String>, as described in
-	 * Section 2.13, “Parallel Streams,” on page 40, by updating an array of
+	 * Section 2.13, ï¿½Parallel Streams,ï¿½ on page 40, by updating an array of
 	 * AtomicInteger. Use the atomic getAndIncrement method to safely increment
 	 * each counter.
 	 */

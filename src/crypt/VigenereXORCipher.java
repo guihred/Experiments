@@ -50,8 +50,7 @@ public class VigenereXORCipher {
 
 	// 0, 0, 140, 181, 87, 0, 53
 	private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-	@SuppressWarnings("unchecked")
-	private List<Integer>[] keysList = Stream.generate(() -> new ArrayList<Integer>()).limit(7).toArray(List[]::new);
+	private List<Integer>[] keysList = Stream.generate(() -> new ArrayList<>()).limit(7).toArray(List[]::new);
 
 	// new List[] { new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new
 	// ArrayList<>(), new ArrayList<>(),

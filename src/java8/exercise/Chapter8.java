@@ -24,7 +24,7 @@ import javafx.geometry.Rectangle2D;
 public class Chapter8 {
 	/*
 	 * Write a program that adds, subtracts, divides, and compares numbers
-	 * between 0 and 232 – 1, using int values and unsigned operations. Show why
+	 * between 0 and 232 ï¿½ 1, using int values and unsigned operations. Show why
 	 * divideUnsigned and remainderUnsigned are necessary.
 	 */
 	public static void ex1() {
@@ -62,7 +62,7 @@ public class Chapter8 {
 	}
 
 	/*
-	 * Euclid’s algorithm (which is over two thousand years old) computes the
+	 * Euclidï¿½s algorithm (which is over two thousand years old) computes the
 	 * greatest common divisor of two numbers as gcd(a, b) = a if b is zero, and
 	 * gcd(b, rem(a, b)) otherwise, where rem is the remainder. Clearly, the gcd
 	 * should not be negative, even if a or b are (since its negation would then
@@ -94,16 +94,16 @@ public class Chapter8 {
 	 * generator.nextDouble() ever yield 0? The documentation says it can yield
 	 * any value between 0 inclusive and 1 exclusive. But, given that there are
 	 * 253 such floating-point numbers, will you ever get a zero? Indeed, you
-	 * do. The random number generator computes the next seed as next(s) = s · m
+	 * do. The random number generator computes the next seed as next(s) = s ï¿½ m
 	 * + a % N, where m = 25214903917, a = 11, and N = 248. The inverse of m
 	 * modulo N is v = 246154705703781, and therefore you can compute the
-	 * predecessor of a seed as prev(s) = (s – a) · v % N. To make a double, two
+	 * predecessor of a seed as prev(s) = (s ï¿½ a) ï¿½ v % N. To make a double, two
 	 * random numbers are generated, and the top 26 and 27 bits are taken each
-	 * time. When s is 0, next(s) is 11, so that’s what we want to hit: two
+	 * time. When s is 0, next(s) is 11, so thatï¿½s what we want to hit: two
 	 * consecutive numbers whose top bits are zero. Now, working backwards,
-	 * let’s start with s = prev(prev(prev(0))). Since the Random constructor
+	 * letï¿½s start with s = prev(prev(prev(0))). Since the Random constructor
 	 * sets s = (initialSeed ^ m) % N, offer it s = prev(prev(prev(0))) ^ m =
-	 * 164311266871034, and you’ll get a zero after two calls to nextDouble. But
+	 * 164311266871034, and youï¿½ll get a zero after two calls to nextDouble. But
 	 * that is still too obvious. Generate a million predecessors, using a
 	 * stream of course, and pick the minimum seed. Hint: You will get a zero
 	 * after 376050 calls to nextDouble.
@@ -205,7 +205,7 @@ public class Chapter8 {
 	private static List<String> getWordsAsList(Path path) throws IOException {
 
 		String contents = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-		return new ArrayList<String>(Arrays.asList(contents.split("[\\P{L}]+")));
+		return new ArrayList<>(Arrays.asList(contents.split("[\\P{L}]+")));
 	}
 
 	public static void main(String[] args) throws Exception {

@@ -10,15 +10,15 @@ public class Musica {
 
 	private StringProperty ano = new SimpleStringProperty("");
 
-	private File arquivo;;
+	private File arquivo;
 
 	private StringProperty artista = new SimpleStringProperty("");
 
-	private StringProperty genero = new SimpleStringProperty("");;
+	private StringProperty genero = new SimpleStringProperty("");
 
 	private StringProperty titulo = new SimpleStringProperty("");
 
-	private StringProperty trilha = new SimpleStringProperty("");;
+	private StringProperty trilha = new SimpleStringProperty("");
 
 	public StringProperty albumProperty() {
 		return album;
@@ -26,7 +26,7 @@ public class Musica {
 
 	public StringProperty anoProperty() {
 		return ano;
-	};
+	}
 
 	public StringProperty artistaProperty() {
 		return artista;
@@ -34,7 +34,7 @@ public class Musica {
 
 	public StringProperty generoProperty() {
 		return genero;
-	};
+	}
 
 	public String getAlbum() {
 		return album.get();
@@ -42,7 +42,7 @@ public class Musica {
 
 	public String getAno() {
 		return ano.get();
-	};
+	}
 
 	public File getArquivo() {
 		return arquivo;

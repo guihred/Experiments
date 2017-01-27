@@ -5,13 +5,7 @@
  */
 package gaming.ex11;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.KeyFrame;
@@ -98,7 +92,7 @@ public class DotsModel {
                 gridPane.getChildren().add(line1);
                 over.addAdj(selected);
 
-                Set<Set<DotsSquare>> check = over.check(selected);
+				Set<Set<DotsSquare>> check = over.check();
 
                 Set<Set<DotsSquare>> collect = points.values().stream().flatMap(a -> a.stream()).collect(Collectors.toSet());
 
@@ -135,7 +129,7 @@ public class DotsModel {
 
                             get.getKey().addAdj(get.getValue());
 
-                            Set<Set<DotsSquare>> check2 = get.getKey().check(get.getValue());
+							Set<Set<DotsSquare>> check2 = get.getKey().check();
                             final Set<Set<DotsSquare>> collect2 = points.values().stream().flatMap(a -> a.stream()).collect(Collectors.toSet());
                             final List<Set<DotsSquare>> collect3 = check2.stream().filter(s -> !collect2.contains(s)).collect(Collectors.toList());
 

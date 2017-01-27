@@ -35,7 +35,7 @@ public class Chapter6 {
 	 */
 	public static void ex1() throws InterruptedException {
 		Object[] array = Stream.generate(() -> UUID.randomUUID().toString()).limit(10000).toArray();
-		AtomicReference<Long> reference = new AtomicReference<Long>(0L);
+		AtomicReference<Long> reference = new AtomicReference<>(0L);
 		ExecutorService pool = Executors.newCachedThreadPool();
 		for (int i = 0; i < 100; i++) {
 			int f = i;
@@ -198,7 +198,7 @@ public class Chapter6 {
 	 * You can use the parallelPrefix method to parallelize the computation of
 	 * Fibonacci numbers. We use the fact that the nth Fibonacci number is the
 	 * top left coefficient of Fn, where F = ( 1 1 1 0 ) . Make an array filled
-	 * with 2 × 2 matrices. Define a Matrix class with a multiplication method,
+	 * with 2 ï¿½ 2 matrices. Define a Matrix class with a multiplication method,
 	 * use parallelSetAll to make an array of matrices, and use parallelPrefix
 	 * to multiply them.
 	 */
@@ -255,7 +255,7 @@ public class Chapter6 {
 	/*
 	 * Write a program that asks the user for a URL, then reads the web page at
 	 * that URL, and then displays all the links. Use a CompletableFuture for
-	 * each stage. Don’t call get. To prevent your program from terminating
+	 * each stage. Donï¿½t call get. To prevent your program from terminating
 	 * prematurely, call ForkJoinPool.commonPool().awaitQuiescence(10,
 	 * TimeUnit.SECONDS);
 	 */

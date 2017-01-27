@@ -103,7 +103,7 @@ public class FxProCH2e extends Application {
                             })
 	);
 	{
-		pongAnimation.setCycleCount(Timeline.INDEFINITE);
+		pongAnimation.setCycleCount(Animation.INDEFINITE);
 	}
 
     /**

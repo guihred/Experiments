@@ -1,11 +1,12 @@
 package fxproexercises.ch02;
 
-import static others.CommonsFX.*;
+import static others.CommonsFX.newArcTo;
+import static others.CommonsFX.newButton;
+import static others.CommonsFX.newPathTransistion;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -27,13 +28,13 @@ public class FxProCH2d extends Application {
     Button pauseButton;
     Button resumeButton;
     Button stopButton;
-	Ellipse ellipse = new SimpleEllipseBuilder().centerX((double) 100).centerY((double) 50).radiusX((double) 4).radiusY(50).fill(Color.BLUE)
+	Ellipse ellipse = new SimpleEllipseBuilder().centerX(100).centerY(50).radiusX(4).radiusY(50).fill(Color.BLUE)
 	.build();
 
 	Path path = new Path(new MoveTo(100, 50), newArcTo(300, 50, 350, 350, true));
 
 	PathTransition anim = newPathTransistion(new Duration(1000.0), path, ellipse,
-			PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT, Interpolator.LINEAR, true, Timeline.INDEFINITE);
+			PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT, Interpolator.LINEAR, true, Animation.INDEFINITE);
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -46,7 +47,7 @@ public class FxProCH2d extends Application {
 		pauseButton = newButton("Pause", (e) -> anim.pause());
 		startButton = newButton("Start", (e) -> anim.playFromStart());
 		Node[] children = { startButton, pauseButton, resumeButton, stopButton };
-		HBox hbox = new SimpleHBoxBuilder().layoutX((double) 60).layoutY((double) 420).spacing((double) 10).children(children).build();
+		HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10).children(children).build();
 		Scene scene = new Scene(new Group(ellipse, hbox), 400, 500);
 
         startButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.STOPPED));

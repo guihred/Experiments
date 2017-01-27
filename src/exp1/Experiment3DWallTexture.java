@@ -38,7 +38,7 @@ public class Experiment3DWallTexture extends Application {
 		final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
 		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
-		public Cube(float size, Color color, double shade) {
+		public Cube(float size, Color color) {
 			getTransforms().addAll(rz, ry, rx);
 			PhongMaterial value = new PhongMaterial(color);
 			value.setDiffuseMap(WALL_IMAGE);
@@ -293,7 +293,7 @@ public class Experiment3DWallTexture extends Application {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube wall = new Cube(SIZE, Color.BLUE, 1);
+				Cube wall = new Cube(SIZE, Color.BLUE);
 				wall.setTranslateX(i * SIZE);
 				wall.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {

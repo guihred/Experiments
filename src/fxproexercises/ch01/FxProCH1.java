@@ -1,7 +1,7 @@
 package fxproexercises.ch01;
 
+import javafx.animation.Animation;
 import javafx.animation.Interpolator;
-import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.geometry.VPos;
@@ -55,7 +55,7 @@ public class FxProCH1 extends Application {
         TranslateTransition transTransition = new TranslateTransition(new Duration(75000), textRef);
         transTransition.setToY(-820);
         transTransition.setInterpolator(Interpolator.LINEAR);
-        transTransition.setCycleCount(Timeline.INDEFINITE);
+		transTransition.setCycleCount(Animation.INDEFINITE);
 
         final ImageView image = new ImageView(new Image("http://projavafx.com/images/earthrise.jpg"));
 

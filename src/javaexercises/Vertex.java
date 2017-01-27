@@ -31,7 +31,7 @@ class Vertex {
 	public static void sortTopology(List<Vertex> vertices) {
 		int counter = 0;
 
-		Queue<Vertex> q = new LinkedList<Vertex>();
+		Queue<Vertex> q = new LinkedList<>();
 		for (Vertex v : vertices) {
 			for (Vertex w : v.adjacents()) {
 				w.indegree++;
@@ -288,7 +288,7 @@ class Vertex {
 
 	public Map<Vertex, Integer> weightedNegative(List<Vertex> graph) {
 		Map<Vertex, Integer> distance = new HashMap<>();
-		Queue<Vertex> q = new LinkedList<Vertex>();
+		Queue<Vertex> q = new LinkedList<>();
 
 		for (Vertex v : graph) {
 			distance.put(v, Integer.MAX_VALUE);

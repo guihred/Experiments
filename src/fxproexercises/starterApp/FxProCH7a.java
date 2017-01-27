@@ -22,7 +22,7 @@ public class FxProCH7a extends Application {
 	public void start(Stage primaryStage) {
 		NumberAxis xAxis = new NumberAxis();
 		NumberAxis yAxis = new NumberAxis();
-		ScatterChart<Number, Number> scatterChart = new ScatterChart<Number, Number>(xAxis, yAxis);
+		ScatterChart<Number, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
 		scatterChart.setData(getChartData());
 		primaryStage.setTitle("Chart App 3");
 		StackPane root = new StackPane();

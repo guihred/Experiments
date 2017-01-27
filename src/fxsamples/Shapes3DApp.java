@@ -1,7 +1,6 @@
 package fxsamples;
 
 import java.util.Random;
-
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -158,7 +157,7 @@ public class Shapes3DApp extends Application {
 	}
 
 	public static void main(String[] args) {
-		Test2.launch(args);
+		Application.launch(args);
 	}
 }
 

@@ -1,6 +1,7 @@
 
 package gaming.ex06;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -35,7 +36,7 @@ public class MoleculeSampleApp extends Application {
     final Xform moleculeGroup = new Xform();
     private Timeline timeline = new Timeline(new KeyFrame(Duration.minutes(1), new KeyValue(world.ry.angleProperty(), 360.0)));
     {
-    	timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
 
     }
     boolean timelinePlaying = false;

@@ -39,7 +39,7 @@ public class AlignUsingStackAndTile extends Application {
 
         primaryStage.setHeight(100);
         primaryStage.setWidth(400);
-        ;
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }

@@ -21,7 +21,7 @@ public class FxProCH8d extends Application {
 
 	public static void main(String[] args) {
         launch(args);
-    };
+	}
     private MetadataView metaDataView;
     private PlayerControlView playerControlsView;
 

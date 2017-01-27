@@ -4,15 +4,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.CubicCurve;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.QuadCurve;
-import javafx.scene.shape.QuadCurveTo;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeType;
+import javafx.scene.shape.*;
 import javafx.stage.Stage;
 
 public class DrawingShape extends Application {
@@ -94,7 +86,7 @@ public class DrawingShape extends Application {
 				35 / 2, // radius x
 				25 / 2); // radius y
 		// make a donut
-		Shape donut = Path.subtract(bigCircle, smallCircle);
+		Shape donut = Shape.subtract(bigCircle, smallCircle);
 		donut.setStrokeWidth(1.8);
 		donut.setStroke(Color.BLACK);
 		// orange glaze

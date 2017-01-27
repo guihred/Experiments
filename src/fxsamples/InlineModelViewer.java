@@ -1,14 +1,12 @@
 package fxsamples;
+
+import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -151,7 +149,7 @@ public class InlineModelViewer extends Application {
     rotate.setFromAngle(0);
     rotate.setToAngle(360);
     rotate.setInterpolator(Interpolator.LINEAR);
-    rotate.setCycleCount(RotateTransition.INDEFINITE);
+		rotate.setCycleCount(Animation.INDEFINITE);
 
     return rotate;
   }

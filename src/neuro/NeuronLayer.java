@@ -5,7 +5,7 @@ import java.util.List;
 
 public class NeuronLayer {
 
-	private List<Neuron> neurons = new ArrayList<Neuron>();
+	private List<Neuron> neurons = new ArrayList<>();
 
 	public List<Neuron> getNeurons() {
 		return neurons;

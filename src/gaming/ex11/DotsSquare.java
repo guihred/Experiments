@@ -75,7 +75,7 @@ public class DotsSquare extends Region {
         return adjacencies.contains(selected);
     }
 
-    Set<Set<DotsSquare>> check(DotsSquare selected) {
+	Set<Set<DotsSquare>> check() {
         final List<DotsSquare> collect = adjacencies.stream()
                 .filter(a -> a.adjacencies.stream()
                         .anyMatch(b -> b != this && b.adjacencies.stream()

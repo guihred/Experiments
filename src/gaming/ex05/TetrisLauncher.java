@@ -1,5 +1,6 @@
 package gaming.ex05;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -27,7 +28,7 @@ public class TetrisLauncher extends Application {
         final Timeline timeline = new Timeline();
         final EventHandler<ActionEvent> eventHandler = tetrisModel.getEventHandler(timeline);
         timeline.getKeyFrames().add(new KeyFrame(new Duration(500), eventHandler));
-        timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
         scene.setOnKeyPressed((KeyEvent e) -> {
             final KeyCode code = e.getCode();

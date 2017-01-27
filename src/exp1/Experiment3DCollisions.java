@@ -1,15 +1,9 @@
 package exp1;
 
 import java.util.stream.Stream;
-
 import javafx.application.Application;
 import javafx.geometry.Bounds;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -48,7 +42,7 @@ public class Experiment3DCollisions extends Application {
 		for (int i = mapa.length - 1; i >= 0; i--) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube rectangle = new Cube(SIZE, Color.BLUE, 1);
+				Cube rectangle = new Cube(SIZE, Color.BLUE);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {
@@ -77,7 +71,7 @@ public class Experiment3DCollisions extends Application {
 		Scene sc = new Scene(new Group(subScene));
 		sc.setOnMouseClicked(event -> {
 			String string = mapa[i][j];
-			Cube rectangle = new Cube(SIZE, color, 1);
+			Cube rectangle = new Cube(SIZE, color);
 			rectangle.setTranslateX(i * SIZE);
 			rectangle.setTranslateZ(j * SIZE);
 			if ("_".equals(string)) {
@@ -183,7 +177,7 @@ public class Experiment3DCollisions extends Application {
 		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 		private Box cube;
 
-		public Cube(float size, Color color, double shade) {
+		public Cube(float size, Color color) {
 			getTransforms().addAll(rz, ry, rx);
 			cube = new Box(size, size / 2, 5);
 			PhongMaterial value = new PhongMaterial(color);

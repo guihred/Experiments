@@ -1,5 +1,6 @@
 package gaming.ex01;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -83,7 +84,7 @@ public class SnakeLauncher extends Application {
                             }
                         })
         );
-        timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
         stage.setScene(scene);
         stage.setWidth(400);

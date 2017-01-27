@@ -51,7 +51,7 @@ public class FxProCH7f extends Application {
         c.setName("C");
         cpp.setName("C++");
         for (int i = 2011; i < 2021; i++) {
-            Data<String, Number> data = new XYChart.Data<String, Number>(Integer.toString(i), javaValue);
+			Data<String, Number> data = new XYChart.Data<>(Integer.toString(i), javaValue);
 			java.getData().add(data);
             javaValue = javaValue + 4 * Math.random() - .2;
             c.getData().add(new XYChart.Data<String, Number>(Integer.toString(i), cValue));

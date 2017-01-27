@@ -117,7 +117,7 @@ public class Experiment3DKillerGhosts extends Application {
 		for (int i = mapa.length - 1; i >= 0; i--) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube rectangle = new Cube(SIZE, Color.BLUE, 1);
+				Cube rectangle = new Cube(SIZE, Color.BLUE);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {
@@ -136,7 +136,7 @@ public class Experiment3DKillerGhosts extends Application {
 	}
 
 	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
-	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();;
+	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
 	private MovimentacaoAleatoria movimentacao;
 
 	private MeshView gerarFantasma(String arquivo, Color animalColor) {
@@ -323,7 +323,7 @@ public class Experiment3DKillerGhosts extends Application {
 		final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
 		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
-		public Cube(float size, Color color, double shade) {
+		public Cube(float size, Color color) {
 			getTransforms().addAll(rz, ry, rx);
 			PhongMaterial value = new PhongMaterial(color);
 

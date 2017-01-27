@@ -1,7 +1,6 @@
 package fxsamples;
 
 import java.util.Arrays;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,9 +20,9 @@ import javafx.stage.Stage;
 public class PersonTableController extends Application {
 
 	private TextField filterField = new TextField();
-	private TableView<Person> personTable = new TableView<Person>();
-	private TableColumn<Person, String> firstNameColumn = new TableColumn<Person, String>("First Name");
-	private TableColumn<Person, String> lastNameColumn = new TableColumn<Person, String>("Last Name");
+	private TableView<Person> personTable = new TableView<>();
+	private TableColumn<Person, String> firstNameColumn = new TableColumn<>("First Name");
+	private TableColumn<Person, String> lastNameColumn = new TableColumn<>("Last Name");
 
 	private ObservableList<Person> masterData = FXCollections.observableArrayList();
 
@@ -95,7 +94,7 @@ public class PersonTableController extends Application {
 		root.setCenter(gridpane);
 
 		gridpane.getChildren().addAll(new Label("Filter Field"), filterField, personTable);
-		this.personTable.getColumns().setAll(Arrays.asList(firstNameColumn, lastNameColumn));
+		personTable.getColumns().setAll(Arrays.asList(firstNameColumn, lastNameColumn));
 		initialize();
 		primaryStage.setScene(scene);
 		primaryStage.show();

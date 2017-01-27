@@ -31,17 +31,9 @@ package fxsamples;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
@@ -233,7 +225,7 @@ public class XylophoneApp extends Application {
 				new KeyFrame(Duration.seconds(8), new KeyValue(sceneRoot.rx
 						.angleProperty(), 60d, Interpolator.TANGENT(
 						Duration.seconds(1.0), 60d))));
-		animation2.setCycleCount(Timeline.INDEFINITE);
+		animation2.setCycleCount(Animation.INDEFINITE);
 
 		PerspectiveCamera camera = new PerspectiveCamera();
 

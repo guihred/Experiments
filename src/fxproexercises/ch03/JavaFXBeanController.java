@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
 public class JavaFXBeanController {
 
     private JavaFXBeanModelExample model;
-    public JavaFXBeanController(JavaFXBeanModelExample model, JavaFXBeanViewExample view) {
+    public JavaFXBeanController(JavaFXBeanModelExample model) {
         this.model = model;
     }
 

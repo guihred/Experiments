@@ -297,19 +297,19 @@ public class StarterAppMain extends Application {
     Node createSplitTreeListDemoNode() {
         final TreeItem<String> animalItem = new TreeItem<>("Animal");
         animalItem.getChildren().addAll(Arrays.asList(
-                new TreeItem<String>("Lion"),
-                new TreeItem<String>("Tiger"),
-                new TreeItem<String>("Bear")));
+                new TreeItem<>("Lion"),
+                new TreeItem<>("Tiger"),
+                new TreeItem<>("Bear")));
         final TreeItem<String> mineralItem = new TreeItem<>("Mineral");
         mineralItem.getChildren().addAll(Arrays.asList(
-                new TreeItem<String>("Copper"),
-                new TreeItem<String>("Diamond"),
-                new TreeItem<String>("Quartz")));
+                new TreeItem<>("Copper"),
+                new TreeItem<>("Diamond"),
+                new TreeItem<>("Quartz")));
         final TreeItem<String> vegetableItem = new TreeItem<>("Vegetable");
         vegetableItem.getChildren().addAll(Arrays.asList(
-                new TreeItem<String>("Arugula"),
-                new TreeItem<String>("Broccoli"),
-                new TreeItem<String>("Cabbage")));
+                new TreeItem<>("Arugula"),
+                new TreeItem<>("Broccoli"),
+                new TreeItem<>("Cabbage")));
 
         final TreeItem<String> rootItem = new TreeItem<>("Root");
         rootItem.getChildren().addAll(Arrays.asList(animalItem, mineralItem, vegetableItem));

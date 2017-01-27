@@ -44,13 +44,13 @@ public class Experiment3D extends Application {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
 				if ("_".equals(string)) {
-					Cube rectangle = new Cube(SIZE, Color.BLUE, 1);
+					Cube rectangle = new Cube(SIZE, Color.BLUE);
 					rectangle.setTranslateX(i * SIZE);
 					rectangle.setTranslateZ(j * SIZE);
 					rectangle.ry.setAngle(90);
 					root.getChildren().add(rectangle);
 				} else {
-					Cube rectangle = new Cube(SIZE, Color.BLUE, 1);
+					Cube rectangle = new Cube(SIZE, Color.BLUE);
 					rectangle.setTranslateX(i * SIZE);
 					rectangle.setTranslateZ(j * SIZE);
 					// Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
@@ -70,13 +70,13 @@ public class Experiment3D extends Application {
 		scene.setOnMouseClicked(event -> {
 			String string = mapa[i][j];
 			if ("_".equals(string)) {
-				Cube rectangle = new Cube(SIZE, color, 1);
+				Cube rectangle = new Cube(SIZE, color);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
 				rectangle.ry.setAngle(90);
 				root.getChildren().add(rectangle);
 			} else {
-				Cube rectangle = new Cube(SIZE, color, 1);
+				Cube rectangle = new Cube(SIZE, color);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
 				root.getChildren().add(rectangle);
@@ -160,7 +160,7 @@ public class Experiment3D extends Application {
 		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
 
-		public Cube(float size, Color color, double shade) {
+		public Cube(float size, Color color) {
 			getTransforms().addAll(rz, ry, rx);
 			final Box cube = new Box(size, size / 2, 5);
 			cube.setMaterial(new PhongMaterial(color));

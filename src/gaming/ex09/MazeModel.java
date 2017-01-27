@@ -8,6 +8,7 @@ package gaming.ex09;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -116,7 +117,7 @@ public class MazeModel {
         };
         final KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.5), eventHandler);
         timeline.getKeyFrames().add(keyFrame);
-        timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
 
         

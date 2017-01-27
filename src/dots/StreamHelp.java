@@ -25,7 +25,7 @@ public class StreamHelp {
 	}
 
 	public static <E, T extends Collection<E>> List<E> toList(T filter) {
-		List<E> a = new ArrayList<E>();
+		List<E> a = new ArrayList<>();
 		for (E e : filter) {
 			a.add(e);
 		}
@@ -41,7 +41,7 @@ public class StreamHelp {
 	}
 
 	public static <E, T extends Collection<E>> Set<E> toSet(T filter) {
-		Set<E> a = new HashSet<E>();
+		Set<E> a = new HashSet<>();
 		for (E e : filter) {
 			a.add(e);
 		}

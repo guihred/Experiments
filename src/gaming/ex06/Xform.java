@@ -56,6 +56,8 @@ public class Xform extends Group {
         case ZYX:
             getTransforms().addAll(t, p, rx, ry, rz, s, ip); 
             break;
+		default:
+			break;
         }
     }
 

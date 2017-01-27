@@ -35,7 +35,6 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
@@ -127,7 +126,7 @@ public class MoleculeSampleApp extends Application {
 		world.getChildren().addAll(axisGroup);
 	}
 
-	private void handleMouse(Scene scene, final Node root) {
+	private void handleMouse(Scene scene) {
 		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
@@ -176,7 +175,7 @@ public class MoleculeSampleApp extends Application {
 		});
 	}
 
-	private void handleKeyboard(Scene scene, final Node root) {
+	private void handleKeyboard(Scene scene) {
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
@@ -296,8 +295,8 @@ public class MoleculeSampleApp extends Application {
 
 		Scene scene = new Scene(root, 1024, 768, true);
 		scene.setFill(Color.GREY);
-		handleKeyboard(scene, world);
-		handleMouse(scene, world);
+		handleKeyboard(scene);
+		handleMouse(scene);
 
 		primaryStage.setTitle("Molecule Sample Application");
 		primaryStage.setScene(scene);
