@@ -136,7 +136,7 @@ public class Experiment3DKillerGhosts extends Application {
 	}
 
 	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
-	private static final String MESH_GHOST = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Ghost 2.STL";
+	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();;
 	private MovimentacaoAleatoria movimentacao;
 
 	private MeshView gerarFantasma(String arquivo, Color animalColor) {

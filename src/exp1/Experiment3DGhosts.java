@@ -170,7 +170,7 @@ public class Experiment3DGhosts extends Application {
 
 
 	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
-	private static final String MESH_GHOST = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Ghost 2.STL";
+	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
 
 	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
 		File file = new File(arquivo);

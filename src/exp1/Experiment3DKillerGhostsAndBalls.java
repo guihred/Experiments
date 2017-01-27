@@ -252,7 +252,7 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 	private static Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 	private static Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 
-	private static final String MESH_GHOST = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Ghost 2.STL";
+	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();;
 
 	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
 
