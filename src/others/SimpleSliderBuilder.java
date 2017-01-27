@@ -3,8 +3,7 @@ package others;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Slider;
 
-public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSliderBuilder>
-		implements SimpleBuilder<Slider> {
+public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSliderBuilder> {
 
 	Slider slider;
 

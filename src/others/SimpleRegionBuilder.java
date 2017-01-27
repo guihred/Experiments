@@ -3,8 +3,7 @@ package others;
 import javafx.scene.layout.Region;
 
 @SuppressWarnings("unchecked")
-public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> extends SimpleNodeBuilder<T, Z>
-		implements SimpleBuilder<T> {
+public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> extends SimpleNodeBuilder<T, Z> {
 
 	protected T region;
 

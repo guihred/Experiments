@@ -4,7 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Hyperlink;
 
-public class SimpleHyperlinkBuilder extends SimpleRegionBuilder<Hyperlink, SimpleHyperlinkBuilder> implements SimpleBuilder<Hyperlink>{
+public class SimpleHyperlinkBuilder extends SimpleRegionBuilder<Hyperlink, SimpleHyperlinkBuilder> {
 
 	Hyperlink hyperlink;
 

@@ -2,8 +2,7 @@ package others;
 
 import javafx.scene.shape.Rectangle;
 
-public class SimpleRectangleBuilder extends SimpleShapeBuilder<Rectangle, SimpleRectangleBuilder>
-		implements SimpleBuilder<Rectangle> {
+public class SimpleRectangleBuilder extends SimpleShapeBuilder<Rectangle, SimpleRectangleBuilder> {
 
 	Rectangle rectangle;
 

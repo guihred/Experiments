@@ -37,21 +37,9 @@ import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
-import javafx.scene.AmbientLight;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -59,6 +47,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 /**
@@ -147,10 +136,8 @@ public class Simple3DSphereApp extends Application {
 			protected Color computeValue() {
 				if (specularColorNull.get()) {
 					return null;
-				} else {
-					return specularColor.get().deriveColor(0, 1, 1,
-							specularColorOpacity.get());
 				}
+				return specularColor.get().deriveColor(0, 1, 1, specularColorOpacity.get());
 			}
 		});
 		material.specularMapProperty()
@@ -211,7 +198,9 @@ public class Simple3DSphereApp extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setResizable(false);
+		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		Scene scene = new Scene(createContent());
+		// primaryStage.set
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

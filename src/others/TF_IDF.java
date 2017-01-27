@@ -1,17 +1,7 @@
 package others;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TF_IDF {
@@ -87,7 +77,7 @@ public class TF_IDF {
 
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(d));
 		String readLine = null;
-		Map<String, Long> collect = new ConcurrentHashMap<String, Long>();
+		Map<String, Long> collect = new ConcurrentHashMap<>();
 		do {
 			readLine = bufferedReader.readLine();
 			if (readLine != null) {
@@ -118,8 +108,9 @@ public class TF_IDF {
 				.entrySet();
 		double idf = 1d;
 		for (Entry<File, Map<String, Long>> entry : entrySet) {
-			if (entry.getValue().containsKey(p))
+			if (entry.getValue().containsKey(p)) {
 				idf += 1;
+			}
 		}
 
 		return Math.log(MAPA_DOCUMENTO.size() / idf);
@@ -131,7 +122,7 @@ public class TF_IDF {
 
 	public static void main(String[] args) throws IOException {
 
-		File arquivo = new File("C:\\Users\\Guilherme\\workspace\\Teste\\src");
+		File arquivo = new File(TF_IDF.class.getResource("src/").toString());
 		Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
 		documentMap.forEach((c, v) -> {
 			v.forEach((p, fre) -> {
@@ -144,7 +135,7 @@ public class TF_IDF {
 			});
 		});
 		// MAP_TF_IDF =
-		List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<Map.Entry<String, Map<File, Double>>>(
+		List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(
 				MAP_TF_IDF.entrySet());
 
 		entrySet.sort(new ValueComparator());
@@ -203,8 +194,8 @@ public class TF_IDF {
 	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
 	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
 	 */
-	private static final Map<File, Map<String, Long>> MAPA_DOCUMENTO = new HashMap<File, Map<String, Long>>();
-	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<String, Map<File, Double>>();
+	private static final Map<File, Map<String, Long>> MAPA_DOCUMENTO = new HashMap<>();
+	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
 
 	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
 }

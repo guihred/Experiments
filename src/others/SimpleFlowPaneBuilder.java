@@ -6,8 +6,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.layout.FlowPane;
 
-public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlowPaneBuilder>
-		implements SimpleBuilder<FlowPane> {
+public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlowPaneBuilder> {
 
 	FlowPane flowPane;
 
@@ -16,6 +15,7 @@ public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlo
 		flowPane = node;
 	}
 
+	@Override
 	public SimpleFlowPaneBuilder padding(Insets insets) {
 		flowPane.setPadding(insets);
 		return this;

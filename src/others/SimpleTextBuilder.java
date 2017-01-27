@@ -2,7 +2,7 @@ package others;
 
 import javafx.scene.text.Text;
 
-public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilder> implements SimpleBuilder<Text> {
+public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilder> {
 
 	private Text text;
 

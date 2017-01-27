@@ -17,12 +17,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -30,12 +25,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import others.SimpleFlowPaneBuilder;
-import others.SimpleHyperlinkBuilder;
-import others.SimpleLabelBuilder;
-import others.SimpleRadioButtonBuilder;
-import others.SimpleSliderBuilder;
-import others.SimpleTextBuilder;
+import others.*;
 
 public class FxProCH2b extends Application {
 
@@ -45,18 +35,18 @@ public class FxProCH2b extends Application {
 			Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE, Cursor.SE_RESIZE,
 			Cursor.S_RESIZE, Cursor.SW_RESIZE, Cursor.W_RESIZE, Cursor.NW_RESIZE, Cursor.NONE);
 
+	Slider sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255).orientation(Orientation.VERTICAL).build();
+	ChoiceBox<Cursor> choiceBoxRef = new ChoiceBox<>(cursors);
+	Text textSceneX = new SimpleTextBuilder().styleClass("emphasized-text").build();
+	Text textSceneY = new SimpleTextBuilder().styleClass("emphasized-text").build();
+	Text textSceneW = new SimpleTextBuilder().styleClass("emphasized-text").build();
+	Text textSceneH = new SimpleTextBuilder().styleClass("emphasized-text").id("sceneHeightText").build();
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
 
 	@Override
 	public void start(Stage stage) {
-		Slider sliderRef;
-		ChoiceBox<Cursor> choiceBoxRef;
-		Text textSceneX;
-		Text textSceneY;
-		Text textSceneW;
-		Text textSceneH;
 		Label labelStageX;
 		Label labelStageY;
 		Label labelStageW;
@@ -70,23 +60,22 @@ public class FxProCH2b extends Application {
 			System.out.println(textRef.getText());
 		}).build();
 
-		FlowPane sceneRoot = new SimpleFlowPaneBuilder().layoutX(20).layoutY(40).padding(new Insets(0, 20, 40, 0))
-				.orientation(Orientation.VERTICAL).vgap(10).hgap(20).columnHalignment(HPos.LEFT)
-				.children(new HBox(10,
-						sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255)
-										.orientation(Orientation.VERTICAL).build(),
-								choiceBoxRef = new ChoiceBox<>(cursors)
-
-						)
-						, textSceneX = new SimpleTextBuilder().styleClass("emphasized-text").build(),
-						textSceneY = new SimpleTextBuilder().styleClass("emphasized-text").build(),
-						textSceneW = new SimpleTextBuilder().styleClass("emphasized-text").build(),
-						textSceneH = new SimpleTextBuilder().styleClass("emphasized-text").id("sceneHeightText")
-								.build(),
+		FlowPane sceneRoot = new SimpleFlowPaneBuilder()
+				.layoutX(20)
+				.layoutY(40)
+				.padding(new Insets(0, 20, 40, 0))
+				.orientation(Orientation.VERTICAL)
+				.vgap(10)
+				.hgap(20)
+				.columnHalignment(HPos.LEFT)
+				.children(new HBox(10, sliderRef, choiceBoxRef)
+						, textSceneX, textSceneY, textSceneW, textSceneH,
 						build,
-						new SimpleRadioButtonBuilder().text("onTheScene.css").toggleGroup(toggleGrp).selected(true)
+						new SimpleRadioButtonBuilder().text("onTheScene.css")
+								.toggleGroup(toggleGrp).selected(true)
 								.build(),
-						new SimpleRadioButtonBuilder().text("changeOfScene.css").toggleGroup(toggleGrp).build(),
+						new SimpleRadioButtonBuilder().text("changeOfScenes.css")
+								.toggleGroup(toggleGrp).build(),
 						labelStageX = new SimpleLabelBuilder().id("stageX").build(),
 						labelStageY = new SimpleLabelBuilder().id("stageY").build(), labelStageW = new Label(),
 						labelStageH = new Label())

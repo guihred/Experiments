@@ -2,7 +2,7 @@ package others;
 
 import javafx.scene.shape.Line;
 
-public class SimpleLineBuilder extends SimpleShapeBuilder<Line, SimpleLineBuilder> implements SimpleBuilder<Line> {
+public class SimpleLineBuilder extends SimpleShapeBuilder<Line, SimpleLineBuilder> {
 
 	Line circle;
 

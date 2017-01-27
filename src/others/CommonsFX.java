@@ -7,11 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
@@ -32,7 +28,7 @@ public class CommonsFX {
 	public static Button newButton(double layoutX, double layoutY, String nome, EventHandler<ActionEvent> onAction) {
 		Button button = new Button(nome);
 		button.setLayoutX(layoutX);
-		button.setLayoutY(layoutX);
+		button.setLayoutY(layoutY);
 		button.setOnAction(onAction);
 		return button;
 	}

@@ -314,7 +314,6 @@ public class Experiment3DWallTexture extends Application {
 
 	private MeshView generateGhost(String arquivo, Color enemyColor) {
 		File file = new File(arquivo);
-		System.out.println(file.exists());
 		StlMeshImporter importer = new StlMeshImporter();
 		importer.read(file);
 		Mesh mesh = importer.getImport();
@@ -334,7 +333,7 @@ public class Experiment3DWallTexture extends Application {
 			enemy.setTranslateX(enemy.getTranslateX() + i);
 		}
 		enemy.setScaleX(0.4);
-		enemy.setScaleY(0.4);
+		enemy.setScaleY(1);
 		enemy.setScaleZ(0.4);
 		return enemy;
 	}

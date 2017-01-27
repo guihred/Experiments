@@ -1,4 +1,5 @@
 package others;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,7 +15,7 @@ public class TermFrequency {
 
 	private static final String REGEX = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
-	private static final Map<File, Map<String, Long>> mapaDocumentos = new HashMap<File, Map<String, Long>>();
+	private static final Map<File, Map<String, Long>> mapaDocumentos = new HashMap<>();
 
 	public static void main(String[] args) throws IOException {
 
@@ -49,8 +50,7 @@ public class TermFrequency {
 		return Math.log(mapaDocumentos.size() / idf);
 	}
 
-	public static Map<File, Map<String, Long>> getMapaDocumentos(File file)
-			throws IOException {
+	public static Map<File, Map<String, Long>> getMapaDocumentos(File file) throws IOException {
 		if (!file.isDirectory()) {
 			Map<String, Long> termFrequencyMap = getFrequencyMap(file);
 			mapaDocumentos.put(file, termFrequencyMap);
@@ -71,28 +71,32 @@ public class TermFrequency {
 	}
 
 	public static Map<String, Long> getFrequencyMap(File f) throws IOException {
-		BufferedReader buff = new BufferedReader(new FileReader(f));
-		Map<String, Long> map = new ConcurrentHashMap<String, Long>();
-		String readLine = null;
-		do {
-			readLine = buff.readLine();
-			if (readLine != null) {
-				String[] split = readLine.split(REGEX);
-				List<String> asList = Arrays.asList(split);
-				asList.stream().parallel().reduce(map, (mapa, str) -> {
-					if (str.isEmpty()) {
+		Map<String, Long> map = new ConcurrentHashMap<>();
+		try (BufferedReader buff = new BufferedReader(new FileReader(f));) {
+
+			String readLine = null;
+			do {
+				readLine = buff.readLine();
+				if (readLine != null) {
+					String[] split = readLine.split(REGEX);
+					List<String> asList = Arrays.asList(split);
+					asList.stream().parallel().reduce(map, (mapa, str) -> {
+						if (str.isEmpty()) {
+							return mapa;
+						}
+						String str2 = str.toLowerCase();
+						if (!mapa.containsKey(str2)) {
+							mapa.put(str2, 1L);
+						}
+						mapa.put(str2, mapa.get(str2) + 1);
 						return mapa;
-					}
-					str = str.toLowerCase();
-					if (!mapa.containsKey(str)) {
-						mapa.put(str, 1L);
-					}
-					mapa.put(str, mapa.get(str) + 1);
-					return mapa;
-				}, (m1, m2) -> m1);
-			}
-		} while (readLine != null);
-		buff.close();
+					}, (m1, m2) -> m1);
+				}
+			} while (readLine != null);
+			buff.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return map;
 	}
 

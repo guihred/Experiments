@@ -20,7 +20,7 @@ public class FxProCH8b extends Application {
 
     @Override
     public void start(Stage primaryStage) throws MalformedURLException {
-        File resource = new File("C:\\Users\\Note\\Documents\\Sistemas\\Workspace\\Teste\\TeenTitans.mp3");
+		File resource = new File(Chapter8Resource.TEEN_TITANS.getURL().getFile());
         Media media = new Media(resource.toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();

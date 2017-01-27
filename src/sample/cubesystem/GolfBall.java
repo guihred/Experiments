@@ -12,7 +12,7 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-public class GolfBall<E> extends Application {
+public class GolfBall extends Application {
 
 	private static final int DIVISION = 200;// the bigger the higher resolution
 	float radius = 300;// radius of the sphere

@@ -47,7 +47,7 @@ public class CubeFace extends Parent {
 
 	DoubleProperty zPos = new SimpleDoubleProperty(0);
 
-	public CubeFace(CubeModel model, int face) {
+	public CubeFace(int face) {
 		getChildren().addAll(createFaceRectangle(), createMapTiles(face));
 
 		zPos.addListener((ov, oldValue, newValue) -> faceRect
@@ -137,7 +137,7 @@ public class CubeFace extends Parent {
 			for (int x = xOffset; x <= xOffset + 1; x++) {
 				int xm = (x + 1) % 8;
 				ImageView mapTile = new ImageView();
-				;
+
 				mapTile.setImage(new Image(
 						"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
 								+ "&z=3"));

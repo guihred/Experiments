@@ -4,8 +4,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 
 @SuppressWarnings("unchecked")
-public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> extends SimpleNodeBuilder<T, Z>
-		implements SimpleBuilder<T> {
+public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> extends SimpleNodeBuilder<T, Z> {
 
 	protected T shape;
 

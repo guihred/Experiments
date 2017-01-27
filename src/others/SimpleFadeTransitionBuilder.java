@@ -4,8 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 
-public class SimpleFadeTransitionBuilder extends SimpleAnimationBuilder<FadeTransition, SimpleFadeTransitionBuilder>
-		implements SimpleBuilder<FadeTransition> {
+public class SimpleFadeTransitionBuilder extends SimpleAnimationBuilder<FadeTransition, SimpleFadeTransitionBuilder> {
 
 	FadeTransition circle;
 

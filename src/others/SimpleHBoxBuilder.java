@@ -3,7 +3,7 @@ package others;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 
-public class SimpleHBoxBuilder extends SimplePaneBuilder<HBox, SimpleHBoxBuilder> implements SimpleBuilder<HBox> {
+public class SimpleHBoxBuilder extends SimplePaneBuilder<HBox, SimpleHBoxBuilder> {
 
 	HBox hbox;
 

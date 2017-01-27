@@ -31,16 +31,12 @@
  */
 package sample.cubesystem;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -165,7 +161,7 @@ public class SphereSystemApp extends Application {
                 new KeyValue(cube1_7.rx.angleProperty(), 7200.0),
                 new KeyValue(cube1_8.rx.angleProperty(), -7200.0),
                 new KeyValue(cube1_9.rx.angleProperty(), 7200.0)));
-        animation.setCycleCount(Timeline.INDEFINITE);
+		animation.setCycleCount(Animation.INDEFINITE);
         
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.setFarClip(1500);

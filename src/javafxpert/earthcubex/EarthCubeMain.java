@@ -41,7 +41,7 @@ public class EarthCubeMain extends Application {
 	public void start(Stage primaryStage) {
 		cubeModel = new CubeModel();
 		CubeModel.instance = cubeModel;
-		cube = new CubeNode(cubeModel);
+		cube = new CubeNode();
 		cube.setFocusTraversable(true);
 
 		Group root = new Group(cube);

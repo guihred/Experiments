@@ -36,7 +36,8 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 		public Cube(float size, Color color, double shade) {
 			getTransforms().addAll(rz, ry, rx);
 			PhongMaterial value = new PhongMaterial(color);
-			// value.setDiffuseMap(new Image("file:wall.jpg"));
+			// value.setDiffuseMap(new
+			// Image(Experiment3DMouseControl.class.getResource("wall.jpg").toString()));
 			// value.setSpecularMap(new Image("file:wall2.jpg"));
 			Box cube = new Box(size, size / 2, 5);
 			cube.setMaterial(value);

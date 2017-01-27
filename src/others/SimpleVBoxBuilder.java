@@ -3,7 +3,7 @@ package others;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 
-public class SimpleVBoxBuilder extends SimplePaneBuilder<VBox, SimpleVBoxBuilder> implements SimpleBuilder<VBox> {
+public class SimpleVBoxBuilder extends SimplePaneBuilder<VBox, SimpleVBoxBuilder> {
 
 	VBox vbox;
 

@@ -2,8 +2,7 @@ package others;
 
 import javafx.scene.shape.Ellipse;
 
-public class SimpleEllipseBuilder extends SimpleShapeBuilder<Ellipse, SimpleEllipseBuilder>
-		implements SimpleBuilder<Ellipse> {
+public class SimpleEllipseBuilder extends SimpleShapeBuilder<Ellipse, SimpleEllipseBuilder> {
 
 	Ellipse ellipse;
 

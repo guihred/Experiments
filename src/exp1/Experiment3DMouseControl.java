@@ -29,8 +29,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Experiment3DMouseControl extends Application {
-	private static final Image WALL_IMAGE = new Image("file:wall.jpg");
-	private static final Image WALL_IMAGE2 = new Image("file:wall2.jpg");
+	private static final Image WALL_IMAGE = new Image(
+			Experiment3DMouseControl.class.getResource("wall.jpg").toString());
+	private static final Image WALL_IMAGE2 = new Image(
+			Experiment3DMouseControl.class.getResource("wall2.jpg").toString());
+
 	public class Cube extends Group {
 
 		final Rotate rx = new Rotate(0, Rotate.X_AXIS);

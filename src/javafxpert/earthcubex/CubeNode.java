@@ -51,7 +51,7 @@ public class CubeNode extends Parent {
 
 	DoubleProperty angleY = new SimpleDoubleProperty(0);
 
-	public CubeNode(CubeModel model) {
+	public CubeNode() {
 
 		angleX.addListener((ov) -> {
 			arrangeFacesZOrder();
@@ -60,7 +60,7 @@ public class CubeNode extends Parent {
 
 		angleY.addListener((ov, oldValue, newValue) -> arrangeFacesZOrder());
 
-		rearFace = new CubeFace(cubeModel, CubeFace.REAR_FACE);
+		rearFace = new CubeFace(CubeFace.REAR_FACE);
 		Rotate build = new SimpleRotateBuilder().angle(180.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.edgeLength / 2)
 				.build();
 
@@ -68,31 +68,31 @@ public class CubeNode extends Parent {
 				new Translate(0, 0, CubeFace.edgeLength),
 				build);
 
-		bottomFace = new CubeFace(cubeModel, CubeFace.BOTTOM_FACE);
+		bottomFace = new CubeFace(CubeFace.BOTTOM_FACE);
 		bottomFace.getTransforms().setAll(
 				new Translate(0, 0, CubeFace.edgeLength),
 				new SimpleRotateBuilder().angle(90.0).axis(Rotate.X_AXIS)
 						.pivotY(CubeFace.edgeLength).build());
 
-		leftFace = new CubeFace(cubeModel, CubeFace.LEFT_FACE);
+		leftFace = new CubeFace(CubeFace.LEFT_FACE);
 		leftFace.getTransforms().setAll(
 				new Translate(0, 0, CubeFace.edgeLength),
 				new SimpleRotateBuilder().angle(90.0).axis(Rotate.Y_AXIS)
 						.pivotX(0).build());
 
-		rightFace = new CubeFace(cubeModel, CubeFace.RIGHT_FACE);
+		rightFace = new CubeFace(CubeFace.RIGHT_FACE);
 		rightFace.getTransforms().setAll(
 				new Translate(0, 0, CubeFace.edgeLength),
 				new SimpleRotateBuilder().angle(-90.0).axis(Rotate.Y_AXIS)
 						.pivotX(CubeFace.edgeLength).build());
 
-		topFace = new CubeFace(cubeModel, CubeFace.TOP_FACE);
+		topFace = new CubeFace(CubeFace.TOP_FACE);
 		topFace.getTransforms().setAll(
 				new Translate(0, 0, CubeFace.edgeLength),
 				new SimpleRotateBuilder().angle(-90.0).axis(Rotate.X_AXIS)
 						.pivotX(0).build());
 
-		frontFace = new CubeFace(cubeModel, CubeFace.FRONT_FACE);
+		frontFace = new CubeFace(CubeFace.FRONT_FACE);
 		frontFace.getTransforms().setAll(
 				new Translate(0, 0, 0));
 

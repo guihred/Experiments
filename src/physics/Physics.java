@@ -1,7 +1,7 @@
 package physics;
 
 import java.util.Random;
-
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -58,22 +58,19 @@ public class Physics extends Application {
 		final Ramp bottomRamp = new Ramp(20, 45, 60, 30);
 		final Ramp lastRamp = new Ramp(50, 20, 80, 30);
 		final Timeline timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setCycleCount(Animation.INDEFINITE);
 		// timeline.setDelay(Duration.seconds(1.0/60.0));
 
 		// create a keyFrame, the keyValue is reached at time 2s
 		Duration duration = Duration.seconds(1.0 / 60.0);
 		// one can add a specific action when the keyframe is reached
-		EventHandler<ActionEvent> onFinished = new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent t) {
-				PhysicalScene.world.step(1.0f / 60.f, 1, 1);
-				for (int i = 0; i < MAX_BALLS; i++) {
-					float xpos = toPixelX(ball[i].body.getPosition().x);
-					float ypos = toPixelY(ball[i].body.getPosition().y);
-					ball[i].node.setLayoutX(xpos);
-					ball[i].node.setLayoutY(ypos);
-				}
+		EventHandler<ActionEvent> onFinished = t -> {
+			PhysicalScene.world.step(1.0f / 60.f, 1, 1);
+			for (int i = 0; i < MAX_BALLS; i++) {
+				float xpos = toPixelX(ball[i].body.getPosition().x);
+				float ypos = toPixelY(ball[i].body.getPosition().y);
+				ball[i].node.setLayoutX(xpos);
+				ball[i].node.setLayoutY(ypos);
 			}
 		};
 
@@ -86,12 +83,7 @@ public class Physics extends Application {
 		btn.setLayoutX(10);
 		btn.setLayoutY(0);
 		btn.setText("Release Balls");
-		btn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				timeline.playFromStart();
-			}
-		});
+		btn.setOnAction(event -> timeline.playFromStart());
 
 		root.getChildren().add(btn);
 		for (int i = 0; i < MAX_BALLS; i++) {

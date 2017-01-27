@@ -2,8 +2,7 @@ package others;
 
 import javafx.scene.shape.Circle;
 
-public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle, SimpleCircleBuilder>
-		implements SimpleBuilder<Circle> {
+public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle, SimpleCircleBuilder> {
 
 	Circle circle;
 
