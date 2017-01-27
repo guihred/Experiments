@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import others.SimpleCircleBuilder;
 
 public class FxProCH10 extends Application {
 
@@ -34,16 +35,18 @@ public class FxProCH10 extends Application {
         Scene scene = new Scene(root, 800, 600, Color.BLACK);
         List<Circle> circles = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
-            final Circle circle = new Circle(150);
-            circle.setCenterX(Math.random() * 800);
-            circle.setCenterY(Math.random() * 600);
-            circle.setFill(new Color(Math.random(), Math.random(), Math.random(), .2));
-            circle.setEffect(new BoxBlur(10, 10, 3));
+            final Circle circle = new SimpleCircleBuilder().radius(150)
+            		.centerX(Math.random() * 800)
+            		.centerY(Math.random() * 600)
+            		.fill(new Color(Math.random(), Math.random(), Math.random(), .2))
+            		.effect(new BoxBlur(10, 10, 3))
+            		.stroke(Color.WHITE)
+            		.build()
+            		;
             circle.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent t) -> {
                 KeyValue collapse = new KeyValue(circle.radiusProperty(), 0);
                 new Timeline(new KeyFrame(Duration.seconds(3), collapse)).play();
             });
-            circle.setStroke(Color.WHITE);
             circle.strokeWidthProperty().bind(Bindings.when(circle.hoverProperty())
                     .then(4)
                     .otherwise(0));

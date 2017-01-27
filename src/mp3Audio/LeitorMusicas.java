@@ -1,25 +1,5 @@
 package mp3Audio;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-import org.apache.commons.lang3.StringUtils;
-import org.blinkenlights.jid3.ID3Exception;
-import org.blinkenlights.jid3.ID3Tag;
-import org.blinkenlights.jid3.MP3File;
-import org.blinkenlights.jid3.v1.ID3V1Tag.Genre;
-import org.blinkenlights.jid3.v1.ID3V1_0Tag;
-import org.blinkenlights.jid3.v2.APICID3V2Frame;
-import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
-
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -29,12 +9,34 @@ import com.google.api.services.customsearch.Customsearch.Cse;
 import com.google.api.services.customsearch.CustomsearchRequestInitializer;
 import com.google.api.services.customsearch.model.Result;
 import com.google.api.services.customsearch.model.Search;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javax.swing.filechooser.FileSystemView;
+import org.apache.commons.lang3.StringUtils;
+import org.blinkenlights.jid3.ID3Tag;
+import org.blinkenlights.jid3.MP3File;
+import org.blinkenlights.jid3.v1.ID3V1Tag.Genre;
+import org.blinkenlights.jid3.v1.ID3V1_0Tag;
+import org.blinkenlights.jid3.v2.APICID3V2Frame;
+import org.blinkenlights.jid3.v2.ID3V2Frame;
+import org.blinkenlights.jid3.v2.ID3V2Tag;
+import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 
 public class LeitorMusicas {
 
 	public static void main(String[] args) throws IOException {
-		File file = new File("C:/Users/Guilherme/Music");
-		getMusicas(file);
+		String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
+		File file = new File(new File(path).getParentFile(), "Music");
+		ObservableList<Musica> musicas = getMusicas(file);
+		musicas.forEach(System.out::println);
 	}
 
 
@@ -126,7 +128,7 @@ public class LeitorMusicas {
 		musica.setAno(year);
 		musica.setTrilha(track);
 		musica.setArquivo(sourceFile);
-
+		extractEmbeddedImageData(mediaFile);
 
 
 		return musica;
@@ -151,7 +153,10 @@ public class LeitorMusicas {
 					}
 				}
 			}
-		} catch (ID3Exception e) {
+			ID3V2Tag id3v2Tag = mp3.getID3V2Tag();
+			ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
+			System.out.println("SingleFrames=" + Arrays.toString(singleFrames));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;

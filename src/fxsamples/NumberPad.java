@@ -13,7 +13,7 @@ public class NumberPad extends Application {
 	public void start(Stage primaryStage) {
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 180, 250);
-		scene.getStylesheets().add("file:mobile_buttons.css");
+		scene.getStylesheets().add(getClass().getResource("mobile_buttons.css").toString());
 		String[] keys = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "*",
 				"0", "#" };
 		GridPane numPad = new GridPane();

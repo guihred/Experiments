@@ -63,6 +63,7 @@ import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import others.SimpleRectangleBuilder;
 
 /**
  *
@@ -135,11 +136,15 @@ public class StarterAppMain extends Application {
         okButton.setOnAction((ActionEvent e) -> {
             alertPopup.hide();
         });
-        final Rectangle rectangle = new Rectangle(300, 200, Color.LIGHTBLUE);
-        rectangle.setArcWidth(20);
-        rectangle.setArcHeight(20);
-        rectangle.setStroke(Color.GRAY);
-        rectangle.setStrokeWidth(2);
+        final Rectangle rectangle = new SimpleRectangleBuilder()
+        		.width(300)
+        		.height(200)
+        		.fill(Color.LIGHTBLUE)
+        		.arcWidth(20)
+        		.arcHeight(20)
+        		.stroke(Color.GRAY)
+        		.strokeWidth(2)
+        		.build();
 
         final Label htmlLabel = new Label(text);
         htmlLabel.setWrapText(true);

@@ -17,13 +17,11 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class TriangleMeshes extends Application {
-	private PerspectiveCamera camera;
 	private final double sceneWidth = 600;
 	private final double sceneHeight = 600;
 	double anchorAngleX;
 	double anchorAngleY;
 	private double scenex, sceney = 0;
-	private double fixedXAngle, fixedYAngle = 0;
 	private final DoubleProperty angleX = new SimpleDoubleProperty(0);
 	private final DoubleProperty angleY = new SimpleDoubleProperty(0);
 

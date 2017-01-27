@@ -68,9 +68,6 @@ public class Person {
 
 	public Person(String firstName, String lastName) {
 		firstNameProperty().set(firstName);
-		;
 		lastNameProperty().set(lastName);
-		;
-		// TODO Auto-generated constructor stub
 	}
 }

@@ -1,4 +1,6 @@
 package fxsamples;
+
+import java.util.Arrays;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -17,7 +19,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class WorkingWithTableView extends Application {
 
@@ -49,26 +50,23 @@ public class WorkingWithTableView extends Application {
 		leaderListView.setPrefHeight(150);
 		// display first and last name with tooltip using alias
 		leaderListView
-				.setCellFactory(new Callback<ListView<Person>, ListCell<Person>>() {
-					@Override
-					public ListCell<Person> call(ListView<Person> param) {
-						Label leadLbl = new Label();
-						Tooltip tooltip = new Tooltip();
-						ListCell<Person> cell = new ListCell<Person>() {
-							@Override
-							public void updateItem(Person item, boolean empty) {
-								super.updateItem(item, empty);
-								if (item != null) {
-									leadLbl.setText(item.getAliasName());
-									setText(item.getFirstName() + " "
-											+ item.getLastName());
-									tooltip.setText(item.getAliasName());
-									setTooltip(tooltip);
-								}
+				.setCellFactory(param -> {
+					Label leadLbl = new Label();
+					Tooltip tooltip = new Tooltip();
+					ListCell<Person> cell = new ListCell<Person>() {
+						@Override
+						public void updateItem(Person item, boolean empty) {
+							super.updateItem(item, empty);
+							if (item != null) {
+								leadLbl.setText(item.getAliasName());
+								setText(item.getFirstName() + " "
+										+ item.getLastName());
+								tooltip.setText(item.getAliasName());
+								setTooltip(tooltip);
 							}
-						}; // ListCell
-						return cell;
-					}
+						}
+					}; // ListCell
+					return cell;
 				}); // setCellFactory
 		gridpane.add(leaderListView, 0, 1);
 		Label emplLbl = new Label("Employees");
@@ -92,8 +90,7 @@ public class WorkingWithTableView extends Application {
 		TableColumn<Person, String> lastNameCol = new TableColumn<>("Last Name");
 		lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
 		lastNameCol.setPrefWidth(employeeTableView.getPrefWidth() / 3);
-		employeeTableView.getColumns().setAll(aliasNameCol, firstNameCol,
-				lastNameCol);
+		employeeTableView.getColumns().setAll(Arrays.asList(aliasNameCol, firstNameCol, lastNameCol));
 		gridpane.add(employeeTableView, 2, 1);
 		// selection listening
 		leaderListView

@@ -8,10 +8,10 @@ import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.RectangleBuilder;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import others.SimpleRectangleBuilder;
 
 /**
  * @author Jasper Potts
@@ -71,25 +71,23 @@ public class Cube3D extends Application {
 		public Cube(double size, Color color, double shade) {
 			getTransforms().addAll(rz, ry, rx);
 			getChildren().addAll(
-					RectangleBuilder
-							.create()
+					new SimpleRectangleBuilder()
 							// back face
 							.width(size)
 							.height(size)
 							.fill(color.deriveColor(0.0, 1.0, 1 - 0.5 * shade,
-									1.0)).translateX(-0.5 * size)
+									1.0))
+							.translateX(-0.5 * size)
 							.translateY(-0.5 * size).translateZ(0.5 * size)
 							.build(),
-					RectangleBuilder
-							.create()
+					new SimpleRectangleBuilder()
 							// bottom face
 							.width(size)
 							.height(size)
 							.fill(color.deriveColor(0.0, 1.0, 1 - 0.4 * shade,
 									1.0)).translateX(-0.5 * size).translateY(0)
 							.rotationAxis(Rotate.X_AXIS).rotate(90).build(),
-					RectangleBuilder
-							.create()
+					new SimpleRectangleBuilder()
 							// right face
 							.width(size)
 							.height(size)
@@ -97,16 +95,14 @@ public class Cube3D extends Application {
 									1.0)).translateX(-1 * size)
 							.translateY(-0.5 * size)
 							.rotationAxis(Rotate.Y_AXIS).rotate(90).build(),
-					RectangleBuilder
-							.create()
+					new SimpleRectangleBuilder()
 							// left face
 							.width(size)
 							.height(size)
 							.fill(color.deriveColor(0.0, 1.0, 1 - 0.2 * shade,
 									1.0)).translateX(0).translateY(-0.5 * size)
 							.rotationAxis(Rotate.Y_AXIS).rotate(90).build(),
-					RectangleBuilder
-							.create()
+					new SimpleRectangleBuilder()
 							// top face
 							.width(size)
 							.height(size)
@@ -114,8 +110,7 @@ public class Cube3D extends Application {
 									1.0)).translateX(-0.5 * size)
 							.translateY(-1 * size).rotationAxis(Rotate.X_AXIS)
 							.rotate(90).build(),
-					RectangleBuilder
-							.create()
+					new SimpleRectangleBuilder()
 							// top face
 							.width(size).height(size).fill(color)
 							.translateX(-0.5 * size).translateY(-0.5 * size)

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -109,7 +108,7 @@ public class PhotoViewer extends Application {
 				db.getFiles().stream().forEach(file -> {
 					try {
 						addImage(file.toURI().toURL().toString());
-						System.out.println(this.imageFiles);
+						System.out.println(imageFiles);
 					} catch (MalformedURLException ex) {
 						ex.printStackTrace();
 					}
@@ -263,10 +262,10 @@ public class PhotoViewer extends Application {
 	 * 
 	 * @return
 	 */
-	private Task createWorker(final String url) {
-		return new Task() {
+	private Task<Boolean> createWorker(final String url) {
+		return new Task<Boolean>() {
 			@Override
-			protected Object call() throws Exception {
+			protected Boolean call() throws Exception {
 				// on the worker thread...
 				Image image = new Image(url, false);
 				Platform.runLater(() -> {
@@ -290,7 +289,7 @@ public class PhotoViewer extends Application {
 	 */
 	private void loadImage(String url) {
 		if (!loading.getAndSet(true)) {
-			Task loadImage = createWorker(url);
+			Task<Boolean> loadImage = createWorker(url);
 			progressIndicator.setVisible(true);
 			progressIndicator.progressProperty().unbind();
 			progressIndicator.progressProperty().bind(

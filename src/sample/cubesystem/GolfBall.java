@@ -2,7 +2,6 @@ package sample.cubesystem;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -25,44 +24,45 @@ public class GolfBall<E> extends Application {
 		System.out.println(createSpheres);
 		final TriangleMesh triangleMesh = createMesh(DIVISION, radius, createSpheres);
 		MeshView a = new MeshView(triangleMesh);
-		a.setDrawMode(DrawMode.LINE);
+		a.setDrawMode(DrawMode.FILL);
 		a.setTranslateY(radius);
 		a.setTranslateX(radius);
 		a.setRotationAxis(Rotate.Y_AXIS);
 		Scene scene = new Scene(new Group(a));
 		// uncomment if you want to move the other sphere
 
-//		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-//			Point3D sphere = otherSphere;
-//			@Override
-//			public void handle(KeyEvent e) {
-//				KeyCode code = e.getCode();
-//				switch (code) {
-//				case UP:
-//					sphere = sphere.add(0, -10, 0);
-//					break;
-//				case DOWN:
-//					sphere = sphere.add(0, 10, 0);
-//					break;
-//				case LEFT:
-//					sphere = sphere.add(-10, 0, 0);
-//					break;
-//				case RIGHT:
-//					sphere = sphere.add(10, 0, 0);
-//					break;
-//				case W:
-//					sphere = sphere.add(0, 0, 10);
-//					break;
-//				case S:
-//					sphere = sphere.add(0, 0, -10);
-//					break;
-//				default:
-//					return;
-//				}
-//				a.setMesh(createMesh(DIVISION, radius, sphere));
-//
-//			}
-//		});
+		// scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+		// Point3D sphere ;
+		//
+		// @Override
+		// public void handle(KeyEvent e) {
+		// KeyCode code = e.getCode();
+		// switch (code) {
+		// case UP:
+		// sphere = sphere.add(0, -10, 0);
+		// break;
+		// case DOWN:
+		// sphere = sphere.add(0, 10, 0);
+		// break;
+		// case LEFT:
+		// sphere = sphere.add(-10, 0, 0);
+		// break;
+		// case RIGHT:
+		// sphere = sphere.add(10, 0, 0);
+		// break;
+		// case W:
+		// sphere = sphere.add(0, 0, 10);
+		// break;
+		// case S:
+		// sphere = sphere.add(0, 0, -10);
+		// break;
+		// default:
+		// return;
+		// }
+		// a.setMesh(createMesh(DIVISION, radius, sphere));
+		//
+		// }
+		// });
 
 		primaryStage.setScene(scene);
 		primaryStage.show();

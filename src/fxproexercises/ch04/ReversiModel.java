@@ -12,7 +12,8 @@ public class ReversiModel {
 
     public static final int BOARD_SIZE = 8;
     public ObjectProperty<Owner> turn = new SimpleObjectProperty<>(Owner.BLACK);
-    public ObjectProperty<Owner>[][] board = new ObjectProperty[BOARD_SIZE][BOARD_SIZE];
+	@SuppressWarnings("unchecked")
+	public ObjectProperty<Owner>[][] board = new ObjectProperty[BOARD_SIZE][BOARD_SIZE];
 
     private ReversiModel() {
         for (int i = 0; i < BOARD_SIZE; i++) {

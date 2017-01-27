@@ -5,7 +5,6 @@
  */
 package fxproexercises.ch08;
 
-import java.io.File;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.DragEvent;
@@ -20,35 +19,13 @@ import javafx.stage.Stage;
  */
 public class FxProCH8d extends Application {
 
-    private final SongModel songModel;
+	public static void main(String[] args) {
+        launch(args);
+    };
     private MetadataView metaDataView;
     private PlayerControlView playerControlsView;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    public FxProCH8d() {
-        songModel = new SongModel();
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        songModel.setURL(new File("C:\\Users\\Note\\Documents\\Sistemas\\Workspace\\Teste\\TeenTitans.mp3").toURI().toString());
-        metaDataView = new MetadataView(songModel);
-        playerControlsView = new PlayerControlView(songModel);
-        final BorderPane root = new BorderPane();
-        root.setCenter(metaDataView.getViewNode());
-        root.setBottom(playerControlsView.getViewNode());
-        final Scene scene = new Scene(root, 800, 400);
-        initSceneDragAndDrop(scene);
-        final String stylesheet = new File("C:\\Users\\Note\\Documents\\Sistemas\\Workspace\\Teste\\media.css").toURI().toString();
-        scene.getStylesheets().add(stylesheet);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Audio Player 3");
-        primaryStage.show();
-        songModel.getPlayer().play();
-    }
+    private final SongModel songModel = new SongModel();
 
     private void initSceneDragAndDrop(Scene scene) {
         scene.setOnDragOver((DragEvent event) -> {
@@ -69,9 +46,28 @@ public class FxProCH8d extends Application {
             if (url != null) {
                 songModel.setURL(url);
                 songModel.getMediaPlayer().play();
+
             }
             event.setDropCompleted(url != null);
             event.consume();
         });
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+		songModel.setURL(Chapter8Resource.TEEN_TITANS.getURL().toString());
+        metaDataView = new MetadataView(songModel);
+        playerControlsView = new PlayerControlView(songModel);
+        final BorderPane root = new BorderPane();
+        root.setCenter(metaDataView.getViewNode());
+        root.setBottom(playerControlsView.getViewNode());
+        final Scene scene = new Scene(root, 800, 400);
+        initSceneDragAndDrop(scene);
+
+		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Audio Player 3");
+        primaryStage.show();
+        songModel.getPlayer().play();
     }
 }

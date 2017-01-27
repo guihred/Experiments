@@ -1,6 +1,5 @@
 package fxproexercises.ch02;
 import static others.CommonsFX.newButton;
-import static others.CommonsFX.newLine;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -18,6 +17,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import others.SimpleHBoxBuilder;
+import others.SimpleLineBuilder;
 
 public class FxProCH2c extends Application {
 
@@ -40,12 +41,14 @@ public class FxProCH2c extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		int startY = 50;
-		int endX = 200;
-		int endY = 400;
-		int strokeWidth = 4;
-		Color color = Color.BLUE;
-		line = newLine(0, startY, endX, endY, strokeWidth, color);
+		line = new SimpleLineBuilder()
+				.startX(0)
+				.startY(50)
+				.endX(200)
+				.endY(400)
+				.stroke(Color.BLUE)
+				.strokeWidth(4)
+				.build();
 		stopButton = newButton("Stop", (e) -> {
 			anim.stop();
 		});
@@ -58,10 +61,12 @@ public class FxProCH2c extends Application {
 		startButton = newButton("Start", (e) -> {
 			anim.playFromStart();
 		});
-		HBox hbox = new HBox(startButton, pauseButton, resumeButton, stopButton);
-		hbox.setLayoutX(60);
-		hbox.setLayoutY(420);
-		hbox.setSpacing(10);
+		HBox hbox = new SimpleHBoxBuilder()
+				.children(startButton, pauseButton, resumeButton, stopButton)
+				.layoutX(60)
+				.layoutY(420)
+				.spacing(10)
+				.build();
 		final Group root = new Group(line, hbox);
 		Scene scene = new Scene(root, 400, 500);
 		line.startXProperty().bind(startXVal);

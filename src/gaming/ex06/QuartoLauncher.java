@@ -20,6 +20,7 @@ import javafx.scene.shape.Shape3D;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import others.SimpleCircleBuilder;
 
 public class QuartoLauncher extends Application {
 
@@ -187,24 +188,30 @@ public class QuartoLauncher extends Application {
         whiteMaterial.setSpecularColor(Color.WHITE);
         final Box board = new Box(240.0, 1, 240.0);
         board.setMaterial(blackMaterial);
-        final Circle cs = new Circle(110, Color.BLACK);
-        cs.setTranslateY(2);
-        cs.setRotationAxis(Rotate.X_AXIS);
-        cs.setRotate(90);
+        final Circle cs = new SimpleCircleBuilder()
+        		.radius(110)
+				.fill(Color.BLACK)
+        		.translateY(2)
+        		.rotationAxis(Rotate.X_AXIS)
+        		.rotate(90)
+        		.build();
         final Circle cs2 = new Circle(120, Color.WHITE);
         cs2.setTranslateY(1);
         cs2.setRotationAxis(Rotate.X_AXIS);
         cs2.setRotate(90);
         final Group group = new Group(board, cs2, cs);
         for (int i = 0; i < 16; i++) {
-            final Circle circle = new Circle(10, Color.WHITE);
-            circle.setTranslateX(i % 4 * 40 - 60);
-            circle.setTranslateZ(i / 4 * 40 - 60);
-            circle.setTranslateY(3);
-            model.map[i % 4][i / 4] = circle;
-            circle.setRotationAxis(Rotate.X_AXIS);
-            circle.setRotate(90);
+            final Circle circle = new SimpleCircleBuilder()
+            		.radius(10)
+    				.fill(Color.WHITE)
+    				.translateX(i % 4 * 40 - 60)
+    				.translateZ(i / 4 * 40 - 60)
+    				.translateY(3)
+    				.rotationAxis(Rotate.X_AXIS)
+    				.rotate(90)
+    				.build();
             circle.fillProperty().bind(Bindings.when(circle.hoverProperty()).then(Color.BLUE).otherwise(Color.WHITE));
+            model.map[i % 4][i / 4] = circle;
             group.getChildren().add(circle);
 
             final QuartoPiece piece = new QuartoPiece(i);

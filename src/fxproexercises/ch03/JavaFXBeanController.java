@@ -17,11 +17,8 @@ import javafx.scene.paint.Color;
 public class JavaFXBeanController {
 
     private JavaFXBeanModelExample model;
-    private JavaFXBeanViewExample view;
-
     public JavaFXBeanController(JavaFXBeanModelExample model, JavaFXBeanViewExample view) {
         this.model = model;
-        this.view = view;
     }
 
     public void incrementIPropertyOnModel() {

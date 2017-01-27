@@ -6,7 +6,6 @@
 package fxproexercises.ch04;
 
 import javafx.animation.FadeTransition;
-import javafx.animation.FadeTransitionBuilder;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -14,16 +13,17 @@ import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.RegionBuilder;
 import javafx.util.Duration;
+import others.SimpleFadeTransitionBuilder;
+import others.SimpleRegionBuilder;
 
 public class ReversiSquare extends Region {
     private static ReversiModel model = ReversiModel.getInstance();
-    private Region highlight = RegionBuilder.create()
+	private Region highlight = SimpleRegionBuilder.create()
             .opacity(0)
             .style("-fx-border-width: 3; -fx-border-color: dodgerblue")
             .build();
-    private FadeTransition highlightTransition = FadeTransitionBuilder.create()
+	private FadeTransition highlightTransition = new SimpleFadeTransitionBuilder()
             .node(highlight)
             .duration(Duration.millis(200))
             .fromValue(0)

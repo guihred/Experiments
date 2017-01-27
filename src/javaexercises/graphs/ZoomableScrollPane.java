@@ -110,7 +110,6 @@ public class ZoomableScrollPane extends ScrollPane {
 	private class ZoomHandler implements EventHandler<ScrollEvent> {
 
 		public ZoomHandler() {
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override

@@ -12,7 +12,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.animation.TimelineBuilder;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -21,9 +20,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.RotateBuilder;
-import javafx.scene.transform.TranslateBuilder;
+import javafx.scene.transform.Translate;
 import javafx.util.Duration;
+import others.SimpleRotateBuilder;
 
 /**
  *
@@ -62,43 +61,40 @@ public class CubeNode extends Parent {
 		angleY.addListener((ov, oldValue, newValue) -> arrangeFacesZOrder());
 
 		rearFace = new CubeFace(cubeModel, CubeFace.REAR_FACE);
+		Rotate build = new SimpleRotateBuilder().angle(180.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.edgeLength / 2)
+				.build();
+
 		rearFace.getTransforms().setAll(
-				TranslateBuilder.create().x(0).y(0).z(CubeFace.edgeLength)
-						.build(),
-				RotateBuilder.create().angle(180.0).axis(Rotate.Y_AXIS)
-						.pivotX(CubeFace.edgeLength / 2).build());
+				new Translate(0, 0, CubeFace.edgeLength),
+				build);
 
 		bottomFace = new CubeFace(cubeModel, CubeFace.BOTTOM_FACE);
 		bottomFace.getTransforms().setAll(
-				TranslateBuilder.create().x(0).y(0).z(CubeFace.edgeLength)
-						.build(),
-				RotateBuilder.create().angle(90.0).axis(Rotate.X_AXIS)
+				new Translate(0, 0, CubeFace.edgeLength),
+				new SimpleRotateBuilder().angle(90.0).axis(Rotate.X_AXIS)
 						.pivotY(CubeFace.edgeLength).build());
 
 		leftFace = new CubeFace(cubeModel, CubeFace.LEFT_FACE);
 		leftFace.getTransforms().setAll(
-				TranslateBuilder.create().x(0).y(0).z(CubeFace.edgeLength)
-						.build(),
-				RotateBuilder.create().angle(90.0).axis(Rotate.Y_AXIS)
+				new Translate(0, 0, CubeFace.edgeLength),
+				new SimpleRotateBuilder().angle(90.0).axis(Rotate.Y_AXIS)
 						.pivotX(0).build());
 
 		rightFace = new CubeFace(cubeModel, CubeFace.RIGHT_FACE);
 		rightFace.getTransforms().setAll(
-				TranslateBuilder.create().x(0).y(0).z(CubeFace.edgeLength)
-						.build(),
-				RotateBuilder.create().angle(-90.0).axis(Rotate.Y_AXIS)
+				new Translate(0, 0, CubeFace.edgeLength),
+				new SimpleRotateBuilder().angle(-90.0).axis(Rotate.Y_AXIS)
 						.pivotX(CubeFace.edgeLength).build());
 
 		topFace = new CubeFace(cubeModel, CubeFace.TOP_FACE);
 		topFace.getTransforms().setAll(
-				TranslateBuilder.create().x(0).y(0).z(CubeFace.edgeLength)
-						.build(),
-				RotateBuilder.create().angle(-90.0).axis(Rotate.X_AXIS)
+				new Translate(0, 0, CubeFace.edgeLength),
+				new SimpleRotateBuilder().angle(-90.0).axis(Rotate.X_AXIS)
 						.pivotX(0).build());
 
 		frontFace = new CubeFace(cubeModel, CubeFace.FRONT_FACE);
 		frontFace.getTransforms().setAll(
-				TranslateBuilder.create().x(0).y(0).z(0).build());
+				new Translate(0, 0, 0));
 
 		getChildren().addAll(rearFace, topFace, leftFace, rightFace,
 				bottomFace, frontFace);
@@ -112,7 +108,7 @@ public class CubeNode extends Parent {
 		xRotate.setPivotZ(CubeFace.edgeLength * 0.5);
 		getTransforms().setAll(
 				xRotate,
-				yRotate = RotateBuilder.create().axis(Rotate.Y_AXIS)
+				yRotate = new SimpleRotateBuilder().axis(Rotate.Y_AXIS)
 						.pivotX(CubeFace.edgeLength * 0.5)
 						.pivotY(CubeFace.edgeLength * 0.5)
 						.pivotZ(CubeFace.edgeLength * 0.5).build()
@@ -186,36 +182,30 @@ public class CubeNode extends Parent {
 	}
 
 	public void goHomePosition() {
-		Timeline homeTimeline = TimelineBuilder
-				.create()
-				.keyFrames(
+		Timeline homeTimeline = new Timeline(
 						new KeyFrame(new Duration(1000.0), new KeyValue(angleX,
 								HOME_ANGLE_X, Interpolator.EASE_BOTH),
 								new KeyValue(angleY, HOME_ANGLE_Y,
-										Interpolator.EASE_BOTH))).build();
+								Interpolator.EASE_BOTH)));
 		homeTimeline.play();
 	}
 
-	public Timeline showMapTimeline = TimelineBuilder
-			.create()
-			.keyFrames(
+	public Timeline showMapTimeline = new Timeline(
 					new KeyFrame(new Duration(0.0), t -> goHomePosition(),
 							new KeyValue(cubeModel.mapOpacity, 0.0,
 									Interpolator.LINEAR)),
 					new KeyFrame(new Duration(1000.0), new KeyValue(
 							cubeModel.mapOpacity, 0.7, Interpolator.EASE_BOTH)))
-			.build();
+	;
 
-	public Timeline hideMapTimeline = TimelineBuilder
-			.create()
-			.keyFrames(
+	public Timeline hideMapTimeline = new Timeline(
 					new KeyFrame(new Duration(0.0), t -> {
 						// goHomePosition();
 						}, new KeyValue(cubeModel.mapOpacity, 0.7,
 								Interpolator.LINEAR)),
 					new KeyFrame(new Duration(1000.0), new KeyValue(
 							cubeModel.mapOpacity, 0.0, Interpolator.EASE_BOTH)))
-			.build();
+	;
 
 	public Node frontNode;
 	public Node rearNode;

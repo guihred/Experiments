@@ -5,8 +5,6 @@
  */
 package fxproexercises.ch08;
 
-import java.io.File;
-import java.net.URL;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -29,9 +27,7 @@ public class FxProCH8a extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            final File resource = new File("C:\\Users\\Note\\Documents\\Sistemas\\Workspace\\Teste\\TeenTitans.mp3");
-            Media sound = new Media(resource.toURI().toString());
-            System.out.println(resource.toURI().toString());
+			Media sound = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
             MediaPlayer mediaPlayer = new MediaPlayer(sound);
             final Button button = new Button("Bing Zzzzt!");
             button.setOnAction(event -> mediaPlayer.play());
@@ -39,8 +35,7 @@ public class FxProCH8a extends Application {
             stackPane.setPadding(new Insets(10));
             stackPane.getChildren().add(button);
             final Scene scene = new Scene(stackPane, 200, 200);
-            final URL stylesheet = new URL("file:C:\\Users\\Note\\Documents\\Sistemas\\Workspace\\Teste\\media.css");
-            scene.getStylesheets().add(stylesheet.toString());
+			scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
             primaryStage.setTitle("Basic AudioClip Example");
             primaryStage.setScene(scene);
             primaryStage.show();

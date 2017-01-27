@@ -58,7 +58,7 @@ public class Chapter4 {
 	}
 
 	/*
-	 * Enhance the program in Section 4.5, “Bindings,” on page 75 so that the
+	 * Enhance the program in Section 4.5, ï¿½Bindings,ï¿½ on page 75 so that the
 	 * circle stays centered and always touches at least two of the sides of the
 	 * scene.s
 	 */
@@ -161,13 +161,12 @@ public class Chapter4 {
 		}
 	}
 
-	/* 6. Center the top and bottom buttons in Figure 4–7. */
+	/* 6. Center the top and bottom buttons in Figure 4ï¿½7. */
 	private static class Ex6 extends Application {
 
 		@Override
 		public void start(Stage stage) throws Exception {
 			BorderPane pane = new BorderPane();
-			Scene scene = new Scene(pane);
 			pane.setCenter(new Button("Center"));
 			pane.setRight(new Button("Right"));
 			pane.setLeft(new Button("Left"));
@@ -175,6 +174,7 @@ public class Chapter4 {
 			pane.setTop(new Button("Top"));
 			BorderPane.setAlignment(pane.getTop(), Pos.CENTER);
 			BorderPane.setAlignment(pane.getBottom(), Pos.CENTER);
+			Scene scene = new Scene(pane);
 			stage.setScene(scene);
 			stage.setTitle("EX6");
 			stage.show();
@@ -299,7 +299,6 @@ public class Chapter4 {
 		@Override
 		public void start(Stage stage) throws Exception {
 			TextField textField = new TextField("file:C:\\Users\\Note\\Documents\\teste.html");
-			BorderPane pane = new BorderPane();
 			WebView browser = new WebView();
 			WebEngine engine = browser.getEngine();
 			Button backButton = new Button("Back");
@@ -314,6 +313,7 @@ public class Chapter4 {
 
 			HBox top = new HBox();
 			top.getChildren().addAll(backButton, textField, loadButton);
+			BorderPane pane = new BorderPane();
 			pane.setTop(top);
 			pane.setCenter(browser);
 			stage.setScene(new Scene(pane));

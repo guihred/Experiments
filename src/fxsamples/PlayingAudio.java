@@ -2,7 +2,6 @@ package fxsamples;
 
 import java.net.MalformedURLException;
 import java.util.Random;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -27,6 +26,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import others.SimpleCircleBuilder;
 
 /**
  * Chapter 7 Playing Audio using JavaFX media API.
@@ -314,10 +314,11 @@ public class PlayingAudio extends Application {
 						int red = rand.nextInt(255);
 						int green = rand.nextInt(255);
 						int blue = rand.nextInt(255);
-						Circle circle = new Circle(10);
-						circle.setCenterX(x + i);
-						circle.setCenterY(y + phase * 100);
-						circle.setFill(Color.rgb(red, green, blue, .70));
+						Circle circle = new SimpleCircleBuilder().radius(10)
+								.centerX(x + i)
+								.centerY(y + phase * 100)
+								.fill(Color.rgb(red, green, blue, .70))
+								.build();
 						vizContainer.getChildren().add(circle);
 						i += 5;
 					}

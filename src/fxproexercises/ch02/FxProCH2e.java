@@ -17,23 +17,18 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.GroupBuilder;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.LinearGradientBuilder;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import others.SimpleCircleBuilder;
 import others.SimpleRectangleBuilder;
-import others.SimpleShapeBuilder;
 
 public class FxProCH2e extends Application {
 
@@ -213,11 +208,11 @@ public class FxProCH2e extends Application {
                 .build();
 		ball = new SimpleCircleBuilder()
                 .radius(5.0)
-                .fill(Color.WHITE)
+				.fill(Color.RED)
                 .build();
-		Scene scene = new Scene(pongComponents = GroupBuilder.create().focusTraversable(true)
-				.children(ball, topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton)
-				.onKeyPressed((KeyEvent k) -> {
+		Group group = new Group(topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton, ball);
+		group.setFocusTraversable(true);
+		group.setOnKeyPressed((KeyEvent k) -> {
 					if (k.getCode() == KeyCode.SPACE
 							&& pongAnimation.statusProperty().get() == Animation.Status.STOPPED) {
 						rightPaddleY.setValue(rightPaddleY.getValue() - 6);
@@ -234,17 +229,18 @@ public class FxProCH2e extends Application {
 							&& !leftPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
 						leftPaddleY.setValue(leftPaddleY.getValue() + 6);
 					}
-				}).build(), 500, 500);
-		scene.setFill(LinearGradientBuilder.create()
-		.startX(0.0)
-		.startY(0.0)
-		.endX(0.0)
-		.endY(1.0)
-		.stops(
-		        new Stop(0.0, Color.BLACK),
-		        new Stop(0.0, Color.GRAY)
-		)
-		.build());
+		});
+		Scene scene = new Scene(pongComponents = group, 500, 500);
+		// scene.setFill(LinearGradientBuilder.create()
+		// .startX(0.0)
+		// .startY(0.0)
+		// .endX(0.0)
+		// .endY(1.0)
+		// .stops(
+		// new Stop(0.0, Color.BLACK),
+		// new Stop(0.0, Color.GRAY)
+		// )
+		// .build());
         ball.centerXProperty().bind(centerX);
         ball.centerYProperty().bind(centerY);
         leftPaddle.translateYProperty().bind(leftPaddleY);

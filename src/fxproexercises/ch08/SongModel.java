@@ -5,9 +5,12 @@
  */
 package fxproexercises.ch08;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.net.URL;
+import java.net.URLDecoder;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,6 +19,7 @@ import javafx.collections.MapChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import mp3Audio.LeitorMusicas;
 
 public final class SongModel {
 
@@ -75,8 +79,8 @@ public final class SongModel {
         return mediaPlayer.get();
     }
 
-    public ReadOnlyObjectProperty<MediaPlayer> mediaPlayerProperty() {
-        return mediaPlayer.getReadOnlyProperty();
+	public ObjectProperty<MediaPlayer> mediaPlayerProperty() {
+		return mediaPlayer;
     }
 
     private void resetProperties() {
@@ -92,11 +96,19 @@ public final class SongModel {
         try {
             final Media media = new Media(url);
             media.getMetadata().addListener((MapChangeListener<String, Object>) (ch) -> {
-                if (ch.wasAdded()) {
                     handleMetadata(ch.getKey(), ch.getValueAdded());
-                }
             });
+			Platform.runLater(() -> {
+				try {
+					byte[] extractEmbeddedImageData = LeitorMusicas
+							.extractEmbeddedImageData(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
+					setAlbumCover(new Image(new ByteArrayInputStream(extractEmbeddedImageData)));
+				} catch (Exception e) {
+				}
+			});
+
             mediaPlayer.setValue(new MediaPlayer(media));
+
             mediaPlayer.get().setOnError(() -> {
                 String errorMessage = mediaPlayer.get().getError().getMessage();
                 System.out.println("MediaPlayer Error: " + errorMessage);
@@ -107,6 +119,7 @@ public final class SongModel {
     }
 
     private void handleMetadata(String key, Object value) {
+		System.out.println("Key=" + key + ",Value=" + value);
         if (key.equals("album")) {
             setAlbum(value.toString());
         } else if (key.equals("artist")) {
@@ -121,6 +134,7 @@ public final class SongModel {
         if (key.equals("image")) {
             setAlbumCover((Image) value);
         }
+
     }
 
     void setArtist(String value) {

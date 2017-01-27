@@ -2,14 +2,14 @@ package others;
 
 import javafx.scene.shape.Rectangle;
 
-public class SimpleRectangleBuilder extends SimpleShapeBuilder<Rectangle> implements SimpleBuilder<Rectangle> {
+public class SimpleRectangleBuilder extends SimpleShapeBuilder<Rectangle, SimpleRectangleBuilder>
+		implements SimpleBuilder<Rectangle> {
 
 	Rectangle rectangle;
 
 	public SimpleRectangleBuilder() {
 		super(new Rectangle());
-		rectangle = (Rectangle) shape;
-		setBuilder(this);
+		rectangle = shape;
 	}
 
 	public SimpleRectangleBuilder arcHeight(double x) {
@@ -22,10 +22,6 @@ public class SimpleRectangleBuilder extends SimpleShapeBuilder<Rectangle> implem
 		return this;
 	}
 
-	@Override
-	public javafx.scene.shape.Rectangle build() {
-		return rectangle;
-	}
 
 	public SimpleRectangleBuilder height(double x) {
 		rectangle.setHeight(x);

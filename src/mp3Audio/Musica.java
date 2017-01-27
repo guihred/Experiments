@@ -1,7 +1,7 @@
 package mp3Audio;
 
 import java.io.File;
-
+import java.text.MessageFormat;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -98,8 +98,9 @@ public class Musica {
 
 	@Override
 	public String toString() {
-		return "Musica [titulo=" + titulo + ", artista=" + artista + ", album=" + album + ", ano=" + ano + ", trilha="
-				+ trilha + ", genero=" + genero + ", arquivo=" + arquivo + "]";
+		return MessageFormat.format(
+				"Musica [titulo={0}, artista={1}, album={2}, ano={3}, trilha={4}, genero={5}, arquivo={6}]",
+				titulo.get(), artista.get(), album.get(), ano.get(), trilha.get(), genero.get(), arquivo.getPath());
 	}
 
 	public StringProperty trilhaProperty() {

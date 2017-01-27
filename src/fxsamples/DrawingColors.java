@@ -11,6 +11,8 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import others.SimpleLineBuilder;
+import others.SimpleRectangleBuilder;
 
 public class DrawingColors extends Application {
 	public static void main(String[] args) {
@@ -40,22 +42,19 @@ public class DrawingColors extends Application {
 		root.getChildren().add(ellipse);
 		double ellipseHeight = ellipse.getBoundsInParent().getHeight();
 		// thick black line behind second shape
-		Line blackLine = new Line();
-		blackLine.setStartX(170);
-		blackLine.setStartY(30);
-		blackLine.setEndX(20);
-		blackLine.setEndY(140);
-		blackLine.setFill(Color.BLACK);
-		blackLine.setStrokeWidth(10.0f);
-		blackLine.setTranslateY(ellipseHeight + 10);
+		Line blackLine = new SimpleLineBuilder()
+				.startX(170)
+				.startY(30)
+				.endX(20)
+				.endY(140)
+				.fill(Color.BLACK)
+				.strokeWidth(10.0f)
+				.translateY(ellipseHeight + 10)
+				.build();
 		root.getChildren().add(blackLine);
 		// A rectangle filled with a linear gradient with a translucent color.
-		Rectangle rectangle = new Rectangle();
-		rectangle.setX(50);
-		rectangle.setY(50);
-		rectangle.setWidth(100);
-		rectangle.setHeight(70);
-		rectangle.setTranslateY(ellipseHeight + 10);
+		Rectangle rectangle = new SimpleRectangleBuilder().x(50).y(50).width(100).height(70)
+				.translateY(ellipseHeight + 10).build();
 		LinearGradient linearGrad = new LinearGradient(0, // start X
 				0, // start Y
 				0, // end X
@@ -68,15 +67,15 @@ public class DrawingColors extends Application {
 		rectangle.setFill(linearGrad);
 		root.getChildren().add(rectangle);
 		// A rectangle filled with a linear gradient with a reflective cycle.
-		Rectangle roundRect = new Rectangle();
-		roundRect.setX(50);
-		roundRect.setY(50);
-		roundRect.setWidth(100);
-		roundRect.setHeight(70);
-		roundRect.setArcWidth(20);
-		roundRect.setArcHeight(20);
-		roundRect
-				.setTranslateY(ellipseHeight + 10 + rectangle.getHeight() + 10);
+		Rectangle roundRect = new SimpleRectangleBuilder()
+				.x(50)
+				.y(50)
+				.width(100)
+				.height(70)
+				.arcWidth(20)
+				.arcHeight(20)
+				.translateY(ellipseHeight + 10 + rectangle.getHeight() + 10)
+				.build();
 		LinearGradient cycleGrad = new LinearGradient(50, // start X
 				50, // start Y
 				70, // end X

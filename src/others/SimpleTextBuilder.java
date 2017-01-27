@@ -1,14 +1,14 @@
 package others;
 
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public class SimpleTextBuilder {
-	private Text text = new Text();
+public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilder> implements SimpleBuilder<Text> {
 
-	public Text build() {
+	private Text text;
 
-		return text;
+	public SimpleTextBuilder() {
+		super(new Text());
+		text = shape;
 	}
 
 	public SimpleTextBuilder managed(boolean x) {
@@ -69,18 +69,6 @@ public class SimpleTextBuilder {
 		return this;
 	}
 
-	public SimpleTextBuilder fill(Color fill) {
-		text.setFill(fill);
-		return this;
-	}
 
-	public SimpleTextBuilder styleClass(String string) {
-		text.setStyle(string);
-		return this;
-	}
 
-	public SimpleTextBuilder id(String id) {
-		text.setId(id);
-		return this;
-	}
 }

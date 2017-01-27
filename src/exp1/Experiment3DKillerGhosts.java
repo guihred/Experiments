@@ -1,21 +1,16 @@
 package exp1;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.Random;
 import java.util.stream.Stream;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
@@ -31,8 +26,6 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 
 public class Experiment3DKillerGhosts extends Application {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
@@ -142,7 +135,7 @@ public class Experiment3DKillerGhosts extends Application {
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
 
-	static final String MESH_MINOTAUR = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Minotaur.stl";
+	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
 	private static final String MESH_GHOST = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Ghost 2.STL";
 	private MovimentacaoAleatoria movimentacao;
 
@@ -312,7 +305,7 @@ public class Experiment3DKillerGhosts extends Application {
 						dialogStage.close();
 					});
 					VBox vbox = new VBox();
-					vbox.getChildren().addAll(new Text("Você Morreu"), button);
+					vbox.getChildren().addAll(new Text("Vocï¿½ Morreu"), button);
 					vbox.setAlignment(Pos.CENTER);
 					vbox.setPadding(new Insets(5));
 					dialogStage.setScene(new Scene(vbox));

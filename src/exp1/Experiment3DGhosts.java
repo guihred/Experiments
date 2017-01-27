@@ -1,18 +1,13 @@
 package exp1;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.Random;
 import java.util.stream.Stream;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Bounds;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -23,8 +18,6 @@ import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 
 public class Experiment3DGhosts extends Application {
 	private final double cameraModifier = 50.0;
@@ -176,7 +169,7 @@ public class Experiment3DGhosts extends Application {
 	}
 
 
-	static final String MESH_MINOTAUR = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Minotaur.stl";
+	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
 	private static final String MESH_GHOST = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Ghost 2.STL";
 
 	private MeshView gerarAnimal(String arquivo, Color jewelColor) {

@@ -13,7 +13,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.effect.PerspectiveTransform;
-import javafx.scene.effect.PerspectiveTransformBuilder;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -21,6 +20,7 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import others.SimplePerspectiveTransformBuilder;
 
 /**
  * 
@@ -127,7 +127,7 @@ public class CubeFace extends Parent {
 		tilePane.setRotate((450 - sideNum * 90) % 360);
 		tilePane.setPrefColumns(2);
 		tilePane.setPrefRows(3);
-		PerspectiveTransform transform = PerspectiveTransformBuilder.create()
+		PerspectiveTransform transform = new SimplePerspectiveTransformBuilder()
 				.ulx(edgeLength * 0.375).uly(edgeLength * 0.625)
 				.urx(edgeLength * 0.625).ury(edgeLength * 0.625).llx(0)
 				.lly(edgeLength).lrx(edgeLength).lry(edgeLength).build();
@@ -157,10 +157,12 @@ public class CubeFace extends Parent {
 		tilePane.setRotate(sideNum * 90 % 360);
 		tilePane.setPrefColumns(2);
 		tilePane.setPrefRows(3);
-		tilePane.setEffect(PerspectiveTransformBuilder.create().ulx(0).uly(0)
+
+		PerspectiveTransform build = new SimplePerspectiveTransformBuilder().ulx(0).uly(0)
 				.urx(edgeLength).ury(0).llx(edgeLength * 0.375)
 				.lly(edgeLength * 0.375).lrx(edgeLength * 0.625)
-				.lry(edgeLength * 0.375).build());
+				.lry(edgeLength * 0.375).build();
+		tilePane.setEffect(build);
 
 		for (int y = 5; y <= 7; y++) {
 			for (int x = xOffset; x <= xOffset + 1; x++) {

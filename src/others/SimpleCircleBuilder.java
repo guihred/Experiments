@@ -2,23 +2,29 @@ package others;
 
 import javafx.scene.shape.Circle;
 
-public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle> implements SimpleBuilder<Circle> {
+public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle, SimpleCircleBuilder>
+		implements SimpleBuilder<Circle> {
 
-	Circle rectangle;
+	Circle circle;
 
 	public SimpleCircleBuilder() {
 		super(new Circle());
-		rectangle = (Circle) shape;
-		setBuilder(this);
+		circle = shape;
 	}
 
-	@Override
-	public Circle build() {
-		return rectangle;
-	}
 
 	public SimpleCircleBuilder radius(double d) {
+		circle.setRadius(d);
+		return this;
+	}
 
+	public SimpleCircleBuilder centerX(double d) {
+		circle.setCenterX(d);
+		return this;
+	}
+
+	public SimpleCircleBuilder centerY(double d) {
+		circle.setCenterY(d);
 		return this;
 	}
 

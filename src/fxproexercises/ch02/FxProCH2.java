@@ -1,6 +1,8 @@
 package fxproexercises.ch02;
 
-import static others.CommonsFX.*;
+import static others.CommonsFX.newButton;
+import static others.CommonsFX.newCheckBox;
+import static others.CommonsFX.newTextField;
 
 import java.util.List;
 import javafx.application.Application;
@@ -9,6 +11,7 @@ import javafx.beans.property.StringProperty;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -22,8 +25,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import others.CommonsFX;
+import others.SimpleRectangleBuilder;
 import others.SimpleTextBuilder;
+import others.SimpleVBoxBuilder;
 
 public class FxProCH2 extends Application {
 
@@ -59,7 +63,7 @@ public class FxProCH2 extends Application {
 		final Stage stageRef = stage;
 		Group rootGroup;
 		TextField titleTextField = newTextField("Stage Coach", 15);
-		final Rectangle skyBlueRect = CommonsFX.newRectangle(0, 0, 250, 350, 50, 50, Color.SKYBLUE, null);
+		final Rectangle skyBlueRect = new SimpleRectangleBuilder().x(0).y(0).width(250).height(350).arcHeight(50).arcWidth(50).fill(Color.SKYBLUE).stroke(null).build();
 		final Button toFrontButton = newButton("toFront()", (e) -> {
 			stageRef.toFront();
 		});
@@ -72,11 +76,10 @@ public class FxProCH2 extends Application {
 		final HBox hbox = new HBox(10, new Label("title:"), titleTextField);
 		boolean disabled = stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED;
 		String text = "resizable";
+		Node[] children = { textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageY = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageW = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageH = new SimpleTextBuilder().textOrigin(VPos.TOP).build(),
+				textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), checkBoxResizable = newCheckBox(text, disabled), checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton };
 		Scene scene = new Scene(rootGroup = new Group(skyBlueRect,
-				newVBox(30, 20, 10, textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageY = new SimpleTextBuilder().textOrigin(VPos.TOP).build(),
-						textStageW = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageH = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build(),
-						checkBoxResizable = newCheckBox(text, disabled), checkBoxFullScreen, hbox, toBackButton,
-						toFrontButton, closeButton)),
+				new SimpleVBoxBuilder().layoutX(30).layoutY(20).spacing(10).children(children).build()),
 				270, 370);
 		scene.setFill(Color.TRANSPARENT);
 		// When mouse button is pressed, save the initial position of screen

@@ -118,7 +118,7 @@ public class MazeModel {
 				timeline.stop();
 			}
 		};
-		final KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.001), eventHandler);
+		final KeyFrame keyFrame = new KeyFrame(Duration.seconds(.5), eventHandler);
 		timeline.getKeyFrames().add(keyFrame);
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.play();

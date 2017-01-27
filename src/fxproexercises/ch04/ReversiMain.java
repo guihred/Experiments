@@ -6,7 +6,6 @@
 package fxproexercises.ch04;
 
 import static others.CommonsFX.newButton;
-import static others.CommonsFX.newVBox;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -18,7 +17,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPaneBuilder;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -30,6 +29,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import others.SimpleTextBuilder;
+import others.SimpleVBoxBuilder;
 
 /**
  *
@@ -135,25 +135,17 @@ public class ReversiMain extends Application {
 		piece.setEffect(new DropShadow(10, Color.DODGERBLUE));
 		piece.setFill(owner.getColor());
 
-		Text score = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 100)).text("").build();
-		Text remaining = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 12)).text("").build();
+		Text score = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 100)).build();
+		Text remaining = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 12))
+				.build();
 
         background = new Region();
         background.setStyle("-fx-background-color: " + owner.opposite().getColorStyle());
+		Node[] children = { piece, remaining };
 
-		StackPane stack = new StackPane(
-                        background,
-                        FlowPaneBuilder.create()
-                        .hgap(20)
-                        .vgap(10)
-                        .alignment(Pos.CENTER)
-                        .children(
-										score,
-								newVBox(Pos.CENTER, 10, piece, remaining)
-
-                        )
-                        .build()
-		);
+		FlowPane flowPane = new FlowPane(20, 10, score, new SimpleVBoxBuilder().alignment(Pos.CENTER).spacing(10).children(children).build());
+		flowPane.setAlignment(Pos.CENTER);
+		StackPane stack = new StackPane(background, flowPane);
 		stack.setPrefHeight(40);
         InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
         background.effectProperty().bind(Bindings.when(model.turn.isEqualTo(owner))

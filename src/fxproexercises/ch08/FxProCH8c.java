@@ -43,7 +43,7 @@ public class FxProCH8c extends Application {
         final Scene scene = new Scene(createGridPane(), 800, 400);
         try {
 
-            final URL stylesheet = new URL("file:C:\\Users\\Note\\Documents\\Sistemas\\Workspace\\Teste\\media.css");
+			final URL stylesheet = Chapter8Resource.MEDIA.getURL();
             scene.getStylesheets().add(stylesheet.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,8 +92,7 @@ public class FxProCH8c extends Application {
     }
 
     public void createMedia()  {
-        File resource = new File("C:\\Users\\Note\\Documents\\Sistemas\\Workspace\\Teste\\TeenTitans.mp3");
-        media = new Media(resource.toURI().toString());
+		media = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
          mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setOnError(() -> {
             final String errorMessage = media.getError().getMessage();
@@ -108,7 +107,8 @@ public class FxProCH8c extends Application {
     }
 
     private void handleMetadata(String key, Object value) {
-        if (key.equals("album")) {
+		System.out.println("Key=" + key + ",Value=" + value);
+		if (key.equals("album")) {
             album.setText(value.toString());
         } else if (key.equals("artist")) {
             artist.setText(value.toString());

@@ -18,22 +18,23 @@ import javafx.geometry.VPos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.HyperlinkBuilder;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.LabelBuilder;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.RadioButtonBuilder;
 import javafx.scene.control.Slider;
-import javafx.scene.control.SliderBuilder;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.FlowPaneBuilder;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import others.SimpleFlowPaneBuilder;
+import others.SimpleHyperlinkBuilder;
+import others.SimpleLabelBuilder;
+import others.SimpleRadioButtonBuilder;
+import others.SimpleSliderBuilder;
 import others.SimpleTextBuilder;
 
 public class FxProCH2b extends Application {
@@ -61,10 +62,18 @@ public class FxProCH2b extends Application {
 		Label labelStageW;
 		Label labelStageH;
 		final ToggleGroup toggleGrp = new ToggleGroup();
-		FlowPane sceneRoot = FlowPaneBuilder.create().layoutX(20).layoutY(40).padding(new Insets(0, 20, 40, 0))
+
+
+		Hyperlink build = new SimpleHyperlinkBuilder().text("lookup()").onAction((e) -> {
+			System.out.println("sceneRef:" + sceneRef);
+			Text textRef = (Text) sceneRef.lookup("#sceneHeightText");
+			System.out.println(textRef.getText());
+		}).build();
+
+		FlowPane sceneRoot = new SimpleFlowPaneBuilder().layoutX(20).layoutY(40).padding(new Insets(0, 20, 40, 0))
 				.orientation(Orientation.VERTICAL).vgap(10).hgap(20).columnHalignment(HPos.LEFT)
 				.children(new HBox(10,
-								sliderRef = SliderBuilder.create().min(0).max(255).value(255)
+						sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255)
 										.orientation(Orientation.VERTICAL).build(),
 								choiceBoxRef = new ChoiceBox<>(cursors)
 
@@ -74,18 +83,15 @@ public class FxProCH2b extends Application {
 						textSceneW = new SimpleTextBuilder().styleClass("emphasized-text").build(),
 						textSceneH = new SimpleTextBuilder().styleClass("emphasized-text").id("sceneHeightText")
 								.build(),
-						HyperlinkBuilder.create().text("lookup()").onAction((e) -> {
-							System.out.println("sceneRef:" + sceneRef);
-							Text textRef = (Text) sceneRef.lookup("#sceneHeightText");
-							System.out.println(textRef.getText());
-						}).build(),
-						RadioButtonBuilder.create().text("onTheScene.css").toggleGroup(toggleGrp).selected(true)
+						build,
+						new SimpleRadioButtonBuilder().text("onTheScene.css").toggleGroup(toggleGrp).selected(true)
 								.build(),
-						RadioButtonBuilder.create().text("changeOfScene.css").toggleGroup(toggleGrp).build(),
-						labelStageX = LabelBuilder.create().id("stageX").build(),
-						labelStageY = LabelBuilder.create().id("stageY").build(), labelStageW = new Label(),
+						new SimpleRadioButtonBuilder().text("changeOfScene.css").toggleGroup(toggleGrp).build(),
+						labelStageX = new SimpleLabelBuilder().id("stageX").build(),
+						labelStageY = new SimpleLabelBuilder().id("stageY").build(), labelStageW = new Label(),
 						labelStageH = new Label())
 				.build();
+
 		sceneRef = new Scene(sceneRoot, 600, 250);
 		sceneRef.getStylesheets().addAll(FxProCH2b.class.getResource("onTheScene.css").toExternalForm());
 		stage.setScene(sceneRef);

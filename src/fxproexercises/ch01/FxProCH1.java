@@ -17,6 +17,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import others.SimpleTextBuilder;
 
 public class FxProCH1 extends Application {
     public static void main(String[] args) {
@@ -40,13 +41,15 @@ public class FxProCH1 extends Application {
                 + "Commander Borman: \"We close with good night, good luck, "
                 + "a Merry Christmas, and God bless all of you -- all of "
                 + "you on the good Earth.\"";
-        Text textRef = new Text(message);
-        textRef.setLayoutY(100);
-        textRef.setTextOrigin(VPos.TOP);
-        textRef.setTextAlignment(TextAlignment.JUSTIFY);
-        textRef.setWrappingWidth(400);
-        textRef.setFill(Color.rgb(187, 195, 107));
-        textRef.setFont(Font.font("SansSerif", FontWeight.BOLD, 24));
+        Text textRef = new SimpleTextBuilder()
+        		.text(message)
+        		.layoutY(100)
+        		.textOrigin(VPos.TOP)
+        		.textAlignment(TextAlignment.JUSTIFY)
+        		.wrappingWidth(400)
+        		.fill(Color.rgb(187, 195, 107))
+        		.font(Font.font("SansSerif", FontWeight.BOLD, 24))
+        		.build();
  
         
         TranslateTransition transTransition = new TranslateTransition(new Duration(75000), textRef);

@@ -1,9 +1,9 @@
 package exp1;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.Random;
 import java.util.stream.Stream;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
@@ -12,12 +12,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
@@ -26,22 +21,17 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.Mesh;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 public class Experiment3DWallTexture extends Application {
-	private static final Image WALL_IMAGE = new Image("file:wall.jpg");
-	private static final Image WALL_IMAGE2 = new Image("file:wall2.jpg");
-	private static final Image OOZE_IMAGE = new Image("file:ooze.jpg");
+	private static final Image WALL_IMAGE = new Image(Experiment3DWallTexture.class.getResource("wall.jpg").toString());
+	private static final Image WALL_IMAGE2 = new Image(
+			Experiment3DWallTexture.class.getResource("wall2.jpg").toString());
+	public static final Image OOZE_IMAGE = new Image(Experiment3DWallTexture.class.getResource("ooze.jpg").toString());
 	public class Cube extends Group {
 
 		final Rotate rx = new Rotate(0, Rotate.X_AXIS);
@@ -134,7 +124,7 @@ public class Experiment3DWallTexture extends Application {
 						dialogStage.close();
 					});
 					VBox vbox = new VBox();
-					vbox.getChildren().addAll(new Text("Você Morreu"), button);
+					vbox.getChildren().addAll(new Text("Vocï¿½ Morreu"), button);
 					vbox.setAlignment(Pos.CENTER);
 					vbox.setPadding(new Insets(5));
 					dialogStage.setScene(new Scene(vbox));
@@ -239,7 +229,7 @@ public class Experiment3DWallTexture extends Application {
 						dialogStage.close();
 					});
 					VBox vbox = new VBox();
-					vbox.getChildren().addAll(new Text("Você Venceu"), button);
+					vbox.getChildren().addAll(new Text("Vocï¿½ Venceu"), button);
 					vbox.setAlignment(Pos.CENTER);
 					vbox.setPadding(new Insets(5));
 					dialogStage.setScene(new Scene(vbox));
@@ -267,9 +257,9 @@ public class Experiment3DWallTexture extends Application {
 	private static Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 	private static Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 
-	private static final String MESH_GHOST = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Ghost 2.STL";
+	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
 
-	static final String MESH_MINOTAUR = "C:\\Users\\Guilherme\\workspace\\OiJava3D\\Minotaur.stl";
+	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
 
 	public static final Random random = new Random();
 
@@ -324,6 +314,7 @@ public class Experiment3DWallTexture extends Application {
 
 	private MeshView generateGhost(String arquivo, Color enemyColor) {
 		File file = new File(arquivo);
+		System.out.println(file.exists());
 		StlMeshImporter importer = new StlMeshImporter();
 		importer.read(file);
 		Mesh mesh = importer.getImport();
@@ -343,7 +334,7 @@ public class Experiment3DWallTexture extends Application {
 			enemy.setTranslateX(enemy.getTranslateX() + i);
 		}
 		enemy.setScaleX(0.4);
-		enemy.setScaleY(1);
+		enemy.setScaleY(0.4);
 		enemy.setScaleZ(0.4);
 		return enemy;
 	}

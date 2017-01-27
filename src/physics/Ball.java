@@ -2,12 +2,12 @@ package physics;
 
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
+import others.SimpleCircleBuilder;
 
 /**
  *
@@ -25,12 +25,12 @@ public class Ball extends PhysicalObject {
 
     @Override
     public Node create() {
-        Circle c = new Circle();
-        c.setRadius(10);
-        c.setStroke(Color.RED);
-        c.setLayoutX(Physics.toPixelX(centerX));
-        c.setLayoutY(Physics.toPixelY(centerY));
-        return c;
+		return new SimpleCircleBuilder()
+				.radius(10)
+				.stroke(Color.RED)
+				.layoutX(Physics.toPixelX(centerX))
+				.layoutY(Physics.toPixelY(centerY))
+				.build();
     }
 
     @Override

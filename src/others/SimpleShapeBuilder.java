@@ -1,46 +1,34 @@
 package others;
 
-import javafx.event.EventHandler;
-import javafx.scene.Cursor;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 
-public class SimpleShapeBuilder<T extends Shape> implements SimpleBuilder<T> {
+@SuppressWarnings("unchecked")
+public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> extends SimpleNodeBuilder<T, Z>
+		implements SimpleBuilder<T> {
 
-	private SimpleBuilder<T> builder;
-	protected Shape shape;
+	protected T shape;
 
-	protected SimpleShapeBuilder(Shape shape) {
+	protected SimpleShapeBuilder(T shape) {
+		super(shape);
 		this.shape = shape;
 	}
 
-	@Override
-	public T build() {
-		return builder.build();
-	}
 
-	public SimpleShapeBuilder<T> cursor(Cursor hand) {
-		shape.setCursor(hand);
-		return this;
-	}
-
-	public SimpleShapeBuilder<T> fill(Color lightblue) {
+	public Z fill(Paint lightblue) {
 		shape.setFill(lightblue);
-		return this;
+		return (Z) this;
 	}
 
-	public SimpleShapeBuilder<T> onMouseDragged(EventHandler<? super MouseEvent> value) {
-		shape.setOnMouseDragged(value);
-		return this;
+	public Z stroke(Paint value) {
+		shape.setStroke(value);
+		return (Z) this;
 	}
 
-	public SimpleShapeBuilder<T> onMousePressed(EventHandler<? super MouseEvent> object) {
-		shape.setOnMousePressed(object);
-		return this;
+	public Z strokeWidth(double value) {
+		shape.setStrokeWidth(value);
+		return (Z) this;
 	}
 
-	protected void setBuilder(SimpleBuilder<T> builder) {
-		this.builder = builder;
-	}
+
 }
