@@ -75,9 +75,9 @@ public class MemoryModel {
                     if (collect.stream().map(m -> m.memoryImage.get()).distinct().count() == 1 && collect.stream().map(m -> m.color).distinct().count() == 1) {
                         collect.forEach((MemorySquare c) -> c.state.set(MemorySquare.State.FOUND));
                     } else {
-                        collect.forEach((MemorySquare c) -> {
-                            new Timeline(new KeyFrame(Duration.seconds(1), new KeyValue(c.state, MemorySquare.State.HIDDEN))).play();
-                        });
+						collect.forEach((MemorySquare c) -> new Timeline(
+								new KeyFrame(Duration.seconds(1), new KeyValue(c.state, MemorySquare.State.HIDDEN)))
+										.play());
 
                     }
                     nPlayed.set(0);

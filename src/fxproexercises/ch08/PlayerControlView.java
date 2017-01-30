@@ -119,9 +119,7 @@ public class PlayerControlView extends AbstractView {
 		final Button playPauseButton = createPlayPauseButton();
 		final Button seekStartButton = new Button();
 		seekStartButton.setId("seekStartButton");
-		seekStartButton.setOnAction((ActionEvent event) -> {
-			seekAndUpdatePosition(Duration.ZERO);
-		});
+		seekStartButton.setOnAction((ActionEvent event) -> seekAndUpdatePosition(Duration.ZERO));
 		final Button seekEndButton = new Button();
 		seekEndButton.setId("seekEndButton");
 		seekEndButton.setOnAction((ActionEvent event) -> {
@@ -233,9 +231,7 @@ public class PlayerControlView extends AbstractView {
 	private class StatusListener implements InvalidationListener {
 		@Override
 		public void invalidated(Observable observable) {
-			Platform.runLater(() -> {
-				updateStatus(songModel.getMediaPlayer().getStatus());
-			});
+			Platform.runLater(() -> updateStatus(songModel.getMediaPlayer().getStatus()));
 		}
 	}
 

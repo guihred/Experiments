@@ -5,12 +5,7 @@ import static java.lang.System.out;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -43,12 +38,7 @@ public class Chapter1 {
 
 		Arrays.asList(directory.listFiles((dir) -> dir.isDirectory())).forEach(
 				out::println);
-		Arrays.asList(directory.listFiles(new FileFilter() {
-			
-			public boolean accept(File dir) {
-				return dir.isDirectory();
-			}
-		})).forEach(out::println);
+		Arrays.asList(directory.listFiles((FileFilter) dir -> dir.isDirectory())).forEach(out::println);
 
 	}
 
@@ -99,14 +89,14 @@ public class Chapter1 {
 	}
 
 	/*
-	 * Didn’t you always hate it that you had to deal with checked exceptions in
+	 * Didnï¿½t you always hate it that you had to deal with checked exceptions in
 	 * a Runnable? Write a method uncheck that catches all checked exceptions
 	 * and turns them into unchecked exceptions. For example, new
 	 * Thread(uncheck( () -> { System.out.println("Zzz"); Thread.sleep(1000);
 	 * })).start(); // Look, no catch (InterruptedException)! Hint: Define an
 	 * interface RunnableEx whose run method may throw any exceptions. Then
 	 * implement public static Runnable uncheck(RunnableEx runner). Use a lambda
-	 * expression inside the uncheck function. Why can’t you just use
+	 * expression inside the uncheck function. Why canï¿½t you just use
 	 * Callable<Void> instead of RunnableEx?
 	 * 
 	 * A: Can't use Callable<Void> because it causes a compilation error if you

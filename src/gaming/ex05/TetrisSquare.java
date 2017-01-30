@@ -9,7 +9,7 @@ import javafx.scene.shape.Rectangle;
 
 public class TetrisSquare extends Region {
 
-    ObjectProperty<State> state = new SimpleObjectProperty<>(State.EMPTY);
+    ObjectProperty<TetrisPieceState> state = new SimpleObjectProperty<>(TetrisPieceState.EMPTY);
 
     public TetrisSquare() {
 
@@ -18,16 +18,9 @@ public class TetrisSquare extends Region {
         setShape(new Rectangle(30, 30));
 
         styleProperty().bind(
-                Bindings.when(state.isEqualTo(State.EMPTY))
+                Bindings.when(state.isEqualTo(TetrisPieceState.EMPTY))
                 .then("-fx-background-color:black;")
                 .otherwise("-fx-background-color:green; "));
     }
 
-}
-
-enum State {
-
-    EMPTY,
-    TRANSITION,
-    SETTLED;
 }

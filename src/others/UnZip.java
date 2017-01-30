@@ -6,12 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnZip {
+	public static final Logger LOGGER = LoggerFactory.getLogger(UnZip.class);
 
 	public static void main(String[] args) throws IOException {
 
-		File jap = new File("C:\\Users\\salete\\Pictures");
+		File jap = new File("C:\\Users\\Note\\Contacts");
 		if (jap.isDirectory()) {
 			File[] listFiles = jap.listFiles();
 			File output = new File(jap, "arquivos");
@@ -47,15 +50,17 @@ public class UnZip {
 				if (ze.isDirectory()) {
 					newFile.mkdirs();
 				} else {
+					try (FileOutputStream fos = new FileOutputStream(newFile);) {
 
-					FileOutputStream fos = new FileOutputStream(newFile);
+						int len;
+						while ((len = zipInputStream.read(buffer)) > 0) {
+							fos.write(buffer, 0, len);
+						}
 
-					int len;
-					while ((len = zipInputStream.read(buffer)) > 0) {
-						fos.write(buffer, 0, len);
+						fos.close();
+					} catch (Exception e) {
+						LOGGER.error("", e);
 					}
-
-					fos.close();
 				}
 
 				ze = zipInputStream.getNextEntry();
@@ -63,8 +68,7 @@ public class UnZip {
 			zipInputStream.closeEntry();
 			zipInputStream.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("", e);
 		}
 	}
 

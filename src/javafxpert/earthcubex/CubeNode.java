@@ -53,42 +53,39 @@ public class CubeNode extends Parent {
 
 	public CubeNode() {
 
-		angleX.addListener((ov) -> {
-			arrangeFacesZOrder();
-
-		});
+		angleX.addListener((ov) -> arrangeFacesZOrder());
 
 		angleY.addListener((ov, oldValue, newValue) -> arrangeFacesZOrder());
 
 		rearFace = new CubeFace(CubeFace.REAR_FACE);
-		Rotate build = new SimpleRotateBuilder().angle(180.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.edgeLength / 2)
+		Rotate build = new SimpleRotateBuilder().angle(180.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH / 2)
 				.build();
 
 		rearFace.getTransforms().setAll(
-				new Translate(0, 0, CubeFace.edgeLength),
+				new Translate(0, 0, CubeFace.EDGE_LENGTH),
 				build);
 
 		bottomFace = new CubeFace(CubeFace.BOTTOM_FACE);
 		bottomFace.getTransforms().setAll(
-				new Translate(0, 0, CubeFace.edgeLength),
+				new Translate(0, 0, CubeFace.EDGE_LENGTH),
 				new SimpleRotateBuilder().angle(90.0).axis(Rotate.X_AXIS)
-						.pivotY(CubeFace.edgeLength).build());
+						.pivotY(CubeFace.EDGE_LENGTH).build());
 
 		leftFace = new CubeFace(CubeFace.LEFT_FACE);
 		leftFace.getTransforms().setAll(
-				new Translate(0, 0, CubeFace.edgeLength),
+				new Translate(0, 0, CubeFace.EDGE_LENGTH),
 				new SimpleRotateBuilder().angle(90.0).axis(Rotate.Y_AXIS)
 						.pivotX(0).build());
 
 		rightFace = new CubeFace(CubeFace.RIGHT_FACE);
 		rightFace.getTransforms().setAll(
-				new Translate(0, 0, CubeFace.edgeLength),
+				new Translate(0, 0, CubeFace.EDGE_LENGTH),
 				new SimpleRotateBuilder().angle(-90.0).axis(Rotate.Y_AXIS)
-						.pivotX(CubeFace.edgeLength).build());
+						.pivotX(CubeFace.EDGE_LENGTH).build());
 
 		topFace = new CubeFace(CubeFace.TOP_FACE);
 		topFace.getTransforms().setAll(
-				new Translate(0, 0, CubeFace.edgeLength),
+				new Translate(0, 0, CubeFace.EDGE_LENGTH),
 				new SimpleRotateBuilder().angle(-90.0).axis(Rotate.X_AXIS)
 						.pivotX(0).build());
 
@@ -99,21 +96,11 @@ public class CubeNode extends Parent {
 		getChildren().addAll(rearFace, topFace, leftFace, rightFace,
 				bottomFace, frontFace);
 
-		Rotate xRotate;
-		Rotate yRotate;
-		xRotate = new Rotate();
-		xRotate.setAxis(Rotate.X_AXIS);
-		xRotate.setPivotX(CubeFace.edgeLength * 0.5);
-		xRotate.setPivotY(CubeFace.edgeLength * 0.5);
-		xRotate.setPivotZ(CubeFace.edgeLength * 0.5);
-		getTransforms().setAll(
-				xRotate,
-				yRotate = new SimpleRotateBuilder().axis(Rotate.Y_AXIS)
-						.pivotX(CubeFace.edgeLength * 0.5)
-						.pivotY(CubeFace.edgeLength * 0.5)
-						.pivotZ(CubeFace.edgeLength * 0.5).build()
-
-		);
+		Rotate xRotate = new SimpleRotateBuilder().axis(Rotate.X_AXIS).pivotX(CubeFace.EDGE_LENGTH * 0.5)
+				.pivotY(CubeFace.EDGE_LENGTH * 0.5).pivotZ(CubeFace.EDGE_LENGTH * 0.5).build();
+		Rotate yRotate = new SimpleRotateBuilder().axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH * 0.5)
+				.pivotY(CubeFace.EDGE_LENGTH * 0.5).pivotZ(CubeFace.EDGE_LENGTH * 0.5).build();
+		getTransforms().setAll(xRotate, yRotate);
 		xRotate.angleProperty().bind(angleX);
 		yRotate.angleProperty().bind(angleY);
 
@@ -165,17 +152,17 @@ public class CubeNode extends Parent {
 	}
 
 	final void arrangeFacesZOrder() {
-		rearFace.zPos.setValue(CubeFace.radius
+		rearFace.zPos.setValue(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleY.getValue() + 0)));
-		bottomFace.zPos.setValue(CubeFace.radius
+		bottomFace.zPos.setValue(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleX.getValue() + 270)));
-		leftFace.zPos.setValue(CubeFace.radius
+		leftFace.zPos.setValue(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleY.getValue() + 270)));
-		rightFace.zPos.setValue(CubeFace.radius
+		rightFace.zPos.setValue(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleY.getValue() + 90)));
-		topFace.zPos.setValue(CubeFace.radius
+		topFace.zPos.setValue(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleX.getValue() + 90)));
-		frontFace.zPos.setValue(CubeFace.radius
+		frontFace.zPos.setValue(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleY.getValue() + 180)));
 
 		FXCollections.sort(getChildren(), new CubeFaceComparator());

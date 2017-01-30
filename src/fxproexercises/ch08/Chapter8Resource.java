@@ -20,11 +20,4 @@ public enum Chapter8Resource {
 		return getClass().getResource(file);
 	}
 
-	public static void main(String[] args) {
-		InputStream file2 = Chapter8Resource.MEDIA.getInputStream();
-		System.out.println(file2);
-		System.out.println(Chapter8Resource.MEDIA.getURL());
-		System.out.println(Chapter8Resource.MEDIA.getURL().getFile());
-
-	}
 }

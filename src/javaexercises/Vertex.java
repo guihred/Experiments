@@ -241,9 +241,7 @@ class Vertex {
 
 		StringBuilder sb = new StringBuilder(getName());
 		sb.append("->");
-		edges.forEach((v, w) -> {
-			sb.append(v.getName() + " ");
-		});
+		edges.forEach((v, w) -> sb.append(v.getName() + " "));
 
 		return sb.toString();
 	}

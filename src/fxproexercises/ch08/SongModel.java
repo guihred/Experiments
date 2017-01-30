@@ -10,11 +10,7 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.MapChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
@@ -95,9 +91,8 @@ public final class SongModel {
         resetProperties();
         try {
             final Media media = new Media(url);
-            media.getMetadata().addListener((MapChangeListener<String, Object>) (ch) -> {
-                    handleMetadata(ch.getKey(), ch.getValueAdded());
-            });
+			media.getMetadata().addListener(
+					(MapChangeListener<String, Object>) (ch) -> handleMetadata(ch.getKey(), ch.getValueAdded()));
 			Platform.runLater(() -> {
 				try {
 					byte[] extractEmbeddedImageData = LeitorMusicas
@@ -120,18 +115,18 @@ public final class SongModel {
 
     private void handleMetadata(String key, Object value) {
 		System.out.println("Key=" + key + ",Value=" + value);
-        if (key.equals("album")) {
+		if ("album".equals(key)) {
             setAlbum(value.toString());
-        } else if (key.equals("artist")) {
+		} else if ("artist".equals(key)) {
             setArtist(value.toString());
         }
-        if (key.equals("title")) {
+		if ("title".equals(key)) {
             setTitle(value.toString());
         }
-        if (key.equals("year")) {
+		if ("year".equals(key)) {
             setYear(value.toString());
         }
-        if (key.equals("image")) {
+		if ("image".equals(key)) {
             setAlbumCover((Image) value);
         }
 

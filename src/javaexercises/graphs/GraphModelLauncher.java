@@ -6,10 +6,7 @@ import static others.CommonsFX.newSelect;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.Animation;
@@ -30,10 +27,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import javafx.util.StringConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GraphModelLauncher extends Application {
-
+	public final Logger logger = LoggerFactory.getLogger(getClass());
 	Graph graph = new Graph();
 
 	@Override
@@ -174,7 +172,7 @@ public class GraphModelLauncher extends Application {
 			return Files.lines(Paths.get(string)).flatMap(e -> Stream.of(e.split("[^a-zA-Z]"))).filter(s -> s.length() == 4).map(String::toLowerCase)
 					.distinct().toArray(String[]::new);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		String[] words = { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire", "wind", "wing", "wink", "wins",
@@ -194,7 +192,7 @@ public class GraphModelLauncher extends Application {
 
 	private void addGraphComponents() {
 
-		Model model = graph.getModel();
+		GraphModel model = graph.getModel();
 
 		model.addCell("A", CellType.CIRCLE);
 		model.addCell("B", CellType.CIRCLE);
@@ -239,26 +237,5 @@ public class GraphModelLauncher extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
-	}
-}
-
-class SimpleConverter<T> extends StringConverter<T> {
-	Map<String, T> mapaLayout = new HashMap<>();
-	private Function<T, String> func;
-
-	public SimpleConverter(Function<T, String> func) {
-		this.func = func;
-	}
-
-	@Override
-	public String toString(T lay) {
-		String simpleName = func.apply(lay);
-		mapaLayout.put(simpleName, lay);
-		return simpleName;
-	}
-
-	@Override
-	public T fromString(String arg0) {
-		return mapaLayout.get(arg0);
 	}
 }

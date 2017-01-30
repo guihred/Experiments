@@ -1,11 +1,6 @@
 package log.analyze;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,8 +15,11 @@ import java.util.function.Predicate;
 import java.util.function.ToLongFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StatsLogAccess {
+	public static final Logger LOGGER = LoggerFactory.getLogger(StatsLogAccess.class);
 
 	public static void main(String[] args) throws IOException {
 		statisticaDemoraArquivo();
@@ -40,11 +38,12 @@ public class StatsLogAccess {
 					String[] a = linha.split(" ");
 					return a[a.length - 1];
 				})).map(tentarFuncao(a -> Long.parseLong(a))).mapToLong(a -> a != null ? a : 0).summaryStatistics();
-				System.out.println(path.toString() + " = " + summaryStatistics.getAverage() + ",\t" + summaryStatistics.getMax() + ",\t"
-						+ summaryStatistics.getMin() + ",\t" + summaryStatistics.getCount());
+				System.out.println(
+						path.toString() + " = " + summaryStatistics.getAverage() + ",\t" + summaryStatistics.getMax()
+								+ ",\t" + summaryStatistics.getMin() + ",\t" + summaryStatistics.getCount());
 
 			} catch (Exception e) {
-				// TODO: handle exception
+				LOGGER.error("", e);
 			}
 		}
 
@@ -53,17 +52,21 @@ public class StatsLogAccess {
 	}
 
 	public static void ajustarArquivos() throws IOException {
-		
+
 		Predicate<String> asPredicate = Pattern.compile("siga-dia.log.2016-\\d+-\\d+-\\d+").asPredicate();
-		List<Path> lista = Files.list(Paths.get("C:\\tmp")).filter(p -> asPredicate.test(p.toFile().getName())).collect(Collectors.toList());
+		List<Path> lista = Files.list(Paths.get("C:\\tmp")).filter(p -> asPredicate.test(p.toFile().getName()))
+				.collect(Collectors.toList());
 		for (Path path : lista) {
-			File file = new File(path.toFile().getName().replaceAll("siga-dia.log.2016-(\\d+)-(\\d+)-(\\d+)", "siga-dia.2016-$1-$2.log"));
+			File file = new File(path.toFile().getName().replaceAll("siga-dia.log.2016-(\\d+)-(\\d+)-(\\d+)",
+					"siga-dia.2016-$1-$2.log"));
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-			Files.lines(path).forEach(out::println);
-			out.close();
+			try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));) {
+				Files.lines(path).forEach(out::println);
+			} catch (Exception e) {
+				LOGGER.error("", e);
+			}
 		}
 
 		// fo
@@ -73,55 +76,64 @@ public class StatsLogAccess {
 	public static void statisticaTamanhoArquivos() throws IOException {
 		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
 				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		PrintStream out = new PrintStream(new File("acessos.txt"));
-		for (Path path : lista) {
-			try {
-				Map<String, Long> stats = Files.lines(path).filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
-						.collect(Collectors.groupingBy(tentarFuncao(linha -> {
-							return linha.split(" ")[6];
-						}), Collectors.counting()));
-				out.println(path + "--------------------------");
+		try (PrintStream out = new PrintStream(new File("acessos.txt"));) {
+			for (Path path : lista) {
+				try {
+					Map<String, Long> stats = Files.lines(path)
+							.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
+							.collect(Collectors.groupingBy(tentarFuncao(linha -> linha.split(" ")[6]),
+									Collectors.counting()));
+					out.println(path + "--------------------------");
 
-				stats.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-						.forEach(entry -> out.println(entry.getKey() + "  ,  " + entry.getValue()));
-			} catch (Exception e) {
-				// TODO: handle exception
+					stats.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+							.forEach(entry -> out.println(entry.getKey() + "  ,  " + entry.getValue()));
+				} catch (Exception e) {
+					LOGGER.error("", e);
+				}
+
 			}
-
+		} catch (Exception e) {
+			LOGGER.error("", e);
 		}
 	}
 
 	public static void statisticaDemoraArquivo() throws IOException {
 		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
 				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		PrintStream out = new PrintStream(new File("acessos.txt"));
-		for (Path path : lista) {
-			try {
-				Map<String, LongSummaryStatistics> stats = Files.lines(path).filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
-						.collect(Collectors.groupingBy(tentarFuncao(linha -> {
-							String string = linha.split(" ")[6];
-							if (string.contains("?")) {
-								return string.substring(0, string.indexOf("?"));
-							}
+		try (PrintStream out = new PrintStream(new File("acessos.txt"));) {
+			for (Path path : lista) {
+				try {
+					Map<String, LongSummaryStatistics> stats = Files.lines(path)
+							.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
+							.collect(Collectors.groupingBy(tentarFuncao(linha -> {
+								String string = linha.split(" ")[6];
+								if (string.contains("?")) {
+									return string.substring(0, string.indexOf("?"));
+								}
 
-							return string;
-						}), Collectors.summarizingLong((ToLongFunction<String>) (String linha) -> {
-							if (linha == null || linha.isEmpty()) {
-								return 0L;
-							}
+								return string;
+							}), Collectors.summarizingLong((ToLongFunction<String>) (String linha) -> {
+								if (linha == null || linha.isEmpty()) {
+									return 0L;
+								}
 
-							final String[] a = linha.split(" ");
-							return Long.parseLong(a[a.length - 1]);
-						})));
-				out.println(path + "--------------------------");
+								final String[] a = linha.split(" ");
+								return Long.parseLong(a[a.length - 1]);
+							})));
+					out.println(path + "--------------------------");
 
-				stats.entrySet().stream()
-						.sorted(Comparator.comparing((Entry<String, LongSummaryStatistics> c) -> c.getValue().getAverage()).reversed())
-						.forEach(entry -> out.println(entry.getKey() + "  ,  " + entry.getValue()));
-			} catch (Exception e) {
-				e.printStackTrace();
+					stats.entrySet().stream()
+							.sorted(Comparator
+									.comparing((Entry<String, LongSummaryStatistics> c) -> c.getValue().getAverage())
+									.reversed())
+							.forEach(entry -> out.println(entry.getKey() + "  ,  " + entry.getValue()));
+				} catch (Exception e) {
+					LOGGER.error("", e);
+				}
+
 			}
-
+		} catch (Exception e) {
+			LOGGER.error("", e);
 		}
 	}
 

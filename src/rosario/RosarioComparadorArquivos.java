@@ -1,7 +1,6 @@
 package rosario;
 
 import java.io.File;
-
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -9,11 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -23,9 +18,11 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RosarioComparadorArquivos extends Application {
-
+	public final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public static void main(String[] args) {
 		launch(args);
@@ -114,7 +111,7 @@ public class RosarioComparadorArquivos extends Application {
 
 				LeitorArquivos.exportarArquivo(items0, items, items2);
 			} catch (Exception e1) {
-				e1.printStackTrace();
+				logger.error("", e);
 			}
 		});
 		gridpane.getChildren().add(exportar);
@@ -128,66 +125,57 @@ public class RosarioComparadorArquivos extends Application {
 			final TableView<Medicamento> medicamentosAnvisaTable) {
 		ObservableList<TableColumn<Medicamento, ?>> columns = medicamentosAnvisaTable.getColumns();
 		TableColumn<Medicamento, String> tableColumn = (TableColumn<Medicamento, String>) columns.get(0);
-		tableColumn.setCellFactory(param -> {
-			return new TableCell<Medicamento, String>() {
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
-					int index = getIndex();
-					int size = getTableView().getItems().size();
-					if (index >= 0 && index < size) {
-						Medicamento auxMed = getTableView().getItems().get(index);
-						setText(auxMed.getRegistro());
+		tableColumn.setCellFactory(param -> new TableCell<Medicamento, String>() {
+			@Override
+			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+				int index = getIndex();
+				int size = getTableView().getItems().size();
+				if (index >= 0 && index < size) {
+					Medicamento auxMed = getTableView().getItems().get(index);
+					setText(auxMed.getRegistro());
 
-						styleProperty().bind(
-								Bindings.when(auxMed.registroValidoProperty(medicamentos)).then("")
-										.otherwise("-fx-background-color:lightcoral"));
-					}
+					styleProperty().bind(Bindings.when(auxMed.registroValidoProperty(medicamentos)).then("")
+							.otherwise("-fx-background-color:lightcoral"));
 				}
+			}
 
-			};
 		});
 
 		TableColumn<Medicamento, String> colunaLote = (TableColumn<Medicamento, String>) columns
 				.get(columns.size() - 3);
-		colunaLote.setCellFactory(param -> {
-			return new TableCell<Medicamento, String>() {
-				@Override
-				protected void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
-					int index = getIndex();
-					int size = getTableView().getItems().size();
-					if (index >= 0 && index < size) {
-						Medicamento auxMed = getTableView().getItems().get(index);
-						setText(auxMed.getLote());
-						styleProperty().bind(
-								Bindings.when(auxMed.loteValidoProperty(medicamentos)).then("")
-										.otherwise("-fx-background-color:lightcoral"));
+		colunaLote.setCellFactory(param -> new TableCell<Medicamento, String>() {
+			@Override
+			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+				int index = getIndex();
+				int size = getTableView().getItems().size();
+				if (index >= 0 && index < size) {
+					Medicamento auxMed = getTableView().getItems().get(index);
+					setText(auxMed.getLote());
+					styleProperty().bind(Bindings.when(auxMed.loteValidoProperty(medicamentos)).then("")
+							.otherwise("-fx-background-color:lightcoral"));
 
-					}
 				}
+			}
 
-			};
 		});
 		TableColumn<Medicamento, Integer> colunaQntd = (TableColumn<Medicamento, Integer>) columns
 				.get(columns.size() - 2);
-		colunaQntd.setCellFactory(param -> {
-			return new TableCell<Medicamento, Integer>() {
-				@Override
-				protected void updateItem(Integer item, boolean empty) {
-					super.updateItem(item, empty);
-					int index = getIndex();
-					int size = getTableView().getItems().size();
-					if (index >= 0 && index < size) {
-						Medicamento auxMed = getTableView().getItems().get(index);
-						setText(Integer.toString(auxMed.getQuantidade()));
-						styleProperty().bind(
-								Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
-										.otherwise("-fx-background-color:lightcoral"));
-					}
+		colunaQntd.setCellFactory(param -> new TableCell<Medicamento, Integer>() {
+			@Override
+			protected void updateItem(Integer item, boolean empty) {
+				super.updateItem(item, empty);
+				int index = getIndex();
+				int size = getTableView().getItems().size();
+				if (index >= 0 && index < size) {
+					Medicamento auxMed = getTableView().getItems().get(index);
+					setText(Integer.toString(auxMed.getQuantidade()));
+					styleProperty().bind(Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
+							.otherwise("-fx-background-color:lightcoral"));
 				}
+			}
 
-			};
 		});
 
 	}
@@ -199,43 +187,37 @@ public class RosarioComparadorArquivos extends Application {
 
 		TableColumn<Medicamento, Integer> colunaQntd = (TableColumn<Medicamento, Integer>) columns
 				.get(columns.size() - 2);
-		colunaQntd.setCellFactory(param -> {
-			return new TableCell<Medicamento, Integer>() {
-				@Override
-				protected void updateItem(Integer item, boolean empty) {
-					super.updateItem(item, empty);
-					int index = getIndex();
-					int size = getTableView().getItems().size();
-					if (index >= 0 && index < size) {
-						Medicamento auxMed = getTableView().getItems().get(index);
-						setText(Integer.toString(auxMed.getQuantidade()));
-						styleProperty().bind(
-								Bindings.when(auxMed.quantidadeCodigoValidoProperty(medicamentos)).then("")
-										.otherwise("-fx-background-color:lightcoral"));
-					}
+		colunaQntd.setCellFactory(param -> new TableCell<Medicamento, Integer>() {
+			@Override
+			protected void updateItem(Integer item, boolean empty) {
+				super.updateItem(item, empty);
+				int index = getIndex();
+				int size = getTableView().getItems().size();
+				if (index >= 0 && index < size) {
+					Medicamento auxMed = getTableView().getItems().get(index);
+					setText(Integer.toString(auxMed.getQuantidade()));
+					styleProperty().bind(Bindings.when(auxMed.quantidadeCodigoValidoProperty(medicamentos)).then("")
+							.otherwise("-fx-background-color:lightcoral"));
 				}
+			}
 
-			};
 		});
 		TableColumn<Medicamento, Integer> colunaCodigo = (TableColumn<Medicamento, Integer>) columns
 				.get(columns.size() - 1);
-		colunaCodigo.setCellFactory(param -> {
-			return new TableCell<Medicamento, Integer>() {
-				@Override
-				protected void updateItem(Integer item, boolean empty) {
-					super.updateItem(item, empty);
-					int index = getIndex();
-					int size = getTableView().getItems().size();
-					if (index >= 0 && index < size) {
-						Medicamento auxMed = getTableView().getItems().get(index);
-						setText(Integer.toString(auxMed.getCodigo()));
-						styleProperty().bind(
-								Bindings.when(auxMed.codigoValidoProperty(medicamentos)).then("")
-										.otherwise("-fx-background-color:lightcoral"));
-					}
+		colunaCodigo.setCellFactory(param -> new TableCell<Medicamento, Integer>() {
+			@Override
+			protected void updateItem(Integer item, boolean empty) {
+				super.updateItem(item, empty);
+				int index = getIndex();
+				int size = getTableView().getItems().size();
+				if (index >= 0 && index < size) {
+					Medicamento auxMed = getTableView().getItems().get(index);
+					setText(Integer.toString(auxMed.getCodigo()));
+					styleProperty().bind(Bindings.when(auxMed.codigoValidoProperty(medicamentos)).then("")
+							.otherwise("-fx-background-color:lightcoral"));
 				}
+			}
 
-			};
 		});
 
 	}
@@ -291,7 +273,7 @@ public class RosarioComparadorArquivos extends Application {
 			ObservableList<Medicamento> people = LeitorArquivos.getMedicamentosRosario(file);
 			return people;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}
@@ -301,7 +283,7 @@ public class RosarioComparadorArquivos extends Application {
 			ObservableList<Medicamento> people = LeitorArquivos.getMedicamentosSNGPCPDF(file);
 			return people;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}
@@ -311,7 +293,7 @@ public class RosarioComparadorArquivos extends Application {
 			ObservableList<Medicamento> people = LeitorArquivos.getMedicamentosAnvisa(selectedFile);
 			return people;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}

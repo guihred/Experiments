@@ -58,7 +58,7 @@ public class FxProCH6b {
                         .append(", ")
                         .append(change.getTo())
                         .append("]\n");
-                if (kind.equals("added") || kind.equals("replaced")) {
+				if ("added".equals(kind) || "replaced".equals(kind)) {
                     sb.append("\t\tAdded size: ")
                             .append(change.getAddedSize())
                             .append("\n");
@@ -66,7 +66,7 @@ public class FxProCH6b {
                             .append(change.getAddedSubList())
                             .append("\n");
                 }
-                if (kind.equals("removed") || kind.equals("replaced")) {
+				if ("removed".equals(kind) || "replaced".equals(kind)) {
                     sb.append("\t\tRemoved size: ")
                             .append(change.getRemovedSize())
                             .append("\n");
@@ -74,7 +74,7 @@ public class FxProCH6b {
                             .append(change.getRemoved())
                             .append("\n");
                 }
-                if (kind.equals("permutted")) {
+				if ("permutted".equals(kind)) {
                     StringBuilder permutationStringBuilder = new StringBuilder("[");
                     for (int k = change.getFrom(); k < change.getTo(); k++) {
                         permutationStringBuilder.append(k)

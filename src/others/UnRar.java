@@ -67,58 +67,55 @@ public class UnRar {
 		String s = file.toString();
 
 		s = s.substring(s.length() - 3);
-		if (s.equalsIgnoreCase("rar")) {
+		if ("rar".equalsIgnoreCase(s)) {
 			System.out.println(file.toString());
 			try {
-				// readFile = new ReadOnlyAccessFile(file);
-				Archive arc = null;
-				try {
-					arc = new Archive(file);
+				try (Archive arc = new Archive(file);) {
+					if (arc.isEncrypted()) {
+						System.out.println("archive is encrypted cannot extreact");
+						unsupportedFiles.add(file.toString());
+						return;
+					}
+					List<FileHeader> files = arc.getFileHeaders();
+					for (FileHeader fh : files) {
+						if (fh.isEncrypted()) {
+							System.out.println("file is encrypted cannot extract: " + fh.getFileNameString());
+							unsupportedFiles.add(file.toString());
+							return;
+						}
+						System.out.println("extracting file: " + fh.getFileNameString());
+						if (fh.isFileHeader() && fh.isUnicode()) {
+							System.out.println("unicode name: " + fh.getFileNameW());
+						}
+						System.out.println("start: " + new Date());
+						File file2 = new File(output, fh.getFileNameString());
+						if (!file2.exists()) {
+							file2.createNewFile();
+						}
+						FileOutputStream os = new FileOutputStream(file2);
+						try {
+							arc.extractFile(fh, os);
+						} catch (RarException e) {
+							if (e.getType().equals(RarExceptionType.notImplementedYet)) {
+								System.out.println("error extracting unsupported file: " + fh.getFileNameString() + e);
+								unsupportedFiles.add(file.toString());
+								return;
+							}
+							System.out.println("error extracting file: " + fh.getFileNameString() + e);
+							errorFiles.add(file.toString());
+							return;
+						} finally {
+							os.close();
+						}
+						System.out.println("end: " + new Date());
+					}
+					System.out.println("successfully tested archive: " + file);
+					successfulFiles.add(file.toString());
 				} catch (RarException e) {
 					System.out.println("archive consturctor error" + e);
 					errorFiles.add(file.toString());
 					return;
 				}
-				if (arc.isEncrypted()) {
-					System.out.println("archive is encrypted cannot extreact");
-					unsupportedFiles.add(file.toString());
-					return;
-				}
-				List<FileHeader> files = arc.getFileHeaders();
-				for (FileHeader fh : files) {
-					if (fh.isEncrypted()) {
-						System.out.println("file is encrypted cannot extract: " + fh.getFileNameString());
-						unsupportedFiles.add(file.toString());
-						return;
-					}
-					System.out.println("extracting file: " + fh.getFileNameString());
-					if (fh.isFileHeader() && fh.isUnicode()) {
-						System.out.println("unicode name: " + fh.getFileNameW());
-					}
-					System.out.println("start: " + new Date());
-					File file2 = new File(output, fh.getFileNameString());
-					if (!file2.exists()) {
-						file2.createNewFile();
-					}
-					FileOutputStream os = new FileOutputStream(file2);
-					try {
-						arc.extractFile(fh, os);
-					} catch (RarException e) {
-						if (e.getType().equals(RarExceptionType.notImplementedYet)) {
-							System.out.println("error extracting unsupported file: " + fh.getFileNameString() + e);
-							unsupportedFiles.add(file.toString());
-							return;
-						}
-						System.out.println("error extracting file: " + fh.getFileNameString() + e);
-						errorFiles.add(file.toString());
-						return;
-					} finally {
-						os.close();
-					}
-					System.out.println("end: " + new Date());
-				}
-				System.out.println("successfully tested archive: " + file);
-				successfulFiles.add(file.toString());
 			} catch (Exception e) {
 				System.out.println("file: " + file + " extraction error - does the file exist?" + e);
 				errorFiles.add(file.toString());
@@ -138,7 +135,6 @@ public class UnRar {
 			}
 			for (File f : files) {
 				recurseDirectory(f, output);
-				f = null;
 			}
 		} else {
 			testFile(file, output);

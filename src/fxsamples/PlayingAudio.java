@@ -16,16 +16,14 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import others.SimpleCircleBuilder;
 
 /**
@@ -34,11 +32,12 @@ import others.SimpleCircleBuilder;
  * @author cdea
  */
 public class PlayingAudio extends Application {
+	public final Logger logger = LoggerFactory.getLogger(getClass());
 	private MediaPlayer mediaPlayer;
 	private Point2D anchorPt;
 	private Point2D previousLocation;
 	private ChangeListener<Duration> progressListener;
-	private static Stage PRIMARY_STAGE;
+	private Stage mainStage;
 	private static final String STOP_BUTTON_ID = "stop-button";
 	private static final String PLAY_BUTTON_ID = "play-button";
 	private static final String PAUSE_BUTTON_ID = "pause-button";
@@ -53,14 +52,14 @@ public class PlayingAudio extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		PRIMARY_STAGE = primaryStage;
-		PRIMARY_STAGE.initStyle(StageStyle.TRANSPARENT);
-		PRIMARY_STAGE.centerOnScreen();
+		mainStage = primaryStage;
+		mainStage.initStyle(StageStyle.TRANSPARENT);
+		mainStage.centerOnScreen();
 		Group root = new Group();
 		Scene scene = new Scene(root, 551, 270, Color.rgb(0, 0, 0, 0));
 		// load JavaFX CSS style
 		scene.getStylesheets().add("file:playing-audio.css");
-		PRIMARY_STAGE.setScene(scene);
+		mainStage.setScene(scene);
 		// Initialize stage to be movable via mouse
 		initMovablePlayer();
 		// application area
@@ -89,23 +88,22 @@ public class PlayingAudio extends Application {
 	 *
 	 */
 	private void initMovablePlayer() {
-		Scene scene = PRIMARY_STAGE.getScene();
+		Scene scene = mainStage.getScene();
 		// starting initial anchor point
 		scene.setOnMousePressed(mouseEvent -> anchorPt = new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY()));
 		// dragging the entire stage
 		scene.setOnMouseDragged(mouseEvent -> {
 			if (anchorPt != null && previousLocation != null) {
-				PRIMARY_STAGE.setX(previousLocation.getX() + mouseEvent.getScreenX() - anchorPt.getX());
-				PRIMARY_STAGE.setY(previousLocation.getY() + mouseEvent.getScreenY() - anchorPt.getY());
+				mainStage.setX(previousLocation.getX() + mouseEvent.getScreenX() - anchorPt.getX());
+				mainStage.setY(previousLocation.getY() + mouseEvent.getScreenY() - anchorPt.getY());
 			}
 		});
 		// set the current location
-		scene.setOnMouseReleased(mouseEvent -> previousLocation = new Point2D(PRIMARY_STAGE.getX(), PRIMARY_STAGE
+		scene.setOnMouseReleased(mouseEvent -> previousLocation = new Point2D(mainStage.getX(), mainStage
 				.getY()));
 		// Initialize previousLocation after Stage is shown
-		PRIMARY_STAGE.addEventHandler(WindowEvent.WINDOW_SHOWN, (WindowEvent t) -> {
-			previousLocation = new Point2D(PRIMARY_STAGE.getX(), PRIMARY_STAGE.getY());
-		});
+		mainStage.addEventHandler(WindowEvent.WINDOW_SHOWN,
+				t -> previousLocation = new Point2D(mainStage.getX(), mainStage.getY()));
 	}
 
 	/**
@@ -114,7 +112,7 @@ public class PlayingAudio extends Application {
 	 * @return Node a Rectangle node.
 	 */
 	private Node createApplicationArea() {
-		Scene scene = PRIMARY_STAGE.getScene();
+		Scene scene = mainStage.getScene();
 		Rectangle applicationArea = new Rectangle();
 		// add selector to style app-area
 		applicationArea.setId("app-area");
@@ -130,7 +128,7 @@ public class PlayingAudio extends Application {
 	 *
 	 */
 	private void initFileDragNDrop() {
-		Scene scene = PRIMARY_STAGE.getScene();
+		Scene scene = mainStage.getScene();
 		scene.setOnDragOver(dragEvent -> {
 			Dragboard db = dragEvent.getDragboard();
 			if (db.hasFiles() || db.hasUrl()) {
@@ -151,7 +149,7 @@ public class PlayingAudio extends Application {
 						filePath = db.getFiles().get(0).toURI().toURL().toString();
 						playMedia(filePath);
 					} catch (MalformedURLException ex) {
-						ex.printStackTrace();
+						logger.error("", ex);
 					}
 				}
 			} else {
@@ -171,7 +169,7 @@ public class PlayingAudio extends Application {
 	 * @return Node A button panel having play, pause and stop buttons.
 	 */
 	private Node createButtonPanel() {
-		Scene scene = PRIMARY_STAGE.getScene();
+		Scene scene = mainStage.getScene();
 		// create button control panel
 		Group buttonGroup = new Group();
 		// Button area
@@ -245,7 +243,7 @@ public class PlayingAudio extends Application {
 	 * @return Node representing a close button.
 	 */
 	private Node createCloseButton() {
-		Scene scene = PRIMARY_STAGE.getScene();
+		Scene scene = mainStage.getScene();
 		Group closeButton = new Group();
 		closeButton.setId(CLOSE_BUTTON_ID);
 		Node closeBackground = new Circle(5, 0, 7);
@@ -269,7 +267,7 @@ public class PlayingAudio extends Application {
 	 *            The URL pointing to an audio file
 	 */
 	private void playMedia(String url) {
-		Scene scene = PRIMARY_STAGE.getScene();
+		Scene scene = mainStage.getScene();
 		if (mediaPlayer != null) {
 			mediaPlayer.pause();
 			mediaPlayer.setOnPaused(null);
@@ -301,13 +299,13 @@ public class PlayingAudio extends Application {
 				mediaPlayer.stop();
 			}); // setOnEndOfMedia()
 				// setup visualization (circle container)
-		Group vizContainer = (Group) PRIMARY_STAGE.getScene().lookup("#" + VIS_CONTAINER_ID);
+		Group vizContainer = (Group) mainStage.getScene().lookup("#" + VIS_CONTAINER_ID);
 		mediaPlayer
 				.setAudioSpectrumListener((double timestamp, double duration, float[] magnitudes, float[] phases) -> {
 					vizContainer.getChildren().clear();
 					int i = 0;
 					int x = 10;
-					double y = PRIMARY_STAGE.getScene().getHeight() / 2;
+					double y = mainStage.getScene().getHeight() / 2;
 					Random rand = new Random(System.currentTimeMillis());
 					// Build random colored circles
 					for (float phase : phases) {
@@ -316,7 +314,7 @@ public class PlayingAudio extends Application {
 						int blue = rand.nextInt(255);
 						Circle circle = new SimpleCircleBuilder().radius(10)
 								.centerX(x + i)
-								.centerY(y + phase * 100)
+								.centerY(y + (double) phase * 100)
 								.fill(Color.rgb(red, green, blue, .70))
 								.build();
 						vizContainer.getChildren().add(circle);
@@ -336,7 +334,7 @@ public class PlayingAudio extends Application {
 	 *            visible, otherwise the opposite.
 	 */
 	private void updatePlayAndPauseButtons(boolean playVisible) {
-		Scene scene = PRIMARY_STAGE.getScene();
+		Scene scene = mainStage.getScene();
 		Node playButton = scene.lookup("#" + PLAY_BUTTON_ID);
 		Node pauseButton = scene.lookup("#" + PAUSE_BUTTON_ID);
 		// hide or show buttons
@@ -372,7 +370,7 @@ public class PlayingAudio extends Application {
 				}
 			}
 		}); // addListener()
-		Scene scene = PRIMARY_STAGE.getScene();
+		Scene scene = mainStage.getScene();
 		slider.setTranslateX(10);
 		slider.translateYProperty().bind(scene.heightProperty().subtract(50));
 		return slider;

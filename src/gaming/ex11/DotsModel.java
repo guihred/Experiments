@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.binding.StringBinding;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
@@ -176,29 +176,13 @@ public class DotsModel {
         });
         final Text text = new Text("EU:");
         final Text text2 = new Text("0");
-        text2.textProperty().bind(new StringBinding() {
-            {
-                bind(points.get("EU"));
-            }
-
-            @Override
-            protected String computeValue() {
-                return Integer.toString(points.get("EU").size());
-            }
-        });
+		text2.textProperty()
+				.bind(Bindings.createStringBinding(() -> Integer.toString(points.get("EU").size()), points.get("EU")));
         gridPane.getChildren().addAll(text, text2);
         final Text tuText = new Text("TU:");
         final Text tuPoints = new Text("0");
-        tuPoints.textProperty().bind(new StringBinding() {
-            {
-                bind(points.get("TU"));
-            }
-
-            @Override
-            protected String computeValue() {
-                return Integer.toString(points.get("TU").size());
-            }
-        });
+		tuPoints.textProperty()
+				.bind(Bindings.createStringBinding(() -> Integer.toString(points.get("TU").size()), points.get("TU")));
         borderPane.setTop(new HBox(text, text2, tuText, tuPoints));
     }
 

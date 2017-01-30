@@ -32,11 +32,11 @@ import others.SimpleVBoxBuilder;
 public class FxProCH2 extends Application {
 
 	StringProperty title = new SimpleStringProperty();
-	Text textStageX;
-	Text textStageY;
-	Text textStageW;
-	Text textStageH;
-	Text textStageF;
+	Text textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	Text textStageY = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	Text textStageW = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	Text textStageH = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	Text textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
 	CheckBox checkBoxResizable;
 	CheckBox checkBoxFullScreen = new CheckBox("fullScreen");
 	double dragAnchorX;
@@ -52,35 +52,29 @@ public class FxProCH2 extends Application {
 		List<String> unnamedParams = getParameters().getUnnamed();
 		if (unnamedParams.size() > 0) {
 			String stageStyleParam = unnamedParams.get(0);
-			if (stageStyleParam.equalsIgnoreCase("transparent")) {
+			if (StageStyle.TRANSPARENT.name().equalsIgnoreCase(stageStyleParam)) {
 				stageStyle = StageStyle.TRANSPARENT;
-			} else if (stageStyleParam.equalsIgnoreCase("undecorated")) {
+			} else if (StageStyle.UNDECORATED.name().equalsIgnoreCase(stageStyleParam)) {
 				stageStyle = StageStyle.UNDECORATED;
-			} else if (stageStyleParam.equalsIgnoreCase("utility")) {
+			} else if (StageStyle.UTILITY.name().equalsIgnoreCase(stageStyleParam)) {
 				stageStyle = StageStyle.UTILITY;
 			}
 		}
 		final Stage stageRef = stage;
-		Group rootGroup;
 		TextField titleTextField = newTextField("Stage Coach", 15);
-		final Rectangle skyBlueRect = new SimpleRectangleBuilder().x(0).y(0).width(250).height(350).arcHeight(50).arcWidth(50).fill(Color.SKYBLUE).stroke(null).build();
-		final Button toFrontButton = newButton("toFront()", (e) -> {
-			stageRef.toFront();
-		});
-		final Button closeButton = newButton("close()", (e) -> {
-			stageRef.close();
-		});
-		final Button toBackButton = newButton("toBack()", (e) -> {
-			stageRef.toBack();
-		});
+		final Rectangle skyBlueRect = new SimpleRectangleBuilder().x(0).y(0).width(250).height(350).arcHeight(50)
+				.arcWidth(50).fill(Color.SKYBLUE).stroke(null).build();
+		final Button toFrontButton = newButton("toFront()", (e) -> stageRef.toFront());
+		final Button closeButton = newButton("close()", (e) -> stageRef.close());
+		final Button toBackButton = newButton("toBack()", (e) -> stageRef.toBack());
 		final HBox hbox = new HBox(10, new Label("title:"), titleTextField);
-		boolean disabled = stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED;
-		String text = "resizable";
-		Node[] children = { textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageY = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageW = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), textStageH = new SimpleTextBuilder().textOrigin(VPos.TOP).build(),
-				textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build(), checkBoxResizable = newCheckBox(text, disabled), checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton };
-		Scene scene = new Scene(rootGroup = new Group(skyBlueRect,
-				new SimpleVBoxBuilder().layoutX(30).layoutY(20).spacing(10).children(children).build()),
-				270, 370);
+		checkBoxResizable = newCheckBox("resizable",
+				stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);
+		Node[] children = { textStageX, textStageY, textStageW, textStageH, textStageF, checkBoxResizable,
+				checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton };
+		Group rootGroup = new Group(skyBlueRect,
+				new SimpleVBoxBuilder().layoutX(30).layoutY(20).spacing(10).children(children).build());
+		Scene scene = new Scene(rootGroup, 270, 370);
 		scene.setFill(Color.TRANSPARENT);
 		// When mouse button is pressed, save the initial position of screen
 		rootGroup.setOnMousePressed((MouseEvent me) -> {

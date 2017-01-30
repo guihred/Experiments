@@ -18,7 +18,7 @@ public class CustomLayout implements Layout {
 	@Override
 	public void execute() {
 
-		Model model = graph.getModel();
+		GraphModel model = graph.getModel();
 		List<Cell> cells = model.getAllCells();
 		cells.get(0).relocate(50, 50);
 		Set<Cell> collect = cells.stream().collect(Collectors.toSet());

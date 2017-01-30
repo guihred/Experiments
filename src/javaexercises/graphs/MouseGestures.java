@@ -22,44 +22,36 @@ public class MouseGestures {
 
 	}
 
-	EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
+	EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
 
-		@Override
-		public void handle(MouseEvent event) {
+		Node node = (Node) event.getSource();
 
-			Node node = (Node) event.getSource();
-
-			double scale = graph.getScale();
-			if (node instanceof Cell) {
-				dragContext.dragged = false;
-			}
-			dragContext.x = node.getBoundsInParent().getMinX() * scale - event.getScreenX();
-			dragContext.y = node.getBoundsInParent().getMinY() * scale - event.getScreenY();
-
+		double scale = graph.getScale();
+		if (node instanceof Cell) {
+			dragContext.dragged = false;
 		}
+		dragContext.x = node.getBoundsInParent().getMinX() * scale - event.getScreenX();
+		dragContext.y = node.getBoundsInParent().getMinY() * scale - event.getScreenY();
+
 	};
 
-	EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<MouseEvent>() {
+	EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
 
-		@Override
-		public void handle(MouseEvent event) {
+		Node node = (Node) event.getSource();
 
-			Node node = (Node) event.getSource();
-
-			double offsetX = event.getScreenX() + dragContext.x;
-			double offsetY = event.getScreenY() + dragContext.y;
-			if (node instanceof Cell) {
-				dragContext.dragged = true;
-			}
-			// adjust the offset in case we are zoomed
-			double scale = graph.getScale();
-
-			offsetX /= scale;
-			offsetY /= scale;
-
-			node.relocate(offsetX, offsetY);
-
+		double offsetX = event.getScreenX() + dragContext.x;
+		double offsetY = event.getScreenY() + dragContext.y;
+		if (node instanceof Cell) {
+			dragContext.dragged = true;
 		}
+		// adjust the offset in case we are zoomed
+		double scale = graph.getScale();
+
+		offsetX /= scale;
+		offsetY /= scale;
+
+		node.relocate(offsetX, offsetY);
+
 	};
 
 	EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {

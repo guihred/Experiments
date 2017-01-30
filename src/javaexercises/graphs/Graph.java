@@ -12,7 +12,7 @@ import javafx.scene.layout.Pane;
 public class Graph {
 
 	public static final BooleanProperty SHOW_WEIGHT = new SimpleBooleanProperty(true);
-	private Model model;
+	private GraphModel model;
 
 	private Group canvas;
 
@@ -24,7 +24,7 @@ public class Graph {
 
 	public Graph() {
 
-		model = new Model();
+		model = new GraphModel();
 
 		canvas = new Group();
 		cellLayer = new CellLayer();
@@ -48,7 +48,7 @@ public class Graph {
 		return cellLayer;
 	}
 
-	public Model getModel() {
+	public GraphModel getModel() {
 		return model;
 	}
 

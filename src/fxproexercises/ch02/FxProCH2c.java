@@ -1,11 +1,7 @@
 package fxproexercises.ch02;
 import static others.CommonsFX.newButton;
 
-import javafx.animation.Animation;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -19,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import others.SimpleHBoxBuilder;
 import others.SimpleLineBuilder;
+import others.SimpleTimelineBuilder;
 
 public class FxProCH2c extends Application {
 
@@ -28,12 +25,13 @@ public class FxProCH2c extends Application {
 	Button resumeButton;
 	Button stopButton;
 	Line line;
-	Timeline anim = new Timeline(new KeyFrame(new Duration(0.0), new KeyValue(startXVal, 100.0)),
-			new KeyFrame(new Duration(1000.0), new KeyValue(startXVal, 300.0, Interpolator.LINEAR)));
-	{
-		anim.setAutoReverse(true);
-		anim.setCycleCount(Animation.INDEFINITE);
-	}
+	Timeline anim = new SimpleTimelineBuilder()
+			.autoReverse(true)
+			.cycleCount(Animation.INDEFINITE)
+			.keyFrames(
+					new KeyFrame(Duration.ZERO, new KeyValue(startXVal, 100.0)),
+					new KeyFrame(new Duration(1000.0), new KeyValue(startXVal, 300.0, Interpolator.LINEAR)))
+			.build();
 
 	public static void main(String[] args) {
 		Application.launch(args);
@@ -49,18 +47,10 @@ public class FxProCH2c extends Application {
 				.stroke(Color.BLUE)
 				.strokeWidth(4)
 				.build();
-		stopButton = newButton("Stop", (e) -> {
-			anim.stop();
-		});
-		resumeButton = newButton("Resume", (e) -> {
-			anim.play();
-		});
-		pauseButton = newButton("Pause", (e) -> {
-			anim.pause();
-		});
-		startButton = newButton("Start", (e) -> {
-			anim.playFromStart();
-		});
+		stopButton = newButton("Stop", (e) -> anim.stop());
+		resumeButton = newButton("Resume", (e) -> anim.play());
+		pauseButton = newButton("Pause", (e) -> anim.pause());
+		startButton = newButton("Start", (e) -> anim.playFromStart());
 		HBox hbox = new SimpleHBoxBuilder()
 				.children(startButton, pauseButton, resumeButton, stopButton)
 				.layoutX(60)

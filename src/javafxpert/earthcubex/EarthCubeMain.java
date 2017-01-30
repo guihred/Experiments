@@ -39,8 +39,7 @@ public class EarthCubeMain extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		cubeModel = new CubeModel();
-		CubeModel.instance = cubeModel;
+		cubeModel = CubeModel.instance;
 		cube = new CubeNode();
 		cube.setFocusTraversable(true);
 

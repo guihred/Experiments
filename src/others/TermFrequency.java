@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TermFrequency {
-
+	public static final Logger LOGGER = LoggerFactory.getLogger(TermFrequency.class);
 	private static final String REGEX = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
 	private static final Map<File, Map<String, Long>> mapaDocumentos = new HashMap<>();
@@ -22,11 +24,7 @@ public class TermFrequency {
 		File file = new File("C:\\Users\\Guilherme\\workspace\\Teste\\src");
 		if (file.exists()) {
 			Map<File, Map<String, Long>> mapa = getMapaDocumentos(file);
-			mapa.forEach((k, v) -> {
-				v.forEach((p, f) -> {
-					System.out.println(k + "," + p + "," + f);
-				});
-			});
+			mapa.forEach((k, v) -> v.forEach((p, f) -> System.out.println(k + "," + p + "," + f)));
 
 		}
 
@@ -61,7 +59,7 @@ public class TermFrequency {
 					try {
 						TermFrequency.getMapaDocumentos(new File(file, f));
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOGGER.error("", e);
 					}
 				});
 			}
@@ -74,7 +72,7 @@ public class TermFrequency {
 		Map<String, Long> map = new ConcurrentHashMap<>();
 		try (BufferedReader buff = new BufferedReader(new FileReader(f));) {
 
-			String readLine = null;
+			String readLine;
 			do {
 				readLine = buff.readLine();
 				if (readLine != null) {
@@ -95,7 +93,7 @@ public class TermFrequency {
 			} while (readLine != null);
 			buff.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("", e);
 		}
 		return map;
 	}

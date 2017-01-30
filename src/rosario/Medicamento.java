@@ -1,7 +1,7 @@
 package rosario;
 
 import java.util.Objects;
-
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ObservableList;
 
@@ -31,8 +31,7 @@ public class Medicamento {
 
 	@Override
 	public String toString() {
-		return registro + "," + nome + "," + apresentacao + "," + lote
-				+ "," + quantidade;
+		return registro + "," + nome + "," + codigo + "," + lote + "," + quantidade;
 	}
 
 	public String getRegistro() {
@@ -65,35 +64,19 @@ public class Medicamento {
 
 	public BooleanBinding registroValidoProperty(ObservableList<Medicamento> medicamentos) {
 		if (registroValido == null) {
-			registroValido = new BooleanBinding() {
-				{
-					bind(medicamentos);
-				}
-
-				@Override
-				protected boolean computeValue() {
-					return medicamentos.stream().anyMatch(m -> Objects.equals(m.getRegistro(), registro));
-				}
-			};
+			registroValido = Bindings.createBooleanBinding(
+					() -> medicamentos.stream().anyMatch(m -> Objects.equals(m.getRegistro(), registro)), medicamentos);
 		}
 
 		return registroValido;
 	}
 
-
 	public BooleanBinding loteValidoProperty(ObservableList<Medicamento> medicamentos) {
 		if (loteValido == null) {
-			loteValido = new BooleanBinding() {
-				{
-					bind(medicamentos);
-				}
-
-				@Override
-				protected boolean computeValue() {
-					return medicamentos.stream().anyMatch(
-							m -> Objects.equals(m.getRegistro(), registro) && Objects.equals(m.getLote(), lote));
-				}
-			};
+			loteValido = Bindings.createBooleanBinding(
+					() -> medicamentos.stream().anyMatch(
+							m -> Objects.equals(m.getRegistro(), registro) && Objects.equals(m.getLote(), lote)),
+					medicamentos);
 		}
 
 		return loteValido;
@@ -101,18 +84,10 @@ public class Medicamento {
 
 	public BooleanBinding quantidadeValidoProperty(ObservableList<Medicamento> medicamentos) {
 		if (quantidadeValido == null) {
-			quantidadeValido = new BooleanBinding() {
-				{
-					bind(medicamentos);
-				}
-
-				@Override
-				protected boolean computeValue() {
-					return medicamentos.stream().anyMatch(
-							m -> Objects.equals(m.getRegistro(), registro) && Objects.equals(m.getLote(), lote)
-									&& Objects.equals(m.getQuantidade(), quantidade));
-				}
-			};
+			quantidadeValido = Bindings.createBooleanBinding(
+					() -> medicamentos.stream().anyMatch(m -> Objects.equals(m.getRegistro(), registro)
+							&& Objects.equals(m.getLote(), lote) && Objects.equals(m.getQuantidade(), quantidade)),
+					medicamentos);
 		}
 
 		return quantidadeValido;
@@ -120,20 +95,9 @@ public class Medicamento {
 
 	public BooleanBinding quantidadeCodigoValidoProperty(ObservableList<Medicamento> medicamentos) {
 		if (quantidadeValido == null) {
-			quantidadeValido = new BooleanBinding() {
-				{
-					bind(medicamentos);
-				}
-
-				@Override
-				protected boolean computeValue() {
-					int sum = medicamentos.stream()
-							.filter(m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo)))
-							.mapToInt(c -> c.getQuantidade()).sum();
-					return sum == quantidade;
-
-				}
-			};
+			quantidadeValido = Bindings.createBooleanBinding(() -> medicamentos.stream()
+					.filter(m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo)))
+					.mapToInt(c -> c.getQuantidade()).sum() == quantidade, medicamentos);
 		}
 
 		return quantidadeValido;
@@ -141,17 +105,10 @@ public class Medicamento {
 
 	public BooleanBinding codigoValidoProperty(ObservableList<Medicamento> medicamentos) {
 		if (codigoValido == null) {
-			codigoValido = new BooleanBinding() {
-				{
-					bind(medicamentos);
-				}
-
-				@Override
-				protected boolean computeValue() {
-					return medicamentos.stream().anyMatch(
-							m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo)));
-				}
-			};
+			codigoValido = Bindings.createBooleanBinding(
+					() -> medicamentos.stream()
+							.anyMatch(m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo))),
+					medicamentos);
 		}
 
 		return codigoValido;

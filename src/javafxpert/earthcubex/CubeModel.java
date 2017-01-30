@@ -18,6 +18,6 @@ import javafx.beans.property.SimpleDoubleProperty;
  * @author Jim Weaver
  */
 public class CubeModel {
-	public static CubeModel instance;
+	public static final CubeModel instance = new CubeModel();
 	public DoubleProperty mapOpacity = new SimpleDoubleProperty(0);
 }

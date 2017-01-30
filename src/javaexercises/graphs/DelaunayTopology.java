@@ -30,7 +30,7 @@ public class DelaunayTopology extends GenTopology {
 		double x = 0;
 		double y = 0;
 		for (int i = 0; i < size; i++) {
-			Cell cell = graph.getModel().addCell(RandomTopology.identifier(i), CellType.CIRCLE);
+			Cell cell = graph.getModel().addCell(CircleTopology.identifier(i), CellType.CIRCLE);
 			double a = rnd.nextDouble() * 2 * Math.PI;
 			x += bound * Math.cos(a);
 			y += bound * Math.sin(a);

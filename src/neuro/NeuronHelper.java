@@ -19,14 +19,8 @@ public class NeuronHelper {
 		create.trainNetwork(trainingData);
 		create.trainNetwork(trainingData);
 
-		create.getLayers().forEach(l -> {
-			l.getNeurons().forEach(n -> {
-				n.getInputs().forEach((a, b) -> {
-					System.out.println(a.getId() + "->\t" + b * n.getBiasValue() + "->\t" + n.getId());
-
-				});
-			});
-		});
+		create.getLayers().forEach(l -> l.getNeurons().forEach(n -> n.getInputs().forEach(
+				(a, b) -> System.out.println(a.getId() + "->\t" + b * n.getBiasValue() + "->\t" + n.getId()))));
 
 		System.out.println(create.runNetwork(new ArrayList<>(trainingData.keySet())));
 

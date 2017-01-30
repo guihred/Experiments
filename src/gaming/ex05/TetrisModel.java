@@ -62,8 +62,8 @@ public class TetrisModel {
     void clearMovingPiece() {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
-                if (map[i][j].state.get() == State.TRANSITION) {
-                    map[i][j].state.set(State.EMPTY);
+                if (map[i][j].state.get() == TetrisPieceState.TRANSITION) {
+                    map[i][j].state.set(TetrisPieceState.EMPTY);
                 }
             }
         }
@@ -76,7 +76,7 @@ public class TetrisModel {
             if (!checkCollision(currentI, currentJ + 1)) {
                 drawPiece();
             } else {
-                drawPiece(State.SETTLED);
+                drawPiece(TetrisPieceState.SETTLED);
                 final Piece[] values = Piece.values();
                 piece = values[random.nextInt(values.length)];
                 currentJ = 0;
@@ -101,7 +101,7 @@ public class TetrisModel {
                 for (int i = 0; i < MAP_HEIGHT; i++) {
                     boolean clearLine = true;
                     for (int j = 0; j < MAP_WIDTH; j++) {
-                        if (map[j][i].state.get() != State.SETTLED) {
+                        if (map[j][i].state.get() != TetrisPieceState.SETTLED) {
                             clearLine = false;
                         }
                     }
@@ -109,7 +109,7 @@ public class TetrisModel {
                         for (int k = i; k >= 0; k--) {
                             for (int j = 0; j < MAP_WIDTH; j++) {
                                 if (k == 0) {
-                                    map[j][k].state.set(State.EMPTY);
+                                    map[j][k].state.set(TetrisPieceState.EMPTY);
                                 } else {
                                     map[j][k].state.set(map[j][k - 1].state.get());
                                 }
@@ -126,7 +126,7 @@ public class TetrisModel {
     void reset() {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
-                map[i][j].state.set(State.EMPTY);
+                map[i][j].state.set(TetrisPieceState.EMPTY);
             }
         }
     }
@@ -156,7 +156,7 @@ public class TetrisModel {
                     if (nextJ + j >= MAP_HEIGHT) {
                         return true;
                     }
-                    if (map[nextI + i][nextJ + j].state.get() == State.SETTLED) {
+                    if (map[nextI + i][nextJ + j].state.get() == TetrisPieceState.SETTLED) {
                         return true;
                     }
                 }
@@ -177,10 +177,10 @@ public class TetrisModel {
     }
 
     void drawPiece() {
-        drawPiece(State.TRANSITION);
+        drawPiece(TetrisPieceState.TRANSITION);
     }
 
-    void drawPiece(State state) {
+    void drawPiece(TetrisPieceState state) {
         final int[][] get = pieceDirection.get(piece).get(direction);
         for (int i = 0; i < get.length; i++) {
             for (int j = 0; j < get[i].length; j++) {

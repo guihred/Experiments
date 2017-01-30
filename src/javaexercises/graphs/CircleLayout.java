@@ -18,7 +18,7 @@ public class CircleLayout implements Layout {
 	public void execute() {
 
 		List<Cell> cells = graph.getModel().getAllCells();
-		Model model = graph.getModel();
+		GraphModel model = graph.getModel();
 		generateCircle(cells, model, 0, 0);
 	}
 
@@ -26,7 +26,7 @@ public class CircleLayout implements Layout {
 		return 200 * (size2 / 50 + 1);
 	}
 
-	public static void generateCircle(Collection<Cell> cells, Model model, double centerX, double centerY) {
+	public static void generateCircle(Collection<Cell> cells, GraphModel model, double centerX, double centerY) {
 		Set<Cell> visited = new HashSet<>();
 		int bound = radius(cells.size());
 		int size = cells.size();

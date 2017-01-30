@@ -9,6 +9,9 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import others.TermFrequency;
 
 public class VigenereXORCipher {
 
@@ -59,9 +62,8 @@ public class VigenereXORCipher {
 	public String encrypt(String k, List<Integer> s) {
 		current = 0;
 		int length = k.length();
-		return s.stream().map(i -> {
-			return i ^ k.charAt(current++ % length);
-		}).map(i -> Character.valueOf((char) i.intValue())).map(c -> Character.toString(c)).collect(Collectors.joining());
+		return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
+				.map(c -> Character.toString(c)).collect(Collectors.joining());
 	}
 
 	public String encrypt(int[] k, List<Integer> s) {
@@ -78,10 +80,15 @@ public class VigenereXORCipher {
 				.collect(Collectors.joining());
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static final Logger LOGGER = LoggerFactory.getLogger(TermFrequency.class);
+	public static void main(String[] args) {
+		try {
 		VigenereXORCipher vigenereCypher = new VigenereXORCipher();
 		// long findKeySize = vigenereCypher.findKeySize();
-		vigenereCypher.findKey(7L);
+			vigenereCypher.findKey(7L);
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
 		// out.println(findKeySize);
 	}
 	public void findKey(long keySize) throws IOException {

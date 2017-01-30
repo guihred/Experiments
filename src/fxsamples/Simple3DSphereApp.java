@@ -36,7 +36,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.*;
@@ -128,18 +127,14 @@ public class Simple3DSphereApp extends Application {
 		material.setDiffuseColor(Color.WHITE);
 		material.diffuseMapProperty().bind(
 				Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
-		material.specularColorProperty().bind(new ObjectBinding<Color>() {
-			{
-				bind(specularColor, specularColorNull, specularColorOpacity);
-			}
-			@Override
-			protected Color computeValue() {
+
+		material.specularColorProperty().bind(Bindings.createObjectBinding(() -> {
 				if (specularColorNull.get()) {
 					return null;
 				}
 				return specularColor.get().deriveColor(0, 1, 1, specularColorOpacity.get());
-			}
-		});
+		}, specularColor, specularColorNull, specularColorOpacity));
+
 		material.specularMapProperty()
 				.bind(Bindings.when(specularMap).then(sImage)
 						.otherwise((Image) null));

@@ -1,7 +1,6 @@
 package gaming.ex12;
 
 import gaming.ex12.resources.ImageResource;
-
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -79,7 +78,7 @@ public class Player {
 		return positionX;
 	}
 
-	public void setPositionX(double positionX) {
+	public final void setPositionX(double positionX) {
 		this.positionX = positionX;
 	}
 
@@ -87,7 +86,7 @@ public class Player {
 		return positionY;
 	}
 
-	public void setPositionY(double positionY) {
+	public final void setPositionY(double positionY) {
 		this.positionY = positionY;
 	}
 

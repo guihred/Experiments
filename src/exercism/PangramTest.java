@@ -3,7 +3,6 @@ package exercism;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import org.junit.Test;
 
 public class PangramTest {
@@ -35,13 +34,6 @@ public class PangramTest {
 	@Test
 	public void nonAsciiCharacters() {
 		assertTrue(Pangram.isPangram("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich."));
-	}
-
-}
-
-class Pangram {
-	public static boolean isPangram(String s) {
-		return Arrays.asList(s.toLowerCase().split("")).containsAll(Arrays.asList("abcdefghijklmnoqrstuvwxyz".split("")));
 	}
 
 }

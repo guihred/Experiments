@@ -51,14 +51,14 @@ public class Edge extends Group implements Comparable<Edge> {
 			view1.strokeProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
 			view1.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
 			double width = target.getBoundsInParent().getWidth() / 3 * 2;
-			view1.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
-				return line.getEndX() + Math.cos(getAngulo()) * width;
-			}, line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
-			view1.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
-				return line.getEndY() + Math.sin(getAngulo()) * width;
-			}, line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
-			view1.rotateProperty().bind(
-					Bindings.createDoubleBinding(() -> Math.toDegrees(getAngulo()), line.endYProperty(), line.startYProperty(), line.endXProperty(),
+			view1.layoutXProperty()
+					.bind(Bindings.createDoubleBinding(() -> line.getEndX() + Math.cos(getAngulo()) * width,
+							line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
+			view1.layoutYProperty()
+					.bind(Bindings.createDoubleBinding(() -> line.getEndY() + Math.sin(getAngulo()) * width,
+							line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
+			view1.rotateProperty().bind(Bindings.createDoubleBinding(() -> Math.toDegrees(getAngulo()),
+					line.endYProperty(), line.startYProperty(), line.endXProperty(),
 							line.startXProperty()));
 			getChildren().addAll(view1);
 		}
@@ -71,7 +71,7 @@ public class Edge extends Group implements Comparable<Edge> {
 
 	}
 
-	public double getAngulo() {
+	public final double getAngulo() {
 		double a = line.getEndX() - line.getStartX();
 		double b = line.getEndY() - line.getStartY();
 		return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);

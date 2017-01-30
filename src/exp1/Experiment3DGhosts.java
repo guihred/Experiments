@@ -8,12 +8,9 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Bounds;
 import javafx.scene.*;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
@@ -37,7 +34,7 @@ public class Experiment3DGhosts extends Application {
 
 	};
 
-	private static Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
+	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
 	private static final int SIZE = 60;
 
 	public static void main(String[] args) {
@@ -260,29 +257,4 @@ public class Experiment3DGhosts extends Application {
 		}
 	}
 
-	public class Cube extends Group {
-		// private TriangleMesh mesh = new TriangleMesh();
-
-		final Rotate rx = new Rotate(0, Rotate.X_AXIS);
-		final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
-
-		public Cube(float size, Color color) {
-			getTransforms().addAll(rz, ry, rx);
-			PhongMaterial value = new PhongMaterial(color);
-
-			Box cube = new Box(size, size / 2, 5);
-			cube.setMaterial(value);
-			cube.setBlendMode(BlendMode.DARKEN);
-			cube.setDrawMode(DrawMode.FILL);
-			cube.setRotationAxis(Rotate.Y_AXIS);
-			cube.setTranslateX(-0.5 * size);
-			cube.setTranslateY(0);
-			cube.setTranslateZ(-0.5 * size);
-
-			getChildren().addAll(cube);
-			// rx.setAngle(90);
-		}
-
-	}
 }

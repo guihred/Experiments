@@ -19,6 +19,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import others.SimpleTimelineBuilder;
 
 /**
  * MoleculeSampleApp
@@ -34,11 +35,10 @@ public class MoleculeSampleApp extends Application {
     final Xform cameraXform3 = new Xform();
     final double cameraDistance = 450;
     final Xform moleculeGroup = new Xform();
-    private Timeline timeline = new Timeline(new KeyFrame(Duration.minutes(1), new KeyValue(world.ry.angleProperty(), 360.0)));
-    {
-		timeline.setCycleCount(Animation.INDEFINITE);
-
-    }
+	private Timeline timeline = new SimpleTimelineBuilder()
+			.cycleCount(Animation.INDEFINITE)
+			.keyFrames(new KeyFrame(Duration.minutes(1), new KeyValue(world.ry.angleProperty(), 360.0)))
+			.build();
     boolean timelinePlaying = false;
     double ONE_FRAME = 1.0 / 24.0;
     double DELTA_MULTIPLIER = 200.0;

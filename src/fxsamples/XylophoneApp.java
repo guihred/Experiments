@@ -42,30 +42,6 @@ import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-/**
- * A sample that demonstrates a xylophone made of 3D cubes. It is animated and
- * plays sounds when clicked.
- *
- * @sampleName Xylophone
- * @preview preview.png
- * @see javafx.scene.shape.Box
- * @see javafx.scene.paint.PhongMaterial
- * @see javafx.scene.media.AudioClip
- * @see javafx.scene.PerspectiveCamera
- * @see javafx.scene.transform.Rotate
- * @see javafx.scene.transform.Scale
- * @see javafx.animation.Timeline
- * @see javafx.animation.KeyFrame
- * @see javafx.animation.KeyValue
- * @see javafx.animation.Interpolator
- * @see javafx.scene.input.MouseEvent
- * @see javafx.event.EventHandler
- * @see javafx.util.Duration
- * @see javafx.scene.Group
- * @see javafx.scene.SceneAntialiasing
- * @see javafx.scene.SubScene
- * @conditionalFeatures SCENE3D
- */
 public class XylophoneApp extends Application {
 
 	private Timeline animation;
@@ -174,30 +150,14 @@ public class XylophoneApp extends Application {
 		bar8Cube.setTranslateX(xStart + 8 * xOffset);
 		bar8Cube.setTranslateZ(yPos);
 
-		bar1Cube.setOnMousePressed((MouseEvent me) -> {
-			bar1Note.play();
-		});
-		bar2Cube.setOnMousePressed((MouseEvent me) -> {
-			bar2Note.play();
-		});
-		bar3Cube.setOnMousePressed((MouseEvent me) -> {
-			bar3Note.play();
-		});
-		bar4Cube.setOnMousePressed((MouseEvent me) -> {
-			bar4Note.play();
-		});
-		bar5Cube.setOnMousePressed((MouseEvent me) -> {
-			bar5Note.play();
-		});
-		bar6Cube.setOnMousePressed((MouseEvent me) -> {
-			bar6Note.play();
-		});
-		bar7Cube.setOnMousePressed((MouseEvent me) -> {
-			bar7Note.play();
-		});
-		bar8Cube.setOnMousePressed((MouseEvent me) -> {
-			bar8Note.play();
-		});
+		bar1Cube.setOnMousePressed((MouseEvent me) -> bar1Note.play());
+		bar2Cube.setOnMousePressed((MouseEvent me) -> bar2Note.play());
+		bar3Cube.setOnMousePressed((MouseEvent me) -> bar3Note.play());
+		bar4Cube.setOnMousePressed((MouseEvent me) -> bar4Note.play());
+		bar5Cube.setOnMousePressed((MouseEvent me) -> bar5Note.play());
+		bar6Cube.setOnMousePressed((MouseEvent me) -> bar6Note.play());
+		bar7Cube.setOnMousePressed((MouseEvent me) -> bar7Note.play());
+		bar8Cube.setOnMousePressed((MouseEvent me) -> bar8Note.play());
 		rectangleGroup.getChildren().addAll(base1Cube, base2Cube, bar1Cube,
 				bar2Cube, bar3Cube, bar4Cube, bar5Cube, bar6Cube, bar7Cube,
 				bar8Cube);

@@ -14,7 +14,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -32,28 +31,6 @@ public class Experiment3DWallTexture extends Application {
 	private static final Image WALL_IMAGE2 = new Image(
 			Experiment3DWallTexture.class.getResource("wall2.jpg").toString());
 	public static final Image OOZE_IMAGE = new Image(Experiment3DWallTexture.class.getResource("ooze.jpg").toString());
-	public class Cube extends Group {
-
-		final Rotate rx = new Rotate(0, Rotate.X_AXIS);
-		final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
-
-		public Cube(float size, Color color) {
-			getTransforms().addAll(rz, ry, rx);
-			PhongMaterial value = new PhongMaterial(color);
-			value.setDiffuseMap(WALL_IMAGE);
-			value.setSpecularMap(WALL_IMAGE2);
-			Box cube = new Box(size, size / 2, 5);
-			cube.setMaterial(value);
-			cube.setBlendMode(BlendMode.DARKEN);
-			cube.setDrawMode(DrawMode.FILL);
-			cube.setRotationAxis(Rotate.Y_AXIS);
-			cube.setTranslateX(-0.5 * size);
-			cube.setTranslateY(0);
-			cube.setTranslateZ(-0.5 * size);
-			getChildren().addAll(cube);
-		}
-	}
 
 	private class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
@@ -254,8 +231,8 @@ public class Experiment3DWallTexture extends Application {
 			{ "_", "_", "_", "_", "_", "_" },
 
 	};
-	private static Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
-	private static Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
+	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
+	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 
 	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
 
@@ -293,7 +270,7 @@ public class Experiment3DWallTexture extends Application {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube wall = new Cube(SIZE, Color.BLUE);
+				Cube wall = new Cube(SIZE, Color.BLUE, WALL_IMAGE, WALL_IMAGE2);
 				wall.setTranslateX(i * SIZE);
 				wall.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {

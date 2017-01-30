@@ -104,7 +104,7 @@ public class ReversiModel {
     }
     public BooleanBinding canFlip(final int cellX, final int cellY, final int directionX, final int directionY, final ObjectProperty<Owner> turn) {
 
-        return new BooleanBinding() {
+		return new BooleanBinding() {
             {
                 bind(turn);
                 int x = cellX + directionX;

@@ -101,10 +101,10 @@ public class JavaExercise1to11 {
 	 * question requires but will be acceptable.
 	 */
 	public static void sqrtByIteration() {
-		double oldx = 1, x = 1;
+		double oldx = 1;
 
 		while (true) {
-			x = (oldx + 5 / oldx) / 2;
+			double x = (oldx + 5 / oldx) / 2;
 			if (Math.abs(x - oldx) < 1.0e-10d) {
 				break;
 			}
@@ -255,16 +255,15 @@ public class JavaExercise1to11 {
 			int j = i;
 			of = of.parallelStream().flatMap(g -> g.reproduce(j)).collect(Collectors.toList());
 		}
-		Greenfly.MAPA.forEach((day, count) -> {
-			System.out.println("At day " + (day + 1) + " = " + count + " greenflies");
-		});
+		Greenfly.MAPA
+				.forEach((day, count) -> System.out.println("At day " + (day + 1) + " = " + count + " greenflies"));
 
 		System.out.println("Total = " + of.size());
 	}
 
 	public static class Greenfly {
 		private static int COUNT = 0;
-		public static final Map<Integer, Integer> MAPA = new LinkedHashMap<>();
+		protected static final Map<Integer, Integer> MAPA = new LinkedHashMap<>();
 		private final int birthday;
 
 		public Greenfly(int birthday) {

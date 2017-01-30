@@ -96,7 +96,7 @@ public class Maze3DLauncher extends Application {
         camera.getTransforms().addAll(translate, rotate);
 
         Scene scene = new Scene(root, 400, 600, true, SceneAntialiasing.BALANCED);
-        new MazeModel(root);
+		MazeModel.create(root);
         root.getTransforms().addAll(new Rotate(90, 0, 0, 0, Rotate.X_AXIS));
 
         handleKeyboard(scene, translate, rotate, camera);

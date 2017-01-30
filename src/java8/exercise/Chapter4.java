@@ -31,7 +31,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-@SuppressWarnings("unused")
 public class Chapter4 {
 
 
@@ -41,7 +40,7 @@ public class Chapter4 {
 	 * Initialize the text field with the same string. Update the label as the
 	 * user edits the text field.
 	 */
-	private static class Ex1 extends Application {
+	public static class Ex1 extends Application {
 
 		@Override
 		public void start(Stage stage) throws Exception {
@@ -62,7 +61,7 @@ public class Chapter4 {
 	 * circle stays centered and always touches at least two of the sides of the
 	 * scene.s
 	 */
-	private static class Ex4 extends Application {
+	public static class Ex4 extends Application {
 
 		@Override
 		public void start(Stage stage) throws Exception {
@@ -95,7 +94,7 @@ public class Chapter4 {
 	 * 
 	 * larger.disableProperty().bind(observe( t -> t >= 100, gauge.widthProperty()));
 	 */
-	private static class Ex5 extends Application {
+	public static class Ex5 extends Application {
 
 		public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
 			return new SimpleObjectProperty<R>() {
@@ -106,9 +105,8 @@ public class Chapter4 {
 
 				@Override
 				public void addListener(ChangeListener<? super R> listener) {
-					t.addListener((ObservableValue<? extends T> arg0, T arg1, T arg2) -> {
-						listener.changed(this, f.apply(arg1), f.apply(arg2));
-					});
+					t.addListener((arg0, arg1, arg2) -> listener.changed(this,
+							f.apply(arg1), f.apply(arg2)));
 				}
 
 				@Override
@@ -162,7 +160,7 @@ public class Chapter4 {
 	}
 
 	/* 6. Center the top and bottom buttons in Figure 4�7. */
-	private static class Ex6 extends Application {
+	public static class Ex6 extends Application {
 
 		@Override
 		public void start(Stage stage) throws Exception {
@@ -182,7 +180,7 @@ public class Chapter4 {
 	}
 
 	/* Find out how to set the border of a control without using CSS. */
-	private static class Ex7 extends Application {
+	public static class Ex7 extends Application {
 
 		@Override
 		public void start(Stage stage) throws Exception {
@@ -207,7 +205,7 @@ public class Chapter4 {
 	 * elliptical orbit. Use a PathTransition.
 	 */
 
-	private static class Ex9 extends Application {
+	public static class Ex9 extends Application {
 
 		@Override
 		public void start(Stage stage) throws Exception {
@@ -294,7 +292,7 @@ public class Chapter4 {
 	 * button. Hint: WebEngine.getHistory().
 	 */
 
-	private static class Ex10 extends Application {
+	public static class Ex10 extends Application {
 
 		@Override
 		public void start(Stage stage) throws Exception {
@@ -302,14 +300,9 @@ public class Chapter4 {
 			WebView browser = new WebView();
 			WebEngine engine = browser.getEngine();
 			Button backButton = new Button("Back");
-			backButton.setOnAction((event) -> {
-				engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1);
-			});
+			backButton.setOnAction((event) -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
 			Button loadButton = new Button("Go");
-			loadButton.setOnAction(event -> {
-				String text = textField.getText();
-				engine.load(text);
-			});
+			loadButton.setOnAction(event -> engine.load(textField.getText()));
 
 			HBox top = new HBox();
 			top.getChildren().addAll(backButton, textField, loadButton);
@@ -323,7 +316,12 @@ public class Chapter4 {
 	}
 
 	public static void main(String[] args) {
-		Application.launch(Ex10.class, args);
+
+		try {
+			Application.launch(Ex10.class, args);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

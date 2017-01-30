@@ -18,7 +18,7 @@ public class MazeLauncher extends Application {
         final GridPane gridPane = new GridPane();
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         final Scene scene = new Scene(gridPane);
-        new MazeModel(gridPane, scene);
+		MazeModel.create(gridPane, scene);
         stage.setScene(scene);
         stage.setWidth(MazeModel.MAZE_SIZE * MazeSquare.SQUARE_SIZE + 30);
         stage.setHeight(MazeModel.MAZE_SIZE * MazeSquare.SQUARE_SIZE + 60);

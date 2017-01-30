@@ -9,17 +9,16 @@ public class VigenereCipher {
 	public String encrypt(String k, String s) {
 		current = 0;
 		int length = k.length();
-		return s.chars().map(i -> {
-			return (i - 'a' + k.charAt(current++ % length) - 'a' + 52) % 26 + 'a';
-		}).mapToObj(i -> Character.valueOf((char) i)).map(c -> Character.toString(c)).collect(Collectors.joining());
+		return s.chars().map(i -> (i - 'a' + k.charAt(current++ % length) - 'a' + 52) % 26 + 'a')
+				.mapToObj(i -> Character.valueOf((char) i)).map(c -> Character.toString(c))
+				.collect(Collectors.joining());
 	}
 
 	public String decrypt(String k, String s) {
 		current = 0;
 		int length = k.length();
-		return s.chars().map(i -> {
-			return (i - k.charAt(current++ % length) + 52) % 26 + 'a';
-		}).mapToObj(i -> Character.valueOf((char) i)).map(c -> Character.toString(c))
+		return s.chars().map(i -> (i - k.charAt(current++ % length) + 52) % 26 + 'a')
+				.mapToObj(i -> Character.valueOf((char) i)).map(c -> Character.toString(c))
 				.collect(Collectors.joining());
 	}
 

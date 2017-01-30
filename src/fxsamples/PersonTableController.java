@@ -51,25 +51,17 @@ public class PersonTableController extends Application {
 		FilteredList<Person> filteredData = new FilteredList<>(masterData, p -> true);
 
 		// 2. Set the filter Predicate whenever the filter changes.
-		filterField.textProperty().addListener((observable, oldValue, newValue) -> {
-			filteredData.setPredicate(person -> {
-				// If filter text is empty, display all persons.
-					if (newValue == null || newValue.isEmpty()) {
-						return true;
-					}
-
-					// Compare first name and last name of every person with
-					// filter text.
-					String lowerCaseFilter = newValue.toLowerCase();
-
-					if (person.getFirstName().toLowerCase().contains(lowerCaseFilter)) {
-						return true; // Filter matches first name.
-					} else if (person.getLastName().toLowerCase().contains(lowerCaseFilter)) {
-						return true; // Filter matches last name.
-					}
-					return false; // Does not match.
-				});
-		});
+		filterField.textProperty().addListener((observable, oldValue, newValue) -> filteredData.setPredicate(person -> {
+			// If filter text is empty, display all persons.
+			if (newValue == null || newValue.isEmpty()) {
+				return true;
+			}
+			// Compare first name and last name of every person with
+			// filter text.
+			String lowerCaseFilter = newValue.toLowerCase();
+			return person.getFirstName().toLowerCase().contains(lowerCaseFilter)
+					|| person.getLastName().toLowerCase().contains(lowerCaseFilter);
+		}));
 
 		// 3. Wrap the FilteredList in a SortedList.
 		SortedList<Person> sortedData = new SortedList<>(filteredData);
@@ -104,4 +96,3 @@ public class PersonTableController extends Application {
 		launch(args);
 	}
 }
-

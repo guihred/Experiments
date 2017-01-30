@@ -23,11 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import others.SimpleDropShadowBuilder;
-import others.SimpleEllipseBuilder;
-import others.SimpleFlowPaneBuilder;
-import others.SimpleTextBuilder;
-import others.SimpleVBoxBuilder;
+import others.*;
 
 public class CenterUsingBind extends Application {
 
@@ -37,9 +33,9 @@ public class CenterUsingBind extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Scene scene;
 		TilePane tiles = new TilePane(createScore(Owner.BLACK), createScore(Owner.WHITE));
-		primaryStage.setScene(scene = new Scene(tiles, 600, 120));
+		Scene scene = new Scene(tiles, 600, 120);
+		primaryStage.setScene(scene);
         tiles.prefTileWidthProperty().bind(scene.widthProperty().divide(2));
         tiles.prefTileHeightProperty().bind(scene.heightProperty());
         primaryStage.show();

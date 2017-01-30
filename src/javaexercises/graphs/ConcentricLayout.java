@@ -18,7 +18,7 @@ public class ConcentricLayout implements Layout {
 	public void execute() {
 
 		Set<Cell> allVisited = new HashSet<>();
-		Model model = graph.getModel();
+		GraphModel model = graph.getModel();
 		List<Cell> allCells = model.getAllCells();
 		List<Set<Cell>> groups = new ArrayList<>();
 		for (Cell cell : allCells) {
@@ -63,9 +63,7 @@ public class ConcentricLayout implements Layout {
 
 		if (!visited.contains(c)) {
 			visited.add(c);
-			graph.getModel().adjacents(c).stream().distinct().forEach(cell -> {
-				visit(cell, visited);
-			});
+			graph.getModel().adjacents(c).stream().distinct().forEach(cell -> visit(cell, visited));
 		}
 		return visited;
 	}

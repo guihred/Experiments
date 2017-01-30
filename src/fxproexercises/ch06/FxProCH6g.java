@@ -8,7 +8,6 @@ package fxproexercises.ch06;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
@@ -49,15 +48,9 @@ public class FxProCH6g extends Application {
     }
 
     private void hookupEvents() {
-        view.startButton.setOnAction((ActionEvent actionEvent) -> {
-            new Thread((Runnable) model.worker).start();
-        });
-        view.cancelButton.setOnAction((ActionEvent actionEvent) -> {
-            model.worker.cancel();
-        });
-        view.exceptionButton.setOnAction((ActionEvent actionEvent) -> {
-            model.shouldThrow.getAndSet(true);
-        });
+		view.startButton.setOnAction((ActionEvent actionEvent) -> new Thread((Runnable) model.worker).start());
+		view.cancelButton.setOnAction((ActionEvent actionEvent) -> model.worker.cancel());
+		view.exceptionButton.setOnAction((ActionEvent actionEvent) -> model.shouldThrow.getAndSet(true));
     }
 
     private static class Model {
@@ -66,9 +59,9 @@ public class FxProCH6g extends Application {
         public AtomicBoolean shouldThrow = new AtomicBoolean(false);
 
         private Model() {
-            worker = new Task<String>() {
-                @Override
-                protected String call() throws Exception {
+			worker = new Task<String>() {
+				@Override
+				public String call() throws Exception {
                     updateTitle("Example Task");
                     updateMessage("Starting...");
                     final int total = 250;
@@ -89,7 +82,7 @@ public class FxProCH6g extends Application {
                         updateProgress(i, total);
                     }
                     return "Completed at " + System.currentTimeMillis();
-                }
+				}
             };
         }
     }
@@ -143,20 +136,14 @@ public class FxProCH6g extends Application {
                     Bindings.format("%5.2f%%", model.worker.progressProperty().multiply(100)));
             value.textProperty().bind(
                     model.worker.valueProperty());
-            exception.textProperty().bind(new StringBinding() {
-                {
-                    super.bind(model.worker.exceptionProperty());
-                }
 
-                @Override
-                protected String computeValue() {
-                    final Throwable exception = model.worker.getException();
-                    if (exception == null) {
-                        return "";
-                    }
-                    return exception.getMessage();
+			exception.textProperty().bind(Bindings.createStringBinding(() -> {
+				final Throwable exception = model.worker.getException();
+				if (exception == null) {
+					return "";
                 }
-            });
+				return exception.getMessage();
+			}, model.worker.exceptionProperty()));
             startButton.disableProperty().bind(
                     stateProperty.isNotEqualTo(Worker.State.READY));
             cancelButton.disableProperty().bind(

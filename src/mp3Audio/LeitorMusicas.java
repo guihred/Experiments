@@ -29,9 +29,11 @@ import org.blinkenlights.jid3.v2.APICID3V2Frame;
 import org.blinkenlights.jid3.v2.ID3V2Frame;
 import org.blinkenlights.jid3.v2.ID3V2Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LeitorMusicas {
-
+	public static final Logger LOGGER = LoggerFactory.getLogger(LeitorMusicas.class);
 	public static void main(String[] args) throws IOException {
 		String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
 		File file = new File(new File(path).getParentFile(), "Music");
@@ -114,10 +116,10 @@ public class LeitorMusicas {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("", e);
 		}
 
-		if (genre2.indexOf("(") == 0 || genre2.equals("")) {
+		if (genre2.indexOf("(") == 0 || "".equals(genre2)) {
 			genre2 = "Undefined";
 		}
 
@@ -157,7 +159,7 @@ public class LeitorMusicas {
 			ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
 			System.out.println("SingleFrames=" + Arrays.toString(singleFrames));
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("", e);
 		}
 		return null;
 	}
@@ -181,7 +183,7 @@ public class LeitorMusicas {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("", e);
 		}
 		return Collections.emptyList();
 	}

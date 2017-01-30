@@ -66,6 +66,7 @@ public class AudioConfigModel {
                     break;
                 case 5:
                     selectedDBs.setValue(130);
+				break;
 			default:
 				break;
             }

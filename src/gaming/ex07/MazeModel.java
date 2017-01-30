@@ -34,6 +34,9 @@ public class MazeModel {
 	GridPane gridPane;
 	int moves = 0;
 
+	public static MazeModel create(GridPane gridPane, Scene scene) {
+		return new MazeModel(gridPane, scene);
+	}
 	public MazeModel(GridPane gridPane, Scene scene) {
 		this.gridPane = gridPane;
 		for (int i = 0; i < MAZE_SIZE; i++) {
@@ -83,22 +86,22 @@ public class MazeModel {
 					if (!check.isEmpty()) {
 						history.add(maze[r][c]);
 						final String direction = check.get(random.nextInt(check.size()));
-						if (direction.equals("L")) {
+						if ("L".equals(direction)) {
 							maze[r][c].west.set(true);
 							c = c - 1;
 							maze[r][c].east.set(true);
 						}
-						if (direction.equals("U")) {
+						if ("U".equals(direction)) {
 							maze[r][c].north.set(true);
 							r = r - 1;
 							maze[r][c].south.set(true);
 						}
-						if (direction.equals("R")) {
+						if ("R".equals(direction)) {
 							maze[r][c].east.set(true);
 							c = c + 1;
 							maze[r][c].west.set(true);
 						}
-						if (direction.equals("D")) {
+						if ("D".equals(direction)) {
 							maze[r][c].south.set(true);
 							r = r + 1;
 							maze[r][c].north.set(true);

@@ -108,9 +108,9 @@ public class FormValidation extends Application {
 		// user hits the enter key
 		passwordField.setOnAction(actionEvent -> {
 			if (GRANTED_ACCESS.get()) {
-				System.out.printf("User %s is granted access.\n",
+				System.out.printf("User %s is granted access.%n",
 						user.getUserName());
-				System.out.printf("User %s entered the password: %s\n",
+				System.out.printf("User %s entered the password: %s%n",
 						user.getUserName(), user.getPassword());
 				Platform.exit();
 			} else {
@@ -131,7 +131,7 @@ public class FormValidation extends Application {
 		ATTEMPTS.addListener((obs, ov, nv) -> {
 			if (MAX_ATTEMPTS == nv.intValue()) {
 				// failed attemps
-				System.out.printf("User %s is denied access.\n",
+				System.out.printf("User %s is denied access.%n",
 						user.getUserName());
 				Platform.exit();
 			}

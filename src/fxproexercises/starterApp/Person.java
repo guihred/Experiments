@@ -1,11 +1,5 @@
 package fxproexercises.starterApp;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -75,14 +69,5 @@ public final class Person {
         return "Person: " + firstName.getValue() + " " + lastName.getValue();
     }
 
-	public static void main(String[] args) throws IOException {
-
-		URL url = new URL("http://pdf.th7.cn/down/files/1411/JavaFX%208,%202nd%20Edition.pdf");
-
-		URLConnection openConnection = url.openConnection();
-		InputStream inputStream = openConnection.getInputStream();
-		Files.copy(inputStream, new File("java8fx.pdf").toPath());
-
-	}
 
 }

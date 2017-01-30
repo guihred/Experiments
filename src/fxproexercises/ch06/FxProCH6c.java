@@ -33,7 +33,7 @@ public class FxProCH6c {
         final Iterator<Map.Entry<String, Integer>> entryIterator = map.entrySet().iterator();
         while (entryIterator.hasNext()) {
             final Map.Entry<String, Integer> next = entryIterator.next();
-            if (next.getKey().equals("Second")) {
+			if ("Second".equals(next.getKey())) {
                 System.out.println("Calling remove on entryIterator: ");
                 entryIterator.remove();
             }

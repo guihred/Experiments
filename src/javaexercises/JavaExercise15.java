@@ -45,6 +45,7 @@ public class JavaExercise15 {
 	static class BigNo {
 		private static final int BASE = 10000;
 		private static final int DIGS = 4;
+		private static final String FORMAT = "%0" + DIGS + "d";
 		private int[] value = new int[200];
 		private BigNo() {
 			this(0);
@@ -65,7 +66,7 @@ public class JavaExercise15 {
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 1; i <= value[0]; i++) {
-				sb.insert(0, String.format("%0" + DIGS + "d", value[i]));
+				sb.insert(0, String.format(FORMAT, value[i]));
 			}
 
 			String replaceAll = sb.toString().replaceAll("^0+", "");

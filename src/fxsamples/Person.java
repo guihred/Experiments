@@ -6,17 +6,20 @@ import javafx.collections.ObservableList;
 
 public class Person {
 	private StringProperty aliasName;
-	private StringProperty firstName;
-	private StringProperty lastName;
 	private ObservableList<Person> employees = FXCollections
 			.observableArrayList();
+	private StringProperty firstName;
+	private StringProperty lastName;
 
-	public final void setAliasName(String value) {
-		aliasNameProperty().set(value);
+	public Person(String firstName, String lastName) {
+		setFirstName(firstName);
+		setLastName(lastName);
 	}
 
-	public final String getAliasName() {
-		return aliasNameProperty().get();
+	public Person(String alias, String firstName, String lastName) {
+		setAliasName(alias);
+		setFirstName(firstName);
+		setLastName(lastName);
 	}
 
 	public StringProperty aliasNameProperty() {
@@ -26,12 +29,8 @@ public class Person {
 		return aliasName;
 	}
 
-	public final void setFirstName(String value) {
-		firstNameProperty().set(value);
-	}
-
-	public final String getFirstName() {
-		return firstNameProperty().get();
+	public ObservableList<Person> employeesProperty() {
+		return employees;
 	}
 
 	public StringProperty firstNameProperty() {
@@ -41,8 +40,12 @@ public class Person {
 		return firstName;
 	}
 
-	public final void setLastName(String value) {
-		lastNameProperty().set(value);
+	public final String getAliasName() {
+		return aliasNameProperty().get();
+	}
+
+	public final String getFirstName() {
+		return firstNameProperty().get();
 	}
 
 	public final String getLastName() {
@@ -56,18 +59,15 @@ public class Person {
 		return lastName;
 	}
 
-	public ObservableList<Person> employeesProperty() {
-		return employees;
+	public final void setAliasName(String value) {
+		aliasNameProperty().set(value);
 	}
 
-	public Person(String alias, String firstName, String lastName) {
-		setAliasName(alias);
-		setFirstName(firstName);
-		setLastName(lastName);
+	public final void setFirstName(String value) {
+		firstNameProperty().set(value);
 	}
 
-	public Person(String firstName, String lastName) {
-		firstNameProperty().set(firstName);
-		lastNameProperty().set(lastName);
+	public final void setLastName(String value) {
+		lastNameProperty().set(value);
 	}
 }

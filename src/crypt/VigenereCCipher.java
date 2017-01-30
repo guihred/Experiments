@@ -86,9 +86,9 @@ public class VigenereCCipher {
 			System.out.printf("%f, key length: %2d, %s", fit, j, key);
 			if (fit < bestFit) {
 				bestFit = fit;
-				System.out.printf(" <--- best so far");
+				System.out.println(" <--- best so far");
 			}
-			System.out.printf("\n");
+			System.out.println("\n");
 		}
 
 		return 0;

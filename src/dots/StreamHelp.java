@@ -4,8 +4,11 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StreamHelp {
+	public static final Logger LOG = LoggerFactory.getLogger(StreamHelp.class);
 
 	@SuppressWarnings("unchecked")
 	public static <E, T extends Collection<E>> T filter(T filter, Predicate<E> pred) {
@@ -18,7 +21,7 @@ public class StreamHelp {
 			}
 			return newInstance;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("ERROR FILTER", e);
 		}
 
 		return null;

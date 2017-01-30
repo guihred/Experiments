@@ -45,12 +45,13 @@ public class FxProCH2b extends Application {
 		Application.launch(args);
 	}
 
+	Label labelStageX = new SimpleLabelBuilder().id("stageX").build();
+
+	Label labelStageY = new SimpleLabelBuilder().id("stageY").build();
+	Label labelStageW = new Label();
+	Label labelStageH = new Label();
 	@Override
 	public void start(Stage stage) {
-		Label labelStageX;
-		Label labelStageY;
-		Label labelStageW;
-		Label labelStageH;
 		final ToggleGroup toggleGrp = new ToggleGroup();
 
 
@@ -76,9 +77,7 @@ public class FxProCH2b extends Application {
 								.build(),
 						new SimpleRadioButtonBuilder().text("changeOfScenes.css")
 								.toggleGroup(toggleGrp).build(),
-						labelStageX = new SimpleLabelBuilder().id("stageX").build(),
-						labelStageY = new SimpleLabelBuilder().id("stageY").build(), labelStageW = new Label(),
-						labelStageH = new Label())
+						labelStageX, labelStageY, labelStageW, labelStageH)
 				.build();
 
 		sceneRef = new Scene(sceneRoot, 600, 250);

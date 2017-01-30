@@ -19,9 +19,8 @@ class NeuronStrategyImpl implements NeuronStrategy {
 
 	@Override
 	public Double findNetValue(Map<Neuron, Double> inputs, Double bias) {
-		return inputs.entrySet().stream().reduce(bias, (soma, nur) -> {
-			return soma + nur.getValue() * nur.getKey().getOutputValue();
-		}, (a, b) -> a + b);
+		return inputs.entrySet().stream().reduce(bias,
+				(soma, nur) -> soma + nur.getValue() * nur.getKey().getOutputValue(), (a, b) -> a + b);
 	}
 
 	@Override

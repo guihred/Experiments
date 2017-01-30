@@ -4,12 +4,8 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.DrawMode;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -153,26 +149,4 @@ public class Experiment3D extends Application {
 		primaryStage.show();
 	}
 
-	public class Cube extends Group {
-
-		final Rotate rx = new Rotate(0, Rotate.X_AXIS);
-		final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
-
-
-		public Cube(float size, Color color) {
-			getTransforms().addAll(rz, ry, rx);
-			final Box cube = new Box(size, size / 2, 5);
-			cube.setMaterial(new PhongMaterial(color));
-			cube.setBlendMode(BlendMode.DARKEN);
-			cube.setDrawMode(DrawMode.FILL);
-			cube.setRotationAxis(Rotate.Y_AXIS);
-			cube.setTranslateX(-0.5 * size);
-			cube.setTranslateY(0);
-			cube.setTranslateZ(-0.5 * size);
-
-			getChildren().addAll(cube);
-			// rx.setAngle(90);
-		}
-	}
 }

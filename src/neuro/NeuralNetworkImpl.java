@@ -1,7 +1,10 @@
 package neuro;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 class NeuralNetworkImpl implements NeuralNetwork {
@@ -12,19 +15,16 @@ class NeuralNetworkImpl implements NeuralNetwork {
 	public void trainNetwork(Map<Double, Double> trainingData) {
 		int i =0;
 		for (Entry<Double, Double> inputI : trainingData.entrySet()) {
-			Neuron someNeuron;
 			if (i < getInputLayer().getNeurons().size()) {
-				someNeuron = getInputLayer().getNeurons().get(i);
+				Neuron someNeuron = getInputLayer().getNeurons().get(i);
 				someNeuron.setOutputValue(inputI.getKey());
 				i++;
-			} else {
-				someNeuron = getInputLayer().getNeurons().get(i % getInputLayer().getNeurons().size());
 			}
 		}
 //		'Step1: Find the output of hidden layer 
 //		'neurons and output layer neurons
 
-		for (NeuronLayer nl : this.getNeuronLayers()) {
+		for (NeuronLayer nl : getNeuronLayers()) {
 			for (Neuron someNeuron : nl.getNeurons()) {
 				someNeuron.updateOutput();
 			}

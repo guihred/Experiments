@@ -23,9 +23,11 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FxProCH8c extends Application {
-
+	public final Logger logger = LoggerFactory.getLogger(getClass());
     public static void main(String[] args) {
         launch(args);
     }
@@ -46,7 +48,7 @@ public class FxProCH8c extends Application {
 			final URL stylesheet = Chapter8Resource.MEDIA.getURL();
             scene.getStylesheets().add(stylesheet.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+			logger.error("", e);
         }
         primaryStage.setScene(scene);
         primaryStage.setTitle("Audio Player 2");
@@ -108,18 +110,18 @@ public class FxProCH8c extends Application {
 
     private void handleMetadata(String key, Object value) {
 		System.out.println("Key=" + key + ",Value=" + value);
-		if (key.equals("album")) {
+		if ("album".equals(key)) {
             album.setText(value.toString());
-        } else if (key.equals("artist")) {
+		} else if ("artist".equals(key)) {
             artist.setText(value.toString());
         }
-        if (key.equals("title")) {
+		if ("title".equals(key)) {
             title.setText(value.toString());
         }
-        if (key.equals("year")) {
+		if ("year".equals(key)) {
             year.setText(value.toString());
         }
-        if (key.equals("image")) {
+		if ("image".equals(key)) {
             albumCover.setImage((Image) value);
         }
     }

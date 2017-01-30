@@ -1,4 +1,5 @@
 /*
+
  * CubeFace.java
  *
  * Represents a face on the CubeNode UI component.
@@ -37,8 +38,8 @@ public class CubeFace extends Parent {
 	static int TOP_FACE = 4;
 	static int BOTTOM_FACE = 5;
 
-	public static double edgeLength = 512;
-	public static double radius = edgeLength * 0.5;
+	public static final double EDGE_LENGTH = 512;
+	public static final double RADIUS = EDGE_LENGTH * 0.5;
 
 	CubeModel cubeModel = CubeModel.instance;
 
@@ -56,13 +57,13 @@ public class CubeFace extends Parent {
 
 	final Rectangle createFaceRectangle() {
 		faceRect = new Rectangle();
-		faceRect.setWidth(edgeLength);
-		faceRect.setHeight(edgeLength);
+		faceRect.setWidth(EDGE_LENGTH);
+		faceRect.setHeight(EDGE_LENGTH);
 		faceRect.setFill(Color.TRANSPARENT);
 		return faceRect;
 	}
 
-	Node createMapTiles(int face) {
+	final Node createMapTiles(int face) {
 		if (face == FRONT_FACE || face == RIGHT_FACE || face == REAR_FACE
 				|| face == LEFT_FACE) {
 			return createSideMapTiles(face);
@@ -74,8 +75,8 @@ public class CubeFace extends Parent {
 			ImageView mapTile = new ImageView();
 			mapTile.setImage(new Image(
 					"http://mt3.google.com/vt/v=w2.97&x=2&y=8&z=4"));
-			mapTile.setFitWidth(CubeFace.edgeLength / 4);
-			mapTile.setFitHeight(CubeFace.edgeLength / 4);
+			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 4);
+			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 4);
 			mapTile.opacityProperty().bind(cubeModel.mapOpacity);
 			stackPane.getChildren().add(mapTile);
 			return stackPane;
@@ -87,8 +88,8 @@ public class CubeFace extends Parent {
 			ImageView mapTile = new ImageView();
 			mapTile.setImage(new Image(
 					"http://mt3.google.com/vt/v=w2.97&x=2&y=15&z=4"));
-			mapTile.setFitWidth(CubeFace.edgeLength / 4);
-			mapTile.setFitHeight(CubeFace.edgeLength / 4);
+			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 4);
+			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 4);
 			mapTile.opacityProperty().bind(cubeModel.mapOpacity);
 			stackPane.getChildren().add(mapTile);
 			return stackPane;
@@ -111,8 +112,8 @@ public class CubeFace extends Parent {
 				mapTile.setImage(new Image(
 						"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
 								+ "&z=3"));
-				mapTile.setFitWidth(CubeFace.edgeLength / 2);
-				mapTile.setFitHeight(CubeFace.edgeLength / 2);
+				mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
+				mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 2);
 				mapTile.opacityProperty().bind(cubeModel.mapOpacity);
 				tilePane.getChildren().add(mapTile);
 			}
@@ -128,9 +129,9 @@ public class CubeFace extends Parent {
 		tilePane.setPrefColumns(2);
 		tilePane.setPrefRows(3);
 		PerspectiveTransform transform = new SimplePerspectiveTransformBuilder()
-				.ulx(edgeLength * 0.375).uly(edgeLength * 0.625)
-				.urx(edgeLength * 0.625).ury(edgeLength * 0.625).llx(0)
-				.lly(edgeLength).lrx(edgeLength).lry(edgeLength).build();
+				.ulx(EDGE_LENGTH * 0.375).uly(EDGE_LENGTH * 0.625)
+				.urx(EDGE_LENGTH * 0.625).ury(EDGE_LENGTH * 0.625).llx(0)
+				.lly(EDGE_LENGTH).lrx(EDGE_LENGTH).lry(EDGE_LENGTH).build();
 		tilePane.setEffect(transform);
 
 		for (int y = 0; y <= 2; y++) {
@@ -141,8 +142,8 @@ public class CubeFace extends Parent {
 				mapTile.setImage(new Image(
 						"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
 								+ "&z=3"));
-				mapTile.setFitWidth(CubeFace.edgeLength / 2);
-				mapTile.setFitHeight(CubeFace.edgeLength / 3);
+				mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
+				mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
 				mapTile.opacityProperty().bind(cubeModel.mapOpacity);
 				tilePane.getChildren().add(mapTile);
 			}
@@ -159,9 +160,9 @@ public class CubeFace extends Parent {
 		tilePane.setPrefRows(3);
 
 		PerspectiveTransform build = new SimplePerspectiveTransformBuilder().ulx(0).uly(0)
-				.urx(edgeLength).ury(0).llx(edgeLength * 0.375)
-				.lly(edgeLength * 0.375).lrx(edgeLength * 0.625)
-				.lry(edgeLength * 0.375).build();
+				.urx(EDGE_LENGTH).ury(0).llx(EDGE_LENGTH * 0.375)
+				.lly(EDGE_LENGTH * 0.375).lrx(EDGE_LENGTH * 0.625)
+				.lry(EDGE_LENGTH * 0.375).build();
 		tilePane.setEffect(build);
 
 		for (int y = 5; y <= 7; y++) {
@@ -171,8 +172,8 @@ public class CubeFace extends Parent {
 				mapTile.setImage(new Image(
 						"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
 								+ "&z=3"));
-				mapTile.setFitWidth(CubeFace.edgeLength / 2);
-				mapTile.setFitHeight(CubeFace.edgeLength / 3);
+				mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
+				mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
 				mapTile.opacityProperty().bind(cubeModel.mapOpacity);
 				tilePane.getChildren().add(mapTile);
 			}
@@ -180,9 +181,9 @@ public class CubeFace extends Parent {
 		return tilePane;
 	}
 
-	Paint computeFaceHSB() {
+	final Paint computeFaceHSB() {
 		Paint color = Color.hsb(FACE_HUE, FACE_SAT,
-				Math.abs(-zPos.getValue() / (radius * 2)) + 0.40);
+				Math.abs(-zPos.getValue() / (RADIUS * 2)) + 0.40);
 		return color;
 	}
 }

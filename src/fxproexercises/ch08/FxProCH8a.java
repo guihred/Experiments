@@ -13,13 +13,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Note
  */
 public class FxProCH8a extends Application {
-
+	public final Logger logger = LoggerFactory.getLogger(getClass());
     public static void main(String[] args) {
         launch(args);
     }
@@ -40,7 +42,7 @@ public class FxProCH8a extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
-            e.printStackTrace();
+			logger.error("ERROR FxProCH8a", e);
         }
     }
 }

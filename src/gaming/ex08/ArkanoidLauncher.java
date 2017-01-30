@@ -12,7 +12,7 @@ public class ArkanoidLauncher extends Application {
     public void start(Stage stage) throws Exception {
         final Group group = new Group();
         final Scene scene = new Scene(group);
-        new ArkanoidModel(group, scene);
+		ArkanoidModel.create(group, scene);
         stage.setScene(scene);
         stage.setWidth(400);
         stage.setHeight(600);

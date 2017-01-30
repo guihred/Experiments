@@ -20,8 +20,12 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Chapter8 {
+	public static final Logger LOGGER = LoggerFactory.getLogger(Chapter8.class);
+
 	/*
 	 * Write a program that adds, subtracts, divides, and compares numbers
 	 * between 0 and 232 � 1, using int values and unsigned operations. Show why
@@ -31,21 +35,27 @@ public class Chapter8 {
 		System.out.print("Ordering signed: ");
 		Stream.of(1, 2, 4, -1).sorted().map(Integer::toUnsignedString).forEach(i -> System.out.print(i + " "));
 		System.out.print("\nOrdering unsigned: ");
-		Stream.of(1, 2, 4, -1).sorted(Integer::compareUnsigned).map(Integer::toUnsignedString).forEach(i -> System.out.print(i + " "));
+		Stream.of(1, 2, 4, -1).sorted(Integer::compareUnsigned).map(Integer::toUnsignedString)
+				.forEach(i -> System.out.print(i + " "));
 
 		System.out.println("\nSum of MAX_VALUE and MIN_VALUE signed:   " + (Integer.MAX_VALUE + Integer.MIN_VALUE));
-		System.out.println("Sum of MAX_VALUE and MIN_VALUE unsigned: " + Integer.toUnsignedString(Integer.MAX_VALUE + Integer.MIN_VALUE));
+		System.out.println("Sum of MAX_VALUE and MIN_VALUE unsigned: "
+				+ Integer.toUnsignedString(Integer.MAX_VALUE + Integer.MIN_VALUE));
 		System.out.println("Sutraction of 1 and MIN_VALUE signed:	" + (1 - Integer.MIN_VALUE));
-		System.out.println("Sutraction of 1 and MIN_VALUE unsigned:	" + Integer.toUnsignedString(1 - Integer.MIN_VALUE));
+		System.out.println(
+				"Sutraction of 1 and MIN_VALUE unsigned:	" + Integer.toUnsignedString(1 - Integer.MIN_VALUE));
 
 		System.out.println("Multiplication of 2 and MAX_VALUE signed:	" + 2 * Integer.MAX_VALUE);
-		System.out.println("Multiplication of 2 and MAX_VALUE unsigned:	" + Integer.toUnsignedString(2 * Integer.MAX_VALUE));
+		System.out.println(
+				"Multiplication of 2 and MAX_VALUE unsigned:	" + Integer.toUnsignedString(2 * Integer.MAX_VALUE));
 
 		System.out.println("Division of 2 and 4294967295 signed:	" + -1 / 2);
-		System.out.println("Division of 2 and 4294967295 unsigned:	" + Integer.toUnsignedString(Integer.divideUnsigned(-1, 2)));
+		System.out.println(
+				"Division of 2 and 4294967295 unsigned:	" + Integer.toUnsignedString(Integer.divideUnsigned(-1, 2)));
 
 		System.out.println("Remainder of 4294967295 and 2 signed:	" + -1 % 2);
-		System.out.println("Remainder of 4294967295 and 2 unsigned:	" + Integer.toUnsignedString(Integer.remainderUnsigned(-1, 2)));
+		System.out.println("Remainder of 4294967295 and 2 unsigned:	"
+				+ Integer.toUnsignedString(Integer.remainderUnsigned(-1, 2)));
 
 	}
 
@@ -118,23 +128,27 @@ public class Chapter8 {
 	 * lambda expression, but without using streams. Which operation is faster
 	 * for a long list?
 	 */
-	public static void ex5() throws IOException {
+	public static void ex5() {
+		try {
 
-		List<String> wordsAsList = getWordsAsList(Paths.get("alice.txt"));
+			List<String> wordsAsList = getWordsAsList(Paths.get("alice.txt"));
 
-		Instant now = Instant.now();
-		long size = wordsAsList.stream().filter(w -> w.length() <= 12).count();
-		Instant end = Instant.now();
-		System.out.println("size=" + size + " time " + Duration.between(now, end).toMillis() + " ms");
+			Instant now = Instant.now();
+			long size = wordsAsList.stream().filter(w -> w.length() <= 12).count();
+			Instant end = Instant.now();
+			System.out.println("size=" + size + " time " + Duration.between(now, end).toMillis() + " ms");
 
-		wordsAsList = getWordsAsList(Paths.get("alice.txt"));
-		now = Instant.now();
-		wordsAsList.removeIf(w -> w.length() > 12);
-		size = wordsAsList.size();
-		end = Instant.now();
+			wordsAsList = getWordsAsList(Paths.get("alice.txt"));
+			now = Instant.now();
+			wordsAsList.removeIf(w -> w.length() > 12);
+			size = wordsAsList.size();
+			end = Instant.now();
 
-		System.out.println("size=" + size + " time " + Duration.between(now, end).toMillis() + " ms");
+			System.out.println("size=" + size + " time " + Duration.between(now, end).toMillis() + " ms");
 
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
 	}
 
 	/*
@@ -148,10 +162,12 @@ public class Chapter8 {
 		Stream.generate(() -> new Point2D(random.nextInt(30), random.nextInt(30))).limit(20)
 				.sorted(comparing(Point2D::getX).thenComparing(Point2D::getY)).forEach(System.out::println);
 
-		Stream.generate(() -> new Rectangle2D(random.nextInt(30), random.nextInt(30), random.nextInt(30), random.nextInt(30)))
+		Stream.generate(
+				() -> new Rectangle2D(random.nextInt(30), random.nextInt(30), random.nextInt(30), random.nextInt(30)))
 				.limit(20)
-				.sorted(comparing(Rectangle2D::getMinX).thenComparing(Rectangle2D::getMinY).thenComparing(Rectangle2D::getWidth)
-						.thenComparing(Rectangle2D::getHeight)).forEach(System.out::println);
+				.sorted(comparing(Rectangle2D::getMinX).thenComparing(Rectangle2D::getMinY)
+						.thenComparing(Rectangle2D::getWidth).thenComparing(Rectangle2D::getHeight))
+				.forEach(System.out::println);
 
 	}
 
@@ -162,11 +178,11 @@ public class Chapter8 {
 		Random random = new Random();
 
 		Stream<Integer> iterate = Stream.iterate(0, (Integer i) -> i == null ? random.nextInt(30) : null).limit(10);
-		System.out.println("nullsFirst(naturalOrder()).reversed() ="
-				+ iterate.sorted(nullsFirst(Comparator.<Integer> naturalOrder()).reversed()).collect(Collectors.toList()));
+		System.out.println("nullsFirst(naturalOrder()).reversed() =" + iterate
+				.sorted(nullsFirst(Comparator.<Integer>naturalOrder()).reversed()).collect(Collectors.toList()));
 		iterate = Stream.iterate(0, (Integer i) -> i == null ? random.nextInt(30) : null).limit(10);
 		System.out.println("nullsLast(reverseOrder()) ="
-				+ iterate.sorted(nullsLast(Comparator.<Integer> reverseOrder())).collect(Collectors.toList()));
+				+ iterate.sorted(nullsLast(Comparator.<Integer>reverseOrder())).collect(Collectors.toList()));
 	}
 
 	/*
@@ -174,11 +190,15 @@ public class Chapter8 {
 	 * integers, or double values. Hint: Look at the source code for
 	 * BufferedReader.lines.
 	 */
-	public static void ex9() throws FileNotFoundException {
-		streamOfLines(new Scanner(new File("alice.txt"))).forEach(System.out::println);
-		streamOfWords(new Scanner(new File("alice.txt"))).forEach(System.out::println);
-		streamOfInteger(new Scanner(new File("alice.txt"))).forEach(System.out::println);
-		streamOfDouble(new Scanner(new File("alice.txt"))).forEach(System.out::println);
+	public static void ex9() {
+		try {
+			streamOfLines(new Scanner(new File("alice.txt"))).forEach(System.out::println);
+			streamOfWords(new Scanner(new File("alice.txt"))).forEach(System.out::println);
+			streamOfInteger(new Scanner(new File("alice.txt"))).forEach(System.out::println);
+			streamOfDouble(new Scanner(new File("alice.txt"))).forEach(System.out::println);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
 	}
 
 	public static int gcd1(int a, int b) {
@@ -208,7 +228,7 @@ public class Chapter8 {
 		return new ArrayList<>(Arrays.asList(contents.split("[\\P{L}]+")));
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		ex15();
 	}
 
@@ -229,7 +249,8 @@ public class Chapter8 {
 				throw new NoSuchElementException();
 			}
 		};
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
+		return StreamSupport
+				.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
 	}
 
 	private static Stream<Integer> streamOfInteger(Scanner scanner) {
@@ -248,7 +269,8 @@ public class Chapter8 {
 				throw new NoSuchElementException();
 			}
 		};
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
+		return StreamSupport
+				.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
 	}
 
 	private static Stream<Double> streamOfDouble(Scanner scanner) {
@@ -267,7 +289,8 @@ public class Chapter8 {
 				throw new NoSuchElementException();
 			}
 		};
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
+		return StreamSupport
+				.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
 	}
 
 	private static Stream<String> streamOfWords(Scanner scanner) {
@@ -286,8 +309,9 @@ public class Chapter8 {
 				throw new NoSuchElementException();
 			}
 		};
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false).flatMap(
-				(s) -> Stream.of(s.split("[\\P{L}]+")));
+		return StreamSupport
+				.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false)
+				.flatMap((s) -> Stream.of(s.split("[\\P{L}]+")));
 	}
 
 	/*
@@ -296,7 +320,7 @@ public class Chapter8 {
 	 */
 	public static void ex10() throws IOException {
 		File original = new File("src2");
-		Files.walk(original.toPath(), 20).map(Path::toFile).filter(( file) -> {
+		Files.walk(original.toPath(), 20).map(Path::toFile).filter((file) -> {
 			try {
 				if (file.canRead() && file.isFile()) {
 					List<String> wordsAsList = getWordsAsList(file.toPath());
@@ -304,7 +328,7 @@ public class Chapter8 {
 				}
 
 			} catch (Exception e) {
-				System.out.println();
+				LOGGER.error("", e);
 			}
 			return true;
 		}).filter(File::isFile).forEach(System.out::println);
@@ -328,8 +352,11 @@ public class Chapter8 {
 		connection.setRequestProperty("Authorization", "Basic " + encode);
 		connection.connect();
 		InputStream inputStream = connection.getInputStream();
-		BufferedReader a = new BufferedReader(new InputStreamReader(inputStream));
-		a.lines().forEach(System.out::print);
+		try (BufferedReader a = new BufferedReader(new InputStreamReader(inputStream));) {
+			a.lines().forEach(System.out::print);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -347,9 +374,15 @@ public class Chapter8 {
 	 * the grep utility, printing all lines that contain a match for a regular
 	 * expression.
 	 */
-	public static void ex15() throws IOException {
+	public static void ex15() {
 		// Lines that contain some number
-		Files.lines(new File("alice.txt").toPath()).filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(System.out::println);
+		try {
+			Files.lines(new File("alice.txt").toPath()).filter(Pattern.compile(".*\\d+.*$").asPredicate())
+					.forEach(System.out::println);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+
+		}
 
 	}
 
@@ -358,9 +391,14 @@ public class Chapter8 {
 	 * containing a city, state, and zip code. Accept both 5- and 9-digit zip
 	 * codes.
 	 */
-	public static void ex16() throws IOException {
+	public static void ex16() {
 		// Lines that contain some number
-		Files.lines(new File("alice.txt").toPath()).filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(System.out::println);
+		try {
+			Files.lines(new File("alice.txt").toPath()).filter(Pattern.compile(".*\\d+.*$").asPredicate())
+					.forEach(System.out::println);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
 
 	}
 }

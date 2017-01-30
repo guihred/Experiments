@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import javaexercises.DisjSets;
 import javafx.scene.paint.Color;
 
-public class Model {
+public class GraphModel {
 
 	Cell graphParent;
 
@@ -22,7 +22,7 @@ public class Model {
 	Map<String, Cell> cellMap; // <id,cell>
 	Map<Cell, Map<Cell, Cell>> paths; // <id,cell>
 
-	public Model() {
+	public GraphModel() {
 
 		graphParent = new Cell("_ROOT_") {
 			@Override
@@ -35,7 +35,7 @@ public class Model {
 		clear();
 	}
 
-	public void clear() {
+	public final void clear() {
 
 		allCells = new ArrayList<>();
 		addedCells = new ArrayList<>();
@@ -219,9 +219,7 @@ public class Model {
 			}
 
 		}
-		topNum.forEach((v, tn) -> {
-			v.addText(Integer.toString(tn));
-		});
+		topNum.forEach((v, tn) -> v.addText(Integer.toString(tn)));
 
 		if (counter != allCells.size()) {
 			System.out.println("CYCLE FOUND");

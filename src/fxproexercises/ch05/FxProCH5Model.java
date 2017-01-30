@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class StarterAppModel {
+public class FxProCH5Model {
 
     public ObservableList<Person> getTeamMembers() {
         ObservableList<Person> teamMembers = FXCollections.observableArrayList();

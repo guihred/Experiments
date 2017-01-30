@@ -37,11 +37,8 @@ public class FxProCH3a {
     private static void addAndRemoveInvalidationListener() {
         System.out.println();
         final InvalidationListener invalidationListener
-                = (Observable observable) -> {
-                    System.out.println("The observable has been invalidated: "
-                            + observable + "."
-                    );
-                };
+				= (Observable observable) -> System.out
+						.println("The observable has been invalidated: " + observable + ".");
         intProperty.addListener(invalidationListener);
         System.out.println("Added invalidation listener.");
         System.out.println("Calling intProperty.set(2048).");
@@ -56,11 +53,8 @@ public class FxProCH3a {
 
     private static void addAndRemoveChangeListener() {
         System.out.println();
-        final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> {
-            System.out.println("The observableValue has changed: oldValue = "
-                    + oldValue + ", newValue = " + newValue
-            );
-        };
+		final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> System.out
+				.println("The observableValue has changed: oldValue = " + oldValue + ", newValue = " + newValue);
         intProperty.addListener(changeListener);
         System.out.println("Added change listener.");
         System.out.println("Calling intProperty.set(5120).");

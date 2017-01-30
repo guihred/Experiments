@@ -14,42 +14,20 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Mesh;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Experiment3DKillerGhostsAndBalls extends Application {
-	public class Cube extends Group {
-
-		final Rotate rx = new Rotate(0, Rotate.X_AXIS);
-		final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-		final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
-
-		public Cube(float size, Color color) {
-			getTransforms().addAll(rz, ry, rx);
-			PhongMaterial value = new PhongMaterial(color);
-			// value.setDiffuseMap(new
-			// Image(Experiment3DMouseControl.class.getResource("wall.jpg").toString()));
-			// value.setSpecularMap(new Image("file:wall2.jpg"));
-			Box cube = new Box(size, size / 2, 5);
-			cube.setMaterial(value);
-			cube.setBlendMode(BlendMode.DARKEN);
-			cube.setDrawMode(DrawMode.FILL);
-			cube.setRotationAxis(Rotate.Y_AXIS);
-			cube.setTranslateX(-0.5 * size);
-			cube.setTranslateY(0);
-			cube.setTranslateZ(-0.5 * size);
-			getChildren().addAll(cube);
-		}
-	}
 
 	private class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
@@ -120,7 +98,7 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 						dialogStage.close();
 					});
 					VBox vbox = new VBox();
-					vbox.getChildren().addAll(new Text("Voc� Morreu"), button);
+					vbox.getChildren().addAll(new Text("Você Morreu"), button);
 					vbox.setAlignment(Pos.CENTER);
 					vbox.setPadding(new Insets(5));
 					dialogStage.setScene(new Scene(vbox));
@@ -250,8 +228,8 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 			{ "_", "_", "_", "_", "_", "_" },
 
 	};
-	private static Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
-	private static Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
+	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
+	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 
 	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
 

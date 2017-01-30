@@ -1,19 +1,21 @@
 package others;
+
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TF_IDF {
+	public static final Logger logger = LoggerFactory.getLogger(TF_IDF.class);
 
-	public static class ValueComparator implements
-			Comparator<Entry<String, Map<File, Double>>> {
+	public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
 
 		// Note: this comparator imposes orderings that are inconsistent with
 		// equals.
 		@Override
-		public int compare(Entry<String, Map<File, Double>> a,
-				Entry<String, Map<File, Double>> b) {
+		public int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
 			Double da = 0d;
 			for (Entry<File, Double> entry : a.getValue().entrySet()) {
 				da = da < entry.getValue() ? entry.getValue() : da;
@@ -27,8 +29,7 @@ public class TF_IDF {
 		}
 	}
 
-	public static Map<File, Map<String, Long>> getDocumentMap(File f)
-			throws IOException {
+	public static Map<File, Map<String, Long>> getDocumentMap(File f) throws IOException {
 
 		if (!f.isDirectory()) {
 			if (f.getName().endsWith(".java")) {
@@ -41,7 +42,7 @@ public class TF_IDF {
 				try {
 					getDocumentMap(new File(f, a));
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			});
 		}
@@ -74,38 +75,37 @@ public class TF_IDF {
 	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
 	 */
 	public static Map<String, Long> getFrequencyMap(File d) throws IOException {
+		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(d));) {
 
-		BufferedReader bufferedReader = new BufferedReader(new FileReader(d));
-		String readLine = null;
-		Map<String, Long> collect = new ConcurrentHashMap<>();
-		do {
-			readLine = bufferedReader.readLine();
-			if (readLine != null) {
+			String readLine;
+			Map<String, Long> collect = new ConcurrentHashMap<>();
+			do {
+				readLine = bufferedReader.readLine();
+				if (readLine != null) {
 
-				String[] split = readLine.split(REGEX_CAMEL_CASE);
-				List<String> asList = Arrays.asList(split);
-				asList.parallelStream()
-						.filter(a -> !a.isEmpty())
-						.reduce(collect,
-								(mapa, a) -> {
-									if (mapa.containsKey(a.toLowerCase())) {
-										mapa.put(a.toLowerCase(),
-												mapa.get(a.toLowerCase()) + 1L);
-									} else {
-										mapa.put(a.toLowerCase(), 1L);
-									}
-									return mapa;
-								}, (mapa1, mapa2) -> mapa1);
-			}
-		} while (readLine != null);
-		bufferedReader.close();
+					String[] split = readLine.split(REGEX_CAMEL_CASE);
+					List<String> asList = Arrays.asList(split);
+					asList.parallelStream().filter(a -> !a.isEmpty()).reduce(collect, (mapa, a) -> {
+						if (mapa.containsKey(a.toLowerCase())) {
+							mapa.put(a.toLowerCase(), mapa.get(a.toLowerCase()) + 1L);
+						} else {
+							mapa.put(a.toLowerCase(), 1L);
+						}
+						return mapa;
+					}, (mapa1, mapa2) -> mapa1);
+				}
+			} while (readLine != null);
+			bufferedReader.close();
 
-		return collect;
+			return collect;
+		} catch (IOException e) {
+			logger.error("", e);
+			throw e;
+		}
 	}
 
 	private static double getInverseDocumentFrequency(String p) {
-		Set<Entry<File, Map<String, Long>>> entrySet = MAPA_DOCUMENTO
-				.entrySet();
+		Set<Entry<File, Map<String, Long>>> entrySet = MAPA_DOCUMENTO.entrySet();
 		double idf = 1d;
 		for (Entry<File, Map<String, Long>> entry : entrySet) {
 			if (entry.getValue().containsKey(p)) {
@@ -124,34 +124,31 @@ public class TF_IDF {
 
 		File arquivo = new File(TF_IDF.class.getResource("src/").toString());
 		Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
-		documentMap.forEach((c, v) -> {
-			v.forEach((p, fre) -> {
-				double idf = getInverseDocumentFrequency(p);
-				if (!TF_IDF.MAP_TF_IDF.containsKey(p)) {
-					MAP_TF_IDF.put(p, new HashMap<File, Double>());
-				}
-				Double termFrequency = getTermFrequency(fre);
-				MAP_TF_IDF.get(p).put(c, idf * termFrequency);
-			});
-		});
+		documentMap.forEach((c, v) -> v.forEach((p, fre) -> {
+			double idf = getInverseDocumentFrequency(p);
+			if (!TF_IDF.MAP_TF_IDF.containsKey(p)) {
+				MAP_TF_IDF.put(p, new HashMap<File, Double>());
+			}
+			Double termFrequency = getTermFrequency(fre);
+			MAP_TF_IDF.get(p).put(c, idf * termFrequency);
+		}));
 		// MAP_TF_IDF =
-		List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(
-				MAP_TF_IDF.entrySet());
+		List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(MAP_TF_IDF.entrySet());
 
 		entrySet.sort(new ValueComparator());
 		// MAP
 		File file = new File("resultado.txt");
 
 		System.out.println(file.getAbsolutePath());
-		final PrintStream out = new PrintStream(file);
-		entrySet.forEach((e) -> {
-			out.println(e.getKey() + "={");
-			e.getValue().forEach((f, d) -> {
-				out.println("   " + f.getName() + "=" + d);
+		try (final PrintStream out = new PrintStream(file);) {
+			entrySet.forEach((e) -> {
+				out.println(e.getKey() + "={");
+				e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
+				out.println("}");
 			});
-			out.println("}");
-		});
-		out.close();
+		} catch (Exception e2) {
+			throw e2;
+		}
 	}
 
 	/*

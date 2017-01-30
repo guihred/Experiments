@@ -15,13 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Font;
@@ -66,9 +60,7 @@ public class ReversiMain extends Application {
     }
 
     private Node restart() {
-		return newButton("Restart", (ActionEvent t) -> {
-            model.restart();
-		});
+		return newButton("Restart", (ActionEvent t) -> model.restart());
     }
 
     private Node createTitle() {

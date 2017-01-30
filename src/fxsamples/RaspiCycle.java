@@ -72,9 +72,7 @@ public class RaspiCycle extends Application {
 		root.getChildren().add(canvas);
 		Scene scene = new Scene(root, SCREENWIDTH, SCREENHEIGHT);
 		scene.setCursor(Cursor.NONE);
-		scene.setOnKeyPressed((KeyEvent event) -> {
-			handleKeyPress(event);
-		});
+		scene.setOnKeyPressed(this::handleKeyPress);
 		primaryStage.setTitle("RaspiCycle");
 		primaryStage.setScene(scene);
 		primaryStage.show();

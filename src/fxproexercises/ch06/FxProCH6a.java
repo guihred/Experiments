@@ -21,9 +21,7 @@ public class FxProCH6a {
 
     public static void main(String[] args) {
         ObservableList<String> strings = FXCollections.observableArrayList();
-        strings.addListener((Observable observable) -> {
-            System.out.println("\tlist invalidated");
-        });
+		strings.addListener((Observable observable) -> System.out.println("\tlist invalidated"));
         strings.addListener((ListChangeListener<String>) change -> System.out.println("\tstrings = " + change.getList()));
         System.out.println("Calling add(\"First\"): ");
         strings.add("First");

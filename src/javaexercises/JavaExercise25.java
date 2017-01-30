@@ -28,11 +28,11 @@ public class JavaExercise25 {
 			double b = B[i];
 			double c = C[i];
 			if (a == 0.0) {
-				System.out.printf("%.1fx + %.1f = 0 \n", b, c);
-				System.out.printf("x=%f\n", -c / b);
+				System.out.printf("%.1fx + %.1f = 0 %n", b, c);
+				System.out.printf("x=%f%n", -c / b);
 				continue;
 			}
-			System.out.printf("%fx^2 + %fx + %f = 0 \n", a, b, c);
+			System.out.printf("%fx^2 + %fx + %f = 0 %n", a, b, c);
 
 			double delta = b * b - 4 * a * c;
 
@@ -41,11 +41,11 @@ public class JavaExercise25 {
 				double x1i = Math.sqrt(Math.abs(delta)) / 2 / a;
 				double x2 = -b / 2 / a;
 				double x2i = -Math.sqrt(Math.abs(delta)) / 2 / a;
-				System.out.printf("x1=%.1f%+.1fi, x2=%.1f%+.1fi\n", x1, x1i, x2, x2i);
+				System.out.printf("x1=%.1f%+.1fi, x2=%.1f%+.1fi%n", x1, x1i, x2, x2i);
 			} else {
 				double x1 = (-b + Math.sqrt(delta)) / 2 / a;
 				double x2 = (-b - Math.sqrt(delta)) / 2 / a;
-				System.out.printf("x1=%.1f, x2=%.1f\n", x1, x2);
+				System.out.printf("x1=%.1f, x2=%.1f%n", x1, x2);
 			}
 		}
 

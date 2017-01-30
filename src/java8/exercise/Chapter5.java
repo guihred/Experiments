@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.function.Predicate;
 
 public class Chapter5 {
-	/* Compute Programmer’s Day without using plusDays. */
+	/* Compute Programmerï¿½s Day without using plusDays. */
 	public static void ex1() {
 		LocalDate programmerDay = LocalDate.ofYearDay(2015, 256);
 		System.out.println(programmerDay);
@@ -82,7 +82,7 @@ public class Chapter5 {
 					System.out.printf(" %2d", now.get(ChronoField.DAY_OF_MONTH));
 					now = now.plusDays(1);
 				} else {
-					System.out.printf("   ");
+					System.out.print("   ");
 				}
 			}
 			System.out.println();
@@ -127,7 +127,7 @@ public class Chapter5 {
 	}
 
 	/*
-	 * Obtain the offsets of today’s date in all supported time zones for the
+	 * Obtain the offsets of todayï¿½s date in all supported time zones for the
 	 * current time instant, turning ZoneId.getAvailableIds into a stream and
 	 * using stream operations.
 	 */
@@ -145,7 +145,7 @@ public class Chapter5 {
 	}
 
 	/*
-	 * Again using stream operations, find all time zones whose offsets aren’t
+	 * Again using stream operations, find all time zones whose offsets arenï¿½t
 	 * full hours.
 	 */
 
@@ -207,7 +207,7 @@ public class Chapter5 {
 	}
 
 	public static void main(String[] args) {
-		ex11();
+		ex4();
 	}
 }
 

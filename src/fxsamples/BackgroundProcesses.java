@@ -1,16 +1,10 @@
 package fxsamples;
 import java.util.Random;
-
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -54,10 +48,7 @@ public class BackgroundProcesses extends Application {
 						copyWorker.progressProperty());
 				// append to text area box
 				copyWorker.messageProperty().addListener(
-						(ObservableValue<? extends String> observable,
-								String oldValue, String newValue) -> {
-							textArea.appendText(newValue + "\n");
-						});
+					(observable, oldValue, newValue) -> textArea.appendText(newValue + "\n"));
 				new Thread(copyWorker).start();
 			});
 		// Cancel button will kill worker and reset.
@@ -97,6 +88,7 @@ public class BackgroundProcesses extends Application {
 		};
 	}
 
+	@SuppressWarnings("unused")
 	private void copyFile(String src, String dest) throws InterruptedException {
 		// simulate a long time
 		Random rnd = new Random(System.currentTimeMillis());

@@ -1,5 +1,6 @@
 package fxproexercises.ch03;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -11,16 +12,11 @@ public class FxProCH3c {
         System.out.println("Constructing y with initial value of 3.0.");
         final DoubleProperty y = new SimpleDoubleProperty(null, "y", 3.0);
         System.out.println("Creating binding area with dependencies x and y.");
-        DoubleBinding area = new DoubleBinding() {
-            {
-                super.bind(x, y);
-            }
-            @Override
-            protected double computeValue() {
-                System.out.println("computeValue() is called.");
-                return x.get() * y.get();
-            }
-        };
+		DoubleBinding area = Bindings.createDoubleBinding(() -> {
+			System.out.println("computeValue() is called.");
+			return x.get() * y.get();
+		}, x, y);
+
         System.out.println("area.get() = " + area.get());
         System.out.println("area.get() = " + area.get());
         System.out.println("Setting x to 5");

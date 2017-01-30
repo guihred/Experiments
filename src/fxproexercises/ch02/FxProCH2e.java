@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import others.SimpleCircleBuilder;
 import others.SimpleRectangleBuilder;
+import others.SimpleTimelineBuilder;
 
 public class FxProCH2e extends Application {
 
@@ -92,19 +93,16 @@ public class FxProCH2e extends Application {
     /**
      * The animation of the ball
      */
-	Timeline pongAnimation = new Timeline(
-                    new KeyFrame(
-                            new Duration(10.0), (javafx.event.ActionEvent t) -> {
+	Timeline pongAnimation = new SimpleTimelineBuilder()
+			.cycleCount(Animation.INDEFINITE)
+			.keyFrames(new KeyFrame(
+					new Duration(10.0), (t) -> {
                                 checkForCollision();
                                 int horzPixels = movingRight ? 1 : -1;
                                 int vertPixels = movingDown ? 1 : -1;
                                 centerX.setValue(centerX.getValue() + horzPixels);
                                 centerY.setValue(centerY.getValue() + vertPixels);
-                            })
-	);
-	{
-		pongAnimation.setCycleCount(Animation.INDEFINITE);
-	}
+                            })).build();
 
     /**
      * Sets the initial starting positions of the ball and paddles
@@ -210,9 +208,10 @@ public class FxProCH2e extends Application {
                 .radius(5.0)
 				.fill(Color.RED)
                 .build();
-		Group group = new Group(topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton, ball);
-		group.setFocusTraversable(true);
-		group.setOnKeyPressed((KeyEvent k) -> {
+		pongComponents = new Group(topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton,
+				ball);
+		pongComponents.setFocusTraversable(true);
+		pongComponents.setOnKeyPressed((KeyEvent k) -> {
 					if (k.getCode() == KeyCode.SPACE
 							&& pongAnimation.statusProperty().get() == Animation.Status.STOPPED) {
 						rightPaddleY.setValue(rightPaddleY.getValue() - 6);
@@ -230,7 +229,7 @@ public class FxProCH2e extends Application {
 						leftPaddleY.setValue(leftPaddleY.getValue() + 6);
 					}
 		});
-		Scene scene = new Scene(pongComponents = group, 500, 500);
+		Scene scene = new Scene(pongComponents, 500, 500);
 		// scene.setFill(LinearGradientBuilder.create()
 		// .startX(0.0)
 		// .startY(0.0)

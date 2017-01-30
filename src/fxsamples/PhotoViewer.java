@@ -22,8 +22,11 @@ import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PhotoViewer extends Application {
+	public final Logger logger = LoggerFactory.getLogger(getClass());
 	// List of URL strings
 	private final List<String> imageFiles = new ArrayList<>();
 	// The current index into the imageFile
@@ -110,7 +113,7 @@ public class PhotoViewer extends Application {
 						addImage(file.toURI().toURL().toString());
 						System.out.println(imageFiles);
 					} catch (MalformedURLException ex) {
-						ex.printStackTrace();
+						logger.error("", ex);
 					}
 				});
 			} else {

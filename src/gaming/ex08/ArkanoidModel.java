@@ -19,6 +19,9 @@ import javafx.util.Duration;
 public class ArkanoidModel {
 
 
+	public static ArkanoidModel create(Group group, Scene scene) {
+		return new ArkanoidModel(group, scene);
+	}
     public ArkanoidModel(Group group, Scene scene) {
         final Rectangle rectangle = new Rectangle(200, 500, 50, 10);
         group.getChildren().add(rectangle);
@@ -78,7 +81,9 @@ public class ArkanoidModel {
                     if (rectangle.getX() > 0) {
                         rectangle.setX(rectangle.getX() - 10);
                     }
+				break;
                 default:
+				break;
             }
         });
         scene.setOnMouseMoved((MouseEvent event) -> {
