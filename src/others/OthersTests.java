@@ -39,9 +39,7 @@ public class OthersTests {
 
 		Complex c1 = A.subtract(B.multiply(2)).add(C).multiply(t.multiply(t));
 		Complex c2 = B.subtract(A).multiply(t.multiply(2));
-		Complex P = c1.add(c2).add(A);
-
-		return P;
+		return c1.add(c2).add(A);
 	}
 
 	public static String shorterReverseLonger(String a, String b) {
@@ -72,7 +70,8 @@ public class OthersTests {
 
 	public static boolean validate(final String eanCode) {
 
-		int checksum = eanCode.chars().limit(eanCode.length() - 1).map(i -> Character.getNumericValue((char) i)).reduce(0, new IntBinaryOperator() {
+		int checksum = eanCode.chars().limit(eanCode.length() - 1L).map(i -> Character.getNumericValue((char) i))
+				.reduce(0, new IntBinaryOperator() {
 			int factor = 1;
 
 			@Override
@@ -87,12 +86,10 @@ public class OthersTests {
 
 	public static int[] minMax(int[] arr) {
 		IntSummaryStatistics s = Arrays.stream(arr).summaryStatistics();
-
 		return new int[] { s.getMin(), s.getMax() };
 	}
 
 	public static String nth(int n) {
-
 		return String.format("%.2f", IntStream.range(0, n).mapToDouble(j -> 1.0 / (3 * j + 1)).sum());
 	}
 

@@ -35,20 +35,7 @@ public class Experiment2D extends Application {
 		Button e = new Button();
 		root.getChildren().add(e);
 
-		for (int i = 0; i < mapa.length; i++) {
-			for (int j = 0; j < mapa[i].length; j++) {
-				String string = mapa[i][j];
-				if ("_".equals(string)) {
-					Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
-							SIZE / 2, SIZE);
-					root.getChildren().add(rectangle);
-				} else {
-					Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
-							SIZE, SIZE / 2);
-					root.getChildren().add(rectangle);
-				}
-			}
-		}
+		initializeLabyrinth(root);
 
 		Scene scene = new Scene(root);
 		// PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -85,6 +72,23 @@ public class Experiment2D extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	private void initializeLabyrinth(Group root) {
+		for (int k = 0; k < mapa.length; k++) {
+			for (int l = 0; l < mapa[k].length; l++) {
+				String string = mapa[k][l];
+				if ("_".equals(string)) {
+					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
+							SIZE / 2, SIZE);
+					root.getChildren().add(rectangle);
+				} else {
+					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
+							SIZE, SIZE / 2);
+					root.getChildren().add(rectangle);
+				}
+			}
+		}
 	}
 
 }

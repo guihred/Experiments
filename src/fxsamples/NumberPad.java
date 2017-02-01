@@ -21,7 +21,7 @@ public class NumberPad extends Application {
 		for (int i = 0; i < 12; i++) {
 			Button button = new Button(keys[i]);
 			button.getStyleClass().add("num-button");
-			numPad.add(button, i % 3, (int) Math.ceil(i / 3));
+			numPad.add(button, i % 3, i / 3);
 		}
 		// Call button
 		Button call = new Button("Call");

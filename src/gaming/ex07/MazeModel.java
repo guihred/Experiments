@@ -107,19 +107,27 @@ public class MazeModel {
 							maze[r][c].north.set(true);
 						}
 					} else {
-						final MazeSquare remove = history.remove(history.size() - 1);
-						for (int i = 0; i < MAZE_SIZE; i++) {
-							for (int j = 0; j < MAZE_SIZE; j++) {
-								if (maze[i][j] == remove) {
-									r = i;
-									c = j;
-									return;
-								}
-							}
+						boolean backIn = getBackIn(history);
+						if (backIn) {
+							return;
 						}
 					}
 				}
 				timeline.stop();
+			}
+
+			private boolean getBackIn(List<MazeSquare> history) {
+				final MazeSquare remove = history.remove(history.size() - 1);
+				for (int i = 0; i < MAZE_SIZE; i++) {
+					for (int j = 0; j < MAZE_SIZE; j++) {
+						if (maze[i][j] == remove) {
+							r = i;
+							c = j;
+							return true;
+						}
+					}
+				}
+				return false;
 			}
 		};
 		final KeyFrame keyFrame = new KeyFrame(Duration.seconds(.001), eventHandler);

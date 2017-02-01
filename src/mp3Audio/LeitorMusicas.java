@@ -81,6 +81,8 @@ public class LeitorMusicas {
 					try {
 						year = "" + leTag.getYear();
 					} catch (Exception e) {
+						LOGGER.error("", e);
+
 					}
 					if (leTag.getGenre() != null) {
 						genre = leTag.getGenre();
@@ -100,10 +102,12 @@ public class LeitorMusicas {
 					try {
 						year = "" + leTag.getYear();
 					} catch (Exception e) {
+						LOGGER.error("", e);
 					}
 					try {
 						track = "" + leTag.getTrackNumber();
 					} catch (Exception e) {
+						LOGGER.error("", e);
 					}
 					if (leTag.getGenre() != null) {
 						genre2 = leTag.getGenre();

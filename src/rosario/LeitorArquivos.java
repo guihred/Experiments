@@ -68,7 +68,8 @@ public class LeitorArquivos {
 					} else {
 						medicamento.setCodigo(Integer.valueOf(split[0]));
 						medicamento.setNome(
-								Stream.of(split).skip(1).limit(split.length - 2).collect(Collectors.joining(" ")));
+								Stream.of(split).skip(1).limit((long) split.length - 2)
+										.collect(Collectors.joining(" ")));
 						if (split.length > 3) {
 							medicamento.setApresentacao(split[2]);
 						}
@@ -152,7 +153,8 @@ public class LeitorArquivos {
 						Medicamento medicamento = new Medicamento();
 						medicamento.setCodigo(Integer.valueOf(split[0]));
 						medicamento.setNome(
-								Stream.of(split).skip(1).limit(split.length - 2).collect(Collectors.joining(" ")));
+								Stream.of(split).skip(1).limit((long) split.length - 2)
+										.collect(Collectors.joining(" ")));
 						medicamento.setQuantidade(
 								Integer.valueOf(split[split.length - 1].replace(",00", "").replace(".", "")));
 						arrayList.add(medicamento);

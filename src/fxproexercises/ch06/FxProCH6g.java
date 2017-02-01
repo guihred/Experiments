@@ -138,11 +138,11 @@ public class FxProCH6g extends Application {
                     model.worker.valueProperty());
 
 			exception.textProperty().bind(Bindings.createStringBinding(() -> {
-				final Throwable exception = model.worker.getException();
-				if (exception == null) {
+				final Throwable workerException = model.worker.getException();
+				if (workerException == null) {
 					return "";
                 }
-				return exception.getMessage();
+				return workerException.getMessage();
 			}, model.worker.exceptionProperty()));
             startButton.disableProperty().bind(
                     stateProperty.isNotEqualTo(Worker.State.READY));

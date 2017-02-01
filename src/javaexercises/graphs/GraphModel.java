@@ -418,7 +418,7 @@ public class GraphModel {
 
 	private List<Color> createRandomColors() {
 		List<Color> availableColors = new ArrayList<>();
-		int cubicRoot = Integer.max((int) Math.ceil(Math.pow(allEdges.size(), 1 / 3)), 2);
+		int cubicRoot = Integer.max((int) Math.ceil(Math.pow(allEdges.size(), 1.0 / 3.0)), 2);
 		for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
 			Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
 					Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256, Math.abs(255 - i % cubicRoot * 256 / cubicRoot) % 256);

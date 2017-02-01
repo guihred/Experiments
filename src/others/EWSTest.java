@@ -7,8 +7,11 @@ import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
 import microsoft.exchange.webservices.data.property.complex.MessageBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EWSTest {
+	public static final Logger LOGGER = LoggerFactory.getLogger(EWSTest.class);
 	public static void main(String[] args) throws Exception {
 		try (ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);) {
 			service.setTraceEnabled(true);
@@ -22,7 +25,7 @@ public class EWSTest {
 			msg.getToRecipients().add("someone@contoso.com");
 			msg.send();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("", e);
 		}
 	}
 }

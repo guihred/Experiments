@@ -109,7 +109,8 @@ public class Chapter6 {
 			url = new URL(urlString);
 			URLConnection conn = url.openConnection();
 			StringBuilder content = new StringBuilder();
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+			try (BufferedReader br = new BufferedReader(
+					new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
 				String inputLine;
 				while ((inputLine = br.readLine()) != null) {
 					content.append(inputLine);
@@ -280,7 +281,7 @@ public class Chapter6 {
 	}
 
 	public static void main(String[] args) throws Exception {
-		ex8();
+		ex10();
 	}
 
 

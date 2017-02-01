@@ -1,6 +1,11 @@
 package others;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,7 +80,7 @@ public class TF_IDF {
 	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
 	 */
 	public static Map<String, Long> getFrequencyMap(File d) throws IOException {
-		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(d));) {
+		try (BufferedReader bufferedReader = Files.newBufferedReader(d.toPath());) {
 
 			String readLine;
 			Map<String, Long> collect = new ConcurrentHashMap<>();
@@ -122,7 +127,7 @@ public class TF_IDF {
 
 	public static void main(String[] args) throws IOException {
 
-		File arquivo = new File(TF_IDF.class.getResource("src/").toString());
+		File arquivo = new File("src");
 		Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
 		documentMap.forEach((c, v) -> v.forEach((p, fre) -> {
 			double idf = getInverseDocumentFrequency(p);
@@ -140,7 +145,8 @@ public class TF_IDF {
 		File file = new File("resultado.txt");
 
 		System.out.println(file.getAbsolutePath());
-		try (final PrintStream out = new PrintStream(file);) {
+		try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName());) {
+
 			entrySet.forEach((e) -> {
 				out.println(e.getKey() + "={");
 				e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));

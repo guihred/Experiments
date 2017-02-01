@@ -191,11 +191,23 @@ public class Chapter8 {
 	 * BufferedReader.lines.
 	 */
 	public static void ex9() {
-		try {
-			streamOfLines(new Scanner(new File("alice.txt"))).forEach(System.out::println);
-			streamOfWords(new Scanner(new File("alice.txt"))).forEach(System.out::println);
-			streamOfInteger(new Scanner(new File("alice.txt"))).forEach(System.out::println);
-			streamOfDouble(new Scanner(new File("alice.txt"))).forEach(System.out::println);
+		try (Scanner scanner = new Scanner(new File("alice.txt"));) {
+			streamOfLines(scanner).forEach(System.out::println);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
+		try (Scanner scanner = new Scanner(new File("alice.txt"));) {
+			streamOfWords(scanner).forEach(System.out::println);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
+		try (Scanner scanner = new Scanner(new File("alice.txt"));) {
+			streamOfInteger(scanner).forEach(System.out::println);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
+		try (Scanner scanner = new Scanner(new File("alice.txt"));) {
+			streamOfDouble(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
@@ -228,8 +240,8 @@ public class Chapter8 {
 		return new ArrayList<>(Arrays.asList(contents.split("[\\P{L}]+")));
 	}
 
-	public static void main(String[] args) {
-		ex15();
+	public static void main(String[] args) throws IOException {
+		ex11();
 	}
 
 	private static Stream<String> streamOfLines(Scanner scanner) {
@@ -352,10 +364,10 @@ public class Chapter8 {
 		connection.setRequestProperty("Authorization", "Basic " + encode);
 		connection.connect();
 		InputStream inputStream = connection.getInputStream();
-		try (BufferedReader a = new BufferedReader(new InputStreamReader(inputStream));) {
+		try (BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
 			a.lines().forEach(System.out::print);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("", e);
 		}
 
 	}

@@ -316,12 +316,7 @@ public class Chapter4 {
 	}
 
 	public static void main(String[] args) {
-
-		try {
-			Application.launch(Ex10.class, args);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Application.launch(Ex10.class, args);
 	}
 
 }

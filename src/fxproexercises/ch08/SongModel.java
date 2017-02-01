@@ -16,8 +16,11 @@ import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import mp3Audio.LeitorMusicas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class SongModel {
+	protected transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String DEFAULT_IMG_URL
             = new File("C:\\Users\\Note\\Pictures\\fb.jpg").toURI().toString();
@@ -99,6 +102,7 @@ public final class SongModel {
 							.extractEmbeddedImageData(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
 					setAlbumCover(new Image(new ByteArrayInputStream(extractEmbeddedImageData)));
 				} catch (Exception e) {
+					logger.error("", e);
 				}
 			});
 
@@ -109,6 +113,7 @@ public final class SongModel {
                 System.out.println("MediaPlayer Error: " + errorMessage);
             });
         } catch (RuntimeException re) {
+			logger.error("", re);
             System.out.println("Caught Exception: " + re.getMessage());
         }
     }

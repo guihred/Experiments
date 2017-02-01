@@ -45,13 +45,9 @@ public class QuartoModel {
                 }
                 a.add(mapQuarto[i][j].number);
                 if (j == 3) {
-                    for (int k = 0; k < arr.length; k++) {
-                        int l = arr[k];
-                        final long count = a.stream().map(n -> n & l).distinct().count();
-                        if (count == 1) {
-                            return true;
-                        }
-                    }
+					if (somethingInCommon(arr, a)) {
+						return true;
+					}
                     System.out.println("Linha " + i);
 
                 }
@@ -66,13 +62,9 @@ public class QuartoModel {
                 }
                 a.add(mapQuarto[j][i].number);
                 if (j == 3) {
-                    for (int k = 0; k < arr.length; k++) {
-                        int l = arr[k];
-                        final long count = a.stream().map(n -> n & l).distinct().count();
-                        if (count == 1) {
-                            return true;
-                        }
-                    }
+					if (somethingInCommon(arr, a)) {
+						return true;
+					}
                     System.out.println("Linha " + i);
 
                 }
@@ -81,24 +73,31 @@ public class QuartoModel {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (mapQuarto[i][j] == null || mapQuarto[i][j + 1] == null || mapQuarto[i + 1][j] == null || mapQuarto[i + 1][j + 1] == null) {
-                    break;
+					continue;
                 }
                 List<Integer> a = new ArrayList<>();
                 a.add(mapQuarto[i][j].number);
                 a.add(mapQuarto[i][j + 1].number);
                 a.add(mapQuarto[i + 1][j].number);
                 a.add(mapQuarto[i + 1][j + 1].number);
-                for (int k = 0; k < arr.length; k++) {
-                    int l = arr[k];
-                    final long count = a.stream().map(n -> n & l).distinct().count();
-                    if (count == 1) {
-                        return true;
-                    }
-                }
+				if (somethingInCommon(arr, a)) {
+					return true;
+				}
                 System.out.println("Linha " + i);
             }
         }
         return false;
     }
+
+	private boolean somethingInCommon(int[] arr, List<Integer> a) {
+		for (int k = 0; k < arr.length; k++) {
+		    int l = arr[k];
+		    final long count = a.stream().map(n -> n & l).distinct().count();
+		    if (count == 1) {
+				return true;
+		    }
+		}
+		return false;
+	}
 
 }

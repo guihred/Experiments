@@ -99,22 +99,9 @@ public class TetrisModel {
                     stage1.show();
                 }
                 for (int i = 0; i < MAP_HEIGHT; i++) {
-                    boolean clearLine = true;
-                    for (int j = 0; j < MAP_WIDTH; j++) {
-                        if (map[j][i].state.get() != TetrisPieceState.SETTLED) {
-                            clearLine = false;
-                        }
-                    }
+					boolean clearLine = isLineClear(i);
                     if (clearLine) {
-                        for (int k = i; k >= 0; k--) {
-                            for (int j = 0; j < MAP_WIDTH; j++) {
-                                if (k == 0) {
-                                    map[j][k].state.set(TetrisPieceState.EMPTY);
-                                } else {
-                                    map[j][k].state.set(map[j][k - 1].state.get());
-                                }
-                            }
-                        }
+						removeLine(i);
                     }
                 }
 
@@ -123,6 +110,28 @@ public class TetrisModel {
 
         };
     }
+
+	private void removeLine(int i) {
+		for (int k = i; k >= 0; k--) {
+		    for (int j = 0; j < MAP_WIDTH; j++) {
+		        if (k == 0) {
+		            map[j][k].state.set(TetrisPieceState.EMPTY);
+		        } else {
+		            map[j][k].state.set(map[j][k - 1].state.get());
+		        }
+		    }
+		}
+	}
+
+	private boolean isLineClear(int i) {
+		boolean clearLine = true;
+		for (int j = 0; j < MAP_WIDTH; j++) {
+		    if (map[j][i].state.get() != TetrisPieceState.SETTLED) {
+		        clearLine = false;
+		    }
+		}
+		return clearLine;
+	}
     void reset() {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {

@@ -35,20 +35,7 @@ public class Experiment3DCollisions extends Application {
 
 		Group root = new Group();
 
-		for (int i = mapa.length - 1; i >= 0; i--) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				Cube rectangle = new Cube(SIZE, Color.BLUE);
-				rectangle.setTranslateX(i * SIZE);
-				rectangle.setTranslateZ(j * SIZE);
-				if ("_".equals(string)) {
-					rectangle.ry.setAngle(90);
-				}
-				cubes[i][j] = rectangle;
-
-				root.getChildren().add(rectangle);
-			}
-		}
+		initializeLabyrinth(root);
 		SubScene subScene = new SubScene(root, 640, 480, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
@@ -155,6 +142,23 @@ public class Experiment3DCollisions extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
 		primaryStage.show();
+	}
+
+	private void initializeLabyrinth(Group root) {
+		for (int k = mapa.length - 1; k >= 0; k--) {
+			for (int l = mapa[k].length - 1; l >= 0; l--) {
+				String string = mapa[k][l];
+				Cube rectangle = new Cube(SIZE, Color.BLUE);
+				rectangle.setTranslateX(k * SIZE);
+				rectangle.setTranslateZ(l * SIZE);
+				if ("_".equals(string)) {
+					rectangle.ry.setAngle(90);
+				}
+				cubes[k][l] = rectangle;
+
+				root.getChildren().add(rectangle);
+			}
+		}
 	}
 
 	boolean checkColision() {

@@ -69,35 +69,31 @@ public class SlidingPuzzleModel {
         EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> {
             for (int i = 0; i < MAP_SIZE; i++) {
                 for (int j = 0; j < MAP_SIZE; j++) {
-                    if (map[i][j] == mem) {
-                        if (isNeighborEmpty(i, j, 0, -1)
-                                || isNeighborEmpty(i, j, 0, 1)
-                                || isNeighborEmpty(i, j, 1, 0)
-                                || isNeighborEmpty(i, j, -1, 0)) {
-                            swapEmptyNeighbor(i, j);
-//                            Stream.of(map).forEach(a -> {
-//                                System.out.println(Stream.of(a).map(e -> String.format("%02d", e.number.get())).collect(Collectors.joining(" ")));
-//                            });
-                            moves++;
-                            if (verifyEnd()) {
-                                final Text text = new Text("You ended in " + moves + " moves");
-                                final Button button = new Button("Reset");
-                                final Stage stage1 = new Stage();
-                                button.setOnAction(a -> {
-                                    reset();
-                                    stage1.close();
-                                    moves = 0;
-                                });
+					if (map[i][j] == mem && (
+							isNeighborEmpty(i, j, 0, -1) 
+							|| isNeighborEmpty(i, j, 0, 1)
+							|| isNeighborEmpty(i, j, 1, 0) 
+							|| isNeighborEmpty(i, j, -1, 0))) {
+						swapEmptyNeighbor(i, j);
+						moves++;
+						if (verifyEnd()) {
+							final Text text = new Text("You ended in " + moves + " moves");
+							final Button button = new Button("Reset");
+							final Stage stage1 = new Stage();
+							button.setOnAction(a -> {
+								reset();
+								stage1.close();
+								moves = 0;
+							});
 
-                                final Group group = new Group(text, button);
-                                group.setLayoutX(50);
-                                group.setLayoutY(50);
-                                stage1.setScene(new Scene(group));
-                                stage1.show();
-                            }
-                            return;
-                        }
-                    }
+							final Group group = new Group(text, button);
+							group.setLayoutX(50);
+							group.setLayoutY(50);
+							stage1.setScene(new Scene(group));
+							stage1.show();
+						}
+						return;
+					}
                 }
             }
 

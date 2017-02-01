@@ -76,7 +76,7 @@ public class StatsLogAccess {
 	public static void statisticaTamanhoArquivos() throws IOException {
 		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
 				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new File("acessos.txt"));) {
+		try (PrintStream out = new PrintStream(new FileOutputStream(new File("acessos.txt")));) {
 			for (Path path : lista) {
 				try {
 					Map<String, Long> stats = Files.lines(path)
@@ -100,7 +100,7 @@ public class StatsLogAccess {
 	public static void statisticaDemoraArquivo() throws IOException {
 		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
 				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new File("acessos.txt"));) {
+		try (PrintStream out = new PrintStream(new FileOutputStream(new File("acessos.txt")));) {
 			for (Path path : lista) {
 				try {
 					Map<String, LongSummaryStatistics> stats = Files.lines(path)

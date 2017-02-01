@@ -36,25 +36,7 @@ public class Experiment3D extends Application {
 
 		Group root = new Group();
 
-		for (int i = mapa.length - 1; i >= 0; i--) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				if ("_".equals(string)) {
-					Cube rectangle = new Cube(SIZE, Color.BLUE);
-					rectangle.setTranslateX(i * SIZE);
-					rectangle.setTranslateZ(j * SIZE);
-					rectangle.ry.setAngle(90);
-					root.getChildren().add(rectangle);
-				} else {
-					Cube rectangle = new Cube(SIZE, Color.BLUE);
-					rectangle.setTranslateX(i * SIZE);
-					rectangle.setTranslateZ(j * SIZE);
-					// Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
-					// SIZE, SIZE / 2);
-					root.getChildren().add(rectangle);
-				}
-			}
-		}
+		initializeLabyrinth(root);
 
 		Scene scene = new Scene(root);
 		PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -147,6 +129,28 @@ public class Experiment3D extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	private void initializeLabyrinth(Group root) {
+		for (int k = mapa.length - 1; k >= 0; k--) {
+			for (int l = mapa[k].length - 1; l >= 0; l--) {
+				String string = mapa[k][l];
+				if ("_".equals(string)) {
+					Cube rectangle = new Cube(SIZE, Color.BLUE);
+					rectangle.setTranslateX(k * SIZE);
+					rectangle.setTranslateZ(l * SIZE);
+					rectangle.ry.setAngle(90);
+					root.getChildren().add(rectangle);
+				} else {
+					Cube rectangle = new Cube(SIZE, Color.BLUE);
+					rectangle.setTranslateX(k * SIZE);
+					rectangle.setTranslateZ(l * SIZE);
+					// Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
+					// SIZE, SIZE / 2);
+					root.getChildren().add(rectangle);
+				}
+			}
+		}
 	}
 
 }

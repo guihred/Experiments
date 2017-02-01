@@ -2,8 +2,8 @@ package others;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +70,7 @@ public class TermFrequency {
 
 	public static Map<String, Long> getFrequencyMap(File f) throws IOException {
 		Map<String, Long> map = new ConcurrentHashMap<>();
-		try (BufferedReader buff = new BufferedReader(new FileReader(f));) {
+		try (BufferedReader buff = Files.newBufferedReader(f.toPath());) {
 
 			String readLine;
 			do {
