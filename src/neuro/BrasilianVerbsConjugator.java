@@ -457,12 +457,8 @@ public class BrasilianVerbsConjugator {
 	
 	
 
-	private static List<String> addDesinencia(String root, String[] present) {
-		// for (String desinencia : present) {
-		// System.out.println(root + desinencia);
-		// }
-		// System.out.println();
-		return Stream.of(present).map(a -> root + a).collect(Collectors.toList());
+	private static List<String> addDesinencia(String root, String[] tense) {
+		return Stream.of(tense).map(a -> root + a).collect(Collectors.toList());
 
 	}
 
