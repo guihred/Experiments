@@ -2,20 +2,30 @@ package rosario;
 
 import java.awt.Color;
 import java.awt.Desktop;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -207,7 +217,7 @@ public class LeitorArquivos {
 					}
 					medicamento.setRegistro(registro);
 					medicamento.setNome(next.getCell(1).getStringCellValue());
-					Cell cell = next.getCell(2);
+					Cell cell = next.getCell(3);
 					String lote = "";
 					if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 						lote = Integer.toString((int) cell.getNumericCellValue());
@@ -215,7 +225,7 @@ public class LeitorArquivos {
 						lote = cell.getStringCellValue();
 					}
 					medicamento.setLote(lote);
-					medicamento.setQuantidade((int) next.getCell(3).getNumericCellValue());
+					medicamento.setQuantidade((int) next.getCell(4).getNumericCellValue());
 					medicamentos.add(medicamento);
 				} catch (Exception e) {
 					System.out.println("ERRO LINHA=" + i);

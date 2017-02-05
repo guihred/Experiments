@@ -1,20 +1,27 @@
 package neuro;
 
-import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.ImmutableMap;
+
 public class BrasilianVerbsConjugator {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	public static void main(String[] args) throws IOException {
 
 		Stream<String> words = getWords(new File("verbs.dic").toURI());
@@ -22,8 +29,8 @@ public class BrasilianVerbsConjugator {
 	}
 
 	private static Stream<String> getWords(URI txtFile) throws IOException {
-		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential()
-				.map(String::trim).filter(s -> !s.isEmpty())
+		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential().map(String::trim)
+				.filter(s -> !s.isEmpty() && s.endsWith("medir"))
 				.distinct();
 	}
 
@@ -62,6 +69,14 @@ public class BrasilianVerbsConjugator {
 					.put(Mode.PRESENT, Arrays.asList("rio", "ris", "ri", "rimos", "rides", "riem")).build());
 			put("seguir", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("sigo", "segues", "segue", "seguimos", "seguis", "seguem")).build());
+			put("sentir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("sinto", "sentes", "sente", "sentimos", "sentis", "sentem")).build());
+			put("cobrir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("cubro", "cobres", "cobre", "cobrimos", "cobris", "cobrem")).build());
+			put("gredir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("grido", "grides", "gride", "gredimos", "gredis", "gridem")).build());
+			put("medir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("meço", "medes", "mede", "medimos", "medis", "medem")).build());
 			put("poder", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("posso", "podes", "pode", "podemos", "podeis", "podem"))
 					.put(Mode.PRETERITE, Arrays.asList("pude", "pudeste", "pôde", "pudemos", "pudestes", "puderam"))
@@ -162,12 +177,17 @@ public class BrasilianVerbsConjugator {
 			.put("saber", Arrays.asList(""))
 			.put("perder", Arrays.asList(""))
 			.put("trazer", Arrays.asList(""))
+			.put("medir", Arrays.asList(""))
 			.put("ler", Arrays.asList("", "re"))
 			.put("aver", Arrays.asList("h", "re"))
 			.put("valer", Arrays.asList("", "equi"))
+			.put("cobrir", Arrays.asList("", "des","en"))
 			.put("ver", Arrays.asList("", "ante", "pre", "re"))
 			.put("querer", Arrays.asList("", "des", "mal", "re"))
 			.put("seguir", Arrays.asList("","con", "per", "pros"))
+			.put("gredir", Arrays.asList("a", "re", "trans", "pro"))
+			.put("pedir", Arrays.asList("", "desim", "des", "ex", "im"))
+			.put("sentir", Arrays.asList("","as", "con", "pres", "res" ))
 			.put("ter", Arrays.asList("", "abs", "con", "de", "entre", "man", "ob", "re", "sus", "ver"))
 			.put("dizer", Arrays.asList("", "ante", "ben", "con", "contra", "des", "inter", "mal", "pre"))
 			.put("fazer", Arrays.asList("", "carni", "contra", "lique", "mal", "per", "putre", "rare", "satis"))
@@ -331,10 +351,6 @@ public class BrasilianVerbsConjugator {
 		} else if (root.endsWith("med")) {
 			addLetter("med", present, past, incompletePast, pluPerfect, future, futureImpefect);
 			present[0] = "meço";
-			root = root.substring(0, root.length() - 3);
-		} else if (root.endsWith("ped")) {
-			addLetter("ped", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[0] = "peço";
 			root = root.substring(0, root.length() - 3);
 		} else if (root.endsWith("u")) {
 			addLetter("u", present, past, incompletePast, pluPerfect, future, futureImpefect);
