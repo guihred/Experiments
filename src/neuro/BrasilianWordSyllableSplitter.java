@@ -25,7 +25,7 @@ public class BrasilianWordSyllableSplitter {
 	private static final String REGEX_VOWEL = "(?i)" + VOWELS;
 	private static final String REGEX_DIPHTHONG = "(?i)(?<=[aeiou])(?=[aeiou])";
 	// cases when the vowel cluster should be split
-	private static final String REGEX_HIATUS = "(?i)(?<=[aeiou])(?=[aeiou][lnrz])|(?<=[aeo])(?=[íúîû])|(?<=[íúéó])(?=[a])|(?<=[ieao])(?=[ú])|(?<=[^q][aeoui][ui])(?=[aeiou])|(?<=[íúe])(?=ei)";
+	private static final String REGEX_HIATUS = "(?i)(?<=[^qg][aeiou])(?=[aeiou][lnrz])|(?<=[aeou])(?=[íúîû])|(?<=[íúéóe])(?=[a])|(?<=[ieao])(?=[ú])|(?<=[^q][aeoui][ui])(?=[aeiou])|(?<=[íúe])(?=ei)";
 
 	public static void main(String[] args) throws IOException {
 
@@ -76,6 +76,7 @@ public class BrasilianWordSyllableSplitter {
 				syllable.add(split[1]);
 			}
 		}
+
 		String collect = syllable.stream().flatMap(sy -> Stream.of(sy.split(REGEX_HIATUS)))
 				.collect(Collectors.joining("-"));
 
