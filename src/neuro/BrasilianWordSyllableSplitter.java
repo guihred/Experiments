@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class BrasilianWordSyllableSplitter {
 
 	private static final String VOWELS = "[aeiouáéíóúâêîôûàèìòùãõ]";
-	private static final String CONSONANT_CLUSTER = "[bcdfgkptv][rl]|[cnlst][h]|mn|bs";
+	private static final String CONSONANT_CLUSTER = "[bcdfgkptv][rl]|[cnlst][h]|mn|bs|tch";
 	private static final String REGEX_VOWEL_CLUSTER_VOWEL = "(?i)" + VOWELS + "(" + CONSONANT_CLUSTER + ")" + VOWELS;
 	private static final String REGEX_VOWEL_CONSONANT_VOWEL = "(?i)" + VOWELS + "[bçcdfghjklmnpqrstvwxyz]" + VOWELS;
 	private static final String REGEX_CONSONANT_CLUSTER = "(?i)" + CONSONANT_CLUSTER;
@@ -58,9 +58,9 @@ public class BrasilianWordSyllableSplitter {
 			String c = i + 3 <= length ? word.substring(i + 2, i + 3) : "";
 			String d = i + 4 <= length ? word.substring(i + 3, i + 4) : "";
 			if ((a + b + c).matches(REGEX_VOWEL_CONSONANT_VOWEL)
-					|| isConsonant(a) && isConsonant(b) && !isConsonantCluster(a + b) && isVowel(c)
-					|| isConsonant(a) && isConsonant(b) && isConsonant(c) && !isConsonantCluster(a + b)
-							&& isConsonantCluster(b + c)
+					|| isConsonant(a) && isConsonant(b) && !isConsonantCluster(a + b) && isVowel(c) && i != 0
+					|| isConsonant(a) && isConsonant(b)&& isConsonant(c) && !isConsonantCluster(a + b) && isConsonantCluster(b + c) && isVowel(d)
+					&& i != 0
 					|| (a + b + c + d).matches(REGEX_VOWEL_CLUSTER_VOWEL)) {
 				syllable.add(s.toString());
 				s.delete(0, s.length());
