@@ -310,9 +310,9 @@ public class Experiment3DMouseControl extends Application {
 		enemy.setTranslateZ(posicaoInicialZ);
 		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
 		enemy.setTranslateX(posicaoInicialX);
-		for (int i = 0; checkColision(enemy.getBoundsInParent()); i++) {
-			enemy.setTranslateZ(enemy.getTranslateZ() + i);
-			enemy.setTranslateX(enemy.getTranslateX() + i);
+		while (checkColision(enemy.getBoundsInParent())) {
+			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
+			enemy.setTranslateX(enemy.getTranslateX() + 1);
 		}
 		enemy.setScaleX(0.4);
 		enemy.setScaleY(1);

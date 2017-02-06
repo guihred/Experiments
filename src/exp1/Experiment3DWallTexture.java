@@ -20,7 +20,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.*;
+import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.Mesh;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
@@ -305,9 +308,9 @@ public class Experiment3DWallTexture extends Application {
 		enemy.setTranslateZ(posicaoInicialZ);
 		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
 		enemy.setTranslateX(posicaoInicialX);
-		for (int i = 0; checkColision(enemy.getBoundsInParent()); i++) {
-			enemy.setTranslateZ(enemy.getTranslateZ() + i);
-			enemy.setTranslateX(enemy.getTranslateX() + i);
+		while (checkColision(enemy.getBoundsInParent())) {
+			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
+			enemy.setTranslateX(enemy.getTranslateX() + 1);
 		}
 		enemy.setScaleX(0.4);
 		enemy.setScaleY(1);

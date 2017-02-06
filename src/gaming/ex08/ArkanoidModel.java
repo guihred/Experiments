@@ -66,7 +66,6 @@ public class ArkanoidModel {
                 }
                 circle.setCenterX(circle.getCenterX() + x);
                 circle.setCenterY(circle.getCenterY() + y);
-
             }
         }));
         scene.setOnKeyPressed((KeyEvent event) -> {

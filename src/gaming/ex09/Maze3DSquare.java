@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 
-public class MazeSquare extends BorderPane {
+public class Maze3DSquare extends BorderPane {
     public static final int SQUARE_SIZE = 40;
 
     BooleanProperty visited = new SimpleBooleanProperty(false);
@@ -17,7 +17,7 @@ public class MazeSquare extends BorderPane {
     BooleanProperty north = new SimpleBooleanProperty(false);
     BooleanProperty south = new SimpleBooleanProperty(false);
 
-    public MazeSquare() {
+    public Maze3DSquare() {
         styleProperty().bind(Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
         setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
         final PhongMaterial phongMaterial = new PhongMaterial(Color.ROYALBLUE);

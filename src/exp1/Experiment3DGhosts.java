@@ -185,9 +185,9 @@ public class Experiment3DGhosts extends Application {
 		animal.setTranslateZ(posicaoInicialZ);
 		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
 		animal.setTranslateX(posicaoInicialX);
-		for (int i = 0; checkColision(animal.getBoundsInParent()); i++) {
-			animal.setTranslateZ(animal.getTranslateZ() + i);
-			animal.setTranslateX(animal.getTranslateX() + i);
+		while (checkColision(animal.getBoundsInParent())) {
+			animal.setTranslateZ(animal.getTranslateZ() + 1);
+			animal.setTranslateX(animal.getTranslateX() + 1);
 		}
 
 

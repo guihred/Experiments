@@ -22,23 +22,23 @@ import javafx.util.Duration;
  *
  * @author Note
  */
-public class MazeModel {
+public class Maze3DModel {
 
     public static final int MAZE_SIZE = 24;
     static final Random random = new Random();
     final Circle circle;
-    MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
+    Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
     GridPane gridPane;
     int moves = 0;
 
-	public static MazeModel create(GridPane gridPane) {
-		return new MazeModel(gridPane);
+	public static Maze3DModel create(GridPane gridPane) {
+		return new Maze3DModel(gridPane);
 	}
-    public MazeModel(GridPane gridPane) {
+    public Maze3DModel(GridPane gridPane) {
         this.gridPane = gridPane;
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
-                maze[i][j] = new MazeSquare();
+                maze[i][j] = new Maze3DSquare();
                 gridPane.add(maze[i][j], j, i);
                 if (i == 0) {
                     maze[i][j].north.set(false);
@@ -55,7 +55,7 @@ public class MazeModel {
             }
         }
         maze[0][0].setCenter(new Circle(5));
-        List<MazeSquare> history = new ArrayList<>();
+        List<Maze3DSquare> history = new ArrayList<>();
         history.add(maze[0][0]);
         List<String> check = new ArrayList<>();
         Timeline timeline = new Timeline();
@@ -103,7 +103,7 @@ public class MazeModel {
                             maze[r][c].north.set(true);
                         }
                     } else {
-                        final MazeSquare remove = history.remove(history.size() - 1);
+                        final Maze3DSquare remove = history.remove(history.size() - 1);
                         for (int i = 0; i < MAZE_SIZE; i++) {
                             for (int j = 0; j < MAZE_SIZE; j++) {
                                 if (maze[i][j] == remove) {
@@ -118,13 +118,13 @@ public class MazeModel {
                     timeline.stop();
             }
         };
-        final KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.5), eventHandler);
+		final KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.01), eventHandler);
         timeline.getKeyFrames().add(keyFrame);
 		timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
 
         
-        circle = new Circle(MazeSquare.SQUARE_SIZE / 3, Color.RED);
+        circle = new Circle(Maze3DSquare.SQUARE_SIZE / 3, Color.RED);
         maze[0][0].setCenter(circle);
         
     }

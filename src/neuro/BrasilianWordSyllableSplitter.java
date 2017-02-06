@@ -13,16 +13,16 @@ import java.util.stream.Stream;
 
 public class BrasilianWordSyllableSplitter {
 
+	private static final String VOWELS = "[aeiouáéíóúâêîôûàèìòùãõ]";
 	private static final String CONSONANT_CLUSTER = "[bcdfgkptv][rl]|[cnlst][h]|mn|bs";
-	private static final String REGEX_VOWEL_CLUSTER_VOWEL = "(?i)[aeiouáéíóúâêîôûàèìòùãõ](" + CONSONANT_CLUSTER
-			+ ")[aeiouáéíóúâêîôûàèìòùãõ]";
-	private static final String REGEX_VOWEL_CONSONANT_VOWEL = "(?i)[aeiouáéíóúâêîôûàèìòùãõ][bçcdfghjklmnpqrstvwxyz][aeiouáéíóúâêîôûàèìòùãõ]";
+	private static final String REGEX_VOWEL_CLUSTER_VOWEL = "(?i)" + VOWELS + "(" + CONSONANT_CLUSTER + ")" + VOWELS;
+	private static final String REGEX_VOWEL_CONSONANT_VOWEL = "(?i)" + VOWELS + "[bçcdfghjklmnpqrstvwxyz]" + VOWELS;
 	private static final String REGEX_CONSONANT_CLUSTER = "(?i)" + CONSONANT_CLUSTER;
 	private static final String REGEX_CONSONANTS = "(?i)[bçcdfghjklmnpqrstvwxyz]";
 	// notice the consonants do not include 'q'
 	private static final String REGEX_ASCENDING_DIPHTHONG = "(?i)[bçcdfghjklmnprstvwxyz]*([iu][aeo]|iu|[eo]a|eo|ee|oo)[ms]*";
 	private static final String REGEX_HAS_ACCENT = "(?i).*[áéíóúâêîôû].*";
-	private static final String REGEX_VOWEL = "(?i)[aeiouáéíóúâêîôûàèìòùãõ]";
+	private static final String REGEX_VOWEL = "(?i)" + VOWELS;
 	private static final String REGEX_DIPHTHONG = "(?i)(?<=[aeiou])(?=[aeiou])";
 	// cases when the vowel cluster should be split
 	private static final String REGEX_HIATUS = "(?i)(?<=[aeiou])(?=[aeiou][lnrz])|(?<=[aeo])(?=[íúîû])|(?<=[íúéó])(?=[a])|(?<=[ieao])(?=[ú])|(?<=[^q][aeoui][ui])(?=[aeiou])|(?<=[íúe])(?=ei)";

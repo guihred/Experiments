@@ -120,62 +120,56 @@ public class QuartoLauncher extends Application {
                     cameraXform2.t.setY(0.0);
                     break;
                 case UP:
-                    if (event.isControlDown() && event.isShiftDown()) {
-                        cameraXform2.t.setY(cameraXform2.t.getY() - 10.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 10.0 * ALT_MULTIPLIER);
-                    } else if (event.isControlDown()) {
-                        cameraXform2.t.setY(cameraXform2.t.getY() - 1.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown()) {
-                        cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 2.0 * ALT_MULTIPLIER);
-                    } else if (event.isShiftDown()) {
-                        double z = camera.getTranslateZ();
-                        double newZ = z + 5.0 * SHIFT_MULTIPLIER;
-                        camera.setTranslateZ(newZ);
-                    }
+				moveUpAndDown(event, 1);
                     break;
                 case DOWN:
-                    if (event.isControlDown() && event.isShiftDown()) {
-                        cameraXform2.t.setY(cameraXform2.t.getY() + 10.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 10.0 * ALT_MULTIPLIER);
-                    } else if (event.isControlDown()) {
-                        cameraXform2.t.setY(cameraXform2.t.getY() + 1.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown()) {
-                        cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 2.0 * ALT_MULTIPLIER);
-                    } else if (event.isShiftDown()) {
-                        double z = camera.getTranslateZ();
-                        double newZ = z - 5.0 * SHIFT_MULTIPLIER;
-                        camera.setTranslateZ(newZ);
-                    }
+				moveUpAndDown(event, -1);
                     break;
                 case RIGHT:
-                    if (event.isControlDown() && event.isShiftDown()) {
-                        cameraXform2.t.setX(cameraXform2.t.getX() + 10.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 10.0 * ALT_MULTIPLIER);
-                    } else if (event.isControlDown()) {
-                        cameraXform2.t.setX(cameraXform2.t.getX() + 1.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown()) {
-                        cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 2.0 * ALT_MULTIPLIER);
-                    }
+				moveSideways(event, 1);
                     break;
                 case LEFT:
-                    if (event.isControlDown() && event.isShiftDown()) {
-                        cameraXform2.t.setX(cameraXform2.t.getX() - 10.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 10.0 * ALT_MULTIPLIER);  // -
-                    } else if (event.isControlDown()) {
-                        cameraXform2.t.setX(cameraXform2.t.getX() - 1.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown()) {
-                        cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER);  // -
-                    }
+				moveSideways(event, -1);
                     break;
 			default:
 				break;
             }
         });
     }
+
+
+
+
+	private void moveUpAndDown(KeyEvent event, int multiplier) {
+		if (event.isControlDown() && event.isShiftDown()) {
+			cameraXform2.t.setY(cameraXform2.t.getY() - multiplier * 10.0 * CONTROL_MULTIPLIER);
+		} else if (event.isAltDown() && event.isShiftDown()) {
+			cameraXform.rx.setAngle(cameraXform.rx.getAngle() - multiplier * 10.0 * ALT_MULTIPLIER);
+		} else if (event.isControlDown()) {
+			cameraXform2.t.setY(cameraXform2.t.getY() - multiplier * 1.0 * CONTROL_MULTIPLIER);
+		} else if (event.isAltDown()) {
+			cameraXform.rx.setAngle(cameraXform.rx.getAngle() - multiplier * 2.0 * ALT_MULTIPLIER);
+		} else if (event.isShiftDown()) {
+		    double z = camera.getTranslateZ();
+			double newZ = z + multiplier * 5.0 * SHIFT_MULTIPLIER;
+		    camera.setTranslateZ(newZ);
+		}
+	}
+
+
+
+
+	private void moveSideways(KeyEvent event, int multiplier) {
+		if (event.isControlDown() && event.isShiftDown()) {
+			cameraXform2.t.setX(cameraXform2.t.getX() + multiplier * 10.0 * CONTROL_MULTIPLIER);
+		} else if (event.isAltDown() && event.isShiftDown()) {
+			cameraXform.ry.setAngle(cameraXform.ry.getAngle() - multiplier * 10.0 * ALT_MULTIPLIER); // -
+		} else if (event.isControlDown()) {
+			cameraXform2.t.setX(cameraXform2.t.getX() + multiplier * 1.0 * CONTROL_MULTIPLIER);
+		} else if (event.isAltDown()) {
+			cameraXform.ry.setAngle(cameraXform.ry.getAngle() - multiplier * 2.0 * ALT_MULTIPLIER); // -
+		}
+	}
     private void buildAxes() {
         final PhongMaterial blackMaterial = new PhongMaterial();
         blackMaterial.setDiffuseColor(Color.BLACK);

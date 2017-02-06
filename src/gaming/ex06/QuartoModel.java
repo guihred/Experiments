@@ -7,6 +7,9 @@ package gaming.ex06;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.scene.shape.Circle;
 
 /**
@@ -35,24 +38,14 @@ public class QuartoModel {
     }
 
     boolean checkEnd() {
-        int[] arr = new int[]{1, 2, 4, 8};
 
-        for (int i = 0; i < 4; i++) {
-            List<Integer> a = new ArrayList<>();
-            for (int j = 0; j < 4; j++) {
-                if (mapQuarto[i][j] == null) {
-                    break;
-                }
-                a.add(mapQuarto[i][j].number);
-                if (j == 3) {
-					if (somethingInCommon(arr, a)) {
-						return true;
-					}
-                    System.out.println("Linha " + i);
 
-                }
-            }
-        }
+		if (Stream.of(mapQuarto).filter(d -> Stream.of(d).noneMatch(Objects::isNull))
+				.map(d -> Stream.of(d).map(q -> q.number).collect(Collectors.toList()))
+				.anyMatch(this::somethingInCommon)) {
+			return true;
+		}
+
 
         for (int i = 0; i < 4; i++) {
             List<Integer> a = new ArrayList<>();
@@ -62,11 +55,9 @@ public class QuartoModel {
                 }
                 a.add(mapQuarto[j][i].number);
                 if (j == 3) {
-					if (somethingInCommon(arr, a)) {
+					if (somethingInCommon(a)) {
 						return true;
 					}
-                    System.out.println("Linha " + i);
-
                 }
             }
         }
@@ -80,16 +71,17 @@ public class QuartoModel {
                 a.add(mapQuarto[i][j + 1].number);
                 a.add(mapQuarto[i + 1][j].number);
                 a.add(mapQuarto[i + 1][j + 1].number);
-				if (somethingInCommon(arr, a)) {
+				if (somethingInCommon(a)) {
 					return true;
 				}
-                System.out.println("Linha " + i);
+
             }
         }
         return false;
     }
 
-	private boolean somethingInCommon(int[] arr, List<Integer> a) {
+	private boolean somethingInCommon(List<Integer> a) {
+		int[] arr = new int[] { 1, 2, 4, 8 };
 		for (int k = 0; k < arr.length; k++) {
 		    int l = arr[k];
 		    final long count = a.stream().map(n -> n & l).distinct().count();

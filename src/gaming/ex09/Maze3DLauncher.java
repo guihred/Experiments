@@ -47,8 +47,14 @@ public class Maze3DLauncher extends Application {
                 changeZ = 5 * Math.cos(rotate.getAngle() * Math.PI / 180);
             }
             if (keycode == KeyCode.S) {
-                changeX = -5 * Math.sin(rotate.getAngle() * Math.PI / 180);
-                changeZ = - 5 * Math.cos(rotate.getAngle() * Math.PI / 180);
+				changeX = -5 * Math.sin(rotate.getAngle() * Math.PI / 180);
+				changeZ = -5 * Math.cos(rotate.getAngle() * Math.PI / 180);
+			}
+			if (keycode == KeyCode.UP) {
+				translate.setY(translate.getY() + 5);
+			}
+			if (keycode == KeyCode.DOWN) {
+				translate.setY(translate.getY() - 5);
             }
             translate.setZ(translate.getZ() + changeZ);
 
@@ -96,7 +102,7 @@ public class Maze3DLauncher extends Application {
         camera.getTransforms().addAll(translate, rotate);
 
         Scene scene = new Scene(root, 400, 600, true, SceneAntialiasing.BALANCED);
-		MazeModel.create(root);
+		Maze3DModel.create(root);
         root.getTransforms().addAll(new Rotate(90, 0, 0, 0, Rotate.X_AXIS));
 
         handleKeyboard(scene, translate, rotate, camera);

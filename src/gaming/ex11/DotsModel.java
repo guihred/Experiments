@@ -78,13 +78,8 @@ public class DotsModel {
             }
         });
         gridPane.setOnMouseReleased(e -> {
-            for (int i = 0; i < MAZE_SIZE; i++) {
-                for (int j = 0; j < MAZE_SIZE; j++) {
-                    if (maze[i][j].getBoundsInParent().contains(e.getX(), e.getY())) {
-                        over = maze[i][j];
-                    }
-                }
-            }
+			over = Stream.of(maze).flatMap(Stream::of).filter(m -> m.getBoundsInParent().contains(e.getX(), e.getY()))
+					.findFirst().orElse(null);
 
             if (selected != null && over != null && selected != over &&Math.abs(over.i - selected.i) + Math.abs(over.j - selected.j) == 1 && !over.contains(selected)) {
                 final Line line1 = new Line(selected.getCenter()[0], selected.getCenter()[1],
@@ -241,17 +236,12 @@ public class DotsModel {
 
     private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades3() {
         final List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = getPossibilidades();
-
         final Map<Integer, List<Map.Entry<DotsSquare, DotsSquare>>> collect = possibilidades.stream().collect(Collectors.groupingBy(e -> getCountMap(e.getKey(), e.getValue())));
-        
-        final int orElse = collect.keySet().stream().mapToInt(i -> i).min().orElse(0);
-
-        final List<Map.Entry<DotsSquare, DotsSquare>> orDefault = collect.getOrDefault(orElse, Collections.emptyList());
-
-        return orDefault;
+		final int bestPossibility = collect.keySet().stream().mapToInt(i -> i).min().orElse(0);
+		return collect.getOrDefault(bestPossibility, Collections.emptyList());
     }
 
-    int getCountMap(DotsSquare a, DotsSquare b) {
+	private int getCountMap(DotsSquare a, DotsSquare b) {
         a.addAdj(b);
         int sum = 0;
         int i = a.i < b.i ? a.i : b.i;

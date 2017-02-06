@@ -5,6 +5,7 @@
  */
 package gaming.ex10;
 
+import java.io.Serializable;
 import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import javafx.scene.paint.Color;
@@ -30,9 +31,9 @@ public enum MinesweeperImage {
         t.setFont(Font.font("Verdana", FontWeight.EXTRA_BOLD, 11));
         return t;
     });
-    Function<Integer, Shape> shape;
+	F<Integer, Shape> shape;
 
-    private MinesweeperImage(Function<Integer, Shape> shape) {
+	private MinesweeperImage(F<Integer, Shape> shape) {
         this.shape = shape;
 
     }
@@ -41,5 +42,8 @@ public enum MinesweeperImage {
         return shape.apply(i);
     }
 
+	public static interface F<T, R> extends Function<T, R>, Serializable {
+	}
 
 }
+
