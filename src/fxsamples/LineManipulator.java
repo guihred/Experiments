@@ -1,4 +1,4 @@
-package projavafx;
+package fxsamples;
 
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;

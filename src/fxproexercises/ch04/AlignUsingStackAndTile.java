@@ -25,10 +25,10 @@ public class AlignUsingStackAndTile extends Application {
         Text text = new Text("JavaFX");
         text.setFont(Font.font(null, FontWeight.BOLD, 18));
         text.setFill(Color.WHITE);
+		Text right = new Text("Reversi");
+		right.setFont(Font.font(null, FontWeight.BOLD, 18));
         StackPane.setAlignment(text, Pos.CENTER_RIGHT);
         left.getChildren().add(text);
-        Text right = new Text("Reversi");
-        right.setFont(Font.font(null, FontWeight.BOLD, 18));
         TilePane tiles = new TilePane();
         tiles.setSnapToPixel(false);
         TilePane.setAlignment(right, Pos.CENTER_LEFT);

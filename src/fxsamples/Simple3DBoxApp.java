@@ -32,12 +32,7 @@ package fxsamples;
  */
 
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -45,25 +40,6 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
-/**
- * A sample that shows a 3D box and uses a perspective camera for rendering the
- * scene. Hint: Switch to Line draw mode to see how cullFace property works.
- *
- * @sampleName 3D Box
- * @preview preview.png
- * @see javafx.scene.shape.Box
- * @see javafx.scene.PerspectiveCamera
- * @see javafx.scene.paint.PhongMaterial
- * @see javafx.scene.paint.Color
- * @see javafx.scene.transform.Rotate
- * @see javafx.scene.transform.Translate
- * @see javafx.scene.SceneAntialiasing
- * @see javafx.scene.SubScene
- * @playground testBox.drawMode
- * @playground testBox.cullFace
- * @playground material.diffuseColor
- * @conditionalFeatures SCENE3D
- */
 public class Simple3DBoxApp extends Application {
 
 	private Box testBox;
@@ -104,12 +80,6 @@ public class Simple3DBoxApp extends Application {
 		primaryStage.show();
 	}
 
-	/**
-	 * Java main for when running without JavaFX launcher
-	 * 
-	 * @param args
-	 *            command line arguments
-	 */
 	public static void main(String[] args) {
 		launch(args);
 	}

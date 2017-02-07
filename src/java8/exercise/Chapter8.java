@@ -68,7 +68,12 @@ public class Chapter8 {
 	 * have a negative counterpart
 	 */
 	public static void ex2() {
-		Math.negateExact(Integer.MIN_VALUE);
+		try {
+
+			Math.negateExact(Integer.MIN_VALUE);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
 	}
 
 	/*
@@ -81,7 +86,7 @@ public class Chapter8 {
 	 * Which of the three gives you the least hassle with negative values?
 	 */
 	public static void ex3() {
-		System.out.println("gcd1 " + gcd1(20, 40));
+		LOGGER.info("gcd1 " + gcd1(20, 40));
 		System.out.println("gcd2 " + gcd2(20, 40));
 		System.out.println("gcd3 " + gcd3(20, 40));
 		System.out.println("gcd1 " + gcd1(-20, 40));
@@ -331,7 +336,7 @@ public class Chapter8 {
 	 * files that contain the keywords transient and volatile.
 	 */
 	public static void ex10() throws IOException {
-		File original = new File("src2");
+		File original = new File("src");
 		Files.walk(original.toPath(), 20).map(Path::toFile).filter((file) -> {
 			try {
 				if (file.canRead() && file.isFile()) {

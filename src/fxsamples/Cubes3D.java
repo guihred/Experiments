@@ -16,7 +16,7 @@ import simplebuilder.SimpleRectangleBuilder;
 /**
  * @author Jasper Potts
  */
-public class Cube3D extends Application {
+public class Cubes3D extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {

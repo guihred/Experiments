@@ -195,7 +195,7 @@ public class Simple3DSphereApp extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		Scene scene = new Scene(createContent());
-		// primaryStage.set
+		scene.setFill(Color.TRANSPARENT);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
