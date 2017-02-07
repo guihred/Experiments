@@ -7,10 +7,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 public class AnagramTest {
-
 	@Test
 	public void testNoMatches() {
-
 		Anagram detector = new Anagram("diaper");
 		Assert.assertTrue(detector.match(Arrays.asList("hello", "world", "zombies", "pants")).isEmpty());
 	}

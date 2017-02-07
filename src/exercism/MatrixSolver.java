@@ -3,6 +3,23 @@ package exercism;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
+/**
+ * The Class MatrixSolver.
+ * 
+ * Used to solve a linear system with its method solve. The method receives a
+ * series of linear equations represented as a matrix.
+ * 
+ * a*x +b*y = c
+ * 
+ * d*x +e*y = f
+ * 
+ * so solve({{a,b},{d,e}},{c,f}) will return an array with the calculated values
+ * for x and y
+ *
+ * It can also be used to calculate the determinant of a matrix with its method
+ * determinant(matrix)
+ * 
+ */
 public class MatrixSolver {
 
 	private static boolean debug = false;

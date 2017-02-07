@@ -97,13 +97,7 @@ public final class SongModel {
 			media.getMetadata().addListener(
 					(MapChangeListener<String, Object>) (ch) -> handleMetadata(ch.getKey(), ch.getValueAdded()));
 			Platform.runLater(() -> {
-				try {
-					byte[] extractEmbeddedImageData = LeitorMusicas
-							.extractEmbeddedImageData(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
-					setAlbumCover(new Image(new ByteArrayInputStream(extractEmbeddedImageData)));
-				} catch (Exception e) {
-					logger.error("", e);
-				}
+				tryGetAlbumCover(url);
 			});
 
             mediaPlayer.setValue(new MediaPlayer(media));
@@ -117,6 +111,16 @@ public final class SongModel {
             System.out.println("Caught Exception: " + re.getMessage());
         }
     }
+
+	private void tryGetAlbumCover(String url) {
+		try {
+			byte[] extractEmbeddedImageData = LeitorMusicas
+					.extractEmbeddedImageData(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
+			setAlbumCover(new Image(new ByteArrayInputStream(extractEmbeddedImageData)));
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
 
     private void handleMetadata(String key, Object value) {
 		System.out.println("Key=" + key + ",Value=" + value);

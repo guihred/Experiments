@@ -9,9 +9,17 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class Scrabble {
+/**
+ * The Class Scrabble.
+ * 
+ * A class to calculate the score of a word in the game Scrabble.
+ */
+public class Scrabble {
 
+	/** The per value. */
 	static Map<Integer, List<String>> PER_VALUE;
+
+	/** The per letter. */
 	private static Map<String, Integer> PER_LETTER;
 	static {
 		PER_VALUE = ImmutableMap.<Integer, List<String>> builder()
@@ -28,18 +36,29 @@ class Scrabble {
 				.flatMap(e -> e.getValue().stream().collect(Collectors.toMap(a -> a, a -> e.getKey())).entrySet().stream())
 				.collect(Collectors.toMap(Entry<String, Integer>::getKey, Entry<String, Integer>::getValue));
 	}
+
+	/** The input. */
 	private String input;
 
+	/**
+	 * Instantiates a new scrabble.
+	 *
+	 * @param input
+	 *            the input
+	 */
 	public Scrabble(String input) {
 		this.input = input;
 	}
 
+	/**
+	 * Gets the score.
+	 *
+	 * @return the score
+	 */
 	int getScore() {
 		if (input == null) {
 			return 0;
 		}
-
-		int sum = Stream.of(input.toUpperCase().split("")).filter(Pattern.compile("[A-Z]").asPredicate()).mapToInt(PER_LETTER::get).sum();
-		return sum;
+		return Stream.of(input.toUpperCase().split("")).filter(Pattern.compile("[A-Z]").asPredicate()).mapToInt(PER_LETTER::get).sum();
 	}
 }

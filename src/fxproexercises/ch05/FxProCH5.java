@@ -45,8 +45,10 @@ public class FxProCH5 extends Application {
 	@Override
 	public void start(final Stage primaryStage) {
 		stage = primaryStage;
-		Scene scene = new Scene(
-				new BorderPane(createTabs(), new VBox(createMenus(), createToolBar()), null, null, null));
+		VBox top = new VBox(createMenus(), createToolBar());
+		BorderPane borderPane = new BorderPane(createTabs());
+		borderPane.setTop(top);
+		Scene scene = new Scene(borderPane);
 		// .stylesheets(StarterAppMain.class.getResource("starterApp.css")
 		// .toExternalForm())
 		stage.setScene(scene);
@@ -182,16 +184,16 @@ public class FxProCH5 extends Application {
 		splitPaneTreeListView.setClosable(false);
 
 		final Tab scrollMisc = new Tab("ScrollPane/Miscellaneous");
-		splitPaneTreeListView.setContent(createScrollMiscDemoNode());
+		scrollMisc.setContent(createScrollMiscDemoNode());
 		scrollMisc.setClosable(false);
 
 		final Tab htmlEditor = new Tab("HTMLEditor");
-		splitPaneTreeListView.setContent(createHtmlEditorDemoNode());
+		htmlEditor.setContent(createHtmlEditorDemoNode());
 		htmlEditor.setClosable(false);
 
 		final WebView webView = new WebView();
 		Tab webViewTab = new Tab("WebView");
-		splitPaneTreeListView.setContent(webView);
+		webViewTab.setContent(webView);
 		webViewTab.setClosable(false);
 		webViewTab.setOnSelectionChanged((Event evt) -> {
 			String randomWebSite = model.getRandomWebSite();
@@ -259,8 +261,7 @@ public class FxProCH5 extends Application {
 		treeView.setEditable(false);
 
 		ListView<String> listView = new ListView<>(model.listViewItems);
-		SplitPane splitPane = new SplitPane();
-		splitPane.getItems().addAll(treeView, listView);
+		SplitPane splitPane = new SplitPane(treeView, listView);
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			TreeItem<String> treeItem = newValue;
@@ -275,18 +276,13 @@ public class FxProCH5 extends Application {
 	}
 
 	Node createScrollMiscDemoNode() {
-
 		ChoiceBox<String> choiceBox = new ChoiceBox<>(model.choiceBoxItems);
 		choiceBox.getSelectionModel().selectFirst();
-		choiceBox.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> System.out.println(newValue + " chosen in ChoiceBox"));
-
+		choiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue + " chosen in ChoiceBox"));
 		final TextField textField = new TextField();
 		textField.setPromptText("Enter user name");
 		textField.setPrefColumnCount(16);
-		textField.textProperty().addListener(
-				(ov, oldValue, newValue) -> System.out.println("TextField text is: " + textField.getText()));
-
+		textField.textProperty().addListener((ov, oldValue, newValue) -> System.out.println("TextField text is: " + textField.getText()));
 		final PasswordField passwordField = new PasswordField();
 		passwordField.setPromptText("Enter password");
 		passwordField.setPrefColumnCount(16);
@@ -295,7 +291,6 @@ public class FxProCH5 extends Application {
 				System.out.println("PasswordField text is: " + passwordField.getText());
 			}
 		});
-
 		final TextArea textArea = new TextArea();
 		textArea.setPrefColumnCount(12);
 		textArea.setPrefRowCount(4);
@@ -304,46 +299,36 @@ public class FxProCH5 extends Application {
 				System.out.println("TextArea text is: " + textArea.getText());
 			}
 		});
-
 		Slider slider = new Slider();
 		slider.setPrefWidth(200);
 		slider.setMin(-1);
 		slider.setMax(model.maxRpm);
 		slider.valueProperty().bindBidirectional(model.rpm);
-
 		ProgressIndicator progressIndicator = new ProgressIndicator();
 		progressIndicator.setPrefWidth(200);
 		progressIndicator.progressProperty().bind(model.rpm.divide(model.maxRpm));
-
 		ProgressBar progressBar = new ProgressBar();
 		progressBar.setPrefWidth(200);
 		progressBar.progressProperty().bind(model.kph.divide(model.maxKph));
-
 		ScrollBar scrollBar = new ScrollBar();
 		scrollBar.setPrefWidth(200);
 		scrollBar.setMin(-1);
 		scrollBar.setMax(model.maxKph);
 		scrollBar.valueProperty().bindBidirectional(model.kph);
-
 		CheckBox checkBox = new CheckBox("CheckBox");
 		checkBox.setOnAction((ActionEvent e) -> {
 			System.out.print(e.getEventType() + " occurred on CheckBox");
 			System.out.print(", and selectedProperty is: ");
 			System.out.println(checkBox.selectedProperty().getValue());
 		});
-
 		final Hyperlink hyperlink = new Hyperlink("Hyperlink");
 		hyperlink.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Hyperlink"));
-
 		final Button button = new Button("Button");
 		button.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Button"));
-
 		final MenuItem menItemA = new MenuItem("MenuItem A");
 		menItemA.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A"));
-
 		final MenuButton menuButton = new MenuButton("MenuButton");
 		menuButton.getItems().addAll(menItemA, new MenuItem("MenuItem B"));
-
 		final ToggleGroup radioToggleGroup = new ToggleGroup();
 		final RadioButton radioButton1 = new RadioButton("RadioButton1");
 		radioButton1.setToggleGroup(radioToggleGroup);
@@ -356,22 +341,16 @@ public class FxProCH5 extends Application {
 				System.out.println(rb.getText() + " selected");
 			}
 		});
-
 		final MenuItem menuItem = new MenuItem("MenuItem A");
 		menuItem.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A"));
 		final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem("MenuItem B"));
 		splitMenu.setText("SplitMenuButton");
 		splitMenu.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on SplitMenuButton"));
-		VBox variousControls = new VBox(20, button, checkBox, new HBox(10, radioButton1, radioButton2), hyperlink,
-				choiceBox, menuButton, splitMenu, textField, passwordField,
-				new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
+		VBox variousControls = new VBox(20, button, checkBox, new HBox(10, radioButton1, radioButton2), hyperlink,choiceBox, menuButton, splitMenu, textField, passwordField,new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
 		variousControls.setPadding(new Insets(10, 10, 10, 10));
-
 		final MenuItem menuItemA = new MenuItem("MenuItem A");
 		menuItemA.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A"));
-
 		ContextMenu contextMenu = new ContextMenu(menuItemA, new MenuItem("MenuItem B"));
-
 		ScrollPane scrollPane = new ScrollPane(variousControls);
 		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);

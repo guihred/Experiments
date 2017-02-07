@@ -106,23 +106,18 @@ public class DotsSquare extends Region {
     }
 
     List<DotsSquare> checkMelhor() {
-        final List<DotsSquare> bestPossibility = almostSquare().collect(Collectors.toList());
-
-
-        return bestPossibility;
+        return almostSquare().collect(Collectors.toList());
     }
     boolean checkMelhor(DotsSquare adj) {
         final Set<DotsSquare> arrayList = new HashSet<>(adjacencies);
         arrayList.add(adj);
 
-        boolean good = arrayList.stream()
+        return arrayList.stream()
                 .flatMap(a -> a.adjacencies.stream()
                         .filter(b -> b != this)
                         .flatMap(b -> b.adjacencies.stream()
                                 .filter((DotsSquare c) -> a != c && !c.contains(this)
                                         && Math.abs(c.i - i) + Math.abs(c.j - j) == 1))).count() == 0;
-
-        return good;
     }
 
     void removeAdj(DotsSquare value) {

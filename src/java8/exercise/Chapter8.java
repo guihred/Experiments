@@ -191,22 +191,22 @@ public class Chapter8 {
 	 * BufferedReader.lines.
 	 */
 	public static void ex9() {
-		try (Scanner scanner = new Scanner(new File("alice.txt"));) {
+		try (Scanner scanner = new Scanner(new File("alice.txt"), StandardCharsets.UTF_8.name());) {
 			streamOfLines(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-		try (Scanner scanner = new Scanner(new File("alice.txt"));) {
+		try (Scanner scanner = new Scanner(new File("alice.txt"), StandardCharsets.UTF_8.name());) {
 			streamOfWords(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-		try (Scanner scanner = new Scanner(new File("alice.txt"));) {
+		try (Scanner scanner = new Scanner(new File("alice.txt"), StandardCharsets.UTF_8.name());) {
 			streamOfInteger(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-		try (Scanner scanner = new Scanner(new File("alice.txt"));) {
+		try (Scanner scanner = new Scanner(new File("alice.txt"), StandardCharsets.UTF_8.name());) {
 			streamOfDouble(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);

@@ -30,16 +30,13 @@ public class Shapes3DApp extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-
 		// cube
 		Group group = new Group();
-
 		// size of the cube
 		double size = 400;
 		group.getTransforms().addAll(rotateX, rotateY);
 
 		Image diffuseMap = createImage(size);
-
 		// show noise image
 		ImageView iv = new ImageView(diffuseMap);
 		iv.setTranslateX(-0.5 * size);
@@ -51,12 +48,10 @@ public class Shapes3DApp extends Application {
 		// create material out of the noise image
 		PhongMaterial material = new PhongMaterial();
 		material.setDiffuseMap(diffuseMap);
-
 		// create box with noise diffuse map
 		Box box = new Box(100, 100, 100);
 		box.setMaterial(material);
 		group.getChildren().add(box);
-
 		// create pyramid with diffuse map
 		float h = 150; // Height
 		float s = 150; // Side
@@ -69,7 +64,6 @@ public class Shapes3DApp extends Application {
 		float y1 = 1.0f;
 
 		TriangleMesh pyramidMesh = new TriangleMesh();
-
 		pyramidMesh.getPoints().addAll( //
 				0.0f, 0.0f, 0.0f, // A 0 Top of Pyramid
 				hs, h, -hs, // B 1
@@ -77,14 +71,12 @@ public class Shapes3DApp extends Application {
 				-hs, h, hs, // D 3
 				-hs, h, -hs // E 4
 				);
-
 		pyramidMesh.getTexCoords().addAll( //
 				x0, y0, // 0
 				x0, y1, // 1
 				x1, y0, // 2
 				x1, y1 // 3
 				);
-
 		pyramidMesh.getFaces().addAll(// index of point, index of texture, index
 										// of point, index of texture, index of
 										// point, index of texture
@@ -100,19 +92,16 @@ public class Shapes3DApp extends Application {
 		pyramid.setMesh(pyramidMesh);
 		pyramid.setDrawMode(DrawMode.FILL);
 		pyramid.setTranslateY(-250);
-
 		// apply material
 		// TODO: why is the diffuse map not displayed?
 		pyramid.setMaterial(material);
 		group.getChildren().add(pyramid);
-
 		// scene
 		StackPane root = new StackPane();
 		root.getChildren().add(group);
 		Scene scene = new Scene(root, 1600, 900, true,
 				SceneAntialiasing.BALANCED);
 		scene.setCamera(new PerspectiveCamera());
-
 		// interaction listeners
 		scene.setOnMousePressed(me -> {
 			mouseOldX = me.getSceneX();
@@ -125,13 +114,10 @@ public class Shapes3DApp extends Application {
 			rotateY.setAngle(rotateY.getAngle() + (mousePosX - mouseOldX));
 			mouseOldX = mousePosX;
 			mouseOldY = mousePosY;
-
 		});
-
 		primaryStage.setResizable(false);
 		primaryStage.setScene(scene);
 		primaryStage.show();
-
 	}
 
 	/**

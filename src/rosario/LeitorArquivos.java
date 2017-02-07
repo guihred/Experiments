@@ -2,30 +2,20 @@ package rosario;
 
 import java.awt.Color;
 import java.awt.Desktop;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -58,44 +48,51 @@ public class LeitorArquivos {
 			cosDoc.close();
 			String[] linhas = parsedText.split("\r\n");
 			Medicamento medicamento = new Medicamento();
-			ObservableList<Medicamento> arrayList = FXCollections.observableArrayList();
+			ObservableList<Medicamento> listaMedicamentos = FXCollections.observableArrayList();
 			for (int i = 0; i < linhas.length; i++) {
-				try {
-
-					String s = linhas[i];
-					String[] split = s.trim().split("\\s+");
-
-					if (split[0].equals("Página:") || !StringUtil.isNumeric(split[split.length - 1])) {
-						continue;
-					}
-					if (split.length == 4 || split.length == 3) {
-						medicamento.setLote(!StringUtil.isNumeric(split[0]) ? split[0]
-								: Integer.toString(Integer.valueOf(split[0])));
-						medicamento.setRegistro(split[1].replaceAll("\\D+", ""));
-						medicamento.setQuantidade(Integer.valueOf(split[split.length - 1]));
-						arrayList.add(medicamento);
-						medicamento = medicamento.clonar();
-					} else {
-						medicamento.setCodigo(Integer.valueOf(split[0]));
-						medicamento.setNome(
-								Stream.of(split).skip(1).limit((long) split.length - 2)
-										.collect(Collectors.joining(" ")));
-						if (split.length > 3) {
-							medicamento.setApresentacao(split[2]);
-						}
-						medicamento.setQuantidade(Integer.valueOf(split[split.length - 1]));
-					}
-				} catch (Exception e) {
-					System.out.println("ERRO LINHA =" + i);
-					logger.error("", e);
-				}
+				medicamento = tryReadSNGPCLine(linhas, medicamento, listaMedicamentos, i);
 
 			}
-			return arrayList;
+			return listaMedicamentos;
 		} catch (Exception e) {
 			throw e;
 		}
 
+	}
+
+	private static Medicamento tryReadSNGPCLine(String[] linhas, Medicamento m,
+			ObservableList<Medicamento> arrayList, int i) {
+		Medicamento medicamento = m;
+		try {
+
+			String s = linhas[i];
+			String[] split = s.trim().split("\\s+");
+
+			if (split[0].equals("Página:") || !StringUtil.isNumeric(split[split.length - 1])) {
+				return medicamento;
+			}
+			if (split.length == 4 || split.length == 3) {
+				medicamento.setLote(!StringUtil.isNumeric(split[0]) ? split[0]
+						: Integer.toString(Integer.valueOf(split[0])));
+				medicamento.setRegistro(split[1].replaceAll("\\D+", ""));
+				medicamento.setQuantidade(Integer.valueOf(split[split.length - 1]));
+				arrayList.add(medicamento);
+				medicamento = medicamento.clonar();
+			} else {
+				medicamento.setCodigo(Integer.valueOf(split[0]));
+				medicamento.setNome(
+						Stream.of(split).skip(1).limit((long) split.length - 2)
+								.collect(Collectors.joining(" ")));
+				if (split.length > 3) {
+					medicamento.setApresentacao(split[2]);
+				}
+				medicamento.setQuantidade(Integer.valueOf(split[split.length - 1]));
+			}
+		} catch (Exception e) {
+			System.out.println("ERRO LINHA =" + i);
+			logger.error("", e);
+		}
+		return medicamento;
 	}
 
 	public static ObservableList<Medicamento> getMedicamentosSNGPC(File file) throws IOException {
@@ -150,35 +147,39 @@ public class LeitorArquivos {
 			pdfStripper.setStartPage(1);
 			String parsedText = pdfStripper.getText(pdDoc);
 			String[] linhas = parsedText.split("\r\n");
-			ObservableList<Medicamento> arrayList = FXCollections.observableArrayList();
+			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
 			for (int i = 0; i < linhas.length; i++) {
-				try {
-					String s = linhas[i];
-					String[] split = s.trim().split("\\s+");
-
-					if (!s.endsWith(",00")) {
-						continue;
-					}
-					if (split.length > 2) {
-						Medicamento medicamento = new Medicamento();
-						medicamento.setCodigo(Integer.valueOf(split[0]));
-						medicamento.setNome(
-								Stream.of(split).skip(1).limit((long) split.length - 2)
-										.collect(Collectors.joining(" ")));
-						medicamento.setQuantidade(
-								Integer.valueOf(split[split.length - 1].replace(",00", "").replace(".", "")));
-						arrayList.add(medicamento);
-					}
-				} catch (Exception e) {
-					logger.error("", e);
-				}
+				tryReadRosarioLine(linhas, medicamentos, i);
 
 			}
-			return arrayList;
+			return medicamentos;
 		} catch (Exception e) {
 			throw e;
 		}
 
+	}
+
+	private static void tryReadRosarioLine(String[] linhas, ObservableList<Medicamento> arrayList, int i) {
+		try {
+			String s = linhas[i];
+			String[] split = s.trim().split("\\s+");
+
+			if (!s.endsWith(",00")) {
+				return;
+			}
+			if (split.length > 2) {
+				Medicamento medicamento = new Medicamento();
+				medicamento.setCodigo(Integer.valueOf(split[0]));
+				medicamento.setNome(
+						Stream.of(split).skip(1).limit((long) split.length - 2)
+								.collect(Collectors.joining(" ")));
+				medicamento.setQuantidade(
+						Integer.valueOf(split[split.length - 1].replace(",00", "").replace(".", "")));
+				arrayList.add(medicamento);
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 	}
 
 	private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
@@ -201,36 +202,8 @@ public class LeitorArquivos {
 			int i = 1;
 			while (iterator.hasNext()) {
 				i++;
-				try {
-
-					Row next = iterator.next();
-					Medicamento medicamento = new Medicamento();
-					Cell cell0 = next.getCell(0);
-					if (cell0 == null) {
-						break;
-					}
-					String registro;
-					if (cell0.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-						registro = Integer.toString((int) cell0.getNumericCellValue());
-					} else {
-						registro = cell0.getStringCellValue().replaceAll("\\D+", "");
-					}
-					medicamento.setRegistro(registro);
-					medicamento.setNome(next.getCell(1).getStringCellValue());
-					Cell cell = next.getCell(3);
-					String lote = "";
-					if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-						lote = Integer.toString((int) cell.getNumericCellValue());
-					} else if (cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING) {
-						lote = cell.getStringCellValue();
-					}
-					medicamento.setLote(lote);
-					medicamento.setQuantidade((int) next.getCell(4).getNumericCellValue());
-					medicamentos.add(medicamento);
-				} catch (Exception e) {
-					System.out.println("ERRO LINHA=" + i);
-					logger.error("", e);
-
+				if (!tryReadAnvisaLine(iterator, medicamentos, i)) {
+					break;
 				}
 			}
 			return medicamentos;
@@ -238,6 +211,41 @@ public class LeitorArquivos {
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+
+	private static boolean tryReadAnvisaLine(Iterator<Row> iterator, ObservableList<Medicamento> medicamentos, int i) {
+		try {
+
+			Row next = iterator.next();
+			Medicamento medicamento = new Medicamento();
+			Cell cell0 = next.getCell(0);
+			if (cell0 == null) {
+				return false;
+			}
+			String registro;
+			if (cell0.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+				registro = Integer.toString((int) cell0.getNumericCellValue());
+			} else {
+				registro = cell0.getStringCellValue().replaceAll("\\D+", "");
+			}
+			medicamento.setRegistro(registro);
+			medicamento.setNome(next.getCell(1).getStringCellValue());
+			Cell cell = next.getCell(3);
+			String lote = "";
+			if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+				lote = Integer.toString((int) cell.getNumericCellValue());
+			} else if (cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING) {
+				lote = cell.getStringCellValue();
+			}
+			medicamento.setLote(lote);
+			medicamento.setQuantidade((int) next.getCell(4).getNumericCellValue());
+			medicamentos.add(medicamento);
+		} catch (Exception e) {
+			System.out.println("ERRO LINHA=" + i);
+			logger.error("", e);
+
+		}
+		return true;
 	}
 
 	public static void exportarArquivo(ObservableList<Medicamento> medicamentosLoja,

@@ -1,6 +1,7 @@
 package log.analyze;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -62,7 +63,7 @@ public class StatsLogAccess {
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));) {
+			try (PrintWriter out = new PrintWriter(new FileOutputStream(file));) {
 				Files.lines(path).forEach(out::println);
 			} catch (Exception e) {
 				LOGGER.error("", e);
@@ -76,22 +77,26 @@ public class StatsLogAccess {
 	public static void statisticaTamanhoArquivos() throws IOException {
 		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
 				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new FileOutputStream(new File("acessos.txt")));) {
+		try (PrintStream out = new PrintStream(new FileOutputStream(new File("acessos.txt")), true,
+				StandardCharsets.UTF_8.name());) {
 			for (Path path : lista) {
-				try {
-					Map<String, Long> stats = Files.lines(path)
-							.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
-							.collect(Collectors.groupingBy(tentarFuncao(linha -> linha.split(" ")[6]),
-									Collectors.counting()));
-					out.println(path + "--------------------------");
-
-					stats.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-							.forEach(entry -> out.println(entry.getKey() + "  ,  " + entry.getValue()));
-				} catch (Exception e) {
-					LOGGER.error("", e);
-				}
+				tryGetMeanSize(out, path);
 
 			}
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
+	}
+
+	private static void tryGetMeanSize(PrintStream out, Path path) {
+		try {
+			Map<String, Long> stats = Files.lines(path)
+					.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
+					.collect(Collectors.groupingBy(tentarFuncao(linha -> linha.split(" ")[6]), Collectors.counting()));
+			out.println(path + "--------------------------");
+
+			stats.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+					.forEach(entry -> out.println(entry.getKey() + "  ,  " + entry.getValue()));
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
@@ -100,7 +105,8 @@ public class StatsLogAccess {
 	public static void statisticaDemoraArquivo() throws IOException {
 		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
 				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new FileOutputStream(new File("acessos.txt")));) {
+		try (PrintStream out = new PrintStream(new FileOutputStream(new File("acessos.txt")), true,
+				StandardCharsets.UTF_8.name());) {
 			for (Path path : lista) {
 				try {
 					Map<String, LongSummaryStatistics> stats = Files.lines(path)

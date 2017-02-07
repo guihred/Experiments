@@ -63,10 +63,9 @@ public class Player {
 
 	public Rectangle2D getBoundary() {
 
-		Rectangle2D rectangle = new Rectangle2D(getPositionX() + colisionX, getPositionY() + colisionY, picture.getScaledWidth() - colisionX
+		return new Rectangle2D(getPositionX() + colisionX, getPositionY() + colisionY, picture.getScaledWidth() - colisionX
 				- colisionWidth,
 				picture.getScaledHeight() - colisionY - colisionHeight);
-		return rectangle;
 
 	}
 

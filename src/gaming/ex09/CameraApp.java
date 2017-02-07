@@ -6,11 +6,13 @@
 package gaming.ex09;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
@@ -26,21 +28,46 @@ import javafx.stage.Stage;
  * @author Note
  */
 public class CameraApp extends Application {
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	private double mouseXold = 0;
+	private double mouseYold = 0;
+	private final double rotateModifier = 25;
+	private final double sceneHeight = 600;
+	private final double sceneWidth = 600;
+	final Sphere sphere = new Sphere(50);
     private PerspectiveCamera camera;
     private final double cameraQuantity = 100.0;
-    private final double sceneWidth = 600;
-    private final double sceneHeight = 600;
-    private double mouseXold = 0;
-    private double mouseYold = 0;
     private final double cameraYLimit = 15;
-    private final double rotateModifier = 25;
+	final Box cube = new Box(50, 50, 50);
+	private Cylinder cylinder = new Cylinder(50, 100);
+	EventHandler<? super KeyEvent> keyBoardHandler = event -> {
+		double change = cameraQuantity;
+		KeyCode keycode = event.getCode();
+		if (keycode == KeyCode.W) {
+			camera.setTranslateZ(camera.getTranslateZ() + change);
+		}
+		if (keycode == KeyCode.S) {
+			camera.setTranslateZ(camera.getTranslateZ() - change);
+		}
 
-    public static void main(String[] args) {
+		if (keycode == KeyCode.A) {
+			camera.setTranslateX(camera.getTranslateX() - change);
+		}
+		if (keycode == KeyCode.D) {
+			camera.setTranslateX(camera.getTranslateX() + change);
+		}
 
-        launch(args);
-    }
+		if (keycode == KeyCode.SPACE) {
+			sphere.setVisible(true);
+			cube.setVisible(true);
+			cylinder.setVisible(true);
+		}
+	};
 
-    @Override
+	@Override
     public void start(Stage primaryStage) throws Exception {
         Group sceneRoot = new Group();
         Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight);
@@ -76,7 +103,6 @@ public class CameraApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        final Cylinder cylinder = new Cylinder(50, 100);
         cylinder.setRotationAxis(Rotate.X_AXIS);
         cylinder.setRotate(45);
         cylinder.setTranslateZ(-200);
@@ -84,13 +110,11 @@ public class CameraApp extends Application {
         final PhongMaterial greenMaterial = new PhongMaterial();
         greenMaterial.setDiffuseColor(Color.DARKGREEN);
         greenMaterial.setSpecularColor(Color.GREEN);
-        final Box cube = new Box(50, 50, 50);
         cube.setMaterial(greenMaterial);
 
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setDiffuseColor(Color.DARKRED);
         redMaterial.setSpecularColor(Color.RED);
-        final Sphere sphere = new Sphere(50);
         sphere.setMaterial(redMaterial);
 
         cube.setRotationAxis(Rotate.Y_AXIS);
@@ -120,29 +144,7 @@ public class CameraApp extends Application {
         blueMetal.setSpecularColor(Color.BLUE);
         cylinder.setMaterial(blueMetal);
 
-        scene.setOnKeyPressed(event -> {
-            double change = cameraQuantity;
-            KeyCode keycode = event.getCode();
-            if (keycode == KeyCode.W) {
-                camera.setTranslateZ(camera.getTranslateZ() + change);
-            }
-            if (keycode == KeyCode.S) {
-                camera.setTranslateZ(camera.getTranslateZ() - change);
-            }
-
-            if (keycode == KeyCode.A) {
-                camera.setTranslateX(camera.getTranslateX() - change);
-            }
-            if (keycode == KeyCode.D) {
-                camera.setTranslateX(camera.getTranslateX() + change);
-            }
-
-            if (keycode == KeyCode.SPACE) {
-                sphere.setVisible(true);
-                cube.setVisible(true);
-                cylinder.setVisible(true);
-            }
-        });
+		scene.setOnKeyPressed(keyBoardHandler);
 
         sceneRoot.getChildren().addAll(cylinder, cube, sphere);
     }

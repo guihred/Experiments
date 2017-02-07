@@ -89,7 +89,7 @@ public class Chapter1 {
 	}
 
 	/*
-	 * Didn�t you always hate it that you had to deal with checked exceptions in
+	 * Didn't you always hate it that you had to deal with checked exceptions in
 	 * a Runnable? Write a method uncheck that catches all checked exceptions
 	 * and turns them into unchecked exceptions. For example, new
 	 * Thread(uncheck( () -> { System.out.println("Zzz"); Thread.sleep(1000);

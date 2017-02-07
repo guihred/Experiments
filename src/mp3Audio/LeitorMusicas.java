@@ -78,12 +78,7 @@ public class LeitorMusicas {
 					if (leTag.getAlbum() != null) {
 						album = leTag.getAlbum();
 					}
-					try {
-						year = "" + leTag.getYear();
-					} catch (Exception e) {
-						LOGGER.error("", e);
-
-					}
+					year = trySetYear(year, leTag);
 					if (leTag.getGenre() != null) {
 						genre = leTag.getGenre();
 					}
@@ -99,16 +94,8 @@ public class LeitorMusicas {
 					if (leTag.getAlbum() != null) {
 						album = leTag.getAlbum();
 					}
-					try {
-						year = "" + leTag.getYear();
-					} catch (Exception e) {
-						LOGGER.error("", e);
-					}
-					try {
-						track = "" + leTag.getTrackNumber();
-					} catch (Exception e) {
-						LOGGER.error("", e);
-					}
+					year = trySetYear(year, leTag);
+					track = trySetTrack(track, leTag);
 					if (leTag.getGenre() != null) {
 						genre2 = leTag.getGenre();
 					}
@@ -138,6 +125,31 @@ public class LeitorMusicas {
 
 
 		return musica;
+	}
+
+
+	private static String trySetTrack(String track, ID3V2_3_0Tag leTag) {
+		try {
+			return "" + leTag.getTrackNumber();
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
+		return track;
+	}
+
+	private static String trySetYear(String y, ID3Tag leTag) {
+		try {
+			if (leTag instanceof ID3V1_0Tag) {
+				return "" + ((ID3V1_0Tag) leTag).getYear();
+			}
+			if (leTag instanceof ID3V2_3_0Tag) {
+				return "" + ((ID3V2_3_0Tag) leTag).getYear();
+			}
+
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
+		return y;
 	}
 
 	public static byte[] extractEmbeddedImageData(File mp3) {

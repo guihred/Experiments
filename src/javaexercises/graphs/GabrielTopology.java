@@ -1,5 +1,6 @@
 package javaexercises.graphs;
 
+import exercism.MatrixSolver;
 import java.util.List;
 import java.util.Random;
 
@@ -61,31 +62,9 @@ public class GabrielTopology extends GenTopology {
 		double dx = d.getLayoutX();
 		double[][] matrix = new double[][] { { ax, ay, ax * ax + ay * ay, 1 }, { bx, by, bx * bx + by * by, 1 }, { cx, cy, cx * cx + cy * cy, 1 },
 				{ dx, dy, dx * dx + dy * dy, 1 } };
-		return determinant(matrix);
+		return MatrixSolver.determinant(matrix);
 
 	}
 
-	public static double determinant(double[][] matrix) {
-		double sum = 0;
-		if (matrix.length == 1) {
-			return matrix[0][0];
-		}
-		for (int i = 0; i < matrix.length; i++) {
-			double[][] smaller = new double[matrix.length - 1][matrix.length - 1];
-			for (int a = 1; a < matrix.length; a++) {
-				for (int b = 0; b < matrix.length; b++) {
-					if (b < i) {
-						smaller[a - 1][b] = matrix[a][b];
-					} else if (b > i) {
-						smaller[a - 1][b - 1] = matrix[a][b];
-					}
-				}
-			}
-			int s = i % 2 == 0 ? 1 : -1;
-			sum += s * matrix[0][i] * determinant(smaller);
-		}
-		return sum;
-
-	}
 
 }

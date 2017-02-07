@@ -24,8 +24,8 @@ public class Chapter2 {
 	private static final String TXT_FILE = "warAndPeace.txt";
 
 	/*
-	 * Write a parallel version of the for loop in Section 2.1, �From Iteration
-	 * to Stream Operations,� on page 22. Obtain the number of processors. Make
+	 * Write a parallel version of the for loop in Section 2.1, From Iteration
+	 * to Stream Operations, on page 22. Obtain the number of processors. Make
 	 * that many separate threads, each working on a segment of the list, and
 	 * total up the results as they come in. (You don�t want the threads to
 	 * update a single counter. Why?)

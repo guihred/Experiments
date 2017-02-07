@@ -17,6 +17,8 @@ import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -32,41 +34,64 @@ import org.slf4j.LoggerFactory;
 
 public class GraphModelLauncher extends Application {
 	public final Logger logger = LoggerFactory.getLogger(getClass());
-	Graph graph = new Graph();
+	final Graph graph = new Graph();
+	ConvergeLayout convergeLayout = new ConvergeLayout(graph);
+	ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph), new CircleLayout(graph),
+			new RandomLayout(graph), new CustomLayout(graph), convergeLayout);
+	ChoiceBox<Layout> selectLayout = newSelect(layouts,
+			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
+	EventHandler<ActionEvent> shortestPathHandler = (ev) -> {
+		graph.getModel().clearSelected();
+		Stage dialog = new Stage();
+		dialog.setWidth(70);
+		dialog.initStyle(StageStyle.UTILITY);
+		ObservableList<String> cells = FXCollections.observableArrayList(
+				graph.getModel().getAllCells().stream().map(c -> c.getCellId()).collect(Collectors.toList()));
+		ChoiceBox<String> c1 = new ChoiceBox<>(cells);
+		ChoiceBox<String> c2 = new ChoiceBox<>(cells);
+		Scene scene = new Scene(new VBox(new Text("Source"), c1, new Text("Target"), c2, newButton("OK", (event) -> {
+			if (c1.getValue() != null && c2.getValue() != null) {
+				List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
+				chain.forEach(e -> {
+					e.setSelected(true);
+					e.getTarget().setSelected(true);
+					e.getSource().setSelected(true);
+				});
+			}
+			dialog.close();
+		})));
+		dialog.setScene(scene);
+		dialog.show();
+	};
+	EventHandler<ActionEvent> createTopologyHandler = (ev) -> {
+		graph.getModel().clearSelected();
+		graph.clean();
+		graph.getModel().removeAllCells();
+		graph.getModel().removeAllEdges();
+
+		String[] words = getWords();
+
+		Stream.of(words).sorted().forEach(a -> graph.getModel().addCell(a, CellType.CIRCLE));
+		for (String v : words) {
+			for (String w : words) {
+				if (oneCharOff(w, v)) {
+					graph.getModel().addBiEdge(v, w, 1);
+				}
+			}
+		}
+		graph.endUpdate();
+		Layout selectedItem = selectLayout.getSelectionModel().getSelectedItem();
+		if (selectedItem != null) {
+			selectedItem.execute();
+		}
+	};
 
 	@Override
 	public void start(Stage primaryStage) {
 		BorderPane root = new BorderPane();
 
-		graph = new Graph();
 		VBox vBox = new VBox();
-		vBox.getChildren().add(
-				newButton(
-						"Shortest Path",
-						(ev) -> {
-							graph.getModel().clearSelected();
-							Stage dialog = new Stage();
-							dialog.setWidth(70);
-							dialog.initStyle(StageStyle.UTILITY);
-							ObservableList<String> cells = FXCollections.observableArrayList(graph.getModel().getAllCells().stream()
-									.map(c -> c.getCellId()).collect(Collectors.toList()));
-							ChoiceBox<String> c1 = new ChoiceBox<>(cells);
-							ChoiceBox<String> c2 = new ChoiceBox<>(cells);
-							Scene scene = new Scene(new VBox(new Text("Source"), c1, new Text("Target"), c2, newButton("OK", (event) -> {
-								if (c1.getValue() != null && c2.getValue() != null) {
-									List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
-									chain.forEach(e -> {
-										e.setSelected(true);
-										e.getTarget().setSelected(true);
-										e.getSource().setSelected(true);
-									});
-								}
-								dialog.close();
-							})));
-							dialog.setScene(scene);
-							dialog.show();
-
-						}));
+		vBox.getChildren().add(newButton("Shortest Path", shortestPathHandler));
 		vBox.getChildren().add(newButton("Kruskal", (ev) -> {
 			graph.getModel().clearSelected();
 			List<Edge> prim = graph.getModel().kruskal();
@@ -92,7 +117,7 @@ public class GraphModelLauncher extends Application {
 		SimpleConverter<GenTopology> converterTopology = new SimpleConverter<>(l -> l.getName());
 		ChoiceBox<GenTopology> topologySelect = newSelect(topologies, converterTopology, "Select Topology");
 		vBox.getChildren().add(new HBox(topologySelect, newButton("Go", (e) -> topologySelect.getSelectionModel().getSelectedItem().execute())));
-		ConvergeLayout convergeLayout = new ConvergeLayout(graph);
+
 		Timeline timeline = new Timeline(new KeyFrame(new Duration(50.0), convergeLayout.eventHandler));
 		timeline.setCycleCount(Animation.INDEFINITE);
 		vBox.getChildren().add(newButton("Triangulate", (ev) -> {
@@ -127,32 +152,8 @@ public class GraphModelLauncher extends Application {
 		new CircleLayout(graph).execute();
 		layout.execute();
 		// @SuppressWarnings("static-access")
-		ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph), new CircleLayout(graph), new RandomLayout(graph),
-				new CustomLayout(graph), convergeLayout);
-		SimpleConverter<Layout> converter = new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", ""));
-		ChoiceBox<Layout> selectLayout = newSelect(layouts, converter, "Select Layout");
-		vBox.getChildren().add(newButton("Create Topology", (ev) -> {
-			graph.getModel().clearSelected();
-			graph.clean();
-			graph.getModel().removeAllCells();
-			graph.getModel().removeAllEdges();
 
-			String[] words = getWords();
-
-			Stream.of(words).sorted().forEach(a -> graph.getModel().addCell(a, CellType.CIRCLE));
-			for (String v : words) {
-				for (String w : words) {
-					if (oneCharOff(w, v)) {
-						graph.getModel().addBiEdge(v, w, 1);
-					}
-				}
-			}
-			graph.endUpdate();
-			Layout selectedItem = selectLayout.getSelectionModel().getSelectedItem();
-			if (selectedItem != null) {
-				selectedItem.execute();
-			}
-		}));
+		vBox.getChildren().add(newButton("Create Topology", createTopologyHandler));
 		vBox.getChildren().add(new HBox(selectLayout, newButton("Go", (e) -> selectLayout.getSelectionModel().getSelectedItem().execute())));
 		vBox.getChildren().add(newButton("Pause/Play", (ev) -> {
 			Status status = timeline.getStatus();

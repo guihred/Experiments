@@ -1,4 +1,4 @@
-package fxsamples;
+package xylophone;
 /*
  * Copyright (c) 2008, 2014, Oracle and/or its affiliates.
  * All rights reserved. Use is subject to license terms.
@@ -31,6 +31,7 @@ package fxsamples;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import fxsamples.Xform;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.*;
@@ -41,42 +42,42 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import others.SimpleTimelineBuilder;
 
 public class XylophoneApp extends Application {
 
-	private Timeline animation;
-	private Timeline animation2;
+	Xform sceneRoot = new Xform();
+	private Timeline animation = new SimpleTimelineBuilder().keyFrames(
+			new KeyFrame(Duration.ZERO,
+					new KeyValue(sceneRoot.ry.angleProperty(), 390d,
+							Interpolator.TANGENT(Duration.seconds(0.5), 390d, Duration.seconds(0.5), 390d))),
+			new KeyFrame(Duration.seconds(2), new KeyValue(sceneRoot.ry.angleProperty(), 30d,
+					Interpolator.TANGENT(Duration.seconds(0.5), 30d, Duration.seconds(0.5), 30d))))
+
+			.build();
+	private Timeline animation2 = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE).keyFrames(
+			new KeyFrame(Duration.ZERO,
+					new KeyValue(sceneRoot.rx.angleProperty(), 60d, Interpolator.TANGENT(Duration.seconds(1.0), 60d))),
+			new KeyFrame(Duration.seconds(4),
+					new KeyValue(sceneRoot.rx.angleProperty(), 80d, Interpolator.TANGENT(Duration.seconds(1.0), 80d))),
+			new KeyFrame(Duration.seconds(8),
+					new KeyValue(sceneRoot.rx.angleProperty(), 60d, Interpolator.TANGENT(Duration.seconds(1.0), 60d))))
+			.build();
+	// I didn't have any xylophone sounds so I added piano sounds :P
+	final AudioClip bar1Note = new AudioClip(XylophoneApp.class.getResource("C.wav").toString());
+	final AudioClip bar2Note = new AudioClip(XylophoneApp.class.getResource("D.wav").toString());
+	final AudioClip bar3Note = new AudioClip(XylophoneApp.class.getResource("E.wav").toString());
+	final AudioClip bar4Note = new AudioClip(XylophoneApp.class.getResource("F.wav").toString());
+	final AudioClip bar5Note = new AudioClip(XylophoneApp.class.getResource("G.wav").toString());
+	final AudioClip bar6Note = new AudioClip(XylophoneApp.class.getResource("A.wav").toString());
+	final AudioClip bar7Note = new AudioClip(XylophoneApp.class.getResource("B.wav").toString());
+	final AudioClip bar8Note = new AudioClip(XylophoneApp.class.getResource("mC.wav").toString());
 
 	public Parent createContent() {
-		Xform sceneRoot = new Xform();
 		sceneRoot.rx.setAngle(45.0);
 		sceneRoot.ry.setAngle(30.0);
 		sceneRoot.setScale(2 * 1.5);
 
-		final AudioClip bar1Note = new AudioClip(XylophoneApp.class
-				.getResource("shared-resources/Note1.wav")
-				.toString());
-		final AudioClip bar2Note = new AudioClip(XylophoneApp.class
-				.getResource("shared-resources/Note2.wav")
-				.toString());
-		final AudioClip bar3Note = new AudioClip(XylophoneApp.class
-				.getResource("shared-resources/Note3.wav")
-				.toString());
-		final AudioClip bar4Note = new AudioClip(XylophoneApp.class
-				.getResource("shared-resources/Note4.wav")
-				.toString());
-		final AudioClip bar5Note = new AudioClip(XylophoneApp.class
-				.getResource("shared-resources/Note5.wav")
-				.toString());
-		final AudioClip bar6Note = new AudioClip(XylophoneApp.class
-				.getResource("shared-resources/Note6.wav")
-				.toString());
-		final AudioClip bar7Note = new AudioClip(XylophoneApp.class
-				.getResource("shared-resources/Note7.wav")
-				.toString());
-		final AudioClip bar8Note = new AudioClip(XylophoneApp.class
-				.getResource("shared-resources/Note8.wav")
-				.toString());
 
 		Group rectangleGroup = new Group();
 
@@ -85,19 +86,16 @@ public class XylophoneApp extends Application {
 		double yPos = 25.0;
 		double barWidth = 22.0;
 		double barDepth = 7.0;
-
 		// Base1
 		Box base1Cube = new Box(barWidth * 11.5, barDepth * 2.0, 10.0);
-		base1Cube
-				.setMaterial(new PhongMaterial(new Color(0.2, 0.12, 0.1, 1.0)));
+		base1Cube.setMaterial(new PhongMaterial(new Color(0.2, 0.12, 0.1, 1.0)));
 		base1Cube.setTranslateX(xStart + 128);
 		base1Cube.setTranslateZ(yPos + 20.0);
 		base1Cube.setTranslateY(11.0);
 
 		// Base2
 		Box base2Cube = new Box(barWidth * 11.5, barDepth * 2.0, 10.0);
-		base2Cube
-				.setMaterial(new PhongMaterial(new Color(0.2, 0.12, 0.1, 1.0)));
+		base2Cube.setMaterial(new PhongMaterial(new Color(0.2, 0.12, 0.1, 1.0)));
 		base2Cube.setTranslateX(xStart + 128);
 		base2Cube.setTranslateZ(yPos - 20.0);
 		base2Cube.setTranslateY(11.0);
@@ -131,13 +129,11 @@ public class XylophoneApp extends Application {
 		bar5Cube.setMaterial(new PhongMaterial(Color.GREENYELLOW));
 		bar5Cube.setTranslateX(xStart + 5 * xOffset);
 		bar5Cube.setTranslateZ(yPos);
-
 		// Bar6
 		Box bar6Cube = new Box(barWidth, barDepth, 75);
 		bar6Cube.setMaterial(new PhongMaterial(Color.YELLOW));
 		bar6Cube.setTranslateX(xStart + 6 * xOffset);
 		bar6Cube.setTranslateZ(yPos);
-
 		// Bar7
 		Box bar7Cube = new Box(barWidth, barDepth, 70);
 		bar7Cube.setMaterial(new PhongMaterial(Color.ORANGE));
@@ -158,46 +154,14 @@ public class XylophoneApp extends Application {
 		bar6Cube.setOnMousePressed((MouseEvent me) -> bar6Note.play());
 		bar7Cube.setOnMousePressed((MouseEvent me) -> bar7Note.play());
 		bar8Cube.setOnMousePressed((MouseEvent me) -> bar8Note.play());
-		rectangleGroup.getChildren().addAll(base1Cube, base2Cube, bar1Cube,
-				bar2Cube, bar3Cube, bar4Cube, bar5Cube, bar6Cube, bar7Cube,
-				bar8Cube);
+		rectangleGroup.getChildren().addAll(base1Cube, base2Cube, bar1Cube, bar2Cube, bar3Cube, bar4Cube, bar5Cube,
+				bar6Cube, bar7Cube, bar8Cube);
 		sceneRoot.getChildren().add(rectangleGroup);
-
-		animation = new Timeline();
-		animation.getKeyFrames().addAll(
-				new KeyFrame(Duration.ZERO, new KeyValue(
-						sceneRoot.ry.angleProperty(), 390d,
-						Interpolator.TANGENT(Duration.seconds(0.5), 390d,
-								Duration.seconds(0.5), 390d))),
-				new KeyFrame(Duration.seconds(2),
-						new KeyValue(sceneRoot.ry.angleProperty(), 30d,
-								Interpolator.TANGENT(Duration.seconds(0.5),
-										30d, Duration.seconds(0.5), 30d))));
-
-		animation2 = new Timeline();
-		animation2.getKeyFrames().addAll(
-				new KeyFrame(Duration.ZERO, new KeyValue(
-						sceneRoot.rx.angleProperty(), 60d,
-						Interpolator.TANGENT(Duration.seconds(1.0), 60d))),
-				new KeyFrame(Duration.seconds(4), new KeyValue(sceneRoot.rx
-						.angleProperty(), 80d, Interpolator.TANGENT(
-						Duration.seconds(1.0), 80d))),
-				new KeyFrame(Duration.seconds(8), new KeyValue(sceneRoot.rx
-						.angleProperty(), 60d, Interpolator.TANGENT(
-						Duration.seconds(1.0), 60d))));
-		animation2.setCycleCount(Animation.INDEFINITE);
-
 		PerspectiveCamera camera = new PerspectiveCamera();
-
-		SubScene subScene = new SubScene(sceneRoot, 780 * 1.5, 380 * 1.5, true,
-				SceneAntialiasing.BALANCED);
+		SubScene subScene = new SubScene(sceneRoot, 780 * 1.5, 380 * 1.5, true, SceneAntialiasing.BALANCED);
 		subScene.setCamera(camera);
-
-		sceneRoot.translateXProperty().bind(
-				subScene.widthProperty().divide(2.2));
-		sceneRoot.translateYProperty().bind(
-				subScene.heightProperty().divide(1.6));
-
+		sceneRoot.translateXProperty().bind(subScene.widthProperty().divide(2.2));
+		sceneRoot.translateYProperty().bind(subScene.heightProperty().divide(1.6));
 		return new Group(subScene);
 	}
 

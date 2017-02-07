@@ -9,7 +9,7 @@ public class FxProCH5Model {
 
     public ObservableList<Person> getTeamMembers() {
         ObservableList<Person> teamMembers = FXCollections.observableArrayList();
-        for (int i = 1; i <= 10000; i++) {
+		for (int i = 1; i <= 100; i++) {
             teamMembers.add(new Person("FirstName" + i,
                     "LastName" + i,
                     "Phone" + i));

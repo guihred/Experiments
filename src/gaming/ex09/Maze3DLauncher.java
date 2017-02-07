@@ -30,7 +30,6 @@ public class Maze3DLauncher extends Application {
                     if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                         double pitchRotate = rotate.getAngle() + (mouseYnew - mouseYold) / 1;
                         rotate.setAngle(pitchRotate);
-
                     }
                     mouseYold = mouseYnew;
                 }

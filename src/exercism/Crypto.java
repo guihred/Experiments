@@ -5,6 +5,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * The Class Crypto.
+ * 
+ * Implement the classic method for composing secret messages called a square
+ * code.
+ * 
+ * Given an English text, output the encoded version of that text.
+ * 
+ * First, the input is normalized: the spaces and punctuation are removed from
+ * the English text and the message is downcased.
+ * 
+ * Then, the normalized characters are broken into rows. These rows can be
+ * regarded as forming a rectangle when printed with intervening newlines.
+ */
 class Crypto {
 
 	private String plainText;

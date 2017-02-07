@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class NucleotideTest {
+public class DNATest {
 
 	@Test
 	public void testEmptyDnaStringHasNoAdenosine() {

@@ -59,7 +59,7 @@ public class FxProCH2e extends Application {
     /**
      * The moving ball
      */
-    Circle ball;
+	Circle ball = new SimpleCircleBuilder().radius(5.0).fill(Color.RED).build();
     /**
      * The Group containing all of the walls, paddles, and ball. This also
      * allows us to requestFocus for KeyEvents on the Group
@@ -73,36 +73,41 @@ public class FxProCH2e extends Application {
     /**
      * The walls
      */
-    Rectangle topWall;
-    Rectangle rightWall;
-    Rectangle leftWall;
-    Rectangle bottomWall;
-    Button startButton;
-    /**
-     * Controls whether the startButton is visible
-     */
-    BooleanProperty startVisible = new SimpleBooleanProperty(true);
-    /**
-     * Controls whether the ball is moving right
-     */
-    boolean movingRight = true;
-    /**
-     * Controls whether the ball is moving down
-     */
-    boolean movingDown = true;
-    /**
-     * The animation of the ball
-     */
+	/**
+	 * Controls whether the startButton is visible
+	 */
+	BooleanProperty startVisible = new SimpleBooleanProperty(true);
+	Rectangle topWall = new SimpleRectangleBuilder().x(0).y(0).width(500).height(1).build();
+	Rectangle rightWall = new SimpleRectangleBuilder().x(500).y(0).width(1).height(500).build();
+	Rectangle leftWall = new SimpleRectangleBuilder().x(0).y(0).width(1).height(500).build();
+	Rectangle bottomWall = new SimpleRectangleBuilder().x(0).y(500).width(500).height(1).build();
+	/**
+	 * Controls whether the ball is moving right
+	 */
+	boolean movingRight = true;
+	/**
+	 * Controls whether the ball is moving down
+	 */
+	boolean movingDown = true;
+	/**
+	 * The animation of the ball
+	 */
 	Timeline pongAnimation = new SimpleTimelineBuilder()
 			.cycleCount(Animation.INDEFINITE)
 			.keyFrames(new KeyFrame(
 					new Duration(10.0), (t) -> {
-                                checkForCollision();
-                                int horzPixels = movingRight ? 1 : -1;
-                                int vertPixels = movingDown ? 1 : -1;
-                                centerX.setValue(centerX.getValue() + horzPixels);
-                                centerY.setValue(centerY.getValue() + vertPixels);
-                            })).build();
+						checkForCollision();
+						int horzPixels = movingRight ? 1 : -1;
+						int vertPixels = movingDown ? 1 : -1;
+						centerX.setValue(centerX.getValue() + horzPixels);
+						centerY.setValue(centerY.getValue() + vertPixels);
+					}))
+			.build();
+	Button startButton = newButton(225, 470, "Start!", (e) -> {
+		startVisible.set(false);
+		pongAnimation.playFromStart();
+		pongComponents.requestFocus();
+	});
 
     /**
      * Sets the initial starting positions of the ball and paddles
@@ -159,12 +164,6 @@ public class FxProCH2e extends Application {
 					rightPaddleY.setValue(initRightPaddleTranslateY + dragY);
 				})
                 .build();
-		startButton = newButton(225, 470, "Start!", (e) -> {
-                    startVisible.set(false);
-                    pongAnimation.playFromStart();
-                    pongComponents.requestFocus();
-                })
-		;
 		leftPaddle = new SimpleRectangleBuilder()
                 .x(20)
                 .width(10)
@@ -180,34 +179,7 @@ public class FxProCH2e extends Application {
                     leftPaddleY.setValue(initLeftPaddleTranslateY + dragY);
                 })
                 .build();
-		bottomWall = new SimpleRectangleBuilder()
-                .x(0)
-                .y(500)
-                .width(500)
-                .height(1)
-                .build();
-		rightWall = new SimpleRectangleBuilder()
-                .x(500)
-                .y(0)
-                .width(1)
-                .height(500)
-                .build();
-		leftWall = new SimpleRectangleBuilder()
-                .x(0)
-                .y(0)
-                .width(1)
-                .height(500)
-                .build();
-		topWall = new SimpleRectangleBuilder()
-                .x(0)
-                .y(0)
-                .width(500)
-                .height(1)
-                .build();
-		ball = new SimpleCircleBuilder()
-                .radius(5.0)
-				.fill(Color.RED)
-                .build();
+
 		pongComponents = new Group(topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton,
 				ball);
 		pongComponents.setFocusTraversable(true);

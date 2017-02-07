@@ -1,10 +1,12 @@
 package fxsamples;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -25,7 +27,41 @@ public class SimpleScene3D extends Application {
 	private double mouseYold = 0;
 	private final double cameraYlimit = 15;
 	private final double rotateModifier = 25;
-
+	EventHandler<? super MouseEvent> mouseHandler = event -> {
+		Node picked = event.getPickResult().getIntersectedNode();
+		if (null != picked) {
+			double scalar = 2;
+			if (picked.getScaleX() > 1) {
+				scalar = 1;
+			}
+			picked.setScaleX(scalar);
+			picked.setScaleY(scalar);
+			picked.setScaleZ(scalar);
+		}
+	};
+	EventHandler<? super KeyEvent> keyPressedHandler = event -> {
+		double change = cameraQuantity;
+		// Add shift modifier to simulate "Running Speed"
+		if (event.isShiftDown()) {
+			change = cameraModifier;
+		}
+		// What key did the user press?
+		KeyCode keycode = event.getCode();
+		// Step 2c: Add Zoom controls
+		if (keycode == KeyCode.W) {
+			camera.setTranslateZ(camera.getTranslateZ() + change);
+		}
+		if (keycode == KeyCode.S) {
+			camera.setTranslateZ(camera.getTranslateZ() - change);
+		}
+		// Step 2d: Add Strafe controls
+		if (keycode == KeyCode.A) {
+			camera.setTranslateX(camera.getTranslateX() - change);
+		}
+		if (keycode == KeyCode.D) {
+			camera.setTranslateX(camera.getTranslateX() + change);
+		}
+	};
 	@Override
 	public void start(Stage primaryStage) {
 		// Step 1a: Build your Scene and Camera
@@ -78,43 +114,12 @@ public class SimpleScene3D extends Application {
 		sceneRoot.getChildren().addAll(primitiveGroup);
 		// End Step 1e
 		// Step 2a: Primitive Picking for Primitives
-		scene.setOnMouseClicked(event -> {
-			Node picked = event.getPickResult().getIntersectedNode();
-			if (null != picked) {
-				double scalar = 2;
-				if (picked.getScaleX() > 1) {
-					scalar = 1;
-				}
-				picked.setScaleX(scalar);
-				picked.setScaleY(scalar);
-				picked.setScaleZ(scalar);
-			}
-		});
+
+		scene.setOnMouseClicked(mouseHandler);
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
-		scene.setOnKeyPressed(event -> {
-			double change = cameraQuantity;
-			// Add shift modifier to simulate "Running Speed"
-			if (event.isShiftDown()) {
-				change = cameraModifier;
-			}
-			// What key did the user press?
-			KeyCode keycode = event.getCode();
-			// Step 2c: Add Zoom controls
-			if (keycode == KeyCode.W) {
-				camera.setTranslateZ(camera.getTranslateZ() + change);
-			}
-			if (keycode == KeyCode.S) {
-				camera.setTranslateZ(camera.getTranslateZ() - change);
-			}
-			// Step 2d: Add Strafe controls
-			if (keycode == KeyCode.A) {
-				camera.setTranslateX(camera.getTranslateX() - change);
-			}
-			if (keycode == KeyCode.D) {
-				camera.setTranslateX(camera.getTranslateX() + change);
-			}
-		});
+
+		scene.setOnKeyPressed(keyPressedHandler);
 		// End Step 2b-d
 		// Step 3: Add a Camera Control Mouse Event handler
 		Rotate xRotate = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
