@@ -1,4 +1,4 @@
-package exp1;
+package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -29,11 +30,12 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class Experiment3DWallTexture extends Application {
-	private static final Image WALL_IMAGE = new Image(Experiment3DWallTexture.class.getResource("wall.jpg").toString());
+public class Labyrinth3DMouseControl extends Application {
+	private static final Image WALL_IMAGE = new Image(
+			Labyrinth3DMouseControl.class.getResource("wall.jpg").toString());
 	private static final Image WALL_IMAGE2 = new Image(
-			Experiment3DWallTexture.class.getResource("wall2.jpg").toString());
-	public static final Image OOZE_IMAGE = new Image(Experiment3DWallTexture.class.getResource("ooze.jpg").toString());
+			Labyrinth3DMouseControl.class.getResource("wall2.jpg").toString());
+
 
 	private class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
@@ -237,9 +239,9 @@ public class Experiment3DWallTexture extends Application {
 	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 
-	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
+	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
 
-	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 
 	public static final Random random = new Random();
 
@@ -385,6 +387,20 @@ public class Experiment3DWallTexture extends Application {
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
 		sc.setOnKeyPressed(new MovimentacaoTeclado(root, camera, ghostCount));
+
+		sc.setOnMouseMoved(new EventHandler<MouseEvent>() {
+
+			private double mousePosX;
+			private double mouseOldX;
+
+			@Override
+			public void handle(MouseEvent me) {
+				mouseOldX = mousePosX;
+				mousePosX = me.getX();
+				double mouseDeltaX = mousePosX - mouseOldX;
+				camera.setRotate(camera.getRotate() + mouseDeltaX);
+			}
+		});
 
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);

@@ -1,4 +1,4 @@
-package exp1;
+package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
@@ -14,11 +14,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
@@ -27,7 +29,11 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class Experiment3DKillerGhostsAndBalls extends Application {
+public class Labyrinth3DWallTexture extends Application {
+	private static final Image WALL_IMAGE = new Image(Labyrinth3DWallTexture.class.getResource("wall.jpg").toString());
+	private static final Image WALL_IMAGE2 = new Image(
+			Labyrinth3DWallTexture.class.getResource("wall2.jpg").toString());
+	public static final Image OOZE_IMAGE = new Image(Labyrinth3DWallTexture.class.getResource("ooze.jpg").toString());
 
 	private class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
@@ -41,43 +47,43 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 		@Override
 		public void handle(long now) {
 			for (int i = 0; i < animais.length; i++) {
-				MeshView animal = animais[i];
+				MeshView enemy = animais[i];
 
 				final int STEP = 1;
 				if (direction[i] == 3) {// NORTH
-					animal.setTranslateZ(animal.getTranslateZ() + STEP);
+					enemy.setTranslateZ(enemy.getTranslateZ() + STEP);
 				}
 				if (direction[i] == 2) {// WEST
-					animal.setTranslateX(animal.getTranslateX() - STEP);
+					enemy.setTranslateX(enemy.getTranslateX() - STEP);
 				}
 				if (direction[i] == 1) {// SOUTH
-					animal.setTranslateZ(animal.getTranslateZ() - STEP);
+					enemy.setTranslateZ(enemy.getTranslateZ() - STEP);
 				}
 				if (direction[i] == 0) {// EAST
-					animal.setTranslateX(animal.getTranslateX() + STEP);
+					enemy.setTranslateX(enemy.getTranslateX() + STEP);
 				}
-				if (checkColision(animal.getBoundsInParent())
-						|| animal.getTranslateZ() < 0
-						|| animal.getTranslateZ() > mapa[0].length * SIZE
+				if (checkColision(enemy.getBoundsInParent())
+						|| enemy.getTranslateZ() < 0
+						|| enemy.getTranslateZ() > mapa[0].length * SIZE
 
-						|| animal.getTranslateX() < 0
-						|| animal.getTranslateX() > mapa.length * SIZE
+						|| enemy.getTranslateX() < 0
+						|| enemy.getTranslateX() > mapa.length * SIZE
 
 				) {
 					if (direction[i] == 3) {// NORTH
-						animal.setTranslateZ(animal.getTranslateZ() - STEP);
+						enemy.setTranslateZ(enemy.getTranslateZ() - STEP);
 					}
 					if (direction[i] == 2) {// WEST
-						animal.setTranslateX(animal.getTranslateX() + STEP);
+						enemy.setTranslateX(enemy.getTranslateX() + STEP);
 					}
 					if (direction[i] == 1) {// SOUTH
-						animal.setTranslateZ(animal.getTranslateZ() + STEP);
+						enemy.setTranslateZ(enemy.getTranslateZ() + STEP);
 					}
 					if (direction[i] == 0) {// EAST
-						animal.setTranslateX(animal.getTranslateX() - STEP);
+						enemy.setTranslateX(enemy.getTranslateX() - STEP);
 					}
-					animal.setRotationAxis(Rotate.Y_AXIS);
-					animal.setRotate(direction[i] * 90);
+					enemy.setRotationAxis(Rotate.Y_AXIS);
+					enemy.setRotate(direction[i] * 90);
 					direction[i] = random.nextInt(4);
 
 				}
@@ -85,7 +91,7 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 					direction[i] = random.nextInt(4);
 				}
 				if (camera.getBoundsInParent().intersects(
-						animal.getBoundsInParent())) {
+						enemy.getBoundsInParent())) {
 					movimentacao.stop();
 					Stage dialogStage = new Stage();
 					dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -98,7 +104,7 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 						dialogStage.close();
 					});
 					VBox vbox = new VBox();
-					vbox.getChildren().addAll(new Text("Você Morreu"), button);
+					vbox.getChildren().addAll(new Text("Voc� Morreu"), button);
 					vbox.setAlignment(Pos.CENTER);
 					vbox.setPadding(new Insets(5));
 					dialogStage.setScene(new Scene(vbox));
@@ -231,9 +237,9 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 
-	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
+	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
 
-	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 
 	public static final Random random = new Random();
 
@@ -258,7 +264,8 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 
 	private boolean checkColision(Bounds boundsInParent) {
 		Stream<Bounds> walls = Stream.of(labirynthWalls)
-				.flatMap(l -> Stream.of(l)).map(Cube::getBoundsInParent);
+				.flatMap(l -> Stream.of(l)).parallel()
+				.map(Cube::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
 
@@ -266,7 +273,7 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube wall = new Cube(SIZE, Color.BLUE);
+				Cube wall = new Cube(SIZE, Color.BLUE, WALL_IMAGE, WALL_IMAGE2);
 				wall.setTranslateX(i * SIZE);
 				wall.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {
@@ -285,30 +292,30 @@ public class Experiment3DKillerGhostsAndBalls extends Application {
 		}
 	}
 
-	private MeshView generateGhost(String arquivo, Color animalColor) {
+	private MeshView generateGhost(String arquivo, Color enemyColor) {
 		File file = new File(arquivo);
 		StlMeshImporter importer = new StlMeshImporter();
 		importer.read(file);
 		Mesh mesh = importer.getImport();
-		MeshView animal = new MeshView(mesh);
-		PhongMaterial sample = new PhongMaterial(animalColor);
-		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
-		animal.setMaterial(sample);
-		animal.setTranslateY(14);
+		MeshView enemy = new MeshView(mesh);
 
+		PhongMaterial sample = new PhongMaterial(enemyColor);
+		sample.setSpecularColor(lightColor);
+		enemy.setMaterial(sample);
+		enemy.setTranslateY(14);
+		enemy.setDrawMode(DrawMode.FILL);
 		int posicaoInicialZ = random.nextInt(mapa[0].length * SIZE);
-		animal.setTranslateZ(posicaoInicialZ);
+		enemy.setTranslateZ(posicaoInicialZ);
 		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
-		animal.setTranslateX(posicaoInicialX);
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
+		enemy.setTranslateX(posicaoInicialX);
+		while (checkColision(enemy.getBoundsInParent())) {
+			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
+			enemy.setTranslateX(enemy.getTranslateX() + 1);
 		}
-		animal.setScaleX(0.4);
-		animal.setScaleY(1);
-		animal.setScaleZ(0.4);
-		return animal;
+		enemy.setScaleX(0.4);
+		enemy.setScaleY(1);
+		enemy.setScaleZ(0.4);
+		return enemy;
 	}
 
 	@Override

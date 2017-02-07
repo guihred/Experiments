@@ -1,4 +1,4 @@
-package exp1;
+package labyrinth;
 
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-public class Experiment3DCollisions extends Application {
+public class Labyrinth3DCollisions extends Application {
 	private final double cameraModifier = 50.0;
 	private final double cameraQuantity = 5.0;
 

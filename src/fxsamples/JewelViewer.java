@@ -1,6 +1,5 @@
 package fxsamples;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import exp1.Experiment3DWallTexture;
 import java.io.File;
 import javafx.application.Application;
 import javafx.scene.*;
@@ -11,6 +10,7 @@ import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import labyrinth.Labyrinth3DWallTexture;
 
 public class JewelViewer extends Application {
 
@@ -27,7 +27,7 @@ public class JewelViewer extends Application {
 	private Group root;
 	private PointLight pointLight;
 
-	private static final String MESH_FILENAME = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	private static final String MESH_FILENAME = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 	static MeshView loadMeshViews() {
 		File file = new File(MESH_FILENAME);
 		StlMeshImporter importer = new StlMeshImporter();

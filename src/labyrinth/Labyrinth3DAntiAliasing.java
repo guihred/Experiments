@@ -1,4 +1,4 @@
-package exp1;
+package labyrinth;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-public class Experiment3DAntiAliasing extends Application {
+public class Labyrinth3DAntiAliasing extends Application {
 	private final double cameraModifier = 50.0;
 	private final double cameraQuantity = 10.0;
 

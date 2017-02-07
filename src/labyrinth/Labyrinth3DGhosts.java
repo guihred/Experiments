@@ -1,4 +1,4 @@
-package exp1;
+package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
@@ -6,25 +6,19 @@ import java.util.Random;
 import java.util.stream.Stream;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class Experiment3DKillerGhosts extends Application {
+public class Labyrinth3DGhosts extends Application {
+	private final double cameraModifier = 50.0;
+	private final double cameraQuantity = 5.0;
 	private static final Color lightColor = Color.rgb(125, 125, 125);
 
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
@@ -54,7 +48,20 @@ public class Experiment3DKillerGhosts extends Application {
 
 		Group root = new Group();
 
-		criarLabirinto(root);
+		for (int i = mapa.length - 1; i >= 0; i--) {
+			for (int j = mapa[i].length - 1; j >= 0; j--) {
+				String string = mapa[i][j];
+				Cube rectangle = new Cube(SIZE, Color.BLUE);
+				rectangle.setTranslateX(i * SIZE);
+				rectangle.setTranslateZ(j * SIZE);
+				if ("_".equals(string)) {
+					rectangle.ry.setAngle(90);
+				}
+				cubes[i][j] = rectangle;
+
+				root.getChildren().add(rectangle);
+			}
+		}
 		SubScene subScene = new SubScene(root, 640, 480, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
@@ -71,30 +78,17 @@ public class Experiment3DKillerGhosts extends Application {
 		root.getChildren().add(sun);
 
 		MeshView[] fantasmas = { 
-				gerarFantasma(MESH_GHOST, Color.AQUAMARINE),
-				gerarFantasma(MESH_GHOST, Color.BROWN),
-				gerarFantasma(MESH_GHOST, Color.CHARTREUSE),
-				gerarFantasma(MESH_GHOST, Color.DODGERBLUE),
-				gerarFantasma(MESH_GHOST, Color.FUCHSIA),
-				gerarFantasma(MESH_GHOST, Color.GREEN),
-				gerarFantasma(MESH_GHOST, Color.HOTPINK),
-				gerarFantasma(MESH_GHOST, Color.INDIGO),
-				gerarFantasma(MESH_GHOST, Color.KHAKI),
-				gerarFantasma(MESH_GHOST, Color.LIGHTSALMON),
-				gerarFantasma(MESH_GHOST, Color.MIDNIGHTBLUE),
-				gerarFantasma(MESH_GHOST, Color.NAVY),
-				gerarFantasma(MESH_GHOST, Color.ORCHID),
-				gerarFantasma(MESH_GHOST, Color.PURPLE),
-				gerarFantasma(MESH_GHOST, Color.RED),
-				gerarFantasma(MESH_GHOST, Color.SLATEBLUE),
-				gerarFantasma(MESH_GHOST, Color.TRANSPARENT),
-				gerarFantasma(MESH_GHOST, Color.VIOLET),
-				gerarFantasma(MESH_GHOST, Color.WHITESMOKE),
-				gerarFantasma(MESH_GHOST, Color.YELLOWGREEN),
+				gerarAnimal(MESH_GHOST, Color.AQUAMARINE),
+				gerarAnimal(MESH_GHOST, Color.BEIGE),
+				gerarAnimal(MESH_GHOST, Color.BLUEVIOLET),
+				gerarAnimal(MESH_GHOST, Color.CORNFLOWERBLUE),
+				gerarAnimal(MESH_GHOST, Color.DEEPPINK),
+				gerarAnimal(MESH_GHOST, Color.DEEPSKYBLUE),
+				gerarAnimal(MESH_GHOST, Color.LIGHTGREEN),
+
 		};
 
-		movimentacao = new MovimentacaoAleatoria(fantasmas);
-		movimentacao.start();
+		new MovimentacaoAleatoria(fantasmas).start();
 
 		root.getChildren().addAll(fantasmas);
 
@@ -102,80 +96,7 @@ public class Experiment3DKillerGhosts extends Application {
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
-		sc.setOnKeyPressed(new MovimentacaoTeclado(camera));
-
-		primaryStage.setTitle("EXP 1: Labyrinth");
-		primaryStage.setScene(sc);
-		// primaryStage.initStyle(StageStyle.TRANSPARENT);
-		primaryStage.show();
-	}
-
-	private void criarLabirinto(Group root) {
-		for (int i = mapa.length - 1; i >= 0; i--) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				Cube rectangle = new Cube(SIZE, Color.BLUE);
-				rectangle.setTranslateX(i * SIZE);
-				rectangle.setTranslateZ(j * SIZE);
-				if ("_".equals(string)) {
-					rectangle.ry.setAngle(90);
-				}
-				cubes[i][j] = rectangle;
-				root.getChildren().add(rectangle);
-			}
-		}
-	}
-
-	boolean checkColision(Bounds boundsInParent) {
-		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(Cube::getBoundsInParent);
-		return walls.anyMatch(b -> b.intersects(boundsInParent));
-	}
-
-	static final String MESH_MINOTAUR = Experiment3DWallTexture.class.getResource("Minotaur.stl").getFile();
-	private static final String MESH_GHOST = Experiment3DWallTexture.class.getResource("ghost2.STL").getFile();
-	private MovimentacaoAleatoria movimentacao;
-
-	private MeshView gerarFantasma(String arquivo, Color animalColor) {
-		File file = new File(arquivo);
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
-		MeshView animal = new MeshView(mesh);
-		PhongMaterial sample = new PhongMaterial(animalColor);
-		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
-		animal.setMaterial(sample);
-		animal.setTranslateY(14);
-
-		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
-		animal.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
-		animal.setTranslateX(posicaoInicialX);
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
-		}
-
-
-		animal.setScaleX(0.4);
-		animal.setScaleY(1);
-		animal.setScaleZ(0.4);
-
-		return animal;
-	}
-
-	private class MovimentacaoTeclado implements EventHandler<KeyEvent> {
-		private final double cameraModifier = 50.0;
-		private final double cameraQuantity = 5.0;
-		private PerspectiveCamera camera;
-
-		public MovimentacaoTeclado(PerspectiveCamera camera) {
-			this.camera = camera;
-		}
-
-		@Override
-		public void handle(KeyEvent event) {
+		sc.setOnKeyPressed(event -> {
 			double change = cameraQuantity;
 			// Add shift modifier to simulate "Running Speed"
 			if (event.isShiftDown()) {
@@ -230,7 +151,51 @@ public class Experiment3DKillerGhosts extends Application {
 				camera.setRotationAxis(Rotate.Y_AXIS);
 				camera.setRotate(camera.getRotate() + change);
 			}
+		});
+
+		primaryStage.setTitle("EXP 1: Labyrinth");
+		primaryStage.setScene(sc);
+//		primaryStage.initStyle(StageStyle.TRANSPARENT);
+		primaryStage.show();
+	}
+
+	boolean checkColision(Bounds boundsInParent) {
+		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
+				.map(Cube::getBoundsInParent);
+		return walls.anyMatch(b -> b.intersects(boundsInParent));
+	}
+
+
+	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
+
+	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
+		File file = new File(arquivo);
+		StlMeshImporter importer = new StlMeshImporter();
+		importer.read(file);
+		Mesh mesh = importer.getImport();
+		MeshView animal = new MeshView(mesh);
+		PhongMaterial sample = new PhongMaterial(jewelColor);
+		sample.setSpecularColor(lightColor);
+		sample.setSpecularPower(16);
+		animal.setMaterial(sample);
+		animal.setTranslateY(14);
+
+		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
+		animal.setTranslateZ(posicaoInicialZ);
+		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
+		animal.setTranslateX(posicaoInicialX);
+		while (checkColision(animal.getBoundsInParent())) {
+			animal.setTranslateZ(animal.getTranslateZ() + 1);
+			animal.setTranslateX(animal.getTranslateX() + 1);
 		}
+
+
+		animal.setScaleX(0.25);
+		animal.setScaleY(1);
+		animal.setScaleZ(0.25);
+
+		return animal;
 	}
 
 	private final class MovimentacaoAleatoria extends AnimationTimer {
@@ -281,37 +246,15 @@ public class Experiment3DKillerGhosts extends Application {
 						animal.setTranslateX(animal.getTranslateX() - STEP);
 					}
 					animal.setRotationAxis(Rotate.Y_AXIS);
-					animal.setRotate(direction[i] * 90);
+					// animal.setRotate(direction[i] * 90);
 					direction[i] = new Random().nextInt(4);
 
 				}
 				if (now % 1000 == 0) {
 					direction[i] = new Random().nextInt(4);
 				}
-				if (camera.getBoundsInParent().intersects(
-						animal.getBoundsInParent())) {
-					movimentacao.stop();
-					Stage dialogStage = new Stage();
-					dialogStage.initModality(Modality.WINDOW_MODAL);
-					Button button = new Button("Ok.");
-					button.setOnAction(e -> {
-						camera.setTranslateX(0);
-						camera.setTranslateY(0);
-						camera.setTranslateZ(0);
-						movimentacao.start();
-						dialogStage.close();
-					});
-					VBox vbox = new VBox();
-					vbox.getChildren().addAll(new Text("Voc� Morreu"), button);
-					vbox.setAlignment(Pos.CENTER);
-					vbox.setPadding(new Insets(5));
-					dialogStage.setScene(new Scene(vbox));
-					dialogStage.show();
-
-				}
-
 			}
 		}
 	}
 
-	}
+}

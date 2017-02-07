@@ -1,4 +1,4 @@
-package exp1;
+package labyrinth;
 
 import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;

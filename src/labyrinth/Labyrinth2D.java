@@ -1,4 +1,4 @@
-package exp1;
+package labyrinth;
 
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
-public class Experiment2D extends Application {
+public class Labyrinth2D extends Application {
 
 	private static String[][] mapa = {
 			{ "_", "_", "_", "_", "_", "_" },
