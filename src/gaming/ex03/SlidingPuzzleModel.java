@@ -23,10 +23,11 @@ public class SlidingPuzzleModel {
 
     public static final int MAP_SIZE = 4;
 
-    SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[MAP_SIZE][MAP_SIZE];
-    GridPane gridPane;
-    int moves = 0;
-    public SlidingPuzzleModel(GridPane gridPane) {
+	private GridPane gridPane;
+	private SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[MAP_SIZE][MAP_SIZE];
+	private int moves = 0;
+
+	public SlidingPuzzleModel(GridPane gridPane) {
         this.gridPane = gridPane;
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
@@ -42,29 +43,6 @@ public class SlidingPuzzleModel {
         }
         reset();
     }
-
-	final void reset() {
-
-        final Random random = new Random();
-        for (int i = 0; i < 100; i++) {
-            int nextI = random.nextInt(MAP_SIZE);
-            int nextJ = random.nextInt(MAP_SIZE);
-            swapEmptyNeighbor(nextI, nextJ);
-        }
-
-    }
-    boolean verifyEnd() {
-        for (int i = 0; i < MAP_SIZE; i++) {
-            for (int j = 0; j < MAP_SIZE; j++) {
-                if (map[i][j].number.get() != i * MAP_SIZE + j + 1) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     final EventHandler<MouseEvent> createMouseClickedEvento(SlidingPuzzleSquare mem) {
         EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> {
             for (int i = 0; i < MAP_SIZE; i++) {
@@ -102,7 +80,7 @@ public class SlidingPuzzleModel {
         return mouseClicked;
     }
 
-    boolean isNeighborEmpty(int i, int j, int h, int v) {
+	boolean isNeighborEmpty(int i, int j, int h, int v) {
         if (i + h >= 0 && i + h < MAP_SIZE) {
             if (j + v >= 0 && j + v < MAP_SIZE) {
                 return map[i + h][j + v].isEmpty();
@@ -110,6 +88,17 @@ public class SlidingPuzzleModel {
         }
         return false;
     }
+    final void reset() {
+
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            int nextI = random.nextInt(MAP_SIZE);
+            int nextJ = random.nextInt(MAP_SIZE);
+            swapEmptyNeighbor(nextI, nextJ);
+        }
+
+    }
+
     final void swapEmptyNeighbor(int i, int j) {
         for (int k = -1; k < 2; k++) {
             for (int l = -1; l < 2; l++) {
@@ -127,5 +116,20 @@ public class SlidingPuzzleModel {
             }
         }
     }
+
+    boolean verifyEnd() {
+        for (int i = 0; i < MAP_SIZE; i++) {
+            for (int j = 0; j < MAP_SIZE; j++) {
+				if (map[i][j].getNumber() != i * MAP_SIZE + j + 1) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+    public static SlidingPuzzleModel create(GridPane gridPane) {
+		return new SlidingPuzzleModel(gridPane);
+	}
 
 }

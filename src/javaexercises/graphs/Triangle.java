@@ -24,10 +24,10 @@ class Triangle {
 		Ponto ab = edge.b.sub(edge.a);
 		double t = point.sub(edge.a).dot(ab) / ab.dot(ab);
 
-		if (t < 0.0d) {
-			t = 0.0d;
-		} else if (t > 1.0d) {
-			t = 1.0d;
+		if (t < 0.0D) {
+			t = 0.0D;
+		} else if (t > 1.0D) {
+			t = 1.0D;
 		}
 
 		return edge.a.add(ab.mult(t));
@@ -88,7 +88,7 @@ class Triangle {
 
 		double det = a11 * a22 - a12 * a21;
 
-		return det > 0.0d;
+		return det > 0.0D;
 	}
 
 	public boolean isPointInCircumcircle(Ponto point) {
@@ -107,10 +107,10 @@ class Triangle {
 		double det = a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 - a13 * a22 * a31 - a12 * a21 * a33 - a11 * a23 * a32;
 
 		if (isOrientedCCW()) {
-			return det > 0.0d;
+			return det > 0.0D;
 		}
 
-		return det < 0.0d;
+		return det < 0.0D;
 	}
 
 }

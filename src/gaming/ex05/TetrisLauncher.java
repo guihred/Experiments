@@ -40,8 +40,8 @@ public class TetrisLauncher extends Application {
                     break;
                 case LEFT:
                 case A:
-                    if (!tetrisModel.checkCollision(tetrisModel.currentI - 1, tetrisModel.currentJ)) {
-                        tetrisModel.currentI--;
+                    if (!tetrisModel.checkCollision(tetrisModel.getCurrentI() - 1, tetrisModel.getCurrentJ())) {
+                        tetrisModel.setCurrentI(tetrisModel.getCurrentI() - 1);
                         tetrisModel.clearMovingPiece();
                         tetrisModel.drawPiece();
                     }
@@ -49,16 +49,16 @@ public class TetrisLauncher extends Application {
                     break;
                 case RIGHT:
                 case D:
-                    if (!tetrisModel.checkCollision(tetrisModel.currentI + 1, tetrisModel.currentJ)) {
-                        tetrisModel.currentI++;
+                    if (!tetrisModel.checkCollision(tetrisModel.getCurrentI() + 1, tetrisModel.getCurrentJ())) {
+                        tetrisModel.setCurrentI(tetrisModel.getCurrentI() + 1);
                         tetrisModel.clearMovingPiece();
                         tetrisModel.drawPiece();
                     }
                     break;
                 case DOWN:
                 case S:
-                    if (!tetrisModel.checkCollision(tetrisModel.currentI, tetrisModel.currentJ + 1)) {
-                        tetrisModel.currentJ++;
+                    if (!tetrisModel.checkCollision(tetrisModel.getCurrentI(), tetrisModel.getCurrentJ() + 1)) {
+                        tetrisModel.setCurrentJ(tetrisModel.getCurrentJ() + 1);
                         tetrisModel.clearMovingPiece();
                         tetrisModel.drawPiece();
                     }

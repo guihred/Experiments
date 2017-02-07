@@ -6,7 +6,7 @@ import java.net.URL;
 public enum Chapter8Resource {
 	TEEN_TITANS("TeenTitans.mp3"),
 	MEDIA("media.css");
-	String file;
+	private String file;
 
 	private Chapter8Resource(String file) {
 		this.file = file;

@@ -31,16 +31,16 @@ import simplebuilder.SimpleVBoxBuilder;
 
 public class StageControlExample extends Application {
 
-	StringProperty title = new SimpleStringProperty();
-	Text textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-	Text textStageY = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-	Text textStageW = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-	Text textStageH = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-	Text textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-	CheckBox checkBoxResizable;
-	CheckBox checkBoxFullScreen = new CheckBox("fullScreen");
-	double dragAnchorX;
-	double dragAnchorY;
+	private StringProperty title = new SimpleStringProperty();
+	private Text textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	private Text textStageY = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	private Text textStageW = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	private Text textStageH = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	private Text textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+	private CheckBox checkBoxResizable;
+	private CheckBox checkBoxFullScreen = new CheckBox("fullScreen");
+	private double dragAnchorX;
+	private double dragAnchorY;
 
 	public static void main(String[] args) {
 		Application.launch(args);

@@ -25,10 +25,10 @@ public class MemoryLauncher extends Application {
 
         final MemoryModel memoryModel = new MemoryModel();
 
-        for (int i = 0; i < memoryModel.map.length; i++) {
-            for (int j = 0; j < memoryModel.map[i].length; j++) {
-                MemorySquare map1 = memoryModel.map[i][j];
-                gridPane.add(new StackPane(map1, map1.shape), i, j);
+        for (int i = 0; i < memoryModel.getMap().length; i++) {
+            for (int j = 0; j < memoryModel.getMap()[i].length; j++) {
+                MemorySquare map1 = memoryModel.getMap()[i][j];
+				gridPane.add(new StackPane(map1, map1.getFinalShape()), i, j);
             }
         }
 

@@ -31,26 +31,57 @@ import simplebuilder.SimpleRotateBuilder;
 public class CubeNode extends Parent {
 	static double HOME_ANGLE_X = 30.0;
 	static double HOME_ANGLE_Y = -40.0;
-	static double MIN_ANGLE_X = -70.0;
 	static double MAX_ANGLE_X = 70.0;
-	static double MIN_ANGLE_Y = -720.0;
 	static double MAX_ANGLE_Y = 720.0;
-	static double MIN_TRANSLATE_Z = 0.0;
 	static double MAX_TRANSLATE_Z = 10000.0;
-
-	CubeModel cubeModel = CubeModel.instance;
-
-	CubeFace rearFace;
-	CubeFace bottomFace;
-	CubeFace leftFace;
-	CubeFace rightFace;
-	CubeFace topFace;
-	CubeFace frontFace;
+	static double MIN_ANGLE_X = -70.0;
+	static double MIN_ANGLE_Y = -720.0;
+	static double MIN_TRANSLATE_Z = 0.0;
 
 	DoubleProperty angleX = new SimpleDoubleProperty(0);
 
 	DoubleProperty angleY = new SimpleDoubleProperty(0);
+	CubeFace bottomFace;
+	public Node bottomNode;
+	CubeModel cubeModel = CubeModel.instance;
+	double dragPressedAngleX;
+	double dragPressedAngleY;
 
+	double dragStartOffsetX;
+
+	double dragStartOffsetY;
+
+	CubeFace frontFace;
+
+	public Node frontNode;
+
+	public Timeline hideMapTimeline = new Timeline(
+					new KeyFrame(new Duration(0.0), t -> {
+				goHomePosition();
+						}, new KeyValue(cubeModel.mapOpacity, 0.7,
+								Interpolator.LINEAR)),
+					new KeyFrame(new Duration(1000.0), new KeyValue(
+							cubeModel.mapOpacity, 0.0, Interpolator.EASE_BOTH)))
+	;
+
+	CubeFace leftFace;
+
+	public Node leftNode;
+
+	CubeFace rearFace;
+	public Node rearNode;
+	CubeFace rightFace;
+	public Node rightNode;
+	public Timeline showMapTimeline = new Timeline(
+					new KeyFrame(new Duration(0.0), t -> goHomePosition(),
+							new KeyValue(cubeModel.mapOpacity, 0.0,
+									Interpolator.LINEAR)),
+					new KeyFrame(new Duration(1000.0), new KeyValue(
+							cubeModel.mapOpacity, 0.7, Interpolator.EASE_BOTH)))
+	;
+	CubeFace topFace;
+
+	public Node topNode;
 	public CubeNode() {
 
 		angleX.addListener((ov) -> arrangeFacesZOrder());
@@ -167,7 +198,6 @@ public class CubeNode extends Parent {
 
 		FXCollections.sort(getChildren(), new CubeFaceComparator());
 	}
-
 	public void goHomePosition() {
 		Timeline homeTimeline = new Timeline(
 						new KeyFrame(new Duration(1000.0), new KeyValue(angleX,
@@ -176,35 +206,5 @@ public class CubeNode extends Parent {
 								Interpolator.EASE_BOTH)));
 		homeTimeline.play();
 	}
-
-	public Timeline showMapTimeline = new Timeline(
-					new KeyFrame(new Duration(0.0), t -> goHomePosition(),
-							new KeyValue(cubeModel.mapOpacity, 0.0,
-									Interpolator.LINEAR)),
-					new KeyFrame(new Duration(1000.0), new KeyValue(
-							cubeModel.mapOpacity, 0.7, Interpolator.EASE_BOTH)))
-	;
-
-	public Timeline hideMapTimeline = new Timeline(
-					new KeyFrame(new Duration(0.0), t -> {
-						// goHomePosition();
-						}, new KeyValue(cubeModel.mapOpacity, 0.7,
-								Interpolator.LINEAR)),
-					new KeyFrame(new Duration(1000.0), new KeyValue(
-							cubeModel.mapOpacity, 0.0, Interpolator.EASE_BOTH)))
-	;
-
-	public Node frontNode;
-	public Node rearNode;
-	public Node leftNode;
-	public Node rightNode;
-	public Node topNode;
-	public Node bottomNode;
-
-	double dragPressedAngleX;
-	double dragPressedAngleY;
-
-	double dragStartOffsetX;
-	double dragStartOffsetY;
 
 }

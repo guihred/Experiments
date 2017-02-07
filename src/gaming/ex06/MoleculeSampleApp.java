@@ -26,46 +26,30 @@ import simplebuilder.SimpleTimelineBuilder;
  */
 public class MoleculeSampleApp extends Application {
 
-    final Group root = new Group();
-    final Group axisGroup = new Group();
-    final Xform world = new Xform();
-    final PerspectiveCamera camera = new PerspectiveCamera(true);
-    final Xform cameraXform = new Xform();
-    final Xform cameraXform2 = new Xform();
-    final Xform cameraXform3 = new Xform();
-    final double cameraDistance = 450;
-    final Xform moleculeGroup = new Xform();
+	private double ALT_MULTIPLIER = 0.5;
+	private final Group axisGroup = new Group();
+	private final PerspectiveCamera camera = new PerspectiveCamera(true);
+	private final double cameraDistance = 450;
+	private final Xform cameraXform = new Xform();
+	private final Xform cameraXform2 = new Xform();
+	private final Xform cameraXform3 = new Xform();
+	private double CONTROL_MULTIPLIER = 0.1;
+	private final Xform moleculeGroup = new Xform();
+	private double mouseDeltaX;
+	private double mouseDeltaY;
+	private double mouseOldX;
+	private double mouseOldY;
+	private double mousePosX;
+	private double mousePosY;
+	private final Group root = new Group();
+	private double SHIFT_MULTIPLIER = 0.1;
+	private final Xform world = new Xform();
 	private Timeline timeline = new SimpleTimelineBuilder()
 			.cycleCount(Animation.INDEFINITE)
 			.keyFrames(new KeyFrame(Duration.minutes(1), new KeyValue(world.ry.angleProperty(), 360.0)))
 			.build();
-    boolean timelinePlaying = false;
-    double ONE_FRAME = 1.0 / 24.0;
-    double DELTA_MULTIPLIER = 200.0;
-    double CONTROL_MULTIPLIER = 0.1;
-    double SHIFT_MULTIPLIER = 0.1;
-    double ALT_MULTIPLIER = 0.5;
-    double mousePosX;
-    double mousePosY;
-    double mouseOldX;
-    double mouseOldY;
-    double mouseDeltaX;
-    double mouseDeltaY;
+	private boolean timelinePlaying = false;
 
-
-    private void buildCamera() {
-        root.getChildren().add(cameraXform);
-        cameraXform.getChildren().add(cameraXform2);
-        cameraXform2.getChildren().add(cameraXform3);
-        cameraXform3.getChildren().add(camera);
-        cameraXform3.setRotateZ(180.0);
-
-        camera.setNearClip(0.1);
-        camera.setFarClip(10000.0);
-        camera.setTranslateZ(-cameraDistance);
-        cameraXform.ry.setAngle(320.0);
-        cameraXform.rx.setAngle(40);
-    }
 
     private void buildAxes() {
         final PhongMaterial redMaterial = new PhongMaterial();
@@ -90,6 +74,20 @@ public class MoleculeSampleApp extends Application {
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
         world.getChildren().addAll(axisGroup);
+    }
+
+    private void buildCamera() {
+        root.getChildren().add(cameraXform);
+        cameraXform.getChildren().add(cameraXform2);
+        cameraXform2.getChildren().add(cameraXform3);
+        cameraXform3.getChildren().add(camera);
+        cameraXform3.setRotateZ(180.0);
+
+        camera.setNearClip(0.1);
+        camera.setFarClip(10000.0);
+        camera.setTranslateZ(-cameraDistance);
+        cameraXform.ry.setAngle(320.0);
+        cameraXform.rx.setAngle(40);
     }
 
     private void buildMolecule() {
@@ -167,44 +165,6 @@ public class MoleculeSampleApp extends Application {
         moleculeGroup.getChildren().add(moleculeXform);
 
         world.getChildren().addAll(moleculeGroup);
-    }
-
-    private void handleMouse(Scene scene) {
-        scene.setOnMousePressed((MouseEvent me) -> {
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseOldX = me.getSceneX();
-            mouseOldY = me.getSceneY();
-        });
-        scene.setOnMouseDragged((MouseEvent me) -> {
-            mouseOldX = mousePosX;
-            mouseOldY = mousePosY;
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseDeltaX = mousePosX - mouseOldX;
-            mouseDeltaY = mousePosY - mouseOldY;
-
-            double modifier = 1.0;
-            double modifierFactor = 0.1;
-
-            if (me.isControlDown()) {
-                modifier = 0.1;
-            }
-            if (me.isShiftDown()) {
-                modifier = 10.0;
-            }
-            if (me.isPrimaryButtonDown()) {
-                cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 2.0);  // +
-                cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 2.0);  // -
-            } else if (me.isSecondaryButtonDown()) {
-                double z = camera.getTranslateZ();
-                double newZ = z + mouseDeltaX * modifierFactor * modifier;
-                camera.setTranslateZ(newZ);
-            } else if (me.isMiddleButtonDown()) {
-                cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
-                cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
-            }
-        });
     }
 
     private void handleKeyboard(Scene scene) {
@@ -300,6 +260,44 @@ public class MoleculeSampleApp extends Application {
                     break;
 			default:
 				break;
+            }
+        });
+    }
+
+    private void handleMouse(Scene scene) {
+        scene.setOnMousePressed((MouseEvent me) -> {
+            mousePosX = me.getSceneX();
+            mousePosY = me.getSceneY();
+            mouseOldX = me.getSceneX();
+            mouseOldY = me.getSceneY();
+        });
+        scene.setOnMouseDragged((MouseEvent me) -> {
+            mouseOldX = mousePosX;
+            mouseOldY = mousePosY;
+            mousePosX = me.getSceneX();
+            mousePosY = me.getSceneY();
+            mouseDeltaX = mousePosX - mouseOldX;
+            mouseDeltaY = mousePosY - mouseOldY;
+
+            double modifier = 1.0;
+            double modifierFactor = 0.1;
+
+            if (me.isControlDown()) {
+                modifier = 0.1;
+            }
+            if (me.isShiftDown()) {
+                modifier = 10.0;
+            }
+            if (me.isPrimaryButtonDown()) {
+                cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 2.0);  // +
+                cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 2.0);  // -
+            } else if (me.isSecondaryButtonDown()) {
+                double z = camera.getTranslateZ();
+                double newZ = z + mouseDeltaX * modifierFactor * modifier;
+                camera.setTranslateZ(newZ);
+            } else if (me.isMiddleButtonDown()) {
+                cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
+                cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
             }
         });
     }

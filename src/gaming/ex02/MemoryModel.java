@@ -28,15 +28,16 @@ public class MemoryModel {
     public static final int MAP_WIDTH = 8;
     public static final int MAP_HEIGHT = 5;
 
-    MemorySquare[][] map = new MemorySquare[MAP_WIDTH][MAP_HEIGHT];
-    IntegerProperty nPlayed = new SimpleIntegerProperty(0);
+	private final MemorySquare[][] map = new MemorySquare[MAP_WIDTH][MAP_HEIGHT];
+	private final IntegerProperty nPlayed = new SimpleIntegerProperty(0);
 
     public MemoryModel() {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
-                map[i][j] = new MemorySquare(i, j);
+				map[i][j] = new MemorySquare();
             }
         }
+
         final Random random = new Random();
         final MemoryImage[] values = MemoryImage.values();
         Color[] colors = new Color[]{
@@ -49,16 +50,18 @@ public class MemoryModel {
         for (int i = 0; i < MAP_WIDTH * MAP_HEIGHT / 2; i++) {
             final MemoryImage value = values[i % values.length];
             Color c = colors[(i + i / colors.length) % colors.length];
-            List<MemorySquare> collect = Stream.of(map).flatMap(Stream::of).filter(s -> s.memoryImage.isNull().get()).collect(Collectors.toList());
+			List<MemorySquare> collect = Stream.of(map).flatMap(Stream::of).filter(s -> s.getMemoryImage() == null)
+					.collect(Collectors.toList());
             final MemorySquare mem = collect.get(random.nextInt(collect.size()));
-            mem.memoryImage.set(value);
-            mem.color = c;
+			mem.setMemoryImage(value);
+            mem.setColor(c);
             createMouseClickedEvento(mem);
 
-            collect = Stream.of(map).flatMap(Stream::of).filter(s -> s.memoryImage.isNull().get()).collect(Collectors.toList());
+			collect = Stream.of(map).flatMap(Stream::of).filter(s -> s.getMemoryImage() == null)
+					.collect(Collectors.toList());
             final MemorySquare mem2 = collect.get(random.nextInt(collect.size()));
-            mem2.memoryImage.set(value);
-            mem2.color = c;
+			mem2.setMemoryImage(value);
+            mem2.setColor(c);
             createMouseClickedEvento(mem2);
 
         }
@@ -67,16 +70,18 @@ public class MemoryModel {
 
     final EventHandler<MouseEvent> createMouseClickedEvento(MemorySquare mem) {
         EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> {
-            if (mem.state.get() == MemorySquare.State.HIDDEN) {
+			if (mem.getState() == MemorySquare.State.HIDDEN) {
                 nPlayed.set(nPlayed.get() + 1);
-                mem.state.set(MemorySquare.State.SHOWN);
+				mem.setState(MemorySquare.State.SHOWN);
                 if (nPlayed.get() % 2 == 0) {
-                    final List<MemorySquare> collect = Stream.of(map).flatMap(Stream::of).filter(s -> s.state.get() == MemorySquare.State.SHOWN).collect(Collectors.toList());
-                    if (collect.stream().map(m -> m.memoryImage.get()).distinct().count() == 1 && collect.stream().map(m -> m.color).distinct().count() == 1) {
-                        collect.forEach((MemorySquare c) -> c.state.set(MemorySquare.State.FOUND));
+					final List<MemorySquare> collect = Stream.of(map).flatMap(Stream::of)
+							.filter(s -> s.getState() == MemorySquare.State.SHOWN).collect(Collectors.toList());
+					if (collect.stream().map(m -> m.getMemoryImage()).distinct().count() == 1
+							&& collect.stream().map(m -> m.getColor()).distinct().count() == 1) {
+						collect.forEach((MemorySquare c) -> c.setState(MemorySquare.State.FOUND));
                     } else {
 						collect.forEach((MemorySquare c) -> new Timeline(
-								new KeyFrame(Duration.seconds(1), new KeyValue(c.state, MemorySquare.State.HIDDEN)))
+								new KeyFrame(Duration.seconds(1), new KeyValue(c.stateProperty(), MemorySquare.State.HIDDEN)))
 										.play());
 
                     }
@@ -88,6 +93,10 @@ public class MemoryModel {
         mem.setOnMouseClicked(mouseClicked);
         return mouseClicked;
     }
+
+	public MemorySquare[][] getMap() {
+		return map;
+	}
 
 
 }

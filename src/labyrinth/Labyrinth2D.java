@@ -24,9 +24,26 @@ public class Labyrinth2D extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	Color color = Color.RED;
 	private int i;
 	private int j;
-	Color color = Color.RED;
+
+	private void initializeLabyrinth(Group root) {
+		for (int k = 0; k < mapa.length; k++) {
+			for (int l = 0; l < mapa[k].length; l++) {
+				String string = mapa[k][l];
+				if ("_".equals(string)) {
+					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
+							SIZE / 2, SIZE);
+					root.getChildren().add(rectangle);
+				} else {
+					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
+							SIZE, SIZE / 2);
+					root.getChildren().add(rectangle);
+				}
+			}
+		}
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -72,23 +89,6 @@ public class Labyrinth2D extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-
-	private void initializeLabyrinth(Group root) {
-		for (int k = 0; k < mapa.length; k++) {
-			for (int l = 0; l < mapa[k].length; l++) {
-				String string = mapa[k][l];
-				if ("_".equals(string)) {
-					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
-							SIZE / 2, SIZE);
-					root.getChildren().add(rectangle);
-				} else {
-					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
-							SIZE, SIZE / 2);
-					root.getChildren().add(rectangle);
-				}
-			}
-		}
 	}
 
 }

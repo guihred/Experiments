@@ -10,25 +10,50 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class Labyrinth3DCollisions extends Application {
-	private final double cameraModifier = 50.0;
-	private final double cameraQuantity = 5.0;
-
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "_" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "_", "|", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" }, };
-
-	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
 	private static final int SIZE = 50;
 
 	public static void main(String[] args) {
 		launch(args);
 	}
 
+	private PerspectiveCamera camera;
+	private final double cameraModifier = 50.0;
+
+	private final double cameraQuantity = 5.0;
+
+	Color color = Color.RED;
+	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
 	private int i;
 	private int j;
-	Color color = Color.RED;
-	private PerspectiveCamera camera;
+
+	boolean checkColision() {
+
+		Bounds boundsInParent = camera.getBoundsInParent();
+		return Stream.of(cubes).flatMap(l -> Stream.of(l))
+				.map(Cube::getBoundsInParent)
+				.anyMatch(b -> b.intersects(boundsInParent));
+	}
+
+	private void initializeLabyrinth(Group root) {
+		for (int k = mapa.length - 1; k >= 0; k--) {
+			for (int l = mapa[k].length - 1; l >= 0; l--) {
+				String string = mapa[k][l];
+				Cube rectangle = new Cube(SIZE, Color.BLUE);
+				rectangle.setTranslateX(k * SIZE);
+				rectangle.setTranslateZ(l * SIZE);
+				if ("_".equals(string)) {
+					rectangle.ry.setAngle(90);
+				}
+				cubes[k][l] = rectangle;
+
+				root.getChildren().add(rectangle);
+			}
+		}
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -142,31 +167,6 @@ public class Labyrinth3DCollisions extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
 		primaryStage.show();
-	}
-
-	private void initializeLabyrinth(Group root) {
-		for (int k = mapa.length - 1; k >= 0; k--) {
-			for (int l = mapa[k].length - 1; l >= 0; l--) {
-				String string = mapa[k][l];
-				Cube rectangle = new Cube(SIZE, Color.BLUE);
-				rectangle.setTranslateX(k * SIZE);
-				rectangle.setTranslateZ(l * SIZE);
-				if ("_".equals(string)) {
-					rectangle.ry.setAngle(90);
-				}
-				cubes[k][l] = rectangle;
-
-				root.getChildren().add(rectangle);
-			}
-		}
-	}
-
-	boolean checkColision() {
-
-		Bounds boundsInParent = camera.getBoundsInParent();
-		return Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(Cube::getBoundsInParent)
-				.anyMatch(b -> b.intersects(boundsInParent));
 	}
 
 }

@@ -15,72 +15,15 @@ import others.TermFrequency;
 
 public class VigenereXORCipher {
 
-	private int current = 0;
-	private PrintStream out;
-	private static final Map<Integer,Double> MAPA_FREQUENCIA = ImmutableMap.<Integer,Double>builder()
-        .put('e' + 0, 12.702d)
-        .put('t' + 0, 9.056d)
-		.put('a'+0, 8.167d)
-        .put('o' + 0, 7.507d)
-        .put('i' + 0, 6.966d)
-        .put('n' + 0, 6.749d)
-        .put('s' + 0, 6.327d)
-        .put('h' + 0, 6.094d)
-		.put('r' + 0, 5.987d)
-		.put('d' + 0, 4.253d)
-		.put('l' + 0, 4.025d)
-		.put('c'+0, 2.782d)
-        .put('u' + 0, 2.758d)
-        .put('m' + 0, 2.406d)
-		.put('w' + 0, 2.361d)
-		.put('f'+0, 2.228d)
-		.put('g'+0, 2.015d)
-        .put('y' + 0, 1.974d)
-		.put('p'+0, 1.929d)
-        .put('b' + 0, 1.492d)
-		.put('v'+0, 0.978d)
-        .put('k' + 0, 0.772d)
-        .put('j' + 0, 0.153d)
-		.put('x'+0, 0.150d)
-        .put('q' + 0, 0.095d)
-		.put('z'+0, 0.074d)
-		.build();
-	
-	public VigenereXORCipher() {
-		out = System.out;
-		// out = new PrintStream(new File("log.txt"));
-	}
-
-	// 0, 0, 140, 181, 87, 0, 53
-	private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-	private List<Integer>[] keysList = Stream.generate(() -> new ArrayList<>()).limit(7).toArray(List[]::new);
-
-	// new List[] { new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new
-	// ArrayList<>(), new ArrayList<>(),
-	// new ArrayList<>(), new ArrayList<>() };
-
-	public String encrypt(String k, List<Integer> s) {
-		current = 0;
-		int length = k.length();
-		return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
-				.map(c -> Character.toString(c)).collect(Collectors.joining());
-	}
-
-	public String encrypt(int[] k, List<Integer> s) {
-		current = 0;
-		int length = k.length;
-		return s.stream().map(i -> (i ^ k[current++ % length])).map(i -> Character.valueOf((char) i.intValue()))
-				.map(c -> Character.toString(c)).collect(Collectors.joining());
-	}
-
-	public String decrypt(String k, String s) {
-		current = 0;
-		int length = k.length();
-		return s.chars().map(i -> (i ^ k.charAt(current++ % length)) % 256).mapToObj(i -> Character.valueOf((char) i)).map(Object::toString)
-				.collect(Collectors.joining());
-	}
-
 	public static final Logger LOGGER = LoggerFactory.getLogger(TermFrequency.class);
+	private static final Map<Integer,Double> MAPA_FREQUENCIA = ImmutableMap.<Integer,Double>builder()
+			.put('e' + 0, 12.702D).put('t' + 0, 9.056D).put('a' + 0, 8.167D).put('o' + 0, 7.507D).put('i' + 0, 6.966D)
+			.put('n' + 0, 6.749D).put('s' + 0, 6.327D).put('h' + 0, 6.094D).put('r' + 0, 5.987D).put('d' + 0, 4.253D)
+			.put('l' + 0, 4.025D).put('c' + 0, 2.782D).put('u' + 0, 2.758D).put('m' + 0, 2.406D).put('w' + 0, 2.361D)
+			.put('f' + 0, 2.228D).put('g' + 0, 2.015D).put('y' + 0, 1.974D).put('p' + 0, 1.929D).put('b' + 0, 1.492D)
+			.put('v' + 0, 0.978D).put('k' + 0, 0.772D).put('j' + 0, 0.153D).put('x' + 0, 0.150D).put('q' + 0, 0.095D)
+			.put('z' + 0, 0.074D)
+		.build();
 	public static void main(String[] args) {
 		try {
 		VigenereXORCipher vigenereCypher = new VigenereXORCipher();
@@ -91,6 +34,56 @@ public class VigenereXORCipher {
 		}
 		// out.println(findKeySize);
 	}
+	
+	private int current = 0;
+
+	// 0, 0, 140, 181, 87, 0, 53
+	private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+	private List<Integer>[] keysList = Stream.generate(() -> new ArrayList<>()).limit(7).toArray(List[]::new);
+
+	// new List[] { new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new
+	// ArrayList<>(), new ArrayList<>(),
+	// new ArrayList<>(), new ArrayList<>() };
+
+	private PrintStream out;
+
+	public VigenereXORCipher() {
+		out = System.out;
+		// out = new PrintStream(new File("log.txt"));
+	}
+
+	public void bruteForce(int i, List<Integer> collect) {
+		List<Integer> d = keysList[i];
+		for (int j = 0; j < d.size(); j++) {
+			keys[i] = d.get(j);
+			if (i < keys.length - 1) {
+				bruteForce(i + 1, collect);
+				continue;
+			}
+			out.println(Arrays.toString(keys));
+			out.println(encrypt(keys, collect));
+		}
+	}
+
+	public String decrypt(String k, String s) {
+		current = 0;
+		int length = k.length();
+		return s.chars().map(i -> (i ^ k.charAt(current++ % length)) % 256).mapToObj(i -> Character.valueOf((char) i)).map(Object::toString)
+				.collect(Collectors.joining());
+	}
+	public String encrypt(int[] k, List<Integer> s) {
+		current = 0;
+		int length = k.length;
+		return s.stream().map(i -> (i ^ k[current++ % length])).map(i -> Character.valueOf((char) i.intValue()))
+				.map(c -> Character.toString(c)).collect(Collectors.joining());
+	}
+	public String encrypt(String k, List<Integer> s) {
+		current = 0;
+		int length = k.length();
+		return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
+				.map(c -> Character.toString(c)).collect(Collectors.joining());
+	}
+
 	public void findKey(long keySize) throws IOException {
 		// keys = new char[Long.valueOf(keySize).intValue()];
 		String line = Files.readAllLines(Paths.get("ctext.txt")).get(0);
@@ -145,19 +138,6 @@ public class VigenereXORCipher {
 		current = 0;
 		out.println(Stream.of(keysList).map(l -> "" + current++ + l + "\n").collect(Collectors.toList()));
 
-	}
-
-	public void bruteForce(int i, List<Integer> collect) {
-		List<Integer> d = keysList[i];
-		for (int j = 0; j < d.size(); j++) {
-			keys[i] = d.get(j);
-			if (i < keys.length - 1) {
-				bruteForce(i + 1, collect);
-				continue;
-			}
-			out.println(Arrays.toString(keys));
-			out.println(encrypt(keys, collect));
-		}
 	}
 	public long findKeySize() throws IOException {
 		String line = Files.readAllLines(Paths.get("ctext.txt")).get(0);

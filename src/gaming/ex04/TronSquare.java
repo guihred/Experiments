@@ -18,21 +18,21 @@ import javafx.scene.layout.Region;
  */
 public class TronSquare extends Region {
 
-    final int i, j;
+	private final int i, j;
 
-    ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
+	private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
 
     public TronSquare(int i, int j) {
+		this.i = i;
+		this.j = j;
         setPrefSize(10, 10);
         styleProperty().bind(
-                Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;").otherwise(
-                        Bindings.when(state.isEqualTo(SnakeState.SNAKE))
+                Bindings.when(stateProperty().isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;").otherwise(
+                        Bindings.when(stateProperty().isEqualTo(SnakeState.SNAKE))
                         .then("-fx-background-color:green;")
                         .otherwise("-fx-background-color:gray;"
                         )));
 
-        this.i = i;
-        this.j = j;
     }
 
     
@@ -45,7 +45,7 @@ public class TronSquare extends Region {
         if (obj.getClass() != TronSquare.class) {
             return false;
         }
-        if (((TronSquare) obj).i == i && ((TronSquare) obj).j == j) {
+        if (((TronSquare) obj).getI() == getI() && ((TronSquare) obj).getJ() == getJ()) {
             return true;
         }
         return false;
@@ -54,7 +54,33 @@ public class TronSquare extends Region {
 
     @Override
     public int hashCode() {
-        return i * MAP_SIZE + j;
+        return getI() * MAP_SIZE + getJ();
     }
+
+
+
+	public int getI() {
+		return i;
+	}
+
+
+
+	public int getJ() {
+		return j;
+	}
+
+
+
+	public ObjectProperty<SnakeState> stateProperty() {
+		return state;
+	}
+
+	public void setState(SnakeState value) {
+		state.set(value);
+	}
+
+	public SnakeState getState() {
+		return state.get();
+	}
 
 }

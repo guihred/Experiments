@@ -23,14 +23,138 @@ import javafx.scene.layout.Pane;
  */
 public class SolitaireModel {
 
-	private Pane gridPane;
-	CardStack[] ascendingStacks = new CardStack[4];
-	CardStack[] simpleStacks = new CardStack[7];
-
+	class DragContext {
+		List<SolitaireCard> cards;
+		boolean dragged;
+		CardStack stack;
+		double x;
+		double y;
+	}
 	public static SolitaireModel create(Pane gridPane, Scene scene) {
 		return new SolitaireModel(gridPane, scene);
 	}
+	CardStack[] ascendingStacks = new CardStack[4];
 
+	DragContext dragContext = new DragContext();
+
+	private Pane gridPane;
+
+	EventHandler<MouseEvent> onMouseDragged = event -> {
+
+		Node node = (Node) event.getSource();
+
+		double offsetX = event.getScreenX() + dragContext.x;
+		double offsetY = event.getScreenY() + dragContext.y;
+		if (node instanceof SolitaireCard) {
+			dragContext.dragged = true;
+		}
+		if (dragContext.cards != null) {
+			List<SolitaireCard> cards = dragContext.cards;
+			for (int i = 0; i < cards.size(); i++) {
+				SolitaireCard c = cards.get(i);
+				c.relocate(offsetX, offsetY + i * 30);
+			}
+
+		}
+
+	};
+	private CardStack[] simpleStacks = new CardStack[7];
+
+	EventHandler<MouseEvent> onMousePressed = event -> {
+
+		Node node = (Node) event.getSource();
+
+		dragContext.x = node.getBoundsInParent().getMinX() - event.getScreenX();
+		dragContext.y = node.getBoundsInParent().getMinY() - event.getScreenY();
+		if (node instanceof CardStack) {
+			CardStack cardStack = (CardStack) node;
+			if (Stream.of(simpleStacks).anyMatch(s -> s == node)) {
+				ObservableList<SolitaireCard> cards = cardStack.getCards();
+				List<SolitaireCard> lastCards = new ArrayList<>();
+				for (SolitaireCard solitaireCard : cards.filtered(SolitaireCard::isShown)) {
+					if (solitaireCard.getLayoutY() < event.getY()) {
+						lastCards.clear();
+					}
+					lastCards.add(solitaireCard);
+				}
+				dragContext.cards = null;
+				dragContext.stack = cardStack;
+				if (!lastCards.isEmpty()) {
+					cardStack.removeCards(lastCards);
+					dragContext.cards = lastCards;
+					gridPane.getChildren().addAll(lastCards);
+					dragContext.stack = cardStack;
+				}
+				
+			} else {
+				SolitaireCard lastCards = cardStack.removeLastCards();
+				if (lastCards != null) {
+					dragContext.cards = Arrays.asList(lastCards);
+					gridPane.getChildren().add(lastCards);
+					dragContext.stack = (CardStack) node;
+				}
+			}
+		}
+
+	};
+
+	EventHandler<MouseEvent> onMouseReleased = event -> {
+		if (dragContext.cards != null) {
+			if (dragContext.cards.size() == 1) {
+				for (CardStack cardStack : ascendingStacks) {
+					if (cardStack.getBoundsInParent().intersects(dragContext.cards.get(0).getBoundsInParent())) {
+						if (cardStack.getCards().isEmpty() && dragContext.cards.get(0).getNumber() != SolitaireNumber.ACE) {
+							break;
+						}
+						if (!cardStack.getCards().isEmpty()
+								&& (dragContext.cards.get(0).getSuit() != cardStack.getLastCards().getSuit() || dragContext.cards
+										.get(0).getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() + 1)) {
+							break;
+						}
+						cardStack.addCards(dragContext.cards);
+						if (!dragContext.stack.getCards().isEmpty()) {
+							if (dragContext.stack.getCards().stream().noneMatch(SolitaireCard::isShown)) {
+								dragContext.stack.getLastCards().setShown(true);
+							}
+						}
+						dragContext.cards = null;
+						return;
+					}
+				}
+			}
+			for (CardStack cardStack : simpleStacks) {
+				if (cardStack.getBoundsInParent().intersects(dragContext.cards.get(0).getBoundsInParent())) {
+					if (cardStack.getCards().isEmpty()
+							&& dragContext.cards.get(0).getNumber() != SolitaireNumber.KING) {
+						break;
+					}
+					if (!cardStack.getCards().isEmpty()
+							&& (dragContext.cards.get(0).getSuit().getColor() == cardStack.getLastCards().getSuit()
+									.getColor()
+									|| dragContext.cards.get(0).getNumber()
+											.getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1)) {
+						break;
+					}
+
+					cardStack.addCardsVertically(dragContext.cards);
+					if (!dragContext.stack.getCards().isEmpty()) {
+						if (dragContext.stack.getCards().stream().noneMatch(SolitaireCard::isShown)) {
+							dragContext.stack.getLastCards().setShown(true);
+						}
+
+					}
+					dragContext.cards = null;
+					return;
+				}
+			}
+			if (Stream.of(simpleStacks).anyMatch(s -> s == dragContext.stack)) {
+				dragContext.stack.addCardsVertically(dragContext.cards);
+			} else {
+				dragContext.stack.addCards(dragContext.cards);
+			}
+		}
+
+	};
 	public SolitaireModel(Pane gridPane, Scene scene) {
 		this.gridPane = gridPane;
 		List<SolitaireCard> allCards = getAllCards();
@@ -104,130 +228,6 @@ public class SolitaireModel {
 		node.setOnMousePressed(onMousePressed);
 		node.setOnMouseDragged(onMouseDragged);
 		node.setOnMouseReleased(onMouseReleased);
-	}
-
-	DragContext dragContext = new DragContext();
-	EventHandler<MouseEvent> onMousePressed = event -> {
-
-		Node node = (Node) event.getSource();
-
-		dragContext.x = node.getBoundsInParent().getMinX() - event.getScreenX();
-		dragContext.y = node.getBoundsInParent().getMinY() - event.getScreenY();
-		if (node instanceof CardStack) {
-			CardStack cardStack = (CardStack) node;
-			if (Stream.of(simpleStacks).anyMatch(s -> s == node)) {
-				ObservableList<SolitaireCard> cards = cardStack.getCards();
-				List<SolitaireCard> lastCards = new ArrayList<>();
-				for (SolitaireCard solitaireCard : cards.filtered(SolitaireCard::isShown)) {
-					if (solitaireCard.getLayoutY() < event.getY()) {
-						lastCards.clear();
-					}
-					lastCards.add(solitaireCard);
-				}
-				dragContext.cards = null;
-				dragContext.stack = cardStack;
-				if (!lastCards.isEmpty()) {
-					cardStack.removeCards(lastCards);
-					dragContext.cards = lastCards;
-					gridPane.getChildren().addAll(lastCards);
-					dragContext.stack = cardStack;
-				}
-				
-			} else {
-				SolitaireCard lastCards = cardStack.removeLastCards();
-				if (lastCards != null) {
-					dragContext.cards = Arrays.asList(lastCards);
-					gridPane.getChildren().add(lastCards);
-					dragContext.stack = (CardStack) node;
-				}
-			}
-		}
-
-	};
-	EventHandler<MouseEvent> onMouseDragged = event -> {
-
-		Node node = (Node) event.getSource();
-
-		double offsetX = event.getScreenX() + dragContext.x;
-		double offsetY = event.getScreenY() + dragContext.y;
-		if (node instanceof SolitaireCard) {
-			dragContext.dragged = true;
-		}
-		if (dragContext.cards != null) {
-			List<SolitaireCard> cards = dragContext.cards;
-			for (int i = 0; i < cards.size(); i++) {
-				SolitaireCard c = cards.get(i);
-				c.relocate(offsetX, offsetY + i * 30);
-			}
-
-		}
-
-	};
-
-	EventHandler<MouseEvent> onMouseReleased = event -> {
-		if (dragContext.cards != null) {
-			if (dragContext.cards.size() == 1) {
-				for (CardStack cardStack : ascendingStacks) {
-					if (cardStack.getBoundsInParent().intersects(dragContext.cards.get(0).getBoundsInParent())) {
-						if (cardStack.getCards().isEmpty() && dragContext.cards.get(0).getNumber() != SolitaireNumber.ACE) {
-							break;
-						}
-						if (!cardStack.getCards().isEmpty()
-								&& (dragContext.cards.get(0).getSuit() != cardStack.getLastCards().getSuit() || dragContext.cards
-										.get(0).getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() + 1)) {
-							break;
-						}
-						cardStack.addCards(dragContext.cards);
-						if (!dragContext.stack.getCards().isEmpty()) {
-							if (dragContext.stack.getCards().stream().noneMatch(SolitaireCard::isShown)) {
-								dragContext.stack.getLastCards().setShown(true);
-							}
-						}
-						dragContext.cards = null;
-						return;
-					}
-				}
-			}
-			for (CardStack cardStack : simpleStacks) {
-				if (cardStack.getBoundsInParent().intersects(dragContext.cards.get(0).getBoundsInParent())) {
-					if (cardStack.getCards().isEmpty()
-							&& dragContext.cards.get(0).getNumber() != SolitaireNumber.KING) {
-						break;
-					}
-					if (!cardStack.getCards().isEmpty()
-							&& (dragContext.cards.get(0).getSuit().getColor() == cardStack.getLastCards().getSuit()
-									.getColor()
-									|| dragContext.cards.get(0).getNumber()
-											.getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1)) {
-						break;
-					}
-
-					cardStack.addCardsVertically(dragContext.cards);
-					if (!dragContext.stack.getCards().isEmpty()) {
-						if (dragContext.stack.getCards().stream().noneMatch(SolitaireCard::isShown)) {
-							dragContext.stack.getLastCards().setShown(true);
-						}
-
-					}
-					dragContext.cards = null;
-					return;
-				}
-			}
-			if (Stream.of(simpleStacks).anyMatch(s -> s == dragContext.stack)) {
-				dragContext.stack.addCardsVertically(dragContext.cards);
-			} else {
-				dragContext.stack.addCards(dragContext.cards);
-			}
-		}
-
-	};
-
-	class DragContext {
-		double x;
-		double y;
-		boolean dragged;
-		List<SolitaireCard> cards;
-		CardStack stack;
 	}
 
 }

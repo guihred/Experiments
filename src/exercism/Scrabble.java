@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class Scrabble {
 
 	/** The per value. */
-	static Map<Integer, List<String>> PER_VALUE;
+	private static Map<Integer, List<String>> PER_VALUE;
 
 	/** The per letter. */
 	private static Map<String, Integer> PER_LETTER;

@@ -8,12 +8,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public class CreateMazeHandler implements EventHandler<ActionEvent> {
-	int r = 0, c = 0;
-	final Random random = new Random();
-	Timeline timeline;
-	List<MazeSquare> history = new ArrayList<>();
-	List<String> check = new ArrayList<>();
-	MazeSquare[][] createdMaze;
+	private int r = 0, c = 0;
+	private final Random random = new Random();
+	private final Timeline timeline;
+	private final List<MazeSquare> history = new ArrayList<>();
+	private final List<String> check = new ArrayList<>();
+	private final MazeSquare[][] createdMaze;
 
 	public CreateMazeHandler(Timeline timeline, MazeSquare[][] maze) {
 		this.timeline = timeline;
@@ -24,43 +24,43 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
 		while (!history.isEmpty()) {
-			createdMaze[r][c].visited.set(true);
+			createdMaze[r][c].setVisited(true);
 			check.clear();
 
-			if (c > 0 && !createdMaze[r][c - 1].visited.get()) {
+			if (c > 0 && !createdMaze[r][c - 1].isVisited()) {
 				check.add("L");
 			}
-			if (r > 0 && !createdMaze[r - 1][c].visited.get()) {
+			if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
 				check.add("U");
 			}
-			if (c < MazeModel.MAZE_SIZE - 1 && !createdMaze[r][c + 1].visited.get()) {
+			if (c < MazeModel.MAZE_SIZE - 1 && !createdMaze[r][c + 1].isVisited()) {
 				check.add("R");
 			}
-			if (r < MazeModel.MAZE_SIZE - 1 && !createdMaze[r + 1][c].visited.get()) {
+			if (r < MazeModel.MAZE_SIZE - 1 && !createdMaze[r + 1][c].isVisited()) {
 				check.add("D");
 			}
 			if (!check.isEmpty()) {
 				history.add(createdMaze[r][c]);
 				final String direction = check.get(random.nextInt(check.size()));
 				if ("L".equals(direction)) {
-					createdMaze[r][c].west.set(true);
+					createdMaze[r][c].setWest(true);
 					c = c - 1;
-					createdMaze[r][c].east.set(true);
+					createdMaze[r][c].setEast(true);
 				}
 				if ("U".equals(direction)) {
-					createdMaze[r][c].north.set(true);
+					createdMaze[r][c].setNorth(true);
 					r = r - 1;
-					createdMaze[r][c].south.set(true);
+					createdMaze[r][c].setSouth(true);
 				}
 				if ("R".equals(direction)) {
-					createdMaze[r][c].east.set(true);
+					createdMaze[r][c].setEast(true);
 					c = c + 1;
-					createdMaze[r][c].west.set(true);
+					createdMaze[r][c].setWest(true);
 				}
 				if ("D".equals(direction)) {
-					createdMaze[r][c].south.set(true);
+					createdMaze[r][c].setSouth(true);
 					r = r + 1;
-					createdMaze[r][c].north.set(true);
+					createdMaze[r][c].setNorth(true);
 				}
 			} else {
 				boolean backIn = getBackIn(history);

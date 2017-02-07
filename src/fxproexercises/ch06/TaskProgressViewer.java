@@ -27,36 +27,10 @@ import javafx.stage.Stage;
 
 public class TaskProgressViewer extends Application {
 
-    private final Model model;
-    private View view;
-
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-
-    public TaskProgressViewer() {
-        model = new Model();
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        view = new View(model);
-        hookupEvents();
-        stage.setTitle("Worker and Task Example");
-        stage.setScene(view.scene);
-        stage.show();
-    }
-
-    private void hookupEvents() {
-		view.startButton.setOnAction((ActionEvent actionEvent) -> new Thread((Runnable) model.worker).start());
-		view.cancelButton.setOnAction((ActionEvent actionEvent) -> model.worker.cancel());
-		view.exceptionButton.setOnAction((ActionEvent actionEvent) -> model.shouldThrow.getAndSet(true));
-    }
-
     private static class Model {
 
-        public Worker<String> worker;
         public AtomicBoolean shouldThrow = new AtomicBoolean(false);
+        public Worker<String> worker;
 
         private Model() {
 			worker = new Task<String>() {
@@ -86,23 +60,22 @@ public class TaskProgressViewer extends Application {
             };
         }
     }
-
     private static class View {
 
-        public ProgressBar progressBar;
-        public Label title;
-        public Label message;
-        public Label running;
-        public Label state;
-        public Label totalWork;
-        public Label workDone;
-        public Label progress;
-        public Label value;
-        public Label exception;
-        public Button startButton;
         public Button cancelButton;
+        public Label exception;
         public Button exceptionButton;
+        public Label message;
+        public Label progress;
+        public ProgressBar progressBar;
+        public Label running;
         public Scene scene;
+        public Button startButton;
+        public Label state;
+        public Label title;
+        public Label totalWork;
+        public Label value;
+        public Label workDone;
 
         private View(final Model model) {
             progressBar = new ProgressBar();
@@ -193,5 +166,32 @@ public class TaskProgressViewer extends Application {
             buttonPane.setAlignment(Pos.CENTER);
             scene = new Scene(new BorderPane(centerPane, topPane, null, buttonPane, null));
         }
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
+
+    private final Model model;
+
+    private View view;
+
+    public TaskProgressViewer() {
+        model = new Model();
+    }
+
+    private void hookupEvents() {
+		view.startButton.setOnAction((ActionEvent actionEvent) -> new Thread((Runnable) model.worker).start());
+		view.cancelButton.setOnAction((ActionEvent actionEvent) -> model.worker.cancel());
+		view.exceptionButton.setOnAction((ActionEvent actionEvent) -> model.shouldThrow.getAndSet(true));
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        view = new View(model);
+        hookupEvents();
+        stage.setTitle("Worker and Task Example");
+        stage.setScene(view.scene);
+        stage.show();
     }
 }

@@ -24,19 +24,18 @@ import javafx.stage.Stage;
  */
 public class TetrisModel {
 
-    public static final int MAP_WIDTH = 10;
-    public static final int MAP_HEIGHT = 20;
+	public static final int MAP_HEIGHT = 20;
+	public static final int MAP_WIDTH = 10;
+	private int currentI, currentJ;
+	private TetrisDirection direction = TetrisDirection.UP;
+	private final TetrisSquare[][] map = new TetrisSquare[MAP_WIDTH][MAP_HEIGHT];
+	private TetrisPiece piece = TetrisPiece.L;
 
-    TetrisSquare[][] map = new TetrisSquare[MAP_WIDTH][MAP_HEIGHT];
-    GridPane gridPane;
-    int currentI, currentJ;
-    Random random = new Random();
-    Piece piece = Piece.L;
-    Map<Piece, Map<Direction, int[][]>> pieceDirection;
-    Direction direction = Direction.UP;
+    private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection;
+
+    private Random random = new Random();
 
     public TetrisModel(GridPane gridPane) {
-        this.gridPane = gridPane;
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
                 map[i][j] = new TetrisSquare();
@@ -45,43 +44,98 @@ public class TetrisModel {
         }
 
         pieceDirection = new HashMap<>();
-        for (Piece value : Piece.values()) {
+        for (TetrisPiece value : TetrisPiece.values()) {
             pieceDirection.put(value, new HashMap<>());
-            pieceDirection.get(value).put(Direction.UP, value.map);
+            pieceDirection.get(value).put(TetrisDirection.UP, value.getMap());
 
-            int[][] right = rotateMap(value.map);
-            pieceDirection.get(value).put(Direction.RIGHT, right);
+            int[][] right = rotateMap(value.getMap());
+            pieceDirection.get(value).put(TetrisDirection.RIGHT, right);
             int[][] down = rotateMap(right);
-            pieceDirection.get(value).put(Direction.DOWN, down);
+            pieceDirection.get(value).put(TetrisDirection.DOWN, down);
             int[][] left = rotateMap(down);
-            pieceDirection.get(value).put(Direction.LEFT, left);
+            pieceDirection.get(value).put(TetrisDirection.LEFT, left);
         }
 
     }
 
+	void changeDirection() {
+        TetrisDirection a = direction;
+        direction = direction.next();
+        if (checkCollision(getCurrentI(), getCurrentJ())) {
+            direction = a;
+        } else {
+            clearMovingPiece();
+            drawPiece();
+        }
+    }
+
+	boolean checkCollision(int nextI, int nextJ) {
+        final int[][] get = pieceDirection.get(piece).get(direction);
+        for (int i = 0; i < get.length; i++) {
+            for (int j = 0; j < get[i].length; j++) {
+                if (get[i][j] == 1) {
+                    if (nextI + i >= MAP_WIDTH || nextI < 0) {
+                        return true;
+                    }
+                    if (nextJ + j >= MAP_HEIGHT) {
+                        return true;
+                    }
+					if (map[nextI + i][nextJ + j].getState() == TetrisPieceState.SETTLED) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
     void clearMovingPiece() {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
-                if (map[i][j].state.get() == TetrisPieceState.TRANSITION) {
-                    map[i][j].state.set(TetrisPieceState.EMPTY);
+				if (map[i][j].getState() == TetrisPieceState.TRANSITION) {
+					map[i][j].setState(TetrisPieceState.EMPTY);
                 }
             }
         }
 
     }
 
+
+    void drawPiece() {
+        drawPiece(TetrisPieceState.TRANSITION);
+    }
+
+
+    void drawPiece(TetrisPieceState state) {
+        final int[][] get = pieceDirection.get(piece).get(direction);
+        for (int i = 0; i < get.length; i++) {
+            for (int j = 0; j < get[i].length; j++) {
+                if (get[i][j] == 1) {
+					map[getCurrentI() + i][getCurrentJ() + j].setState(state);
+                }
+            }
+        }
+    }
+
+    public int getCurrentI() {
+		return currentI;
+	}
+
+    public int getCurrentJ() {
+		return currentJ;
+	}
+
     EventHandler<ActionEvent> getEventHandler(Timeline timeline) {
         return (ActionEvent t) -> {
             clearMovingPiece();
-            if (!checkCollision(currentI, currentJ + 1)) {
+            if (!checkCollision(getCurrentI(), getCurrentJ() + 1)) {
                 drawPiece();
             } else {
                 drawPiece(TetrisPieceState.SETTLED);
-                final Piece[] values = Piece.values();
+                final TetrisPiece[] values = TetrisPiece.values();
                 piece = values[random.nextInt(values.length)];
-                currentJ = 0;
-                currentI = MAP_WIDTH / 2;
-                if (checkCollision(currentI, currentJ)) {
+                setCurrentJ(0);
+                setCurrentI(MAP_WIDTH / 2);
+                if (checkCollision(getCurrentI(), getCurrentJ())) {
                     timeline.stop();
                     final Text text = new Text("You Got " + 0 + " points");
                     final Button button = new Button("Reset");
@@ -106,42 +160,40 @@ public class TetrisModel {
                 }
 
             }
-            currentJ++;
+            setCurrentJ(getCurrentJ() + 1);
 
         };
     }
-
-	private void removeLine(int i) {
-		for (int k = i; k >= 0; k--) {
-		    for (int j = 0; j < MAP_WIDTH; j++) {
-		        if (k == 0) {
-		            map[j][k].state.set(TetrisPieceState.EMPTY);
-		        } else {
-		            map[j][k].state.set(map[j][k - 1].state.get());
-		        }
-		    }
-		}
-	}
-
-	private boolean isLineClear(int i) {
+    private boolean isLineClear(int i) {
 		boolean clearLine = true;
 		for (int j = 0; j < MAP_WIDTH; j++) {
-		    if (map[j][i].state.get() != TetrisPieceState.SETTLED) {
+			if (map[j][i].getState() != TetrisPieceState.SETTLED) {
 		        clearLine = false;
 		    }
 		}
 		return clearLine;
 	}
-    void reset() {
+
+	private void removeLine(int i) {
+		for (int k = i; k >= 0; k--) {
+		    for (int j = 0; j < MAP_WIDTH; j++) {
+		        if (k == 0) {
+					map[j][k].setState(TetrisPieceState.EMPTY);
+		        } else {
+					map[j][k].setState(map[j][k - 1].getState());
+		        }
+		    }
+		}
+	}
+	void reset() {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
-                map[i][j].state.set(TetrisPieceState.EMPTY);
+				map[i][j].setState(TetrisPieceState.EMPTY);
             }
         }
     }
 
-
-    final int[][] rotateMap(int[][] pieceMap) {
+	final int[][] rotateMap(int[][] pieceMap) {
         int width = pieceMap.length;
         int height = pieceMap[0].length;
         int[][] left = new int[height][width];
@@ -152,101 +204,12 @@ public class TetrisModel {
         }
         return left;
     }
+	public void setCurrentI(int currentI) {
+		this.currentI = currentI;
+	}
 
-
-    boolean checkCollision(int nextI, int nextJ) {
-        final int[][] get = pieceDirection.get(piece).get(direction);
-        for (int i = 0; i < get.length; i++) {
-            for (int j = 0; j < get[i].length; j++) {
-                if (get[i][j] == 1) {
-                    if (nextI + i >= MAP_WIDTH || nextI < 0) {
-                        return true;
-                    }
-                    if (nextJ + j >= MAP_HEIGHT) {
-                        return true;
-                    }
-                    if (map[nextI + i][nextJ + j].state.get() == TetrisPieceState.SETTLED) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    void changeDirection() {
-        Direction a = direction;
-        direction = direction.next();
-        if (checkCollision(currentI, currentJ)) {
-            direction = a;
-        } else {
-            clearMovingPiece();
-            drawPiece();
-        }
-    }
-
-    void drawPiece() {
-        drawPiece(TetrisPieceState.TRANSITION);
-    }
-
-    void drawPiece(TetrisPieceState state) {
-        final int[][] get = pieceDirection.get(piece).get(direction);
-        for (int i = 0; i < get.length; i++) {
-            for (int j = 0; j < get[i].length; j++) {
-                if (get[i][j] == 1) {
-                    map[currentI + i][currentJ + j].state.set(state);
-                }
-            }
-        }
-    }
-    enum Direction {
-        UP, RIGHT, DOWN, LEFT;
-
-        Direction next() {
-            final Direction[] values = values();
-            return values[(ordinal() + 1) % values.length];
-        }
-    }
-
-    enum Piece {
-
-        S(new int[][]{
-            {1, 0},
-            {1, 1},
-            {0, 1}
-        }),
-        Z(new int[][]{
-            {0, 1},
-            {1, 1},
-            {1, 0}
-        }),
-        I(new int[][]{
-            {1, 1, 1, 1}
-        }),
-        O(new int[][]{
-            {1, 1},
-            {1, 1}}),
-        J(new int[][]{
-            {0, 1},
-            {0, 1},
-            {1, 1}
-        }),
-        L(new int[][]{
-            {1, 0},
-            {1, 0},
-            {1, 1}
-        }),
-        T(new int[][]{
-            {0, 1},
-            {1, 1},
-            {0, 1}
-        });
-        int[][] map;
-
-        private Piece(int[][] map) {
-            this.map = map;
-        }
-
-    }
+    public void setCurrentJ(int currentJ) {
+		this.currentJ = currentJ;
+	}
 
 }

@@ -6,34 +6,15 @@ import javafx.scene.input.MouseEvent;
 
 public class MouseGestures {
 
+	class DragContext {
+		boolean dragged;
+		double x;
+		double y;
+	}
+
 	final DragContext dragContext = new DragContext();
 
 	Graph graph;
-
-	public MouseGestures(Graph graph) {
-		this.graph = graph;
-	}
-
-	public void makeDraggable(final Node node) {
-
-		node.setOnMousePressed(onMousePressedEventHandler);
-		node.setOnMouseDragged(onMouseDraggedEventHandler);
-		node.setOnMouseReleased(onMouseReleasedEventHandler);
-
-	}
-
-	EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
-
-		Node node = (Node) event.getSource();
-
-		double scale = graph.getScale();
-		if (node instanceof Cell) {
-			dragContext.dragged = false;
-		}
-		dragContext.x = node.getBoundsInParent().getMinX() * scale - event.getScreenX();
-		dragContext.y = node.getBoundsInParent().getMinY() * scale - event.getScreenY();
-
-	};
 
 	EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
 
@@ -54,6 +35,19 @@ public class MouseGestures {
 
 	};
 
+	EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
+
+		Node node = (Node) event.getSource();
+
+		double scale = graph.getScale();
+		if (node instanceof Cell) {
+			dragContext.dragged = false;
+		}
+		dragContext.x = node.getBoundsInParent().getMinX() * scale - event.getScreenX();
+		dragContext.y = node.getBoundsInParent().getMinY() * scale - event.getScreenY();
+
+	};
+
 	EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
 		Object source = event.getSource();
 		if (source instanceof Cell) {
@@ -66,11 +60,15 @@ public class MouseGestures {
 
 	};
 
-	class DragContext {
+	public MouseGestures(Graph graph) {
+		this.graph = graph;
+	}
 
-		double x;
-		double y;
-		boolean dragged;
+	public void makeDraggable(final Node node) {
+
+		node.setOnMousePressed(onMousePressedEventHandler);
+		node.setOnMouseDragged(onMouseDraggedEventHandler);
+		node.setOnMouseReleased(onMouseReleasedEventHandler);
 
 	}
 }

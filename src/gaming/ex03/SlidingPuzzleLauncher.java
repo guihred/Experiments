@@ -16,12 +16,11 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class SlidingPuzzleLauncher extends Application {
-    SlidingPuzzleModel memoryModel;
     @Override
     public void start(Stage stage) throws Exception {
         final GridPane gridPane = new GridPane();
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        memoryModel = new SlidingPuzzleModel(gridPane);
+		SlidingPuzzleModel.create(gridPane);
         final Scene scene = new Scene(gridPane);
         stage.setScene(scene);
         stage.setWidth(200);

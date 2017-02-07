@@ -113,8 +113,8 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 		private PerspectiveCamera camera;
 		private final double cameraModifier = 50.0;
 		private final double cameraQuantity = 5.0;
-		private Group root;
 		private IntegerProperty ghostcount;
+		private Group root;
 
 		public MovimentacaoTeclado(Group root, PerspectiveCamera camera,
 				IntegerProperty ghostcount) {
@@ -214,8 +214,6 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 		}
 	}
 
-	private static final Color lightColor = Color.rgb(125, 125, 125);
-
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
@@ -228,9 +226,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 			{ "_", "_", "_", "_", "_", "_" },
 
 	};
-	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
-	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
+	private static final IntegerProperty ghostCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
 
+	private static final Color lightColor = Color.rgb(125, 125, 125);
 	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
 
 	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
@@ -239,14 +237,15 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 
 	private static final int SIZE = 60;
 
-	private static final IntegerProperty ghostCount = new SimpleIntegerProperty(
-			mapa.length * mapa[0].length);
-
 	public static void main(String[] args) {
 		launch(args);
 	}
 
+	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
+
 	private PerspectiveCamera camera;
+
+	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 	private MovimentacaoAleatoria movimentacao;
 
 	private Sphere checkBalls(Bounds boundsInParent) {

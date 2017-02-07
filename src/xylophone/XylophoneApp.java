@@ -49,19 +49,19 @@ public class XylophoneApp extends Application {
 	Xform sceneRoot = new Xform();
 	private Timeline animation = new SimpleTimelineBuilder().keyFrames(
 			new KeyFrame(Duration.ZERO,
-					new KeyValue(sceneRoot.ry.angleProperty(), 390d,
-							Interpolator.TANGENT(Duration.seconds(0.5), 390d, Duration.seconds(0.5), 390d))),
-			new KeyFrame(Duration.seconds(2), new KeyValue(sceneRoot.ry.angleProperty(), 30d,
-					Interpolator.TANGENT(Duration.seconds(0.5), 30d, Duration.seconds(0.5), 30d))))
+					new KeyValue(sceneRoot.ry.angleProperty(), 390D,
+							Interpolator.TANGENT(Duration.seconds(0.5), 390D, Duration.seconds(0.5), 390D))),
+			new KeyFrame(Duration.seconds(2), new KeyValue(sceneRoot.ry.angleProperty(), 30D,
+					Interpolator.TANGENT(Duration.seconds(0.5), 30D, Duration.seconds(0.5), 30D))))
 
 			.build();
 	private Timeline animation2 = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE).keyFrames(
 			new KeyFrame(Duration.ZERO,
-					new KeyValue(sceneRoot.rx.angleProperty(), 60d, Interpolator.TANGENT(Duration.seconds(1.0), 60d))),
+					new KeyValue(sceneRoot.rx.angleProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D))),
 			new KeyFrame(Duration.seconds(4),
-					new KeyValue(sceneRoot.rx.angleProperty(), 80d, Interpolator.TANGENT(Duration.seconds(1.0), 80d))),
+					new KeyValue(sceneRoot.rx.angleProperty(), 80D, Interpolator.TANGENT(Duration.seconds(1.0), 80D))),
 			new KeyFrame(Duration.seconds(8),
-					new KeyValue(sceneRoot.rx.angleProperty(), 60d, Interpolator.TANGENT(Duration.seconds(1.0), 60d))))
+					new KeyValue(sceneRoot.rx.angleProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D))))
 			.build();
 	// I didn't have any xylophone sounds so I added piano sounds :P
 	final AudioClip bar1Note = new AudioClip(XylophoneApp.class.getResource("C.wav").toString());

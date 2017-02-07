@@ -31,94 +31,13 @@ import simplebuilder.SimpleVBoxBuilder;
  */
 public class ReversiMain extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	private ReversiModel model = ReversiModel.getInstance();
 
-    ReversiModel model = ReversiModel.getInstance();
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        
-        Node game = new BorderPane(new StackPane(createBackground(), tiles()), createTitle(), null, createScoreBoxes(), null);
-        Node restart = restart();
-        primaryStage.setScene(new Scene(new AnchorPane(game, restart)));
-
-        primaryStage.setWidth(400);
-        primaryStage.setHeight(600);
-        AnchorPane.setTopAnchor(game, 0d);
-        AnchorPane.setBottomAnchor(game, 0d);
-        AnchorPane.setLeftAnchor(game, 0d);
-        AnchorPane.setRightAnchor(game, 0d);
-        AnchorPane.setRightAnchor(restart, 10d);
-        AnchorPane.setTopAnchor(restart, 10d);
-//        if (Platform.isSupported(ConditionalFeature.SCENE3D)) {
-//            primaryStage.getScene().setCamera(PerspectiveCameraBuilder.create()
-//                    .fieldOfView(60).build());
-//        }
-        primaryStage.show();
-    }
-
-    private Node restart() {
-		return newButton("Restart", (ActionEvent t) -> model.restart());
-    }
-
-    private Node createTitle() {
-        StackPane left = new StackPane();
-        left.setStyle("-fx-background-color: black");
-
-        Text text = new Text("JavaFX");
-        text.setFont(Font.font(null, FontWeight.BOLD, 18));
-        text.setFill(Color.WHITE);
-        StackPane.setAlignment(text, Pos.CENTER_RIGHT);
-        left.getChildren().add(text);
-        Text right = new Text("Reversi");
-        right.setFont(Font.font(null, FontWeight.BOLD, 18));
-        TilePane tiles = new TilePane();
-        tiles.setSnapToPixel(false);
-        TilePane.setAlignment(right, Pos.CENTER_LEFT);
-        tiles.getChildren().addAll(left, right);
-        tiles.setPrefTileHeight(40);
-        tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(),
-                "width").divide(2));
-        return tiles;
-    }
-
-    private Node tiles() {
-        GridPane board = new GridPane();
-        for (int i = 0; i < ReversiModel.BOARD_SIZE; i++) {
-            for (int j = 0; j < ReversiModel.BOARD_SIZE; j++) {
-                ReversiSquare square = new ReversiSquare(i, j);
-                ReversiPiece piece = new ReversiPiece();
-                piece.ownerProperty().bind(model.board[i][j]);
-                board.add(new StackPane(square, piece), i, j);
-            }
-        }
-//        if (Platform.isSupported(ConditionalFeature.SCENE3D)) {
-//            Transform scale = new Scale(.45, .8, 1, 300, 60, 0);
-//            Transform translate = new Translate(75, -2, -150);
-//            Transform xRot = new Rotate(-40, 300, 150, 0, Rotate.X_AXIS);
-//            Transform yRot = new Rotate(-5, 300, 150, 0, Rotate.Y_AXIS);
-//            Transform zRot = new Rotate(-6, 300, 150, 0, Rotate.Z_AXIS);
-//            board.getTransforms().addAll(scale, translate, xRot, yRot, zRot);
-//        }
-        return board;
-    }
     private Node createBackground() {
         final Region region = new Region();
         region.setStyle("-fx-background-color: radial-gradient(radius 100%, white, gray);");
 
         return region;
-    }
-
-  
-    private Node createScoreBoxes() {
-		TilePane tiles = new TilePane(createScore(Owner.BLACK), createScore(Owner.WHITE));
-		tiles.setSnapToPixel(false);
-		tiles.setPrefColumns(2);
-        tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(),
-                "width").divide(2));
-        return tiles;
     }
 
     private StackPane createScore(Owner owner) {
@@ -150,6 +69,87 @@ public class ReversiMain extends Application {
         score.textProperty().bind(model.getScore(owner).asString());
         remaining.textProperty().bind(model.getTurnsRemaining(owner).asString().concat(" turns remaining"));
         return stack;
+    }
+
+    private Node createScoreBoxes() {
+		TilePane tiles = new TilePane(createScore(Owner.BLACK), createScore(Owner.WHITE));
+		tiles.setSnapToPixel(false);
+		tiles.setPrefColumns(2);
+        tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(),
+                "width").divide(2));
+        return tiles;
+    }
+
+    private Node createTitle() {
+        StackPane left = new StackPane();
+        left.setStyle("-fx-background-color: black");
+
+        Text text = new Text("JavaFX");
+        text.setFont(Font.font(null, FontWeight.BOLD, 18));
+        text.setFill(Color.WHITE);
+        StackPane.setAlignment(text, Pos.CENTER_RIGHT);
+        left.getChildren().add(text);
+        Text right = new Text("Reversi");
+        right.setFont(Font.font(null, FontWeight.BOLD, 18));
+        TilePane tiles = new TilePane();
+        tiles.setSnapToPixel(false);
+        TilePane.setAlignment(right, Pos.CENTER_LEFT);
+        tiles.getChildren().addAll(left, right);
+        tiles.setPrefTileHeight(40);
+        tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(),
+                "width").divide(2));
+        return tiles;
+    }
+
+    private Node restart() {
+		return newButton("Restart", (ActionEvent t) -> model.restart());
+    }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        
+        Node game = new BorderPane(new StackPane(createBackground(), tiles()), createTitle(), null, createScoreBoxes(), null);
+        Node restart = restart();
+        primaryStage.setScene(new Scene(new AnchorPane(game, restart)));
+
+        primaryStage.setWidth(400);
+        primaryStage.setHeight(600);
+		AnchorPane.setTopAnchor(game, 0D);
+		AnchorPane.setBottomAnchor(game, 0D);
+		AnchorPane.setLeftAnchor(game, 0D);
+		AnchorPane.setRightAnchor(game, 0D);
+		AnchorPane.setRightAnchor(restart, 10D);
+		AnchorPane.setTopAnchor(restart, 10D);
+//        if (Platform.isSupported(ConditionalFeature.SCENE3D)) {
+//            primaryStage.getScene().setCamera(PerspectiveCameraBuilder.create()
+//                    .fieldOfView(60).build());
+//        }
+        primaryStage.show();
+    }
+
+  
+    private Node tiles() {
+        GridPane board = new GridPane();
+        for (int i = 0; i < ReversiModel.BOARD_SIZE; i++) {
+            for (int j = 0; j < ReversiModel.BOARD_SIZE; j++) {
+                ReversiSquare square = new ReversiSquare(i, j);
+                ReversiPiece piece = new ReversiPiece();
+                piece.ownerProperty().bind(model.board[i][j]);
+                board.add(new StackPane(square, piece), i, j);
+            }
+        }
+//        if (Platform.isSupported(ConditionalFeature.SCENE3D)) {
+//            Transform scale = new Scale(.45, .8, 1, 300, 60, 0);
+//            Transform translate = new Translate(75, -2, -150);
+//            Transform xRot = new Rotate(-40, 300, 150, 0, Rotate.X_AXIS);
+//            Transform yRot = new Rotate(-5, 300, 150, 0, Rotate.Y_AXIS);
+//            Transform zRot = new Rotate(-6, 300, 150, 0, Rotate.Z_AXIS);
+//            board.getTransforms().addAll(scale, translate, xRot, yRot, zRot);
+//        }
+        return board;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }

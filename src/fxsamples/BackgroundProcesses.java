@@ -14,7 +14,33 @@ public class BackgroundProcesses extends Application {
 		launch(args);
 	}
 
-	Task<Boolean> copyWorker;
+	private Task<Boolean> copyWorker;
+
+	@SuppressWarnings("unused")
+	private void copyFile(String src, String dest) throws InterruptedException {
+		// simulate a long time
+		Random rnd = new Random(System.currentTimeMillis());
+		long millis = rnd.nextInt(1000);
+		Thread.sleep(millis);
+	}
+
+	private Task<Boolean> createWorker(final int numFiles) {
+		return new Task<Boolean>() {
+			@Override
+			protected Boolean call() throws Exception {
+				for (int i = 0; i < numFiles; i++) {
+					long elapsedTime = System.currentTimeMillis();
+					copyFile("some file", "some dest file");
+					elapsedTime = System.currentTimeMillis() - elapsedTime;
+					String status = elapsedTime + " milliseconds";
+					// queue up status
+					updateMessage(status);
+					updateProgress(i + 1, numFiles);
+				}
+				return true;
+			}
+		};
+	}
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -68,31 +94,5 @@ public class BackgroundProcesses extends Application {
 				startButton, cancelButton, textArea);
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-
-	private Task<Boolean> createWorker(final int numFiles) {
-		return new Task<Boolean>() {
-			@Override
-			protected Boolean call() throws Exception {
-				for (int i = 0; i < numFiles; i++) {
-					long elapsedTime = System.currentTimeMillis();
-					copyFile("some file", "some dest file");
-					elapsedTime = System.currentTimeMillis() - elapsedTime;
-					String status = elapsedTime + " milliseconds";
-					// queue up status
-					updateMessage(status);
-					updateProgress(i + 1, numFiles);
-				}
-				return true;
-			}
-		};
-	}
-
-	@SuppressWarnings("unused")
-	private void copyFile(String src, String dest) throws InterruptedException {
-		// simulate a long time
-		Random rnd = new Random(System.currentTimeMillis());
-		long millis = rnd.nextInt(1000);
-		Thread.sleep(millis);
 	}
 }

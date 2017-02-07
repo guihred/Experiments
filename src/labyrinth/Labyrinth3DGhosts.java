@@ -17,10 +17,65 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class Labyrinth3DGhosts extends Application {
-	private final double cameraModifier = 50.0;
-	private final double cameraQuantity = 5.0;
-	private static final Color lightColor = Color.rgb(125, 125, 125);
+	private final class MovimentacaoAleatoria extends AnimationTimer {
+		private MeshView[] animais;
+		int direction[];// EAST, WEST, NORTH, SOUTH
 
+		public MovimentacaoAleatoria(MeshView... animais) {
+			this.animais = animais;
+			direction = new int[animais.length];
+		}
+
+		@Override
+		public void handle(long now) {
+			for (int i = 0; i < animais.length; i++) {
+				MeshView animal = animais[i];
+
+				final int STEP = 1;
+				if (direction[i] == 3) {// NORTH
+					animal.setTranslateZ(animal.getTranslateZ() + STEP);
+				}
+				if (direction[i] == 2) {// WEST
+					animal.setTranslateX(animal.getTranslateX() - STEP);
+				}
+				if (direction[i] == 1) {// SOUTH
+					animal.setTranslateZ(animal.getTranslateZ() - STEP);
+				}
+				if (direction[i] == 0) {// EAST
+					animal.setTranslateX(animal.getTranslateX() + STEP);
+				}
+				if (checkColision(animal.getBoundsInParent())
+						|| animal.getTranslateZ() < 0
+						|| animal.getTranslateZ() > mapa[0].length * SIZE
+
+						|| animal.getTranslateX() < 0
+						|| animal.getTranslateX() > mapa.length * SIZE
+
+				) {
+					if (direction[i] == 3) {// NORTH
+						animal.setTranslateZ(animal.getTranslateZ() - STEP);
+					}
+					if (direction[i] == 2) {// WEST
+						animal.setTranslateX(animal.getTranslateX() + STEP);
+					}
+					if (direction[i] == 1) {// SOUTH
+						animal.setTranslateZ(animal.getTranslateZ() + STEP);
+					}
+					if (direction[i] == 0) {// EAST
+						animal.setTranslateX(animal.getTranslateX() - STEP);
+					}
+					animal.setRotationAxis(Rotate.Y_AXIS);
+					// animal.setRotate(direction[i] * 90);
+					direction[i] = new Random().nextInt(4);
+
+				}
+				if (now % 1000 == 0) {
+					direction[i] = new Random().nextInt(4);
+				}
+			}
+		}
+	}
+	private static final Color lightColor = Color.rgb(125, 125, 125);
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
@@ -34,7 +89,9 @@ public class Labyrinth3DGhosts extends Application {
 
 	};
 
-	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
+	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
+
+	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 	private static final int SIZE = 60;
 
 	public static void main(String[] args) {
@@ -42,6 +99,47 @@ public class Labyrinth3DGhosts extends Application {
 	}
 
 	private PerspectiveCamera camera;
+
+	private final double cameraModifier = 50.0;
+
+	private final double cameraQuantity = 5.0;
+
+
+	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
+	boolean checkColision(Bounds boundsInParent) {
+		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
+				.map(Cube::getBoundsInParent);
+		return walls.anyMatch(b -> b.intersects(boundsInParent));
+	}
+
+	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
+		File file = new File(arquivo);
+		StlMeshImporter importer = new StlMeshImporter();
+		importer.read(file);
+		Mesh mesh = importer.getImport();
+		MeshView animal = new MeshView(mesh);
+		PhongMaterial sample = new PhongMaterial(jewelColor);
+		sample.setSpecularColor(lightColor);
+		sample.setSpecularPower(16);
+		animal.setMaterial(sample);
+		animal.setTranslateY(14);
+
+		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
+		animal.setTranslateZ(posicaoInicialZ);
+		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
+		animal.setTranslateX(posicaoInicialX);
+		while (checkColision(animal.getBoundsInParent())) {
+			animal.setTranslateZ(animal.getTranslateZ() + 1);
+			animal.setTranslateX(animal.getTranslateX() + 1);
+		}
+
+
+		animal.setScaleX(0.25);
+		animal.setScaleY(1);
+		animal.setScaleZ(0.25);
+
+		return animal;
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -157,104 +255,6 @@ public class Labyrinth3DGhosts extends Application {
 		primaryStage.setScene(sc);
 //		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.show();
-	}
-
-	boolean checkColision(Bounds boundsInParent) {
-		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(Cube::getBoundsInParent);
-		return walls.anyMatch(b -> b.intersects(boundsInParent));
-	}
-
-
-	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
-	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
-
-	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
-		File file = new File(arquivo);
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
-		MeshView animal = new MeshView(mesh);
-		PhongMaterial sample = new PhongMaterial(jewelColor);
-		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
-		animal.setMaterial(sample);
-		animal.setTranslateY(14);
-
-		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
-		animal.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
-		animal.setTranslateX(posicaoInicialX);
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
-		}
-
-
-		animal.setScaleX(0.25);
-		animal.setScaleY(1);
-		animal.setScaleZ(0.25);
-
-		return animal;
-	}
-
-	private final class MovimentacaoAleatoria extends AnimationTimer {
-		int direction[];// EAST, WEST, NORTH, SOUTH
-		private MeshView[] animais;
-
-		public MovimentacaoAleatoria(MeshView... animais) {
-			this.animais = animais;
-			direction = new int[animais.length];
-		}
-
-		@Override
-		public void handle(long now) {
-			for (int i = 0; i < animais.length; i++) {
-				MeshView animal = animais[i];
-
-				final int STEP = 1;
-				if (direction[i] == 3) {// NORTH
-					animal.setTranslateZ(animal.getTranslateZ() + STEP);
-				}
-				if (direction[i] == 2) {// WEST
-					animal.setTranslateX(animal.getTranslateX() - STEP);
-				}
-				if (direction[i] == 1) {// SOUTH
-					animal.setTranslateZ(animal.getTranslateZ() - STEP);
-				}
-				if (direction[i] == 0) {// EAST
-					animal.setTranslateX(animal.getTranslateX() + STEP);
-				}
-				if (checkColision(animal.getBoundsInParent())
-						|| animal.getTranslateZ() < 0
-						|| animal.getTranslateZ() > mapa[0].length * SIZE
-
-						|| animal.getTranslateX() < 0
-						|| animal.getTranslateX() > mapa.length * SIZE
-
-				) {
-					if (direction[i] == 3) {// NORTH
-						animal.setTranslateZ(animal.getTranslateZ() - STEP);
-					}
-					if (direction[i] == 2) {// WEST
-						animal.setTranslateX(animal.getTranslateX() + STEP);
-					}
-					if (direction[i] == 1) {// SOUTH
-						animal.setTranslateZ(animal.getTranslateZ() + STEP);
-					}
-					if (direction[i] == 0) {// EAST
-						animal.setTranslateX(animal.getTranslateX() - STEP);
-					}
-					animal.setRotationAxis(Rotate.Y_AXIS);
-					// animal.setRotate(direction[i] * 90);
-					direction[i] = new Random().nextInt(4);
-
-				}
-				if (now % 1000 == 0) {
-					direction[i] = new Random().nextInt(4);
-				}
-			}
-		}
 	}
 
 }

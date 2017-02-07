@@ -75,11 +75,11 @@ public class Chapter2 {
 	 * the same stream.
 	 */
 	public static void ex10() {
-		Stream<Double> of2 = Stream.of(3d, 4d, 5d, 7d, 1d, 2d, 9d, 10d, 8d, 6d);
+		Stream<Double> of2 = Stream.of(3D, 4D, 5D, 7D, 1D, 2D, 9D, 10D, 8D, 6D);
 		// reduce knowing before handed the count of elements of the stream
-		System.out.println(of2.reduce(0d, (a, b) -> a + b / 10));
+		System.out.println(of2.reduce(0D, (a, b) -> a + b / 10));
 
-		of2 = Stream.of(3d, 4d, 5d, 7d, 1d, 2d, 9d, 10d, 8d, 6d);
+		of2 = Stream.of(3D, 4D, 5D, 7D, 1D, 2D, 9D, 10D, 8D, 6D);
 		// reduce using the standard combiner for reducing a Stream of Double
 		double average = of2.reduce(new DoubleSummaryStatistics(), (a, b) -> {
 			a.accept(b);

@@ -19,13 +19,13 @@ import simplebuilder.SimpleTimelineBuilder;
 
 public class PendulumAnimationLauncher extends Application {
 
-	DoubleProperty startXVal = new SimpleDoubleProperty(100.0);
-	Button startButton;
-	Button pauseButton;
-	Button resumeButton;
-	Button stopButton;
-	Line line;
-	Timeline anim = new SimpleTimelineBuilder()
+	private DoubleProperty startXVal = new SimpleDoubleProperty(100.0);
+	private Button startButton;
+	private Button pauseButton;
+	private Button resumeButton;
+	private Button stopButton;
+	private Line line;
+	private Timeline anim = new SimpleTimelineBuilder()
 			.autoReverse(true)
 			.cycleCount(Animation.INDEFINITE)
 			.keyFrames(

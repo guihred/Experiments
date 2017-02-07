@@ -36,63 +36,63 @@ public class PongLauncher extends Application {
     /**
      * The center points of the moving ball
      */
-    DoubleProperty centerX = new SimpleDoubleProperty();
-    DoubleProperty centerY = new SimpleDoubleProperty();
+	private DoubleProperty centerX = new SimpleDoubleProperty();
+	private DoubleProperty centerY = new SimpleDoubleProperty();
     /**
      * The Y coordinate of the left paddle
      */
-    DoubleProperty leftPaddleY = new SimpleDoubleProperty();
+	private DoubleProperty leftPaddleY = new SimpleDoubleProperty();
     /**
      * The Y coordinate of the right paddle
      */
-    DoubleProperty rightPaddleY = new SimpleDoubleProperty();
+	private DoubleProperty rightPaddleY = new SimpleDoubleProperty();
     /**
      * The drag anchor for left and right paddles
      */
-    double leftPaddleDragAnchorY;
-    double rightPaddleDragAnchorY;
+	private double leftPaddleDragAnchorY;
+	private double rightPaddleDragAnchorY;
     /**
      * The initial translateY property for the left and right paddles
      */
-    double initLeftPaddleTranslateY;
-    double initRightPaddleTranslateY;
+	private double initLeftPaddleTranslateY;
+	private double initRightPaddleTranslateY;
     /**
      * The moving ball
      */
-	Circle ball = new SimpleCircleBuilder().radius(5.0).fill(Color.RED).build();
+	private Circle ball = new SimpleCircleBuilder().radius(5.0).fill(Color.RED).build();
     /**
      * The Group containing all of the walls, paddles, and ball. This also
      * allows us to requestFocus for KeyEvents on the Group
      */
-    Group pongComponents;
+	private Group pongComponents;
     /**
      * The left and right paddles
      */
-    Rectangle leftPaddle;
-    Rectangle rightPaddle;
+	private Rectangle leftPaddle;
+	private Rectangle rightPaddle;
     /**
      * The walls
      */
 	/**
 	 * Controls whether the startButton is visible
 	 */
-	BooleanProperty startVisible = new SimpleBooleanProperty(true);
-	Rectangle topWall = new SimpleRectangleBuilder().x(0).y(0).width(500).height(1).build();
-	Rectangle rightWall = new SimpleRectangleBuilder().x(500).y(0).width(1).height(500).build();
-	Rectangle leftWall = new SimpleRectangleBuilder().x(0).y(0).width(1).height(500).build();
-	Rectangle bottomWall = new SimpleRectangleBuilder().x(0).y(500).width(500).height(1).build();
+	private BooleanProperty startVisible = new SimpleBooleanProperty(true);
+	private Rectangle topWall = new SimpleRectangleBuilder().x(0).y(0).width(500).height(1).build();
+	private Rectangle rightWall = new SimpleRectangleBuilder().x(500).y(0).width(1).height(500).build();
+	private Rectangle leftWall = new SimpleRectangleBuilder().x(0).y(0).width(1).height(500).build();
+	private Rectangle bottomWall = new SimpleRectangleBuilder().x(0).y(500).width(500).height(1).build();
 	/**
 	 * Controls whether the ball is moving right
 	 */
-	boolean movingRight = true;
+	private boolean movingRight = true;
 	/**
 	 * Controls whether the ball is moving down
 	 */
-	boolean movingDown = true;
+	private boolean movingDown = true;
 	/**
 	 * The animation of the ball
 	 */
-	Timeline pongAnimation = new SimpleTimelineBuilder()
+	private Timeline pongAnimation = new SimpleTimelineBuilder()
 			.cycleCount(Animation.INDEFINITE)
 			.keyFrames(new KeyFrame(
 					new Duration(10.0), (t) -> {
@@ -103,7 +103,7 @@ public class PongLauncher extends Application {
 						centerY.setValue(centerY.getValue() + vertPixels);
 					}))
 			.build();
-	Button startButton = newButton(225, 470, "Start!", (e) -> {
+	private Button startButton = newButton(225, 470, "Start!", (e) -> {
 		startVisible.set(false);
 		pongAnimation.playFromStart();
 		pongComponents.requestFocus();

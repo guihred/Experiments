@@ -26,14 +26,13 @@ public class Maze3DModel {
 
     public static final int MAZE_SIZE = 24;
     static final Random random = new Random();
-    final Circle circle;
-    Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
-    GridPane gridPane;
-    int moves = 0;
-
-	public static Maze3DModel create(GridPane gridPane) {
+    public static Maze3DModel create(GridPane gridPane) {
 		return new Maze3DModel(gridPane);
 	}
+    final Circle circle;
+    GridPane gridPane;
+    Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
+	int moves = 0;
     public Maze3DModel(GridPane gridPane) {
         this.gridPane = gridPane;
         for (int i = 0; i < MAZE_SIZE; i++) {

@@ -25,32 +25,34 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import others.*;
 import simplebuilder.*;
 
 public class CSSStylingExample extends Application {
 
-	DoubleProperty fillVals = new SimpleDoubleProperty(255.0);
-	Scene sceneRef;
-	ObservableList<Cursor> cursors = FXCollections.observableArrayList(Cursor.DEFAULT, Cursor.CROSSHAIR, Cursor.WAIT,
-			Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE, Cursor.SE_RESIZE,
-			Cursor.S_RESIZE, Cursor.SW_RESIZE, Cursor.W_RESIZE, Cursor.NW_RESIZE, Cursor.NONE);
-
-	Slider sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255).orientation(Orientation.VERTICAL).build();
-	ChoiceBox<Cursor> choiceBoxRef = new ChoiceBox<>(cursors);
-	Text textSceneX = new SimpleTextBuilder().styleClass("emphasized-text").build();
-	Text textSceneY = new SimpleTextBuilder().styleClass("emphasized-text").build();
-	Text textSceneW = new SimpleTextBuilder().styleClass("emphasized-text").build();
-	Text textSceneH = new SimpleTextBuilder().styleClass("emphasized-text").id("sceneHeightText").build();
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
 
-	Label labelStageX = new SimpleLabelBuilder().id("stageX").build();
+	private ObservableList<Cursor> cursors = FXCollections.observableArrayList(Cursor.DEFAULT, Cursor.CROSSHAIR,
+			Cursor.WAIT,
+			Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE, Cursor.SE_RESIZE,
+			Cursor.S_RESIZE, Cursor.SW_RESIZE, Cursor.W_RESIZE, Cursor.NW_RESIZE, Cursor.NONE);
+	private ChoiceBox<Cursor> choiceBoxRef = new ChoiceBox<>(cursors);
 
-	Label labelStageY = new SimpleLabelBuilder().id("stageY").build();
-	Label labelStageW = new Label();
-	Label labelStageH = new Label();
+	private DoubleProperty fillVals = new SimpleDoubleProperty(255.0);
+	private Label labelStageH = new Label();
+	private Label labelStageW = new Label();
+	private Label labelStageX = new SimpleLabelBuilder().id("stageX").build();
+	private Label labelStageY = new SimpleLabelBuilder().id("stageY").build();
+	private Scene sceneRef;
+	private Slider sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255).orientation(Orientation.VERTICAL)
+			.build();
+
+	private Text textSceneH = new SimpleTextBuilder().styleClass("emphasized-text").id("sceneHeightText").build();
+
+	private Text textSceneW = new SimpleTextBuilder().styleClass("emphasized-text").build();
+	private Text textSceneX = new SimpleTextBuilder().styleClass("emphasized-text").build();
+	private Text textSceneY = new SimpleTextBuilder().styleClass("emphasized-text").build();
 	@Override
 	public void start(Stage stage) {
 		final ToggleGroup toggleGrp = new ToggleGroup();

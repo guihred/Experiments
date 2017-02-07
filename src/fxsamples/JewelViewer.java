@@ -15,19 +15,16 @@ import labyrinth.Labyrinth3DWallTexture;
 public class JewelViewer extends Application {
 
 
+	private static final Color jewelColor = Color.BURLYWOOD;
+	private static final Color lightColor = Color.rgb(125, 125, 125);
+	private static final String MESH_FILENAME = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+
 	private static final double MODEL_SCALE_FACTOR = 0.5;
+
 	private static final double MODEL_X_OFFSET = 0; // standard
 	private static final double MODEL_Y_OFFSET = 0; // standard
 
 	private static final int VIEWPORT_SIZE = 800;
-
-	private static final Color lightColor = Color.rgb(125, 125, 125);
-	private static final Color jewelColor = Color.BURLYWOOD;
-
-	private Group root;
-	private PointLight pointLight;
-
-	private static final String MESH_FILENAME = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 	static MeshView loadMeshViews() {
 		File file = new File(MESH_FILENAME);
 		StlMeshImporter importer = new StlMeshImporter();
@@ -35,6 +32,29 @@ public class JewelViewer extends Application {
 		Mesh mesh = importer.getImport();
 
 		return new MeshView(mesh);
+	}
+
+	public static void main(String[] args) {
+		System.setProperty("prism.dirtyopts", "false");
+		launch(args);
+	}
+	private PerspectiveCamera camera;
+
+	private final double cameraModifier = 50.0;
+
+	private final double cameraQuantity = 10.0;
+
+	private PointLight pointLight;
+
+	private Group root;
+	private PerspectiveCamera addCamera(Scene scene) {
+		camera = new PerspectiveCamera();
+		System.out.println("Near Clip: " + camera.getNearClip());
+		System.out.println("Far Clip:  " + camera.getFarClip());
+		System.out.println("FOV:       " + camera.getFieldOfView());
+
+		scene.setCamera(camera);
+		return camera;
 	}
 
 	private Group buildScene() {
@@ -68,21 +88,6 @@ public class JewelViewer extends Application {
 
 		return root;
 	}
-
-	private PerspectiveCamera camera;
-
-	private PerspectiveCamera addCamera(Scene scene) {
-		camera = new PerspectiveCamera();
-		System.out.println("Near Clip: " + camera.getNearClip());
-		System.out.println("Far Clip:  " + camera.getFarClip());
-		System.out.println("FOV:       " + camera.getFieldOfView());
-
-		scene.setCamera(camera);
-		return camera;
-	}
-
-	private final double cameraQuantity = 10.0;
-	private final double cameraModifier = 50.0;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -139,10 +144,5 @@ public class JewelViewer extends Application {
 		primaryStage.setTitle("Jewel Viewer");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-
-	public static void main(String[] args) {
-		System.setProperty("prism.dirtyopts", "false");
-		launch(args);
 	}
 }

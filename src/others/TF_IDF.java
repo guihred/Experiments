@@ -13,19 +13,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TF_IDF {
-	public static final Logger logger = LoggerFactory.getLogger(TF_IDF.class);
-
 	public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
 
 		// Note: this comparator imposes orderings that are inconsistent with
 		// equals.
 		@Override
 		public int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
-			Double da = 0d;
+			Double da = 0D;
 			for (Entry<File, Double> entry : a.getValue().entrySet()) {
 				da = da < entry.getValue() ? entry.getValue() : da;
 			}
-			Double db = 0d;
+			Double db = 0D;
 			for (Entry<File, Double> entry : b.getValue().entrySet()) {
 				db = db < entry.getValue() ? entry.getValue() : db;
 			}
@@ -33,6 +31,67 @@ public class TF_IDF {
 			return db.compareTo(da);
 		}
 	}
+
+	public static final Logger logger = LoggerFactory.getLogger(TF_IDF.class);
+
+	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
+
+	/*
+	 * Modos de calcular tf(t,d)=
+	 * 
+	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
+	 * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
+	 * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
+	 * documents, e.g. raw frequency divided by the maximum raw frequency of any
+	 * term in the document:
+	 * 
+	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
+	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
+	 */
+
+	/*
+	 * 
+	 * Tf, in its basic form, is just the frequency that we look up in
+	 * appropriate table. In this case, it's one.
+	 * 
+	 * Idf is a bit more involved:
+	 * 
+	 * idf("this", D) = log( N/f(t,D))
+	 * 
+	 * The numerator of the fraction is the number of documents, which is two.
+	 * The number of documents in which "this" appears is also two, giving
+	 * 
+	 * idf("this", D) = log (2/2) = 0
+	 * 
+	 * So tf�idf is zero for this term, and with the basic definition this is
+	 * true of any term that occurs in all documents.
+	 * 
+	 * A slightly more interesting example arises from the word "example", which
+	 * occurs three times but in only one document. For this document, tf�idf of
+	 * "example" is:
+	 * 
+	 * D = conjunto total de documento
+	 * 
+	 * d_i = um documento i
+	 * 
+	 * tf("example", d_i) = 3 idf("example", D) = log (2/1) ~= 0.3010
+	 * tfidf("example", d_i) = tf("example", d_i) x idf("example", D) = 3 x
+	 * 0.3010 = 0.9030
+	 * 
+	 * Modos de calcular tf(t,d)=
+	 * 
+	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
+	 * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
+	 * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
+	 * documents, e.g. raw frequency divided by the maximum raw frequency of any
+	 * term in the document:
+	 * 
+	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
+	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
+	 */
+	private static final Map<File, Map<String, Long>> MAPA_DOCUMENTO = new HashMap<>();
+
+	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
 
 	public static Map<File, Map<String, Long>> getDocumentMap(File f) throws IOException {
 
@@ -53,19 +112,6 @@ public class TF_IDF {
 		}
 		return MAPA_DOCUMENTO;
 	}
-
-	/*
-	 * Modos de calcular tf(t,d)=
-	 * 
-	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
-	 * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
-	 * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
-	 * documents, e.g. raw frequency divided by the maximum raw frequency of any
-	 * term in the document:
-	 * 
-	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
-	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
-	 */
 
 	/*
 	 * Modos de calcular tf(t,d)=
@@ -111,7 +157,7 @@ public class TF_IDF {
 
 	private static double getInverseDocumentFrequency(String p) {
 		Set<Entry<File, Map<String, Long>>> entrySet = MAPA_DOCUMENTO.entrySet();
-		double idf = 1d;
+		double idf = 1D;
 		for (Entry<File, Map<String, Long>> entry : entrySet) {
 			if (entry.getValue().containsKey(p)) {
 				idf += 1;
@@ -120,9 +166,8 @@ public class TF_IDF {
 
 		return Math.log(MAPA_DOCUMENTO.size() / idf);
 	}
-
 	private static double getTermFrequency(Long fre) {
-		return fre == 0 ? 0d : 1 + Math.log(fre);
+		return fre == 0 ? 0D : 1 + Math.log(fre);
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -146,59 +191,22 @@ public class TF_IDF {
 
 		System.out.println(file.getAbsolutePath());
 		try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName());) {
+			List<String> javaKeywords = Arrays.asList("abstract", "continue", "for", "new", "switch", "assert",
+					"default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break",
+					"double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case",
+					"enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
+					"final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
+					"float", "native", "super", "while");
 
 			entrySet.forEach((e) -> {
-				out.println(e.getKey() + "={");
-				e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
-				out.println("}");
+				if (!javaKeywords.contains(e.getKey())) {
+					out.println(e.getKey() + "={");
+					e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
+					out.println("}");
+				}
 			});
 		} catch (Exception e2) {
 			throw e2;
 		}
 	}
-
-	/*
-	 * 
-	 * Tf, in its basic form, is just the frequency that we look up in
-	 * appropriate table. In this case, it's one.
-	 * 
-	 * Idf is a bit more involved:
-	 * 
-	 * idf("this", D) = log( N/f(t,D))
-	 * 
-	 * The numerator of the fraction is the number of documents, which is two.
-	 * The number of documents in which "this" appears is also two, giving
-	 * 
-	 * idf("this", D) = log (2/2) = 0
-	 * 
-	 * So tf�idf is zero for this term, and with the basic definition this is
-	 * true of any term that occurs in all documents.
-	 * 
-	 * A slightly more interesting example arises from the word "example", which
-	 * occurs three times but in only one document. For this document, tf�idf of
-	 * "example" is:
-	 * 
-	 * D = conjunto total de documento
-	 * 
-	 * d_i = um documento i
-	 * 
-	 * tf("example", d_i) = 3 idf("example", D) = log (2/1) ~= 0.3010
-	 * tfidf("example", d_i) = tf("example", d_i) x idf("example", D) = 3 x
-	 * 0.3010 = 0.9030
-	 * 
-	 * Modos de calcular tf(t,d)=
-	 * 
-	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
-	 * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
-	 * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
-	 * documents, e.g. raw frequency divided by the maximum raw frequency of any
-	 * term in the document:
-	 * 
-	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
-	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
-	 */
-	private static final Map<File, Map<String, Long>> MAPA_DOCUMENTO = new HashMap<>();
-	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
-
-	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
 }

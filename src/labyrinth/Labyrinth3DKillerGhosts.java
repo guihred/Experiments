@@ -25,217 +25,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Labyrinth3DKillerGhosts extends Application {
-	private static final Color lightColor = Color.rgb(125, 125, 125);
-
-	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" },
-			{ "_", "|", "_", "_", "_", "|" }, { "_", "_", "|", "|", "|", "_" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "_", "|", "_" },
-			{ "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" },
-			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "|", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "_", "_", "_", "|", "_", "|" },
-			{ "_", "_", "_", "_", "_", "_" },
-
-	};
-
-	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
-	private static final int SIZE = 60;
-
-	public static void main(String[] args) {
-		launch(args);
-	}
-
-	private PerspectiveCamera camera;
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-
-		Group root = new Group();
-
-		criarLabirinto(root);
-		SubScene subScene = new SubScene(root, 640, 480, true,
-				SceneAntialiasing.BALANCED);
-		subScene.heightProperty().bind(primaryStage.heightProperty());
-		subScene.widthProperty().bind(primaryStage.widthProperty());
-		camera = new PerspectiveCamera(true);
-		camera.setNearClip(0.1);
-		camera.setFarClip(1000.0);
-		camera.setTranslateZ(-100);
-		subScene.setCamera(camera);
-		PointLight sun = new PointLight(Color.rgb(125, 125, 125));
-		sun.translateXProperty().bind(camera.translateXProperty());
-		sun.translateYProperty().bind(camera.translateYProperty());
-		sun.translateZProperty().bind(camera.translateZProperty());
-		root.getChildren().add(sun);
-
-		MeshView[] fantasmas = { 
-				gerarFantasma(MESH_GHOST, Color.AQUAMARINE),
-				gerarFantasma(MESH_GHOST, Color.BROWN),
-				gerarFantasma(MESH_GHOST, Color.CHARTREUSE),
-				gerarFantasma(MESH_GHOST, Color.DODGERBLUE),
-				gerarFantasma(MESH_GHOST, Color.FUCHSIA),
-				gerarFantasma(MESH_GHOST, Color.GREEN),
-				gerarFantasma(MESH_GHOST, Color.HOTPINK),
-				gerarFantasma(MESH_GHOST, Color.INDIGO),
-				gerarFantasma(MESH_GHOST, Color.KHAKI),
-				gerarFantasma(MESH_GHOST, Color.LIGHTSALMON),
-				gerarFantasma(MESH_GHOST, Color.MIDNIGHTBLUE),
-				gerarFantasma(MESH_GHOST, Color.NAVY),
-				gerarFantasma(MESH_GHOST, Color.ORCHID),
-				gerarFantasma(MESH_GHOST, Color.PURPLE),
-				gerarFantasma(MESH_GHOST, Color.RED),
-				gerarFantasma(MESH_GHOST, Color.SLATEBLUE),
-				gerarFantasma(MESH_GHOST, Color.TRANSPARENT),
-				gerarFantasma(MESH_GHOST, Color.VIOLET),
-				gerarFantasma(MESH_GHOST, Color.WHITESMOKE),
-				gerarFantasma(MESH_GHOST, Color.YELLOWGREEN),
-		};
-
-		movimentacao = new MovimentacaoAleatoria(fantasmas);
-		movimentacao.start();
-
-		root.getChildren().addAll(fantasmas);
-
-		Scene sc = new Scene(new Group(subScene));
-		// End Step 2a
-		// Step 2b: Add a Movement Keyboard Handler
-		sc.setFill(Color.TRANSPARENT);
-		sc.setOnKeyPressed(new MovimentacaoTeclado(camera));
-
-		primaryStage.setTitle("EXP 1: Labyrinth");
-		primaryStage.setScene(sc);
-		// primaryStage.initStyle(StageStyle.TRANSPARENT);
-		primaryStage.show();
-	}
-
-	private void criarLabirinto(Group root) {
-		for (int i = mapa.length - 1; i >= 0; i--) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				Cube rectangle = new Cube(SIZE, Color.BLUE);
-				rectangle.setTranslateX(i * SIZE);
-				rectangle.setTranslateZ(j * SIZE);
-				if ("_".equals(string)) {
-					rectangle.ry.setAngle(90);
-				}
-				cubes[i][j] = rectangle;
-				root.getChildren().add(rectangle);
-			}
-		}
-	}
-
-	boolean checkColision(Bounds boundsInParent) {
-		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(Cube::getBoundsInParent);
-		return walls.anyMatch(b -> b.intersects(boundsInParent));
-	}
-
-	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
-	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
-	private MovimentacaoAleatoria movimentacao;
-
-	private MeshView gerarFantasma(String arquivo, Color animalColor) {
-		File file = new File(arquivo);
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
-		MeshView animal = new MeshView(mesh);
-		PhongMaterial sample = new PhongMaterial(animalColor);
-		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
-		animal.setMaterial(sample);
-		animal.setTranslateY(14);
-
-		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
-		animal.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
-		animal.setTranslateX(posicaoInicialX);
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
-		}
-
-
-		animal.setScaleX(0.4);
-		animal.setScaleY(1);
-		animal.setScaleZ(0.4);
-
-		return animal;
-	}
-
-	private class MovimentacaoTeclado implements EventHandler<KeyEvent> {
-		private final double cameraModifier = 50.0;
-		private final double cameraQuantity = 5.0;
-		private PerspectiveCamera camera;
-
-		public MovimentacaoTeclado(PerspectiveCamera camera) {
-			this.camera = camera;
-		}
-
-		@Override
-		public void handle(KeyEvent event) {
-			double change = cameraQuantity;
-			// Add shift modifier to simulate "Running Speed"
-			if (event.isShiftDown()) {
-				change = cameraModifier;
-			}
-			// What key did the user press?
-			KeyCode keycode = event.getCode();
-			// Step 2c: Add Zoom controls
-			if (keycode == KeyCode.W) {
-				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-						* change;
-				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-						* change;
-
-				camera.setTranslateX(camera.getTranslateX() + sin);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateX(camera.getTranslateX() - sin);
-				}
-				camera.setTranslateZ(camera.getTranslateZ() + cos);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateZ(camera.getTranslateZ() - cos);
-				}
-			}
-			if (keycode == KeyCode.S) {
-				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-						* change;
-				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-						* change;
-
-				camera.setTranslateX(camera.getTranslateX() - sin);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateX(camera.getTranslateX() + sin);
-					// camera.setTranslateZ(camera.getTranslateZ() - change);
-				}
-				camera.setTranslateZ(camera.getTranslateZ() - cos);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateZ(camera.getTranslateZ() + cos);
-				}
-			}
-			// Step 2d: Add Strafe controls
-			if (keycode == KeyCode.A) {
-				camera.setRotationAxis(Rotate.Y_AXIS);
-				camera.setRotate(camera.getRotate() - change);
-			}
-			if (keycode == KeyCode.UP) {
-				camera.setTranslateY(camera.getTranslateY() - change);
-			}
-			if (keycode == KeyCode.DOWN) {
-				camera.setTranslateY(camera.getTranslateY() + change);
-			}
-			if (keycode == KeyCode.D) {
-				camera.setRotationAxis(Rotate.Y_AXIS);
-				camera.setRotate(camera.getRotate() + change);
-			}
-		}
-	}
-
 	private final class MovimentacaoAleatoria extends AnimationTimer {
-		int direction[];// EAST, WEST, NORTH, SOUTH
 		private MeshView[] animais;
+		int direction[];// EAST, WEST, NORTH, SOUTH
 
 		public MovimentacaoAleatoria(MeshView... animais) {
 			this.animais = animais;
@@ -312,6 +104,214 @@ public class Labyrinth3DKillerGhosts extends Application {
 
 			}
 		}
+	}
+
+	private class MovimentacaoTeclado implements EventHandler<KeyEvent> {
+		private PerspectiveCamera camera;
+		private final double cameraModifier = 50.0;
+		private final double cameraQuantity = 5.0;
+
+		public MovimentacaoTeclado(PerspectiveCamera camera) {
+			this.camera = camera;
+		}
+
+		@Override
+		public void handle(KeyEvent event) {
+			double change = cameraQuantity;
+			// Add shift modifier to simulate "Running Speed"
+			if (event.isShiftDown()) {
+				change = cameraModifier;
+			}
+			// What key did the user press?
+			KeyCode keycode = event.getCode();
+			// Step 2c: Add Zoom controls
+			if (keycode == KeyCode.W) {
+				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
+						* change;
+				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
+						* change;
+
+				camera.setTranslateX(camera.getTranslateX() + sin);
+				if (checkColision(camera.getBoundsInParent())) {
+					camera.setTranslateX(camera.getTranslateX() - sin);
+				}
+				camera.setTranslateZ(camera.getTranslateZ() + cos);
+				if (checkColision(camera.getBoundsInParent())) {
+					camera.setTranslateZ(camera.getTranslateZ() - cos);
+				}
+			}
+			if (keycode == KeyCode.S) {
+				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
+						* change;
+				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
+						* change;
+
+				camera.setTranslateX(camera.getTranslateX() - sin);
+				if (checkColision(camera.getBoundsInParent())) {
+					camera.setTranslateX(camera.getTranslateX() + sin);
+					// camera.setTranslateZ(camera.getTranslateZ() - change);
+				}
+				camera.setTranslateZ(camera.getTranslateZ() - cos);
+				if (checkColision(camera.getBoundsInParent())) {
+					camera.setTranslateZ(camera.getTranslateZ() + cos);
+				}
+			}
+			// Step 2d: Add Strafe controls
+			if (keycode == KeyCode.A) {
+				camera.setRotationAxis(Rotate.Y_AXIS);
+				camera.setRotate(camera.getRotate() - change);
+			}
+			if (keycode == KeyCode.UP) {
+				camera.setTranslateY(camera.getTranslateY() - change);
+			}
+			if (keycode == KeyCode.DOWN) {
+				camera.setTranslateY(camera.getTranslateY() + change);
+			}
+			if (keycode == KeyCode.D) {
+				camera.setRotationAxis(Rotate.Y_AXIS);
+				camera.setRotate(camera.getRotate() + change);
+			}
+		}
+	}
+
+	private static final Color lightColor = Color.rgb(125, 125, 125);
+	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
+			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
+			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
+			{ "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" },
+			{ "_", "|", "_", "_", "_", "|" }, { "_", "_", "|", "|", "|", "_" },
+			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "_", "|", "_" },
+			{ "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" },
+			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "|", "_", "_", "|" },
+			{ "|", "_", "_", "_", "_", "|" }, { "_", "_", "_", "|", "_", "|" },
+			{ "_", "_", "_", "_", "_", "_" },
+
+	};
+
+	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
+
+	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+
+	private static final int SIZE = 60;
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	private PerspectiveCamera camera;
+
+	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
+	private MovimentacaoAleatoria movimentacao;
+	boolean checkColision(Bounds boundsInParent) {
+		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
+				.map(Cube::getBoundsInParent);
+		return walls.anyMatch(b -> b.intersects(boundsInParent));
+	}
+
+	private void criarLabirinto(Group root) {
+		for (int i = mapa.length - 1; i >= 0; i--) {
+			for (int j = mapa[i].length - 1; j >= 0; j--) {
+				String string = mapa[i][j];
+				Cube rectangle = new Cube(SIZE, Color.BLUE);
+				rectangle.setTranslateX(i * SIZE);
+				rectangle.setTranslateZ(j * SIZE);
+				if ("_".equals(string)) {
+					rectangle.ry.setAngle(90);
+				}
+				cubes[i][j] = rectangle;
+				root.getChildren().add(rectangle);
+			}
+		}
+	}
+
+	private MeshView gerarFantasma(String arquivo, Color animalColor) {
+		File file = new File(arquivo);
+		StlMeshImporter importer = new StlMeshImporter();
+		importer.read(file);
+		Mesh mesh = importer.getImport();
+		MeshView animal = new MeshView(mesh);
+		PhongMaterial sample = new PhongMaterial(animalColor);
+		sample.setSpecularColor(lightColor);
+		sample.setSpecularPower(16);
+		animal.setMaterial(sample);
+		animal.setTranslateY(14);
+
+		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
+		animal.setTranslateZ(posicaoInicialZ);
+		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
+		animal.setTranslateX(posicaoInicialX);
+		while (checkColision(animal.getBoundsInParent())) {
+			animal.setTranslateZ(animal.getTranslateZ() + 1);
+			animal.setTranslateX(animal.getTranslateX() + 1);
+		}
+
+
+		animal.setScaleX(0.4);
+		animal.setScaleY(1);
+		animal.setScaleZ(0.4);
+
+		return animal;
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+
+		Group root = new Group();
+
+		criarLabirinto(root);
+		SubScene subScene = new SubScene(root, 640, 480, true,
+				SceneAntialiasing.BALANCED);
+		subScene.heightProperty().bind(primaryStage.heightProperty());
+		subScene.widthProperty().bind(primaryStage.widthProperty());
+		camera = new PerspectiveCamera(true);
+		camera.setNearClip(0.1);
+		camera.setFarClip(1000.0);
+		camera.setTranslateZ(-100);
+		subScene.setCamera(camera);
+		PointLight sun = new PointLight(Color.rgb(125, 125, 125));
+		sun.translateXProperty().bind(camera.translateXProperty());
+		sun.translateYProperty().bind(camera.translateYProperty());
+		sun.translateZProperty().bind(camera.translateZProperty());
+		root.getChildren().add(sun);
+
+		MeshView[] fantasmas = { 
+				gerarFantasma(MESH_GHOST, Color.AQUAMARINE),
+				gerarFantasma(MESH_GHOST, Color.BROWN),
+				gerarFantasma(MESH_GHOST, Color.CHARTREUSE),
+				gerarFantasma(MESH_GHOST, Color.DODGERBLUE),
+				gerarFantasma(MESH_GHOST, Color.FUCHSIA),
+				gerarFantasma(MESH_GHOST, Color.GREEN),
+				gerarFantasma(MESH_GHOST, Color.HOTPINK),
+				gerarFantasma(MESH_GHOST, Color.INDIGO),
+				gerarFantasma(MESH_GHOST, Color.KHAKI),
+				gerarFantasma(MESH_GHOST, Color.LIGHTSALMON),
+				gerarFantasma(MESH_GHOST, Color.MIDNIGHTBLUE),
+				gerarFantasma(MESH_GHOST, Color.NAVY),
+				gerarFantasma(MESH_GHOST, Color.ORCHID),
+				gerarFantasma(MESH_GHOST, Color.PURPLE),
+				gerarFantasma(MESH_GHOST, Color.RED),
+				gerarFantasma(MESH_GHOST, Color.SLATEBLUE),
+				gerarFantasma(MESH_GHOST, Color.TRANSPARENT),
+				gerarFantasma(MESH_GHOST, Color.VIOLET),
+				gerarFantasma(MESH_GHOST, Color.WHITESMOKE),
+				gerarFantasma(MESH_GHOST, Color.YELLOWGREEN),
+		};
+
+		movimentacao = new MovimentacaoAleatoria(fantasmas);
+		movimentacao.start();
+
+		root.getChildren().addAll(fantasmas);
+
+		Scene sc = new Scene(new Group(subScene));
+		// End Step 2a
+		// Step 2b: Add a Movement Keyboard Handler
+		sc.setFill(Color.TRANSPARENT);
+		sc.setOnKeyPressed(new MovimentacaoTeclado(camera));
+
+		primaryStage.setTitle("EXP 1: Labyrinth");
+		primaryStage.setScene(sc);
+		// primaryStage.initStyle(StageStyle.TRANSPARENT);
+		primaryStage.show();
 	}
 
 	}

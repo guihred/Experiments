@@ -105,7 +105,7 @@ public class JavaExercise1to11 {
 
 		while (true) {
 			double x = (oldx + 5 / oldx) / 2;
-			if (Math.abs(x - oldx) < 1.0e-10d) {
+			if (Math.abs(x - oldx) < 1.0e-10D) {
 				break;
 			}
 			oldx = x;
@@ -156,7 +156,7 @@ public class JavaExercise1to11 {
 			double item = 1 / (1000 * n + Math.PI);
 			sum += item;
 			n++;
-			if (item < 1.0e-10d) {
+			if (item < 1.0e-10D) {
 				break;
 			}
 		}

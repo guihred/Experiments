@@ -24,7 +24,10 @@ import java.util.Random;
 public class Robot {
 
 	/** The name. */
-	String name;
+	private String name;
+
+	/** The random. */
+	private Random random = new Random();
 
 	/**
 	 * Instantiates a new robot.
@@ -32,7 +35,7 @@ public class Robot {
 	public Robot() {
 		reset();
 	}
-
+	
 	/**
 	 * Gets the name.
 	 *
@@ -40,16 +43,6 @@ public class Robot {
 	 */
 	String getName() {
 		return name;
-	}
-	
-	/** The random. */
-	Random random = new Random();
-
-	/**
-	 * Reset.
-	 */
-	final void reset() {
-		name = newLetter() + newLetter() + newNumber() + newNumber() + newNumber();
 	}
 
 	/**
@@ -70,6 +63,13 @@ public class Robot {
 	private String newNumber() {
 		String[] a = "0123456789".split("");
 		return a[random.nextInt(a.length)];
+	}
+
+	/**
+	 * Reset.
+	 */
+	final void reset() {
+		name = newLetter() + newLetter() + newNumber() + newNumber() + newNumber();
 	}
 	
 }

@@ -32,18 +32,13 @@ public class CameraApp extends Application {
 		launch(args);
 	}
 
-	private double mouseXold = 0;
-	private double mouseYold = 0;
-	private final double rotateModifier = 25;
-	private final double sceneHeight = 600;
-	private final double sceneWidth = 600;
-	final Sphere sphere = new Sphere(50);
-    private PerspectiveCamera camera;
-    private final double cameraQuantity = 100.0;
-    private final double cameraYLimit = 15;
-	final Box cube = new Box(50, 50, 50);
+	private PerspectiveCamera camera;
+	private final double cameraQuantity = 100.0;
+	private final double cameraYLimit = 15;
+	private final Box cube = new Box(50, 50, 50);
 	private Cylinder cylinder = new Cylinder(50, 100);
-	EventHandler<? super KeyEvent> keyBoardHandler = event -> {
+	private final Sphere sphere = new Sphere(50);
+	private EventHandler<? super KeyEvent> keyBoardHandler = event -> {
 		double change = cameraQuantity;
 		KeyCode keycode = event.getCode();
 		if (keycode == KeyCode.W) {
@@ -66,6 +61,11 @@ public class CameraApp extends Application {
 			cylinder.setVisible(true);
 		}
 	};
+    private double mouseXold = 0;
+    private double mouseYold = 0;
+    private final double rotateModifier = 25;
+	private final double sceneHeight = 600;
+	private final double sceneWidth = 600;
 
 	@Override
     public void start(Stage primaryStage) throws Exception {

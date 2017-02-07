@@ -26,11 +26,11 @@ import simplebuilder.SimpleTextBuilder;
 
 public class AudioConfigLauncher extends Application {
 
-	AudioConfigModel acModel = new AudioConfigModel();
-	Text textDb;
-	Slider slider;
-	CheckBox mutingCheckBox;
-	ChoiceBox<String> genreChoiceBox;
+	private AudioConfigModel acModel = new AudioConfigModel();
+	private Text textDb;
+	private Slider slider;
+	private CheckBox mutingCheckBox;
+	private ChoiceBox<String> genreChoiceBox;
 
 	public static void main(String[] args) {
 		Application.launch(args);

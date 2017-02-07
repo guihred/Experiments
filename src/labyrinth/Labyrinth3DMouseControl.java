@@ -31,12 +31,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Labyrinth3DMouseControl extends Application {
-	private static final Image WALL_IMAGE = new Image(
-			Labyrinth3DMouseControl.class.getResource("wall.jpg").toString());
-	private static final Image WALL_IMAGE2 = new Image(
-			Labyrinth3DMouseControl.class.getResource("wall2.jpg").toString());
-
-
 	private class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
 		int direction[];// EAST, WEST, NORTH, SOUTH
@@ -116,13 +110,12 @@ public class Labyrinth3DMouseControl extends Application {
 			}
 		}
 	}
-
 	private class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 		private PerspectiveCamera camera;
 		private final double cameraModifier = 50.0;
 		private final double cameraQuantity = 5.0;
-		private Group root;
 		private IntegerProperty ghostcount;
+		private Group root;
 
 		public MovimentacaoTeclado(Group root, PerspectiveCamera camera,
 				IntegerProperty ghostcount) {
@@ -222,39 +215,54 @@ public class Labyrinth3DMouseControl extends Application {
 		}
 	}
 
+
+	private static String[][] mapa = { 
+			{ "_", "_", "_", "_", "_", "|" },
+			{ "|", "_", "_", "_", "_", "|" }, 
+			{ "|", "|", "_", "|", "_", "|" },
+			{ "_", "|", "_", "|", "_", "|" }, 
+			{ "|", "|", "_", "|", "_", "|" },
+			{ "|", "_", "_", "|", "_", "|" }, 
+			{ "|", "_", "_", "_", "|", "_" },
+			{ "_", "|", "_", "_", "_", "|" }, 
+			{ "_", "_", "|", "|", "|", "_" },
+			{ "_", "|", "_", "|", "_", "|" }, 
+			{ "|", "|", "_", "_", "|", "_" },
+			{ "_", "_", "_", "_", "_", "|" }, 
+			{ "|", "_", "_", "_", "_", "_" },
+			{ "|", "|", "_", "|", "_", "|" }, 
+			{ "|", "_", "|", "_", "_", "|" },
+			{ "|", "_", "_", "_", "_", "|" }, 
+			{ "_", "_", "_", "|", "_", "|" },
+			{ "_", "_", "_", "_", "_", "_" },
+	};
+	private static final IntegerProperty ghostCount = new SimpleIntegerProperty(
+			mapa.length * mapa[0].length);
+
 	private static final Color lightColor = Color.rgb(125, 125, 125);
 
-	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" },
-			{ "_", "|", "_", "_", "_", "|" }, { "_", "_", "|", "|", "|", "_" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "_", "|", "_" },
-			{ "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" },
-			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "|", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "_", "_", "_", "|", "_", "|" },
-			{ "_", "_", "_", "_", "_", "_" },
-
-	};
-	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
-	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 
 	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
-
 	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
-
 	public static final Random random = new Random();
 
 	private static final int SIZE = 60;
 
-	private static final IntegerProperty ghostCount = new SimpleIntegerProperty(
-			mapa.length * mapa[0].length);
+	private static final Image WALL_IMAGE = new Image(
+			Labyrinth3DMouseControl.class.getResource("wall.jpg").toString());
+
+	private static final Image WALL_IMAGE2 = new Image(
+			Labyrinth3DMouseControl.class.getResource("wall2.jpg").toString());
 
 	public static void main(String[] args) {
 		launch(args);
 	}
 
+	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
+
 	private PerspectiveCamera camera;
+
+	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
 	private MovimentacaoAleatoria movimentacao;
 
 	private Sphere checkBalls(Bounds boundsInParent) {
@@ -390,8 +398,8 @@ public class Labyrinth3DMouseControl extends Application {
 
 		sc.setOnMouseMoved(new EventHandler<MouseEvent>() {
 
-			private double mousePosX;
 			private double mouseOldX;
+			private double mousePosX;
 
 			@Override
 			public void handle(MouseEvent me) {

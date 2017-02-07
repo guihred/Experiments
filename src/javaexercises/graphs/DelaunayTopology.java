@@ -30,7 +30,7 @@ public class DelaunayTopology extends GenTopology {
 		double x = 0;
 		double y = 0;
 		for (int i = 0; i < size; i++) {
-			Cell cell = graph.getModel().addCell(CircleTopology.identifier(i), CellType.CIRCLE);
+			Cell cell = graph.getModel().addCell(GenTopology.identifier(i), CellType.CIRCLE);
 			double a = rnd.nextDouble() * 2 * Math.PI;
 			x += bound * Math.cos(a);
 			y += bound * Math.sin(a);
@@ -79,16 +79,16 @@ public class DelaunayTopology extends GenTopology {
 		graph.getModel().removeAllEdges();
 		List<Triangle>
 		triangleSoup = new ArrayList<>();
-		double maxOfAnyCoordinate = 0.0d;
+		double maxOfAnyCoordinate = 0.0D;
 		List<Ponto> pointSet = getPointSet(all);
 		for (Ponto vector : pointSet) {
 			maxOfAnyCoordinate = Math.max(Math.max(vector.x, vector.y), maxOfAnyCoordinate);
 		}
 
-		maxOfAnyCoordinate *= 16.0d;
-		Ponto p1 = new Ponto(0.0d, 3.0d * maxOfAnyCoordinate, null);
-		Ponto p2 = new Ponto(3.0d * maxOfAnyCoordinate, 0.0d, null);
-		Ponto p3 = new Ponto(-3.0d * maxOfAnyCoordinate, -3.0d * maxOfAnyCoordinate, null);
+		maxOfAnyCoordinate *= 16.0D;
+		Ponto p1 = new Ponto(0.0D, 3.0D * maxOfAnyCoordinate, null);
+		Ponto p2 = new Ponto(3.0D * maxOfAnyCoordinate, 0.0D, null);
+		Ponto p3 = new Ponto(-3.0D * maxOfAnyCoordinate, -3.0D * maxOfAnyCoordinate, null);
 		Triangle superTriangle = new Triangle(p1, p2, p3);
 		triangleSoup.add(superTriangle);
 		for (int i = 0; i < pointSet.size(); i++) {

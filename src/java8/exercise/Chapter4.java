@@ -261,7 +261,7 @@ public class Chapter4 {
 			arc.setStrokeType(StrokeType.OUTSIDE);
 			arc.setStrokeLineCap(StrokeLineCap.ROUND);
 			arc.setStrokeLineJoin(StrokeLineJoin.ROUND);
-			arc.setRotate(30d);
+			arc.setRotate(30D);
 			arc.setFill(Color.TRANSPARENT);
 			arc.rotateProperty().bind(multiply(rotationSlider.valueProperty(), 3.6));
 			arc.radiusXProperty().bind(multiply(radiusSlider.valueProperty(), 3.6));

@@ -50,7 +50,7 @@ class NeuralNetworkImpl implements NeuralNetwork {
 		for (int j = getNeuronLayers().size() - 2; j > 0; j--) {
 			NeuronLayer currentLayer = getNeuronLayers().get(j);
 			for (Neuron someNeuron : currentLayer.getNeurons()) {
-				Double errorFactor = 0d;
+				Double errorFactor = 0D;
 				Collection<Neuron> forwardConnections = someNeuron.getForwardConnections();
 				for (Neuron connectedNeuron : forwardConnections) {
 					// 'Sum up all the delta * weight

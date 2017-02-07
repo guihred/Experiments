@@ -22,7 +22,7 @@ public class TronLauncher extends Application {
         final TronModel newGameModel = new TronModel();
         for (int i = 0; i < TronModel.MAP_SIZE; i++) {
             for (int j = 0; j < TronModel.MAP_SIZE; j++) {
-                gridPane.add(newGameModel.map[i][j], i, j);
+                gridPane.add(newGameModel.getMap()[i][j], i, j);
             }
         }
 
@@ -33,26 +33,26 @@ public class TronLauncher extends Application {
             switch (code) {
                 case UP:
                 case W:
-                    if (newGameModel.direction != TronDirection.DOWN) {
-                        newGameModel.direction = TronDirection.UP;
+                    if (newGameModel.getDirection() != TronDirection.DOWN) {
+                        newGameModel.setDirection(TronDirection.UP);
                     }
                     break;
                 case LEFT:
                 case A:
-                    if (newGameModel.direction != TronDirection.RIGHT) {
-                        newGameModel.direction = TronDirection.LEFT;
+                    if (newGameModel.getDirection() != TronDirection.RIGHT) {
+                        newGameModel.setDirection(TronDirection.LEFT);
                     }
                     break;
                 case RIGHT:
                 case S:
-                    if (newGameModel.direction != TronDirection.LEFT) {
-                        newGameModel.direction = TronDirection.RIGHT;
+                    if (newGameModel.getDirection() != TronDirection.LEFT) {
+                        newGameModel.setDirection(TronDirection.RIGHT);
                     }
                     break;
                 case DOWN:
                 case D:
-                    if (newGameModel.direction != TronDirection.UP) {
-                        newGameModel.direction = TronDirection.DOWN;
+                    if (newGameModel.getDirection() != TronDirection.UP) {
+                        newGameModel.setDirection(TronDirection.DOWN);
                     }
                     break;
                 default:
@@ -66,7 +66,7 @@ public class TronLauncher extends Application {
                         new Duration(40), (javafx.event.ActionEvent t) -> {
                             if (newGameModel.updateMap()) {
                                 timeline.stop();
-                                final Text text = new Text("You Got " + newGameModel.snake.size() + " points");
+                                final Text text = new Text("You Got " + newGameModel.getSnake().size() + " points");
                                 final Button button = new Button("Reset");
                                 final Stage stage1 = new Stage();
                                 button.setOnAction(a -> {

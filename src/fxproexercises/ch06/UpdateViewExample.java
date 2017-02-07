@@ -27,24 +27,75 @@ import javafx.stage.Stage;
 
 public class UpdateViewExample extends Application {
 
-    private final Model model;
-    private View view;
+    private static class Model {
+
+        private final ObjectProperty<Paint> fillPaint = new SimpleObjectProperty<>();
+        private final ObjectProperty<Paint> strokePaint = new SimpleObjectProperty<>();
+
+        private Model() {
+            fillPaint.set(Color.LIGHTGRAY);
+            strokePaint.set(Color.DARKGRAY);
+        }
+
+        final public ObjectProperty<Paint> fillPaintProperty() {
+            return fillPaint;
+        }
+
+        final public Paint getFillPaint() {
+            return fillPaint.get();
+        }
+
+        final public Paint getStrokePaint() {
+            return strokePaint.get();
+        }
+
+        final public void setFillPaint(Paint value) {
+            this.fillPaint.set(value);
+        }
+
+        final public void setStrokePaint(Paint value) {
+            this.strokePaint.set(value);
+        }
+
+        final public ObjectProperty<Paint> strokePaintProperty() {
+            return strokePaint;
+        }
+    }
+    private static class View {
+
+        public HBox buttonHBox;
+        public Button changeFillButton;
+        public Button changeStrokeButton;
+        public Rectangle rectangle;
+        public Scene scene;
+
+        private View(Model model) {
+            rectangle = new Rectangle(200, 200);
+            rectangle.setStrokeWidth(10);
+            rectangle.fillProperty().bind(model.fillPaintProperty());
+            rectangle.strokeProperty().bind(model.strokePaintProperty());
+            changeFillButton = new Button("Change Fill");
+            changeStrokeButton = new Button("Change Stroke");
+            buttonHBox = new HBox(10, changeFillButton, changeStrokeButton);
+            buttonHBox.setPadding(new Insets(10, 10, 10, 10));
+            buttonHBox.setAlignment(Pos.CENTER);
+            final BorderPane borderPane = new BorderPane(rectangle, null, null, buttonHBox, null);
+            borderPane.setPadding(new Insets(10, 10, 10, 10));
+
+            scene = new Scene(borderPane);
+        }
+    }
 
     public static void main(String[] args) {
         Application.launch(args);
     }
 
+    private final Model model;
+
+    private View view;
+
     public UpdateViewExample() {
         model = new Model();
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        view = new View(model);
-        hookupEvents();
-        stage.setTitle("Unresponsive UI Example");
-        stage.setScene(view.scene);
-        stage.show();
     }
 
     private void hookupEvents() {
@@ -81,64 +132,13 @@ public class UpdateViewExample extends Application {
         });
     }
 
-    private static class Model {
-
-        private final ObjectProperty<Paint> fillPaint = new SimpleObjectProperty<>();
-        private final ObjectProperty<Paint> strokePaint = new SimpleObjectProperty<>();
-
-        private Model() {
-            fillPaint.set(Color.LIGHTGRAY);
-            strokePaint.set(Color.DARKGRAY);
-        }
-
-        final public Paint getFillPaint() {
-            return fillPaint.get();
-        }
-
-        final public void setFillPaint(Paint value) {
-            this.fillPaint.set(value);
-        }
-
-        final public Paint getStrokePaint() {
-            return strokePaint.get();
-        }
-
-        final public void setStrokePaint(Paint value) {
-            this.strokePaint.set(value);
-        }
-
-        final public ObjectProperty<Paint> fillPaintProperty() {
-            return fillPaint;
-        }
-
-        final public ObjectProperty<Paint> strokePaintProperty() {
-            return strokePaint;
-        }
-    }
-
-    private static class View {
-
-        public Rectangle rectangle;
-        public Button changeFillButton;
-        public Button changeStrokeButton;
-        public HBox buttonHBox;
-        public Scene scene;
-
-        private View(Model model) {
-            rectangle = new Rectangle(200, 200);
-            rectangle.setStrokeWidth(10);
-            rectangle.fillProperty().bind(model.fillPaintProperty());
-            rectangle.strokeProperty().bind(model.strokePaintProperty());
-            changeFillButton = new Button("Change Fill");
-            changeStrokeButton = new Button("Change Stroke");
-            buttonHBox = new HBox(10, changeFillButton, changeStrokeButton);
-            buttonHBox.setPadding(new Insets(10, 10, 10, 10));
-            buttonHBox.setAlignment(Pos.CENTER);
-            final BorderPane borderPane = new BorderPane(rectangle, null, null, buttonHBox, null);
-            borderPane.setPadding(new Insets(10, 10, 10, 10));
-
-            scene = new Scene(borderPane);
-        }
+    @Override
+    public void start(Stage stage) throws Exception {
+        view = new View(model);
+        hookupEvents();
+        stage.setTitle("Unresponsive UI Example");
+        stage.setScene(view.scene);
+        stage.show();
     }
 
 }

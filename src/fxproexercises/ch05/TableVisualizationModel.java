@@ -7,17 +7,21 @@ import javafx.collections.ObservableList;
 
 public class TableVisualizationModel {
 
-    public ObservableList<Person> getTeamMembers() {
-        ObservableList<Person> teamMembers = FXCollections.observableArrayList();
-		for (int i = 1; i <= 100; i++) {
-            teamMembers.add(new Person("FirstName" + i,
-                    "LastName" + i,
-                    "Phone" + i));
-        }
-        return teamMembers;
-    }
+	public static final ObservableList<String> choiceBoxItems = FXCollections.observableArrayList(
+            "Choice A",
+            "Choice B",
+            "Choice C",
+            "Choice D"
+    );
 
-    public String getRandomWebSite() {
+	public static final DoubleProperty kph = new SimpleDoubleProperty(0);
+
+	public static final ObservableList<String> listViewItems = FXCollections.observableArrayList();
+	public static final double maxKph = 300.0;
+	public static final double maxRpm = 8000.0;
+	public static final DoubleProperty rpm = new SimpleDoubleProperty(0);
+
+	public static final String getRandomWebSite() {
         String[] webSites = {
             "http://javafx.com",
             "http://fxexperience.com",
@@ -31,15 +35,13 @@ public class TableVisualizationModel {
         return webSites[randomIdx];
     }
 
-    public ObservableList<String> listViewItems = FXCollections.observableArrayList();
-    public ObservableList<String> choiceBoxItems = FXCollections.observableArrayList(
-            "Choice A",
-            "Choice B",
-            "Choice C",
-            "Choice D"
-    );
-    public double maxRpm = 8000.0;
-    public DoubleProperty rpm = new SimpleDoubleProperty(0);
-    public double maxKph = 300.0;
-    public DoubleProperty kph = new SimpleDoubleProperty(0);
+	public static final ObservableList<Person> getTeamMembers() {
+        ObservableList<Person> teamMembers = FXCollections.observableArrayList();
+		for (int i = 1; i <= 100; i++) {
+            teamMembers.add(new Person("FirstName" + i,
+                    "LastName" + i,
+                    "Phone" + i));
+        }
+        return teamMembers;
+    }
 }

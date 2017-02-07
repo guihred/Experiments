@@ -1,57 +1,59 @@
 package neuro;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.ImmutableMap;
-
 public class BrasilianVerbsConjugator {
-	private static final boolean DEBUG = false;
-	public static void main(String[] args) throws IOException {
-
-		Stream<String> words = getWords(new File("verbs.dic").toURI());
-		words.forEach(BrasilianVerbsConjugator::conjugate);
-	}
-
-	private static Stream<String> getWords(URI txtFile) throws IOException {
-		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential().map(String::trim)
-				.filter(s -> !s.isEmpty() && s.endsWith("medir"))
-				.distinct();
-	}
-
-	public static void conjugate(String verb) {
-		if (isIrregular(verb)) {
-			irregularConjugation(verb);
-		} else if (verb.endsWith("ar")) {
-			firstConjugation(verb);
-		} else if (verb.endsWith("er")) {
-			secondConjugation(verb);
-		} else if (verb.endsWith("ir")) {
-			thirdConjugation(verb);
-		} else if (verb.endsWith("por") || verb.endsWith("pôr")) {
-			fourthConjugation(verb);
-		}
-
-	}
-
 	enum Mode {
-		PRESENT, PRETERITE, IMPERFECT, PLUPERFECT, FUTURE, CONDITIONAL;
+		CONDITIONAL, FUTURE, IMPERFECT, PLUPERFECT, PRESENT, PRETERITE;
 	}
+	private static final boolean DEBUG = false;
+
+	private static Map<Mode, String[]> first = new LinkedHashMap<>();
+
+	private static Map<Mode, String[]> fourth = new LinkedHashMap<>();
+
+	static final Map<String, List<String>> IRREGULAR = ImmutableMap.<String, List<String>>builder()
+			.put("ir", Arrays.asList(""))
+			.put("dar", Arrays.asList(""))
+			.put("ser", Arrays.asList(""))
+			.put("rir", Arrays.asList(""))
+			.put("crer", Arrays.asList(""))
+			.put("caber", Arrays.asList(""))
+			.put("estar", Arrays.asList(""))
+			.put("poder", Arrays.asList(""))
+			.put("ouvir", Arrays.asList(""))
+			.put("saber", Arrays.asList(""))
+			.put("perder", Arrays.asList(""))
+			.put("trazer", Arrays.asList(""))
+			.put("medir", Arrays.asList(""))
+			.put("ler", Arrays.asList("", "re"))
+			.put("aver", Arrays.asList("h", "re"))
+			.put("valer", Arrays.asList("", "equi"))
+			.put("cobrir", Arrays.asList("", "des","en"))
+			.put("ver", Arrays.asList("", "ante", "pre", "re"))
+			.put("querer", Arrays.asList("", "des", "mal", "re"))
+			.put("seguir", Arrays.asList("","con", "per", "pros"))
+			.put("gredir", Arrays.asList("a", "re", "trans", "pro"))
+			.put("pedir", Arrays.asList("", "desim", "des", "ex", "im"))
+			.put("sentir", Arrays.asList("","as", "con", "pres", "res" ))
+			.put("ter", Arrays.asList("", "abs", "con", "de", "entre", "man", "ob", "re", "sus", "ver"))
+			.put("dizer", Arrays.asList("", "ante", "ben", "con", "contra", "des", "inter", "mal", "pre"))
+			.put("fazer", Arrays.asList("", "carni", "contra", "lique", "mal", "per", "putre", "rare", "satis"))
+			.put("vir", Arrays.asList("", "ad", "a", "contra", "con", "desa", "de", "inter", "pro", "re", "sobre", "ante"))
+			.build();
+
+	private static Map<Mode, String[]> second = new LinkedHashMap<>();
 
 	static final Map<String, Map<Mode, List<String>>> SIMPLE_IRREGULARITIES = new HashMap<String, Map<Mode, List<String>>>() {
 		{
@@ -164,243 +166,34 @@ public class BrasilianVerbsConjugator {
 		}
 	};
 
-	static final Map<String, List<String>> IRREGULAR = ImmutableMap.<String, List<String>>builder()
-			.put("ir", Arrays.asList(""))
-			.put("dar", Arrays.asList(""))
-			.put("ser", Arrays.asList(""))
-			.put("rir", Arrays.asList(""))
-			.put("crer", Arrays.asList(""))
-			.put("caber", Arrays.asList(""))
-			.put("estar", Arrays.asList(""))
-			.put("poder", Arrays.asList(""))
-			.put("ouvir", Arrays.asList(""))
-			.put("saber", Arrays.asList(""))
-			.put("perder", Arrays.asList(""))
-			.put("trazer", Arrays.asList(""))
-			.put("medir", Arrays.asList(""))
-			.put("ler", Arrays.asList("", "re"))
-			.put("aver", Arrays.asList("h", "re"))
-			.put("valer", Arrays.asList("", "equi"))
-			.put("cobrir", Arrays.asList("", "des","en"))
-			.put("ver", Arrays.asList("", "ante", "pre", "re"))
-			.put("querer", Arrays.asList("", "des", "mal", "re"))
-			.put("seguir", Arrays.asList("","con", "per", "pros"))
-			.put("gredir", Arrays.asList("a", "re", "trans", "pro"))
-			.put("pedir", Arrays.asList("", "desim", "des", "ex", "im"))
-			.put("sentir", Arrays.asList("","as", "con", "pres", "res" ))
-			.put("ter", Arrays.asList("", "abs", "con", "de", "entre", "man", "ob", "re", "sus", "ver"))
-			.put("dizer", Arrays.asList("", "ante", "ben", "con", "contra", "des", "inter", "mal", "pre"))
-			.put("fazer", Arrays.asList("", "carni", "contra", "lique", "mal", "per", "putre", "rare", "satis"))
-			.put("vir", Arrays.asList("", "ad", "a", "contra", "con", "desa", "de", "inter", "pro", "re", "sobre", "ante"))
-			.build();
-
-	private static boolean isIrregular(String verb) {
-		return IRREGULAR.entrySet().stream()
-				.anyMatch(e -> e.getValue().stream().anyMatch(v -> (v + e.getKey()).equals(verb)));
-	}
-
-	private static void irregularConjugation(String verb) {
-		Entry<String, List<String>> irregular = IRREGULAR.entrySet().stream()
-				.filter(e -> e.getValue().stream().anyMatch(v -> (v + e.getKey()).equals(verb))).findFirst()
-				.orElse(null);
-		if (irregular != null) {
-			String key = irregular.getKey();
-			if(SIMPLE_IRREGULARITIES.containsKey(key)){
-				if (key.endsWith("ar")) {
-					Map<Mode, String[]> firstConjugation = getFirstConjugation();
-					printIrregular(verb, key, firstConjugation);
-				} else if (key.endsWith("er")) {
-					Map<Mode, String[]> firstConjugation = getSecondConjugation();
-					printIrregular(verb, key, firstConjugation);
-				} else if (key.endsWith("ir")) {
-					Map<Mode, String[]> firstConjugation = getThirdConjugation();
-					printIrregular(verb, key, firstConjugation);
-				}
-			} else {
-				System.out.println("CADÊ ->" + key);
-			}
-
-		}
-
-	}
-
-	private static void printIrregular(String verb, String key, Map<Mode, String[]> firstConjugation) {
-		Map<Mode, List<String>> map = SIMPLE_IRREGULARITIES.get(key);
-		String root1 = verb.substring(0, verb.length() - key.length());
-
-		List<Entry<Mode, String[]>> entrySet = firstConjugation.entrySet().stream()
-				.collect(Collectors.toList());
-		String root2 = getRoot(verb);
-		for (int i = 0; i < entrySet.size(); i++) {
-			Entry<Mode, String[]> entry = entrySet.get(i);
-			Mode m = entry.getKey();
-			if (map.containsKey(m)) {
-				List<String> a = map.get(m);
-				String[] array = a.toArray(new String[0]);
-				addLetter(root1, array);
-				firstConjugation.put(m, array);
-			} else {
-				addLetter(root2, entry.getValue());
-			}
-		}
-		String[][] array = firstConjugation.values().toArray(new String[0][0]);
-		printVerb(verb, "", array);
-	}
-
-	private static void fourthConjugation(String verb) {
-		String root = getRoot(verb);
-		Map<Mode, String[]> fourthConjugation = getFourthConjugation();
-		String[] present = fourthConjugation.get(Mode.PRESENT);
-		String[] past = fourthConjugation.get(Mode.PRETERITE);
-		String[] incompletePast = fourthConjugation.get(Mode.IMPERFECT);
-		String[] pluPerfect = fourthConjugation.get(Mode.PLUPERFECT);
-		String[] future = fourthConjugation.get(Mode.FUTURE);
-		String[] futureImpefect = fourthConjugation.get(Mode.CONDITIONAL);
-		printVerb(verb, root, present, past, incompletePast, pluPerfect, future, futureImpefect);
-	}
-
-	private static Map<Mode, String[]> fourth = new LinkedHashMap<>();
-	private static Map<Mode, String[]> getFourthConjugation() {
-		String[] present = { "onho", "ões", "õe", "omos", "ondes", "õem" };
-		String[] past = { "us", "useste", "ôs", "usemos", "usestes", "useram" };
-		String[] incompletePast = { "unha", "unhas", "unha", "únhamos", "únheis", "unham" };
-		String[] pluPerfect = { "usera", "useras", "usera", "uséramos", "uséreis", "useram" };
-		String[] future = { "orei", "orás", "orá", "oremos", "oreis", "orão" };
-		String[] futureImpefect = { "oria", "orias", "oria", "oríamos", "oríeis", "oriam" };
-		
-		fourth.put(Mode.PRESENT, present);
-		fourth.put(Mode.PRETERITE, past);
-		fourth.put(Mode.IMPERFECT, incompletePast);
-		fourth.put(Mode.PLUPERFECT, pluPerfect);
-		fourth.put(Mode.FUTURE, future);
-		fourth.put(Mode.CONDITIONAL, futureImpefect);
-
-		return fourth;
-		
-	}
-
 	private static Map<Mode, String[]> third = new LinkedHashMap<>();
-	private static Map<Mode, String[]> getThirdConjugation() {
-		String[] present = { "o", "es", "e", "imos", "is", "em" };
-		String[] past = { "i", "iste", "iu", "imos", "istes", "iram" };
-		String[] incompletePast = { "ia", "ias", "ia", "íamos", "íeis", "iam" };
-		String[] pluPerfect = { "ira", "iras", "ira", "íramos", "íreis", "iram" };
-		String[] future = { "irei", "irás", "irá", "iremos", "ireis", "irão" };
-		String[] futureImpefect = { "iria", "irias", "iria", "iríamos", "iríeis", "iriam" };
-		third.put(Mode.PRESENT, present);
-		third.put(Mode.PRETERITE, past);
-		third.put(Mode.IMPERFECT, incompletePast);
-		third.put(Mode.PLUPERFECT, pluPerfect);
-		third.put(Mode.FUTURE, future);
-		third.put(Mode.CONDITIONAL, futureImpefect);
-		
-		return third;
-		
+
+	private static List<String> addDesinencia(String root, String[] tense) {
+		return Stream.of(tense).map(a -> root + a).collect(Collectors.toList());
+
 	}
 
-	private static Map<Mode, String[]> second = new LinkedHashMap<>();
-	private static Map<Mode, String[]> getSecondConjugation() {
-		String[] present = { "o", "es", "e", "emos", "eis", "em" };
-		String[] past = { "i", "este", "eu", "emos", "estes", "eram" };
-		String[] incompletePast = { "ia", "ias", "ia", "íamos", "íeis", "iam" };
-		String[] pluPerfect = { "era", "eras", "era", "êramos", "êreis", "eram" };
-		String[] future = { "erei", "erás", "erá", "eremos", "ereis", "erão" };
-		String[] futureImpefect = { "eria", "erias", "eria", "eríamos", "eríeis", "eriam" };
-		second.put(Mode.PRESENT, present);
-		second.put(Mode.PRETERITE, past);
-		second.put(Mode.IMPERFECT, incompletePast);
-		second.put(Mode.PLUPERFECT, pluPerfect);
-		second.put(Mode.FUTURE, future);
-		second.put(Mode.CONDITIONAL, futureImpefect);
-		return second;
-	}
-
-	private static Map<Mode, String[]> first = new LinkedHashMap<>();
-	private static Map<Mode, String[]> getFirstConjugation() {
-		String[] present = { "o", "as", "a", "amos", "ais", "am" };
-		String[] past = { "ei", "aste", "ou", "amos", "astes", "aram" };
-		String[] incompletePast = { "ava", "avas", "ava", "ávamos", "áveis", "avam" };
-		String[] pluPerfect = { "ara", "aras", "ara", "áramos", "áreis", "aram" };
-		String[] future = { "arei", "arás", "ará", "aremos", "areis", "arão" };
-		String[] futureImpefect = { "aria", "arias", "aria", "aríamos", "aríeis", "ariam" };
-		first.put(Mode.PRESENT, present);
-		first.put(Mode.PRETERITE, past);
-		first.put(Mode.IMPERFECT, incompletePast);
-		first.put(Mode.PLUPERFECT, pluPerfect);
-		first.put(Mode.FUTURE, future);
-		first.put(Mode.CONDITIONAL, futureImpefect);
-		return first;
-	}
-	
-
-	private static void thirdConjugation(String verb) {
-		String root = getRoot(verb);
-		Map<Mode, String[]> thirdConjugation = getThirdConjugation();
-		String[] present = thirdConjugation.get(Mode.PRESENT);
-		String[] past = thirdConjugation.get(Mode.PRETERITE);
-		String[] incompletePast = thirdConjugation.get(Mode.IMPERFECT);
-		String[] pluPerfect = thirdConjugation.get(Mode.PLUPERFECT);
-		String[] future = thirdConjugation.get(Mode.FUTURE);
-		String[] futureImpefect = thirdConjugation.get(Mode.CONDITIONAL);
-		if (root.endsWith("a")) {
-			addLetter("a", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present = new String[] { "aio", "ais", "ai", "aímos", "aís", "aem" };
-			past = new String[] { "aí", "aíste", "aiu", "aímos", "aístes", "aíram" };
-			incompletePast = new String[] { "aía", "aías", "aía", "aíamos", "aíeis", "aíam" };
-			root = root.substring(0, root.length() - 1);
-		} else if (root.endsWith("med")) {
-			addLetter("med", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[0] = "meço";
-			root = root.substring(0, root.length() - 3);
-		} else if (root.endsWith("u")) {
-			addLetter("u", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present = new String[] { "uo", "uis", "ui", "uímos", "uís", "uem" };
-			past = new String[] { "uí", "uíste", "uiu", "uímos", "uístes", "uíram" };
-			incompletePast = new String[] { "uía", "uías", "uía", "uíamos", "uíeis", "uíam" };
-			root = root.substring(0, root.length() - 1);
-		} else if (root.endsWith("c")) {
-			addLetter("c", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[0] = "ço";
-			root = root.substring(0, root.length() - 1);
-		} else if (root.endsWith("g")) {
-			addLetter("g", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[0] = "jo";
-			root = root.substring(0, root.length() - 1);
+	private static void addLetter(String add, String[]... tenses) {
+		for (int i = 0; i < tenses.length; i++) {
+			for (int j = 0; j < tenses[i].length; j++) {
+				tenses[i][j] = add + tenses[i][j];
+			}
 		}
-		printVerb(verb, root, present, past, incompletePast, pluPerfect, future, futureImpefect);
 	}
 
-	private static void secondConjugation(String verb) {
-		String root = getRoot(verb);
-		Map<Mode, String[]> secondConjugation = getSecondConjugation();
-		String[] present = secondConjugation.get(Mode.PRESENT);
-		String[] past = secondConjugation.get(Mode.PRETERITE);
-		String[] incompletePast = secondConjugation.get(Mode.IMPERFECT);
-		String[] pluPerfect = secondConjugation.get(Mode.PLUPERFECT);
-		String[] future = secondConjugation.get(Mode.FUTURE);
-		String[] futureImpefect = secondConjugation.get(Mode.CONDITIONAL);
-
-		if (root.endsWith("gu")) {
-			addLetter("gu", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[0] = "go";
-			root = root.substring(0, root.length() - 2);
-		} else if (root.endsWith("o")) {
-			addLetter("o", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[1] = "óis";
-			present[2] = "ói";
-			past[0] = "oí";
-			incompletePast = new String[] { "oía", "oías", "oía", "oíamos", "oíeis", "oíam" };
-			root = root.substring(0, root.length() - 1);
-		} else if (root.endsWith("c")) {
-			addLetter("c", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[0] = "ço";
-			root = root.substring(0, root.length() - 1);
-		} else if (root.endsWith("g")) {
-			addLetter("g", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[0] = "jo";
-			root = root.substring(0, root.length() - 1);
+	public static void conjugate(String verb) {
+		if (isIrregular(verb)) {
+			irregularConjugation(verb);
+		} else if (verb.endsWith("ar")) {
+			firstConjugation(verb);
+		} else if (verb.endsWith("er")) {
+			secondConjugation(verb);
+		} else if (verb.endsWith("ir")) {
+			thirdConjugation(verb);
+		} else if (verb.endsWith("por") || verb.endsWith("pôr")) {
+			fourthConjugation(verb);
 		}
-		printVerb(verb, root, present, past, incompletePast, pluPerfect, future, futureImpefect);
+
 	}
 
 	private static void firstConjugation(String verb) {
@@ -438,7 +231,154 @@ public class BrasilianVerbsConjugator {
 		}
 		printVerb(verb, root, present, past, incompletePast, pluPerfect, future, futureImpefect);
 	}
+	private static void fourthConjugation(String verb) {
+		String root = getRoot(verb);
+		Map<Mode, String[]> fourthConjugation = getFourthConjugation();
+		String[] present = fourthConjugation.get(Mode.PRESENT);
+		String[] past = fourthConjugation.get(Mode.PRETERITE);
+		String[] incompletePast = fourthConjugation.get(Mode.IMPERFECT);
+		String[] pluPerfect = fourthConjugation.get(Mode.PLUPERFECT);
+		String[] future = fourthConjugation.get(Mode.FUTURE);
+		String[] futureImpefect = fourthConjugation.get(Mode.CONDITIONAL);
+		printVerb(verb, root, present, past, incompletePast, pluPerfect, future, futureImpefect);
+	}
 
+	private static Map<Mode, String[]> getFirstConjugation() {
+		String[] present = { "o", "as", "a", "amos", "ais", "am" };
+		String[] past = { "ei", "aste", "ou", "amos", "astes", "aram" };
+		String[] incompletePast = { "ava", "avas", "ava", "ávamos", "áveis", "avam" };
+		String[] pluPerfect = { "ara", "aras", "ara", "áramos", "áreis", "aram" };
+		String[] future = { "arei", "arás", "ará", "aremos", "areis", "arão" };
+		String[] futureImpefect = { "aria", "arias", "aria", "aríamos", "aríeis", "ariam" };
+		first.put(Mode.PRESENT, present);
+		first.put(Mode.PRETERITE, past);
+		first.put(Mode.IMPERFECT, incompletePast);
+		first.put(Mode.PLUPERFECT, pluPerfect);
+		first.put(Mode.FUTURE, future);
+		first.put(Mode.CONDITIONAL, futureImpefect);
+		return first;
+	}
+	private static Map<Mode, String[]> getFourthConjugation() {
+		String[] present = { "onho", "ões", "õe", "omos", "ondes", "õem" };
+		String[] past = { "us", "useste", "ôs", "usemos", "usestes", "useram" };
+		String[] incompletePast = { "unha", "unhas", "unha", "únhamos", "únheis", "unham" };
+		String[] pluPerfect = { "usera", "useras", "usera", "uséramos", "uséreis", "useram" };
+		String[] future = { "orei", "orás", "orá", "oremos", "oreis", "orão" };
+		String[] futureImpefect = { "oria", "orias", "oria", "oríamos", "oríeis", "oriam" };
+		
+		fourth.put(Mode.PRESENT, present);
+		fourth.put(Mode.PRETERITE, past);
+		fourth.put(Mode.IMPERFECT, incompletePast);
+		fourth.put(Mode.PLUPERFECT, pluPerfect);
+		fourth.put(Mode.FUTURE, future);
+		fourth.put(Mode.CONDITIONAL, futureImpefect);
+
+		return fourth;
+		
+	}
+
+	private static String getRoot(String verb) {
+		return verb.substring(0, verb.length() - 2);
+	}
+	private static Map<Mode, String[]> getSecondConjugation() {
+		String[] present = { "o", "es", "e", "emos", "eis", "em" };
+		String[] past = { "i", "este", "eu", "emos", "estes", "eram" };
+		String[] incompletePast = { "ia", "ias", "ia", "íamos", "íeis", "iam" };
+		String[] pluPerfect = { "era", "eras", "era", "êramos", "êreis", "eram" };
+		String[] future = { "erei", "erás", "erá", "eremos", "ereis", "erão" };
+		String[] futureImpefect = { "eria", "erias", "eria", "eríamos", "eríeis", "eriam" };
+		second.put(Mode.PRESENT, present);
+		second.put(Mode.PRETERITE, past);
+		second.put(Mode.IMPERFECT, incompletePast);
+		second.put(Mode.PLUPERFECT, pluPerfect);
+		second.put(Mode.FUTURE, future);
+		second.put(Mode.CONDITIONAL, futureImpefect);
+		return second;
+	}
+
+	private static Map<Mode, String[]> getThirdConjugation() {
+		String[] present = { "o", "es", "e", "imos", "is", "em" };
+		String[] past = { "i", "iste", "iu", "imos", "istes", "iram" };
+		String[] incompletePast = { "ia", "ias", "ia", "íamos", "íeis", "iam" };
+		String[] pluPerfect = { "ira", "iras", "ira", "íramos", "íreis", "iram" };
+		String[] future = { "irei", "irás", "irá", "iremos", "ireis", "irão" };
+		String[] futureImpefect = { "iria", "irias", "iria", "iríamos", "iríeis", "iriam" };
+		third.put(Mode.PRESENT, present);
+		third.put(Mode.PRETERITE, past);
+		third.put(Mode.IMPERFECT, incompletePast);
+		third.put(Mode.PLUPERFECT, pluPerfect);
+		third.put(Mode.FUTURE, future);
+		third.put(Mode.CONDITIONAL, futureImpefect);
+		
+		return third;
+		
+	}
+	private static Stream<String> getWords(URI txtFile) throws IOException {
+		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential().map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.distinct();
+	}
+	
+
+	private static void irregularConjugation(String verb) {
+		Entry<String, List<String>> irregular = IRREGULAR.entrySet().stream()
+				.filter(e -> e.getValue().stream().anyMatch(v -> (v + e.getKey()).equals(verb))).findFirst()
+				.orElse(null);
+		if (irregular != null) {
+			String key = irregular.getKey();
+			if(SIMPLE_IRREGULARITIES.containsKey(key)){
+				if (key.endsWith("ar")) {
+					Map<Mode, String[]> firstConjugation = getFirstConjugation();
+					printIrregular(verb, key, firstConjugation);
+				} else if (key.endsWith("er")) {
+					Map<Mode, String[]> firstConjugation = getSecondConjugation();
+					printIrregular(verb, key, firstConjugation);
+				} else if (key.endsWith("ir")) {
+					Map<Mode, String[]> firstConjugation = getThirdConjugation();
+					printIrregular(verb, key, firstConjugation);
+				}
+			} else {
+				System.out.println("CADÊ ->" + key);
+			}
+
+		}
+
+	}
+
+	private static boolean isIrregular(String verb) {
+		return IRREGULAR.entrySet().stream()
+				.anyMatch(e -> e.getValue().stream().anyMatch(v -> (v + e.getKey()).equals(verb)));
+	}
+
+	public static void main(String[] args) throws IOException {
+
+		Stream<String> words = getWords(new File("verbs.dic").toURI());
+		words.forEach(BrasilianVerbsConjugator::conjugate);
+	}
+
+
+	private static void printIrregular(String verb, String key, Map<Mode, String[]> firstConjugation) {
+		Map<Mode, List<String>> map = SIMPLE_IRREGULARITIES.get(key);
+		String root1 = verb.substring(0, verb.length() - key.length());
+
+		List<Entry<Mode, String[]>> entrySet = firstConjugation.entrySet().stream()
+				.collect(Collectors.toList());
+		String root2 = getRoot(verb);
+		for (int i = 0; i < entrySet.size(); i++) {
+			Entry<Mode, String[]> entry = entrySet.get(i);
+			Mode m = entry.getKey();
+			if (map.containsKey(m)) {
+				List<String> a = map.get(m);
+				String[] array = a.toArray(new String[0]);
+				addLetter(root1, array);
+				firstConjugation.put(m, array);
+			} else {
+				addLetter(root2, entry.getValue());
+			}
+		}
+		String[][] array = firstConjugation.values().toArray(new String[0][0]);
+		printVerb(verb, "", array);
+	}
 
 	private static void printVerb(String verb, String root, String[]... tenses) {
 		List<List<String>> tens = new ArrayList<>();
@@ -462,24 +402,77 @@ public class BrasilianVerbsConjugator {
 		}
 
 	}
+	
+	
 
-	private static void addLetter(String add, String[]... tenses) {
-		for (int i = 0; i < tenses.length; i++) {
-			for (int j = 0; j < tenses[i].length; j++) {
-				tenses[i][j] = add + tenses[i][j];
-			}
+	private static void secondConjugation(String verb) {
+		String root = getRoot(verb);
+		Map<Mode, String[]> secondConjugation = getSecondConjugation();
+		String[] present = secondConjugation.get(Mode.PRESENT);
+		String[] past = secondConjugation.get(Mode.PRETERITE);
+		String[] incompletePast = secondConjugation.get(Mode.IMPERFECT);
+		String[] pluPerfect = secondConjugation.get(Mode.PLUPERFECT);
+		String[] future = secondConjugation.get(Mode.FUTURE);
+		String[] futureImpefect = secondConjugation.get(Mode.CONDITIONAL);
+
+		if (root.endsWith("gu")) {
+			addLetter("gu", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present[0] = "go";
+			root = root.substring(0, root.length() - 2);
+		} else if (root.endsWith("o")) {
+			addLetter("o", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present[1] = "óis";
+			present[2] = "ói";
+			past[0] = "oí";
+			incompletePast = new String[] { "oía", "oías", "oía", "oíamos", "oíeis", "oíam" };
+			root = root.substring(0, root.length() - 1);
+		} else if (root.endsWith("c")) {
+			addLetter("c", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present[0] = "ço";
+			root = root.substring(0, root.length() - 1);
+		} else if (root.endsWith("g")) {
+			addLetter("g", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present[0] = "jo";
+			root = root.substring(0, root.length() - 1);
 		}
-	}
-	
-	
-
-	private static List<String> addDesinencia(String root, String[] tense) {
-		return Stream.of(tense).map(a -> root + a).collect(Collectors.toList());
-
+		printVerb(verb, root, present, past, incompletePast, pluPerfect, future, futureImpefect);
 	}
 
-	private static String getRoot(String verb) {
-		return verb.substring(0, verb.length() - 2);
+	private static void thirdConjugation(String verb) {
+		String root = getRoot(verb);
+		Map<Mode, String[]> thirdConjugation = getThirdConjugation();
+		String[] present = thirdConjugation.get(Mode.PRESENT);
+		String[] past = thirdConjugation.get(Mode.PRETERITE);
+		String[] incompletePast = thirdConjugation.get(Mode.IMPERFECT);
+		String[] pluPerfect = thirdConjugation.get(Mode.PLUPERFECT);
+		String[] future = thirdConjugation.get(Mode.FUTURE);
+		String[] futureImpefect = thirdConjugation.get(Mode.CONDITIONAL);
+		if (root.endsWith("a")) {
+			addLetter("a", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present = new String[] { "aio", "ais", "ai", "aímos", "aís", "aem" };
+			past = new String[] { "aí", "aíste", "aiu", "aímos", "aístes", "aíram" };
+			incompletePast = new String[] { "aía", "aías", "aía", "aíamos", "aíeis", "aíam" };
+			root = root.substring(0, root.length() - 1);
+		} else if (root.endsWith("med")) {
+			addLetter("med", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present[0] = "meço";
+			root = root.substring(0, root.length() - 3);
+		} else if (root.endsWith("u")) {
+			addLetter("u", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present = new String[] { "uo", "uis", "ui", "uímos", "uís", "uem" };
+			past = new String[] { "uí", "uíste", "uiu", "uímos", "uístes", "uíram" };
+			incompletePast = new String[] { "uía", "uías", "uía", "uíamos", "uíeis", "uíam" };
+			root = root.substring(0, root.length() - 1);
+		} else if (root.endsWith("c")) {
+			addLetter("c", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present[0] = "ço";
+			root = root.substring(0, root.length() - 1);
+		} else if (root.endsWith("g")) {
+			addLetter("g", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present[0] = "jo";
+			root = root.substring(0, root.length() - 1);
+		}
+		printVerb(verb, root, present, past, incompletePast, pluPerfect, future, futureImpefect);
 	}
 
 }

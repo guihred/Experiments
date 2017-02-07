@@ -10,9 +10,6 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class Labyrinth3D extends Application {
-	private final double cameraModifier = 50.0;
-	private final double cameraQuantity = 10.0;
-
 	private static String[][] mapa = {
 		{ "_", "_", "_", "_", "_", "_" },
 		{ "|", "_", "_", "_", "_", "|" }, 
@@ -21,15 +18,40 @@ public class Labyrinth3D extends Application {
 		{ "|", "_", "_", "|", "_", "|" },
 		{ "|", "_", "_", "_", "_", "|" }, 
 		{ "|", "_", "_", "_", "_", "_" }, };
-
 	private static final int SIZE = 50;
 
 	public static void main(String[] args) {
 		launch(args);
 	}
+
+	private final double cameraModifier = 50.0;
+
+	private final double cameraQuantity = 10.0;
+	Color color = Color.RED;
 	private int i;
 	private int j;
-	Color color = Color.RED;
+
+	private void initializeLabyrinth(Group root) {
+		for (int k = mapa.length - 1; k >= 0; k--) {
+			for (int l = mapa[k].length - 1; l >= 0; l--) {
+				String string = mapa[k][l];
+				if ("_".equals(string)) {
+					Cube rectangle = new Cube(SIZE, Color.BLUE);
+					rectangle.setTranslateX(k * SIZE);
+					rectangle.setTranslateZ(l * SIZE);
+					rectangle.ry.setAngle(90);
+					root.getChildren().add(rectangle);
+				} else {
+					Cube rectangle = new Cube(SIZE, Color.BLUE);
+					rectangle.setTranslateX(k * SIZE);
+					rectangle.setTranslateZ(l * SIZE);
+					// Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
+					// SIZE, SIZE / 2);
+					root.getChildren().add(rectangle);
+				}
+			}
+		}
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -129,28 +151,6 @@ public class Labyrinth3D extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-
-	private void initializeLabyrinth(Group root) {
-		for (int k = mapa.length - 1; k >= 0; k--) {
-			for (int l = mapa[k].length - 1; l >= 0; l--) {
-				String string = mapa[k][l];
-				if ("_".equals(string)) {
-					Cube rectangle = new Cube(SIZE, Color.BLUE);
-					rectangle.setTranslateX(k * SIZE);
-					rectangle.setTranslateZ(l * SIZE);
-					rectangle.ry.setAngle(90);
-					root.getChildren().add(rectangle);
-				} else {
-					Cube rectangle = new Cube(SIZE, Color.BLUE);
-					rectangle.setTranslateX(k * SIZE);
-					rectangle.setTranslateZ(l * SIZE);
-					// Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
-					// SIZE, SIZE / 2);
-					root.getChildren().add(rectangle);
-				}
-			}
-		}
 	}
 
 }

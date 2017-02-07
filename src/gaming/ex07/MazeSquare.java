@@ -9,11 +9,11 @@ import javafx.scene.shape.Line;
 public class MazeSquare extends BorderPane {
     public static final int SQUARE_SIZE = 20;
 
-    BooleanProperty visited = new SimpleBooleanProperty(false);
-    BooleanProperty west = new SimpleBooleanProperty(false);
-    BooleanProperty east = new SimpleBooleanProperty(false);
-    BooleanProperty north = new SimpleBooleanProperty(false);
-    BooleanProperty south = new SimpleBooleanProperty(false);
+	private final BooleanProperty visited = new SimpleBooleanProperty(false);
+	private final BooleanProperty west = new SimpleBooleanProperty(false);
+	private final BooleanProperty east = new SimpleBooleanProperty(false);
+	private final BooleanProperty north = new SimpleBooleanProperty(false);
+	private final BooleanProperty south = new SimpleBooleanProperty(false);
 
     public MazeSquare() {
         setStyle("-fx-background-color:green;");
@@ -32,5 +32,48 @@ public class MazeSquare extends BorderPane {
         line4.visibleProperty().bind(south.not());
         setBottom(line4);
     }
+
+	public void setSouth(boolean v) {
+		south.set(v);
+	}
+
+	public final boolean isVisited() {
+		return visited.get();
+	}
+
+	public final void setVisited(final boolean visited) {
+		this.visited.set(visited);
+	}
+
+	public boolean isSouth() {
+		return south.get();
+	}
+
+	public final boolean isWest() {
+		return west.get();
+	}
+
+	public final void setWest(final boolean west) {
+		this.west.set(west);
+	}
+
+	public final boolean isEast() {
+		return east.get();
+	}
+
+
+	public final void setEast(final boolean east) {
+		this.east.set(east);
+	}
+
+	public final boolean isNorth() {
+		return north.get();
+	}
+
+
+	public final void setNorth(final boolean north) {
+		this.north.set(north);
+	}
+
 
 }

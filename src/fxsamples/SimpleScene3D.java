@@ -27,7 +27,7 @@ public class SimpleScene3D extends Application {
 	private double mouseYold = 0;
 	private final double cameraYlimit = 15;
 	private final double rotateModifier = 25;
-	EventHandler<? super MouseEvent> mouseHandler = event -> {
+	private EventHandler<? super MouseEvent> mouseHandler = event -> {
 		Node picked = event.getPickResult().getIntersectedNode();
 		if (null != picked) {
 			double scalar = 2;
@@ -39,7 +39,7 @@ public class SimpleScene3D extends Application {
 			picked.setScaleZ(scalar);
 		}
 	};
-	EventHandler<? super KeyEvent> keyPressedHandler = event -> {
+	private EventHandler<? super KeyEvent> keyPressedHandler = event -> {
 		double change = cameraQuantity;
 		// Add shift modifier to simulate "Running Speed"
 		if (event.isShiftDown()) {

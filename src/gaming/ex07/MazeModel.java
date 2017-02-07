@@ -26,15 +26,9 @@ public class MazeModel {
 
 	public static final int MAZE_SIZE = 24;
 
-	MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
-	GridPane gridPane;
-	int moves = 0;
+	private MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
 
-	public static MazeModel create(GridPane gridPane, Scene scene) {
-		return new MazeModel(gridPane, scene);
-	}
 	public MazeModel(GridPane gridPane, Scene scene) {
-		this.gridPane = gridPane;
 		initializeMaze(gridPane);
 		maze[0][0].setCenter(new Circle(5));
 		Timeline timeline = new Timeline();
@@ -47,7 +41,7 @@ public class MazeModel {
 		final Circle circle = new Circle(MazeSquare.SQUARE_SIZE / 3, Color.RED);
 		maze[0][0].setCenter(circle);
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			int i = 0, j = 0;
+			private int i = 0, j = 0;
 
 			@Override
 			public void handle(KeyEvent event) {
@@ -56,25 +50,25 @@ public class MazeModel {
 				switch (code) {
 				case W:
 				case UP:
-					if (i > 0 && maze[i][j].north.get()) {
+					if (i > 0 && maze[i][j].isNorth()) {
 						i--;
 					}
 					break;
 				case S:
 				case DOWN:
-					if (i < MazeModel.MAZE_SIZE - 1 && maze[i][j].south.get()) {
+					if (i < MazeModel.MAZE_SIZE - 1 && maze[i][j].isSouth()) {
 						i++;
 					}
 					break;
 				case D:
 				case RIGHT:
-					if (j < MazeModel.MAZE_SIZE - 1 && maze[i][j].east.get()) {
+					if (j < MazeModel.MAZE_SIZE - 1 && maze[i][j].isEast()) {
 						j++;
 					}
 					break;
 				case A:
 				case LEFT:
-					if (j > 0 && maze[i][j].west.get()) {
+					if (j > 0 && maze[i][j].isWest()) {
 						j--;
 					}
 					break;
@@ -88,26 +82,29 @@ public class MazeModel {
 		});
 
 	}
-
 	private void initializeMaze(GridPane gridPane) {
 		for (int i = 0; i < MAZE_SIZE; i++) {
 			for (int j = 0; j < MAZE_SIZE; j++) {
 				maze[i][j] = new MazeSquare();
 				gridPane.add(maze[i][j], j, i);
 				if (i == 0) {
-					maze[i][j].north.set(false);
+					maze[i][j].setNorth(false);
 				}
 				if (j == 0) {
-					maze[i][j].west.set(false);
+					maze[i][j].setWest(false);
 				}
 				if (j == MAZE_SIZE - 1) {
-					maze[i][j].east.set(false);
+					maze[i][j].setEast(false);
 				}
 				if (i == MAZE_SIZE - 1) {
-					maze[i][j].south.set(false);
+					maze[i][j].setSouth(false);
 				}
 			}
 		}
+	}
+
+	public static MazeModel create(GridPane gridPane, Scene scene) {
+		return new MazeModel(gridPane, scene);
 	}
 
 }

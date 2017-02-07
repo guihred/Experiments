@@ -1,6 +1,5 @@
 package javaexercises.graphs;
 
-import static javaexercises.graphs.CircleTopology.identifier;
 
 import java.util.Random;
 

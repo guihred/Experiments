@@ -100,8 +100,7 @@ public class LineManipulator extends Application {
 	}
 
 	public static class Delta {
-
-		double x, y;
+		private double x, y;
 	}
 }
 

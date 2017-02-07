@@ -24,32 +24,60 @@ import javafx.stage.Stage;
 public class ThreadInformationViewer extends Application
         implements EventHandler<ActionEvent>, ChangeListener<Number> {
 
-    private final Model model;
-    private View view;
+    public static class Model {
+
+		public ObservableList<String> stackTraces = FXCollections.observableArrayList();
+		public ObservableList<String> threadNames = FXCollections.observableArrayList();
+
+        public Model() {
+            update();
+        }
+
+        private String formatStackTrace(StackTraceElement[] value) {
+            StringBuilder sb = new StringBuilder("StackTrace: \n");
+            for (StackTraceElement stackTraceElement : value) {
+                sb.append(" at ").append(stackTraceElement.toString()).append("\n");
+            }
+            return sb.toString();
+        }
+
+        public final void update() {
+            threadNames.clear();
+            stackTraces.clear();
+            final Map<Thread, StackTraceElement[]> map = Thread.getAllStackTraces();
+            map.forEach((k, v) -> {
+                threadNames.add("\"" + k.getName() + "\"");
+                stackTraces.add(formatStackTrace(v));
+            });
+        }
+    }
+    private static class View {
+
+        public Scene scene;
+        public TextArea stackTrace;
+        public ListView<String> threadNames;
+        public Button updateButton;
+
+        private View(Model model) {
+            threadNames = new ListView<>(model.threadNames);
+            stackTrace = new TextArea();
+            updateButton = new Button("Update");
+            final VBox vbox = new VBox(10, threadNames, stackTrace, updateButton);
+            vbox.setPadding(new Insets(10, 10, 10, 10));
+            scene = new Scene(vbox);
+        }
+    }
 
     public static void main(String[] args) {
         Application.launch(args);
     }
 
+    private final Model model;
+
+    private View view;
+
     public ThreadInformationViewer() {
         model = new Model();
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        view = new View(model);
-        hookupEvents();
-        stage.setTitle("JavaFX Threads Information");
-        stage.setScene(view.scene);
-
-        stage.setWidth(440);
-        stage.setHeight(640);
-        stage.show();
-    }
-
-    private void hookupEvents() {
-        view.updateButton.setOnAction(this);
-        view.threadNames.getSelectionModel().selectedIndexProperty().addListener(this);
     }
 
     @Override
@@ -66,48 +94,20 @@ public class ThreadInformationViewer extends Application
         model.update();
     }
 
-    public static class Model {
-
-		public ObservableList<String> threadNames = FXCollections.observableArrayList();
-		public ObservableList<String> stackTraces = FXCollections.observableArrayList();
-
-        public Model() {
-            update();
-        }
-
-        public final void update() {
-            threadNames.clear();
-            stackTraces.clear();
-            final Map<Thread, StackTraceElement[]> map = Thread.getAllStackTraces();
-            map.forEach((k, v) -> {
-                threadNames.add("\"" + k.getName() + "\"");
-                stackTraces.add(formatStackTrace(v));
-            });
-        }
-
-        private String formatStackTrace(StackTraceElement[] value) {
-            StringBuilder sb = new StringBuilder("StackTrace: \n");
-            for (StackTraceElement stackTraceElement : value) {
-                sb.append(" at ").append(stackTraceElement.toString()).append("\n");
-            }
-            return sb.toString();
-        }
+    private void hookupEvents() {
+        view.updateButton.setOnAction(this);
+        view.threadNames.getSelectionModel().selectedIndexProperty().addListener(this);
     }
 
-    private static class View {
+    @Override
+    public void start(Stage stage) throws Exception {
+        view = new View(model);
+        hookupEvents();
+        stage.setTitle("JavaFX Threads Information");
+        stage.setScene(view.scene);
 
-        public ListView<String> threadNames;
-        public TextArea stackTrace;
-        public Button updateButton;
-        public Scene scene;
-
-        private View(Model model) {
-            threadNames = new ListView<>(model.threadNames);
-            stackTrace = new TextArea();
-            updateButton = new Button("Update");
-            final VBox vbox = new VBox(10, threadNames, stackTrace, updateButton);
-            vbox.setPadding(new Insets(10, 10, 10, 10));
-            scene = new Scene(vbox);
-        }
+        stage.setWidth(440);
+        stage.setHeight(640);
+        stage.show();
     }
 }

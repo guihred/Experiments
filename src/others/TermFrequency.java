@@ -39,7 +39,7 @@ public class TermFrequency {
 	}
 
 	public static double getInvertDocumentFrequency(String t) {
-		Double idf = 1d;
+		Double idf = 1D;
 		for (Entry<File, Map<String, Long>> entry : mapaDocumentos.entrySet()) {
 			if (entry.getValue().containsKey(t)) {
 				idf += 1;

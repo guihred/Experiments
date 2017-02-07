@@ -24,7 +24,7 @@ public class DrawingLines extends Application {
 		redLine.setStrokeWidth(10);
 		redLine.setStrokeLineCap(StrokeLineCap.BUTT);
 		// creating a dashed pattern
-		redLine.getStrokeDashArray().addAll(10d, 5d, 15d, 5d, 20d);
+		redLine.getStrokeDashArray().addAll(10D, 5D, 15D, 5D, 20D);
 		redLine.setStrokeDashOffset(0);
 		root.getChildren().add(redLine);
 		// White line

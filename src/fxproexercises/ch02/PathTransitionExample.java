@@ -24,16 +24,16 @@ import simplebuilder.SimpleHBoxBuilder;
 
 public class PathTransitionExample extends Application {
 
-    Button startButton;
-    Button pauseButton;
-    Button resumeButton;
-    Button stopButton;
-	Ellipse ellipse = new SimpleEllipseBuilder().centerX(100).centerY(50).radiusX(4).radiusY(50).fill(Color.BLUE)
-	.build();
+	private Button startButton;
+	private Button pauseButton;
+	private Button resumeButton;
+	private Button stopButton;
+	private Ellipse ellipse = new SimpleEllipseBuilder().centerX(100).centerY(50).radiusX(4).radiusY(50)
+			.fill(Color.BLUE).build();
 
-	Path path = new Path(new MoveTo(100, 50), newArcTo(300, 50, 350, 350, true));
+	private Path path = new Path(new MoveTo(100, 50), newArcTo(300, 50, 350, 350, true));
 
-	PathTransition anim = newPathTransistion(new Duration(1000.0), path, ellipse,
+	private PathTransition anim = newPathTransistion(new Duration(1000.0), path, ellipse,
 			PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT, Interpolator.LINEAR, true, Animation.INDEFINITE);
 
     public static void main(String[] args) {

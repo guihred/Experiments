@@ -6,6 +6,7 @@
 package gaming.ex01;
 
 import static gaming.ex01.SnakeModel.MAP_SIZE;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -17,15 +18,15 @@ import javafx.scene.layout.Region;
  */
 public class SnakeSquare extends Region {
 
-    final int i, j;
+	private final int i, j;
 
-    ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
+	private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
 
     public SnakeSquare(int i, int j) {
         setPrefSize(50, 50);
         styleProperty().bind(
-                Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;").otherwise(
-                        Bindings.when(state.isEqualTo(SnakeState.SNAKE))
+				Bindings.when(stateProperty().isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;")
+						.otherwise(Bindings.when(stateProperty().isEqualTo(SnakeState.SNAKE))
                         .then("-fx-background-color:green;")
                         .otherwise("-fx-background-color:gray;"
                         )));
@@ -44,7 +45,7 @@ public class SnakeSquare extends Region {
         if (obj.getClass() != SnakeSquare.class) {
             return false;
         }
-        if (((SnakeSquare) obj).i == i && ((SnakeSquare) obj).j == j) {
+        if (((SnakeSquare) obj).i == i && ((SnakeSquare) obj).getJ() == getJ()) {
             return true;
         }
         return false;
@@ -53,7 +54,32 @@ public class SnakeSquare extends Region {
 
     @Override
     public int hashCode() {
-        return i * MAP_SIZE + j;
+        return i * MAP_SIZE + getJ();
     }
+
+
+
+	public int getI() {
+		return i;
+	}
+
+
+
+	public int getJ() {
+		return j;
+	}
+
+
+
+	public ObjectProperty<SnakeState> stateProperty() {
+		return state;
+	}
+	public SnakeState getState() {
+		return state.get();
+	}
+
+	public void setState(SnakeState state) {
+		this.state.set(state);
+	}
 
 }

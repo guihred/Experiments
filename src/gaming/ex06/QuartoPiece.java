@@ -17,9 +17,9 @@ import javafx.scene.shape.Shape3D;
 
 public class QuartoPiece extends Group {
 
-    final int number;
-    BooleanProperty selected = new SimpleBooleanProperty(false);
-    final PhongMaterial material;
+	private final int number;
+	private final BooleanProperty selected = new SimpleBooleanProperty(false);
+	private final PhongMaterial material;
 
     public QuartoPiece(int number) {
         this.number = number;
@@ -53,5 +53,16 @@ public class QuartoPiece extends Group {
         }
         getChildren().add(shape);
     }
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setSelected(boolean value) {
+		selected.set(value);
+	}
+	public Boolean isSelected() {
+		return selected.get();
+	}
 
 }

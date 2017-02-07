@@ -28,37 +28,6 @@ class Vertex {
 		System.out.println(chain.stream().map(v -> v.getName()).sequential().collect(Collectors.joining("->")));
 	}
 
-	public static void sortTopology(List<Vertex> vertices) {
-		int counter = 0;
-
-		Queue<Vertex> q = new LinkedList<>();
-		for (Vertex v : vertices) {
-			for (Vertex w : v.adjacents()) {
-				w.indegree++;
-			}
-
-			if (v.indegree == 0) {
-				q.add(v);
-			}
-		}
-		while (!q.isEmpty()) {
-			Vertex v = q.poll();
-			v.topNum = ++counter;
-
-			for (Vertex w : v.adjacents()) {
-				if (--w.indegree == 0) {
-					q.add(w);
-				}
-			}
-
-		}
-		vertices.forEach(v -> System.out.println(v.id + "=" + v.topNum));
-
-		if (counter != vertices.size()) {
-			System.out.println("CYCLE FOUND");
-		}
-	}
-
 	static List<Edge> kruskal(List<Vertex> totalVertices) {
 
 		int numVertices = totalVertices.size();
@@ -104,19 +73,59 @@ class Vertex {
 
 	}
 
-	public void assignNum(Map<Vertex, Integer> num, int c) {
-		int counter = c;
+	public static void sortTopology(List<Vertex> vertices) {
+		int counter = 0;
 
-		num.put(this, counter++);
-		Set<Vertex> adjacents = adjacents();
-		for (Vertex w : adjacents) {
-			if (!num.containsKey(w)) {
-				w.parent = this;
-				w.assignNum(num, counter);
+		Queue<Vertex> q = new LinkedList<>();
+		for (Vertex v : vertices) {
+			for (Vertex w : v.adjacents()) {
+				w.indegree++;
+			}
 
+			if (v.indegree == 0) {
+				q.add(v);
+			}
+		}
+		while (!q.isEmpty()) {
+			Vertex v = q.poll();
+			v.topNum = ++counter;
+
+			for (Vertex w : v.adjacents()) {
+				if (--w.indegree == 0) {
+					q.add(w);
+				}
 			}
 
 		}
+		vertices.forEach(v -> System.out.println(v.id + "=" + v.topNum));
+
+		if (counter != vertices.size()) {
+			System.out.println("CYCLE FOUND");
+		}
+	}
+
+	private Map<Vertex, Integer> edges = new HashMap<>();
+
+	final int id;
+
+	String name;
+	Vertex parent;
+
+	Map<Integer, Vertex> path = new HashMap<>();
+
+	public int topNum, indegree;
+	public Vertex(int id) {
+		this.id = id;
+		name = Character.toString((char) ('A' + id - 1));
+	}
+
+	public Vertex(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
+	public Set<Vertex> adjacents() {
+		return edges.keySet();
 	}
 
 	void assignLow(Map<Vertex, Integer> num, Map<Vertex, Integer> low) {
@@ -138,34 +147,19 @@ class Vertex {
 		}
 	}
 
-	final int id;
-	public int topNum, indegree;
+	public void assignNum(Map<Vertex, Integer> num, int c) {
+		int counter = c;
 
-	private Map<Vertex, Integer> edges = new HashMap<>();
+		num.put(this, counter++);
+		Set<Vertex> adjacents = adjacents();
+		for (Vertex w : adjacents) {
+			if (!num.containsKey(w)) {
+				w.parent = this;
+				w.assignNum(num, counter);
 
-	Map<Integer, Vertex> path = new HashMap<>();
-	Vertex parent;
+			}
 
-	String name;
-
-	public Vertex(int id) {
-		this.id = id;
-		name = Character.toString((char) ('A' + id - 1));
-	}
-
-	public Vertex(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-
-	public Set<Vertex> adjacents() {
-		return edges.keySet();
-	}
-
-	public Vertex biput(Vertex v, int weight) {
-		edges.put(v, weight);
-		v.edges.put(this, weight);
-		return this;
+		}
 	}
 
 	public void biput(Vertex... vertices) {
@@ -173,6 +167,12 @@ class Vertex {
 			edges.put(vertices[i], 1);
 			vertices[i].edges.put(this, 1);
 		}
+	}
+
+	public Vertex biput(Vertex v, int weight) {
+		edges.put(v, weight);
+		v.edges.put(this, weight);
+		return this;
 	}
 
 	public Map<Vertex, Integer> dijkstra(List<Vertex> graph) {
@@ -212,6 +212,14 @@ class Vertex {
 		return id == other.id;
 	}
 
+	public String getName() {
+		if (!NAMED) {
+			return Integer.toString(id);
+		}
+
+		return name;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -244,14 +252,6 @@ class Vertex {
 		edges.forEach((v, w) -> sb.append(v.getName() + " "));
 
 		return sb.toString();
-	}
-
-	public String getName() {
-		if (!NAMED) {
-			return Integer.toString(id);
-		}
-
-		return name;
 	}
 
 	public Map<Vertex, Integer> unweighted(List<Vertex> graph) {

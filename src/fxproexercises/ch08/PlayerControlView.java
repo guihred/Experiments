@@ -32,15 +32,15 @@ import javafx.util.Duration;
 
 public class PlayerControlView extends AbstractView {
 
-	Label statusLabel;
-	Slider volumeSlider;
-	Label totalDurationLabel;
-	Label currentTimeLabel;
-	Slider positionSlider;
-	Image pauseImg;
-	Image playImg;
-	ImageView playPauseIcon;
-	Node controlPanel;
+	private Label statusLabel;
+	private Slider volumeSlider;
+	private Label totalDurationLabel;
+	private Label currentTimeLabel;
+	private Slider positionSlider;
+	private Image pauseImg;
+	private Image playImg;
+	private ImageView playPauseIcon;
+	private Node controlPanel;
 
 	public PlayerControlView(SongModel songModel) {
 		super(songModel);

@@ -27,32 +27,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleAudioPlayerLauncher extends Application {
-	public final Logger logger = LoggerFactory.getLogger(getClass());
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         launch(args);
     }
+    private Label album;
+    private ImageView albumCover;
+    private Label artist;
+    public final Logger logger = LoggerFactory.getLogger(getClass());
     private Media media;
     private MediaPlayer mediaPlayer;
-    private Label artist;
-    private Label album;
     private Label title;
     private Label year;
-    private ImageView albumCover;
-    @Override
-    public void start(Stage primaryStage) {
-        createControls();
-        createMedia();
-        final Scene scene = new Scene(createGridPane(), 800, 400);
-        try {
-
-			final URL stylesheet = Chapter8Resource.MEDIA.getURL();
-            scene.getStylesheets().add(stylesheet.toString());
-        } catch (Exception e) {
-			logger.error("", e);
-        }
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Audio Player 2");
-        primaryStage.show();
+    private void createControls() {
+        artist = new Label();
+        artist.setId("artist");
+        album = new Label();
+        album.setId("album");
+        title = new Label();
+        title.setId("title");
+        year = new Label();
+        year.setId("year");
+        final Reflection reflection = new Reflection();
+        reflection.setFraction(0.2);
+        final Image image = new Image(new File("C:\\Users\\Note\\Pictures\\fb.jpg").toURI().toString());
+        albumCover = new ImageView(image);
+        albumCover.setFitWidth(240);
+        albumCover.setPreserveRatio(true);
+        albumCover.setSmooth(true);
+        albumCover.setEffect(reflection);
     }
 
     private GridPane createGridPane() {
@@ -72,25 +74,6 @@ public class SimpleAudioPlayerLauncher extends Application {
         r0.setValignment(VPos.TOP);
         gp.getRowConstraints().addAll(r0, r0, r0, r0);
         return gp;
-    }
-
-    private void createControls() {
-        artist = new Label();
-        artist.setId("artist");
-        album = new Label();
-        album.setId("album");
-        title = new Label();
-        title.setId("title");
-        year = new Label();
-        year.setId("year");
-        final Reflection reflection = new Reflection();
-        reflection.setFraction(0.2);
-        final Image image = new Image(new File("C:\\Users\\Note\\Pictures\\fb.jpg").toURI().toString());
-        albumCover = new ImageView(image);
-        albumCover.setFitWidth(240);
-        albumCover.setPreserveRatio(true);
-        albumCover.setSmooth(true);
-        albumCover.setEffect(reflection);
     }
 
     public void createMedia()  {
@@ -124,5 +107,22 @@ public class SimpleAudioPlayerLauncher extends Application {
 		if ("image".equals(key)) {
             albumCover.setImage((Image) value);
         }
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        createControls();
+        createMedia();
+        final Scene scene = new Scene(createGridPane(), 800, 400);
+        try {
+
+			final URL stylesheet = Chapter8Resource.MEDIA.getURL();
+            scene.getStylesheets().add(stylesheet.toString());
+        } catch (Exception e) {
+			logger.error("", e);
+        }
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Audio Player 2");
+        primaryStage.show();
     }
 }

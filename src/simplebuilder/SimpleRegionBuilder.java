@@ -7,13 +7,14 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
 
 	protected T region;
 
-	public static SimpleRegionBuilder<Region, SimpleRegionBuilder<Region, SimpleBuilder<Region>>> create() {
-		return new SimpleRegionBuilder<>(new Region());
-	}
-
 	public SimpleRegionBuilder(T region) {
 		super(region);
 		this.region = region;
+	}
+
+	public Z prefHeight(double value) {
+		region.setPrefHeight(value);
+		return (Z) this;
 	}
 
 	public Z prefWidth(double value) {
@@ -21,9 +22,8 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
 		return (Z) this;
 	}
 
-	public Z prefHeight(double value) {
-		region.setPrefHeight(value);
-		return (Z) this;
+	public static SimpleRegionBuilder<Region, SimpleRegionBuilder<Region, SimpleBuilder<Region>>> create() {
+		return new SimpleRegionBuilder<>(new Region());
 	}
 
 

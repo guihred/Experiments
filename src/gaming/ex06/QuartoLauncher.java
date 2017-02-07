@@ -27,7 +27,7 @@ public class QuartoLauncher extends Application {
     private final Group root = new Group();
     private final Xform world = new Xform();
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
-    QuartoModel model = new QuartoModel();
+	private QuartoModel model = new QuartoModel();
     private final Xform cameraXform = new Xform();
     private final Xform cameraXform2 = new Xform();
     private final Xform cameraXform3 = new Xform();
@@ -60,23 +60,23 @@ public class QuartoLauncher extends Application {
             if (target instanceof Shape3D) {
                 final Parent parent = ((Shape3D) target).getParent();
                 if (parent instanceof QuartoPiece) {
-                    if (Stream.of(model.mapQuarto).flatMap(Stream::of).noneMatch(parent::equals)) {
-                        ((QuartoPiece) parent).selected.set(true);
-                        model.pieces.stream().filter(p -> !Objects.equals(p, parent) && p.selected.get()).forEach(
-                                (QuartoPiece p) -> p.selected.setValue(false)
+                    if (Stream.of(model.getMapQuarto()).flatMap(Stream::of).noneMatch(parent::equals)) {
+						((QuartoPiece) parent).setSelected(true);
+						model.getPieces().stream().filter(p -> !Objects.equals(p, parent) && p.isSelected()).forEach(
+										(QuartoPiece p) -> p.setSelected(false)
                         );
                     }
                 }
             }
-            if (target instanceof Circle && Stream.of(model.map).flatMap(Stream::of).anyMatch(target::equals)) {
-                model.pieces.stream().filter(p -> p.selected.get()).forEach((QuartoPiece p) -> {
+            if (target instanceof Circle && Stream.of(model.getMap()).flatMap(Stream::of).anyMatch(target::equals)) {
+				model.getPieces().stream().filter(p -> p.isSelected()).forEach((QuartoPiece p) -> {
                     p.setTranslateX(((Circle) target).getTranslateX());
                     p.setTranslateZ(((Circle) target).getTranslateZ());
-                    p.selected.set(false);
+					p.setSelected(false);
                     for (int i = 0; i < 4; i++) {
                         for (int j = 0; j < 4; j++) {
-                            if (target == model.map[i][j]) {
-                                model.mapQuarto[i][j] = p;
+                            if (target == model.getMap()[i][j]) {
+                                model.getMapQuarto()[i][j] = p;
                             }
                         }
                     }
@@ -205,7 +205,7 @@ public class QuartoLauncher extends Application {
     				.rotate(90)
     				.build();
             circle.fillProperty().bind(Bindings.when(circle.hoverProperty()).then(Color.BLUE).otherwise(Color.WHITE));
-            model.map[i % 4][i / 4] = circle;
+            model.getMap()[i % 4][i / 4] = circle;
             group.getChildren().add(circle);
 
             final QuartoPiece piece = new QuartoPiece(i);
@@ -214,7 +214,7 @@ public class QuartoLauncher extends Application {
             piece.setTranslateX(j == 0 ? -110 : j == 1 ? -90 : j == 2 ? 90 : 110);
             piece.setTranslateZ(k == 0 ? -110 : k == 1 ? -90 : k == 2 ? 90 : 110);
             world.getChildren().add(piece);
-            model.pieces.add(piece);
+            model.getPieces().add(piece);
 
         }
 

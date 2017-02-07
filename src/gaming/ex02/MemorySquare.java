@@ -21,15 +21,12 @@ import javafx.scene.shape.Shape;
  * @author Note
  */
 public class MemorySquare extends Region {
-    final int i, j;
-    Color color;
-    ObjectProperty<MemoryImage> memoryImage = new SimpleObjectProperty<>();
-    ObjectProperty<State> state = new SimpleObjectProperty<>(State.HIDDEN);
-    Shape shape;
+	private Color color;
+	private final ObjectProperty<MemoryImage> memoryImage = new SimpleObjectProperty<>();
+	private final ObjectProperty<State> state = new SimpleObjectProperty<>(State.HIDDEN);
+	private Shape shape;
 
-    public MemorySquare(int i, int j) {
-        this.i = i;
-        this.j = j;
+	public MemorySquare() {
         setPadding(new Insets(10));
         setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
         setPrefSize(50, 50);
@@ -41,13 +38,40 @@ public class MemorySquare extends Region {
             shape = memoryImage.get().getShape();
             shape.setFill(Color.WHITE);
             shape.fillProperty().bind(Bindings.when(state.isEqualTo(State.HIDDEN)).then(Color.WHITE).otherwise(color));
-
         }
 
         return shape;
     }
 
-    public enum State {
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public MemoryImage getMemoryImage() {
+		return memoryImage.get();
+	}
+
+	public void setMemoryImage(MemoryImage image) {
+		memoryImage.set(image);
+	}
+
+	public ObjectProperty<State> stateProperty() {
+		return state;
+	}
+
+	public State getState() {
+		return state.get();
+	}
+
+	public void setState(State s) {
+		state.set(s);
+	}
+
+	public enum State {
         HIDDEN,
         SHOWN,
         FOUND

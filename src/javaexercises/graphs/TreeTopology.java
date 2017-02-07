@@ -21,7 +21,7 @@ public class TreeTopology extends GenTopology {
 		double x = bound * Math.cos(Math.toRadians(nextInt));
 		double y = bound * Math.sin(Math.toRadians(nextInt));
 		for (int i = 0; i < size; i++) {
-			Cell cell = graph.getModel().addCell(CircleTopology.identifier(i), CellType.CIRCLE);
+			Cell cell = graph.getModel().addCell(GenTopology.identifier(i), CellType.CIRCLE);
 			nextInt = rnd.nextInt(360);
 			x += bound * Math.cos(Math.toRadians(nextInt));
 			y += bound * Math.sin(Math.toRadians(nextInt));

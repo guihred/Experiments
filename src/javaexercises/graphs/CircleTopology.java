@@ -1,9 +1,9 @@
 package javaexercises.graphs;
 
-import java.util.Objects;
 import java.util.Random;
 
 public class CircleTopology extends GenTopology {
+
 
 	public CircleTopology(int size, Graph graph) {
 		super(graph, "Circle", size);
@@ -43,28 +43,6 @@ public class CircleTopology extends GenTopology {
 		System.out.println("TERMINOU");
 	}
 
-	public static String identifier(int i) {
-		if (i > 25) {
-			return cellIdentifier(i + 1);
-		}
-		return Objects.toString((char) ('A' + i));
 
-	}
-
-	private final static char[] digits = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-
-	public static String cellIdentifier(int n) {
-		int i = -n;
-		/* Use the faster version */
-		char buf[] = new char[33];
-		int charPos = 32;
-		while (i <= -26) {
-			buf[charPos--] = digits[-(i % 26)];
-			i = i / 26;
-		}
-		buf[charPos] = digits[-i];
-		return new String(buf, charPos, 33 - charPos);
-	}
 
 }

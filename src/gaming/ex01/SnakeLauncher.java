@@ -22,7 +22,7 @@ public class SnakeLauncher extends Application {
         final SnakeModel newGameModel = new SnakeModel();
         for (int i = 0; i < SnakeModel.MAP_SIZE; i++) {
             for (int j = 0; j < SnakeModel.MAP_SIZE; j++) {
-                gridPane.add(newGameModel.map[i][j], i, j);
+                gridPane.add(newGameModel.getMap()[i][j], i, j);
             }
         }
 
@@ -33,26 +33,26 @@ public class SnakeLauncher extends Application {
             switch (code) {
                 case UP:
                 case W:
-                    if (newGameModel.direction != SnakeDirection.DOWN) {
-                        newGameModel.direction = SnakeDirection.UP;
+                    if (newGameModel.getDirection() != SnakeDirection.DOWN) {
+                        newGameModel.setDirection(SnakeDirection.UP);
                     }
                     break;
                 case LEFT:
                 case A:
-                    if (newGameModel.direction != SnakeDirection.RIGHT) {
-                        newGameModel.direction = SnakeDirection.LEFT;
+                    if (newGameModel.getDirection() != SnakeDirection.RIGHT) {
+                        newGameModel.setDirection(SnakeDirection.LEFT);
                     }
                     break;
                 case RIGHT:
                 case S:
-                    if (newGameModel.direction != SnakeDirection.LEFT) {
-                        newGameModel.direction = SnakeDirection.RIGHT;
+                    if (newGameModel.getDirection() != SnakeDirection.LEFT) {
+                        newGameModel.setDirection(SnakeDirection.RIGHT);
                     }
                     break;
                 case DOWN:
                 case D:
-                    if (newGameModel.direction != SnakeDirection.UP) {
-                        newGameModel.direction = SnakeDirection.DOWN;
+                    if (newGameModel.getDirection() != SnakeDirection.UP) {
+                        newGameModel.setDirection(SnakeDirection.DOWN);
                     }
                     break;
                 default:
@@ -66,7 +66,7 @@ public class SnakeLauncher extends Application {
                         new Duration(200), (javafx.event.ActionEvent t) -> {
                             if (newGameModel.updateMap()) {
                                 timeline.stop();
-                                final Text text = new Text("You Got " + newGameModel.snake.size() + " points");
+                                final Text text = new Text("You Got " + newGameModel.getSnake().size() + " points");
                                 final Button button = new Button("Reset");
                                 final Stage stage1 = new Stage();
                                 button.setOnAction(a -> {

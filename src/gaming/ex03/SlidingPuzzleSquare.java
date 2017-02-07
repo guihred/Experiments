@@ -10,10 +10,11 @@ import javafx.scene.text.Text;
 public class SlidingPuzzleSquare extends Region {
 
     
-    final IntegerProperty number;
-    Text text = new Text();
+	private final IntegerProperty number;
+	private StackPane stackPane;
+	private Text text = new Text();
 
-    public SlidingPuzzleSquare(int number) {
+	public SlidingPuzzleSquare(int number) {
         this.number = new SimpleIntegerProperty(number);
         setPadding(new Insets(10));
         if (isEmpty()) {
@@ -24,19 +25,6 @@ public class SlidingPuzzleSquare extends Region {
         }
         setPrefSize(50, 50);
 
-    }
-
-    public final boolean isEmpty() {
-        return number.get() == SlidingPuzzleModel.MAP_SIZE * SlidingPuzzleModel.MAP_SIZE;
-    }
-
-    StackPane stackPane;
-
-    StackPane getStack() {
-        if (stackPane == null) {
-			stackPane = new StackPane(this, text);
-		}
-        return stackPane;
     }
 
     @Override
@@ -54,8 +42,23 @@ public class SlidingPuzzleSquare extends Region {
 
     }
 
+    public Integer getNumber() {
+		return number.get();
+	}
+
+    StackPane getStack() {
+        if (stackPane == null) {
+			stackPane = new StackPane(this, text);
+		}
+        return stackPane;
+    }
+
     @Override
     public int hashCode() {
         return number.get();
+    }
+
+    public final boolean isEmpty() {
+        return number.get() == SlidingPuzzleModel.MAP_SIZE * SlidingPuzzleModel.MAP_SIZE;
     }
 }

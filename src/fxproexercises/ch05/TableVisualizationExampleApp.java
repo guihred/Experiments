@@ -196,7 +196,7 @@ public class TableVisualizationExampleApp extends Application {
 		webViewTab.setContent(webView);
 		webViewTab.setClosable(false);
 		webViewTab.setOnSelectionChanged((Event evt) -> {
-			String randomWebSite = model.getRandomWebSite();
+			String randomWebSite = TableVisualizationModel.getRandomWebSite();
 			if (webViewTab.isSelected()) {
 				webView.getEngine().load(randomWebSite);
 				System.out.println("WebView tab is selected, loading: " + randomWebSite);
@@ -222,7 +222,7 @@ public class TableVisualizationExampleApp extends Application {
 		phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
 		phoneNumberColumn.setPrefWidth(150);
 
-		TableView<Person> table = new TableView<>(model.getTeamMembers());
+		TableView<Person> table = new TableView<>(TableVisualizationModel.getTeamMembers());
 		table.getColumns().addAll(Arrays.asList(firstNameColumn, lastNameColumn, phoneNumberColumn));
 		table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			Person selectedPerson = newValue;
@@ -260,15 +260,15 @@ public class TableVisualizationExampleApp extends Application {
 		treeView.setShowRoot(false);
 		treeView.setEditable(false);
 
-		ListView<String> listView = new ListView<>(model.listViewItems);
+		ListView<String> listView = new ListView<>(TableVisualizationModel.listViewItems);
 		SplitPane splitPane = new SplitPane(treeView, listView);
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			TreeItem<String> treeItem = newValue;
 			if (newValue != null && treeItem.isLeaf()) {
-				model.listViewItems.clear();
+				TableVisualizationModel.listViewItems.clear();
 				for (int i = 1; i <= 10000; i++) {
-					model.listViewItems.add(treeItem.getValue() + " " + i);
+					TableVisualizationModel.listViewItems.add(treeItem.getValue() + " " + i);
 				}
 			}
 		});
@@ -276,7 +276,7 @@ public class TableVisualizationExampleApp extends Application {
 	}
 
 	Node createScrollMiscDemoNode() {
-		ChoiceBox<String> choiceBox = new ChoiceBox<>(model.choiceBoxItems);
+		ChoiceBox<String> choiceBox = new ChoiceBox<>(TableVisualizationModel.choiceBoxItems);
 		choiceBox.getSelectionModel().selectFirst();
 		choiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue + " chosen in ChoiceBox"));
 		final TextField textField = new TextField();
@@ -302,19 +302,19 @@ public class TableVisualizationExampleApp extends Application {
 		Slider slider = new Slider();
 		slider.setPrefWidth(200);
 		slider.setMin(-1);
-		slider.setMax(model.maxRpm);
-		slider.valueProperty().bindBidirectional(model.rpm);
+		slider.setMax(TableVisualizationModel.maxRpm);
+		slider.valueProperty().bindBidirectional(TableVisualizationModel.rpm);
 		ProgressIndicator progressIndicator = new ProgressIndicator();
 		progressIndicator.setPrefWidth(200);
-		progressIndicator.progressProperty().bind(model.rpm.divide(model.maxRpm));
+		progressIndicator.progressProperty().bind(TableVisualizationModel.rpm.divide(TableVisualizationModel.maxRpm));
 		ProgressBar progressBar = new ProgressBar();
 		progressBar.setPrefWidth(200);
-		progressBar.progressProperty().bind(model.kph.divide(model.maxKph));
+		progressBar.progressProperty().bind(TableVisualizationModel.kph.divide(TableVisualizationModel.maxKph));
 		ScrollBar scrollBar = new ScrollBar();
 		scrollBar.setPrefWidth(200);
 		scrollBar.setMin(-1);
-		scrollBar.setMax(model.maxKph);
-		scrollBar.valueProperty().bindBidirectional(model.kph);
+		scrollBar.setMax(TableVisualizationModel.maxKph);
+		scrollBar.valueProperty().bindBidirectional(TableVisualizationModel.kph);
 		CheckBox checkBox = new CheckBox("CheckBox");
 		checkBox.setOnAction((ActionEvent e) -> {
 			System.out.print(e.getEventType() + " occurred on CheckBox");
