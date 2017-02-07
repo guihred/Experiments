@@ -34,19 +34,22 @@ public class MinesweeperSquare extends Region {
         this.j = j;
         setPadding(new Insets(10));
         setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
-        styleProperty().bind(Bindings.when(state.isEqualTo(State.HIDDEN))
-                .then("-fx-background-color: burlywood;")
-                .otherwise("-fx-background-color: white;"));
+		styleProperty().bind(
 
-        setEffect(new InnerShadow());
+				Bindings.when(state.isEqualTo(State.HIDDEN))
+                .then("-fx-background-color: burlywood;")
+						.otherwise("-fx-background-color: white;")
+						.concat("-fx-border-color: black;-fx-border-width: 1;"));
+
+		setEffect(new InnerShadow());
         setPrefSize(50, 50);
     }
 
     Shape getFinalShape() {
         if (shape == null) {
-            shape = this.minesweeperImage.get().getShape(num);
-            Color color = (minesweeperImage.get().equals(MinesweeperImage.BOMB))
-                    ? Color.RED : (minesweeperImage.get().equals(MinesweeperImage.NUMBER)) ? Color.BLUE : Color.WHITE;
+            shape = minesweeperImage.get().getShape(num);
+            Color color = minesweeperImage.get().equals(MinesweeperImage.BOMB)
+                    ? Color.RED : minesweeperImage.get().equals(MinesweeperImage.NUMBER) ? Color.BLUE : Color.WHITE;
 
             shape.fillProperty().bind(Bindings.when(state.isEqualTo(State.HIDDEN)).then(Color.TRANSPARENT).otherwise(color));
 

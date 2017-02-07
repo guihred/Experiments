@@ -21,7 +21,7 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-import others.SimplePerspectiveTransformBuilder;
+import simplebuilder.SimplePerspectiveTransformBuilder;
 
 /**
  * 

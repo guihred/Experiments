@@ -150,7 +150,7 @@ class Vertex {
 
 	public Vertex(int id) {
 		this.id = id;
-		name = "" + (char) ('A' + id - 1);
+		name = Character.toString((char) ('A' + id - 1));
 	}
 
 	public Vertex(int id, String name) {

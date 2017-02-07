@@ -42,7 +42,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import others.SimpleTimelineBuilder;
+import simplebuilder.SimpleTimelineBuilder;
 
 public class XylophoneApp extends Application {
 

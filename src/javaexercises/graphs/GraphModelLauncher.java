@@ -1,7 +1,7 @@
 package javaexercises.graphs;
 
-import static others.CommonsFX.newButton;
-import static others.CommonsFX.newSelect;
+import static simplebuilder.CommonsFX.newButton;
+import static simplebuilder.CommonsFX.newSelect;
 
 import java.io.IOException;
 import java.nio.file.Files;

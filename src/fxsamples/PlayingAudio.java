@@ -24,7 +24,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import others.SimpleCircleBuilder;
+import simplebuilder.SimpleCircleBuilder;
 
 /**
  * Chapter 7 Playing Audio using JavaFX media API.

@@ -24,6 +24,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import others.*;
+import simplebuilder.*;
 
 public class CenterUsingBind extends Application {
 
@@ -60,11 +61,11 @@ public class CenterUsingBind extends Application {
 		StackPane stack = new StackPane(background, flowPane);
 		stack.setPrefHeight(1000);
 		InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
-        background.effectProperty().bind(Bindings.when(model.turn.isEqualTo(owner))
+        background.effectProperty().bind(Bindings.when(model.getTurn().isEqualTo(owner))
                 .then(innerShadow)
                 .otherwise((InnerShadow) null));
         DropShadow dropShadow = new DropShadow(10, Color.DODGERBLUE);
-        piece.effectProperty().bind(Bindings.when(model.turn.isEqualTo(owner))
+        piece.effectProperty().bind(Bindings.when(model.getTurn().isEqualTo(owner))
                 .then(dropShadow)
                 .otherwise((DropShadow) null));
         score.textProperty().bind(model.getScore(owner).asString());

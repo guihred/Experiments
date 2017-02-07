@@ -11,7 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public abstract class Cell extends Pane {
+public class Cell extends Pane {
 
 	String cellId;
 	protected Text text;
@@ -27,8 +27,9 @@ public abstract class Cell extends Pane {
 		text = new Text(cellId);
 	}
 
-	public abstract CellType getType();
-
+	public CellType getType() {
+		return null;
+	}
 	public void setColor(Color color) {
 		this.color.set(color);
 	}

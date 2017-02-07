@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import others.SimpleRectangleBuilder;
+import simplebuilder.SimpleRectangleBuilder;
 
 /**
  * @author Jasper Potts

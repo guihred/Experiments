@@ -22,7 +22,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
-import others.SimpleRotateBuilder;
+import simplebuilder.SimpleRotateBuilder;
 
 /**
  *

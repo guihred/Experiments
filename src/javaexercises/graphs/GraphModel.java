@@ -24,13 +24,7 @@ public class GraphModel {
 
 	public GraphModel() {
 
-		graphParent = new Cell("_ROOT_") {
-			@Override
-			public CellType getType() {
-				return null;
-			}
-		};
-
+		graphParent = new Cell("_ROOT_");
 		// clear model, create lists
 		clear();
 	}

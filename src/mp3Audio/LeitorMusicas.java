@@ -130,7 +130,7 @@ public class LeitorMusicas {
 
 	private static String trySetTrack(String track, ID3V2_3_0Tag leTag) {
 		try {
-			return "" + leTag.getTrackNumber();
+			return Integer.toString(leTag.getTrackNumber());
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
@@ -140,10 +140,10 @@ public class LeitorMusicas {
 	private static String trySetYear(String y, ID3Tag leTag) {
 		try {
 			if (leTag instanceof ID3V1_0Tag) {
-				return "" + ((ID3V1_0Tag) leTag).getYear();
+				return ((ID3V1_0Tag) leTag).getYear();
 			}
 			if (leTag instanceof ID3V2_3_0Tag) {
-				return "" + ((ID3V2_3_0Tag) leTag).getYear();
+				return Integer.toString(((ID3V2_3_0Tag) leTag).getYear());
 			}
 
 		} catch (Exception e) {

@@ -118,13 +118,11 @@ public class SolitaireModel {
 			if (Stream.of(simpleStacks).anyMatch(s -> s == node)) {
 				ObservableList<SolitaireCard> cards = cardStack.getCards();
 				List<SolitaireCard> lastCards = new ArrayList<>();
-				for (SolitaireCard solitaireCard : cards) {
-					if (solitaireCard.isShown()) {
-						if (solitaireCard.getLayoutY() < event.getY()) {
-							lastCards.clear();
-						}
-						lastCards.add(solitaireCard);
+				for (SolitaireCard solitaireCard : cards.filtered(SolitaireCard::isShown)) {
+					if (solitaireCard.getLayoutY() < event.getY()) {
+						lastCards.clear();
 					}
+					lastCards.add(solitaireCard);
 				}
 				dragContext.cards = null;
 				dragContext.stack = cardStack;

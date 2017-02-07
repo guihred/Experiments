@@ -52,21 +52,7 @@ public class MinesweeperModel {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
                 if (map[i][j].minesweeperImage.get() == MinesweeperImage.BLANK) {
-                    int num = 0;
-                    for (int k = -1; k <= 1; k++) {
-                        for (int l = -1; l <= 1; l++) {
-                            if (l == 0 && k == 0) {
-                                continue;
-                            }
-                            if (i + k >= 0 && i + k < MAP_WIDTH) {
-                                if (j + l >= 0 && j + l < MAP_HEIGHT) {
-                                    if (map[i + k][j + l].minesweeperImage.get().equals(MinesweeperImage.BOMB)) {
-                                        num++;
-                                    }
-                                }
-                            }
-                        }
-                    }
+					int num = countBombsAround(i, j);
                     if (num != 0) {
                         map[i][j].num = num;
                         map[i][j].minesweeperImage.set(MinesweeperImage.NUMBER);
@@ -79,6 +65,25 @@ public class MinesweeperModel {
         startTime = System.currentTimeMillis();
 
     }
+
+	private int countBombsAround(int i, int j) {
+		int num = 0;
+		for (int k = -1; k <= 1; k++) {
+		    for (int l = -1; l <= 1; l++) {
+		        if (l == 0 && k == 0) {
+		            continue;
+		        }
+		        if (i + k >= 0 && i + k < MAP_WIDTH) {
+		            if (j + l >= 0 && j + l < MAP_HEIGHT) {
+		                if (map[i + k][j + l].minesweeperImage.get().equals(MinesweeperImage.BOMB)) {
+		                    num++;
+		                }
+		            }
+		        }
+		    }
+		}
+		return num;
+	}
 
     final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
         EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> {
@@ -156,21 +161,7 @@ public class MinesweeperModel {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
                 if (map[i][j].minesweeperImage.get() == MinesweeperImage.BLANK) {
-                    int num = 0;
-                    for (int k = -1; k <= 1; k++) {
-                        for (int l = -1; l <= 1; l++) {
-                            if (l == 0 && k == 0) {
-                                continue;
-                            }
-                            if (i + k >= 0 && i + k < MAP_WIDTH) {
-                                if (j + l >= 0 && j + l < MAP_HEIGHT) {
-                                    if (map[i + k][j + l].minesweeperImage.get().equals(MinesweeperImage.BOMB)) {
-                                        num++;
-                                    }
-                                }
-                            }
-                        }
-                    }
+					int num = countBombsAround(i, j);
                     if (num != 0) {
                         map[i][j].num = num;
                         map[i][j].minesweeperImage.set(MinesweeperImage.NUMBER);
@@ -197,15 +188,13 @@ public class MinesweeperModel {
                 if (l == 0 && k == 0) {
                     continue;
                 }
-                if (i + k >= 0 && i + k < MAP_WIDTH) {
-                    if (j + l >= 0 && j + l < MAP_HEIGHT) {
-                        if (map[i + k][j + l].minesweeperImage.get().equals(MinesweeperImage.BLANK)
-                                && map[i + k][j + l].state.get().equals(MinesweeperSquare.State.HIDDEN)) {
-                            showNeighbours(i + k, j + l);
-                        }
-                        map[i + k][j + l].state.set(MinesweeperSquare.State.SHOWN);
-                    }
-                }
+				if (i + k >= 0 && i + k < MAP_WIDTH && j + l >= 0 && j + l < MAP_HEIGHT) {
+					if (map[i + k][j + l].minesweeperImage.get().equals(MinesweeperImage.BLANK)
+							&& map[i + k][j + l].state.get().equals(MinesweeperSquare.State.HIDDEN)) {
+						showNeighbours(i + k, j + l);
+					}
+					map[i + k][j + l].state.set(MinesweeperSquare.State.SHOWN);
+				}
             }
         }
 

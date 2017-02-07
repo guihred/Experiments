@@ -19,7 +19,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import others.SimpleTimelineBuilder;
+import simplebuilder.SimpleTimelineBuilder;
 
 /**
  * MoleculeSampleApp

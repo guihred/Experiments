@@ -14,8 +14,8 @@ import javafx.scene.effect.Lighting;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.util.Duration;
-import others.SimpleFadeTransitionBuilder;
-import others.SimpleRegionBuilder;
+import simplebuilder.SimpleFadeTransitionBuilder;
+import simplebuilder.SimpleRegionBuilder;
 
 public class ReversiSquare extends Region {
     private static ReversiModel model = ReversiModel.getInstance();

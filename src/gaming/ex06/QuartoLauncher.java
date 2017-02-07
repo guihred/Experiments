@@ -20,7 +20,7 @@ import javafx.scene.shape.Shape3D;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import others.SimpleCircleBuilder;
+import simplebuilder.SimpleCircleBuilder;
 
 public class QuartoLauncher extends Application {
 

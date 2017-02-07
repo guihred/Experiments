@@ -11,7 +11,7 @@ import javafx.beans.property.SimpleObjectProperty;
 public class ReversiModel {
 
     public static final int BOARD_SIZE = 8;
-    public ObjectProperty<Owner> turn = new SimpleObjectProperty<>(Owner.BLACK);
+    private ObjectProperty<Owner> turn = new SimpleObjectProperty<>(Owner.BLACK);
 	@SuppressWarnings("unchecked")
 	public ObjectProperty<Owner>[][] board = new ObjectProperty[BOARD_SIZE][BOARD_SIZE];
 
@@ -136,8 +136,15 @@ public class ReversiModel {
         };
     }
 
-    private static class ReversiModelHolder {
+    public ObjectProperty<Owner> getTurn() {
+		return turn;
+	}
 
+	public void setTurn(ObjectProperty<Owner> turn) {
+		this.turn = turn;
+	}
+
+	private static class ReversiModelHolder {
         private static final ReversiModel INSTANCE = new ReversiModel();
     }
 }

@@ -11,8 +11,8 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import others.SimpleLineBuilder;
-import others.SimpleRectangleBuilder;
+import simplebuilder.SimpleLineBuilder;
+import simplebuilder.SimpleRectangleBuilder;
 
 public class DrawingColors extends Application {
 	public static void main(String[] args) {

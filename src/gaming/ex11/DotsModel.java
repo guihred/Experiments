@@ -93,70 +93,68 @@ public class DotsModel {
 				}
 			} else {
 				currentPlayer = (currentPlayer + 1) % jogadores.length;
-				if (currentPlayer == 0) {
-					int nplayed = 0;
-					while (currentPlayer == 0) {
-						List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = getMelhorPossibilidades();
+				int nplayed = 0;
+				while (currentPlayer == 0) {
+					List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = getMelhorPossibilidades();
 
-						possibilidades = possibilidades.isEmpty() ? getMelhorPossibilidades2() : possibilidades;
-						possibilidades = possibilidades.isEmpty() ? getMelhorPossibilidades3() : possibilidades;
+					possibilidades = possibilidades.isEmpty() ? getMelhorPossibilidades2() : possibilidades;
+					possibilidades = possibilidades.isEmpty() ? getMelhorPossibilidades3() : possibilidades;
 
-						possibilidades = possibilidades.isEmpty() ? getPossibilidades() : possibilidades;
-						if (possibilidades.isEmpty()) {
-							currentPlayer = (currentPlayer + 1) % jogadores.length;
-							break;
-						}
-						final Map.Entry<DotsSquare, DotsSquare> get = possibilidades
-								.get(random.nextInt(possibilidades.size()));
-						final Double[] center = get.getKey().getCenter();
-						final Double[] center2 = get.getValue().getCenter();
-						final Line line2 = new Line(center[0], center[1], center[0], center[1]);
-						gridPane.getChildren().add(line2);
-
-						get.getKey().addAdj(get.getValue());
-
-						Set<Set<DotsSquare>> check2 = get.getKey().check();
-						final Set<Set<DotsSquare>> collect2 = points.values().stream().flatMap(a -> a.stream())
-								.collect(Collectors.toSet());
-						final List<Set<DotsSquare>> collect3 = check2.stream().filter(s -> !collect2.contains(s))
-								.collect(Collectors.toList());
-
-						final KeyFrame keyFrame = new KeyFrame(Duration.seconds(nplayed * 0.5),
-								new KeyValue(line2.endXProperty(), center[0]));
-						final KeyFrame keyFrame1 = new KeyFrame(Duration.seconds(0.5 + nplayed * 0.5),
-								new KeyValue(line2.endXProperty(), center2[0]));
-
-						final Timeline timeline = new Timeline(keyFrame, keyFrame1,
-								new KeyFrame(Duration.seconds(nplayed * 0.5),
-										new KeyValue(line2.endYProperty(), center[1])),
-								new KeyFrame(Duration.seconds(0.5 + nplayed * 0.5),
-										new KeyValue(line2.endYProperty(), center2[1])));
-						nplayed++;
-						timeline.play();
-						if (!collect3.isEmpty()) {
-							points.get(jogadores[currentPlayer]).addAll(collect3);
-							for (Set<DotsSquare> q : collect3) {
-								final double[] toArray = q.stream().flatMap(a -> Stream.of(a.getCenter()))
-										.mapToDouble(Double::valueOf).toArray();
-								final Polygon polygon = new Polygon(toArray);
-								polygon.setFill(colors[currentPlayer]);
-
-								if (timeline.getOnFinished() == null) {
-									timeline.setOnFinished(f -> gridPane.getChildren().add(polygon));
-								} else {
-									final EventHandler<ActionEvent> onFinished = timeline.getOnFinished();
-									timeline.setOnFinished(f -> {
-										onFinished.handle(f);
-										gridPane.getChildren().add(polygon);
-									});
-								}
-							}
-						} else {
-							currentPlayer = (currentPlayer + 1) % jogadores.length;
-						}
+					possibilidades = possibilidades.isEmpty() ? getPossibilidades() : possibilidades;
+					if (possibilidades.isEmpty()) {
+						currentPlayer = (currentPlayer + 1) % jogadores.length;
+						break;
 					}
+					final Map.Entry<DotsSquare, DotsSquare> get = possibilidades
+							.get(random.nextInt(possibilidades.size()));
+					final Double[] center = get.getKey().getCenter();
+					final Double[] center2 = get.getValue().getCenter();
+					final Line line2 = new Line(center[0], center[1], center[0], center[1]);
+					gridPane.getChildren().add(line2);
 
+					get.getKey().addAdj(get.getValue());
+
+					Set<Set<DotsSquare>> check2 = get.getKey().check();
+					final Set<Set<DotsSquare>> collect2 = points.values().stream().flatMap(a -> a.stream())
+							.collect(Collectors.toSet());
+					final List<Set<DotsSquare>> collect3 = check2.stream().filter(s -> !collect2.contains(s))
+							.collect(Collectors.toList());
+
+					final KeyFrame keyFrame = new KeyFrame(Duration.seconds(nplayed * 0.5),
+							new KeyValue(line2.endXProperty(), center[0]));
+					final KeyFrame keyFrame1 = new KeyFrame(Duration.seconds(0.5 + nplayed * 0.5),
+							new KeyValue(line2.endXProperty(), center2[0]));
+
+					final Timeline timeline = new Timeline(keyFrame, keyFrame1,
+							new KeyFrame(Duration.seconds(nplayed * 0.5),
+									new KeyValue(line2.endYProperty(), center[1])),
+							new KeyFrame(Duration.seconds(0.5 + nplayed * 0.5),
+									new KeyValue(line2.endYProperty(), center2[1])));
+					nplayed++;
+					timeline.play();
+					if (!collect3.isEmpty()) {
+						points.get(jogadores[currentPlayer]).addAll(collect3);
+						for (Set<DotsSquare> q : collect3) {
+							final double[] toArray = q.stream().flatMap(a -> Stream.of(a.getCenter()))
+									.mapToDouble(Double::valueOf).toArray();
+							final Polygon polygon = new Polygon(toArray);
+							polygon.setFill(colors[currentPlayer]);
+
+							if (timeline.getOnFinished() == null) {
+								timeline.setOnFinished(f -> gridPane.getChildren().add(polygon));
+							} else {
+								final EventHandler<ActionEvent> onFinished = timeline.getOnFinished();
+								timeline.setOnFinished(f -> {
+									onFinished.handle(f);
+									gridPane.getChildren().add(polygon);
+								});
+							}
+						}
+					} else {
+						currentPlayer = (currentPlayer + 1) % jogadores.length;
+					}
 				}
+
 			}
 
 		}

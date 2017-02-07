@@ -42,17 +42,17 @@ class Crypto {
 
 	public String getCipherText() {
 		List<String> plaintextSegments = getPlaintextSegments();
-		String a = "";
+		StringBuilder a = new StringBuilder();
 		int squareSize = getSquareSize();
 		for (int i = 0; i < squareSize; i++) {
 			for (String string : plaintextSegments) {
 				if (i < string.length()) {
-					a += string.charAt(i);
+					a.append(Character.toString(string.charAt(i)));
 				}
 			}
 		}
 
-		return a;
+		return a.toString();
 	}
 
 	public int getSquareSize() {
