@@ -1,8 +1,7 @@
 package gaming.ex12;
 
-import gaming.ex12.resources.ImageResource;
-
 import gaming.ex12.Player.Direction;
+import gaming.ex12.resources.ImageResource;
 import javafx.scene.canvas.GraphicsContext;
 
 class RunAnimation {
@@ -12,7 +11,7 @@ class RunAnimation {
 	private int offsetY = 0;
 	private int columns;
 	private int count;
-	boolean debug;
+	private boolean debug;
 
 	public RunAnimation(ImageResource image, int index, int count) {
 		this.image = image;

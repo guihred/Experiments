@@ -32,7 +32,7 @@ import javafx.stage.Stage;
 public class Labyrinth3DWallTexture extends Application {
 	private class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
-		int direction[];// EAST, WEST, NORTH, SOUTH
+		private int direction[];// EAST, WEST, NORTH, SOUTH
 
 		public MovimentacaoAleatoria(MeshView... animais) {
 			this.animais = animais;
@@ -242,7 +242,7 @@ public class Labyrinth3DWallTexture extends Application {
 
 	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
 
-	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 	public static final Image OOZE_IMAGE = new Image(Labyrinth3DWallTexture.class.getResource("ooze.jpg").toString());
 	public static final Random random = new Random();
 
@@ -261,7 +261,7 @@ public class Labyrinth3DWallTexture extends Application {
 
 	private PerspectiveCamera camera;
 
-	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
+	private LabyrinthWall[][] labirynthWalls = new LabyrinthWall[mapa.length][mapa[0].length];
 	private MovimentacaoAleatoria movimentacao;
 
 	private Sphere checkBalls(Bounds boundsInParent) {
@@ -274,7 +274,7 @@ public class Labyrinth3DWallTexture extends Application {
 	private boolean checkColision(Bounds boundsInParent) {
 		Stream<Bounds> walls = Stream.of(labirynthWalls)
 				.flatMap(l -> Stream.of(l)).parallel()
-				.map(Cube::getBoundsInParent);
+				.map(LabyrinthWall::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
 
@@ -282,11 +282,11 @@ public class Labyrinth3DWallTexture extends Application {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube wall = new Cube(SIZE, Color.BLUE, WALL_IMAGE, WALL_IMAGE2);
+				LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE, WALL_IMAGE, WALL_IMAGE2);
 				wall.setTranslateX(i * SIZE);
 				wall.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {
-					wall.ry.setAngle(90);
+					wall.getRy().setAngle(90);
 				}
 				labirynthWalls[i][j] = wall;
 				root.getChildren().add(wall);
@@ -357,11 +357,11 @@ public class Labyrinth3DWallTexture extends Application {
 		// });
 		// root.getChildren().add(rectangle);
 
-		PointLight sun = new PointLight(Color.rgb(125, 125, 125));
-		sun.translateXProperty().bind(camera.translateXProperty());
-		sun.translateYProperty().bind(camera.translateYProperty());
-		sun.translateZProperty().bind(camera.translateZProperty());
-		root.getChildren().add(sun);
+		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+		light.translateXProperty().bind(camera.translateXProperty());
+		light.translateYProperty().bind(camera.translateYProperty());
+		light.translateZProperty().bind(camera.translateZProperty());
+		root.getChildren().add(light);
 
 		MeshView[] fantasmas = { generateGhost(MESH_GHOST, Color.AQUAMARINE),
 				generateGhost(MESH_GHOST, Color.BROWN),

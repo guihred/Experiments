@@ -24,28 +24,17 @@ public class VigenereXORCipher {
 			.put('v' + 0, 0.978D).put('k' + 0, 0.772D).put('j' + 0, 0.153D).put('x' + 0, 0.150D).put('q' + 0, 0.095D)
 			.put('z' + 0, 0.074D)
 		.build();
-	public static void main(String[] args) {
-		try {
-		VigenereXORCipher vigenereCypher = new VigenereXORCipher();
-		// long findKeySize = vigenereCypher.findKeySize();
-			vigenereCypher.findKey(7L);
-		} catch (IOException e) {
-			LOGGER.error("", e);
-		}
-		// out.println(findKeySize);
-	}
-	
 	private int current = 0;
-
+	
 	// 0, 0, 140, 181, 87, 0, 53
 	private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+
 	private List<Integer>[] keysList = Stream.generate(() -> new ArrayList<>()).limit(7).toArray(List[]::new);
+	private PrintStream out;
 
 	// new List[] { new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new
 	// ArrayList<>(), new ArrayList<>(),
 	// new ArrayList<>(), new ArrayList<>() };
-
-	private PrintStream out;
 
 	public VigenereXORCipher() {
 		out = System.out;
@@ -71,6 +60,7 @@ public class VigenereXORCipher {
 		return s.chars().map(i -> (i ^ k.charAt(current++ % length)) % 256).mapToObj(i -> Character.valueOf((char) i)).map(Object::toString)
 				.collect(Collectors.joining());
 	}
+
 	public String encrypt(int[] k, List<Integer> s) {
 		current = 0;
 		int length = k.length;
@@ -83,7 +73,6 @@ public class VigenereXORCipher {
 		return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
 				.map(c -> Character.toString(c)).collect(Collectors.joining());
 	}
-
 	public void findKey(long keySize) throws IOException {
 		// keys = new char[Long.valueOf(keySize).intValue()];
 		String line = Files.readAllLines(Paths.get("ctext.txt")).get(0);
@@ -139,6 +128,7 @@ public class VigenereXORCipher {
 		out.println(Stream.of(keysList).map(l -> "" + current++ + l + "\n").collect(Collectors.toList()));
 
 	}
+
 	public long findKeySize() throws IOException {
 		String line = Files.readAllLines(Paths.get("ctext.txt")).get(0);
 		String[] split = line.split("(?<=\\G..)");
@@ -164,6 +154,16 @@ public class VigenereXORCipher {
 
 		out.println(collect);
 		return bestKeySize;
+	}
+	public static void main(String[] args) {
+		try {
+		VigenereXORCipher vigenereCypher = new VigenereXORCipher();
+		// long findKeySize = vigenereCypher.findKeySize();
+			vigenereCypher.findKey(7L);
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
+		// out.println(findKeySize);
 	}
 
 }

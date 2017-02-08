@@ -5,7 +5,7 @@ import javafx.scene.control.ToggleGroup;
 
 public class SimpleRadioButtonBuilder extends SimpleRegionBuilder<RadioButton, SimpleRadioButtonBuilder> {
 
-	RadioButton radioButton;
+	protected RadioButton radioButton;
 
 	public SimpleRadioButtonBuilder() {
 		super(new RadioButton());

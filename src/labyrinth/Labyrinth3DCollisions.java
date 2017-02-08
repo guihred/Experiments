@@ -16,25 +16,21 @@ public class Labyrinth3DCollisions extends Application {
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" }, };
 	private static final int SIZE = 50;
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	private PerspectiveCamera camera;
-	private final double cameraModifier = 50.0;
 
+	private final double cameraModifier = 50.0;
 	private final double cameraQuantity = 5.0;
 
-	Color color = Color.RED;
-	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
+	private Color color = Color.RED;
+
+	private LabyrinthWall[][] cubes = new LabyrinthWall[mapa.length][mapa[0].length];
 	private int i;
 	private int j;
-
 	boolean checkColision() {
 
 		Bounds boundsInParent = camera.getBoundsInParent();
 		return Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(Cube::getBoundsInParent)
+				.map(LabyrinthWall::getBoundsInParent)
 				.anyMatch(b -> b.intersects(boundsInParent));
 	}
 
@@ -42,11 +38,11 @@ public class Labyrinth3DCollisions extends Application {
 		for (int k = mapa.length - 1; k >= 0; k--) {
 			for (int l = mapa[k].length - 1; l >= 0; l--) {
 				String string = mapa[k][l];
-				Cube rectangle = new Cube(SIZE, Color.BLUE);
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 				rectangle.setTranslateX(k * SIZE);
 				rectangle.setTranslateZ(l * SIZE);
 				if ("_".equals(string)) {
-					rectangle.ry.setAngle(90);
+					rectangle.getRy().setAngle(90);
 				}
 				cubes[k][l] = rectangle;
 
@@ -71,19 +67,19 @@ public class Labyrinth3DCollisions extends Application {
 		camera.setTranslateZ(-100);
 		subScene.setCamera(camera);
 
-		PointLight sun = new PointLight(Color.rgb(125, 125, 125));
-		sun.translateXProperty().bind(camera.translateXProperty());
-		sun.translateYProperty().bind(camera.translateYProperty());
-		sun.translateZProperty().bind(camera.translateZProperty());
-		root.getChildren().add(sun);
+		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+		light.translateXProperty().bind(camera.translateXProperty());
+		light.translateYProperty().bind(camera.translateYProperty());
+		light.translateZProperty().bind(camera.translateZProperty());
+		root.getChildren().add(light);
 		Scene sc = new Scene(new Group(subScene));
 		sc.setOnMouseClicked(event -> {
 			String string = mapa[i][j];
-			Cube rectangle = new Cube(SIZE, color);
+			LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
 			rectangle.setTranslateX(i * SIZE);
 			rectangle.setTranslateZ(j * SIZE);
 			if ("_".equals(string)) {
-				rectangle.ry.setAngle(90);
+				rectangle.getRy().setAngle(90);
 			}
 			root.getChildren().add(rectangle);
 			j++;
@@ -167,6 +163,10 @@ public class Labyrinth3DCollisions extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 
 }

@@ -7,118 +7,22 @@ import java.util.stream.Collectors;
 class Vertex {
 	public static final boolean NAMED = true;
 
-	public static void chain(String nome1, String nome2, List<Vertex> vertices) {
-		Vertex v1 = vertices.stream().filter(v -> v.name.equals(nome1)).findFirst().get();
-		Vertex v2 = vertices.stream().filter(v -> v.name.equals(nome2)).findFirst().get();
-		for (Vertex v : vertices) {
-			v.dijkstra(vertices);
-		}
-
-		Map<Vertex, Integer> dijkstra = v1.dijkstra(vertices);
-		Set<Vertex> chain = new LinkedHashSet<>();
-		Vertex path = v2;
-		chain.add(path);
-		Integer integer = dijkstra.get(v2);
-		if (integer != null && integer < Integer.MAX_VALUE) {
-			while (path != v1) {
-				path = path.pathTo(v1, vertices);
-				chain.add(path);
-			}
-		}
-		System.out.println(chain.stream().map(v -> v.getName()).sequential().collect(Collectors.joining("->")));
-	}
-
-	static List<Edge> kruskal(List<Vertex> totalVertices) {
-
-		int numVertices = totalVertices.size();
-		List<Edge> totalEdges = totalVertices.stream()
-				.flatMap((Vertex v) -> v.edges.entrySet().stream().map((Entry<Vertex, Integer> e) -> new Edge(v, e.getKey(), e.getValue())))
-				.collect(Collectors.toList());
-		DisjSets ds = new DisjSets(numVertices);
-		PriorityQueue<Edge> pq = new PriorityQueue<>(totalEdges);
-		List<Edge> mst = new ArrayList<>();
-		while (mst.size() != numVertices - 1) {
-			Edge e1 = pq.poll();
-			int uset = ds.find(e1.u.id - 1);
-			int vset = ds.find(e1.v.id - 1);
-			if (uset != vset) {
-				mst.add(e1);
-				ds.union(uset, vset);
-			}
-		}
-		return mst;
-	}
-
-	public static List<Edge> prim(List<Vertex> vertices) {
-		Map<Vertex, Integer> heap = new HashMap<>();
-		Map<Vertex, Vertex> mstHolder = new HashMap<>();
-		for (Vertex v : vertices) {
-			heap.put(v, Integer.MAX_VALUE);
-		}
-
-		while (!heap.isEmpty()) {
-			Entry<Vertex, Integer> minVertex = heap.entrySet().stream().min(Comparator.comparing(Entry<Vertex, Integer>::getValue)).get();
-			heap.remove(minVertex.getKey());
-			Set<Entry<Vertex, Integer>> entrySet = minVertex.getKey().edges.entrySet();
-			for (Entry<Vertex, Integer> edge : entrySet) {
-				if (heap.containsKey(edge.getKey()) && heap.get(edge.getKey()) > edge.getValue()) {
-					heap.put(edge.getKey(), edge.getValue());
-					mstHolder.put(edge.getKey(), minVertex.getKey());
-				}
-			}
-
-		}
-		return mstHolder.entrySet().stream().map(e -> new Edge(e.getValue(), e.getKey(), e.getValue().weight(e.getKey())))
-				.collect(Collectors.toList());
-
-	}
-
-	public static void sortTopology(List<Vertex> vertices) {
-		int counter = 0;
-
-		Queue<Vertex> q = new LinkedList<>();
-		for (Vertex v : vertices) {
-			for (Vertex w : v.adjacents()) {
-				w.indegree++;
-			}
-
-			if (v.indegree == 0) {
-				q.add(v);
-			}
-		}
-		while (!q.isEmpty()) {
-			Vertex v = q.poll();
-			v.topNum = ++counter;
-
-			for (Vertex w : v.adjacents()) {
-				if (--w.indegree == 0) {
-					q.add(w);
-				}
-			}
-
-		}
-		vertices.forEach(v -> System.out.println(v.id + "=" + v.topNum));
-
-		if (counter != vertices.size()) {
-			System.out.println("CYCLE FOUND");
-		}
-	}
-
 	private Map<Vertex, Integer> edges = new HashMap<>();
 
 	final int id;
 
-	String name;
-	Vertex parent;
+	private String name;
 
-	Map<Integer, Vertex> path = new HashMap<>();
+	private Vertex parent;
 
-	public int topNum, indegree;
+	private Map<Integer, Vertex> path = new HashMap<>();
+
+	private int topNum, indegree;
+
 	public Vertex(int id) {
 		this.id = id;
 		name = Character.toString((char) ('A' + id - 1));
 	}
-
 	public Vertex(int id, String name) {
 		this.id = id;
 		this.name = name;
@@ -146,7 +50,6 @@ class Vertex {
 
 		}
 	}
-
 	public void assignNum(Map<Vertex, Integer> num, int c) {
 		int counter = c;
 
@@ -309,5 +212,102 @@ class Vertex {
 			}
 		}
 		return distance;
+	}
+
+	public static void chain(String nome1, String nome2, List<Vertex> vertices) {
+		Vertex v1 = vertices.stream().filter(v -> v.name.equals(nome1)).findFirst().get();
+		Vertex v2 = vertices.stream().filter(v -> v.name.equals(nome2)).findFirst().get();
+		for (Vertex v : vertices) {
+			v.dijkstra(vertices);
+		}
+
+		Map<Vertex, Integer> dijkstra = v1.dijkstra(vertices);
+		Set<Vertex> chain = new LinkedHashSet<>();
+		Vertex path = v2;
+		chain.add(path);
+		Integer integer = dijkstra.get(v2);
+		if (integer != null && integer < Integer.MAX_VALUE) {
+			while (path != v1) {
+				path = path.pathTo(v1, vertices);
+				chain.add(path);
+			}
+		}
+		System.out.println(chain.stream().map(v -> v.getName()).sequential().collect(Collectors.joining("->")));
+	}
+
+	static List<Edge> kruskal(List<Vertex> totalVertices) {
+
+		int numVertices = totalVertices.size();
+		List<Edge> totalEdges = totalVertices.stream()
+				.flatMap((Vertex v) -> v.edges.entrySet().stream().map((Entry<Vertex, Integer> e) -> new Edge(v, e.getKey(), e.getValue())))
+				.collect(Collectors.toList());
+		DisjSets ds = new DisjSets(numVertices);
+		PriorityQueue<Edge> pq = new PriorityQueue<>(totalEdges);
+		List<Edge> mst = new ArrayList<>();
+		while (mst.size() != numVertices - 1) {
+			Edge e1 = pq.poll();
+			int uset = ds.find(e1.getU().id - 1);
+			int vset = ds.find(e1.getV().id - 1);
+			if (uset != vset) {
+				mst.add(e1);
+				ds.union(uset, vset);
+			}
+		}
+		return mst;
+	}
+
+	public static List<Edge> prim(List<Vertex> vertices) {
+		Map<Vertex, Integer> heap = new HashMap<>();
+		Map<Vertex, Vertex> mstHolder = new HashMap<>();
+		for (Vertex v : vertices) {
+			heap.put(v, Integer.MAX_VALUE);
+		}
+
+		while (!heap.isEmpty()) {
+			Entry<Vertex, Integer> minVertex = heap.entrySet().stream().min(Comparator.comparing(Entry<Vertex, Integer>::getValue)).get();
+			heap.remove(minVertex.getKey());
+			Set<Entry<Vertex, Integer>> entrySet = minVertex.getKey().edges.entrySet();
+			for (Entry<Vertex, Integer> edge : entrySet) {
+				if (heap.containsKey(edge.getKey()) && heap.get(edge.getKey()) > edge.getValue()) {
+					heap.put(edge.getKey(), edge.getValue());
+					mstHolder.put(edge.getKey(), minVertex.getKey());
+				}
+			}
+
+		}
+		return mstHolder.entrySet().stream().map(e -> new Edge(e.getValue(), e.getKey(), e.getValue().weight(e.getKey())))
+				.collect(Collectors.toList());
+
+	}
+
+	public static void sortTopology(List<Vertex> vertices) {
+		int counter = 0;
+
+		Queue<Vertex> q = new LinkedList<>();
+		for (Vertex v : vertices) {
+			for (Vertex w : v.adjacents()) {
+				w.indegree++;
+			}
+
+			if (v.indegree == 0) {
+				q.add(v);
+			}
+		}
+		while (!q.isEmpty()) {
+			Vertex v = q.poll();
+			v.topNum = ++counter;
+
+			for (Vertex w : v.adjacents()) {
+				if (--w.indegree == 0) {
+					q.add(w);
+				}
+			}
+
+		}
+		vertices.forEach(v -> System.out.println(v.id + "=" + v.topNum));
+
+		if (counter != vertices.size()) {
+			System.out.println("CYCLE FOUND");
+		}
 	}
 }

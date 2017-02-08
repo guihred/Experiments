@@ -1,6 +1,8 @@
 package javaexercises;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -80,7 +82,7 @@ public class GraphAlgorithms {
 		List<Vertex> graph = Stream.of(words).map(a -> new Vertex(id.incrementAndGet(), a)).collect(Collectors.toList());
 		for (Vertex v : graph) {
 			for (Vertex w : graph) {
-				if (oneCharOff(w.name, v.name)) {
+				if (oneCharOff(w.getName(), v.getName())) {
 					w.put(v, 1);
 					v.put(w, 1);
 				}
@@ -186,10 +188,8 @@ public class GraphAlgorithms {
 		int diffs = 0;
 
 		for (int i = 0; i < word1.length(); i++) {
-			if (word1.charAt(i) != word2.charAt(i)) {
-				if (++diffs > 1) {
-					return false;
-				}
+			if (word1.charAt(i) != word2.charAt(i) && ++diffs > 1) {
+				return false;
 			}
 		}
 

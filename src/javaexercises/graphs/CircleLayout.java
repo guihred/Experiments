@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class CircleLayout implements Layout {
 
-	Graph graph;
+	private Graph graph;
 
 	public CircleLayout(Graph graph) {
 		this.graph = graph;

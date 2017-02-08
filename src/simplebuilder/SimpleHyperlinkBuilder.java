@@ -6,7 +6,7 @@ import javafx.scene.control.Hyperlink;
 
 public class SimpleHyperlinkBuilder extends SimpleRegionBuilder<Hyperlink, SimpleHyperlinkBuilder> {
 
-	Hyperlink hyperlink;
+	protected Hyperlink hyperlink;
 
 	public SimpleHyperlinkBuilder() {
 		super(new Hyperlink());

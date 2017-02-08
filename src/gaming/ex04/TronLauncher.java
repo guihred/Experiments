@@ -22,7 +22,7 @@ public class TronLauncher extends Application {
         final TronModel newGameModel = new TronModel();
         for (int i = 0; i < TronModel.MAP_SIZE; i++) {
             for (int j = 0; j < TronModel.MAP_SIZE; j++) {
-                gridPane.add(newGameModel.getMap()[i][j], i, j);
+				gridPane.add(newGameModel.getMap()[i][j], i, j);
             }
         }
 

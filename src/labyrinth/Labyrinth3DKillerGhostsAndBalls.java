@@ -1,3 +1,4 @@
+
 package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
@@ -31,7 +32,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 
 	private class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
-		int direction[];// EAST, WEST, NORTH, SOUTH
+		private int direction[];// EAST, WEST, NORTH, SOUTH
 
 		public MovimentacaoAleatoria(MeshView... animais) {
 			this.animais = animais;
@@ -226,28 +227,24 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 			{ "_", "_", "_", "_", "_", "_" },
 
 	};
-	private static final IntegerProperty ghostCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
-
-	private static final Color lightColor = Color.rgb(125, 125, 125);
 	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
-
-	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
-
-	public static final Random random = new Random();
+	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 
 	private static final int SIZE = 60;
-
-	public static void main(String[] args) {
-		launch(args);
-	}
 
 	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 
 	private PerspectiveCamera camera;
 
-	private Cube[][] labirynthWalls = new Cube[mapa.length][mapa[0].length];
+	private final IntegerProperty ghostCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
+
+	private LabyrinthWall[][] labirynthWalls = new LabyrinthWall[mapa.length][mapa[0].length];
+
+	private final Color lightColor = Color.rgb(125, 125, 125);
+
 	private MovimentacaoAleatoria movimentacao;
 
+	public final Random random = new Random();
 	private Sphere checkBalls(Bounds boundsInParent) {
 		return Stream.of(balls).flatMap(l -> Stream.of(l))
 				.filter(b -> b != null)
@@ -257,7 +254,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 
 	private boolean checkColision(Bounds boundsInParent) {
 		Stream<Bounds> walls = Stream.of(labirynthWalls)
-				.flatMap(l -> Stream.of(l)).map(Cube::getBoundsInParent);
+				.flatMap(l -> Stream.of(l)).map(LabyrinthWall::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
 
@@ -265,11 +262,11 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube wall = new Cube(SIZE, Color.BLUE);
+				LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE);
 				wall.setTranslateX(i * SIZE);
 				wall.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {
-					wall.ry.setAngle(90);
+					wall.getRy().setAngle(90);
 				}
 				labirynthWalls[i][j] = wall;
 				root.getChildren().add(wall);
@@ -340,11 +337,11 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 		// });
 		// root.getChildren().add(rectangle);
 
-		PointLight sun = new PointLight(Color.rgb(125, 125, 125));
-		sun.translateXProperty().bind(camera.translateXProperty());
-		sun.translateYProperty().bind(camera.translateYProperty());
-		sun.translateZProperty().bind(camera.translateZProperty());
-		root.getChildren().add(sun);
+		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+		light.translateXProperty().bind(camera.translateXProperty());
+		light.translateYProperty().bind(camera.translateYProperty());
+		light.translateZProperty().bind(camera.translateZProperty());
+		root.getChildren().add(light);
 
 		MeshView[] fantasmas = { generateGhost(MESH_GHOST, Color.AQUAMARINE),
 				generateGhost(MESH_GHOST, Color.BROWN),
@@ -381,5 +378,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

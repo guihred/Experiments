@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 public class DeathStar extends Application {
 
 	private static final int DIVISION = 200;// the bigger the higher resolution
-	float radius = 300;// radius of the sphere
+	private float radius = 300;// radius of the sphere
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -30,7 +30,7 @@ public class DeathStar extends Application {
 		// uncomment if you want to move the other sphere
 
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			Point3D sphere = otherSphere;
+			public Point3D sphere = otherSphere;
 			@Override
 			public void handle(KeyEvent e) {
 				KeyCode code = e.getCode();
@@ -85,7 +85,7 @@ public class DeathStar extends Application {
 			float sin_va = (float) Math.sin(va);
 			float cos_va = (float) Math.cos(va);
 
-			float ty = 0.5f + sin_va * 0.5f;
+			float ty = 0.5F + sin_va * 0.5F;
 			for (int i = 0; i < division; ++i) {
 				double a = rDiv * i * 2 * (float) Math.PI;
 				float hSin = (float) Math.sin(a);
@@ -119,13 +119,13 @@ public class DeathStar extends Application {
 
 		float textureDelta = 1.f / 256;
 		for (int i = 0; i < division; ++i) {
-			tPoints[tPos + 0] = rDiv * (0.5f + i);
+			tPoints[tPos + 0] = rDiv * (0.5F + i);
 			tPoints[tPos + 1] = textureDelta;
 			tPos += 2;
 		}
 
 		for (int i = 0; i < division; ++i) {
-			tPoints[tPos + 0] = rDiv * (0.5f + i);
+			tPoints[tPos + 0] = rDiv * (0.5F + i);
 			tPoints[tPos + 1] = 1 - textureDelta;
 			tPos += 2;
 		}

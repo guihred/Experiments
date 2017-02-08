@@ -4,7 +4,7 @@ import javafx.scene.shape.Ellipse;
 
 public class SimpleEllipseBuilder extends SimpleShapeBuilder<Ellipse, SimpleEllipseBuilder> {
 
-	Ellipse ellipse;
+	protected Ellipse ellipse;
 
 	public SimpleEllipseBuilder() {
 		super(new Ellipse());

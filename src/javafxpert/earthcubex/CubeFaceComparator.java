@@ -9,7 +9,6 @@
 package javafxpert.earthcubex;
 
 import java.util.Comparator;
-
 import javafx.scene.Node;
 
 /**
@@ -21,6 +20,6 @@ public class CubeFaceComparator implements Comparator<Node> {
 	public int compare(Node cubeFaceB, Node cubeFaceA) {
 		CubeFace faceA = (CubeFace) cubeFaceA;
 		CubeFace faceB = (CubeFace) cubeFaceB;
-		return faceA.zPos.getValue().compareTo(faceB.zPos.getValue());
+		return faceA.getZPos().compareTo(faceB.getZPos());
 	}
 }

@@ -36,9 +36,9 @@ public class Chapter1 {
 	 */
 	public static void ex2(File directory) {
 
-		Arrays.asList(directory.listFiles((dir) -> dir.isDirectory())).forEach(
+		Arrays.asList(directory.listFiles(File::isDirectory)).forEach(
 				out::println);
-		Arrays.asList(directory.listFiles((FileFilter) dir -> dir.isDirectory())).forEach(out::println);
+		Arrays.asList(directory.listFiles((FileFilter) File::isDirectory)).forEach(out::println);
 
 	}
 

@@ -29,7 +29,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package sample.cubesystem;
+package fxsamples;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -38,9 +38,9 @@ import javafx.scene.transform.Rotate;
 
 public class Cube extends Group {
 
-    final Rotate rx = new Rotate(0, Rotate.X_AXIS);
-    final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-    final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
+	protected final Rotate rx = new Rotate(0, Rotate.X_AXIS);
+	protected final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
+	protected final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
     public Cube(double size, Color color, double shade) {
         getTransforms().addAll(rz, ry, rx);

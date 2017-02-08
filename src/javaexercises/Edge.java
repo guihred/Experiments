@@ -3,9 +3,9 @@ package javaexercises;
 import java.util.Objects;
 
 class Edge implements Comparable<Edge> {
-	Vertex u;
-	Vertex v;
-	Integer weight;
+	private Vertex u;
+	private Vertex v;
+	private Integer weight;
 
 	public Edge() {
 	}
@@ -47,6 +47,30 @@ class Edge implements Comparable<Edge> {
 	@Override
 	public String toString() {
 		return u.getName() + "-" + v.getName() + "(" + weight + ")";
+	}
+
+	public Vertex getU() {
+		return u;
+	}
+
+	public void setU(Vertex u) {
+		this.u = u;
+	}
+
+	public Vertex getV() {
+		return v;
+	}
+
+	public void setV(Vertex v) {
+		this.v = v;
+	}
+
+	public Integer getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Integer weight) {
+		this.weight = weight;
 	}
 
 }

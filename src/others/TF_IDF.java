@@ -102,7 +102,7 @@ public class TF_IDF {
 			}
 		} else {
 			List<String> asList = Arrays.asList(f.list());
-			asList.forEach((a) -> {
+			asList.forEach(a -> {
 				try {
 					getDocumentMap(new File(f, a));
 				} catch (Exception e) {
@@ -198,7 +198,7 @@ public class TF_IDF {
 					"final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
 					"float", "native", "super", "while");
 
-			entrySet.forEach((e) -> {
+			entrySet.forEach(e -> {
 				if (!javaKeywords.contains(e.getKey())) {
 					out.println(e.getKey() + "={");
 					e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));

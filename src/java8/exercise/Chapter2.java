@@ -33,7 +33,7 @@ public class Chapter2 {
 	public static void ex1() throws IOException, InterruptedException, ExecutionException {
 		Pattern compile = Pattern.compile("[\\P{L}]+");
 		System.out.println(Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel()
-				.flatMap((l) -> compile.splitAsStream(l)).filter((s) -> s.length() > 12).count());
+				.flatMap(l -> compile.splitAsStream(l)).filter(s -> s.length() > 12).count());
 		System.out.println(countConcurrentWithoutStreams());
 	}
 	private static long countConcurrentWithoutStreams() throws IOException, InterruptedException, ExecutionException {
@@ -133,7 +133,8 @@ public class Chapter2 {
 	public static void ex2() throws IOException {
 		Pattern compile = Pattern.compile("[\\P{L}]+");
 		System.out.println();
-		Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel().flatMap((l) -> compile.splitAsStream(l)).filter((s) -> {
+		Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel().flatMap(l -> compile.splitAsStream(l))
+				.filter(s -> {
 			if (s.length() > 12) {
 				System.out.printf("Long word %s%n", s);
 			}
@@ -150,10 +151,10 @@ public class Chapter2 {
 	public static void ex3() throws IOException {
 
 		long tic = System.currentTimeMillis();
-		getWordsAsList().parallelStream().filter((s) -> s.length() > 12).count();
+		getWordsAsList().parallelStream().filter(s -> s.length() > 12).count();
 		System.out.println("Paralel:" + (System.currentTimeMillis() - tic) + "ms");
 		tic = System.currentTimeMillis();
-		getWordsAsList().stream().filter((s) -> s.length() > 12).count();
+		getWordsAsList().stream().filter(s -> s.length() > 12).count();
 		System.out.println("Sequential:" + (System.currentTimeMillis() - tic) + "ms");
 
 	}
@@ -188,10 +189,10 @@ public class Chapter2 {
 	 * Stream<Long>. Try out a = 25214903917, c = 11, and m = 248.
 	 */
 	public static void ex5() {
-		long a = 25214903917l;
+		long a = 25214903917L;
 		long c = 11;
 		long m = 2L << 48;
-		Stream<Long> iterate = Stream.iterate(System.currentTimeMillis(), (t) -> (a * t + c) % m);
+		Stream<Long> iterate = Stream.iterate(System.currentTimeMillis(), t -> (a * t + c) % m);
 		iterate.limit(10).forEach(System.out::println);
 	}
 
@@ -209,7 +210,7 @@ public class Chapter2 {
 		// return result.stream();
 		// }
 		String s = "asdasdasdasd";
-		Stream<Character> map = Stream.iterate(0, i -> i + 1).limit(s.length()).map((i) -> s.charAt(i));
+		Stream<Character> map = Stream.iterate(0, i -> i + 1).limit(s.length()).map(s::charAt);
 		map.forEach(System.out::println);
 	}
 

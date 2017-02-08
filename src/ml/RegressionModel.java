@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RegressionModel {
-	int current = 0;
+	private int current = 0;
 
 	public static void main(String[] args) {
 

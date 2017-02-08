@@ -8,7 +8,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class JavaExercise1to11 {
+public final class JavaExercise1to11 {
+
+	private JavaExercise1to11() {
+	}
 
 	public static void main(String[] args) {
 		fibonacciSeriesProblem();
@@ -31,9 +34,9 @@ public class JavaExercise1to11 {
 	 * that the records are in ascending order of ages.
 	 */
 	public static void sortingRecords() {
-		Person[] p = { new Person("George", 34, 1.71f), new Person("Betty", 22, 1.76f), new Person("Charles", 24, 1.79f),
-				new Person("Hanna", 29, 1.66f), new Person("Edward", 23, 1.82f), new Person("Frida", 28, 1.77f), new Person("Davina", 33, 1.69f),
-				new Person("Andrew", 25, 1.67f) };
+		Person[] p = { new Person("George", 34, 1.71F), new Person("Betty", 22, 1.76F),
+				new Person("Charles", 24, 1.79F), new Person("Hanna", 29, 1.66F), new Person("Edward", 23, 1.82F),
+				new Person("Frida", 28, 1.77F), new Person("Davina", 33, 1.69F), new Person("Andrew", 25, 1.67F) };
 		sort(p);
 	}
 
@@ -45,9 +48,9 @@ public class JavaExercise1to11 {
 		}
 	}
 	static class Person {
-		String name;
-		int age;
-		float height;
+		private String name;
+		private int age;
+		private float height;
 
 		public Person(String n, int a, float h) {
 			name = n;
@@ -57,7 +60,7 @@ public class JavaExercise1to11 {
 
 		@Override
 		public String toString() {
-			return String.format("%-9s %3d %6.2f", name, age, height);
+			return String.format("%-9s %3d %6.2F", name, age, height);
 		}
 	}
 
@@ -117,7 +120,7 @@ public class JavaExercise1to11 {
 	/**
 	 * 8. Accumulating Rounding Errors. Write a program which evaluates 2^n/100
 	 * for each n = 1,2,... 16. Each value should be determined in two different
-	 * ways. First evaluate (float)numerator/100.0f where numerator = 2^n; this
+	 * ways. First evaluate (float)numerator/100.0F where numerator = 2^n; this
 	 * gives a good result. The second way is very naïve: simply add
 	 * (float)1/(float)100 to itself 2^n times!
 	 */

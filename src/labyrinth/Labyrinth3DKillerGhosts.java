@@ -27,7 +27,7 @@ import javafx.stage.Stage;
 public class Labyrinth3DKillerGhosts extends Application {
 	private final class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
-		int direction[];// EAST, WEST, NORTH, SOUTH
+		private int direction[];// EAST, WEST, NORTH, SOUTH
 
 		public MovimentacaoAleatoria(MeshView... animais) {
 			this.animais = animais;
@@ -190,7 +190,7 @@ public class Labyrinth3DKillerGhosts extends Application {
 
 	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
 
-	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 
 	private static final int SIZE = 60;
 
@@ -200,11 +200,11 @@ public class Labyrinth3DKillerGhosts extends Application {
 
 	private PerspectiveCamera camera;
 
-	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
+	private LabyrinthWall[][] cubes = new LabyrinthWall[mapa.length][mapa[0].length];
 	private MovimentacaoAleatoria movimentacao;
 	boolean checkColision(Bounds boundsInParent) {
 		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(Cube::getBoundsInParent);
+				.map(LabyrinthWall::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
 
@@ -212,11 +212,11 @@ public class Labyrinth3DKillerGhosts extends Application {
 		for (int i = mapa.length - 1; i >= 0; i--) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube rectangle = new Cube(SIZE, Color.BLUE);
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {
-					rectangle.ry.setAngle(90);
+					rectangle.getRy().setAngle(90);
 				}
 				cubes[i][j] = rectangle;
 				root.getChildren().add(rectangle);
@@ -268,11 +268,11 @@ public class Labyrinth3DKillerGhosts extends Application {
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
 		subScene.setCamera(camera);
-		PointLight sun = new PointLight(Color.rgb(125, 125, 125));
-		sun.translateXProperty().bind(camera.translateXProperty());
-		sun.translateYProperty().bind(camera.translateYProperty());
-		sun.translateZProperty().bind(camera.translateZProperty());
-		root.getChildren().add(sun);
+		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+		light.translateXProperty().bind(camera.translateXProperty());
+		light.translateYProperty().bind(camera.translateYProperty());
+		light.translateZProperty().bind(camera.translateZProperty());
+		root.getChildren().add(light);
 
 		MeshView[] fantasmas = { 
 				gerarFantasma(MESH_GHOST, Color.AQUAMARINE),

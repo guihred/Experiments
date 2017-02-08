@@ -34,13 +34,14 @@ import org.slf4j.LoggerFactory;
 
 public class GraphModelLauncher extends Application {
 	public final Logger logger = LoggerFactory.getLogger(getClass());
-	final Graph graph = new Graph();
-	ConvergeLayout convergeLayout = new ConvergeLayout(graph);
-	ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph), new CircleLayout(graph),
+	private final Graph graph = new Graph();
+	private ConvergeLayout convergeLayout = new ConvergeLayout(graph);
+	private ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph),
+			new CircleLayout(graph),
 			new RandomLayout(graph), new CustomLayout(graph), convergeLayout);
-	ChoiceBox<Layout> selectLayout = newSelect(layouts,
+	private ChoiceBox<Layout> selectLayout = newSelect(layouts,
 			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
-	EventHandler<ActionEvent> shortestPathHandler = (ev) -> {
+	private EventHandler<ActionEvent> shortestPathHandler = ev -> {
 		graph.getModel().clearSelected();
 		Stage dialog = new Stage();
 		dialog.setWidth(70);
@@ -49,7 +50,7 @@ public class GraphModelLauncher extends Application {
 				graph.getModel().getAllCells().stream().map(c -> c.getCellId()).collect(Collectors.toList()));
 		ChoiceBox<String> c1 = new ChoiceBox<>(cells);
 		ChoiceBox<String> c2 = new ChoiceBox<>(cells);
-		Scene scene = new Scene(new VBox(new Text("Source"), c1, new Text("Target"), c2, newButton("OK", (event) -> {
+		Scene scene = new Scene(new VBox(new Text("Source"), c1, new Text("Target"), c2, newButton("OK", event -> {
 			if (c1.getValue() != null && c2.getValue() != null) {
 				List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
 				chain.forEach(e -> {
@@ -63,7 +64,7 @@ public class GraphModelLauncher extends Application {
 		dialog.setScene(scene);
 		dialog.show();
 	};
-	EventHandler<ActionEvent> createTopologyHandler = (ev) -> {
+	private EventHandler<ActionEvent> createTopologyHandler = ev -> {
 		graph.getModel().clearSelected();
 		graph.clean();
 		graph.getModel().removeAllCells();
@@ -92,23 +93,23 @@ public class GraphModelLauncher extends Application {
 
 		VBox vBox = new VBox();
 		vBox.getChildren().add(newButton("Shortest Path", shortestPathHandler));
-		vBox.getChildren().add(newButton("Kruskal", (ev) -> {
+		vBox.getChildren().add(newButton("Kruskal", ev -> {
 			graph.getModel().clearSelected();
 			List<Edge> prim = graph.getModel().kruskal();
 			prim.forEach(e -> e.setSelected(true));
 		}));
-		vBox.getChildren().add(newButton("Articulations", (ev) -> {
+		vBox.getChildren().add(newButton("Articulations", ev -> {
 			graph.getModel().clearSelected();
 			graph.getModel().findArticulations();
 		}));
 
-		vBox.getChildren().add(newButton("Sort Topology", (ev) -> {
+		vBox.getChildren().add(newButton("Sort Topology", ev -> {
 			graph.getModel().clearSelected();
 			graph.getModel().sortTopology();
 		}));
 		Layout layout = new ConvergeLayout(graph);
 
-		vBox.getChildren().add(newButton("Color", (ev) -> graph.getModel().coloring()));
+		vBox.getChildren().add(newButton("Color", ev -> graph.getModel().coloring()));
 
 		DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
 		ObservableList<GenTopology> topologies = FXCollections.observableArrayList(delaunayTopology, new RandomTopology(50, graph), new TreeTopology(
@@ -116,11 +117,12 @@ public class GraphModelLauncher extends Application {
 
 		SimpleConverter<GenTopology> converterTopology = new SimpleConverter<>(l -> l.getName());
 		ChoiceBox<GenTopology> topologySelect = newSelect(topologies, converterTopology, "Select Topology");
-		vBox.getChildren().add(new HBox(topologySelect, newButton("Go", (e) -> topologySelect.getSelectionModel().getSelectedItem().execute())));
+		vBox.getChildren().add(new HBox(topologySelect,
+				newButton("Go", e -> topologySelect.getSelectionModel().getSelectedItem().execute())));
 
-		Timeline timeline = new Timeline(new KeyFrame(new Duration(50.0), convergeLayout.eventHandler));
+		Timeline timeline = new Timeline(new KeyFrame(new Duration(50.0), convergeLayout.getEventHandler()));
 		timeline.setCycleCount(Animation.INDEFINITE);
-		vBox.getChildren().add(newButton("Triangulate", (ev) -> {
+		vBox.getChildren().add(newButton("Triangulate", ev -> {
 			Status status = timeline.getStatus();
 			if (status == Status.RUNNING) {
 				timeline.stop();
@@ -130,7 +132,7 @@ public class GraphModelLauncher extends Application {
 				timeline.play();
 			}
 		}));
-		vBox.getChildren().add(newButton("Voronoi", (ev) -> {
+		vBox.getChildren().add(newButton("Voronoi", ev -> {
 			Status status = timeline.getStatus();
 			if (status == Status.RUNNING) {
 				timeline.stop();
@@ -154,8 +156,9 @@ public class GraphModelLauncher extends Application {
 		// @SuppressWarnings("static-access")
 
 		vBox.getChildren().add(newButton("Create Topology", createTopologyHandler));
-		vBox.getChildren().add(new HBox(selectLayout, newButton("Go", (e) -> selectLayout.getSelectionModel().getSelectedItem().execute())));
-		vBox.getChildren().add(newButton("Pause/Play", (ev) -> {
+		vBox.getChildren().add(new HBox(selectLayout,
+				newButton("Go", e -> selectLayout.getSelectionModel().getSelectedItem().execute())));
+		vBox.getChildren().add(newButton("Pause/Play", ev -> {
 			Status status = timeline.getStatus();
 			if (status == Status.RUNNING) {
 				timeline.stop();
@@ -170,19 +173,16 @@ public class GraphModelLauncher extends Application {
 	private String[] getWords() {
 		String string = "alice.txt";
 		try {
-			return Files.lines(Paths.get(string)).flatMap(e -> Stream.of(e.split("[^a-zA-Z]"))).filter(s -> s.length() == 4).map(String::toLowerCase)
-					.distinct().toArray(String[]::new);
+			return Files.lines(Paths.get(string)).flatMap(e -> Stream.of(e.split("[^a-zA-Z]")))
+					.filter(s -> s.length() == 4).map(String::toLowerCase).distinct().toArray(String[]::new);
 		} catch (IOException e) {
 			logger.error("", e);
 		}
 
-		String[] words = { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire", "wind", "wing", "wink", "wins",
-				"none", "gone", "note", "vote", "site", "nite", "bite" };
+		String[] words = { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire",
+				"wind", "wing", "wink", "wins", "none", "gone", "note", "vote", "site", "nite", "bite" };
 		return words;
 	}
-
-
-
 
 	private CheckBox newCheck(String name, BooleanProperty property) {
 		CheckBox checkBox = new CheckBox(name);
@@ -226,10 +226,8 @@ public class GraphModelLauncher extends Application {
 		int diffs = 0;
 
 		for (int i = 0; i < word1.length(); i++) {
-			if (word1.charAt(i) != word2.charAt(i)) {
-				if (++diffs > 1) {
-					return false;
-				}
+			if (word1.charAt(i) != word2.charAt(i) && ++diffs > 1) {
+				return false;
 			}
 		}
 

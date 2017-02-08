@@ -16,7 +16,7 @@ public class VoronoiRegion extends Group {
 	public VoronoiRegion(Ponto p, List<Triangle> triangles) {
 		Function<double[], Double> keyExtractor = (double[] pon) -> Edge.getAngulo(pon[0], pon[1], x(p.getC()), y(p.getC()));
 		Comparator<double[]> comparator = Comparator.comparing(keyExtractor);
-		List<double[]> collect = triangles.stream().map(t -> centerCircle(t.a.getC(), t.b.getC(), t.c.getC())).collect(Collectors.toList());
+		List<double[]> collect = triangles.stream().map(t -> centerCircle(t.getA().getC(), t.getB().getC(), t.getC().getC())).collect(Collectors.toList());
 		for (double[] es : collect) {
 			Circle circle = new Circle(2);
 			circle.setLayoutX(es[0]);

@@ -18,6 +18,7 @@ import javafx.util.Duration;
 
 public class ArkanoidModel {
 
+	private Circle circle = new Circle(190, 250, 5, Color.RED);
 
 	public static ArkanoidModel create(Group group, Scene scene) {
 		return new ArkanoidModel(group, scene);
@@ -30,10 +31,9 @@ public class ArkanoidModel {
             rect.setFill(Color.AQUA);
             group.getChildren().add(rect);
         }
-        Circle circle = new Circle(190, 250, 5, Color.RED);
         group.getChildren().add(circle);
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(10), new EventHandler<ActionEvent>() {
-            int x = 1, y = 1;
+        EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
+			private int x = 1, y = 1;
             @Override
             public void handle(ActionEvent event) {
 
@@ -44,30 +44,24 @@ public class ArkanoidModel {
 
                     x = -x;
                 }
-                if (orElse instanceof Rectangle) {
-                    if (((Rectangle) orElse).getFill().equals(Color.AQUA)) {
-                        group.getChildren().remove(orElse);
-                    }
-                }
+				if (orElse instanceof Rectangle && ((Rectangle) orElse).getFill().equals(Color.AQUA)) {
+					group.getChildren().remove(orElse);
+				}
 
                 circle.setCenterY(circle.getCenterY() + y);
-                Node orElse2 = group.getChildren().stream()
-                        .filter(c -> c != circle && circle.intersects(c.getBoundsInLocal())).findAny().orElse(null);
-                if (group.getChildren().stream()
-                        .filter(c -> c != circle)
-                        .anyMatch(c -> circle.intersects(c.getBoundsInLocal()))
+                Node orElse2 = group.getChildren().stream().filter(c -> c != circle && circle.intersects(c.getBoundsInLocal())).findAny().orElse(null);
+				if (orElse2 != null
                         || circle.getCenterY() <= 5 || circle.getCenterY() > 570) {
                     y = -y;
                 }
-                if (orElse2 instanceof Rectangle) {
-                    if (((Rectangle) orElse2).getFill().equals(Color.AQUA)) {
-                        group.getChildren().remove(orElse2);
-                    }
-                }
+				if (orElse2 instanceof Rectangle && ((Rectangle) orElse2).getFill().equals(Color.AQUA)) {
+					group.getChildren().remove(orElse2);
+				}
                 circle.setCenterX(circle.getCenterX() + x);
                 circle.setCenterY(circle.getCenterY() + y);
             }
-        }));
+        };
+		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(10), eventHandler));
         scene.setOnKeyPressed((KeyEvent event) -> {
             final KeyCode code = event.getCode();
             switch (code) {

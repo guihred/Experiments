@@ -19,11 +19,11 @@ public class BrasilianVerbsConjugator {
 	}
 	private static final boolean DEBUG = false;
 
-	private static Map<Mode, String[]> first = new LinkedHashMap<>();
+	private static Map<Mode, String[]> first = new EnumMap<>(Mode.class);
 
-	private static Map<Mode, String[]> fourth = new LinkedHashMap<>();
+	private static Map<Mode, String[]> fourth = new EnumMap<>(Mode.class);
 
-	static final Map<String, List<String>> IRREGULAR = ImmutableMap.<String, List<String>>builder()
+	private static final Map<String, List<String>> IRREGULAR = ImmutableMap.<String, List<String>>builder()
 			.put("ir", Arrays.asList(""))
 			.put("dar", Arrays.asList(""))
 			.put("ser", Arrays.asList(""))
@@ -53,9 +53,9 @@ public class BrasilianVerbsConjugator {
 			.put("vir", Arrays.asList("", "ad", "a", "contra", "con", "desa", "de", "inter", "pro", "re", "sobre", "ante"))
 			.build();
 
-	private static Map<Mode, String[]> second = new LinkedHashMap<>();
+	private static Map<Mode, String[]> second = new EnumMap<>(Mode.class);
 
-	static final Map<String, Map<Mode, List<String>>> SIMPLE_IRREGULARITIES = new HashMap<String, Map<Mode, List<String>>>() {
+	private static final Map<String, Map<Mode, List<String>>> SIMPLE_IRREGULARITIES = new HashMap<String, Map<Mode, List<String>>>() {
 		{
 			put("valer", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("valho", "vales", "vale", "valemos", "valeis", "valem")).build());
@@ -166,7 +166,7 @@ public class BrasilianVerbsConjugator {
 		}
 	};
 
-	private static Map<Mode, String[]> third = new LinkedHashMap<>();
+	private static Map<Mode, String[]> third = new EnumMap<>(Mode.class);
 
 	private static List<String> addDesinencia(String root, String[] tense) {
 		return Stream.of(tense).map(a -> root + a).collect(Collectors.toList());

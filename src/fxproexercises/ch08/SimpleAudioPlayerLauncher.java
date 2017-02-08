@@ -27,10 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleAudioPlayerLauncher extends Application {
-	public static void main(String[] args) {
-        launch(args);
-    }
-    private Label album;
+	private Label album;
     private ImageView albumCover;
     private Label artist;
     public final Logger logger = LoggerFactory.getLogger(getClass());
@@ -56,7 +53,6 @@ public class SimpleAudioPlayerLauncher extends Application {
         albumCover.setSmooth(true);
         albumCover.setEffect(reflection);
     }
-
     private GridPane createGridPane() {
         final GridPane gp = new GridPane();
         gp.setPadding(new Insets(10));
@@ -83,7 +79,7 @@ public class SimpleAudioPlayerLauncher extends Application {
             final String errorMessage = media.getError().getMessage();
             System.err.println("error:" + errorMessage);
         });
-        media.getMetadata().addListener((MapChangeListener<String, Object>) (ch) -> {
+		media.getMetadata().addListener((MapChangeListener<String, Object>) ch -> {
                 if (ch.wasAdded()) {
                     handleMetadata(ch.getKey(), ch.getValueAdded());
                 }
@@ -124,5 +120,9 @@ public class SimpleAudioPlayerLauncher extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Audio Player 2");
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

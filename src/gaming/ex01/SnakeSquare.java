@@ -25,8 +25,8 @@ public class SnakeSquare extends Region {
     public SnakeSquare(int i, int j) {
         setPrefSize(50, 50);
         styleProperty().bind(
-				Bindings.when(stateProperty().isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;")
-						.otherwise(Bindings.when(stateProperty().isEqualTo(SnakeState.SNAKE))
+				Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;")
+						.otherwise(Bindings.when(state.isEqualTo(SnakeState.SNAKE))
                         .then("-fx-background-color:green;")
                         .otherwise("-fx-background-color:gray;"
                         )));
@@ -69,11 +69,6 @@ public class SnakeSquare extends Region {
 		return j;
 	}
 
-
-
-	public ObjectProperty<SnakeState> stateProperty() {
-		return state;
-	}
 	public SnakeState getState() {
 		return state.get();
 	}

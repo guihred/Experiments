@@ -36,12 +36,24 @@ import javafx.scene.transform.Rotate;
 
 public class Xform extends Group {
 
-    final Rotate rx = new Rotate(0, Rotate.X_AXIS);
-    final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-    final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
+    private final Rotate rx = new Rotate(0, Rotate.X_AXIS);
+    private final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
+    private final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
     public Xform() {
         super();
         getTransforms().addAll(rz, ry, rx);
     }
+
+	public Rotate getRx() {
+		return rx;
+	}
+
+	public Rotate getRy() {
+		return ry;
+	}
+
+	public Rotate getRz() {
+		return rz;
+	}
 }

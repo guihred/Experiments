@@ -20,17 +20,12 @@ public class Labyrinth3DAntiAliasing extends Application {
 		{ "|", "_", "_", "_", "_", "_" }, };
 	private static final int SIZE = 50;
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	PerspectiveCamera camera = new PerspectiveCamera(true);
 
 	private final double cameraModifier = 50.0;
-	private final double cameraQuantity = 10.0;
-	Color color = Color.RED;
 
-	EventHandler<? super KeyEvent> keyboardHandler = event -> {
+	private final double cameraQuantity = 10.0;
+	private EventHandler<? super KeyEvent> keyboardHandler = event -> {
 		double change = cameraQuantity;
 		// Add shift modifier to simulate "Running Speed"
 		if (event.isShiftDown()) {
@@ -77,16 +72,15 @@ public class Labyrinth3DAntiAliasing extends Application {
 			// camera.setTranslateX(camera.getTranslateX() + change);
 		}
 	};
-
 	private void initializeLabyrinth(Group root) {
 		for (int k = mapa.length - 1; k >= 0; k--) {
 			for (int l = mapa[k].length - 1; l >= 0; l--) {
 				String string = mapa[k][l];
-				Cube rectangle = new Cube(SIZE, Color.BLUE);
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 				rectangle.setTranslateX(k * SIZE);
 				rectangle.setTranslateZ(l * SIZE);
 				if ("_".equals(string)) {
-					rectangle.ry.setAngle(90);
+					rectangle.getRy().setAngle(90);
 				}
 				root.getChildren().add(rectangle);
 			}
@@ -108,11 +102,11 @@ public class Labyrinth3DAntiAliasing extends Application {
 		camera.setTranslateZ(-1000);
 		subScene.setCamera(camera);
 
-		PointLight sun = new PointLight(Color.rgb(125, 125, 125));
-		sun.translateXProperty().bind(camera.translateXProperty());
-		sun.translateYProperty().bind(camera.translateYProperty());
-		sun.translateZProperty().bind(camera.translateZProperty());
-		root.getChildren().add(sun);
+		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+		light.translateXProperty().bind(camera.translateXProperty());
+		light.translateYProperty().bind(camera.translateYProperty());
+		light.translateZProperty().bind(camera.translateZProperty());
+		root.getChildren().add(light);
 		Scene sc = new Scene(new Group(subScene));
 
 		// End Step 2a
@@ -123,5 +117,9 @@ public class Labyrinth3DAntiAliasing extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class RandomLayout implements Layout {
 
-	Graph graph;
+	private Graph graph;
 
-	Random rnd = new Random();
+	private Random rnd = new Random();
 
 	public RandomLayout(Graph graph) {
 		this.graph = graph;

@@ -6,30 +6,30 @@ import javafx.util.Duration;
 
 public class SimpleFadeTransitionBuilder extends SimpleAnimationBuilder<FadeTransition, SimpleFadeTransitionBuilder> {
 
-	FadeTransition circle;
+	protected FadeTransition fadeTransition;
 
 	public SimpleFadeTransitionBuilder() {
 		super(new FadeTransition());
-		circle = animation;
+		fadeTransition = animation;
 	}
 
 	public SimpleFadeTransitionBuilder node(Node highlight) {
-		circle.setNode(highlight);
+		fadeTransition.setNode(highlight);
 		return this;
 	}
 
 	public SimpleFadeTransitionBuilder duration(Duration value) {
-		circle.setDuration(value);
+		fadeTransition.setDuration(value);
 		return this;
 	}
 
 	public SimpleFadeTransitionBuilder fromValue(double value) {
-		circle.setFromValue(value);
+		fadeTransition.setFromValue(value);
 		return this;
 	}
 
 	public SimpleFadeTransitionBuilder toValue(double value) {
-		circle.setToValue(value);
+		fadeTransition.setToValue(value);
 		return this;
 	}
 

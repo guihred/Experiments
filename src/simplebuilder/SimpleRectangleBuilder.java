@@ -4,7 +4,7 @@ import javafx.scene.shape.Rectangle;
 
 public class SimpleRectangleBuilder extends SimpleShapeBuilder<Rectangle, SimpleRectangleBuilder> {
 
-	Rectangle rectangle;
+	protected Rectangle rectangle;
 
 	public SimpleRectangleBuilder() {
 		super(new Rectangle());

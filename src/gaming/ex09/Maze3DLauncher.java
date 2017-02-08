@@ -21,7 +21,7 @@ public class Maze3DLauncher extends Application {
     private void handleKeyboard(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera) {
 
         scene.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-            double mouseYold;
+			private double mouseYold;
 
             @Override
             public void handle(MouseEvent event) {

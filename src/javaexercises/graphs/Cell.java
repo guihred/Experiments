@@ -13,14 +13,14 @@ import javafx.scene.text.Text;
 
 public class Cell extends Pane {
 
-	String cellId;
+	private final String cellId;
 	protected Text text;
 	protected BooleanProperty selected = new SimpleBooleanProperty(false);
 	protected ObjectProperty<Color> color = new SimpleObjectProperty<>();
-	List<Cell> children = new ArrayList<>();
-	List<Cell> parents = new ArrayList<>();
+	private List<Cell> children = new ArrayList<>();
+	private List<Cell> parents = new ArrayList<>();
 
-	Node view;
+	private Node view;
 
 	public Cell(String cellId) {
 		this.cellId = cellId;

@@ -24,30 +24,20 @@ import javafx.scene.layout.Pane;
 public class SolitaireModel {
 
 	class DragContext {
-		List<SolitaireCard> cards;
-		boolean dragged;
-		CardStack stack;
-		double x;
-		double y;
+		protected List<SolitaireCard> cards;
+		protected CardStack stack;
+		protected double x;
+		protected double y;
 	}
-	public static SolitaireModel create(Pane gridPane, Scene scene) {
-		return new SolitaireModel(gridPane, scene);
-	}
-	CardStack[] ascendingStacks = new CardStack[4];
 
-	DragContext dragContext = new DragContext();
+	private CardStack[] ascendingStacks = new CardStack[4];
+	private DragContext dragContext = new DragContext();
 
 	private Pane gridPane;
 
-	EventHandler<MouseEvent> onMouseDragged = event -> {
-
-		Node node = (Node) event.getSource();
-
+	private EventHandler<MouseEvent> onMouseDragged = event -> {
 		double offsetX = event.getScreenX() + dragContext.x;
 		double offsetY = event.getScreenY() + dragContext.y;
-		if (node instanceof SolitaireCard) {
-			dragContext.dragged = true;
-		}
 		if (dragContext.cards != null) {
 			List<SolitaireCard> cards = dragContext.cards;
 			for (int i = 0; i < cards.size(); i++) {
@@ -60,7 +50,7 @@ public class SolitaireModel {
 	};
 	private CardStack[] simpleStacks = new CardStack[7];
 
-	EventHandler<MouseEvent> onMousePressed = event -> {
+	private EventHandler<MouseEvent> onMousePressed = event -> {
 
 		Node node = (Node) event.getSource();
 
@@ -82,6 +72,12 @@ public class SolitaireModel {
 				if (!lastCards.isEmpty()) {
 					cardStack.removeCards(lastCards);
 					dragContext.cards = lastCards;
+					dragContext.y += event.getY();
+
+					lastCards.forEach(d -> {
+						d.setLayoutY(d.getLayoutY() + node.getBoundsInParent().getMinY());
+						d.setLayoutX(d.getLayoutX() + node.getBoundsInParent().getMinX());
+					});
 					gridPane.getChildren().addAll(lastCards);
 					dragContext.stack = cardStack;
 				}
@@ -89,6 +85,9 @@ public class SolitaireModel {
 			} else {
 				SolitaireCard lastCards = cardStack.removeLastCards();
 				if (lastCards != null) {
+					dragContext.y += event.getY();
+					lastCards.setLayoutX(lastCards.getLayoutX() + node.getBoundsInParent().getMinX());
+					lastCards.setLayoutY(lastCards.getLayoutY() + node.getBoundsInParent().getMinY());
 					dragContext.cards = Arrays.asList(lastCards);
 					gridPane.getChildren().add(lastCards);
 					dragContext.stack = (CardStack) node;
@@ -97,8 +96,7 @@ public class SolitaireModel {
 		}
 
 	};
-
-	EventHandler<MouseEvent> onMouseReleased = event -> {
+	private EventHandler<MouseEvent> onMouseReleased = event -> {
 		if (dragContext.cards != null) {
 			if (dragContext.cards.size() == 1) {
 				for (CardStack cardStack : ascendingStacks) {
@@ -112,10 +110,9 @@ public class SolitaireModel {
 							break;
 						}
 						cardStack.addCards(dragContext.cards);
-						if (!dragContext.stack.getCards().isEmpty()) {
-							if (dragContext.stack.getCards().stream().noneMatch(SolitaireCard::isShown)) {
-								dragContext.stack.getLastCards().setShown(true);
-							}
+						if (!dragContext.stack.getCards().isEmpty()
+								&& dragContext.stack.getCards().stream().noneMatch(SolitaireCard::isShown)) {
+							dragContext.stack.getLastCards().setShown(true);
 						}
 						dragContext.cards = null;
 						return;
@@ -137,11 +134,9 @@ public class SolitaireModel {
 					}
 
 					cardStack.addCardsVertically(dragContext.cards);
-					if (!dragContext.stack.getCards().isEmpty()) {
-						if (dragContext.stack.getCards().stream().noneMatch(SolitaireCard::isShown)) {
-							dragContext.stack.getLastCards().setShown(true);
-						}
-
+					if (!dragContext.stack.getCards().isEmpty()
+							&& dragContext.stack.getCards().stream().noneMatch(SolitaireCard::isShown)) {
+						dragContext.stack.getLastCards().setShown(true);
 					}
 					dragContext.cards = null;
 					return;
@@ -155,6 +150,8 @@ public class SolitaireModel {
 		}
 
 	};
+
+
 	public SolitaireModel(Pane gridPane, Scene scene) {
 		this.gridPane = gridPane;
 		List<SolitaireCard> allCards = getAllCards();
@@ -195,7 +192,6 @@ public class SolitaireModel {
 			simpleStacks[i].layoutXProperty().bind(scene.widthProperty().divide(7).multiply(i));
 			simpleStacks[i].setLayoutY(200);
 			List<SolitaireCard> removeLastCards = cardStack.removeLastCards(i + 1);
-			System.out.println(removeLastCards);
 			removeLastCards.forEach(c -> c.setShown(false));
 			removeLastCards.get(i).setShown(true);
 			simpleStacks[i].addCardsVertically(removeLastCards);
@@ -228,6 +224,10 @@ public class SolitaireModel {
 		node.setOnMousePressed(onMousePressed);
 		node.setOnMouseDragged(onMouseDragged);
 		node.setOnMouseReleased(onMouseReleased);
+	}
+
+	public static SolitaireModel create(Pane gridPane, Scene scene) {
+		return new SolitaireModel(gridPane, scene);
 	}
 
 }

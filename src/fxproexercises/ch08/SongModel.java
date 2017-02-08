@@ -95,7 +95,7 @@ public final class SongModel {
         try {
             final Media media = new Media(url);
 			media.getMetadata().addListener(
-					(MapChangeListener<String, Object>) (ch) -> handleMetadata(ch.getKey(), ch.getValueAdded()));
+					(MapChangeListener<String, Object>) ch -> handleMetadata(ch.getKey(), ch.getValueAdded()));
 			Platform.runLater(() -> {
 				tryGetAlbumCover(url);
 			});

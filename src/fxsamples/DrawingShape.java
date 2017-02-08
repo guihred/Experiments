@@ -93,8 +93,8 @@ public class DrawingShape extends Application {
 		donut.setFill(Color.rgb(255, 200, 0));
 		// add drop shadow
 		DropShadow dropShadow = new DropShadow(5, // radius
-				2.0f, // offset X
-				2.0f, // offset Y
+				2.0F, // offset X
+				2.0F, // offset Y
 				Color.rgb(50, 50, 50, .588));
 		donut.setEffect(dropShadow);
 		// move slightly down

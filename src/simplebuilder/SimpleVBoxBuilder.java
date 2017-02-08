@@ -5,7 +5,7 @@ import javafx.scene.layout.VBox;
 
 public class SimpleVBoxBuilder extends SimplePaneBuilder<VBox, SimpleVBoxBuilder> {
 
-	VBox vbox;
+	protected VBox vbox;
 
 	public SimpleVBoxBuilder() {
 		super(new VBox());

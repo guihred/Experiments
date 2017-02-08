@@ -5,6 +5,7 @@
  */
 package gaming.ex05;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -18,10 +19,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-/**
- *
- * @author Note
- */
 public class TetrisModel {
 
 	public static final int MAP_HEIGHT = 20;
@@ -31,7 +28,7 @@ public class TetrisModel {
 	private final TetrisSquare[][] map = new TetrisSquare[MAP_WIDTH][MAP_HEIGHT];
 	private TetrisPiece piece = TetrisPiece.L;
 
-    private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection;
+	private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
 
     private Random random = new Random();
 
@@ -43,7 +40,6 @@ public class TetrisModel {
             }
         }
 
-        pieceDirection = new HashMap<>();
         for (TetrisPiece value : TetrisPiece.values()) {
             pieceDirection.put(value, new HashMap<>());
             pieceDirection.get(value).put(TetrisDirection.UP, value.getMap());

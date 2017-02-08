@@ -2,11 +2,7 @@ package fxsamples;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
+import javafx.scene.paint.*;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -48,7 +44,7 @@ public class DrawingColors extends Application {
 				.endX(20)
 				.endY(140)
 				.fill(Color.BLACK)
-				.strokeWidth(10.0f)
+				.strokeWidth(10.0F)
 				.translateY(ellipseHeight + 10)
 				.build();
 		root.getChildren().add(blackLine);
@@ -62,7 +58,7 @@ public class DrawingColors extends Application {
 				true, // proportional
 				CycleMethod.NO_CYCLE, // cycle colors
 				// stops
-				new Stop(0.1f, Color.rgb(255, 200, 0, .784)), new Stop(1.0f,
+				new Stop(0.1F, Color.rgb(255, 200, 0, .784)), new Stop(1.0F,
 						Color.rgb(0, 0, 0, .784)));
 		rectangle.setFill(linearGrad);
 		root.getChildren().add(rectangle);
@@ -82,7 +78,7 @@ public class DrawingColors extends Application {
 				70, // end Y
 				false, // proportional
 				CycleMethod.REFLECT, // cycleMethod
-				new Stop(0f, Color.rgb(0, 255, 0, .784)), new Stop(1.0f,
+				new Stop(0F, Color.rgb(0, 255, 0, .784)), new Stop(1.0F,
 						Color.rgb(0, 0, 0, .784)));
 		roundRect.setFill(cycleGrad);
 		root.getChildren().add(roundRect);

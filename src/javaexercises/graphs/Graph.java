@@ -12,15 +12,15 @@ import javafx.scene.layout.Pane;
 public class Graph {
 
 	public static final BooleanProperty SHOW_WEIGHT = new SimpleBooleanProperty(true);
-	private GraphModel model;
-
 	private Group canvas;
 
+	private Pane cellLayer;
+
+	private GraphModel model;
+
+	private MouseGestures mouseGestures;
+
 	private ZoomableScrollPane scrollPane;
-
-	MouseGestures mouseGestures;
-
-	Pane cellLayer;
 
 	public Graph() {
 
@@ -40,45 +40,9 @@ public class Graph {
 
 	}
 
-	public ScrollPane getScrollPane() {
-		return scrollPane;
-	}
-
-	public Pane getCellLayer() {
-		return cellLayer;
-	}
-
-	public GraphModel getModel() {
-		return model;
-	}
-
 	public void clean() {
 		getCellLayer().getChildren().removeIf(VoronoiRegion.class::isInstance);
 	}
-
-	public void voronoi() {
-		clean();
-		List<Cell> allCells = getModel().getAllCells();
-		List<Triangle> triangulate = new DelaunayTopology(allCells.size(), this).triangulate();
-		List<Ponto> collect = triangulate.stream().flatMap(Triangle::allPoints).distinct().collect(Collectors.toList());
-		for (Ponto ponto : collect) {
-			List<Triangle> tr = triangulate.stream().filter(t -> t.allPoints().anyMatch(ponto::equals)).collect(Collectors.toList());
-			VoronoiRegion voronoiRegion = new VoronoiRegion(ponto, tr);
-			getCellLayer().getChildren().add(0, voronoiRegion);
-		}
-		sortChildren();
-		getModel().coloring();
-
-	}
-
-	public void sortChildren() {
-		ObservableList<Node> children = getCellLayer().getChildren();
-		List<Node> collect2 = children.stream().filter(Cell.class::isInstance).collect(Collectors.toList());
-		for (Node node : collect2) {
-			node.toFront();
-		}
-	}
-
 
 	public void endUpdate() {
 
@@ -105,8 +69,44 @@ public class Graph {
 		getModel().merge();
 	}
 
+	public Pane getCellLayer() {
+		return cellLayer;
+	}
+
+	public GraphModel getModel() {
+		return model;
+	}
 
 	public double getScale() {
 		return scrollPane.getScaleValue();
+	}
+
+	public ScrollPane getScrollPane() {
+		return scrollPane;
+	}
+
+
+	public void sortChildren() {
+		ObservableList<Node> children = getCellLayer().getChildren();
+		List<Node> collect2 = children.stream().filter(Cell.class::isInstance).collect(Collectors.toList());
+		for (Node node : collect2) {
+			node.toFront();
+		}
+	}
+
+
+	public void voronoi() {
+		clean();
+		List<Cell> allCells = getModel().getAllCells();
+		List<Triangle> triangulate = new DelaunayTopology(allCells.size(), this).triangulate();
+		List<Ponto> collect = triangulate.stream().flatMap(Triangle::allPoints).distinct().collect(Collectors.toList());
+		for (Ponto ponto : collect) {
+			List<Triangle> tr = triangulate.stream().filter(t -> t.allPoints().anyMatch(ponto::equals)).collect(Collectors.toList());
+			VoronoiRegion voronoiRegion = new VoronoiRegion(ponto, tr);
+			getCellLayer().getChildren().add(0, voronoiRegion);
+		}
+		sortChildren();
+		getModel().coloring();
+
 	}
 }

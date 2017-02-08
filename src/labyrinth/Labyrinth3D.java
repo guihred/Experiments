@@ -20,29 +20,25 @@ public class Labyrinth3D extends Application {
 		{ "|", "_", "_", "_", "_", "_" }, };
 	private static final int SIZE = 50;
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	private final double cameraModifier = 50.0;
 
 	private final double cameraQuantity = 10.0;
-	Color color = Color.RED;
+
+	private Color color = Color.RED;
 	private int i;
 	private int j;
-
 	private void initializeLabyrinth(Group root) {
 		for (int k = mapa.length - 1; k >= 0; k--) {
 			for (int l = mapa[k].length - 1; l >= 0; l--) {
 				String string = mapa[k][l];
 				if ("_".equals(string)) {
-					Cube rectangle = new Cube(SIZE, Color.BLUE);
+					LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 					rectangle.setTranslateX(k * SIZE);
 					rectangle.setTranslateZ(l * SIZE);
-					rectangle.ry.setAngle(90);
+					rectangle.getRy().setAngle(90);
 					root.getChildren().add(rectangle);
 				} else {
-					Cube rectangle = new Cube(SIZE, Color.BLUE);
+					LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 					rectangle.setTranslateX(k * SIZE);
 					rectangle.setTranslateZ(l * SIZE);
 					// Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
@@ -70,13 +66,13 @@ public class Labyrinth3D extends Application {
 		scene.setOnMouseClicked(event -> {
 			String string = mapa[i][j];
 			if ("_".equals(string)) {
-				Cube rectangle = new Cube(SIZE, color);
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
-				rectangle.ry.setAngle(90);
+				rectangle.getRy().setAngle(90);
 				root.getChildren().add(rectangle);
 			} else {
-				Cube rectangle = new Cube(SIZE, color);
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
 				root.getChildren().add(rectangle);
@@ -151,6 +147,10 @@ public class Labyrinth3D extends Application {
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 
 }

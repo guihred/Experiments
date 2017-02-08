@@ -36,7 +36,7 @@ public class TreeTopology extends GenTopology {
 				double n = (y1 + cell2.getLayoutY()) / 2;
 				double r = distance(x1, cell2.getLayoutX(), y1, cell2.getLayoutY());
 				if (cells.stream().filter(c -> c != cell && c != cell2).noneMatch(c -> distance(m, c.getLayoutX(), n, c.getLayoutY()) <= r / 2)) {
-					graph.getModel().addBiEdge(cell.cellId, cell2.cellId, 1);
+					graph.getModel().addBiEdge(cell.getCellId(), cell2.getCellId(), 1);
 				}
 
 			}
@@ -45,7 +45,7 @@ public class TreeTopology extends GenTopology {
 		List<Edge> kruskal = graph.getModel().kruskal();
 		graph.getModel().removeAllEdges();
 		for (Edge edge : kruskal) {
-			graph.getModel().addBiEdge(edge.getSource().cellId, edge.getTarget().cellId, 1);
+			graph.getModel().addBiEdge(edge.getSource().getCellId(), edge.getTarget().getCellId(), 1);
 		}
 		graph.endUpdate();
 		graph.sortChildren();

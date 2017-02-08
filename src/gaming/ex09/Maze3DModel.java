@@ -25,31 +25,26 @@ import javafx.util.Duration;
 public class Maze3DModel {
 
     public static final int MAZE_SIZE = 24;
-    static final Random random = new Random();
-    public static Maze3DModel create(GridPane gridPane) {
-		return new Maze3DModel(gridPane);
-	}
-    final Circle circle;
-    GridPane gridPane;
-    Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
-	int moves = 0;
-    public Maze3DModel(GridPane gridPane) {
-        this.gridPane = gridPane;
+	private final Circle circle;
+	private Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
+	private final Random random = new Random();
+
+	public Maze3DModel(GridPane gridPane) {
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
                 maze[i][j] = new Maze3DSquare();
                 gridPane.add(maze[i][j], j, i);
                 if (i == 0) {
-                    maze[i][j].north.set(false);
+					maze[i][j].setNorth(false);
                 }
                 if (j == 0) {
-                    maze[i][j].west.set(false);
+					maze[i][j].setWest(false);
                 }
                 if (j == MAZE_SIZE - 1) {
-                    maze[i][j].east.set(false);
+					maze[i][j].setEast(false);
                 }
                 if (i == MAZE_SIZE - 1) {
-                    maze[i][j].south.set(false);
+					maze[i][j].setSouth(false);
                 }
             }
         }
@@ -59,47 +54,47 @@ public class Maze3DModel {
         List<String> check = new ArrayList<>();
         Timeline timeline = new Timeline();
         final EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
-            int r = 0, c = 0;
+			private int r = 0, c = 0;
             @Override
             public void handle(ActionEvent event) {
                 while (!history.isEmpty()) {
-                    maze[r][c].visited.set(true);
+					maze[r][c].setVisited(true);
                     check.clear();
 
-                    if (c > 0 && !maze[r][c - 1].visited.get()) {
+					if (c > 0 && !maze[r][c - 1].isVisited()) {
                         check.add("L");
                     }
-                    if (r > 0 && !maze[r - 1][c].visited.get()) {
+					if (r > 0 && !maze[r - 1][c].isVisited()) {
                         check.add("U");
                     }
-                    if (c < MAZE_SIZE - 1 && !maze[r][c + 1].visited.get()) {
+					if (c < MAZE_SIZE - 1 && !maze[r][c + 1].isVisited()) {
                         check.add("R");
                     }
-                    if (r < MAZE_SIZE - 1 && !maze[r + 1][c].visited.get()) {
+					if (r < MAZE_SIZE - 1 && !maze[r + 1][c].isVisited()) {
                         check.add("D");
                     }
                     if (!check.isEmpty()) {
                         history.add(maze[r][c]);
                         final String direction = check.get(random.nextInt(check.size()));
 						if ("L".equals(direction)) {
-                            maze[r][c].west.set(true);
+							maze[r][c].setWest(true);
                             c = c - 1;
-                            maze[r][c].east.set(true);
+							maze[r][c].setEast(true);
                         }
 						if ("U".equals(direction)) {
-                            maze[r][c].north.set(true);
+							maze[r][c].setNorth(true);
                             r = r - 1;
-                            maze[r][c].south.set(true);
+							maze[r][c].setSouth(true);
                         }
 						if ("R".equals(direction)) {
-                            maze[r][c].east.set(true);
+							maze[r][c].setEast(true);
                             c = c + 1;
-                            maze[r][c].west.set(true);
+							maze[r][c].setWest(true);
                         }
 						if ("D".equals(direction)) {
-                            maze[r][c].south.set(true);
+							maze[r][c].setSouth(true);
                             r = r + 1;
-                            maze[r][c].north.set(true);
+							maze[r][c].setNorth(true);
                         }
                     } else {
                         final Maze3DSquare remove = history.remove(history.size() - 1);
@@ -127,5 +122,8 @@ public class Maze3DModel {
         maze[0][0].setCenter(circle);
         
     }
+    public static Maze3DModel create(GridPane gridPane) {
+		return new Maze3DModel(gridPane);
+	}
 
 }

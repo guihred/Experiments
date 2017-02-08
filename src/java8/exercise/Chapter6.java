@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class Chapter6 {
 	static class Matrix {
-		int[][] mat = { { 1, 1 }, { 1, 0 } };
+		private int[][] mat = { { 1, 1 }, { 1, 0 } };
 		public Matrix() {
 		}
 		public Matrix(int[][] mat) {
@@ -88,7 +88,8 @@ public class Chapter6 {
 	 */
 	public static void ex10() {
 		String url = "http://www.google.com";
-		CompletableFuture.supplyAsync(() -> readPage(url)).thenApply((page) -> getLinks(page)).thenAccept(l -> l.forEach(System.out::println));
+		CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(page -> getLinks(page))
+				.thenAccept(l -> l.forEach(System.out::println));
 		ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
 
 	}
@@ -170,7 +171,7 @@ public class Chapter6 {
 		ConcurrentHashMap<String, Set<File>> concurrentHashMap = new ConcurrentHashMap<>();
 		ExecutorService pool;
 		pool = Executors.newCachedThreadPool();
-		Stream.of(new File("alice.txt"), new File("warAndPeace.txt")).forEach((u) -> pool.submit(() -> {
+		Stream.of(new File("alice.txt"), new File("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
 			try {
 				Stream<String> wordsAsList = getWords(u.toURI());
 				wordsAsList.forEach(w -> {
@@ -189,7 +190,7 @@ public class Chapter6 {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
 		concurrentHashMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.forEach((u) -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
+				.forEach(u -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
 	/*
@@ -211,7 +212,7 @@ public class Chapter6 {
 		ConcurrentHashMap<String, Set<File>> concurrentHashMap = new ConcurrentHashMap<>();
 		ExecutorService pool;
 		pool = Executors.newCachedThreadPool();
-		Stream.of(new File("alice.txt"), new File("warAndPeace.txt")).forEach((u) -> pool.submit(() -> {
+		Stream.of(new File("alice.txt"), new File("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
 			try {
 				getWords(u.toURI())
 						.forEach(w -> concurrentHashMap.computeIfAbsent(w, t -> ConcurrentHashMap.newKeySet()).add(u));
@@ -222,7 +223,7 @@ public class Chapter6 {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
 		concurrentHashMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.forEach((u) -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
+				.forEach(u -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
 	public static void ex7() throws IOException {

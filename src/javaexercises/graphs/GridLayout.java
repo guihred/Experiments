@@ -7,9 +7,9 @@ import java.util.Random;
 
 public class GridLayout implements Layout {
 
-	Graph graph;
+	private Graph graph;
 
-	Random rnd = new Random();
+	private Random rnd = new Random();
 
 	public GridLayout(Graph graph) {
 		this.graph = graph;
@@ -21,7 +21,7 @@ public class GridLayout implements Layout {
 		Cell[] cells = graph.getModel().getAllCells().stream().toArray(Cell[]::new);
 
 		Cell cell2 = cells[0];
-		Map<Cell, Integer> w = graph.getModel().unweightedUndirected(cell2.cellId);
+		Map<Cell, Integer> w = graph.getModel().unweightedUndirected(cell2.getCellId());
 		Comparator<Cell> comparing = Comparator.comparing(e -> w.get(e));
 		Arrays.sort(cells, comparing);
 
@@ -32,7 +32,7 @@ public class GridLayout implements Layout {
 		for (int i = 0; i < size; i++) {
 			Cell cell = cells[i];
 			if (w.get(cell) == Integer.MAX_VALUE) {
-				w.putAll(graph.getModel().unweightedUndirected(cell.cellId));
+				w.putAll(graph.getModel().unweightedUndirected(cell.getCellId()));
 				Arrays.sort(cells, i, size, comparing);
 			}
 			double x = i % sqrt * radius + (i / sqrt % 2 == 0 ? 0 : -radius / 2) + rnd.nextInt(11) - 5;

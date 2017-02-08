@@ -8,45 +8,19 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-/**
- *
- 
- */
 public class EarthCubeMain extends Application {
-
-	/**
-	 
-	 */
-	CubeModel cubeModel;
-
-	/**
-	 
-	 */
-	Scene scene;
-
-	/**
-	 
-	 */
-	CubeNode cube;
-
-	/**
-	 
-	 
-	 */
 	public static void main(String[] args) {
 		Application.launch(EarthCubeMain.class, args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
-		cubeModel = CubeModel.instance;
-		cube = new CubeNode();
+		CubeNode cube = new CubeNode();
 		cube.setFocusTraversable(true);
-
 		Group root = new Group(cube);
 		root.setLayoutX(150);
 		root.setLayoutY(150);
-		scene = new Scene(root, 800, 800);
+		Scene scene = new Scene(root, 800, 800);
 		scene.setFill(Color.TRANSPARENT);
 		PerspectiveCamera perspectiveCamera = new PerspectiveCamera();
 		perspectiveCamera.setFieldOfView(30);
@@ -55,6 +29,6 @@ public class EarthCubeMain extends Application {
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.show();
 
-		cube.showMapTimeline.playFromStart();
+		cube.playShowMap();
 	}
 }

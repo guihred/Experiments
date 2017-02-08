@@ -9,18 +9,18 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.transform.Rotate;
 
-public class Cube extends Group {
+public class LabyrinthWall extends Group {
 
-	final Rotate rx = new Rotate(0, Rotate.X_AXIS);
-	final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
-	final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
+	private final Rotate rx = new Rotate(0, Rotate.X_AXIS);
+	private final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
+	private final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
-	public Cube(double size, Color color) {
+	public LabyrinthWall(double size, Color color) {
 		PhongMaterial value = new PhongMaterial(color);
 		create(size, value);
 	}
 
-	public Cube(double size, Color color, Image diffuse, Image specular) {
+	public LabyrinthWall(double size, Color color, Image diffuse, Image specular) {
 		PhongMaterial value = new PhongMaterial(color);
 		value.setDiffuseMap(diffuse);
 		value.setSpecularMap(specular);
@@ -28,7 +28,7 @@ public class Cube extends Group {
 	}
 
 	private void create(double size, PhongMaterial value) {
-		getTransforms().addAll(rz, ry, rx);
+		getTransforms().addAll(getRz(), getRy(), getRx());
 		Box cube = new Box(size, size / 2, 5);
 		cube.setMaterial(value);
 		cube.setBlendMode(BlendMode.DARKEN);
@@ -38,5 +38,17 @@ public class Cube extends Group {
 		cube.setTranslateY(0);
 		cube.setTranslateZ(-0.5 * size);
 		getChildren().addAll(cube);
+	}
+
+	public Rotate getRx() {
+		return rx;
+	}
+
+	public Rotate getRy() {
+		return ry;
+	}
+
+	public Rotate getRz() {
+		return rz;
 	}
 }

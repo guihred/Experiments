@@ -8,14 +8,12 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Scale;
 
 public class ZoomableScrollPane extends ScrollPane {
-	Group zoomGroup;
-	Scale scaleTransform;
-	Node content;
-	double scaleValue = 1.0;
-	double delta = 0.1;
+	private Group zoomGroup;
+	private Scale scaleTransform;
+	private double scaleValue = 1.0;
+	private double delta = 0.1;
 
 	public ZoomableScrollPane(Node content) {
-		this.content = content;
 		Group contentGroup = new Group();
 		zoomGroup = new Group();
 		contentGroup.getChildren().add(zoomGroup);
@@ -93,13 +91,10 @@ public class ZoomableScrollPane extends ScrollPane {
 		double scale = Math.min(scaleX, scaleY);
 
 		// check precondition
-		if (minimizeOnly) {
-
-			// check if zoom factor would be an enlargement and if so, just set
-			// it to 1
-			if (Double.compare(scale, 1) > 0) {
-				scale = 1;
-			}
+		// check if zoom factor would be an enlargement and if so, just set
+		// it to 1
+		if (minimizeOnly && Double.compare(scale, 1) > 0) {
+			scale = 1;
 		}
 
 		// apply zoom

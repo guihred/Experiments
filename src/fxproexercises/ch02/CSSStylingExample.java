@@ -29,10 +29,6 @@ import simplebuilder.*;
 
 public class CSSStylingExample extends Application {
 
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
-
 	private ObservableList<Cursor> cursors = FXCollections.observableArrayList(Cursor.DEFAULT, Cursor.CROSSHAIR,
 			Cursor.WAIT,
 			Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE, Cursor.SE_RESIZE,
@@ -40,6 +36,7 @@ public class CSSStylingExample extends Application {
 	private ChoiceBox<Cursor> choiceBoxRef = new ChoiceBox<>(cursors);
 
 	private DoubleProperty fillVals = new SimpleDoubleProperty(255.0);
+
 	private Label labelStageH = new Label();
 	private Label labelStageW = new Label();
 	private Label labelStageX = new SimpleLabelBuilder().id("stageX").build();
@@ -47,10 +44,10 @@ public class CSSStylingExample extends Application {
 	private Scene sceneRef;
 	private Slider sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255).orientation(Orientation.VERTICAL)
 			.build();
-
 	private Text textSceneH = new SimpleTextBuilder().styleClass("emphasized-text").id("sceneHeightText").build();
 
 	private Text textSceneW = new SimpleTextBuilder().styleClass("emphasized-text").build();
+
 	private Text textSceneX = new SimpleTextBuilder().styleClass("emphasized-text").build();
 	private Text textSceneY = new SimpleTextBuilder().styleClass("emphasized-text").build();
 	@Override
@@ -58,7 +55,7 @@ public class CSSStylingExample extends Application {
 		final ToggleGroup toggleGrp = new ToggleGroup();
 
 
-		Hyperlink build = new SimpleHyperlinkBuilder().text("lookup()").onAction((e) -> {
+		Hyperlink build = new SimpleHyperlinkBuilder().text("lookup()").onAction(e -> {
 			System.out.println("sceneRef:" + sceneRef);
 			Text textRef = (Text) sceneRef.lookup("#sceneHeightText");
 			System.out.println(textRef.getText());
@@ -125,5 +122,8 @@ public class CSSStylingExample extends Application {
 		addedTextRef.textProperty().bind(new SimpleStringProperty("Scene fill: ").concat(sceneRef.fillProperty()));
 		// Add to the Text node to the FlowPane
 		((FlowPane) sceneRef.getRoot()).getChildren().add(addedTextRef);
+	}
+	public static void main(String[] args) {
+		Application.launch(args);
 	}
 }

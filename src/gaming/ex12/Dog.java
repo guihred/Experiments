@@ -1,7 +1,6 @@
 package gaming.ex12;
 
 import gaming.ex12.resources.ImageResource;
-
 import javafx.scene.canvas.GraphicsContext;
 
 public class Dog extends Player implements Enemy {
@@ -9,11 +8,10 @@ public class Dog extends Player implements Enemy {
 	public static final int INITIAL_X = 550;
 	public static final int WANDER_WIDTH = 150;
 
-	RunAnimation walkingAnimation = new RunAnimation(ImageResource.DOG);
-	RunAnimation stoppedAnimation = new RunAnimation(ImageResource.DOG, 11, 1);
-	RunAnimation jumpAnimation = new RunAnimation(ImageResource.DOG, 7, 2);
-
-	DogStatus status = DogStatus.WALKING;
+	private RunAnimation walkingAnimation = new RunAnimation(ImageResource.DOG);
+	private RunAnimation stoppedAnimation = new RunAnimation(ImageResource.DOG, 11, 1);
+	private RunAnimation jumpAnimation = new RunAnimation(ImageResource.DOG, 7, 2);
+	private DogStatus status = DogStatus.WALKING;
 
 	public Dog() {
 		super(ImageResource.DOG);

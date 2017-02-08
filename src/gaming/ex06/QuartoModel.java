@@ -54,11 +54,9 @@ public class QuartoModel {
                     break;
                 }
                 a.add(getMapQuarto()[j][i].getNumber());
-                if (j == 3) {
-					if (somethingInCommon(a)) {
-						return true;
-					}
-                }
+				if (j == 3 && somethingInCommon(a)) {
+					return true;
+				}
             }
         }
         for (int i = 0; i < 3; i++) {

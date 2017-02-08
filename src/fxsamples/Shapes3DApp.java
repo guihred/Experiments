@@ -58,14 +58,14 @@ public class Shapes3DApp extends Application {
 		float hs = s / 2;
 
 		// coordinates of the mapped image
-		float x0 = 0.0f;
-		float y0 = 0.0f;
-		float x1 = 1.0f;
-		float y1 = 1.0f;
+		float x0 = 0.0F;
+		float y0 = 0.0F;
+		float x1 = 1.0F;
+		float y1 = 1.0F;
 
 		TriangleMesh pyramidMesh = new TriangleMesh();
 		pyramidMesh.getPoints().addAll( //
-				0.0f, 0.0f, 0.0f, // A 0 Top of Pyramid
+				0.0F, 0.0F, 0.0F, // A 0 Top of Pyramid
 				hs, h, -hs, // B 1
 				hs, h, hs, // C 2
 				-hs, h, hs, // D 3

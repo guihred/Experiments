@@ -29,8 +29,8 @@ public class ChangingTextFonts extends Application {
 		text2.setFont(serif);
 		text2.setFill(Color.RED);
 		DropShadow dropShadow = new DropShadow();
-		dropShadow.setOffsetX(2.0f);
-		dropShadow.setOffsetY(2.0f);
+		dropShadow.setOffsetX(2.0F);
+		dropShadow.setOffsetY(2.0F);
 		dropShadow.setColor(Color.rgb(50, 50, 50, .588));
 		text2.setEffect(dropShadow);
 		root.getChildren().add(text2);
@@ -54,7 +54,7 @@ public class ChangingTextFonts extends Application {
 		root.getChildren().add(text5);
 		// Reflection
 		Reflection refl = new Reflection();
-		refl.setFraction(0.8f);
+		refl.setFraction(0.8F);
 		refl.setTopOffset(5);
 		text5.setEffect(refl);
 		primaryStage.setScene(scene);

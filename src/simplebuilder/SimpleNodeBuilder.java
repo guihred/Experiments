@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Cursor;
@@ -61,6 +62,11 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 
 	public Z rotate(double value) {
 		node.setRotate(value);
+		return (Z) this;
+	}
+
+	public Z rotate(ObservableValue<? extends Number> observable) {
+		node.rotateProperty().bind(observable);
 		return (Z) this;
 	}
 

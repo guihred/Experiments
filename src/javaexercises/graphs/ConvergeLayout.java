@@ -8,13 +8,10 @@ import javafx.event.EventHandler;
 
 public class ConvergeLayout implements Layout {
 
-	Graph graph;
+	private Random rnd = new Random();
 
-	Random rnd = new Random();
-
-	EventHandler<ActionEvent> eventHandler;
+	private final EventHandler<ActionEvent> eventHandler;
 	public ConvergeLayout(Graph graph) {
-		this.graph = graph;
 		eventHandler = t1 -> {
 			List<Cell> allCells = graph.getModel().getAllCells();
 			if (allCells.size() > 100) {
@@ -53,7 +50,11 @@ public class ConvergeLayout implements Layout {
 	@Override
 	public void execute() {
 		for (int j = 0; j < 500; j++) {
-			eventHandler.handle(null);
+			getEventHandler().handle(null);
 		}
+	}
+
+	public EventHandler<ActionEvent> getEventHandler() {
+		return eventHandler;
 	}
 }

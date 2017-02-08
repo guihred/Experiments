@@ -5,7 +5,7 @@ import javafx.animation.Timeline;
 
 public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, SimpleTimelineBuilder> {
 
-	Timeline timeline;
+	protected Timeline timeline;
 
 	public SimpleTimelineBuilder() {
 		super(new Timeline());

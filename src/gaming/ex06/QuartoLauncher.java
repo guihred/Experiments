@@ -59,14 +59,12 @@ public class QuartoLauncher extends Application {
             final EventTarget target = event.getTarget();
             if (target instanceof Shape3D) {
                 final Parent parent = ((Shape3D) target).getParent();
-                if (parent instanceof QuartoPiece) {
-                    if (Stream.of(model.getMapQuarto()).flatMap(Stream::of).noneMatch(parent::equals)) {
-						((QuartoPiece) parent).setSelected(true);
-						model.getPieces().stream().filter(p -> !Objects.equals(p, parent) && p.isSelected()).forEach(
-										(QuartoPiece p) -> p.setSelected(false)
-                        );
-                    }
-                }
+				if (parent instanceof QuartoPiece
+						&& Stream.of(model.getMapQuarto()).flatMap(Stream::of).noneMatch(parent::equals)) {
+					((QuartoPiece) parent).setSelected(true);
+					model.getPieces().stream().filter(p -> !Objects.equals(p, parent) && p.isSelected())
+							.forEach((QuartoPiece p) -> p.setSelected(false));
+				}
             }
             if (target instanceof Circle && Stream.of(model.getMap()).flatMap(Stream::of).anyMatch(target::equals)) {
 				model.getPieces().stream().filter(p -> p.isSelected()).forEach((QuartoPiece p) -> {

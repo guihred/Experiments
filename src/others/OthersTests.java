@@ -72,7 +72,7 @@ public class OthersTests {
 
 		int checksum = eanCode.chars().limit(eanCode.length() - 1L).map(i -> Character.getNumericValue((char) i))
 				.reduce(0, new IntBinaryOperator() {
-			int factor = 1;
+					private int factor = 1;
 
 			@Override
 			public int applyAsInt(int sum, int i) {

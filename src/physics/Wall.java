@@ -23,8 +23,8 @@ public class Wall extends PhysicalObject {
     public Wall(float worldX, float worldY, float width, float height) {
         this.worldX = worldX;
         this.worldY = worldY;
-        this.worldWidth = width;
-        this.worldHeight = height;
+        worldWidth = width;
+        worldHeight = height;
         build();
     }
 
@@ -48,8 +48,8 @@ public class Wall extends PhysicalObject {
         
         sd.setAsBox(worldWidth,worldHeight);
         fd.shape = sd;
-        fd.density = 1.0f;
-        fd.friction = 0.3f;        
+		fd.density = 1.0F;
+		fd.friction = 0.3F;
         
 
         BodyDef bd = new BodyDef();

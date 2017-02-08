@@ -25,28 +25,15 @@ public class JewelViewer extends Application {
 	private static final double MODEL_Y_OFFSET = 0; // standard
 
 	private static final int VIEWPORT_SIZE = 800;
-	static MeshView loadMeshViews() {
-		File file = new File(MESH_FILENAME);
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
-
-		return new MeshView(mesh);
-	}
-
-	public static void main(String[] args) {
-		System.setProperty("prism.dirtyopts", "false");
-		launch(args);
-	}
 	private PerspectiveCamera camera;
 
 	private final double cameraModifier = 50.0;
-
 	private final double cameraQuantity = 10.0;
 
 	private PointLight pointLight;
 
 	private Group root;
+
 	private PerspectiveCamera addCamera(Scene scene) {
 		camera = new PerspectiveCamera();
 		System.out.println("Near Clip: " + camera.getNearClip());
@@ -88,7 +75,6 @@ public class JewelViewer extends Application {
 
 		return root;
 	}
-
 	@Override
 	public void start(Stage primaryStage) {
 		Group group = buildScene();
@@ -144,5 +130,19 @@ public class JewelViewer extends Application {
 		primaryStage.setTitle("Jewel Viewer");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	static MeshView loadMeshViews() {
+		File file = new File(MESH_FILENAME);
+		StlMeshImporter importer = new StlMeshImporter();
+		importer.read(file);
+		Mesh mesh = importer.getImport();
+
+		return new MeshView(mesh);
+	}
+
+	public static void main(String[] args) {
+		System.setProperty("prism.dirtyopts", "false");
+		launch(args);
 	}
 }

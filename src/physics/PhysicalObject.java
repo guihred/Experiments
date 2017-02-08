@@ -1,7 +1,6 @@
 package physics;
 
 import javafx.scene.Node;
-
 import org.jbox2d.dynamics.Body;
 
 /**
@@ -10,8 +9,8 @@ import org.jbox2d.dynamics.Body;
  */
 public abstract class PhysicalObject {
 
-	Node node;
-	Body body;
+	protected Node node;
+	protected Body body;
 
 	final void build() {
 		node = create();

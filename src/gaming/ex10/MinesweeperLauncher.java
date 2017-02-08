@@ -21,9 +21,9 @@ public class MinesweeperLauncher extends Application {
 
         final MinesweeperModel memoryModel = new MinesweeperModel(gridPane);
 
-        for (int i = 0; i < memoryModel.map.length; i++) {
-            for (int j = 0; j < memoryModel.map[i].length; j++) {
-                MinesweeperSquare map1 = memoryModel.map[i][j];
+        for (int i = 0; i < memoryModel.getMap().length; i++) {
+            for (int j = 0; j < memoryModel.getMap()[i].length; j++) {
+                MinesweeperSquare map1 = memoryModel.getMap()[i][j];
                 gridPane.add(new StackPane(map1, map1.getFinalShape()), i, j);
             }
         }

@@ -1,7 +1,6 @@
 package gaming.ex12;
 
 import gaming.ex12.resources.ImageResource;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,12 +16,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class PlatformMain extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
-	boolean keyPressed = false;
-
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("The Cat in Motion");
@@ -68,8 +61,8 @@ public class PlatformMain extends Application {
 		primaryStage.show();
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		AnimationTimer a = new AnimationTimer() {
-			Player jungle = new Player(ImageResource.JUNGLE);
-			long lastNanoTime = 0;
+			private Player jungle = new Player(ImageResource.JUNGLE);
+			private long lastNanoTime = 0;
 			@Override
 			public void handle(long currentNanoTime) {
 				jungle.render(gc);
@@ -105,5 +98,9 @@ public class PlatformMain extends Application {
 		};
 		a.start();
 
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

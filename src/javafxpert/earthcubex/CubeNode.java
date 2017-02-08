@@ -16,7 +16,6 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.Rotate;
@@ -29,33 +28,26 @@ import simplebuilder.SimpleRotateBuilder;
  * @author Jim Weaver
  */
 public class CubeNode extends Parent {
-	static double HOME_ANGLE_X = 30.0;
-	static double HOME_ANGLE_Y = -40.0;
-	static double MAX_ANGLE_X = 70.0;
-	static double MAX_ANGLE_Y = 720.0;
-	static double MAX_TRANSLATE_Z = 10000.0;
-	static double MIN_ANGLE_X = -70.0;
-	static double MIN_ANGLE_Y = -720.0;
-	static double MIN_TRANSLATE_Z = 0.0;
+	private static final double HOME_ANGLE_X = 30.0;
+	private static final double HOME_ANGLE_Y = -40.0;
+	private static final double MAX_TRANSLATE_Z = 10000.0;
+	private static final double MIN_TRANSLATE_Z = 0.0;
 
-	DoubleProperty angleX = new SimpleDoubleProperty(0);
+	private DoubleProperty angleX = new SimpleDoubleProperty(0);
 
-	DoubleProperty angleY = new SimpleDoubleProperty(0);
-	CubeFace bottomFace;
-	public Node bottomNode;
-	CubeModel cubeModel = CubeModel.instance;
-	double dragPressedAngleX;
-	double dragPressedAngleY;
+	private DoubleProperty angleY = new SimpleDoubleProperty(0);
+	private CubeFace bottomFace;
+	private CubeModel cubeModel = CubeModel.instance;
+	private double dragPressedAngleX;
+	private double dragPressedAngleY;
 
-	double dragStartOffsetX;
+	private double dragStartOffsetX;
 
-	double dragStartOffsetY;
+	private double dragStartOffsetY;
 
-	CubeFace frontFace;
+	private CubeFace frontFace;
 
-	public Node frontNode;
-
-	public Timeline hideMapTimeline = new Timeline(
+	private Timeline hideMapTimeline = new Timeline(
 					new KeyFrame(new Duration(0.0), t -> {
 				goHomePosition();
 						}, new KeyValue(cubeModel.mapOpacity, 0.7,
@@ -64,24 +56,18 @@ public class CubeNode extends Parent {
 							cubeModel.mapOpacity, 0.0, Interpolator.EASE_BOTH)))
 	;
 
-	CubeFace leftFace;
+	private CubeFace leftFace;
 
-	public Node leftNode;
-
-	CubeFace rearFace;
-	public Node rearNode;
-	CubeFace rightFace;
-	public Node rightNode;
-	public Timeline showMapTimeline = new Timeline(
+	private CubeFace rearFace;
+	private CubeFace rightFace;
+	private Timeline showMapTimeline = new Timeline(
 					new KeyFrame(new Duration(0.0), t -> goHomePosition(),
 							new KeyValue(cubeModel.mapOpacity, 0.0,
 									Interpolator.LINEAR)),
 					new KeyFrame(new Duration(1000.0), new KeyValue(
-							cubeModel.mapOpacity, 0.7, Interpolator.EASE_BOTH)))
-	;
-	CubeFace topFace;
+					cubeModel.mapOpacity, 0.7, Interpolator.EASE_BOTH)));
+	private CubeFace topFace;
 
-	public Node topNode;
 	public CubeNode() {
 
 		angleX.addListener((ov) -> arrangeFacesZOrder());
@@ -181,23 +167,23 @@ public class CubeNode extends Parent {
 			}
 		});
 	}
-
 	final void arrangeFacesZOrder() {
-		rearFace.zPos.setValue(CubeFace.RADIUS
+		rearFace.setZPos(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleY.getValue() + 0)));
-		bottomFace.zPos.setValue(CubeFace.RADIUS
+		bottomFace.setZPos(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleX.getValue() + 270)));
-		leftFace.zPos.setValue(CubeFace.RADIUS
+		leftFace.setZPos(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleY.getValue() + 270)));
-		rightFace.zPos.setValue(CubeFace.RADIUS
+		rightFace.setZPos(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleY.getValue() + 90)));
-		topFace.zPos.setValue(CubeFace.RADIUS
+		topFace.setZPos(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleX.getValue() + 90)));
-		frontFace.zPos.setValue(CubeFace.RADIUS
+		frontFace.setZPos(CubeFace.RADIUS
 				* Math.cos(Math.toRadians(angleY.getValue() + 180)));
 
 		FXCollections.sort(getChildren(), new CubeFaceComparator());
 	}
+
 	public void goHomePosition() {
 		Timeline homeTimeline = new Timeline(
 						new KeyFrame(new Duration(1000.0), new KeyValue(angleX,
@@ -205,6 +191,9 @@ public class CubeNode extends Parent {
 								new KeyValue(angleY, HOME_ANGLE_Y,
 								Interpolator.EASE_BOTH)));
 		homeTimeline.play();
+	}
+	public void playShowMap() {
+		showMapTimeline.playFromStart();
 	}
 
 }

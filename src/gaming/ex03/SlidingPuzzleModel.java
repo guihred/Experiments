@@ -81,11 +81,9 @@ public class SlidingPuzzleModel {
     }
 
 	boolean isNeighborEmpty(int i, int j, int h, int v) {
-        if (i + h >= 0 && i + h < MAP_SIZE) {
-            if (j + v >= 0 && j + v < MAP_SIZE) {
-                return map[i + h][j + v].isEmpty();
-            }
-        }
+		if (i + h >= 0 && i + h < MAP_SIZE && j + v >= 0 && j + v < MAP_SIZE) {
+			return map[i + h][j + v].isEmpty();
+		}
         return false;
     }
     final void reset() {
@@ -102,17 +100,15 @@ public class SlidingPuzzleModel {
     final void swapEmptyNeighbor(int i, int j) {
         for (int k = -1; k < 2; k++) {
             for (int l = -1; l < 2; l++) {
-                if ((k == 0 || l == 0) && k != l) {
-                    if (isNeighborEmpty(i, j, k, l)) {
-                        gridPane.getChildren().remove(map[i][j].getStack());
-                        gridPane.getChildren().remove(map[i + k][j + l].getStack());
-                        gridPane.add(map[i][j].getStack(), j + l, i + k);
-                        gridPane.add(map[i + k][j + l].getStack(), j, i);
-                        final SlidingPuzzleSquare empty = map[i + k][j + l];
-                        map[i + k][j + l] = map[i][j];
-                        map[i][j] = empty;
-                    }
-                }
+				if ((k == 0 || l == 0) && k != l && isNeighborEmpty(i, j, k, l)) {
+					gridPane.getChildren().remove(map[i][j].getStack());
+					gridPane.getChildren().remove(map[i + k][j + l].getStack());
+					gridPane.add(map[i][j].getStack(), j + l, i + k);
+					gridPane.add(map[i + k][j + l].getStack(), j, i);
+					final SlidingPuzzleSquare empty = map[i + k][j + l];
+					map[i + k][j + l] = map[i][j];
+					map[i][j] = empty;
+				}
             }
         }
     }

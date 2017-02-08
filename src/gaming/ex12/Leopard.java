@@ -1,17 +1,15 @@
 package gaming.ex12;
 
 import gaming.ex12.resources.ImageResource;
-
 import javafx.scene.canvas.GraphicsContext;
 
 public class Leopard extends Player {
 	public static final int INITIAL_Y = 238;
 
-	RunAnimation stoppedAnimation = new RunAnimation(ImageResource.LEOPARD, 10, 1);
-	RunAnimation runAnimation = new RunAnimation(ImageResource.LEOPARD);
-	RunAnimation jumpAnimation = new RunAnimation(ImageResource.LEOPARD, 5, 3);
-
-	LeopardStatus status = LeopardStatus.STOPPED;
+	private RunAnimation stoppedAnimation = new RunAnimation(ImageResource.LEOPARD, 10, 1);
+	private RunAnimation runAnimation = new RunAnimation(ImageResource.LEOPARD);
+	private RunAnimation jumpAnimation = new RunAnimation(ImageResource.LEOPARD, 5, 3);
+	private LeopardStatus status = LeopardStatus.STOPPED;
 
 	public Leopard() {
 		super(ImageResource.LEOPARD);

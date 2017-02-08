@@ -6,6 +6,8 @@
 package fxproexercises.ch06;
 
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,7 +23,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class ThreadInformationViewer extends Application
+public final class ThreadInformationViewer extends Application
         implements EventHandler<ActionEvent>, ChangeListener<Number> {
 
     public static class Model {
@@ -34,11 +36,7 @@ public class ThreadInformationViewer extends Application
         }
 
         private String formatStackTrace(StackTraceElement[] value) {
-            StringBuilder sb = new StringBuilder("StackTrace: \n");
-            for (StackTraceElement stackTraceElement : value) {
-                sb.append(" at ").append(stackTraceElement.toString()).append("\n");
-            }
-            return sb.toString();
+			return Stream.of(value).map(StackTraceElement::toString).collect(Collectors.joining("\n at ", "StackTrace: ", ""));
         }
 
         public final void update() {
@@ -51,7 +49,8 @@ public class ThreadInformationViewer extends Application
             });
         }
     }
-    private static class View {
+
+	private static final class View {
 
         public Scene scene;
         public TextArea stackTrace;
@@ -66,10 +65,6 @@ public class ThreadInformationViewer extends Application
             vbox.setPadding(new Insets(10, 10, 10, 10));
             scene = new Scene(vbox);
         }
-    }
-
-    public static void main(String[] args) {
-        Application.launch(args);
     }
 
     private final Model model;
@@ -109,5 +104,9 @@ public class ThreadInformationViewer extends Application
         stage.setWidth(440);
         stage.setHeight(640);
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
     }
 }

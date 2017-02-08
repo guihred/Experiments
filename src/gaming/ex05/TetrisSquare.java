@@ -18,14 +18,10 @@ public class TetrisSquare extends Region {
         setShape(new Rectangle(30, 30));
 
         styleProperty().bind(
-                Bindings.when(stateProperty().isEqualTo(TetrisPieceState.EMPTY))
+                Bindings.when(state.isEqualTo(TetrisPieceState.EMPTY))
                 .then("-fx-background-color:black;")
                 .otherwise("-fx-background-color:green; "));
     }
-
-	public ObjectProperty<TetrisPieceState> stateProperty() {
-		return state;
-	}
 
 	public void setState(TetrisPieceState value) {
 		state.set(value);

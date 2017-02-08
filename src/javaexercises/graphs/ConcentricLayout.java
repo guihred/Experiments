@@ -4,11 +4,7 @@ import java.util.*;
 
 public class ConcentricLayout implements Layout {
 
-	final int BOUND = 100;
-
-	final Graph graph;
-
-	Random rnd = new Random();
+	private final Graph graph;
 
 	public ConcentricLayout(Graph graph) {
 		this.graph = graph;

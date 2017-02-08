@@ -28,25 +28,23 @@ import simplebuilder.SimplePerspectiveTransformBuilder;
  * @author Jim Weaver
  */
 public class CubeFace extends Parent {
-	static double FACE_HUE = 211;
-	static double FACE_SAT = 0.25;
+	private static double FACE_HUE = 211;
+	private static double FACE_SAT = 0.25;
 
-	static int FRONT_FACE = 1;
-	static int RIGHT_FACE = 2;
-	static int REAR_FACE = 3;
-	static int LEFT_FACE = 0;
-	static int TOP_FACE = 4;
-	static int BOTTOM_FACE = 5;
+	public static final int FRONT_FACE = 1;
+	public static final int RIGHT_FACE = 2;
+	public static final int REAR_FACE = 3;
+	public static final int LEFT_FACE = 0;
+	public static final int TOP_FACE = 4;
+	public static final int BOTTOM_FACE = 5;
 
 	public static final double EDGE_LENGTH = 512;
 	public static final double RADIUS = EDGE_LENGTH * 0.5;
 
-	CubeModel cubeModel = CubeModel.instance;
+	private CubeModel cubeModel = CubeModel.instance;
 
-	Rectangle faceRect;
-	Node node;
-
-	DoubleProperty zPos = new SimpleDoubleProperty(0);
+	private Rectangle faceRect;
+	private DoubleProperty zPos = new SimpleDoubleProperty(0);
 
 	public CubeFace(int face) {
 		getChildren().addAll(createFaceRectangle(), createMapTiles(face));
@@ -186,4 +184,17 @@ public class CubeFace extends Parent {
 				Math.abs(-zPos.getValue() / (RADIUS * 2)) + 0.40);
 		return color;
 	}
+
+	public final DoubleProperty zPosProperty() {
+		return zPos;
+	}
+
+	public final Double getZPos() {
+		return zPosProperty().getValue();
+	}
+
+	public final void setZPos(final double zPos) {
+		zPosProperty().set(zPos);
+	}
+
 }

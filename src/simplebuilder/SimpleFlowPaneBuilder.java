@@ -8,7 +8,7 @@ import javafx.scene.layout.FlowPane;
 
 public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlowPaneBuilder> {
 
-	FlowPane flowPane;
+	protected FlowPane flowPane;
 
 	public SimpleFlowPaneBuilder() {
 		super(new FlowPane());

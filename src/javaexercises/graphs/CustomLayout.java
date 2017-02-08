@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 
 public class CustomLayout implements Layout {
 
-	Graph graph;
+	private Graph graph;
 
-	Random rnd = new Random();
+	private Random rnd = new Random();
 
 	public CustomLayout(Graph graph) {
 		this.graph = graph;

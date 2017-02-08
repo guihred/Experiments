@@ -5,7 +5,7 @@ import javafx.scene.transform.Rotate;
 
 public class SimpleRotateBuilder extends SimpleTransformBuilder<Rotate, SimpleRotateBuilder> {
 
-	Rotate rotate;
+	protected Rotate rotate;
 
 	public SimpleRotateBuilder() {
 		super(new Rotate());

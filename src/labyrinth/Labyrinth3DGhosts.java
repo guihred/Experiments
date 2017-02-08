@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 public class Labyrinth3DGhosts extends Application {
 	private final class MovimentacaoAleatoria extends AnimationTimer {
 		private MeshView[] animais;
-		int direction[];// EAST, WEST, NORTH, SOUTH
+		private int direction[];// EAST, WEST, NORTH, SOUTH
 
 		public MovimentacaoAleatoria(MeshView... animais) {
 			this.animais = animais;
@@ -91,12 +91,8 @@ public class Labyrinth3DGhosts extends Application {
 
 	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
 
-	static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 	private static final int SIZE = 60;
-
-	public static void main(String[] args) {
-		launch(args);
-	}
 
 	private PerspectiveCamera camera;
 
@@ -104,14 +100,14 @@ public class Labyrinth3DGhosts extends Application {
 
 	private final double cameraQuantity = 5.0;
 
+	private LabyrinthWall[][] cubes = new LabyrinthWall[mapa.length][mapa[0].length];
 
-	private Cube[][] cubes = new Cube[mapa.length][mapa[0].length];
+
 	boolean checkColision(Bounds boundsInParent) {
 		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(Cube::getBoundsInParent);
+				.map(LabyrinthWall::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
-
 	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
 		File file = new File(arquivo);
 		StlMeshImporter importer = new StlMeshImporter();
@@ -149,11 +145,11 @@ public class Labyrinth3DGhosts extends Application {
 		for (int i = mapa.length - 1; i >= 0; i--) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
-				Cube rectangle = new Cube(SIZE, Color.BLUE);
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
 				if ("_".equals(string)) {
-					rectangle.ry.setAngle(90);
+					rectangle.getRy().setAngle(90);
 				}
 				cubes[i][j] = rectangle;
 
@@ -169,11 +165,11 @@ public class Labyrinth3DGhosts extends Application {
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
 		subScene.setCamera(camera);
-		PointLight sun = new PointLight(Color.rgb(125, 125, 125));
-		sun.translateXProperty().bind(camera.translateXProperty());
-		sun.translateYProperty().bind(camera.translateYProperty());
-		sun.translateZProperty().bind(camera.translateZProperty());
-		root.getChildren().add(sun);
+		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+		light.translateXProperty().bind(camera.translateXProperty());
+		light.translateYProperty().bind(camera.translateYProperty());
+		light.translateZProperty().bind(camera.translateZProperty());
+		root.getChildren().add(light);
 
 		MeshView[] fantasmas = { 
 				gerarAnimal(MESH_GHOST, Color.AQUAMARINE),
@@ -255,6 +251,10 @@ public class Labyrinth3DGhosts extends Application {
 		primaryStage.setScene(sc);
 //		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 
 }

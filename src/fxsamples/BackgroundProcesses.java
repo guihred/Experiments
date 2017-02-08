@@ -58,7 +58,7 @@ public class BackgroundProcesses extends Application {
 		final TextArea textArea = new TextArea();
 		// ... Layout and UI controls code here
 		// wire up Start button
-		startButton.setOnAction((event) -> {
+		startButton.setOnAction(event -> {
 			startButton.setDisable(true);
 			progressBar.setProgress(0);
 			progressIndicator.setProgress(0);

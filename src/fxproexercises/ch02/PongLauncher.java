@@ -95,7 +95,7 @@ public class PongLauncher extends Application {
 	private Timeline pongAnimation = new SimpleTimelineBuilder()
 			.cycleCount(Animation.INDEFINITE)
 			.keyFrames(new KeyFrame(
-					new Duration(10.0), (t) -> {
+					new Duration(10.0), t -> {
 						checkForCollision();
 						int horzPixels = movingRight ? 1 : -1;
 						int vertPixels = movingDown ? 1 : -1;
@@ -103,7 +103,7 @@ public class PongLauncher extends Application {
 						centerY.setValue(centerY.getValue() + vertPixels);
 					}))
 			.build();
-	private Button startButton = newButton(225, 470, "Start!", (e) -> {
+	private Button startButton = newButton(225, 470, "Start!", e -> {
 		startVisible.set(false);
 		pongAnimation.playFromStart();
 		pongComponents.requestFocus();

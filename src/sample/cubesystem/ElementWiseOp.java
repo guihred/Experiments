@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 public class ElementWiseOp {
-	static final Map<String, BiFunction<Double, Double, Double>> OPERATIONS = new HashMap<String, BiFunction<Double, Double, Double>>() {
+	private static final Map<String, BiFunction<Double, Double, Double>> OPERATIONS = new HashMap<String, BiFunction<Double, Double, Double>>() {
 		{
 			put("add", (a, b) -> a + b);
 			put("sub", (a, b) -> a - b);

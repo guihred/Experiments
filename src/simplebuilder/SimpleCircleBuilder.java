@@ -4,7 +4,7 @@ import javafx.scene.shape.Circle;
 
 public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle, SimpleCircleBuilder> {
 
-	Circle circle;
+	protected Circle circle;
 
 	public SimpleCircleBuilder() {
 		super(new Circle());

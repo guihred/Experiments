@@ -30,6 +30,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleArcBuilder;
 
 public class Chapter4 {
 
@@ -119,13 +120,10 @@ public class Chapter4 {
 
 		public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t, ObservableValue<U> u) {
 			return new SimpleObjectProperty<R>() {
-
 				@Override
 				public void addListener(ChangeListener<? super R> listener) {
-					t.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(oldValue, u.getValue()),
-							f.apply(newValue, u.getValue())));
-					u.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(t.getValue(), oldValue),
-							f.apply(t.getValue(), newValue)));
+					t.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(oldValue, u.getValue()),f.apply(newValue, u.getValue())));
+					u.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(t.getValue(), oldValue),f.apply(t.getValue(), newValue)));
 				}
 
 				@Override
@@ -164,12 +162,7 @@ public class Chapter4 {
 
 		@Override
 		public void start(Stage stage) throws Exception {
-			BorderPane pane = new BorderPane();
-			pane.setCenter(new Button("Center"));
-			pane.setRight(new Button("Right"));
-			pane.setLeft(new Button("Left"));
-			pane.setBottom(new Button("Bottom"));
-			pane.setTop(new Button("Top"));
+			BorderPane pane = new BorderPane(new Button("Center"),new Button("Top"),new Button("Right"),new Button("Bottom"),new Button("Left"));
 			BorderPane.setAlignment(pane.getTop(), Pos.CENTER);
 			BorderPane.setAlignment(pane.getBottom(), Pos.CENTER);
 			Scene scene = new Scene(pane);
@@ -185,12 +178,12 @@ public class Chapter4 {
 		@Override
 		public void start(Stage stage) throws Exception {
 			BorderPane pane = new BorderPane();
-			Scene scene = new Scene(pane);
 			pane.setCenter(new Button("Center"));
-			pane.setRight(new Button("Right"));
+			Button top = new Button("Top");
 			pane.setLeft(new Button("Left"));
 			pane.setBottom(new Button("Bottom"));
-			Button top = new Button("Top");
+			pane.setRight(new Button("Right"));
+			Scene scene = new Scene(pane);
 			top.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(1))));
 			pane.setTop(top);
 
@@ -211,7 +204,7 @@ public class Chapter4 {
 		public void start(Stage stage) throws Exception {
 			BorderPane pane = new BorderPane();
 			Scene scene = new Scene(pane);
-			Circle planet = new Circle(scene.widthProperty().get() / 4 + 100, scene.widthProperty().get() / 4, 25);
+			Circle planet = new Circle(scene.getWidth() / 4 + 100, scene.getWidth() / 4, 25);
 			planet.setFill(Color.BLUE);
 			planet.centerXProperty().bind(divide(scene.widthProperty(), 2).add(100));
 			planet.centerYProperty().bind(divide(scene.heightProperty(), 2));
@@ -238,7 +231,7 @@ public class Chapter4 {
 
 
 			Button pulse = new Button("Pulse");
-			pulse.setOnAction((event) -> {
+			pulse.setOnAction(event -> {
 				ScaleTransition st = new ScaleTransition(Duration.millis(500));
 				st.setByX(1.5);
 				st.setByY(1.5);
@@ -249,24 +242,14 @@ public class Chapter4 {
 				st.play();
 			});
 			Button orbit = new Button("Orbit");
-			Arc arc = new Arc();
-			arc.centerXProperty().bind(divide(scene.widthProperty(), 2));
-			arc.centerYProperty().bind(divide(scene.heightProperty(), 2));
-			arc.setRadiusX(100);
-			arc.setRadiusY(150);
-			arc.setStartAngle(45.0f);
-			arc.setLength(360.0f);
-			arc.setType(ArcType.CHORD);
-			arc.setStroke(Color.RED);
-			arc.setStrokeType(StrokeType.OUTSIDE);
-			arc.setStrokeLineCap(StrokeLineCap.ROUND);
-			arc.setStrokeLineJoin(StrokeLineJoin.ROUND);
-			arc.setRotate(30D);
-			arc.setFill(Color.TRANSPARENT);
-			arc.rotateProperty().bind(multiply(rotationSlider.valueProperty(), 3.6));
-			arc.radiusXProperty().bind(multiply(radiusSlider.valueProperty(), 3.6));
+
+			Arc arc = new SimpleArcBuilder().centerX(divide(scene.widthProperty(), 2)).radiusX(100).radiusY(150)
+					.startAngle(45).length(360).centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
+					.stroke(Color.RED).strokeType(StrokeType.OUTSIDE).strokeLineCap(StrokeLineCap.ROUND).rotate(30D)
+					.radiusX(multiply(radiusSlider.valueProperty(), 3.6)).strokeLineJoin(StrokeLineJoin.ROUND)
+					.rotate(multiply(rotationSlider.valueProperty(), 3.6)).fill(Color.TRANSPARENT).build();
 			center.getChildren().add(arc);
-			orbit.setOnAction((event) -> {
+			orbit.setOnAction(event -> {
 				PathTransition st = new PathTransition(Duration.millis(1000), arc, center.getCenter());
 				st.setCycleCount(Animation.INDEFINITE);
 				st.setInterpolator(Interpolator.LINEAR);
@@ -300,7 +283,7 @@ public class Chapter4 {
 			WebView browser = new WebView();
 			WebEngine engine = browser.getEngine();
 			Button backButton = new Button("Back");
-			backButton.setOnAction((event) -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
+			backButton.setOnAction(event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
 			Button loadButton = new Button("Go");
 			loadButton.setOnAction(event -> engine.load(textField.getText()));
 
@@ -316,7 +299,7 @@ public class Chapter4 {
 	}
 
 	public static void main(String[] args) {
-		Application.launch(Ex10.class, args);
+		Application.launch(Ex9.class, args);
 	}
 
 }

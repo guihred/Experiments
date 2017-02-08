@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 class Triangle {
-	Ponto a, b, c;
+	private Ponto a;
+	private Ponto b;
+	private Ponto c;
 
 	public Triangle(Ponto a, Ponto b, Ponto c) {
 		this.a = a;
@@ -111,6 +113,30 @@ class Triangle {
 		}
 
 		return det < 0.0D;
+	}
+
+	public Ponto getA() {
+		return a;
+	}
+
+	public void setA(Ponto a) {
+		this.a = a;
+	}
+
+	public Ponto getB() {
+		return b;
+	}
+
+	public void setB(Ponto b) {
+		this.b = b;
+	}
+
+	public Ponto getC() {
+		return c;
+	}
+
+	public void setC(Ponto c) {
+		this.c = c;
 	}
 
 }

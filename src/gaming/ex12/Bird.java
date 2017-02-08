@@ -1,18 +1,17 @@
 package gaming.ex12;
 
 import gaming.ex12.resources.ImageResource;
-
 import javafx.scene.canvas.GraphicsContext;
 
 public class Bird extends Player implements Enemy {
 	public static final int INITIAL_Y = 100;
 	public static final int INITIAL_X = 300;
 	public static final int WANDER_WIDTH = 300;
-	RunAnimation flyingAnimation = new RunAnimation(ImageResource.BIRD);
-	RunAnimation fallingAnimation = new RunAnimation(ImageResource.BIRD, 20, 2);
-	RunAnimation fallenAnimation = new RunAnimation(ImageResource.BIRD, 6, 1);
+	private RunAnimation flyingAnimation = new RunAnimation(ImageResource.BIRD);
+	private RunAnimation fallingAnimation = new RunAnimation(ImageResource.BIRD, 20, 2);
+	private RunAnimation fallenAnimation = new RunAnimation(ImageResource.BIRD, 6, 1);
 
-	BirdStatus status = BirdStatus.FLYING;
+	private BirdStatus status = BirdStatus.FLYING;
 
 	public Bird() {
 		super(ImageResource.BIRD);

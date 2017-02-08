@@ -4,7 +4,7 @@ import javafx.scene.shape.Line;
 
 public class SimpleLineBuilder extends SimpleShapeBuilder<Line, SimpleLineBuilder> {
 
-	Line circle;
+	protected Line circle;
 
 	public SimpleLineBuilder() {
 		super(new Line());

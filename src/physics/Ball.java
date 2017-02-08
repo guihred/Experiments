@@ -41,13 +41,13 @@ public class Ball extends PhysicalObject {
         bd.position.set(centerX,centerY);
         
         CircleShape cs = new CircleShape();
-        cs.m_radius = 1.0f;
+		cs.m_radius = 1.0F;
         
         FixtureDef fd = new FixtureDef();
         fd.shape = cs;
-        fd.density = 0.9f;
-        fd.friction = 0.3f;        
-        fd.restitution = 0.5f;
+		fd.density = 0.9F;
+		fd.friction = 0.3F;
+		fd.restitution = 0.5F;
         
         Body b = PhysicalScene.world.createBody(bd); 
         

@@ -148,7 +148,7 @@ public class PhotoViewer extends Application {
 		leftButton.setType(ArcType.ROUND);
 		leftButton.getStyleClass().add("left-arrow");
 		// return to previous image
-		leftButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (mouseEvent) -> {
+		leftButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
 			System.out.println("busy loading? " + loading.get());
 			// if no previous image or currently loading.
 				if (currentIndex == 0 || loading.get()) {
@@ -165,7 +165,7 @@ public class PhotoViewer extends Application {
 		rightButton.setType(ArcType.ROUND);
 		rightButton.getStyleClass().add("right-arrow");
 		// advance to next image
-		rightButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (mouseEvent) -> {
+		rightButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
 			System.out.println("busy loading? " + loading.get());
 			// if no next image or currently loading.
 				if (currentIndex == imageFiles.size() - 1 || loading.get()) {

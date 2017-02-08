@@ -42,10 +42,10 @@ public class PathTransitionExample extends Application {
 
     @Override
     public void start(Stage stage) {
-		stopButton = newButton("Stop", (e) -> anim.stop());
-		resumeButton = newButton("Resume", (e) -> anim.play());
-		pauseButton = newButton("Pause", (e) -> anim.pause());
-		startButton = newButton("Start", (e) -> anim.playFromStart());
+		stopButton = newButton("Stop", e -> anim.stop());
+		resumeButton = newButton("Resume", e -> anim.play());
+		pauseButton = newButton("Pause", e -> anim.pause());
+		startButton = newButton("Start", e -> anim.playFromStart());
 		Node[] children = { startButton, pauseButton, resumeButton, stopButton };
 		HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10).children(children).build();
 		Scene scene = new Scene(new Group(ellipse, hbox), 400, 500);

@@ -20,7 +20,7 @@ public class FXCollectionsMapExamples {
 
     public static void main(String[] args) {
         ObservableMap<String, Integer> map = FXCollections.observableHashMap();
-        map.addListener(new MyListener());
+        map.addListener(new MyListenerMapExamples());
         System.out.println("Calling put(\"First\", 1): ");
         map.put("First", 1);
         System.out.println("Calling put(\"First\", 100): ");
@@ -48,22 +48,22 @@ public class FXCollectionsMapExamples {
         }
     }
 
-    private static class MyListener implements MapChangeListener<String, Integer> {
-
-        @Override
-        public void onChanged(Change<? extends String, ? extends Integer> change) {
-            System.out.println("\tmap = " + change.getMap());
-            System.out.println(prettyPrint(change));
-        }
-
-        private String prettyPrint(Change<? extends String, ? extends Integer> change) {
-            StringBuilder sb = new StringBuilder("\tChange event data:\n");
-            sb.append("\t\tWas added: ").append(change.wasAdded()).append("\n");
-            sb.append("\t\tWas removed: ").append(change.wasRemoved()).append("\n");
-            sb.append("\t\tKey: ").append(change.getKey()).append("\n");
-            sb.append("\t\tValue added: ").append(change.getValueAdded()).append("\n");
-            sb.append("\t\tValue removed: ").append(change.getValueRemoved()).append("\n");
-            return sb.toString();
-        }
-    }
+}
+class MyListenerMapExamples implements MapChangeListener<String, Integer> {
+	
+	@Override
+	public void onChanged(Change<? extends String, ? extends Integer> change) {
+		System.out.println("\tmap = " + change.getMap());
+		System.out.println(prettyPrint(change));
+	}
+	
+	private String prettyPrint(Change<? extends String, ? extends Integer> change) {
+		StringBuilder sb = new StringBuilder("\tChange event data:\n");
+		sb.append("\t\tWas added: ").append(change.wasAdded()).append("\n");
+		sb.append("\t\tWas removed: ").append(change.wasRemoved()).append("\n");
+		sb.append("\t\tKey: ").append(change.getKey()).append("\n");
+		sb.append("\t\tValue added: ").append(change.getValueAdded()).append("\n");
+		sb.append("\t\tValue removed: ").append(change.getValueRemoved()).append("\n");
+		return sb.toString();
+	}
 }

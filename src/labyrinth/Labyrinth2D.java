@@ -24,7 +24,8 @@ public class Labyrinth2D extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
-	Color color = Color.RED;
+
+	private Color color = Color.RED;
 	private int i;
 	private int j;
 

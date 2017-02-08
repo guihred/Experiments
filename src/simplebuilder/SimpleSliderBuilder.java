@@ -5,7 +5,7 @@ import javafx.scene.control.Slider;
 
 public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSliderBuilder> {
 
-	Slider slider;
+	protected Slider slider;
 
 	public SimpleSliderBuilder() {
 		super(new Slider());

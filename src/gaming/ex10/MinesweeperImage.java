@@ -18,20 +18,19 @@ import javafx.scene.text.Text;
 
 public enum MinesweeperImage {
 
-    BLANK((j) -> new Rectangle(5, 5, Color.WHITE)),
-    BOMB((j) -> {
+	BLANK(j -> new Rectangle(5, 5, Color.WHITE)), BOMB(j -> {
         int pontas = 8;
         double[] points = DoubleStream.iterate(0, i -> i + 1).limit(pontas * 2).flatMap(i
                 -> DoubleStream.of(5 * (i % 2 + 1) * Math.cos(Math.toRadians(i * 360 / pontas / 2)),
                         5 * (i % 2 + 1) * Math.sin(Math.toRadians(i * 360 / pontas / 2)))).toArray();
         return new Polygon(points);
     }),
-    NUMBER((i) -> {
+	NUMBER(i -> {
         Text t = new Text(Integer.toString(i));
         t.setFont(Font.font("Verdana", FontWeight.EXTRA_BOLD, 11));
         return t;
     });
-	F<Integer, Shape> shape;
+	private F<Integer, Shape> shape;
 
 	private MinesweeperImage(F<Integer, Shape> shape) {
         this.shape = shape;

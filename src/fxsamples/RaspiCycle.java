@@ -221,10 +221,11 @@ public class RaspiCycle extends Application {
 		System.out.println("Current Position: (" + curPos.getX() + ", "
 				+ curPos.getY() + ")");
 		walls.stream()
-				.filter((line) -> (line.getStartX() <= curPos.getX()
+				.filter(line -> (line.getStartX() <= curPos.getX()
 						&& curPos.getX() <= line.getEndX()
 						&& line.getStartY() <= curPos.getY() && curPos.getY() <= line
-						.getEndY())).forEach((line) -> {
+								.getEndY()))
+				.forEach(line -> {
 					animTimer.stop();
 					System.out.println("COLLISION!");
 					Platform.exit();

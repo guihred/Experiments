@@ -26,7 +26,7 @@ import simplebuilder.SimpleTimelineBuilder;
  */
 public class MoleculeSampleApp extends Application {
 
-	private double ALT_MULTIPLIER = 0.5;
+	private double altMultiplier = 0.5;
 	private final Group axisGroup = new Group();
 	private final PerspectiveCamera camera = new PerspectiveCamera(true);
 	private final double cameraDistance = 450;
@@ -207,62 +207,48 @@ public class MoleculeSampleApp extends Application {
                     }
                     break;
                 case UP:
-                    if (event.isControlDown() && event.isShiftDown()) {
-                        cameraXform2.t.setY(cameraXform2.t.getY() - 10.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 10.0 * ALT_MULTIPLIER);
-                    } else if (event.isControlDown()) {
-                        cameraXform2.t.setY(cameraXform2.t.getY() - 1.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown()) {
-                        cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 2.0 * ALT_MULTIPLIER);
-                    } else if (event.isShiftDown()) {
-                        double z = camera.getTranslateZ();
-                        double newZ = z + 5.0 * SHIFT_MULTIPLIER;
-                        camera.setTranslateZ(newZ);
-                    }
+				upAndDownMovement(event, -1);
                     break;
                 case DOWN:
-                    if (event.isControlDown() && event.isShiftDown()) {
-                        cameraXform2.t.setY(cameraXform2.t.getY() + 10.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 10.0 * ALT_MULTIPLIER);
-                    } else if (event.isControlDown()) {
-                        cameraXform2.t.setY(cameraXform2.t.getY() + 1.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown()) {
-                        cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 2.0 * ALT_MULTIPLIER);
-                    } else if (event.isShiftDown()) {
-                        double z = camera.getTranslateZ();
-                        double newZ = z - 5.0 * SHIFT_MULTIPLIER;
-                        camera.setTranslateZ(newZ);
-                    }
+				upAndDownMovement(event, 1);
                     break;
                 case RIGHT:
-                    if (event.isControlDown() && event.isShiftDown()) {
-                        cameraXform2.t.setX(cameraXform2.t.getX() + 10.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 10.0 * ALT_MULTIPLIER);
-                    } else if (event.isControlDown()) {
-                        cameraXform2.t.setX(cameraXform2.t.getX() + 1.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown()) {
-                        cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 2.0 * ALT_MULTIPLIER);
-                    }
+				leftAndRightMovement(event, 1);
                     break;
                 case LEFT:
-                    if (event.isControlDown() && event.isShiftDown()) {
-                        cameraXform2.t.setX(cameraXform2.t.getX() - 10.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 10.0 * ALT_MULTIPLIER);  // -
-                    } else if (event.isControlDown()) {
-                        cameraXform2.t.setX(cameraXform2.t.getX() - 1.0 * CONTROL_MULTIPLIER);
-                    } else if (event.isAltDown()) {
-                        cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER);  // -
-                    }
+				leftAndRightMovement(event, -1);
                     break;
 			default:
 				break;
             }
         });
     }
+
+	private void leftAndRightMovement(KeyEvent event, int i) {
+		if (event.isControlDown() && event.isShiftDown()) {
+			cameraXform2.t.setX(cameraXform2.t.getX() + i * 10.0 * CONTROL_MULTIPLIER);
+		} else if (event.isAltDown() && event.isShiftDown()) {
+			cameraXform.ry.setAngle(cameraXform.ry.getAngle() - i * 10.0 * altMultiplier);
+		} else if (event.isControlDown()) {
+			cameraXform2.t.setX(cameraXform2.t.getX() + i * 1.0 * CONTROL_MULTIPLIER);
+		} else if (event.isAltDown()) {
+			cameraXform.ry.setAngle(cameraXform.ry.getAngle() - i * 2.0 * altMultiplier);
+		}
+	}
+
+	private void upAndDownMovement(KeyEvent event, int i) {
+		if (event.isControlDown() && event.isShiftDown()) {
+			cameraXform2.t.setY(cameraXform2.t.getY() + i * 10.0 * CONTROL_MULTIPLIER);
+		} else if (event.isAltDown() && event.isShiftDown()) {
+			cameraXform.rx.setAngle(cameraXform.rx.getAngle() + i * 10.0 * altMultiplier);
+		} else if (event.isControlDown()) {
+			cameraXform2.t.setY(cameraXform2.t.getY() + i * 1.0 * CONTROL_MULTIPLIER);
+		} else if (event.isAltDown()) {
+			cameraXform.rx.setAngle(cameraXform.rx.getAngle() + i * 2.0 * altMultiplier);
+		} else if (event.isShiftDown()) {
+			camera.setTranslateZ(camera.getTranslateZ() - i * 5.0 * SHIFT_MULTIPLIER);
+		}
+	}
 
     private void handleMouse(Scene scene) {
         scene.setOnMousePressed((MouseEvent me) -> {

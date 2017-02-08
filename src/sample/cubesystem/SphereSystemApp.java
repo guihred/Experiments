@@ -105,62 +105,62 @@ public class SphereSystemApp extends Application {
         cube1_8.setTranslateX(180.0);
         cube1_9.setTranslateX(200.0);
 
-        cube1_1X.rx.setAngle(30.0);
-        cube1_2X.rz.setAngle(10.0);
-        cube1_3X.rz.setAngle(50.0);
-        cube1_4X.rz.setAngle(170.0);
-        cube1_5X.rz.setAngle(60.0);
-        cube1_6X.rz.setAngle(30.0);
-        cube1_7X.rz.setAngle(120.0);
-        cube1_8X.rz.setAngle(40.0);
-        cube1_9X.rz.setAngle(-60.0);
+        cube1_1X.getRx().setAngle(30.0);
+        cube1_2X.getRz().setAngle(10.0);
+        cube1_3X.getRz().setAngle(50.0);
+        cube1_4X.getRz().setAngle(170.0);
+        cube1_5X.getRz().setAngle(60.0);
+        cube1_6X.getRz().setAngle(30.0);
+        cube1_7X.getRz().setAngle(120.0);
+        cube1_8X.getRz().setAngle(40.0);
+        cube1_9X.getRz().setAngle(-60.0);
 
         double endTime = 4000.0;
 
         // Animate
         animation = new Timeline();
         animation.getKeyFrames().addAll(new KeyFrame(Duration.ZERO,
-                new KeyValue(cube1X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1X.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_1X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_2X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_3X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_4X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_5X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_6X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_7X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_8X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_9X.ry.angleProperty(), 0.0),
-                new KeyValue(cube1_1.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_2.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_3.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_4.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_5.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_6.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_7.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_8.rx.angleProperty(), 0.0),
-                new KeyValue(cube1_9.rx.angleProperty(), 0.0)),
+                new KeyValue(cube1X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1X.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_1X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_2X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_3X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_4X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_5X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_6X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_7X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_8X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_9X.getRy().angleProperty(), 0.0),
+                new KeyValue(cube1_1.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_2.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_3.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_4.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_5.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_6.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_7.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_8.getRx().angleProperty(), 0.0),
+                new KeyValue(cube1_9.getRx().angleProperty(), 0.0)),
                 new KeyFrame(new Duration(endTime),
-                new KeyValue(cube1X.ry.angleProperty(), 360.0),
-                new KeyValue(cube1X.rx.angleProperty(), 360.0),
-                new KeyValue(cube1_1X.ry.angleProperty(), -2880.0),
-                new KeyValue(cube1_2X.ry.angleProperty(), -1440.0),
-                new KeyValue(cube1_3X.ry.angleProperty(), -1080.0),
-                new KeyValue(cube1_4X.ry.angleProperty(), -720.0),
-                new KeyValue(cube1_5X.ry.angleProperty(), 1440.0),
-                new KeyValue(cube1_6X.ry.angleProperty(), 1080.0),
-                new KeyValue(cube1_7X.ry.angleProperty(), -360.0),
-                new KeyValue(cube1_8X.ry.angleProperty(), -720.0),
-                new KeyValue(cube1_9X.ry.angleProperty(), -1080.0),
-                new KeyValue(cube1_1.rx.angleProperty(), 7200.0),
-                new KeyValue(cube1_2.rx.angleProperty(), -7200.0),
-                new KeyValue(cube1_3.rx.angleProperty(), 7200.0),
-                new KeyValue(cube1_4.rx.angleProperty(), -7200.0),
-                new KeyValue(cube1_5.rx.angleProperty(), 7200.0),
-                new KeyValue(cube1_6.rx.angleProperty(), -7200.0),
-                new KeyValue(cube1_7.rx.angleProperty(), 7200.0),
-                new KeyValue(cube1_8.rx.angleProperty(), -7200.0),
-                new KeyValue(cube1_9.rx.angleProperty(), 7200.0)));
+                new KeyValue(cube1X.getRy().angleProperty(), 360.0),
+                new KeyValue(cube1X.getRx().angleProperty(), 360.0),
+                new KeyValue(cube1_1X.getRy().angleProperty(), -2880.0),
+                new KeyValue(cube1_2X.getRy().angleProperty(), -1440.0),
+                new KeyValue(cube1_3X.getRy().angleProperty(), -1080.0),
+                new KeyValue(cube1_4X.getRy().angleProperty(), -720.0),
+                new KeyValue(cube1_5X.getRy().angleProperty(), 1440.0),
+                new KeyValue(cube1_6X.getRy().angleProperty(), 1080.0),
+                new KeyValue(cube1_7X.getRy().angleProperty(), -360.0),
+                new KeyValue(cube1_8X.getRy().angleProperty(), -720.0),
+                new KeyValue(cube1_9X.getRy().angleProperty(), -1080.0),
+                new KeyValue(cube1_1.getRx().angleProperty(), 7200.0),
+                new KeyValue(cube1_2.getRx().angleProperty(), -7200.0),
+                new KeyValue(cube1_3.getRx().angleProperty(), 7200.0),
+                new KeyValue(cube1_4.getRx().angleProperty(), -7200.0),
+                new KeyValue(cube1_5.getRx().angleProperty(), 7200.0),
+                new KeyValue(cube1_6.getRx().angleProperty(), -7200.0),
+                new KeyValue(cube1_7.getRx().angleProperty(), 7200.0),
+                new KeyValue(cube1_8.getRx().angleProperty(), -7200.0),
+                new KeyValue(cube1_9.getRx().angleProperty(), 7200.0)));
 		animation.setCycleCount(Animation.INDEFINITE);
         
         PerspectiveCamera camera = new PerspectiveCamera(true);

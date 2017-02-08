@@ -19,12 +19,8 @@ import javafx.stage.Stage;
  */
 public class BasicAudioPlayerWithControlLauncher extends Application {
 
-	public static void main(String[] args) {
-        launch(args);
-	}
-    private MetadataView metaDataView;
+	private MetadataView metaDataView;
     private PlayerControlView playerControlsView;
-
     private final SongModel songModel = new SongModel();
 
     private void initSceneDragAndDrop(Scene scene) {
@@ -70,4 +66,8 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
         primaryStage.show();
         songModel.getPlayer().play();
     }
+
+    public static void main(String[] args) {
+        launch(args);
+	}
 }

@@ -28,11 +28,8 @@ import javafx.stage.Stage;
  * @author Note
  */
 public class CameraApp extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	private PerspectiveCamera camera;
+
 	private final double cameraQuantity = 100.0;
 	private final double cameraYLimit = 15;
 	private final Box cube = new Box(50, 50, 50);
@@ -61,12 +58,11 @@ public class CameraApp extends Application {
 			cylinder.setVisible(true);
 		}
 	};
-    private double mouseXold = 0;
-    private double mouseYold = 0;
+	private double mouseXold = 0;
+	private double mouseYold = 0;
     private final double rotateModifier = 25;
-	private final double sceneHeight = 600;
-	private final double sceneWidth = 600;
-
+    private final double sceneHeight = 600;
+    private final double sceneWidth = 600;
 	@Override
     public void start(Stage primaryStage) throws Exception {
         Group sceneRoot = new Group();
@@ -148,4 +144,8 @@ public class CameraApp extends Application {
 
         sceneRoot.getChildren().addAll(cylinder, cube, sphere);
     }
+
+	public static void main(String[] args) {
+		launch(args);
+	}
 }

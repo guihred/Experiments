@@ -8,7 +8,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class ReversiModel {
+public final class ReversiModel {
 
     public static final int BOARD_SIZE = 8;
     private ObjectProperty<Owner> turn = new SimpleObjectProperty<>(Owner.BLACK);

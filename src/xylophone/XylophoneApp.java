@@ -46,7 +46,7 @@ import simplebuilder.SimpleTimelineBuilder;
 
 public class XylophoneApp extends Application {
 
-	Xform sceneRoot = new Xform();
+	private Xform sceneRoot = new Xform();
 	private Timeline animation = new SimpleTimelineBuilder().keyFrames(
 			new KeyFrame(Duration.ZERO,
 					new KeyValue(sceneRoot.ry.angleProperty(), 390D,
@@ -64,14 +64,14 @@ public class XylophoneApp extends Application {
 					new KeyValue(sceneRoot.rx.angleProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D))))
 			.build();
 	// I didn't have any xylophone sounds so I added piano sounds :P
-	final AudioClip bar1Note = new AudioClip(XylophoneApp.class.getResource("C.wav").toString());
-	final AudioClip bar2Note = new AudioClip(XylophoneApp.class.getResource("D.wav").toString());
-	final AudioClip bar3Note = new AudioClip(XylophoneApp.class.getResource("E.wav").toString());
-	final AudioClip bar4Note = new AudioClip(XylophoneApp.class.getResource("F.wav").toString());
-	final AudioClip bar5Note = new AudioClip(XylophoneApp.class.getResource("G.wav").toString());
-	final AudioClip bar6Note = new AudioClip(XylophoneApp.class.getResource("A.wav").toString());
-	final AudioClip bar7Note = new AudioClip(XylophoneApp.class.getResource("B.wav").toString());
-	final AudioClip bar8Note = new AudioClip(XylophoneApp.class.getResource("mC.wav").toString());
+	private final AudioClip bar1Note = new AudioClip(XylophoneApp.class.getResource("C.wav").toString());
+	private final AudioClip bar2Note = new AudioClip(XylophoneApp.class.getResource("D.wav").toString());
+	private final AudioClip bar3Note = new AudioClip(XylophoneApp.class.getResource("E.wav").toString());
+	private final AudioClip bar4Note = new AudioClip(XylophoneApp.class.getResource("F.wav").toString());
+	private final AudioClip bar5Note = new AudioClip(XylophoneApp.class.getResource("G.wav").toString());
+	private final AudioClip bar6Note = new AudioClip(XylophoneApp.class.getResource("A.wav").toString());
+	private final AudioClip bar7Note = new AudioClip(XylophoneApp.class.getResource("B.wav").toString());
+	private final AudioClip bar8Note = new AudioClip(XylophoneApp.class.getResource("mC.wav").toString());
 
 	public Parent createContent() {
 		sceneRoot.rx.setAngle(45.0);

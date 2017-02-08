@@ -70,12 +70,18 @@ class CardStack extends Pane {
 	public void addCardsVertically(SolitaireCard... cards) {
 		for (SolitaireCard solitaireCard : cards) {
 			if (!this.cards.contains(solitaireCard)) {
-				solitaireCard.setLayoutY(this.cards.size() * 30);
 				this.cards.add(solitaireCard);
 				solitaireCard.setLayoutX(0);
 				getChildren().add(solitaireCard);
 			}
 		}
+		double layout = 0;
+		for (int i = 0; i < this.cards.size(); i++) {
+			SolitaireCard solitaireCard = this.cards.get(i);
+			solitaireCard.setLayoutY(layout);
+			layout += solitaireCard.isShown() ? 30 : 15;
+		}
+
 	}
 	public void addCards(SolitaireCard... cards) {
 		for (SolitaireCard solitaireCard : cards) {

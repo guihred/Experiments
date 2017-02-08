@@ -5,7 +5,7 @@ import javafx.scene.layout.HBox;
 
 public class SimpleHBoxBuilder extends SimplePaneBuilder<HBox, SimpleHBoxBuilder> {
 
-	HBox hbox;
+	protected HBox hbox;
 
 	public SimpleHBoxBuilder() {
 		super(new HBox());

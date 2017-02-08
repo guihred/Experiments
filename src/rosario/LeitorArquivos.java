@@ -271,7 +271,7 @@ public class LeitorArquivos {
 
 	private static void criarAba(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {
 		XSSFCellStyle style = wb.createCellStyle();
-		style.setFillBackgroundColor(new XSSFColor(new Color(1.0f, 0.2f, 0.2f)));
+		style.setFillBackgroundColor(new XSSFColor(new Color(1.0F, 0.2F, 0.2F)));
 		style.setFillPattern(CellStyle.FINE_DOTS);
 		int j = 0;
 		for (int i = 0; i < medicamentos.size(); i++) {
@@ -311,7 +311,7 @@ public class LeitorArquivos {
 
 	private static void criarAbaLoja(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {
 		XSSFCellStyle style = wb.createCellStyle();
-		style.setFillBackgroundColor(new XSSFColor(new Color(1.0f, 0.2f, 0.2f)));
+		style.setFillBackgroundColor(new XSSFColor(new Color(1.0F, 0.2F, 0.2F)));
 		style.setFillPattern(CellStyle.FINE_DOTS);
 		int j = 0;
 		for (int i = 0; i < medicamentos.size(); i++) {

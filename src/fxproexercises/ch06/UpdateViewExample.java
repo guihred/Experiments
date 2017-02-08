@@ -27,41 +27,18 @@ import javafx.stage.Stage;
 
 public class UpdateViewExample extends Application {
 
-    private static class Model {
+	private static final class Model {
 
-        private final ObjectProperty<Paint> fillPaint = new SimpleObjectProperty<>();
-        private final ObjectProperty<Paint> strokePaint = new SimpleObjectProperty<>();
+		protected final ObjectProperty<Paint> fillPaint = new SimpleObjectProperty<>();
+		protected final ObjectProperty<Paint> strokePaint = new SimpleObjectProperty<>();
 
         private Model() {
             fillPaint.set(Color.LIGHTGRAY);
             strokePaint.set(Color.DARKGRAY);
         }
-
-        final public ObjectProperty<Paint> fillPaintProperty() {
-            return fillPaint;
-        }
-
-        final public Paint getFillPaint() {
-            return fillPaint.get();
-        }
-
-        final public Paint getStrokePaint() {
-            return strokePaint.get();
-        }
-
-        final public void setFillPaint(Paint value) {
-            this.fillPaint.set(value);
-        }
-
-        final public void setStrokePaint(Paint value) {
-            this.strokePaint.set(value);
-        }
-
-        final public ObjectProperty<Paint> strokePaintProperty() {
-            return strokePaint;
-        }
     }
-    private static class View {
+
+	private static final class View {
 
         public HBox buttonHBox;
         public Button changeFillButton;
@@ -72,8 +49,8 @@ public class UpdateViewExample extends Application {
         private View(Model model) {
             rectangle = new Rectangle(200, 200);
             rectangle.setStrokeWidth(10);
-            rectangle.fillProperty().bind(model.fillPaintProperty());
-            rectangle.strokeProperty().bind(model.strokePaintProperty());
+			rectangle.fillProperty().bind(model.fillPaint);
+            rectangle.strokeProperty().bind(model.strokePaint);
             changeFillButton = new Button("Change Fill");
             changeStrokeButton = new Button("Change Stroke");
             buttonHBox = new HBox(10, changeFillButton, changeStrokeButton);
@@ -86,10 +63,6 @@ public class UpdateViewExample extends Application {
         }
     }
 
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-
     private final Model model;
 
     private View view;
@@ -100,11 +73,11 @@ public class UpdateViewExample extends Application {
 
     private void hookupEvents() {
         view.changeFillButton.setOnAction((ActionEvent actionEvent) -> {
-            final Paint fillPaint = model.getFillPaint();
+            final Paint fillPaint = model.fillPaint.get();
             if (fillPaint.equals(Color.LIGHTGRAY)) {
-                model.setFillPaint(Color.GRAY);
+                model.fillPaint.set(Color.GRAY);
             } else {
-                model.setFillPaint(Color.LIGHTGRAY);
+                model.fillPaint.set(Color.LIGHTGRAY);
             }
             Runnable task = () -> {
                 try {
@@ -123,11 +96,11 @@ public class UpdateViewExample extends Application {
             new Thread(task).start();
         });
         view.changeStrokeButton.setOnAction((ActionEvent actionEvent) -> {
-            final Paint strokePaint = model.getStrokePaint();
+            final Paint strokePaint = model.strokePaint.get();
             if (strokePaint.equals(Color.DARKGRAY)) {
-                model.setStrokePaint(Color.BLACK);
+                model.strokePaint.set(Color.BLACK);
             } else {
-                model.setStrokePaint(Color.DARKGRAY);
+                model.strokePaint.set(Color.DARKGRAY);
             }
         });
     }
@@ -139,6 +112,10 @@ public class UpdateViewExample extends Application {
         stage.setTitle("Unresponsive UI Example");
         stage.setScene(view.scene);
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
     }
 
 }

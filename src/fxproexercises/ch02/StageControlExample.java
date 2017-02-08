@@ -64,9 +64,9 @@ public class StageControlExample extends Application {
 		TextField titleTextField = newTextField("Stage Coach", 15);
 		final Rectangle skyBlueRect = new SimpleRectangleBuilder().x(0).y(0).width(250).height(350).arcHeight(50)
 				.arcWidth(50).fill(Color.SKYBLUE).stroke(null).build();
-		final Button toFrontButton = newButton("toFront()", (e) -> stageRef.toFront());
-		final Button closeButton = newButton("close()", (e) -> stageRef.close());
-		final Button toBackButton = newButton("toBack()", (e) -> stageRef.toBack());
+		final Button toFrontButton = newButton("toFront()", e -> stageRef.toFront());
+		final Button closeButton = newButton("close()", e -> stageRef.close());
+		final Button toBackButton = newButton("toBack()", e -> stageRef.toBack());
 		final HBox hbox = new HBox(10, new Label("title:"), titleTextField);
 		checkBoxResizable = newCheckBox("resizable",
 				stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);

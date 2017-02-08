@@ -21,17 +21,18 @@ public class Ramp extends PhysicalObject {
     private float endX;
     private float endY;
     private float angle;
-    private float fudgeX = 10.0f;
-    private float fudgeY = 10.0f;
+	private float fudgeX = 10.0F;
+	private float fudgeY = 10.0F;
 
     public Ramp(float startX, float startY, float endX, float endY) {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
-        this.angle = (float)Math.atan((this.endY - this.startY)/(this.endX - this.startX));
-        fudgeX = (float)Math.cos(angle)*Physics.toPixelWidth(1.0f)+(float)Math.sin(angle)*Physics.toPixelHeight(1.0f);
-        fudgeY = (float)Math.sin(angle)*Physics.toPixelHeight(1.0f);
+        angle = (float)Math.atan((this.endY - this.startY)/(this.endX - this.startX));
+		fudgeX = (float) Math.cos(angle) * Physics.toPixelWidth(1.0F)
+				+ (float) Math.sin(angle) * Physics.toPixelHeight(1.0F);
+		fudgeY = (float) Math.sin(angle) * Physics.toPixelHeight(1.0F);
         System.out.println("ramp angle="+Math.toDegrees(angle)+"fudgeX="+fudgeX+";fudgeY="+fudgeY);
         build();
     }
@@ -41,7 +42,7 @@ public class Ramp extends PhysicalObject {
         Line rect = new Line(Physics.toPixelX(startX)+fudgeX,Physics.toPixelY(startY)-fudgeY,Physics.toPixelWidth(endX)-fudgeX,Physics.toPixelY(endY)+fudgeY);
         rect.setStrokeLineCap(StrokeLineCap.ROUND);
         rect.setFill(Color.BLACK);
-        rect.setStrokeWidth(Physics.toPixelHeight(1.0f));
+		rect.setStrokeWidth(Physics.toPixelHeight(1.0F));
         return rect;
     }
 
@@ -51,10 +52,10 @@ public class Ramp extends PhysicalObject {
         FixtureDef fd = new FixtureDef();
         PolygonShape sd = new PolygonShape();
 
-        sd.setAsBox(Math.abs(startX - endX)*0.5f, 1);
+		sd.setAsBox(Math.abs(startX - endX) * 0.5F, 1);
         fd.shape = sd;
-        fd.density = 1.0f;
-        fd.friction = 0.7f;        
+		fd.density = 1.0F;
+		fd.friction = 0.7F;
         
         BodyDef bd = new BodyDef();
         bd.position = new Vec2((startX+endX)/2,(startY+endY)/2);        

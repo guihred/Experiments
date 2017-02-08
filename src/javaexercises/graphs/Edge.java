@@ -15,8 +15,7 @@ public class Edge extends Group implements Comparable<Edge> {
 	protected Cell source;
 	protected Cell target;
 	protected BooleanProperty selected = new SimpleBooleanProperty(false);
-	Line line;
-	boolean directed;
+	private Line line;
 	private final Integer valor;
 
 	public Edge(Cell source, Cell target) {

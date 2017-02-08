@@ -37,16 +37,16 @@ public class DotsModel {
     public static final int MAZE_SIZE = 6;
 
     DotsSquare[][] maze = new DotsSquare[MAZE_SIZE][MAZE_SIZE];
-    Group gridPane;
-    Line line = new Line(0, 0, 0, 0);
-    DotsSquare over;
-    DotsSquare selected;
-    final ObservableMap<String, ObservableSet<Set<DotsSquare>>> points = FXCollections.observableHashMap();
-    int currentPlayer = 1;
-    String[] jogadores = {"EU", "TU"};
-    Color[] colors = {Color.RED, Color.BLUE};
-    Random random = new Random();
-	EventHandler<? super MouseEvent> onMousePressed = e -> {
+	private Group gridPane;
+	private final Line line = new Line(0, 0, 0, 0);
+	private DotsSquare over;
+	private DotsSquare selected;
+	private final ObservableMap<String, ObservableSet<Set<DotsSquare>>> points = FXCollections.observableHashMap();
+	private int currentPlayer = 1;
+	private String[] jogadores = { "EU", "TU" };
+	private Color[] colors = { Color.RED, Color.BLUE };
+	private Random random = new Random();
+	private EventHandler<? super MouseEvent> onMousePressed = e -> {
 		final EventTarget target = e.getTarget();
 		if (target instanceof DotsSquare) {
 			DotsSquare a = (DotsSquare) target;
@@ -57,19 +57,19 @@ public class DotsModel {
 			selected = a;
 		}
 	};
-	EventHandler<? super MouseEvent> onMouseDragged = e -> {
+	private EventHandler<? super MouseEvent> onMouseDragged = e -> {
 		final EventTarget target = e.getTarget();
 		if (target instanceof DotsSquare) {
 			line.setEndX(e.getX());
 			line.setEndY(e.getY());
 		}
 	};
-	EventHandler<? super MouseEvent> onMouseReleased = e -> {
+	private EventHandler<? super MouseEvent> onMouseReleased = e -> {
 		over = Stream.of(maze).flatMap(Stream::of).filter(m -> m.getBoundsInParent().contains(e.getX(), e.getY()))
 				.findFirst().orElse(null);
 
 		if (selected != null && over != null && selected != over
-				&& Math.abs(over.i - selected.i) + Math.abs(over.j - selected.j) == 1 && !over.contains(selected)) {
+				&& Math.abs(over.getI() - selected.getI()) + Math.abs(over.getJ() - selected.getJ()) == 1 && !over.contains(selected)) {
 			final Line line1 = new Line(selected.getCenter()[0], selected.getCenter()[1], over.getCenter()[0],
 					over.getCenter()[1]);
 			gridPane.getChildren().add(line1);
@@ -263,9 +263,9 @@ public class DotsModel {
 	private int getCountMap(DotsSquare a, DotsSquare b) {
         a.addAdj(b);
         int sum = 0;
-        int i = a.i < b.i ? a.i : b.i;
-        int j = a.j < b.j ? a.j : b.j;
-        if (a.i == b.i) {
+        int i = a.getI() < b.getI() ? a.getI() : b.getI();
+        int j = a.getJ() < b.getJ() ? a.getJ() : b.getJ();
+        if (a.getI() == b.getI()) {
             if (i > 0) {
                 DotsSquare c = maze[i - 1][j];
                 DotsSquare d = maze[i - 1][j + 1];
@@ -298,7 +298,7 @@ public class DotsModel {
                     sum += getCountMap(d, c);
                 }
             }
-        } else if (a.j == b.j) {
+        } else if (a.getJ() == b.getJ()) {
             if (j > 0) {
                 DotsSquare c = maze[i][j - 1];
                 DotsSquare d = maze[i + 1][j - 1];
@@ -338,6 +338,10 @@ public class DotsModel {
 
         return sum;
     }
+
+	public Line getLine() {
+		return line;
+	}
 
 
 }

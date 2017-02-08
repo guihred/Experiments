@@ -47,10 +47,10 @@ public class PendulumAnimationLauncher extends Application {
 				.stroke(Color.BLUE)
 				.strokeWidth(4)
 				.build();
-		stopButton = newButton("Stop", (e) -> anim.stop());
-		resumeButton = newButton("Resume", (e) -> anim.play());
-		pauseButton = newButton("Pause", (e) -> anim.pause());
-		startButton = newButton("Start", (e) -> anim.playFromStart());
+		stopButton = newButton("Stop", e -> anim.stop());
+		resumeButton = newButton("Resume", e -> anim.play());
+		pauseButton = newButton("Pause", e -> anim.pause());
+		startButton = newButton("Start", e -> anim.playFromStart());
 		HBox hbox = new SimpleHBoxBuilder()
 				.children(startButton, pauseButton, resumeButton, stopButton)
 				.layoutX(60)

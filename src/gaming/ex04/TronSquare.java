@@ -27,8 +27,8 @@ public class TronSquare extends Region {
 		this.j = j;
         setPrefSize(10, 10);
         styleProperty().bind(
-                Bindings.when(stateProperty().isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;").otherwise(
-                        Bindings.when(stateProperty().isEqualTo(SnakeState.SNAKE))
+                Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;").otherwise(
+                        Bindings.when(state.isEqualTo(SnakeState.SNAKE))
                         .then("-fx-background-color:green;")
                         .otherwise("-fx-background-color:gray;"
                         )));
@@ -70,10 +70,6 @@ public class TronSquare extends Region {
 	}
 
 
-
-	public ObjectProperty<SnakeState> stateProperty() {
-		return state;
-	}
 
 	public void setState(SnakeState value) {
 		state.set(value);

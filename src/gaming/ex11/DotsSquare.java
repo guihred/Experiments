@@ -12,7 +12,7 @@ public class DotsSquare extends Region {
 
     public static final int SQUARE_SIZE = 40;
 
-    final int i, j;
+	private final int i, j;
     private final Set<DotsSquare> adjacencies = new HashSet<>();
 
     public DotsSquare(int i, int j) {
@@ -32,7 +32,7 @@ public class DotsSquare extends Region {
 
     @Override
     public String toString() {
-        return "(" + i + "," + j + ")";
+        return "(" + getI() + "," + getJ() + ")";
     }
 
     Double[] getCenter() {
@@ -43,8 +43,8 @@ public class DotsSquare extends Region {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash += i * 7;
-        hash += j * 11;
+        hash += getI() * 7;
+        hash += getJ() * 11;
         return hash;
     }
 
@@ -57,10 +57,10 @@ public class DotsSquare extends Region {
             return false;
         }
         final DotsSquare other = (DotsSquare) obj;
-        if (i != other.i) {
+        if (getI() != other.getI()) {
             return false;
         }
-        if (j != other.j) {
+        if (getJ() != other.getJ()) {
             return false;
         }
         return true;
@@ -101,7 +101,7 @@ public class DotsSquare extends Region {
                         .filter(b -> b != this)
                         .flatMap(b -> b.adjacencies.stream()
                                 .filter((DotsSquare c) -> a != c && !c.contains(this)
-                                        && Math.abs(c.i - i) + Math.abs(c.j - j) == 1)));
+                                        && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)));
         return hopped;
     }
 
@@ -117,12 +117,20 @@ public class DotsSquare extends Region {
                         .filter(b -> b != this)
                         .flatMap(b -> b.adjacencies.stream()
                                 .filter((DotsSquare c) -> a != c && !c.contains(this)
-                                        && Math.abs(c.i - i) + Math.abs(c.j - j) == 1))).count() == 0;
+                                        && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1))).count() == 0;
     }
 
     void removeAdj(DotsSquare value) {
         adjacencies.remove(value);
         value.adjacencies.remove(this);
     }
+
+	public int getI() {
+		return i;
+	}
+
+	public int getJ() {
+		return j;
+	}
 
 }

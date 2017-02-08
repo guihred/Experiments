@@ -30,18 +30,18 @@ public class TronModel {
     public TronModel() {
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
-                getMap()[i][j] = new TronSquare(i, j);
+				map[i][j] = new TronSquare(i, j);
             }
         }
 
         int i = random.nextInt(MAP_SIZE);
         int j = random.nextInt(MAP_SIZE);
 
-        getSnake().add(getMap()[i][j]);
+		snake.add(map[i][j]);
         i = random.nextInt(MAP_SIZE);
         j = random.nextInt(MAP_SIZE);
-		getMap()[i][j].setState(SnakeState.FOOD);
-        getSnake().addListener((ListChangeListener.Change<? extends TronSquare> c) -> {
+		map[i][j].setState(SnakeState.FOOD);
+        snake.addListener((ListChangeListener.Change<? extends TronSquare> c) -> {
             c.next();
 			c.getAddedSubList().forEach((TronSquare s) -> s.setState(SnakeState.SNAKE));
         });
@@ -52,16 +52,16 @@ public class TronModel {
         getSnake().clear();
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
-				getMap()[i][j].setState(SnakeState.NONE);
+				map[i][j].setState(SnakeState.NONE);
             }
         }
         int i = random.nextInt(MAP_SIZE);
         int j = random.nextInt(MAP_SIZE);
 
-        getSnake().add(getMap()[i][j]);
+		getSnake().add(map[i][j]);
         i = random.nextInt(MAP_SIZE);
         j = random.nextInt(MAP_SIZE);
-		getMap()[i][j].setState(SnakeState.FOOD);
+		map[i][j].setState(SnakeState.FOOD);
 
     }
 
@@ -83,10 +83,10 @@ public class TronModel {
                 break;
             default:
         }
-		if (getMap()[i][j].getState() == SnakeState.NONE) {
+		if (map[i][j].getState() == SnakeState.NONE) {
             getSnake().remove(getSnake().size() - 1);
-		} else if (getMap()[i][j].getState() == SnakeState.FOOD) {
-			final List<TronSquare> collect = Stream.of(getMap()).flatMap(s -> Stream.of(s))
+		} else if (map[i][j].getState() == SnakeState.FOOD) {
+			final List<TronSquare> collect = Stream.of(map).flatMap(s -> Stream.of(s))
 					.filter(s -> s.getState() == SnakeState.NONE).collect(Collectors.toList());
             if (!collect.isEmpty()) {
 				collect.get(random.nextInt(collect.size())).setState(SnakeState.FOOD);
@@ -96,8 +96,8 @@ public class TronModel {
 
             return true;
         }
-        if (!getSnake().contains(getMap()[i][j])) {
-			getSnake().add(0, getMap()[i][j]);
+		if (!getSnake().contains(map[i][j])) {
+			getSnake().add(0, map[i][j]);
 		}
 
 

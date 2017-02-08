@@ -328,7 +328,7 @@ public class Chapter8 {
 		};
 		return StreamSupport
 				.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false)
-				.flatMap((s) -> Stream.of(s.split("[\\P{L}]+")));
+				.flatMap(s -> Stream.of(s.split("[\\P{L}]+")));
 	}
 
 	/*
@@ -337,7 +337,7 @@ public class Chapter8 {
 	 */
 	public static void ex10() throws IOException {
 		File original = new File("src");
-		Files.walk(original.toPath(), 20).map(Path::toFile).filter((file) -> {
+		Files.walk(original.toPath(), 20).map(Path::toFile).filter(file -> {
 			try {
 				if (file.canRead() && file.isFile()) {
 					List<String> wordsAsList = getWordsAsList(file.toPath());

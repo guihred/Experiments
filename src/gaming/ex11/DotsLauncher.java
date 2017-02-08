@@ -16,7 +16,7 @@ public class DotsLauncher extends Application {
 
         final Scene scene = new Scene(borderPane);
         DotsModel mazeModel = new DotsModel(gridPane, borderPane);
-        gridPane.getChildren().add(mazeModel.line);
+        gridPane.getChildren().add(mazeModel.getLine());
         stage.setScene(scene);
         stage.setWidth(DotsModel.MAZE_SIZE * DotsSquare.SQUARE_SIZE + 20);
         stage.setHeight((DotsModel.MAZE_SIZE + 1) * DotsSquare.SQUARE_SIZE + 20);

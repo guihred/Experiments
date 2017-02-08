@@ -360,14 +360,12 @@ public class PlayingAudio extends Application {
 	private Slider createSlider() {
 		Slider slider = new Slider(0, 100, 1);
 		slider.setId(SEEK_POS_SLIDER_ID);
-		slider.valueProperty().addListener((observable) -> {
-			if (slider.isValueChanging()) {
-				// must check if media is paused before seeking
-				if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
-					// convert seconds to millis
-					double dur = slider.getValue() * 1000;
-					mediaPlayer.seek(Duration.millis(dur));
-				}
+		slider.valueProperty().addListener(observable -> {
+			if (slider.isValueChanging() && mediaPlayer != null
+					&& mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
+				// convert seconds to millis
+				double dur = slider.getValue() * 1000;
+				mediaPlayer.seek(Duration.millis(dur));
 			}
 		}); // addListener()
 		Scene scene = mainStage.getScene();

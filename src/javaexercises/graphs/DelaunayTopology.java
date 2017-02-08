@@ -50,22 +50,20 @@ public class DelaunayTopology extends GenTopology {
 
 	private void legalizeEdge(List<Triangle> triangleSoup1, Triangle triangle, Linha edge, Ponto newVertex) {
 		Triangle neighbourTriangle = triangleSoup1.stream().filter(t -> t.isNeighbour(edge) && t != triangle).findFirst().orElse(null);
-		if (neighbourTriangle != null) {
-			if (neighbourTriangle.isPointInCircumcircle(newVertex)) {
-				triangleSoup1.remove(triangle);
-				triangleSoup1.remove(neighbourTriangle);
+		if (neighbourTriangle != null && neighbourTriangle.isPointInCircumcircle(newVertex)) {
+			triangleSoup1.remove(triangle);
+			triangleSoup1.remove(neighbourTriangle);
 
-				Ponto noneEdgeVertex = neighbourTriangle.getNoneEdgeVertex(edge);
+			Ponto noneEdgeVertex = neighbourTriangle.getNoneEdgeVertex(edge);
 
-				Triangle firstTriangle = new Triangle(noneEdgeVertex, edge.a, newVertex);
-				Triangle secondTriangle = new Triangle(noneEdgeVertex, edge.b, newVertex);
+			Triangle firstTriangle = new Triangle(noneEdgeVertex, edge.a, newVertex);
+			Triangle secondTriangle = new Triangle(noneEdgeVertex, edge.b, newVertex);
 
-				triangleSoup1.add(firstTriangle);
-				triangleSoup1.add(secondTriangle);
+			triangleSoup1.add(firstTriangle);
+			triangleSoup1.add(secondTriangle);
 
-				legalizeEdge(triangleSoup1, firstTriangle, new Linha(noneEdgeVertex, edge.a), newVertex);
-				legalizeEdge(triangleSoup1, secondTriangle, new Linha(noneEdgeVertex, edge.b), newVertex);
-			}
+			legalizeEdge(triangleSoup1, firstTriangle, new Linha(noneEdgeVertex, edge.a), newVertex);
+			legalizeEdge(triangleSoup1, secondTriangle, new Linha(noneEdgeVertex, edge.b), newVertex);
 		}
 	}
 
@@ -123,9 +121,9 @@ public class DelaunayTopology extends GenTopology {
 				legalizeEdge(triangleSoup, triangle3, new Linha(edge.a, secondNoneEdgeVertex), pointSet.get(i));
 				legalizeEdge(triangleSoup, triangle4, new Linha(edge.b, secondNoneEdgeVertex), pointSet.get(i));
 			} else {
-				Ponto a = triangle.a;
-				Ponto b = triangle.b;
-				Ponto c = triangle.c;
+				Ponto a = triangle.getA();
+				Ponto b = triangle.getB();
+				Ponto c = triangle.getC();
 
 				triangleSoup.remove(triangle);
 
@@ -143,18 +141,18 @@ public class DelaunayTopology extends GenTopology {
 			}
 		}
 
-		triangleSoup.removeIf(t1 -> t1.hasVertex(superTriangle.a));
-		triangleSoup.removeIf(t2 -> t2.hasVertex(superTriangle.b));
-		triangleSoup.removeIf(t3 -> t3.hasVertex(superTriangle.c));
+		triangleSoup.removeIf(t1 -> t1.hasVertex(superTriangle.getA()));
+		triangleSoup.removeIf(t2 -> t2.hasVertex(superTriangle.getB()));
+		triangleSoup.removeIf(t3 -> t3.hasVertex(superTriangle.getC()));
 
 		for (Triangle t : triangleSoup) {
-			Cell cella = t.a.getC();
-			Cell cellb = t.b.getC();
-			Cell cellc = t.c.getC();
+			Cell cella = t.getA().getC();
+			Cell cellb = t.getB().getC();
+			Cell cellc = t.getC().getC();
 
-			graph.getModel().addBiEdge(cella.cellId, cellb.cellId, (int) t.a.sub(t.b).mag());
-			graph.getModel().addBiEdge(cella.cellId, cellc.cellId, (int) t.a.sub(t.c).mag());
-			graph.getModel().addBiEdge(cellc.cellId, cellb.cellId, (int) t.b.sub(t.c).mag());
+			graph.getModel().addBiEdge(cella.getCellId(), cellb.getCellId(), (int) t.getA().sub(t.getB()).mag());
+			graph.getModel().addBiEdge(cella.getCellId(), cellc.getCellId(), (int) t.getA().sub(t.getC()).mag());
+			graph.getModel().addBiEdge(cellc.getCellId(), cellb.getCellId(), (int) t.getB().sub(t.getC()).mag());
 		}
 		graph.endUpdate();
 		return triangleSoup;

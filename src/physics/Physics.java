@@ -18,15 +18,11 @@ import javafx.util.Duration;
  */
 public class Physics extends Application {
 
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-	static int WIDTH = 600;
-	static int HEIGHT = 600;
-	static int PHYSICAL_WIDTH = 100;
-	static int PHYSICAL_HEIGHT = 100;
-	static int MAX_BALLS = 200;
+	public static final int WIDTH = 600;
+	public static final int HEIGHT = 600;
+	public static final int PHYSICAL_WIDTH = 100;
+	public static final int PHYSICAL_HEIGHT = 100;
+	public static final int MAX_BALLS = 200;
 
 	public static void main(String[] args) {
 		Application.launch(args);
@@ -65,7 +61,7 @@ public class Physics extends Application {
 		Duration duration = Duration.seconds(1.0 / 60.0);
 		// one can add a specific action when the keyframe is reached
 		EventHandler<ActionEvent> onFinished = t -> {
-			PhysicalScene.world.step(1.0f / 60.f, 1, 1);
+			PhysicalScene.world.step(1.0F / 60.f, 1, 1);
 			for (int i = 0; i < MAX_BALLS; i++) {
 				float xpos = toPixelX(ball[i].body.getPosition().x);
 				float ypos = toPixelY(ball[i].body.getPosition().y);
@@ -110,20 +106,20 @@ public class Physics extends Application {
 	 * (0,100) --> (100, 0) in meters
 	 */
 	public static int toPixelX(float worldX) {
-		float x = WIDTH * worldX / 100.0f;
+		float x = WIDTH * worldX / 100.0F;
 		return (int) x;
 	}
 
 	public static int toPixelY(float worldY) {
-		float y = HEIGHT - 1.0f * HEIGHT * worldY / 100.0f;
+		float y = HEIGHT - 1.0F * HEIGHT * worldY / 100.0F;
 		return (int) y;
 	}
 
 	public static float toPixelWidth(float worldWidth) {
-		return WIDTH * worldWidth / 100.0f;
+		return WIDTH * worldWidth / 100.0F;
 	}
 
 	public static float toPixelHeight(float worldHeight) {
-		return HEIGHT * worldHeight / 100.0f;
+		return HEIGHT * worldHeight / 100.0F;
 	}
 }
