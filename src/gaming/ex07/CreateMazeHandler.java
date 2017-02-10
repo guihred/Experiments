@@ -33,10 +33,10 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 			if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
 				check.add("U");
 			}
-			if (c < MazeModel.MAZE_SIZE - 1 && !createdMaze[r][c + 1].isVisited()) {
+			if (c < createdMaze.length - 1 && !createdMaze[r][c + 1].isVisited()) {
 				check.add("R");
 			}
-			if (r < MazeModel.MAZE_SIZE - 1 && !createdMaze[r + 1][c].isVisited()) {
+			if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
 				check.add("D");
 			}
 			if (!check.isEmpty()) {
