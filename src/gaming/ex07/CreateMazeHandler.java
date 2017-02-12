@@ -74,8 +74,8 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 
 	private boolean getBackIn(List<MazeSquare> history) {
 		final MazeSquare remove = history.remove(history.size() - 1);
-		for (int i = 0; i < MazeModel.MAZE_SIZE; i++) {
-			for (int j = 0; j < MazeModel.MAZE_SIZE; j++) {
+		for (int i = 0; i < createdMaze.length; i++) {
+			for (int j = 0; j < createdMaze.length; j++) {
 				if (createdMaze[i][j] == remove) {
 					r = i;
 					c = j;

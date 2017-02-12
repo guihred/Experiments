@@ -33,6 +33,22 @@ public class MazeSquare extends BorderPane {
         setBottom(line4);
     }
 
+	public BooleanProperty northProperty() {
+		return north;
+	}
+
+	public BooleanProperty southProperty() {
+		return south;
+	}
+
+	public BooleanProperty westProperty() {
+		return west;
+	}
+
+	public BooleanProperty eastProperty() {
+		return east;
+	}
+
 	public void setSouth(boolean v) {
 		south.set(v);
 	}
