@@ -14,7 +14,7 @@ import javafx.util.Duration;
 
 public class Pacman extends Arc {
 	public enum PacmanDirection {
-		UP(270), LEFT(180), DOWN(90), RIGHT(0);
+		DOWN(90), LEFT(180), RIGHT(0), UP(270);
 		private final int angle;
 
 		private PacmanDirection(int angle) {
@@ -43,17 +43,19 @@ public class Pacman extends Arc {
 		timeline.playFromStart();
 	}
 
-	public void turn(double angle) {
-		setRotate(angle);
-	}
-
-	public void turn(PacmanDirection direction) {
-		this.direction = direction;
-		setRotate(direction.angle);
+	private boolean checkCollision(ObservableList<Node> observableList) {
+		boolean anyMatch = observableList.stream().filter(Rectangle.class::isInstance)
+				.anyMatch(
+				p -> this != p && p.getBoundsInParent().intersects(getBoundsInParent()));
+		return anyMatch;
 	}
 
 	public void move(long now, ObservableList<Node> observableList) {
 		int step = 2;
+		if (direction == null) {
+			return;
+		}
+
 		switch (direction) {
 		case RIGHT:
 			setLayoutX(getLayoutX() + step);
@@ -84,11 +86,15 @@ public class Pacman extends Arc {
 		}
 	}
 
-	private boolean checkCollision(ObservableList<Node> observableList) {
-		boolean anyMatch = observableList.stream().filter(Rectangle.class::isInstance)
-				.anyMatch(
-				p -> this != p && p.getBoundsInParent().intersects(getBoundsInParent()));
-		return anyMatch;
+	public void turn(double angle) {
+		setRotate(angle);
+	}
+
+	public void turn(PacmanDirection direction) {
+		this.direction = direction;
+		if (direction != null) {
+			setRotate(direction.angle);
+		}
 	}
 
 }

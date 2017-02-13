@@ -8,6 +8,10 @@ import javafx.stage.Stage;
 
 public class PacmanLauncher extends Application {
 
+	public static void main(String[] args) {
+		launch(args);
+	}
+
 	@Override
 	public void start(Stage stage) throws Exception {
 		final Group group = new Group();
@@ -23,9 +27,5 @@ public class PacmanLauncher extends Application {
 		stage.setHeight(PacmanModel.MAZE_SIZE * 2 * PacmanModel.SQUARE_SIZE + PacmanModel.SQUARE_SIZE);
 		stage.setResizable(false);
 		stage.show();
-	}
-
-	public static void main(String[] args) {
-		launch(args);
 	}
 }

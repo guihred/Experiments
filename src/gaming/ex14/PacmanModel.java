@@ -25,11 +25,15 @@ import javafx.util.Duration;
 
 public class PacmanModel {
 
-	public static final int SQUARE_SIZE = 60;
 	public static final int MAZE_SIZE = 5;
-	Pacman pacman = new Pacman();
+	public static final int SQUARE_SIZE = 60;
+	public static PacmanModel create(Group group, Scene scene) {
+		return new PacmanModel(group, scene);
+	}
 	List<PacmanGhost> ghosts = Stream.of(Color.RED, Color.BLUE, Color.ORANGE, Color.GREEN).map(PacmanGhost::new)
 			.collect(Collectors.toList());
+
+	Pacman pacman = new Pacman();
 
 	public PacmanModel(Group group, Scene scene) {
 
@@ -81,6 +85,9 @@ public class PacmanModel {
 			case RIGHT:
 				pacman.turn(PacmanDirection.RIGHT);
 				break;
+			case SPACE:
+				pacman.turn(null);
+				break;
 			default:
 				break;
 
@@ -89,6 +96,19 @@ public class PacmanModel {
 
 	}
 
+	private void addRectangle(Group group, double value, double value2, int width, int height) {
+		Rectangle rectangle = new Rectangle(width, height, Color.BLUE);
+		rectangle.setLayoutX(value);
+		rectangle.setLayoutY(value2);
+		group.getChildren().add(rectangle);
+	}
+
+	public void addRectangle(Group group, double value, double value2, int width, int height, Color blue) {
+		Rectangle rectangle = new Rectangle(width, height, blue);
+		rectangle.setLayoutX(value);
+		rectangle.setLayoutY(value2);
+		group.getChildren().add(rectangle);
+	}
 	private MazeSquare[][] createLabyrinth(MazeSquare[][] maze, Group group) {
 		for (int i = 0; i < MAZE_SIZE; i++) {
 			for (int j = 0; j < MAZE_SIZE; j++) {
@@ -127,19 +147,7 @@ public class PacmanModel {
 		return maze;
 	}
 
-	private void addRectangle(Group group, double value, double value2, int width, int height) {
-		Rectangle rectangle = new Rectangle(width, height, Color.BLUE);
-		rectangle.setLayoutX(value);
-		rectangle.setLayoutY(value2);
-		group.getChildren().add(rectangle);
-	}
 
-	public void addRectangle(Group group, double value, double value2, int width, int height, Color blue) {
-		Rectangle rectangle = new Rectangle(width, height, blue);
-		rectangle.setLayoutX(value);
-		rectangle.setLayoutY(value2);
-		group.getChildren().add(rectangle);
-	}
 	private MazeSquare[][] initializeMaze() {
 		MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
 		for (int i = 0; i < MAZE_SIZE; i++) {
@@ -160,11 +168,6 @@ public class PacmanModel {
 			}
 		}
 		return maze;
-	}
-
-
-	public static PacmanModel create(Group group, Scene scene) {
-		return new PacmanModel(group, scene);
 	}
 
 }
