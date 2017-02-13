@@ -3,17 +3,19 @@ package gaming.ex14;
 import gaming.ex07.CreateMazeHandler;
 import gaming.ex07.MazeSquare;
 import gaming.ex14.Pacman.PacmanDirection;
-
+import gaming.ex14.PacmanGhost.GhostColor;
+import gaming.ex14.PacmanGhost.GhostStatus;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
-
 import javafx.animation.Animation;
-import javafx.animation.Animation.Status;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -30,13 +32,21 @@ public class PacmanModel {
 	public static PacmanModel create(Group group, Scene scene) {
 		return new PacmanModel(group, scene);
 	}
-	List<PacmanGhost> ghosts = Stream.of(Color.RED, Color.BLUE, Color.ORANGE, Color.GREEN).map(PacmanGhost::new)
+
+	final IntegerProperty points = new SimpleIntegerProperty(0);
+	final List<PacmanBall> balls = DoubleStream.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE).limit(MAZE_SIZE * 2)
+			.mapToObj(d -> d)
+			.flatMap(d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE).limit(MAZE_SIZE * 2)
+					.mapToObj(e -> new Double[] { d, e }))
+			.map(PacmanBall::new).collect(Collectors.toList());
+
+	final List<PacmanGhost> ghosts = Stream.of(GhostColor.RED, GhostColor.BLUE, GhostColor.ORANGE, GhostColor.GREEN)
+			.map(PacmanGhost::new)
 			.collect(Collectors.toList());
 
-	Pacman pacman = new Pacman();
+	final Pacman pacman = new Pacman();
 
 	public PacmanModel(Group group, Scene scene) {
-
 		Timeline timeline = new Timeline();
 		MazeSquare[][] maze = initializeMaze();
 		final EventHandler<ActionEvent> eventHandler = new CreateMazeHandler(timeline, maze);
@@ -44,29 +54,67 @@ public class PacmanModel {
 		timeline.getKeyFrames().add(keyFrame);
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
-		timeline.statusProperty().addListener((ChangeListener<Status>) (observable, oldValue, newValue) -> {
+		timeline.statusProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == Animation.Status.STOPPED) {
 				createLabyrinth(maze, group);
 			}
 		});
 		AnimationTimer animationTimer = new AnimationTimer() {
+			long time;
 			@Override
 			public void handle(long now) {
 				ghosts.forEach(g -> g.move(now, group.getChildren()));
 				pacman.move(now, group.getChildren());
+				List<PacmanBall> bal = balls.stream()
+						.filter(b -> b.getBoundsInParent().intersects(pacman.getBoundsInParent()))
+						.collect(Collectors.toList());
+				if (!bal.isEmpty()) {
+					points.set(points.get() + bal.size());
+					balls.removeAll(bal);
+					group.getChildren().removeAll(bal);
+					if (bal.stream().anyMatch(PacmanBall::isSpecial)) {
+						ghosts.stream().filter(g -> g.getStatus() == GhostStatus.ALIVE)
+								.forEach(g -> g.setStatus(GhostStatus.AFRAID));
+						time = 500;
+					}
+				}
+				List<PacmanGhost> gh = ghosts.stream()
+						.filter(b -> b.getBoundsInParent().intersects(pacman.getBoundsInParent()))
+						.collect(Collectors.toList());
+				if (!gh.isEmpty()) {
+					if (gh.stream().anyMatch(g -> g.getStatus() == GhostStatus.ALIVE)) {
+						pacman.die();
+					} else {
+						gh.forEach(g -> g.setStatus(GhostStatus.DEAD));
+					}
+				}
+
+				if (time > 0) {
+					time--;
+					if (time == 0) {
+						ghosts.stream().filter(g -> g.getStatus() == GhostStatus.AFRAID)
+								.forEach(g -> g.setStatus(GhostStatus.ALIVE));
+					}
+				}
 			}
 		};
 
 		animationTimer.start();
+		Random random = new Random();
+		for (int i = 0; i < 5; i++) {
+			int nextInt = random.nextInt(balls.size());
+			PacmanBall pacmanBall = balls.get(nextInt);
+			pacmanBall.setSpecial(true);
+		}
 
+		group.getChildren().addAll(balls);
 		group.getChildren().add(pacman);
 		group.getChildren().addAll(ghosts);
 		pacman.setLayoutY(30);
 		pacman.setLayoutX(30);
 		for (int i = 0; i < ghosts.size(); i++) {
 			PacmanGhost ghost = ghosts.get(i);
-			ghost.setLayoutX(265 + i % 2 * SQUARE_SIZE);
-			ghost.setLayoutY(265 + i / 2 * SQUARE_SIZE);
+			ghost.setStartPosition(265 + i % 2 * SQUARE_SIZE, 265 + i / 2 * SQUARE_SIZE);
 
 		}
 		scene.setOnKeyPressed(e -> {

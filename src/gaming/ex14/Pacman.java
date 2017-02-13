@@ -1,6 +1,7 @@
 package gaming.ex14;
 
 import javafx.animation.Animation;
+import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -11,6 +12,7 @@ import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import simplebuilder.SimpleTimelineBuilder;
 
 public class Pacman extends Arc {
 	public enum PacmanDirection {
@@ -27,6 +29,12 @@ public class Pacman extends Arc {
 	}
 
 	private PacmanDirection direction = PacmanDirection.RIGHT;
+	private Timeline eatingAnimation = new SimpleTimelineBuilder()
+			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0f)),
+					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0f)),
+					new KeyFrame(Duration.seconds(0.25), new KeyValue(startAngleProperty(), 0.0f)),
+					new KeyFrame(Duration.seconds(0.25), new KeyValue(lengthProperty(), 360.0f)))
+			.cycleCount(Animation.INDEFINITE).autoReverse(true).build();
 	public Pacman() {
 		setFill(Color.YELLOW);
 		setRadiusX(15.0f);
@@ -34,20 +42,12 @@ public class Pacman extends Arc {
 		setStartAngle(45.0f);
 		setLength(270.0f);
 		setType(ArcType.ROUND);
-		Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0f)),
-				new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0f)),
-				new KeyFrame(Duration.seconds(0.25), new KeyValue(startAngleProperty(), 0.0f)),
-				new KeyFrame(Duration.seconds(0.25), new KeyValue(lengthProperty(), 360.0f)));
-		timeline.setCycleCount(Animation.INDEFINITE);
-		timeline.setAutoReverse(true);
-		timeline.playFromStart();
+		eatingAnimation.playFromStart();
 	}
 
 	private boolean checkCollision(ObservableList<Node> observableList) {
-		boolean anyMatch = observableList.stream().filter(Rectangle.class::isInstance)
-				.anyMatch(
-				p -> this != p && p.getBoundsInParent().intersects(getBoundsInParent()));
-		return anyMatch;
+		return observableList.stream().filter(Rectangle.class::isInstance)
+				.anyMatch(p -> p.getBoundsInParent().intersects(getBoundsInParent()));
 	}
 
 	public void move(long now, ObservableList<Node> observableList) {
@@ -60,7 +60,7 @@ public class Pacman extends Arc {
 		case RIGHT:
 			setLayoutX(getLayoutX() + step);
 			if (checkCollision(observableList)) {
-				setLayoutX(getLayoutX() - 5);
+				setLayoutX(getLayoutX() - 2 * step);
 			}
 			break;
 		case UP:
@@ -78,7 +78,7 @@ public class Pacman extends Arc {
 		case LEFT:
 			setLayoutX(getLayoutX() - step);
 			if (checkCollision(observableList)) {
-				setLayoutX(getLayoutX() + step);
+				setLayoutX(getLayoutX() + 2 * step);
 			}
 			break;
 		default:
@@ -86,15 +86,31 @@ public class Pacman extends Arc {
 		}
 	}
 
-	public void turn(double angle) {
-		setRotate(angle);
+	public void turn(PacmanDirection direction) {
+		if (eatingAnimation.getStatus() == Status.RUNNING) {
+			this.direction = direction;
+			if (direction != null) {
+				setRotate(direction.angle);
+			}
+		}
 	}
 
-	public void turn(PacmanDirection direction) {
-		this.direction = direction;
-		if (direction != null) {
-			setRotate(direction.angle);
+	public void die() {
+		if (eatingAnimation.getStatus() == Status.RUNNING) {
+			turn(null);
+			eatingAnimation.stop();
+			Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0f)),
+					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0f)),
+					new KeyFrame(Duration.seconds(2), new KeyValue(startAngleProperty(), 180.0f)),
+					new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0f)));
+			timeline.play();
+			timeline.setOnFinished(e -> {
+				setLayoutX(PacmanModel.SQUARE_SIZE / 2);
+				setLayoutY(PacmanModel.SQUARE_SIZE / 2);
+				eatingAnimation.play();
+			});
 		}
+
 	}
 
 }
