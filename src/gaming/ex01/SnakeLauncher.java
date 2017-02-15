@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class SnakeLauncher extends Application {
-	final SnakeModel newGameModel = new SnakeModel();
+	private final SnakeModel newGameModel = new SnakeModel();
 
 	private void handleKeyPressed(KeyEvent e) {
 		final KeyCode code = e.getCode();
@@ -59,29 +59,9 @@ public class SnakeLauncher extends Application {
         }
 
         final Scene scene = new Scene(gridPane);
-		scene.setOnKeyPressed(e -> handleKeyPressed(e));
+		scene.setOnKeyPressed(this::handleKeyPressed);
         final Timeline timeline = new Timeline();
-        timeline.getKeyFrames().add(
-                new KeyFrame(
-                        new Duration(200), (javafx.event.ActionEvent t) -> {
-                            if (newGameModel.updateMap()) {
-                                timeline.stop();
-                                final Text text = new Text("You Got " + newGameModel.getSnake().size() + " points");
-                                final Button button = new Button("Reset");
-                                final Stage stage1 = new Stage();
-                                button.setOnAction(a -> {
-                                    newGameModel.reset();
-                                    timeline.play();
-                                    stage1.close();
-                                });
-                                final Group group = new Group(text, button);
-                                group.setLayoutX(50);
-                                group.setLayoutY(50);
-                                stage1.setScene(new Scene(group));
-                                stage1.show();
-                            }
-                        })
-        );
+		timeline.getKeyFrames().add(new KeyFrame(new Duration(200), t -> gameLoop(timeline)));
 		timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
         stage.setScene(scene);
@@ -89,6 +69,24 @@ public class SnakeLauncher extends Application {
         stage.setHeight(400);
         stage.show();
     }
+
+	private void gameLoop(final Timeline timeline) {
+		if (newGameModel.updateMap()) {
+		    timeline.stop();
+		    final Button button = new Button("Reset");
+		    final Stage stage1 = new Stage();
+		    button.setOnAction(a -> {
+		        newGameModel.reset();
+		        timeline.play();
+		        stage1.close();
+		    });
+			final Group group = new Group(new Text("You Got " + newGameModel.getSnake().size() + " points"), button);
+		    group.setLayoutX(50);
+		    group.setLayoutY(50);
+		    stage1.setScene(new Scene(group));
+		    stage1.show();
+		}
+	}
 
     public static void main(String[] args) {
         launch(SnakeLauncher.class, args);

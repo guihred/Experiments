@@ -25,7 +25,7 @@ public class SlidingPuzzleModel {
 
 	private GridPane gridPane;
 	private SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[MAP_SIZE][MAP_SIZE];
-	private int moves = 0;
+	private int moves;
 
 	public SlidingPuzzleModel(GridPane gridPane) {
         this.gridPane = gridPane;

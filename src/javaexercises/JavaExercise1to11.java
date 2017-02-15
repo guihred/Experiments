@@ -219,11 +219,11 @@ public final class JavaExercise1to11 {
 	 * organised so that there are ten prime num bers on eac h line.
 	 */
 	public static void allPrimeLessThan600Problem() {
-		final int SIZE = 600, SQRTSIZE = 25;
-		boolean[] primes = Arrays.copyOf(new boolean[0], SIZE);
-		Arrays.fill(primes, 2, SIZE, true);
+		final int size = 600, sqrtSize = 25;
+		boolean[] primes = Arrays.copyOf(new boolean[0], size);
+		Arrays.fill(primes, 2, size, true);
 		for (int i = 0; i < primes.length; i++) {
-			for (int j = 2; j < SQRTSIZE; j++) {
+			for (int j = 2; j < sqrtSize; j++) {
 				if (i % j == 0 && i != j) {
 					primes[i] = false;
 				}
@@ -265,18 +265,18 @@ public final class JavaExercise1to11 {
 	}
 
 	public static class Greenfly {
-		private static int COUNT = 0;
+		private static int count;
 		protected static final Map<Integer, Integer> MAPA = new LinkedHashMap<>();
 		private final int birthday;
 
 		public Greenfly(int birthday) {
 			this.birthday = birthday;
 			if (birthday < 0) {
-				++COUNT;
+				++count;
 			} else {
-				COUNT += 8;
+				count += 8;
 			}
-			MAPA.put(birthday, COUNT);
+			MAPA.put(birthday, count);
 		}
 
 		public Stream<Greenfly> reproduce(int day) {

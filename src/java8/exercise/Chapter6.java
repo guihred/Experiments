@@ -28,9 +28,6 @@ import org.slf4j.LoggerFactory;
 
 
 public final class Chapter6 {
-	private Chapter6() {
-	}
-
 	static class Matrix {
 		private int[][] mat = { { 1, 1 }, { 1, 0 } };
 		public Matrix() {
@@ -55,7 +52,10 @@ public final class Chapter6 {
 		}
 	}
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(Chapter6.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Chapter6.class);
+
+	private Chapter6() {
+	}
 
 	/*
 	 * Write a program that keeps track of the longest string that is observed
@@ -91,41 +91,11 @@ public final class Chapter6 {
 	 */
 	public static void ex10() {
 		String url = "http://www.google.com";
-		CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(page -> getLinks(page))
+		CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(Chapter6::getLinks)
 				.thenAccept(l -> l.forEach(System.out::println));
 		ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
 
 	}
-
-	public static List<String> getLinks(String content) {
-		List<String> links = new ArrayList<>();
-		Pattern p = Pattern.compile("(?i)href=\"http://(.*?)\"");
-		Matcher m = p.matcher(content);
-		while (m.find()) {
-			links.add(m.group(1));
-		}
-		return links;
-	}
-
-	public static String readPage(String urlString) {
-		URL url;
-		try {
-			url = new URL(urlString);
-			URLConnection conn = url.openConnection();
-			StringBuilder content = new StringBuilder();
-			try (BufferedReader br = new BufferedReader(
-					new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
-				String inputLine;
-				while ((inputLine = br.readLine()) != null) {
-					content.append(inputLine);
-				}
-			}
-			return content.toString();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 
 	/*
 	 * Generate 1,000 threads, each of which increments a counter 100,000 times.
@@ -196,13 +166,6 @@ public final class Chapter6 {
 				.forEach(u -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
-	/*
-	 * How large does an array have to be for Arrays.parallelSort to be faster
-	 * than Arrays.sort on your computer?
-	 * 
-	 * In my computer, parallel sorting started to be faster when the size of
-	 * the array reached 1.000.000 items;
-	 */
 
 	/*
 	 * Repeat the preceding exercise, but use computeIfAbsent instead. What is
@@ -238,9 +201,17 @@ public final class Chapter6 {
 
 	}
 
+	/*
+	 * How large does an array have to be for Arrays.parallelSort to be faster
+	 * than Arrays.sort on your computer?
+	 * 
+	 * In my computer, parallel sorting started to be faster when the size of
+	 * the array reached 1.000.000 items;
+	 */
+
 	public static void ex8() {
 		Random random = new Random();
-		for (int i = 0; i < 7; i++) {
+		for (double i = 0; i < 7; i++) {
 			long size = (long) Math.pow(10, i + 1);
 			int[] array = random.ints(size).toArray();
 			Instant now = Instant.now();
@@ -277,15 +248,45 @@ public final class Chapter6 {
 		System.out.println(a[a.length - 1].mat[0][0]);
 	}
 
+	public static List<String> getLinks(String content) {
+		List<String> links = new ArrayList<>();
+		Pattern p = Pattern.compile("(?i)href=\"http://(.*?)\"");
+		Matcher m = p.matcher(content);
+		while (m.find()) {
+			links.add(m.group(1));
+		}
+		return links;
+	}
 
-
-	private static Stream<String> getWords(URI TXT_FILE) throws IOException {
-		return Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel().flatMap(m -> Stream.of(m.split("[\\P{L}]+")))
+	private static Stream<String> getWords(URI txtFile) throws IOException {
+		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).parallel()
+				.flatMap(m -> Stream.of(m.split("[\\P{L}]+")))
 				.filter(s -> !s.isEmpty());
 	}
 
+
+
 	public static void main(String[] args) {
 		ex10();
+	}
+
+	public static String readPage(String urlString) {
+		URL url;
+		try {
+			url = new URL(urlString);
+			URLConnection conn = url.openConnection();
+			StringBuilder content = new StringBuilder();
+			try (BufferedReader br = new BufferedReader(
+					new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+				String inputLine;
+				while ((inputLine = br.readLine()) != null) {
+					content.append(inputLine);
+				}
+			}
+			return content.toString();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 

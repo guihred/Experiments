@@ -31,7 +31,7 @@ public class MinesweeperModel {
 	private GridPane gridPane;
 	private final MinesweeperSquare[][] map = new MinesweeperSquare[MAP_WIDTH][MAP_HEIGHT];
 	private IntegerProperty nPlayed = new SimpleIntegerProperty(0);
-	private long startTime = 0;
+	private long startTime;
     public MinesweeperModel(GridPane gridPane) {
         this.gridPane = gridPane;
 
@@ -98,7 +98,6 @@ public class MinesweeperModel {
 		            reset();
 		        }
 
-		        final Text text = new Text("You exploded in " + " moves");
 		        final Button button = new Button("Reset");
 		        final Stage stage1 = new Stage();
 		        button.setOnAction(a -> {
@@ -106,9 +105,10 @@ public class MinesweeperModel {
 		            stage1.close();
 		        });
 
+				final Text text = new Text("You exploded in " + " moves");
 		        final Group group = new Group(text, button);
+				group.setLayoutY(50);
 		        group.setLayoutX(50);
-		        group.setLayoutY(50);
 		        stage1.setScene(new Scene(group));
 		        stage1.show();
 		    }

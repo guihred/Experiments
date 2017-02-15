@@ -19,7 +19,7 @@ public class PacmanGhost extends Group {
 	public enum GhostColor {
 		RED(Color.RED), BLUE(Color.BLUE), ORANGE(Color.ORANGE), GREEN(Color.GREEN);
 
-		private transient final Color color;
+		private final transient Color color;
 
 		private GhostColor(Color color) {
 			this.color = color;
@@ -66,8 +66,8 @@ public class PacmanGhost extends Group {
 				.bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.color)
 						.otherwise(Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.BLUEVIOLET)
 								.otherwise(Color.TRANSPARENT)));
-		polygon.getPoints().addAll(-12d, 0d, -12d, 20d, -8d, 10d, -4d, 20d, 0d, 10d, 4d, 20d, 8d, 10d, 12d, 20d, 12d,
-				0d);
+		polygon.getPoints().addAll(-12D, 0D, -12D, 20D, -8D, 10D, -4D, 20D, 0D, 10D, 4D, 20D, 8D, 10D, 12D, 20D, 12D,
+				0D);
 
 		Ellipse ellipse = new Ellipse(4, 6);
 		ellipse.setFill(Color.WHITE);
@@ -106,16 +106,16 @@ public class PacmanGhost extends Group {
 		if (status.get() == GhostStatus.ALIVE) {
 			shortestMovement(now, observableList);
 		} else if (status.get() == GhostStatus.DEAD) {
-			int STEP = 1;
+			int step = 1;
 			if (startX > getLayoutX()) {
-				setLayoutX(getLayoutX() + STEP);
+				setLayoutX(getLayoutX() + step);
 			} else if (startX < getLayoutX()) {
-				setLayoutX(getLayoutX() - STEP);
+				setLayoutX(getLayoutX() - step);
 			}
 			if (startY > getLayoutY()) {
-				setLayoutY(getLayoutY() + STEP);
+				setLayoutY(getLayoutY() + step);
 			} else if (startY < getLayoutY()) {
-				setLayoutY(getLayoutY() - STEP);
+				setLayoutY(getLayoutY() - step);
 			}
 			if (Math.abs(startX - getLayoutX()) < 3 && Math.abs(startY - getLayoutY()) < 3) {
 				setStatus(GhostStatus.ALIVE);
@@ -126,7 +126,6 @@ public class PacmanGhost extends Group {
 	}
 
 	void shortestMovement(long now, ObservableList<Node> otherNodes) {
-		final int STEP = 1;
 		Pacman pacman = otherNodes.stream().filter(Pacman.class::isInstance).map(Pacman.class::cast).findFirst()
 				.orElse(null);
 		if (pacman == null) {
@@ -135,13 +134,14 @@ public class PacmanGhost extends Group {
 		}
 		double hx = getLayoutX() - pacman.getLayoutX();
 		double hy = getLayoutY() - pacman.getLayoutY();
-		addTranslate(STEP);
+		final int step = 1;
+		addTranslate(step);
 		if (checkColision(getBoundsInParent(), otherNodes) || now % 200 == 0) {
-			addTranslate(-STEP);
+			addTranslate(-step);
 			setDirection(changeDirection(hx, hy));
-			addTranslate(STEP);
+			addTranslate(step);
 			if (checkColision(getBoundsInParent(), otherNodes)) {
-				addTranslate(-STEP);
+				addTranslate(-step);
 				randomMovement(now, otherNodes);
 			}
 
@@ -168,43 +168,43 @@ public class PacmanGhost extends Group {
 		return hy < 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
 	}
 
-	private void addTranslate(final int STEP) {
+	private void addTranslate(final int step) {
 		if (getDirection() == GhostDirection.NORTH) {// NORTH
-			setLayoutY(getLayoutY() + STEP);
+			setLayoutY(getLayoutY() + step);
 		}
 		if (getDirection() == GhostDirection.WEST) {// WEST
-			setLayoutX(getLayoutX() - STEP);
+			setLayoutX(getLayoutX() - step);
 		}
 		if (getDirection() == GhostDirection.SOUTH) {// SOUTH
-			setLayoutY(getLayoutY() - STEP);
+			setLayoutY(getLayoutY() - step);
 		}
 		if (getDirection() == GhostDirection.EAST) {// EAST
-			setLayoutX(getLayoutX() + STEP);
+			setLayoutX(getLayoutX() + step);
 		}
 		if (getDirection() == GhostDirection.NORTHEAST) {// WEST
-			setLayoutY(getLayoutY() + STEP);
-			setLayoutX(getLayoutX() + STEP);
+			setLayoutY(getLayoutY() + step);
+			setLayoutX(getLayoutX() + step);
 		}
 		if (getDirection() == GhostDirection.SOUTHEAST) {// WEST
-			setLayoutY(getLayoutY() - STEP);
-			setLayoutX(getLayoutX() + STEP);
+			setLayoutY(getLayoutY() - step);
+			setLayoutX(getLayoutX() + step);
 		}
 		if (getDirection() == GhostDirection.SOUTHWEST) {// WEST
-			setLayoutY(getLayoutY() - STEP);
-			setLayoutX(getLayoutX() - STEP);
+			setLayoutY(getLayoutY() - step);
+			setLayoutX(getLayoutX() - step);
 		}
 		if (getDirection() == GhostDirection.NORTHWEST) {// WEST
-			setLayoutY(getLayoutY() + STEP);
-			setLayoutX(getLayoutX() - STEP);
+			setLayoutY(getLayoutY() + step);
+			setLayoutX(getLayoutX() - step);
 		}
 	}
 
 	private void randomMovement(long now, ObservableList<Node> observableList) {
-		final int STEP = 1;
+		final int step = 1;
 		GhostDirection[] values = GhostDirection.values();
-		addTranslate(STEP);
+		addTranslate(step);
 		if (checkColision(getBoundsInParent(), observableList)) {
-			addTranslate(-STEP);
+			addTranslate(-step);
 			setDirection(values[new Random().nextInt(values.length)]);
 		}
 

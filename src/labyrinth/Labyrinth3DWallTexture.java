@@ -1,5 +1,7 @@
 package labyrinth;
 
+import static labyrinth.LabyrinthWall.SIZE;
+
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import javafx.stage.Stage;
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
 
-	static String[][] mapa = { 
+	protected static final String[][] mapa = { 
 			{ "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, 
 			{ "|", "|", "_", "|", "_", "|" },
@@ -55,7 +57,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
 
 	public static final Image OOZE_IMAGE = new Image(Labyrinth3DWallTexture.class.getResource("ooze.jpg").toString());
-	static final int SIZE = 60;
+
 	private static final Image WALL_IMAGE = new Image(Labyrinth3DWallTexture.class.getResource("wall.jpg").toString());
 
 	private static final Image WALL_IMAGE2 = new Image(
@@ -73,10 +75,10 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 	private MovimentacaoAleatoria movimentacao;
 
 	public final Random random = new Random();
-	final Group root = new Group();
+	private final Group root = new Group();
 
 	Sphere checkBalls(Bounds boundsInParent) {
-		return Stream.of(balls).flatMap(l -> Stream.of(l))
+		return Stream.of(balls).flatMap(Stream::of)
 				.filter(b -> b != null)
 				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
 				.findFirst().orElse(null);

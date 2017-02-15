@@ -23,9 +23,9 @@ import javafx.stage.Stage;
  * @author Mark Heckler, @MkHeck
  */
 public class RaspiCycle extends Application {
-	private int SPEED = 1;
-	private double SCREENHEIGHT;
-	private double SCREENWIDTH;
+	private int speed = 1;
+	private final double SCREENHEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
+	private final double SCREENWIDTH = Screen.getPrimary().getVisualBounds().getWidth();
 	private Canvas canvas;
 	private GraphicsContext gc;
 	private Point2D startPos;
@@ -44,8 +44,6 @@ public class RaspiCycle extends Application {
 	public void start(Stage primaryStage) {
 		StackPane root = new StackPane();
 		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-		SCREENHEIGHT = bounds.getHeight();
-		SCREENWIDTH = bounds.getWidth();
 		// Add screen boundaries to list of walls (coordinates)
 		// to check for collisions
 		// Top wall
@@ -157,11 +155,11 @@ public class RaspiCycle extends Application {
 			curDir = Direction.DOWN;
 			isNewDir = true;
 		} else if (event.getCode() == KeyCode.DIGIT1) {
-			SPEED = 1;
+			speed = 1;
 		} else if (event.getCode() == KeyCode.DIGIT2) {
-			SPEED = 2;
+			speed = 2;
 		} else if (event.getCode() == KeyCode.DIGIT3) {
-			SPEED = 3;
+			speed = 3;
 		}
 
 		else if (event.getCode() == KeyCode.ESCAPE) {
@@ -194,22 +192,22 @@ public class RaspiCycle extends Application {
 		case UP:
 			// X doesn't change, only Y
 			newX = curPos.getX();
-			newY = curPos.getY() - SPEED;
+			newY = curPos.getY() - speed;
 			break;
 		case DOWN:
 			// X doesn't change, only Y
 			newX = curPos.getX();
-			newY = curPos.getY() + SPEED;
+			newY = curPos.getY() + speed;
 			break;
 		case LEFT:
 			// Y doesn't change, only X
 			newY = curPos.getY();
-			newX = curPos.getX() - SPEED;
+			newX = curPos.getX() - speed;
 			break;
 		case RIGHT:
 			// Y doesn't change, only X
 			newY = curPos.getY();
-			newX = curPos.getX() + SPEED;
+			newX = curPos.getX() + speed;
 			break;
 		default:
 			break;
@@ -221,10 +219,10 @@ public class RaspiCycle extends Application {
 		System.out.println("Current Position: (" + curPos.getX() + ", "
 				+ curPos.getY() + ")");
 		walls.stream()
-				.filter(line -> (line.getStartX() <= curPos.getX()
+				.filter(line -> line.getStartX() <= curPos.getX()
 						&& curPos.getX() <= line.getEndX()
 						&& line.getStartY() <= curPos.getY() && curPos.getY() <= line
-								.getEndY()))
+								.getEndY())
 				.forEach(line -> {
 					animTimer.stop();
 					System.out.println("COLLISION!");

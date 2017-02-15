@@ -8,12 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -31,7 +26,6 @@ public class WorkingWithTableView extends Application {
 		primaryStage
 				.setTitle("Bosses and Employees: Chapter 4 Working with Tables");
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 500, 250, Color.WHITE);
 		// create a grid pane
 		GridPane gridpane = new GridPane();
 		gridpane.setPadding(new Insets(5));
@@ -53,7 +47,8 @@ public class WorkingWithTableView extends Application {
 				.setCellFactory(param -> {
 					Label leadLbl = new Label();
 					Tooltip tooltip = new Tooltip();
-					ListCell<Person> cell = new ListCell<Person>() {
+					 // ListCell
+					return new ListCell<Person>() {
 						@Override
 						public void updateItem(Person item, boolean empty) {
 							super.updateItem(item, empty);
@@ -65,8 +60,7 @@ public class WorkingWithTableView extends Application {
 								setTooltip(tooltip);
 							}
 						}
-					}; // ListCell
-					return cell;
+					};
 				}); // setCellFactory
 		gridpane.add(leaderListView, 0, 1);
 		Label emplLbl = new Label("Employees");
@@ -106,6 +100,7 @@ public class WorkingWithTableView extends Application {
 										.employeesProperty());
 							}
 						});
+		Scene scene = new Scene(root, 500, 250, Color.WHITE);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

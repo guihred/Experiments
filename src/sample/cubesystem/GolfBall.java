@@ -14,8 +14,10 @@ import javafx.stage.Stage;
 
 public class GolfBall extends Application {
 
-	private static final int DIVISION = 200;// the bigger the higher resolution
-	private float radius = 300;// radius of the sphere
+	// the bigger the higher resolution
+	private static final int DIVISION = 200;
+	// radius of the sphere
+	private float radius = 300;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -32,36 +34,67 @@ public class GolfBall extends Application {
 		// uncomment if you want to move the other sphere
 
 		// scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
 		// Point3D sphere ;
+
 		//
+
 		// @Override
+
 		// public void handle(KeyEvent e) {
+
 		// KeyCode code = e.getCode();
+
 		// switch (code) {
+
 		// case UP:
+
 		// sphere = sphere.add(0, -10, 0);
+
 		// break;
+
 		// case DOWN:
+
 		// sphere = sphere.add(0, 10, 0);
+
 		// break;
+
 		// case LEFT:
+
 		// sphere = sphere.add(-10, 0, 0);
+
 		// break;
+
 		// case RIGHT:
+
 		// sphere = sphere.add(10, 0, 0);
+
 		// break;
+
 		// case W:
+
 		// sphere = sphere.add(0, 0, 10);
+
 		// break;
+
 		// case S:
+
 		// sphere = sphere.add(0, 0, -10);
+
 		// break;
+
 		// default:
+
 		// return;
+
 		// }
+
 		// a.setMesh(createMesh(DIVISION, radius, sphere));
+
 		//
+
 		// }
+
 		// });
 
 		primaryStage.setScene(scene);
@@ -72,19 +105,19 @@ public class GolfBall extends Application {
 		List<Point3D> spheres = new ArrayList<>();
 		final int div2 = division / 2;
 
-		final float rDiv = 1.f / division;
+		final float rDiv = 1.F / division;
 		for (int j = 0; j < div2 - 1; ++j) {
 			float va = rDiv * (j + 1 - div2 / 2) * 2 * (float) Math.PI;
-			float sin_va = (float) Math.sin(va);
-			float cos_va = (float) Math.cos(va);
+			float sinVal = (float) Math.sin(va);
+			float cosVal = (float) Math.cos(va);
 
 			for (int i = 0; i < division; ++i) {
 				double a = rDiv * i * 2 * (float) Math.PI;
 				float hSin = (float) Math.sin(a);
 				float hCos = (float) Math.cos(a);
-				double x = hSin * cos_va * radius;
-				double z = hCos * cos_va * radius;
-				double y = sin_va * radius;
+				double x = hSin * cosVal * radius;
+				double z = hCos * cosVal * radius;
+				double y = sinVal * radius;
 
 				spheres.add(new Point3D(x, y, z));
 			}
@@ -103,27 +136,27 @@ public class GolfBall extends Application {
 		final int nTPoints = (division + 1) * (div2 - 1) + division * 2;
 		final int nFaces = division * (div2 - 2) * 2 + division * 2;
 
-		final float rDiv = 1.f / division;
+		final float rDiv = 1.F / division;
 
-		float points[] = new float[nPoints * 3];
-		float tPoints[] = new float[nTPoints * 2];
-		int faces[] = new int[nFaces * 6];
+		float[] points = new float[nPoints * 3];
+		float[] tPoints = new float[nTPoints * 2];
+		int[] faces = new int[nFaces * 6];
 
 		int pPos = 0, tPos = 0;
 
 		for (int y = 0; y < div2 - 1; ++y) {
 			float va = rDiv * (y + 1 - div2 / 2) * 2 * (float) Math.PI;
-			float sin_va = (float) Math.sin(va);
-			float cos_va = (float) Math.cos(va);
+			float sinVal = (float) Math.sin(va);
+			float cosVal = (float) Math.cos(va);
 
-			float ty = 0.5F + sin_va * 0.5F;
+			float ty = 0.5F + sinVal * 0.5F;
 			for (int i = 0; i < division; ++i) {
 				double a = rDiv * i * 2 * (float) Math.PI;
 				float hSin = (float) Math.sin(a);
 				float hCos = (float) Math.cos(a);
-				points[pPos + 0] = hSin * cos_va * radius;
-				points[pPos + 2] = hCos * cos_va * radius;
-				points[pPos + 1] = sin_va * radius;
+				points[pPos + 0] = hSin * cosVal * radius;
+				points[pPos + 2] = hCos * cosVal * radius;
+				points[pPos + 1] = sinVal * radius;
 				for (Point3D centerOtherSphere : spheres) {
 					checkDistance(radius, centerOtherSphere, points, pPos);
 				}
@@ -153,7 +186,7 @@ public class GolfBall extends Application {
 
 		int pS = (div2 - 1) * division;
 
-		float textureDelta = 1.f / 256;
+		float textureDelta = 1.F / 256;
 		for (int i = 0; i < division; ++i) {
 			tPoints[tPos + 0] = rDiv * (0.5F + i);
 			tPoints[tPos + 1] = textureDelta;
@@ -180,6 +213,7 @@ public class GolfBall extends Application {
 				int t3 = t1 + division + 1;
 
 				// add p0, p1, p2
+
 				faces[fIndex + 0] = p0;
 				faces[fIndex + 1] = t0;
 				faces[fIndex + 2] = p1 % division == 0 ? p1 - division : p1;
@@ -189,6 +223,7 @@ public class GolfBall extends Application {
 				fIndex += 6;
 
 				// add p3, p2, p1
+
 				faces[fIndex + 0] = p3 % division == 0 ? p3 - division : p3;
 				faces[fIndex + 1] = t3;
 				faces[fIndex + 2] = p2;

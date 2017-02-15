@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class Chapter8 {
-	public static final Logger LOGGER = LoggerFactory.getLogger(Chapter8.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Chapter8.class);
 
 	private Chapter8() {
 	}

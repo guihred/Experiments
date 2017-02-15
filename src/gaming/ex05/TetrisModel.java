@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -120,11 +118,7 @@ public class TetrisModel {
 		return currentJ;
 	}
 
-	public EventHandler<ActionEvent> getEventHandler(Timeline timeline) {
-		return (t) -> movePiecesTimeline(timeline);
-    }
-
-	private void movePiecesTimeline(Timeline timeline) {
+	public void movePiecesTimeline(Timeline timeline) {
 		clearMovingPiece();
 		if (!checkCollision(getCurrentI(), getCurrentJ() + 1)) {
 		    drawPiece();

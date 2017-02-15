@@ -7,8 +7,8 @@ import javafx.scene.canvas.GraphicsContext;
 class RunAnimation {
 	private ImageResource image;
 	private int lastIndex;
-	private int offsetX = 0;
-	private int offsetY = 0;
+	private int offsetX;
+	private int offsetY;
 	private int columns;
 	private int count;
 	private boolean debug;

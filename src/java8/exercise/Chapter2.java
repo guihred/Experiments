@@ -19,26 +19,13 @@ import org.slf4j.LoggerFactory;
 
 public final class Chapter2 {
 
-	private Chapter2() {
-	}
-
-	public static final Logger LOGGER = LoggerFactory.getLogger(Chapter2.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Chapter2.class);
 
 	private static final String TXT_FILE = "warAndPeace.txt";
 
-	/*
-	 * Write a parallel version of the for loop in Section 2.1, From Iteration
-	 * to Stream Operations, on page 22. Obtain the number of processors. Make
-	 * that many separate threads, each working on a segment of the list, and
-	 * total up the results as they come in. (You don�t want the threads to
-	 * update a single counter. Why?)
-	 */
-	public static void ex1() throws IOException, InterruptedException, ExecutionException {
-		Pattern compile = Pattern.compile("[\\P{L}]+");
-		System.out.println(Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel()
-				.flatMap(l -> compile.splitAsStream(l)).filter(s -> s.length() > 12).count());
-		System.out.println(countConcurrentWithoutStreams());
+	private Chapter2() {
 	}
+
 	private static long countConcurrentWithoutStreams() throws IOException, InterruptedException, ExecutionException {
 		List<String> words = getWordsAsList();
 		int cores = Runtime.getRuntime().availableProcessors();
@@ -66,6 +53,19 @@ public final class Chapter2 {
 		}
 		pool.shutdown();
 		return count;
+	}
+	/*
+	 * Write a parallel version of the for loop in Section 2.1, From Iteration
+	 * to Stream Operations, on page 22. Obtain the number of processors. Make
+	 * that many separate threads, each working on a segment of the list, and
+	 * total up the results as they come in. (You don�t want the threads to
+	 * update a single counter. Why?)
+	 */
+	public static void ex1() throws IOException, InterruptedException, ExecutionException {
+		Pattern compile = Pattern.compile("[\\P{L}]+");
+		System.out.println(Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel()
+				.flatMap(compile::splitAsStream).filter(s -> s.length() > 12).count());
+		System.out.println(countConcurrentWithoutStreams());
 	}
 
 	/*
@@ -136,7 +136,7 @@ public final class Chapter2 {
 	public static void ex2() throws IOException {
 		Pattern compile = Pattern.compile("[\\P{L}]+");
 		System.out.println();
-		Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel().flatMap(l -> compile.splitAsStream(l))
+		Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel().flatMap(compile::splitAsStream)
 				.filter(s -> {
 			if (s.length() > 12) {
 				System.out.printf("Long word %s%n", s);
@@ -226,18 +226,6 @@ public final class Chapter2 {
 		zip(Stream.of(1, 2, 3), Stream.of(1, 2)).forEach(System.out::println);
 	}
 
-	private static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {
-		Iterator<T> iterator = second.iterator();
-
-		return first.flatMap(t -> {
-			if (iterator.hasNext()) {
-				return Stream.of(t, iterator.next());
-			}
-			first.close();
-			return null;
-		});
-
-	}
 	/*
 	 * Join all elements in a Stream<ArrayList<T>> to one ArrayList<T>. Show how
 	 * to do this with the three forms of reduce.
@@ -263,17 +251,28 @@ public final class Chapter2 {
 		}));
 
 	}
-
 	private static List<String> getWordsAsList() throws IOException {
 		String contents = new String(Files.readAllBytes(Paths.get(TXT_FILE)), StandardCharsets.UTF_8);
-		List<String> words = Arrays.asList(contents.split("[\\P{L}]+"));
-		return words;
+		return Arrays.asList(contents.split("[\\P{L}]+"));
 	}
 
 	public static void main(String[] args) {
 		// ex1();
 		// ex2();
 		ex13();
+	}
+
+	private static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {
+		Iterator<T> iterator = second.iterator();
+
+		return first.flatMap(t -> {
+			if (iterator.hasNext()) {
+				return Stream.of(t, iterator.next());
+			}
+			first.close();
+			return null;
+		});
+
 	}
 
 

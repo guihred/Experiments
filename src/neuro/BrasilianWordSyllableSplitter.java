@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class BrasilianWordSyllableSplitter {
-	public static final Logger LOGGER = LoggerFactory.getLogger(BrasilianWordSyllableSplitter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BrasilianWordSyllableSplitter.class);
 	private static final String VOWELS = "[aeiouáéíóúâêîôûàèìòùãõ]";
 	private static final String CONSONANT_CLUSTER = "[bcdfgkptv][rl]|[cnlst][h]|mn|bs|tch";
 	private static final String REGEX_VOWEL_CLUSTER_VOWEL = "(?i)" + VOWELS + "(" + CONSONANT_CLUSTER + ")" + VOWELS;
@@ -58,7 +58,7 @@ public final class BrasilianWordSyllableSplitter {
 		StringBuilder s = new StringBuilder();
 		for (int i = 0; i < length; i++) {
 			String a = word.substring(i, i + 1);
-			if (a.equals("-")) {
+			if ("-".equals(a)) {
 				syllable.add(s.toString());
 				s.delete(0, s.length());
 				continue;

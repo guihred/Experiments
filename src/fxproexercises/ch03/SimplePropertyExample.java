@@ -17,24 +17,23 @@ import javafx.beans.value.ChangeListener;
 
 public final class SimplePropertyExample {
 
-	private SimplePropertyExample() {
+	private static IntegerProperty intProperty;
+
+    private SimplePropertyExample() {
 	}
 
-    private static IntegerProperty intProperty;
-
-    public static void main(String[] args) {
-        createProperty();
-        addAndRemoveInvalidationListener();
-        addAndRemoveChangeListener();
-        bindAndUnbindOnePropertyToAnother();
-    }
-
-    private static void createProperty() {
+    private static void addAndRemoveChangeListener() {
         System.out.println();
-        intProperty = new SimpleIntegerProperty(1024);
-        System.out.println("intProperty = " + intProperty);
-        System.out.println("intProperty.get() = " + intProperty.get());
-        System.out.println("intProperty.getValue() = " + intProperty.getValue().intValue());
+		final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> System.out
+				.println("The observableValue has changed: oldValue = " + oldValue + ", newValue = " + newValue);
+        intProperty.addListener(changeListener);
+        System.out.println("Added change listener.");
+        System.out.println("Calling intProperty.set(5120).");
+        intProperty.set(5120);
+        intProperty.removeListener(changeListener);
+        System.out.println("Removed change listener.");
+        System.out.println("Calling intProperty.set(6144).");
+        intProperty.set(6144);
     }
 
     private static void addAndRemoveInvalidationListener() {
@@ -54,20 +53,6 @@ public final class SimplePropertyExample {
         intProperty.set(4096);
     }
 
-    private static void addAndRemoveChangeListener() {
-        System.out.println();
-		final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> System.out
-				.println("The observableValue has changed: oldValue = " + oldValue + ", newValue = " + newValue);
-        intProperty.addListener(changeListener);
-        System.out.println("Added change listener.");
-        System.out.println("Calling intProperty.set(5120).");
-        intProperty.set(5120);
-        intProperty.removeListener(changeListener);
-        System.out.println("Removed change listener.");
-        System.out.println("Calling intProperty.set(6144).");
-        intProperty.set(6144);
-    }
-
     private static void bindAndUnbindOnePropertyToAnother() {
         System.out.println();
         IntegerProperty otherProperty = new SimpleIntegerProperty(0);
@@ -84,5 +69,20 @@ public final class SimplePropertyExample {
         System.out.println("Calling intProperty.set(8192).");
         intProperty.set(8192);
         System.out.println("otherProperty.get() = " + otherProperty.get());
+    }
+
+    private static void createProperty() {
+        System.out.println();
+        intProperty = new SimpleIntegerProperty(1024);
+        System.out.println("intProperty = " + intProperty);
+        System.out.println("intProperty.get() = " + intProperty.get());
+        System.out.println("intProperty.getValue() = " + intProperty.getValue().intValue());
+    }
+
+    public static void main(String[] args) {
+        createProperty();
+        addAndRemoveInvalidationListener();
+        addAndRemoveChangeListener();
+        bindAndUnbindOnePropertyToAnother();
     }
 }

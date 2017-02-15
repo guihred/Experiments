@@ -30,17 +30,17 @@ public class Pacman extends Arc {
 
 	private PacmanDirection direction = PacmanDirection.RIGHT;
 	private Timeline eatingAnimation = new SimpleTimelineBuilder()
-			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0f)),
-					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0f)),
-					new KeyFrame(Duration.seconds(0.25), new KeyValue(startAngleProperty(), 0.0f)),
-					new KeyFrame(Duration.seconds(0.25), new KeyValue(lengthProperty(), 360.0f)))
+			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0F)),
+					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0F)),
+					new KeyFrame(Duration.seconds(0.25), new KeyValue(startAngleProperty(), 0.0F)),
+					new KeyFrame(Duration.seconds(0.25), new KeyValue(lengthProperty(), 360.0F)))
 			.cycleCount(Animation.INDEFINITE).autoReverse(true).build();
 	public Pacman() {
 		setFill(Color.YELLOW);
-		setRadiusX(15.0f);
-		setRadiusY(15.0f);
-		setStartAngle(45.0f);
-		setLength(270.0f);
+		setRadiusX(15.0F);
+		setRadiusY(15.0F);
+		setStartAngle(45.0F);
+		setLength(270.0F);
 		setType(ArcType.ROUND);
 		eatingAnimation.playFromStart();
 	}
@@ -51,11 +51,11 @@ public class Pacman extends Arc {
 	}
 
 	public void move(ObservableList<Node> observableList) {
-		int step = 2;
 		if (direction == null) {
 			return;
 		}
 
+		int step = 2;
 		switch (direction) {
 		case RIGHT:
 			setLayoutX(getLayoutX() + step);
@@ -99,10 +99,10 @@ public class Pacman extends Arc {
 		if (eatingAnimation.getStatus() == Status.RUNNING) {
 			turn(null);
 			eatingAnimation.stop();
-			Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0f)),
-					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0f)),
-					new KeyFrame(Duration.seconds(2), new KeyValue(startAngleProperty(), 180.0f)),
-					new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0f)));
+			Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0F)),
+					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0F)),
+					new KeyFrame(Duration.seconds(2), new KeyValue(startAngleProperty(), 180.0F)),
+					new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0F)));
 			timeline.play();
 			timeline.setOnFinished(e -> {
 				setLayoutX(PacmanModel.SQUARE_SIZE / 2);

@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RosarioComparadorArquivos extends Application {
-	public final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(RosarioComparadorArquivos.class);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -111,7 +111,7 @@ public class RosarioComparadorArquivos extends Application {
 
 				LeitorArquivos.exportarArquivo(items0, items, items2);
 			} catch (Exception e1) {
-				logger.error("", e1);
+				LOGGER.error("", e1);
 			}
 		});
 		gridpane.getChildren().add(exportar);
@@ -270,30 +270,27 @@ public class RosarioComparadorArquivos extends Application {
 
 	private ObservableList<Medicamento> getMedicamentosRosario(File file) {
 		try {
-			ObservableList<Medicamento> people = LeitorArquivos.getMedicamentosRosario(file);
-			return people;
+			return LeitorArquivos.getMedicamentosRosario(file);
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}
 
 	private ObservableList<Medicamento> getMedicamentosSNGPC(File file) {
 		try {
-			ObservableList<Medicamento> people = LeitorArquivos.getMedicamentosSNGPCPDF(file);
-			return people;
+			return LeitorArquivos.getMedicamentosSNGPCPDF(file);
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}
 
 	private ObservableList<Medicamento> getMedicamentosAnvisa(File selectedFile) {
 		try {
-			ObservableList<Medicamento> people = LeitorArquivos.getMedicamentosAnvisa(selectedFile);
-			return people;
+			return LeitorArquivos.getMedicamentosAnvisa(selectedFile);
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}

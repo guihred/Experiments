@@ -5,8 +5,8 @@ import javafx.scene.shape.Shape;
 
 // records a pair of (possibly) intersecting shapes.
 class ShapePair {
-	Shape a;
-	Shape b;
+	protected Shape a;
+	protected Shape b;
 
 	public ShapePair(Shape src, Shape dest) {
 		a = src;

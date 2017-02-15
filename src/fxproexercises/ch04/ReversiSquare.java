@@ -67,7 +67,7 @@ public class ReversiSquare extends Region {
     }
 
     @Override
-    protected void layoutChildren() {
+	public void layoutChildren() {
         layoutInArea(highlight, 0, 0, getWidth(), getHeight(), getBaselineOffset(), HPos.CENTER,
                 VPos.CENTER);
     }

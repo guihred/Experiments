@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class EWSTest {
-	public static final Logger LOGGER = LoggerFactory.getLogger(EWSTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EWSTest.class);
 
 	private EWSTest() {
 	}

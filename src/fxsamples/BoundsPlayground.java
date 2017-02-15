@@ -10,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -25,10 +24,10 @@ import javafx.stage.StageStyle;
 
 /** Demo for understanding JavaFX Layout Bounds */
 public class BoundsPlayground extends Application {
-	final ObservableList<Shape> shapes = FXCollections.observableArrayList();
-	final ObservableList<ShapePair> intersections = FXCollections.observableArrayList();
+	private final ObservableList<Shape> shapes = FXCollections.observableArrayList();
+	private final ObservableList<ShapePair> intersections = FXCollections.observableArrayList();
 
-	ObjectProperty<BoundsType> selectedBoundsType = new SimpleObjectProperty<>(BoundsType.LAYOUT_BOUNDS);
+	private final ObjectProperty<BoundsType> selectedBoundsType = new SimpleObjectProperty<>(BoundsType.LAYOUT_BOUNDS);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -88,7 +87,7 @@ public class BoundsPlayground extends Application {
 			for (Shape dest : shapes) {
 				ShapePair pair = new ShapePair(src, dest);
 				if (!(pair.a instanceof Anchor) && !(pair.b instanceof Anchor) && !intersections.contains(pair)
-						&& pair.intersects(selectedBoundsType.get())) {
+						&& pair.intersects(getSelectedBoundsType().get())) {
 					intersections.add(pair);
 				}
 			}
@@ -143,7 +142,7 @@ public class BoundsPlayground extends Application {
 
 	// records relative x and y co-ordinates.
 	private static class Delta {
-		double x, y;
+		protected double x, y;
 	}
 
 	// define a utility stage for reporting intersections.
@@ -158,38 +157,27 @@ public class BoundsPlayground extends Application {
 		final Label instructions = new Label("Click on any circle in the scene to the left to drag it around.");
 		instructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 		instructions.setStyle("-fx-font-weight: bold; -fx-text-fill: darkgreen;");
-
 		final Label intersectionInstructions = new Label("Any intersecting bounds in the scene will be reported below.");
 		instructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-
 		// add the ability to set a translate value for the circles.
 		final CheckBox translateNodes = new CheckBox("Translate circles");
-		translateNodes.selectedProperty()
-				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes)
-						.peek(s -> s.setTranslateY(doTranslate ? 100 : 0)).forEach(s -> testIntersections()));
+		translateNodes.selectedProperty().addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> s.setTranslateY(doTranslate ? 100 : 0)).forEach(s -> testIntersections()));
 		translateNodes.selectedProperty().set(false);
-
 		// add the ability to add an effect to the circles.
 		final Label modifyInstructions = new Label("Modify visual display aspects.");
 		modifyInstructions.setStyle("-fx-font-weight: bold;");
 		modifyInstructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 		final CheckBox effectNodes = new CheckBox("Add an effect to circles");
-		effectNodes.selectedProperty()
-				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes)
-						.peek(s -> s.setEffect(doTranslate ? new DropShadow() : null))
-						.forEach(s -> testIntersections()));
+		effectNodes.selectedProperty().addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> s.setEffect(doTranslate ? new DropShadow() : null)).forEach(s -> testIntersections()));
 		effectNodes.selectedProperty().set(true);
-
 		// add the ability to add a stroke to the circles.
 		final CheckBox strokeNodes = new CheckBox("Add outside strokes to circles");
-		strokeNodes.selectedProperty()
-				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> {
+		strokeNodes.selectedProperty().addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> {
 					if (doTranslate) {
 						s.setStroke(Color.LIGHTSEAGREEN);
 					}
 				}).peek(s -> s.setStrokeWidth(doTranslate ? 10 : 0)).forEach(s -> testIntersections()));
 		strokeNodes.selectedProperty().set(true);
-
 		// add the ability to show or hide the layout bounds overlay.
 		final Label showBoundsInstructions = new Label("The gray squares represent layout bounds.");
 		showBoundsInstructions.setStyle("-fx-font-weight: bold;");
@@ -197,12 +185,9 @@ public class BoundsPlayground extends Application {
 		final CheckBox showBounds = new CheckBox("Show Bounds");
 		boundsOverlay.visibleProperty().bind(showBounds.selectedProperty());
 		showBounds.selectedProperty().set(true);
-
 		// create a container for the display control checkboxes.
 		VBox displayChecks = new VBox(10);
-		displayChecks.getChildren().addAll(modifyInstructions, translateNodes, effectNodes, strokeNodes,
-				showBoundsInstructions, showBounds);
-
+		displayChecks.getChildren().addAll(modifyInstructions, translateNodes, effectNodes, strokeNodes,showBoundsInstructions, showBounds);
 		// create a toggle group for the bounds type to use.
 		ToggleGroup boundsToggleGroup = new ToggleGroup();
 		final RadioButton useLayoutBounds = new RadioButton("Use Layout Bounds");
@@ -213,45 +198,33 @@ public class BoundsPlayground extends Application {
 		useBoundsInParent.setToggleGroup(boundsToggleGroup);
 		VBox boundsToggles = new VBox(10);
 		boundsToggles.getChildren().addAll(useLayoutBounds, useBoundsInLocal, useBoundsInParent);
-
 		// change the layout bounds display depending on which bounds type has
 		// been selected.
 		useLayoutBounds.selectedProperty().addListener(
-				(ChangeListener<Boolean>) (observableValue, aBoolean, isSelected) -> {
+				(o, a, isSelected) -> {
 					if (isSelected) {
-						for (Node overlay : boundsOverlay.getChildren()) {
-							((BoundsDisplay) overlay).monitorBounds(BoundsType.LAYOUT_BOUNDS);
-						}
-						selectedBoundsType.set(BoundsType.LAYOUT_BOUNDS);
+						boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast).forEach(b->b.monitorBounds(BoundsType.LAYOUT_BOUNDS));
+						getSelectedBoundsType().set(BoundsType.LAYOUT_BOUNDS);
 						testIntersections();
 					}
 				});
-		useBoundsInLocal.selectedProperty().addListener(
-				(ChangeListener<Boolean>) (observableValue, aBoolean, isSelected) -> {
+		useBoundsInLocal.selectedProperty().addListener((o, a, isSelected) -> {
 					if (isSelected) {
-						for (Node overlay : boundsOverlay.getChildren()) {
-							((BoundsDisplay) overlay).monitorBounds(BoundsType.BOUNDS_IN_LOCAL);
-						}
-						selectedBoundsType.set(BoundsType.BOUNDS_IN_LOCAL);
+						boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast).forEach(b->b.monitorBounds(BoundsType.BOUNDS_IN_LOCAL));
+						getSelectedBoundsType().set(BoundsType.BOUNDS_IN_LOCAL);
 						testIntersections();
 					}
 				});
-		useBoundsInParent.selectedProperty().addListener(
-				(ChangeListener<Boolean>) (observableValue, aBoolean, isSelected) -> {
+		useBoundsInParent.selectedProperty().addListener((o, a, isSelected) -> {
 					if (isSelected) {
-						for (Node overlay : boundsOverlay.getChildren()) {
-							((BoundsDisplay) overlay).monitorBounds(BoundsType.BOUNDS_IN_PARENT);
-						}
-						selectedBoundsType.set(BoundsType.BOUNDS_IN_PARENT);
+						boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast).forEach(b->b.monitorBounds(BoundsType.BOUNDS_IN_PARENT));
+						getSelectedBoundsType().set(BoundsType.BOUNDS_IN_PARENT);
 						testIntersections();
 					}
 				});
 		useLayoutBounds.selectedProperty().set(true);
-
 		WebView boundsExplanation = new WebView();
-		boundsExplanation
-				.getEngine()
-				.loadContent(
+		boundsExplanation.getEngine().loadContent(
 						"<html><body bgcolor='darkseagreen' fgcolor='lightgrey' style='font-size:12px'><dl>"
 								+ "<dt><b>Layout Bounds</b></dt><dd>The boundary of the shape.</dd><br/>"
 								+ "<dt><b>Bounds in Local</b></dt><dd>The boundary of the shape and effect.</dd><br/>"
@@ -261,18 +234,20 @@ public class BoundsPlayground extends Application {
 		boundsExplanation.setMinHeight(130);
 		boundsExplanation.setMaxHeight(130);
 		boundsExplanation.setStyle("-fx-background-color: transparent");
-
 		// layout the utility pane.
 		VBox utilityLayout = new VBox(10);
-		utilityLayout
-				.setStyle("-fx-padding:10; -fx-background-color: linear-gradient(to bottom, lightblue, derive(lightblue, 20%));");
+		utilityLayout.setStyle(
+				"-fx-padding:10; -fx-background-color: linear-gradient(to bottom, lightblue, derive(lightblue, 20%));");
 		utilityLayout.getChildren().addAll(instructions, intersectionInstructions, intersectionView, displayChecks,
 				boundsToggles, boundsExplanation);
 		utilityLayout.setPrefHeight(530);
 		reportingStage.setScene(new Scene(utilityLayout));
 		reportingStage.show();
-
 		// ensure the utility window closes when the main app window closes.
 		stage.setOnCloseRequest(windowEvent -> reportingStage.close());
+	}
+
+	public ObjectProperty<BoundsType> getSelectedBoundsType() {
+		return selectedBoundsType;
 	}
 }

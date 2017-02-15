@@ -23,10 +23,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class FormValidation extends Application {
-	private final static String MY_PASS = "senha";
-	private final static BooleanProperty GRANTED_ACCESS = new SimpleBooleanProperty(false);
-	private final static int MAX_ATTEMPTS = 3;
-	private final IntegerProperty ATTEMPTS = new SimpleIntegerProperty(0);
+	private static final String MY_PASS = "senha";
+	private static final BooleanProperty GRANTED_ACCESS = new SimpleBooleanProperty(false);
+	private static final int MAX_ATTEMPTS = 3;
+	private final IntegerProperty attempts = new SimpleIntegerProperty(0);
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -75,12 +75,12 @@ public class FormValidation extends Application {
 		// error icon
 		SVGPath deniedIcon = new SVGPath();
 		deniedIcon.setFill(Color.rgb(255, 0, 0, .9));
-		deniedIcon.setStroke(Color.WHITE);//
+		deniedIcon.setStroke(Color.WHITE);
 		deniedIcon.setContent("M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z");
 		deniedIcon.setVisible(false);
 		SVGPath grantedIcon = new SVGPath();
 		grantedIcon.setFill(Color.rgb(0, 255, 0, .9));
-		grantedIcon.setStroke(Color.WHITE);//
+		grantedIcon.setStroke(Color.WHITE);
 		grantedIcon.setContent("M2.379,14.729 5.208,11.899 12.958,19.648 25.877,6.733 28.707,9.561 12.958,25.308z");
 		grantedIcon.setVisible(false);
 		StackPane accessIndicator = new StackPane();
@@ -100,8 +100,8 @@ public class FormValidation extends Application {
 			} else {
 				deniedIcon.setVisible(true);
 			}
-			ATTEMPTS.set(ATTEMPTS.add(1).get());
-			System.out.println("Attempts: " + ATTEMPTS.get());
+			attempts.set(attempts.add(1).get());
+			System.out.println("Attempts: " + attempts.get());
 		});
 		// listener when the user types into the password field
 		passwordField.textProperty().addListener((obs, ov, nv) -> {
@@ -112,7 +112,7 @@ public class FormValidation extends Application {
 			}
 		});
 		// listener on number of attempts
-		ATTEMPTS.addListener((obs, ov, nv) -> {
+		attempts.addListener((obs, ov, nv) -> {
 			if (MAX_ATTEMPTS == nv.intValue()) {
 				// failed attemps
 				System.out.printf("User %s is denied access.%n", user.getUserName());

@@ -1,3 +1,4 @@
+
 package gaming.ex14;
 
 import gaming.ex07.CreateMazeHandler;
@@ -29,21 +30,23 @@ import javafx.util.Duration;
 public class PacmanModel {
 
 	public static final int MAZE_SIZE = 5;
-	public static final int SQUARE_SIZE = 60;
-	final List<PacmanBall> balls = DoubleStream.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE).limit(MAZE_SIZE * 2)
+	public static final double SQUARE_SIZE = 60;
+	private final List<PacmanBall> balls = DoubleStream.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE)
+			.limit(MAZE_SIZE * 2)
 			.mapToObj(d -> d)
 			.flatMap(d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE).limit(MAZE_SIZE * 2)
 					.mapToObj(e -> new Double[] { d, e }))
 			.map(PacmanBall::new).collect(Collectors.toList());
 
-	final List<PacmanGhost> ghosts = Stream.of(GhostColor.RED, GhostColor.BLUE, GhostColor.ORANGE, GhostColor.GREEN)
+	private final List<PacmanGhost> ghosts = Stream
+			.of(GhostColor.RED, GhostColor.BLUE, GhostColor.ORANGE, GhostColor.GREEN)
 			.map(PacmanGhost::new)
 			.collect(Collectors.toList());
-	final Pacman pacman = new Pacman();
+	private final Pacman pacman = new Pacman();
 
-	final IntegerProperty points = new SimpleIntegerProperty(0);
+	private final IntegerProperty points = new SimpleIntegerProperty(0);
 
-	long time;
+	private long time;
 	public PacmanModel(Group group, Scene scene) {
 		Timeline timeline = new Timeline();
 		MazeSquare[][] maze = initializeMaze();
@@ -79,7 +82,7 @@ public class PacmanModel {
 			PacmanGhost ghost = ghosts.get(i);
 			ghost.setStartPosition(265 + i % 2 * SQUARE_SIZE, 265 + i / 2 * SQUARE_SIZE);
 		}
-		scene.setOnKeyPressed(e -> handleKeyPressed(e));
+		scene.setOnKeyPressed(this::handleKeyPressed);
 
 	}
 
@@ -108,7 +111,7 @@ public class PacmanModel {
 		}
 	}
 
-	private void addRectangle(Group group, double value, double value2, int width, int height) {
+	private void addRectangle(Group group, double value, double value2, double width, double height) {
 		Rectangle rectangle = new Rectangle(width, height, Color.BLUE);
 		rectangle.setLayoutX(value);
 		rectangle.setLayoutY(value2);
@@ -165,7 +168,7 @@ public class PacmanModel {
 		List<PacmanBall> bal = balls.stream().filter(b -> b.getBoundsInParent().intersects(pacman.getBoundsInParent()))
 				.collect(Collectors.toList());
 		if (!bal.isEmpty()) {
-			points.set(points.get() + bal.size());
+			getPoints().set(getPoints().get() + bal.size());
 			balls.removeAll(bal);
 			group.getChildren().removeAll(bal);
 			if (bal.stream().anyMatch(PacmanBall::isSpecial)) {
@@ -192,7 +195,8 @@ public class PacmanModel {
 			}
 		}
 	}
-	private MazeSquare[][] initializeMaze() {
+
+	private static MazeSquare[][] initializeMaze() {
 		MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
 		for (int i = 0; i < MAZE_SIZE; i++) {
 			for (int j = 0; j < MAZE_SIZE; j++) {
@@ -216,6 +220,10 @@ public class PacmanModel {
 
 	public static PacmanModel create(Group group, Scene scene) {
 		return new PacmanModel(group, scene);
+	}
+
+	public IntegerProperty getPoints() {
+		return points;
 	}
 
 }

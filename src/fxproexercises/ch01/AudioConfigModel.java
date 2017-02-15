@@ -15,23 +15,23 @@ public class AudioConfigModel {
     /**
      * The minimum audio volume in decibels
      */
-    public double minDecibels = 0.0;
+	public static final double MIN_DECIBELS = 0.0;
     /**
      * The maximum audio volume in decibels
      */
-    public double maxDecibels = 160.0;
+	public static final double MAX_DECIBELS = 160.0;
     /**
      * The selected audio volume in decibels
      */
-    public IntegerProperty selectedDBs = new SimpleIntegerProperty(0);
+	public final IntegerProperty selectedDBs = new SimpleIntegerProperty(0);
     /**
      * Indicates whether audio is muted
      */
-    public BooleanProperty muting = new SimpleBooleanProperty(false);
+	public final BooleanProperty muting = new SimpleBooleanProperty(false);
     /**
      * List of some musical genres
      */
-    public ObservableList<String> genres = FXCollections.observableArrayList(
+	public static final ObservableList<String> GENRES = FXCollections.observableArrayList(
             "Chamber",
             "Country",
             "Cowbell",
@@ -42,7 +42,7 @@ public class AudioConfigModel {
     /**
      * A reference to the selection model used by the Slider
      */
-    public SingleSelectionModel<String> genreSelectionModel;
+	private SingleSelectionModel<String> genreSelectionModel;
 
     /**
      * Adds a change listener to the selection model of the ChoiceBox, and
@@ -59,4 +59,13 @@ public class AudioConfigModel {
 		genreSelectionModel.selectedIndexProperty().addListener((ov, oldValue, newValue) -> selectedDBs
 				.setValue(hashMap.getOrDefault(newValue, selectedDBs.getValue())));
     }
+
+	public SingleSelectionModel<String> getGenreSelectionModel() {
+		return genreSelectionModel;
+	}
+
+	public void setGenreSelectionModel(SingleSelectionModel<String> genreSelectionModel) {
+		this.genreSelectionModel = genreSelectionModel;
+		addListenerToGenreSelectionModel();
+	}
 }

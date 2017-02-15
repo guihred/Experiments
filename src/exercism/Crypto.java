@@ -56,13 +56,13 @@ class Crypto {
 	}
 
 	public int getSquareSize() {
-		return Double.valueOf(Math.ceil(Math.sqrt(getNormalizedPlaintext().length()))).intValue();
+		return (int) Math.ceil(Math.sqrt(getNormalizedPlaintext().length()));
 	}
 
 	public String getNormalizedCipherText() {
 		String cipherText = getCipherText();
 
-		int intValue = Double.valueOf(Math.floor(Math.sqrt(cipherText.length()))).intValue();
+		int intValue = (int) Math.floor(Math.sqrt(cipherText.length()));
 
 		return Stream.of(cipherText.split("(?<=\\G.{" + intValue + "})")).collect(Collectors.joining(" "));
 	}

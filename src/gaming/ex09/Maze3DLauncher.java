@@ -114,8 +114,6 @@ public class Maze3DLauncher extends Application {
         stage.setHeight(600);
         stage.show();
 
-        
-
     }
 
     public static void main(String[] args) {

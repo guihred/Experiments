@@ -25,14 +25,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import simplebuilder.*;
 
 public class CSSStylingExample extends Application {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CSSStylingExample.class);
 
 	private ObservableList<Cursor> cursors = FXCollections.observableArrayList(Cursor.DEFAULT, Cursor.CROSSHAIR,
-			Cursor.WAIT,
-			Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE, Cursor.SE_RESIZE,
-			Cursor.S_RESIZE, Cursor.SW_RESIZE, Cursor.W_RESIZE, Cursor.NW_RESIZE, Cursor.NONE);
+			Cursor.WAIT, Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE,
+			Cursor.SE_RESIZE, Cursor.S_RESIZE, Cursor.SW_RESIZE, Cursor.W_RESIZE, Cursor.NW_RESIZE, Cursor.NONE);
 	private ChoiceBox<Cursor> choiceBoxRef = new ChoiceBox<>(cursors);
 
 	private DoubleProperty fillVals = new SimpleDoubleProperty(255.0);
@@ -56,9 +58,9 @@ public class CSSStylingExample extends Application {
 
 
 		Hyperlink build = new SimpleHyperlinkBuilder().text("lookup()").onAction(e -> {
-			System.out.println("sceneRef:" + sceneRef);
+			LOGGER.info("sceneRef:" + sceneRef);
 			Text textRef = (Text) sceneRef.lookup("#sceneHeightText");
-			System.out.println(textRef.getText());
+			LOGGER.info(textRef.getText());
 		}).build();
 
 		FlowPane sceneRoot = new SimpleFlowPaneBuilder()

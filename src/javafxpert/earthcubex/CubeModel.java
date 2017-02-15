@@ -19,5 +19,9 @@ import javafx.beans.property.SimpleDoubleProperty;
  */
 public class CubeModel {
 	public static final CubeModel instance = new CubeModel();
-	public DoubleProperty mapOpacity = new SimpleDoubleProperty(0);
+	private final DoubleProperty mapOpacity = new SimpleDoubleProperty(0);
+
+	public DoubleProperty getMapOpacity() {
+		return mapOpacity;
+	}
 }

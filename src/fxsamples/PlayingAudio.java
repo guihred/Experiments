@@ -32,7 +32,7 @@ import simplebuilder.SimpleCircleBuilder;
  * @author cdea
  */
 public class PlayingAudio extends Application {
-	public final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PlayingAudio.class);
 	private MediaPlayer mediaPlayer;
 	private Point2D anchorPt;
 	private Point2D previousLocation;
@@ -153,7 +153,7 @@ public class PlayingAudio extends Application {
 			}
 			dragEvent.setDropCompleted(success);
 			dragEvent.consume();
-		}); // end of setOnDragDropped
+		});
 	}
 
 	private void tryPlayMedia(Dragboard db) {
@@ -161,7 +161,7 @@ public class PlayingAudio extends Application {
 			String filePath = db.getFiles().get(0).toURI().toURL().toString();
 			playMedia(filePath);
 		} catch (MalformedURLException ex) {
-			logger.error("", ex);
+			LOGGER.error("", ex);
 		}
 	}
 
@@ -189,14 +189,9 @@ public class PlayingAudio extends Application {
 					mediaPlayer.stop();
 				}
 			}
-		}); // setOnMousePressed()
+		});
 			// play button
-		Arc playButton = new Arc(12, // center x
-				16, // center y
-				15, // radius x
-				15, // radius y
-				150, // start angle
-				60); // length
+		Arc playButton = new Arc(12, 16, 15, 15, 150, 60);
 		playButton.setId(PLAY_BUTTON_ID);
 		playButton.setType(ArcType.ROUND);
 		playButton.setOnMousePressed(mouseEvent -> mediaPlayer.play());
@@ -206,16 +201,10 @@ public class PlayingAudio extends Application {
 		Node pauseBackground = new Circle(12, 16, 10);
 		pauseBackground.getStyleClass().add("pause-circle");
 
-		Node firstLine = new Line(6, // start x
-				6, // start y
-				6, // end x
-				14); // end y
+		Node firstLine = new Line(6, 6, 6, 14);
 		firstLine.getStyleClass().add("pause-line");
 		firstLine.setStyle("-fx-translate-x: 34;");
-		Node secondLine = new Line(6, // start x
-				6, // start y
-				6, // end x
-				14); // end y
+		Node secondLine = new Line(6, 6, 6, 14);
 		secondLine.getStyleClass().add("pause-line");
 		secondLine.setStyle("-fx-translate-x: 38;");
 		pauseButton.getChildren().addAll(pauseBackground, firstLine, secondLine);
@@ -226,13 +215,13 @@ public class PlayingAudio extends Application {
 					mediaPlayer.pause();
 				}
 			}
-		}); // setOnMousePressed()
+		});
 		playButton.setOnMousePressed(mouseEvent -> {
 			if (mediaPlayer != null) {
 				updatePlayAndPauseButtons(false);
 				mediaPlayer.play();
 			}
-		}); // setOnMousePressed()
+		});
 		buttonGroup.getChildren().addAll(stopButton, playButton, pauseButton);
 		// move button group when scene is resized
 		buttonGroup.translateXProperty().bind(scene.widthProperty().subtract(buttonArea.getWidth() + 6));
@@ -294,20 +283,19 @@ public class PlayingAudio extends Application {
 			progressSlider.setValue(0);
 			progressSlider.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
 			mediaPlayer.play();
-		}); // setOnReady()
+		});
 			// back to the beginning
 		mediaPlayer.setOnEndOfMedia(() -> {
 			updatePlayAndPauseButtons(true);
 			// change buttons to play and rewind
 				mediaPlayer.stop();
-			}); // setOnEndOfMedia()
+		});
 				// setup visualization (circle container)
 		Group vizContainer = (Group) mainStage.getScene().lookup("#" + VIS_CONTAINER_ID);
 		mediaPlayer
 				.setAudioSpectrumListener((double timestamp, double duration, float[] magnitudes, float[] phases) -> {
 					vizContainer.getChildren().clear();
 					int i = 0;
-					int x = 10;
 					double y = mainStage.getScene().getHeight() / 2;
 					Random rand = new Random(System.currentTimeMillis());
 					// Build random colored circles
@@ -316,14 +304,14 @@ public class PlayingAudio extends Application {
 						int green = rand.nextInt(255);
 						int blue = rand.nextInt(255);
 						Circle circle = new SimpleCircleBuilder().radius(10)
-								.centerX(x + i)
+								.centerX((double) 10 + i)
 								.centerY(y + (double) phase * 100)
 								.fill(Color.rgb(red, green, blue, .70))
 								.build();
 						vizContainer.getChildren().add(circle);
 						i += 5;
 					}
-				}); // setAudioSpectrumListener()
+				});
 	}
 
 	/**
@@ -370,7 +358,7 @@ public class PlayingAudio extends Application {
 				double dur = slider.getValue() * 1000;
 				mediaPlayer.seek(Duration.millis(dur));
 			}
-		}); // addListener()
+		});
 		Scene scene = mainStage.getScene();
 		slider.setTranslateX(10);
 		slider.translateYProperty().bind(scene.heightProperty().subtract(50));

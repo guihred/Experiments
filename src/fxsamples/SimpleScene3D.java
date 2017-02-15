@@ -16,17 +16,16 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-
 public class SimpleScene3D extends Application {
+	private static final double CAMERA_MODIFIER = 50.0;
+	private static final double CAMERA_QUANTITY = 10.0;
+	private static final double SCENE_WIDTH = 600;
+	private static final double SCENE_HEIGHT = 600;
+	private static final double CAMERA_Y_LIMIT = 15;
+	private static final double ROTATE_MODIFIER = 25;
 	private PerspectiveCamera camera;
-	private final double cameraModifier = 50.0;
-	private final double cameraQuantity = 10.0;
-	private final double sceneWidth = 600;
-	private final double sceneHeight = 600;
-	private double mouseXold = 0;
-	private double mouseYold = 0;
-	private final double cameraYlimit = 15;
-	private final double rotateModifier = 25;
+	private double mouseXold;
+	private double mouseYold;
 	private EventHandler<? super MouseEvent> mouseHandler = event -> {
 		Node picked = event.getPickResult().getIntersectedNode();
 		if (null != picked) {
@@ -41,10 +40,13 @@ public class SimpleScene3D extends Application {
 	};
 	private EventHandler<? super KeyEvent> keyPressedHandler = event -> {
 		// Add shift modifier to simulate "Running Speed"
-		double change = event.isShiftDown() ? cameraModifier : cameraQuantity;
+
+		double change = event.isShiftDown() ? CAMERA_MODIFIER : CAMERA_QUANTITY;
 		// What key did the user press?
+
 		KeyCode keycode = event.getCode();
 		// Step 2c: Add Zoom controls
+
 		if (keycode == KeyCode.W) {
 			camera.setTranslateZ(camera.getTranslateZ() + change);
 		}
@@ -52,6 +54,7 @@ public class SimpleScene3D extends Application {
 			camera.setTranslateZ(camera.getTranslateZ() - change);
 		}
 		// Step 2d: Add Strafe controls
+
 		if (keycode == KeyCode.A) {
 			camera.setTranslateX(camera.getTranslateX() - change);
 		}
@@ -62,15 +65,15 @@ public class SimpleScene3D extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		// Step 1a: Build your Scene and Camera
+
 		Group sceneRoot = new Group();
-		Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight);
+		Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
 		scene.setFill(Color.BLACK);
 		camera = new PerspectiveCamera(true);
 		camera.setNearClip(0.1);
 		camera.setFarClip(10000.0);
 		camera.setTranslateZ(-1000);
 		scene.setCamera(camera);
-
 		final Cylinder cylinder = new Cylinder(50, 100);
 		final PhongMaterial blueMaterial = new PhongMaterial();
 		blueMaterial.setDiffuseColor(Color.DARKBLUE);
@@ -78,11 +81,14 @@ public class SimpleScene3D extends Application {
 		cylinder.setMaterial(blueMaterial);
 		cylinder.setDrawMode(DrawMode.FILL);
 		// Step 1c: Translate and Rotate primitive into position
+
 		cylinder.setRotationAxis(Rotate.X_AXIS);
 		cylinder.setRotate(45);
 		cylinder.setTranslateZ(-200);
 		// End Step 1c
+
 		// Step 1d: Add and Transform more primitives
+
 		final PhongMaterial greenMaterial = new PhongMaterial();
 		greenMaterial.setDiffuseColor(Color.DARKGREEN);
 		greenMaterial.setSpecularColor(Color.GREEN);
@@ -103,21 +109,28 @@ public class SimpleScene3D extends Application {
 		sphere.setTranslateZ(-150);
 		sceneRoot.getChildren().addAll(cylinder, cube, sphere);
 		// End Step 1d
+
 		// Step 1e: All Together Now: Grouped Primitives
+
 		Group primitiveGroup = new Group(cylinder, cube, sphere);
 		primitiveGroup.setRotationAxis(Rotate.Z_AXIS);
-		primitiveGroup.setRotate(180); // Rotate the Group as a whole
+		// Rotate the Group as a whole
+		primitiveGroup.setRotate(180);
 		sceneRoot.getChildren().addAll(primitiveGroup);
 		// End Step 1e
+
 		// Step 2a: Primitive Picking for Primitives
 
 		scene.setOnMouseClicked(mouseHandler);
 		// End Step 2a
+
 		// Step 2b: Add a Movement Keyboard Handler
 
 		scene.setOnKeyPressed(keyPressedHandler);
 		// End Step 2b-d
+
 		// Step 3: Add a Camera Control Mouse Event handler
+
 		Rotate xRotate = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
 		Rotate yRotate = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
 		camera.getTransforms().addAll(xRotate, yRotate);
@@ -129,11 +142,11 @@ public class SimpleScene3D extends Application {
 						double mouseXnew = event.getSceneX();
 						double mouseYnew = event.getSceneY();
 						if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-							double pitchRotate = xRotate.getAngle() + (mouseYnew - mouseYold) / rotateModifier;
-							pitchRotate = pitchRotate > cameraYlimit ? cameraYlimit : pitchRotate;
-							pitchRotate = pitchRotate < -cameraYlimit ? -cameraYlimit : pitchRotate;
+							double pitchRotate = xRotate.getAngle() + (mouseYnew - mouseYold) / ROTATE_MODIFIER;
+							pitchRotate = pitchRotate > CAMERA_Y_LIMIT ? CAMERA_Y_LIMIT : pitchRotate;
+							pitchRotate = pitchRotate < -CAMERA_Y_LIMIT ? -CAMERA_Y_LIMIT : pitchRotate;
 							xRotate.setAngle(pitchRotate);
-							double yawRotate = yRotate.getAngle() - (mouseXnew - mouseXold) / rotateModifier;
+							double yawRotate = yRotate.getAngle() - (mouseXnew - mouseXold) / ROTATE_MODIFIER;
 							yRotate.setAngle(yawRotate);
 						}
 						mouseXold = mouseXnew;
@@ -143,11 +156,9 @@ public class SimpleScene3D extends Application {
 		// End Step 3
 
 		primaryStage.setTitle("SimpleScene3D");
-
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
-
 	public static void main(String[] args) {
 		launch(args);
 	}

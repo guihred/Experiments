@@ -15,7 +15,7 @@ public class OthersTests {
 				"RCV_ACK", FIN_WAIT_2)), ESTABLISHED(of("APP_CLOSE", FIN_WAIT_1, "RCV_FIN", CLOSE_WAIT)), SYN_RCVD(of("APP_CLOSE", Estado.FIN_WAIT_1,
 				"RCV_ACK", ESTABLISHED)), SYN_SENT(of("RCV_SYN", SYN_RCVD, "RCV_SYN_ACK", ESTABLISHED, "APP_CLOSE", CLOSED)), LISTEN(of("RCV_SYN",
 				Estado.SYN_RCVD, "APP_SEND", Estado.SYN_SENT, "APP_CLOSE", Estado.CLOSED));
-		public Map<String, Estado> map;
+		private Map<String, Estado> map;
 
 		Estado(Map<String, Estado> map) {
 			this.map = map;
@@ -35,11 +35,11 @@ public class OthersTests {
 		return eventList.stream().sequential().reduce(estado, (e, s) -> e.getMap().getOrDefault(s, Estado.ERROR), (e, f) -> e);
 	}
 
-	public static Complex p(Complex t, Complex A, Complex B, Complex C) {
+	public static Complex p(Complex t, Complex a, Complex b, Complex c) {
 
-		Complex c1 = A.subtract(B.multiply(2)).add(C).multiply(t.multiply(t));
-		Complex c2 = B.subtract(A).multiply(t.multiply(2));
-		return c1.add(c2).add(A);
+		Complex c1 = a.subtract(b.multiply(2)).add(c).multiply(t.multiply(t));
+		Complex c2 = b.subtract(a).multiply(t.multiply(2));
+		return c1.add(c2).add(a);
 	}
 
 	public static String shorterReverseLonger(String a, String b) {

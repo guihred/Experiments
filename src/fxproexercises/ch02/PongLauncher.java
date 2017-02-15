@@ -134,9 +134,8 @@ public class PongLauncher extends Application {
         } else if (ball.intersects(bottomWall.getBoundsInLocal())
                 || ball.intersects(topWall.getBoundsInLocal())) {
             movingDown = !movingDown;
-        } else if (ball.intersects(leftPaddle.getBoundsInParent()) && !movingRight) {
-            movingRight = !movingRight;
-        } else if (ball.intersects(rightPaddle.getBoundsInParent()) && movingRight) {
+		} else if (ball.intersects(leftPaddle.getBoundsInParent()) && !movingRight
+				|| ball.intersects(rightPaddle.getBoundsInParent()) && movingRight) {
             movingRight = !movingRight;
         }
     }
@@ -184,22 +183,19 @@ public class PongLauncher extends Application {
 				ball);
 		pongComponents.setFocusTraversable(true);
 		pongComponents.setOnKeyPressed((KeyEvent k) -> {
-					if (k.getCode() == KeyCode.SPACE
-							&& pongAnimation.statusProperty().get() == Animation.Status.STOPPED) {
-						rightPaddleY.setValue(rightPaddleY.getValue() - 6);
-					} else if (k.getCode() == KeyCode.L
-							&& !rightPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
-						rightPaddleY.setValue(rightPaddleY.getValue() - 6);
-					} else if (k.getCode() == KeyCode.COMMA
-							&& !rightPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
-						rightPaddleY.setValue(rightPaddleY.getValue() + 6);
-					} else if (k.getCode() == KeyCode.A
-							&& !leftPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
-						leftPaddleY.setValue(leftPaddleY.getValue() - 6);
-					} else if (k.getCode() == KeyCode.Z
-							&& !leftPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
-						leftPaddleY.setValue(leftPaddleY.getValue() + 6);
-					}
+			if (k.getCode() == KeyCode.L && !rightPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
+				rightPaddleY.setValue(rightPaddleY.getValue() - 6);
+			}
+			if (k.getCode() == KeyCode.COMMA
+					&& !rightPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
+				rightPaddleY.setValue(rightPaddleY.getValue() + 6);
+			}
+			if (k.getCode() == KeyCode.A && !leftPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
+				leftPaddleY.setValue(leftPaddleY.getValue() - 6);
+			}
+			if (k.getCode() == KeyCode.Z && !leftPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
+				leftPaddleY.setValue(leftPaddleY.getValue() + 6);
+			}
 		});
 		Scene scene = new Scene(pongComponents, 500, 500);
 		// scene.setFill(LinearGradientBuilder.create()

@@ -16,7 +16,8 @@ import javafx.stage.Stage;
 class MovimentacaoAleatoria extends AnimationTimer {
 	private final CommomLabyrinth labyrinth3dWallTexture;
 	private MeshView[] animais;
-	private int direction[];// EAST, WEST, NORTH, SOUTH
+	// EAST, WEST, NORTH, SOUTH
+	private int[] direction;
 	private Random random = new Random();
 
 	public MovimentacaoAleatoria(CommomLabyrinth labyrinth3dWallTexture, MeshView... animais) {
@@ -30,38 +31,46 @@ class MovimentacaoAleatoria extends AnimationTimer {
 		for (int i = 0; i < animais.length; i++) {
 			MeshView enemy = animais[i];
 
-			final int STEP = 1;
-			if (direction[i] == 3) {// NORTH
-				enemy.setTranslateZ(enemy.getTranslateZ() + STEP);
+			final int step = 1;
+			// NORTH
+			if (direction[i] == 3) {
+				enemy.setTranslateZ(enemy.getTranslateZ() + step);
 			}
-			if (direction[i] == 2) {// WEST
-				enemy.setTranslateX(enemy.getTranslateX() - STEP);
+			// WEST
+			if (direction[i] == 2) {
+				enemy.setTranslateX(enemy.getTranslateX() - step);
 			}
-			if (direction[i] == 1) {// SOUTH
-				enemy.setTranslateZ(enemy.getTranslateZ() - STEP);
+			// SOUTH
+			if (direction[i] == 1) {
+				enemy.setTranslateZ(enemy.getTranslateZ() - step);
 			}
-			if (direction[i] == 0) {// EAST
-				enemy.setTranslateX(enemy.getTranslateX() + STEP);
+			// EAST
+			if (direction[i] == 0) {
+				enemy.setTranslateX(enemy.getTranslateX() + step);
 			}
 			if (labyrinth3dWallTexture.checkColision(enemy.getBoundsInParent())
 					|| enemy.getTranslateZ() < 0
-					|| enemy.getTranslateZ() > Labyrinth3DWallTexture.mapa[0].length * Labyrinth3DWallTexture.SIZE
+					|| enemy.getTranslateZ() > Labyrinth3DWallTexture.mapa[0].length * LabyrinthWall.SIZE
 
 					|| enemy.getTranslateX() < 0
-					|| enemy.getTranslateX() > Labyrinth3DWallTexture.mapa.length * Labyrinth3DWallTexture.SIZE
+					|| enemy.getTranslateX() > Labyrinth3DWallTexture.mapa.length * LabyrinthWall.SIZE
 
 			) {
-				if (direction[i] == 3) {// NORTH
-					enemy.setTranslateZ(enemy.getTranslateZ() - STEP);
+				// NORTH
+				if (direction[i] == 3) {
+					enemy.setTranslateZ(enemy.getTranslateZ() - step);
 				}
-				if (direction[i] == 2) {// WEST
-					enemy.setTranslateX(enemy.getTranslateX() + STEP);
+				// WEST
+				if (direction[i] == 2) {
+					enemy.setTranslateX(enemy.getTranslateX() + step);
 				}
-				if (direction[i] == 1) {// SOUTH
-					enemy.setTranslateZ(enemy.getTranslateZ() + STEP);
+				// SOUTH
+				if (direction[i] == 1) {
+					enemy.setTranslateZ(enemy.getTranslateZ() + step);
 				}
-				if (direction[i] == 0) {// EAST
-					enemy.setTranslateX(enemy.getTranslateX() - STEP);
+				// EAST
+				if (direction[i] == 0) {
+					enemy.setTranslateX(enemy.getTranslateX() - step);
 				}
 				enemy.setRotationAxis(Rotate.Y_AXIS);
 				enemy.setRotate(direction[i] * 90);

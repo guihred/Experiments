@@ -41,33 +41,15 @@ public class DotsModel {
 	private Group gridPane;
 	private String[] jogadores = { "EU", "TU" };
 	private final Line line = new Line(0, 0, 0, 0);
-	DotsSquare[][] maze = new DotsSquare[MAZE_SIZE][MAZE_SIZE];
+	private DotsSquare[][] maze = new DotsSquare[MAZE_SIZE][MAZE_SIZE];
 
-
-	private void handleMouseDragged(MouseEvent e) {
-		final EventTarget target = e.getTarget();
-		if (target instanceof DotsSquare) {
-			line.setEndX(e.getX());
-			line.setEndY(e.getY());
-		}
-	}
-
-	private void handleMousePressed(MouseEvent e) {
-		if (e.getTarget() instanceof DotsSquare) {
-			DotsSquare a = (DotsSquare) e.getTarget();
-			line.setStartY(a.getLayoutY() + a.getHeight() / 2);
-			line.setStartX(a.getLayoutX() + a.getWidth() / 2);
-			line.setEndX(e.getX());
-			line.setEndY(e.getY());
-			selected = a;
-		}
-	}
 
 	private DotsSquare over;
+
 	private final ObservableMap<String, ObservableSet<Set<DotsSquare>>> points = FXCollections.observableHashMap();
+
 	private Random random = new Random();
 	private DotsSquare selected;
-
 	@SuppressWarnings("unchecked")
 	public DotsModel(Group gridPane, BorderPane borderPane) {
         this.gridPane = gridPane;
@@ -77,9 +59,9 @@ public class DotsModel {
 
 		initializeMaze(gridPane);
 
-		gridPane.setOnMousePressed(e -> handleMousePressed(e));
-		gridPane.setOnMouseDragged(e -> handleMouseDragged(e));
-		gridPane.setOnMouseReleased(e -> handleMouseReleased(e));
+		gridPane.setOnMousePressed(this::handleMousePressed);
+		gridPane.setOnMouseDragged(this::handleMouseDragged);
+		gridPane.setOnMouseReleased(this::handleMouseReleased);
         final Text text = new Text("EU:");
         final Text text2 = new Text("0");
 		text2.textProperty()
@@ -91,6 +73,14 @@ public class DotsModel {
 				.bind(Bindings.createStringBinding(() -> Integer.toString(points.get("TU").size()), points.get("TU")));
         borderPane.setTop(new HBox(text, text2, tuText, tuPoints));
     }
+	private void addPolygonOnFinished(final Polygon polygon, final EventHandler<ActionEvent> onFinished,
+			ActionEvent f) {
+		if (onFinished != null) {
+			onFinished.handle(f);
+		}
+		gridPane.getChildren().add(polygon);
+	}
+
 	private int getCountMap(DotsSquare a, DotsSquare b) {
         a.addAdj(b);
         int sum = 0;
@@ -116,14 +106,14 @@ public class DotsModel {
             if (i < MAZE_SIZE - 1) {
                 DotsSquare c = maze[i + 1][j];
                 DotsSquare d = maze[i + 1][j + 1];
-                if (a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a)) {
-                    sum++;
-                    sum += getCountMap(a, c);
-                }
                 if (a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a)) {
                     sum++;
                     sum += getCountMap(b, d);
                 }
+				if (a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a)) {
+					sum++;
+					sum += getCountMap(a, c);
+				}
                 if (a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a)) {
                     sum++;
                     sum += getCountMap(d, c);
@@ -169,12 +159,11 @@ public class DotsModel {
 
         return sum;
     }
-
 	public Line getLine() {
 		return line;
 	}
 
-    private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades() {
+	private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades() {
         List<Map.Entry<DotsSquare, DotsSquare>> melhor = new ArrayList<>();
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
@@ -190,7 +179,7 @@ public class DotsModel {
     private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades2() {
         final List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = getPossibilidades();
 
-        final List<Map.Entry<DotsSquare, DotsSquare>> collect = possibilidades.stream().filter((Map.Entry<DotsSquare, DotsSquare> entry) -> {
+        return possibilidades.stream().filter((Map.Entry<DotsSquare, DotsSquare> entry) -> {
             final boolean checkMelhor = entry.getKey().checkMelhor(entry.getValue());
             if (!checkMelhor) {
                 return false;
@@ -208,8 +197,6 @@ public class DotsModel {
             }
             return true;
         }).collect(Collectors.toList());
-
-        return collect;
     }
 
     private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades3() {
@@ -233,6 +220,25 @@ public class DotsModel {
         }
         return possibilidades;
     }
+
+    private void handleMouseDragged(MouseEvent e) {
+		final EventTarget target = e.getTarget();
+		if (target instanceof DotsSquare) {
+			line.setEndX(e.getX());
+			line.setEndY(e.getY());
+		}
+	}
+
+	private void handleMousePressed(MouseEvent e) {
+		if (e.getTarget() instanceof DotsSquare) {
+			DotsSquare a = (DotsSquare) e.getTarget();
+			line.setStartY(a.getLayoutY() + a.getHeight() / 2);
+			line.setStartX(a.getLayoutX() + a.getWidth() / 2);
+			line.setEndX(e.getX());
+			line.setEndY(e.getY());
+			selected = a;
+		}
+	}
 
 	private void handleMouseReleased(MouseEvent e) {
 		over = Stream.of(maze).flatMap(Stream::of).filter(m -> m.getBoundsInParent().contains(e.getX(), e.getY()))
@@ -310,12 +316,7 @@ public class DotsModel {
 							final Polygon polygon = new Polygon(toArray);
 							polygon.setFill(colors[currentPlayer]);
 							final EventHandler<ActionEvent> onFinished = timeline.getOnFinished();
-							timeline.setOnFinished(f -> {
-								if (onFinished != null) {
-									onFinished.handle(f);
-								}
-								gridPane.getChildren().add(polygon);
-							});
+							timeline.setOnFinished(f -> addPolygonOnFinished(polygon, onFinished, f));
 						});
 					} else {
 						currentPlayer = (currentPlayer + 1) % jogadores.length;

@@ -1,9 +1,8 @@
 package fxproexercises.ch04;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.NumberBinding;
-import javafx.beans.binding.NumberExpression;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.beans.binding.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -104,36 +103,32 @@ public final class ReversiModel {
     }
     public BooleanBinding canFlip(final int cellX, final int cellY, final int directionX, final int directionY, final ObjectProperty<Owner> turn) {
 
-		return new BooleanBinding() {
-            {
-                bind(turn);
-                int x = cellX + directionX;
-                int y = cellY + directionY;
-                while (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE) {
-                    bind(board[x][y]);
-                    x += directionX;
-                    y += directionY;
-                }
-            }
+		List<ObjectExpression<?>> binds = new ArrayList<>();
 
-            @Override
-            protected boolean computeValue() {
-                Owner turnVal = turn.get();
-                int x = cellX + directionX;
-                int y = cellY + directionY;
-                boolean first = true;
-                while (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && board[x][y].get()
-                        != Owner.NONE) {
-                    if (board[x][y].get() == turnVal) {
-                        return !first;
-                    }
-                    first = false;
-                    x += directionX;
-                    y += directionY;
-                }
-                return false;
-            }
-        };
+		binds.add(turn);
+		int dx = cellX + directionX;
+		int dy = cellY + directionY;
+		while (dx >= 0 && dx < BOARD_SIZE && dy >= 0 && dy < BOARD_SIZE) {
+			binds.add(board[dx][dy]);
+			dx += directionX;
+			dy += directionY;
+		}
+
+		return Bindings.createBooleanBinding(() -> {
+			Owner turnVal = turn.get();
+			int x = cellX + directionX;
+			int y = cellY + directionY;
+			boolean first = true;
+			while (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && board[x][y].get() != Owner.NONE) {
+				if (board[x][y].get() == turnVal) {
+					return !first;
+				}
+				first = false;
+				x += directionX;
+				y += directionY;
+			}
+			return false;
+		}, binds.toArray(new ObjectExpression[0]));
     }
 
     public ObjectProperty<Owner> getTurn() {

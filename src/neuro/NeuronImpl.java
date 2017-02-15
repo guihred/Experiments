@@ -4,7 +4,7 @@ import java.util.*;
 
 public class NeuronImpl implements Neuron {
 	private NeuronStrategy strategy;
-	private static int count = 0;
+	private static int count;
 	private int id = 0;
 	private double biasValue = new Random().nextDouble();
 	private double outputValue;
@@ -86,6 +86,7 @@ public class NeuronImpl implements Neuron {
 		this.strategy = strategy;
 	}
 
+	@Override
 	public int getId() {
 		return id;
 	}

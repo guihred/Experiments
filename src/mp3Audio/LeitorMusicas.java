@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class LeitorMusicas {
-	public static final Logger LOGGER = LoggerFactory.getLogger(LeitorMusicas.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LeitorMusicas.class);
 
 	private LeitorMusicas() {
 	}

@@ -2,8 +2,8 @@ package javaexercises.graphs;
 
 class Linha {
 
-	public Ponto a;
-	public Ponto b;
+	protected Ponto a;
+	protected Ponto b;
 
 	public Linha(Ponto a, Ponto b) {
 		this.a = a;

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author Note
  */
 public class BasicAudioClipExample extends Application {
-	public final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(BasicAudioClipExample.class);
     public static void main(String[] args) {
         launch(args);
     }
@@ -42,7 +42,7 @@ public class BasicAudioClipExample extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
-			logger.error("ERROR FxProCH8a", e);
+			LOGGER.error("ERROR FxProCH8a", e);
         }
     }
 }

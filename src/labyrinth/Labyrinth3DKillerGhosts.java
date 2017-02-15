@@ -44,8 +44,8 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
 				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
-				rectangle.setTranslateX(i * SIZE);
 				rectangle.setTranslateZ(j * SIZE);
+				rectangle.setTranslateX(i * SIZE);
 				if ("_".equals(string)) {
 					rectangle.getRy().setAngle(90);
 				}
@@ -56,9 +56,8 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 	}
 
 	private MeshView gerarFantasma(String arquivo, Color animalColor) {
-		File file = new File(arquivo);
 		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
+		importer.read(new File(arquivo));
 		Mesh mesh = importer.getImport();
 		MeshView animal = new MeshView(mesh);
 		PhongMaterial sample = new PhongMaterial(animalColor);

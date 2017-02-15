@@ -2,7 +2,7 @@ package neuro;
 
 import java.util.ArrayList;
 
-class NetworkFactoryImpl extends NetworkFactory {
+class NetworkFactoryImpl implements NetworkFactory {
 
 	@Override
 	public NeuralNetwork create(Long... inputneurons) {
@@ -24,7 +24,7 @@ class NetworkFactoryImpl extends NetworkFactory {
 
 	@Override
 	public NeuralNetwork createNetwork(Long inputneurons, Long outputneurons) {
-		return this.create(inputneurons, inputneurons, outputneurons);
+		return create(inputneurons, inputneurons, outputneurons);
 
 	}
 

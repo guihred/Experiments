@@ -4,18 +4,21 @@ import java.util.Objects;
 
 public abstract class GenTopology {
 
-	protected final String name;
-	protected int size;
+	private static final char[] digits = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 	protected Graph graph;
+	protected final String name;
 
-	public GenTopology(String name) {
-		this.name = name;
-	}
+	protected int size;
 
 	public GenTopology(Graph graph, String name, int size) {
 		this.graph = graph;
 		this.name = name;
 		this.size = size;
+	}
+
+	public GenTopology(String name) {
+		this.name = name;
 	}
 
 	public abstract void execute();
@@ -24,13 +27,10 @@ public abstract class GenTopology {
 		return name;
 	}
 
-	private final static char[] digits = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-
 	public static String cellIdentifier(int n) {
 		int i = -n;
 		/* Use the faster version */
-		char buf[] = new char[33];
+		char[] buf = new char[33];
 		int charPos = 32;
 		while (i <= -26) {
 			buf[charPos--] = digits[-(i % 26)];

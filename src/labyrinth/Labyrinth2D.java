@@ -21,13 +21,34 @@ public class Labyrinth2D extends Application {
 
 	private static final int SIZE = 50;
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	private Color color = Color.RED;
+
 	private int i;
 	private int j;
+	private void handleMouseClick(Group root) {
+		String string = mapa[i][j];
+		if ("_".equals(string)) {
+			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
+					SIZE / 2, SIZE);
+			rectangle.setFill(color);
+			root.getChildren().add(rectangle);
+		} else {
+			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE, SIZE,
+					SIZE / 2);
+			rectangle.setFill(color);
+			root.getChildren().add(rectangle);
+		}
+		j++;
+		if (j >= mapa[i].length) {
+			j = 0;
+			i++;
+		}
+		if (i >= mapa.length) {
+			i = 0;
+			j = 0;
+			color = color == Color.RED ? Color.BLACK : Color.RED;
+		}
+	}
 
 	private void initializeLabyrinth(Group root) {
 		for (int k = 0; k < mapa.length; k++) {
@@ -68,29 +89,8 @@ public class Labyrinth2D extends Application {
 		primaryStage.show();
 	}
 
-	private void handleMouseClick(Group root) {
-		String string = mapa[i][j];
-		if ("_".equals(string)) {
-			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
-					SIZE / 2, SIZE);
-			rectangle.setFill(color);
-			root.getChildren().add(rectangle);
-		} else {
-			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE, SIZE,
-					SIZE / 2);
-			rectangle.setFill(color);
-			root.getChildren().add(rectangle);
-		}
-		j++;
-		if (j >= mapa[i].length) {
-			j = 0;
-			i++;
-		}
-		if (i >= mapa.length) {
-			i = 0;
-			j = 0;
-			color = color == Color.RED ? Color.BLACK : Color.RED;
-		}
+	public static void main(String[] args) {
+		launch(args);
 	}
 
 }

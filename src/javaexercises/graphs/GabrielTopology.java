@@ -23,8 +23,8 @@ public class GabrielTopology extends GenTopology {
 		for (int i = 0; i < size; i++) {
 			Cell cell = graph.getModel().addCell(GenTopology.identifier(i), CellType.CIRCLE);
 			nextInt = rnd.nextInt(360);
-			x += bound * Math.cos(Math.toRadians(nextInt));
 			y += bound * Math.sin(Math.toRadians(nextInt));
+			x += bound * Math.cos(Math.toRadians(nextInt));
 			cell.relocate(x, y);
 		}
 		List<Cell> cells = graph.getModel().getAddedCells();

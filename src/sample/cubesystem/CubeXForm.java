@@ -34,13 +34,13 @@ package sample.cubesystem;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
 
-public class Xform extends Group {
+public class CubeXForm extends Group {
 
     private final Rotate rx = new Rotate(0, Rotate.X_AXIS);
     private final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
     private final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
-    public Xform() {
+    public CubeXForm() {
         super();
         getTransforms().addAll(rz, ry, rx);
     }

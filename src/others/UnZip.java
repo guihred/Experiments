@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class UnZip {
-	public static final Logger LOGGER = LoggerFactory.getLogger(UnZip.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UnZip.class);
 
 	private UnZip() {
 	}
@@ -53,17 +53,7 @@ public final class UnZip {
 				if (ze.isDirectory()) {
 					newFile.mkdirs();
 				} else {
-					try (FileOutputStream fos = new FileOutputStream(newFile);) {
-
-						int len;
-						while ((len = zipInputStream.read(buffer)) > 0) {
-							fos.write(buffer, 0, len);
-						}
-
-						fos.close();
-					} catch (Exception e) {
-						LOGGER.error("", e);
-					}
+					writeNewFile(zipInputStream, buffer, newFile);
 				}
 
 				ze = zipInputStream.getNextEntry();
@@ -71,6 +61,20 @@ public final class UnZip {
 			zipInputStream.closeEntry();
 			zipInputStream.close();
 		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
+	}
+
+	private static void writeNewFile(ZipInputStream zipInputStream, byte[] buffer, File newFile) {
+		try (FileOutputStream fos = new FileOutputStream(newFile);) {
+
+			int len;
+			while ((len = zipInputStream.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+			}
+
+			fos.close();
+		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
 	}

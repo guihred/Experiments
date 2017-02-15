@@ -61,7 +61,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	private Group root = new Group();
 
 	private Sphere checkBalls(Bounds boundsInParent) {
-		return Stream.of(balls).flatMap(l -> Stream.of(l))
+		return Stream.of(balls).flatMap(Stream::of)
 				.filter(b -> b != null)
 				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
 				.findFirst().orElse(null);
@@ -82,8 +82,8 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 				Sphere ball = new Sphere(SIZE / 20);
 				balls[i][j] = ball;
 				ball.setMaterial(new PhongMaterial(Color.YELLOW));
-				ball.setTranslateX(i * SIZE);
 				ball.setTranslateZ(j * SIZE);
+				ball.setTranslateX(i * SIZE);
 				root.getChildren().add(ball);
 
 			}
@@ -211,7 +211,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 				generateGhost(MESH_GHOST, Color.PURPLE),
 				generateGhost(MESH_GHOST, Color.RED),
 				generateGhost(MESH_GHOST, Color.SLATEBLUE),
-				generateGhost(MESH_GHOST, Color.TRANSPARENT),
+				generateGhost(MESH_GHOST, Color.AZURE),
 				generateGhost(MESH_GHOST, Color.VIOLET),
 				generateGhost(MESH_GHOST, Color.WHITESMOKE),
 				generateGhost(MESH_GHOST, Color.YELLOWGREEN), };

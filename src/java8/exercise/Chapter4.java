@@ -149,7 +149,7 @@ public final class Chapter4 {
 			Button button = new Button("Teste Disabled");
 			Label message = new Label("Teste Disabled");
 
-			button.disableProperty().bind(observe(t -> (t.doubleValue() > 50), slider.valueProperty()));
+			button.disableProperty().bind(observe(t -> t.doubleValue() > 50, slider.valueProperty()));
 			message.textProperty().bind(observe(t -> (t.doubleValue() > 50) + "", slider.valueProperty()));
 			pane.getChildren().addAll(slider, button, message);
 			stage.setScene(scene);

@@ -17,8 +17,8 @@ public enum SolitaireSuit {
 	HEARTS(Color.RED, () -> fill(getCircles(getTriangle(8, PI / 2, 4), -PI / 6),Color.RED)),
 	;
 
-	private transient final Supplier<Shape> creator;
-	private transient final Color color;
+	private final transient Supplier<Shape> creator;
+	private final transient Color color;
 
 	private SolitaireSuit(Color color, Supplier<Shape> creator) {
 		this.color = color;

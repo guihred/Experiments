@@ -21,15 +21,18 @@ public final class JavaExercise25 {
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.ENGLISH);
 
-		double[] A = { 1, 0.1, 0, 0, 0, 0, 0, 0, 1, 0.1, 10e-34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10e34, 10e-34, 1, 1, 10e-10 };
-		double[] B = { 5, 0.5, 0, 1, 1, 10000, 10e-34, 10e34, -20000, -20000, -2, 0, 1, 10e-34, 0, 1, 10, 100, 1000, 10000, 10e34, 0, 0, 10e-34,
+		double[] coefA = { 1, 0.1, 0, 0, 0, 0, 0, 0, 1, 0.1, 10e-34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10e34, 10e-34, 1, 1,
+				10e-10 };
+		double[] coefB = { 5, 0.5, 0, 1, 1, 10000, 10e-34, 10e34, -20000, -20000, -2, 0, 1, 10e-34, 0, 1, 10, 100, 1000,
+				10000, 10e34, 0, 0, 10e-34,
 				10e34, -10e30 };
-		double[] C = { 6, 0.6, 2, 0, 1, 1, -10e34, -10e-34, 10e8, 10e7, 10e34, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, -10e34, -10e-34, -10e34, 10e-34, 10e-10 };
-		for (int i = 0; i < A.length; i++) {
+		double[] coefC = { 6, 0.6, 2, 0, 1, 1, -10e34, -10e-34, 10e8, 10e7, 10e34, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, -10e34,
+				-10e-34, -10e34, 10e-34, 10e-10 };
+		for (int i = 0; i < coefA.length; i++) {
 
-			double a = A[i];
-			double b = B[i];
-			double c = C[i];
+			double a = coefA[i];
+			double b = coefB[i];
+			double c = coefC[i];
 			if (a == 0.0) {
 				System.out.printf("%.1fx + %.1f = 0 %n", b, c);
 				System.out.printf("x=%f%n", -c / b);

@@ -3,8 +3,8 @@ package javaexercises.graphs;
 import java.util.Objects;
 
 class Ponto {
-	public double x;
-	public double y;
+	protected double x;
+	protected double y;
 	private Cell c;
 
 

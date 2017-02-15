@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class LeitorArquivos {
-	public static final Logger logger = LoggerFactory.getLogger(LeitorArquivos.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LeitorArquivos.class);
 
 	private LeitorArquivos() {
 	}
@@ -41,7 +41,7 @@ public final class LeitorArquivos {
 			medicamentosSNGPCPDF = getMedicamentosSNGPCPDF(file);
 			medicamentosSNGPCPDF.forEach(System.out::println);
 		} catch (IOException e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 		}
 	}
 
@@ -76,7 +76,7 @@ public final class LeitorArquivos {
 			String s = linhas[i];
 			String[] split = s.trim().split("\\s+");
 
-			if (split[0].equals("Página:") || !StringUtil.isNumeric(split[split.length - 1])) {
+			if ("Página:".equals(split[0]) || !StringUtil.isNumeric(split[split.length - 1])) {
 				return medicamento;
 			}
 			if (split.length == 4 || split.length == 3) {
@@ -98,7 +98,7 @@ public final class LeitorArquivos {
 			}
 		} catch (Exception e) {
 			System.out.println("ERRO LINHA =" + i);
-			logger.error("", e);
+			LOGGER.error("", e);
 		}
 		return medicamento;
 	}
@@ -170,11 +170,10 @@ public final class LeitorArquivos {
 	private static void tryReadRosarioLine(String[] linhas, ObservableList<Medicamento> arrayList, int i) {
 		try {
 			String s = linhas[i];
-			String[] split = s.trim().split("\\s+");
-
 			if (!s.endsWith(",00")) {
 				return;
 			}
+			String[] split = s.trim().split("\\s+");
 			if (split.length > 2) {
 				Medicamento medicamento = new Medicamento();
 				medicamento.setCodigo(Integer.valueOf(split[0]));
@@ -186,15 +185,14 @@ public final class LeitorArquivos {
 				arrayList.add(medicamento);
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 		}
 	}
 
 	private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
 		PDFParser parser = new PDFParser(source);
 		parser.parse();
-		COSDocument cosDoc = parser.getDocument();
-		return cosDoc;
+		return parser.getDocument();
 	}
 
 	public static ObservableList<Medicamento> getMedicamentosAnvisa(File selectedFile) throws IOException {
@@ -225,7 +223,6 @@ public final class LeitorArquivos {
 		try {
 
 			Row next = iterator.next();
-			Medicamento medicamento = new Medicamento();
 			Cell cell0 = next.getCell(0);
 			if (cell0 == null) {
 				return false;
@@ -236,6 +233,7 @@ public final class LeitorArquivos {
 			} else {
 				registro = cell0.getStringCellValue().replaceAll("\\D+", "");
 			}
+			Medicamento medicamento = new Medicamento();
 			medicamento.setRegistro(registro);
 			medicamento.setNome(next.getCell(1).getStringCellValue());
 			Cell cell = next.getCell(3);
@@ -250,7 +248,7 @@ public final class LeitorArquivos {
 			medicamentos.add(medicamento);
 		} catch (Exception e) {
 			System.out.println("ERRO LINHA=" + i);
-			logger.error("", e);
+			LOGGER.error("", e);
 
 		}
 		return true;
@@ -272,7 +270,7 @@ public final class LeitorArquivos {
 			wb.write(file);
 			Desktop.getDesktop().open(file2);
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 		}
 
 	}

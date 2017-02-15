@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToLongFunction;
@@ -20,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StatsLogAccess {
-	public static final Logger LOGGER = LoggerFactory.getLogger(StatsLogAccess.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatsLogAccess.class);
 
 	public static void main(String[] args) {
 		try {
@@ -42,7 +41,7 @@ public class StatsLogAccess {
 
 					String[] a = linha.split(" ");
 					return a[a.length - 1];
-				})).map(tentarFuncao(a -> Long.parseLong(a))).mapToLong(a -> a != null ? a : 0).summaryStatistics();
+				})).map(tentarFuncao(Long::parseLong)).mapToLong(a -> a != null ? a : 0).summaryStatistics();
 				System.out.println(
 						path.toString() + " = " + summaryStatistics.getAverage() + ",\t" + summaryStatistics.getMax()
 								+ ",\t" + summaryStatistics.getMin() + ",\t" + summaryStatistics.getCount());
@@ -145,23 +144,10 @@ public class StatsLogAccess {
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-	}
-
-	@FunctionalInterface
-	protected interface ConsumerEx<T> {
-		void accept(T t) throws Exception;
-	}
-
-	protected static <T> Consumer<T> tentar(ConsumerEx<T> t) {
-		return f -> {
-			try {
-				t.accept(f);
-			} catch (Exception e) {
-				// Ignorar exceção
-			}
-		};
 
 	}
+
+
 
 	@FunctionalInterface
 	protected interface FunctionEx<T, R> {
@@ -176,6 +162,5 @@ public class StatsLogAccess {
 				return null;
 			}
 		};
-
 	}
 }

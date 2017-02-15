@@ -51,5 +51,5 @@ abstract class JJ {
 }
 
 class K {
-	public static int k = 0;
+	public static int k;
 }

@@ -1,5 +1,6 @@
 package fxproexercises.ch06;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.concurrent.Worker;
@@ -15,57 +16,42 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-class TaskProgressView {
-	public Button cancelButton;
-	public Label exception;
-	public Button exceptionButton;
-	public Label message;
-	public Label progress;
-	public ProgressBar progressBar;
-	public Label running;
-	public Scene scene;
-	public Button startButton;
-	public Label state;
-	public Label title;
-	public Label totalWork;
-	public Label value;
-	public Label workDone;
+public class TaskProgressView {
+	private Button cancelButton = new Button("Cancel");
+	private Label exception = new Label();
+	private Button exceptionButton = new Button("Exception");
+	private Label message = new Label();
+	private Label progress = new Label();
+	private ProgressBar progressBar = new ProgressBar();
+	private Label running = new Label();
+	private Scene scene;
+	private Button startButton = new Button("Start");
+	private Label state = new Label();
+	private Label title = new Label();
+	private Label totalWork = new Label();
+	private Label value = new Label();
+	private Label workDone = new Label();
 
-	TaskProgressView() {
-		progressBar = new ProgressBar();
+	public TaskProgressView(Worker<String> worker, AtomicBoolean shouldThrow) {
 		progressBar.setMinWidth(250);
-		title = new Label();
-		message = new Label();
-		running = new Label();
-		state = new Label();
-		totalWork = new Label();
-		workDone = new Label();
-		progress = new Label();
-		value = new Label();
-		exception = new Label();
-		startButton = new Button("Start");
-		cancelButton = new Button("Cancel");
-		exceptionButton = new Button("Exception");
-
-		progressBar.progressProperty().bind(TaskProgressApp.worker.progressProperty());
-		title.textProperty().bind(TaskProgressApp.worker.titleProperty());
-		message.textProperty().bind(TaskProgressApp.worker.messageProperty());
-		running.textProperty().bind(Bindings.format("%s", TaskProgressApp.worker.runningProperty()));
-		final ReadOnlyObjectProperty<Worker.State> stateProperty = TaskProgressApp.worker.stateProperty();
+		progressBar.progressProperty().bind(worker.progressProperty());
+		title.textProperty().bind(worker.titleProperty());
+		message.textProperty().bind(worker.messageProperty());
+		running.textProperty().bind(Bindings.format("%s", worker.runningProperty()));
+		final ReadOnlyObjectProperty<Worker.State> stateProperty = worker.stateProperty();
 		state.textProperty().bind(Bindings.format("%s", stateProperty));
-		totalWork.textProperty().bind(TaskProgressApp.worker.totalWorkProperty().asString());
-		workDone.textProperty().bind(TaskProgressApp.worker.workDoneProperty().asString());
-		progress.textProperty()
-				.bind(Bindings.format("%5.2f%%", TaskProgressApp.worker.progressProperty().multiply(100)));
-		value.textProperty().bind(TaskProgressApp.worker.valueProperty());
+		totalWork.textProperty().bind(worker.totalWorkProperty().asString());
+		workDone.textProperty().bind(worker.workDoneProperty().asString());
+		progress.textProperty().bind(Bindings.format("%5.2f%%", worker.progressProperty().multiply(100)));
+		value.textProperty().bind(worker.valueProperty());
 
 		exception.textProperty().bind(Bindings.createStringBinding(() -> {
-			final Throwable workerException = TaskProgressApp.worker.getException();
+			final Throwable workerException = worker.getException();
 			if (workerException == null) {
 				return "";
 			}
 			return workerException.getMessage();
-		}, TaskProgressApp.worker.exceptionProperty()));
+		}, worker.exceptionProperty()));
 		startButton.disableProperty().bind(stateProperty.isNotEqualTo(Worker.State.READY));
 		cancelButton.disableProperty().bind(stateProperty.isNotEqualTo(Worker.State.RUNNING));
 		exceptionButton.disableProperty().bind(stateProperty.isNotEqualTo(Worker.State.RUNNING));
@@ -111,5 +97,15 @@ class TaskProgressView {
 		buttonPane.setSpacing(10);
 		buttonPane.setAlignment(Pos.CENTER);
 		scene = new Scene(new BorderPane(centerPane, topPane, null, buttonPane, null));
+		hookupEvents(worker, shouldThrow);
+	}
+
+	private void hookupEvents(Worker<String> worker, AtomicBoolean shouldThrow) {
+		startButton.setOnAction(actionEvent -> new Thread((Runnable) worker).start());
+		cancelButton.setOnAction(actionEvent -> worker.cancel());
+		exceptionButton.setOnAction(actionEvent -> shouldThrow.getAndSet(true));
+	}
+	public Scene getScene() {
+		return scene;
 	}
 }

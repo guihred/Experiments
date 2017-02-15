@@ -119,9 +119,6 @@ public class Simple3DSphereApp extends Application {
 	public Parent createContent() throws Exception {
 
 		Image dImage = new Image("file:earth-d.jpg");
-		Image nImage = new Image("file:earth-n.jpg");
-		Image sImage = new Image("file:earth-s.jpg");
-		Image siImage = new Image("file:earth-l.jpg");
 
 		material = new PhongMaterial();
 		material.setDiffuseColor(Color.WHITE);
@@ -135,11 +132,14 @@ public class Simple3DSphereApp extends Application {
 				return specularColor.get().deriveColor(0, 1, 1, specularColorOpacity.get());
 		}, specularColor, specularColorNull, specularColorOpacity));
 
+		Image sImage = new Image("file:earth-s.jpg");
 		material.specularMapProperty()
 				.bind(Bindings.when(specularMap).then(sImage)
 						.otherwise((Image) null));
+		Image nImage = new Image("file:earth-n.jpg");
 		material.bumpMapProperty().bind(
 				Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
+		Image siImage = new Image("file:earth-l.jpg");
 		material.selfIlluminationMapProperty().bind(
 				Bindings.when(selfIlluminationMap).then(siImage)
 						.otherwise((Image) null));

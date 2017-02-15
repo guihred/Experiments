@@ -49,19 +49,19 @@ public class XylophoneApp extends Application {
 	private Xform sceneRoot = new Xform();
 	private Timeline animation = new SimpleTimelineBuilder().keyFrames(
 			new KeyFrame(Duration.ZERO,
-					new KeyValue(sceneRoot.ry.angleProperty(), 390D,
+					new KeyValue(sceneRoot.rotateYProperty(), 390D,
 							Interpolator.TANGENT(Duration.seconds(0.5), 390D, Duration.seconds(0.5), 390D))),
-			new KeyFrame(Duration.seconds(2), new KeyValue(sceneRoot.ry.angleProperty(), 30D,
+			new KeyFrame(Duration.seconds(2), new KeyValue(sceneRoot.rotateYProperty(), 30D,
 					Interpolator.TANGENT(Duration.seconds(0.5), 30D, Duration.seconds(0.5), 30D))))
 
 			.build();
 	private Timeline animation2 = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE).keyFrames(
 			new KeyFrame(Duration.ZERO,
-					new KeyValue(sceneRoot.rx.angleProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D))),
+					new KeyValue(sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D))),
 			new KeyFrame(Duration.seconds(4),
-					new KeyValue(sceneRoot.rx.angleProperty(), 80D, Interpolator.TANGENT(Duration.seconds(1.0), 80D))),
+					new KeyValue(sceneRoot.rotateXProperty(), 80D, Interpolator.TANGENT(Duration.seconds(1.0), 80D))),
 			new KeyFrame(Duration.seconds(8),
-					new KeyValue(sceneRoot.rx.angleProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D))))
+					new KeyValue(sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D))))
 			.build();
 	// I didn't have any xylophone sounds so I added piano sounds :P
 	private final AudioClip bar1Note = new AudioClip(XylophoneApp.class.getResource("C.wav").toString());
@@ -74,8 +74,8 @@ public class XylophoneApp extends Application {
 	private final AudioClip bar8Note = new AudioClip(XylophoneApp.class.getResource("mC.wav").toString());
 
 	public Parent createContent() {
-		sceneRoot.rx.setAngle(45.0);
-		sceneRoot.ry.setAngle(30.0);
+		sceneRoot.setRx(45.0);
+		sceneRoot.setRy(30.0);
 		sceneRoot.setScale(2 * 1.5);
 
 

@@ -10,14 +10,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class BackgroundProcesses extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	private Task<Boolean> copyWorker;
 
 	@SuppressWarnings("unused")
-	private void copyFile(String src, String dest) throws InterruptedException {
+	private static void copyFile(String src, String dest) throws InterruptedException {
 		// simulate a long time
 		Random rnd = new Random(System.currentTimeMillis());
 		long millis = rnd.nextInt(1000);
@@ -94,5 +90,9 @@ public class BackgroundProcesses extends Application {
 				startButton, cancelButton, textArea);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

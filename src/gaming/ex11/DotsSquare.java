@@ -36,8 +36,7 @@ public class DotsSquare extends Region {
     }
 
     Double[] getCenter() {
-        Double[] a = {getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2};
-        return a;
+        return new Double[] {getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2};
     }
 
     @Override
@@ -96,13 +95,12 @@ public class DotsSquare extends Region {
 
     Stream<DotsSquare> almostSquare() {
         // ONE link away from being a square
-        final Stream<DotsSquare> hopped = adjacencies.stream()
+        return adjacencies.stream()
                 .flatMap(a -> a.adjacencies.stream()
                         .filter(b -> b != this)
                         .flatMap(b -> b.adjacencies.stream()
                                 .filter((DotsSquare c) -> a != c && !c.contains(this)
                                         && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)));
-        return hopped;
     }
 
     List<DotsSquare> checkMelhor() {

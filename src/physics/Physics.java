@@ -61,7 +61,7 @@ public class Physics extends Application {
 		Duration duration = Duration.seconds(1.0 / 60.0);
 		// one can add a specific action when the keyframe is reached
 		EventHandler<ActionEvent> onFinished = t -> {
-			PhysicalScene.world.step(1.0F / 60.f, 1, 1);
+			PhysicalScene.world.step(1.0F / 60.F, 1, 1);
 			for (int i = 0; i < MAX_BALLS; i++) {
 				float xpos = toPixelX(ball[i].body.getPosition().x);
 				float ypos = toPixelY(ball[i].body.getPosition().y);

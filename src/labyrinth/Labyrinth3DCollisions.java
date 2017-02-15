@@ -14,8 +14,7 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" }, };
 	private static final int SIZE = 50;
 
-	private PerspectiveCamera camera;
-
+	private PerspectiveCamera camera = new PerspectiveCamera(true);
 
 	private Color color = Color.RED;
 
@@ -80,10 +79,9 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
-		camera = new PerspectiveCamera(true);
-		camera.setNearClip(0.1);
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
+		camera.setNearClip(0.1);
 		subScene.setCamera(camera);
 
 		PointLight light = new PointLight(Color.rgb(125, 125, 125));

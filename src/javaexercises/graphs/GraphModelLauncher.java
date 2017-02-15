@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GraphModelLauncher extends Application {
-	public final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(GraphModelLauncher.class);
 	private final Graph graph = new Graph();
 	private ConvergeLayout convergeLayout = new ConvergeLayout(graph);
 	private ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph),
@@ -177,12 +177,11 @@ public class GraphModelLauncher extends Application {
 			return Files.lines(Paths.get(string)).flatMap(e -> Stream.of(e.split("[^a-zA-Z]")))
 					.filter(s -> s.length() == 4).map(String::toLowerCase).distinct().toArray(String[]::new);
 		} catch (IOException e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 		}
 
-		String[] words = { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire",
+		return new String[] { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire",
 				"wind", "wing", "wink", "wins", "none", "gone", "note", "vote", "site", "nite", "bite" };
-		return words;
 	}
 
 	private CheckBox newCheck(String name, BooleanProperty property) {

@@ -12,7 +12,47 @@ import java.util.stream.Collectors;
 
 public final class Chapter1 {
 
+	static interface Collection2<T> extends Collection<T> {
+
+		default void forEachIf(Consumer<? super T> action, Predicate<? super T> p) {
+			forEach(t -> {
+				if (p.test(t)) {
+					action.accept(t);
+				}
+			});
+		}
+
+	}
+
+	private static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
+		private static final long serialVersionUID = 1L;
+
+		public Collection2Impl() {
+		}
+
+	}
+
+	@FunctionalInterface
+	interface RunnableEx {
+		void run() throws Exception;
+	}
+
 	private Chapter1() {
+	}
+
+	/*
+	 * Write a static method andThen that takes as parameters two Runnable
+	 * instances and returns a Runnable that runs the first, then the second. In
+	 * the main method, pass two lambda expressions into a call to andThen, and
+	 * run the returned instance.
+	 */
+	public static Runnable andThen(Runnable a, Runnable b) {
+
+		return () -> {
+			a.run();
+			b.run();
+		};
+
 	}
 
 	/*
@@ -76,22 +116,6 @@ public final class Chapter1 {
 		// Too lazy to make some code and test how many lines I'd have saved
 		// :-P.
 	}
-
-	@FunctionalInterface
-	interface RunnableEx {
-		public void run() throws Exception;
-	}
-
-	public static Runnable unckeck(RunnableEx runner) {
-		return () -> {
-			try {
-				runner.run();
-			} catch (Exception ex) {
-				System.err.println(ex);
-			}
-		};
-	}
-
 	/*
 	 * Didn't you always hate it that you had to deal with checked exceptions in
 	 * a Runnable? Write a method uncheck that catches all checked exceptions
@@ -114,20 +138,6 @@ public final class Chapter1 {
 		})).start();
 	}
 
-	/*
-	 * Write a static method andThen that takes as parameters two Runnable
-	 * instances and returns a Runnable that runs the first, then the second. In
-	 * the main method, pass two lambda expressions into a call to andThen, and
-	 * run the returned instance.
-	 */
-	public static Runnable andThen(Runnable a, Runnable b) {
-
-		return () -> {
-			a.run();
-			b.run();
-		};
-
-	}
 	public static void ex7() {
 		andThen(
 				() -> out.println("first"), 
@@ -171,26 +181,6 @@ public final class Chapter1 {
 
 	}
 
-	static interface Collection2<T> extends Collection<T> {
-
-		default void forEachIf(Consumer<? super T> action, Predicate<? super T> p) {
-			forEach((t) -> {
-				if (p.test(t)) {
-					action.accept(t);
-				}
-			});
-		}
-
-	}
-
-	private static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
-		public Collection2Impl() {
-		}
-
-		private static final long serialVersionUID = 1L;
-
-	}
-	
 	public static void ex9() {
 		Collection2<String> a = new Collection2Impl<>();
 		a.add("a");
@@ -198,10 +188,10 @@ public final class Chapter1 {
 		a.add("");
 		a.add("d");
 
-		a.forEachIf(out::println, (s) -> !s.isEmpty());
+		a.forEachIf(out::println, s -> !s.isEmpty());
 
 	}
-
+	
 	public static void main(String[] args) {
 		// ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 });
 		// ex2(new File("."));
@@ -211,5 +201,15 @@ public final class Chapter1 {
 		// ex7();
 		// ex8();
 		ex9();
+	}
+
+	public static Runnable unckeck(RunnableEx runner) {
+		return () -> {
+			try {
+				runner.run();
+			} catch (Exception ex) {
+				System.err.println(ex);
+			}
+		};
 	}
 }

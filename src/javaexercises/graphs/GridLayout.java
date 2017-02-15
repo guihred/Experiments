@@ -22,7 +22,7 @@ public class GridLayout implements Layout {
 
 		Cell cell2 = cells[0];
 		Map<Cell, Integer> w = graph.getModel().unweightedUndirected(cell2.getCellId());
-		Comparator<Cell> comparing = Comparator.comparing(e -> w.get(e));
+		Comparator<Cell> comparing = Comparator.comparing(w::get);
 		Arrays.sort(cells, comparing);
 
 		int size = cells.length;

@@ -73,11 +73,11 @@ public class SnakeModel {
 		case LEFT:
 			i = (i - 1 + MAP_SIZE) % MAP_SIZE;
 			break;
-		case RIGHT:
-			i = (i + 1) % MAP_SIZE;
-			break;
 		case UP:
 			j = (j - 1 + MAP_SIZE) % MAP_SIZE;
+			break;
+		case RIGHT:
+			i = (i + 1) % MAP_SIZE;
 			break;
 		case DOWN:
 			j = (j + 1) % MAP_SIZE;
@@ -87,7 +87,7 @@ public class SnakeModel {
 		if (map[i][j].getState() == SnakeState.NONE) {
 			snake.remove(snake.size() - 1);
 		} else if (map[i][j].getState() == SnakeState.FOOD) {
-			final List<SnakeSquare> collect = Stream.of(map).flatMap(s -> Stream.of(s))
+			final List<SnakeSquare> collect = Stream.of(map).flatMap(Stream::of)
 					.filter(s -> s.getState() == SnakeState.NONE).collect(Collectors.toList());
 			if (!collect.isEmpty()) {
 				collect.get(random.nextInt(collect.size())).setState(SnakeState.FOOD);

@@ -49,8 +49,8 @@ public class CubeNode extends Parent {
 	private CubeFace frontFace;
 
 	private Timeline hideMapTimeline = new Timeline(
-			new KeyFrame(new Duration(0.0), t -> goHomePosition(), new KeyValue(cubeModel.mapOpacity, 0.7,Interpolator.LINEAR)),
-			new KeyFrame(new Duration(1000.0), new KeyValue(cubeModel.mapOpacity, 0.0, Interpolator.EASE_BOTH)))
+			new KeyFrame(new Duration(0.0), t -> goHomePosition(), new KeyValue(cubeModel.getMapOpacity(), 0.7,Interpolator.LINEAR)),
+			new KeyFrame(new Duration(1000.0), new KeyValue(cubeModel.getMapOpacity(), 0.0, Interpolator.EASE_BOTH)))
 	;
 
 	private CubeFace leftFace;
@@ -59,15 +59,15 @@ public class CubeNode extends Parent {
 	private CubeFace rightFace;
 	private Timeline showMapTimeline = new Timeline(
 					new KeyFrame(new Duration(0.0), t -> goHomePosition(),
-							new KeyValue(cubeModel.mapOpacity, 0.0,
+							new KeyValue(cubeModel.getMapOpacity(), 0.0,
 									Interpolator.LINEAR)),
 					new KeyFrame(new Duration(1000.0), new KeyValue(
-					cubeModel.mapOpacity, 0.7, Interpolator.EASE_BOTH)));
+					cubeModel.getMapOpacity(), 0.7, Interpolator.EASE_BOTH)));
 	private CubeFace topFace;
 
 	public CubeNode() {
 
-		angleX.addListener((ov) -> arrangeFacesZOrder());
+		angleX.addListener(ov -> arrangeFacesZOrder());
 
 		angleY.addListener((ov, oldValue, newValue) -> arrangeFacesZOrder());
 
@@ -126,11 +126,11 @@ public class CubeNode extends Parent {
 			dragStartOffsetY = me.getScreenY() - getScene().getWindow().getY();
 		});
 
-		setOnMouseDragged(me -> handleMouseDragged(me));
+		setOnMouseDragged(this::handleMouseDragged);
 
 		setOnKeyPressed(ke -> {
 			if (ke.getCode() == KeyCode.SPACE) {
-				if (cubeModel.mapOpacity.getValue() == 0.0) {
+				if (cubeModel.getMapOpacity().getValue() == 0.0) {
 					showMapTimeline.playFromStart();
 				} else {
 					hideMapTimeline.playFromStart();

@@ -268,14 +268,8 @@ public class GraphModel {
 
 	public Map<Cell, Integer> dijkstra(Cell s) {
 		Map<Cell, Integer> distance = new HashMap<>();
-		Map<Cell, Boolean> known = new HashMap<>();
-		for (Cell v : allCells) {
-			distance.put(v, Integer.MAX_VALUE);
-			known.put(v, false);
-		}
-
-		distance.put(s, 0);
-		while (known.entrySet().stream().anyMatch((e) -> !e.getValue())) {
+		Map<Cell, Boolean> known = createDistanceMap(s, distance);
+		while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
 			Cell v = distance.entrySet().stream().filter(e -> !known.get(e.getKey())).min(Comparator.comparing(Entry<Cell, Integer>::getValue))
 					.orElse(null).getKey();
 			known.put(v, true);
@@ -496,22 +490,18 @@ public class GraphModel {
 		Cell source = cellMap.get(s);
 
 		Map<Cell, Integer> distance = new HashMap<>();
-		Map<Cell, Boolean> known = new HashMap<>();
-		for (Cell v : allCells) {
-			distance.put(v, Integer.MAX_VALUE);
-			known.put(v, false);
-		}
-		distance.put(source, 0);
+		Map<Cell, Boolean> known = createDistanceMap(source, distance);
 		for (int i = 0; i < allCells.size(); i++) {
 			for (Cell v : allCells) {
 				if (!known.get(v) && distance.get(v) == i) {
 					known.put(v, true);
-					for (Cell w : adjacents(v)) {
-						if (distance.get(w) == Integer.MAX_VALUE) {
-							distance.put(w, i + 1);
-							// w.path.put(id, v);
-							setPath(w, source, v);
-						}
+					List<Cell> unreachables = adjacents(v).stream()
+							.filter(w -> Objects.equals(distance.get(w), Integer.MAX_VALUE))
+							.collect(Collectors.toList());
+					for (Cell w : unreachables) {
+						distance.put(w, i + 1);
+						// w.path.put(id, v);
+						setPath(w, source, v);
 					}
 
 				}
@@ -521,16 +511,21 @@ public class GraphModel {
 
 	}
 
-	public Map<Cell, Integer> unweightedUndirected(String s) {
-		Cell source = cellMap.get(s);
-
-		Map<Cell, Integer> distance = new HashMap<>();
+	private Map<Cell, Boolean> createDistanceMap(Cell source, Map<Cell, Integer> distance) {
 		Map<Cell, Boolean> known = new HashMap<>();
 		for (Cell v : allCells) {
 			distance.put(v, Integer.MAX_VALUE);
 			known.put(v, false);
 		}
 		distance.put(source, 0);
+		return known;
+	}
+
+	public Map<Cell, Integer> unweightedUndirected(String s) {
+		Cell source = cellMap.get(s);
+
+		Map<Cell, Integer> distance = new HashMap<>();
+		Map<Cell, Boolean> known = createDistanceMap(source, distance);
 		for (int i = 0; i < allCells.size(); i++) {
 			for (Cell v : allCells) {
 				if (!known.get(v) && distance.get(v) == i) {

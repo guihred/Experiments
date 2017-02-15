@@ -6,10 +6,7 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class Labyrinth3D extends Application implements CommomLabyrinth {
@@ -22,17 +19,15 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 		{ "|", "_", "_", "_", "_", "|" }, 
 		{ "|", "_", "_", "_", "_", "_" }, };
 	private static final int SIZE = 50;
+	private static final double CAMERA_QUANTITY = 10.0;
 
-	PerspectiveCamera camera = new PerspectiveCamera(true);
+	private PerspectiveCamera camera = new PerspectiveCamera(true);
 
-	private final double cameraModifier = 50.0;
-
-	private final double cameraQuantity = 10.0;
 	private Color color = Color.RED;
 	private int i;
 	private int j;
 
-	Group root = new Group();
+	private Group root = new Group();
 
 	@Override
 	public PerspectiveCamera getCamera() {
@@ -45,59 +40,7 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 				.collect(Collectors.toList());
 	}
 
-	private void handleKeyPressed(PerspectiveCamera camera, KeyEvent event) {
-		double change = cameraQuantity;
-		// Add shift modifier to simulate "Running Speed"
-		if (event.isShiftDown()) {
-			change = cameraModifier;
-		}
-		// What key did the user press?
-		KeyCode keycode = event.getCode();
-		// Step 2c: Add Zoom controls
-		if (keycode == KeyCode.W) {
-			double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-					* change;
-			double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-					* change;
-
-			camera.setTranslateX(camera.getTranslateX() + sin);
-			camera.setTranslateZ(camera.getTranslateZ() + cos);
-			// camera.setTranslateZ(camera.getTranslateZ() + change);
-		}
-		if (keycode == KeyCode.S) {
-			double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-					* change;
-			double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-					* change;
-
-			camera.setTranslateX(camera.getTranslateX() - sin);
-			camera.setTranslateZ(camera.getTranslateZ() - cos);
-			// camera.setTranslateZ(camera.getTranslateZ() - change);
-		}
-		// Step 2d: Add Strafe controls
-		if (keycode == KeyCode.A) {
-			camera.setRotationAxis(Rotate.Y_AXIS);
-			camera.setRotate(camera.getRotate() - change);
-			// camera.setTranslateX(camera.getTranslateX() - change);
-		}
-		if (keycode == KeyCode.UP) {
-			// root.setRotationAxis(Rotate.Y_AXIS);
-			// root.setRotate(root.getRotate() - change);
-			camera.setTranslateY(camera.getTranslateY() - change);
-		}
-		if (keycode == KeyCode.DOWN) {
-			// root.setRotationAxis(Rotate.Y_AXIS);
-			// root.setRotate(root.getRotate() - change);
-			camera.setTranslateY(camera.getTranslateY() + change);
-		}
-		if (keycode == KeyCode.D) {
-			camera.setRotationAxis(Rotate.Y_AXIS);
-			camera.setRotate(camera.getRotate() + change);
-			// camera.setTranslateX(camera.getTranslateX() + change);
-		}
-	}
-
-	private void handleMouseClick(Group root) {
+	private void handleMouseClick() {
 		String string = mapa[i][j];
 		if ("_".equals(string)) {
 			LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
@@ -153,11 +96,11 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 		camera.setTranslateZ(-1000);
 		scene.setCamera(camera);
 
-		scene.setOnMouseClicked(event -> handleMouseClick(root));
-		camera.setTranslateY(camera.getTranslateY() - cameraQuantity);
+		scene.setOnMouseClicked(e -> handleMouseClick());
+		camera.setTranslateY(camera.getTranslateY() - CAMERA_QUANTITY);
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
-		scene.setOnKeyPressed(event -> handleKeyPressed(camera, event));
+		scene.setOnKeyPressed(new MovimentacaoTeclado(this));
 
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(scene);

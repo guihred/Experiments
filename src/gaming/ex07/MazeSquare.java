@@ -56,17 +56,16 @@ public class MazeSquare extends BorderPane {
 	public final boolean isVisited() {
 		return visited.get();
 	}
-
-	public final void setVisited(final boolean visited) {
-		this.visited.set(visited);
-	}
-
 	public boolean isSouth() {
 		return south.get();
 	}
 
 	public final boolean isWest() {
 		return west.get();
+	}
+
+	public final void setVisited(final boolean visited) {
+		this.visited.set(visited);
 	}
 
 	public final void setWest(final boolean west) {

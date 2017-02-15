@@ -17,10 +17,8 @@ public class Labyrinth3DAntiAliasing extends Application implements CommomLabyri
 		{ "|", "_", "_", "_", "_", "|" }, 
 		{ "|", "_", "_", "_", "_", "_" }, };
 	private static final int SIZE = 50;
-
-	PerspectiveCamera camera = new PerspectiveCamera(true);
-
-	List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
+	private PerspectiveCamera camera = new PerspectiveCamera(true);
+	private List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
 	@Override
 	public PerspectiveCamera getCamera() {
 		return camera;
@@ -58,8 +56,8 @@ public class Labyrinth3DAntiAliasing extends Application implements CommomLabyri
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
 		camera.setNearClip(0.1);
-		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-1000);
+		camera.setFarClip(1000.0);
 		subScene.setCamera(camera);
 
 		PointLight light = new PointLight(Color.rgb(125, 125, 125));

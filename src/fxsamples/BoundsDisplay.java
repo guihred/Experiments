@@ -16,7 +16,7 @@ class BoundsDisplay extends Rectangle {
 	 */
 	private final BoundsPlayground boundsPlayground;
 	// the shape to which the bounds display has been type.
-	final Shape monitoredShape;
+	private final Shape monitoredShape;
 	private ChangeListener<Bounds> boundsChangeListener;
 
 	BoundsDisplay(BoundsPlayground boundsPlayground, final Shape shape) {
@@ -36,7 +36,7 @@ class BoundsDisplay extends Rectangle {
 		// remove the shape's previous boundsType.
 		if (boundsChangeListener != null) {
 			final ReadOnlyObjectProperty<Bounds> oldBounds;
-			switch (this.boundsPlayground.selectedBoundsType.get()) {
+			switch (boundsPlayground.getSelectedBoundsType().get()) {
 			case LAYOUT_BOUNDS:
 				oldBounds = monitoredShape.layoutBoundsProperty();
 				break;

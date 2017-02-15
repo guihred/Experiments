@@ -20,7 +20,7 @@ public class BrasilianVerbsConjugator {
 		CONDITIONAL, FUTURE, IMPERFECT, PLUPERFECT, PRESENT, PRETERITE;
 	}
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(BrasilianVerbsConjugator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BrasilianVerbsConjugator.class);
 
 	private static final boolean DEBUG = false;
 
@@ -253,10 +253,10 @@ public class BrasilianVerbsConjugator {
 
 	private static Map<Mode, String[]> getFirstConjugation() {
 		String[] present = { "o", "as", "a", "amos", "ais", "am" };
-		String[] past = { "ei", "aste", "ou", "amos", "astes", "aram" };
-		String[] incompletePast = { "ava", "avas", "ava", "ávamos", "áveis", "avam" };
-		String[] pluPerfect = { "ara", "aras", "ara", "áramos", "áreis", "aram" };
 		String[] future = { "arei", "arás", "ará", "aremos", "areis", "arão" };
+		String[] pluPerfect = { "ara", "aras", "ara", "áramos", "áreis", "aram" };
+		String[] incompletePast = { "ava", "avas", "ava", "ávamos", "áveis", "avam" };
+		String[] past = { "ei", "aste", "ou", "amos", "astes", "aram" };
 		String[] futureImpefect = { "aria", "arias", "aria", "aríamos", "aríeis", "ariam" };
 		first.put(Mode.PRESENT, present);
 		first.put(Mode.PRETERITE, past);
@@ -267,11 +267,11 @@ public class BrasilianVerbsConjugator {
 		return first;
 	}
 	private static Map<Mode, String[]> getFourthConjugation() {
-		String[] present = { "onho", "ões", "õe", "omos", "ondes", "õem" };
 		String[] past = { "us", "useste", "ôs", "usemos", "usestes", "useram" };
 		String[] incompletePast = { "unha", "unhas", "unha", "únhamos", "únheis", "unham" };
-		String[] pluPerfect = { "usera", "useras", "usera", "uséramos", "uséreis", "useram" };
 		String[] future = { "orei", "orás", "orá", "oremos", "oreis", "orão" };
+		String[] present = { "onho", "ões", "õe", "omos", "ondes", "õem" };
+		String[] pluPerfect = { "usera", "useras", "usera", "uséramos", "uséreis", "useram" };
 		String[] futureImpefect = { "oria", "orias", "oria", "oríamos", "oríeis", "oriam" };
 		
 		fourth.put(Mode.PRESENT, present);
@@ -289,12 +289,12 @@ public class BrasilianVerbsConjugator {
 		return verb.substring(0, verb.length() - 2);
 	}
 	private static Map<Mode, String[]> getSecondConjugation() {
+		String[] incompletePast = { "ia", "ias", "ia", "íamos", "íeis", "iam" };
 		String[] present = { "o", "es", "e", "emos", "eis", "em" };
 		String[] past = { "i", "este", "eu", "emos", "estes", "eram" };
-		String[] incompletePast = { "ia", "ias", "ia", "íamos", "íeis", "iam" };
+		String[] futureImpefect = { "eria", "erias", "eria", "eríamos", "eríeis", "eriam" };
 		String[] pluPerfect = { "era", "eras", "era", "êramos", "êreis", "eram" };
 		String[] future = { "erei", "erás", "erá", "eremos", "ereis", "erão" };
-		String[] futureImpefect = { "eria", "erias", "eria", "eríamos", "eríeis", "eriam" };
 		second.put(Mode.PRESENT, present);
 		second.put(Mode.PRETERITE, past);
 		second.put(Mode.IMPERFECT, incompletePast);
@@ -469,15 +469,15 @@ public class BrasilianVerbsConjugator {
 			addLetter("med", present, past, incompletePast, pluPerfect, future, futureImpefect);
 			present[0] = "meço";
 			root = root.substring(0, root.length() - 3);
+		} else if (root.endsWith("c")) {
+			addLetter("c", present, past, incompletePast, pluPerfect, future, futureImpefect);
+			present[0] = "ço";
+			root = root.substring(0, root.length() - 1);
 		} else if (root.endsWith("u")) {
 			addLetter("u", present, past, incompletePast, pluPerfect, future, futureImpefect);
 			present = new String[] { "uo", "uis", "ui", "uímos", "uís", "uem" };
 			past = new String[] { "uí", "uíste", "uiu", "uímos", "uístes", "uíram" };
 			incompletePast = new String[] { "uía", "uías", "uía", "uíamos", "uíeis", "uíam" };
-			root = root.substring(0, root.length() - 1);
-		} else if (root.endsWith("c")) {
-			addLetter("c", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present[0] = "ço";
 			root = root.substring(0, root.length() - 1);
 		} else if (root.endsWith("g")) {
 			addLetter("g", present, past, incompletePast, pluPerfect, future, futureImpefect);

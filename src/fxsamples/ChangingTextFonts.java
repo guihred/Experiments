@@ -18,9 +18,9 @@ public class ChangingTextFonts extends Application {
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Chapter 2 Changing Text Fonts");
 		System.out.println("Font families: ");
-		Font.getFamilies().stream().forEach(i -> System.out.println(i));
+		Font.getFamilies().stream().forEach(System.out::println);
 		System.out.println("Font names: ");
-		Font.getFontNames().stream().forEach(i -> System.out.println(i));
+		Font.getFontNames().stream().forEach(System.out::println);
 		Group root = new Group();
 		Scene scene = new Scene(root, 580, 250, Color.WHITE);
 		// Serif with drop shadow

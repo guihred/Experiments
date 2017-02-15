@@ -28,8 +28,8 @@ import simplebuilder.SimplePerspectiveTransformBuilder;
  * @author Jim Weaver
  */
 public class CubeFace extends Parent {
-	private static double FACE_HUE = 211;
-	private static double FACE_SAT = 0.25;
+	private static final double FACE_HUE = 211;
+	private static final double FACE_SAT = 0.25;
 
 	public static final int FRONT_FACE = 1;
 	public static final int RIGHT_FACE = 2;
@@ -75,7 +75,7 @@ public class CubeFace extends Parent {
 					"http://mt3.google.com/vt/v=w2.97&x=2&y=8&z=4"));
 			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 4);
 			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 4);
-			mapTile.opacityProperty().bind(cubeModel.mapOpacity);
+			mapTile.opacityProperty().bind(cubeModel.getMapOpacity());
 			stackPane.getChildren().add(mapTile);
 			return stackPane;
 		} else if (face == BOTTOM_FACE) {
@@ -88,7 +88,7 @@ public class CubeFace extends Parent {
 					"http://mt3.google.com/vt/v=w2.97&x=2&y=15&z=4"));
 			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 4);
 			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 4);
-			mapTile.opacityProperty().bind(cubeModel.mapOpacity);
+			mapTile.opacityProperty().bind(cubeModel.getMapOpacity());
 			stackPane.getChildren().add(mapTile);
 			return stackPane;
 		} else {
@@ -112,7 +112,7 @@ public class CubeFace extends Parent {
 								+ "&z=3"));
 				mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
 				mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 2);
-				mapTile.opacityProperty().bind(cubeModel.mapOpacity);
+				mapTile.opacityProperty().bind(cubeModel.getMapOpacity());
 				tilePane.getChildren().add(mapTile);
 			}
 		}
@@ -133,18 +133,7 @@ public class CubeFace extends Parent {
 		tilePane.setEffect(transform);
 
 		for (int y = 0; y <= 2; y++) {
-			for (int x = xOffset; x <= xOffset + 1; x++) {
-				int xm = (x + 1) % 8;
-				ImageView mapTile = new ImageView();
-
-				mapTile.setImage(new Image(
-						"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
-								+ "&z=3"));
-				mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
-				mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
-				mapTile.opacityProperty().bind(cubeModel.mapOpacity);
-				tilePane.getChildren().add(mapTile);
-			}
+			loadFace(tilePane, xOffset, y);
 		}
 		return tilePane;
 	}
@@ -164,25 +153,28 @@ public class CubeFace extends Parent {
 		tilePane.setEffect(build);
 
 		for (int y = 5; y <= 7; y++) {
-			for (int x = xOffset; x <= xOffset + 1; x++) {
-				int xm = (x + 1) % 8;
-				ImageView mapTile = new ImageView();
-				mapTile.setImage(new Image(
-						"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
-								+ "&z=3"));
-				mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
-				mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
-				mapTile.opacityProperty().bind(cubeModel.mapOpacity);
-				tilePane.getChildren().add(mapTile);
-			}
+			loadFace(tilePane, xOffset, y);
 		}
 		return tilePane;
 	}
 
+	private void loadFace(TilePane tilePane, int xOffset, int y) {
+		for (int x = xOffset; x <= xOffset + 1; x++) {
+			int xm = (x + 1) % 8;
+			ImageView mapTile = new ImageView();
+			mapTile.setImage(new Image(
+					"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
+							+ "&z=3"));
+			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
+			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
+			mapTile.opacityProperty().bind(cubeModel.getMapOpacity());
+			tilePane.getChildren().add(mapTile);
+		}
+	}
+
 	final Paint computeFaceHSB() {
-		Paint color = Color.hsb(FACE_HUE, FACE_SAT,
+		return Color.hsb(FACE_HUE, FACE_SAT,
 				Math.abs(-zPos.getValue() / (RADIUS * 2)) + 0.40);
-		return color;
 	}
 
 	public final DoubleProperty zPosProperty() {

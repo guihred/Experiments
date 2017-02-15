@@ -11,11 +11,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import others.TermFrequency;
 
 public class VigenereXORCipher {
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(TermFrequency.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(VigenereXORCipher.class);
 	private static final Map<Integer,Double> MAPA_FREQUENCIA = ImmutableMap.<Integer,Double>builder()
 			.put('e' + 0, 12.702D).put('t' + 0, 9.056D).put('a' + 0, 8.167D).put('o' + 0, 7.507D).put('i' + 0, 6.966D)
 			.put('n' + 0, 6.749D).put('s' + 0, 6.327D).put('h' + 0, 6.094D).put('r' + 0, 5.987D).put('d' + 0, 4.253D)
@@ -24,7 +23,7 @@ public class VigenereXORCipher {
 			.put('v' + 0, 0.978D).put('k' + 0, 0.772D).put('j' + 0, 0.153D).put('x' + 0, 0.150D).put('q' + 0, 0.095D)
 			.put('z' + 0, 0.074D)
 		.build();
-	private int current = 0;
+	private int current;
 	
 	// 0, 0, 140, 181, 87, 0, 53
 	private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
@@ -64,14 +63,14 @@ public class VigenereXORCipher {
 	public String encrypt(int[] k, List<Integer> s) {
 		current = 0;
 		int length = k.length;
-		return s.stream().map(i -> (i ^ k[current++ % length])).map(i -> Character.valueOf((char) i.intValue()))
-				.map(c -> Character.toString(c)).collect(Collectors.joining());
+		return s.stream().map(i -> i ^ k[current++ % length]).map(i -> Character.valueOf((char) i.intValue()))
+				.map(Object::toString).collect(Collectors.joining());
 	}
 	public String encrypt(String k, List<Integer> s) {
 		current = 0;
 		int length = k.length();
 		return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
-				.map(c -> Character.toString(c)).collect(Collectors.joining());
+				.map(Object::toString).collect(Collectors.joining());
 	}
 	public void findKey(long keySize) throws IOException {
 		// keys = new char[Long.valueOf(keySize).intValue()];
@@ -84,8 +83,8 @@ public class VigenereXORCipher {
 			List<Integer> stream = collect.stream().sequential().filter(bite -> current++ % keySize == j).collect(Collectors.toList());
 			double maxSum = 0.0;
 			for (int b = 0; b < 256; b++) {
-				int B = b;
-				List<Integer> map = stream.stream().map(l -> (char) (l ^ B) & 255).collect(Collectors.toList());
+				int n = b;
+				List<Integer> map = stream.stream().map(l -> (char) (l ^ n) & 255).collect(Collectors.toList());
 				if (map.parallelStream().allMatch(m -> m > 32 && m < 128 && !Character.isDigit(m))) {
 					int size = map.size();
 					Map<Integer, Long> collect2 = map.parallelStream().map(c -> Character.valueOf((char) c.intValue()))
@@ -98,9 +97,9 @@ public class VigenereXORCipher {
 					}
 					if (maxSum < sum) {
 						maxSum = sum;
-						out.println(i + "," + maxSum + "," + B);
-						keys[i] = B;
-						keysList[i].add(B);
+						out.println(i + "," + maxSum + "," + n);
+						keys[i] = n;
+						keysList[i].add(n);
 					}
 
 				}

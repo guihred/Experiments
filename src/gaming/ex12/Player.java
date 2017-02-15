@@ -6,7 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Player {
 
-	public final double MAX_VELOCITY_X = 15;
+	public static final double MAX_VELOCITY_X = 15;
 	private double positionX;
 	private double positionY;
 	protected double velocityX;

@@ -6,14 +6,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.transform.Rotate;
 
-class MovimentacaoTeclado implements EventHandler<KeyEvent> {
+public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 	/**
 	 * 
 	 */
 	private final CommomLabyrinth labyrinth3dWallTexture;
 	private PerspectiveCamera camera;
-	private final double cameraModifier = 50.0;
-	private final double cameraQuantity = 5.0;
+	private static final double CAMERA_MODIFIER = 50.0;
+	private static final double CAMERA_QUANTITY = 5.0;
 
 	public MovimentacaoTeclado(CommomLabyrinth labyrinth3dWallTexture) {
 		this.labyrinth3dWallTexture = labyrinth3dWallTexture;
@@ -22,10 +22,10 @@ class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 
 	@Override
 	public void handle(KeyEvent event) {
-		double change = cameraQuantity;
+		double change = CAMERA_QUANTITY;
 		// Add shift modifier to simulate "Running Speed"
 		if (event.isShiftDown()) {
-			change = cameraModifier;
+			change = CAMERA_MODIFIER;
 		}
 		// What key did the user press?
 		KeyCode keycode = event.getCode();
@@ -65,15 +65,15 @@ class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 			camera.setRotationAxis(Rotate.Y_AXIS);
 			camera.setRotate(camera.getRotate() - change);
 		}
-		if (keycode == KeyCode.UP) {
-			camera.setTranslateY(camera.getTranslateY() - change);
-		}
 		if (keycode == KeyCode.DOWN) {
 			camera.setTranslateY(camera.getTranslateY() + change);
 		}
 		if (keycode == KeyCode.D) {
 			camera.setRotationAxis(Rotate.Y_AXIS);
 			camera.setRotate(camera.getRotate() + change);
+		}
+		if (keycode == KeyCode.UP) {
+			camera.setTranslateY(camera.getTranslateY() - change);
 		}
 
 		labyrinth3dWallTexture.endKeyboard();

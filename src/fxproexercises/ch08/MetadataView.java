@@ -59,13 +59,13 @@ public class MetadataView extends AbstractView {
         final GridPane gp = new GridPane();
         gp.setPadding(new Insets(10));
         gp.setHgap(20);
-        gp.add(albumCover, 0, 0, 1, GridPane.REMAINING);
         gp.add(title, 1, 0);
         gp.add(artist, 1, 1);
+		gp.add(albumCover, 0, 0, 1, GridPane.REMAINING);
         gp.add(album, 1, 2);
         gp.add(year, 1, 3);
+		final ColumnConstraints c1 = new ColumnConstraints();
         final ColumnConstraints c0 = new ColumnConstraints();
-        final ColumnConstraints c1 = new ColumnConstraints();
         c1.setHgrow(Priority.ALWAYS);
         gp.getColumnConstraints().addAll(c0, c1);
         final RowConstraints r0 = new RowConstraints();

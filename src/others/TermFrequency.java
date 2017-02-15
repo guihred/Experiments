@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class TermFrequency {
-	public static final Logger LOGGER = LoggerFactory.getLogger(TermFrequency.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TermFrequency.class);
 	private static final String REGEX = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
 	private static final Map<File, Map<String, Long>> mapaDocumentos = new HashMap<>();
@@ -63,7 +63,7 @@ public final class TermFrequency {
 		} else {
 			String[] list = file.list();
 			if (list != null) {
-				Arrays.asList(list).forEach((f) -> {
+				Arrays.asList(list).forEach(f -> {
 					try {
 						TermFrequency.getMapaDocumentos(new File(file, f));
 					} catch (Exception e) {

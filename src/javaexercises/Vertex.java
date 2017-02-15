@@ -9,7 +9,7 @@ class Vertex {
 
 	private Map<Vertex, Integer> edges = new HashMap<>();
 
-	final int id;
+	private final int id;
 
 	private String name;
 
@@ -86,7 +86,7 @@ class Vertex {
 			known.put(v, false);
 		}
 		distance.put(this, 0);
-		while (known.entrySet().stream().anyMatch((e) -> !e.getValue())) {
+		while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
 			Vertex v = distance.entrySet().stream().filter(e -> !known.get(e.getKey())).min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
 					.orElse(null).getKey();
 			known.put(v, true);

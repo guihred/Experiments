@@ -160,8 +160,7 @@ public class SolitaireModel {
 		if (isDoubleClicked(event)) {
 			for (CardStack cardStack : ascendingStacks) {
 				SolitaireCard solitaireCard = dragContext.cards.get(dragContext.cards.size() - 1);
-				if (isStackEmptyAndCardIsNotAce(cardStack, solitaireCard)
-						|| isNotNextCardInStack(cardStack, solitaireCard)) {
+				if (isNotAscendingStackCompatible(cardStack, solitaireCard)) {
 					continue;
 				}
 				cardStack.addCards(solitaireCard);
@@ -175,8 +174,7 @@ public class SolitaireModel {
 
 		if (dragContext.cards.size() == 1) {
 			for (CardStack cardStack : getHoveredStacks(ascendingStacks)) {
-				if (isStackEmptyAndCardIsNotAce(cardStack, dragContext.cards.get(0))
-						|| isNotNextCardInStack(cardStack, dragContext.cards.get(0))) {
+				if (isNotAscendingStackCompatible(cardStack, dragContext.cards.get(0))) {
 					break;
 				}
 				cardStack.addCards(dragContext.cards);
@@ -206,7 +204,12 @@ public class SolitaireModel {
 		dragContext.stack.addCards(dragContext.cards);
 	}
 
-	private boolean isNullOrEmpty(List<?> cards) {
+	private boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {
+		return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard)
+				|| isNotNextCardInStack(cardStack, solitaireCard);
+	}
+
+	private static boolean isNullOrEmpty(List<?> cards) {
 		return cards == null || cards.isEmpty();
 	}
 
@@ -241,9 +244,9 @@ public class SolitaireModel {
 	}
 
 	public void makeDraggable(final Node node) {
-		node.setOnMousePressed(event -> handleMousePressed(event));
-		node.setOnMouseDragged(event -> handleMouseDragged(event));
-		node.setOnMouseReleased(event -> handleMouseReleased(event));
+		node.setOnMousePressed(this::handleMousePressed);
+		node.setOnMouseDragged(this::handleMouseDragged);
+		node.setOnMouseReleased(this::handleMouseReleased);
 	}
 
 	public static SolitaireModel create(Pane gridPane, Scene scene) {

@@ -162,10 +162,9 @@ public class TableVisualizationExampleApp extends Application {
 			}
 		});
 
-		ToolBar toolBar = new ToolBar(newButton, editButton, deleteButton, new Separator(Orientation.VERTICAL),
+		return new ToolBar(newButton, editButton, deleteButton, new Separator(Orientation.VERTICAL),
 				boldButton, italicButton, new Separator(Orientation.VERTICAL), leftAlignButton, centerAlignButton,
 				rightAlignButton);
-		return toolBar;
 	}
 
 	TabPane createTabs() {
@@ -259,16 +258,16 @@ public class TableVisualizationExampleApp extends Application {
 		treeView.setShowRoot(false);
 		treeView.setEditable(false);
 
-		ListView<String> listView = new ListView<>(TableVisualizationModel.listViewItems);
+		ListView<String> listView = new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS);
 		SplitPane splitPane = new SplitPane();
 		splitPane.getItems().addAll(treeView, listView);
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			TreeItem<String> treeItem = newValue;
 			if (newValue != null && treeItem.isLeaf()) {
-				TableVisualizationModel.listViewItems.clear();
+				TableVisualizationModel.LIST_VIEW_ITEMS.clear();
 				for (int i = 1; i <= 10000; i++) {
-					TableVisualizationModel.listViewItems.add(treeItem.getValue() + " " + i);
+					TableVisualizationModel.LIST_VIEW_ITEMS.add(treeItem.getValue() + " " + i);
 				}
 			}
 		});
@@ -276,7 +275,7 @@ public class TableVisualizationExampleApp extends Application {
 	}
 
 	Node createScrollMiscDemoNode() {
-		ChoiceBox<String> choiceBox = new ChoiceBox<>(TableVisualizationModel.choiceBoxItems);
+		ChoiceBox<String> choiceBox = new ChoiceBox<>(TableVisualizationModel.CHOICE_BOX_ITEMS);
 		choiceBox.getSelectionModel().selectFirst();
 		choiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue + " chosen in ChoiceBox"));
 		final TextField textField = new TextField();
@@ -302,19 +301,19 @@ public class TableVisualizationExampleApp extends Application {
 		Slider slider = new Slider();
 		slider.setPrefWidth(200);
 		slider.setMin(-1);
-		slider.setMax(TableVisualizationModel.maxRpm);
-		slider.valueProperty().bindBidirectional(TableVisualizationModel.rpm);
+		slider.setMax(TableVisualizationModel.MAX_RPM);
+		slider.valueProperty().bindBidirectional(TableVisualizationModel.RPM);
 		ProgressIndicator progressIndicator = new ProgressIndicator();
 		progressIndicator.setPrefWidth(200);
-		progressIndicator.progressProperty().bind(TableVisualizationModel.rpm.divide(TableVisualizationModel.maxRpm));
+		progressIndicator.progressProperty().bind(TableVisualizationModel.RPM.divide(TableVisualizationModel.MAX_RPM));
 		ProgressBar progressBar = new ProgressBar();
 		progressBar.setPrefWidth(200);
-		progressBar.progressProperty().bind(TableVisualizationModel.kph.divide(TableVisualizationModel.maxKph));
+		progressBar.progressProperty().bind(TableVisualizationModel.KPH.divide(TableVisualizationModel.MAX_KPH));
 		ScrollBar scrollBar = new ScrollBar();
 		scrollBar.setPrefWidth(200);
 		scrollBar.setMin(-1);
-		scrollBar.setMax(TableVisualizationModel.maxKph);
-		scrollBar.valueProperty().bindBidirectional(TableVisualizationModel.kph);
+		scrollBar.setMax(TableVisualizationModel.MAX_KPH);
+		scrollBar.valueProperty().bindBidirectional(TableVisualizationModel.KPH);
 		CheckBox checkBox = new CheckBox("CheckBox");
 		checkBox.setOnAction((ActionEvent e) -> {
 			System.out.print(e.getEventType() + " occurred on CheckBox");

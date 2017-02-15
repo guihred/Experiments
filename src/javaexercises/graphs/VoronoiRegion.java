@@ -59,11 +59,10 @@ public class VoronoiRegion extends Group {
 		double[][] matr = new double[][] { { 2 * (bx - ax), 2 * (by - ay) }, { 2 * (cx - ax), 2 * (cy - ay) }, };
 
 		// getChildren().addAll(0, asList);
-		double[] solve = MatrixSolver.solve(matr, coef2);
-		return solve;
+		return MatrixSolver.solve(matr, coef2);
 	}
 
-	private Double[] cen(double[] a) {
+	private static Double[] cen(double[] a) {
 		Double[] b = new Double[a.length];
 		for (int i = 0; i < a.length; i++) {
 			b[i] = a[i];

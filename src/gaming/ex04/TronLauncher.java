@@ -58,7 +58,7 @@ public class TronLauncher extends Application {
         }
 
         final Scene scene = new Scene(gridPane);
-		scene.setOnKeyPressed(e -> handleKeyPressed(e));
+		scene.setOnKeyPressed(this::handleKeyPressed);
         final Timeline timeline = new Timeline();
 
         timeline.getKeyFrames().add(
@@ -74,8 +74,6 @@ public class TronLauncher extends Application {
                                     timeline.play();
                                     stage1.close();
                                 });
-
-
                                 final Group group = new Group(text, button);
                                 group.setLayoutX(50);
                                 group.setLayoutY(50);

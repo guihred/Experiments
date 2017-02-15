@@ -7,7 +7,10 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 
-public class CommonChartData {
+public final class CommonChartData {
+
+	private CommonChartData() {
+	}
 	public static ObservableList<XYChart.Series<Number, Number>> getChartData() {
 		double javaValue = 17.56;
 		double cValue = 17.06;
@@ -32,11 +35,10 @@ public class CommonChartData {
 	}
 
 	public static ObservableList<PieChart.Data> getPieData() {
-		ObservableList<PieChart.Data> answer = FXCollections.observableArrayList(new PieChart.Data("Java", 17.56),
+		return FXCollections.observableArrayList(new PieChart.Data("Java", 17.56),
 				new PieChart.Data("C", 17.06), new PieChart.Data("C++", 8.25), new PieChart.Data("C#", 8.20),
 				new PieChart.Data("ObjectiveC", 6.8), new PieChart.Data("PHP", 6.0),
 				new PieChart.Data("(Visual)Basic", 4.76), new PieChart.Data("Other", 31.37));
-		return answer;
 	}
 
 	public static ObservableList<XYChart.Series<String, Number>> getCategoryData() {

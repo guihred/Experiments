@@ -136,14 +136,11 @@ public final class Chapter5 {
 	 */
 	public static void ex8() {
 		
-		
 		Instant now = Instant.now();
-		ZoneId.getAvailableZoneIds().stream()
-		.map(ZoneId::of)
-		.map(z -> now.atZone(z))
-		.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
-		.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) 
- + "\t" + o.getOffset()).forEach(System.out::println);
+		ZoneId.getAvailableZoneIds().stream().map(ZoneId::of).map(now::atZone)
+				.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
+				.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) + "\t" + o.getOffset())
+				.forEach(System.out::println);
 
 	}
 
@@ -155,13 +152,11 @@ public final class Chapter5 {
 	public static void ex9() {
 
 		Instant now = Instant.now();
-		ZoneId.getAvailableZoneIds()	.stream()
-		.map(ZoneId::of)	
-		.map(z -> now.atZone(z))	
-		.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
-		.filter(z -> z.getOffset().getTotalSeconds() % 3600 != 0)
-		.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) + "\t" + o.getOffset())
-		.forEach(System.out::println);
+		ZoneId.getAvailableZoneIds().stream().map(ZoneId::of).map(now::atZone)
+				.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
+				.filter(z -> z.getOffset().getTotalSeconds() % 3600 != 0)
+				.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) + "\t" + o.getOffset())
+				.forEach(System.out::println);
 		
 	}
 
@@ -177,7 +172,7 @@ public final class Chapter5 {
 		LocalTime timeFlight = LocalTime.of(15, 5);
 		ZoneId losAngeles = ZoneId.of("America/Los_Angeles");
 		ZonedDateTime flightBegining = ZonedDateTime.of(date, timeFlight, losAngeles);
-		Duration flightDuration = Duration.ofMinutes(10 * 60 + 50);
+		Duration flightDuration = Duration.ofMinutes(650);
 		ZonedDateTime addTo = flightBegining.plus(flightDuration);
 		Instant from = Instant.from(addTo);
 		ZoneId frankfurt = ZoneId.of("Europe/Berlin");

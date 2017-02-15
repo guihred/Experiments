@@ -21,7 +21,7 @@ public class ConvergeLayout implements Layout {
 			return;
 		}
 
-		double BOUND = (allCells.size() / 50 + 1) * 100;
+		double bound = (allCells.size() / 50 + 1) * 100;
 
 		Cell cell = allCells.get(rnd.nextInt(allCells.size()));
 		List<Edge> edges = graph.getModel().edges(cell);
@@ -30,16 +30,16 @@ public class ConvergeLayout implements Layout {
 			DoubleSummaryStatistics summaryX = edges.parallelStream().mapToDouble(e1 -> {
 				double angulo1 = e1.getAngulo();
 				Integer valor = e1.getValor();
-				return Math.cos(angulo1) * BOUND * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
+				return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
 			}).summaryStatistics();
-			double sumX = summaryX.getAverage();
 			DoubleSummaryStatistics summaryY = edges.parallelStream().mapToDouble(e2 -> {
 				double angulo2 = e2.getAngulo();
 				Integer valor = e2.getValor();
-				return Math.sin(angulo2) * BOUND * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
+				return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
 			}).summaryStatistics();
+			double sumX = summaryX.getAverage();
 			double sumY = summaryY.getAverage();
-			if (sumY < BOUND / 2 || sumX < BOUND / 2) {
+			if (sumY < bound / 2 || sumX < bound / 2) {
 				double layoutX = cell.getLayoutX();
 				double layoutY = cell.getLayoutY();
 				cell.relocate(layoutX + sumX, layoutY + sumY);

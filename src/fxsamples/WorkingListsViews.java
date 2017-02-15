@@ -9,11 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -24,20 +20,16 @@ public class WorkingListsViews extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage
-				.setTitle("Hero Picker: Chapter 4 Creating and Working with ObservableLists");
+		primaryStage.setTitle("Hero Picker: Chapter 4 Creating and Working with ObservableLists");
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 400, 250, Color.WHITE);
-		// create a grid pane
 		GridPane gridpane = new GridPane();
-		gridpane.setPadding(new Insets(5));
-		gridpane.setHgap(10);
 		gridpane.setVgap(10);
-		ColumnConstraints column1 = new ColumnConstraints(150, 150,
-				Double.MAX_VALUE);
+		gridpane.setHgap(10);
+		gridpane.setPadding(new Insets(5));
+		ColumnConstraints column1 = new ColumnConstraints(150, 150, Double.MAX_VALUE);
 		ColumnConstraints column2 = new ColumnConstraints(50);
-		ColumnConstraints column3 = new ColumnConstraints(150, 150,
-				Double.MAX_VALUE);
+		ColumnConstraints column3 = new ColumnConstraints(150, 150, Double.MAX_VALUE);
 		column1.setHgrow(Priority.ALWAYS);
 		column3.setHgrow(Priority.ALWAYS);
 		gridpane.getColumnConstraints().addAll(column1, column2, column3);

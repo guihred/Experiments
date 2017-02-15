@@ -40,7 +40,7 @@ public class AudioConfigLauncher extends Application {
 	public void start(Stage stage) {
 		textDb = new SimpleTextBuilder().x(18).y(69).textOrigin(VPos.TOP).fill(Color.web("#131021"))
 				.font(Font.font("SansSerif", FontWeight.BOLD, 18)).build();
-		genreChoiceBox = new ChoiceBox<>(acModel.genres);
+		genreChoiceBox = new ChoiceBox<>(AudioConfigModel.GENRES);
 		genreChoiceBox.setLayoutX(204);
 		genreChoiceBox.setLayoutY(154);
 		genreChoiceBox.setPrefWidth(93);
@@ -48,8 +48,8 @@ public class AudioConfigLauncher extends Application {
 		int x = 280;
 		int y = 113;
 		mutingCheckBox = newCheckBox(x, y);
-		slider = new SimpleSliderBuilder().layoutX(135).layoutY(135).prefWidth(162).min(acModel.minDecibels)
-		.max(acModel.maxDecibels).build();
+		slider = new SimpleSliderBuilder().layoutX(135).layoutY(135).prefWidth(162).min(AudioConfigModel.MIN_DECIBELS)
+				.max(AudioConfigModel.MAX_DECIBELS).build();
 		final Text genreText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web("#131021"))
 				.font(Font.font("SanSerif", FontWeight.BOLD, 18)).text("Genre").build();
 		final Line line3 = new SimpleLineBuilder().startX(9).startY(141).endX(309).endY(141).stroke(Color.color(0.66, 0.67, 0.69)).build();
@@ -72,9 +72,8 @@ public class AudioConfigLauncher extends Application {
 		slider.valueProperty().bindBidirectional(acModel.selectedDBs);
 		slider.disableProperty().bind(acModel.muting);
 		mutingCheckBox.selectedProperty().bindBidirectional(acModel.muting);
-		acModel.genreSelectionModel = genreChoiceBox.getSelectionModel();
-		acModel.addListenerToGenreSelectionModel();
-		acModel.genreSelectionModel.selectFirst();
+		acModel.setGenreSelectionModel(genreChoiceBox.getSelectionModel());
+		acModel.getGenreSelectionModel().selectFirst();
 		stage.setWidth(320);
 		stage.setHeight(343);
 		stage.setScene(scene);

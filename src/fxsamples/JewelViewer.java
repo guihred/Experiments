@@ -26,13 +26,12 @@ public class JewelViewer extends Application {
 	private static final double MODEL_Y_OFFSET = 0; // standard
 
 	private static final int VIEWPORT_SIZE = 800;
+
+	private static final double CAMERA_MODIFIER = 50.0;
+	private static final double CAMERA_QUANTITY = 10.0;
+
 	private PerspectiveCamera camera;
-
-	private final double cameraModifier = 50.0;
-	private final double cameraQuantity = 10.0;
-
 	private PointLight pointLight;
-
 	private Group root;
 
 	private PerspectiveCamera addCamera(Scene scene) {
@@ -102,7 +101,7 @@ public class JewelViewer extends Application {
 		});
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
-		scene.setOnKeyPressed(event -> handleKeyPressed(event));
+		scene.setOnKeyPressed(this::handleKeyPressed);
 		// End Step 2b-d
 
 		primaryStage.setTitle("Jewel Viewer");
@@ -112,7 +111,7 @@ public class JewelViewer extends Application {
 
 	private void handleKeyPressed(KeyEvent event) {
 		// Add shift modifier to simulate "Running Speed"
-		double change = event.isShiftDown() ? cameraModifier : cameraQuantity;
+		double change = event.isShiftDown() ? CAMERA_MODIFIER : CAMERA_QUANTITY;
 		// What key did the user press?
 		KeyCode keycode = event.getCode();
 		// Step 2c: Add Zoom controls

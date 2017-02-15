@@ -27,8 +27,7 @@ public class MazeModel {
 	public static final int MAZE_SIZE = 24;
 
 	private MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
-	private int x = 0, y = 0;
-	private EventHandler<KeyEvent> onKeyPressed = event -> handleKey(event);
+	private int x, y;
 	private Circle circle;
 	public MazeModel(GridPane gridPane, Scene scene) {
 		initializeMaze(gridPane);
@@ -42,7 +41,7 @@ public class MazeModel {
 
 		circle = new Circle(MazeSquare.SQUARE_SIZE / 3, Color.RED);
 		maze[0][0].setCenter(circle);
-		scene.setOnKeyPressed(onKeyPressed);
+		scene.setOnKeyPressed(this::handleKey);
 	}
 	private void initializeMaze(GridPane gridPane) {
 		for (int i = 0; i < MAZE_SIZE; i++) {

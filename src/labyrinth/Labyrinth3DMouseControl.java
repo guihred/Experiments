@@ -79,7 +79,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	private Group root = new Group();
 
 	private Sphere checkBalls(Bounds boundsInParent) {
-		return Stream.of(balls).flatMap(l -> Stream.of(l))
+		return Stream.of(balls).flatMap(Stream::of)
 				.filter(b -> b != null)
 				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
 				.findFirst().orElse(null);
@@ -100,9 +100,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 				root.getChildren().add(wall);
 				Sphere ball = new Sphere(SIZE / 20);
 				balls[i][j] = ball;
-				ball.setMaterial(new PhongMaterial(Color.YELLOW));
 				ball.setTranslateX(i * SIZE);
 				ball.setTranslateZ(j * SIZE);
+				ball.setMaterial(new PhongMaterial(Color.YELLOW));
 				root.getChildren().add(ball);
 
 			}
@@ -128,9 +128,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 				dialogStage.initModality(Modality.WINDOW_MODAL);
 				Button button = new Button("Ok.");
 				button.setOnAction(e -> {
-					camera.setTranslateX(0);
 					camera.setTranslateY(0);
 					camera.setTranslateZ(0);
+					camera.setTranslateX(0);
 					movimentacao.start();
 					dialogStage.close();
 				});
@@ -154,9 +154,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 
 		PhongMaterial sample = new PhongMaterial(enemyColor);
 		sample.setSpecularColor(lightColor);
-		enemy.setMaterial(sample);
-		enemy.setTranslateY(14);
 		enemy.setDrawMode(DrawMode.FILL);
+		enemy.setTranslateY(14);
+		enemy.setMaterial(sample);
 		int posicaoInicialZ = random.nextInt(mapa[0].length * SIZE);
 		enemy.setTranslateZ(posicaoInicialZ);
 		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
@@ -189,11 +189,11 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
 		camera = new PerspectiveCamera(true);
-		camera.setNearClip(0.1);
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
-		camera.setFieldOfView(40);
 		camera.setRotationAxis(Rotate.Y_AXIS);
+		camera.setNearClip(0.1);
+		camera.setFieldOfView(40);
 		subScene.setCamera(camera);
 		PointLight light = new PointLight(Color.rgb(125, 125, 125));
 		light.translateXProperty().bind(camera.translateXProperty());
@@ -208,18 +208,17 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 				generateGhost(MESH_GHOST, Color.FUCHSIA),
 				generateGhost(MESH_GHOST, Color.GREEN),
 				generateGhost(MESH_GHOST, Color.HOTPINK),
+				generateGhost(MESH_GHOST, Color.MIDNIGHTBLUE), generateGhost(MESH_GHOST, Color.WHITESMOKE),
 				generateGhost(MESH_GHOST, Color.INDIGO),
 				generateGhost(MESH_GHOST, Color.KHAKI),
 				generateGhost(MESH_GHOST, Color.LIGHTSALMON),
-				generateGhost(MESH_GHOST, Color.MIDNIGHTBLUE),
+				generateGhost(MESH_GHOST, Color.RED),
 				generateGhost(MESH_GHOST, Color.NAVY),
+				generateGhost(MESH_GHOST, Color.TRANSPARENT),
 				generateGhost(MESH_GHOST, Color.ORCHID),
 				generateGhost(MESH_GHOST, Color.PURPLE),
-				generateGhost(MESH_GHOST, Color.RED),
 				generateGhost(MESH_GHOST, Color.SLATEBLUE),
-				generateGhost(MESH_GHOST, Color.TRANSPARENT),
 				generateGhost(MESH_GHOST, Color.VIOLET),
-				generateGhost(MESH_GHOST, Color.WHITESMOKE),
 				generateGhost(MESH_GHOST, Color.YELLOWGREEN), };
 
 		movimentacao = new MovimentacaoAleatoria(this, fantasmas);
@@ -228,11 +227,8 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		root.getChildren().addAll(fantasmas);
 
 		Scene sc = new Scene(new Group(subScene));
-		// End Step 2a
-		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
 		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
-
 		sc.setOnMouseMoved(new EventHandler<MouseEvent>() {
 
 			private double mouseOldX;

@@ -22,7 +22,8 @@ class Triangle {
 	public String toString() {
 		return Arrays.toString(new Ponto[] { a, b, c });
 	}
-	private Ponto computeClosestPoint(Linha edge, Ponto point) {
+
+	private static Ponto computeClosestPoint(Linha edge, Ponto point) {
 		Ponto ab = edge.b.sub(edge.a);
 		double t = point.sub(edge.a).dot(ab) / ab.dot(ab);
 
@@ -69,7 +70,7 @@ class Triangle {
 		return null;
 	}
 
-	private boolean hasSameSign(double a1, double b1) {
+	private static boolean hasSameSign(double a1, double b1) {
 		return Math.signum(a1) == Math.signum(b1);
 	}
 

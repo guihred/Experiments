@@ -32,7 +32,7 @@ public final class TF_IDF {
 		}
 	}
 
-	public static final Logger logger = LoggerFactory.getLogger(TF_IDF.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TF_IDF.class);
 
 	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
 
@@ -109,7 +109,7 @@ public final class TF_IDF {
 				try {
 					getDocumentMap(new File(f, a));
 				} catch (Exception e) {
-					logger.error("", e);
+					LOGGER.error("", e);
 				}
 			});
 		}
@@ -153,7 +153,7 @@ public final class TF_IDF {
 
 			return collect;
 		} catch (IOException e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 			throw e;
 		}
 	}
@@ -197,7 +197,7 @@ public final class TF_IDF {
 			System.out.println(file.getAbsolutePath());
 			printWordFound(entrySet, file);
 		} catch (Exception e2) {
-			logger.error("", e2);
+			LOGGER.error("", e2);
 		}
 	}
 

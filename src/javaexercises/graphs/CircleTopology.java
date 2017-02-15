@@ -31,16 +31,13 @@ public class CircleTopology extends GenTopology {
 					if (cost != null) {
 						valor = cost;
 					}
-
 					graph.getModel().addEdge(sourceId, targetId, valor);
 					break;
 				}
-				System.out.println("OPS");
 			} while (graph.getModel().addedCost(sourceId, targetId) != null || sourceId.equals(targetId));
 		}
 		graph.endUpdate();
 		CircleLayout.generateCircle(graph.getModel().getAllCells(), graph.getModel(), 0, 0);
-		System.out.println("TERMINOU");
 	}
 
 

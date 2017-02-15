@@ -8,7 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public class CreateMazeHandler implements EventHandler<ActionEvent> {
-	private int r = 0, c = 0;
+	private int r, c;
 	private final Random random = new Random();
 	private final Timeline timeline;
 	private final List<MazeSquare> history = new ArrayList<>();

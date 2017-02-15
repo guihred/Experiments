@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PhotoViewer extends Application {
-	public final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PhotoViewer.class);
 	// List of URL strings
 	private final List<String> imageFiles = new ArrayList<>();
 	// The current index into the imageFile
@@ -127,7 +127,7 @@ public class PhotoViewer extends Application {
 			addImage(file.toURI().toURL().toString());
 			System.out.println(imageFiles);
 		} catch (MalformedURLException ex) {
-			logger.error("", ex);
+			LOGGER.error("", ex);
 		}
 	}
 
@@ -220,7 +220,7 @@ public class PhotoViewer extends Application {
 	private boolean isValidImageFile(String url) {
 		List<String> imgTypes = Arrays.asList(".jpg", ".jpeg", ".png", ".gif",
 				".bmp");
-		return imgTypes.stream().anyMatch(t -> url.endsWith(t));
+		return imgTypes.stream().anyMatch(url::endsWith);
 	}
 
 	/**
@@ -279,7 +279,7 @@ public class PhotoViewer extends Application {
 					System.out.println("done loading image " + url);
 					currentImageView.setImage(image);
 					progressIndicator.setVisible(false);
-					loading.set(false); // free lock
+					loading.set(false);
 				});
 				return true;
 			}

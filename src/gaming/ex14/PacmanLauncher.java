@@ -19,7 +19,7 @@ public class PacmanLauncher extends Application {
 		Text text = new Text();
 		text.setFill(Color.WHITE);
 		PacmanModel create = PacmanModel.create(group, scene);
-		text.textProperty().bind(create.points.asString());
+		text.textProperty().bind(create.getPoints().asString());
 		borderPane.setTop(text);
 		borderPane.setStyle("-fx-background-color:black;");
 		stage.setScene(scene);

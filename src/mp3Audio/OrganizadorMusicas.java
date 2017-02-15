@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OrganizadorMusicas extends Application {
-	public final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(OrganizadorMusicas.class);
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -154,7 +154,7 @@ public class OrganizadorMusicas extends Application {
 		try {
 			return LeitorMusicas.getMusicas(file);
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}

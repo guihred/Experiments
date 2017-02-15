@@ -29,7 +29,7 @@ public class InlineModelViewer extends Application {
 	private static final double MODEL_Y_OFFSET = 0;
 	private static final double MODEL_Z_OFFSET = (double) VIEWPORT_SIZE / 2;
 
-	private static final String textureLoc = "file:wall.jpg";
+	private static final String TEXTURE_LOC = "file:wall.jpg";
 
 	private Image texture;
 	private PhongMaterial texturedMaterial = new PhongMaterial();
@@ -62,7 +62,7 @@ public class InlineModelViewer extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		texture = new Image(textureLoc);
+		texture = new Image(TEXTURE_LOC);
 		texturedMaterial.setDiffuseMap(texture);
 
 		Group group = buildScene();

@@ -47,37 +47,26 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		MeshView animal = new MeshView(mesh);
 		PhongMaterial sample = new PhongMaterial(jewelColor);
 		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
 		animal.setMaterial(sample);
+		sample.setSpecularPower(16);
 		animal.setTranslateY(14);
 
-		int posicaoInicialZ = random.nextInt(mapa[0].length * SIZE);
-		animal.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
-		animal.setTranslateX(posicaoInicialX);
+		animal.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
+		animal.setTranslateX(random.nextInt(mapa.length * SIZE));
 		while (checkColision(animal.getBoundsInParent())) {
 			animal.setTranslateZ(animal.getTranslateZ() + 1);
 			animal.setTranslateX(animal.getTranslateX() + 1);
 		}
 
 
+		animal.setScaleZ(0.25);
 		animal.setScaleX(0.25);
 		animal.setScaleY(1);
-		animal.setScaleZ(0.25);
 
 		return animal;
 	}
 
-	@Override
-	public PerspectiveCamera getCamera() {
-		return camera;
-	}
 
-
-	@Override
-	public List<LabyrinthWall> getLabyrinthWalls() {
-		return cubes;
-	}
 
 	private void initializeLabyrinth(Group root) {
 		for (int i = mapa.length - 1; i >= 0; i--) {
@@ -94,6 +83,16 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 				root.getChildren().add(rectangle);
 			}
 		}
+	}
+
+	@Override
+	public PerspectiveCamera getCamera() {
+		return camera;
+	}
+
+	@Override
+	public List<LabyrinthWall> getLabyrinthWalls() {
+		return cubes;
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class SimpleAudioPlayerLauncher extends Application {
 	private Label album;
     private ImageView albumCover;
     private Label artist;
-    public final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAudioPlayerLauncher.class);
     private Media media;
     private MediaPlayer mediaPlayer;
     private Label title;
@@ -115,7 +115,7 @@ public class SimpleAudioPlayerLauncher extends Application {
 			final URL stylesheet = Chapter8Resource.MEDIA.getURL();
             scene.getStylesheets().add(stylesheet.toString());
         } catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
         }
         primaryStage.setScene(scene);
         primaryStage.setTitle("Audio Player 2");
