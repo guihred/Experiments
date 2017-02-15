@@ -5,7 +5,9 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class TableVisualizationModel {
+public final class TableVisualizationModel {
+	private TableVisualizationModel() {
+	}
 
 	public static final ObservableList<String> choiceBoxItems = FXCollections.observableArrayList(
             "Choice A",

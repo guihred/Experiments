@@ -40,9 +40,6 @@ class NeuralNetworkImpl implements NeuralNetwork {
 				someNeuron = getOutputLayer().getNeurons().get(i);
 				someNeuron.updateDelta(outputI.getValue() - someNeuron.getOutputValue());
 				i++;
-			} else {
-
-				someNeuron = getOutputLayer().getNeurons().get(i % getOutputLayer().getNeurons().size());
 			}
 		}
 		// '2.2) Calculate delta of all the hidden layers, backwards
@@ -109,8 +106,6 @@ class NeuralNetworkImpl implements NeuralNetwork {
 				someNeuron = getInputLayer().getNeurons().get(i);
 				Double inputValue = inputs.get(i);
 				someNeuron.setOutputValue(inputValue);
-			} else {
-				someNeuron = getInputLayer().getNeurons().get(i % getInputLayer().getNeurons().size());
 			}
 		}
 //		'Step1: Find the output of each hidden neuron layer

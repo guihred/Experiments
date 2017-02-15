@@ -15,7 +15,10 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 
-public class SimplePropertyExample {
+public final class SimplePropertyExample {
+
+	private SimplePropertyExample() {
+	}
 
     private static IntegerProperty intProperty;
 

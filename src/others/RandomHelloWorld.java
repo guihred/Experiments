@@ -2,7 +2,11 @@ package others;
 
 import java.util.Random;
 
-public class RandomHelloWorld {
+public final class RandomHelloWorld {
+
+	private RandomHelloWorld() {
+	}
+
 	public static void main(String[] args) {
 		System.out.println(randomString(-229985452) + " " + randomString(-147909649));
 	}

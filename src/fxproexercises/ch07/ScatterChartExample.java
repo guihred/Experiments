@@ -5,22 +5,14 @@
  */
 package fxproexercises.ch07;
 
-/**
- *
- * @author Note
- */
-import java.util.Arrays;
+import static fxproexercises.ch07.CommonChartData.getChartData;
+
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
 public class ScatterChartExample extends Application {
 
     public static void main(String[] args) {
@@ -44,26 +36,5 @@ public class ScatterChartExample extends Application {
         primaryStage.show();
     }
 
-    private ObservableList<XYChart.Series<Number, Number>> getChartData() {
-        double javaValue = 17.56;
-        double cValue = 17.06;
-        double cppValue = 8.25;
-        ObservableList<XYChart.Series<Number, Number>> answer = FXCollections.observableArrayList();
-        Series<Number, Number> java = new Series<>();
-        java.setName("java");
-        Series<Number, Number> c = new Series<>();
-        c.setName("C");
-        Series<Number, Number> cpp = new Series<>();
-        cpp.setName("C++");
-        for (int i = 2011; i < 2021; i++) {
-            java.getData().add(new XYChart.Data<>(i, javaValue));
-            javaValue = javaValue + 4 * Math.random() - 2;
-            c.getData().add(new XYChart.Data<>(i, cValue));
-            cValue = cValue + Math.random() - .5;
-            cpp.getData().add(new XYChart.Data<>(i, cppValue));
-            cppValue = cppValue + 4 * Math.random() - 2;
-        }
-        answer.addAll(Arrays.asList(java, c, cpp));
-        return answer;
-    }
+
 }

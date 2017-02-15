@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TF_IDF {
+public final class TF_IDF {
 	public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
 
 		// Note: this comparator imposes orderings that are inconsistent with
@@ -93,6 +93,9 @@ public class TF_IDF {
 
 	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
 
+	private TF_IDF() {
+	}
+
 	public static Map<File, Map<String, Long>> getDocumentMap(File f) throws IOException {
 
 		if (!f.isDirectory()) {
@@ -166,37 +169,46 @@ public class TF_IDF {
 
 		return Math.log(MAPA_DOCUMENTO.size() / idf);
 	}
+
 	private static double getTermFrequency(Long fre) {
 		return fre == 0 ? 0D : 1 + Math.log(fre);
 	}
 
 	public static void main(String[] args) throws IOException {
+		try {
 
-		File arquivo = new File("src");
-		Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
-		documentMap.forEach((c, v) -> v.forEach((p, fre) -> {
-			double idf = getInverseDocumentFrequency(p);
-			if (!TF_IDF.MAP_TF_IDF.containsKey(p)) {
-				MAP_TF_IDF.put(p, new HashMap<File, Double>());
-			}
-			Double termFrequency = getTermFrequency(fre);
-			MAP_TF_IDF.get(p).put(c, idf * termFrequency);
-		}));
-		// MAP_TF_IDF =
-		List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(MAP_TF_IDF.entrySet());
+			File arquivo = new File("src");
+			Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
+			documentMap.forEach((c, v) -> v.forEach((p, fre) -> {
+				double idf = getInverseDocumentFrequency(p);
+				if (!TF_IDF.MAP_TF_IDF.containsKey(p)) {
+					MAP_TF_IDF.put(p, new HashMap<File, Double>());
+				}
+				Double termFrequency = getTermFrequency(fre);
+				MAP_TF_IDF.get(p).put(c, idf * termFrequency);
+			}));
+			// MAP_TF_IDF =
+			List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(MAP_TF_IDF.entrySet());
 
-		entrySet.sort(new ValueComparator());
-		// MAP
-		File file = new File("resultado.txt");
+			entrySet.sort(new ValueComparator());
+			// MAP
+			File file = new File("resultado.txt");
 
-		System.out.println(file.getAbsolutePath());
+			System.out.println(file.getAbsolutePath());
+			printWordFound(entrySet, file);
+		} catch (Exception e2) {
+			logger.error("", e2);
+		}
+	}
+
+	private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) throws Exception {
 		try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName());) {
 			List<String> javaKeywords = Arrays.asList("abstract", "continue", "for", "new", "switch", "assert",
 					"default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break",
-					"double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case",
-					"enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
-					"final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
-					"float", "native", "super", "while");
+					"double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
+					"case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try",
+					"char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp",
+					"volatile", "const", "float", "native", "super", "while");
 
 			entrySet.forEach(e -> {
 				if (!javaKeywords.contains(e.getKey())) {

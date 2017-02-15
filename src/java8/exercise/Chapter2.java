@@ -17,7 +17,10 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Chapter2 {
+public final class Chapter2 {
+
+	private Chapter2() {
+	}
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(Chapter2.class);
 

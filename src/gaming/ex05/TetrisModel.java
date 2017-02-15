@@ -120,46 +120,47 @@ public class TetrisModel {
 		return currentJ;
 	}
 
-    EventHandler<ActionEvent> getEventHandler(Timeline timeline) {
-        return (ActionEvent t) -> {
-            clearMovingPiece();
-            if (!checkCollision(getCurrentI(), getCurrentJ() + 1)) {
-                drawPiece();
-            } else {
-                drawPiece(TetrisPieceState.SETTLED);
-                final TetrisPiece[] values = TetrisPiece.values();
-                piece = values[random.nextInt(values.length)];
-                setCurrentJ(0);
-                setCurrentI(MAP_WIDTH / 2);
-                if (checkCollision(getCurrentI(), getCurrentJ())) {
-                    timeline.stop();
-                    final Text text = new Text("You Got " + 0 + " points");
-                    final Button button = new Button("Reset");
-                    final Stage stage1 = new Stage();
-                    button.setOnAction(a -> {
-                       reset();
-                        timeline.play();
-                        stage1.close();
-                    });
-
-                    final Group group = new Group(text, button);
-                    group.setLayoutX(50);
-                    group.setLayoutY(50);
-                    stage1.setScene(new Scene(group));
-                    stage1.show();
-                }
-                for (int i = 0; i < MAP_HEIGHT; i++) {
-					boolean clearLine = isLineClear(i);
-                    if (clearLine) {
-						removeLine(i);
-                    }
-                }
-
-            }
-            setCurrentJ(getCurrentJ() + 1);
-
-        };
+	public EventHandler<ActionEvent> getEventHandler(Timeline timeline) {
+		return (t) -> movePiecesTimeline(timeline);
     }
+
+	private void movePiecesTimeline(Timeline timeline) {
+		clearMovingPiece();
+		if (!checkCollision(getCurrentI(), getCurrentJ() + 1)) {
+		    drawPiece();
+		} else {
+		    drawPiece(TetrisPieceState.SETTLED);
+		    final TetrisPiece[] values = TetrisPiece.values();
+		    piece = values[random.nextInt(values.length)];
+		    setCurrentJ(0);
+		    setCurrentI(MAP_WIDTH / 2);
+		    if (checkCollision(getCurrentI(), getCurrentJ())) {
+		        timeline.stop();
+		        final Text text = new Text("You Got " + 0 + " points");
+		        final Button button = new Button("Reset");
+		        final Stage stage1 = new Stage();
+		        button.setOnAction(a -> {
+		           reset();
+		            timeline.play();
+		            stage1.close();
+		        });
+
+		        final Group group = new Group(text, button);
+		        group.setLayoutX(50);
+		        group.setLayoutY(50);
+		        stage1.setScene(new Scene(group));
+		        stage1.show();
+		    }
+		    for (int i = 0; i < MAP_HEIGHT; i++) {
+				boolean clearLine = isLineClear(i);
+		        if (clearLine) {
+					removeLine(i);
+		        }
+		    }
+
+		}
+		setCurrentJ(getCurrentJ() + 1);
+	}
     private boolean isLineClear(int i) {
 		boolean clearLine = true;
 		for (int j = 0; j < MAP_WIDTH; j++) {

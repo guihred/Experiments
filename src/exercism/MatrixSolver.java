@@ -20,7 +20,10 @@ import java.util.stream.DoubleStream;
  * determinant(matrix)
  * 
  */
-public class MatrixSolver {
+public final class MatrixSolver {
+
+	private MatrixSolver() {
+	}
 
 	private static boolean debug = false;
 

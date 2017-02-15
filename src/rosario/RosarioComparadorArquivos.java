@@ -111,7 +111,7 @@ public class RosarioComparadorArquivos extends Application {
 
 				LeitorArquivos.exportarArquivo(items0, items, items2);
 			} catch (Exception e1) {
-				logger.error("", e);
+				logger.error("", e1);
 			}
 		});
 		gridpane.getChildren().add(exportar);

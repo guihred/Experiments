@@ -1,6 +1,8 @@
 package gaming.ex06;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -51,89 +53,80 @@ public class QuartoLauncher extends Application {
         cameraXform.rx.setAngle(45);
     }
 
-    
+	private void handleMouseClick(MouseEvent event) {
+		final EventTarget target = event.getTarget();
+		if (target instanceof Shape3D) {
+		    final Parent parent = ((Shape3D) target).getParent();
+			if (parent instanceof QuartoPiece
+					&& Stream.of(model.getMapQuarto()).flatMap(Stream::of).noneMatch(parent::equals)) {
+				((QuartoPiece) parent).setSelected(true);
+				model.getPieces().stream().filter(p -> !Objects.equals(p, parent) && p.isSelected())
+						.forEach((QuartoPiece p) -> p.setSelected(false));
+			}
+		}
+		if (target instanceof Circle && Stream.of(model.getMap()).flatMap(Stream::of).anyMatch(target::equals)) {
+			List<QuartoPiece>selectedPiece=model.getPieces().stream().filter(p -> p.isSelected()).collect(Collectors.toList());
+			for(QuartoPiece p:selectedPiece) {
+		        p.setTranslateX(((Circle) target).getTranslateX());
+		        p.setTranslateZ(((Circle) target).getTranslateZ());
+				p.setSelected(false);
+		        for (int i = 0; i < 4; i++) {
+		            for (int j = 0; j < 4; j++) {
+		                if (target == model.getMap()[i][j]) {
+		                    model.getMapQuarto()[i][j] = p;
+		                }
+		            }
+		        }
+		        if (model.checkEnd()) {
+		            System.out.println("ACABOU");
+		            final Text text = new Text("You Got " + 0 + " points");
+		            final Button button = new Button("Reset");
+		            final Stage stage1 = new Stage();
+		            button.setOnAction(a -> {
+		                model.reset();
+		                stage1.close();
+		            });
+
+		            final Group group = new Group(text, button);
+		            group.setLayoutX(50);
+		            group.setLayoutY(50);
+		            stage1.setScene(new Scene(group));
+		            stage1.show();
+
+		        }
+			}
+
+		}
+	}
 
 
-    private void handleMouse(Scene scene) {
-        scene.setOnMouseClicked((MouseEvent event) -> {
-            final EventTarget target = event.getTarget();
-            if (target instanceof Shape3D) {
-                final Parent parent = ((Shape3D) target).getParent();
-				if (parent instanceof QuartoPiece
-						&& Stream.of(model.getMapQuarto()).flatMap(Stream::of).noneMatch(parent::equals)) {
-					((QuartoPiece) parent).setSelected(true);
-					model.getPieces().stream().filter(p -> !Objects.equals(p, parent) && p.isSelected())
-							.forEach((QuartoPiece p) -> p.setSelected(false));
-				}
-            }
-            if (target instanceof Circle && Stream.of(model.getMap()).flatMap(Stream::of).anyMatch(target::equals)) {
-				model.getPieces().stream().filter(p -> p.isSelected()).forEach((QuartoPiece p) -> {
-                    p.setTranslateX(((Circle) target).getTranslateX());
-                    p.setTranslateZ(((Circle) target).getTranslateZ());
-					p.setSelected(false);
-                    for (int i = 0; i < 4; i++) {
-                        for (int j = 0; j < 4; j++) {
-                            if (target == model.getMap()[i][j]) {
-                                model.getMapQuarto()[i][j] = p;
-                            }
-                        }
-                    }
-                    if (model.checkEnd()) {
-                        System.out.println("ACABOU");
-                        final Text text = new Text("You Got " + 0 + " points");
-                        final Button button = new Button("Reset");
-                        final Stage stage1 = new Stage();
-                        button.setOnAction(a -> {
-                            model.reset();
-                            stage1.close();
-                        });
-
-                        final Group group = new Group(text, button);
-                        group.setLayoutX(50);
-                        group.setLayoutY(50);
-                        stage1.setScene(new Scene(group));
-                        stage1.show();
-
-                    }
-                });
-
-            }
-        });
-
-
-        scene.setOnMouseDragReleased(null);
-    }
-
-
-    private void handleKeyboard(Scene scene) {
-        scene.setOnKeyPressed((KeyEvent event) -> {
-            switch (event.getCode()) {
-                case Z:
-                    if (event.isShiftDown()) {
-                        cameraXform.ry.setAngle(0.0);
-                        cameraXform.rx.setAngle(0.0);
-                        camera.setTranslateZ(-cameraDistance);
-                    }
-                    cameraXform2.t.setX(0.0);
-                    cameraXform2.t.setY(0.0);
-                    break;
-                case UP:
-				moveUpAndDown(event, 1);
-                    break;
-                case DOWN:
-				moveUpAndDown(event, -1);
-                    break;
-                case RIGHT:
-				moveSideways(event, 1);
-                    break;
-                case LEFT:
-				moveSideways(event, -1);
-                    break;
-			default:
-				break;
-            }
-        });
-    }
+	private void handleKeyPressed(KeyEvent event) {
+		switch (event.getCode()) {
+		    case Z:
+		        if (event.isShiftDown()) {
+		            cameraXform.ry.setAngle(0.0);
+		            cameraXform.rx.setAngle(0.0);
+		            camera.setTranslateZ(-cameraDistance);
+		        }
+		        cameraXform2.t.setX(0.0);
+		        cameraXform2.t.setY(0.0);
+		        break;
+		    case UP:
+			moveUpAndDown(event, 1);
+		        break;
+		    case DOWN:
+			moveUpAndDown(event, -1);
+		        break;
+		    case RIGHT:
+			moveSideways(event, 1);
+		        break;
+		    case LEFT:
+			moveSideways(event, -1);
+		        break;
+		default:
+			break;
+		}
+	}
 
 
 
@@ -225,8 +218,9 @@ public class QuartoLauncher extends Application {
         buildAxes();
         Scene scene = new Scene(root, 1024, 768, true);
         scene.setFill(Color.GREY);
-        handleKeyboard(scene);
-        handleMouse(scene);
+		scene.setOnKeyPressed(event -> handleKeyPressed(event));
+		scene.setOnMouseClicked(event -> handleMouseClick(event));
+		scene.setOnMouseDragReleased(null);
 
         primaryStage.setTitle("Molecule Sample Application");
         primaryStage.setScene(scene);

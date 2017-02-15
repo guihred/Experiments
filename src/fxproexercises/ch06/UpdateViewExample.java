@@ -72,15 +72,11 @@ public class UpdateViewExample extends Application {
     }
 
     private void hookupEvents() {
-        view.changeFillButton.setOnAction((ActionEvent actionEvent) -> {
+		view.changeFillButton.setOnAction((ActionEvent actionEvent) -> {
             final Paint fillPaint = model.fillPaint.get();
-            if (fillPaint.equals(Color.LIGHTGRAY)) {
-                model.fillPaint.set(Color.GRAY);
-            } else {
-                model.fillPaint.set(Color.LIGHTGRAY);
-            }
-            Runnable task = () -> {
-                try {
+			model.fillPaint.set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
+			new Thread(() -> {
+				try {
                     Thread.sleep(3000);
                     Platform.runLater(() -> {
                         final Rectangle rect = view.rectangle;
@@ -90,19 +86,11 @@ public class UpdateViewExample extends Application {
                         rect.setArcHeight(newArcSize);
                     });
                 } catch (InterruptedException e) {
-// TODO properly handle interruption
                 }
-            };
-            new Thread(task).start();
+			}).start();
         });
-        view.changeStrokeButton.setOnAction((ActionEvent actionEvent) -> {
-            final Paint strokePaint = model.strokePaint.get();
-            if (strokePaint.equals(Color.DARKGRAY)) {
-                model.strokePaint.set(Color.BLACK);
-            } else {
-                model.strokePaint.set(Color.DARKGRAY);
-            }
-        });
+		view.changeStrokeButton.setOnAction(e -> model.strokePaint
+				.set(model.strokePaint.get().equals(Color.DARKGRAY) ? Color.BLACK : Color.DARKGRAY));
     }
 
     @Override

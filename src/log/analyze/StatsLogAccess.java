@@ -22,8 +22,12 @@ import org.slf4j.LoggerFactory;
 public class StatsLogAccess {
 	public static final Logger LOGGER = LoggerFactory.getLogger(StatsLogAccess.class);
 
-	public static void main(String[] args) throws IOException {
-		statisticaDemoraArquivo();
+	public static void main(String[] args) {
+		try {
+			statisticaDemoraArquivo();
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
 	}
 
 	public static void statisticaTamanhoArquivos1() throws IOException {

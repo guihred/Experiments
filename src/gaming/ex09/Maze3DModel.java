@@ -28,9 +28,89 @@ public class Maze3DModel {
 	private final Circle circle;
 	private Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
 	private final Random random = new Random();
+	private List<Maze3DSquare> history = new ArrayList<>();
+	private int row = 0, column = 0;
 
 	public Maze3DModel(GridPane gridPane) {
-        for (int i = 0; i < MAZE_SIZE; i++) {
+		initializeMaze(gridPane);
+        maze[0][0].setCenter(new Circle(5));
+        history.add(maze[0][0]);
+        List<String> check = new ArrayList<>();
+        Timeline timeline = new Timeline();
+        final EventHandler<ActionEvent> eventHandler = event -> createMazeLoop(check, timeline);
+		final KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.01), eventHandler);
+        timeline.getKeyFrames().add(keyFrame);
+		timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+
+        
+        circle = new Circle(Maze3DSquare.SQUARE_SIZE / 3, Color.RED);
+        maze[0][0].setCenter(circle);
+        
+    }
+
+	private void createMazeLoop(List<String> check, Timeline timeline) {
+		while (!history.isEmpty()) {
+			maze[row][column].setVisited(true);
+			check.clear();
+			if (column > 0 && !maze[row][column - 1].isVisited()) {
+				check.add("L");
+			}
+			if (row > 0 && !maze[row - 1][column].isVisited()) {
+				check.add("U");
+			}
+			if (column < MAZE_SIZE - 1 && !maze[row][column + 1].isVisited()) {
+				check.add("R");
+			}
+			if (row < MAZE_SIZE - 1 && !maze[row + 1][column].isVisited()) {
+				check.add("D");
+			}
+			if (!check.isEmpty()) {
+				history.add(maze[row][column]);
+				final String direction = check.get(random.nextInt(check.size()));
+				if ("L".equals(direction)) {
+					maze[row][column].setWest(true);
+					column = column - 1;
+					maze[row][column].setEast(true);
+				}
+				if ("U".equals(direction)) {
+					maze[row][column].setNorth(true);
+					row = row - 1;
+					maze[row][column].setSouth(true);
+				}
+				if ("R".equals(direction)) {
+					maze[row][column].setEast(true);
+					column = column + 1;
+					maze[row][column].setWest(true);
+				}
+				if ("D".equals(direction)) {
+					maze[row][column].setSouth(true);
+					row = row + 1;
+					maze[row][column].setNorth(true);
+				}
+			} else if (getBackIn(history)) {
+				return;
+			}
+		}
+		timeline.stop();
+	}
+
+	private boolean getBackIn(List<Maze3DSquare> history) {
+		final Maze3DSquare remove = history.remove(history.size() - 1);
+		for (int i = 0; i < maze.length; i++) {
+			for (int j = 0; j < maze.length; j++) {
+				if (maze[i][j] == remove) {
+					row = i;
+					column = j;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private void initializeMaze(GridPane gridPane) {
+		for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
                 maze[i][j] = new Maze3DSquare();
                 gridPane.add(maze[i][j], j, i);
@@ -48,80 +128,7 @@ public class Maze3DModel {
                 }
             }
         }
-        maze[0][0].setCenter(new Circle(5));
-        List<Maze3DSquare> history = new ArrayList<>();
-        history.add(maze[0][0]);
-        List<String> check = new ArrayList<>();
-        Timeline timeline = new Timeline();
-        final EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
-			private int r = 0, c = 0;
-            @Override
-            public void handle(ActionEvent event) {
-                while (!history.isEmpty()) {
-					maze[r][c].setVisited(true);
-                    check.clear();
-
-					if (c > 0 && !maze[r][c - 1].isVisited()) {
-                        check.add("L");
-                    }
-					if (r > 0 && !maze[r - 1][c].isVisited()) {
-                        check.add("U");
-                    }
-					if (c < MAZE_SIZE - 1 && !maze[r][c + 1].isVisited()) {
-                        check.add("R");
-                    }
-					if (r < MAZE_SIZE - 1 && !maze[r + 1][c].isVisited()) {
-                        check.add("D");
-                    }
-                    if (!check.isEmpty()) {
-                        history.add(maze[r][c]);
-                        final String direction = check.get(random.nextInt(check.size()));
-						if ("L".equals(direction)) {
-							maze[r][c].setWest(true);
-                            c = c - 1;
-							maze[r][c].setEast(true);
-                        }
-						if ("U".equals(direction)) {
-							maze[r][c].setNorth(true);
-                            r = r - 1;
-							maze[r][c].setSouth(true);
-                        }
-						if ("R".equals(direction)) {
-							maze[r][c].setEast(true);
-                            c = c + 1;
-							maze[r][c].setWest(true);
-                        }
-						if ("D".equals(direction)) {
-							maze[r][c].setSouth(true);
-                            r = r + 1;
-							maze[r][c].setNorth(true);
-                        }
-                    } else {
-                        final Maze3DSquare remove = history.remove(history.size() - 1);
-                        for (int i = 0; i < MAZE_SIZE; i++) {
-                            for (int j = 0; j < MAZE_SIZE; j++) {
-                                if (maze[i][j] == remove) {
-                                    r = i;
-                                    c = j;
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                } 
-                    timeline.stop();
-            }
-        };
-		final KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.01), eventHandler);
-        timeline.getKeyFrames().add(keyFrame);
-		timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
-
-        
-        circle = new Circle(Maze3DSquare.SQUARE_SIZE / 3, Color.RED);
-        maze[0][0].setCenter(circle);
-        
-    }
+	}
     public static Maze3DModel create(GridPane gridPane) {
 		return new Maze3DModel(gridPane);
 	}

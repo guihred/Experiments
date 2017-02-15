@@ -6,10 +6,10 @@ import javafx.scene.input.MouseEvent;
 
 public class MouseGestures {
 
-	class DragContext {
-		protected boolean dragged;
-		protected double x;
-		protected double y;
+	private static class DragContext {
+		private boolean dragged;
+		private double x;
+		private double y;
 	}
 
 	private final DragContext dragContext = new DragContext();

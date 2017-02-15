@@ -1,8 +1,8 @@
 package fxproexercises.ch07;
 
+import static fxproexercises.ch07.CommonChartData.getPieData;
+
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
@@ -19,7 +19,7 @@ public class PieChartExample extends Application {
     public void start(Stage primaryStage) {
         PieChart pieChart = new PieChart();
 
-        pieChart.setData(getChartData());
+        pieChart.setData(getPieData());
         pieChart.setTitle("Tiobe index");
         pieChart.setLegendSide(Side.LEFT);
         pieChart.setClockwise(false);
@@ -31,16 +31,4 @@ public class PieChartExample extends Application {
         primaryStage.show();
     }
 
-    private ObservableList<PieChart.Data> getChartData() {
-        ObservableList<PieChart.Data> answer = FXCollections.observableArrayList();
-        answer.addAll(new PieChart.Data("Java", 17.56),
-                new PieChart.Data("C", 17.06),
-                new PieChart.Data("C++", 8.25),
-                new PieChart.Data("C#", 8.20),
-                new PieChart.Data("ObjectiveC", 6.8),
-                new PieChart.Data("PHP", 6.0),
-                new PieChart.Data("(Visual)Basic", 4.76),
-                new PieChart.Data("Other", 31.37));
-        return answer;
-    }
 }

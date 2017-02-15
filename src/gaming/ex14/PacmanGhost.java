@@ -19,7 +19,7 @@ public class PacmanGhost extends Group {
 	public enum GhostColor {
 		RED(Color.RED), BLUE(Color.BLUE), ORANGE(Color.ORANGE), GREEN(Color.GREEN);
 
-		private final Color color;
+		private transient final Color color;
 
 		private GhostColor(Color color) {
 			this.color = color;
@@ -117,7 +117,7 @@ public class PacmanGhost extends Group {
 			} else if (startY < getLayoutY()) {
 				setLayoutY(getLayoutY() - STEP);
 			}
-			if (startX == getLayoutX() && startY == getLayoutY()) {
+			if (Math.abs(startX - getLayoutX()) < 3 && Math.abs(startY - getLayoutY()) < 3) {
 				setStatus(GhostStatus.ALIVE);
 			}
 		} else {

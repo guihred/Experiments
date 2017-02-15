@@ -4,15 +4,12 @@
  * and open the template in the editor.
  */
 package fxproexercises.ch07;
+import static fxproexercises.ch07.CommonChartData.getChartData;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.chart.BubbleChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -56,31 +53,4 @@ public class BubbleChartExample extends Application {
 		primaryStage.show();
 	}
 
-	private ObservableList<XYChart.Series<Number, Number>> getChartData() {
-		double javaValue = 17.56;
-		double cValue = 17.06;
-		double cppValue = 8.25;
-		ObservableList<XYChart.Series<Number, Number>> answer = FXCollections.observableArrayList();
-		Series<Number, Number> java = new Series<>();
-		Series<Number, Number> c = new Series<>();
-		Series<Number, Number> cpp = new Series<>();
-		java.setName("java");
-		c.setName("C");
-		cpp.setName("C++");
-		for (int i = 20110; i < 20210; i = i + 10) {
-			double diff = Math.random();
-			java.getData().add(new XYChart.Data<Number, Number>(i, javaValue, 2 * diff));
-			javaValue = Math.max(javaValue + 4 * diff - 2, 0);
-			diff = Math.random();
-			c.getData().add(new XYChart.Data<Number, Number>(i, cValue, 2 * diff));
-			cValue = Math.max(cValue + 4 * diff - 2, 0);
-			diff = Math.random();
-			cpp.getData().add(new XYChart.Data<Number, Number>(i, cppValue, 2 * diff));
-			cppValue = Math.max(cppValue + 4 * diff - 2, 0);
-		}
-		answer.add(java);
-		answer.add(c);
-		answer.add(cpp);
-		return answer;
-	}
 }

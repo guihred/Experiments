@@ -50,7 +50,7 @@ public class Pacman extends Arc {
 				.anyMatch(p -> p.getBoundsInParent().intersects(getBoundsInParent()));
 	}
 
-	public void move(long now, ObservableList<Node> observableList) {
+	public void move(ObservableList<Node> observableList) {
 		int step = 2;
 		if (direction == null) {
 			return;

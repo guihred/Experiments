@@ -12,11 +12,16 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BrasilianVerbsConjugator {
 	enum Mode {
 		CONDITIONAL, FUTURE, IMPERFECT, PLUPERFECT, PRESENT, PRETERITE;
 	}
+
+	public static final Logger LOGGER = LoggerFactory.getLogger(BrasilianVerbsConjugator.class);
+
 	private static final boolean DEBUG = false;
 
 	private static Map<Mode, String[]> first = new EnumMap<>(Mode.class);
@@ -55,116 +60,119 @@ public class BrasilianVerbsConjugator {
 
 	private static Map<Mode, String[]> second = new EnumMap<>(Mode.class);
 
-	private static final Map<String, Map<Mode, List<String>>> SIMPLE_IRREGULARITIES = new HashMap<String, Map<Mode, List<String>>>() {
-		{
-			put("valer", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("valho", "vales", "vale", "valemos", "valeis", "valem")).build());
-			put("ler", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("leio", "lês", "lê", "lemos", "leis", "leem")).build());
-			put("ouvir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("ouço", "ouves", "ouve", "ouvimos", "ouvis", "ouvem")).build());
-			put("perder", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("perco", "perdes", "perde", "perdemos", "perdeis", "perdem")).build());
-			put("crer", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("creio", "crês", "crê", "cremos", "credes", "creem")).build());
-			put("rir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("rio", "ris", "ri", "rimos", "rides", "riem")).build());
-			put("seguir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("sigo", "segues", "segue", "seguimos", "seguis", "seguem")).build());
-			put("sentir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("sinto", "sentes", "sente", "sentimos", "sentis", "sentem")).build());
-			put("cobrir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("cubro", "cobres", "cobre", "cobrimos", "cobris", "cobrem")).build());
-			put("gredir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("grido", "grides", "gride", "gredimos", "gredis", "gridem")).build());
-			put("medir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("meço", "medes", "mede", "medimos", "medis", "medem")).build());
-			put("poder", ImmutableMap.<Mode, List<String>>builder()
+	private static final Map<String, Map<Mode, List<String>>> SIMPLE_IRREGULARITIES = ImmutableMap.<String, Map<Mode, List<String>>>builder()
+			.put("valer", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("valho", "vales", "vale", "valemos", "valeis", "valem")).build())
+			.put("ler", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("leio", "lês", "lê", "lemos", "leis", "leem")).build())
+			.put("ouvir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("ouço", "ouves", "ouve", "ouvimos", "ouvis", "ouvem")).build())
+			.put("perder", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("perco", "perdes", "perde", "perdemos", "perdeis", "perdem"))
+					.build())
+			.put("crer", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("creio", "crês", "crê", "cremos", "credes", "creem")).build())
+			.put("rir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("rio", "ris", "ri", "rimos", "rides", "riem")).build())
+			.put("seguir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("sigo", "segues", "segue", "seguimos", "seguis", "seguem"))
+					.build())
+			.put("sentir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("sinto", "sentes", "sente", "sentimos", "sentis", "sentem"))
+					.build())
+			.put("cobrir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("cubro", "cobres", "cobre", "cobrimos", "cobris", "cobrem"))
+					.build())
+			.put("gredir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("grido", "grides", "gride", "gredimos", "gredis", "gridem"))
+					.build())
+			.put("medir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("meço", "medes", "mede", "medimos", "medis", "medem")).build())
+			.put("poder", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("posso", "podes", "pode", "podemos", "podeis", "podem"))
 					.put(Mode.PRETERITE, Arrays.asList("pude", "pudeste", "pôde", "pudemos", "pudestes", "puderam"))
 					.put(Mode.PLUPERFECT, Arrays.asList("pudera", "puderas", "pudera", "pudéramos", "pudéreis", "puderam"))
-					.build());
-			put("ver", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("ver", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("vejo", "vês", "vê", "vemos", "vedes", "veem"))
 					.put(Mode.PRETERITE, Arrays.asList("vi", "viste", "viu", "vimos", "vistes", "viram"))
 					.put(Mode.PLUPERFECT, Arrays.asList("vira", "viras", "vira", "víramos", "víreis", "viram"))
-					.build());
-			put("dar", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("dar", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("dou", "dás", "dá", "damos", "dais", "dão"))
 					.put(Mode.PRETERITE, Arrays.asList("dei", "deste", "deu", "demos", "destes", "deram"))
 					.put(Mode.PLUPERFECT, Arrays.asList("dera", "deras", "dera", "déramos", "déreis", "deram"))
-					.build());
-			put("vir", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("vir", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("venho", "vens", "vem", "vimos", "vindes", "vêm"))
 					.put(Mode.PRETERITE, Arrays.asList("vim", "vieste", "veio", "viemos", "viestes", "vieram"))
 					.put(Mode.IMPERFECT, Arrays.asList("vinha", "vinhas", "vinha", "vínhamos", "vínheis", "vinham"))
 					.put(Mode.PLUPERFECT, Arrays.asList("viera", "vieras", "viera", "viéramos", "viéreis", "vieram"))
-					.build());
-			put("ter", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("ter", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("tenho", "tens", "tem", "temos", "tendes", "têm"))
 					.put(Mode.PRETERITE, Arrays.asList("tive", "tiveste", "teve", "tivemos", "tivestes", "tiveram"))
 					.put(Mode.IMPERFECT, Arrays.asList("tinha", "tinhas", "tinha", "tínhamos", "tínheis", "tinham"))
 					.put(Mode.PLUPERFECT, Arrays.asList("tivera", "tiveras", "tivera", "tivéramos", "tivéreis", "tiveram"))
-					.build());
-			put("aver", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("aver", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("ei", "ás", "á", "avemos", "aveis", "ão"))
 					.put(Mode.PRETERITE, Arrays.asList("ouve", "ouveste", "ouve", "ouvemos", "ouvestes", "ouveram"))
 					.put(Mode.PLUPERFECT, Arrays.asList("ouvera", "ouveras", "ouvera", "ouvéramos", "ouvéreis", "ouveram"))
-					.build());
-			put("querer", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("querer", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("quero", "queres", "quer", "queremos", "quereis", "querem"))
 					.put(Mode.PRETERITE, Arrays.asList("quis", "quiseste", "quis", "quisemos", "quisestes", "quiseram"))
 					.put(Mode.PLUPERFECT, Arrays.asList("quisera", "quiseras", "quisera", "quiséramos", "quiséreis", "quiseram"))
-					.build());
-			put("saber", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("saber", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("sei", "sabes", "sabe", "sabemos", "sabeis", "sabem"))
 					.put(Mode.PRETERITE, Arrays.asList("soube", "soubeste", "soube", "soubemos", "soubestes", "souberam"))
 					.put(Mode.PLUPERFECT, Arrays.asList("soubera", "souberas", "soubera", "soubéramos", "soubéreis", "souberam"))
-					.build());
-			put("caber", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("caber", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("caibo", "cabes", "cabe", "cabemos", "cabeis", "cabem"))
 					.put(Mode.PRETERITE, Arrays.asList("coube", "coubeste", "coube", "coubemos", "coubestes", "couberam"))
 					.put(Mode.PLUPERFECT, Arrays.asList("coubera", "couberas", "coubera", "coubéramos", "coubéreis", "couberam"))
-					.build());
-			put("estar", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("estar", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("estou", "estás", "está", "estamos", "estais", "estão"))
 					.put(Mode.PRETERITE, Arrays.asList("estive", "estiveste", "esteve", "estivemos", "estivestes", "estiveram"))
 					.put(Mode.PLUPERFECT,Arrays.asList("estivera", "estiveras", "estivera", "estivéramos", "estivestes", "estiveram"))
-					.build());
-			put("dizer", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("dizer", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("digo", "dizes", "diz", "dizemos", "dizeis", "dizem"))
 					.put(Mode.PRETERITE, Arrays.asList("disse", "disseste", "disse", "dissemos", "dissestes", "disseram"))
 					.put(Mode.PLUPERFECT, Arrays.asList("dissera", "disseras", "dissera", "disséramos", "disséreis", "disseram"))
 					.put(Mode.FUTURE, Arrays.asList("direi", "dirás", "dirá", "diremos", "direis", "dirão"))
 					.put(Mode.CONDITIONAL, Arrays.asList("diria", "dirias", "diria", "diríamos", "diríeis", "diriam"))
-					.build());
-			put("trazer", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("trazer", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("trago", "trazes", "traz", "trazemos", "trazeis", "trazem"))
 					.put(Mode.PRETERITE, Arrays.asList("trouxe", "trouxeste", "trouxe", "trouxemos", "trouxestes", "trouxeram"))
 					.put(Mode.PLUPERFECT,Arrays.asList("trouxera", "trouxeras", "trouxera", "trouxéramos", "trouxéreis", "trouxeram"))
 					.put(Mode.FUTURE, Arrays.asList("trarei", "trarás", "trará", "traremos", "trareis", "trarão"))
 					.put(Mode.CONDITIONAL, Arrays.asList("traria", "trarias", "traria", "traríamos", "traríeis", "trariam"))
-					.build());
-			put("ser", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("ser", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("sou", "és", "é", "somos", "sois", "são"))
 					.put(Mode.PRETERITE, Arrays.asList("fui", "foste", "foi", "fomos", "fostes", "foram"))
 					.put(Mode.IMPERFECT, Arrays.asList("era", "eras", "era", "éramos", "éreis", "eram"))
 					.put(Mode.PLUPERFECT,Arrays.asList("fora", "foras", "fora", "fôramos", "fôreis", "foram"))
-					.build());
-			put("ir", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("ir", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("vou", "vais", "vai", "vamos", "ides", "vão"))
 					.put(Mode.PRETERITE, Arrays.asList("fui", "foste", "foi", "fomos", "fostes", "foram"))
 					.put(Mode.PLUPERFECT,Arrays.asList("fora", "foras", "fora", "fôramos", "fôreis", "foram"))
-					.build());
-			put("fazer", ImmutableMap.<Mode, List<String>>builder()
+					.build())
+			.put("fazer", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("faço", "fazes", "faz", "fazemos", "fazeis", "fazem"))
 					.put(Mode.PRETERITE, Arrays.asList("fiz", "fizeste", "fez", "fizemos", "fizestes", "fizeram"))
 					.put(Mode.PLUPERFECT,Arrays.asList("fizera", "fizeste", "fizera", "fizéramos", "fizestes", "fizeram"))
 					.put(Mode.FUTURE, Arrays.asList("farei", "farás", "fará", "faremos", "fareis", "farão"))
 					.put(Mode.CONDITIONAL, Arrays.asList("faria", "farias", "faria", "faríamos", "faríeis", "fariam"))
-					.build());
-		}
-	};
+					.build())
+			.build();
 
 	private static Map<Mode, String[]> third = new EnumMap<>(Mode.class);
 
@@ -350,10 +358,14 @@ public class BrasilianVerbsConjugator {
 				.anyMatch(e -> e.getValue().stream().anyMatch(v -> (v + e.getKey()).equals(verb)));
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 
-		Stream<String> words = getWords(new File("verbs.dic").toURI());
-		words.forEach(BrasilianVerbsConjugator::conjugate);
+		try {
+			Stream<String> words = getWords(new File("verbs.dic").toURI());
+			words.forEach(BrasilianVerbsConjugator::conjugate);
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
 	}
 
 

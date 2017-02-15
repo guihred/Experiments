@@ -6,26 +6,17 @@ import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 public class SpriteAnimation extends Transition {
-
-	private final ImageView imageView;
-	private final int count;
-	private final int columns;
-	private final int offsetX;
-	private final int offsetY;
-	private final int width;
-	private final int height;
-
+	private int columns;
+	private int count;
+	private int height;
+	private ImageView imageView;
 	private int lastIndex;
+	private int offsetX;
+	private int offsetY;
+	private int width;
 
-	public SpriteAnimation(ImageView imageView, Duration duration, int count,
-			int columns, int offsetX, int offsetY, int width, int height) {
+	public SpriteAnimation(ImageView imageView, Duration duration) {
 		this.imageView = imageView;
-		this.count = count;
-		this.columns = columns;
-		this.offsetX = offsetX;
-		this.offsetY = offsetY;
-		this.width = width;
-		this.height = height;
 		setCycleDuration(duration);
 		setInterpolator(Interpolator.LINEAR);
 	}
@@ -39,5 +30,45 @@ public class SpriteAnimation extends Transition {
 			imageView.setViewport(new Rectangle2D(x, y, width, height));
 			lastIndex = index;
 		}
+	}
+
+	public SpriteAnimation setColumns(int columns) {
+		this.columns = columns;
+		return this;
+	}
+
+	public SpriteAnimation setCount(int count) {
+		this.count = count;
+		return this;
+	}
+
+	public SpriteAnimation setHeight(int height) {
+		this.height = height;
+		return this;
+	}
+
+	public SpriteAnimation setImageView(ImageView imageView) {
+		this.imageView = imageView;
+		return this;
+	}
+
+	public SpriteAnimation setLastIndex(int lastIndex) {
+		this.lastIndex = lastIndex;
+		return this;
+	}
+
+	public SpriteAnimation setOffsetX(int offsetX) {
+		this.offsetX = offsetX;
+		return this;
+	}
+
+	public SpriteAnimation setOffsetY(int offsetY) {
+		this.offsetY = offsetY;
+		return this;
+	}
+
+	public SpriteAnimation setWidth(int width) {
+		this.width = width;
+		return this;
 	}
 }

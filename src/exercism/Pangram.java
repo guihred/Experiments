@@ -14,7 +14,10 @@ import java.util.Arrays;
  * The alphabet used is ASCII, and case insensitive, from 'a' to 'z'
  * inclusively.
  */
-public class Pangram {
+public final class Pangram {
+
+	private Pangram() {
+	}
 
 	/**
 	 * Checks if is pangram.

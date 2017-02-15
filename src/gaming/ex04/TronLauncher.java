@@ -15,11 +15,42 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class TronLauncher extends Application {
+	private final TronModel newGameModel = new TronModel();
 
+	private void handleKeyPressed(KeyEvent e) {
+		final KeyCode code = e.getCode();
+		switch (code) {
+		case UP:
+		case W:
+			if (newGameModel.getDirection() != TronDirection.DOWN) {
+				newGameModel.setDirection(TronDirection.UP);
+			}
+			break;
+		case LEFT:
+		case A:
+			if (newGameModel.getDirection() != TronDirection.RIGHT) {
+				newGameModel.setDirection(TronDirection.LEFT);
+			}
+			break;
+		case RIGHT:
+		case S:
+			if (newGameModel.getDirection() != TronDirection.LEFT) {
+				newGameModel.setDirection(TronDirection.RIGHT);
+			}
+			break;
+		case DOWN:
+		case D:
+			if (newGameModel.getDirection() != TronDirection.UP) {
+				newGameModel.setDirection(TronDirection.DOWN);
+			}
+			break;
+		default:
+		}
+		newGameModel.updateMap();
+	}
     @Override
     public void start(Stage stage) throws Exception {
         final GridPane gridPane = new GridPane();
-        final TronModel newGameModel = new TronModel();
         for (int i = 0; i < TronModel.MAP_SIZE; i++) {
             for (int j = 0; j < TronModel.MAP_SIZE; j++) {
 				gridPane.add(newGameModel.getMap()[i][j], i, j);
@@ -27,38 +58,7 @@ public class TronLauncher extends Application {
         }
 
         final Scene scene = new Scene(gridPane);
-
-        scene.setOnKeyPressed((KeyEvent e) -> {
-            final KeyCode code = e.getCode();
-            switch (code) {
-                case UP:
-                case W:
-                    if (newGameModel.getDirection() != TronDirection.DOWN) {
-                        newGameModel.setDirection(TronDirection.UP);
-                    }
-                    break;
-                case LEFT:
-                case A:
-                    if (newGameModel.getDirection() != TronDirection.RIGHT) {
-                        newGameModel.setDirection(TronDirection.LEFT);
-                    }
-                    break;
-                case RIGHT:
-                case S:
-                    if (newGameModel.getDirection() != TronDirection.LEFT) {
-                        newGameModel.setDirection(TronDirection.RIGHT);
-                    }
-                    break;
-                case DOWN:
-                case D:
-                    if (newGameModel.getDirection() != TronDirection.UP) {
-                        newGameModel.setDirection(TronDirection.DOWN);
-                    }
-                    break;
-                default:
-            }
-            newGameModel.updateMap();
-        });
+		scene.setOnKeyPressed(e -> handleKeyPressed(e));
         final Timeline timeline = new Timeline();
 
         timeline.getKeyFrames().add(

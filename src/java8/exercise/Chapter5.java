@@ -9,7 +9,10 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Predicate;
 
-public class Chapter5 {
+public final class Chapter5 {
+	private Chapter5() {
+	}
+
 	/* Compute Programmer�s Day without using plusDays. */
 	public static void ex1() {
 		LocalDate programmerDay = LocalDate.ofYearDay(2015, 256);

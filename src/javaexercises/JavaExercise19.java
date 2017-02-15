@@ -1,12 +1,16 @@
 package javaexercises;
 
 
-public class JavaExercise19 {
+public final class JavaExercise19 {
+	private JavaExercise19() {
+	}
+
 	/**
 	 * 19. What does this do? . The following is again a problem of analysing a
 	 * complete java program and determining what it writes out without keying
 	 * the program in and trying it.
 	 */
+
 	public static void main(String[] args) {
 
 		Jack ink = new Jack();

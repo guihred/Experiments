@@ -46,7 +46,7 @@ public class OthersTests {
 		return a.length() < b.length() ? a + reverse(b) + a : b + reverse(a) + b;
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		Complex p = p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5));
 		System.out.println(p);
 

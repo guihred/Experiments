@@ -27,7 +27,9 @@ public class MazeModel {
 	public static final int MAZE_SIZE = 24;
 
 	private MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
-
+	private int x = 0, y = 0;
+	private EventHandler<KeyEvent> onKeyPressed = event -> handleKey(event);
+	private Circle circle;
 	public MazeModel(GridPane gridPane, Scene scene) {
 		initializeMaze(gridPane);
 		maze[0][0].setCenter(new Circle(5));
@@ -38,49 +40,9 @@ public class MazeModel {
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 
-		final Circle circle = new Circle(MazeSquare.SQUARE_SIZE / 3, Color.RED);
+		circle = new Circle(MazeSquare.SQUARE_SIZE / 3, Color.RED);
 		maze[0][0].setCenter(circle);
-		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			private int i = 0, j = 0;
-
-			@Override
-			public void handle(KeyEvent event) {
-				maze[i][j].setCenter(null);
-				final KeyCode code = event.getCode();
-				switch (code) {
-				case W:
-				case UP:
-					if (i > 0 && maze[i][j].isNorth()) {
-						i--;
-					}
-					break;
-				case S:
-				case DOWN:
-					if (i < MazeModel.MAZE_SIZE - 1 && maze[i][j].isSouth()) {
-						i++;
-					}
-					break;
-				case D:
-				case RIGHT:
-					if (j < MazeModel.MAZE_SIZE - 1 && maze[i][j].isEast()) {
-						j++;
-					}
-					break;
-				case A:
-				case LEFT:
-					if (j > 0 && maze[i][j].isWest()) {
-						j--;
-					}
-					break;
-				default:
-					break;
-
-				}
-				maze[i][j].setCenter(circle);
-
-			}
-		});
-
+		scene.setOnKeyPressed(onKeyPressed);
 	}
 	private void initializeMaze(GridPane gridPane) {
 		for (int i = 0; i < MAZE_SIZE; i++) {
@@ -103,6 +65,40 @@ public class MazeModel {
 		}
 	}
 
+	private void handleKey(KeyEvent event) {
+		maze[x][y].setCenter(null);
+		final KeyCode code = event.getCode();
+		switch (code) {
+		case W:
+		case UP:
+			if (x > 0 && maze[x][y].isNorth()) {
+				x--;
+			}
+			break;
+		case S:
+		case DOWN:
+			if (x < MazeModel.MAZE_SIZE - 1 && maze[x][y].isSouth()) {
+				x++;
+			}
+			break;
+		case D:
+		case RIGHT:
+			if (y < MazeModel.MAZE_SIZE - 1 && maze[x][y].isEast()) {
+				y++;
+			}
+			break;
+		case A:
+		case LEFT:
+			if (y > 0 && maze[x][y].isWest()) {
+				y--;
+			}
+			break;
+		default:
+			break;
+
+		}
+		maze[x][y].setCenter(circle);
+	}
 	public static MazeModel create(GridPane gridPane, Scene scene) {
 		return new MazeModel(gridPane, scene);
 	}

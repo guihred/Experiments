@@ -1,6 +1,5 @@
 package fxsamples;
 import java.io.File;
-
 import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
@@ -36,9 +35,10 @@ public class SandboxFX extends Application {
 		imageView
 				.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
 
-		final Animation animation = new SpriteAnimation(imageView,
-				Duration.millis(1000), COUNT, COLUMNS, OFFSET_X, OFFSET_Y,
-				WIDTH, HEIGHT);
+		final Animation animation = new SpriteAnimation(imageView, Duration.millis(1000)).setCount(COUNT)
+				.setColumns(COLUMNS).setOffsetX(OFFSET_X).setOffsetY(OFFSET_Y)
+						.setWidth(WIDTH).setHeight(HEIGHT);
+
 		animation.setCycleCount(Animation.INDEFINITE);
 		animation.play();
 

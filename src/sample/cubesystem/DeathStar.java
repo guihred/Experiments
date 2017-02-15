@@ -1,7 +1,6 @@
 package sample.cubesystem;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -16,70 +15,62 @@ public class DeathStar extends Application {
 
 	private static final int DIVISION = 200;// the bigger the higher resolution
 	private float radius = 300;// radius of the sphere
+	public Point3D sphere = new Point3D(-radius, 0, -radius * 1.5);
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Point3D otherSphere = new Point3D(-radius, 0, -radius * 1.5);
-		final TriangleMesh triangleMesh = createMesh(DIVISION, radius, otherSphere);
-		MeshView a = new MeshView(triangleMesh);
+		final TriangleMesh triangleMesh = createMesh(DIVISION, radius, sphere);
+		MeshView mesh = new MeshView(triangleMesh);
 
-		a.setTranslateY(radius);
-		a.setTranslateX(radius);
-		a.setRotationAxis(Rotate.Y_AXIS);
-		Scene scene = new Scene(new Group(a));
+		mesh.setTranslateY(radius);
+		mesh.setTranslateX(radius);
+		mesh.setRotationAxis(Rotate.Y_AXIS);
+		Scene scene = new Scene(new Group(mesh));
 		// uncomment if you want to move the other sphere
 
-		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			public Point3D sphere = otherSphere;
-			@Override
-			public void handle(KeyEvent e) {
-				KeyCode code = e.getCode();
-				switch (code) {
-				case UP:
-					sphere = sphere.add(0, -10, 0);
-					break;
-				case DOWN:
-					sphere = sphere.add(0, 10, 0);
-					break;
-				case LEFT:
-					sphere = sphere.add(-10, 0, 0);
-					break;
-				case RIGHT:
-					sphere = sphere.add(10, 0, 0);
-					break;
-				case W:
-					sphere = sphere.add(0, 0, 10);
-					break;
-				case S:
-					sphere = sphere.add(0, 0, -10);
-					break;
-				default:
-					return;
-				}
-				a.setMesh(createMesh(DIVISION, radius, sphere));
-
-			}
-		});
+		scene.setOnKeyPressed(e -> handleKeyPressed(mesh, e));
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
 
-	static TriangleMesh createMesh(final int division, final float radius, final Point3D centerOtherSphere) {
-		final int div2 = division / 2;
+	private void handleKeyPressed(MeshView a, KeyEvent e) {
+		KeyCode code = e.getCode();
+		switch (code) {
+		case UP:
+			sphere = sphere.add(0, -10, 0);
+			break;
+		case DOWN:
+			sphere = sphere.add(0, 10, 0);
+			break;
+		case LEFT:
+			sphere = sphere.add(-10, 0, 0);
+			break;
+		case RIGHT:
+			sphere = sphere.add(10, 0, 0);
+			break;
+		case W:
+			sphere = sphere.add(0, 0, 10);
+			break;
+		case S:
+			sphere = sphere.add(0, 0, -10);
+			break;
+		default:
+			return;
+		}
+		a.setMesh(createMesh(DIVISION, radius, sphere));
+	}
 
+	private static TriangleMesh createMesh(final int division, final float radius, final Point3D centerOtherSphere) {
+		final int div2 = division / 2;
 		final int nPoints = division * (div2 - 1) + 2;
 		final int nTPoints = (division + 1) * (div2 - 1) + division * 2;
 		final int nFaces = division * (div2 - 2) * 2 + division * 2;
-
 		final float rDiv = 1.f / division;
-
 		float points[] = new float[nPoints * 3];
 		float tPoints[] = new float[nTPoints * 2];
 		int faces[] = new int[nFaces * 6];
-
 		int pPos = 0, tPos = 0;
-
 		for (int y = 0; y < div2 - 1; ++y) {
 			float va = rDiv * (y + 1 - div2 / 2) * 2 * (float) Math.PI;
 			float sin_va = (float) Math.sin(va);
@@ -196,7 +187,6 @@ public class DeathStar extends Application {
 		m.getPoints().setAll(points);
 		m.getTexCoords().setAll(tPoints);
 		m.getFaces().setAll(faces);
-
 		return m;
 	}
 

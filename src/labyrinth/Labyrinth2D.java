@@ -62,34 +62,35 @@ public class Labyrinth2D extends Application {
 		// camera.setTranslateZ(-1000);
 		// scene.setCamera(camera);
 
-		scene.setOnMouseClicked(event -> {
-			String string = mapa[i][j];
-			if ("_".equals(string)) {
-				Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
-						SIZE / 2, SIZE);
-				rectangle.setFill(color);
-				root.getChildren().add(rectangle);
-			} else {
-				Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE, SIZE,
-						SIZE / 2);
-				rectangle.setFill(color);
-				root.getChildren().add(rectangle);
-			}
-			j++;
-			if (j >= mapa[i].length) {
-				j = 0;
-				i++;
-			}
-			if (i >= mapa.length) {
-				i = 0;
-				j = 0;
-				color = color == Color.RED ? Color.BLACK : Color.RED;
-			}
-
-		});
+		scene.setOnMouseClicked(event -> handleMouseClick(root));
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	private void handleMouseClick(Group root) {
+		String string = mapa[i][j];
+		if ("_".equals(string)) {
+			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
+					SIZE / 2, SIZE);
+			rectangle.setFill(color);
+			root.getChildren().add(rectangle);
+		} else {
+			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE, SIZE,
+					SIZE / 2);
+			rectangle.setFill(color);
+			root.getChildren().add(rectangle);
+		}
+		j++;
+		if (j >= mapa[i].length) {
+			j = 0;
+			i++;
+		}
+		if (i >= mapa.length) {
+			i = 0;
+			j = 0;
+			color = color == Color.RED ? Color.BLACK : Color.RED;
+		}
 	}
 
 }

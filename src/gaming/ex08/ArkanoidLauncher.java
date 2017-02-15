@@ -18,9 +18,6 @@ public class ArkanoidLauncher extends Application {
         stage.setHeight(600);
         stage.setResizable(false);
         stage.show();
-
-        
-
     }
 
     public static void main(String[] args) {

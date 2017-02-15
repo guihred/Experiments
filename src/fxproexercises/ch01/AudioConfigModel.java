@@ -1,5 +1,7 @@
 package fxproexercises.ch01;
 
+import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -47,29 +49,14 @@ public class AudioConfigModel {
      * contains code that executes when the selection in the ChoiceBox changes.
      */
     public void addListenerToGenreSelectionModel() {
-        genreSelectionModel.selectedIndexProperty().addListener((ov, oldValue, newValue) -> {
-            switch (newValue.intValue()) {
-                case 0:
-                    selectedDBs.setValue(80);
-                    break;
-                case 1:
-                    selectedDBs.setValue(100);
-                    break;
-                case 2:
-                    selectedDBs.setValue(150);
-                    break;
-                case 3:
-                    selectedDBs.setValue(140);
-                    break;
-                case 4:
-                    selectedDBs.setValue(120);
-                    break;
-                case 5:
-                    selectedDBs.setValue(130);
-				break;
-			default:
-				break;
-            }
-        });
+		Map<Integer, Integer> hashMap = new HashMap<>();
+		hashMap.put(0, 80);
+		hashMap.put(1, 100);
+		hashMap.put(2, 150);
+		hashMap.put(3, 140);
+		hashMap.put(4, 120);
+		hashMap.put(5, 130);
+		genreSelectionModel.selectedIndexProperty().addListener((ov, oldValue, newValue) -> selectedDBs
+				.setValue(hashMap.getOrDefault(newValue, selectedDBs.getValue())));
     }
 }

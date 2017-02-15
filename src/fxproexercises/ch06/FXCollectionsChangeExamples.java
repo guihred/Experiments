@@ -17,7 +17,10 @@ import javafx.collections.ObservableList;
  *
  * @author Note
  */
-public class FXCollectionsChangeExamples {
+public final class FXCollectionsChangeExamples {
+
+	private FXCollectionsChangeExamples() {
+	}
 
     public static void main(String[] args) {
         ObservableList<String> strings = FXCollections.observableArrayList();

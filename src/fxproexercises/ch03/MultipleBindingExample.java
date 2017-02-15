@@ -5,8 +5,12 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
-public class MultipleBindingExample {
-    public static void main(String[] args) {
+public final class MultipleBindingExample {
+
+	private MultipleBindingExample() {
+	}
+
+	public static void main(String[] args) {
         System.out.println("Constructing x with initial value of 2.0.");
         final DoubleProperty x = new SimpleDoubleProperty(null, "x", 2.0);
         System.out.println("Constructing y with initial value of 3.0.");

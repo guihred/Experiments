@@ -83,55 +83,57 @@ public class MinesweeperModel {
 	}
 
     final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
-        EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> {
-			if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
-                nPlayed.set(nPlayed.get() + 1);
-				mem.setState(MinesweeperSquare.State.SHOWN);
-				if (mem.getMinesweeperImage().equals(MinesweeperImage.BOMB)) {
-                    if (nPlayed.get() == 0) {
-                        reset();
-                    }
-
-                    final Text text = new Text("You exploded in " + " moves");
-                    final Button button = new Button("Reset");
-                    final Stage stage1 = new Stage();
-                    button.setOnAction(a -> {
-                        reset();
-                        stage1.close();
-                    });
-
-                    final Group group = new Group(text, button);
-                    group.setLayoutX(50);
-                    group.setLayoutY(50);
-                    stage1.setScene(new Scene(group));
-                    stage1.show();
-                }
-				if (mem.getMinesweeperImage().equals(MinesweeperImage.BLANK)) {
-                    showNeighbours(mem.getI(), mem.getJ());
-                }
-                if (verifyEnd()) {
-                    final Text text = new Text("You won in " + (System.currentTimeMillis() - startTime) / 1000
-                            + " seconds! ");
-                    final Button button = new Button("Reset");
-                    final Stage stage1 = new Stage();
-                    button.setOnAction(a -> {
-                        reset();
-                        stage1.close();
-                    });
-
-                    final Group group = new Group(text, button);
-                    group.setLayoutX(50);
-                    group.setLayoutY(50);
-                    stage1.setScene(new Scene(group));
-                    stage1.show();
-                }
-
-            }
-        };
+		EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(mem);
         mem.getFinalShape().setOnMouseClicked(mouseClicked);
         mem.setOnMouseClicked(mouseClicked);
         return mouseClicked;
     }
+
+	private void handleClick(MinesweeperSquare mem) {
+		if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
+		    nPlayed.set(nPlayed.get() + 1);
+			mem.setState(MinesweeperSquare.State.SHOWN);
+			if (mem.getMinesweeperImage().equals(MinesweeperImage.BOMB)) {
+		        if (nPlayed.get() == 0) {
+		            reset();
+		        }
+
+		        final Text text = new Text("You exploded in " + " moves");
+		        final Button button = new Button("Reset");
+		        final Stage stage1 = new Stage();
+		        button.setOnAction(a -> {
+		            reset();
+		            stage1.close();
+		        });
+
+		        final Group group = new Group(text, button);
+		        group.setLayoutX(50);
+		        group.setLayoutY(50);
+		        stage1.setScene(new Scene(group));
+		        stage1.show();
+		    }
+			if (mem.getMinesweeperImage().equals(MinesweeperImage.BLANK)) {
+		        showNeighbours(mem.getI(), mem.getJ());
+		    }
+		    if (verifyEnd()) {
+		        final Text text = new Text("You won in " + (System.currentTimeMillis() - startTime) / 1000
+		                + " seconds! ");
+		        final Button button = new Button("Reset");
+		        final Stage stage1 = new Stage();
+		        button.setOnAction(a -> {
+		            reset();
+		            stage1.close();
+		        });
+
+		        final Group group = new Group(text, button);
+		        group.setLayoutX(50);
+		        group.setLayoutY(50);
+		        stage1.setScene(new Scene(group));
+		        stage1.show();
+		    }
+
+		}
+	}
     public MinesweeperSquare[][] getMap() {
 		return map;
 	}

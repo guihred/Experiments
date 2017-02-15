@@ -7,8 +7,10 @@ package fxproexercises.ch03;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class SimplePropertyBindExample {
+public final class SimplePropertyBindExample {
 
+	private SimplePropertyBindExample() {
+	}
     public static void main(String[] args) {
         System.out.println("Constructing two StringProperty objects.");
         StringProperty prop1 = new SimpleStringProperty("");

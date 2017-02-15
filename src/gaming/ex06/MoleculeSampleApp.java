@@ -167,62 +167,60 @@ public class MoleculeSampleApp extends Application {
         world.getChildren().addAll(moleculeGroup);
     }
 
-    private void handleKeyboard(Scene scene) {
-        scene.setOnKeyPressed((KeyEvent event) -> {
-            switch (event.getCode()) {
-                case Z:
-                    if (event.isShiftDown()) {
-                        cameraXform.ry.setAngle(0.0);
-                        cameraXform.rx.setAngle(0.0);
-                        camera.setTranslateZ(-300.0);
-                    }
-                    cameraXform2.t.setX(0.0);
-                    cameraXform2.t.setY(0.0);
-                    break;
-                case X:
-                    if (event.isControlDown()) {
-                        if (axisGroup.isVisible()) {
-                            axisGroup.setVisible(false);
-                        } else {
-                            axisGroup.setVisible(true);
-                        }
-                    }
-                    break;
-                case S:
-                    if (event.isControlDown()) {
-                        if (moleculeGroup.isVisible()) {
-                            moleculeGroup.setVisible(false);
-                        } else {
-                            moleculeGroup.setVisible(true);
-                        }
-                    }
-                    break;
-                case SPACE:
-                    if (timelinePlaying) {
-                        timeline.pause();
-                        timelinePlaying = false;
-                    } else {
-                        timeline.play();
-                        timelinePlaying = true;
-                    }
-                    break;
-                case UP:
-				upAndDownMovement(event, -1);
-                    break;
-                case DOWN:
-				upAndDownMovement(event, 1);
-                    break;
-                case RIGHT:
-				leftAndRightMovement(event, 1);
-                    break;
-                case LEFT:
-				leftAndRightMovement(event, -1);
-                    break;
-			default:
-				break;
-            }
-        });
-    }
+	private void handleKeyEvent(KeyEvent event) {
+		switch (event.getCode()) {
+		    case Z:
+		        if (event.isShiftDown()) {
+		            cameraXform.ry.setAngle(0.0);
+		            cameraXform.rx.setAngle(0.0);
+		            camera.setTranslateZ(-300.0);
+		        }
+		        cameraXform2.t.setX(0.0);
+		        cameraXform2.t.setY(0.0);
+		        break;
+		    case X:
+		        if (event.isControlDown()) {
+		            if (axisGroup.isVisible()) {
+		                axisGroup.setVisible(false);
+		            } else {
+		                axisGroup.setVisible(true);
+		            }
+		        }
+		        break;
+		    case S:
+		        if (event.isControlDown()) {
+		            if (moleculeGroup.isVisible()) {
+		                moleculeGroup.setVisible(false);
+		            } else {
+		                moleculeGroup.setVisible(true);
+		            }
+		        }
+		        break;
+		    case SPACE:
+		        if (timelinePlaying) {
+		            timeline.pause();
+		            timelinePlaying = false;
+		        } else {
+		            timeline.play();
+		            timelinePlaying = true;
+		        }
+		        break;
+		    case UP:
+			upAndDownMovement(event, -1);
+		        break;
+		    case DOWN:
+			upAndDownMovement(event, 1);
+		        break;
+		    case RIGHT:
+			leftAndRightMovement(event, 1);
+		        break;
+		    case LEFT:
+			leftAndRightMovement(event, -1);
+		        break;
+		default:
+			break;
+		}
+	}
 
 	private void leftAndRightMovement(KeyEvent event, int i) {
 		if (event.isControlDown() && event.isShiftDown()) {
@@ -257,36 +255,30 @@ public class MoleculeSampleApp extends Application {
             mouseOldX = me.getSceneX();
             mouseOldY = me.getSceneY();
         });
-        scene.setOnMouseDragged((MouseEvent me) -> {
-            mouseOldX = mousePosX;
-            mouseOldY = mousePosY;
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseDeltaX = mousePosX - mouseOldX;
-            mouseDeltaY = mousePosY - mouseOldY;
-
-            double modifier = 1.0;
-            double modifierFactor = 0.1;
-
-            if (me.isControlDown()) {
-                modifier = 0.1;
-            }
-            if (me.isShiftDown()) {
-                modifier = 10.0;
-            }
-            if (me.isPrimaryButtonDown()) {
-                cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 2.0);  // +
-                cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 2.0);  // -
-            } else if (me.isSecondaryButtonDown()) {
-                double z = camera.getTranslateZ();
-                double newZ = z + mouseDeltaX * modifierFactor * modifier;
-                camera.setTranslateZ(newZ);
-            } else if (me.isMiddleButtonDown()) {
-                cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
-                cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
-            }
-        });
+		scene.setOnMouseDragged(me -> handleMouseDragged(me));
     }
+
+	private void handleMouseDragged(MouseEvent me) {
+		mouseOldX = mousePosX;
+		mouseOldY = mousePosY;
+		mousePosX = me.getSceneX();
+		mousePosY = me.getSceneY();
+		mouseDeltaX = mousePosX - mouseOldX;
+		mouseDeltaY = mousePosY - mouseOldY;
+		double modifier = me.isShiftDown() ? 10.0 : me.isControlDown() ? 0.1 : 1.0;
+		double modifierFactor = 0.1;
+		if (me.isPrimaryButtonDown()) {
+		    cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 2.0);  // +
+		    cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 2.0);  // -
+		} else if (me.isSecondaryButtonDown()) {
+		    double z = camera.getTranslateZ();
+		    double newZ = z + mouseDeltaX * modifierFactor * modifier;
+		    camera.setTranslateZ(newZ);
+		} else if (me.isMiddleButtonDown()) {
+		    cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
+		    cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
+		}
+	}
     
         @Override
     public void start(Stage primaryStage) {
@@ -297,7 +289,7 @@ public class MoleculeSampleApp extends Application {
 
         Scene scene = new Scene(root, 1024, 768, true);
         scene.setFill(Color.GREY);
-        handleKeyboard(scene);
+		scene.setOnKeyPressed(this::handleKeyEvent);
         handleMouse(scene);
 
         primaryStage.setTitle("Molecule Sample Application");

@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class BrasilianWordSyllableSplitter {
-
+public final class BrasilianWordSyllableSplitter {
+	public static final Logger LOGGER = LoggerFactory.getLogger(BrasilianWordSyllableSplitter.class);
 	private static final String VOWELS = "[aeiouáéíóúâêîôûàèìòùãõ]";
 	private static final String CONSONANT_CLUSTER = "[bcdfgkptv][rl]|[cnlst][h]|mn|bs|tch";
 	private static final String REGEX_VOWEL_CLUSTER_VOWEL = "(?i)" + VOWELS + "(" + CONSONANT_CLUSTER + ")" + VOWELS;
@@ -27,10 +29,18 @@ public class BrasilianWordSyllableSplitter {
 	// cases when the vowel cluster should be split
 	private static final String REGEX_HIATUS = "(?i)(?<=[^qg][aeiou])(?=[aeiou][lnrz])|(?<=[aeou])(?=[íúîû])|(?<=[íúéóe])(?=[a])|(?<=[ieao])(?=[ú])|(?<=[^q][aeoui][ui])(?=[aeiou])|(?<=[íúe])(?=ei)";
 
-	public static void main(String[] args) throws IOException {
+	private BrasilianWordSyllableSplitter() {
+	}
 
-		Stream<String> words = getWords(new File("words.dic").toURI());
-		words.forEach(BrasilianWordSyllableSplitter::splitSyllables);
+	public static void main(String[] args) {
+
+		try {
+			Stream<String> words;
+			words = getWords(new File("words.dic").toURI());
+			words.forEach(BrasilianWordSyllableSplitter::splitSyllables);
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
 
 	}
 
@@ -57,11 +67,7 @@ public class BrasilianWordSyllableSplitter {
 			String b = i + 2 <= length ? word.substring(i + 1, i + 2) : "";
 			String c = i + 3 <= length ? word.substring(i + 2, i + 3) : "";
 			String d = i + 4 <= length ? word.substring(i + 3, i + 4) : "";
-			if ((a + b + c).matches(REGEX_VOWEL_CONSONANT_VOWEL)
-					|| isConsonant(a) && isConsonant(b) && !isConsonantCluster(a + b) && isVowel(c) && i != 0
-					|| isConsonant(a) && isConsonant(b)&& isConsonant(c) && !isConsonantCluster(a + b) && isConsonantCluster(b + c) && isVowel(d)
-					&& i != 0
-					|| (a + b + c + d).matches(REGEX_VOWEL_CLUSTER_VOWEL)) {
+			if (splitSyllableCondition(i, a, b, c, d)) {
 				syllable.add(s.toString());
 				s.delete(0, s.length());
 			}
@@ -83,6 +89,14 @@ public class BrasilianWordSyllableSplitter {
 		System.out.println(word + " " + collect);
 		return collect;
 
+	}
+
+	private static boolean splitSyllableCondition(int i, String a, String b, String c, String d) {
+		return (a + b + c).matches(REGEX_VOWEL_CONSONANT_VOWEL)
+				|| isConsonant(a) && isConsonant(b) && !isConsonantCluster(a + b) && isVowel(c) && i != 0
+				|| isConsonant(a) && isConsonant(b)&& isConsonant(c) && !isConsonantCluster(a + b) && isConsonantCluster(b + c) && isVowel(d)
+				&& i != 0
+				|| (a + b + c + d).matches(REGEX_VOWEL_CLUSTER_VOWEL);
 	}
 
 	private static boolean isConsonantCluster(String a) {

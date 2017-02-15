@@ -145,6 +145,10 @@ public final class ReversiModel {
 	}
 
 	private static class ReversiModelHolder {
+
         private static final ReversiModel INSTANCE = new ReversiModel();
+
+		private ReversiModelHolder() {
+		}
     }
 }

@@ -13,18 +13,26 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TermFrequency {
+public final class TermFrequency {
 	public static final Logger LOGGER = LoggerFactory.getLogger(TermFrequency.class);
 	private static final String REGEX = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
 	private static final Map<File, Map<String, Long>> mapaDocumentos = new HashMap<>();
 
-	public static void main(String[] args) throws IOException {
+	private TermFrequency() {
+	}
+
+	public static void main(String[] args) {
 
 		File file = new File("C:\\Users\\Guilherme\\workspace\\Teste\\src");
 		if (file.exists()) {
-			Map<File, Map<String, Long>> mapa = getMapaDocumentos(file);
-			mapa.forEach((k, v) -> v.forEach((p, f) -> System.out.println(k + "," + p + "," + f)));
+			try {
+				Map<File, Map<String, Long>> mapa;
+				mapa = getMapaDocumentos(file);
+				mapa.forEach((k, v) -> v.forEach((p, f) -> System.out.println(k + "," + p + "," + f)));
+			} catch (IOException e) {
+				LOGGER.error("", e);
+			}
 
 		}
 

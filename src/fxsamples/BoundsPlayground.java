@@ -1,34 +1,24 @@
 package fxsamples;
 
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeLineCap;
-import javafx.scene.shape.StrokeType;
+import javafx.scene.shape.*;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -38,7 +28,7 @@ public class BoundsPlayground extends Application {
 	final ObservableList<Shape> shapes = FXCollections.observableArrayList();
 	final ObservableList<ShapePair> intersections = FXCollections.observableArrayList();
 
-	ObjectProperty<BoundsType> selectedBoundsType = new SimpleObjectProperty<BoundsType>(BoundsType.LAYOUT_BOUNDS);
+	ObjectProperty<BoundsType> selectedBoundsType = new SimpleObjectProperty<>(BoundsType.LAYOUT_BOUNDS);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -47,32 +37,23 @@ public class BoundsPlayground extends Application {
 	@Override
 	public void start(Stage stage) {
 		stage.setTitle("Bounds Playground");
-
 		// define some objects to manipulate on the scene.
 		Circle greenCircle = new Circle(100, 100, 50, Color.FORESTGREEN);
 		greenCircle.setId("Green Circle");
 		Circle redCircle = new Circle(300, 200, 50, Color.FIREBRICK);
 		redCircle.setId("Red Circle");
-
 		Line line = new Line(25, 300, 375, 200);
 		line.setId("Line");
 		line.setStrokeLineCap(StrokeLineCap.ROUND);
 		line.setStroke(Color.MIDNIGHTBLUE);
 		line.setStrokeWidth(5);
-
 		final Anchor anchor1 = new Anchor("Anchor 1", line.startXProperty(), line.startYProperty());
 		final Anchor anchor2 = new Anchor("Anchor 2", line.endXProperty(), line.endYProperty());
-
 		final Group group = new Group(greenCircle, redCircle, line, anchor1, anchor2);
-
+		group.getChildrenUnmodifiable().stream().filter(Shape.class::isInstance).map(Shape.class::cast)
+				.forEach(shapes::add);
 		// monitor intersections of shapes in the scene.
-		for (Node node : group.getChildrenUnmodifiable()) {
-			if (node instanceof Shape) {
-				shapes.add((Shape) node);
-			}
-		}
 		testIntersections();
-
 		// enable dragging for the scene objects.
 		Circle[] circles = { greenCircle, redCircle, anchor1, anchor2 };
 		for (Circle circle : circles) {
@@ -82,16 +63,11 @@ public class BoundsPlayground extends Application {
 			circle.centerYProperty().addListener(
 					(ChangeListener<Number>) (observableValue, oldValue, newValue) -> testIntersections());
 		}
-
 		// define an overlay to show the layout bounds of the scene's shapes.
 		Group layoutBoundsOverlay = new Group();
 		layoutBoundsOverlay.setMouseTransparent(true);
-		for (Shape shape : shapes) {
-			if (!(shape instanceof Anchor)) {
-				layoutBoundsOverlay.getChildren().add(new BoundsDisplay(shape));
-			}
-		}
-
+		shapes.stream().filter(s -> !(s instanceof Anchor)).map(s -> new BoundsDisplay(this, s))
+				.forEach(layoutBoundsOverlay.getChildren()::add);
 		// layout the scene.
 		final StackPane background = new StackPane();
 		background.setStyle("-fx-background-color: cornsilk;");
@@ -100,7 +76,6 @@ public class BoundsPlayground extends Application {
 		background.prefWidthProperty().bind(scene.widthProperty());
 		stage.setScene(scene);
 		stage.show();
-
 		createUtilityWindow(stage, layoutBoundsOverlay, new Shape[] { greenCircle, redCircle });
 	}
 
@@ -151,81 +126,6 @@ public class BoundsPlayground extends Application {
 		LAYOUT_BOUNDS, BOUNDS_IN_LOCAL, BOUNDS_IN_PARENT
 	}
 
-	// a translucent overlay display rectangle to show the bounds of a Shape.
-	class BoundsDisplay extends Rectangle {
-		// the shape to which the bounds display has been type.
-		final Shape monitoredShape;
-		private ChangeListener<Bounds> boundsChangeListener;
-
-		BoundsDisplay(final Shape shape) {
-			setFill(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.35));
-			setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
-			setStrokeType(StrokeType.INSIDE);
-			setStrokeWidth(3);
-
-			monitoredShape = shape;
-
-			monitorBounds(BoundsType.LAYOUT_BOUNDS);
-		}
-
-		// set the type of the shape's bounds to monitor for the bounds display.
-		void monitorBounds(final BoundsType boundsType) {
-			// remove the shape's previous boundsType.
-			if (boundsChangeListener != null) {
-				final ReadOnlyObjectProperty<Bounds> oldBounds;
-				switch (selectedBoundsType.get()) {
-				case LAYOUT_BOUNDS:
-					oldBounds = monitoredShape.layoutBoundsProperty();
-					break;
-				case BOUNDS_IN_LOCAL:
-					oldBounds = monitoredShape.boundsInLocalProperty();
-					break;
-				case BOUNDS_IN_PARENT:
-					oldBounds = monitoredShape.boundsInParentProperty();
-					break;
-				default:
-					oldBounds = null;
-				}
-				if (oldBounds != null) {
-					oldBounds.removeListener(boundsChangeListener);
-				}
-			}
-
-			// determine the shape's bounds for the given boundsType.
-			final ReadOnlyObjectProperty<Bounds> bounds;
-			switch (boundsType) {
-			case LAYOUT_BOUNDS:
-				bounds = monitoredShape.layoutBoundsProperty();
-				break;
-			case BOUNDS_IN_LOCAL:
-				bounds = monitoredShape.boundsInLocalProperty();
-				break;
-			case BOUNDS_IN_PARENT:
-				bounds = monitoredShape.boundsInParentProperty();
-				break;
-			default:
-				bounds = null;
-			}
-
-			// set the visual bounds display based upon the new bounds and keep
-			// it in sync.
-			updateBoundsDisplay(bounds.get());
-
-			// keep the visual bounds display based upon the new bounds and keep
-			// it in sync.
-			boundsChangeListener = (observableValue, oldBounds, newBounds) -> updateBoundsDisplay(newBounds);
-			bounds.addListener(boundsChangeListener);
-		}
-
-		// update this bounds display to match a new set of bounds.
-		private void updateBoundsDisplay(Bounds newBounds) {
-			setX(newBounds.getMinX());
-			setY(newBounds.getMinY());
-			setWidth(newBounds.getWidth());
-			setHeight(newBounds.getHeight());
-		}
-	}
-
 	// an anchor displayed around a point.
 	class Anchor extends Circle {
 		Anchor(String id, DoubleProperty x, DoubleProperty y) {
@@ -242,54 +142,8 @@ public class BoundsPlayground extends Application {
 	}
 
 	// records relative x and y co-ordinates.
-	class Delta {
+	private static class Delta {
 		double x, y;
-	}
-
-	// records a pair of (possibly) intersecting shapes.
-	class ShapePair {
-		private Shape a, b;
-
-		public ShapePair(Shape src, Shape dest) {
-			a = src;
-			b = dest;
-		}
-
-		public boolean intersects(BoundsType boundsType) {
-			if (a == b) {
-				return false;
-			}
-
-			a.intersects(b.getBoundsInLocal());
-			switch (boundsType) {
-			case LAYOUT_BOUNDS:
-				return a.getLayoutBounds().intersects(b.getLayoutBounds());
-			case BOUNDS_IN_LOCAL:
-				return a.getBoundsInLocal().intersects(b.getBoundsInLocal());
-			case BOUNDS_IN_PARENT:
-				return a.getBoundsInParent().intersects(b.getBoundsInParent());
-			default:
-				return false;
-			}
-		}
-
-		@Override
-		public String toString() {
-			return a.getId() + " : " + b.getId();
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			ShapePair o = (ShapePair) other;
-			return o != null && (a == o.a && b == o.b || a == o.b && b == o.a);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = a != null ? a.hashCode() : 0;
-			result = 31 * result + (b != null ? b.hashCode() : 0);
-			return result;
-		}
 	}
 
 	// define a utility stage for reporting intersections.
@@ -299,78 +153,47 @@ public class BoundsPlayground extends Application {
 		reportingStage.initStyle(StageStyle.UTILITY);
 		reportingStage.setX(stage.getX() + stage.getWidth());
 		reportingStage.setY(stage.getY());
-
 		// define content for the intersections utility panel.
-		final ListView<ShapePair> intersectionView = new ListView<ShapePair>(intersections);
+		final ListView<ShapePair> intersectionView = new ListView<>(intersections);
 		final Label instructions = new Label("Click on any circle in the scene to the left to drag it around.");
-		instructions.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+		instructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 		instructions.setStyle("-fx-font-weight: bold; -fx-text-fill: darkgreen;");
 
 		final Label intersectionInstructions = new Label("Any intersecting bounds in the scene will be reported below.");
-		instructions.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+		instructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 
 		// add the ability to set a translate value for the circles.
 		final CheckBox translateNodes = new CheckBox("Translate circles");
-		translateNodes.selectedProperty().addListener(
-				(ChangeListener<Boolean>) (observableValue, oldValue, doTranslate) -> {
-					if (doTranslate) {
-						for (Shape shape1 : transformableShapes) {
-							shape1.setTranslateY(100);
-							testIntersections();
-						}
-					} else {
-						for (Shape shape2 : transformableShapes) {
-							shape2.setTranslateY(0);
-							testIntersections();
-						}
-					}
-				});
+		translateNodes.selectedProperty()
+				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes)
+						.peek(s -> s.setTranslateY(doTranslate ? 100 : 0)).forEach(s -> testIntersections()));
 		translateNodes.selectedProperty().set(false);
 
 		// add the ability to add an effect to the circles.
 		final Label modifyInstructions = new Label("Modify visual display aspects.");
 		modifyInstructions.setStyle("-fx-font-weight: bold;");
-		modifyInstructions.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+		modifyInstructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 		final CheckBox effectNodes = new CheckBox("Add an effect to circles");
-		effectNodes.selectedProperty().addListener(
-				(ChangeListener<Boolean>) (observableValue, oldValue, doTranslate) -> {
-					if (doTranslate) {
-						for (Shape shape1 : transformableShapes) {
-							shape1.setEffect(new DropShadow());
-							testIntersections();
-						}
-					} else {
-						for (Shape shape2 : transformableShapes) {
-							shape2.setEffect(null);
-							testIntersections();
-						}
-					}
-				});
+		effectNodes.selectedProperty()
+				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes)
+						.peek(s -> s.setEffect(doTranslate ? new DropShadow() : null))
+						.forEach(s -> testIntersections()));
 		effectNodes.selectedProperty().set(true);
 
 		// add the ability to add a stroke to the circles.
 		final CheckBox strokeNodes = new CheckBox("Add outside strokes to circles");
-		strokeNodes.selectedProperty().addListener(
-				(ChangeListener<Boolean>) (observableValue, oldValue, doTranslate) -> {
+		strokeNodes.selectedProperty()
+				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> {
 					if (doTranslate) {
-						for (Shape shape1 : transformableShapes) {
-							shape1.setStroke(Color.LIGHTSEAGREEN);
-							shape1.setStrokeWidth(10);
-							testIntersections();
-						}
-					} else {
-						for (Shape shape2 : transformableShapes) {
-							shape2.setStrokeWidth(0);
-							testIntersections();
-						}
+						s.setStroke(Color.LIGHTSEAGREEN);
 					}
-				});
+				}).peek(s -> s.setStrokeWidth(doTranslate ? 10 : 0)).forEach(s -> testIntersections()));
 		strokeNodes.selectedProperty().set(true);
 
 		// add the ability to show or hide the layout bounds overlay.
 		final Label showBoundsInstructions = new Label("The gray squares represent layout bounds.");
 		showBoundsInstructions.setStyle("-fx-font-weight: bold;");
-		showBoundsInstructions.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+		showBoundsInstructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 		final CheckBox showBounds = new CheckBox("Show Bounds");
 		boundsOverlay.visibleProperty().bind(showBounds.selectedProperty());
 		showBounds.selectedProperty().set(true);

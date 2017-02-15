@@ -6,17 +6,21 @@ import com.github.junrar.exception.RarException.RarExceptionType;
 import com.github.junrar.rarfile.FileHeader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class UnRar {
+public final class UnRar {
 	/**
 	 * @param args
 	 */
 	private static List<String> successfulFiles = new ArrayList<>();
 	private static List<String> errorFiles = new ArrayList<>();
 	private static List<String> unsupportedFiles = new ArrayList<>();
+
+	private UnRar() {
+	}
 
 	public static void main(String[] args) {
 		File file = new File("C:\\Users\\Guilherme\\Videos\\FantasticBeasts\\Fantastic.Beasts.and.Where.to.Find.Them");
@@ -57,7 +61,6 @@ public class UnRar {
 		System.out.println("failed:\t\t" + errorFiles.size());
 	}
 
-	@SuppressWarnings("resource")
 	private static void testFile(File file, File output) {
 		if (file == null || !file.exists()) {
 			System.out.println("error file " + file + " does not exist");
@@ -69,7 +72,6 @@ public class UnRar {
 		s = s.substring(s.length() - 3);
 		if ("rar".equalsIgnoreCase(s)) {
 			System.out.println(file.toString());
-			try {
 				try (Archive arc = new Archive(file);) {
 					if (arc.isEncrypted()) {
 						System.out.println("archive is encrypted cannot extreact");
@@ -92,36 +94,36 @@ public class UnRar {
 						if (!file2.exists()) {
 							file2.createNewFile();
 						}
-						FileOutputStream os = new FileOutputStream(file2);
-						try {
-							arc.extractFile(fh, os);
-						} catch (RarException e) {
-							if (e.getType().equals(RarExceptionType.notImplementedYet)) {
-								System.out.println("error extracting unsupported file: " + fh.getFileNameString() + e);
-								unsupportedFiles.add(file.toString());
-								return;
-							}
-							System.out.println("error extracting file: " + fh.getFileNameString() + e);
-							errorFiles.add(file.toString());
+						if (!tryExtractFile(file2, fh, arc, file)) {
 							return;
-						} finally {
-							os.close();
 						}
 						System.out.println("end: " + new Date());
 					}
 					System.out.println("successfully tested archive: " + file);
 					successfulFiles.add(file.toString());
-				} catch (RarException e) {
-					System.out.println("archive consturctor error" + e);
-					errorFiles.add(file.toString());
-					return;
-				}
 			} catch (Exception e) {
 				System.out.println("file: " + file + " extraction error - does the file exist?" + e);
 				errorFiles.add(file.toString());
 			}
 
 		}
+	}
+
+	private static boolean tryExtractFile(File file2, FileHeader fh, Archive arc, File file) throws IOException {
+		try (FileOutputStream os = new FileOutputStream(file2);) {
+			arc.extractFile(fh, os);
+		} catch (RarException e) {
+			if (e.getType().equals(RarExceptionType.notImplementedYet)) {
+				System.out.println("error extracting unsupported file: " + fh.getFileNameString() + e);
+				unsupportedFiles.add(file.toString());
+				return false;
+			}
+			System.out.println("error extracting file: " + fh.getFileNameString() + e);
+			errorFiles.add(file.toString());
+			return false;
+		}
+		return true;
+
 	}
 
 	private static void recurseDirectory(File file, File output) {

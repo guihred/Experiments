@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -38,17 +39,14 @@ public class OrganizadorMusicas extends Application {
 		primaryStage.setTitle("Organizador ");
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 600, 250, Color.WHITE);
-		// create a grid pane
 		FlowPane gridpane = new FlowPane();
+		gridpane.setVgap(10);
 		gridpane.setPadding(new Insets(5));
 		gridpane.setHgap(10);
-		gridpane.setVgap(10);
 		root.setCenter(gridpane);
-		// candidates label
-		// List of leaders
 
-		Label listaRosario = new Label("Lista Músicas");
-		GridPane.setHalignment(listaRosario, HPos.CENTER);
+		Label listaMusicas = new Label("Lista Músicas");
+		GridPane.setHalignment(listaMusicas, HPos.CENTER);
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Carregar Pasta de Músicas");
 		Button buttonEstoque = new Button("Carregar Musicas");
@@ -62,7 +60,7 @@ public class OrganizadorMusicas extends Application {
 				medicamentosEstoqueTable.setItems(getMusicas(selectedFile));
 			}
 		});
-		gridpane.getChildren().add(new VBox(listaRosario, buttonEstoque, medicamentosEstoqueTable));
+		gridpane.getChildren().add(new VBox(listaMusicas, buttonEstoque, medicamentosEstoqueTable));
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -75,46 +73,7 @@ public class OrganizadorMusicas extends Application {
 		musicaTable.setPrefWidth(600);
 		musicaTable.setScaleShape(false);
 
-		musicaTable.setOnMousePressed(event -> {
-			if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-				Musica selectedItem = musicaTable.getSelectionModel().getSelectedItem();
-				Stage stage = new Stage();
-				VBox root = new VBox();
-				root.getChildren().addAll(criarField("Título", selectedItem.tituloProperty()));
-				root.getChildren().addAll(criarField("Artista", selectedItem.artistaProperty()));
-				root.getChildren().addAll(criarField("Álbum", selectedItem.albumProperty()));
-
-				byte[] extractEmbeddedImageData = LeitorMusicas.extractEmbeddedImageData(selectedItem.getArquivo());
-				if (extractEmbeddedImageData != null) {
-					Image image = new Image(new ByteArrayInputStream(extractEmbeddedImageData));
-					root.getChildren().addAll(new ImageView(image));
-				} else {
-					Button button = new Button("Escolha a Foto");
-					root.getChildren().add(button);
-					button.setOnAction(a -> {
-						Stage stage2 = new Stage();
-						FlowPane flow = new FlowPane();
-						flow.setPrefWrapLength(300);
-
-						List<String> imagens = LeitorMusicas.getImagens("\"" + selectedItem.getArtista() + "\" \""
-								+ selectedItem.getTitulo() + "\" \"" + selectedItem.getAlbum() + "\"");
-						for (String url : imagens) {
-							ImageView pages = new ImageView(url);
-							pages.setOnMouseClicked(e -> System.out.println(url));
-
-							flow.getChildren().add(pages);
-						}
-
-						stage.setScene(new Scene(flow));
-						stage2.show();
-					});
-
-				}
-				stage.setScene(new Scene(root));
-				stage.show();
-				System.out.println(selectedItem);
-			}
-		});
+		musicaTable.setOnMousePressed(event -> handleMousePressed(musicaTable, event));
 
 		TableColumn<Musica, String> tituloMusica = new TableColumn<>("Título");
 		tituloMusica.setCellValueFactory(new PropertyValueFactory<>("titulo"));
@@ -147,6 +106,48 @@ public class OrganizadorMusicas extends Application {
 
 		musicaTable.getColumns().setAll(tituloMusica, nomeMusica, albumMusica, anoMusica, generoMusica);
 		return musicaTable;
+	}
+
+
+	private void handleMousePressed(final TableView<Musica> musicaTable, MouseEvent event) {
+		if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+			Musica selectedItem = musicaTable.getSelectionModel().getSelectedItem();
+			Stage stage = new Stage();
+			VBox root = new VBox();
+			root.getChildren().addAll(criarField("Título", selectedItem.tituloProperty()));
+			root.getChildren().addAll(criarField("Artista", selectedItem.artistaProperty()));
+			root.getChildren().addAll(criarField("Álbum", selectedItem.albumProperty()));
+
+			byte[] extractEmbeddedImageData = LeitorMusicas.extractEmbeddedImageData(selectedItem.getArquivo());
+			if (extractEmbeddedImageData != null) {
+				Image image = new Image(new ByteArrayInputStream(extractEmbeddedImageData));
+				root.getChildren().addAll(new ImageView(image));
+			} else {
+				Button button = new Button("Escolha a Foto");
+				root.getChildren().add(button);
+				button.setOnAction(a -> {
+					Stage stage2 = new Stage();
+					FlowPane flow = new FlowPane();
+					flow.setPrefWrapLength(300);
+
+					List<String> imagens = LeitorMusicas.getImagens("\"" + selectedItem.getArtista() + "\" \""
+							+ selectedItem.getTitulo() + "\" \"" + selectedItem.getAlbum() + "\"");
+					for (String url : imagens) {
+						ImageView pages = new ImageView(url);
+						pages.setOnMouseClicked(e -> System.out.println(url));
+
+						flow.getChildren().add(pages);
+					}
+
+					stage.setScene(new Scene(flow));
+					stage2.show();
+				});
+
+			}
+			stage.setScene(new Scene(root));
+			stage.show();
+			System.out.println(selectedItem);
+		}
 	}
 
 	private ObservableList<Musica> getMusicas(File file) {

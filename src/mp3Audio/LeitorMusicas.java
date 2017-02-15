@@ -32,13 +32,23 @@ import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LeitorMusicas {
+public final class LeitorMusicas {
 	public static final Logger LOGGER = LoggerFactory.getLogger(LeitorMusicas.class);
-	public static void main(String[] args) throws IOException {
-		String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
-		File file = new File(new File(path).getParentFile(), "Music");
-		ObservableList<Musica> musicas = getMusicas(file);
-		musicas.forEach(System.out::println);
+
+	private LeitorMusicas() {
+	}
+
+	public static void main(String[] args) {
+
+		try {
+			String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
+			File file = new File(new File(path).getParentFile(), "Music");
+			ObservableList<Musica> musicas;
+			musicas = getMusicas(file);
+			musicas.forEach(System.out::println);
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
 	}
 
 

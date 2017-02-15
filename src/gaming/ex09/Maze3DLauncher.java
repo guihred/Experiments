@@ -36,59 +36,62 @@ public class Maze3DLauncher extends Application {
             }
         });
 
-        scene.setOnKeyPressed((KeyEvent event) -> {
-            int change = 1;
-            KeyCode keycode = event.getCode();
-            double changeX = 0;
-            double changeZ = 0;
-            if (keycode == KeyCode.W) {
-                changeX = 5 * Math.sin(rotate.getAngle() * Math.PI / 180);
-                changeZ = 5 * Math.cos(rotate.getAngle() * Math.PI / 180);
-            }
-            if (keycode == KeyCode.S) {
-				changeX = -5 * Math.sin(rotate.getAngle() * Math.PI / 180);
-				changeZ = -5 * Math.cos(rotate.getAngle() * Math.PI / 180);
-			}
-			if (keycode == KeyCode.UP) {
-				translate.setY(translate.getY() + 5);
-			}
-			if (keycode == KeyCode.DOWN) {
-				translate.setY(translate.getY() - 5);
-            }
-            translate.setZ(translate.getZ() + changeZ);
-
-            if (scene.getRoot().getChildrenUnmodifiable().stream()
-                    .filter(Parent.class::isInstance)
-                    .map(Parent.class::cast)
-                    .flatMap(p -> p.getChildrenUnmodifiable().stream())
-                    .filter(Box.class::isInstance)
-                    .anyMatch(s -> s.intersects(camera.getBoundsInParent()))) {
-                translate.setZ(translate.getZ() - changeZ);
-            }
-            translate.setX(translate.getX() + changeX);
-            if (scene.getRoot().getChildrenUnmodifiable().stream()
-                    .filter(Parent.class::isInstance)
-                    .map(Parent.class::cast)
-                    .flatMap(p -> p.getChildrenUnmodifiable().stream())
-                    .filter(Box.class::isInstance)
-                    .anyMatch(s -> s.intersects(camera.getBoundsInParent()))) {
-                translate.setX(translate.getX() - changeX);
-            }
-
-            if (keycode == KeyCode.A) {
-                rotate.setAngle(rotate.getAngle() - change);
-            }
-            if (keycode == KeyCode.D) {
-                rotate.setAngle(rotate.getAngle() + change);
-            }
-            if (keycode == KeyCode.SPACE) {
-                camera.setFieldOfView(camera.getFieldOfView() + change);
-            }
-            if (keycode == KeyCode.BACK_SPACE) {
-                camera.setFieldOfView(camera.getFieldOfView() - change);
-            }
-        });
+		scene.setOnKeyPressed((KeyEvent event) -> handleKeyPressed(scene, translate, rotate, camera, event));
     }
+
+	private void handleKeyPressed(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera,
+			KeyEvent event) {
+		int change = 1;
+		KeyCode keycode = event.getCode();
+		double changeX = 0;
+		double changeZ = 0;
+		if (keycode == KeyCode.W) {
+		    changeX = 5 * Math.sin(rotate.getAngle() * Math.PI / 180);
+		    changeZ = 5 * Math.cos(rotate.getAngle() * Math.PI / 180);
+		}
+		if (keycode == KeyCode.S) {
+			changeX = -5 * Math.sin(rotate.getAngle() * Math.PI / 180);
+			changeZ = -5 * Math.cos(rotate.getAngle() * Math.PI / 180);
+		}
+		if (keycode == KeyCode.UP) {
+			translate.setY(translate.getY() + 5);
+		}
+		if (keycode == KeyCode.DOWN) {
+			translate.setY(translate.getY() - 5);
+		}
+		translate.setZ(translate.getZ() + changeZ);
+
+		if (scene.getRoot().getChildrenUnmodifiable().stream()
+		        .filter(Parent.class::isInstance)
+		        .map(Parent.class::cast)
+		        .flatMap(p -> p.getChildrenUnmodifiable().stream())
+		        .filter(Box.class::isInstance)
+		        .anyMatch(s -> s.intersects(camera.getBoundsInParent()))) {
+		    translate.setZ(translate.getZ() - changeZ);
+		}
+		translate.setX(translate.getX() + changeX);
+		if (scene.getRoot().getChildrenUnmodifiable().stream()
+		        .filter(Parent.class::isInstance)
+		        .map(Parent.class::cast)
+		        .flatMap(p -> p.getChildrenUnmodifiable().stream())
+		        .filter(Box.class::isInstance)
+		        .anyMatch(s -> s.intersects(camera.getBoundsInParent()))) {
+		    translate.setX(translate.getX() - changeX);
+		}
+
+		if (keycode == KeyCode.A) {
+		    rotate.setAngle(rotate.getAngle() - change);
+		}
+		if (keycode == KeyCode.D) {
+		    rotate.setAngle(rotate.getAngle() + change);
+		}
+		if (keycode == KeyCode.SPACE) {
+		    camera.setFieldOfView(camera.getFieldOfView() + change);
+		}
+		if (keycode == KeyCode.BACK_SPACE) {
+		    camera.setFieldOfView(camera.getFieldOfView() - change);
+		}
+	}
 
     @Override
     public void start(Stage stage) throws Exception {

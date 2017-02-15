@@ -4,6 +4,7 @@ import java.io.File;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -101,35 +102,34 @@ public class JewelViewer extends Application {
 		});
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
-		scene.setOnKeyPressed(event -> {
-			double change = cameraQuantity;
-			// Add shift modifier to simulate "Running Speed"
-			if (event.isShiftDown()) {
-				change = cameraModifier;
-			}
-			// What key did the user press?
-			KeyCode keycode = event.getCode();
-			// Step 2c: Add Zoom controls
-			if (keycode == KeyCode.W) {
-				camera.setTranslateZ(camera.getTranslateZ() + change);
-			}
-			if (keycode == KeyCode.S) {
-				camera.setTranslateZ(camera.getTranslateZ() - change);
-			}
-			// Step 2d: Add Strafe controls
-			if (keycode == KeyCode.A) {
-				camera.setRotate(camera.getRotate() - 1);
-			}
-			camera.setRotationAxis(Rotate.Y_AXIS);
-			if (keycode == KeyCode.D) {
-				camera.setRotate(camera.getRotate() + 1);
-			}
-		});
+		scene.setOnKeyPressed(event -> handleKeyPressed(event));
 		// End Step 2b-d
 
 		primaryStage.setTitle("Jewel Viewer");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	private void handleKeyPressed(KeyEvent event) {
+		// Add shift modifier to simulate "Running Speed"
+		double change = event.isShiftDown() ? cameraModifier : cameraQuantity;
+		// What key did the user press?
+		KeyCode keycode = event.getCode();
+		// Step 2c: Add Zoom controls
+		if (keycode == KeyCode.W) {
+			camera.setTranslateZ(camera.getTranslateZ() + change);
+		}
+		if (keycode == KeyCode.S) {
+			camera.setTranslateZ(camera.getTranslateZ() - change);
+		}
+		// Step 2d: Add Strafe controls
+		if (keycode == KeyCode.A) {
+			camera.setRotate(camera.getRotate() - 1);
+		}
+		camera.setRotationAxis(Rotate.Y_AXIS);
+		if (keycode == KeyCode.D) {
+			camera.setRotate(camera.getRotate() + 1);
+		}
 	}
 
 	static MeshView loadMeshViews() {

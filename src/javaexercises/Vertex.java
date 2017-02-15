@@ -166,14 +166,14 @@ class Vertex {
 		}
 		distance.put(this, 0);
 		for (int i = 0; i < graph.size(); i++) {
-			for (Vertex v : graph) {
-				if (!known.get(v) && distance.get(v) == i) {
+			int j = i;
+			for (Vertex v : graph.stream().filter(q -> !known.get(q) && distance.get(q) == j)
+					.collect(Collectors.toList())) {
 					known.put(v, true);
-					for (Vertex w : v.adjacents()) {
-						if (distance.get(w) == Integer.MAX_VALUE) {
-							distance.put(w, i + 1);
-							w.path.put(id, v);
-						}
+				for (Vertex w : v.adjacents()) {
+					if (distance.get(w) == Integer.MAX_VALUE) {
+						distance.put(w, i + 1);
+						w.path.put(id, v);
 					}
 
 				}

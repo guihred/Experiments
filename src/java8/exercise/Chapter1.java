@@ -10,7 +10,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Chapter1 {
+public final class Chapter1 {
+
+	private Chapter1() {
+	}
+
 	/*
 	 * Is the comparator code in the Arrays.sort method called in the same
 	 * thread as the call to sort or a different thread?

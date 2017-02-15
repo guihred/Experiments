@@ -23,8 +23,11 @@ import javafx.geometry.Rectangle2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Chapter8 {
+public final class Chapter8 {
 	public static final Logger LOGGER = LoggerFactory.getLogger(Chapter8.class);
+
+	private Chapter8() {
+	}
 
 	/*
 	 * Write a program that adds, subtracts, divides, and compares numbers
@@ -245,7 +248,7 @@ public class Chapter8 {
 		return new ArrayList<>(Arrays.asList(contents.split("[\\P{L}]+")));
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		ex11();
 	}
 
@@ -360,21 +363,30 @@ public class Chapter8 {
 	 * string), followed by connection.connect() and
 	 * connection.getInputStream().
 	 */
-	public static void ex11() throws IOException {
-		URL url = new URL("https://www.quora.com/");
-		URLConnection connection = url.openConnection();
-		String str = "username:password";
-		String encode = Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
-		System.out.println("Basic " + encode);
-		connection.setRequestProperty("Authorization", "Basic " + encode);
-		connection.connect();
-		InputStream inputStream = connection.getInputStream();
-		try (BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
-			a.lines().forEach(System.out::print);
+	public static void ex11() {
+		try {
+
+			URL url = new URL("https://www.quora.com/");
+			URLConnection connection = url.openConnection();
+			String str = "username:password";
+			String encode = Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
+			System.out.println("Basic " + encode);
+			connection.setRequestProperty("Authorization", "Basic " + encode);
+			connection.connect();
+			printLines(connection);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
 
+	}
+
+	private static void printLines(URLConnection connection) throws IOException {
+		try (InputStream inputStream = connection.getInputStream();
+				BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
+			a.lines().forEach(System.out::print);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
 	}
 
 	/*

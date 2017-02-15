@@ -7,7 +7,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
-public class ElementWiseOp {
+public final class ElementWiseOp {
 	private static final Map<String, BiFunction<Double, Double, Double>> OPERATIONS = new HashMap<String, BiFunction<Double, Double, Double>>() {
 		{
 			put("add", (a, b) -> a + b);
@@ -18,6 +18,9 @@ public class ElementWiseOp {
 			put("mod", (a, b) -> a % b);
 		}
 	};
+
+	private ElementWiseOp() {
+	}
 
 	public static Double[][] scalarOp(String op, Double[][] matr, Double scalar) {
 		BiFunction<Double, Double, Double> operation = OPERATIONS.getOrDefault(op, (a, b) -> a);

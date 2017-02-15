@@ -17,8 +17,6 @@ import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -41,7 +39,9 @@ public class GraphModelLauncher extends Application {
 			new RandomLayout(graph), new CustomLayout(graph), convergeLayout);
 	private ChoiceBox<Layout> selectLayout = newSelect(layouts,
 			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
-	private EventHandler<ActionEvent> shortestPathHandler = ev -> {
+
+
+	private void displayDialogForShortestPath() {
 		graph.getModel().clearSelected();
 		Stage dialog = new Stage();
 		dialog.setWidth(70);
@@ -63,8 +63,9 @@ public class GraphModelLauncher extends Application {
 		})));
 		dialog.setScene(scene);
 		dialog.show();
-	};
-	private EventHandler<ActionEvent> createTopologyHandler = ev -> {
+	}
+
+	private void createTopology() {
 		graph.getModel().clearSelected();
 		graph.clean();
 		graph.getModel().removeAllCells();
@@ -85,14 +86,14 @@ public class GraphModelLauncher extends Application {
 		if (selectedItem != null) {
 			selectedItem.execute();
 		}
-	};
+	}
 
 	@Override
 	public void start(Stage primaryStage) {
 		BorderPane root = new BorderPane();
 
 		VBox vBox = new VBox();
-		vBox.getChildren().add(newButton("Shortest Path", shortestPathHandler));
+		vBox.getChildren().add(newButton("Shortest Path", ev -> displayDialogForShortestPath()));
 		vBox.getChildren().add(newButton("Kruskal", ev -> {
 			graph.getModel().clearSelected();
 			List<Edge> prim = graph.getModel().kruskal();
@@ -155,7 +156,7 @@ public class GraphModelLauncher extends Application {
 		layout.execute();
 		// @SuppressWarnings("static-access")
 
-		vBox.getChildren().add(newButton("Create Topology", createTopologyHandler));
+		vBox.getChildren().add(newButton("Create Topology", ev -> createTopology()));
 		vBox.getChildren().add(new HBox(selectLayout,
 				newButton("Go", e -> selectLayout.getSelectionModel().getSelectedItem().execute())));
 		vBox.getChildren().add(newButton("Pause/Play", ev -> {

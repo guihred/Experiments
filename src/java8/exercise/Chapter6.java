@@ -27,7 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class Chapter6 {
+public final class Chapter6 {
+	private Chapter6() {
+	}
+
 	static class Matrix {
 		private int[][] mat = { { 1, 1 }, { 1, 0 } };
 		public Matrix() {
@@ -281,7 +284,7 @@ public class Chapter6 {
 				.filter(s -> !s.isEmpty());
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		ex10();
 	}
 

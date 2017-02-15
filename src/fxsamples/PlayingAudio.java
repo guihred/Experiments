@@ -141,16 +141,10 @@ public class PlayingAudio extends Application {
 		scene.setOnDragDropped(dragEvent -> {
 			Dragboard db = dragEvent.getDragboard();
 			boolean success = false;
-			String filePath = null;
 			if (db.hasFiles()) {
 				success = true;
 				if (db.getFiles().size() > 0) {
-					try {
-						filePath = db.getFiles().get(0).toURI().toURL().toString();
-						playMedia(filePath);
-					} catch (MalformedURLException ex) {
-						logger.error("", ex);
-					}
+					tryPlayMedia(db);
 				}
 			} else {
 				// audio file from some host or jar
@@ -160,6 +154,15 @@ public class PlayingAudio extends Application {
 			dragEvent.setDropCompleted(success);
 			dragEvent.consume();
 		}); // end of setOnDragDropped
+	}
+
+	private void tryPlayMedia(Dragboard db) {
+		try {
+			String filePath = db.getFiles().get(0).toURI().toURL().toString();
+			playMedia(filePath);
+		} catch (MalformedURLException ex) {
+			logger.error("", ex);
+		}
 	}
 
 	/**

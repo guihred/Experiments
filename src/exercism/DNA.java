@@ -69,7 +69,7 @@ public class DNA {
 	 *
 	 * @return the map
 	 */
-	public Map<Character, Long> nucleotideCounts() {
+	public Map<Character, Long> getNucleotideCounts() {
 		return nucleotideCounts;
 	}
 

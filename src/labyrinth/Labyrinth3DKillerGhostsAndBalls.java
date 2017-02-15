@@ -3,20 +3,19 @@ package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -24,196 +23,11 @@ import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class Labyrinth3DKillerGhostsAndBalls extends Application {
+public class Labyrinth3DKillerGhostsAndBalls extends Application implements CommomLabyrinth {
 
-	private class MovimentacaoAleatoria extends AnimationTimer {
-		private MeshView[] animais;
-		private int direction[];// EAST, WEST, NORTH, SOUTH
-
-		public MovimentacaoAleatoria(MeshView... animais) {
-			this.animais = animais;
-			direction = new int[animais.length];
-		}
-
-		@Override
-		public void handle(long now) {
-			for (int i = 0; i < animais.length; i++) {
-				MeshView animal = animais[i];
-
-				final int STEP = 1;
-				if (direction[i] == 3) {// NORTH
-					animal.setTranslateZ(animal.getTranslateZ() + STEP);
-				}
-				if (direction[i] == 2) {// WEST
-					animal.setTranslateX(animal.getTranslateX() - STEP);
-				}
-				if (direction[i] == 1) {// SOUTH
-					animal.setTranslateZ(animal.getTranslateZ() - STEP);
-				}
-				if (direction[i] == 0) {// EAST
-					animal.setTranslateX(animal.getTranslateX() + STEP);
-				}
-				if (checkColision(animal.getBoundsInParent())
-						|| animal.getTranslateZ() < 0
-						|| animal.getTranslateZ() > mapa[0].length * SIZE
-
-						|| animal.getTranslateX() < 0
-						|| animal.getTranslateX() > mapa.length * SIZE
-
-				) {
-					if (direction[i] == 3) {// NORTH
-						animal.setTranslateZ(animal.getTranslateZ() - STEP);
-					}
-					if (direction[i] == 2) {// WEST
-						animal.setTranslateX(animal.getTranslateX() + STEP);
-					}
-					if (direction[i] == 1) {// SOUTH
-						animal.setTranslateZ(animal.getTranslateZ() + STEP);
-					}
-					if (direction[i] == 0) {// EAST
-						animal.setTranslateX(animal.getTranslateX() - STEP);
-					}
-					animal.setRotationAxis(Rotate.Y_AXIS);
-					animal.setRotate(direction[i] * 90);
-					direction[i] = random.nextInt(4);
-
-				}
-				if (now % 1000 == 0) {
-					direction[i] = random.nextInt(4);
-				}
-				if (camera.getBoundsInParent().intersects(
-						animal.getBoundsInParent())) {
-					movimentacao.stop();
-					Stage dialogStage = new Stage();
-					dialogStage.initModality(Modality.WINDOW_MODAL);
-					Button button = new Button("Ok.");
-					button.setOnAction(e -> {
-						camera.setTranslateX(0);
-						camera.setTranslateY(0);
-						camera.setTranslateZ(0);
-						movimentacao.start();
-						dialogStage.close();
-					});
-					VBox vbox = new VBox();
-					vbox.getChildren().addAll(new Text("Você Morreu"), button);
-					vbox.setAlignment(Pos.CENTER);
-					vbox.setPadding(new Insets(5));
-					dialogStage.setScene(new Scene(vbox));
-					dialogStage.show();
-				}
-
-			}
-		}
-	}
-
-	private class MovimentacaoTeclado implements EventHandler<KeyEvent> {
-		private PerspectiveCamera camera;
-		private final double cameraModifier = 50.0;
-		private final double cameraQuantity = 5.0;
-		private IntegerProperty ghostcount;
-		private Group root;
-
-		public MovimentacaoTeclado(Group root, PerspectiveCamera camera,
-				IntegerProperty ghostcount) {
-			this.root = root;
-			this.camera = camera;
-			this.ghostcount = ghostcount;
-		}
-
-		@Override
-		public void handle(KeyEvent event) {
-			double change = cameraQuantity;
-			// Add shift modifier to simulate "Running Speed"
-			if (event.isShiftDown()) {
-				change = cameraModifier;
-			}
-			// What key did the user press?
-			KeyCode keycode = event.getCode();
-			// Step 2c: Add Zoom controls
-			if (keycode == KeyCode.W) {
-				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-						* change;
-				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-						* change;
-
-				camera.setTranslateX(camera.getTranslateX() + sin);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateX(camera.getTranslateX() - sin);
-				}
-				camera.setTranslateZ(camera.getTranslateZ() + cos);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateZ(camera.getTranslateZ() - cos);
-				}
-			}
-			if (keycode == KeyCode.S) {
-				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-						* change;
-				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-						* change;
-
-				camera.setTranslateX(camera.getTranslateX() - sin);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateX(camera.getTranslateX() + sin);
-				}
-				camera.setTranslateZ(camera.getTranslateZ() - cos);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateZ(camera.getTranslateZ() + cos);
-				}
-			}
-			// Step 2d: Add Strafe controls
-			if (keycode == KeyCode.A) {
-				camera.setRotationAxis(Rotate.Y_AXIS);
-				camera.setRotate(camera.getRotate() - change);
-			}
-			if (keycode == KeyCode.UP) {
-				camera.setTranslateY(camera.getTranslateY() - change);
-			}
-			if (keycode == KeyCode.DOWN) {
-				camera.setTranslateY(camera.getTranslateY() + change);
-			}
-			if (keycode == KeyCode.D) {
-				camera.setRotationAxis(Rotate.Y_AXIS);
-				camera.setRotate(camera.getRotate() + change);
-			}
-
-			Sphere ballGot = checkBalls(camera.getBoundsInParent());
-			if (ballGot != null) {
-				root.getChildren().remove(ballGot);
-				for (int i = 0; i < balls.length; i++) {
-					for (int j = 0; j < balls[i].length; j++) {
-						if (ballGot == balls[i][j]) {
-							balls[i][j] = null;
-						}
-					}
-				}
-				ghostcount.set(ghostcount.get() - 1);
-				if (ghostcount.get() == 0) {
-					movimentacao.stop();
-					Stage dialogStage = new Stage();
-					dialogStage.initModality(Modality.WINDOW_MODAL);
-					Button button = new Button("Ok.");
-					button.setOnAction(e -> {
-						camera.setTranslateX(0);
-						camera.setTranslateY(0);
-						camera.setTranslateZ(0);
-						movimentacao.start();
-						dialogStage.close();
-					});
-					VBox vbox = new VBox();
-					vbox.getChildren().addAll(new Text("Voc� Venceu"), button);
-					vbox.setAlignment(Pos.CENTER);
-					vbox.setPadding(new Insets(5));
-					dialogStage.setScene(new Scene(vbox));
-					dialogStage.show();
-				}
-
-			}
-		}
-	}
 
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
@@ -237,14 +51,15 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 	private PerspectiveCamera camera;
 
 	private final IntegerProperty ghostCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
-
-	private LabyrinthWall[][] labirynthWalls = new LabyrinthWall[mapa.length][mapa[0].length];
+	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
 
 	private final Color lightColor = Color.rgb(125, 125, 125);
 
 	private MovimentacaoAleatoria movimentacao;
 
-	public final Random random = new Random();
+	private final Random random = new Random();
+	private Group root = new Group();
+
 	private Sphere checkBalls(Bounds boundsInParent) {
 		return Stream.of(balls).flatMap(l -> Stream.of(l))
 				.filter(b -> b != null)
@@ -252,13 +67,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 				.findFirst().orElse(null);
 	}
 
-	private boolean checkColision(Bounds boundsInParent) {
-		Stream<Bounds> walls = Stream.of(labirynthWalls)
-				.flatMap(l -> Stream.of(l)).map(LabyrinthWall::getBoundsInParent);
-		return walls.anyMatch(b -> b.intersects(boundsInParent));
-	}
-
-	private void createLabirynth(Group root) {
+	private void createLabyrinth(Group root) {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
@@ -268,7 +77,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 				if ("_".equals(string)) {
 					wall.getRy().setAngle(90);
 				}
-				labirynthWalls[i][j] = wall;
+				labyrinthWalls.add(wall);
 				root.getChildren().add(wall);
 				Sphere ball = new Sphere(SIZE / 20);
 				balls[i][j] = ball;
@@ -278,6 +87,42 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 				root.getChildren().add(ball);
 
 			}
+		}
+	}
+
+	@Override
+	public void endKeyboard() {
+		Sphere ballGot = checkBalls(camera.getBoundsInParent());
+		if (ballGot != null) {
+			root.getChildren().remove(ballGot);
+			for (int i = 0; i < balls.length; i++) {
+				for (int j = 0; j < balls[i].length; j++) {
+					if (ballGot == balls[i][j]) {
+						balls[i][j] = null;
+					}
+				}
+			}
+			ghostCount.set(ghostCount.get() - 1);
+			if (ghostCount.get() == 0) {
+				movimentacao.stop();
+				Stage dialogStage = new Stage();
+				dialogStage.initModality(Modality.WINDOW_MODAL);
+				Button button = new Button("Ok.");
+				button.setOnAction(e -> {
+					camera.setTranslateX(0);
+					camera.setTranslateY(0);
+					camera.setTranslateZ(0);
+					movimentacao.start();
+					dialogStage.close();
+				});
+				VBox vbox = new VBox();
+				vbox.getChildren().addAll(new Text("Voc� Venceu"), button);
+				vbox.setAlignment(Pos.CENTER);
+				vbox.setPadding(new Insets(5));
+				dialogStage.setScene(new Scene(vbox));
+				dialogStage.show();
+			}
+
 		}
 	}
 
@@ -308,11 +153,18 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 	}
 
 	@Override
+	public PerspectiveCamera getCamera() {
+		return camera;
+	}
+
+	@Override
+	public Collection<LabyrinthWall> getLabyrinthWalls() {
+		return labyrinthWalls;
+	}
+
+	@Override
 	public void start(Stage primaryStage) throws Exception {
-
-		Group root = new Group();
-
-		createLabirynth(root);
+		createLabyrinth(root);
 		SubScene subScene = new SubScene(root, 640, 480, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
@@ -364,7 +216,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 				generateGhost(MESH_GHOST, Color.WHITESMOKE),
 				generateGhost(MESH_GHOST, Color.YELLOWGREEN), };
 
-		movimentacao = new MovimentacaoAleatoria(fantasmas);
+		movimentacao = new MovimentacaoAleatoria(this, fantasmas);
 		movimentacao.start();
 
 		root.getChildren().addAll(fantasmas);
@@ -373,7 +225,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application {
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
-		sc.setOnKeyPressed(new MovimentacaoTeclado(root, camera, ghostCount));
+		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
 
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);

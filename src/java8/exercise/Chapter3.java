@@ -3,7 +3,10 @@ package java8.exercise;
 import java.util.Arrays;
 import java.util.List;
 
-public class Chapter3 {
+public final class Chapter3 {
+
+	private Chapter3() {
+	}
 
 	private static Integer getRich(List<Integer> l, int low, int high) {
 		System.out.println(low + "," + high);

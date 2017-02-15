@@ -27,7 +27,10 @@ package exercism;
  * nucleotides are different from their equivalent in the other string.
  * 
  */
-public class Hamming {
+public final class Hamming {
+
+	private Hamming() {
+	}
 
 	/**
 	 * Compute.

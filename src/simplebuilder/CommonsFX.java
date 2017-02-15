@@ -13,7 +13,10 @@ import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
-public class CommonsFX {
+public final class CommonsFX {
+
+	private CommonsFX() {
+	}
 
 	public static ArcTo newArcTo(int x, int y, int radiusX, int radiusY, boolean sweepFlag) {
 		ArcTo arcto = new ArcTo();

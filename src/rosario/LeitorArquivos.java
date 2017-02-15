@@ -27,14 +27,22 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LeitorArquivos {
+public final class LeitorArquivos {
 	public static final Logger logger = LoggerFactory.getLogger(LeitorArquivos.class);
 
-	public static void main(String[] args) throws IOException {
+	private LeitorArquivos() {
+	}
+
+	public static void main(String[] args) {
 		File file = new File("sngpc.pdf");
 		System.out.println(file.exists());
-		ObservableList<Medicamento> medicamentosSNGPCPDF = getMedicamentosSNGPCPDF(file);
-		medicamentosSNGPCPDF.forEach(System.out::println);
+		try {
+			ObservableList<Medicamento> medicamentosSNGPCPDF;
+			medicamentosSNGPCPDF = getMedicamentosSNGPCPDF(file);
+			medicamentosSNGPCPDF.forEach(System.out::println);
+		} catch (IOException e) {
+			logger.error("", e);
+		}
 	}
 
 	public static ObservableList<Medicamento> getMedicamentosSNGPCPDF(File file) throws IOException {

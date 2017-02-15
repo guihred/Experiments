@@ -9,10 +9,13 @@ import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UnZip {
+public final class UnZip {
 	public static final Logger LOGGER = LoggerFactory.getLogger(UnZip.class);
 
-	public static void main(String[] args) throws IOException {
+	private UnZip() {
+	}
+
+	public static void main(String[] args) {
 
 		File jap = new File("C:\\Users\\Note\\Contacts");
 		if (jap.isDirectory()) {

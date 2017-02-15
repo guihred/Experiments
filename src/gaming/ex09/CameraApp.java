@@ -36,22 +36,13 @@ public class CameraApp extends Application {
 	private Cylinder cylinder = new Cylinder(50, 100);
 	private final Sphere sphere = new Sphere(50);
 	private EventHandler<? super KeyEvent> keyBoardHandler = event -> {
-		double change = cameraQuantity;
 		KeyCode keycode = event.getCode();
-		if (keycode == KeyCode.W) {
-			camera.setTranslateZ(camera.getTranslateZ() + change);
+		if (keycode == KeyCode.S || keycode == KeyCode.W) {
+			camera.setTranslateZ(camera.getTranslateZ() + cameraQuantity * (keycode == KeyCode.S ? -1 : 1));
 		}
-		if (keycode == KeyCode.S) {
-			camera.setTranslateZ(camera.getTranslateZ() - change);
+		if (keycode == KeyCode.A || keycode == KeyCode.D) {
+			camera.setTranslateX(camera.getTranslateX() + cameraQuantity * (keycode == KeyCode.A ? -1 : 1));
 		}
-
-		if (keycode == KeyCode.A) {
-			camera.setTranslateX(camera.getTranslateX() - change);
-		}
-		if (keycode == KeyCode.D) {
-			camera.setTranslateX(camera.getTranslateX() + change);
-		}
-
 		if (keycode == KeyCode.SPACE) {
 			sphere.setVisible(true);
 			cube.setVisible(true);

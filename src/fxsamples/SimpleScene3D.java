@@ -40,11 +40,8 @@ public class SimpleScene3D extends Application {
 		}
 	};
 	private EventHandler<? super KeyEvent> keyPressedHandler = event -> {
-		double change = cameraQuantity;
 		// Add shift modifier to simulate "Running Speed"
-		if (event.isShiftDown()) {
-			change = cameraModifier;
-		}
+		double change = event.isShiftDown() ? cameraModifier : cameraQuantity;
 		// What key did the user press?
 		KeyCode keycode = event.getCode();
 		// Step 2c: Add Zoom controls
@@ -80,7 +77,6 @@ public class SimpleScene3D extends Application {
 		blueMaterial.setSpecularColor(Color.BLUE);
 		cylinder.setMaterial(blueMaterial);
 		cylinder.setDrawMode(DrawMode.FILL);
-
 		// Step 1c: Translate and Rotate primitive into position
 		cylinder.setRotationAxis(Rotate.X_AXIS);
 		cylinder.setRotate(45);
@@ -130,27 +126,14 @@ public class SimpleScene3D extends Application {
 				event -> {
 					if (event.getEventType() == MouseEvent.MOUSE_PRESSED
 							|| event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-						// acquire the new Mouse coordinates from the recent
-						// event
 						double mouseXnew = event.getSceneX();
 						double mouseYnew = event.getSceneY();
 						if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-							// calculate the rotational change of the camera
-							// pitch
-							double pitchRotate = xRotate.getAngle()
-									+ (mouseYnew - mouseYold) / rotateModifier;
-							// set min/max camera pitch to prevent camera
-							// flipping
-							pitchRotate = pitchRotate > cameraYlimit ? cameraYlimit
-									: pitchRotate;
-							pitchRotate = pitchRotate < -cameraYlimit ? -cameraYlimit
-									: pitchRotate;
-							// replace the old camera pitch rotation with the
-							// new one.
+							double pitchRotate = xRotate.getAngle() + (mouseYnew - mouseYold) / rotateModifier;
+							pitchRotate = pitchRotate > cameraYlimit ? cameraYlimit : pitchRotate;
+							pitchRotate = pitchRotate < -cameraYlimit ? -cameraYlimit : pitchRotate;
 							xRotate.setAngle(pitchRotate);
-							// calculate the rotational change of the camera yaw
-							double yawRotate = yRotate.getAngle()
-									- (mouseXnew - mouseXold) / rotateModifier;
+							double yawRotate = yRotate.getAngle() - (mouseXnew - mouseXold) / rotateModifier;
 							yRotate.setAngle(yawRotate);
 						}
 						mouseXold = mouseXnew;

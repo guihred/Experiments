@@ -32,8 +32,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleArcBuilder;
 
-public class Chapter4 {
-
+public final class Chapter4 {
+	private Chapter4() {
+	}
 
 	/*
 	 * Write a program with a text field and a label. As with the Hello, JavaFX

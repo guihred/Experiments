@@ -1,15 +1,13 @@
 package labyrinth;
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Application;
-import javafx.geometry.Bounds;
 import javafx.scene.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-public class Labyrinth3DCollisions extends Application {
+public class Labyrinth3DCollisions extends Application implements CommomLabyrinth {
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "_" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "_", "|", "_", "|" },
@@ -18,20 +16,45 @@ public class Labyrinth3DCollisions extends Application {
 
 	private PerspectiveCamera camera;
 
-	private final double cameraModifier = 50.0;
-	private final double cameraQuantity = 5.0;
 
 	private Color color = Color.RED;
 
-	private LabyrinthWall[][] cubes = new LabyrinthWall[mapa.length][mapa[0].length];
+	private List<LabyrinthWall> cubes = new ArrayList<>();
 	private int i;
 	private int j;
-	boolean checkColision() {
+	private Group root = new Group();
 
-		Bounds boundsInParent = camera.getBoundsInParent();
-		return Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(LabyrinthWall::getBoundsInParent)
-				.anyMatch(b -> b.intersects(boundsInParent));
+
+	@Override
+	public PerspectiveCamera getCamera() {
+		return camera;
+	}
+
+	@Override
+	public List<LabyrinthWall> getLabyrinthWalls() {
+		return cubes;
+	}
+
+
+	private void handleMouseClick() {
+		String string = mapa[i][j];
+		LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
+		rectangle.setTranslateX(i * SIZE);
+		rectangle.setTranslateZ(j * SIZE);
+		if ("_".equals(string)) {
+			rectangle.getRy().setAngle(90);
+		}
+		root.getChildren().add(rectangle);
+		j++;
+		if (j >= mapa[i].length) {
+			j = 0;
+			i++;
+		}
+		if (i >= mapa.length) {
+			i = 0;
+			j = 0;
+			color = color == Color.RED ? Color.BLACK : Color.RED;
+		}
 	}
 
 	private void initializeLabyrinth(Group root) {
@@ -44,8 +67,7 @@ public class Labyrinth3DCollisions extends Application {
 				if ("_".equals(string)) {
 					rectangle.getRy().setAngle(90);
 				}
-				cubes[k][l] = rectangle;
-
+				cubes.add(rectangle);
 				root.getChildren().add(rectangle);
 			}
 		}
@@ -53,9 +75,6 @@ public class Labyrinth3DCollisions extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
-		Group root = new Group();
-
 		initializeLabyrinth(root);
 		SubScene subScene = new SubScene(root, 640, 480, true,
 				SceneAntialiasing.BALANCED);
@@ -73,92 +92,10 @@ public class Labyrinth3DCollisions extends Application {
 		light.translateZProperty().bind(camera.translateZProperty());
 		root.getChildren().add(light);
 		Scene sc = new Scene(new Group(subScene));
-		sc.setOnMouseClicked(event -> {
-			String string = mapa[i][j];
-			LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
-			rectangle.setTranslateX(i * SIZE);
-			rectangle.setTranslateZ(j * SIZE);
-			if ("_".equals(string)) {
-				rectangle.getRy().setAngle(90);
-			}
-			root.getChildren().add(rectangle);
-			j++;
-			if (j >= mapa[i].length) {
-				j = 0;
-				i++;
-			}
-			if (i >= mapa.length) {
-				i = 0;
-				j = 0;
-				color = color == Color.RED ? Color.BLACK : Color.RED;
-			}
-
-		});
+		sc.setOnMouseClicked(event -> handleMouseClick());
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
-		sc.setOnKeyPressed(event -> {
-			double change = cameraQuantity;
-			// Add shift modifier to simulate "Running Speed"
-			if (event.isShiftDown()) {
-				change = cameraModifier;
-			}
-			// What key did the user press?
-			KeyCode keycode = event.getCode();
-			// Step 2c: Add Zoom controls
-			if (keycode == KeyCode.W) {
-				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-						* change;
-				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-						* change;
-
-				camera.setTranslateX(camera.getTranslateX() + sin);
-				if (checkColision()) {
-					camera.setTranslateX(camera.getTranslateX() - sin);
-					// camera.setTranslateZ(camera.getTranslateZ() + change);
-				}
-				camera.setTranslateZ(camera.getTranslateZ() + cos);
-				if (checkColision()) {
-					camera.setTranslateZ(camera.getTranslateZ() - cos);
-				}
-			}
-			if (keycode == KeyCode.S) {
-				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-						* change;
-				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-						* change;
-
-				camera.setTranslateX(camera.getTranslateX() - sin);
-				if (checkColision()) {
-					camera.setTranslateX(camera.getTranslateX() + sin);
-					// camera.setTranslateZ(camera.getTranslateZ() - change);
-				}
-				camera.setTranslateZ(camera.getTranslateZ() - cos);
-				if (checkColision()) {
-					camera.setTranslateZ(camera.getTranslateZ() + cos);
-				}
-			}
-			// Step 2d: Add Strafe controls
-			if (keycode == KeyCode.A) {
-				camera.setRotationAxis(Rotate.Y_AXIS);
-				camera.setRotate(camera.getRotate() - change);
-				// camera.setTranslateX(camera.getTranslateX() - change);
-			}
-			if (keycode == KeyCode.UP) {
-				// root.setRotationAxis(Rotate.Y_AXIS);
-				// root.setRotate(root.getRotate() - change);
-				camera.setTranslateY(camera.getTranslateY() - change);
-			}
-			if (keycode == KeyCode.DOWN) {
-				// root.setRotationAxis(Rotate.Y_AXIS);
-				// root.setRotate(root.getRotate() - change);
-				camera.setTranslateY(camera.getTranslateY() + change);
-			}
-			if (keycode == KeyCode.D) {
-				camera.setRotationAxis(Rotate.Y_AXIS);
-				camera.setRotate(camera.getRotate() + change);
-				// camera.setTranslateX(camera.getTranslateX() + change);
-			}
-		});
+		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
 
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);

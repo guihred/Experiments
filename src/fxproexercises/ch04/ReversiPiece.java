@@ -13,12 +13,12 @@ import javafx.scene.layout.Region;
 
 public class ReversiPiece extends Region {
 
-	private ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>(this, "owner", Owner.NONE);
+	private ObjectProperty<Owner> owner = new SimpleObjectProperty<>(this, "owner", Owner.NONE);
 
     public ReversiPiece() {
-        styleProperty().bind(Bindings.when(ownerProperty.isEqualTo(Owner.NONE))
+		styleProperty().bind(Bindings.when(owner.isEqualTo(Owner.NONE))
                 .then("radius 0; ")
-                .otherwise(Bindings.when(ownerProperty.isEqualTo(Owner.WHITE))
+				.otherwise(Bindings.when(owner.isEqualTo(Owner.WHITE))
                         .then("-fx-background-color: radial-gradient(radius 100%, white .4, gray .9, darkgray 1); ")
                         .otherwise("-fx-background-color: radial-gradient(radius 100%, white 0, black .6); "))
                 .concat("-fx-background-radius: 1000em; -fx-background-insets: 5;"));
@@ -31,17 +31,17 @@ public class ReversiPiece extends Region {
     }
     public ReversiPiece(Owner owner) {
         this();
-        ownerProperty.setValue(owner);
+		this.owner.setValue(owner);
     }
     public ObjectProperty<Owner> ownerProperty() {
-        return ownerProperty;
+		return owner;
     }
 
     public Owner getOwner() {
-        return ownerProperty.get();
+		return owner.get();
     }
 
     public void setOwner(Owner owner) {
-        ownerProperty.set(owner);
+		this.owner.set(owner);
     }
 }

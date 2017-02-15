@@ -8,7 +8,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class GraphAlgorithms {
+public final class GraphAlgorithms {
+	private GraphAlgorithms() {
+	}
+
 	public static void main(String[] args) {
 		List<Vertex> vertices = createGraph8();
 

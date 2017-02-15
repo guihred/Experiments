@@ -2,80 +2,20 @@ package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.stream.Stream;
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.geometry.Bounds;
 import javafx.scene.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-public class Labyrinth3DGhosts extends Application {
-	private final class MovimentacaoAleatoria extends AnimationTimer {
-		private MeshView[] animais;
-		private int direction[];// EAST, WEST, NORTH, SOUTH
-
-		public MovimentacaoAleatoria(MeshView... animais) {
-			this.animais = animais;
-			direction = new int[animais.length];
-		}
-
-		@Override
-		public void handle(long now) {
-			for (int i = 0; i < animais.length; i++) {
-				MeshView animal = animais[i];
-
-				final int STEP = 1;
-				if (direction[i] == 3) {// NORTH
-					animal.setTranslateZ(animal.getTranslateZ() + STEP);
-				}
-				if (direction[i] == 2) {// WEST
-					animal.setTranslateX(animal.getTranslateX() - STEP);
-				}
-				if (direction[i] == 1) {// SOUTH
-					animal.setTranslateZ(animal.getTranslateZ() - STEP);
-				}
-				if (direction[i] == 0) {// EAST
-					animal.setTranslateX(animal.getTranslateX() + STEP);
-				}
-				if (checkColision(animal.getBoundsInParent())
-						|| animal.getTranslateZ() < 0
-						|| animal.getTranslateZ() > mapa[0].length * SIZE
-
-						|| animal.getTranslateX() < 0
-						|| animal.getTranslateX() > mapa.length * SIZE
-
-				) {
-					if (direction[i] == 3) {// NORTH
-						animal.setTranslateZ(animal.getTranslateZ() - STEP);
-					}
-					if (direction[i] == 2) {// WEST
-						animal.setTranslateX(animal.getTranslateX() + STEP);
-					}
-					if (direction[i] == 1) {// SOUTH
-						animal.setTranslateZ(animal.getTranslateZ() + STEP);
-					}
-					if (direction[i] == 0) {// EAST
-						animal.setTranslateX(animal.getTranslateX() - STEP);
-					}
-					animal.setRotationAxis(Rotate.Y_AXIS);
-					// animal.setRotate(direction[i] * 90);
-					direction[i] = new Random().nextInt(4);
-
-				}
-				if (now % 1000 == 0) {
-					direction[i] = new Random().nextInt(4);
-				}
-			}
-		}
-	}
+public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
+	private Random random = new Random();
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
@@ -96,18 +36,9 @@ public class Labyrinth3DGhosts extends Application {
 
 	private PerspectiveCamera camera;
 
-	private final double cameraModifier = 50.0;
-
-	private final double cameraQuantity = 5.0;
-
-	private LabyrinthWall[][] cubes = new LabyrinthWall[mapa.length][mapa[0].length];
+	private final List<LabyrinthWall> cubes = new ArrayList<>();
 
 
-	boolean checkColision(Bounds boundsInParent) {
-		Stream<Bounds> walls = Stream.of(cubes).flatMap(l -> Stream.of(l))
-				.map(LabyrinthWall::getBoundsInParent);
-		return walls.anyMatch(b -> b.intersects(boundsInParent));
-	}
 	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
 		File file = new File(arquivo);
 		StlMeshImporter importer = new StlMeshImporter();
@@ -120,9 +51,9 @@ public class Labyrinth3DGhosts extends Application {
 		animal.setMaterial(sample);
 		animal.setTranslateY(14);
 
-		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
+		int posicaoInicialZ = random.nextInt(mapa[0].length * SIZE);
 		animal.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
+		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
 		animal.setTranslateX(posicaoInicialX);
 		while (checkColision(animal.getBoundsInParent())) {
 			animal.setTranslateZ(animal.getTranslateZ() + 1);
@@ -138,10 +69,17 @@ public class Labyrinth3DGhosts extends Application {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public PerspectiveCamera getCamera() {
+		return camera;
+	}
 
-		Group root = new Group();
 
+	@Override
+	public List<LabyrinthWall> getLabyrinthWalls() {
+		return cubes;
+	}
+
+	private void initializeLabyrinth(Group root) {
 		for (int i = mapa.length - 1; i >= 0; i--) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
@@ -151,11 +89,18 @@ public class Labyrinth3DGhosts extends Application {
 				if ("_".equals(string)) {
 					rectangle.getRy().setAngle(90);
 				}
-				cubes[i][j] = rectangle;
+				cubes.add(rectangle);
 
 				root.getChildren().add(rectangle);
 			}
 		}
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		Group root = new Group();
+
+		initializeLabyrinth(root);
 		SubScene subScene = new SubScene(root, 640, 480, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
@@ -182,7 +127,7 @@ public class Labyrinth3DGhosts extends Application {
 
 		};
 
-		new MovimentacaoAleatoria(fantasmas).start();
+		new MovimentacaoAleatoria(this, fantasmas).start();
 
 		root.getChildren().addAll(fantasmas);
 
@@ -190,66 +135,10 @@ public class Labyrinth3DGhosts extends Application {
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
-		sc.setOnKeyPressed(event -> {
-			double change = cameraQuantity;
-			// Add shift modifier to simulate "Running Speed"
-			if (event.isShiftDown()) {
-				change = cameraModifier;
-			}
-			// What key did the user press?
-			KeyCode keycode = event.getCode();
-			// Step 2c: Add Zoom controls
-			if (keycode == KeyCode.W) {
-				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-						* change;
-				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-						* change;
-
-				camera.setTranslateX(camera.getTranslateX() + sin);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateX(camera.getTranslateX() - sin);
-				}
-				camera.setTranslateZ(camera.getTranslateZ() + cos);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateZ(camera.getTranslateZ() - cos);
-				}
-			}
-			if (keycode == KeyCode.S) {
-				double sin = Math.sin(camera.getRotate() * Math.PI / 180)
-						* change;
-				double cos = Math.cos(camera.getRotate() * Math.PI / 180)
-						* change;
-
-				camera.setTranslateX(camera.getTranslateX() - sin);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateX(camera.getTranslateX() + sin);
-					// camera.setTranslateZ(camera.getTranslateZ() - change);
-				}
-				camera.setTranslateZ(camera.getTranslateZ() - cos);
-				if (checkColision(camera.getBoundsInParent())) {
-					camera.setTranslateZ(camera.getTranslateZ() + cos);
-				}
-			}
-			// Step 2d: Add Strafe controls
-			if (keycode == KeyCode.A) {
-				camera.setRotationAxis(Rotate.Y_AXIS);
-				camera.setRotate(camera.getRotate() - change);
-			}
-			if (keycode == KeyCode.UP) {
-				camera.setTranslateY(camera.getTranslateY() - change);
-			}
-			if (keycode == KeyCode.DOWN) {
-				camera.setTranslateY(camera.getTranslateY() + change);
-			}
-			if (keycode == KeyCode.D) {
-				camera.setRotationAxis(Rotate.Y_AXIS);
-				camera.setRotate(camera.getRotate() + change);
-			}
-		});
+		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
 
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
-//		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.show();
 	}
 

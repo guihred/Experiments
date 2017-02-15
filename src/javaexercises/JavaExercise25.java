@@ -13,7 +13,10 @@ import java.util.Locale;
  * coefficient values and other awkward cases. The following test cases should
  * be used:
  */
-public class JavaExercise25 {
+public final class JavaExercise25 {
+
+	private JavaExercise25() {
+	}
 
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.ENGLISH);

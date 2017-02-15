@@ -16,6 +16,41 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class PlatformMain extends Application {
+	private long lastNanoTime = 0;
+	private Player jungle = new Player(ImageResource.JUNGLE);
+
+	private void gameLoop(Leopard cat, Bird bird, Dog dog, List<Player> grounds, List<Enemy> enemies,
+			GraphicsContext gc) {
+		jungle.render(gc);
+		long time = lastNanoTime++ % 36 + 1;
+		double time2 = time / 36.0;
+		for (Enemy enemy : enemies) {
+			if (enemy.isClose(cat)) {
+				enemy.attack(cat);
+			}
+		}
+		dog.update(time2);
+		bird.update(time2);
+		cat.update(time2);
+
+		for (Player ground : grounds) {
+			ground.render(gc);
+			for (Enemy enemy : enemies) {
+				if (ground.intersects((Player) enemy)) {
+					((Player) enemy).verticalCollision(ground);
+				}
+			}
+
+		}
+		dog.render(gc);
+		bird.render(gc);
+		cat.render(gc);
+
+		if (cat.intersects(bird)) {
+			bird.fall();
+		}
+	}
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("The Cat in Motion");
@@ -61,39 +96,9 @@ public class PlatformMain extends Application {
 		primaryStage.show();
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		AnimationTimer a = new AnimationTimer() {
-			private Player jungle = new Player(ImageResource.JUNGLE);
-			private long lastNanoTime = 0;
 			@Override
 			public void handle(long currentNanoTime) {
-				jungle.render(gc);
-				long time = lastNanoTime++ % 36 + 1;
-				double time2 = time / 36.0;
-				for (Enemy enemy : enemies) {
-					if (enemy.isClose(cat)) {
-						enemy.attack(cat);
-					}
-				}
-				dog.update(time2);
-				bird.update(time2);
-				cat.update(time2);
-
-				for (Player ground : grounds) {
-					ground.render(gc);
-					for (Enemy enemy : enemies) {
-						if (ground.intersects((Player) enemy)) {
-							((Player) enemy).verticalCollision(ground);
-						}
-					}
-
-				}
-				dog.render(gc);
-				bird.render(gc);
-				cat.render(gc);
-
-				if (cat.intersects(bird)) {
-					bird.fall();
-				}
-
+				gameLoop(cat, bird, dog, grounds, enemies, gc);
 			}
 		};
 		a.start();

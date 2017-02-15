@@ -1,6 +1,9 @@
 package java8.exercise;
 
-public class Chapter9 {
+public final class Chapter9 {
+
+	private Chapter9() {
+	}
 	/*
 	 * 1. Implement a code segment that constructs a Scanner and a PrintWriter
 	 * at the end of Section 9.1.1, �The try-with-resources Statement,� on page

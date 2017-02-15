@@ -40,7 +40,10 @@ import java.util.Arrays;
  * outlined. This program should not incorporate any bug which may be present in
  * the above description!
  */
-public class JavaExercise24 {
+public final class JavaExercise24 {
+	private JavaExercise24() {
+	}
+
 	private static double[] data = { 637.42D, 6300.95D, 7.81D, 6300.95D, 712.72D, 4325.22D, 2.79D, 3125.77D, 813.02D,
 			3125.77D, 6.42D, 1234.56D };
 	public static void main(String[] args) {

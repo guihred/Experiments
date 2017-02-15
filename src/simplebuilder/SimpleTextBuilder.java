@@ -4,68 +4,65 @@ import javafx.scene.text.Text;
 
 public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilder> {
 
-	private Text text;
-
 	public SimpleTextBuilder() {
 		super(new Text());
-		text = shape;
 	}
 
 	public SimpleTextBuilder managed(boolean x) {
-		text.setManaged(x);
+		shape.setManaged(x);
 		return this;
 	}
 	public SimpleTextBuilder font(javafx.scene.text.Font x) {
-		text.setFont(x);
+		shape.setFont(x);
 		return this;
 	}
 
 	public SimpleTextBuilder fontSmoothingType(javafx.scene.text.FontSmoothingType x) {
-		text.setFontSmoothingType(x);
+		shape.setFontSmoothingType(x);
 		return this;
 	}
 
 	public SimpleTextBuilder strikethrough(boolean x) {
-		text.setStrikethrough(x);
+		shape.setStrikethrough(x);
 		return this;
 	}
 
 	public SimpleTextBuilder text(java.lang.String x) {
-		text.setText(x);
+		shape.setText(x);
 		return this;
 	}
 
 	public SimpleTextBuilder textAlignment(javafx.scene.text.TextAlignment x) {
-		text.setTextAlignment(x);
+		shape.setTextAlignment(x);
 		return this;
 	}
 
 	public SimpleTextBuilder textOrigin(javafx.geometry.VPos x) {
-		text.setTextOrigin(x);
+		shape.setTextOrigin(x);
 
 		return this;
 	}
 
 	public SimpleTextBuilder underline(boolean x) {
-		text.setUnderline(x);
+		shape.setUnderline(x);
 
 		return this;
 	}
 
 	public SimpleTextBuilder wrappingWidth(double x) {
-		text.setWrappingWidth(x);
+		shape.setWrappingWidth(x);
 
 		return this;
 	}
 
 	public SimpleTextBuilder x(double x) {
-		text.setX(x);
+		shape.setX(x);
 
 		return this;
 	}
 
 	public SimpleTextBuilder y(double x) {
-		text.setY(x);
+		shape.setY(x);
 		return this;
 	}
 

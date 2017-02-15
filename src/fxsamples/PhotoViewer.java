@@ -1,4 +1,6 @@
 package fxsamples;
+
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,16 +108,8 @@ public class PhotoViewer extends Application {
 		scene.setOnDragDropped((DragEvent event) -> {
 			Dragboard db = event.getDragboard();
 			// image from the local file system.
-
 			if (db.hasFiles()) {
-				db.getFiles().stream().forEach(file -> {
-					try {
-						addImage(file.toURI().toURL().toString());
-						System.out.println(imageFiles);
-					} catch (MalformedURLException ex) {
-						logger.error("", ex);
-					}
-				});
+				db.getFiles().stream().forEach(this::tryAddImage);
 			} else {
 				// image from some host
 				addImage(db.getUrl());
@@ -126,6 +120,15 @@ public class PhotoViewer extends Application {
 			event.setDropCompleted(true);
 			event.consume();
 		});
+	}
+
+	private void tryAddImage(File file) {
+		try {
+			addImage(file.toURI().toURL().toString());
+			System.out.println(imageFiles);
+		} catch (MalformedURLException ex) {
+			logger.error("", ex);
+		}
 	}
 
 	/*

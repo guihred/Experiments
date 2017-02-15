@@ -12,7 +12,10 @@ import java.math.BigInteger;
  * more than 800 digits long.
  */
 
-public class JavaExercise15 {
+public final class JavaExercise15 {
+
+	private JavaExercise15() {
+	}
 	public static void main(String[] args) {
 		BigNo ten = new BigNo(12345678);
 		System.out.println(ten);
@@ -41,8 +44,9 @@ public class JavaExercise15 {
 		}
 		return p;
 	}
+}
 
-	static class BigNo {
+class BigNo {
 		private static final int BASE = 10000;
 		private static final int DIGS = 4;
 		private static final String FORMAT = "%0" + DIGS + "d";
@@ -96,5 +100,5 @@ public class JavaExercise15 {
 
 			return result;
 		}
-	}
+
 }

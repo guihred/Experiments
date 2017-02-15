@@ -10,8 +10,12 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DiffTest {
+public final class DiffTest {
 	public static final Logger LOGGER = LoggerFactory.getLogger(DiffTest.class);
+
+	private DiffTest() {
+	}
+
 	public static void main(String[] args) {
 		List<String> original = fileToLines("adicionar-notificacao.html");
 		List<String> revised = fileToLines("adicionar-notificacao2.html");
