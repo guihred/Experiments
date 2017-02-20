@@ -24,7 +24,7 @@ public final class TermFrequency {
 
 	public static void main(String[] args) {
 
-		File file = new File(TermFrequency.class.getResource("").toString().replaceAll("file:/", ""));
+		File file = new File(TermFrequency.class.getResource("").getFile());
 		if (file.exists()) {
 			try {
 				Map<File, Map<String, Long>> mapa;

@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 public class VigenereXORCipher {
 
@@ -74,7 +74,7 @@ public class VigenereXORCipher {
 	}
 	public void findKey(long keySize) throws IOException {
 		// keys = new char[Long.valueOf(keySize).intValue()];
-		String line = Files.readAllLines(Paths.get("ctext.txt")).get(0);
+		String line = Files.readAllLines(ResourceFXUtils.toPath("ctext.txt")).get(0);
 		String[] split = line.split("(?<=\\G..)");
 		List<Integer> collect = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
 		for (int i = 0; i < keySize; i++) {
@@ -129,7 +129,7 @@ public class VigenereXORCipher {
 	}
 
 	public long findKeySize() throws IOException {
-		String line = Files.readAllLines(Paths.get("ctext.txt")).get(0);
+		String line = Files.readAllLines(ResourceFXUtils.toPath("ctext.txt")).get(0);
 		String[] split = line.split("(?<=\\G..)");
 		List<Integer> collect = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
 		long max = 0;

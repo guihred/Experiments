@@ -29,9 +29,11 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 
 	};
 
-	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
+	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getClassLoader().getResource("ghost2.STL")
+			.getFile();
 
-	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getClassLoader().getResource("Minotaur.stl")
+			.getFile();
 
 	private static final int SIZE = 60;
 

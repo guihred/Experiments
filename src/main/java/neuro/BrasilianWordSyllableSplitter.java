@@ -1,6 +1,5 @@
 package neuro;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -12,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 public final class BrasilianWordSyllableSplitter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BrasilianWordSyllableSplitter.class);
@@ -36,7 +36,7 @@ public final class BrasilianWordSyllableSplitter {
 
 		try {
 			Stream<String> words;
-			words = getWords(new File("words.dic").toURI());
+			words = getWords(ResourceFXUtils.toFile("words.dic").toURI());
 			words.forEach(BrasilianWordSyllableSplitter::splitSyllables);
 		} catch (IOException e) {
 			LOGGER.error("", e);

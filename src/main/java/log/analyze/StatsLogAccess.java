@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 public class StatsLogAccess {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatsLogAccess.class);
@@ -80,7 +81,7 @@ public class StatsLogAccess {
 	public static void statisticaTamanhoArquivos() throws IOException {
 		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
 				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new FileOutputStream(new File("acessos.txt")), true,
+		try (PrintStream out = new PrintStream(new FileOutputStream(ResourceFXUtils.toFile("acessos.txt")), true,
 				StandardCharsets.UTF_8.name());) {
 			for (Path path : lista) {
 				tryGetMeanSize(out, path);
@@ -108,7 +109,7 @@ public class StatsLogAccess {
 	public static void statisticaDemoraArquivo() throws IOException {
 		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
 				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new FileOutputStream(new File("acessos.txt")), true,
+		try (PrintStream out = new PrintStream(new FileOutputStream(ResourceFXUtils.toFile("acessos.txt")), true,
 				StandardCharsets.UTF_8.name());) {
 			for (Path path : lista) {
 				try {

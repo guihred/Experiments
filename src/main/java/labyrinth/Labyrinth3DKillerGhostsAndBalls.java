@@ -41,8 +41,10 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 			{ "_", "_", "_", "_", "_", "_" },
 
 	};
-	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
-	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getClassLoader().getResource("ghost2.STL")
+			.getFile();
+	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getClassLoader().getResource("Minotaur.stl")
+			.getFile();
 
 	private static final int SIZE = 60;
 

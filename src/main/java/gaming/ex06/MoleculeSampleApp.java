@@ -30,7 +30,7 @@ public class MoleculeSampleApp extends Application {
 	private static final double CONTROL_MULTIPLIER = 0.1;
 	private static final double SHIFT_MULTIPLIER = 0.1;
 	private static final double CAMERA_DISTANCE = 450;
-	private double altMultiplier = 0.5;
+	private static final double ALT_MULTIPLIER = 0.5;
 	private final Group axisGroup = new Group();
 	private final PerspectiveCamera camera = new PerspectiveCamera(true);
 	private final Xform cameraXform = new Xform();
@@ -259,11 +259,11 @@ public class MoleculeSampleApp extends Application {
 		if (event.isControlDown() && event.isShiftDown()) {
 			cameraXform2.setTx(cameraXform2.getTx() + i * 10.0 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown() && event.isShiftDown()) {
-			cameraXform.setRy(cameraXform.getRotateY() - i * 10.0 * altMultiplier);
+			cameraXform.setRy(cameraXform.getRotateY() - i * 10.0 * ALT_MULTIPLIER);
 		} else if (event.isControlDown()) {
 			cameraXform2.setTx(cameraXform2.getTx() + i * 1.0 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown()) {
-			cameraXform.setRy(cameraXform.getRotateY() - i * 2.0 * altMultiplier);
+			cameraXform.setRy(cameraXform.getRotateY() - i * 2.0 * ALT_MULTIPLIER);
 		}
 	}
 
@@ -291,11 +291,11 @@ public class MoleculeSampleApp extends Application {
 		if (event.isControlDown() && event.isShiftDown()) {
 			cameraXform2.setTy(cameraXform2.getTy() + i * 10.0 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown() && event.isShiftDown()) {
-			cameraXform.setRx(cameraXform.getRotateX() + i * 10.0 * altMultiplier);
+			cameraXform.setRx(cameraXform.getRotateX() + i * 10.0 * ALT_MULTIPLIER);
 		} else if (event.isControlDown()) {
 			cameraXform2.setTy(cameraXform2.getTy() + i * 1.0 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown()) {
-			cameraXform.setRx(cameraXform.getRotateX() + i * 2.0 * altMultiplier);
+			cameraXform.setRx(cameraXform.getRotateX() + i * 2.0 * ALT_MULTIPLIER);
 		} else if (event.isShiftDown()) {
 			camera.setTranslateZ(camera.getTranslateZ() - i * 5.0 * SHIFT_MULTIPLIER);
 		}

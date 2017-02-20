@@ -1,8 +1,9 @@
 package labyrinth;
 
+import static simplebuilder.ResourceFXUtils.toURL;
+import static simplebuilder.ResourceFXUtils.toExternalForm;
+
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import java.awt.Robot;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,17 +11,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -57,16 +55,14 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 			{ "_", "_", "_", "_", "_", "_" },
 	};
 
-	private final URL MESH_GHOST = newURL(
-			Labyrinth3DMouseControl.class.getResource("ghost2.STL").toExternalForm());
+	private final URL MESH_GHOST = toURL("ghost2.STL");
 
 
 	public static final String MESH_MINOTAUR = "Minotaur.stl";
 	private static final int SIZE = 60;
 
-	private final Image WALL_IMAGE = new Image(Labyrinth3DMouseControl.class.getResource("wall.jpg").toExternalForm());
-	private final Image WALL_IMAGE2 = new Image(
-			Labyrinth3DMouseControl.class.getResource("wall2.jpg").toExternalForm());
+	private final Image WALL_IMAGE = new Image(toExternalForm("wall.jpg"));
+	private final Image WALL_IMAGE2 = new Image(toExternalForm("wall2.jpg"));
 
 	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 
@@ -145,14 +141,6 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 				dialogStage.show();
 			}
 
-		}
-	}
-
-	private static URL newURL(String arquivo) {
-		try {
-			return new URL(arquivo);
-		} catch (MalformedURLException e) {
-			return null;
 		}
 	}
 
@@ -239,43 +227,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		sc.setFill(Color.TRANSPARENT);
 		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
 		primaryStage.setFullScreen(true);
-		sc.setOnMouseMoved(new EventHandler<MouseEvent>() {
-			private double mouseOldX;
-			private double mousePosX;
-			@Override
-			public void handle(MouseEvent me) {
-				mouseOldX = mousePosX;
-				mousePosX = me.getX();
-				double width = sc.getWidth();
-				if ((int) mousePosX == (int) width - 1) {
-					Platform.runLater(() -> {
-						try {
-							Robot robot = new Robot();
-							robot.mouseMove(1, (int) me.getY());
-							mouseOldX = 0;
-							mousePosX = 0;
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					});
-				}
-				if (mousePosX <= 5) {
-					Platform.runLater(() -> {
-						try {
-							Robot robot = new Robot();
-							robot.mouseMove((int) width, (int) me.getY());
-							mouseOldX = width;
-							mousePosX = width;
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					});
-				}
-
-				double mouseDeltaX = mousePosX - mouseOldX;
-				camera.setRotate(camera.getRotate() + mouseDeltaX * .5);
-			}
-		});
+		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));
 
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);

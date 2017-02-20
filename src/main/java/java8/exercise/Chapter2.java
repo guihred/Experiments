@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 public final class Chapter2 {
 
@@ -136,7 +137,7 @@ public final class Chapter2 {
 	public static void ex2() throws IOException {
 		Pattern compile = Pattern.compile("[\\P{L}]+");
 		System.out.println();
-		Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel().flatMap(compile::splitAsStream)
+		Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8).parallel().flatMap(compile::splitAsStream)
 				.filter(s -> {
 			if (s.length() > 12) {
 				System.out.printf("Long word %s%n", s);
@@ -252,7 +253,7 @@ public final class Chapter2 {
 
 	}
 	private static List<String> getWordsAsList() throws IOException {
-		String contents = new String(Files.readAllBytes(Paths.get(TXT_FILE)), StandardCharsets.UTF_8);
+		String contents = new String(Files.readAllBytes(ResourceFXUtils.toPath(TXT_FILE)), StandardCharsets.UTF_8);
 		return Arrays.asList(contents.split("[\\P{L}]+"));
 	}
 

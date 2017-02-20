@@ -23,9 +23,9 @@ public class AnimationExample extends Application {
 
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
-		Image earth = new Image("file:earth.png");
-		Image sun = new Image("file:sun.jpg");
-		Image space = new Image("file:space.jpg");
+		Image earth = new Image(getClass().getClassLoader().getResource("earth.png").toString());
+		Image sun = new Image(getClass().getClassLoader().getResource("sun.png").toString());
+		Image space = new Image(getClass().getClassLoader().getResource("space.jpg").toString());
 
 		final long startNanoTime = System.nanoTime();
 

@@ -1,6 +1,5 @@
 package neuro;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -10,9 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.junit.Assert;
 import org.junit.Test;
+import simplebuilder.ResourceFXUtils;
 
 public class BrasiliaWordTest {
 	@Test
@@ -48,7 +47,7 @@ public class BrasiliaWordTest {
 
 	@Test
 	public void testEverySyllableMustHaveAVowel() throws IOException {
-		Stream<String> words = getWords(new File("words.dic").toURI());
+		Stream<String> words = getWords(ResourceFXUtils.toFile("words.dic").toURI());
 		words.forEach(w -> {
 			String syllables = BrasilianWordSyllableSplitter.splitSyllables(w);
 			String[] split = syllables.split("-");
@@ -65,7 +64,7 @@ public class BrasiliaWordTest {
 
 	@Test
 	public void testEverySyllableMustAtMost4Vowels() throws IOException {
-		Stream<String> words = getWords(new File("words.dic").toURI(),
+		Stream<String> words = getWords(ResourceFXUtils.toFile("words.dic").toURI(),
 				s -> s.matches("(?i).*[aeiouáéíóúâêîôûàèìòùãõyü]{3,4}.*"));
 		words.forEach(w -> {
 			String syllables = BrasilianWordSyllableSplitter.splitSyllables(w);

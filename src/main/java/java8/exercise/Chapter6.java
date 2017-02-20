@@ -1,5 +1,7 @@
 package java8.exercise;
 
+import static simplebuilder.ResourceFXUtils.toFile;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -139,12 +141,17 @@ public final class Chapter6 {
 
 	}
 
+	/*
+	 * Write an application in which multiple threads read all words from a
+	 * collection of files. Use a ConcurrentHashMap<String, Set<File>> to track
+	 * in which files each word occurs. Use the merge method to update the map.
+	 */
 	public static void ex5() throws InterruptedException {
 
 		ConcurrentHashMap<String, Set<File>> concurrentHashMap = new ConcurrentHashMap<>();
 		ExecutorService pool;
 		pool = Executors.newCachedThreadPool();
-		Stream.of(new File("alice.txt"), new File("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
+		Stream.of(toFile("alice.txt"), toFile("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
 			try {
 				Stream<String> wordsAsList = getWords(u.toURI());
 				wordsAsList.forEach(w -> {
@@ -178,7 +185,7 @@ public final class Chapter6 {
 		ConcurrentHashMap<String, Set<File>> concurrentHashMap = new ConcurrentHashMap<>();
 		ExecutorService pool;
 		pool = Executors.newCachedThreadPool();
-		Stream.of(new File("alice.txt"), new File("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
+		Stream.of(toFile("alice.txt"), toFile("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
 			try {
 				getWords(u.toURI())
 						.forEach(w -> concurrentHashMap.computeIfAbsent(w, t -> ConcurrentHashMap.newKeySet()).add(u));
@@ -192,8 +199,13 @@ public final class Chapter6 {
 				.forEach(u -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
+	/*
+	 * In a ConcurrentHashMap<String, Long>, find the key with maximum value
+	 * (breaking ties arbitrarily). Hint: reduceEntries.
+	 */
 	public static void ex7() throws IOException {
-		Map<String, Long> collect = getWords(new File("alice.txt").toURI()).parallel().collect(
+		Map<String, Long> collect = getWords(toFile("alice.txt").toURI()).parallel()
+				.collect(
 				Collectors.groupingBy(w -> w, Collectors.counting()));
 
 		Entry<String, Long> entries = new ConcurrentHashMap<>(collect).reduceEntries(4, (t, u) -> t.getValue() > u.getValue() ? t : u);
@@ -266,8 +278,8 @@ public final class Chapter6 {
 
 
 
-	public static void main(String[] args) {
-		ex10();
+	public static void main(String[] args) throws IOException {
+		ex7();
 	}
 
 	public static String readPage(String urlString) {

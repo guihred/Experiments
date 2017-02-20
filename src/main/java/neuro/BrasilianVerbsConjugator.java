@@ -1,7 +1,6 @@
 package neuro;
 
 import com.google.common.collect.ImmutableMap;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +13,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 public class BrasilianVerbsConjugator {
 	enum Mode {
@@ -22,7 +22,7 @@ public class BrasilianVerbsConjugator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BrasilianVerbsConjugator.class);
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	private static Map<Mode, String[]> first = new EnumMap<>(Mode.class);
 
@@ -361,7 +361,7 @@ public class BrasilianVerbsConjugator {
 	public static void main(String[] args) {
 
 		try {
-			Stream<String> words = getWords(new File("verbs.dic").toURI());
+			Stream<String> words = getWords(ResourceFXUtils.toFile("verbs.dic").toURI());
 			words.forEach(BrasilianVerbsConjugator::conjugate);
 		} catch (IOException e) {
 			LOGGER.error("", e);

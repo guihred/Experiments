@@ -26,6 +26,7 @@ public class ConvergeLayout implements Layout {
 		Cell cell = allCells.get(rnd.nextInt(allCells.size()));
 		List<Edge> edges = graph.getModel().edges(cell);
 		if (!edges.isEmpty()) {
+
 			double media = graph.getModel().getAllEdges().parallelStream().mapToInt(Edge::getValor).average().getAsDouble();
 			DoubleSummaryStatistics summaryX = edges.parallelStream().mapToDouble(e1 -> {
 				double angulo1 = e1.getAngulo();
@@ -42,7 +43,7 @@ public class ConvergeLayout implements Layout {
 			if (sumY < bound / 2 || sumX < bound / 2) {
 				double layoutX = cell.getLayoutX();
 				double layoutY = cell.getLayoutY();
-				cell.relocate(layoutX + sumX, layoutY + sumY);
+					cell.relocate(layoutX + sumX, layoutY + sumY);
 			}
 
 		}

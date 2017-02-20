@@ -2,7 +2,6 @@ package fxsamples;
 
 import java.io.IOException;
 import java.net.URL;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -23,8 +22,8 @@ public class LookNFeelChooser extends Application {
 
 	@Override
 	public void init() {
-		Font.loadFont("file:Roboto-Thin.ttf", 10).getName();
-		Font.loadFont("file:Roboto-Light.ttf", 10).getName();
+		Font.loadFont(getClass().getClassLoader().getResource("Roboto-Thin.ttf").toString(), 10).getName();
+		Font.loadFont(getClass().getClassLoader().getResource("Roboto-Light.ttf").toString(), 10).getName();
 	}
 
 	public static void main(String[] args) {
@@ -34,7 +33,7 @@ public class LookNFeelChooser extends Application {
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		BorderPane root = new BorderPane();
-		Parent content = FXMLLoader.load(new URL("file:lnf_demo.fxml"));
+		Parent content = FXMLLoader.load(new URL(getClass().getClassLoader().getResource("lnf_demo.fxml").toString()));
 		Scene scene = new Scene(root, 650, 550, Color.WHITE);
 		root.setCenter(content);
 		// Menu bar

@@ -1,10 +1,14 @@
 package fxsamples;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javafx.application.Application;
 import javafx.scene.*;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -14,13 +18,14 @@ import javafx.stage.Stage;
 import labyrinth.Labyrinth3DWallTexture;
 
 public class JewelViewer extends Application {
-
-
 	private static final Color jewelColor = Color.BURLYWOOD;
 	private static final Color lightColor = Color.rgb(125, 125, 125);
-	private static final String MESH_FILENAME = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	public static final String MESH_FILENAME = Labyrinth3DWallTexture.class.getClassLoader()
+			.getResource("Minotaur.stl").getFile();
+	public static final String ORIGINAL_FILENAME = Labyrinth3DWallTexture.class.getClassLoader()
+			.getResource("original.stl").getFile();
 
-	private static final double MODEL_SCALE_FACTOR = 0.5;
+	private static final double MODEL_SCALE_FACTOR = 4;
 
 	private static final double MODEL_X_OFFSET = 0; // standard
 	private static final double MODEL_Y_OFFSET = 0; // standard
@@ -101,9 +106,10 @@ public class JewelViewer extends Application {
 		});
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
+		camera.setRotationAxis(Rotate.Y_AXIS);
 		scene.setOnKeyPressed(this::handleKeyPressed);
 		// End Step 2b-d
-
+		initFileDragNDrop(scene);
 		primaryStage.setTitle("Jewel Viewer");
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -125,18 +131,89 @@ public class JewelViewer extends Application {
 		if (keycode == KeyCode.A) {
 			camera.setRotate(camera.getRotate() - 1);
 		}
-		camera.setRotationAxis(Rotate.Y_AXIS);
 		if (keycode == KeyCode.D) {
 			camera.setRotate(camera.getRotate() + 1);
 		}
 	}
 
-	static MeshView loadMeshViews() {
-		File file = new File(MESH_FILENAME);
+	private void initFileDragNDrop(Scene scene) {
+		scene.setOnDragOver(dragEvent -> {
+			Dragboard db = dragEvent.getDragboard();
+			if (db.hasFiles() || db.hasUrl()) {
+				dragEvent.acceptTransferModes(TransferMode.LINK);
+				return;
+			}
+			dragEvent.consume();
+		});
+		// Dropping over surface
+		scene.setOnDragDropped(dragEvent -> {
+			Dragboard db = dragEvent.getDragboard();
+			boolean success = false;
+			if (db.hasFiles()) {
+				success = true;
+				if (db.getFiles().size() > 0) {
+					tryLoadMeshViews(db);
+				}
+			} else {
+				// audio file from some host or jar
+				tryLoadMeshViews(db.getUrl());
+				success = true;
+			}
+			dragEvent.setDropCompleted(success);
+			dragEvent.consume();
+		});
+	}
+
+	private void loadMeshViews(File file) {
 		StlMeshImporter importer = new StlMeshImporter();
 		importer.read(file);
 		Mesh mesh = importer.getImport();
+		MeshView meshViews = new MeshView(mesh);
+		meshViews.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
+		meshViews.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
+		meshViews.setTranslateZ(VIEWPORT_SIZE / 2);
+		meshViews.setScaleX(MODEL_SCALE_FACTOR);
+		meshViews.setScaleY(MODEL_SCALE_FACTOR);
+		meshViews.setScaleZ(MODEL_SCALE_FACTOR);
 
+		PhongMaterial sample = new PhongMaterial(jewelColor);
+		sample.setSpecularColor(lightColor);
+		sample.setSpecularPower(16);
+		meshViews.setMaterial(sample);
+
+		meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS), new Rotate(-90, Rotate.X_AXIS));
+
+		pointLight = new PointLight(lightColor);
+		pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
+		pointLight.setTranslateY(VIEWPORT_SIZE / 2);
+		pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
+
+		Color ambientColor = Color.rgb(80, 80, 80, 0);
+		AmbientLight ambient = new AmbientLight(ambientColor);
+		root.getChildren().clear();
+		root.getChildren().add(pointLight);
+		root.getChildren().add(ambient);
+
+	}
+
+	private void tryLoadMeshViews(String url) {
+		try {
+			loadMeshViews(new File(new URL(url).getFile()));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void tryLoadMeshViews(Dragboard db) {
+		File filePath = db.getFiles().get(0);
+		loadMeshViews(filePath);
+	}
+
+	static MeshView loadMeshViews() {
+		File file = new File(ORIGINAL_FILENAME);
+		StlMeshImporter importer = new StlMeshImporter();
+		importer.read(file);
+		Mesh mesh = importer.getImport();
 		return new MeshView(mesh);
 	}
 

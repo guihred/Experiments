@@ -193,14 +193,14 @@ public final class Chapter1 {
 	}
 	
 	public static void main(String[] args) {
-		// ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 });
+		ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 });
 		// ex2(new File("."));
 		// ex3(new File("C:/Users/Note/Documents"), "log");
 		// ex4(new File("C:/Users/Note/Documents").listFiles());
 		// ex6();
 		// ex7();
 		// ex8();
-		ex9();
+		// ex9();
 	}
 
 	public static Runnable unckeck(RunnableEx runner) {

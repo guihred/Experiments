@@ -1,5 +1,4 @@
 package fxsamples;
-import java.io.File;
 import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
@@ -13,7 +12,7 @@ import javafx.util.Duration;
 public class SandboxFX extends Application {
 
 	private static final Image IMAGE = new Image(
-			"file:The_Horse_in_Motion.jpg", true);
+			SandboxFX.class.getClassLoader().getResource("The_Horse_in_Motion.jpg").toString(), true);
 
 	private static final int COLUMNS = 4;
 	private static final int COUNT = 10;
@@ -28,7 +27,6 @@ public class SandboxFX extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		System.out.println(new File(".").getAbsolutePath());
 		primaryStage.setTitle("The Horse in Motion");
 
 		final ImageView imageView = new ImageView(IMAGE);

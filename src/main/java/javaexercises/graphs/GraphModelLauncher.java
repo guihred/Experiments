@@ -5,7 +5,6 @@ import static simplebuilder.CommonsFX.newSelect;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,6 +28,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 public class GraphModelLauncher extends Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphModelLauncher.class);
@@ -172,9 +172,8 @@ public class GraphModelLauncher extends Application {
 	}
 
 	private String[] getWords() {
-		String string = "alice.txt";
 		try {
-			return Files.lines(Paths.get(string)).flatMap(e -> Stream.of(e.split("[^a-zA-Z]")))
+			return Files.lines(ResourceFXUtils.toPath("alice.txt")).flatMap(e -> Stream.of(e.split("[^a-zA-Z]")))
 					.filter(s -> s.length() == 4).map(String::toLowerCase).distinct().toArray(String[]::new);
 		} catch (IOException e) {
 			LOGGER.error("", e);

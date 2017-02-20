@@ -1,6 +1,8 @@
 package labyrinth;
 
 import static labyrinth.LabyrinthWall.SIZE;
+import static simplebuilder.ResourceFXUtils.toExternalForm;
+import static simplebuilder.ResourceFXUtils.toFullPath;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
@@ -25,6 +27,7 @@ import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -52,16 +55,15 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 			{ "_", "_", "_", "_", "_", "_" },
 
 	};
-	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getResource("ghost2.STL").getFile();
+	private static final String MESH_GHOST = toFullPath("ghost2.STL");
 
-	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getResource("Minotaur.stl").getFile();
+	public static final String MESH_MINOTAUR = toFullPath("Minotaur.stl");
 
-	public static final Image OOZE_IMAGE = new Image(Labyrinth3DWallTexture.class.getResource("ooze.jpg").toString());
+	public static final Image OOZE_IMAGE = new Image(toExternalForm("ooze.jpg"));
 
-	private static final Image WALL_IMAGE = new Image(Labyrinth3DWallTexture.class.getResource("wall.jpg").toString());
+	private static final Image WALL_IMAGE = new Image(toExternalForm("wall.jpg").toString());
 
-	private static final Image WALL_IMAGE2 = new Image(
-			Labyrinth3DWallTexture.class.getResource("wall2.jpg").toString());
+	private static final Image WALL_IMAGE2 = new Image(toExternalForm("wall2.jpg").toString());
 
 	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 
@@ -193,21 +195,9 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		camera.setNearClip(0.1);
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
+		camera.setRotationAxis(Rotate.Y_AXIS);
 		camera.setFieldOfView(40);
 		subScene.setCamera(camera);
-
-		// Rectangle rectangle = new Rectangle(10,
-									// 10);
-
-		// rectangle.setFill(Color.GREEN);
-		// rectangle.translateYProperty().bind(
-		// camera.translateYProperty().add(-10));
-		//
-		// camera.translateXProperty().addListener(
-		// (observable, oldValue, newValue) -> {
-		//
-		// });
-		// root.getChildren().add(rectangle);
 
 		PointLight light = new PointLight(Color.rgb(125, 125, 125));
 		light.translateXProperty().bind(camera.translateXProperty());
@@ -238,7 +228,6 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 
 		movimentacao = new MovimentacaoAleatoria(this, fantasmas);
 		movimentacao.start();
-
 		root.getChildren().addAll(fantasmas);
 
 		Scene sc = new Scene(new Group(subScene));
@@ -246,7 +235,8 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
 		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
-
+		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));
+		primaryStage.setFullScreen(true);
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
 		primaryStage.show();
