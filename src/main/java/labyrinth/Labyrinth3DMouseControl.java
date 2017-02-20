@@ -1,6 +1,7 @@
 package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
+import java.awt.Robot;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.EventHandler;
@@ -230,21 +232,46 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 
 		movimentacao = new MovimentacaoAleatoria(this, fantasmas);
 		movimentacao.start();
-
 		root.getChildren().addAll(fantasmas);
 
 		Scene sc = new Scene(new Group(subScene));
+		sc.setCursor(Cursor.NONE);
 		sc.setFill(Color.TRANSPARENT);
 		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
+		primaryStage.setFullScreen(true);
 		sc.setOnMouseMoved(new EventHandler<MouseEvent>() {
-
 			private double mouseOldX;
 			private double mousePosX;
-
 			@Override
 			public void handle(MouseEvent me) {
 				mouseOldX = mousePosX;
 				mousePosX = me.getX();
+				double width = sc.getWidth();
+				if ((int) mousePosX == (int) width - 1) {
+					Platform.runLater(() -> {
+						try {
+							Robot robot = new Robot();
+							robot.mouseMove(1, (int) me.getY());
+							mouseOldX = 0;
+							mousePosX = 0;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					});
+				}
+				if (mousePosX <= 5) {
+					Platform.runLater(() -> {
+						try {
+							Robot robot = new Robot();
+							robot.mouseMove((int) width, (int) me.getY());
+							mouseOldX = width;
+							mousePosX = width;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					});
+				}
+
 				double mouseDeltaX = mousePosX - mouseOldX;
 				camera.setRotate(camera.getRotate() + mouseDeltaX * .5);
 			}

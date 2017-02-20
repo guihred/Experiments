@@ -9,6 +9,11 @@
 	</properties>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -27,7 +32,7 @@
 					<verbose>true</verbose>
 					<vendor>Guih.red</vendor>
 					<appName>Labyrinth</appName>
-					<additionalAppResources>resources</additionalAppResources>
+					<additionalAppResources>src/main/resources</additionalAppResources>
 				</configuration>
 			</plugin>
 		</plugins>
