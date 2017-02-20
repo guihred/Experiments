@@ -25,6 +25,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 
 public class Labyrinth3DKillerGhostsAndBalls extends Application implements CommomLabyrinth {
 
@@ -41,10 +42,8 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 			{ "_", "_", "_", "_", "_", "_" },
 
 	};
-	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getClassLoader().getResource("ghost2.STL")
-			.getFile();
-	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getClassLoader().getResource("Minotaur.stl")
-			.getFile();
+	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
+	public static final String MESH_MINOTAUR = ResourceFXUtils.toFullPath("Minotaur.stl");
 
 	private static final int SIZE = 60;
 

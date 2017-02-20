@@ -26,6 +26,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 public final class LeitorArquivos {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LeitorArquivos.class);
@@ -34,7 +35,7 @@ public final class LeitorArquivos {
 	}
 
 	public static void main(String[] args) {
-		File file = new File("sngpc.pdf");
+		File file = ResourceFXUtils.toFile("sngpc.pdf");
 		System.out.println(file.exists());
 		try {
 			ObservableList<Medicamento> medicamentosSNGPCPDF;

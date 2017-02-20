@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 
 public class AnimationExample extends Application {
 
@@ -22,10 +23,9 @@ public class AnimationExample extends Application {
 		root.getChildren().add(canvas);
 
 		GraphicsContext gc = canvas.getGraphicsContext2D();
-
-		Image earth = new Image(getClass().getClassLoader().getResource("earth.png").toString());
-		Image sun = new Image(getClass().getClassLoader().getResource("sun.png").toString());
-		Image space = new Image(getClass().getClassLoader().getResource("space.jpg").toString());
+		Image earth = new Image(ResourceFXUtils.toExternalForm("earth.png"));
+		Image sun = new Image(ResourceFXUtils.toExternalForm("sun.png"));
+		Image space = new Image(ResourceFXUtils.toExternalForm("space.jpg"));
 
 		final long startNanoTime = System.nanoTime();
 

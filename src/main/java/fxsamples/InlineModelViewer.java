@@ -19,6 +19,7 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.ResourceFXUtils;
 
 public class InlineModelViewer extends Application {
 
@@ -61,7 +62,7 @@ public class InlineModelViewer extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		texture = new Image(getClass().getClassLoader().getResource("wall.jpg").toString());
+		texture = new Image(ResourceFXUtils.toExternalForm("wall.jpg").toString());
 		texturedMaterial.setDiffuseMap(texture);
 
 		Group group = buildScene();

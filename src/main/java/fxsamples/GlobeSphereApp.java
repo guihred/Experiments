@@ -48,6 +48,7 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import simplebuilder.ResourceFXUtils;
 
 /**
  * A sample that demonstrates features of PhongMaterial applied to a 3D Sphere.
@@ -118,7 +119,7 @@ public class GlobeSphereApp extends Application {
 
 	public Parent createContent() throws Exception {
 
-		Image dImage = new Image(getClass().getClassLoader().getResource("earth-d.jpg").toString());
+		Image dImage = new Image(ResourceFXUtils.toExternalForm("earth-d.jpg"));
 
 		material = new PhongMaterial();
 		material.setDiffuseColor(Color.WHITE);
@@ -132,14 +133,14 @@ public class GlobeSphereApp extends Application {
 				return specularColor.get().deriveColor(0, 1, 1, specularColorOpacity.get());
 		}, specularColor, specularColorNull, specularColorOpacity));
 
-		Image sImage = new Image(getClass().getClassLoader().getResource("earth-s.jpg").toString());
+		Image sImage = new Image(ResourceFXUtils.toExternalForm("earth-s.jpg"));
 		material.specularMapProperty()
 				.bind(Bindings.when(specularMap).then(sImage)
 						.otherwise((Image) null));
-		Image nImage = new Image(getClass().getClassLoader().getResource("earth-n.jpg").toString());
+		Image nImage = new Image(ResourceFXUtils.toExternalForm("earth-n.jpg"));
 		material.bumpMapProperty().bind(
 				Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
-		Image siImage = new Image(getClass().getClassLoader().getResource("earth-l.jpg").toString());
+		Image siImage = new Image(ResourceFXUtils.toExternalForm("earth-l.jpg"));
 		material.selfIlluminationMapProperty().bind(
 				Bindings.when(selfIlluminationMap).then(siImage)
 						.otherwise((Image) null));

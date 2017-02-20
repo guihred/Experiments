@@ -12,6 +12,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 
 public class Labyrinth3DKillerGhosts extends Application implements CommomLabyrinth {
 
@@ -29,12 +30,8 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 
 	};
 
-	private static final String MESH_GHOST = Labyrinth3DWallTexture.class.getClassLoader().getResource("ghost2.STL")
-			.getFile();
-
-	public static final String MESH_MINOTAUR = Labyrinth3DWallTexture.class.getClassLoader().getResource("Minotaur.stl")
-			.getFile();
-
+	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
+	public static final String MESH_MINOTAUR = ResourceFXUtils.toFullPath("Minotaur.stl");
 	private static final int SIZE = 60;
 
 	private PerspectiveCamera camera;

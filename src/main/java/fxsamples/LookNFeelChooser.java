@@ -17,13 +17,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 
 public class LookNFeelChooser extends Application {
 
 	@Override
 	public void init() {
-		Font.loadFont(getClass().getClassLoader().getResource("Roboto-Thin.ttf").toString(), 10).getName();
-		Font.loadFont(getClass().getClassLoader().getResource("Roboto-Light.ttf").toString(), 10).getName();
+		Font.loadFont(ResourceFXUtils.toExternalForm("Roboto-Thin.ttf"), 10).getName();
+		Font.loadFont(ResourceFXUtils.toExternalForm("Roboto-Light.ttf"), 10).getName();
 	}
 
 	public static void main(String[] args) {
@@ -33,7 +34,7 @@ public class LookNFeelChooser extends Application {
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		BorderPane root = new BorderPane();
-		Parent content = FXMLLoader.load(new URL(getClass().getClassLoader().getResource("lnf_demo.fxml").toString()));
+		Parent content = FXMLLoader.load(new URL(ResourceFXUtils.toExternalForm("lnf_demo.fxml")));
 		Scene scene = new Scene(root, 650, 550, Color.WHITE);
 		root.setCenter(content);
 		// Menu bar

@@ -8,11 +8,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.ResourceFXUtils;
 
 public class SandboxFX extends Application {
 
-	private static final Image IMAGE = new Image(
-			SandboxFX.class.getClassLoader().getResource("The_Horse_in_Motion.jpg").toString(), true);
+	private static final Image IMAGE = new Image(ResourceFXUtils.toExternalForm("The_Horse_in_Motion.jpg"), true);
 
 	private static final int COLUMNS = 4;
 	private static final int COUNT = 10;
