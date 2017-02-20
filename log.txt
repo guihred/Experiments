@@ -1,0 +1,47 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Experiments 0.0.1
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] >>> javafx-maven-plugin:8.7.0:run (default-cli) > :jar @ Experiments >>>
+[INFO] 
+[INFO] >>> javafx-maven-plugin:8.7.0:jar (jar) > [jfxjar]package @ Experiments >>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ Experiments ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory C:\Users\Note\Documents\Sistemas\Workspace\Experiments\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ Experiments ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ Experiments ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory C:\Users\Note\Documents\Sistemas\Workspace\Experiments\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ Experiments ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ Experiments ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ Experiments ---
+[INFO] Building jar: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\Experiments-0.0.1.jar
+[INFO] 
+[INFO] <<< javafx-maven-plugin:8.7.0:jar (jar) < [jfxjar]package @ Experiments <<<
+[INFO] 
+[INFO] --- javafx-maven-plugin:8.7.0:jar (jar) @ Experiments ---
+[INFO] Building JavaFX JAR for application
+[INFO] Adding 'deploy' directory to Mojo classpath: C:\Users\Note\Documents\Sistemas\Workspace\Experiments/src/main/deploy
+[INFO] 
+[INFO] <<< javafx-maven-plugin:8.7.0:run (default-cli) < :jar @ Experiments <<<
+[INFO] 
+[INFO] --- javafx-maven-plugin:8.7.0:run (default-cli) @ Experiments ---
+[INFO] Running JavaFX Application
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 01:16 min
+[INFO] Finished at: 2017-02-17T12:04:53-02:00
+[INFO] Final Memory: 16M/222M
+[INFO] ------------------------------------------------------------------------
