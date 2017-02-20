@@ -6,11 +6,13 @@ import gaming.ex07.MazeSquare;
 import gaming.ex14.Pacman.PacmanDirection;
 import gaming.ex14.PacmanGhost.GhostColor;
 import gaming.ex14.PacmanGhost.GhostStatus;
+
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
+
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -31,12 +33,15 @@ public class PacmanModel {
 
 	public static final int MAZE_SIZE = 5;
 	public static final double SQUARE_SIZE = 60;
-	private final List<PacmanBall> balls = DoubleStream.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE)
+	private final List<PacmanBall> balls = DoubleStream
+			.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE)
 			.limit(MAZE_SIZE * 2)
-			.mapToObj(d -> d)
-			.flatMap(d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE).limit(MAZE_SIZE * 2)
-					.mapToObj(e -> new Double[] { d, e }))
-			.map(PacmanBall::new).collect(Collectors.toList());
+			.mapToObj(Double::valueOf)
+			.flatMap(
+					d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE)
+							.limit(MAZE_SIZE * 2)
+							.mapToObj((double e) -> new PacmanBall(d, e)))
+			.collect(Collectors.toList());
 
 	private final List<PacmanGhost> ghosts = Stream
 			.of(GhostColor.RED, GhostColor.BLUE, GhostColor.ORANGE, GhostColor.GREEN)

@@ -19,8 +19,8 @@ public class PacmanBall extends Circle {
 					new KeyFrame(Duration.seconds(0.1), new KeyValue(radiusProperty(), 15)))
 			.autoReverse(true).cycleCount(Animation.INDEFINITE).build();
 
-	public PacmanBall(Double[] d) {
-		super(d[0], d[1], 5, Color.WHITE);
+	public PacmanBall(Double x, Double y) {
+		super(x, y, 5, Color.WHITE);
 		special.addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
 				timeline.play();
