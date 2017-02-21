@@ -75,7 +75,8 @@ class MovimentacaoAleatoria extends AnimationTimer {
 			}
 			if (labyrinth3dWallTexture.getCamera().getBoundsInParent().intersects(
 					enemy.getBoundsInParent())) {
-				labyrinth3dWallTexture.displayEndOfGame();
+				stop();
+				labyrinth3dWallTexture.displayEndOfGame(() -> start());
 			}
 
 		}

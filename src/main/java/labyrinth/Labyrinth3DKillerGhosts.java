@@ -1,18 +1,25 @@
 package labyrinth;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
 import simplebuilder.ResourceFXUtils;
+
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 
 public class Labyrinth3DKillerGhosts extends Application implements CommomLabyrinth {
 
@@ -145,8 +152,9 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
-		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
-
+		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+		sc.setOnKeyPressed(value);
+		sc.setOnKeyReleased(value::keyReleased);
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
 		// primaryStage.initStyle(StageStyle.TRANSPARENT);

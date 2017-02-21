@@ -1,22 +1,28 @@
 package labyrinth;
 
-import static simplebuilder.ResourceFXUtils.toURL;
 import static simplebuilder.ResourceFXUtils.toExternalForm;
+import static simplebuilder.ResourceFXUtils.toURL;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
+
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -30,6 +36,8 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 
 public class Labyrinth3DMouseControl extends Application implements CommomLabyrinth {
 
@@ -225,7 +233,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		Scene sc = new Scene(new Group(subScene));
 		sc.setCursor(Cursor.NONE);
 		sc.setFill(Color.TRANSPARENT);
-		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
+		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+		sc.setOnKeyPressed(value);
+		sc.setOnKeyReleased(value::keyReleased);
 		primaryStage.setFullScreen(true);
 		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));
 

@@ -243,7 +243,9 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setCursor(Cursor.NONE);
 		sc.setFill(Color.TRANSPARENT);
-		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
+		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+		sc.setOnKeyPressed(value);
+		sc.setOnKeyReleased(value::keyReleased);
 		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));
 		primaryStage.setFullScreen(true);
 		primaryStage.setTitle("EXP 1: Labyrinth");

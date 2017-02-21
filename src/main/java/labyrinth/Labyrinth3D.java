@@ -2,6 +2,7 @@ package labyrinth;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -100,8 +101,9 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 		camera.setTranslateY(camera.getTranslateY() - CAMERA_QUANTITY);
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
-		scene.setOnKeyPressed(new MovimentacaoTeclado(this));
-
+		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+		scene.setOnKeyPressed(value);
+		scene.setOnKeyReleased(value::keyReleased);
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(scene);
 		primaryStage.show();

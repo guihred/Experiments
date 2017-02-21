@@ -2,12 +2,14 @@
 package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
+
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -226,8 +228,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
-		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
-
+		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+		sc.setOnKeyPressed(value);
+		sc.setOnKeyReleased(value::keyReleased);
 		primaryStage.setTitle("EXP 1: Labyrinth");
 		primaryStage.setScene(sc);
 		primaryStage.show();

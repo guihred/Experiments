@@ -25,7 +25,7 @@ public interface CommomLabyrinth {
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
 
-	default void displayEndOfGame() {
+	default void displayEndOfGame(Runnable run) {
 		Stage dialogStage = new Stage();
 		dialogStage.initModality(Modality.WINDOW_MODAL);
 		Button button = new Button("Ok.");
@@ -33,6 +33,7 @@ public interface CommomLabyrinth {
 			getCamera().setTranslateX(0);
 			getCamera().setTranslateY(0);
 			getCamera().setTranslateZ(0);
+			run.run();
 			dialogStage.close();
 		});
 		VBox vbox = new VBox();

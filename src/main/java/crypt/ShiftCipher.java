@@ -1,13 +1,13 @@
 package crypt;
 
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public final class ShiftCipher {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ShiftCipher.class);
 
-	private ShiftCipher() {
+	public ShiftCipher() {
 	}
 
 	public static String encrypt(int k,String s) {
@@ -21,12 +21,13 @@ public final class ShiftCipher {
 				.collect(Collectors.joining());
 	}
 
-	public static void main(String[] args) {
 
+	@Test
+	public void encryptDecryptEquals() {
 		int k = 25;
-		LOGGER.info(encrypt(k, "cryptoisfun"));
-		LOGGER.info(decrypt(k, encrypt(k, "cryptoisfun")));
-
+		String s = "cryptoisfun";
+		String encrypt = encrypt(k, s);
+		Assert.assertEquals(s, decrypt(k, encrypt));
 	}
 
 }
