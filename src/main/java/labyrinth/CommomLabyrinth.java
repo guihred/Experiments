@@ -2,8 +2,17 @@ package labyrinth;
 
 import java.util.Collection;
 import java.util.stream.Stream;
+
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public interface CommomLabyrinth {
 	Collection<LabyrinthWall> getLabyrinthWalls();
@@ -15,4 +24,23 @@ public interface CommomLabyrinth {
 				.map(LabyrinthWall::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
+
+	default void displayEndOfGame() {
+		Stage dialogStage = new Stage();
+		dialogStage.initModality(Modality.WINDOW_MODAL);
+		Button button = new Button("Ok.");
+		button.setOnAction(e -> {
+			getCamera().setTranslateX(0);
+			getCamera().setTranslateY(0);
+			getCamera().setTranslateZ(0);
+			dialogStage.close();
+		});
+		VBox vbox = new VBox();
+		vbox.getChildren().addAll(new Text("Você Morreu"), button);
+		vbox.setAlignment(Pos.CENTER);
+		vbox.setPadding(new Insets(5));
+		dialogStage.setScene(new Scene(vbox));
+		dialogStage.show();
+	}
+
 }

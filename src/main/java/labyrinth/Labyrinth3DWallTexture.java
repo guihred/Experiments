@@ -4,19 +4,25 @@ import static labyrinth.LabyrinthWall.SIZE;
 import static simplebuilder.ResourceFXUtils.toExternalForm;
 import static simplebuilder.ResourceFXUtils.toFullPath;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
+
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -30,6 +36,8 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
@@ -136,7 +144,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 					dialogStage.close();
 				});
 				VBox vbox = new VBox();
-				vbox.getChildren().addAll(new Text("Voc� Venceu"), button);
+				vbox.getChildren().addAll(new Text("Você Venceu"), button);
 				vbox.setAlignment(Pos.CENTER);
 				vbox.setPadding(new Insets(5));
 				dialogStage.setScene(new Scene(vbox));
@@ -233,6 +241,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		Scene sc = new Scene(new Group(subScene));
 		// End Step 2a
 		// Step 2b: Add a Movement Keyboard Handler
+		sc.setCursor(Cursor.NONE);
 		sc.setFill(Color.TRANSPARENT);
 		sc.setOnKeyPressed(new MovimentacaoTeclado(this));
 		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));

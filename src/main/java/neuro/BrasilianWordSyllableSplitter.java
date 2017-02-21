@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import simplebuilder.ResourceFXUtils;
 
 public final class BrasilianWordSyllableSplitter {
@@ -27,7 +29,20 @@ public final class BrasilianWordSyllableSplitter {
 	private static final String REGEX_VOWEL = "(?i)" + VOWELS;
 	private static final String REGEX_DIPHTHONG = "(?i)(?<=[aeiou])(?=[aeiou])";
 	// cases when the vowel cluster should be split
-	private static final String REGEX_HIATUS = "(?i)(?<=[^qg][aeiou])(?=[aeiou][lnrz])|(?<=[aeou])(?=[íúîû])|(?<=[íúéóe])(?=[a])|(?<=[ieao])(?=[ú])|(?<=[^q][aeoui][ui])(?=[aeiou])|(?<=[íúe])(?=ei)";
+	private static final String REGEX_HIATUS = "(?i)"
+			+ "(?<=[^qg][aeiou])(?=[aeiou][lnrz])"
+			+ "|(?<=[aeou])(?=[íúîû])"
+			+ "|(?<=[íúéóe])(?=[a])"
+			+ "|(?<=[ieao])(?=[ú])"
+			+ "|(?<=[^qaeiou][aeoui][ui])(?=[aeiou])"
+			+ "|(?<=[^qaeio][aeo][ui])(?=[aeiou])"
+			+ "|(?<=[íúe])(?=ei)"
+			+ "|(?<=[a])(?=[a])" 
+			+ "|(?<=[e])(?=[e])"
+			+ "|(?<=[i])(?=[i])" 
+			+ "|(?<=[o])(?=[o])"
+			+ "|(?<=[u])(?=[u])"
+			;
 
 	private BrasilianWordSyllableSplitter() {
 	}
@@ -36,7 +51,7 @@ public final class BrasilianWordSyllableSplitter {
 
 		try {
 			Stream<String> words;
-			words = getWords(ResourceFXUtils.toFile("words.dic").toURI());
+			words = getWords(ResourceFXUtils.toURI("words.dic"));
 			words.forEach(BrasilianWordSyllableSplitter::splitSyllables);
 		} catch (IOException e) {
 			LOGGER.error("", e);

@@ -1,6 +1,7 @@
 package simplebuilder;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 
@@ -29,6 +30,10 @@ public final class ResourceFXUtils {
 
 	public static File toFile(String arquivo) {
 		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile());
+	}
+
+	public static URI toURI(String arquivo) {
+		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();
 	}
 
 	public static Path toPath(String arquivo) {

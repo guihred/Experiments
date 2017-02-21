@@ -101,7 +101,6 @@ public class PacmanModel {
 			pacman.turn(PacmanDirection.UP);
 			break;
 		case LEFT:
-
 			pacman.turn(PacmanDirection.LEFT);
 			break;
 		case RIGHT:

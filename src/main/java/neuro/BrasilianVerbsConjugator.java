@@ -1,19 +1,26 @@
 package neuro;
 
-import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import simplebuilder.ResourceFXUtils;
+
+import com.google.common.collect.ImmutableMap;
 
 public class BrasilianVerbsConjugator {
 	enum Mode {
@@ -361,7 +368,7 @@ public class BrasilianVerbsConjugator {
 	public static void main(String[] args) {
 
 		try {
-			Stream<String> words = getWords(ResourceFXUtils.toFile("verbs.dic").toURI());
+			Stream<String> words = getWords(ResourceFXUtils.toURI("verbs.dic"));
 			words.forEach(BrasilianVerbsConjugator::conjugate);
 		} catch (IOException e) {
 			LOGGER.error("", e);

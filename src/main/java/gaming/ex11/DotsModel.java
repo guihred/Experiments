@@ -5,9 +5,16 @@
  */
 package gaming.ex11;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -50,15 +57,12 @@ public class DotsModel {
 
 	private Random random = new Random();
 	private DotsSquare selected;
-	@SuppressWarnings("unchecked")
+
 	public DotsModel(Group gridPane, BorderPane borderPane) {
         this.gridPane = gridPane;
         points.put("EU", FXCollections.observableSet());
         points.put("TU", FXCollections.observableSet());
-
-
 		initializeMaze(gridPane);
-
 		gridPane.setOnMousePressed(this::handleMousePressed);
 		gridPane.setOnMouseDragged(this::handleMouseDragged);
 		gridPane.setOnMouseReleased(this::handleMouseReleased);

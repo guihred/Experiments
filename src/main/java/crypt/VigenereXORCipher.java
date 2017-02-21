@@ -1,16 +1,23 @@
 package crypt;
 
-import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import simplebuilder.ResourceFXUtils;
+
+import com.google.common.collect.ImmutableMap;
 
 public class VigenereXORCipher {
 
@@ -28,6 +35,7 @@ public class VigenereXORCipher {
 	// 0, 0, 140, 181, 87, 0, 53
 	private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 
+	@SuppressWarnings("unchecked")
 	private List<Integer>[] keysList = Stream.generate(() -> new ArrayList<>()).limit(7).toArray(List[]::new);
 	private PrintStream out;
 
