@@ -22,12 +22,6 @@ public final class DiffTest {
 
 		// Compute diff. Get the Patch object. Patch is the container for
 		// computed deltas.
-		// Patch patch = DiffUtils.diff(original, revised);
-		//
-		//
-		// for (Delta delta : patch.getDeltas()) {
-		// System.out.println(delta);
-		// }
 		DiffRowGenerator generator = new DiffRowGenerator.Builder().build();
 
 		List<DiffRow> rows = generator.generateDiffRows(original, revised);

@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -46,15 +45,6 @@ public class DrawingLines extends Application {
 		redLine.strokeDashOffsetProperty().bind(slider.valueProperty());
 		root.getChildren().add(slider);
 
-		Rectangle roundRect = new Rectangle();
-		roundRect.setX(50);
-		roundRect.setY(50);
-		roundRect.setFill(Color.ALICEBLUE);
-		roundRect.setWidth(100);
-		roundRect.setHeight(130);
-		roundRect.setArcWidth(10);
-		roundRect.setArcHeight(40);
-		// root.getChildren().add(roundRect);
 
 		Text offsetText = new Text("Stroke Dash Offset: 0.0");
 		offsetText.setX(10);

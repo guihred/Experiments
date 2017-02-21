@@ -109,8 +109,6 @@ public class ZoomableScrollPane extends ScrollPane {
 
 		@Override
 		public void handle(ScrollEvent scrollEvent) {
-			// if (scrollEvent.isControlDown())
-			{
 				double s = scaleValue;
 				if (scrollEvent.getDeltaY() < 0) {
 					scaleValue -= delta;
@@ -123,7 +121,6 @@ public class ZoomableScrollPane extends ScrollPane {
 				}
 				zoomTo(scaleValue);
 				scrollEvent.consume();
-			}
 		}
 	}
 }

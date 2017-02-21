@@ -16,20 +16,9 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
@@ -37,7 +26,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +60,7 @@ public final class Chapter6 {
 	private Chapter6() {
 	}
 
-	/*
+	/**
 	 * Write a program that keeps track of the longest string that is observed
 	 * by a number of threads. Use an AtomicReference and an appropriate
 	 * accumulator.
@@ -97,7 +85,7 @@ public final class Chapter6 {
 		System.out.println(reference.get());
 	}
 
-	/*
+	/**
 	 * Write a program that asks the user for a URL, then reads the web page at
 	 * that URL, and then displays all the links. Use a CompletableFuture for
 	 * each stage. Don�t call get. To prevent your program from terminating
@@ -112,7 +100,7 @@ public final class Chapter6 {
 
 	}
 
-	/*
+	/**
 	 * Generate 1,000 threads, each of which increments a counter 100,000 times.
 	 * Compare the performance of using AtomicLong versus LongAdder.
 	 * 
@@ -154,7 +142,7 @@ public final class Chapter6 {
 
 	}
 
-	/*
+	/**
 	 * Write an application in which multiple threads read all words from a
 	 * collection of files. Use a ConcurrentHashMap<String, Set<File>> to track
 	 * in which files each word occurs. Use the merge method to update the map.
@@ -187,7 +175,7 @@ public final class Chapter6 {
 	}
 
 
-	/*
+	/**
 	 * Repeat the preceding exercise, but use computeIfAbsent instead. What is
 	 * the advantage of this approach?
 	 * 
@@ -212,7 +200,7 @@ public final class Chapter6 {
 				.forEach(u -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
-	/*
+	/**
 	 * In a ConcurrentHashMap<String, Long>, find the key with maximum value
 	 * (breaking ties arbitrarily). Hint: reduceEntries.
 	 */
@@ -226,7 +214,7 @@ public final class Chapter6 {
 
 	}
 
-	/*
+	/**
 	 * How large does an array have to be for Arrays.parallelSort to be faster
 	 * than Arrays.sort on your computer?
 	 * 
@@ -256,7 +244,7 @@ public final class Chapter6 {
 
 	}
 
-	/*
+	/**
 	 * You can use the parallelPrefix method to parallelize the computation of
 	 * Fibonacci numbers. We use the fact that the nth Fibonacci number is the
 	 * top left coefficient of Fn, where F = ( 1 1 1 0 ) . Make an array filled
@@ -291,8 +279,12 @@ public final class Chapter6 {
 
 
 
-	public static void main(String[] args) throws IOException {
-		ex7();
+	public static void main(String[] args) {
+		try {
+			ex7();
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
 	}
 
 	public static String readPage(String urlString) {

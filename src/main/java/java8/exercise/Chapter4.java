@@ -36,7 +36,7 @@ public final class Chapter4 {
 	private Chapter4() {
 	}
 
-	/*
+	/**
 	 * Write a program with a text field and a label. As with the Hello, JavaFX
 	 * program, the label should have the string Hello, FX in a 100 point font.
 	 * Initialize the text field with the same string. Update the label as the
@@ -58,7 +58,7 @@ public final class Chapter4 {
 		}
 	}
 
-	/*
+	/**
 	 * Enhance the program in Section 4.5, �Bindings,� on page 75 so that the
 	 * circle stays centered and always touches at least two of the sides of the
 	 * scene.s
@@ -81,20 +81,21 @@ public final class Chapter4 {
 		}
 	}
 
-	/*
+	/**
 	 * Write methods
 	 * 
 	 * public static <T, R> ObservableValue<R> observe( Function<T, R> f,
-	 * 		ObservableValue<T> t)
+	 * ObservableValue<T> t)
 	 * 
-	 * public static <T, U, R> ObservableValue<R> observe( 
-	 * 		BiFunction<T, U, R> f, ObservableValue<T> t, ObservableValue<U> u)
+	 * public static <T, U, R> ObservableValue<R> observe( BiFunction<T, U, R>
+	 * f, ObservableValue<T> t, ObservableValue<U> u)
 	 * 
 	 * that return observable values whose getValue method returns the value of
 	 * the lambda expression, and whose invalidation and change listeners are
 	 * fired when any of the inputs become invalid or change. For example,
 	 * 
-	 * larger.disableProperty().bind(observe( t -> t >= 100, gauge.widthProperty()));
+	 * larger.disableProperty().bind(observe( t -> t >= 100,
+	 * gauge.widthProperty()));
 	 */
 	public static class Ex5 extends Application {
 
@@ -158,7 +159,7 @@ public final class Chapter4 {
 		}
 	}
 
-	/* 6. Center the top and bottom buttons in Figure 4�7. */
+	/** 6. Center the top and bottom buttons in Figure 4�7. */
 	public static class Ex6 extends Application {
 
 		@Override
@@ -173,7 +174,7 @@ public final class Chapter4 {
 		}
 	}
 
-	/* Find out how to set the border of a control without using CSS. */
+	/** Find out how to set the border of a control without using CSS. */
 	public static class Ex7 extends Application {
 
 		@Override
@@ -194,7 +195,7 @@ public final class Chapter4 {
 		}
 	}
 
-	/*
+	/**
 	 * Animate a circle, representing a planet, so it travels along an
 	 * elliptical orbit. Use a PathTransition.
 	 */
@@ -209,12 +210,12 @@ public final class Chapter4 {
 			planet.setFill(Color.BLUE);
 			planet.centerXProperty().bind(divide(scene.widthProperty(), 2).add(100));
 			planet.centerYProperty().bind(divide(scene.heightProperty(), 2));
-			Circle sun = new Circle(50);
-			sun.setFill(Color.YELLOW);
-			sun.centerXProperty().bind(divide(scene.widthProperty(), 2));
-			sun.centerYProperty().bind(divide(scene.heightProperty(), 2));
+			Circle theSun = new Circle(50);
+			theSun.setFill(Color.YELLOW);
+			theSun.centerXProperty().bind(divide(scene.widthProperty(), 2));
+			theSun.centerYProperty().bind(divide(scene.heightProperty(), 2));
 			BorderPane center = new BorderPane();
-			center.getChildren().addAll(sun, planet);
+			center.getChildren().addAll(theSun, planet);
 
 			HBox right = new HBox();
 			Slider rotationSlider = new Slider();
@@ -271,7 +272,7 @@ public final class Chapter4 {
 		}
 	}
 
-	/*
+	/**
 	 * Using the web viewer, implement a browser with a URL bar and a back
 	 * button. Hint: WebEngine.getHistory().
 	 */

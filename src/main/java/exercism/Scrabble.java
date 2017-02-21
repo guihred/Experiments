@@ -15,7 +15,6 @@ import java.util.stream.Stream;
  * A class to calculate the score of a word in the game Scrabble.
  */
 public class Scrabble {
-
 	/** The per value. */
 	private static final Map<Integer, List<String>> PER_VALUE = ImmutableMap.<Integer, List<String>>builder()
 			.put(1, Arrays.asList("A", "E", "I", "O", "U", "L", "N", "R", "S", "T"))
@@ -29,12 +28,6 @@ public class Scrabble {
 
 	/** The per letter. */
 	private static final Map<String, Integer> PER_LETTER = getMapPerLetter();
-
-	private static Map<String, Integer> getMapPerLetter() {
-		return Scrabble.PER_VALUE.entrySet().stream()
-				.flatMap(e -> e.getValue().stream().collect(Collectors.toMap(a -> a, a -> e.getKey())).entrySet().stream())
-				.collect(Collectors.toMap(Entry<String, Integer>::getKey, Entry<String, Integer>::getValue));
-	}
 
 	/** The input. */
 	private String input;
@@ -59,5 +52,11 @@ public class Scrabble {
 			return 0;
 		}
 		return Stream.of(input.toUpperCase().split("")).filter(Pattern.compile("[A-Z]").asPredicate()).mapToInt(PER_LETTER::get).sum();
+	}
+
+	private static Map<String, Integer> getMapPerLetter() {
+		return Scrabble.PER_VALUE.entrySet().stream()
+				.flatMap(e -> e.getValue().stream().collect(Collectors.toMap(a -> a, a -> e.getKey())).entrySet().stream())
+				.collect(Collectors.toMap(Entry<String, Integer>::getKey, Entry<String, Integer>::getValue));
 	}
 }

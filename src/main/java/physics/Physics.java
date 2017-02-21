@@ -35,7 +35,6 @@ public class Physics extends Application {
 		PhysicalScene scene = new PhysicalScene(root, WIDTH, HEIGHT);
 
 		final Ball[] ball = new Ball[MAX_BALLS];
-		// new Ball(20,90);
 		Random r = new Random(System.currentTimeMillis());
 		for (int i = 0; i < MAX_BALLS; i++) {
 			ball[i] = new Ball(r.nextInt(100), 95);
@@ -55,7 +54,6 @@ public class Physics extends Application {
 		final Ramp lastRamp = new Ramp(50, 20, 80, 30);
 		final Timeline timeline = new Timeline();
 		timeline.setCycleCount(Animation.INDEFINITE);
-		// timeline.setDelay(Duration.seconds(1.0/60.0));
 
 		// create a keyFrame, the keyValue is reached at time 2s
 		Duration duration = Duration.seconds(1.0 / 60.0);
@@ -96,8 +94,6 @@ public class Physics extends Application {
 		root.getChildren().add(lastRamp.node);
 		primaryStage.setScene(scene);
 		primaryStage.show();
-		// timeline.setDelay(Duration.seconds(2));
-		// timeline.playFromStart();
 
 	}
 

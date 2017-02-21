@@ -6,12 +6,15 @@ import javafx.event.EventHandler;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class MouseMovementHandler implements EventHandler<MouseEvent> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MouseMovementHandler.class);
 	private double mouseOldX;
 	private double mousePosX;
 	private Scene sc;
-	PerspectiveCamera camera;
+	private PerspectiveCamera camera;
 
 	public MouseMovementHandler(Scene sc, CommomLabyrinth labyrinth) {
 		this.sc = sc;
@@ -32,7 +35,7 @@ final class MouseMovementHandler implements EventHandler<MouseEvent> {
 					mouseOldX = 0;
 					mousePosX = 0;
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOGGER.error("", e);
 				}
 			});
 		}
@@ -45,7 +48,7 @@ final class MouseMovementHandler implements EventHandler<MouseEvent> {
 					mouseOldX = width;
 					mousePosX = width;
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOGGER.error("", e);
 				}
 			});
 		}

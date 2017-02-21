@@ -119,10 +119,6 @@ public class ReversiMain extends Application {
 		AnchorPane.setRightAnchor(game, 0D);
 		AnchorPane.setRightAnchor(restart, 10D);
 		AnchorPane.setTopAnchor(restart, 10D);
-//        if (Platform.isSupported(ConditionalFeature.SCENE3D)) {
-//            primaryStage.getScene().setCamera(PerspectiveCameraBuilder.create()
-//                    .fieldOfView(60).build());
-//        }
         primaryStage.show();
     }
 
@@ -137,14 +133,6 @@ public class ReversiMain extends Application {
                 board.add(new StackPane(square, piece), i, j);
             }
         }
-//        if (Platform.isSupported(ConditionalFeature.SCENE3D)) {
-//            Transform scale = new Scale(.45, .8, 1, 300, 60, 0);
-//            Transform translate = new Translate(75, -2, -150);
-//            Transform xRot = new Rotate(-40, 300, 150, 0, Rotate.X_AXIS);
-//            Transform yRot = new Rotate(-5, 300, 150, 0, Rotate.Y_AXIS);
-//            Transform zRot = new Rotate(-6, 300, 150, 0, Rotate.Z_AXIS);
-//            board.getTransforms().addAll(scale, translate, xRot, yRot, zRot);
-//        }
         return board;
     }
 

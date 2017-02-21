@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import simplebuilder.ResourceFXUtils;
 
-public final class BrasilianWordSyllableSplitter {
-	private static final Logger LOGGER = LoggerFactory.getLogger(BrasilianWordSyllableSplitter.class);
+public final class BrazilianWordSyllableSplitter {
+	private static final Logger LOGGER = LoggerFactory.getLogger(BrazilianWordSyllableSplitter.class);
 	private static final String VOWELS = "[aeiouáéíóúâêîôûàèìòùãõ]";
 	private static final String CONSONANT_CLUSTER = "[bcdfgkptv][rl]|[cnlst][h]|mn|bs|tch";
 	private static final String REGEX_VOWEL_CLUSTER_VOWEL = "(?i)" + VOWELS + "(" + CONSONANT_CLUSTER + ")" + VOWELS;
@@ -34,8 +32,9 @@ public final class BrasilianWordSyllableSplitter {
 			+ "|(?<=[aeou])(?=[íúîû])"
 			+ "|(?<=[íúéóe])(?=[a])"
 			+ "|(?<=[ieao])(?=[ú])"
-			+ "|(?<=[^qaeiou][aeoui][ui])(?=[aeiou])"
-			+ "|(?<=[^qaeio][aeo][ui])(?=[aeiou])"
+			+ "|(?<=[^qaeiou][aeoui][ui])(?=[aeiouã])"
+			+ "|(?<=[^qaeo][aeo][ui])(?=[aeiouãô])"
+			+ "|(?<=qu[ei])(?=[aeiouãô][aeiouãô])"
 			+ "|(?<=[íúe])(?=ei)"
 			+ "|(?<=[a])(?=[a])" 
 			+ "|(?<=[e])(?=[e])"
@@ -44,7 +43,7 @@ public final class BrasilianWordSyllableSplitter {
 			+ "|(?<=[u])(?=[u])"
 			;
 
-	private BrasilianWordSyllableSplitter() {
+	private BrazilianWordSyllableSplitter() {
 	}
 
 	public static void main(String[] args) {
@@ -52,7 +51,7 @@ public final class BrasilianWordSyllableSplitter {
 		try {
 			Stream<String> words;
 			words = getWords(ResourceFXUtils.toURI("words.dic"));
-			words.forEach(BrasilianWordSyllableSplitter::splitSyllables);
+			words.forEach(BrazilianWordSyllableSplitter::splitSyllables);
 		} catch (IOException e) {
 			LOGGER.error("", e);
 		}
@@ -101,7 +100,7 @@ public final class BrasilianWordSyllableSplitter {
 		String collect = syllable.stream().flatMap(sy -> Stream.of(sy.split(REGEX_HIATUS)))
 				.collect(Collectors.joining("-"));
 
-		System.out.println(word + " " + collect);
+		// System.out.println(word + " " + collect);
 		return collect;
 
 	}

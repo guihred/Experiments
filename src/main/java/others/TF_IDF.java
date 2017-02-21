@@ -36,7 +36,7 @@ public final class TF_IDF {
 
 	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
 
-	/*
+	/**
 	 * Modos de calcular tf(t,d)=
 	 * 
 	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
@@ -49,7 +49,7 @@ public final class TF_IDF {
 	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
 	 */
 
-	/*
+	/**
 	 * 
 	 * Tf, in its basic form, is just the frequency that we look up in
 	 * appropriate table. In this case, it's one.
@@ -116,7 +116,7 @@ public final class TF_IDF {
 		return MAPA_DOCUMENTO;
 	}
 
-	/*
+	/**
 	 * Modos de calcular tf(t,d)=
 	 * 
 	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
@@ -174,7 +174,7 @@ public final class TF_IDF {
 		return fre == 0 ? 0D : 1 + Math.log(fre);
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		try {
 
 			File arquivo = new File("src");

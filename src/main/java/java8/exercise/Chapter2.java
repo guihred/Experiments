@@ -55,7 +55,8 @@ public final class Chapter2 {
 		pool.shutdown();
 		return count;
 	}
-	/*
+
+	/**
 	 * Write a parallel version of the for loop in Section 2.1, From Iteration
 	 * to Stream Operations, on page 22. Obtain the number of processors. Make
 	 * that many separate threads, each working on a segment of the list, and
@@ -69,7 +70,7 @@ public final class Chapter2 {
 		System.out.println(countConcurrentWithoutStreams());
 	}
 
-	/*
+	/**
 	 * Write a call to reduce that can be used to compute the average of a
 	 * Stream<Double>. Why can�t you simply compute the sum and divide by
 	 * count()?
@@ -100,7 +101,7 @@ public final class Chapter2 {
 		// I don't know
 	}
 
-	/*
+	/**
 	 * Count all short words in a parallel Stream<String>, as described in
 	 * Section 2.13, �Parallel Streams,� on page 40, by updating an array of
 	 * AtomicInteger. Use the atomic getAndIncrement method to safely increment
@@ -129,7 +130,7 @@ public final class Chapter2 {
 		}
 	}
 
-	/*
+	/**
 	 * Verify that asking for the first five long words does not call the filter
 	 * method once the fifth long word has been found. Simply log each method
 	 * call.
@@ -146,7 +147,7 @@ public final class Chapter2 {
 		}).limit(5).forEach(System.out::println);
 	}
 
-	/*
+	/**
 	 * Measure the difference when counting long words with a parallelStream
 	 * instead of a stream. Call System.currentTimeMillis before and after the
 	 * call, and print the difference. Switch to a larger document (such as War
@@ -163,7 +164,7 @@ public final class Chapter2 {
 
 	}
 
-	/*
+	/**
 	 * Suppose you have an array int[] values = { 1, 4, 9, 16 }. What is
 	 * Stream.of(values)? How do you get a stream of int instead?
 	 * 
@@ -177,14 +178,14 @@ public final class Chapter2 {
 		IntStream.of(values).forEach(System.out::println);
 	}
 
-	/*
+	/**
 	 * It should be possible to concurrently collect stream results in a single
 	 * ArrayList, instead of merging multiple array lists, provided it has been
 	 * constructed with the stream�s size, since concurrent set operations at
 	 * disjoint positions are threadsafe. How can you achieve that?
 	 */
 
-	/*
+	/**
 	 * Using Stream.iterate, make an infinite stream of random numbers�not by
 	 * calling Math.random but by directly implementing a linear congruential
 	 * generator. In such a generator, you start with x0 = seed and then produce
@@ -200,9 +201,9 @@ public final class Chapter2 {
 		iterate.limit(10).forEach(System.out::println);
 	}
 
-	/*
-	 * The characterStream method in Section 2.3, �The filter, map, and flatMap
-	 * Methods,� on page 25, was a bit clumsy, first filling an array list and
+	/**
+	 * The characterStream method in Section 2.3, The filter, map, and flatMap
+	 * Methods, on page 25, was a bit clumsy, first filling an array list and
 	 * then turning it into a stream. Write a stream-based one-liner instead.
 	 * One approach is to make a stream of integers from 0 to s.length() - 1 and
 	 * map that with the s::charAt method reference.
@@ -218,7 +219,7 @@ public final class Chapter2 {
 		map.forEach(System.out::println);
 	}
 
-	/*
+	/**
 	 * Write a method public static <T> Stream<T> zip(Stream<T> first, Stream<T>
 	 * second) that alternates elements from the streams first and second,
 	 * stopping when one of them runs out of elements.
@@ -227,7 +228,7 @@ public final class Chapter2 {
 		zip(Stream.of(1, 2, 3), Stream.of(1, 2)).forEach(System.out::println);
 	}
 
-	/*
+	/**
 	 * Join all elements in a Stream<ArrayList<T>> to one ArrayList<T>. Show how
 	 * to do this with the three forms of reduce.
 	 */

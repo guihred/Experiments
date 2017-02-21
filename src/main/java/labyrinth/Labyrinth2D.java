@@ -77,11 +77,6 @@ public class Labyrinth2D extends Application {
 		initializeLabyrinth(root);
 
 		Scene scene = new Scene(root);
-		// PerspectiveCamera camera = new PerspectiveCamera(true);
-		// camera.setNearClip(0.1);
-		// camera.setFarClip(10000.0);
-		// camera.setTranslateZ(-1000);
-		// scene.setCamera(camera);
 
 		scene.setOnMouseClicked(event -> handleMouseClick(root));
 		primaryStage.setTitle("EXP 1: Labyrinth");

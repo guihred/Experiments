@@ -2,7 +2,7 @@ package javaexercises.graphs;
 
 import java.util.Objects;
 
-public abstract class GenTopology {
+public abstract class BaseTopology {
 
 	private static final char[] digits = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
@@ -11,13 +11,13 @@ public abstract class GenTopology {
 
 	protected int size;
 
-	public GenTopology(Graph graph, String name, int size) {
+	public BaseTopology(Graph graph, String name, int size) {
 		this.graph = graph;
 		this.name = name;
 		this.size = size;
 	}
 
-	public GenTopology(String name) {
+	public BaseTopology(String name) {
 		this.name = name;
 	}
 

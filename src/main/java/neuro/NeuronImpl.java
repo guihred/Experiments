@@ -5,7 +5,7 @@ import java.util.*;
 public class NeuronImpl implements Neuron {
 	private NeuronStrategy strategy;
 	private static int count;
-	private int id = 0;
+	private int id;
 	private double biasValue = new Random().nextDouble();
 	private double outputValue;
 	private double deltaValue;

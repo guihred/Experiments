@@ -9,8 +9,8 @@ public class Player {
 	public static final double MAX_VELOCITY_X = 15;
 	private double positionX;
 	private double positionY;
-	protected double velocityX;
-	protected double velocityY;
+	protected int velocityX;
+	protected int velocityY;
 	protected double colisionX;
 	protected double colisionY;
 	protected double colisionWidth;

@@ -278,7 +278,6 @@ public class GraphModel {
 					Integer cvw = cost(v, w);
 					if (distance.get(v) + cvw < distance.get(w)) {
 						distance.put(w, distance.get(v) + cvw);
-						// w.path.put(id, v);
 						setPath(w, s, v);
 					}
 				}
@@ -500,7 +499,6 @@ public class GraphModel {
 							.collect(Collectors.toList());
 					for (Cell w : unreachables) {
 						distance.put(w, i + 1);
-						// w.path.put(id, v);
 						setPath(w, source, v);
 					}
 
@@ -533,7 +531,6 @@ public class GraphModel {
 					for (Cell w : anyAdjacents(v)) {
 						if (distance.get(w) == Integer.MAX_VALUE) {
 							distance.put(w, i + 1);
-							// w.path.put(id, v);
 							setPath(w, source, v);
 						}
 					}

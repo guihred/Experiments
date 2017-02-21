@@ -13,7 +13,7 @@ import simplebuilder.SimpleCircleBuilder;
  *
  * @author wayne
  */
-public class Ball extends PhysicalObject {
+public class Ball extends BasePhysicalObject {
     
     private float centerX;
     private float centerY;

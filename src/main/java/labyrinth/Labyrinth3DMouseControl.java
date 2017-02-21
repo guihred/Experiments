@@ -3,26 +3,20 @@ package labyrinth;
 import static simplebuilder.ResourceFXUtils.toExternalForm;
 import static simplebuilder.ResourceFXUtils.toURL;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
-
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -36,8 +30,6 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 
 public class Labyrinth3DMouseControl extends Application implements CommomLabyrinth {
 
@@ -63,14 +55,14 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 			{ "_", "_", "_", "_", "_", "_" },
 	};
 
-	private final URL MESH_GHOST = toURL("ghost2.STL");
+	private static final URL MESH_GHOST = toURL("ghost2.STL");
 
 
 	public static final String MESH_MINOTAUR = "Minotaur.stl";
 	private static final int SIZE = 60;
 
-	private final Image WALL_IMAGE = new Image(toExternalForm("wall.jpg"));
-	private final Image WALL_IMAGE2 = new Image(toExternalForm("wall2.jpg"));
+	private static final Image WALL_IMAGE = new Image(toExternalForm("wall.jpg"));
+	private static final Image WALL_IMAGE2 = new Image(toExternalForm("wall2.jpg"));
 
 	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 

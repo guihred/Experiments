@@ -32,6 +32,10 @@ class Vertex {
 		return edges.keySet();
 	}
 
+	public int getTopNum() {
+		return topNum;
+	}
+
 	void assignLow(Map<Vertex, Integer> num, Map<Vertex, Integer> low) {
 		Vertex v = this;
 		low.put(v, num.get(v));

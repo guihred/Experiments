@@ -1,15 +1,10 @@
 package fxsamples;
 import java.util.Random;
-
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -17,6 +12,7 @@ import javafx.stage.Stage;
 public class BackgroundProcesses extends Application {
 	private Task<Boolean> copyWorker;
 
+	@SuppressWarnings("unused")
 	private static void copyFile(String src, String dest) throws InterruptedException {
 		// simulate a long time
 		Random rnd = new Random(System.currentTimeMillis());
@@ -27,7 +23,7 @@ public class BackgroundProcesses extends Application {
 	private Task<Boolean> createWorker(final int numFiles) {
 		return new Task<Boolean>() {
 			@Override
-			protected Boolean call() throws Exception {
+			public Boolean call() throws Exception {
 				for (int i = 0; i < numFiles; i++) {
 					long elapsedTime = System.currentTimeMillis();
 					copyFile("some file", "some dest file");

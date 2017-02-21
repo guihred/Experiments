@@ -2,7 +2,7 @@ package javaexercises.graphs;
 
 import java.util.Random;
 
-public class CircleTopology extends GenTopology {
+public class CircleTopology extends BaseTopology {
 
 
 	public CircleTopology(int size, Graph graph) {

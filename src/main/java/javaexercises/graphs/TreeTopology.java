@@ -3,7 +3,7 @@ package javaexercises.graphs;
 import java.util.List;
 import java.util.Random;
 
-public class TreeTopology extends GenTopology {
+public class TreeTopology extends BaseTopology {
 
 	public TreeTopology(int size, Graph graph) {
 		super(graph, "Tree", size);
@@ -20,7 +20,7 @@ public class TreeTopology extends GenTopology {
 		double x = bound * Math.cos(Math.toRadians(nextInt));
 		double y = bound * Math.sin(Math.toRadians(nextInt));
 		for (int i = 0; i < size; i++) {
-			Cell cell = graph.getModel().addCell(GenTopology.identifier(i), CellType.CIRCLE);
+			Cell cell = graph.getModel().addCell(BaseTopology.identifier(i), CellType.CIRCLE);
 			nextInt = rnd.nextInt(360);
 			x += bound * Math.cos(Math.toRadians(nextInt));
 			y += bound * Math.sin(Math.toRadians(nextInt));

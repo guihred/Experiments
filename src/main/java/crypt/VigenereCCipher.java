@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class VigenereCCipher {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VigenereCCipher.class);
+	private static final int NUMBER_OF_LETTERS = 26;
 	private static final String ENCODED = "MOMUD EKAPV TQEFM OEVHP AJMII CDCTI FGYAG JSPXY ALUYM NSMYH"
 			+ "VUXJE LEPXJ FXGCM JHKDZ RYICU HYPUS PGIGM OIYHF WHTCQ KMLRD" + "ITLXZ LJFVQ GHOLW CUHLO MDSOE KTALU VYLNZ RFGBX PHVGA LWQIS"
 			+ "FGRPH JOOFW GUBYI LAPLA LCAFA AMKLG CETDW VOELJ IKGJB XPHVG" + "ALWQC SNWBU BYHCU HKOCE XJEYK BQKVY KIIEH GRLGH XEOLW AWFOJ"
@@ -23,13 +24,13 @@ public class VigenereCCipher {
 	int bestMatch(final double[] a, final double[] b) {
 		double sum = 0, fit, d, bestFit = 1e100;
 		int i, rotate, bestRotate = 0;
-		for (i = 0; i < 26; i++) {
+		for (i = 0; i < NUMBER_OF_LETTERS; i++) {
 			sum += a[i];
 		}
-		for (rotate = 0; rotate < 26; rotate++) {
+		for (rotate = 0; rotate < NUMBER_OF_LETTERS; rotate++) {
 			fit = 0;
-			for (i = 0; i < 26; i++) {
-				d = a[(i + rotate) % 26] / sum - b[i];
+			for (i = 0; i < NUMBER_OF_LETTERS; i++) {
+				d = a[(i + rotate) % NUMBER_OF_LETTERS] / sum - b[i];
 				fit += d * d / b[i];
 			}
 
@@ -44,11 +45,11 @@ public class VigenereCCipher {
 
 	double freqEveryNth(final int[] msg, int len, int interval, char[] key) {
 		double sum, d, ret;
-		double[] out = new double[26], accu = new double[26];
+		double[] out = new double[NUMBER_OF_LETTERS], accu = new double[NUMBER_OF_LETTERS];
 		int i, j, rot;
 
 		for (j = 0; j < interval; j++) {
-			for (i = 0; i < 26; i++) {
+			for (i = 0; i < NUMBER_OF_LETTERS; i++) {
 				out[i] = 0;
 			}
 			for (i = j; i < len; i += interval) {
@@ -57,16 +58,16 @@ public class VigenereCCipher {
 			rot = bestMatch(out, FREQ);
 			key[j] = (char) rot;
 			key[j] += 'A';
-			for (i = 0; i < 26; i++) {
-				accu[i] += out[(i + rot) % 26];
+			for (i = 0; i < NUMBER_OF_LETTERS; i++) {
+				accu[i] += out[(i + rot) % NUMBER_OF_LETTERS];
 			}
 		}
 
-		for (i = 0, sum = 0; i < 26; i++) {
+		for (i = 0, sum = 0; i < NUMBER_OF_LETTERS; i++) {
 			sum += accu[i];
 		}
 
-		for (i = 0, ret = 0; i < 26; i++) {
+		for (i = 0, ret = 0; i < NUMBER_OF_LETTERS; i++) {
 			d = accu[i] / sum - FREQ[i];
 			ret += d * d / FREQ[i];
 		}

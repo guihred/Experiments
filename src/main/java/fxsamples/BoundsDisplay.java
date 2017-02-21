@@ -32,7 +32,7 @@ class BoundsDisplay extends Rectangle {
 	}
 
 	// set the type of the shape's bounds to monitor for the bounds display.
-	void monitorBounds(final BoundsType boundsType) {
+	final void monitorBounds(final BoundsType boundsType) {
 		// remove the shape's previous boundsType.
 		if (boundsChangeListener != null) {
 			final ReadOnlyObjectProperty<Bounds> oldBounds;

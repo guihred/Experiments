@@ -2,14 +2,12 @@
 package labyrinth;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
-
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -179,18 +177,6 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		camera.setFieldOfView(40);
 		subScene.setCamera(camera);
 
-		// Rectangle rectangle = new Rectangle(10,
-									// 10);
-
-		// rectangle.setFill(Color.GREEN);
-		// rectangle.translateYProperty().bind(
-		// camera.translateYProperty().add(-10));
-		//
-		// camera.translateXProperty().addListener(
-		// (observable, oldValue, newValue) -> {
-		//
-		// });
-		// root.getChildren().add(rectangle);
 
 		PointLight light = new PointLight(Color.rgb(125, 125, 125));
 		light.translateXProperty().bind(camera.translateXProperty());

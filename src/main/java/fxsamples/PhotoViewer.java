@@ -271,7 +271,7 @@ public class PhotoViewer extends Application {
 	private Task<Boolean> createWorker(final String url) {
 		return new Task<Boolean>() {
 			@Override
-			protected Boolean call() throws Exception {
+			public Boolean call() throws Exception {
 				// on the worker thread...
 				Image image = new Image(url, false);
 				Platform.runLater(() -> {

@@ -1,33 +1,26 @@
 package neuro;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import simplebuilder.ResourceFXUtils;
 
-import com.google.common.collect.ImmutableMap;
-
-public class BrasilianVerbsConjugator {
+public class BrazilianVerbsConjugator {
 	enum Mode {
 		CONDITIONAL, FUTURE, IMPERFECT, PLUPERFECT, PRESENT, PRETERITE;
 	}
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BrasilianVerbsConjugator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BrazilianVerbsConjugator.class);
 
 	private static final boolean DEBUG = true;
 
@@ -199,14 +192,23 @@ public class BrasilianVerbsConjugator {
 	public static void conjugate(String verb) {
 		if (isIrregular(verb)) {
 			irregularConjugation(verb);
-		} else if (verb.endsWith("ar")) {
+			return;
+		}
+		if (verb.endsWith("ar")) {
 			firstConjugation(verb);
-		} else if (verb.endsWith("er")) {
+			return;
+		}
+		if (verb.endsWith("er")) {
 			secondConjugation(verb);
-		} else if (verb.endsWith("ir")) {
+			return;
+		}
+		if (verb.endsWith("ir")) {
 			thirdConjugation(verb);
-		} else if (verb.endsWith("por") || verb.endsWith("pôr")) {
+			return;
+		}
+		if (verb.endsWith("por") || verb.endsWith("pôr")) {
 			fourthConjugation(verb);
+			return;
 		}
 
 	}
@@ -342,16 +344,15 @@ public class BrasilianVerbsConjugator {
 		if (irregular != null) {
 			String key = irregular.getKey();
 			if(SIMPLE_IRREGULARITIES.containsKey(key)){
+				Map<Mode, String[]> firstConjugation = null;
 				if (key.endsWith("ar")) {
-					Map<Mode, String[]> firstConjugation = getFirstConjugation();
-					printIrregular(verb, key, firstConjugation);
+					firstConjugation = getFirstConjugation();
 				} else if (key.endsWith("er")) {
-					Map<Mode, String[]> firstConjugation = getSecondConjugation();
-					printIrregular(verb, key, firstConjugation);
+					firstConjugation = getSecondConjugation();
 				} else if (key.endsWith("ir")) {
-					Map<Mode, String[]> firstConjugation = getThirdConjugation();
-					printIrregular(verb, key, firstConjugation);
+					firstConjugation = getThirdConjugation();
 				}
+				printIrregular(verb, key, firstConjugation);
 			} else {
 				System.out.println("CADÊ ->" + key);
 			}
@@ -369,7 +370,7 @@ public class BrasilianVerbsConjugator {
 
 		try {
 			Stream<String> words = getWords(ResourceFXUtils.toURI("verbs.dic"));
-			words.forEach(BrasilianVerbsConjugator::conjugate);
+			words.forEach(BrazilianVerbsConjugator::conjugate);
 		} catch (IOException e) {
 			LOGGER.error("", e);
 		}
@@ -408,8 +409,7 @@ public class BrasilianVerbsConjugator {
 		System.out.println();
 		System.out.println(verb);
 		if (DEBUG) {
-			Integer bigger = tens.stream().flatMap(List<String>::stream).map(String::length).max(Integer::compareTo)
-					.get();
+			int bigger = tens.stream().flatMap(List<String>::stream).mapToInt(String::length).max().getAsInt();
 			for (int i = 0; i < tens.get(0).size(); i++) {
 				for (int j = 0; j < tens.size(); j++) {
 					String string = tens.get(j).get(i);

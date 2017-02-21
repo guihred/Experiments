@@ -16,6 +16,7 @@ import javafx.util.StringConverter;
 
 public class BubbleChartExample extends Application {
 
+
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -32,17 +33,7 @@ public class BubbleChartExample extends Application {
 		xAxis.setLowerBound(20110);
 		xAxis.setUpperBound(20201);
 		xAxis.setTickUnit(10);
-		xAxis.setTickLabelFormatter(new StringConverter<Number>() {
-			@Override
-			public String toString(Number n) {
-				return String.valueOf(n.intValue() / 10);
-			}
-
-			@Override
-			public Number fromString(String s) {
-				return Integer.valueOf(s) * 10;
-			}
-		});
+		xAxis.setTickLabelFormatter(new SimpleStringConverter());
 		BubbleChart<Number, Number> bubbleChart = new BubbleChart<>(xAxis, yAxis);
 		bubbleChart.setData(getChartData());
 		bubbleChart.setTitle("Speculations");
@@ -53,4 +44,16 @@ public class BubbleChartExample extends Application {
 		primaryStage.show();
 	}
 
+}
+
+class SimpleStringConverter extends StringConverter<Number> {
+	@Override
+	public String toString(Number n) {
+		return String.valueOf(n.intValue() / 10);
+	}
+
+	@Override
+	public Number fromString(String s) {
+		return Integer.valueOf(s) * 10;
+	}
 }

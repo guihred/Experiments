@@ -62,7 +62,7 @@ public class InlineModelViewer extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		texture = new Image(ResourceFXUtils.toExternalForm("wall.jpg").toString());
+		texture = new Image(ResourceFXUtils.toExternalForm("wall.jpg"));
 		texturedMaterial.setDiffuseMap(texture);
 
 		Group group = buildScene();

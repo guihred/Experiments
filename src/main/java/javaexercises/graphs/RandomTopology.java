@@ -3,7 +3,7 @@ package javaexercises.graphs;
 
 import java.util.Random;
 
-public class RandomTopology extends GenTopology {
+public class RandomTopology extends BaseTopology {
 
 	public RandomTopology(int size, Graph graph) {
 		super(graph, "Random", size);

@@ -102,7 +102,7 @@ public class GlobeSphereApp extends Application {
 
 	private Sphere earth;
 	private PhongMaterial material;
-	private PointLight sun;
+	private PointLight sunObj;
 	private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
 	private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
 	private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
@@ -161,11 +161,11 @@ public class GlobeSphereApp extends Application {
 		camera.getTransforms().addAll(new Rotate(-20, Rotate.Y_AXIS),
 				new Rotate(-20, Rotate.X_AXIS), new Translate(0, 0, -20));
 
-		sun = new PointLight(Color.rgb(255, 243, 234));
-		sun.translateXProperty().bind(sunDistance.multiply(-0.82));
-		sun.translateYProperty().bind(sunDistance.multiply(-0.41));
-		sun.translateZProperty().bind(sunDistance.multiply(-0.41));
-		sun.lightOnProperty().bind(sunLight);
+		sunObj = new PointLight(Color.rgb(255, 243, 234));
+		sunObj.translateXProperty().bind(sunDistance.multiply(-0.82));
+		sunObj.translateYProperty().bind(sunDistance.multiply(-0.41));
+		sunObj.translateZProperty().bind(sunDistance.multiply(-0.41));
+		sunObj.lightOnProperty().bind(sunLight);
 
 		AmbientLight ambient = new AmbientLight(Color.rgb(1, 1, 1));
 
@@ -173,7 +173,7 @@ public class GlobeSphereApp extends Application {
 		Group root = new Group();
 		root.getChildren().add(camera);
 		root.getChildren().add(earth);
-		root.getChildren().add(sun);
+		root.getChildren().add(sunObj);
 		root.getChildren().add(ambient);
 
 		RotateTransition rt = new RotateTransition(Duration.seconds(24), earth);

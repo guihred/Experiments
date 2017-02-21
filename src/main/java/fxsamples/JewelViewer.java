@@ -16,10 +16,14 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import labyrinth.Labyrinth3DWallTexture;
+import neuro.BrazilianVerbsConjugator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JewelViewer extends Application {
-	private static final Color jewelColor = Color.BURLYWOOD;
-	private static final Color lightColor = Color.rgb(125, 125, 125);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BrazilianVerbsConjugator.class);
+	private static final Color JEWEL_COLOR = Color.BURLYWOOD;
+	private static final Color LIGHT_COLOR = Color.rgb(125, 125, 125);
 	public static final String MESH_FILENAME = Labyrinth3DWallTexture.class.getClassLoader()
 			.getResource("Minotaur.stl").getFile();
 	public static final String ORIGINAL_FILENAME = Labyrinth3DWallTexture.class.getClassLoader()
@@ -58,15 +62,15 @@ public class JewelViewer extends Application {
 		meshViews.setScaleY(MODEL_SCALE_FACTOR);
 		meshViews.setScaleZ(MODEL_SCALE_FACTOR);
 
-		PhongMaterial sample = new PhongMaterial(jewelColor);
-		sample.setSpecularColor(lightColor);
+		PhongMaterial sample = new PhongMaterial(JEWEL_COLOR);
+		sample.setSpecularColor(LIGHT_COLOR);
 		sample.setSpecularPower(16);
 		meshViews.setMaterial(sample);
 
 		meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS),
 					new Rotate(-90, Rotate.X_AXIS));
 
-		pointLight = new PointLight(lightColor);
+		pointLight = new PointLight(LIGHT_COLOR);
 		pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
 		pointLight.setTranslateY(VIEWPORT_SIZE / 2);
 		pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
@@ -176,14 +180,14 @@ public class JewelViewer extends Application {
 		meshViews.setScaleY(MODEL_SCALE_FACTOR);
 		meshViews.setScaleZ(MODEL_SCALE_FACTOR);
 
-		PhongMaterial sample = new PhongMaterial(jewelColor);
-		sample.setSpecularColor(lightColor);
+		PhongMaterial sample = new PhongMaterial(JEWEL_COLOR);
+		sample.setSpecularColor(LIGHT_COLOR);
 		sample.setSpecularPower(16);
 		meshViews.setMaterial(sample);
 
 		meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS), new Rotate(-90, Rotate.X_AXIS));
 
-		pointLight = new PointLight(lightColor);
+		pointLight = new PointLight(LIGHT_COLOR);
 		pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
 		pointLight.setTranslateY(VIEWPORT_SIZE / 2);
 		pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
@@ -200,7 +204,7 @@ public class JewelViewer extends Application {
 		try {
 			loadMeshViews(new File(new URL(url).getFile()));
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			LOGGER.error("", e);
 		}
 	}
 

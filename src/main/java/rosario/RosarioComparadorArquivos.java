@@ -70,8 +70,6 @@ public class RosarioComparadorArquivos extends Application {
 			File selectedFile = fileChooserSNGPC.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
 				medicamentosEstoqueSNGPCTable.setItems(getMedicamentosSNGPC(selectedFile));
-				// atualizarPorCodigo(medicamentosEstoqueTable.getItems(),
-				// medicamentosEstoqueSNGPCTable);
 				atualizarPorCodigo(medicamentosEstoqueSNGPCTable.getItems(), medicamentosEstoqueTable);
 			}
 		});
@@ -240,12 +238,6 @@ public class RosarioComparadorArquivos extends Application {
 		nomeMedicamento.setSortable(true);
 		nomeMedicamento.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		nomeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-
-		// TableColumn<Medicamento, String> apresentacaoMedicamento = new
-		// TableColumn<>("Apresentacao");
-		// apresentacaoMedicamento.setSortable(true);
-		// apresentacaoMedicamento.setCellValueFactory(new
-		// PropertyValueFactory<>("apresentacao"));
 
 		TableColumn<Medicamento, String> loteMedicamento = new TableColumn<>("Lote");
 		loteMedicamento.setSortable(true);

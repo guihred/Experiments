@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.FixtureDef;
  *
  * @author wyoung
  */
-public class Ramp extends PhysicalObject {
+public class Ramp extends BasePhysicalObject {
 
     private float startX;
     private float startY;

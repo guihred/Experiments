@@ -4,7 +4,7 @@ import exercism.MatrixSolver;
 import java.util.List;
 import java.util.Random;
 
-public class GabrielTopology extends GenTopology {
+public class GabrielTopology extends BaseTopology {
 
 	public GabrielTopology(int size, Graph graph) {
 		super(graph, "Gabriel", size);
@@ -21,7 +21,7 @@ public class GabrielTopology extends GenTopology {
 		double x = bound * Math.cos(Math.toRadians(nextInt));
 		double y = bound * Math.sin(Math.toRadians(nextInt));
 		for (int i = 0; i < size; i++) {
-			Cell cell = graph.getModel().addCell(GenTopology.identifier(i), CellType.CIRCLE);
+			Cell cell = graph.getModel().addCell(BaseTopology.identifier(i), CellType.CIRCLE);
 			nextInt = rnd.nextInt(360);
 			y += bound * Math.sin(Math.toRadians(nextInt));
 			x += bound * Math.cos(Math.toRadians(nextInt));

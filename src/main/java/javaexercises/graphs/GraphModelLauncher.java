@@ -113,11 +113,11 @@ public class GraphModelLauncher extends Application {
 		vBox.getChildren().add(newButton("Color", ev -> graph.getModel().coloring()));
 
 		DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
-		ObservableList<GenTopology> topologies = FXCollections.observableArrayList(delaunayTopology, new RandomTopology(50, graph), new TreeTopology(
+		ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology, new RandomTopology(50, graph), new TreeTopology(
 				30, graph), new CircleTopology(30, graph), new GabrielTopology(30, graph));
 
-		SimpleConverter<GenTopology> converterTopology = new SimpleConverter<>(l -> l.getName());
-		ChoiceBox<GenTopology> topologySelect = newSelect(topologies, converterTopology, "Select Topology");
+		SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(l -> l.getName());
+		ChoiceBox<BaseTopology> topologySelect = newSelect(topologies, converterTopology, "Select Topology");
 		vBox.getChildren().add(new HBox(topologySelect,
 				newButton("Go", e -> topologySelect.getSelectionModel().getSelectedItem().execute())));
 
@@ -154,7 +154,6 @@ public class GraphModelLauncher extends Application {
 
 		new CircleLayout(graph).execute();
 		layout.execute();
-		// @SuppressWarnings("static-access")
 
 		vBox.getChildren().add(newButton("Create Topology", ev -> createTopology()));
 		vBox.getChildren().add(new HBox(selectLayout,

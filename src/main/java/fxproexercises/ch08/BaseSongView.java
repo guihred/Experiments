@@ -7,12 +7,12 @@ package fxproexercises.ch08;
 
 import javafx.scene.Node;
 
-public abstract class AbstractView {
+public abstract class BaseSongView {
 
     protected final SongModel songModel;
     protected final Node viewNode;
 
-    public AbstractView(SongModel songModel) {
+    public BaseSongView(SongModel songModel) {
         this.songModel = songModel;
         viewNode = initView();
     }

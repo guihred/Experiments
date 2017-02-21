@@ -7,7 +7,7 @@ import org.jbox2d.dynamics.Body;
  *
  * @author wayne
  */
-public abstract class PhysicalObject {
+public abstract class BasePhysicalObject {
 
 	protected Node node;
 	protected Body body;

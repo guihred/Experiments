@@ -23,11 +23,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleCircleBuilder;
+import simplebuilder.SimpleLinearGradientBuilder;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 
@@ -198,16 +200,8 @@ public class PongLauncher extends Application {
 			}
 		});
 		Scene scene = new Scene(pongComponents, 500, 500);
-		// scene.setFill(LinearGradientBuilder.create()
-		// .startX(0.0)
-		// .startY(0.0)
-		// .endX(0.0)
-		// .endY(1.0)
-		// .stops(
-		// new Stop(0.0, Color.BLACK),
-		// new Stop(0.0, Color.GRAY)
-		// )
-		// .build());
+		scene.setFill(new SimpleLinearGradientBuilder().startX(0.0).startY(0.0).endX(0.0).endY(1.0)
+				.stops(new Stop(0.0, Color.BLACK), new Stop(0.0, Color.GRAY)).build());
         ball.centerXProperty().bind(centerX);
         ball.centerYProperty().bind(centerY);
         leftPaddle.translateYProperty().bind(leftPaddleY);

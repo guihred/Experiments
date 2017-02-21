@@ -58,7 +58,6 @@ public class VoronoiRegion extends Group {
 		double[] coef2 = new double[] { -ay * ay - ax * ax + bx * bx + by * by, -ay * ay - ax * ax + cx * cx + cy * cy };
 		double[][] matr = new double[][] { { 2 * (bx - ax), 2 * (by - ay) }, { 2 * (cx - ax), 2 * (cy - ay) }, };
 
-		// getChildren().addAll(0, asList);
 		return MatrixSolver.solve(matr, coef2);
 	}
 

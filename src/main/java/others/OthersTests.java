@@ -9,6 +9,16 @@ import java.util.stream.IntStream;
 import org.apache.commons.math3.complex.Complex;
 
 public class OthersTests {
+	private static final class EanFactorReducer implements IntBinaryOperator {
+		private int factor = 1;
+
+		@Override
+		public int applyAsInt(int sum, int i) {
+			factor = factor == 1 ? 3 : 1;
+			return sum + i * factor;
+		}
+	}
+
 	enum Estado {
 		ERROR(null), CLOSED(null), LAST_ACK(of("RCV_ACK", Estado.CLOSED)), CLOSE_WAIT(of("APP_CLOSE", LAST_ACK)), TIME_WAIT(of("APP_TIMEOUT", CLOSED)), CLOSING(
 				of("RCV_ACK", TIME_WAIT)), FIN_WAIT_2(of("RCV_FIN", TIME_WAIT)), FIN_WAIT_1(of("RCV_FIN", CLOSING, "RCV_FIN_ACK", TIME_WAIT,
@@ -71,15 +81,7 @@ public class OthersTests {
 	public static boolean validate(final String eanCode) {
 
 		int checksum = eanCode.chars().limit(eanCode.length() - 1L).map(i -> Character.getNumericValue((char) i))
-				.reduce(0, new IntBinaryOperator() {
-					private int factor = 1;
-
-			@Override
-			public int applyAsInt(int sum, int i) {
-				factor = factor == 1 ? 3 : 1;
-				return sum + i * factor;
-			}
-		});
+				.reduce(0, new EanFactorReducer());
 		checksum = (10 - checksum % 10) % 10;
 		return checksum == Character.getNumericValue(eanCode.charAt(eanCode.length() - 1));
 	}

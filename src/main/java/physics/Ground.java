@@ -13,7 +13,7 @@ import org.jbox2d.dynamics.FixtureDef;
  *
  * @author wyoung
  */
-public class Ground extends PhysicalObject {
+public class Ground extends BasePhysicalObject {
     
     public Ground() {
         build();

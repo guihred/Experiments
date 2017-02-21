@@ -2,7 +2,6 @@ package labyrinth;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -81,8 +80,6 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 					LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 					rectangle.setTranslateX(k * SIZE);
 					rectangle.setTranslateZ(l * SIZE);
-					// Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
-					// SIZE, SIZE / 2);
 					root.getChildren().add(rectangle);
 				}
 			}

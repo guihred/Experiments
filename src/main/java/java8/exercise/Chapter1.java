@@ -40,7 +40,7 @@ public final class Chapter1 {
 	private Chapter1() {
 	}
 
-	/*
+	/***
 	 * Write a static method andThen that takes as parameters two Runnable
 	 * instances and returns a Runnable that runs the first, then the second. In
 	 * the main method, pass two lambda expressions into a call to andThen, and
@@ -55,7 +55,7 @@ public final class Chapter1 {
 
 	}
 
-	/*
+	/**
 	 * Is the comparator code in the Arrays.sort method called in the same
 	 * thread as the call to sort or a different thread?
 	 * 
@@ -72,7 +72,7 @@ public final class Chapter1 {
 
 	}
 
-	/*
+	/**
 	 * Using the listFiles(FileFilter) and isDirectory methods of the
 	 * java.io.File class, write a method that returns all subdirectories of a
 	 * given directory. Use a lambda expression instead of a FileFilter object.
@@ -86,7 +86,7 @@ public final class Chapter1 {
 
 	}
 
-	/*
+	/**
 	 * Using the list(FilenameFilter) method of the java.io.File class, write a
 	 * method that returns all files in a given directory with a given
 	 * extension. Use a lambda expression, not a FilenameFilter. Which variables
@@ -97,7 +97,7 @@ public final class Chapter1 {
 
 	}
 
-	/*
+	/**
 	 * Given an array of File objects, sort it so that the directories come
 	 * before the files, and within each group, elements are sorted by path
 	 * name. Use a lambda expression, not a Comparator.
@@ -116,7 +116,8 @@ public final class Chapter1 {
 		// Too lazy to make some code and test how many lines I'd have saved
 		// :-P.
 	}
-	/*
+
+	/**
 	 * Didn't you always hate it that you had to deal with checked exceptions in
 	 * a Runnable? Write a method uncheck that catches all checked exceptions
 	 * and turns them into unchecked exceptions. For example, new
@@ -145,12 +146,10 @@ public final class Chapter1 {
 		).run();
 	}
 
-	/*
+	/**
 	 * What happens when a lambda expression captures values in an enhanced for
-	 * loop such as this one? 
-	 * String[] names = { "Peter", "Paul", "Mary" };
-	 * List<Runnable> runners = new ArrayList<>(); 
-	 * for (String name : names)
+	 * loop such as this one? String[] names = { "Peter", "Paul", "Mary" };
+	 * List<Runnable> runners = new ArrayList<>(); for (String name : names)
 	 * runners.add(() -> System.out.println(name));
 	 * 
 	 * Is it legal? Does each lambda expression capture a different value, or do
@@ -194,13 +193,13 @@ public final class Chapter1 {
 	
 	public static void main(String[] args) {
 		ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 });
-		// ex2(new File("."));
-		// ex3(new File("C:/Users/Note/Documents"), "log");
-		// ex4(new File("C:/Users/Note/Documents").listFiles());
-		// ex6();
-		// ex7();
-		// ex8();
-		// ex9();
+		ex2(new File("."));
+		ex3(new File("C:/Users/Note/Documents"), "log");
+		ex4(new File("C:/Users/Note/Documents").listFiles());
+		ex6();
+		ex7();
+		ex8();
+		ex9();
 	}
 
 	public static Runnable unckeck(RunnableEx runner) {

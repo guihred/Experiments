@@ -24,9 +24,9 @@ public final class GraphAlgorithms {
 		vertices.get(0).assignLow(num, low);
 		System.out.println(num);
 		System.out.println(low);
-		// System.out.println(Vertex.kruskal(vertices));
-		// System.out.println(Vertex.prim(vertices));
-		// sortTopology(vertices);
+		System.out.println(Vertex.kruskal(vertices));
+		System.out.println(Vertex.prim(vertices));
+		Vertex.sortTopology(vertices);
 
 	}
 

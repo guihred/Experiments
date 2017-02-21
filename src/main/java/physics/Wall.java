@@ -13,7 +13,7 @@ import org.jbox2d.dynamics.FixtureDef;
  *
  * @author wyoung
  */
-public class Wall extends PhysicalObject {
+public class Wall extends BasePhysicalObject {
     
     private float worldX;
     private float worldY;

@@ -24,8 +24,8 @@ import javafx.stage.Stage;
  */
 public class RaspiCycle extends Application {
 	private int speed = 1;
-	private final double SCREENHEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
-	private final double SCREENWIDTH = Screen.getPrimary().getVisualBounds().getWidth();
+	private static final double SCREEN_HEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
+	private static final double SCREEN_WIDTH = Screen.getPrimary().getVisualBounds().getWidth();
 	private Canvas canvas;
 	private GraphicsContext gc;
 	private Point2D startPos;
@@ -59,16 +59,16 @@ public class RaspiCycle extends Application {
 		walls.add(getLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX(),
 				bounds.getMaxY()));
 		// Define starting point for our Light Cycle (bottom center)
-		startPos = curPos = new Point2D(SCREENWIDTH / 2, SCREENHEIGHT - 10);
+		startPos = curPos = new Point2D(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 10);
 		// Prepare the Game Grid (screen)
-		canvas = new Canvas(SCREENWIDTH, SCREENHEIGHT);
+		canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
 		gc = canvas.getGraphicsContext2D();
 		gc.setFill(Color.rgb(2, 2, 47));
-		gc.fillRect(0, 0, SCREENWIDTH, SCREENHEIGHT);
+		gc.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		drawGameGrid();
 		drawWalls(bounds);
 		root.getChildren().add(canvas);
-		Scene scene = new Scene(root, SCREENWIDTH, SCREENHEIGHT);
+		Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 		scene.setCursor(Cursor.NONE);
 		scene.setOnKeyPressed(this::handleKeyPress);
 		primaryStage.setTitle("RaspiCycle");
@@ -115,21 +115,21 @@ public class RaspiCycle extends Application {
 	}
 
 	private void drawGameGrid() {
-		int boxSize = (int) (Math.min(SCREENWIDTH, SCREENHEIGHT) / 10);
+		int boxSize = (int) (Math.min(SCREEN_WIDTH, SCREEN_HEIGHT) / 10);
 		int i;
 		gc.setStroke(Color.BLACK);
 		gc.setLineWidth(5);
 
 		// Draw horizontal lines
 		i = boxSize;
-		while (i < SCREENHEIGHT) {
-			gc.strokeLine(0, i, SCREENWIDTH, i);
+		while (i < SCREEN_HEIGHT) {
+			gc.strokeLine(0, i, SCREEN_WIDTH, i);
 			i += boxSize;
 		}
 		// Draw vertical lines
 		i = boxSize;
-		while (i < SCREENWIDTH) {
-			gc.strokeLine(i, 0, i, SCREENHEIGHT);
+		while (i < SCREEN_WIDTH) {
+			gc.strokeLine(i, 0, i, SCREEN_HEIGHT);
 			i += boxSize;
 		}
 	}
@@ -160,9 +160,7 @@ public class RaspiCycle extends Application {
 			speed = 2;
 		} else if (event.getCode() == KeyCode.DIGIT3) {
 			speed = 3;
-		}
-
-		else if (event.getCode() == KeyCode.ESCAPE) {
+		} else if (event.getCode() == KeyCode.ESCAPE) {
 			animTimer.stop();
 			Platform.exit();
 		}

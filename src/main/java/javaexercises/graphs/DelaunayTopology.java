@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class DelaunayTopology extends GenTopology {
+public class DelaunayTopology extends BaseTopology {
 
 
 	public DelaunayTopology(int size, Graph graph) {
@@ -30,7 +30,7 @@ public class DelaunayTopology extends GenTopology {
 		double x = 0;
 		double y = 0;
 		for (int i = 0; i < size; i++) {
-			Cell cell = graph.getModel().addCell(GenTopology.identifier(i), CellType.CIRCLE);
+			Cell cell = graph.getModel().addCell(BaseTopology.identifier(i), CellType.CIRCLE);
 			double a = rnd.nextDouble() * 2 * Math.PI;
 			x += bound * Math.cos(a);
 			y += bound * Math.sin(a);

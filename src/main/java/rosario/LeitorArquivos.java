@@ -202,9 +202,6 @@ public final class LeitorArquivos {
 			Workbook xssfWorkbook = new XSSFWorkbook(fileInputStream);
 			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
 			Iterator<Row> iterator = sheetAt.iterator();
-			// for (int i = 0; i < 1; i++) {
-			// iterator.next();
-			// }
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
 			int i = 1;
 			while (iterator.hasNext()) {

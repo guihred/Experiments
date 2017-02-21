@@ -2,7 +2,8 @@ package exercism;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -25,7 +26,6 @@ public class ScrabbleScoreTest {
 	@Test
 	public void test() {
 		Scrabble scrabble = new Scrabble(input);
-
 		assertEquals(expectedOutput, scrabble.getScore());
 	}
 

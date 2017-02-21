@@ -30,7 +30,7 @@ import javafx.scene.media.MediaPlayer.Status;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
-public class PlayerControlView extends AbstractView {
+public class PlayerControlView extends BaseSongView {
 
 	private Label statusLabel;
 	private Slider volumeSlider;

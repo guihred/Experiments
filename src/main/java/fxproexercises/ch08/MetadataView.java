@@ -22,7 +22,7 @@ import javafx.scene.layout.RowConstraints;
  *
  * @author Note
  */
-public class MetadataView extends AbstractView {
+public class MetadataView extends BaseSongView {
     private Label artist;
     private Label album;
     private Label title;

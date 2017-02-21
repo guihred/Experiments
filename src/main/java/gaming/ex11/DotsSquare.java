@@ -16,7 +16,6 @@ public class DotsSquare extends Region {
     private final Set<DotsSquare> adjacencies = new HashSet<>();
 
     public DotsSquare(int i, int j) {
-//        setStyle("-fx-background-color:green;");
         setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
         this.i = i;
         this.j = j;
@@ -32,7 +31,7 @@ public class DotsSquare extends Region {
 
     @Override
     public String toString() {
-        return "(" + getI() + "," + getJ() + ")";
+        return "(" + i + "," + j + ")";
     }
 
     Double[] getCenter() {
