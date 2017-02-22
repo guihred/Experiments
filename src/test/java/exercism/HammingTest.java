@@ -3,6 +3,7 @@ package exercism;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import exercism.Hamming;
 import org.junit.Test;
 
 public class HammingTest {

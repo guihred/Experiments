@@ -27,16 +27,8 @@ public class ConvergeLayout implements Layout {
 		if (!edges.isEmpty()) {
 
 			double media = graph.getModel().getAllEdges().parallelStream().mapToInt(Edge::getValor).average().getAsDouble();
-			double sumX = edges.parallelStream().mapToDouble(e1 -> {
-				double angulo1 = e1.getAngulo();
-				Integer valor = e1.getValor();
-				return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
-			}).average().getAsDouble();
-			double sumY = edges.parallelStream().mapToDouble(e2 -> {
-				double angulo2 = e2.getAngulo();
-				Integer valor = e2.getValor();
-				return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
-			}).average().getAsDouble();
+			double sumX = edges.parallelStream().mapToDouble(e1 -> calculateXSum(bound, media, e1)).average().getAsDouble();
+			double sumY = edges.parallelStream().mapToDouble(e2 -> calculateYSum(bound, media, e2)).average().getAsDouble();
 			if (sumY < bound / 2 || sumX < bound / 2) {
 				double layoutX = cell.getLayoutX();
 				double layoutY = cell.getLayoutY();
@@ -44,6 +36,18 @@ public class ConvergeLayout implements Layout {
 			}
 
 		}
+	}
+
+	private double calculateYSum(double bound, double media, Edge e2) {
+		double angulo2 = e2.getAngulo();
+		Integer valor = e2.getValor();
+		return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
+	}
+
+	private double calculateXSum(double bound, double media, Edge e1) {
+		double angulo1 = e1.getAngulo();
+		Integer valor = e1.getValor();
+		return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
 	}
 
 	@Override

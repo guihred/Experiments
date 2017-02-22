@@ -2,6 +2,7 @@ package exercism;
 
 import static org.junit.Assert.assertEquals;
 
+import exercism.Crypto;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;

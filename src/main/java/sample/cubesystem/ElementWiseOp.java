@@ -15,7 +15,7 @@ public final class ElementWiseOp {
 		POW((a, b) -> Math.pow(a, b)), 
 		MOD((a, b) -> a % b);
 
-		private transient final BiFunction<Double, Double, Double> function;
+		private final transient BiFunction<Double, Double, Double> function;
 		private Operation(BiFunction<Double, Double, Double> op) {
 			function = op;
 		}

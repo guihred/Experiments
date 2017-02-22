@@ -15,6 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import simplebuilder.ResourceFXUtils;
 
+/**
+ * The Class BrazilianVerbsConjugator.
+ * 
+ * Implements a way to conjugate a verb of the portuguese language. Given a verb
+ * in its infinitive form (-ar,-er,-ir,-or), the method returns a map of
+ * conjugation of the verb in their 6 modes of conjugation present in the
+ * portuguese language. The method won't verify if the given verb exists and
+ * will return null if the verb does not end in 'ar','er','ir' or 'or'.
+ */
 public class BrazilianVerbsConjugator {
 	enum Mode {
 		PRESENT, PRETERITE, IMPERFECT, PLUPERFECT, FUTURE, CONDITIONAL;
@@ -38,7 +47,6 @@ public class BrazilianVerbsConjugator {
 			.put("poder", Arrays.asList(""))
 			.put("ouvir", Arrays.asList(""))
 			.put("saber", Arrays.asList(""))
-			.put("medir", Arrays.asList(""))
 			.put("subir", Arrays.asList(""))
 			.put("fugir", Arrays.asList(""))
 			.put("servir", Arrays.asList(""))
@@ -59,7 +67,7 @@ public class BrazilianVerbsConjugator {
 			.put("querer", Arrays.asList("", "des", "mal", "re"))
 			.put("seguir", Arrays.asList("","con", "per", "pros"))
 			.put("gredir", Arrays.asList("a", "re", "trans", "pro"))
-			.put("pedir", Arrays.asList("", "desim", "des", "ex", "im"))
+			.put("edir", Arrays.asList("p", "m", "desimp", "desp", "exp", "imp"))
 			.put("sentir", Arrays.asList("","as", "con", "pres", "res" ))
 			.put("iar", Arrays.asList("od", "remed", "med", "intermed", "incend", "ans"))
 			.put("ter", Arrays.asList("", "abs", "con", "de", "entre", "man", "ob", "re", "sus", "ver"))
@@ -72,7 +80,8 @@ public class BrazilianVerbsConjugator {
 
 	private static Map<Mode, String[]> second = new EnumMap<>(Mode.class);
 
-	private static final Map<String, Map<Mode, List<String>>> SIMPLE_IRREGULARITIES = ImmutableMap.<String, Map<Mode, List<String>>>builder()
+	private static final Map<String, Map<Mode, List<String>>> SIMPLE_IRREGULARITIES = ImmutableMap
+			.<String, Map<Mode, List<String>>>builder()
 			.put("vertir",ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT,Arrays.asList("virto", "vertes", "verte", "vertimos", "vertis", "vertem")).build())
 			.put("servir", ImmutableMap.<Mode, List<String>>builder()
@@ -117,10 +126,8 @@ public class BrazilianVerbsConjugator {
 					.put(Mode.PRESENT, Arrays.asList("cubro", "cobres", "cobre", "cobrimos", "cobris", "cobrem")).build())
 			.put("gredir", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("grido", "grides", "gride", "gredimos", "gredis", "gridem")).build())
-			.put("medir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("meço", "medes", "mede", "medimos", "medis", "medem")).build())
-			.put("pedir", ImmutableMap.<Mode, List<String>>builder()
-					.put(Mode.PRESENT, Arrays.asList("peço", "pedes", "pede", "pedimos", "pedis", "pedem")).build())
+			.put("edir", ImmutableMap.<Mode, List<String>>builder()
+					.put(Mode.PRESENT, Arrays.asList("eço", "edes", "ede", "edimos", "edis", "edem")).build())
 			.put("poder", ImmutableMap.<Mode, List<String>>builder()
 					.put(Mode.PRESENT, Arrays.asList("posso", "podes", "pode", "podemos", "podeis", "podem"))
 					.put(Mode.PRETERITE, Arrays.asList("pude", "pudeste", "pôde", "pudemos", "pudestes", "puderam"))
@@ -217,7 +224,7 @@ public class BrazilianVerbsConjugator {
 		}
 	}
 
-	public static EnumMap<Mode, List<String>> conjugate(String verb) {
+	public static Map<Mode, List<String>> conjugate(String verb) {
 		if (isIrregular(verb)) {
 			return
 			irregularConjugation(verb);
@@ -436,7 +443,7 @@ public class BrazilianVerbsConjugator {
 			if (map.containsKey(m)) {
 				List<String> a = map.get(m);
 				String[] array = a.toArray(new String[0]);
-				if (m == Mode.PRESENT && (verb.equals("ter") || verb.equals("vir"))) {
+				if (m == Mode.PRESENT && ("ter".equals(verb) || "vir".equals(verb))) {
 					array[1] = array[1].replaceAll("é", "e");
 					array[2] = array[2].replaceAll("é", "e");
 				}
@@ -460,8 +467,8 @@ public class BrazilianVerbsConjugator {
 			tens.add(addDesinencia);
 			enumMap.put(entry.getKey(), addDesinencia);
 		}
-		System.out.println(verb);
 		if (DEBUG) {
+			System.out.println(verb);
 			System.out.println();
 			int bigger = tens.stream().flatMap(List<String>::stream).mapToInt(String::length).max().getAsInt();
 			for (int i = 0; i < tens.get(0).size(); i++) {

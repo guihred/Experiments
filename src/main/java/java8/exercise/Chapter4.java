@@ -59,7 +59,7 @@ public final class Chapter4 {
 	}
 
 	/**
-	 * Enhance the program in Section 4.5, �Bindings,� on page 75 so that the
+	 * Enhance the program in Section 4.5, Bindings, on page 75 so that the
 	 * circle stays centered and always touches at least two of the sides of the
 	 * scene.s
 	 */

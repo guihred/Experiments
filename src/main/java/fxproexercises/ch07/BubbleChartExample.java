@@ -12,7 +12,6 @@ import javafx.scene.chart.BubbleChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 public class BubbleChartExample extends Application {
 
@@ -44,16 +43,4 @@ public class BubbleChartExample extends Application {
 		primaryStage.show();
 	}
 
-}
-
-class SimpleStringConverter extends StringConverter<Number> {
-	@Override
-	public String toString(Number n) {
-		return String.valueOf(n.intValue() / 10);
-	}
-
-	@Override
-	public Number fromString(String s) {
-		return Integer.valueOf(s) * 10;
-	}
 }

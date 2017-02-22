@@ -60,7 +60,7 @@ public final class Chapter2 {
 	 * Write a parallel version of the for loop in Section 2.1, From Iteration
 	 * to Stream Operations, on page 22. Obtain the number of processors. Make
 	 * that many separate threads, each working on a segment of the list, and
-	 * total up the results as they come in. (You don�t want the threads to
+	 * total up the results as they come in. (You don't want the threads to
 	 * update a single counter. Why?)
 	 */
 	public static void ex1() throws Exception {

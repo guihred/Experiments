@@ -125,7 +125,7 @@ public final class Chapter1 {
 	 * })).start(); // Look, no catch (InterruptedException)! Hint: Define an
 	 * interface RunnableEx whose run method may throw any exceptions. Then
 	 * implement public static Runnable uncheck(RunnableEx runner). Use a lambda
-	 * expression inside the uncheck function. Why can�t you just use
+	 * expression inside the uncheck function. Why can't you just use
 	 * Callable<Void> instead of RunnableEx?
 	 * 
 	 * A: Can't use Callable<Void> because it causes a compilation error if you

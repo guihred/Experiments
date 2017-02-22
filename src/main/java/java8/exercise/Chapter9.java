@@ -7,7 +7,7 @@ public final class Chapter9 {
 
 	/**
 	 * 1. Implement a code segment that constructs a Scanner and a PrintWriter
-	 * at the end of Section 9.1.1, �The try-with-resources Statement,� on page
+	 * at the end of Section 9.1.1, 'The try-with-resources Statement,� on page
 	 * 180, without the try-with-resources statement. Be sure to close both
 	 * objects, provided they have been properly constructed. You need to
 	 * consider the following conditions: -The Scanner constructor throws an

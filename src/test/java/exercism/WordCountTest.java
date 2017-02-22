@@ -2,6 +2,7 @@ package exercism;
 
 import static org.junit.Assert.assertEquals;
 
+import exercism.WordCount;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;

@@ -32,7 +32,7 @@ public class BrazilianWordRulesTest {
 		});
 	}
 
-	private int countMatches(Pattern compile, String w) {
+	private static int countMatches(Pattern compile, String w) {
 		Matcher matcher = compile.matcher(w);
 		int count = 0;
 		while (matcher.find()) {

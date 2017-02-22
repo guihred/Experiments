@@ -63,7 +63,7 @@ public final class TF_IDF {
 	 * 
 	 * idf("this", D) = log (2/2) = 0
 	 * 
-	 * So tf�idf is zero for this term, and with the basic definition this is
+	 * So tf-idf is zero for this term, and with the basic definition this is
 	 * true of any term that occurs in all documents.
 	 * 
 	 * A slightly more interesting example arises from the word "example", which

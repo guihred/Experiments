@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * Then, the normalized characters are broken into rows. These rows can be
  * regarded as forming a rectangle when printed with intervening newlines.
  */
-class Crypto {
+public class Crypto {
 
 	private String plainText;
 

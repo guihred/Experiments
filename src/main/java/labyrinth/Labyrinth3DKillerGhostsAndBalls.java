@@ -117,7 +117,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 					dialogStage.close();
 				});
 				VBox vbox = new VBox();
-				vbox.getChildren().addAll(new Text("Voc� Venceu"), button);
+				vbox.getChildren().addAll(new Text("Você Venceu"), button);
 				vbox.setAlignment(Pos.CENTER);
 				vbox.setPadding(new Insets(5));
 				dialogStage.setScene(new Scene(vbox));

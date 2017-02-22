@@ -31,7 +31,7 @@ public final class Chapter8 {
 
 	/*
 	 * Write a program that adds, subtracts, divides, and compares numbers
-	 * between 0 and 232 � 1, using int values and unsigned operations. Show why
+	 * between 0 and 232 -1, using int values and unsigned operations. Show why
 	 * divideUnsigned and remainderUnsigned are necessary.
 	 */
 	public static void ex1() {

@@ -22,6 +22,48 @@ import simplebuilder.ResourceFXUtils;
 public class StatsLogAccess {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatsLogAccess.class);
 
+	public static void statisticaDemoraArquivo() throws IOException {
+		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
+				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
+		try (PrintStream out = new PrintStream(new FileOutputStream(ResourceFXUtils.toFile("acessos.txt")), true,
+				StandardCharsets.UTF_8.name());) {
+			for (Path path : lista) {
+				try {
+					Map<String, LongSummaryStatistics> stats = Files.lines(path)
+							.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
+							.collect(Collectors.groupingBy(tentarFuncao(linha -> {
+								String string = linha.split(" ")[6];
+								if (string.contains("?")) {
+									return string.substring(0, string.indexOf("?"));
+								}
+	
+								return string;
+							}), Collectors.summarizingLong((ToLongFunction<String>) (String linha) -> {
+								if (linha == null || linha.isEmpty()) {
+									return 0L;
+								}
+	
+								final String[] a = linha.split(" ");
+								return Long.parseLong(a[a.length - 1]);
+							})));
+					out.println(path + "--------------------------");
+	
+					stats.entrySet().stream()
+							.sorted(Comparator
+									.comparing((Entry<String, LongSummaryStatistics> c) -> c.getValue().getAverage())
+									.reversed())
+							.forEach(entry -> out.println(entry.getKey() + "  ,  " + entry.getValue()));
+				} catch (Exception e) {
+					LOGGER.error("", e);
+				}
+	
+			}
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
+	
+	}
+
 	public static void main(String[] args) {
 		try {
 			statisticaDemoraArquivo();
@@ -105,50 +147,6 @@ public class StatsLogAccess {
 			LOGGER.error("", e);
 		}
 	}
-
-	public static void statisticaDemoraArquivo() throws IOException {
-		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
-				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new FileOutputStream(ResourceFXUtils.toFile("acessos.txt")), true,
-				StandardCharsets.UTF_8.name());) {
-			for (Path path : lista) {
-				try {
-					Map<String, LongSummaryStatistics> stats = Files.lines(path)
-							.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
-							.collect(Collectors.groupingBy(tentarFuncao(linha -> {
-								String string = linha.split(" ")[6];
-								if (string.contains("?")) {
-									return string.substring(0, string.indexOf("?"));
-								}
-
-								return string;
-							}), Collectors.summarizingLong((ToLongFunction<String>) (String linha) -> {
-								if (linha == null || linha.isEmpty()) {
-									return 0L;
-								}
-
-								final String[] a = linha.split(" ");
-								return Long.parseLong(a[a.length - 1]);
-							})));
-					out.println(path + "--------------------------");
-
-					stats.entrySet().stream()
-							.sorted(Comparator
-									.comparing((Entry<String, LongSummaryStatistics> c) -> c.getValue().getAverage())
-									.reversed())
-							.forEach(entry -> out.println(entry.getKey() + "  ,  " + entry.getValue()));
-				} catch (Exception e) {
-					LOGGER.error("", e);
-				}
-
-			}
-		} catch (Exception e) {
-			LOGGER.error("", e);
-		}
-
-	}
-
-
 
 	@FunctionalInterface
 	protected interface FunctionEx<T, R> {

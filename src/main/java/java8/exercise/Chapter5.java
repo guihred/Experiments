@@ -13,7 +13,7 @@ public final class Chapter5 {
 	private Chapter5() {
 	}
 
-	/* Compute Programmer�s Day without using plusDays. */
+	/* Compute Programmer's Day without using plusDays. */
 	public static void ex1() {
 		LocalDate programmerDay = LocalDate.ofYearDay(2015, 256);
 		System.out.println(programmerDay);

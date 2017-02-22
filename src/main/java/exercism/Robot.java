@@ -41,7 +41,7 @@ public class Robot {
 	 *
 	 * @return the name
 	 */
-	String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -68,7 +68,7 @@ public class Robot {
 	/**
 	 * Reset.
 	 */
-	final void reset() {
+	public final void reset() {
 		name = newLetter() + newLetter() + newNumber() + newNumber() + newNumber();
 	}
 	

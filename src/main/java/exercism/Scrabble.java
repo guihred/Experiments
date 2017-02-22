@@ -47,7 +47,7 @@ public class Scrabble {
 	 *
 	 * @return the score
 	 */
-	int getScore() {
+	public int getScore() {
 		if (input == null) {
 			return 0;
 		}
