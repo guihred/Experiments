@@ -13,7 +13,7 @@ public class User {
 	private StringProperty password = new SimpleStringProperty(this,
 			PASSWORD_PROP_NAME, "senha");
 
-	public ObservableValue<? extends String> userNameProperty() {
+	public ObservableValue<String> userNameProperty() {
 		return userName;
 	}
 

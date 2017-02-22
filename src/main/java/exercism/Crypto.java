@@ -62,9 +62,22 @@ class Crypto {
 	public String getNormalizedCipherText() {
 		String cipherText = getCipherText();
 
-		int intValue = (int) Math.floor(Math.sqrt(cipherText.length()));
+		int sqrtCipher = (int) Math.floor(Math.sqrt(cipherText.length()));
+		String[] split = cipherText.split("(?<=\\G.{" + sqrtCipher + "})");
+		if (split.length > 1) {
+			int length = split[split.length - 1].length();
+			while (length < sqrtCipher - 1) {
+				for (int i = sqrtCipher - length-1,j=0; i > 0; i--,j++) {
+					String a = split[split.length - 2 - j];
+					String b = split[split.length - 1 - j];
+					split[split.length - 2 - j] = a.substring(0, a.length() - 1);
+					split[split.length - 1 - j] = a.substring(a.length() - 1, a.length()) + b;
+				}
+				length = split[split.length - 1].length();
+			}
+		}
 
-		return Stream.of(cipherText.split("(?<=\\G.{" + intValue + "})")).collect(Collectors.joining(" "));
+		return Stream.of(split).collect(Collectors.joining(" "));
 	}
 
 }

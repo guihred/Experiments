@@ -81,7 +81,7 @@ public class BobTest {
 
 	@Test
 	public void calmlySpeakingWithUmlauts() {
-		assertEquals("Whatever.", bob.hey("\u00dcML\u00e4\u00dcTS!"));
+		assertEquals("Whatever.", bob.hey("\u00dcml\u00e4\u00dcts"));
 	}
 
 

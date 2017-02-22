@@ -38,15 +38,12 @@ public class SimpleScene3D extends Application {
 			picked.setScaleZ(scalar);
 		}
 	};
-	private EventHandler<? super KeyEvent> keyPressedHandler = event -> {
-		// Add shift modifier to simulate "Running Speed"
 
+	private void handleKeyPressed(KeyEvent event) {
 		double change = event.isShiftDown() ? CAMERA_MODIFIER : CAMERA_QUANTITY;
 		// What key did the user press?
-
 		KeyCode keycode = event.getCode();
 		// Step 2c: Add Zoom controls
-
 		if (keycode == KeyCode.W) {
 			camera.setTranslateZ(camera.getTranslateZ() + change);
 		}
@@ -54,14 +51,13 @@ public class SimpleScene3D extends Application {
 			camera.setTranslateZ(camera.getTranslateZ() - change);
 		}
 		// Step 2d: Add Strafe controls
-
 		if (keycode == KeyCode.A) {
 			camera.setTranslateX(camera.getTranslateX() - change);
 		}
 		if (keycode == KeyCode.D) {
 			camera.setTranslateX(camera.getTranslateX() + change);
 		}
-	};
+	}
 	@Override
 	public void start(Stage primaryStage) {
 		// Step 1a: Build your Scene and Camera
@@ -125,8 +121,7 @@ public class SimpleScene3D extends Application {
 		// End Step 2a
 
 		// Step 2b: Add a Movement Keyboard Handler
-
-		scene.setOnKeyPressed(keyPressedHandler);
+		scene.setOnKeyPressed(this::handleKeyPressed);
 		// End Step 2b-d
 
 		// Step 3: Add a Camera Control Mouse Event handler

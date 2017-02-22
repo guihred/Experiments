@@ -16,14 +16,14 @@ package exercism;
 public class Bob {
 
 	public String hey(String s) {
-		if (s.matches(".+\\?")) {
-			return "Sure.";
+		if (s.matches("[\\s]*")) {
+			return "Fine. Be that way!";
 		}
-		if (s.matches(".[A-Z\\s!]+[^a-z]*")) {
+		if (s.matches("[a-z0-9, ]*.[A-Z\\s!]{2,}[^a-z]*")) {
 			return "Whoa, chill out!";
 		}
-		if (s.matches("[ ]*")) {
-			return "Fine. Be that way!";
+		if (s.matches(".+\\?")) {
+			return "Sure.";
 		}
 
 		return "Whatever.";
