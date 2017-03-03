@@ -25,7 +25,7 @@ import simplebuilder.ResourceFXUtils;
  * will return null if the verb does not end in 'ar','er','ir' or 'or'.
  */
 public class BrazilianVerbsConjugator {
-	enum Mode {
+	public enum Mode {
 		PRESENT, PRETERITE, IMPERFECT, PLUPERFECT, FUTURE, CONDITIONAL;
 	}
 
