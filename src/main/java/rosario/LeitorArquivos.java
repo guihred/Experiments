@@ -2,20 +2,31 @@ package rosario;
 
 import java.awt.Color;
 import java.awt.Desktop;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -26,6 +37,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import simplebuilder.ResourceFXUtils;
 
 public final class LeitorArquivos {
@@ -197,9 +209,13 @@ public final class LeitorArquivos {
 	}
 
 	public static ObservableList<Medicamento> getMedicamentosAnvisa(File selectedFile) throws IOException {
+		if (selectedFile.getName().endsWith(".pdf")) {
+			return getMedicamentosSNGPCPDF(selectedFile);
+		}
 
 		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);) {
-			Workbook xssfWorkbook = new XSSFWorkbook(fileInputStream);
+			Workbook xssfWorkbook = selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
+					: new XSSFWorkbook(fileInputStream);
 			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
 			Iterator<Row> iterator = sheetAt.iterator();
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
@@ -225,31 +241,38 @@ public final class LeitorArquivos {
 			if (cell0 == null) {
 				return false;
 			}
-			String registro;
-			if (cell0.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-				registro = Integer.toString((int) cell0.getNumericCellValue());
-			} else {
-				registro = cell0.getStringCellValue().replaceAll("\\D+", "");
-			}
 			Medicamento medicamento = new Medicamento();
-			medicamento.setRegistro(registro);
+			medicamento.setRegistro(getRegistro(cell0));
 			medicamento.setNome(next.getCell(1).getStringCellValue());
-			Cell cell = next.getCell(3);
-			String lote = "";
-			if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-				lote = Integer.toString((int) cell.getNumericCellValue());
-			} else if (cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING) {
-				lote = cell.getStringCellValue();
-			}
-			medicamento.setLote(lote);
-			medicamento.setQuantidade((int) next.getCell(4).getNumericCellValue());
+			medicamento.setLote(getLote(next));
+			medicamento.setQuantidade((int) next.getCell(next.getLastCellNum() - 1).getNumericCellValue());
 			medicamentos.add(medicamento);
 		} catch (Exception e) {
 			System.out.println("ERRO LINHA=" + i);
 			LOGGER.error("", e);
-
 		}
 		return true;
+	}
+
+	private static String getRegistro(Cell cell0) {
+		String registro;
+		if (cell0.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+			registro = Integer.toString((int) cell0.getNumericCellValue());
+		} else {
+			registro = cell0.getStringCellValue().replaceAll("\\D+", "");
+		}
+		return registro;
+	}
+
+	private static String getLote(Row row) {
+		Cell cell = row.getCell(row.getLastCellNum() - 2);
+		String lote = "";
+		if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+			lote = Integer.toString((int) cell.getNumericCellValue());
+		} else if (cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING) {
+			lote = cell.getStringCellValue();
+		}
+		return lote;
 	}
 
 	public static void exportarArquivo(ObservableList<Medicamento> medicamentosLoja,
