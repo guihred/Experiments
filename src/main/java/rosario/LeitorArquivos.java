@@ -170,8 +170,13 @@ public final class LeitorArquivos {
 			String[] linhas = parsedText.split("\r\n");
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
 			for (int i = 0; i < linhas.length; i++) {
-				tryReadRosarioLine(linhas, medicamentos, i);
-
+				Medicamento medicamento = tryReadRosarioLine(linhas, i);
+				if (medicamento != null) {
+					medicamentos.add(medicamento);
+					if (StringUtil.isBlank(medicamento.getNome())) {
+						medicamento.setNome(medicamentos.get(medicamentos.size() - 2).getNome());
+					}
+				}
 			}
 			return medicamentos;
 		} catch (Exception e) {
@@ -180,26 +185,26 @@ public final class LeitorArquivos {
 
 	}
 
-	private static void tryReadRosarioLine(String[] linhas, ObservableList<Medicamento> arrayList, int i) {
+	private static Medicamento tryReadRosarioLine(String[] linhas, int i) {
 		try {
 			String s = linhas[i];
 			if (!s.endsWith(",00")) {
-				return;
+				return null;
 			}
 			String[] split = s.trim().split("\\s+");
-			if (split.length > 2) {
+			if (split.length >= 2) {
 				Medicamento medicamento = new Medicamento();
-				medicamento.setCodigo(Integer.valueOf(split[0]));
-				medicamento.setNome(
-						Stream.of(split).skip(1).limit((long) split.length - 2)
+				medicamento.setCodigo(Integer.valueOf(split[split.length - 2]));
+				medicamento.setNome(Stream.of(split).limit((long) split.length - 2)
 								.collect(Collectors.joining(" ")));
 				medicamento.setQuantidade(
 						Integer.valueOf(split[split.length - 1].replace(",00", "").replace(".", "")));
-				arrayList.add(medicamento);
+				return medicamento;
 			}
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
+		return null;
 	}
 
 	private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
