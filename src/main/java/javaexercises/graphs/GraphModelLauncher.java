@@ -172,7 +172,7 @@ public class GraphModelLauncher extends Application {
 
 	private String[] getWords() {
 		try {
-			return Files.lines(ResourceFXUtils.toPath("alice.txt")).flatMap(e -> Stream.of(e.split("[^a-zA-Z]")))
+			return Files.lines(ResourceFXUtils.toPath("alice.txt")).flatMap((String e) -> Stream.of(e.split("[^a-zA-Z]")))
 					.filter(s -> s.length() == 4).map(String::toLowerCase).distinct().toArray(String[]::new);
 		} catch (IOException e) {
 			LOGGER.error("", e);

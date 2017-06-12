@@ -259,7 +259,7 @@ public class DotsModel {
 			if (!collect1.isEmpty()) {
 				points.get(jogadores[currentPlayer]).addAll(collect1);
 				for (Set<DotsSquare> collect2 : collect1) {
-					final double[] toArray = collect2.stream().flatMap(a -> Stream.of(a.getCenter()))
+					final double[] toArray = collect2.stream().flatMap((DotsSquare a) -> Stream.of(a.getCenter()))
 							.mapToDouble(Double::valueOf).toArray();
 					final Polygon polygon = new Polygon(toArray);
 					polygon.setFill(colors[currentPlayer]);
@@ -309,7 +309,7 @@ public class DotsModel {
 					if (!collect3.isEmpty()) {
 						points.get(jogadores[currentPlayer]).addAll(collect3);
 						collect3.forEach((Set<DotsSquare> q) -> {
-							final double[] toArray = q.stream().flatMap(a -> Stream.of(a.getCenter()))
+							final double[] toArray = q.stream().flatMap((DotsSquare a) -> Stream.of(a.getCenter()))
 									.mapToDouble(Double::valueOf).toArray();
 							final Polygon polygon = new Polygon(toArray);
 							polygon.setFill(colors[currentPlayer]);

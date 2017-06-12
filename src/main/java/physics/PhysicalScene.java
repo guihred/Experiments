@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.World;
  */
 public class PhysicalScene extends Scene {
     
-	protected static World world = new World(new Vec2(0, -9.86F), true);
+	protected static World world = new World(new Vec2(0, -9.86F));
     
     public PhysicalScene(Parent parent, double d, double d1, boolean bln) {
         super(parent, d, d1, bln);

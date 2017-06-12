@@ -273,7 +273,7 @@ public final class Chapter6 {
 
 	private static Stream<String> getWords(URI txtFile) throws IOException {
 		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).parallel()
-				.flatMap(m -> Stream.of(m.split("[\\P{L}]+")))
+				.flatMap((String m) -> Stream.of(m.split("[\\P{L}]+")))
 				.filter(s -> !s.isEmpty());
 	}
 

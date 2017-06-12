@@ -98,7 +98,7 @@ public final class BrazilianWordSyllableSplitter {
 			}
 		}
 
-		String collect = syllable.stream().flatMap(sy -> Stream.of(sy.split(REGEX_HIATUS)))
+		String collect = syllable.stream().flatMap((String sy) -> Stream.of(sy.split(REGEX_HIATUS)))
 				.collect(Collectors.joining("-"));
 		if (DEBUG) {
 			System.out.println(word + " " + collect);

@@ -29,7 +29,7 @@ public class VoronoiRegion extends Group {
 		List<double[]> pontosImportantes = triangles.stream().flatMap(Triangle::allPoints).filter(pon -> !p.equals(pon)).distinct().map(p::add)
 				.map(po -> po.mult(0.5)).map(po -> new double[] { po.x + w, po.y + h }).collect(Collectors.toList());
 
-		double[] array = collect.stream().sorted(comparator).flatMap(t -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
+		double[] array = collect.stream().sorted(comparator).flatMap((double[]t) -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
 
 		Polygon polygon = new Polygon(array);
 		double x = x(p.getC());
@@ -39,7 +39,7 @@ public class VoronoiRegion extends Group {
 			double[] ds = pontosImportantes.get(i);
 			if (!polygon.contains(ds[0], ds[1])) {
 				collect.add(new double[] { ds[0], ds[1] });
-				array = collect.stream().sorted(comparator).flatMap(t -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
+				array = collect.stream().sorted(comparator).flatMap((double[]t) -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
 				polygon = new Polygon(array);
 			}
 		}
