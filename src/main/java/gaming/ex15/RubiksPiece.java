@@ -1,20 +1,28 @@
 package gaming.ex15;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 
 public class RubiksPiece extends Group {
-
-	Map<RubiksCubeFaces, Rotate> rotations = new HashMap<>();
+	private static int count;
+	private final int id;
+	private Map<RubiksCubeFaces, Rotate> rotations = new EnumMap<>(RubiksCubeFaces.class);
 
 	public RubiksPiece(double size) {
+		id = ++count;
+
 		// back face
 		Box rec1 = new Box(size, size, 1);
 		rec1.setMaterial(new PhongMaterial(Color.GREEN));
@@ -57,23 +65,53 @@ public class RubiksPiece extends Group {
 		rec6.setTranslateZ(-0.5 * size);
 
 		getChildren().addAll(rec1, rec2, rec3, rec4, rec5, rec6);
+		if (RubiksCubeLauncher.DEBUG) {
+			ObservableList<Node> children2 = getChildren();
+			List<Numbers3D> arrayList = new ArrayList<>();
+			for (int i = 0; i < children2.size(); i++) {
+				Numbers3D text = new Numbers3D(id);
+				Node node = children2.get(i);
+				text.setTranslateX(node.getTranslateX());
+				text.setTranslateY(node.getTranslateY());
+				text.setTranslateZ(node.getTranslateZ());
+				text.setRotationAxis(node.getRotationAxis());
+				text.setRotate(node.getRotate());
+				arrayList.add(text);
+			}
+			getChildren().addAll(arrayList);
+
+		}
+		
 	}
 
-	public void rotate(RubiksCubeFaces face, RubiksPiece pivot, DoubleProperty angle) {
-		if (rotations.containsKey(face)) {
-			rotations.get(face).angleProperty().bind(angle.add(rotations.get(face).getAngle()));
-		} else {
-			Rotate rotate = new Rotate(0, face.getAxis());
-			rotate.pivotXProperty().bind(
-					pivot.translateXProperty().subtract(translateXProperty())
-							.subtract(RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2));
-			rotate.pivotYProperty().bind(
-					pivot.translateYProperty().subtract(translateYProperty())
-							.subtract(RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2));
-			rotate.pivotZProperty().bind(pivot.translateZProperty().subtract(translateZProperty()));
-			rotate.angleProperty().bind(angle);
-			getTransforms().add(rotate);
-			rotations.put(face, rotate);
+	public void rotate(RubiksCubeFaces face, RubiksPiece pivot, DoubleProperty angle, boolean clockwise) {
+		Rotate rotate = rotations.get(face);
+		double angle2 = Math.ceil((rotate.getAngle() + 360) % 360 / 90) * 90;
+		DoubleBinding add = clockwise ? angle.add(angle2) : angle.multiply(-1).add(angle2);
+		rotate.angleProperty().bind(add);
+	}
+
+	public void setPivot(RubiksPiece pivot) {
+		if (rotations.isEmpty()) {
+			RubiksCubeFaces[] values = RubiksCubeFaces.values();
+			for (RubiksCubeFaces face : values) {
+				Rotate rotate = new Rotate(0, face.getAxis());
+				rotate.setPivotX(pivot.getTranslateX() - getTranslateX() - RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2);
+				rotate.setPivotY(pivot.getTranslateY() - getTranslateY() - RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2);
+				rotate.setPivotZ(pivot.getTranslateZ() - getTranslateZ());
+				getTransforms().add(rotate);
+				rotations.put(face, rotate);
+			}
 		}
+
+	}
+
+	public void unbindAngle() {
+		rotations.forEach((f, r) -> r.angleProperty().unbind());
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%02d", id);
 	}
 }
