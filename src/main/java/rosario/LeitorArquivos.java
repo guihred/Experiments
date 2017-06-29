@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -23,7 +20,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -38,6 +36,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import simplebuilder.ResourceFXUtils;
 
 public final class LeitorArquivos {
@@ -159,7 +159,34 @@ public final class LeitorArquivos {
 		return arrayList;
 	}
 
+	private static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) throws IOException {
+		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
+				Workbook xssfWorkbook = selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
+						: new XSSFWorkbook(fileInputStream);) {
+			Sheet sheetAt = xssfWorkbook.getSheetAt(2);
+			Iterator<Row> iterator = sheetAt.iterator();
+			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
+			int i = 1;
+			while (iterator.hasNext()) {
+				i++;
+				boolean tryReadAnvisaLine = tryReadRosarioLine(iterator, medicamentos, i);
+				if (!tryReadAnvisaLine) {
+					break;
+				}
+			}
+			return medicamentos;
+
+		} catch (IOException e) {
+			throw e;
+		}
+
+	}
+
 	public static ObservableList<Medicamento> getMedicamentosRosario(File file) throws IOException {
+		if (file.getName().endsWith("xlsx") || file.getName().endsWith("xls")) {
+			return getMedicamentosRosarioExcel(file);
+		}
+
 
 		PDFTextStripper pdfStripper = new PDFTextStripper();
 		try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -218,9 +245,9 @@ public final class LeitorArquivos {
 			return getMedicamentosSNGPCPDF(selectedFile);
 		}
 
-		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);) {
-			Workbook xssfWorkbook = selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
-					: new XSSFWorkbook(fileInputStream);
+		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
+				Workbook xssfWorkbook = selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
+						: new XSSFWorkbook(fileInputStream);) {
 			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
 			Iterator<Row> iterator = sheetAt.iterator();
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
@@ -259,9 +286,37 @@ public final class LeitorArquivos {
 		return true;
 	}
 
+	private static boolean tryReadRosarioLine(Iterator<Row> iterator, ObservableList<Medicamento> medicamentos, int i) {
+		try {
+
+			Row next = iterator.next();
+			Cell cell0 = next.getCell(0);
+			if (cell0 == null) {
+				return false;
+			}
+			Medicamento medicamento = new Medicamento();
+			String registro = getRegistro(cell0);
+			if (registro.isEmpty()) {
+				return true;
+			}
+			medicamento.setCodigo(Integer.valueOf(registro));
+			String stringCellValue = next.getCell(1).getStringCellValue();
+			if (stringCellValue.equalsIgnoreCase("Totais")) {
+				return true;
+			}
+			medicamento.setNome(stringCellValue);
+			medicamento.setQuantidade((int) next.getCell(2).getNumericCellValue());
+			medicamentos.add(medicamento);
+		} catch (Exception e) {
+			System.out.println("ERRO LINHA=" + i);
+			LOGGER.error("", e);
+		}
+		return true;
+	}
+
 	private static String getRegistro(Cell cell0) {
 		String registro;
-		if (cell0.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+		if (cell0.getCellTypeEnum() == CellType.NUMERIC) {
 			registro = Integer.toString((int) cell0.getNumericCellValue());
 		} else {
 			registro = cell0.getStringCellValue().replaceAll("\\D+", "");
@@ -272,9 +327,9 @@ public final class LeitorArquivos {
 	private static String getLote(Row row) {
 		Cell cell = row.getCell(row.getLastCellNum() - 2);
 		String lote = "";
-		if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+		if (cell != null && cell.getCellTypeEnum() == CellType.NUMERIC) {
 			lote = Integer.toString((int) cell.getNumericCellValue());
-		} else if (cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING) {
+		} else if (cell != null && cell.getCellTypeEnum() == CellType.STRING) {
 			lote = cell.getStringCellValue();
 		}
 		return lote;
@@ -304,7 +359,7 @@ public final class LeitorArquivos {
 	private static void criarAba(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {
 		XSSFCellStyle style = wb.createCellStyle();
 		style.setFillBackgroundColor(new XSSFColor(new Color(1.0F, 0.2F, 0.2F)));
-		style.setFillPattern(CellStyle.FINE_DOTS);
+		style.setFillPattern(FillPatternType.FINE_DOTS);
 		int j = 0;
 		for (int i = 0; i < medicamentos.size(); i++) {
 			Medicamento medicamento = medicamentos.get(i);
@@ -344,7 +399,7 @@ public final class LeitorArquivos {
 	private static void criarAbaLoja(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {
 		XSSFCellStyle style = wb.createCellStyle();
 		style.setFillBackgroundColor(new XSSFColor(new Color(1.0F, 0.2F, 0.2F)));
-		style.setFillPattern(CellStyle.FINE_DOTS);
+		style.setFillPattern(FillPatternType.FINE_DOTS);
 		int j = 0;
 		for (int i = 0; i < medicamentos.size(); i++) {
 			Medicamento medicamento = medicamentos.get(i);

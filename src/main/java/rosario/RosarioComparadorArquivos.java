@@ -2,6 +2,9 @@ package rosario;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -25,9 +28,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RosarioComparadorArquivos extends Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RosarioComparadorArquivos.class);
@@ -57,7 +57,8 @@ public class RosarioComparadorArquivos extends Application {
 
 		FileChooser fileChooserRosario = new FileChooser();
 		fileChooserRosario.setTitle("Carregar Arquivo Rosário");
-		fileChooserRosario.getExtensionFilters().addAll(new ExtensionFilter("PDF", "*.pdf"));
+		fileChooserRosario.getExtensionFilters().addAll(new ExtensionFilter("Excel", "*.xlsx", "*.xls"),
+				new ExtensionFilter("PDF", "*.pdf"));
 		Button buttonEstoque = new Button("Carregar Arquivo Rosário");
 		final TableView<Medicamento> medicamentosEstoqueTable = tabelaMedicamentos(false);
 		buttonEstoque.setOnAction(e -> {
