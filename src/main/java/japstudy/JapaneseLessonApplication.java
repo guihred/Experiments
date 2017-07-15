@@ -1,7 +1,6 @@
 package japstudy;
 
-import java.io.IOException;
-
+import japstudy.db.JapaneseLesson;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -9,7 +8,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -30,11 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class JapaneseLessonApplication extends Application {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JapaneseLessonApplication.class);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -69,12 +63,7 @@ public class JapaneseLessonApplication extends Application {
 	}
 
 	private ObservableList<JapaneseLesson> getLessons() {
-		try {
-			return JapaneseLessonReader.getLessons("jaftranscript.docx");
-		} catch (IOException e) {
-			LOGGER.error("ERRO AO", e);
-			return FXCollections.observableArrayList();
-		}
+		return JapaneseLessonReader.getLessons();
 	}
 
 	private TableView<JapaneseLesson> tabelaJapaneseLessons(FlowPane gridpane) {

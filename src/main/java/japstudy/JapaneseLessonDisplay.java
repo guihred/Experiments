@@ -1,8 +1,8 @@
 package japstudy;
 
-import java.io.IOException;
 import java.util.Random;
 
+import japstudy.db.JapaneseLesson;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -10,7 +10,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,11 +22,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class JapaneseLessonDisplay extends Application {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JapaneseLessonDisplay.class);
 	private IntegerProperty current = new SimpleIntegerProperty(1);
 	private ObservableList<JapaneseLesson> lessons = getLessons();
 	private DoubleProperty score = new SimpleDoubleProperty(1);
@@ -83,12 +78,7 @@ public class JapaneseLessonDisplay extends Application {
 	}
 
 	private ObservableList<JapaneseLesson> getLessons() {
-		try {
-			return JapaneseLessonReader.getLessons("jaftranscript.docx");
-		} catch (IOException e) {
-			LOGGER.error("ERRO AO", e);
-			return FXCollections.observableArrayList();
-		}
+		return JapaneseLessonReader.getLessons();
 	}
 
 	private void nextLesson(TextField answer) {
