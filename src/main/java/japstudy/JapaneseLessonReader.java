@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.apache.poi.xwpf.usermodel.BodyElementType;
@@ -37,6 +38,18 @@ public final class JapaneseLessonReader {
 
 	public static ObservableList<JapaneseLesson> getLessons() {
 		return FXCollections.observableArrayList(lessonDAO.list());
+	}
+
+	public static Long getCountExerciseByLesson(Integer lesson) {
+		return lessonDAO.getCountExerciseByLesson(lesson);
+	}
+
+	public static LocalTime getMaxTimeLesson(Integer lesson, Integer exercise) {
+		return lessonDAO.getMaxTimeLesson(lesson, exercise);
+	}
+
+	public static void update(JapaneseLesson japaneseLesson) {
+		lessonDAO.saveOrUpdate(japaneseLesson);
 	}
 	public static ObservableList<JapaneseLesson> getLessons(String arquivo) throws IOException {
 		InputStream resourceAsStream = new FileInputStream(new File(arquivo));

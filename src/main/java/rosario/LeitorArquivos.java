@@ -163,7 +163,7 @@ public final class LeitorArquivos {
 		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
 				Workbook xssfWorkbook = selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
 						: new XSSFWorkbook(fileInputStream);) {
-			Sheet sheetAt = xssfWorkbook.getSheetAt(2);
+			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
 			Iterator<Row> iterator = sheetAt.iterator();
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
 			int i = 1;

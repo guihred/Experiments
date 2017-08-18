@@ -1,6 +1,7 @@
 package japstudy.db;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -15,6 +16,9 @@ public class JapaneseLesson implements Serializable {
 	private String english;
 	@Column(length = 2000)
 	private String japanese;
+
+	private LocalTime start;
+	private LocalTime end;
 
 	@EmbeddedId
 	private LessonPK pk = new LessonPK();
@@ -107,6 +111,22 @@ public class JapaneseLesson implements Serializable {
 		return "JapaneseLesson [english=" + english + ", exercise=" + pk.getExercise() + ", japanese=" + japanese
 				+ ", romaji="
 				+ romaji + "]";
+	}
+
+	public LocalTime getStart() {
+		return start;
+	}
+
+	public void setStart(LocalTime start) {
+		this.start = start;
+	}
+
+	public LocalTime getEnd() {
+		return end;
+	}
+
+	public void setEnd(LocalTime end) {
+		this.end = end;
 	}
 	
 }
