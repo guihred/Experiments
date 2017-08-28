@@ -1,6 +1,7 @@
 package rosario;
 
 import java.util.Objects;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ObservableList;
@@ -9,7 +10,6 @@ public class Medicamento {
 	private String registro;
 	private Integer codigo;
 	private String nome;
-	private String apresentacao;
 	private String lote;
 	private Integer quantidade;
 	private BooleanBinding registroValido;
@@ -20,7 +20,6 @@ public class Medicamento {
 	public Medicamento clonar() {
 		Medicamento medicamento2 = new Medicamento();
 		medicamento2.setCodigo(codigo);
-		medicamento2.setApresentacao(apresentacao);
 		medicamento2.setNome(nome);
 		medicamento2.setRegistro(registro);
 		medicamento2.setLote(lote);
@@ -135,13 +134,6 @@ public class Medicamento {
 		this.nome = nome;
 	}
 
-	public String getApresentacao() {
-		return apresentacao;
-	}
-
-	public void setApresentacao(String apresentacao) {
-		this.apresentacao = apresentacao;
-	}
 
 	public String getLote() {
 		return lote;

@@ -1,12 +1,17 @@
 package rosario;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -14,6 +19,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -23,11 +29,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class RosarioComparadorArquivos extends Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RosarioComparadorArquivos.class);
@@ -52,56 +60,47 @@ public class RosarioComparadorArquivos extends Application {
 		Label pesquisar = new Label("Pesquisar medicamento");
 		gridpane.getChildren().add(new VBox(pesquisar, filterField, exportar));
 
+		final TableView<Medicamento> medicamentosEstoqueTable = tabelaMedicamentos(false);
 		Label estoqueRosario = new Label("Estoque Rosário");
 		GridPane.setHalignment(estoqueRosario, HPos.CENTER);
-
-		FileChooser fileChooserRosario = new FileChooser();
-		fileChooserRosario.setTitle("Carregar Arquivo Rosário");
-		fileChooserRosario.getExtensionFilters().addAll(new ExtensionFilter("Excel", "*.xlsx", "*.xls"),
-				new ExtensionFilter("PDF", "*.pdf"));
+		FileChooser fileChooserRosario = choseFile("Carregar Arquivo Rosário");
 		Button buttonEstoque = new Button("Carregar Arquivo Rosário");
-		final TableView<Medicamento> medicamentosEstoqueTable = tabelaMedicamentos(false);
 		buttonEstoque.setOnAction(e -> {
 			File selectedFile = fileChooserRosario.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
-				ObservableList<Medicamento> medicamentosRosario = getMedicamentosRosario(selectedFile);
-				FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosRosario, p -> true);
-				medicamentosEstoqueTable.setItems(filteredData);
-				filterField.textProperty().addListener((observable, oldValue, newValue) -> {
-					filteredData.setPredicate(medicamento -> {
-						if (newValue == null || newValue.isEmpty()) {
-							return true;
-						}
-						return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
+				if (LeitorArquivos.isExcel(selectedFile)) {
+					showImportDialog(selectedFile, meds -> {
+						configurarFiltroRapido(filterField, medicamentosEstoqueTable, meds);
 					});
-				});
+					return;
+				}
+
+				ObservableList<Medicamento> medicamentosRosario = getMedicamentosRosario(selectedFile);
+				configurarFiltroRapido(filterField, medicamentosEstoqueTable, medicamentosRosario);
 			}
 		});
 
-		gridpane.getChildren().add(new VBox(estoqueRosario, buttonEstoque, medicamentosEstoqueTable));
+		VBox e = new VBox(estoqueRosario, buttonEstoque, medicamentosEstoqueTable);
+		gridpane.getChildren().add(e);
 
 		Label estoqueSNGPC = new Label("Estoque SNGPC");
 		GridPane.setHalignment(estoqueSNGPC, HPos.CENTER);
 
-		FileChooser fileChooserSNGPC = new FileChooser();
-		fileChooserSNGPC.setTitle("Carregar Arquivo SNGPC");
-		fileChooserSNGPC.getExtensionFilters().addAll(new ExtensionFilter("PDF", "*.pdf"));
-		Button buttonEstoqueSNGPC = new Button("Carregar Arquivo SNGPC");
+		FileChooser fileChooserSNGPC = choseFile("Carregar Arquivo SNGPC");
 		final TableView<Medicamento> medicamentosEstoqueSNGPCTable = tabelaMedicamentos(true);
-		buttonEstoqueSNGPC.setOnAction(e -> {
+		Button buttonEstoqueSNGPC = new Button("Carregar Arquivo SNGPC");
+		buttonEstoqueSNGPC.setOnAction(a -> {
 			File selectedFile = fileChooserSNGPC.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
-				ObservableList<Medicamento> medicamentosSNGPC = getMedicamentosSNGPC(selectedFile);
-				FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosSNGPC, p -> true);
-				medicamentosEstoqueSNGPCTable.setItems(filteredData);
-				filterField.textProperty().addListener((observable, oldValue, newValue) -> {
-					filteredData.setPredicate(medicamento -> {
-						if (newValue == null || newValue.isEmpty()) {
-							return true;
-						}
-						return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
+				if (LeitorArquivos.isExcel(selectedFile)) {
+					showImportDialog(selectedFile, meds -> {
+						configurarFiltroRapido(filterField, medicamentosEstoqueSNGPCTable, meds);
+						atualizarPorCodigo(meds, medicamentosEstoqueTable);
 					});
-				});
+					return;
+				}
+				ObservableList<Medicamento> medicamentosSNGPC = getMedicamentosSNGPC(selectedFile);
+				configurarFiltroRapido(filterField, medicamentosEstoqueSNGPCTable, medicamentosSNGPC);
 				atualizarPorCodigo(medicamentosSNGPC, medicamentosEstoqueTable);
 			}
 		});
@@ -109,44 +108,40 @@ public class RosarioComparadorArquivos extends Application {
 
 		Label estoqueAnvisa = new Label("Estoque Anvisa");
 		GridPane.setHalignment(estoqueAnvisa, HPos.CENTER);
-		FileChooser fileChooser2 = new FileChooser();
-		fileChooser2.setTitle("Carregar Arquivo Anvisa");
-		fileChooser2.getExtensionFilters().addAll(new ExtensionFilter("Excel", "*.xlsx", "*.xls"),
-				new ExtensionFilter("PDF", "*.pdf"));
+		FileChooser fileChooser2 = choseFile("Carregar Arquivo Anvisa");
 		Button button2 = new Button("Carregar Arquivo Anvisa");
 		final TableView<Medicamento> medicamentosAnvisaTable = tabelaMedicamentos(true);
-		button2.setOnAction(e -> {
+		button2.setOnAction(a -> {
 			File selectedFile = fileChooser2.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
-				ObservableList<Medicamento> medicamentosAnvisa = getMedicamentosAnvisa(selectedFile);
-				FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosAnvisa, p -> true);
-				filterField.textProperty().addListener((observable, oldValue, newValue) -> {
-					filteredData.setPredicate(medicamento -> {
-						if (newValue == null || newValue.isEmpty()) {
-							return true;
-						}
-						return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
+				if (LeitorArquivos.isExcel(selectedFile)) {
+					showImportDialog(selectedFile, meds -> {
+						configurarFiltroRapido(filterField, medicamentosAnvisaTable, meds);
+						atualizar(medicamentosEstoqueSNGPCTable.getItems(), medicamentosAnvisaTable);
+						atualizar(medicamentosAnvisaTable.getItems(), medicamentosEstoqueSNGPCTable);
 					});
-				});
-				medicamentosAnvisaTable.setItems(filteredData);
+					return;
+				}
+				ObservableList<Medicamento> medicamentosAnvisa = getMedicamentosAnvisa(selectedFile);
+				configurarFiltroRapido(filterField, medicamentosAnvisaTable, medicamentosAnvisa);
 				atualizar(medicamentosEstoqueSNGPCTable.getItems(), medicamentosAnvisaTable);
 				atualizar(medicamentosAnvisaTable.getItems(), medicamentosEstoqueSNGPCTable);
 			}
 		});
 		gridpane.getChildren().add(new VBox(estoqueAnvisa, button2, medicamentosAnvisaTable));
-		exportar.setOnAction(e -> {
+		exportar.setOnAction(a -> {
 			try {
 				ObservableList<Medicamento> items0 = medicamentosEstoqueTable.getItems();
-				ObservableList<Medicamento> items = medicamentosEstoqueSNGPCTable.getItems();
+				ObservableList<Medicamento> items1 = medicamentosEstoqueSNGPCTable.getItems();
 				ObservableList<Medicamento> items2 = medicamentosAnvisaTable.getItems();
-				items0.stream().peek(m -> m.quantidadeCodigoValidoProperty(items))
-						.forEach(m -> m.codigoValidoProperty(items));
-				items.stream().peek(m -> m.registroValidoProperty(items2)).peek(m -> m.loteValidoProperty(items2))
+				items0.stream().peek(m -> m.quantidadeCodigoValidoProperty(items1))
+						.forEach(m -> m.codigoValidoProperty(items1));
+				items1.stream().peek(m -> m.registroValidoProperty(items2)).peek(m -> m.loteValidoProperty(items2))
 						.forEach(m -> m.quantidadeValidoProperty(items2));
-				items2.stream().peek(m -> m.registroValidoProperty(items)).peek(m -> m.loteValidoProperty(items))
-						.forEach(m -> m.quantidadeValidoProperty(items));
+				items2.stream().peek(m -> m.registroValidoProperty(items1)).peek(m -> m.loteValidoProperty(items1))
+						.forEach(m -> m.quantidadeValidoProperty(items1));
 
-				LeitorArquivos.exportarArquivo(items0, items, items2);
+				LeitorArquivos.exportarArquivo(items0, items1, items2);
 			} catch (Exception e1) {
 				LOGGER.error("", e1);
 			}
@@ -155,6 +150,27 @@ public class RosarioComparadorArquivos extends Application {
 		// selection listening
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	private FileChooser choseFile(String value) {
+		FileChooser fileChooser2 = new FileChooser();
+		fileChooser2.setTitle(value);
+		fileChooser2.getExtensionFilters().addAll(new ExtensionFilter("Excel ou PDF", "*.xlsx", "*.xls", "*.pdf"));
+		return fileChooser2;
+	}
+
+	private void configurarFiltroRapido(TextField filterField, final TableView<Medicamento> medicamentosEstoqueTable,
+			ObservableList<Medicamento> medicamentosRosario) {
+		FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosRosario, p -> true);
+		medicamentosEstoqueTable.setItems(filteredData);
+		filterField.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(medicamento -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+				return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
+			});
+		});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -333,4 +349,100 @@ public class RosarioComparadorArquivos extends Application {
 			return FXCollections.emptyObservableList();
 		}
 	}
+
+	private void showImportDialog(File excel, Consumer<ObservableList<Medicamento>> consumer) {
+		Stage stage = new Stage(StageStyle.UTILITY);
+		stage.centerOnScreen();
+		stage.setTitle("Importar Excel");
+		ObservableList<String> items = FXCollections.observableArrayList("Registro", "Nome", "Lote", "Quantidade",
+				"Codigo");
+
+		ObservableList<String> sheetsExcel = LeitorArquivos.getSheetsExcel(excel);
+		ChoiceBox<String> selectSheet = new ChoiceBox<>(sheetsExcel);
+		ObservableList<List<String>> listExcel = LeitorArquivos.getListExcel(excel, null);
+		selectSheet.getSelectionModel().selectFirst();
+		int orElse = listExcel.stream().mapToInt(e -> e.size()).max().orElse(items.size());
+		final TableView<List<String>> medicamentosTable = new TableView<>(listExcel);
+		selectSheet.getSelectionModel().selectedItemProperty().addListener(
+				(val, old, newValue) -> {
+					if (!Objects.equals(old, newValue)) {
+						medicamentosTable.setItems(LeitorArquivos.getListExcel(excel, newValue));
+					}
+				});
+
+		List<ChoiceBox<String>> colunas = new ArrayList<>();
+		for (int i = 0; i < orElse; i++) {
+			int j = i;
+			String string = items.get(i % items.size());
+			ChoiceBox<String> choiceBox = new ChoiceBox<>(items);
+			colunas.add(choiceBox);
+			TableColumn<List<String>, String> registroMedicamento = new TableColumn<>();
+			choiceBox.getSelectionModel().select(string);
+			registroMedicamento.setGraphic(choiceBox);
+			registroMedicamento.setCellValueFactory(param -> new SimpleStringProperty(
+					Objects.toString(
+							param.getValue() == null || j >= param.getValue().size() ? null : param.getValue().get(j),
+							"")));
+			medicamentosTable.getColumns().add(registroMedicamento);
+		}
+		Button button = new Button("Importar Arquivo");
+		button.setOnAction(a -> {
+			ObservableList<Medicamento> medicamentos = converterMedicamentos(medicamentosTable.getItems(), colunas);
+			consumer.accept(medicamentos);
+			stage.hide();
+		});
+		stage.setScene(
+				new Scene(new VBox(new HBox(new Label("Selecione Planilha"), selectSheet), medicamentosTable, button)));
+		stage.show();
+	}
+
+	private ObservableList<Medicamento> converterMedicamentos(ObservableList<List<String>> items2,
+			List<ChoiceBox<String>> colunas) {
+		ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
+		for (List<String> item : items2) {
+			Medicamento medicamento = new Medicamento();
+			medicamentos.add(medicamento);
+			for (int i = 0; i < colunas.size(); i++) {
+				ChoiceBox<String> coluna = colunas.get(i);
+				String selectedItem = coluna.getSelectionModel().getSelectedItem();
+				if (!item.isEmpty()) {
+					switch (selectedItem) {
+					case "Registro":
+						medicamento.setRegistro(Objects.toString(medicamento.getRegistro(), "")
+								+ item.get(i % item.size()).replaceAll("\\D+", ""));
+						break;
+					case "Nome":
+						medicamento.setNome(Objects.toString(medicamento.getNome(), "") + item.get(i % item.size()));
+						break;
+					case "Lote":
+						medicamento.setLote(Objects.toString(medicamento.getLote(), "") + item.get(i % item.size()));
+						break;
+					case "Quantidade":
+						Integer qnt = intValue(item.get(i % item.size()));
+						if (qnt != null) {
+							medicamento.setQuantidade(qnt);
+						}
+					case "Codigo":
+						Integer codigo = intValue(item.get(i % item.size()));
+						if (codigo != null) {
+							medicamento.setCodigo(codigo);
+						}
+					default:
+						break;
+					}
+				}
+			}
+
+		}
+		return medicamentos;
+	}
+
+	private Integer intValue(String s) {
+		try {
+			return Integer.valueOf(s.replaceAll("\\D+", ""));
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
 }

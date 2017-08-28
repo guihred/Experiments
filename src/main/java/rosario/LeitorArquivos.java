@@ -8,9 +8,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.pdfbox.cos.COSDocument;
@@ -36,6 +41,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import simplebuilder.ResourceFXUtils;
@@ -104,9 +110,7 @@ public final class LeitorArquivos {
 				medicamento.setNome(
 						Stream.of(split).skip(1).limit((long) split.length - 2)
 								.collect(Collectors.joining(" ")));
-				if (split.length > 3) {
-					medicamento.setApresentacao(split[2]);
-				}
+
 				medicamento.setQuantidade(Integer.valueOf(split[split.length - 1]));
 			}
 		} catch (Exception e) {
@@ -141,9 +145,6 @@ public final class LeitorArquivos {
 				if (StringUtil.isNumeric(text)) {
 					medicamento.setCodigo(Integer.valueOf(collect.get(0)));
 					medicamento.setNome(collect.get(1));
-					if (!StringUtil.isNumeric(collect.get(2))) {
-						medicamento.setApresentacao(collect.get(2));
-					}
 
 					medicamento.setQuantidade(Integer.valueOf(text2));
 
@@ -159,10 +160,9 @@ public final class LeitorArquivos {
 		return arrayList;
 	}
 
-	private static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) throws IOException {
+	public static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) throws IOException {
 		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-				Workbook xssfWorkbook = selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
-						: new XSSFWorkbook(fileInputStream);) {
+				Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream);) {
 			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
 			Iterator<Row> iterator = sheetAt.iterator();
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
@@ -182,8 +182,13 @@ public final class LeitorArquivos {
 
 	}
 
+	private static Workbook getWorkbook(File selectedFile, FileInputStream fileInputStream) throws IOException {
+		return selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
+				: new XSSFWorkbook(fileInputStream);
+	}
+
 	public static ObservableList<Medicamento> getMedicamentosRosario(File file) throws IOException {
-		if (file.getName().endsWith("xlsx") || file.getName().endsWith("xls")) {
+		if (isExcel(file)) {
 			return getMedicamentosRosarioExcel(file);
 		}
 
@@ -195,9 +200,13 @@ public final class LeitorArquivos {
 			pdfStripper.setStartPage(1);
 			String parsedText = pdfStripper.getText(pdDoc);
 			String[] linhas = parsedText.split("\r\n");
+			IntUnaryOperator mapper = e -> e;
+			IntStream.of(1, 2, 3).map(mapper);
+			Map<String, IntUnaryOperator> hashMap = new HashMap<>();
+
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
 			for (int i = 0; i < linhas.length; i++) {
-				Medicamento medicamento = tryReadRosarioLine(linhas, i);
+				Medicamento medicamento = tryReadRosarioLine(hashMap, linhas, i);
 				if (medicamento != null) {
 					medicamentos.add(medicamento);
 					if (StringUtil.isBlank(medicamento.getNome())) {
@@ -212,20 +221,42 @@ public final class LeitorArquivos {
 
 	}
 
-	private static Medicamento tryReadRosarioLine(String[] linhas, int i) {
+	public static boolean isExcel(File file) {
+		return file.getName().endsWith("xlsx") || file.getName().endsWith("xls");
+	}
+
+	private static Medicamento tryReadRosarioLine(Map<String, IntUnaryOperator> mapaCampos, String[] linhas, int i) {
 		try {
 			String s = linhas[i];
+			String[] split = s.trim().split("\\s+");
+			if (split.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains("codproduto")
+					|| s.toLowerCase().contains("qtestoquecomercial"))) {
+				if (split[1].equalsIgnoreCase("codproduto")) {
+					mapaCampos.put("codproduto", j -> j - 2);
+				}
+				if (split[0].equalsIgnoreCase("codproduto")) {
+					mapaCampos.put("codproduto", j -> 0);
+				}
+				mapaCampos.put("qtestoquecomercial", j -> j - 1);
+			}
 			if (!s.endsWith(",00")) {
 				return null;
 			}
-			String[] split = s.trim().split("\\s+");
 			if (split.length >= 2) {
 				Medicamento medicamento = new Medicamento();
-				medicamento.setCodigo(Integer.valueOf(split[split.length - 2]));
-				medicamento.setNome(Stream.of(split).limit((long) split.length - 2)
+				String s2 = split[mapaCampos.getOrDefault("codproduto", j -> 0).applyAsInt(split.length)];
+
+					medicamento.setCodigo(
+							Integer
+							.valueOf(s2));
+				medicamento.setNome(IntStream
+						.range(0, split.length).filter(e -> mapaCampos.values().stream()
+								.mapToInt(j -> j.applyAsInt(split.length)).noneMatch(j -> j == e))
+						.mapToObj(e -> split[e])
 								.collect(Collectors.joining(" ")));
 				medicamento.setQuantidade(
-						Integer.valueOf(split[split.length - 1].replace(",00", "").replace(".", "")));
+						Integer.valueOf(split[mapaCampos.getOrDefault("qtestoquecomercial", j -> j - 1)
+								.applyAsInt(split.length)].replace(",00", "").replace(".", "")));
 				return medicamento;
 			}
 		} catch (Exception e) {
@@ -241,13 +272,12 @@ public final class LeitorArquivos {
 	}
 
 	public static ObservableList<Medicamento> getMedicamentosAnvisa(File selectedFile) throws IOException {
-		if (selectedFile.getName().endsWith(".pdf")) {
+		if (isPDF(selectedFile)) {
 			return getMedicamentosSNGPCPDF(selectedFile);
 		}
 
 		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-				Workbook xssfWorkbook = selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
-						: new XSSFWorkbook(fileInputStream);) {
+				Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream);) {
 			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
 			Iterator<Row> iterator = sheetAt.iterator();
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
@@ -263,6 +293,10 @@ public final class LeitorArquivos {
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+
+	public static boolean isPDF(File selectedFile) {
+		return selectedFile.getName().endsWith(".pdf");
 	}
 
 	private static boolean tryReadAnvisaLine(Iterator<Row> iterator, ObservableList<Medicamento> medicamentos, int i) {
@@ -315,24 +349,27 @@ public final class LeitorArquivos {
 	}
 
 	private static String getRegistro(Cell cell0) {
-		String registro;
 		if (cell0.getCellTypeEnum() == CellType.NUMERIC) {
-			registro = Integer.toString((int) cell0.getNumericCellValue());
-		} else {
-			registro = cell0.getStringCellValue().replaceAll("\\D+", "");
+			return Integer.toString((int) cell0.getNumericCellValue());
 		}
-		return registro;
+		return cell0.getStringCellValue().replaceAll("\\D+", "");
+	}
+
+	private static String getString(Cell cell0) {
+		if (cell0.getCellTypeEnum() == CellType.NUMERIC) {
+			return Integer.toString((int) cell0.getNumericCellValue());
+		}
+		return cell0.getStringCellValue();
 	}
 
 	private static String getLote(Row row) {
 		Cell cell = row.getCell(row.getLastCellNum() - 2);
-		String lote = "";
 		if (cell != null && cell.getCellTypeEnum() == CellType.NUMERIC) {
-			lote = Integer.toString((int) cell.getNumericCellValue());
+			return Integer.toString((int) cell.getNumericCellValue());
 		} else if (cell != null && cell.getCellTypeEnum() == CellType.STRING) {
-			lote = cell.getStringCellValue();
+			return cell.getStringCellValue();
 		}
-		return lote;
+		return "";
 	}
 
 	public static void exportarArquivo(ObservableList<Medicamento> medicamentosLoja,
@@ -426,6 +463,46 @@ public final class LeitorArquivos {
 		createSheet.autoSizeColumn(0);
 		createSheet.autoSizeColumn(1);
 		createSheet.autoSizeColumn(2);
+	}
+
+	public static ObservableList<String> getSheetsExcel(File selectedFile) {
+		ObservableList<String> list = FXCollections.observableArrayList();
+		Platform.runLater(() -> {
+			try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
+					Workbook workbook = getWorkbook(selectedFile, fileInputStream);) {
+				int numberOfSheets = workbook.getNumberOfSheets();
+				for (int i = 0; i < numberOfSheets; i++) {
+					list.add(workbook.getSheetAt(i).getSheetName());
+				}
+			} catch (IOException e) {
+				LOGGER.error("", e);
+			}
+		});
+
+		return list;
+	}
+
+	public static ObservableList<List<String>> getListExcel(File selectedFile, String sheetName) {
+		ObservableList<List<String>> list = FXCollections.observableArrayList();
+		Platform.runLater(() -> {
+			try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
+					Workbook workbook = getWorkbook(selectedFile, fileInputStream);) {
+				Sheet sheetAt = sheetName == null ? workbook.getSheetAt(0) : workbook.getSheet(sheetName);
+				for (Row row : sheetAt) {
+					List<String> arrayList = new ArrayList<>();
+					for (Cell cell : row) {
+						arrayList.add(getString(cell));
+					}
+					list.add(arrayList);
+					}
+			} catch (IOException e) {
+				LOGGER.error("", e);
+			}
+		});
+
+		return list;
+		
+		
 	}
 
 }
