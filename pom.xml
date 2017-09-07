@@ -39,10 +39,10 @@
 				<artifactId>javafx-maven-plugin</artifactId>
 				<version>8.7.0</version>
 				<configuration>
-					<mainClass>labyrinth.Labyrinth3DMouseControl</mainClass>
+					<mainClass>rosario.RosarioComparadorArquivos</mainClass>
 					<verbose>true</verbose>
 					<vendor>Guih.red</vendor>
-					<appName>Labyrinth</appName>
+					<appName>Comparador de Arquivos Rosario</appName>
 					<additionalAppResources>src/main/resources</additionalAppResources>
 				</configuration>
 			</plugin>

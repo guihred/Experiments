@@ -4,19 +4,27 @@ import static labyrinth.LabyrinthWall.SIZE;
 import static simplebuilder.ResourceFXUtils.toExternalForm;
 import static simplebuilder.ResourceFXUtils.toFullPath;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
+
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
+
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -57,7 +65,6 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 	};
 	private static final String MESH_GHOST = toFullPath("ghost2.STL");
 
-	public static final String MESH_MINOTAUR = toFullPath("Minotaur.stl");
 
 	public static final Image OOZE_IMAGE = new Image(toExternalForm("ooze.jpg"));
 

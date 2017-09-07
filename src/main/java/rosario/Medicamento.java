@@ -1,12 +1,13 @@
 package rosario;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ObservableList;
 
-public class Medicamento {
+public class Medicamento implements Serializable {
 	private String registro;
 	private Integer codigo;
 	private String nome;

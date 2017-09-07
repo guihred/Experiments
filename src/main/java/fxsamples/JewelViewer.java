@@ -1,10 +1,20 @@
 package fxsamples;
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
+
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -17,15 +27,11 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import labyrinth.Labyrinth3DWallTexture;
 import neuro.BrazilianVerbsConjugator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class JewelViewer extends Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BrazilianVerbsConjugator.class);
 	private static final Color JEWEL_COLOR = Color.BURLYWOOD;
 	private static final Color LIGHT_COLOR = Color.rgb(125, 125, 125);
-	public static final String MESH_FILENAME = Labyrinth3DWallTexture.class.getClassLoader()
-			.getResource("Minotaur.stl").getFile();
 	public static final String ORIGINAL_FILENAME = Labyrinth3DWallTexture.class.getClassLoader()
 			.getResource("original.stl").getFile();
 

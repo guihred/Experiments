@@ -1,20 +1,27 @@
 
 package labyrinth;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
+
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
+
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -43,7 +50,6 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 
 	};
 	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
-	public static final String MESH_MINOTAUR = ResourceFXUtils.toFullPath("Minotaur.stl");
 
 	private static final int SIZE = 60;
 

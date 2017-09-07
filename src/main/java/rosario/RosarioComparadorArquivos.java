@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,8 @@ public class RosarioComparadorArquivos extends Application {
 			File selectedFile = fileChooserRosario.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
 				if (LeitorArquivos.isExcel(selectedFile)) {
-					showImportDialog(selectedFile, meds -> {
+					showImportDialog(selectedFile,
+							FXCollections.observableArrayList("Codigo", "Nome", "Quantidade", ""), meds -> {
 						configurarFiltroRapido(filterField, medicamentosEstoqueTable, meds);
 					});
 					return;
@@ -93,7 +95,9 @@ public class RosarioComparadorArquivos extends Application {
 			File selectedFile = fileChooserSNGPC.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
 				if (LeitorArquivos.isExcel(selectedFile)) {
-					showImportDialog(selectedFile, meds -> {
+					showImportDialog(selectedFile,
+							FXCollections.observableArrayList("Registro", "Nome", "Lote", "Quantidade", "Codigo", ""),
+							meds -> {
 						configurarFiltroRapido(filterField, medicamentosEstoqueSNGPCTable, meds);
 						atualizarPorCodigo(meds, medicamentosEstoqueTable);
 					});
@@ -115,7 +119,8 @@ public class RosarioComparadorArquivos extends Application {
 			File selectedFile = fileChooser2.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
 				if (LeitorArquivos.isExcel(selectedFile)) {
-					showImportDialog(selectedFile, meds -> {
+					showImportDialog(selectedFile,
+							FXCollections.observableArrayList("Registro", "Nome", "Lote", "Quantidade", ""), meds -> {
 						configurarFiltroRapido(filterField, medicamentosAnvisaTable, meds);
 						atualizar(medicamentosEstoqueSNGPCTable.getItems(), medicamentosAnvisaTable);
 						atualizar(medicamentosAnvisaTable.getItems(), medicamentosEstoqueSNGPCTable);
@@ -226,9 +231,8 @@ public class RosarioComparadorArquivos extends Application {
 				if (index >= 0 && index < size) {
 					Medicamento auxMed = getTableView().getItems().get(index);
 					setText(Integer.toString(auxMed.getQuantidade()));
-					styleProperty().bind(
-							Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
-									.otherwise("-fx-background-color:lightcoral"));
+					styleProperty().bind(Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
+							.otherwise("-fx-background-color:lightcoral"));
 				}
 			}
 
@@ -350,12 +354,12 @@ public class RosarioComparadorArquivos extends Application {
 		}
 	}
 
-	private void showImportDialog(File excel, Consumer<ObservableList<Medicamento>> consumer) {
+	private void showImportDialog(File excel, ObservableList<String> items,
+			Consumer<ObservableList<Medicamento>> consumer) {
 		Stage stage = new Stage(StageStyle.UTILITY);
 		stage.centerOnScreen();
+		stage.toFront();
 		stage.setTitle("Importar Excel");
-		ObservableList<String> items = FXCollections.observableArrayList("Registro", "Nome", "Lote", "Quantidade",
-				"Codigo");
 
 		ObservableList<String> sheetsExcel = LeitorArquivos.getSheetsExcel(excel);
 		ChoiceBox<String> selectSheet = new ChoiceBox<>(sheetsExcel);
@@ -401,40 +405,48 @@ public class RosarioComparadorArquivos extends Application {
 		ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
 		for (List<String> item : items2) {
 			Medicamento medicamento = new Medicamento();
-			medicamentos.add(medicamento);
-			for (int i = 0; i < colunas.size(); i++) {
-				ChoiceBox<String> coluna = colunas.get(i);
-				String selectedItem = coluna.getSelectionModel().getSelectedItem();
-				if (!item.isEmpty()) {
-					switch (selectedItem) {
-					case "Registro":
-						medicamento.setRegistro(Objects.toString(medicamento.getRegistro(), "")
-								+ item.get(i % item.size()).replaceAll("\\D+", ""));
-						break;
-					case "Nome":
-						medicamento.setNome(Objects.toString(medicamento.getNome(), "") + item.get(i % item.size()));
-						break;
-					case "Lote":
-						medicamento.setLote(Objects.toString(medicamento.getLote(), "") + item.get(i % item.size()));
-						break;
-					case "Quantidade":
-						Integer qnt = intValue(item.get(i % item.size()));
-						if (qnt != null) {
-							medicamento.setQuantidade(qnt);
-						}
-					case "Codigo":
-						Integer codigo = intValue(item.get(i % item.size()));
-						if (codigo != null) {
-							medicamento.setCodigo(codigo);
-						}
-					default:
-						break;
-					}
-				}
+			setCampos(colunas, item, medicamento);
+			if (medicamento.getQuantidade() != null && StringUtils.isNotBlank(medicamento.getNome())) {
+				medicamentos.add(medicamento);
 			}
 
 		}
 		return medicamentos;
+	}
+
+	private void setCampos(List<ChoiceBox<String>> colunas, List<String> item, Medicamento medicamento) {
+		for (int i = 0; i < colunas.size(); i++) {
+			ChoiceBox<String> coluna = colunas.get(i);
+			String selectedItem = coluna.getSelectionModel().getSelectedItem();
+			if (!item.isEmpty()) {
+				switch (selectedItem) {
+				case "Registro":
+					medicamento.setRegistro(Objects.toString(medicamento.getRegistro(), "")
+							+ item.get(i % item.size()).replaceAll("\\D+", ""));
+					break;
+				case "Nome":
+					medicamento.setNome(Objects.toString(medicamento.getNome(), "") + item.get(i % item.size()));
+					break;
+				case "Lote":
+					medicamento.setLote(Objects.toString(medicamento.getLote(), "") + item.get(i % item.size()));
+					break;
+				case "Quantidade":
+					Integer qnt = intValue(item.get(i % item.size()));
+					if (qnt != null) {
+						medicamento.setQuantidade(qnt);
+					}
+					break;
+				case "Codigo":
+					Integer codigo = intValue(item.get(i % item.size()));
+					if (codigo != null) {
+						medicamento.setCodigo(codigo);
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
 	}
 
 	private Integer intValue(String s) {

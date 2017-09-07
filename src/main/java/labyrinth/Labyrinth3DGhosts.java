@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -18,8 +20,6 @@ import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
 import simplebuilder.ResourceFXUtils;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 
 public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
@@ -38,7 +38,6 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	};
 
 	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
-	public static final String MESH_MINOTAUR = ResourceFXUtils.toFullPath("Minotaur.stl");
 	private static final int SIZE = 60;
 
 	private PerspectiveCamera camera;
