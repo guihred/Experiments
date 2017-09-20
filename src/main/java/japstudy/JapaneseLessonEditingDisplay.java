@@ -9,15 +9,17 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoUnit;
+import java.util.function.BiConsumer;
 
 import japstudy.db.HibernateUtil;
 import japstudy.db.JapaneseLesson;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -40,7 +42,7 @@ public class JapaneseLessonEditingDisplay extends Application {
 			.appendValue(SECOND_OF_MINUTE, 2).appendLiteral('s').optionalStart().appendValue(MILLI_OF_SECOND, 3)
 			.appendLiteral("ms").toFormatter();
 	private Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
-	private MediaPlayer mediaPlayer = new MediaPlayer(sound);
+	private ObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
 
 
 	@Override
@@ -65,53 +67,11 @@ public class JapaneseLessonEditingDisplay extends Application {
 			}
 		});
 
-		japanese.textProperty().addListener((o, old, newV) -> {
-			if (newV != null) {
-				JapaneseLesson japaneseLesson = lessons.get(current.intValue());
-				japaneseLesson.setJapanese(newV);
-			}
-		});
-		english.textProperty().addListener((o, old, newV) -> {
-			if (newV != null) {
-				JapaneseLesson japaneseLesson = lessons.get(current.intValue());
-				japaneseLesson.setEnglish(newV);
-			}
-		});
-		romaji.textProperty().addListener((o, old, newV) -> {
-			if (newV != null) {
-				JapaneseLesson japaneseLesson = lessons.get(current.intValue());
-				japaneseLesson.setRomaji(newV);
-			}
-		});
-		start.textProperty().addListener((o, old, newV) -> {
-			if (newV != null) {
-				LocalTime from = LocalTime.from(TIME_FORMAT.parse(newV));
-				JapaneseLesson japaneseLesson = lessons.get(current.intValue());
-				japaneseLesson.setStart(from);
-			}
-		});
-		end.textProperty().addListener((o, old, newV) -> {
-			if (newV != null) {
-
-				LocalTime from = LocalTime.from(TIME_FORMAT.parse(newV));
-				JapaneseLesson japaneseLesson = lessons.get(current.intValue());
-				japaneseLesson.setEnd(from);
-			}
-		});
-		mediaPlayer.currentTimeProperty().addListener((ob, old, newV) -> {
-			Duration endDuration = convertDuration(lessons.get(current.get()).getEnd());
-			if (newV.greaterThanOrEqualTo(endDuration)) {
-				mediaPlayer.pause();
-			}
-			// Duration startDuration =
-			// convertDuration(lessons.get(current.get()).getStart());
-			// if (newV.lessThanOrEqualTo(startDuration)) {
-			// mediaPlayer.seek(startDuration);
-			// }
-			// mediaPlayer.s
-
-		});
-		System.out.println(sound.getMetadata());
+		japanese.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setJapanese));
+		english.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setEnglish));
+		romaji.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setRomaji));
+		start.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setStart));
+		end.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setEnd));
 		Button previous = new Button("Previous");
 		previous.setOnAction(e -> previousLesson());
 		previous.disableProperty().bind(current.isEqualTo(0));
@@ -133,20 +93,29 @@ public class JapaneseLessonEditingDisplay extends Application {
 		HBox hBox = new HBox(lesson);
 		Text japaneseText = new Text("Japanese");
 		Text romajiText = new Text("Romaji");
-		Text current = new Text();
-		mediaPlayer.setStartTime(Duration.ZERO);
+		Text currentText = new Text();
+		mediaPlayer.addListener((obj, oldM, newO) -> {
 
-		StringBinding stringBinding = Bindings.createStringBinding(() -> {
-			Duration currentTimeProperty = mediaPlayer.getCurrentTime();
-			double millis = currentTimeProperty.toMillis();
-			LocalTime ofNanoOfDay = LocalTime.ofNanoOfDay((long) millis * 1000000);
-			return TIME_FORMAT.format(ofNanoOfDay);
-		}, mediaPlayer.currentTimeProperty());
+			newO.currentTimeProperty().addListener((ob, old, newV) -> {
+				Duration endDuration = convertDuration(lessons.get(current.get()).getEnd());
+				if (newV.greaterThanOrEqualTo(endDuration)) {
+					newO.pause();
+				}
+			});
+			newO.setStartTime(Duration.ZERO);
 
-		current.textProperty().bind(stringBinding);
+			StringBinding stringBinding = Bindings.createStringBinding(() -> {
+				Duration currentTimeProperty = newO.getCurrentTime();
+				double millis = currentTimeProperty.toMillis();
+				LocalTime ofNanoOfDay = LocalTime.ofNanoOfDay((long) millis * 1000000);
+				return TIME_FORMAT.format(ofNanoOfDay);
+			}, newO.currentTimeProperty());
+
+			currentText.textProperty().bind(stringBinding);
+		});
 		Scene value = new Scene(
 				new VBox(hBox, english, romajiText, romaji, japaneseText, japanese,
-						new HBox(new VBox(new Text("Start"), start), current, new VBox(new Text("End"), end)),
+						new HBox(new VBox(new Text("Start"), start), currentText, new VBox(new Text("End"), end)),
 						new HBox(previous, play, next)));
 		primaryStage.setScene(value);
 		value.setOnKeyPressed(e -> {
@@ -155,15 +124,28 @@ public class JapaneseLessonEditingDisplay extends Application {
 			}
 		});
 
-		mediaPlayer.play();
-		Platform.runLater(() -> {
-
-			mediaPlayer.pause();
-		});
-
+		mediaPlayer.set(new MediaPlayer(sound));
 		primaryStage.show();
 		primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 	}
+
+	private void setTextField(String newV, BiConsumer<JapaneseLesson, String> a) {
+		if (newV != null) {
+			JapaneseLesson japaneseLesson = lessons.get(current.intValue());
+			a.accept(japaneseLesson, newV);
+		}
+	}
+
+	private void setDateField(String newV, BiConsumer<JapaneseLesson, LocalTime> a) {
+		if (newV != null) {
+			LocalTime from = LocalTime.from(TIME_FORMAT.parse(newV));
+			JapaneseLesson japaneseLesson = lessons.get(current.intValue());
+			a.accept(japaneseLesson, from);
+		}
+	}
+
+	/*	
+			*/
 
 	private TextField newText() {
 		return new TextField();
@@ -190,30 +172,30 @@ public class JapaneseLessonEditingDisplay extends Application {
 		JapaneseAudio audio = JapaneseAudio.getAudio(japaneseLesson.getLesson());
 		if (audio != null) {
 			if (!sound.getSource().equals(audio.getURL().toString())) {
-				System.out.println("What?" + audio.getURL().toString() + "!=" + sound.getSource());
+				sound = new Media(audio.getURL().toString());
+				mediaPlayer.set(new MediaPlayer(sound));
 			}
 			setStartEnd(japaneseLesson);
 			LocalTime start = japaneseLesson.getStart();
-			Duration totalDuration = mediaPlayer.getTotalDuration();
+			Duration totalDuration = mediaPlayer.get().getTotalDuration();
 			Duration startDuration = totalDuration.multiply(toMilli(start) / totalDuration.toMillis());
-			System.out.println("current:" + mediaPlayer.getCurrentTime());
-			System.out.println(" start:" + mediaPlayer.getStartTime());
-			System.out.println(" stop:" + mediaPlayer.getStopTime());
+			System.out.println("current:" + mediaPlayer.get().getCurrentTime());
+			System.out.println(" start:" + mediaPlayer.get().getStartTime());
+			System.out.println(" stop:" + mediaPlayer.get().getStopTime());
 			System.out.println(" seek:" + startDuration);
 			// sound.get
-			mediaPlayer.seek(startDuration);
+			mediaPlayer.get().seek(startDuration);
 			// mediaPlayer.onS
-			if (mediaPlayer.getStatus() != Status.PLAYING) {
-				mediaPlayer.play();
+			if (mediaPlayer.get().getStatus() != Status.PLAYING) {
+				mediaPlayer.get().play();
 			}
 		}
 
 	}
 
 	private Duration convertDuration(LocalTime start) {
-		Duration startDuration = Duration
+		return Duration
 				.valueOf(toMilli(start) + "ms");
-		return startDuration;
 	}
 
 	private void setStartEnd(JapaneseLesson japaneseLesson) {

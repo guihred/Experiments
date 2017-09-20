@@ -62,10 +62,10 @@ public class RosarioComparadorArquivos extends Application {
 		gridpane.getChildren().add(new VBox(pesquisar, filterField, exportar));
 
 		final TableView<Medicamento> medicamentosEstoqueTable = tabelaMedicamentos(false);
-		Label estoqueRosario = new Label("Estoque Rosário");
+		Label estoqueRosario = new Label("Estoque Loja");
 		GridPane.setHalignment(estoqueRosario, HPos.CENTER);
-		FileChooser fileChooserRosario = choseFile("Carregar Arquivo Rosário");
-		Button buttonEstoque = new Button("Carregar Arquivo Rosário");
+		FileChooser fileChooserRosario = choseFile("Carregar Arquivo Loja");
+		Button buttonEstoque = new Button("Carregar Arquivo Loja");
 		buttonEstoque.setOnAction(e -> {
 			File selectedFile = fileChooserRosario.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
