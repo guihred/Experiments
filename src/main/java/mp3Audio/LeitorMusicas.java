@@ -1,14 +1,5 @@
 package mp3Audio;
 
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.apache.ApacheHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.customsearch.Customsearch;
-import com.google.api.services.customsearch.Customsearch.Cse;
-import com.google.api.services.customsearch.CustomsearchRequestInitializer;
-import com.google.api.services.customsearch.model.Result;
-import com.google.api.services.customsearch.model.Search;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,9 +8,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 import javax.swing.filechooser.FileSystemView;
+
 import org.apache.commons.lang3.StringUtils;
 import org.blinkenlights.jid3.ID3Tag;
 import org.blinkenlights.jid3.MP3File;
@@ -31,6 +22,19 @@ import org.blinkenlights.jid3.v2.ID3V2Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.apache.ApacheHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.customsearch.Customsearch;
+import com.google.api.services.customsearch.Customsearch.Cse;
+import com.google.api.services.customsearch.CustomsearchRequestInitializer;
+import com.google.api.services.customsearch.model.Result;
+import com.google.api.services.customsearch.model.Search;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public final class LeitorMusicas {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LeitorMusicas.class);
@@ -120,7 +124,7 @@ public final class LeitorMusicas {
 			LOGGER.error("", e);
 		}
 
-		if (genre2.indexOf("(") == 0 || "".equals(genre2)) {
+		if (genre2.indexOf('(') == 0 || "".equals(genre2)) {
 			genre2 = "Undefined";
 		}
 

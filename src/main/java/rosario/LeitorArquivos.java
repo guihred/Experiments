@@ -357,7 +357,8 @@ public final class LeitorArquivos {
 
 	private static String getString(Cell cell0) {
 		if (cell0.getCellTypeEnum() == CellType.NUMERIC) {
-			return Integer.toString((int) cell0.getNumericCellValue());
+			double numericCellValue = cell0.getNumericCellValue();
+			return Long.toString((long) numericCellValue);
 		}
 		return cell0.getStringCellValue();
 	}

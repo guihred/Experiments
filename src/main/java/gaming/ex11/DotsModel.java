@@ -5,9 +5,16 @@
  */
 package gaming.ex11;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -44,7 +51,6 @@ public class DotsModel {
 	private DotsSquare[][] maze = new DotsSquare[MAZE_SIZE][MAZE_SIZE];
 
 
-	private DotsSquare over;
 
 	private final ObservableMap<String, ObservableSet<Set<DotsSquare>>> points = FXCollections.observableHashMap();
 
@@ -190,10 +196,7 @@ public class DotsModel {
             entry.getKey().addAdj(entry.getValue());
             final boolean criou = Stream.of(maze).flatMap(Stream::of).flatMap(DotsSquare::almostSquare).count() > 0;
             entry.getKey().removeAdj(entry.getValue());
-            if (criou) {
-                return false;
-            }
-            return true;
+			return !criou;
         }).collect(Collectors.toList());
     }
 
@@ -239,7 +242,8 @@ public class DotsModel {
 	}
 
 	private void handleMouseReleased(MouseEvent e) {
-		over = Stream.of(maze).flatMap(Stream::of).filter(m -> m.getBoundsInParent().contains(e.getX(), e.getY()))
+		DotsSquare over = Stream.of(maze).flatMap(Stream::of)
+				.filter(m -> m.getBoundsInParent().contains(e.getX(), e.getY()))
 				.findFirst().orElse(null);
 		if (selected == null || over == null || selected == over) {
 			return;
@@ -252,7 +256,7 @@ public class DotsModel {
 			gridPane.getChildren().add(line1);
 			over.addAdj(selected);
 			Set<Set<DotsSquare>> check = over.check();
-			Set<Set<DotsSquare>> collect = points.values().stream().flatMap(a -> a.stream())
+			Set<Set<DotsSquare>> collect = points.values().stream().flatMap(ObservableSet<Set<DotsSquare>>::stream)
 					.collect(Collectors.toSet());
 			List<Set<DotsSquare>> collect1 = check.stream().filter(s -> !collect.contains(s))
 					.collect(Collectors.toList());
@@ -289,7 +293,8 @@ public class DotsModel {
 					get.getKey().addAdj(get.getValue());
 
 					Set<Set<DotsSquare>> check2 = get.getKey().check();
-					final Set<Set<DotsSquare>> collect2 = points.values().stream().flatMap(a -> a.stream())
+					final Set<Set<DotsSquare>> collect2 = points.values().stream()
+							.flatMap(ObservableSet<Set<DotsSquare>>::stream)
 							.collect(Collectors.toSet());
 					final List<Set<DotsSquare>> collect3 = check2.stream().filter(s -> !collect2.contains(s))
 							.collect(Collectors.toList());
@@ -328,7 +333,6 @@ public class DotsModel {
 		line.setStartX(0);
 		line.setEndY(0);
 		line.setStartY(0);
-		over = null;
 		selected = null;
 	}
 

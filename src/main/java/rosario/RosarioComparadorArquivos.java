@@ -35,10 +35,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class RosarioComparadorArquivos extends Application {
+	private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
 	private static final Logger LOGGER = LoggerFactory.getLogger(RosarioComparadorArquivos.class);
 
 	public static void main(String[] args) {
@@ -71,9 +73,8 @@ public class RosarioComparadorArquivos extends Application {
 			if (selectedFile != null) {
 				if (LeitorArquivos.isExcel(selectedFile)) {
 					showImportDialog(selectedFile,
-							FXCollections.observableArrayList("Codigo", "Nome", "Quantidade", ""), meds -> {
-						configurarFiltroRapido(filterField, medicamentosEstoqueTable, meds);
-					});
+							FXCollections.observableArrayList("Codigo", "Nome", "Quantidade", ""),
+							meds -> configurarFiltroRapido(filterField, medicamentosEstoqueTable, meds));
 					return;
 				}
 
@@ -168,14 +169,13 @@ public class RosarioComparadorArquivos extends Application {
 			ObservableList<Medicamento> medicamentosRosario) {
 		FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosRosario, p -> true);
 		medicamentosEstoqueTable.setItems(filteredData);
-		filterField.textProperty().addListener((observable, oldValue, newValue) -> {
-			filteredData.setPredicate(medicamento -> {
-				if (newValue == null || newValue.isEmpty()) {
-					return true;
-				}
-				return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
-			});
-		});
+		filterField.textProperty()
+				.addListener((observable, oldValue, newValue) -> filteredData.setPredicate(medicamento -> {
+					if (newValue == null || newValue.isEmpty()) {
+						return true;
+					}
+					return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
+				}));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -195,7 +195,7 @@ public class RosarioComparadorArquivos extends Application {
 
 					styleProperty().bind(
 							Bindings.when(auxMed.registroValidoProperty(medicamentos)).then("")
-									.otherwise("-fx-background-color:lightcoral"));
+									.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
 				}
 			}
 
@@ -214,7 +214,7 @@ public class RosarioComparadorArquivos extends Application {
 					setText(auxMed.getLote());
 					styleProperty().bind(
 							Bindings.when(auxMed.loteValidoProperty(medicamentos)).then("")
-									.otherwise("-fx-background-color:lightcoral"));
+									.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
 
 				}
 			}
@@ -232,7 +232,7 @@ public class RosarioComparadorArquivos extends Application {
 					Medicamento auxMed = getTableView().getItems().get(index);
 					setText(Integer.toString(auxMed.getQuantidade()));
 					styleProperty().bind(Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
-							.otherwise("-fx-background-color:lightcoral"));
+							.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
 				}
 			}
 
@@ -258,7 +258,7 @@ public class RosarioComparadorArquivos extends Application {
 					setText(Integer.toString(auxMed.getQuantidade()));
 					styleProperty().bind(
 							Bindings.when(auxMed.quantidadeCodigoValidoProperty(medicamentos)).then("")
-									.otherwise("-fx-background-color:lightcoral"));
+									.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
 				}
 			}
 
@@ -276,7 +276,7 @@ public class RosarioComparadorArquivos extends Application {
 					setText(Integer.toString(auxMed.getCodigo()));
 					styleProperty().bind(
 							Bindings.when(auxMed.codigoValidoProperty(medicamentos)).then("")
-									.otherwise("-fx-background-color:lightcoral"));
+									.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
 				}
 			}
 
@@ -357,6 +357,7 @@ public class RosarioComparadorArquivos extends Application {
 	private void showImportDialog(File excel, ObservableList<String> items,
 			Consumer<ObservableList<Medicamento>> consumer) {
 		Stage stage = new Stage(StageStyle.UTILITY);
+		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.centerOnScreen();
 		stage.toFront();
 		stage.setTitle("Importar Excel");
@@ -365,7 +366,7 @@ public class RosarioComparadorArquivos extends Application {
 		ChoiceBox<String> selectSheet = new ChoiceBox<>(sheetsExcel);
 		ObservableList<List<String>> listExcel = LeitorArquivos.getListExcel(excel, null);
 		selectSheet.getSelectionModel().selectFirst();
-		int orElse = listExcel.stream().mapToInt(e -> e.size()).max().orElse(items.size());
+		int orElse = listExcel.stream().mapToInt(List<String>::size).max().orElse(items.size());
 		final TableView<List<String>> medicamentosTable = new TableView<>(listExcel);
 		selectSheet.getSelectionModel().selectedItemProperty().addListener(
 				(val, old, newValue) -> {
@@ -428,7 +429,8 @@ public class RosarioComparadorArquivos extends Application {
 					medicamento.setNome(Objects.toString(medicamento.getNome(), "") + item.get(i % item.size()));
 					break;
 				case "Lote":
-					medicamento.setLote(Objects.toString(medicamento.getLote(), "") + item.get(i % item.size()));
+					String string = item.get(i % item.size());
+					medicamento.setLote(Objects.toString(medicamento.getLote(), "") + string);
 					break;
 				case "Quantidade":
 					Integer qnt = intValue(item.get(i % item.size()));
