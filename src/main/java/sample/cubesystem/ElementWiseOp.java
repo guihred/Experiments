@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-@SuppressWarnings("serial")
 public final class ElementWiseOp {
 	enum Operation {
 		NONE((a, b) -> a), 

@@ -108,9 +108,8 @@ public class JapaneseLesson implements Serializable {
 
 	@Override
 	public String toString() {
-		return "JapaneseLesson [english=" + english + ", exercise=" + pk.getExercise() + ", japanese=" + japanese
-				+ ", romaji="
-				+ romaji + "]";
+		return String.format("JapaneseLesson [english=%s, exercise=%d, japanese=%s, romaji=%s]", english,
+				pk.getExercise(), japanese, romaji);
 	}
 
 	public LocalTime getStart() {
