@@ -15,5 +15,7 @@
         <property name="hibernate.current_session_context_class">thread</property>
         <mapping class="japstudy.db.JapaneseLesson"></mapping>
         <mapping class="japstudy.db.LessonPK"></mapping>
+        <mapping class="election.experiment.Cidade"></mapping>
+        <mapping class="election.experiment.Candidato"></mapping>
     </session-factory>
 </hibernate-configuration>
