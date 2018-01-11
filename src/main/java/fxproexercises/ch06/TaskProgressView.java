@@ -1,6 +1,7 @@
 package fxproexercises.ch06;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.concurrent.Worker;
@@ -32,7 +33,12 @@ public class TaskProgressView {
 	private Label value = new Label();
 	private Label workDone = new Label();
 
-	public TaskProgressView(Worker<String> worker, AtomicBoolean shouldThrow) {
+    public TaskProgressView(Worker<String> worker) {
+        this(worker, new AtomicBoolean(false));
+        exceptionButton.setVisible(false);
+    }
+
+    public TaskProgressView(Worker<String> worker, AtomicBoolean shouldThrow) {
 		progressBar.setMinWidth(250);
 		progressBar.progressProperty().bind(worker.progressProperty());
 		title.textProperty().bind(worker.titleProperty());
