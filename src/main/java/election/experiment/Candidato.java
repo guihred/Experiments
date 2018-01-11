@@ -1,8 +1,10 @@
 package election.experiment;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,30 +16,34 @@ import javax.persistence.Table;
 @Table
 public class Candidato implements Serializable {
 
+	private String cargo;
+
+	@ManyToOne
+	@JoinColumn
+	private Cidade cidade;
+
+	private String fotoUrl;
+
+	private String grauInstrucao;
+
 	@Id
 	private String href;
+	private LocalDate nascimento;
+
+	private String naturalidade;
 
 	private String nome;
 
 	private String nomeCompleto;
 
 	private Integer numero;
-
-	private Integer votos;
-
-	private LocalDate nascimento;
-
-	private String naturalidade;
-
 	private String ocupacao;
 
-	private String grauInstrucao;
 
 	private String partido;
 
-	@ManyToOne
-	@JoinColumn
-	private Cidade cidade;
+	private Integer votos;
+	private Boolean eleito = false;
 
 	@Override
 	public boolean equals(Object obj) {
@@ -55,8 +61,18 @@ public class Candidato implements Serializable {
 		return Objects.equals(other.href, href);
 	}
 
+
+
+	public String getCargo() {
+		return cargo;
+	}
+
 	public Cidade getCidade() {
 		return cidade;
+	}
+
+	public String getFotoUrl() {
+		return fotoUrl;
 	}
 
 	public String getGrauInstrucao() {
@@ -98,22 +114,28 @@ public class Candidato implements Serializable {
 	public Integer getVotos() {
 		return votos;
 	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(href);
+	}
+	public void setCargo(String cargo) {
+		this.cargo = cargo;
 	}
 
 	public void setCidade(Cidade cidade) {
 		this.cidade = cidade;
 	}
+
+	public void setFotoUrl(String fotoUrl) {
+		this.fotoUrl = fotoUrl;
+	}
+
 	public void setGrauInstrucao(String grauInstrucao) {
 		this.grauInstrucao = grauInstrucao;
 	}
 	public void setHref(String href) {
 		this.href = href;
 	}
-
 	public void setNascimento(LocalDate nascimento) {
 		this.nascimento = nascimento;
 	}
@@ -127,9 +149,11 @@ public class Candidato implements Serializable {
 	public void setNomeCompleto(String nomeCompleto) {
 		this.nomeCompleto = nomeCompleto;
 	}
+
 	public void setNumero(Integer numero) {
 		this.numero = numero;
 	}
+
 	public void setOcupacao(String ocupacao) {
 		this.ocupacao = ocupacao;
 	}
@@ -137,15 +161,25 @@ public class Candidato implements Serializable {
 	public void setPartido(String partido) {
 		this.partido = partido;
 	}
+
 	public void setVotos(Integer votos) {
 		this.votos = votos;
 	}
 
-	/*
-	 * 1° 1.25% 7,681 votos Eleito
-	 * 
-	 * Romildo Santos é Vereador Eleito de Guarulhos pelo DEM. Nome Romildo Virginio
-	 * dos Santos Naturalidade São Paulo - SP Estado Civil Casado Ocupação Outros
-	 * Grau de Instrução Superior Completo
-	 */
+	@Override
+	public String toString() {
+		return MessageFormat.format(
+				"Candidato [cargo={0}, cidade={1}, grauInstrucao={2}, href={3}, fotoUrl={4}, nascimento={5}, naturalidade={6}, nome={7}, nomeCompleto={8}, numero={9}, ocupacao={10}, partido={11}, votos={12}]",
+				cargo, Optional.ofNullable(cidade).map(e -> e.getNome() + " - " + e.getEstado()).orElse(null),
+				grauInstrucao, href, fotoUrl, nascimento, naturalidade, nome, nomeCompleto, numero,
+				ocupacao, partido, votos);
+	}
+
+	public Boolean getEleito() {
+		return eleito;
+	}
+
+	public void setEleito(Boolean eleito) {
+		this.eleito = eleito;
+	}
 }

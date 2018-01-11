@@ -8,7 +8,7 @@ import japstudy.db.HibernateUtil;
 
 public class CidadeDAO {
 
-	public void saveOrUpdate(Cidade cidade) {
+	public void saveOrUpdate(Object cidade) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		session.saveOrUpdate(cidade);
@@ -22,7 +22,7 @@ public class CidadeDAO {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT l ");
 		hql.append("FROM Cidade l ");
-		List<Cidade> list = session.createQuery(hql.toString(), Cidade.class).list();
+		List<Cidade> list = session.createQuery(hql.toString(), Cidade.class).setMaxResults(10).list();
 		session.getTransaction().commit();
 		return list;
 	}
