@@ -1,12 +1,7 @@
 package election.experiment;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
@@ -23,21 +18,16 @@ public class ElectionCrawler implements HasLogging {
 	private CidadeDAO cidadeDAO = new CidadeDAO();
 
 	public static void main(String[] args) {
-
         new ElectionCrawler().migrateCandidates();
-
 	}
 
 	public void migrateCities() {
-        insertProxyConfig();
-        String encoded = Base64.getEncoder().encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes());
 		List<String> asList = Arrays.asList("ac", "al", "am", "ap", "ba", "ce", "es", "go", "ma", "mg", "ms", "mt",
 				"pa", "pb", "pe", "pi", "pr", "rj", "rn", "ro", "rr", "rs", "sc", "se", "sp", "to");
 		String alphabet = "abcdefghijklmnopqrstuvwxyz";
 		for (String estado : asList) {
 			for (String letter : alphabet.split("")) {
                 Connection connect = Jsoup.connect("https://www.eleicoes2016.com.br/" + estado + "/" + letter + "/");
-                connect.header("Proxy-Authorization", "Basic " + encoded);
 				try {
 					Document parse = connect
 							.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0")
@@ -63,40 +53,16 @@ public class ElectionCrawler implements HasLogging {
 		HibernateUtil.shutdown();
 	}
 
-    private void insertProxyConfig() {
-        System.setProperty("https.proxyHost", "10.70.124.16");
-        System.setProperty("https.proxyPort", "3128");
-        System.setProperty("javax.net.ssl.trustStore", "C:/Users/guilherme.hmedeiros/Downloads/Instaladores/cacerts");
-
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(getHTTPUsername(), getHTTPPassword().toCharArray());
-            }
-
-        });
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
-    }
-
-    private String getHTTPPassword() {
-        return "13-juuSAN";
-    }
-
-    private String getHTTPUsername() {
-        return "guilherme.hmedeiros";
-    }
-
     private Integer convertNumerico(String eleitores) {
-		String replaceAll = eleitores.replaceAll("\\D", "");
+        String replaceAll = eleitores.replaceAll("[^0-9]", "");
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
 	}
 
 	public void migrateCandidates() {
-        insertProxyConfig();
 		List<Cidade> cidades = cidadeDAO.list();
 		for (Cidade cidade : cidades) {
-			int i = 2;
-			while (true) {
+            int i = 2;
+            while (true) {
 
                 Connection connect = Jsoup.connect("https://www.eleicoes2016.com.br" + cidade.getHref() + i);
 				try {
