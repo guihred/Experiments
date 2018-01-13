@@ -44,7 +44,7 @@ final class CrawlerCompleteCandidateTask extends CrawlerTask {
             long count = ths.stream().filter(Thread::isAlive).count();
             while (count > 10) {
                 count = ths.stream().filter(Thread::isAlive).count();
-                updateAll(i, total);
+                updateAll(completeCandidates.get(), total);
             }
         }
         while (ths.stream().anyMatch(Thread::isAlive)) {

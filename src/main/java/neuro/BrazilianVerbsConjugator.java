@@ -1,18 +1,26 @@
 package neuro;
 
-import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableMap;
+
 import simplebuilder.ResourceFXUtils;
 
 /**
@@ -226,24 +234,19 @@ public class BrazilianVerbsConjugator {
 
 	public static Map<Mode, List<String>> conjugate(String verb) {
 		if (isIrregular(verb)) {
-			return
-			irregularConjugation(verb);
+            return irregularConjugation(verb);
 		}
 		if (verb.endsWith("ar")) {
-			return
-			firstConjugation(verb);
+            return firstConjugation(verb);
 		}
 		if (verb.endsWith("er")) {
-			return
-			secondConjugation(verb);
+            return secondConjugation(verb);
 		}
 		if (verb.endsWith("ir")) {
-			return
-			thirdConjugation(verb);
+            return thirdConjugation(verb);
 		}
-		if (verb.endsWith("por") || verb.endsWith("pôr")) {
-			return
-			fourthConjugation(verb);
+        if (verb.matches("^.*p[oô]r$")) {
+            return fourthConjugation(verb);
 		}
 		return null;
 	}
@@ -385,7 +388,7 @@ public class BrazilianVerbsConjugator {
 	}
 	private static Stream<String> getWords(URI txtFile) throws IOException {
 		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential().map(String::trim)
-				.filter(s -> !s.isEmpty() && s.endsWith("siar"))
+                .filter(s -> !s.isEmpty())
 				.distinct();
 	}
 	

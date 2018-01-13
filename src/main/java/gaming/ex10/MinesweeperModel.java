@@ -7,12 +7,15 @@ package gaming.ex10;
 
 import java.util.Random;
 import java.util.stream.Stream;
+
+import gaming.ex10.MinesweeperSquare.State;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -25,8 +28,9 @@ import javafx.stage.Stage;
  */
 public class MinesweeperModel {
 
-    public static final int MAP_HEIGHT = 8;
-    public static final int MAP_WIDTH = 8;
+    private static final int NUMBER_OF_BOMBS = 64;
+    public static final int MAP_HEIGHT = 16;
+    public static final int MAP_WIDTH = 16;
 
 	private GridPane gridPane;
 	private final MinesweeperSquare[][] map = new MinesweeperSquare[MAP_WIDTH][MAP_HEIGHT];
@@ -41,13 +45,17 @@ public class MinesweeperModel {
             }
         }
         final Random random = new Random();
-        for (int i = 0; i < 10; i++) {
+
+        long count = 0;
+        while (count < NUMBER_OF_BOMBS) {
 
             int j = random.nextInt(MAP_WIDTH);
             int k = random.nextInt(MAP_HEIGHT);
 
             final MinesweeperSquare mem = map[j][k];
 			mem.setMinesweeperImage(MinesweeperImage.BOMB);
+            count = Stream.of(map).flatMap(Stream::of).filter(e -> e.getMinesweeperImage() == MinesweeperImage.BOMB)
+                    .count();
         }
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
@@ -74,7 +82,7 @@ public class MinesweeperModel {
 		            continue;
 		        }
 				if (i + k >= 0 && i + k < MAP_WIDTH && j + l >= 0 && j + l < MAP_HEIGHT
-						&& map[i + k][j + l].getMinesweeperImage().equals(MinesweeperImage.BOMB)) {
+                        && map[i + k][j + l].getMinesweeperImage() == MinesweeperImage.BOMB) {
 					num++;
 				}
 		    }
@@ -83,18 +91,28 @@ public class MinesweeperModel {
 	}
 
     final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
-		EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(mem);
+        EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(event, mem);
         mem.getFinalShape().setOnMouseClicked(mouseClicked);
+        mem.getFlag().setOnMouseClicked(mouseClicked);
         mem.setOnMouseClicked(mouseClicked);
         return mouseClicked;
     }
 
-	private void handleClick(MinesweeperSquare mem) {
+    private void handleClick(MouseEvent event, MinesweeperSquare mem) {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            if (mem.getState() == State.HIDDEN) {
+                mem.setState(MinesweeperSquare.State.FLAGGED);
+            } else if (mem.getState() == State.FLAGGED) {
+                mem.setState(MinesweeperSquare.State.HIDDEN);
+            }
+            return;
+        }
+
 		if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
 		    nPlayed.set(nPlayed.get() + 1);
-			mem.setState(MinesweeperSquare.State.SHOWN);
+            mem.setState(MinesweeperSquare.State.SHOWN);
 			if (mem.getMinesweeperImage().equals(MinesweeperImage.BOMB)) {
-		        if (nPlayed.get() == 0) {
+                if (nPlayed.get() == 0) {
 		            reset();
 		        }
 
@@ -148,14 +166,16 @@ public class MinesweeperModel {
             }
         }
         final Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            final MinesweeperImage bomb = MinesweeperImage.BOMB;
+        long count = 0;
+        while (count < NUMBER_OF_BOMBS) {
 
             int j = random.nextInt(MAP_WIDTH);
             int k = random.nextInt(MAP_HEIGHT);
 
             final MinesweeperSquare mem = map[j][k];
-			mem.setMinesweeperImage(bomb);
+            mem.setMinesweeperImage(MinesweeperImage.BOMB);
+            count = Stream.of(map).flatMap(Stream::of).filter(e -> e.getMinesweeperImage() == MinesweeperImage.BOMB)
+                    .count();
         }
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
@@ -173,9 +193,8 @@ public class MinesweeperModel {
         gridPane.getChildren().clear();
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
-
                 MinesweeperSquare map1 = map[i][j];
-                gridPane.add(new StackPane(map1, map1.getFinalShape()), i, j);
+                gridPane.add(new StackPane(map1, map1.getFinalShape(), map1.getFlag()), i, j);
             }
         }
         startTime = System.currentTimeMillis();

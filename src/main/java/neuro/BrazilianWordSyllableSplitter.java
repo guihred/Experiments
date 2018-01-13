@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import simplebuilder.ResourceFXUtils;
 
 public final class BrazilianWordSyllableSplitter {
@@ -50,7 +52,7 @@ public final class BrazilianWordSyllableSplitter {
 	public static void main(String[] args) {
 
 		try {
-			Stream<String> words;
+            Stream<String>
 			words = getWords(ResourceFXUtils.toURI("words.dic"));
 			words.forEach(BrazilianWordSyllableSplitter::splitSyllables);
 		} catch (IOException e) {
@@ -60,7 +62,7 @@ public final class BrazilianWordSyllableSplitter {
 	}
 
 	private static Stream<String> getWords(URI txtFile) throws IOException {
-		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential()
+        return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential()
 				.map(String::trim)
 				.filter(s -> !s.isEmpty())
 				.distinct();

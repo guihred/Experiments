@@ -8,7 +8,12 @@ package gaming.ex10;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -24,7 +29,7 @@ public class MinesweeperLauncher extends Application {
         for (int i = 0; i < memoryModel.getMap().length; i++) {
             for (int j = 0; j < memoryModel.getMap()[i].length; j++) {
                 MinesweeperSquare map1 = memoryModel.getMap()[i][j];
-                gridPane.add(new StackPane(map1, map1.getFinalShape()), i, j);
+                gridPane.add(new StackPane(map1, map1.getFinalShape(), map1.getFlag()), i, j);
             }
         }
 
