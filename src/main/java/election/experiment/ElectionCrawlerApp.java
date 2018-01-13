@@ -1,6 +1,7 @@
 package election.experiment;
 
 import fxproexercises.ch06.TaskProgressView;
+import japstudy.db.HibernateUtil;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.stage.Stage;
@@ -20,6 +21,7 @@ public class ElectionCrawlerApp extends Application {
         stage.setTitle("Worker and Task Example");
         stage.setScene(view.getScene());
         stage.show();
+        stage.setOnCloseRequest(e -> HibernateUtil.shutdown());
     }
 
 }

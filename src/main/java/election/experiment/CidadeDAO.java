@@ -12,7 +12,6 @@ public class CidadeDAO {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		session.saveOrUpdate(cidade);
-		session.flush();
 		session.getTransaction().commit();
 	}
 
@@ -21,8 +20,8 @@ public class CidadeDAO {
 		session.beginTransaction();
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT l ");
-		hql.append("FROM Cidade l ");
-		List<Cidade> list = session.createQuery(hql.toString(), Cidade.class).setMaxResults(10).list();
+        hql.append("FROM Cidade l");
+        List<Cidade> list = session.createQuery(hql.toString(), Cidade.class).list();
 		session.getTransaction().commit();
 		return list;
 	}

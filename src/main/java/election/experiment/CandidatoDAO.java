@@ -42,7 +42,7 @@ public class CandidatoDAO {
         StringBuilder hql = new StringBuilder();
         hql.append("SELECT COUNT(l) ");
         hql.append(" FROM Candidato l");
-        // hql.append(" WHERE l.nomeCompleto IS NULL");
+        hql.append(" WHERE l.nomeCompleto IS NULL");
         Long list = session.createQuery(hql.toString(), Long.class).uniqueResult();
         session.getTransaction().commit();
         return list;

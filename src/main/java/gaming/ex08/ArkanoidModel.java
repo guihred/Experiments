@@ -34,19 +34,19 @@ public class ArkanoidModel {
 		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(10), event -> gameLoop()));
 		scene.setOnKeyPressed((KeyEvent event) -> {
 			final KeyCode code = event.getCode();
-			switch (code) {
-			case RIGHT:
-				if (rectangle.getX() < 350) {
-					rectangle.setX(rectangle.getX() + 10);
-				}
-				break;
-			case LEFT:
-				if (rectangle.getX() > 0) {
-					rectangle.setX(rectangle.getX() - 10);
-				}
-				break;
-			default:
-				break;
+            switch (code) {
+                case RIGHT:
+                    if (rectangle.getX() < 350) {
+                        rectangle.setX(rectangle.getX() + 10);
+                    }
+                    break;
+                case LEFT:
+                    if (rectangle.getX() > 0) {
+                        rectangle.setX(rectangle.getX() - 10);
+                    }
+                    break;
+                default:
+                    break;
 			}
 		});
 		scene.setOnMouseMoved((MouseEvent event) -> {
@@ -66,7 +66,7 @@ public class ArkanoidModel {
 		if (orElse != null || circle.getCenterX() <= 5 || circle.getCenterX() > 390) {
 			x = -x;
 		}
-		if (orElse instanceof Rectangle && ((Rectangle) orElse).getFill().equals(Color.AQUA)) {
+        if (orElse instanceof Rectangle && ((Rectangle) orElse).getFill() == Color.AQUA) {
 			group.getChildren().remove(orElse);
 		}
 		circle.setCenterY(circle.getCenterY() + y);
@@ -75,7 +75,7 @@ public class ArkanoidModel {
 		if (orElse2 != null || circle.getCenterY() <= 5 || circle.getCenterY() > 570) {
 			y = -y;
 		}
-		if (orElse2 instanceof Rectangle && ((Rectangle) orElse2).getFill().equals(Color.AQUA)) {
+        if (orElse2 instanceof Rectangle && ((Rectangle) orElse2).getFill() == Color.AQUA) {
 			group.getChildren().remove(orElse2);
 		}
 		circle.setCenterX(circle.getCenterX() + x);
