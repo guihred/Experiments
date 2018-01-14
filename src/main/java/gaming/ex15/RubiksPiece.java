@@ -80,6 +80,12 @@ public class RubiksPiece extends Group {
 				text.setTranslateZ(node.getTranslateZ());
 				text.setRotationAxis(node.getRotationAxis());
 				text.setRotate(node.getRotate());
+                if (i % 3 == 0 || i == 4) {
+                    Rotate e = new Rotate(180);
+                    e.setAxis(i % 3 == 0 ? Rotate.Y_AXIS : Rotate.X_AXIS);
+                    text.getTransforms().add(e);
+                }
+
 				arrayList.add(text);
 			}
 			getChildren().addAll(arrayList);

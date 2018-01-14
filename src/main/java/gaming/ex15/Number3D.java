@@ -18,7 +18,7 @@ public class Number3D extends Group {
 
 	private IntegerProperty num = new SimpleIntegerProperty(0);
 	private ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.BLACK);
-	private DoubleProperty sizeProperty = new SimpleDoubleProperty(10);
+    private DoubleProperty sizeProperty = new SimpleDoubleProperty(15);
 	private PhongMaterial phongMaterial = new PhongMaterial();
 //	 _ 	   _  _     _  _ _  _  _
 //	| | |  _| _||_||_ |_  ||_||_| 

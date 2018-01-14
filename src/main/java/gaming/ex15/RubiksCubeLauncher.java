@@ -28,7 +28,7 @@ import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class RubiksCubeLauncher extends Application {
-	public static final boolean DEBUG = true;
+    public static final boolean DEBUG = true;
 	public static final int CUBE_COMPLEXITY = 3;
 
 	static final Logger LOGGER = LoggerFactory.getLogger(RubiksCubeLauncher.class);
