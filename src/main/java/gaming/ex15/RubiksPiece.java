@@ -1,24 +1,28 @@
 package gaming.ex15;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 
 public class RubiksPiece extends Group {
 	private static int count;
 	private final int id;
-	private Map<RubiksCubeFaces, Rotate> rotations = new EnumMap<>(RubiksCubeFaces.class);
+    private Map<Point3D, Rotate> rotations = new HashMap<>();
 
 	public RubiksPiece(double size) {
 		id = ++count;
@@ -85,10 +89,13 @@ public class RubiksPiece extends Group {
 	}
 
 	public void rotate(RubiksCubeFaces face, RubiksPiece pivot, DoubleProperty angle, boolean clockwise) {
-		Rotate rotate = rotations.get(face);
+        Rotate rotate = rotations.get(face.getAxis());
 		double angle2 = Math.ceil((rotate.getAngle() + 360) % 360 / 90) * 90;
-		DoubleBinding add = clockwise ? angle.add(angle2) : angle.multiply(-1).add(angle2);
+        DoubleBinding add = clockwise ^ (face == RubiksCubeFaces.BACK || face == RubiksCubeFaces.FRONT)
+                ? angle.add(angle2)
+                : angle.multiply(-1).add(angle2);
 		rotate.angleProperty().bind(add);
+
 	}
 
 	public void setPivot(RubiksPiece pivot) {
@@ -100,14 +107,25 @@ public class RubiksPiece extends Group {
 				rotate.setPivotY(pivot.getTranslateY() - getTranslateY() - RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2);
 				rotate.setPivotZ(pivot.getTranslateZ() - getTranslateZ());
 				getTransforms().add(rotate);
-				rotations.put(face, rotate);
+                rotations.put(face.getAxis(), rotate);
 			}
 		}
-
+        getTransforms().add(new Rotate(0));
 	}
 
 	public void unbindAngle() {
-		rotations.forEach((f, r) -> r.angleProperty().unbind());
+        Transform concatenation = getTransforms().get(getTransforms().size() - 1);
+
+        List<Entry<Point3D, Rotate>> entrySet = new ArrayList<>(rotations.entrySet());
+        entrySet.sort(Comparator.comparing((Entry<Point3D, Rotate> e) -> !e.getValue().angleProperty().isBound()));
+        for (Entry<Point3D, Rotate> entry : entrySet) {
+            Rotate r = entry.getValue();
+            concatenation = r.createConcatenation(concatenation);
+            r.angleProperty().unbind();
+            r.setAngle(0);
+        }
+        getTransforms().set(getTransforms().size() - 1, concatenation);
+
 	}
 
 	@Override

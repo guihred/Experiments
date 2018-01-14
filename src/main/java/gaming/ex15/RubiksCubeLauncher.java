@@ -103,7 +103,7 @@ public class RubiksCubeLauncher extends Application {
 		Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(p -> p.setPivot(pieces[1][1][1]));
 	}
 	private void unbindAll() {
-		Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(p -> p.unbindAngle());
+        Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(RubiksPiece::unbindAngle);
 		if (RubiksCubeLauncher.DEBUG) {
 			for (int i = 0; i < CUBE_COMPLEXITY; i++) {
 				for (int j = 0; j < CUBE_COMPLEXITY; j++) {
@@ -120,8 +120,13 @@ public class RubiksCubeLauncher extends Application {
 	public void rotateCube(RubiksCubeFaces face, boolean clockwise) {
 		RubiksPiece pivot = pieces[1][1][1];
 		List<RubiksPiece> collect = getFacePieces(face);
-		collect.forEach((RubiksPiece e) -> e.rotate(face, pivot, angle, clockwise));
+        for (RubiksPiece e : collect) {
+            e.rotate(face, pivot, angle, clockwise);
+        }
 		timeline.playFromStart();
+        if (RubiksCubeLauncher.DEBUG) {
+            System.out.println(face);
+        }
 		List<RubiksPiece> arrayList = new ArrayList<>();
 		for (int i = 0; i < collect.size(); i++) {
 			int j = !clockwise ? rotateAntiClockWise(i) : rotateClockWise(i);
@@ -137,7 +142,7 @@ public class RubiksCubeLauncher extends Application {
 
 	private List<RubiksPiece> getFacePieces(RubiksCubeFaces face) {
 		return IntStream
-				.range(0, CUBE_COMPLEXITY)
+                .range(0, CUBE_COMPLEXITY)
 				.boxed()
 				.flatMap(i -> IntStream
 						.range(0, CUBE_COMPLEXITY)
