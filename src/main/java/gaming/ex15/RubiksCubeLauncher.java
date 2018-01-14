@@ -43,9 +43,9 @@ public class RubiksCubeLauncher extends Application {
 			for (int j = 0; j < CUBE_COMPLEXITY; j++) {
 				for (int k = 0; k < CUBE_COMPLEXITY; k++) {
 					RubiksPiece rubiksPiece = new RubiksPiece(RUBIKS_CUBE_SIZE);
-					rubiksPiece.setTranslateX(-i * (RUBIKS_CUBE_SIZE + 1));
-					rubiksPiece.setTranslateY(j * (RUBIKS_CUBE_SIZE + 1));
-					rubiksPiece.setTranslateZ(k * (RUBIKS_CUBE_SIZE + 1));
+                    rubiksPiece.setTranslateX(-i * (RUBIKS_CUBE_SIZE + 1.0));
+                    rubiksPiece.setTranslateY(j * (RUBIKS_CUBE_SIZE + 1.0));
+                    rubiksPiece.setTranslateZ(k * (RUBIKS_CUBE_SIZE + 1.0));
 					pieces[i][j][k] = rubiksPiece;
 					root.getChildren().add(rubiksPiece);
 				}
@@ -76,14 +76,6 @@ public class RubiksCubeLauncher extends Application {
 		sc.setOnMouseMoved(a);
 		setPivot();
 	}
-//	0,1,2	6,3,0
-//	3,4,5	7,4,1
-//	6,7,8	8,5,2
-	// i=a/3
-	// j=a%3
-	// x=a%3-1
-	// y=1-a/3
-	// b=(a%3-1)*3+(1-a/3)
 	
 	public int rotateAntiClockWise(int i) {
 		return 6 - i % 3 * 3 + i / 3;
@@ -121,7 +113,7 @@ public class RubiksCubeLauncher extends Application {
 		RubiksPiece pivot = pieces[1][1][1];
 		List<RubiksPiece> collect = getFacePieces(face);
         for (RubiksPiece e : collect) {
-            e.rotate(face, pivot, angle, clockwise);
+            e.rotate(face, angle, clockwise);
         }
 		timeline.playFromStart();
         if (RubiksCubeLauncher.DEBUG) {

@@ -94,7 +94,7 @@ public class RubiksPiece extends Group {
 		
 	}
 
-	public void rotate(RubiksCubeFaces face, RubiksPiece pivot, DoubleProperty angle, boolean clockwise) {
+	public void rotate(RubiksCubeFaces face, DoubleProperty angle, boolean clockwise) {
         Rotate rotate = rotations.get(face.getAxis());
 		double angle2 = Math.ceil((rotate.getAngle() + 360) % 360 / 90) * 90;
         DoubleBinding add = clockwise ^ (face == RubiksCubeFaces.BACK || face == RubiksCubeFaces.FRONT)
