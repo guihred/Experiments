@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -18,7 +19,7 @@ import javafx.collections.ObservableList;
  * @author Note
  */
 public class SnakeModel {
-	public static final int MAP_SIZE = 10;
+    public static final int MAP_SIZE = 50;
 
 	private final SnakeSquare[][] map = new SnakeSquare[MAP_SIZE][MAP_SIZE];
 
@@ -68,7 +69,8 @@ public class SnakeModel {
 
 	public final boolean updateMap() {
 		final SnakeSquare head = snake.get(0);
-		int i = head.getI(), j = head.getJ();
+        int i = head.getI();
+        int j = head.getJ();
 		switch (direction) {
 		case LEFT:
 			i = (i - 1 + MAP_SIZE) % MAP_SIZE;
@@ -84,6 +86,9 @@ public class SnakeModel {
 			break;
 		default:
 		}
+        if (map[i][j].getState() == SnakeState.SNAKE) {
+            return true;
+        }
 		if (map[i][j].getState() == SnakeState.NONE) {
 			snake.remove(snake.size() - 1);
 		} else if (map[i][j].getState() == SnakeState.FOOD) {
@@ -93,14 +98,10 @@ public class SnakeModel {
 				collect.get(random.nextInt(collect.size())).setState(SnakeState.FOOD);
 			}
 
-		} else {
-
-			return true;
-		}
+        }
 		if (!snake.contains(map[i][j])) {
 			snake.add(0, map[i][j]);
 		}
-
 		return false;
 	}
 

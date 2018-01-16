@@ -61,7 +61,7 @@ public class SnakeLauncher extends Application {
         final Scene scene = new Scene(gridPane);
 		scene.setOnKeyPressed(this::handleKeyPressed);
         final Timeline timeline = new Timeline();
-		timeline.getKeyFrames().add(new KeyFrame(new Duration(200), t -> gameLoop(timeline)));
+        timeline.getKeyFrames().add(new KeyFrame(new Duration(200), t -> gameLoop(timeline)));
 		timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
         stage.setScene(scene);
@@ -70,8 +70,20 @@ public class SnakeLauncher extends Application {
         stage.show();
     }
 
+    int i = 0;
 	private void gameLoop(final Timeline timeline) {
-		if (newGameModel.updateMap()) {
+        KeyFrame remove = timeline.getKeyFrames().get(0);
+        if (remove.getTime().greaterThan(new Duration(50))) {
+            i++;
+            if (i % 50 == 0) {
+                timeline.stop();
+                timeline.getKeyFrames().clear();
+                Duration add = remove.getTime().add(new Duration(-2));
+                timeline.getKeyFrames().add(new KeyFrame(add, f -> gameLoop(timeline)));
+                timeline.play();
+            }
+        }
+	    if (newGameModel.updateMap()) {
 		    timeline.stop();
 		    final Button button = new Button("Reset");
 		    final Stage stage1 = new Stage();

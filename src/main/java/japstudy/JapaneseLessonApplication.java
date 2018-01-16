@@ -1,5 +1,6 @@
 package japstudy;
 
+import japstudy.db.HibernateUtil;
 import japstudy.db.JapaneseLesson;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
@@ -16,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -50,16 +52,22 @@ public class JapaneseLessonApplication extends Application {
 		Button button = new Button("Start");
 		button.setOnAction(e -> {
 			JapaneseLessonDisplayer display = new JapaneseLessonDisplayer(tabelaJapaneseLessons.getItems());
-
 			display.show();
 		});
 		gridpane.getChildren().add(new VBox(estoqueRosario, tabelaJapaneseLessons, button));
 		GridPane.setHalignment(estoqueRosario, HPos.CENTER);
 		tabelaJapaneseLessons.setItems(getLessons());
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.SHIFT) {
+                editItem(tabelaJapaneseLessons);
+            }
+        });
 		// selection listening
 		tabelaJapaneseLessons.prefWidthProperty().bind(primaryStage.widthProperty().add(-25));
 		primaryStage.setScene(scene);
 		primaryStage.show();
+
+        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 	}
 
 	private ObservableList<JapaneseLesson> getLessons() {
@@ -98,12 +106,30 @@ public class JapaneseLessonApplication extends Application {
 		quantidadeJapaneseLesson.setSortable(true);
 		quantidadeJapaneseLesson.setCellValueFactory(new PropertyValueFactory<>("romaji"));
 		quantidadeJapaneseLesson.prefWidthProperty().bind(medicamentosTable.prefWidthProperty().multiply(3.0 / 12));
+
 		medicamentosTable.getColumns().add(quantidadeJapaneseLesson);
 
+
+        medicamentosTable.setOnMouseClicked(e -> {
+            if (e.getClickCount() > 1) {
+
+                editItem(medicamentosTable);
+            }
+        });
 
 		return medicamentosTable;
 	}
 
+    private void editItem(final TableView<JapaneseLesson> medicamentosTable) {
+        TableViewSelectionModel<JapaneseLesson> selectionModel = medicamentosTable.getSelectionModel();
+        if (!selectionModel.isEmpty()) {
+            JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
+            Stage primaryStage = new Stage();
+            japaneseLessonEditingDisplay.start(primaryStage);
+            JapaneseLesson selectedItem = selectionModel.getSelectedItem();
+            japaneseLessonEditingDisplay.setCurrent(selectedItem);
+        }
+    }
 
 	public class JapaneseLessonDisplayer extends Stage {
 		private ObservableList<JapaneseLesson> lessons;
@@ -129,10 +155,8 @@ public class JapaneseLessonApplication extends Application {
 			japanese.visibleProperty().bind(tested);
 
 			TextField answer = new TextField();
-			Button next = new Button("Next");
-			next.setOnAction(e -> {
-				nextLesson(answer);
-			});
+            Button next = new Button("_Next");
+            next.setOnAction(e -> nextLesson(answer));
 
 			setWidth(400);
 			current.set(0);

@@ -29,7 +29,7 @@ public final class JapaneseLessonReader {
 	public static void main(String[] args) {
 		try {
 			ObservableList<JapaneseLesson> lessons = getLessons("jaftranscript.docx");
-			lessons.forEach(System.out::println);
+            lessons.forEach(JapaneseLessonReader::update);
 			HibernateUtil.shutdown();
 		} catch (IOException e) {
 			LOGGER.error("", e);

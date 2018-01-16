@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoUnit;
 import java.util.function.BiConsumer;
 
-import japstudy.db.HibernateUtil;
 import japstudy.db.JapaneseLesson;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -44,9 +43,12 @@ public class JapaneseLessonEditingDisplay extends Application {
 	private Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
 	private ObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
 
-
+    public IntegerProperty currentProperty() {
+        return current;
+    }
 	@Override
 	public void start(Stage primaryStage) {
+
 
 		TextField english = newText();
 		TextField japanese = newText();
@@ -72,13 +74,16 @@ public class JapaneseLessonEditingDisplay extends Application {
 		romaji.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setRomaji));
 		start.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setStart));
 		end.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setEnd));
-		Button previous = new Button("Previous");
+        Button previous = new Button("P_revious");
 		previous.setOnAction(e -> previousLesson());
 		previous.disableProperty().bind(current.isEqualTo(0));
-		Button next = new Button("Next");
+        Button save = new Button("_Save and Close");
+        save.setOnAction(e -> saveAndClose(primaryStage));
+
+        Button next = new Button("_Next");
 		next.setOnAction(e -> nextLesson());
 		next.disableProperty().bind(current.isEqualTo(lessons.size() - 1));
-		Button play = new Button("Play");
+        Button play = new Button("_Play");
 		play.setOnAction(e -> playLesson());
 		primaryStage.setWidth(600);
 		current.set(0);
@@ -116,7 +121,7 @@ public class JapaneseLessonEditingDisplay extends Application {
 		Scene value = new Scene(
 				new VBox(hBox, english, romajiText, romaji, japaneseText, japanese,
 						new HBox(new VBox(new Text("Start"), start), currentText, new VBox(new Text("End"), end)),
-						new HBox(previous, play, next)));
+                        new HBox(previous, play, next, save)));
 		primaryStage.setScene(value);
 		value.setOnKeyPressed(e -> {
 			if (e.getCode() == KeyCode.ENTER) {
@@ -126,8 +131,16 @@ public class JapaneseLessonEditingDisplay extends Application {
 
 		mediaPlayer.set(new MediaPlayer(sound));
 		primaryStage.show();
-		primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 	}
+
+    private void saveAndClose(Stage primaryStage) {
+        int index = current.get();
+        JapaneseLesson japaneseLesson = lessons.get(index);
+        JapaneseLessonReader.update(japaneseLesson);
+        lessons.set(index, japaneseLesson);
+
+        primaryStage.close();
+    }
 
 	private void setTextField(String newV, BiConsumer<JapaneseLesson, String> a) {
 		if (newV != null) {
@@ -234,5 +247,9 @@ public class JapaneseLessonEditingDisplay extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+
+    public void setCurrent(JapaneseLesson selectedItem) {
+        current.set(lessons.indexOf(selectedItem));
+    }
 
 }

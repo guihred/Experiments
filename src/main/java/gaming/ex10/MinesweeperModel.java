@@ -28,7 +28,7 @@ import javafx.stage.Stage;
  */
 public class MinesweeperModel {
 
-    private static final int NUMBER_OF_BOMBS = 64;
+    private static final int NUMBER_OF_BOMBS = 30;
     public static final int MAP_HEIGHT = 16;
     public static final int MAP_WIDTH = 16;
 

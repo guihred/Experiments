@@ -2,6 +2,7 @@ package japstudy;
 
 import java.util.Random;
 
+import japstudy.db.HibernateUtil;
 import japstudy.db.JapaneseLesson;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
@@ -68,6 +69,7 @@ public class JapaneseLessonDisplay extends Application {
 			}
 		});
 		primaryStage.show();
+        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 	}
 
 	private Text newText() {
