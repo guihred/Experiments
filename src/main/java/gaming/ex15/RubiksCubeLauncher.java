@@ -28,7 +28,7 @@ import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class RubiksCubeLauncher extends Application {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 	public static final int CUBE_COMPLEXITY = 3;
 
 	static final Logger LOGGER = LoggerFactory.getLogger(RubiksCubeLauncher.class);
@@ -110,7 +110,6 @@ public class RubiksCubeLauncher extends Application {
 	}
 
 	public void rotateCube(RubiksCubeFaces face, boolean clockwise) {
-		RubiksPiece pivot = pieces[1][1][1];
 		List<RubiksPiece> collect = getFacePieces(face);
         for (RubiksPiece e : collect) {
             e.rotate(face, angle, clockwise);
