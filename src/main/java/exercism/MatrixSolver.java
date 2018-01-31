@@ -2,6 +2,7 @@ package exercism;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,9 +114,9 @@ public final class MatrixSolver {
 	}
 
 	private static void printMatrix(double[][] matr, double[] coef) {
-		if (debug) {
+        if (debug && LOGGER.isInfoEnabled()) {
 			for (int i = 0; i < matr.length; i++) {
-				LOGGER.info(Arrays.toString(matr[i]) + "[" + coef[i] + "]");
+                LOGGER.info(Arrays.toString(matr[i]) + "[" + coef[i] + "]");
 			}
 			LOGGER.info("\n");
 		}

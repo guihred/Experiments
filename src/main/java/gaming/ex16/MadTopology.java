@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import gaming.ex16.MadTriangle.MadEdgeDistance;
 import javaexercises.DisjSets;
-import javaexercises.graphs.BaseTopology;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -25,9 +24,9 @@ public class MadTopology {
 
         int size = 10 * m;
         for (int i = 0; i < size; i++) {
-            MadCell cell = new MadCell(BaseTopology.identifier(i));
-            float x = i % sqrt * radius + (i / sqrt % 2 == 0 ? 0 : -radius / 2) + 30;
-            float j = i / sqrt;
+            MadCell cell = new MadCell(i);
+            float x = i % sqrt * radius + (i / sqrt % 2 == 0 ? 0f : -radius / 2) + 30;
+            int j = i / sqrt;
             float k = j * radius;
             float y = k * sqrt2 / 2;
             cell.relocate(x, y);
@@ -38,7 +37,6 @@ public class MadTopology {
         CreateMadMaze.createLabyrinth(triangulate, allEdges);
         return triangulate;
     }
-
     public void drawShapes(GraphicsContext gc) {
         gc.setStroke(Color.BLUE);
         gc.setLineWidth(1);
@@ -187,9 +185,9 @@ public class MadTopology {
         return mst;
     }
 
-    public int indexOf(String s) {
+    public int indexOf(int s) {
         for (int i = 0; i < allCells.size(); i++) {
-            if (allCells.get(i).getId().equals(s)) {
+            if (allCells.get(i).getId() == s) {
                 return i;
             }
         }

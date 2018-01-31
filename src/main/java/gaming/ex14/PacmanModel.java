@@ -1,18 +1,17 @@
 
 package gaming.ex14;
 
-import gaming.ex07.CreateMazeHandler;
-import gaming.ex07.MazeSquare;
-import gaming.ex14.Pacman.PacmanDirection;
-import gaming.ex14.PacmanGhost.GhostColor;
-import gaming.ex14.PacmanGhost.GhostStatus;
-
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
+import gaming.ex07.CreateMazeHandler;
+import gaming.ex07.MazeSquare;
+import gaming.ex14.Pacman.PacmanDirection;
+import gaming.ex14.PacmanGhost.GhostColor;
+import gaming.ex14.PacmanGhost.GhostStatus;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -169,7 +168,7 @@ public class PacmanModel {
 	private void gameLoop(Group group, long now) {
 		ghosts.forEach(g -> g.move(now, group.getChildren()));
 		pacman.move(group.getChildren());
-		List<PacmanBall> bal = balls.stream().filter(b -> b.getBoundsInParent().intersects(pacman.getBoundsInParent()))
+        List<PacmanBall> bal = balls.stream().filter(b -> b.getBoundsInParent().intersects(pacman.getBoundsInParent()))
 				.collect(Collectors.toList());
 		if (!bal.isEmpty()) {
 			getPoints().set(getPoints().get() + bal.size());

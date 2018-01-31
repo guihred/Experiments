@@ -2,14 +2,14 @@ package gaming.ex16;
 
 public class MadCell {
 
-    String id;
+    int id;
     float x, y;
 
-    public MadCell(String id) {
+    public MadCell(int id) {
         this.id = id;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -21,12 +21,12 @@ public class MadCell {
         return y;
     }
 
-    public void relocate(double x, double y) {
-        this.x = (float) x;
-        this.y = (float) y;
+    public void relocate(float x, float y) {
+        this.x = x;
+        this.y = y;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

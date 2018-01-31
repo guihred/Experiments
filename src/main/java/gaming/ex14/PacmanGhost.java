@@ -2,6 +2,7 @@ package gaming.ex14;
 
 import java.util.Random;
 import java.util.stream.Stream;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,9 +32,15 @@ public class PacmanGhost extends Group {
 	}
 
 	public enum GhostDirection {
-		EAST(1, 0), NORTH(0, 2), SOUTH(0, -2), WEST(-1, 0), NORTHEAST(1, 1), SOUTHEAST(1, -1), NORTHWEST(-1,
-				1), SOUTHWEST(-1, -1);
-		private final int x;
+        EAST(1, 0),
+        NORTH(0, 2),
+        SOUTH(0, -2),
+        WEST(-1, 0),
+        NORTHEAST(1, 1),
+        SOUTHEAST(1, -1),
+        NORTHWEST(-1, 1),
+        SOUTHWEST(-1, -1);
+        private final int x;
 		private final int y;
 
 		private GhostDirection(int x, int y) {

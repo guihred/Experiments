@@ -28,8 +28,10 @@ public class CreateMadMaze {
             Optional<MadTriangle> openB = maze.stream().filter(t -> t.hasVertex(maze.get(r).getA())
                     && !t.hasVertex(maze.get(r).getB()) && t.hasVertex(maze.get(r).getC())).filter(e -> !e.isVisited())
                     .findAny();
-            Optional<MadTriangle> openA = maze.stream().filter(t -> !t.hasVertex(maze.get(r).getA())
-                    && t.hasVertex(maze.get(r).getB()) && t.hasVertex(maze.get(r).getC())).filter(e -> !e.isVisited())
+            Optional<MadTriangle> openA = maze.stream()
+                    .filter(t -> !t.hasVertex(maze.get(r).getA()) && t.hasVertex(maze.get(r).getB())
+                            && t.hasVertex(maze.get(r).getC()))
+                    .filter(e -> !e.isVisited())
 
                     .findAny();
 
@@ -52,10 +54,7 @@ public class CreateMadMaze {
                     MadCell cellC = maze.get(r).getC().getCell();
                     allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellB)
                             || e.getSource().equals(cellB) && e.getTarget().equals(cellC));
-                    
                     r = maze.indexOf(madTriangle);
-                    
-
                 }
                 if ("B".equals(direction) && openB.isPresent()) {
                     MadTriangle madTriangle = openB.get();
@@ -77,7 +76,6 @@ public class CreateMadMaze {
                 getBackIn(maze, history);
             }
         }
-
 
     }
 

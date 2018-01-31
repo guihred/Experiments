@@ -6,6 +6,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -46,8 +47,15 @@ public class Pacman extends Arc {
 	}
 
 	private boolean checkCollision(ObservableList<Node> observableList) {
+
 		return observableList.stream().filter(Rectangle.class::isInstance)
-				.anyMatch(p -> p.getBoundsInParent().intersects(getBoundsInParent()));
+                .anyMatch(p -> {
+                    Bounds boundsInParent = getBoundsInParent();
+
+                    return p.getBoundsInParent().intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
+                            boundsInParent.getWidth(), boundsInParent.getHeight());
+
+                });
 	}
 
 	public void move(ObservableList<Node> observableList) {
@@ -58,28 +66,36 @@ public class Pacman extends Arc {
 		int step = 2;
 		switch (direction) {
 		case RIGHT:
-			setLayoutX(getLayoutX() + step);
-			if (checkCollision(observableList)) {
-				setLayoutX(getLayoutX() - 2 * step);
-			}
+                if (!checkCollision(observableList)) {
+                    setLayoutX(getLayoutX() + step);
+                    if (checkCollision(observableList)) {
+                        setLayoutX(getLayoutX() - step);
+                    }
+                }
 			break;
 		case UP:
-			setLayoutY(getLayoutY() - step);
-			if (checkCollision(observableList)) {
-				setLayoutY(getLayoutY() + 2 * step);
-			}
+                if (!checkCollision(observableList)) {
+                    setLayoutY(getLayoutY() - step);
+                    if (checkCollision(observableList)) {
+                        setLayoutY(getLayoutY() + step);
+                    }
+                }
 			break;
 		case DOWN:
-			setLayoutY(getLayoutY() + step);
-			if (checkCollision(observableList)) {
-				setLayoutY(getLayoutY() - 2 * step);
+                if (!checkCollision(observableList)) {
+                    setLayoutY(getLayoutY() + step);
+                    if (checkCollision(observableList)) {
+                        setLayoutY(getLayoutY() - 2 * step);
+                    }
 			}
 			break;
 		case LEFT:
-			setLayoutX(getLayoutX() - step);
-			if (checkCollision(observableList)) {
-				setLayoutX(getLayoutX() + 2 * step);
-			}
+                if (!checkCollision(observableList)) {
+                    setLayoutX(getLayoutX() - step);
+                    if (checkCollision(observableList)) {
+                        setLayoutX(getLayoutX() + 2 * step);
+                    }
+                }
 			break;
 		default:
 			break;
