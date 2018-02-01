@@ -16,7 +16,7 @@ public class CreateMadMaze {
     void handle(List<MadTriangle> maze, List<MadEdge> allEdges) {
         final Random random = new Random();
         final List<MadTriangle> history = new ArrayList<>();
-        final List<String> check = new ArrayList<>();
+        final List<Character> check = new ArrayList<>();
         history.add(maze.get(0));
         while (!history.isEmpty()) {
 
@@ -36,19 +36,19 @@ public class CreateMadMaze {
                     .findAny();
 
             if (openA.isPresent()) {
-                check.add("A");
+                check.add('A');
             }
             if (openB.isPresent()) {
-                check.add("B");
+                check.add('B');
             }
             if (openC.isPresent()) {
-                check.add("C");
+                check.add('C');
             }
 
             if (!check.isEmpty()) {
                 history.add(maze.get(r));
-                final String direction = check.get(random.nextInt(check.size()));
-                if ("A".equals(direction) && openA.isPresent()) {
+                Character direction = check.get(random.nextInt(check.size()));
+                if ('A' == direction && openA.isPresent()) {
                     MadTriangle madTriangle = openA.get();
                     MadCell cellB = maze.get(r).getB().getCell();
                     MadCell cellC = maze.get(r).getC().getCell();
@@ -56,7 +56,7 @@ public class CreateMadMaze {
                             || e.getSource().equals(cellB) && e.getTarget().equals(cellC));
                     r = maze.indexOf(madTriangle);
                 }
-                if ("B".equals(direction) && openB.isPresent()) {
+                if ('B' == direction && openB.isPresent()) {
                     MadTriangle madTriangle = openB.get();
                     MadCell cellA = maze.get(r).getA().getCell();
                     MadCell cellC = maze.get(r).getC().getCell();
@@ -64,7 +64,7 @@ public class CreateMadMaze {
                             || e.getSource().equals(cellA) && e.getTarget().equals(cellC));
                     r = maze.indexOf(madTriangle);
                 }
-                if ("C".equals(direction) && openC.isPresent()) {
+                if ('C' == direction && openC.isPresent()) {
                     MadTriangle madTriangle = openC.get();
                     MadCell cellA = maze.get(r).getA().getCell();
                     MadCell cellB = maze.get(r).getB().getCell();
