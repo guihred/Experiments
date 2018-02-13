@@ -3,6 +3,7 @@ package gaming.ex07;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -66,6 +67,29 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 				boolean backIn = getBackIn(history);
 				if (backIn) {
 					return;
+				}
+			}
+		}
+		for (int i = 0; i < createdMaze.length; i++) {
+			for (int j = 0; j < createdMaze[i].length; j++) {
+				MazeSquare mazeSquare = createdMaze[i][j];
+				if (i > 0 && !mazeSquare.isEast() && !mazeSquare.isNorth() && !mazeSquare.isWest()) {
+					createdMaze[i][j].setNorth(true);
+					createdMaze[i - 1][j].setSouth(true);
+				}
+				if (i < createdMaze.length - 1 && !mazeSquare.isEast() && !mazeSquare.isSouth()
+						&& !mazeSquare.isWest()) {
+					createdMaze[i][j].setSouth(true);
+					createdMaze[i + 1][j].setNorth(true);
+				}
+				if (j < createdMaze[i].length - 1 && !mazeSquare.isNorth() && !mazeSquare.isEast()
+						&& !mazeSquare.isSouth()) {
+					createdMaze[i][j].setEast(true);
+					createdMaze[i][j + 1].setWest(true);
+				}
+				if (j > 0 && !mazeSquare.isNorth() && !mazeSquare.isWest() && !mazeSquare.isSouth()) {
+					createdMaze[i][j].setWest(true);
+					createdMaze[i][j - 1].setEast(true);
 				}
 			}
 		}

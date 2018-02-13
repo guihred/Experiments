@@ -1,8 +1,10 @@
 package gaming.ex14;
 
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import gaming.ex07.MazeSquare;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,8 +35,8 @@ public class PacmanGhost extends Group {
 
 	public enum GhostDirection {
         EAST(1, 0),
-        NORTH(0, 2),
-        SOUTH(0, -2),
+        NORTH(0, 1),
+        SOUTH(0, -1),
         WEST(-1, 0),
         NORTHEAST(1, 1),
         SOUTHEAST(1, -1),
@@ -59,15 +61,18 @@ public class PacmanGhost extends Group {
 	private Circle rightEye = new Circle(2);
 	private double startX;
 	private double startY;
-
+	private MazeSquare mazeSquare;
+	Circle circle = new Circle(2);
+	private GhostColor color;
 	public PacmanGhost(GhostColor color) {
+		this.color = color;
 		Polygon polygon = new Polygon();
 		for (int i = 180; i <= 360; i += 5) {
 			double x = Math.cos(Math.toRadians(i)) * 12;
 			double y = Math.sin(Math.toRadians(i)) * 12;
 			polygon.getPoints().addAll(x, y);
 		}
-
+		circle.setFill(color.color);
 		polygon.setFill(color.color);
 		polygon.fillProperty()
 				.bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.color)
@@ -75,7 +80,6 @@ public class PacmanGhost extends Group {
 								.otherwise(Color.TRANSPARENT)));
 		polygon.getPoints().addAll(-12D, 0D, -12D, 20D, -8D, 10D, -4D, 20D, 0D, 10D, 4D, 20D, 8D, 10D, 12D, 20D, 12D,
 				0D);
-
 		Ellipse ellipse = new Ellipse(4, 6);
 		ellipse.setFill(Color.WHITE);
 		ellipse.setLayoutX(-5);
@@ -99,6 +103,7 @@ public class PacmanGhost extends Group {
 		getChildren().add(leftEye);
 	}
 
+
 	boolean checkColision(Bounds boundsInParent, ObservableList<Node> observableList) {
 		Stream<Bounds> walls = observableList.stream().filter(Rectangle.class::isInstance).map(Node::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
@@ -109,9 +114,9 @@ public class PacmanGhost extends Group {
 		return direction;
 	}
 
-	public void move(long now, ObservableList<Node> observableList) {
+	public void move(long now, Pacman pacman, ObservableList<Node> observableList, MazeSquare[][] maze) {
 		if (status.get() == GhostStatus.ALIVE) {
-			shortestMovement(now, observableList);
+			shortestMovement(now, observableList, pacman, maze);
 		} else if (status.get() == GhostStatus.DEAD) {
 			int step = 1;
 			if (startX > getLayoutX()) {
@@ -132,27 +137,141 @@ public class PacmanGhost extends Group {
 		}
 	}
 
-	void shortestMovement(long now, ObservableList<Node> otherNodes) {
-		Pacman pacman = otherNodes.stream().filter(Pacman.class::isInstance).map(Pacman.class::cast).findFirst()
-				.orElse(null);
+	void shortestMovement(long now, ObservableList<Node> otherNodes, Pacman pacman, MazeSquare[][] maze) {
+
 		if (pacman == null) {
 			randomMovement(now, otherNodes);
 			return;
 		}
-		double hx = getLayoutX() - pacman.getLayoutX();
-		double hy = getLayoutY() - pacman.getLayoutY();
+		int hx = 0;
+		int hy = 0;
+
+		if ((getLayoutY() + PacmanModel.SQUARE_SIZE / 2) % PacmanModel.SQUARE_SIZE / 2 == 0
+				|| (getLayoutX() + PacmanModel.SQUARE_SIZE / 2) % PacmanModel.SQUARE_SIZE / 2 == 0) {
+			extracted(pacman, maze);
+			if (mazeSquare != null) {
+				hx = (int) (-getLayoutX() + readjustedX(mazeSquare.i));
+				hy = (int) (-getLayoutY() + readjustedY(mazeSquare.j));
+				GhostDirection changeDirection = changeDirection(hx, hy);
+				setDirection(changeDirection);
+			}
+		}
+
+
 		final int step = 1;
 		addTranslate(step);
-		if (checkColision(getBoundsInParent(), otherNodes) || now % 200 == 0) {
+		if (checkColision(getBoundsInParent(), otherNodes)) {
 			addTranslate(-step);
-			setDirection(changeDirection(hx, hy));
+			setDirection(changeDirection2(hx, hy));
 			addTranslate(step);
 			if (checkColision(getBoundsInParent(), otherNodes)) {
+
+				extracted(pacman, maze);
 				addTranslate(-step);
 				randomMovement(now, otherNodes);
 			}
 
 		}
+	}
+
+
+	private void extracted(Pacman pacman, MazeSquare[][] maze) {
+		int hxg = adjustedX(getLayoutX());
+		int hyg = adjustedY(getLayoutY());
+		MazeSquare mazeSquare2 = getSquareInBounds(maze, getLayoutX(), getLayoutY());
+		if (mazeSquare2 != null) {
+			hxg = mazeSquare2.i;
+			hyg = mazeSquare2.j;
+		}
+		
+		if (color == GhostColor.RED) {
+			System.out.println(getLayoutX() + " " + getLayoutY() + " " + hxg + " " + hyg + " " + "" + readjustedX(hxg)
+					+ " " + readjustedX(hyg));
+		}
+		int hx = adjustedX(pacman.getLayoutX());
+		int hy = adjustedY(pacman.getLayoutY());
+		mazeSquare2 = getSquareInBounds(maze, pacman.getLayoutX(), pacman.getLayoutY());
+		if (mazeSquare2 != null) {
+			hx = mazeSquare2.i;
+			hy = mazeSquare2.j;
+		}
+
+		mazeSquare = getBestMaze(maze, hx, hy, hxg, hyg);
+		if (mazeSquare != null) {
+			circle.setLayoutX(readjustedX(mazeSquare.i));
+			circle.setLayoutY(readjustedY(mazeSquare.j));
+		}
+
+	}
+
+
+	private MazeSquare getSquareInBounds(MazeSquare[][] maze, double x, double y) {
+		for (int i = 0; i < maze.length; i++) {
+			for (int j = 0; j < maze[i].length; j++) {
+				boolean inBounds = maze[i][j].isInBounds(x, y);
+				if (inBounds) {
+					return maze[i][j];
+				}
+			}
+		}
+		return null;
+	}
+
+
+	private double readjustedX(int i) {
+
+		return PacmanModel.SQUARE_SIZE / 2 + (getLayoutX() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
+				? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
+				: i * PacmanModel.SQUARE_SIZE);
+	}
+
+	private double readjustedY(int i) {
+
+		return PacmanModel.SQUARE_SIZE / 2 + (getLayoutY() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
+				? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
+				: i * PacmanModel.SQUARE_SIZE);
+	}
+
+	private int adjustedX(double layoutX) {
+		double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
+		return (int) (paci > PacmanModel.MAZE_SIZE ? -paci + 2 * PacmanModel.MAZE_SIZE - 1
+				: paci) % PacmanModel.MAZE_SIZE;
+	}
+
+	private int adjustedY(double layoutX) {
+		double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
+		return (int) (paci > PacmanModel.MAZE_SIZE ? -paci - 1 + 2 * PacmanModel.MAZE_SIZE : paci)
+				% PacmanModel.MAZE_SIZE;
+	}
+
+	private MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
+		if (MazeSquare.paths == null) {
+			return null;
+		}
+		if (hx < 0) {
+			hx = 0;
+		}
+		if (hxg < 0) {
+			hxg = 0;
+		}
+		if (hy < 0) {
+			hy = 0;
+		}
+		if (hyg < 0) {
+			hyg = 0;
+		}
+
+		Map<MazeSquare, MazeSquare> map = MazeSquare.paths.get(maze[hxg][hyg]);
+		if (map == null) {
+			return null;
+		}
+		
+		MazeSquare mazeSquare = map.get(maze[hx][hy]);
+
+		// System.out.println("f " + maze[hxg][hyg] + " t" + maze[hx][hy] + " b " +
+		// mazeSquare);
+
+		return mazeSquare;
 	}
 
 	public void setStartPosition(double startX, double startY) {
@@ -163,46 +282,37 @@ public class PacmanGhost extends Group {
 	}
 
 	private GhostDirection changeDirection(double hx, double hy) {
-		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < 30) {
+		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
+			if (hx < 0) {
+				return hy > 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
+			}
+			return hy > 0 ? GhostDirection.SOUTHEAST : GhostDirection.NORTHEAST;
+		}
+
+		if (hx != 0) {
+
+			return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
+		}
+		return hy > 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
+	}
+
+	private GhostDirection changeDirection2(double hx, double hy) {
+		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
 			if (hx > 0) {
 				return hy < 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
 			}
 			return hy > 0 ? GhostDirection.SOUTHEAST : GhostDirection.NORTHEAST;
 		}
-		if (Math.abs(hx) > Math.abs(hy)) {
-			return hx > 0 ? GhostDirection.WEST : GhostDirection.EAST;
+		if (hy != 0) {
+			return hy > 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
 		}
-		return hy < 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
+		return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
 	}
 
 	private void addTranslate(final int step) {
-		if (getDirection() == GhostDirection.NORTH) {// NORTH
-			setLayoutY(getLayoutY() + step);
-		}
-		if (getDirection() == GhostDirection.WEST) {// WEST
-			setLayoutX(getLayoutX() - step);
-		}
-		if (getDirection() == GhostDirection.SOUTH) {// SOUTH
-			setLayoutY(getLayoutY() - step);
-		}
-		if (getDirection() == GhostDirection.EAST) {// EAST
-			setLayoutX(getLayoutX() + step);
-		}
-		if (getDirection() == GhostDirection.NORTHEAST) {// WEST
-			setLayoutY(getLayoutY() + step);
-			setLayoutX(getLayoutX() + step);
-		}
-		if (getDirection() == GhostDirection.SOUTHEAST) {// WEST
-			setLayoutY(getLayoutY() - step);
-			setLayoutX(getLayoutX() + step);
-		}
-		if (getDirection() == GhostDirection.SOUTHWEST) {// WEST
-			setLayoutY(getLayoutY() - step);
-			setLayoutX(getLayoutX() - step);
-		}
-		if (getDirection() == GhostDirection.NORTHWEST) {// WEST
-			setLayoutY(getLayoutY() + step);
-			setLayoutX(getLayoutX() - step);
+		if (direction != null) {
+			setLayoutY(getLayoutY() + step * direction.y);
+			setLayoutX(getLayoutX() + step * direction.x);
 		}
 	}
 

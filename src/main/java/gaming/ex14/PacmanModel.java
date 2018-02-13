@@ -34,11 +34,11 @@ public class PacmanModel {
 	public static final double SQUARE_SIZE = 60;
 	private final List<PacmanBall> balls = DoubleStream
 			.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE)
-			.limit(MAZE_SIZE * 2)
+			.limit(MAZE_SIZE * 2L)
 			.mapToObj(Double::valueOf)
 			.flatMap(
 					d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE)
-							.limit(MAZE_SIZE * 2)
+							.limit(MAZE_SIZE * 2L)
 							.mapToObj((double e) -> new PacmanBall(d, e)))
 			.collect(Collectors.toList());
 
@@ -67,7 +67,7 @@ public class PacmanModel {
 		AnimationTimer animationTimer = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
-				gameLoop(group, now);
+				gameLoop(group, now, maze);
 			}
 		};
 		animationTimer.start();
@@ -85,6 +85,7 @@ public class PacmanModel {
 		for (int i = 0; i < ghosts.size(); i++) {
 			PacmanGhost ghost = ghosts.get(i);
 			ghost.setStartPosition(265 + i % 2 * SQUARE_SIZE, 265 + i / 2 * SQUARE_SIZE);
+			group.getChildren().add(ghost.circle);
 		}
 		scene.setOnKeyPressed(this::handleKeyPressed);
 
@@ -118,6 +119,7 @@ public class PacmanModel {
 		Rectangle rectangle = new Rectangle(width, height, Color.BLUE);
 		rectangle.setLayoutX(value);
 		rectangle.setLayoutY(value2);
+		
 		group.getChildren().add(rectangle);
 	}
 	public void addRectangle(Group group, double value, double value2, int width, int height, Color blue) {
@@ -159,14 +161,23 @@ public class PacmanModel {
 					addRectangle(group, layoutX + SQUARE_SIZE, layoutY2, 2, SQUARE_SIZE);
 					addRectangle(group, layoutX2, layoutY2, 2, SQUARE_SIZE);
 				}
-
+				maze[i][j].dijkstra(maze);
 			}
 		}
+		MazeSquare.paths.forEach((from, map) -> {
+
+			map.forEach((to, by) -> {
+				System.out.println("from " + from + " to " + to + " by " + by);
+
+			});
+
+		});
+
 		return maze;
 	}
 
-	private void gameLoop(Group group, long now) {
-		ghosts.forEach(g -> g.move(now, group.getChildren()));
+	private void gameLoop(Group group, long now, MazeSquare[][] maze) {
+		ghosts.forEach(g -> g.move(now, pacman, group.getChildren(), maze));
 		pacman.move(group.getChildren());
         List<PacmanBall> bal = balls.stream().filter(b -> b.getBoundsInParent().intersects(pacman.getBoundsInParent()))
 				.collect(Collectors.toList());
@@ -203,7 +214,7 @@ public class PacmanModel {
 		MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
 		for (int i = 0; i < MAZE_SIZE; i++) {
 			for (int j = 0; j < MAZE_SIZE; j++) {
-				maze[i][j] = new MazeSquare();
+				maze[i][j] = new MazeSquare(i, j);
 				if (i == 0) {
 					maze[i][j].setNorth(false);
 				}

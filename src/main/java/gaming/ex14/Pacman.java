@@ -29,6 +29,7 @@ public class Pacman extends Arc {
 		}
 	}
 
+
 	private PacmanDirection direction = PacmanDirection.RIGHT;
 	private Timeline eatingAnimation = new SimpleTimelineBuilder()
 			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0F)),
@@ -129,4 +130,8 @@ public class Pacman extends Arc {
 
 	}
 
+	@Override
+	public String toString() {
+		return "Pacman [" + getLayoutX() + "," + getLayoutY() + "]";
+	}
 }
