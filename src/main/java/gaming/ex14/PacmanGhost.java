@@ -153,6 +153,7 @@ public class PacmanGhost extends Group {
 				hx = (int) (-getLayoutX() + readjustedX(mazeSquare.i));
 				hy = (int) (-getLayoutY() + readjustedY(mazeSquare.j));
 				GhostDirection changeDirection = changeDirection(hx, hy);
+
 				setDirection(changeDirection);
 			}
 		}
@@ -178,22 +179,18 @@ public class PacmanGhost extends Group {
 	private void extracted(Pacman pacman, MazeSquare[][] maze) {
 		int hxg = adjustedX(getLayoutX());
 		int hyg = adjustedY(getLayoutY());
-		MazeSquare mazeSquare2 = getSquareInBounds(maze, getLayoutX(), getLayoutY());
-		if (mazeSquare2 != null) {
-			hxg = mazeSquare2.i;
-			hyg = mazeSquare2.j;
+		MazeSquare ghostSquare = getSquareInBounds(maze, getLayoutX(), getLayoutY());
+		if (ghostSquare != null) {
+			hxg = ghostSquare.i;
+			hyg = ghostSquare.j;
 		}
 		
-		if (color == GhostColor.RED) {
-			System.out.println(getLayoutX() + " " + getLayoutY() + " " + hxg + " " + hyg + " " + "" + readjustedX(hxg)
-					+ " " + readjustedX(hyg));
-		}
 		int hx = adjustedX(pacman.getLayoutX());
 		int hy = adjustedY(pacman.getLayoutY());
-		mazeSquare2 = getSquareInBounds(maze, pacman.getLayoutX(), pacman.getLayoutY());
-		if (mazeSquare2 != null) {
-			hx = mazeSquare2.i;
-			hy = mazeSquare2.j;
+		MazeSquare pacmanSquare = getSquareInBounds(maze, pacman.getLayoutX(), pacman.getLayoutY());
+		if (pacmanSquare != null) {
+			hx = pacmanSquare.i;
+			hy = pacmanSquare.j;
 		}
 
 		mazeSquare = getBestMaze(maze, hx, hy, hxg, hyg);
@@ -281,15 +278,15 @@ public class PacmanGhost extends Group {
 		this.startY = startY;
 	}
 
-	private GhostDirection changeDirection(double hx, double hy) {
+	private GhostDirection changeDirection(final double hx, final double hy) {
 		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
 			if (hx < 0) {
-				return hy > 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
+				return hy < 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
 			}
 			return hy > 0 ? GhostDirection.SOUTHEAST : GhostDirection.NORTHEAST;
 		}
 
-		if (hx != 0) {
+		if (Math.abs(hx) > Math.abs(hy)) {
 
 			return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
 		}
@@ -299,12 +296,12 @@ public class PacmanGhost extends Group {
 	private GhostDirection changeDirection2(double hx, double hy) {
 		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
 			if (hx > 0) {
-				return hy < 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
+				return hy < 0 ? GhostDirection.NORTHEAST : GhostDirection.SOUTHEAST;
 			}
-			return hy > 0 ? GhostDirection.SOUTHEAST : GhostDirection.NORTHEAST;
+			return hy < 0 ? GhostDirection.SOUTHWEST : GhostDirection.NORTHWEST;
 		}
-		if (hy != 0) {
-			return hy > 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
+		if (Math.abs(hx) < Math.abs(hy)) {
+			return hy < 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
 		}
 		return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
 	}
@@ -331,6 +328,9 @@ public class PacmanGhost extends Group {
 	}
 
 	public void setDirection(GhostDirection direction) {
+		if (color == GhostColor.RED) {
+			System.out.println(direction);
+		}
 		adjustEyes(-1);
 		this.direction = direction;
 		adjustEyes(1);
