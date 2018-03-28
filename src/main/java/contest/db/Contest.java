@@ -1,8 +1,5 @@
 package contest.db;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,36 +11,40 @@ import javax.persistence.Table;
 
 @Table
 @Entity
-public class Contest implements Serializable {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Integer id;
-	@Column
-	private String name;
-	@Column
-	@Enumerated(EnumType.STRING)
-	private Organization organization;
-	@Column
-	private Integer lesson;
+public class Contest extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id")
+    private Integer key;
+    @Column
+    private String name;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Organization organization;
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(lesson, name);
-	}
+    @Override
+    public Integer getKey() {
+        return key;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Contest other = (Contest) obj;
-		return Objects.equals(name, other.name) && Objects.equals(lesson, other.lesson);
-	}
+    public String getName() {
+        return name;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setKey(Integer id) {
+        this.key = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
 
 }

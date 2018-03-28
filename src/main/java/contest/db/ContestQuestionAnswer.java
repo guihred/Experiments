@@ -1,6 +1,5 @@
 package contest.db;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -14,43 +13,64 @@ import javax.persistence.Table;
 
 @Entity
 @Table
-public class ContestQuestionAnswer implements Serializable {
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Integer key;
-
+public class ContestQuestionAnswer extends BaseEntity {
 	@Column(length = 5000)
 	private String answer;
-	@Column
-	private Integer number;
+
 	@Column
 	private Boolean correct = Boolean.FALSE;
 	@ManyToOne
 	@JoinColumn
 	private ContestQuestion exercise;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Integer key;
+    @Column
+    private Integer number;
 
 	public void appendAnswer(String english) {
 		answer = Objects.toString(answer, "") + english;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		ContestQuestionAnswer other = (ContestQuestionAnswer) obj;
-		return Objects.equals(other.key, key);
-	}
+    public String getAnswer() {
+        return answer;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(key);
-	}
+    public Boolean getCorrect() {
+        return correct;
+    }
+
+    public ContestQuestion getExercise() {
+        return exercise;
+    }
+
+    @Override
+    public Integer getKey() {
+        return key;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public void setCorrect(Boolean correct) {
+        this.correct = correct;
+    }
+
+    public void setExercise(ContestQuestion exercise) {
+        this.exercise = exercise;
+    }
+
+    public void setKey(Integer key) {
+        this.key = key;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
 
 }
