@@ -3,7 +3,10 @@ package contest.db;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
@@ -15,11 +18,10 @@ import org.apache.pdfbox.contentstream.operator.state.SetGraphicsStateParameters
 import org.apache.pdfbox.contentstream.operator.state.SetMatrix;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This is an example on how to get the x/y coordinates of image locations.
@@ -27,12 +29,8 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine {
-    /**
-     * Default constructor.
-     *
-     * @throws IOException
-     *             If there is an error loading text stripper properties.
-     */
+    int num = 0;
+    List<PDFImage> images = new ArrayList<>();
     public PrintImageLocations() throws IOException {
         addOperator(new Concatenate());
         addOperator(new DrawObject());
@@ -41,47 +39,6 @@ public class PrintImageLocations extends PDFStreamEngine {
         addOperator(new Restore());
         addOperator(new SetMatrix());
     }
-
-    /**
-     * This will print the documents data.
-     *
-     * @param args
-     *            The command line arguments.
-     *
-     * @throws IOException
-     *             If there is an error parsing the document.
-     */
-    public static void main(String[] args) throws IOException {
-        if (args.length != 1) {
-            usage();
-        } else {
-            PDDocument document = null;
-            try {
-                document = PDDocument.load(new File(args[0]));
-                PrintImageLocations printer = new PrintImageLocations();
-                for (PDPage page : document.getPages()) {
-                    printer.processPage(page);
-                }
-            } finally {
-                if (document != null) {
-                    document.close();
-                }
-            }
-        }
-    }
-
-    /**
-     * This is used to handle an operation.
-     *
-     * @param operator
-     *            The operation to perform.
-     * @param operands
-     *            The list of arguments.
-     *
-     * @throws IOException
-     *             If there is an error processing the operation.
-     */
-    int num = 0;
 
     @Override
     protected void processOperator(Operator operator, List<COSBase> operands) throws IOException {
@@ -102,16 +59,39 @@ public class PrintImageLocations extends PDFStreamEngine {
         if (xobject instanceof PDImageXObject) {
             PDImageXObject image = (PDImageXObject) xobject;
             BufferedImage image2 = image.getImage();
-            ContestReader.save(num++, image2, image.getSuffix());
+            File save = save(num++, image2, image.getSuffix());
+
+            Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
+
+            // position in user space units. 1 unit = 1/72 inch at 72 dpi
+            float translateX = ctmNew.getTranslateX();
+            float translateY = ctmNew.getTranslateY();
+            // raw size in pixels
+
+            PDFImage pdfImage = new PDFImage();
+            pdfImage.file = save;
+            pdfImage.x = translateX;
+            pdfImage.y = translateY;
+            images.add(pdfImage);
+            System.out.println(pdfImage.file + " at (" + pdfImage.x + "," + pdfImage.y + ")");
+
         }
 
     }
 
-    /**
-     * This will print the usage for this document.
-     */
-    private static void usage() {
-        System.err.println("Usage: java " + PrintImageLocations.class.getName() + " <input-pdf>");
+    public static File save(Object numb, BufferedImage image, String ext) {
+
+        File file = new File("teste" + numb + "." + ext);
+        try {
+            ImageIO.write(image, ext, file); // ignore returned boolean
+        } catch (IOException e) {
+            System.err.println("Write error for " + file.getPath() + ": " + e.getMessage());
+        }
+        return file;
     }
 
+}
+class PDFImage{
+    File file;
+    float x, y;
 }

@@ -1,6 +1,9 @@
 package contest.db;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -33,10 +37,30 @@ public class ContestQuestion extends BaseEntity {
     private Integer number;
 
     @Enumerated(EnumType.STRING)
-    private QuestionType type;
+    private QuestionType type = QuestionType.OPTIONS;
+
+    @OneToMany(mappedBy = "exercise")
+    private List<ContestQuestionAnswer> options;
 
     public void appendExercise(String english) {
         exercise = Objects.toString(exercise, "") + english;
+    }
+
+    public String getFormattedOptions() {
+        if(options==null) {
+            return "";
+        }
+        
+        return options.stream().map(e -> e.getAnswer()).collect(Collectors.joining("\n\n"));
+        
+    }
+
+    public void addOption(ContestQuestionAnswer e) {
+        if(options==null) {
+            options= new ArrayList<>();
+        }
+        options.add(e);
+        
     }
 
     public Contest getContest() {
@@ -86,6 +110,14 @@ public class ContestQuestion extends BaseEntity {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public List<ContestQuestionAnswer> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<ContestQuestionAnswer> options) {
+        this.options = options;
     }
 
 }

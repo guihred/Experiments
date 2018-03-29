@@ -45,6 +45,11 @@ public class ContestQuestionAnswer extends BaseEntity {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj) && Objects.equals(((ContestQuestionAnswer) obj).number, number);
+    }
+
+    @Override
     public Integer getKey() {
         return key;
     }

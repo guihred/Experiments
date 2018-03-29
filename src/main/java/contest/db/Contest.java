@@ -22,6 +22,13 @@ public class Contest extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Organization organization;
 
+    public Contest() {
+    }
+
+    public Contest(Organization organization) {
+        this.organization = organization;
+    }
+
     @Override
     public Integer getKey() {
         return key;
