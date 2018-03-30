@@ -72,6 +72,9 @@ public final class ContestReader {
             return;
         }
         if (s.matches(QUESTION_PATTERN)) {
+			if (option == 5 && state == 4) {
+				addQuestion();
+			}
             log(s);
             contestQuestion.setNumber(intValue(s));
             state = 3;
@@ -96,13 +99,7 @@ public final class ContestReader {
         if (state == 4 && StringUtils.isBlank(s)) {
             contestQuestion.addOption(answer);
             if (option == 5) {
-                answer = new ContestQuestionAnswer();
-                answer.setExercise(contestQuestion);
-                listaMedicamentos.add(contestQuestion);
-                contestQuestion = new ContestQuestion();
-                contestQuestion.setContest(contest);
-                contestQuestion.setSubject(subject);
-                option = 0;
+                addQuestion();
             }
 
             state = 0;
@@ -134,13 +131,7 @@ public final class ContestReader {
                 if (StringUtils.isNotBlank(s)) {
                     answer.appendAnswer(s.trim() + " ");
                     if (option == 5 && i == linhas.length - 1) {
-                        answer = new ContestQuestionAnswer();
-                        answer.setExercise(contestQuestion);
-                        listaMedicamentos.add(contestQuestion);
-                        contestQuestion = new ContestQuestion();
-                        contestQuestion.setContest(contest);
-                        contestQuestion.setSubject(subject);
-                        option = 0;
+                        addQuestion();
                     }
 
                 }
@@ -153,6 +144,17 @@ public final class ContestReader {
             log(s);
         }
     }
+
+
+	private void addQuestion() {
+		answer = new ContestQuestionAnswer();
+		answer.setExercise(contestQuestion);
+		listaMedicamentos.add(contestQuestion);
+		contestQuestion = new ContestQuestion();
+		contestQuestion.setContest(contest);
+		contestQuestion.setSubject(subject);
+		option = 0;
+	}
 
     Integer intValue(String v) {
         try {

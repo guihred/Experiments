@@ -15,7 +15,7 @@
 				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
-		<plugins>
+		<plugins> 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
@@ -84,8 +84,14 @@
 		<dependency>
 			<groupId>de.jflex</groupId>
 			<artifactId>maven-jflex-plugin</artifactId>
-			<version>1.4.3</version>
+			<version>1.4.3</version> 
 		</dependency>
+<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk16 -->
+<dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcprov-jdk16</artifactId>
+    <version>1.45</version>
+</dependency>
 
 		<dependency>
 			<groupId>org.hamcrest</groupId>

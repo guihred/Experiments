@@ -3,9 +3,6 @@ package contest.db;
 import java.io.File;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -23,8 +20,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class ContestApplication extends Application {
-    private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContestApplication.class);
 
     public static void main(String[] args) {
         launch(args);
@@ -41,7 +36,7 @@ public class ContestApplication extends Application {
         gridpane.setHgap(10);
         gridpane.setVgap(10);
         root.setCenter(gridpane);
-        File file = new File("102 - Analista de Tecnologia da Informacao - Tipo D.pdf");
+		File file = new File("102 - Analista de Tecnologia da Informacao - Tipo B.pdf");
         ObservableList<ContestQuestion> medicamentosSNGPCPDF = ContestReader.getContestQuestions(file);
 
         final TableView<ContestQuestion> medicamentosEstoqueTable = tabelaContestQuestions(root);
