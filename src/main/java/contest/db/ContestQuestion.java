@@ -51,7 +51,7 @@ public class ContestQuestion extends BaseEntity {
             return "";
         }
         
-        return options.stream().map(e -> e.getAnswer()).collect(Collectors.joining("\n\n"));
+        return options.stream().map(ContestQuestionAnswer::getAnswer).collect(Collectors.joining("\n\n"));
         
     }
 

@@ -5,15 +5,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -30,133 +32,51 @@ public final class ContestReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(ContestReader.class);
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
     private static final String QUESTION_PATTERN = "QUESTÃO .+___+\\s+";
+
+    private static final int STATE_IGNORE = 0;
+    private static final int STATE_OPTION = 4;
+    private static final int STATE_QUESTION = 3;
+    private static final int STATE_TEXT = 2;
+
     private static final String SUBJECT_PATTERN = "Questões de \\d+ a \\d+\\s*";
-    private static final String TEXTS_PATTERN = "Textos ";
     private static final String TEXT_PATTERN = "Texto \\d+";
+    private static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
 
     public static ObservableList<ContestQuestion> getContestQuestions(File file) {
         ContestReader contestReader = new ContestReader();
         new Thread(() -> contestReader.readFile(file)).start();
         return contestReader.listaMedicamentos;
-
     }
-    ContestQuestionAnswer answer = new ContestQuestionAnswer();
+
+    private ContestQuestionAnswer answer = new ContestQuestionAnswer();
     private Contest contest;
-    ContestQuestion contestQuestion = new ContestQuestion();
-    int state = 0;
-    ObservableList<ContestQuestion> listaMedicamentos = FXCollections.observableArrayList();
-    int option = 0;
-    String subject;
-    StringBuilder text = new StringBuilder();
+    private ContestQuestion contestQuestion = new ContestQuestion();
+    private ObservableList<ContestQuestion> listaMedicamentos = FXCollections.observableArrayList();
+    private int option = 0;
+
+    private Map<String, Map.Entry<Float, Float>> questionPosition = new HashMap<>();
+
+    private int state = 0;
+    private String subject;
+
+
+    private ContestText text = new ContestText();
+    private List<ContestText> texts = new ArrayList<>();
+
+    private void addQuestion() {
+        answer = new ContestQuestionAnswer();
+        answer.setExercise(contestQuestion);
+        listaMedicamentos.add(contestQuestion);
+        contestQuestion = new ContestQuestion();
+        contestQuestion.setContest(contest);
+        contestQuestion.setSubject(subject);
+        option = 0;
+    }
 
     public void copyStream(Object numb, InputStream obj) throws IOException {
         InputStream createInputStream = obj;
         IOUtils.copy(createInputStream, new FileOutputStream(new File("teste" + numb)));
     }
-
-
-    private void processQuestion(String[] linhas, int i) {
-        String s = linhas[i];
-        if (s.contains("P R O V A  O B J E T I V A")) {
-            state = 1;
-            return;
-        }
-        if (s.matches(SUBJECT_PATTERN)) {
-            subject = linhas[i - 1];
-            return;
-        }
-
-        if (s.startsWith(TEXTS_PATTERN)) {
-            state = 2;
-            return;
-        }
-        if (s.matches(LINE_PATTERN)) {
-            return;
-        }
-        if (s.matches(QUESTION_PATTERN)) {
-			if (option == 5 && state == 4) {
-				addQuestion();
-			}
-            log(s);
-            contestQuestion.setNumber(intValue(s));
-            state = 3;
-            return;
-        }
-        if (s.matches(OPTION_PATTERN)) {
-            if (state == 4) {
-                contestQuestion.addOption(answer);
-
-                answer = new ContestQuestionAnswer();
-                answer.setExercise(contestQuestion);
-            }
-
-            answer.setNumber(option);
-            option++;
-            state = 4;
-
-        }
-        if (StringUtils.isBlank(s) && state == 2 && !listaMedicamentos.isEmpty()) {
-            state = 0;
-        }
-        if (state == 4 && StringUtils.isBlank(s)) {
-            contestQuestion.addOption(answer);
-            if (option == 5) {
-                addQuestion();
-            }
-
-            state = 0;
-        }
-
-        switch (state) {
-            case 0:
-                contestQuestion.setContest(contest);
-                contestQuestion.setSubject(subject);
-                break;
-            case 1:
-                if (StringUtils.isNotBlank(s)) {
-                    subject = s;
-                    contestQuestion.setSubject(subject);
-                    state = 0;
-                }
-                break;
-            case 2:
-                if (StringUtils.isNotBlank(s)) {
-                    text.append(s + "\n");
-                }
-                break;
-            case 3:
-                if (StringUtils.isNotBlank(s)) {
-                    contestQuestion.appendExercise(s + "\n");
-                }
-                break;
-            case 4:
-                if (StringUtils.isNotBlank(s)) {
-                    answer.appendAnswer(s.trim() + " ");
-                    if (option == 5 && i == linhas.length - 1) {
-                        addQuestion();
-                    }
-
-                }
-                break;
-            default:
-                break;
-        }
-
-        if (StringUtils.isNotBlank(s) && state != 0) {
-            log(s);
-        }
-    }
-
-
-	private void addQuestion() {
-		answer = new ContestQuestionAnswer();
-		answer.setExercise(contestQuestion);
-		listaMedicamentos.add(contestQuestion);
-		contestQuestion = new ContestQuestion();
-		contestQuestion.setContest(contest);
-		contestQuestion.setSubject(subject);
-		option = 0;
-	}
 
     Integer intValue(String v) {
         try {
@@ -167,23 +87,113 @@ public final class ContestReader {
 
     }
 
-    public boolean isPDF(File selectedFile) {
-        return selectedFile.getName().endsWith(".pdf");
-    }
 
     private void log(String s) {
         // System.out.println(s);
     }
 
     private COSDocument parseAndGet(RandomAccessFile source) throws IOException {
-        RandomAccessRead a;
-
         PDFParser parser = new PDFParser(source);
         parser.parse();
         return parser.getDocument();
     }
+    private void processQuestion(String[] linhas, int i) {
+        String s = linhas[i];
 
-    Map<String, Map.Entry<Float, Float>> questionPosition = new HashMap<>();
+        if (s.matches(SUBJECT_PATTERN) && i > 0) {
+            subject = linhas[i - 1];
+            return;
+        }
+
+        if (s.matches(TEXTS_PATTERN)) {
+            state = STATE_TEXT;
+            String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
+            IntSummaryStatistics stats = Stream.of(split).mapToInt(this::intValue).summaryStatistics();
+            text.setMin(stats.getMin());
+            text.setMax(stats.getMax());
+
+            return;
+        }
+        if (s.matches(LINE_PATTERN)) {
+            return;
+        }
+
+        if (s.matches(QUESTION_PATTERN)) {
+            if (option == 5 && state == STATE_OPTION) {
+				addQuestion();
+			}
+            if (state == STATE_TEXT) {
+                addNewText();
+            }
+            log(s);
+            contestQuestion.setNumber(intValue(s));
+            state = STATE_QUESTION;
+            return;
+        }
+        if (s.matches(OPTION_PATTERN)) {
+            if (state == STATE_OPTION) {
+                contestQuestion.addOption(answer);
+
+                answer = new ContestQuestionAnswer();
+                answer.setExercise(contestQuestion);
+            }
+
+            answer.setNumber(option);
+            option++;
+            state = STATE_OPTION;
+
+        }
+        if (StringUtils.isBlank(s) && state == STATE_TEXT && !listaMedicamentos.isEmpty()) {
+            addNewText();
+            state = STATE_IGNORE;
+        }
+        if (state == STATE_OPTION && StringUtils.isBlank(s)) {
+            contestQuestion.addOption(answer);
+            if (option == 5) {
+                addQuestion();
+            }
+
+            state = STATE_IGNORE;
+        }
+
+        switch (state) {
+            case STATE_IGNORE:
+                contestQuestion.setContest(contest);
+                contestQuestion.setSubject(subject);
+                break;
+
+            case STATE_TEXT:
+                if (StringUtils.isNotBlank(s)) {
+                    text.appendText(s + "\n");
+                }
+                break;
+            case STATE_QUESTION:
+                if (StringUtils.isNotBlank(s)) {
+                    contestQuestion.appendExercise(s + "\n");
+                }
+                break;
+            case STATE_OPTION:
+                if (StringUtils.isNotBlank(s)) {
+                    answer.appendAnswer(s.trim() + " ");
+                    if (option == 5 && i == linhas.length - 1) {
+                        addQuestion();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (StringUtils.isNotBlank(s) && state != STATE_IGNORE) {
+            log(s);
+        }
+    }
+
+    private void addNewText() {
+        text.setContest(contest);
+        texts.add(text);
+        text = new ContestText(contest);
+    }
     private void readFile(File file) {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
@@ -196,7 +206,7 @@ public final class ContestReader {
                             && !textPositions.isEmpty()) {
                         float x = textPositions.get(0).getX();
                         float y = textPositions.get(0).getY();
-                        questionPosition.put(text.replaceAll("_", ""), new AbstractMap.SimpleEntry<>(x, y));
+                        questionPosition.put(text, new AbstractMap.SimpleEntry<>(x, y));
                     }
                 }
 
@@ -205,13 +215,14 @@ public final class ContestReader {
             contest = new Contest(Organization.IADES);
             PrintImageLocations printImageLocations = new PrintImageLocations();
             for (int i = 2; i < numberOfPages; i++) {
-                PDPage page = pdDoc.getPage(i);
+                PDPage page = pdDoc.getPage(i - 1);
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
                 printImageLocations.processPage(page);
                 String parsedText = pdfStripper.getText(pdDoc);
                 String[] linhas = parsedText.split("\r\n");
                 tryReadSNGPCLine(linhas);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -223,13 +234,11 @@ public final class ContestReader {
         try {
             state = 0;
             option = 0;
-            text = new StringBuilder();
+            text = new ContestText(contest);
             answer.setExercise(contestQuestion);
             for (int i = 0; i < lines.length; i++) {
                 processQuestion(lines, i);
-
             }
-
         } catch (Exception e) {
             log("ERRO LINHA =");
             LOGGER.error("", e);
