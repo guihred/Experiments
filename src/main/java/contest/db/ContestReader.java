@@ -4,12 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.IntSummaryStatistics;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
@@ -31,7 +30,7 @@ public final class ContestReader {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
     private static final Logger LOGGER = LoggerFactory.getLogger(ContestReader.class);
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
-    private static final String QUESTION_PATTERN = "QUESTÃO .+___+\\s+";
+    public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
 
     private static final int STATE_IGNORE = 0;
     private static final int STATE_OPTION = 4;
@@ -39,8 +38,7 @@ public final class ContestReader {
     private static final int STATE_TEXT = 2;
 
     private static final String SUBJECT_PATTERN = "Questões de \\d+ a \\d+\\s*";
-    private static final String TEXT_PATTERN = "Texto \\d+";
-    private static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
+    public static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
 
     public static ObservableList<ContestQuestion> getContestQuestions(File file) {
         ContestReader contestReader = new ContestReader();
@@ -54,11 +52,12 @@ public final class ContestReader {
     private ObservableList<ContestQuestion> listaMedicamentos = FXCollections.observableArrayList();
     private int option = 0;
 
-    private Map<String, Map.Entry<Float, Float>> questionPosition = new HashMap<>();
+    // private Map<String, Map.Entry<Float, Float>> questionPosition = new
+    // HashMap<>();
+    private List<QuestionPosition> questionPosition = new ArrayList<>();
 
     private int state = 0;
     private String subject;
-
 
     private ContestText text = new ContestText();
     private List<ContestText> texts = new ArrayList<>();
@@ -87,7 +86,6 @@ public final class ContestReader {
 
     }
 
-
     private void log(String s) {
         // System.out.println(s);
     }
@@ -97,6 +95,7 @@ public final class ContestReader {
         parser.parse();
         return parser.getDocument();
     }
+
     private void processQuestion(String[] linhas, int i) {
         String s = linhas[i];
 
@@ -120,8 +119,8 @@ public final class ContestReader {
 
         if (s.matches(QUESTION_PATTERN)) {
             if (option == 5 && state == STATE_OPTION) {
-				addQuestion();
-			}
+                addQuestion();
+            }
             if (state == STATE_TEXT) {
                 addNewText();
             }
@@ -194,6 +193,9 @@ public final class ContestReader {
         texts.add(text);
         text = new ContestText(contest);
     }
+
+    int pageNumber;
+
     private void readFile(File file) {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
@@ -202,11 +204,20 @@ public final class ContestReader {
                 @Override
                 protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
                     super.writeString(text, textPositions);
-                    if (text != null && text.matches(QUESTION_PATTERN + "|" + TEXT_PATTERN)
+                    if (text != null && text.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN)
                             && !textPositions.isEmpty()) {
-                        float x = textPositions.get(0).getX();
-                        float y = textPositions.get(0).getY();
-                        questionPosition.put(text, new AbstractMap.SimpleEntry<>(x, y));
+                        TextPosition textPosition = textPositions.get(0);
+                        float x = textPosition.getXDirAdj();
+                        float y = textPosition.getYDirAdj();
+                        QuestionPosition qp = new QuestionPosition();
+                        qp.line = text;
+                        qp.x = x;
+                        qp.y = y;
+                        qp.page = pageNumber;
+
+                        System.out.println(qp.line + " at (" + qp.x + "," + qp.y + ") page " + pageNumber);
+                        questionPosition.add(qp);
+
                     }
                 }
 
@@ -216,20 +227,39 @@ public final class ContestReader {
             PrintImageLocations printImageLocations = new PrintImageLocations();
             for (int i = 2; i < numberOfPages; i++) {
                 PDPage page = pdDoc.getPage(i - 1);
+                pageNumber = i;
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
-                printImageLocations.processPage(page);
+                List<PDFImage> images = printImageLocations.processPage(page, i);
                 String parsedText = pdfStripper.getText(pdDoc);
-                String[] linhas = parsedText.split("\r\n");
-                tryReadSNGPCLine(linhas);
+                String[] lines = parsedText.split("\r\n");
+                tryReadQuestionFromLines(lines);
+                List<HasImage> collect = Stream.concat(texts.stream(), listaMedicamentos.stream())
+                        .collect(Collectors.toList());
+                final int j = i;
+                for (PDFImage pdfImage : images) {
+                    questionPosition.stream().filter(e -> e.page == j)
+                            .min(Comparator.comparing((QuestionPosition e) -> {
+                                float a = pdfImage.x - e.x;
+                                float b = pdfImage.y - e.y;
+                                return a * a + b * b;
+                            })).ifPresent(orElse -> {
+                                for (HasImage pdfImage2 : collect) {
+                                    if (pdfImage2.matches(orElse.line)) {
+                                        pdfImage2.setImage(pdfImage.file.getAbsolutePath());
+                                    }
+                                }
+                            });
+                }
 
+                // concat.forEach(action);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private ContestQuestion tryReadSNGPCLine(String[] lines) {
+    private ContestQuestion tryReadQuestionFromLines(String[] lines) {
 
         try {
             state = 0;
@@ -240,7 +270,6 @@ public final class ContestReader {
                 processQuestion(lines, i);
             }
         } catch (Exception e) {
-            log("ERRO LINHA =");
             LOGGER.error("", e);
         }
         return null;

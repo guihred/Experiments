@@ -19,7 +19,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table
-public class ContestQuestion extends BaseEntity {
+public class ContestQuestion extends BaseEntity implements HasImage {
+    private static int KEY;
     @ManyToOne
     @JoinColumn
     private Contest contest;
@@ -31,7 +32,7 @@ public class ContestQuestion extends BaseEntity {
     private String subject;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer key;
+    private Integer key = KEY++;
 
     @Column
     private Integer number;
@@ -41,6 +42,8 @@ public class ContestQuestion extends BaseEntity {
 
     @OneToMany(mappedBy = "exercise")
     private List<ContestQuestionAnswer> options;
+
+    private String image;
 
     public void appendExercise(String english) {
         exercise = Objects.toString(exercise, "") + english;
@@ -118,6 +121,31 @@ public class ContestQuestion extends BaseEntity {
 
     public void setOptions(List<ContestQuestionAnswer> options) {
         this.options = options;
+    }
+
+    @Override
+    public String getImage() {
+        return image;
+    }
+
+    @Override
+    public void setImage(String image) {
+        if (this.image == null) {
+            this.image = image;
+        } else {
+            this.image += ";" + image;
+        }
+
+    }
+
+    @Override
+    public boolean matches(String s0) {
+        boolean matches = s0.matches(ContestReader.QUESTION_PATTERN);
+        if (!matches) {
+            return false;
+        }
+        String split = s0.replaceAll(ContestReader.QUESTION_PATTERN, "$1");
+        return split.equals(number + "");
     }
 
 }

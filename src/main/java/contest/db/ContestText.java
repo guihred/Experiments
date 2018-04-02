@@ -11,10 +11,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table
-public class ContestText extends BaseEntity {
+public class ContestText extends BaseEntity implements HasImage {
     @ManyToOne
     @JoinColumn
     private Contest contest;
@@ -30,6 +31,8 @@ public class ContestText extends BaseEntity {
     private Integer min;
     @Column(length = 5000)
     private String text;
+    @Transient
+    private String image;
 
     public ContestText() {
     }
@@ -86,6 +89,21 @@ public class ContestText extends BaseEntity {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public String getImage() {
+        return image;
+    }
+
+    @Override
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    @Override
+    public boolean matches(String s0) {
+        return s0.matches(ContestReader.TEXTS_PATTERN);
     }
 
 }
