@@ -1,16 +1,21 @@
 package election.experiment;
 
+import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Base64;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import javafx.concurrent.Task;
 import simplebuilder.HasLogging;
@@ -19,7 +24,15 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
     private Instant start;
     private boolean cancelled = false;
-
+	String encoded = Base64.getEncoder().encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes());
+	protected Document getDocument(String url) throws IOException {
+		Connection connect = Jsoup.connect(url);
+		connect.header("Proxy-Authorization", "Basic " + encoded);
+		Document parse = connect
+				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0")
+				.get();
+		return parse;
+	}
     protected void updateAll(long i, long total) {
         updateTitle("Processed " + i + " of " + total + " items.");
         if (i > 0) {

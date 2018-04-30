@@ -2,12 +2,9 @@ package election.experiment;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -56,15 +53,9 @@ final class CrawlerCompleteCandidateTask extends CrawlerTask {
     }
 
     private void extractCandidateInfo(Candidato candidato) {
-        String encoded = Base64.getEncoder().encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes());
         for (int tried = 0; tried < 10; tried++) {
             try {
-                Connection connect = Jsoup
-                        .connect("https://www.eleicoes2016.com.br/" + candidato.getHref() + "/");
-                connect.header("Proxy-Authorization", "Basic " + encoded);
-                Document parse = connect.userAgent(
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0")
-                        .get();
+				Document parse = getDocument("https://www.eleicoes2016.com.br/" + candidato.getHref() + "/");
                 Elements select = parse.select(".info-candidato");
                 Elements children = select.first().children();
                 String nomeCompleto = children.get(0).child(1).text();

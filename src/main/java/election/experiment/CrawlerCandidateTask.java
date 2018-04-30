@@ -4,8 +4,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -51,11 +49,8 @@ final class CrawlerCandidateTask extends CrawlerTask {
     private void extractCityContent(Cidade cidade) {
         int i = 2;
         while (true) {
-            Connection connect = Jsoup.connect("https://www.eleicoes2016.com.br" + cidade.getHref() + i);
             try {
-                Document parse = connect.userAgent(
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0")
-                        .get();
+				Document parse = getDocument("https://www.eleicoes2016.com.br" + cidade.getHref() + i);
 
                 Elements select = parse.select(".candidato-js");
                 for (Element element : select) {

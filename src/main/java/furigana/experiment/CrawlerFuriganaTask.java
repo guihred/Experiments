@@ -9,15 +9,12 @@ import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -118,7 +115,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
 
     public void migrateCities() throws IOException {
-        insertProxyConfig();
+		// insertProxyConfig();
         Files.lines(Paths.get("hp1Tex2.tex")).forEach(line -> {
             String[] split = line.split("");
             String currentWord = "";
@@ -141,7 +138,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         System.out.println();
     }
 
-    String encoded = Base64.getEncoder().encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes());
+
     Map<String, String> mapReading = new HashMap<>();
 
     public String getReading(String currentWord, char currentLetter) {
@@ -155,14 +152,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         }
 
 
-        Connection connect = Jsoup.connect("http://jisho.org/search/" + URLEncoder.encode(currentWord));
-        connect.header("Proxy-Authorization", "Basic " + encoded);
-
         try {
-            Document
-                parse = connect
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0")
-                    .get();
+			Document parse = getDocument("http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8"));
 
             Elements kun = parse.select(".readings .japanese_gothic a");
             if (currentWord.length() == 1 && !kun.isEmpty()) {
@@ -209,17 +200,23 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             }
 
 
-            if (currentWord.length() >= 1) {
-                Elements select = parse.select(".concept_light-representation ");
-                for (Element element : select) {
-                    Element link = element.select(".text").first();
-                    if (link.text().equals(currentWord)) {
-                        String text = element.select(".furigana").text();
-                        mapReading.put(key, text);
-                        return text;
-                    }
+			Elements select = parse.select(".concept_light-representation ");
+			for (Element element : select) {
+				Element link = element.select(".text").first();
+				if (link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter)) {
+					String text = element.select(".furigana").text();
+					mapReading.put(key, text);
+					return text;
                 }
             }
+			Elements twoWord = parse.select(".japanese_word__furigana ");
+			if (!twoWord.isEmpty()) {
+				String text = twoWord.text();
+				if (text.equals(currentWord)) {
+					mapReading.put(key, text);
+					return text;
+				}
+			}
 
         } catch (Exception e) {
             getLogger().error("ERRO " + currentWord, e);
@@ -229,6 +226,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         }
         return currentWord;
     }
+
 
 
 }

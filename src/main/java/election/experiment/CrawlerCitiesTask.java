@@ -3,11 +3,8 @@ package election.experiment;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -31,17 +28,11 @@ public class CrawlerCitiesTask extends CrawlerTask {
         updateProgress(0, total);
         List<Thread> ths = new ArrayList<>();
         for (String estado : estados) {
-            String encoded = Base64.getEncoder()
-                    .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes());
             Thread thread = new Thread(() -> {
                 for (String letter : alphabet.split("")) {
-                    Connection connect = Jsoup
-                            .connect("https://www.eleicoes2016.com.br/" + estado + "/" + letter + "/");
-                    connect.header("Proxy-Authorization", "Basic " + encoded);
+
                     try {
-                        Document parse = connect.userAgent(
-                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0")
-                                .get();
+						Document parse = getDocument("https://www.eleicoes2016.com.br/" + estado + "/" + letter + "/");
 
                         Elements select = parse.select(".lista-estados .custom li");
                         for (Element element : select) {
