@@ -2,12 +2,17 @@ package furigana.experiment;
 
 import java.io.IOException;
 import java.lang.Character.UnicodeBlock;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import simplebuilder.HasLogging;
 
@@ -27,19 +32,20 @@ public class FuriganaCrawler implements HasLogging {
 
 
 	public void migrateCities() throws IOException {
-		Files.lines(Paths.get("C:\\Users\\guigu\\Documents\\Estudo\\hp1Tex2.tex")).forEach(line -> {
+		Files.lines(Paths.get("hp1Tex2.tex")).forEach(line -> {
 			String[] split = line.split("");
-			String current="";
+			String currentWord = "";
 			UnicodeBlock currentBlock=null;
 			for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
-				char charAt = split[i].charAt(0);
-				UnicodeBlock of = UnicodeBlock.of(charAt);
+				char currentLetter = split[i].charAt(0);
+				UnicodeBlock of = UnicodeBlock.of(currentLetter);
 				if(KANJI_BLOCK.contains(of)) {
-					current+=charAt;
+					currentWord += currentLetter;
 				}
-				if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !current.isEmpty()) {
-					System.out.println(current);
-					current = "";
+				if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
+					System.out.println(currentWord + "=" + getReading(currentWord, currentLetter));
+
+					currentWord = "";
 				}
 				currentBlock = of;
 			}
@@ -53,34 +59,33 @@ public class FuriganaCrawler implements HasLogging {
 		// "go", "ma", "mg", "ms", "mt",
 		// "pa", "pb", "pe", "pi", "pr", "rj", "rn", "ro", "rr", "rs", "sc", "se", "sp",
 		// "to");
-		// String alphabet = "abcdefghijklmnopqrstuvwxyz";z
-		// for (String estado : asList) {
-		// for (String letter : alphabet.split("")) {
-		// Connection connect = Jsoup.connect("https://www.eleicoes2016.com.br/" +
-		// estado + "/" + letter + "/");
-		// try {
-		// Document parse = connect
-		// .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101
-		// Firefox/52.0")
-		// .get();
 		//
-		// Elements select = parse.select(".lista-estados .custom li");
-		// for (Element element : select) {
-		// Element link = element.select("a").first();
-		// link.attr("href");
-		// element.select("span").first().text().replaceAll("\\D", "");
-		// }
-		// } catch (Exception e) {
-		// getLogger().error("ERRO cidade " + estado + " " + letter, e);
-		// }
-		// }
-		// }
 		// HibernateUtil.shutdown();
 	}
 
-    private Integer convertNumerico(String eleitores) {
-        String replaceAll = eleitores.replaceAll("[^0-9]", "");
-        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
+	String getReading(String currentWord, char currentLetter) {
+		Connection connect = Jsoup.connect("http://jisho.org/search/" + URLEncoder.encode(currentWord));
+		try {
+			Document parse = connect
+
+					.get();
+
+			Elements select = parse.select(".concept_light-representation");
+			if (select.size() > 0) {
+				for (Element element : select) {
+					Element link = element.select(".text").first();
+
+					if (link.text().equals(currentWord)) {
+						return element.select(".furigana").text();
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			getLogger().error("ERRO " + currentWord, e);
+		}
+		return currentWord;
 	}
+
 
 }
