@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -18,6 +19,7 @@ import org.apache.pdfbox.contentstream.operator.state.SetGraphicsStateParameters
 import org.apache.pdfbox.contentstream.operator.state.SetMatrix;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
@@ -31,6 +33,7 @@ import org.apache.pdfbox.util.Matrix;
 public class PrintImageLocations extends PDFStreamEngine {
     int num = 0;
     List<PDFImage> images = new ArrayList<>();
+    private int pageNumber;
     public PrintImageLocations() throws IOException {
         addOperator(new Concatenate());
         addOperator(new DrawObject());
@@ -40,6 +43,15 @@ public class PrintImageLocations extends PDFStreamEngine {
         addOperator(new SetMatrix());
     }
 
+    public List<PDFImage> processPage(PDPage page, int pageNumber) throws IOException {
+        this.pageNumber = pageNumber;
+        int size = images.size();
+        super.processPage(page);
+        if (images.size() > size) {
+            return images.subList(size, images.size());
+        }
+        return Collections.emptyList();
+    }
     @Override
     protected void processOperator(Operator operator, List<COSBase> operands) throws IOException {
         String operation = operator.getName();
@@ -71,9 +83,11 @@ public class PrintImageLocations extends PDFStreamEngine {
             PDFImage pdfImage = new PDFImage();
             pdfImage.file = save;
             pdfImage.x = translateX;
-            pdfImage.y = translateY;
+            pdfImage.y = translateY - ctmNew.getScalingFactorY();
+            pdfImage.pageNumber = pageNumber;
             images.add(pdfImage);
-            System.out.println(pdfImage.file + " at (" + pdfImage.x + "," + pdfImage.y + ")");
+            System.out.println(image);
+            System.out.println(pdfImage.file + " at (" + pdfImage.x + "," + pdfImage.y + ") page " + pageNumber);
 
         }
 
@@ -94,4 +108,5 @@ public class PrintImageLocations extends PDFStreamEngine {
 class PDFImage{
     File file;
     float x, y;
+    int pageNumber;
 }
