@@ -3,6 +3,8 @@ package rosario;
 import java.io.Serializable;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ObservableList;
@@ -75,18 +77,24 @@ public class Medicamento implements Serializable {
 		if (loteValido == null) {
 			loteValido = Bindings.createBooleanBinding(
 					() -> medicamentos.stream().anyMatch(
-							m -> Objects.equals(m.getRegistro(), registro) && Objects.equals(m.getLote(), lote)),
+							m -> Objects.equals(m.getRegistro(), registro) && loteIgual(m)),
 					medicamentos);
 		}
 
 		return loteValido;
 	}
 
+	private boolean loteIgual(Medicamento m) {
+		return Objects.equals(m.getLote(), lote)
+				|| StringUtils.isNumeric(lote) && StringUtils.isNumeric(m.getLote())
+						&& Objects.equals(Integer.valueOf(m.getLote()), Integer.valueOf(lote));
+	}
+
 	public BooleanBinding quantidadeValidoProperty(ObservableList<Medicamento> medicamentos) {
 		if (quantidadeValido == null) {
 			quantidadeValido = Bindings.createBooleanBinding(
 					() -> medicamentos.stream().anyMatch(m -> Objects.equals(m.getRegistro(), registro)
-							&& Objects.equals(m.getLote(), lote) && Objects.equals(m.getQuantidade(), quantidade)),
+							&& loteIgual(m) && Objects.equals(m.getQuantidade(), quantidade)),
 					medicamentos);
 		}
 
