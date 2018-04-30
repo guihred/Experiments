@@ -65,18 +65,19 @@ public class FuriganaCrawler implements HasLogging {
 
 	String getReading(String currentWord, char currentLetter) {
 		Connection connect = Jsoup.connect("http://jisho.org/search/" + URLEncoder.encode(currentWord));
+
 		try {
 			Document parse = connect
 
 					.get();
 
-			Elements select = parse.select(".concept_light-representation");
+            Elements select = parse.select(".concept_light-representation .text:contains(\"" + currentWord + "\")");
 			if (select.size() > 0) {
 				for (Element element : select) {
-					Element link = element.select(".text").first();
+                    Element link = element.parent();
 
-					if (link.text().equals(currentWord)) {
-						return element.select(".furigana").text();
+                    if (element.text().equals(currentWord)) {
+                        return link.select(".furigana").text();
 					}
 
 				}

@@ -1,7 +1,6 @@
 package furigana.experiment;
 
 import fxproexercises.ch06.TaskProgressView;
-import japstudy.db.HibernateUtil;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.stage.Stage;
@@ -18,10 +17,9 @@ public class FuriganaCrawlerApp extends Application {
 
 	@Override
     public void start(Stage stage) throws Exception {
-        stage.setTitle("Worker and Task Example");
+        stage.setTitle("Furigana Converter");
         stage.setScene(view.getScene());
         stage.show();
-        stage.setOnCloseRequest(e -> HibernateUtil.shutdown());
     }
 
 }
