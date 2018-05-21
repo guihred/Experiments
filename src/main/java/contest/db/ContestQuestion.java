@@ -130,6 +130,11 @@ public class ContestQuestion extends BaseEntity implements HasImage {
 
     @Override
     public void setImage(String image) {
+        this.image = image;
+    }
+
+    @Override
+    public void appendImage(String image) {
         if (this.image == null) {
             this.image = image;
         } else {
@@ -137,7 +142,6 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         }
 
     }
-
     @Override
     public boolean matches(String s0) {
         boolean matches = s0.matches(ContestReader.QUESTION_PATTERN);

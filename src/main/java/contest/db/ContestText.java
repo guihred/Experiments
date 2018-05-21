@@ -16,13 +16,14 @@ import javax.persistence.Transient;
 @Entity
 @Table
 public class ContestText extends BaseEntity implements HasImage {
+    private static int KEY;
     @ManyToOne
     @JoinColumn
     private Contest contest;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer key;
+    private Integer key = KEY++;
 
     @Column
     private Integer max;
@@ -50,6 +51,10 @@ public class ContestText extends BaseEntity implements HasImage {
         text = Objects.toString(text, "") + english;
     }
 
+    @Override
+    public void appendImage(String english) {
+        image = Objects.toString(image, "") + english;
+    }
     public Contest getContest() {
         return contest;
     }

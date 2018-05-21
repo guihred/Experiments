@@ -1,4 +1,8 @@
 package contest.db;
+import static contest.db.ContestReader.ReaderState.STATE_IGNORE;
+import static contest.db.ContestReader.ReaderState.STATE_OPTION;
+import static contest.db.ContestReader.ReaderState.STATE_QUESTION;
+import static contest.db.ContestReader.ReaderState.STATE_TEXT;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,38 +33,68 @@ import javafx.collections.ObservableList;
 public final class ContestReader {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
     private static final Logger LOGGER = LoggerFactory.getLogger(ContestReader.class);
+    private static final String TEXT_PATTERN = "Texto \\d+\\s*";
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
 
-    private static final int STATE_IGNORE = 0;
-    private static final int STATE_OPTION = 4;
-    private static final int STATE_QUESTION = 3;
-    private static final int STATE_TEXT = 2;
+
+    enum ReaderState {
+        STATE_IGNORE,
+        STATE_OPTION,
+        STATE_QUESTION,
+        STATE_TEXT;
+    }
 
     private static final String SUBJECT_PATTERN = "Questões de \\d+ a \\d+\\s*";
     public static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
 
-    public static ObservableList<ContestQuestion> getContestQuestions(File file) {
-        ContestReader contestReader = new ContestReader();
-        new Thread(() -> contestReader.readFile(file)).start();
-        return contestReader.listaMedicamentos;
+    private static ContestReader INSTANCE;
+
+    public static ObservableList<ContestQuestion> getContestQuestions(File file, Runnable... r) {
+        if (INSTANCE == null) {
+            INSTANCE = new ContestReader();
+        }
+        new Thread(() -> {
+            INSTANCE.readFile(file);
+            Stream.of(r).forEach(Runnable::run);
+        }).start();
+        return INSTANCE.listaMedicamentos;
     }
 
+    public static ObservableList<ContestText> getContestTexts(File file) {
+        if (INSTANCE == null) {
+            INSTANCE = new ContestReader();
+        }
+        if (INSTANCE.texts.isEmpty()) {
+            // new Thread(() -> INSTANCE.readFile(file)).start();
+        }
+
+        return INSTANCE.texts;
+    }
     private ContestQuestionAnswer answer = new ContestQuestionAnswer();
     private Contest contest;
     private ContestQuestion contestQuestion = new ContestQuestion();
     private ObservableList<ContestQuestion> listaMedicamentos = FXCollections.observableArrayList();
+
     private int option = 0;
 
     // private Map<String, Map.Entry<Float, Float>> questionPosition = new
     // HashMap<>();
     private List<QuestionPosition> questionPosition = new ArrayList<>();
+    private ReaderState state = STATE_IGNORE;
 
-    private int state = 0;
     private String subject;
-
     private ContestText text = new ContestText();
-    private List<ContestText> texts = new ArrayList<>();
+
+    private final ObservableList<ContestText> texts = FXCollections.observableArrayList();
+
+    int pageNumber;
+
+    private void addNewText() {
+        text.setContest(contest);
+        texts.add(text);
+        text = new ContestText(contest);
+    }
 
     private void addQuestion() {
         answer = new ContestQuestionAnswer();
@@ -95,7 +129,6 @@ public final class ContestReader {
         parser.parse();
         return parser.getDocument();
     }
-
     private void processQuestion(String[] linhas, int i) {
         String s = linhas[i];
 
@@ -163,6 +196,9 @@ public final class ContestReader {
 
             case STATE_TEXT:
                 if (StringUtils.isNotBlank(s)) {
+                    if (s.matches(TEXT_PATTERN)) {
+                        addNewText();
+                    }
                     text.appendText(s + "\n");
                 }
                 break;
@@ -187,14 +223,6 @@ public final class ContestReader {
             log(s);
         }
     }
-
-    private void addNewText() {
-        text.setContest(contest);
-        texts.add(text);
-        text = new ContestText(contest);
-    }
-
-    int pageNumber;
 
     private void readFile(File file) {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -246,7 +274,7 @@ public final class ContestReader {
                             })).ifPresent(orElse -> {
                                 for (HasImage pdfImage2 : collect) {
                                     if (pdfImage2.matches(orElse.line)) {
-                                        pdfImage2.setImage(pdfImage.file.getAbsolutePath());
+                                        pdfImage2.appendImage(pdfImage.file.getName());
                                     }
                                 }
                             });
@@ -262,7 +290,7 @@ public final class ContestReader {
     private ContestQuestion tryReadQuestionFromLines(String[] lines) {
 
         try {
-            state = 0;
+            state = STATE_IGNORE;
             option = 0;
             text = new ContestText(contest);
             answer.setExercise(contestQuestion);

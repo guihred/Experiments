@@ -19,11 +19,18 @@ public abstract class BaseEntity implements Serializable {
             return false;
         }
         BaseEntity other = (BaseEntity) obj;
-        return Objects.equals(other.getKey(), getKey());
+        if (!Objects.equals(other.getKey(), getKey())) {
+            return false;
+        }
+        return obj == this;
     }
 
     @Override
     public int hashCode() {
+        if (getKey() == null) {
+            return super.hashCode();
+        }
+
         return Objects.hash(getKey());
     }
 }

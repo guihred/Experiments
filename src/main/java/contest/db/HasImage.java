@@ -5,5 +5,7 @@ public interface HasImage {
 
     void setImage(String image);
 
+    void appendImage(String image);
+
     boolean matches(String s0);
 }
