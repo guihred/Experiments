@@ -158,9 +158,11 @@ public class ContestQuestionEditingDisplay extends Application {
         ContestQuestion contestQuestion = lessons.get(index);
         lessons.set(index, contestQuestion);
 		System.out.println(ContestReader.INSTANCE.contest.toSQL());
-		System.out.println(lessons.stream().map(e -> e.toSQL()).collect(Collectors.joining("\n")));
+		System.out.println(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
 		System.out.println(lessons.stream().flatMap(e -> e.getOptions().stream()).map(e -> e.toSQL())
 				.collect(Collectors.joining("\n")));
+		System.out.println(
+				ContestReader.INSTANCE.texts.stream().map(ContestText::toSQL).collect(Collectors.joining("\n")));
 
         primaryStage.close();
     }

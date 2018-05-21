@@ -86,7 +86,7 @@ public final class ContestReader {
     private String subject;
     private ContestText text = new ContestText();
 
-    private final ObservableList<ContestText> texts = FXCollections.observableArrayList();
+	final ObservableList<ContestText> texts = FXCollections.observableArrayList();
 
     int pageNumber;
 
