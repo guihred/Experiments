@@ -48,7 +48,7 @@ public final class ContestReader {
     private static final String SUBJECT_PATTERN = "Questões de \\d+ a \\d+\\s*";
     public static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
 
-    private static ContestReader INSTANCE;
+	public static ContestReader INSTANCE;
 
     public static ObservableList<ContestQuestion> getContestQuestions(File file, Runnable... r) {
         if (INSTANCE == null) {
@@ -58,7 +58,7 @@ public final class ContestReader {
             INSTANCE.readFile(file);
             Stream.of(r).forEach(Runnable::run);
         }).start();
-        return INSTANCE.listaMedicamentos;
+        return INSTANCE.listQuestions;
     }
 
     public static ObservableList<ContestText> getContestTexts(File file) {
@@ -72,9 +72,9 @@ public final class ContestReader {
         return INSTANCE.texts;
     }
     private ContestQuestionAnswer answer = new ContestQuestionAnswer();
-    private Contest contest;
+	Contest contest;
     private ContestQuestion contestQuestion = new ContestQuestion();
-    private ObservableList<ContestQuestion> listaMedicamentos = FXCollections.observableArrayList();
+	private ObservableList<ContestQuestion> listQuestions = FXCollections.observableArrayList();
 
     private int option = 0;
 
@@ -99,7 +99,7 @@ public final class ContestReader {
     private void addQuestion() {
         answer = new ContestQuestionAnswer();
         answer.setExercise(contestQuestion);
-        listaMedicamentos.add(contestQuestion);
+        listQuestions.add(contestQuestion);
         contestQuestion = new ContestQuestion();
         contestQuestion.setContest(contest);
         contestQuestion.setSubject(subject);
@@ -175,7 +175,7 @@ public final class ContestReader {
             state = STATE_OPTION;
 
         }
-        if (StringUtils.isBlank(s) && state == STATE_TEXT && !listaMedicamentos.isEmpty()) {
+        if (StringUtils.isBlank(s) && state == STATE_TEXT && !listQuestions.isEmpty()) {
             addNewText();
             state = STATE_IGNORE;
         }
@@ -262,7 +262,7 @@ public final class ContestReader {
                 String parsedText = pdfStripper.getText(pdDoc);
                 String[] lines = parsedText.split("\r\n");
                 tryReadQuestionFromLines(lines);
-                List<HasImage> collect = Stream.concat(texts.stream(), listaMedicamentos.stream())
+                List<HasImage> collect = Stream.concat(texts.stream(), listQuestions.stream())
                         .collect(Collectors.toList());
                 final int j = i;
                 for (PDFImage pdfImage : images) {

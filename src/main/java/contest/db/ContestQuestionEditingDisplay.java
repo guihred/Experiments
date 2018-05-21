@@ -42,8 +42,8 @@ public class ContestQuestionEditingDisplay extends Application {
     }
 
     public ContestQuestionEditingDisplay() {
-        this.lessons = ContestReader.getContestQuestions(
-                new File("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), () -> current.set(0));
+        lessons = ContestReader.getContestQuestions(
+				new File("102 - Analista de Tecnologia da Informacao - Tipo C.pdf"), () -> current.set(0));
     }
 
     private ListView<ContestQuestionAnswer> newOptionListView() {
@@ -157,6 +157,11 @@ public class ContestQuestionEditingDisplay extends Application {
         int index = current.get();
         ContestQuestion contestQuestion = lessons.get(index);
         lessons.set(index, contestQuestion);
+		System.out.println(ContestReader.INSTANCE.contest.toSQL());
+		System.out.println(lessons.stream().map(e -> e.toSQL()).collect(Collectors.joining("\n")));
+		System.out.println(lessons.stream().flatMap(e -> e.getOptions().stream()).map(e -> e.toSQL())
+				.collect(Collectors.joining("\n")));
+
         primaryStage.close();
     }
 
