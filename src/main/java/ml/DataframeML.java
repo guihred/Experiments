@@ -143,20 +143,24 @@ public class DataframeML implements HasLogging {
         System.out.print("\ncount");
         collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + "d", v.getCount()));
         System.out.print("\nmean");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + ".1f", v.getMean()));
+        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMean()));
         System.out.print("\nstd");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + ".1f", v.getStd()));
+        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getStd()));
         System.out.print("\nmin");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + ".1f", v.getMin()));
+        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMin()));
         System.out.print("\n25%");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + ".1f", v.getMedian25()));
+        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian25()));
         System.out.print("\n50%");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + ".1f", v.getMedian50()));
+        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian50()));
         System.out.print("\n75%");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + ".1f", v.getMedian75()));
+        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian75()));
         System.out.print("\nmax");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + ".1f", v.getMax()));
+        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMax()));
         
+    }
+
+    private String floatFormating(String k) {
+        return "\t%" + k.length() + ".1f";
     }
     
     
