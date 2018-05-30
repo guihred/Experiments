@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.function.DoubleUnaryOperator;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,6 +33,19 @@ public class DataframeML implements HasLogging {
 	// System.out.println(x);
 	// x.describe();
 	// }
+    public static void main(String[] args) {
+		DataframeML x = new DataframeML("california_housing_train.csv");
+		logln(x);
+		// x.describe();
+		// x.apply("median_house_value", d -> d / 1000);
+		x.crossFeature("rooms_per_person", d -> d[0] / d[1], "total_rooms", "population");
+		logln(x);
+		// x.correlation();
+    }
+
+    private static void logln(Object x) {
+        System.out.println(x);
+    }
 
     public DataframeML() {
     }
@@ -66,6 +82,25 @@ public class DataframeML implements HasLogging {
         return "%" + s.length() + "s\t";
     }
 
+    public void apply(String header, DoubleUnaryOperator mapper) {
+        dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
+                .map(mapper).boxed().collect(Collectors.toList()));
+        formatMap.put(header, Double.class);
+    }
+
+    public void crossFeature(String header, ToDoubleFunction<double[]> mapper, String... dependent) {
+        dataframe.put(header, IntStream.range(0, size).mapToObj(i -> toDoubleArray(i, dependent)).mapToDouble(mapper)
+                .boxed().collect(Collectors.toList()));
+        formatMap.put(header, Double.class);
+    }
+
+    private double[] toDoubleArray(int i, String... dependent) {
+        double[] d = new double[dependent.length];
+        for (int j = 0; j < dependent.length; j++) {
+            d[j] = ((Number) dataframe.get(dependent[j]).get(i)).doubleValue();
+        }
+        return d;
+    }
 	@SuppressWarnings("unchecked")
 	public ObservableList<Series<Number, Number>> createNumberSeries(String feature, String target) {
 		Series<Number, Number> series = new Series<>();
@@ -124,7 +159,7 @@ public class DataframeML implements HasLogging {
                 return valueOf;
             }
         } catch (NumberFormatException e) {
-            getLogger().trace("FORMAT ERROR", e);
+            getLogger().trace("FORMAT ERROR INTEGER", e);
         }
         try {
             if (formatHierarchy.indexOf(currentFormat) <= formatHierarchy.indexOf(Long.class)) {
@@ -155,161 +190,75 @@ public class DataframeML implements HasLogging {
     public void describe() {
         Map<String, DataframeStatisticAccumulator> collect = dataframe.entrySet().stream()
                 .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
-                        (Entry<String, List<Object>> e) -> e.getValue().stream().collect(
-                                () -> new DataframeStatisticAccumulator(e.getKey()),
+                        e -> e.getValue().stream().collect(
+                                () -> new DataframeStatisticAccumulator(this, e.getKey()),
                                 DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                         (m1, m2) -> m1, LinkedHashMap::new));
         
-        collect.forEach((k, v) -> System.out.printf("\t%s", k));
-        System.out.print("\ncount");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + "d", v.getCount()));
-        System.out.print("\nmean");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMean()));
-        System.out.print("\nstd");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getStd()));
-        System.out.print("\nmin");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMin()));
-        System.out.print("\n25%");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian25()));
-        System.out.print("\n50%");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian50()));
-        System.out.print("\n75%");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian75()));
-        System.out.print("\nmax");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMax()));
+        collect.forEach((k, v) -> log("\t%s", k));
+        log("\ncount");
+        collect.forEach((k, v) -> log("\t%" + k.length() + "d", v.getCount()));
+        log("\nmean");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMean()));
+        log("\nstd");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getStd()));
+        log("\nmin");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMin()));
+        log("\n25%%");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian25()));
+        log("\n50%%");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian50()));
+        log("\n75%%");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian75()));
+        log("\nmax");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMax()));
+        logln();
         
+    }
+
+    void log(String s, Object... e) {
+        System.out.printf(s, e);
+    }
+
+    void logln() {
+        System.out.println();
+    }
+
+    public void correlation() {
+        Map<String, DataframeStatisticAccumulator> collect = dataframe.entrySet().stream()
+                .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
+                        e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(this, e.getKey()),
+                                DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
+                        (m1, m2) -> m1, LinkedHashMap::new));
+
+        logln();
+        Set<String> keySet = formatMap.keySet();
+        int pad = keySet.stream().mapToInt(String::length).max().getAsInt();
+        log("\t\t");
+        keySet.forEach(k -> log("\t%s", k));
+        logln();
+        for (String variable : keySet) {
+            log("%" + pad + "s", variable);
+            double self = collect.get(variable).getCorrelation(variable);
+            for (String variable2 : keySet) {
+                log(floatFormating(variable2.length()), collect.get(variable).getCorrelation(variable2) / self);
+            }
+            logln();
+
+        }
+
     }
 
     private String floatFormating(String k) {
-        return "\t%" + k.length() + ".1f";
+        int length = k.length();
+        return floatFormating(length);
     }
-    
-    
-    public class DataframeStatisticAccumulator{
-        private int count;
-        private double sum;
-        private double min = Double.MAX_VALUE;
-        private double median25;
-        private double median50;
-        private double median75;
-        private double max = Double.NEGATIVE_INFINITY;
-        String unique, top, freq;
-        private String header;
-        private Class<?> format;
 
-        public DataframeStatisticAccumulator(String header) {
-            this.header = header;
-            this.format = formatMap.get(header);
-        }
-
-        private void acceptNumber(Number n) {
-            count++;
-            double o = n.doubleValue();
-            sum += o;
-            min = Math.min(min, o);
-            max = Math.max(max, o);
-
-            if (count == DataframeML.this.size / 4) {
-                median25 = o;
-            }
-            if (count == DataframeML.this.size / 2) {
-                median50 = o;
-            }
-            if (count == DataframeML.this.size * 3 / 4) {
-                median75 = o;
-            }
-        }
-
-        public void combine(DataframeStatisticAccumulator n) {
-            count += n.count;
-
-            sum += n.sum;
-
-            min = Math.min(min, n.min);
-            max = Math.max(max, n.max);
-        }
-        double getMean() {
-            return sum / count;
-        }
-
-
-        double getStd() {
-            if (format == String.class) {
-                return 0;
-            }
-
-            double mean = sum / count;
-            double sum2 = dataframe.get(header).stream().map(Number.class::cast).mapToDouble(e -> e.doubleValue())
-                    .map(e -> e - mean).map(e -> e * e).sum();
-            return Math.sqrt(sum2 / (count - 1));
-        }
-
-        public DataframeStatisticAccumulator accept(Object o) {
-            if (format.isInstance(o)) {
-                if (format == Integer.class || format == Long.class || format == Double.class) {
-                    acceptNumber((Number) o);
-                }
-            }
-            return this;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public void setCount(int count) {
-            this.count = count;
-        }
-
-        public double getMin() {
-            return min;
-        }
-
-        public void setMin(double min) {
-            this.min = min;
-        }
-
-        public double getMedian25() {
-            return median25;
-        }
-
-        public void setMedian25(double median25) {
-            this.median25 = median25;
-        }
-
-        public double getMedian50() {
-            return median50;
-        }
-
-        public void setMedian50(double median50) {
-            this.median50 = median50;
-        }
-
-        public double getMedian75() {
-            return median75;
-        }
-
-        public void setMedian75(double median75) {
-            this.median75 = median75;
-        }
-
-        public double getMax() {
-            return max;
-        }
-
-        public void setMax(double max) {
-            this.max = max;
-        }
-
-        public double getSum() {
-            return sum;
-        }
-
-        public void setSum(double sum) {
-            this.sum = sum;
-        }
-        
+    private String floatFormating(int length) {
+        return "\t%" + length + ".1f";
     }
+
+
 }
 
 
