@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.function.DoubleUnaryOperator;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -25,8 +27,11 @@ public class DataframeML implements HasLogging {
     public static void main(String[] args) {
         DataframeML x = new DataframeML("california_housing_train.csv");
         logln(x);
-        x.describe();
-        x.correlation();
+        // x.describe();
+        // x.apply("median_house_value", d -> d / 1000);
+        x.crossFeature("rooms_per_person", d -> d[0] / d[1], "total_rooms", "population");
+        logln(x);
+        // x.correlation();
     }
 
     private static void logln(Object x) {
@@ -67,9 +72,28 @@ public class DataframeML implements HasLogging {
     private String formating(String s) {
         return "%" + s.length() + "s\t";
     }
-    
-    
 
+    public void apply(String header, DoubleUnaryOperator mapper) {
+        dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
+                .map(mapper).boxed().collect(Collectors.toList()));
+        formatMap.put(header, Double.class);
+    }
+
+    public void crossFeature(String header, ToDoubleFunction<double[]> mapper, String... dependent) {
+        dataframe.put(header, IntStream.range(0, size).mapToObj(i -> toDoubleArray(i, dependent)).mapToDouble(mapper)
+                .boxed().collect(Collectors.toList()));
+        formatMap.put(header, Double.class);
+    }
+
+    private double[] toDoubleArray(int i, String... dependent) {
+        double[] d = new double[dependent.length];
+        for (int j = 0; j < dependent.length; j++) {
+            d[j] = ((Number) dataframe.get(dependent[j]).get(i)).doubleValue();
+        }
+        return d;
+    }
+    
+    
     public void readCSV(String csvFile) {
         try (Scanner scanner = new Scanner(new File(csvFile));) {
             List<String> header = CSVUtils.parseLine(scanner.nextLine());
@@ -142,7 +166,7 @@ public class DataframeML implements HasLogging {
         Map<String, DataframeStatisticAccumulator> collect = dataframe.entrySet().stream()
                 .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
                         e -> e.getValue().stream().collect(
-                                () -> new DataframeStatisticAccumulator(e.getKey()),
+                                () -> new DataframeStatisticAccumulator(this, e.getKey()),
                                 DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                         (m1, m2) -> m1, LinkedHashMap::new));
         
@@ -178,7 +202,7 @@ public class DataframeML implements HasLogging {
     public void correlation() {
         Map<String, DataframeStatisticAccumulator> collect = dataframe.entrySet().stream()
                 .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
-                        e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(e.getKey()),
+                        e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(this, e.getKey()),
                                 DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                         (m1, m2) -> m1, LinkedHashMap::new));
 
@@ -208,136 +232,8 @@ public class DataframeML implements HasLogging {
     private String floatFormating(int length) {
         return "\t%" + length + ".1f";
     }
-    
-    
-    public class DataframeStatisticAccumulator{
-        private int count;
-        private double sum;
-        private double min = Double.MAX_VALUE;
-        private double median25;
-        private double median50;
-        private double median75;
-        private double max = Double.NEGATIVE_INFINITY;
-        String unique, top, freq;
-        private String header;
-        private Class<?> format;
-
-        public DataframeStatisticAccumulator(String header) {
-            this.header = header;
-            this.format = formatMap.get(header);
-        }
-
-        private void acceptNumber(Number n) {
-            count++;
-            double o = n.doubleValue();
-            sum += o;
-            min = Math.min(min, o);
-            max = Math.max(max, o);
-
-            if (count == DataframeML.this.size / 4) {
-                median25 = o;
-            }
-            if (count == DataframeML.this.size / 2) {
-                median50 = o;
-            }
-            if (count == DataframeML.this.size * 3 / 4) {
-                median75 = o;
-            }
-        }
-
-        public void combine(DataframeStatisticAccumulator n) {
-            count += n.count;
-
-            sum += n.sum;
-
-            min = Math.min(min, n.min);
-            max = Math.max(max, n.max);
-        }
-        double getMean() {
-            return sum / count;
-        }
 
 
-        double getStd() {
-            if (format == String.class) {
-                return 0;
-            }
-
-            double mean = sum / count;
-            double sum2 = dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
-                    .map(e -> e - mean).map(e -> e * e).sum();
-            return Math.sqrt(sum2 / (count - 1));
-        }
-
-        double getCorrelation(String other) {
-            if (format == String.class||formatMap.get(other)==String.class) {
-                return 0;
-            }
-            
-            double mean = sum / count;
-            List<Object> variable = dataframe.get(header);
-            double sum1 = variable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
-                    .map(e -> e - mean).map(e -> e * e).sum();
-            double st1 = Math.sqrt(sum1 / (count - 1));
-            
-            List<Object> otherVariable = dataframe.get(other);
-            double mean2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).average()
-                    .getAsDouble();
-            double sum2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
-                    .map(e -> e - mean2).map(e -> e * e).sum();
-            double st2 = Math.sqrt(sum2 );
-            double covariance = IntStream.range(0, count)
-                    .mapToDouble(i -> (((Number) variable.get(i)).doubleValue() - mean)
-                            * (((Number) otherVariable.get(i)).doubleValue() - mean2))
-                    .sum();
-            return covariance / st1 / st2;
-        }
-
-        public DataframeStatisticAccumulator accept(Object o) {
-            if (format.isInstance(o)) {
-                if (format == Integer.class || format == Long.class || format == Double.class) {
-                    acceptNumber((Number) o);
-                }
-            }
-            return this;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-
-        public double getMin() {
-            return min;
-        }
-
-
-        public double getMedian25() {
-            return median25;
-        }
-
-
-        public double getMedian50() {
-            return median50;
-        }
-
-
-        public double getMedian75() {
-            return median75;
-        }
-
-
-        public double getMax() {
-            return max;
-        }
-
-
-        public double getSum() {
-            return sum;
-        }
-
-        
-    }
 }
 
 
