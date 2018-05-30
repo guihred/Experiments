@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import simplebuilder.HasLogging;
 
@@ -23,7 +25,7 @@ public class DataframeML implements HasLogging {
     public static void main(String[] args) {
         DataframeML x = new DataframeML("california_housing_train.csv");
         System.out.println(x);
-        x.describe();
+        x.correlation();
     }
 
     public DataframeML() {
@@ -134,7 +136,7 @@ public class DataframeML implements HasLogging {
     public void describe() {
         Map<String, DataframeStatisticAccumulator> collect = dataframe.entrySet().stream()
                 .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
-                        (Entry<String, List<Object>> e) -> e.getValue().stream().collect(
+                        e -> e.getValue().stream().collect(
                                 () -> new DataframeStatisticAccumulator(e.getKey()),
                                 DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                         (m1, m2) -> m1, LinkedHashMap::new));
@@ -159,8 +161,37 @@ public class DataframeML implements HasLogging {
         
     }
 
+    public void correlation() {
+        Map<String, DataframeStatisticAccumulator> collect = dataframe.entrySet().stream()
+                .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
+                        e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(e.getKey()),
+                                DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
+                        (m1, m2) -> m1, LinkedHashMap::new));
+
+        Set<String> keySet = formatMap.keySet();
+        int pad = keySet.stream().mapToInt(String::length).max().getAsInt();
+        System.out.printf("\t");
+        keySet.forEach(k -> System.out.printf("\t%" + pad + "s", k));
+        System.out.println();
+        for (String variable : keySet) {
+            System.out.print(variable);
+            double self = collect.get(variable).getCorrelation(variable);
+            for (String variable2 : keySet) {
+                System.out.printf(floatFormating(pad), collect.get(variable).getCorrelation(variable2) / self);
+            }
+            System.out.println();
+
+        }
+
+    }
+
     private String floatFormating(String k) {
-        return "\t%" + k.length() + ".1f";
+        int length = k.length();
+        return floatFormating(length);
+    }
+
+    private String floatFormating(int length) {
+        return "\t%" + length + ".1f";
     }
     
     
@@ -223,6 +254,30 @@ public class DataframeML implements HasLogging {
             return Math.sqrt(sum2 / (count - 1));
         }
 
+        double getCorrelation(String other) {
+            if (format == String.class||formatMap.get(other)==String.class) {
+                return 0;
+            }
+            
+            double mean = sum / count;
+            List<Object> variable = dataframe.get(header);
+            double sum1 = variable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
+                    .map(e -> e - mean).map(e -> e * e).sum();
+            double st1 = Math.sqrt(sum1 / (count - 1));
+            
+            List<Object> otherVariable = dataframe.get(other);
+            double mean2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).average()
+                    .getAsDouble();
+            double sum2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
+                    .map(e -> e - mean2).map(e -> e * e).sum();
+            double st2 = Math.sqrt(sum2 );
+            double covariance = IntStream.range(0, count)
+                    .mapToDouble(i -> (((Number) variable.get(i)).doubleValue() - mean)
+                            * (((Number) otherVariable.get(i)).doubleValue() - mean2))
+                    .sum();
+            return covariance / st1 / st2;
+        }
+
         public DataframeStatisticAccumulator accept(Object o) {
             if (format.isInstance(o)) {
                 if (format == Integer.class || format == Long.class || format == Double.class) {
@@ -236,57 +291,36 @@ public class DataframeML implements HasLogging {
             return count;
         }
 
-        public void setCount(int count) {
-            this.count = count;
-        }
 
         public double getMin() {
             return min;
         }
 
-        public void setMin(double min) {
-            this.min = min;
-        }
 
         public double getMedian25() {
             return median25;
         }
 
-        public void setMedian25(double median25) {
-            this.median25 = median25;
-        }
 
         public double getMedian50() {
             return median50;
         }
 
-        public void setMedian50(double median50) {
-            this.median50 = median50;
-        }
 
         public double getMedian75() {
             return median75;
         }
 
-        public void setMedian75(double median75) {
-            this.median75 = median75;
-        }
 
         public double getMax() {
             return max;
         }
 
-        public void setMax(double max) {
-            this.max = max;
-        }
 
         public double getSum() {
             return sum;
         }
 
-        public void setSum(double sum) {
-            this.sum = sum;
-        }
         
     }
 }
