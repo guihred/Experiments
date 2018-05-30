@@ -11,7 +11,12 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
@@ -20,11 +25,11 @@ public class DataframeML implements HasLogging {
     Map<String, Class<?>> formatMap = new LinkedHashMap<>();
     int size;
     List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class, Double.class);
-    public static void main(String[] args) {
-        DataframeML x = new DataframeML("california_housing_train.csv");
-        System.out.println(x);
-        x.describe();
-    }
+	// public static void main(String[] args) {
+	// DataframeML x = new DataframeML("california_housing_train.csv");
+	// System.out.println(x);
+	// x.describe();
+	// }
 
     public DataframeML() {
     }
@@ -60,9 +65,25 @@ public class DataframeML implements HasLogging {
     private String formating(String s) {
         return "%" + s.length() + "s\t";
     }
-    
-    
 
+	@SuppressWarnings("unchecked")
+	public ObservableList<Series<Number, Number>> createNumberSeries(String feature, String target) {
+		Series<Number, Number> series = new Series<>();
+		series.setName(feature + " X " + target);
+
+		List<Object> list = dataframe.get(feature);
+		List<Object> list2 = dataframe.get(target);
+		ObservableList<Data<Number, Number>> data = FXCollections.observableArrayList();
+		IntStream.range(0, size)
+				.filter(i -> list.get(i) != null && list2.get(i) != null)
+				.forEach((int i) -> data.add(new Data<>((Number) list.get(i), (Number) list2.get(i))));
+		series.setData(data);
+		return FXCollections.observableArrayList(series);
+	}
+
+	List<Object> list(String header) {
+		return dataframe.get(header);
+	}
     public void readCSV(String csvFile) {
         try (Scanner scanner = new Scanner(new File(csvFile));) {
             List<String> header = CSVUtils.parseLine(scanner.nextLine());
