@@ -24,8 +24,13 @@ public class DataframeML implements HasLogging {
     List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class, Double.class);
     public static void main(String[] args) {
         DataframeML x = new DataframeML("california_housing_train.csv");
-        System.out.println(x);
+        logln(x);
+        x.describe();
         x.correlation();
+    }
+
+    private static void logln(Object x) {
+        System.out.println(x);
     }
 
     public DataframeML() {
@@ -105,7 +110,7 @@ public class DataframeML implements HasLogging {
                 return valueOf;
             }
         } catch (NumberFormatException e) {
-            getLogger().trace("FORMAT ERROR", e);
+            getLogger().trace("FORMAT ERROR INTEGER", e);
         }
         try {
             if (formatHierarchy.indexOf(currentFormat) <= formatHierarchy.indexOf(Long.class)) {
@@ -141,24 +146,33 @@ public class DataframeML implements HasLogging {
                                 DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                         (m1, m2) -> m1, LinkedHashMap::new));
         
-        collect.forEach((k, v) -> System.out.printf("\t%s", k));
-        System.out.print("\ncount");
-        collect.forEach((k, v) -> System.out.printf("\t%" + k.length() + "d", v.getCount()));
-        System.out.print("\nmean");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMean()));
-        System.out.print("\nstd");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getStd()));
-        System.out.print("\nmin");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMin()));
-        System.out.print("\n25%");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian25()));
-        System.out.print("\n50%");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian50()));
-        System.out.print("\n75%");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMedian75()));
-        System.out.print("\nmax");
-        collect.forEach((k, v) -> System.out.printf(floatFormating(k), v.getMax()));
+        collect.forEach((k, v) -> log("\t%s", k));
+        log("\ncount");
+        collect.forEach((k, v) -> log("\t%" + k.length() + "d", v.getCount()));
+        log("\nmean");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMean()));
+        log("\nstd");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getStd()));
+        log("\nmin");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMin()));
+        log("\n25%%");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian25()));
+        log("\n50%%");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian50()));
+        log("\n75%%");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian75()));
+        log("\nmax");
+        collect.forEach((k, v) -> log(floatFormating(k), v.getMax()));
+        logln();
         
+    }
+
+    void log(String s, Object... e) {
+        System.out.printf(s, e);
+    }
+
+    void logln() {
+        System.out.println();
     }
 
     public void correlation() {
@@ -168,18 +182,19 @@ public class DataframeML implements HasLogging {
                                 DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                         (m1, m2) -> m1, LinkedHashMap::new));
 
+        logln();
         Set<String> keySet = formatMap.keySet();
         int pad = keySet.stream().mapToInt(String::length).max().getAsInt();
-        System.out.printf("\t");
-        keySet.forEach(k -> System.out.printf("\t%" + pad + "s", k));
-        System.out.println();
+        log("\t\t");
+        keySet.forEach(k -> log("\t%s", k));
+        logln();
         for (String variable : keySet) {
-            System.out.print(variable);
+            log("%" + pad + "s", variable);
             double self = collect.get(variable).getCorrelation(variable);
             for (String variable2 : keySet) {
-                System.out.printf(floatFormating(pad), collect.get(variable).getCorrelation(variable2) / self);
+                log(floatFormating(variable2.length()), collect.get(variable).getCorrelation(variable2) / self);
             }
-            System.out.println();
+            logln();
 
         }
 
@@ -249,7 +264,7 @@ public class DataframeML implements HasLogging {
             }
 
             double mean = sum / count;
-            double sum2 = dataframe.get(header).stream().map(Number.class::cast).mapToDouble(e -> e.doubleValue())
+            double sum2 = dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
                     .map(e -> e - mean).map(e -> e * e).sum();
             return Math.sqrt(sum2 / (count - 1));
         }
