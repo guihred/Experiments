@@ -28,8 +28,8 @@ public class RegressionChartExample extends Application {
         RegressionModel regressionModel = new RegressionModel();
 		DataframeML x = new DataframeML("california_housing_train.csv");
 
-		ObservableList<Series<Number, Number>> data = regressionModel.createSeries(x.list("total_rooms"),
-				x.list("total_rooms"));
+        ObservableList<Series<Number, Number>> data = regressionModel.createSeries(x.list("total_rooms"),
+                x.list("total_rooms"));
         LineChart<Number, Number> lineChart = lineChart(data,
                 String.format("Speculations(%.1f*x + %.1f)", regressionModel.slope, regressionModel.initial));
 

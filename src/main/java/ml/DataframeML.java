@@ -24,6 +24,7 @@ import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
 
+    private static final int FRAME_MAX_SIZE = 20;
     Map<String, List<Object>> dataframe = new LinkedHashMap<>();
     Map<String, Class<?>> formatMap = new LinkedHashMap<>();
     int size;
@@ -129,6 +130,7 @@ public class DataframeML implements HasLogging {
 
             while (scanner.hasNext()) {
                 size++;
+
                 List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
                 if (header.size() != line2.size()) {
                     getLogger().error("ERROR FIELDS COUNT");
@@ -136,6 +138,9 @@ public class DataframeML implements HasLogging {
 
                 for (int i = 0; i < header.size() && i < line2.size(); i++) {
                     dataframe.get(header.get(i)).add(tryNumber(header.get(i), line2.get(i)));
+                }
+                if (size > FRAME_MAX_SIZE) {
+                    break;
                 }
             }
         } catch (FileNotFoundException e) {

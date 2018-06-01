@@ -33,7 +33,8 @@ class RegressionModel {
         List<Data<Number, Number>> collect = IntStream.range(0, MAX_SIZE)
                 .mapToObj(i -> toData(i, bestInitial + bestSlope * i)).collect(Collectors.toList());
         series.setData(FXCollections.observableArrayList(collect));
-        return FXCollections.observableArrayList(series);
+        // return FXCollections.observableArrayList(series); FIXME
+        return FXCollections.observableArrayList();
     }
     @SuppressWarnings("unchecked")
 	public ObservableList<Series<Number, Number>> createRandomSeries() {
@@ -54,16 +55,27 @@ class RegressionModel {
 
 	@SuppressWarnings("unchecked")
 	public ObservableList<Series<Number, Number>> createSeries(List<?> features, List<?> target) {
-		this.features = features.stream().map(Number.class::cast).map(e -> e.doubleValue()).limit(MAX_SIZE)
+        Random random = new Random();
+        slope = (random.nextDouble() - .5) * 10;
+        initial = (random.nextDouble() - .5) * 10;
+
+        bestSlope = (random.nextDouble() - .5) * 10;
+        bestInitial = (random.nextDouble() - .5) * 10;
+
+        this.features = features.stream().map(Number.class::cast).filter(e -> e != null).map(e -> e.doubleValue())
+
+                .limit(MAX_SIZE)
 				.collect(Collectors.toList());
-		this.target = target.stream().map(Number.class::cast).map(e -> e.doubleValue()).limit(MAX_SIZE)
+        this.target = target.stream().map(Number.class::cast).filter(e -> e != null).map(e -> e.doubleValue())
+                .limit(MAX_SIZE)
 				.collect(Collectors.toList());
 		c = 0;
-		List<Data<Number, Number>> collect = this.target.stream().map(this::mapToData).collect(Collectors.toList());
-		Series<Number, Number> series = new Series<>();
-		series.setName("Numbers");
-		ObservableList<Data<Number, Number>> observableArrayList = FXCollections.observableArrayList(collect);
-		series.setData(observableArrayList);
+        ObservableList<Data<Number, Number>> observableArrayList = FXCollections.observableArrayList();
+        Series<Number, Number> series = new Series<>();
+        series.setName("Numbers");
+        series.setData(observableArrayList);
+
+        this.target.stream().map(this::mapToData).forEach(e -> observableArrayList.add(e));
 		return FXCollections.observableArrayList(series);
 	}
     private DoubleStream doubleStream() {
@@ -104,7 +116,7 @@ class RegressionModel {
             c = 0;
 			double loss = target.stream().mapToDouble(e -> e).map(e -> -e + bestInitial + bestSlope * features.get(c++))
 					.map(e -> Math.abs(e)).sum();
-			slopeList.add(toData(bestSlope, loss));
+            // slopeList.add(toData(bestSlope, loss));
         }
 		for (int i = 0; i < 5000; i++) {
 
