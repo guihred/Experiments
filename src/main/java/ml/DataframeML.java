@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,11 +25,12 @@ import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
 
-    private static final int FRAME_MAX_SIZE = 20;
+    private static final int FRAME_MAX_SIZE = 500;
     Map<String, List<Object>> dataframe = new LinkedHashMap<>();
     Map<String, Class<?>> formatMap = new LinkedHashMap<>();
     int size;
     List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class, Double.class);
+    private Map<String, DataframeStatisticAccumulator> stats;
 	// public static void main(String[] args) {
 	// DataframeML x = new DataframeML("california_housing_train.csv");
 	// System.out.println(x);
@@ -193,30 +195,32 @@ public class DataframeML implements HasLogging {
     }
 
     public void describe() {
-        Map<String, DataframeStatisticAccumulator> collect = dataframe.entrySet().stream()
-                .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
-                        e -> e.getValue().stream().collect(
-                                () -> new DataframeStatisticAccumulator(this, e.getKey()),
-                                DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
-                        (m1, m2) -> m1, LinkedHashMap::new));
+        if (stats == null) {
+            stats = dataframe.entrySet().stream()
+                    .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
+                            e -> e.getValue().stream().collect(
+                                    () -> new DataframeStatisticAccumulator(this, e.getKey()),
+                                    DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
+                            (m1, m2) -> m1, LinkedHashMap::new));
+        }
         
-        collect.forEach((k, v) -> log("\t%s", k));
+        stats.forEach((k, v) -> log("\t%s", k));
         log("\ncount");
-        collect.forEach((k, v) -> log("\t%" + k.length() + "d", v.getCount()));
+        stats.forEach((k, v) -> log("\t%" + k.length() + "d", v.getCount()));
         log("\nmean");
-        collect.forEach((k, v) -> log(floatFormating(k), v.getMean()));
+        stats.forEach((k, v) -> log(floatFormating(k), v.getMean()));
         log("\nstd");
-        collect.forEach((k, v) -> log(floatFormating(k), v.getStd()));
+        stats.forEach((k, v) -> log(floatFormating(k), v.getStd()));
         log("\nmin");
-        collect.forEach((k, v) -> log(floatFormating(k), v.getMin()));
+        stats.forEach((k, v) -> log(floatFormating(k), v.getMin()));
         log("\n25%%");
-        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian25()));
+        stats.forEach((k, v) -> log(floatFormating(k), v.getMedian25()));
         log("\n50%%");
-        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian50()));
+        stats.forEach((k, v) -> log(floatFormating(k), v.getMedian50()));
         log("\n75%%");
-        collect.forEach((k, v) -> log(floatFormating(k), v.getMedian75()));
+        stats.forEach((k, v) -> log(floatFormating(k), v.getMedian75()));
         log("\nmax");
-        collect.forEach((k, v) -> log(floatFormating(k), v.getMax()));
+        stats.forEach((k, v) -> log(floatFormating(k), v.getMax()));
         logln();
         
     }
@@ -251,6 +255,19 @@ public class DataframeML implements HasLogging {
             logln();
 
         }
+
+    }
+
+    public Map<Double, Long> histogram(String header, int bins) {
+        List<Object> list = dataframe.get(header);
+        List<Double> collect = list.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).boxed()
+                .collect(Collectors.toList());
+        DoubleSummaryStatistics summaryStatistics = collect.stream().mapToDouble(e -> e).summaryStatistics();
+        double min = summaryStatistics.getMin();
+        double max = summaryStatistics.getMax();
+        double binSize = (max - min) / bins;
+        return collect.parallelStream()
+                .collect(Collectors.groupingBy(e -> Math.floor(e / binSize) * binSize, Collectors.counting()));
 
     }
 
