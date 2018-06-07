@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.beans.property.Property;
 import javafx.scene.Scene;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.SimpleSliderBuilder;
 
 public class HistogramExample extends Application {
 
@@ -15,7 +20,7 @@ public class HistogramExample extends Application {
 	public void start(Stage theStage) {
 		theStage.setTitle("Timeline Example");
 
-		Group root = new Group();
+        FlowPane root = new FlowPane();
 		Scene theScene = new Scene(root);
 		theStage.setScene(theScene);
 
@@ -35,9 +40,20 @@ public class HistogramExample extends Application {
 
 		root.getChildren().add(canvas);
         canvas.setPoints(points);
+        root.getChildren().add(newSlider("Radius", 1, 5, canvas.radius));
+        root.getChildren().add(newSlider("Line", 1, 10, canvas.lineSize));
+        root.getChildren().add(newSlider("X Bins", 10, 30, canvas.bins));
+        root.getChildren().add(newSlider("Y Bins", 10, 30, canvas.ybins));
 
 		theStage.show();
 	}
+
+    private VBox newSlider(String string, int min, int max, Property<Number> radius) {
+        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
+        build.valueProperty().bindBidirectional(radius);
+        VBox e = new VBox(new Text(string), build);
+        return e;
+    }
 
     public static void main(String[] args) {
         launch(args);
