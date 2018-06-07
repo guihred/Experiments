@@ -18,7 +18,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class PointGraph extends Canvas {
-    double layout = 30;
+    DoubleProperty layout = new SimpleDoubleProperty(30);
     double maxLayout = 480;
     DoubleProperty lineSize = new SimpleDoubleProperty(5);
     IntegerProperty bins = new SimpleIntegerProperty(20);
@@ -40,29 +40,30 @@ public class PointGraph extends Canvas {
         bins.addListener(listener);
         ybins.addListener(listener);
         radius.addListener(listener);
+        layout.addListener(listener);
     }
 
     public void drawAxis(DoubleSummaryStatistics xStats, DoubleSummaryStatistics yStats) {
 
         gc.setFill(Color.BLACK);
         gc.setLineWidth(1);
-        gc.strokeLine(layout, layout, layout, maxLayout);
-        gc.strokeLine(layout, maxLayout, maxLayout, maxLayout);
-        double j = (maxLayout - layout) / bins.intValue();
+        gc.strokeLine(layout.doubleValue(), layout.doubleValue(), layout.doubleValue(), maxLayout);
+        gc.strokeLine(layout.doubleValue(), maxLayout, maxLayout, maxLayout);
+        double j = (maxLayout - layout.doubleValue()) / bins.intValue();
         for (int i = 1; i <= bins.intValue(); i++) {
-            double x1 = i * j + layout;
+            double x1 = i * j + layout.doubleValue();
             gc.strokeLine(x1, maxLayout, x1, maxLayout + lineSize.doubleValue());
             String xLabel = String.format("%.1f", i * xProportion + xStats.getMin());
             gc.strokeText(xLabel, x1 - lineSize.doubleValue() * xLabel.length() / 2,
                     maxLayout + lineSize.doubleValue() * (4 + 3 * (i % 2)));
 
         }
-        j = (maxLayout - layout) / ybins.intValue();
+        j = (maxLayout - layout.doubleValue()) / ybins.intValue();
         for (int i = 0; i <= ybins.intValue(); i++) {
             double y1 = maxLayout - i * j;
-            gc.strokeLine(layout, y1, layout - lineSize.doubleValue(), y1);
+            gc.strokeLine(layout.doubleValue(), y1, layout.doubleValue() - lineSize.doubleValue(), y1);
             String yLabel = String.format("%.1f", i * yProportion + yStats.getMin());
-            gc.strokeText(yLabel, layout - lineSize.doubleValue() * 4, y1);
+            gc.strokeText(yLabel, layout.doubleValue() - lineSize.doubleValue() * 4, y1);
         }
     }
 
@@ -89,15 +90,15 @@ public class PointGraph extends Canvas {
         List<Entry<? extends Number, ? extends Number>> entrySet = points.stream()
                 .sorted(Comparator.comparing((Entry<? extends Number, ? extends Number> e) -> e.getKey().doubleValue()))
                 .collect(Collectors.toList());
-        double j = (maxLayout - layout) / bins.intValue();
-        double j2 = (maxLayout - layout) / ybins.intValue();
+        double j = (maxLayout - layout.doubleValue()) / bins.intValue();
+        double j2 = (maxLayout - layout.doubleValue()) / ybins.intValue();
         gc.setLineWidth(5);
         gc.setFill(Color.GREEN);
         gc.setLineWidth(0.5);
         for (int k = 0; k < entrySet.size(); k++) {
             Entry<? extends Number, ? extends Number> entry = entrySet.get(k);
             double x = entry.getKey().doubleValue();
-            double x1 = (x - xStats.getMin()) / xProportion * j + layout;
+            double x1 = (x - xStats.getMin()) / xProportion * j + layout.doubleValue();
             double y = entry.getValue().doubleValue();
             double y1 = maxLayout - (y - yStats.getMin()) / yProportion * j2;
             // gc.strokeLine(x1, maxLayout, x1, y1)

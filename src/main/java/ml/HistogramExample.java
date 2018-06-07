@@ -42,6 +42,7 @@ public class HistogramExample extends Application {
         canvas.setPoints(points);
         root.getChildren().add(newSlider("Radius", 1, 5, canvas.radius));
         root.getChildren().add(newSlider("Line", 1, 10, canvas.lineSize));
+        root.getChildren().add(newSlider("Padding", 10, 50, canvas.layout));
         root.getChildren().add(newSlider("X Bins", 10, 30, canvas.bins));
         root.getChildren().add(newSlider("Y Bins", 10, 30, canvas.ybins));
 
@@ -51,8 +52,7 @@ public class HistogramExample extends Application {
     private VBox newSlider(String string, int min, int max, Property<Number> radius) {
         Slider build = new SimpleSliderBuilder().min(min).max(max).build();
         build.valueProperty().bindBidirectional(radius);
-        VBox e = new VBox(new Text(string), build);
-        return e;
+        return new VBox(new Text(string), build);
     }
 
     public static void main(String[] args) {
