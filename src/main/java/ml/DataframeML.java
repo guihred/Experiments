@@ -2,6 +2,7 @@ package ml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
@@ -25,7 +26,7 @@ import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
 
-    private static final int FRAME_MAX_SIZE = 500;
+    private static final int FRAME_MAX_SIZE = 120000;
     Map<String, List<Object>> dataframe = new LinkedHashMap<>();
     Map<String, Class<?>> formatMap = new LinkedHashMap<>();
     int size;
@@ -117,6 +118,16 @@ public class DataframeML implements HasLogging {
 				.forEach((int i) -> data.add(new Data<>((Number) list.get(i), (Number) list2.get(i))));
 		series.setData(data);
 		return FXCollections.observableArrayList(series);
+	}
+
+    public List<Entry<Number, Number>> createNumberEntries(String feature, String target) {
+	    List<Object> list = dataframe.get(feature);
+	    List<Object> list2 = dataframe.get(target);
+	    List<Entry<Number, Number>> data = new ArrayList<>();
+	    IntStream.range(0, size)
+	    .filter(i -> list.get(i) != null && list2.get(i) != null)
+	    .forEach((int i) -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
+        return data;
 	}
 
 	List<Object> list(String header) {
