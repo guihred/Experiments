@@ -3,7 +3,6 @@ package ml;
 import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
-import java.util.Locale;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,7 +15,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-class HistogramGraph extends Canvas {
+class LineGraph extends Canvas {
     double layout = 30;
     double maxLayout = 480;
     double lineSize = 5;
@@ -27,7 +26,7 @@ class HistogramGraph extends Canvas {
     GraphicsContext gc;
     ObservableMap<Double, Long> histogram = FXCollections.observableHashMap();
 
-    public HistogramGraph() {
+    public LineGraph() {
         super(550, 550);
         this.gc = this.getGraphicsContext2D();
         drawGraph();
@@ -38,6 +37,7 @@ class HistogramGraph extends Canvas {
         this.histogram.putAll(histogram);
     }
 
+    int radius = 5;
     public void drawGraph() {
 
         gc.clearRect(0, 0, 550, 550);
@@ -58,15 +58,35 @@ class HistogramGraph extends Canvas {
         double j2 = (maxLayout - layout) / ybins;
         gc.setLineWidth(5);
         gc.setFill(Color.GREEN);
-        for (Entry<Double, Long> entry : entrySet) {
+        gc.setLineWidth(0.5);
+        for (int k = 0; k < entrySet.size(); k++) {
+            Entry<Double, Long> entry = entrySet.get(k);
             Double x = entry.getKey();
             int i = (int) (x / xProportion);
             double x1 = i * j + layout;
             Long y = entry.getValue();
             double y1 = maxLayout - y / yProportion * j2;
             // gc.strokeLine(x1, maxLayout, x1, y1)
-            gc.fillRect(x1, y1, 20, maxLayout - y1);
-            System.out.printf(Locale.ENGLISH, "x,y=(%.1f,%d)%n", x, y);
+            gc.fillOval(x1 - radius / 2, y1 - radius / 2, radius, radius);
+        }
+        for (int k = 0; k < entrySet.size(); k++) {
+            Entry<Double, Long> entry = entrySet.get(k);
+            Double x = entry.getKey();
+            int i = (int) (x / xProportion);
+            double x1 = i * j + layout;
+            Long y = entry.getValue();
+            double y1 = maxLayout - y / yProportion * j2;
+            // gc.strokeLine(x1, maxLayout, x1, y1)
+            if (k < entrySet.size() - 1) {
+                Entry<Double, Long> entry2 = entrySet.get(k + 1);
+                Double x2 = entry2.getKey();
+                int i2 = (int) (x2 / xProportion);
+                double x12 = i2 * j + layout;
+                Long y2 = entry2.getValue();
+                double y12 = maxLayout - y2 / yProportion * j2;
+                gc.strokeLine(x1, y1, x12, y12);
+
+            }
         }
         drawAxis();
 
@@ -90,7 +110,7 @@ class HistogramGraph extends Canvas {
 
         }
         j = (maxLayout - layout) / ybins;
-        for (int i = 1; i <= ybins; i++) {
+        for (int i = 0; i <= ybins; i++) {
             double y1 = maxLayout - i * j;
             gc.strokeLine(layout, y1, layout - lineSize, y1);
             String yLabel = String.format("%.0f", i * yProportion);
