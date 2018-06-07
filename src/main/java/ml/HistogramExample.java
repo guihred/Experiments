@@ -27,7 +27,8 @@ public class HistogramExample extends Application {
         x.crossFeature("rooms_per_person", d -> d[0] / d[1], "total_rooms", "population");
         Map<Double, Long> histogram = x.histogram("rooms_per_person", 20);
         Map<String, Long> collect = histogram.entrySet().stream()
-                .collect(Collectors.toMap(t -> String.format("%.0f Rooms", t.getKey()), Entry<Double, Long>::getValue,
+                .collect(Collectors.toMap(t -> t.getKey() >= 6 ? "Others" : String.format("%.0f Rooms", t.getKey()),
+                        Entry<Double, Long>::getValue,
                         (a, b) -> a + b));
 
 		root.getChildren().add(canvas);

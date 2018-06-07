@@ -74,7 +74,8 @@ class PieGraph extends Canvas {
         for (int i = 0; i < collect.size(); i++) {
             Entry<String, Long> entry = collect.get(i);
             double arcExtent = entry.getValue() * 360d / sum;
-            double x = Math.sin(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius / 1.5 + centerX + radius / 2;
+            double x = Math.sin(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius / 1.5 + centerX + radius / 2
+                    - 4 * entry.getKey().length();
             double y = Math.cos(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius / 1.5 + centerY + radius / 2;
             gc.strokeText(entry.getKey(), x, y);
 
@@ -88,7 +89,7 @@ class PieGraph extends Canvas {
         double x = gc.getCanvas().getWidth() / 10;
         double y = gc.getCanvas().getHeight() * 7 / 8;
         int columns = (int) Math.sqrt(collect.size()) + 1;
-        int maxLetter = collect.stream().map(Entry<String, Long>::getKey).mapToInt(e -> e.length()).max().orElse(0);
+        int maxLetter = collect.stream().map(Entry<String, Long>::getKey).mapToInt(String::length).max().orElse(0);
         double a = gc.getCanvas().getWidth() / columns / 4 + maxLetter * 4;
         double b = gc.getCanvas().getHeight() / columns / 8;
         for (int i = 0; i < collect.size(); i++) {
