@@ -1,7 +1,6 @@
 package ml;
 
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import javafx.application.Application;
 import javafx.beans.property.Property;
@@ -25,13 +24,13 @@ public class HistogramExample extends Application {
 		theStage.setScene(theScene);
 
         // PieGraph canvas = new PieGraph();
-        PointGraph canvas = new PointGraph();
-        // HistogramGraph canvas = new HistogramGraph();
+        // PointGraph canvas = new PointGraph();
+        HistogramGraph canvas = new HistogramGraph();
 
         DataframeML x = new DataframeML("california_housing_train.csv");
-        // x.crossFeature("rooms_per_person", d -> d[0] / d[1], "total_rooms",
-        // "population");
-        List<Entry<Number, Number>> points = x.createNumberEntries("longitude", "latitude");
+        x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
+//        List<Entry<Number, Number>> points = x.createNumberEntries("longitude", "latitude");
+        Map<Double, Long> histogram = x.histogram("population", 55);
         // Map<String, Long> collect = histogram.entrySet().stream()
         // .collect(Collectors.toMap(t -> t.getKey() >= 6 ? "Others" :
         // String.format("%.0f Rooms", t.getKey()),
@@ -39,8 +38,10 @@ public class HistogramExample extends Application {
         // (a, b) -> a + b));
 
 		root.getChildren().add(canvas);
-        canvas.setPoints(points);
-        root.getChildren().add(newSlider("Radius", 1, 5, canvas.radius));
+//        canvas.setHistogram(collect);
+        canvas.setHistogram(histogram);
+        // canvas.setPoints(points);
+        // root.getChildren().add(newSlider("Radius", 1, 375, canvas.radius));
         root.getChildren().add(newSlider("Line", 1, 10, canvas.lineSize));
         root.getChildren().add(newSlider("Padding", 10, 50, canvas.layout));
         root.getChildren().add(newSlider("X Bins", 10, 30, canvas.bins));
