@@ -28,7 +28,7 @@ class PieGraph extends Canvas {
 
     public PieGraph() {
         super(550, 550);
-        this.gc = this.getGraphicsContext2D();
+        gc = getGraphicsContext2D();
         drawGraph();
         radius.set((int) (gc.getCanvas().getWidth() / 2));
         radius.addListener(e -> drawGraph());
@@ -36,7 +36,7 @@ class PieGraph extends Canvas {
 
     public void setHistogram(Map<String, Long> histogram) {
         this.histogram.putAll(histogram);
-        availableColors = extracted();
+		availableColors = generateColors(histogram.size());
         drawGraph();
     }
 
@@ -76,9 +76,10 @@ class PieGraph extends Canvas {
         drawLegend(collect, availableColors);
     }
 
-    private List<Color> extracted() {
+	public static List<Color> generateColors(int size) {
         List<Color> availableColors = new ArrayList<>();
-        int cubicRoot = Integer.max((int) Math.ceil(Math.pow(histogram.size(), 1.0 / 3.0)), 2);
+		;
+		int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
         for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
             Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
                     Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,

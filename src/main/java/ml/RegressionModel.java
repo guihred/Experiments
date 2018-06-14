@@ -25,7 +25,6 @@ class RegressionModel {
 
     double bestSlope;
     double bestInitial;
-    @SuppressWarnings("unchecked")
 	public ObservableList<Series<Number, Number>> getExpectedSeries() {
         Series<Number, Number> series = new Series<>();
         c = 0;
@@ -114,9 +113,8 @@ class RegressionModel {
                     * learningRate;
             bestSlope -= adjust;
             c = 0;
-			double loss = target.stream().mapToDouble(e -> e).map(e -> -e + bestInitial + bestSlope * features.get(c++))
+			target.stream().mapToDouble(e -> e).map(e -> -e + bestInitial + bestSlope * features.get(c++))
 					.map(e -> Math.abs(e)).sum();
-            // slopeList.add(toData(bestSlope, loss));
         }
 		for (int i = 0; i < 5000; i++) {
 

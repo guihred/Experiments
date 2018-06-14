@@ -30,7 +30,8 @@ public class DataframeML implements HasLogging {
     Map<String, List<Object>> dataframe = new LinkedHashMap<>();
     Map<String, Class<?>> formatMap = new LinkedHashMap<>();
     int size;
-    List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class, Double.class);
+	private static final List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class,
+			Double.class);
     private Map<String, DataframeStatisticAccumulator> stats;
 	// public static void main(String[] args) {
 	// DataframeML x = new DataframeML("california_housing_train.csv");
