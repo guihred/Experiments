@@ -112,9 +112,9 @@ class HistogramGraph extends Canvas {
                 double y1 = maxLayout1 - y / yProportion * j2;
                 // gc.strokeLine(x1, maxLayout, x1, y1)
                 gc.fillRect(x1, y1, 20, maxLayout1 - y1);
-                // System.out.printf(Locale.ENGLISH, "x,y=(%.1f,%d)%n", x, y);
+                // System.out.printf(Locale.ENGLISH, "x,y=(%.1f,%d)%n", x, y)
             }
-            // System.out.println(histogram);
+            // System.out.println(histogram)
         });
         drawAxis();
 

@@ -1,18 +1,18 @@
 package ml;
 
-import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -25,17 +25,23 @@ public class PointGraph extends Canvas {
     IntegerProperty ybins = new SimpleIntegerProperty(20);
     double xProportion;
     double yProportion;
-    GraphicsContext gc;
-    ObservableList<Entry<? extends Number, ? extends Number>> points = FXCollections.observableArrayList();
+    final StringProperty xHeader = new SimpleStringProperty();
+    final StringProperty yHeader = new SimpleStringProperty();
 
-    DoubleProperty radius = new SimpleDoubleProperty(1);;
+    GraphicsContext gc;
+    ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
+
+    DoubleProperty radius = new SimpleDoubleProperty(1);
+    private DataframeML data;
 
     public PointGraph() {
         super(550, 550);
         this.gc = this.getGraphicsContext2D();
         drawGraph();
         InvalidationListener listener = observable -> drawGraph();
-        points.addListener(listener);
+        stats.addListener(listener);
+        xHeader.addListener(listener);
+        yHeader.addListener(listener);
         lineSize.addListener(listener);
         bins.addListener(listener);
         ybins.addListener(listener);
@@ -68,57 +74,54 @@ public class PointGraph extends Canvas {
     }
 
     public void drawGraph() {
-        if (points.isEmpty()) {
+        DoubleSummaryStatistics xStats = stats.get(xHeader.get());
+        DoubleSummaryStatistics yStats = stats.get(yHeader.get());
+        if (xStats == null || yStats == null) {
             return;
         }
         gc.clearRect(0, 0, 550, 550);
-        DoubleSummaryStatistics xStats = points.stream().map(Entry<? extends Number, ? extends Number>::getKey)
-                .mapToDouble(Number::doubleValue)
-                .summaryStatistics();
-        DoubleSummaryStatistics yStats = points.stream().map(Entry<? extends Number, ? extends Number>::getValue)
-                .mapToDouble(Number::doubleValue)
-                .summaryStatistics();
         double max = xStats.getMax();
         double min = xStats.getMin();
         xProportion = (max - min) / bins.intValue();
         double max2 = yStats.getMax() + 0.1;
         double min2 = yStats.getMin() - 0.1;
         yProportion = (max2 - min2) / ybins.intValue();
-        xProportion = Double.max(xProportion, yProportion);
-        yProportion = Double.max(xProportion, yProportion);
 
-        List<Entry<? extends Number, ? extends Number>> entrySet = points.stream()
-                .sorted(Comparator.comparing((Entry<? extends Number, ? extends Number> e) -> e.getKey().doubleValue()))
-                .collect(Collectors.toList());
+        List<Object> entrySetX = data.list(xHeader.get());
+        List<Object> entrySetY = data.list(yHeader.get());
         double j = (maxLayout - layout.doubleValue()) / bins.intValue();
         double j2 = (maxLayout - layout.doubleValue()) / ybins.intValue();
         gc.setLineWidth(5);
         gc.setFill(Color.GREEN);
         gc.setLineWidth(0.5);
-        for (int k = 0; k < entrySet.size(); k++) {
-            Entry<? extends Number, ? extends Number> entry = entrySet.get(k);
-            double x = entry.getKey().doubleValue();
+        for (int k = 0; k < data.size; k++) {
+            double x = ((Number) entrySetX.get(k)).doubleValue();
             double x1 = (x - xStats.getMin()) / xProportion * j + layout.doubleValue();
-            double y = entry.getValue().doubleValue();
+            double y = ((Number) entrySetY.get(k)).doubleValue();
             double y1 = maxLayout - (y - yStats.getMin()) / yProportion * j2;
             // gc.strokeLine(x1, maxLayout, x1, y1)
-            System.out.println(entry);
             gc.fillOval(x1 - radius.doubleValue() / 2, y1 - radius.doubleValue() / 2, radius.doubleValue(),
                     radius.doubleValue());
         }
         drawAxis(xStats, yStats);
-
-        System.out.println(points);
-
-
-    }
-    public void setPoints(List<Entry<Number, Number>> points2) {
-        this.points.addAll(points2);
     }
 
-    public void setPoints2(List<Entry<? extends Number, ? extends Number>> points) {
-        this.points.addAll(points);
-    }
 
+    public void setDatagram(DataframeML x) {
+        this.data = x;
+        data.dataframe.forEach((col, items) -> {
+            DoubleSummaryStatistics summaryStatistics = items.stream().map(Number.class::cast)
+                    .mapToDouble(Number::doubleValue).summaryStatistics();
+            stats.put(col, summaryStatistics);
+        });
+        Iterator<String> iterator = data.dataframe.keySet().iterator();
+        if (iterator.hasNext()) {
+            xHeader.set(iterator.next());
+        }
+        if (iterator.hasNext()) {
+            yHeader.set(iterator.next());
+        }
+
+    }
 
 }
