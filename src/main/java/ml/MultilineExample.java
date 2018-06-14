@@ -1,7 +1,6 @@
 package ml;
 
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
@@ -20,7 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import simplebuilder.SimpleSliderBuilder;
 
-public class HistogramExample extends Application {
+public class MultilineExample extends Application {
 
 
     @Override
@@ -33,11 +32,11 @@ public class HistogramExample extends Application {
 
         // PieGraph canvas = new PieGraph();
         // PointGraph canvas = new PointGraph();
+		// HistogramGraph canvas = new HistogramGraph();
+		MultiLineGraph canvas = new MultiLineGraph();
+
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
-        HistogramGraph canvas = new HistogramGraph();
-        // MultiLineGraph canvas = new MultiLineGraph();
-
 //        List<Entry<Number, Number>> points = x.createNumberEntries("longitude", "latitude");
 		// Map<Double, Long> histogram = x.histogram("population", 55);
         // Map<String, Long> collect = histogram.entrySet().stream()
@@ -48,7 +47,7 @@ public class HistogramExample extends Application {
 
 //        canvas.setHistogram(collect);
         // canvas.setPoints(points);
-        // root.getChildren().add(newSlider("Radius", 1, 375, canvas.radius));
+		root.getChildren().add(newSlider("Radius", 1, 375, canvas.radius));
 		root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSize));
 		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layout));
 		root.getChildren().add(newSlider("X Bins", 1, 30, canvas.bins));
@@ -56,8 +55,7 @@ public class HistogramExample extends Application {
 
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
         canvas.stats.addListener((InvalidationListener) o -> {
-            Set<Entry<String, Color>> entrySet = canvas.colors.entrySet();
-            itens.setAll(entrySet);
+            itens.setAll(canvas.colors.entrySet());
         });
         canvas.setHistogram(x);
         ListView<Entry<String, Color>> e = new ListView<>(itens);

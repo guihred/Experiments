@@ -2,8 +2,8 @@ package ml;
 
 import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,89 +31,119 @@ class HistogramGraph extends Canvas {
     double xProportion;
     double yProportion;
     GraphicsContext gc;
-    ObservableMap<Double, Long> histogram = FXCollections.observableHashMap();
+    private DataframeML dataframe;
+    final ObservableMap<String, LongSummaryStatistics> stats = FXCollections.observableHashMap();
+    final ObservableMap<String, DoubleSummaryStatistics> xstats = FXCollections.observableHashMap();
+    final ObservableMap<String, Color> colors = FXCollections.observableHashMap();
 
     public HistogramGraph() {
         super(550, 550);
         this.gc = this.getGraphicsContext2D();
         drawGraph();
-        histogram.addListener((InvalidationListener) observable -> drawGraph());
-        maxLayout.addListener((InvalidationListener) observable -> drawGraph());
-        lineSize.addListener((InvalidationListener) observable -> drawGraph());
-        bins.addListener((InvalidationListener) observable -> drawGraph());
-        ybins.addListener((InvalidationListener) observable -> drawGraph());
-        layout.addListener((InvalidationListener) observable -> drawGraph());
+        InvalidationListener listener = observable -> drawGraph();
+        stats.addListener(listener);
+        colors.addListener(listener);
+        maxLayout.addListener(listener);
+        lineSize.addListener(listener);
+        bins.addListener(listener);
+        ybins.addListener(listener);
+        layout.addListener(listener);
     }
 
-    public void setHistogram(Map<Double, Long> histogram) {
-        this.histogram.putAll(histogram);
+    public void setHistogram(DataframeML dataframe) {
+        this.dataframe = dataframe;
+
+        dataframe.dataframe.forEach((col, items) -> {
+            List<Color> generateColors = PieGraph.generateColors(stats.size());
+            Iterator<Color> iterator = generateColors.iterator();
+            colors.put(col, iterator.next());
+            Map<Double, Long> histogram = dataframe.histogram(col, bins.get());
+
+            stats.put(col, histogram.values().stream().mapToLong(e -> e).summaryStatistics());
+            xstats.put(col, histogram.keySet().stream().mapToDouble(Number::doubleValue).summaryStatistics());
+            stats.forEach((col2, itens) -> {
+                if (iterator.hasNext()) {
+                    colors.put(col2, iterator.next());
+                }
+            });
+        });
+
     }
 
     public void drawGraph() {
+        if (dataframe == null) {
+            drawAxis();
+            return;
 
-        gc.clearRect(0, 0, 550, 550);
-        DoubleSummaryStatistics xStats = histogram.entrySet().stream().mapToDouble(Entry<Double, Long>::getKey)
-                .summaryStatistics();
-        LongSummaryStatistics yStats = histogram.entrySet().stream().mapToLong(Entry<Double, Long>::getValue)
-                .summaryStatistics();
-        double max = xStats.getMax();
-        double min = xStats.getMin();
-        double bins = this.bins.get();
-        xProportion = (max - min) / bins;
-        long max2 = yStats.getMax();
-        // long min2 = yStats.getMin()
-        // ybins.set(Long.min(max2, 10));
-        yProportion = max2 / (double) ybins.get();
-        List<Entry<Double, Long>> entrySet = histogram.entrySet().stream()
-                .sorted(Comparator.comparing(Entry<Double, Long>::getKey)).collect(Collectors.toList());
-        double maxLayout = this.maxLayout.get();
-        double layout = this.layout.get();
-
-        double j = (maxLayout - layout) / bins;
-        double j2 = (maxLayout - layout) / ybins.get();
-        gc.setLineWidth(5);
-        gc.setFill(Color.GREEN);
-        for (Entry<Double, Long> entry : entrySet) {
-            Double x = entry.getKey();
-            int i = (int) (x / xProportion);
-            double x1 = i * j + layout;
-            Long y = entry.getValue();
-            double y1 = maxLayout - y / yProportion * j2;
-            // gc.strokeLine(x1, maxLayout, x1, y1)
-            gc.fillRect(x1, y1, 20, maxLayout - y1);
-            System.out.printf(Locale.ENGLISH, "x,y=(%.1f,%d)%n", x, y);
         }
+        gc.clearRect(0, 0, 550, 550);
+        List<Entry<String, LongSummaryStatistics>> collect = stats.entrySet().stream()
+                .filter(e -> colors.containsKey(e.getKey())).collect(Collectors.toList());
+        List<Entry<String, DoubleSummaryStatistics>> collect2 = xstats.entrySet().stream()
+                .filter(e -> colors.containsKey(e.getKey())).collect(Collectors.toList());
+
+        long max = collect.stream().map(e -> e.getValue()).mapToLong(e -> e.getMax()).max().orElse(0);
+        double min = collect.stream().map(e -> e.getValue()).mapToLong(e -> e.getMin()).min().orElse(0);
+        yProportion = (max - min) / this.ybins.get();
+        double xmax = collect2.stream().map(e -> e.getValue()).mapToDouble(e -> e.getMax()).max().orElse(0);
+        double xmin = collect2.stream().map(e -> e.getValue()).mapToDouble(e -> e.getMin()).min().orElse(0);
+        double xbins = this.bins.get();
+        xProportion = (xmax - xmin) / xbins;
+
+        collect.forEach(entryS -> {
+
+            String key = entryS.getKey();
+            Map<Double, Long> histogram = dataframe.histogram(key, bins.get());
+
+            List<Entry<Double, Long>> entrySet = histogram.entrySet().stream()
+                    .sorted(Comparator.comparing(Entry<Double, Long>::getKey)).collect(Collectors.toList());
+            double maxLayout1 = this.maxLayout.get();
+            double layout1 = this.layout.get();
+
+            double j = (maxLayout1 - layout1) / bins.get();
+            double j2 = (maxLayout1 - layout1) / this.ybins.get();
+            gc.setLineWidth(5);
+            gc.setFill(colors.get(key));
+            for (Entry<Double, Long> entry : entrySet) {
+                Double x = entry.getKey();
+                int i = (int) (x / xProportion);
+                double x1 = i * j + layout1;
+                Long y = entry.getValue();
+                double y1 = maxLayout1 - y / yProportion * j2;
+                // gc.strokeLine(x1, maxLayout, x1, y1)
+                gc.fillRect(x1, y1, 20, maxLayout1 - y1);
+                // System.out.printf(Locale.ENGLISH, "x,y=(%.1f,%d)%n", x, y);
+            }
+            // System.out.println(histogram);
+        });
         drawAxis();
-
-        System.out.println(histogram);
-
 
     }
 
     public void drawAxis() {
-        double layout = this.layout.get();
+        double layout1 = this.layout.get();
 
-        double bins = this.bins.get();
+        double xbins = this.bins.get();
         gc.setFill(Color.BLACK);
         gc.setLineWidth(1);
-        double maxLayout = this.maxLayout.get();
-        double lineSize = this.lineSize.get();
-        gc.strokeLine(layout, layout, layout, maxLayout);
-        gc.strokeLine(layout, maxLayout, maxLayout, maxLayout);
-        double j = (maxLayout - layout) / bins;
-        for (int i = 1; i <= bins; i++) {
-            double x1 = i * j + layout;
-            gc.strokeLine(x1, maxLayout, x1, maxLayout + lineSize);
+        double maxLayout1 = this.maxLayout.get();
+        double lineSize1 = this.lineSize.get();
+        gc.strokeLine(layout1, layout1, layout1, maxLayout1);
+        gc.strokeLine(layout1, maxLayout1, maxLayout1, maxLayout1);
+        double j = (maxLayout1 - layout1) / xbins;
+        for (int i = 1; i <= xbins; i++) {
+            double x1 = i * j + layout1;
+            gc.strokeLine(x1, maxLayout1, x1, maxLayout1 + lineSize1);
             String xLabel = String.format("%.1f", i * xProportion);
-            gc.strokeText(xLabel, x1 - lineSize * xLabel.length() / 2, maxLayout + lineSize * (4 + 3 * (i % 2)));
+            gc.strokeText(xLabel, x1 - lineSize1 * xLabel.length() / 2, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
 
         }
-        j = (maxLayout - layout) / ybins.get();
+        j = (maxLayout1 - layout1) / ybins.get();
         for (int i = 1; i <= ybins.get(); i++) {
-            double y1 = maxLayout - i * j;
-            gc.strokeLine(layout, y1, layout - lineSize, y1);
+            double y1 = maxLayout1 - i * j;
+            gc.strokeLine(layout1, y1, layout1 - lineSize1, y1);
             String yLabel = String.format("%.0f", i * yProportion);
-            gc.strokeText(yLabel, layout - lineSize * 4, y1);
+            gc.strokeText(yLabel, layout1 - lineSize1 * 4, y1);
         }
     }
 
