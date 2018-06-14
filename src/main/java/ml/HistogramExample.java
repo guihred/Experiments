@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -59,21 +58,8 @@ public class HistogramExample extends Application {
             itens.setAll(canvas.colors.entrySet());
         });
         canvas.setHistogram(x);
-
         ListView<Entry<String, Color>> e = new ListView<>(itens);
-        Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = c -> {
-            SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(
-                    canvas.colors.containsKey(c.getKey()));
-            simpleBooleanProperty.addListener((obs, old, newVal) -> {
-                if (newVal) {
-                    canvas.colors.put(c.getKey(), c.getValue());
-                } else {
-                    canvas.colors.remove(c.getKey());
-                }
-            });
-            return simpleBooleanProperty;
-        };
-
+        Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(canvas.colors);
         e.setCellFactory(list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colors)));
 
         root.getChildren().add(e);
