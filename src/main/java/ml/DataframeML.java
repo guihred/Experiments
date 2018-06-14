@@ -52,6 +52,11 @@ public class DataframeML implements HasLogging {
         System.out.println(x);
     }
 
+    public DoubleSummaryStatistics summary(String header) {
+        DoubleSummaryStatistics summaryStatistics = list(header).stream().map(Number.class::cast)
+                .mapToDouble(Number::doubleValue).summaryStatistics();
+        return summaryStatistics;
+    }
     public DataframeML() {
     }
 
@@ -93,10 +98,13 @@ public class DataframeML implements HasLogging {
         formatMap.put(header, Double.class);
     }
 
-    public void crossFeature(String header, ToDoubleFunction<double[]> mapper, String... dependent) {
-        dataframe.put(header, IntStream.range(0, size).mapToObj(i -> toDoubleArray(i, dependent)).mapToDouble(mapper)
-                .boxed().collect(Collectors.toList()));
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public List<Double> crossFeature(String header, ToDoubleFunction<double[]> mapper, String... dependent) {
+        List<Double> collect = IntStream.range(0, size).mapToObj(i -> toDoubleArray(i, dependent)).mapToDouble(mapper)
+                .boxed().collect(Collectors.toList());
+        dataframe.put(header, (List) collect);
         formatMap.put(header, Double.class);
+        return collect;
     }
 
     private double[] toDoubleArray(int i, String... dependent) {
