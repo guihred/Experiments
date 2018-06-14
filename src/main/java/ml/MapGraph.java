@@ -3,7 +3,6 @@ package ml;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javafx.application.Application;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
@@ -15,7 +14,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class MapGraph extends Application {
-
 
     @Override
 	public void start(Stage stage) {

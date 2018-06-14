@@ -47,20 +47,21 @@ public class MultilineExample extends Application {
 
 //        canvas.setHistogram(collect);
         // canvas.setPoints(points);
-		root.getChildren().add(newSlider("Radius", 1, 375, canvas.radius));
-		root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSize));
-		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layout));
-		root.getChildren().add(newSlider("X Bins", 1, 30, canvas.bins));
-		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybins));
+		root.getChildren().add(newSlider("Radius", 1, 375, canvas.radiusProperty()));
+		root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSizeProperty()));
+		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
+		root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
+		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
 
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
-        canvas.stats.addListener((InvalidationListener) o -> {
-            itens.setAll(canvas.colors.entrySet());
+		canvas.statsProperty().addListener((InvalidationListener) o -> {
+			itens.setAll(canvas.colorsProperty().entrySet());
         });
         canvas.setHistogram(x);
         ListView<Entry<String, Color>> e = new ListView<>(itens);
-        Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(canvas.colors);
-        e.setCellFactory(list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colors)));
+		Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(
+				canvas.colorsProperty());
+		e.setCellFactory(list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
 
         root.getChildren().add(e);
         root.getChildren().add(canvas);

@@ -1,16 +1,15 @@
 package ml;
 
 import java.util.Map.Entry;
-
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
 import javafx.util.Callback;
 
-final class MapCallback<T, E> implements Callback<Entry<T, E>, ObservableValue<Boolean>> {
+public final class MapCallback<T, E> implements Callback<Entry<T, E>, ObservableValue<Boolean>> {
     private final ObservableMap<T, E> mapValues;
 
-    MapCallback(ObservableMap<T, E> colors) {
+	public MapCallback(ObservableMap<T, E> colors) {
         this.mapValues = colors;
     }
 

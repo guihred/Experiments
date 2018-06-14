@@ -8,7 +8,6 @@ import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -23,22 +22,22 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 class HistogramGraph extends Canvas {
-    DoubleProperty layout = new SimpleDoubleProperty(30);
-    DoubleProperty maxLayout = new SimpleDoubleProperty(480);
-    DoubleProperty lineSize = new SimpleDoubleProperty(5);
-    IntegerProperty bins = new SimpleIntegerProperty(20);
-    LongProperty ybins = new SimpleLongProperty(20);
-    double xProportion;
-    double yProportion;
-    GraphicsContext gc;
+	private DoubleProperty layout = new SimpleDoubleProperty(30);
+	private DoubleProperty maxLayout = new SimpleDoubleProperty(480);
+	private DoubleProperty lineSize = new SimpleDoubleProperty(5);
+	private IntegerProperty bins = new SimpleIntegerProperty(20);
+	private LongProperty ybins = new SimpleLongProperty(20);
+	private double xProportion;
+	private double yProportion;
+	private GraphicsContext gc;
     private DataframeML dataframe;
-    final ObservableMap<String, LongSummaryStatistics> stats = FXCollections.observableHashMap();
-    final ObservableMap<String, DoubleSummaryStatistics> xstats = FXCollections.observableHashMap();
-    final ObservableMap<String, Color> colors = FXCollections.observableHashMap();
+	private final ObservableMap<String, LongSummaryStatistics> stats = FXCollections.observableHashMap();
+	private final ObservableMap<String, DoubleSummaryStatistics> xstats = FXCollections.observableHashMap();
+	private final ObservableMap<String, Color> colors = FXCollections.observableHashMap();
 
     public HistogramGraph() {
         super(550, 550);
-        this.gc = this.getGraphicsContext2D();
+        gc = getGraphicsContext2D();
         drawGraph();
         InvalidationListener listener = observable -> drawGraph();
         stats.addListener(listener);
@@ -53,7 +52,7 @@ class HistogramGraph extends Canvas {
     public void setHistogram(DataframeML dataframe) {
         this.dataframe = dataframe;
 
-        dataframe.dataframe.forEach((col, items) -> {
+		dataframe.forEach((col, items) -> {
             List<Color> generateColors = PieGraph.generateColors(stats.size());
             Iterator<Color> iterator = generateColors.iterator();
             colors.put(col, iterator.next());
@@ -84,10 +83,10 @@ class HistogramGraph extends Canvas {
 
         long max = collect.stream().map(e -> e.getValue()).mapToLong(e -> e.getMax()).max().orElse(0);
         double min = collect.stream().map(e -> e.getValue()).mapToLong(e -> e.getMin()).min().orElse(0);
-        yProportion = (max - min) / this.ybins.get();
+        yProportion = (max - min) / ybins.get();
         double xmax = collect2.stream().map(e -> e.getValue()).mapToDouble(e -> e.getMax()).max().orElse(0);
         double xmin = collect2.stream().map(e -> e.getValue()).mapToDouble(e -> e.getMin()).min().orElse(0);
-        double xbins = this.bins.get();
+        double xbins = bins.get();
         xProportion = (xmax - xmin) / xbins;
 
         collect.forEach(entryS -> {
@@ -97,11 +96,11 @@ class HistogramGraph extends Canvas {
 
             List<Entry<Double, Long>> entrySet = histogram.entrySet().stream()
                     .sorted(Comparator.comparing(Entry<Double, Long>::getKey)).collect(Collectors.toList());
-            double maxLayout1 = this.maxLayout.get();
-            double layout1 = this.layout.get();
+            double maxLayout1 = maxLayout.get();
+            double layout1 = layout.get();
 
             double j = (maxLayout1 - layout1) / bins.get();
-            double j2 = (maxLayout1 - layout1) / this.ybins.get();
+            double j2 = (maxLayout1 - layout1) / ybins.get();
             gc.setLineWidth(5);
             gc.setFill(colors.get(key));
             for (Entry<Double, Long> entry : entrySet) {
@@ -121,13 +120,13 @@ class HistogramGraph extends Canvas {
     }
 
     public void drawAxis() {
-        double layout1 = this.layout.get();
+        double layout1 = layout.get();
 
-        double xbins = this.bins.get();
+        double xbins = bins.get();
         gc.setFill(Color.BLACK);
         gc.setLineWidth(1);
-        double maxLayout1 = this.maxLayout.get();
-        double lineSize1 = this.lineSize.get();
+        double maxLayout1 = maxLayout.get();
+        double lineSize1 = lineSize.get();
         gc.strokeLine(layout1, layout1, layout1, maxLayout1);
         gc.strokeLine(layout1, maxLayout1, maxLayout1, maxLayout1);
         double j = (maxLayout1 - layout1) / xbins;
@@ -146,5 +145,29 @@ class HistogramGraph extends Canvas {
             gc.strokeText(yLabel, layout1 - lineSize1 * 4, y1);
         }
     }
+
+	public ObservableMap<String, Color> colorsProperty() {
+		return colors;
+	}
+
+	public ObservableMap<String, LongSummaryStatistics> statsProperty() {
+		return stats;
+	}
+
+	public DoubleProperty lineSizeProperty() {
+		return lineSize;
+	}
+
+	public DoubleProperty layoutProperty() {
+		return layout;
+	}
+
+	public IntegerProperty binsProperty() {
+		return bins;
+	}
+
+	public LongProperty ybinsProperty() {
+		return ybins;
+	}
 
 }

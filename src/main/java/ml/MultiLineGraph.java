@@ -18,18 +18,18 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 class MultiLineGraph extends Canvas {
-	DoubleProperty layout = new SimpleDoubleProperty(30);
-	double maxLayout = 480;
-	DoubleProperty lineSize = new SimpleDoubleProperty(5);
-	IntegerProperty bins = new SimpleIntegerProperty(20);
-	IntegerProperty ybins = new SimpleIntegerProperty(20);
-	double xProportion;
-	double yProportion;
-	GraphicsContext gc;
+	private DoubleProperty layout = new SimpleDoubleProperty(30);
+	private double maxLayout = 480;
+	private DoubleProperty lineSize = new SimpleDoubleProperty(5);
+	private IntegerProperty bins = new SimpleIntegerProperty(20);
+	private IntegerProperty ybins = new SimpleIntegerProperty(20);
+	private double xProportion;
+	private double yProportion;
+	private GraphicsContext gc;
 	private DataframeML dataframe;
-	ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
-    ObservableMap<String, Color> colors = FXCollections.observableHashMap();
-	IntegerProperty radius = new SimpleIntegerProperty(5);
+	private ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
+	private ObservableMap<String, Color> colors = FXCollections.observableHashMap();
+	private IntegerProperty radius = new SimpleIntegerProperty(5);
 
 
 	public MultiLineGraph() {
@@ -45,11 +45,10 @@ class MultiLineGraph extends Canvas {
 		bins.addListener(listener);
 		ybins.addListener(listener);
 	}
-
 	public void setHistogram(DataframeML dataframe) {
 		this.dataframe = dataframe;
 
-        dataframe.dataframe.forEach((col, items) -> {
+		dataframe.forEach((col, items) -> {
             if (colors == null || colors.size() < stats.size()) {
                 List<Color> generateColors = PieGraph.generateColors(stats.size());
                 Iterator<Color> iterator = generateColors.iterator();
@@ -69,7 +68,7 @@ class MultiLineGraph extends Canvas {
 
 
 		gc.clearRect(0, 0, 550, 550);
-        int max = dataframe.size - 1;
+        int max = dataframe.getSize() - 1;
         double min = 0;
         xProportion = (max - min) / bins.get();
 
@@ -149,4 +148,71 @@ class MultiLineGraph extends Canvas {
 		}
 	}
 
+	public final DoubleProperty layoutProperty() {
+		return layout;
+	}
+
+	public final double getLayout() {
+		return layoutProperty().get();
+	}
+
+	public final void setLayout(final double layout) {
+		layoutProperty().set(layout);
+	}
+
+	public final DoubleProperty lineSizeProperty() {
+		return lineSize;
+	}
+
+	public final double getLineSize() {
+		return lineSizeProperty().get();
+	}
+
+	public final void setLineSize(final double lineSize) {
+		lineSizeProperty().set(lineSize);
+	}
+
+	public final IntegerProperty binsProperty() {
+		return bins;
+	}
+
+	public final int getBins() {
+		return binsProperty().get();
+	}
+
+	public final void setBins(final int bins) {
+		binsProperty().set(bins);
+	}
+
+	public final IntegerProperty ybinsProperty() {
+		return ybins;
+	}
+
+	public final int getYbins() {
+		return ybinsProperty().get();
+	}
+
+	public final void setYbins(final int ybins) {
+		ybinsProperty().set(ybins);
+	}
+
+	public final IntegerProperty radiusProperty() {
+		return radius;
+	}
+
+	public final int getRadius() {
+		return radiusProperty().get();
+	}
+
+	public final void setRadius(final int radius) {
+		radiusProperty().set(radius);
+	}
+
+	public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
+		return stats;
+	}
+
+	public ObservableMap<String, Color> colorsProperty() {
+		return colors;
+	}
 }
