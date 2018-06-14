@@ -3,6 +3,7 @@ package ml;
 import java.util.DoubleSummaryStatistics;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javafx.beans.InvalidationListener;
@@ -27,8 +28,9 @@ class MultiLineGraph extends Canvas {
 	GraphicsContext gc;
 	private DataframeML dataframe;
 	ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
+    ObservableMap<String, Color> colors = FXCollections.observableHashMap();
 	IntegerProperty radius = new SimpleIntegerProperty(5);
-	private List<Color> colors;
+
 
 	public MultiLineGraph() {
 		super(550, 550);
@@ -37,6 +39,7 @@ class MultiLineGraph extends Canvas {
 		InvalidationListener listener = observable -> drawGraph();
 		stats.addListener(listener);
 		radius.addListener(listener);
+        colors.addListener(listener);
 		lineSize.addListener(listener);
 		layout.addListener(listener);
 		bins.addListener(listener);
@@ -46,10 +49,14 @@ class MultiLineGraph extends Canvas {
 	public void setHistogram(DataframeML dataframe) {
 		this.dataframe = dataframe;
 
-		dataframe.dataframe.forEach((col, items) -> {
-			stats.put(col,
-					items.stream().map(Number.class::cast).mapToDouble(e -> e.doubleValue()).summaryStatistics());
-		});
+        dataframe.dataframe.forEach((col, items) -> {
+            if (colors == null || colors.size() < stats.size()) {
+                List<Color> generateColors = PieGraph.generateColors(stats.size());
+                Iterator<Color> iterator = generateColors.iterator();
+                stats.forEach((col2, itens) -> colors.put(col2, iterator.next()));
+            }
+            stats.put(col, items.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).summaryStatistics());
+        });
 
 	}
 
@@ -59,59 +66,52 @@ class MultiLineGraph extends Canvas {
 			return;
 
 		}
-		if (colors == null || colors.size() < stats.size()) {
-			colors = PieGraph.generateColors(stats.size());
-		}
 
-		Iterator<Color> iterator = colors.iterator();
 
 		gc.clearRect(0, 0, 550, 550);
-		stats.forEach((col, yStats) -> {
+        int max = dataframe.size - 1;
+        double min = 0;
+        xProportion = (max - min) / bins.get();
 
-			// DoubleSummaryStatistics xStats =
-			// histogram.entrySet().stream().mapToDouble(Entry<Double, Long>::getKey)
-			// .summaryStatistics();
-			double max = dataframe.size - 1;// xStats.getMax();
-			double min = 0;
-			xProportion = (max - min) / bins.get();
-			double max2 = yStats.getMax();
-			// long min2 = yStats.getMin()
-			// ybins = 10;
-			yProportion = max2 / ybins.get();
+        double max2 = stats.entrySet().stream().filter(e -> colors.containsKey(e.getKey()))
+                .map(Entry<String, DoubleSummaryStatistics>::getValue)
+
+                .mapToDouble(DoubleSummaryStatistics::getMax).max().orElse(0);
+        yProportion = max2 / ybins.get();
+
+		stats.forEach((col, yStats) -> {
+            Color p = colors.get(col);
+            if (p == null) {
+                return;
+            }
 			List<Double> entrySet = dataframe.list(col).stream().map(Number.class::cast)
-					.mapToDouble(e -> e.doubleValue()).sorted().boxed().collect(Collectors.toList());
+                    .mapToDouble(Number::doubleValue).sorted().boxed().collect(Collectors.toList());
 			double d = layout.get();
 			double j = (maxLayout - d) / bins.doubleValue();
 			double j2 = (maxLayout - d) / ybins.get();
-			if (iterator.hasNext()) {
-				gc.setFill(iterator.next());
-			}
+            gc.setFill(p);
+            gc.setStroke(p);
 			gc.setLineWidth(0.5);
 			for (int k = 0; k < entrySet.size(); k++) {
-				// Double x = entry.getKey();
-				// Entry<Double, Long> entry = entrySet.get(k);
 				double i = k / xProportion;
 				double x1 = i * j + d;
 				Double y = entrySet.get(k);
 				double y1 = maxLayout - y / yProportion * j2;
 				// gc.strokeLine(x1, maxLayout, x1, y1)
-				int h = radius.get();
+                double h = radius.get();
 				gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
 			}
 			for (int k = 0; k < entrySet.size(); k++) {
-				// Entry<Double, Long> entry = entrySet.get(k);
 				double x = k;
 				double i = x / xProportion;
 				double x1 = i * j + d;
 				double y = entrySet.get(k);
 				double y1 = maxLayout - y / yProportion * j2;
-				// gc.strokeLine(x1, maxLayout, x1, y1)
 				if (k < entrySet.size() - 1) {
-					Double entry2 = entrySet.get(k + 1);
-					double x2 = k + 1;
+					double x2 = 1D + k;
 					double i2 = x2 / xProportion;
 					double x12 = i2 * j + d;
-					double y2 = entry2;
+					double y2 = entrySet.get(k + 1);
 					double y12 = maxLayout - y2 / yProportion * j2;
 					gc.strokeLine(x1, y1, x12, y12);
 
@@ -125,6 +125,7 @@ class MultiLineGraph extends Canvas {
 	public void drawAxis() {
 
 		gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
 		gc.setLineWidth(1);
 		double e = layout.get();
 		gc.strokeLine(e, e, e, maxLayout);
