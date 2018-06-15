@@ -1,7 +1,6 @@
 package ml;
 
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javafx.application.Application;
@@ -34,14 +33,13 @@ public class WorldMapExample extends Application {
         // root.getChildren().add(newSlider("Padding", 10, 100, canvas.layout));
         // root.getChildren().add(newSlider("X Bins", 1, 30, canvas.bins));
         // root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybins));
-        DataframeML x = new DataframeML("POPULACAO.csv");
+        DataframeML x = new DataframeML("globalGDP.csv");
         // x.describe();
         x.logln(x);
-        x.filterString("Flag Codes", "B"::equalsIgnoreCase);
-        x.filterString("SUBJECT", "YP99TLL1_ST"::equalsIgnoreCase);
-        x.filterString("SEX", "TT"::equalsIgnoreCase);
-        Set<Object> collect = x.list("Country").stream().collect(Collectors.toSet());
-        System.out.println(collect);
+        System.out.println(x.list("Country").stream().sorted().collect(Collectors.toSet()));
+        x.filterString("TRANSACT", "B1_GA"::equalsIgnoreCase);
+        x.filterString("Unit Code", "USD"::equalsIgnoreCase);
+        System.out.println(x.list("Country").stream().sorted().collect(Collectors.toSet()));
 
         x.logln(x);
 
