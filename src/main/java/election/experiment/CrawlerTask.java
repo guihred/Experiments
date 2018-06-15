@@ -51,15 +51,15 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
-    protected String getHTTPPassword() {
+    protected static String getHTTPPassword() {
         return "13-juuSAN";
     }
 
-    protected String getHTTPUsername() {
+    protected static String getHTTPUsername() {
         return "guilherme.hmedeiros";
     }
 
-    protected void insertProxyConfig() {
+    protected static void insertProxyConfig() {
         System.setProperty("http.proxyHost", "10.70.124.16");
         System.setProperty("http.proxyPort", "3128");
         System.setProperty("https.proxyHost", "10.70.124.16");

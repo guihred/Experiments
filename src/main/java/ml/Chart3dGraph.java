@@ -340,7 +340,7 @@ public class Chart3dGraph extends Application {
         DoubleSummaryStatistics lat = dataframeML.summary("latitude");
         DoubleSummaryStatistics lon = dataframeML.summary("longitude");
         DoubleSummaryStatistics pop = dataframeML.summary("population");
-        int total = dataframeML.size;
+        int total = dataframeML.getSize();
         List<Double> xLatitude = dataframeML.crossFeature("x", d -> convert(d[0], size - 1, lat.getMax(), lat.getMin()),
                 "latitude");
         List<Double> yLongitude = dataframeML.crossFeature("y",

@@ -2,9 +2,9 @@ package ml;
 
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,16 +30,27 @@ public class WorldMapExample extends Application {
 
 		WorldMapGraph canvas = new WorldMapGraph();
         // root.getChildren().add(newSlider("Radius", 1, 375, canvas.radius));
-		root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSize));
-		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layout));
-		root.getChildren().add(newSlider("X Bins", 1, 30, canvas.bins));
-		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybins));
+        // root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSize));
+        // root.getChildren().add(newSlider("Padding", 10, 100, canvas.layout));
+        // root.getChildren().add(newSlider("X Bins", 1, 30, canvas.bins));
+        // root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybins));
+        DataframeML x = new DataframeML("POPULACAO.csv");
+        // x.describe();
+        x.logln(x);
+        x.filterString("Flag Codes", "B"::equalsIgnoreCase);
+        x.filterString("SUBJECT", "YP99TLL1_ST"::equalsIgnoreCase);
+        x.filterString("SEX", "TT"::equalsIgnoreCase);
+        Set<Object> collect = x.list("Country").stream().collect(Collectors.toSet());
+        System.out.println(collect);
 
+        x.logln(x);
+
+        canvas.setDataframe(x);
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
-        canvas.stats.addListener((InvalidationListener) o -> {
-            Set<Entry<String, Color>> entrySet = canvas.colors.entrySet();
-            itens.setAll(entrySet);
-        });
+        // canvas.stats.addListener((InvalidationListener) o -> {
+        // Set<Entry<String, Color>> entrySet = canvas.colors.entrySet();
+        // itens.setAll(entrySet);
+        // });
 		// canvas.setHistogram(x);
         root.getChildren().add(canvas);
 		theStage.show();

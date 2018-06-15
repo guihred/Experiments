@@ -32,13 +32,13 @@ public class DataframeStatisticAccumulator{
         min = Math.min(min, o);
         max = Math.max(max, o);
 
-        if (count == dataframe.size / 4) {
+        if (count == dataframe.getSize() / 4) {
             median25 = o;
         }
-        if (count == dataframe.size / 2) {
+        if (count == dataframe.getSize() / 2) {
             median50 = o;
         }
-        if (count == dataframe.size * 3 / 4) {
+        if (count == dataframe.getSize() * 3 / 4) {
             median75 = o;
         }
     }

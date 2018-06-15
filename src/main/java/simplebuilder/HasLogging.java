@@ -9,4 +9,7 @@ public interface HasLogging {
 		return LoggerFactory.getLogger(getClass());
 	}
 
+    default void logln(Object x) {
+        System.out.println(x);
+    }
 }
