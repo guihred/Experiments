@@ -2,17 +2,8 @@ package ml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.DoubleSummaryStatistics;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.IntConsumer;
@@ -20,7 +11,6 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart.Data;
@@ -29,7 +19,7 @@ import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
 
-    private static final int FRAME_MAX_SIZE = 120000;
+	private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
     private static final List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class,
 			Double.class);
 
@@ -38,7 +28,7 @@ public class DataframeML implements HasLogging {
         DataframeML x = new DataframeML("POPULACAO.csv");
         x.logln(x);
         // x.describe()
-        x.filterString("Flag Codes", "B"::equalsIgnoreCase);
+		// x.filterString("Flag Codes", "B"::equalsIgnoreCase);
         x.logln(x);
         // x.correlation()
     }
@@ -210,6 +200,12 @@ public class DataframeML implements HasLogging {
 
     List<Object> list(String header) {
 		return dataframe.get(header);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	<T> List<T> list(String header, Class<T> c) {
+		List list = dataframe.get(header);
+		return Collections.checkedList(list, c);
 	}
 
     List<Object> row(int i) {
