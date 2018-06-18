@@ -36,8 +36,6 @@ public final class ContestReader {
     private static final String TEXT_PATTERN = "Texto \\d+\\s*";
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
-
-
     enum ReaderState {
         STATE_IGNORE,
         STATE_OPTION,
@@ -78,8 +76,6 @@ public final class ContestReader {
 
     private int option = 0;
 
-    // private Map<String, Map.Entry<Float, Float>> questionPosition = new
-    // HashMap<>();
     private List<QuestionPosition> questionPosition = new ArrayList<>();
     private ReaderState state = STATE_IGNORE;
 
@@ -139,7 +135,8 @@ public final class ContestReader {
 
         if (s.matches(TEXTS_PATTERN)) {
             state = STATE_TEXT;
-            String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
+
+			String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
             IntSummaryStatistics stats = Stream.of(split).mapToInt(this::intValue).summaryStatistics();
             text.setMin(stats.getMin());
             text.setMax(stats.getMax());
@@ -196,9 +193,7 @@ public final class ContestReader {
 
             case STATE_TEXT:
                 if (StringUtils.isNotBlank(s)) {
-                    if (s.matches(TEXT_PATTERN)) {
-                        addNewText();
-                    }
+
                     text.appendText(s + "\n");
                 }
                 break;
