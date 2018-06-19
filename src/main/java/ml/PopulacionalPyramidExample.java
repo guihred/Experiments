@@ -1,9 +1,14 @@
 package ml;
 
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import javafx.application.Application;
 import javafx.beans.property.Property;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
@@ -27,6 +32,8 @@ public class PopulacionalPyramidExample extends Application {
 		x.filterString("SEX", Pattern.compile("MA|FE").asPredicate());
 		x.filterString("Subject", e -> e.matches("Population.+\\d+"));
 		x.map("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"));
+        Set<String> categorize = x.categorize("Country");
+
 		// System.out.println(x);
 		PopulacionalGraph canvas = new PopulacionalGraph();
 		root.getChildren().add(newSlider("Prop", 0.1, 2, canvas.lineSizeProperty()));
@@ -35,11 +42,20 @@ public class PopulacionalPyramidExample extends Application {
         root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
 		canvas.widthProperty().bind(root.widthProperty().add(-20));
 
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.setItems(FXCollections.observableArrayList(categorize.stream().sorted().collect(Collectors.toList())));
+        comboBox.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    canvas.countryProperty().set(newValue);
+
+        });
+        comboBox.getSelectionModel().select(0);
 		canvas.lineSizeProperty().set(canvas.getHeight() / canvas.getWidth());
 		canvas.maxLayoutProperty().set(canvas.getWidth() - canvas.layoutProperty().doubleValue() - 20);
 
 		canvas.setHistogram(x);
 
+        root.getChildren().add(comboBox);
         root.getChildren().add(canvas);
 		theStage.show();
 	}
@@ -49,6 +65,7 @@ public class PopulacionalPyramidExample extends Application {
         build.valueProperty().bindBidirectional(radius);
         return new VBox(new Text(string), build);
     }
+
 
     public static void main(String[] args) {
         launch(args);

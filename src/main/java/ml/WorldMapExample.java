@@ -1,8 +1,5 @@
 package ml;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
@@ -25,18 +22,18 @@ public class WorldMapExample extends Application {
         // root.getChildren().add(newSlider("Padding", 10, 100, canvas.layout));
         // root.getChildren().add(newSlider("X Bins", 1, 30, canvas.bins));
         // root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybins));
-        DataframeML x = new DataframeML("globalGDP.csv");
-        // x.describe();
+        DataframeML x = new DataframeML.DataframeBuilder("globalGDP.csv")
+                .filter("TRANSACT", s -> "B1_GA".equals(s.toString()))
+                .filter("Unit Code", s -> "USD".equals(s.toString())).build();
+//        // x.describe();
+//        x.logln(x);
+//        //        System.out.println(x.list("Country").stream().sorted().collect(Collectors.toSet()));
+//        System.out.println("COUNTRIES NOT FOUND: " + x.list("Country").stream().distinct().map(Objects::toString)
+//                .filter(e -> !Country.hasName(e))
+//                .sorted().collect(Collectors.toSet()));
+//
         x.logln(x);
-        //        System.out.println(x.list("Country").stream().sorted().collect(Collectors.toSet()));
-        x.filterString("TRANSACT", "B1_GA"::equalsIgnoreCase);
-        x.filterString("Unit Code", "USD"::equalsIgnoreCase);
-        System.out.println("COUNTRIES NOT FOUND: " + x.list("Country").stream().distinct().map(Objects::toString)
-                .filter(e -> !Country.hasName(e))
-                .sorted().collect(Collectors.toSet()));
-
-        x.logln(x);
-
+//
         canvas.setDataframe(x, "Country");
         //        ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList()
         // canvas.stats.addListener((InvalidationListener) o -> {
@@ -44,6 +41,8 @@ public class WorldMapExample extends Application {
         // itens.setAll(entrySet);
         // });
 		// canvas.setHistogram(x);
+        //        canvas.coloring();
+
         root.getChildren().add(canvas);
 		theStage.show();
 	}

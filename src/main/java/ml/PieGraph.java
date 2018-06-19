@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -16,7 +17,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
-class PieGraph extends Canvas {
+public class PieGraph extends Canvas {
 	private GraphicsContext gc;
 	private ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
 	private IntegerProperty radius = new SimpleIntegerProperty(275);

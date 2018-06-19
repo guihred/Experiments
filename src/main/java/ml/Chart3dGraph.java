@@ -33,7 +33,7 @@ import javafx.stage.Stage;
 public class Chart3dGraph extends Application {
 
     // size of graph
-    int size = 400;
+    private int size = 400;
 
     // variables for mouse interaction
     private double mousePosX, mousePosY;

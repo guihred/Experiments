@@ -69,10 +69,10 @@ public class MapGraph extends Application {
             };
             svgPath.setOnMouseExited(value2);
             text.setOnMouseExited(value2);
-            text.setLayoutX(country.getFinalLayoutX() - text.getBoundsInParent().getWidth() / 2);
-            text.setLayoutY(country.getFinalLayoutY());
-            line.startXProperty().bind(Bindings.createDoubleBinding(country::getFinalLayoutX, bounds));
-            line.startYProperty().bind(Bindings.createDoubleBinding(country::getFinalLayoutY, bounds));
+            text.setLayoutX(country.getCenterX() - text.getBoundsInParent().getWidth() / 2);
+            text.setLayoutY(country.getCenterY());
+            line.startXProperty().bind(Bindings.createDoubleBinding(country::getCenterX, bounds));
+            line.startYProperty().bind(Bindings.createDoubleBinding(country::getCenterY, bounds));
             line.endXProperty().bind(Bindings.createDoubleBinding(() -> minDistance(line, bounds), bounds));
             line.endYProperty().bind(Bindings.createDoubleBinding(() -> minDistanceY(line, bounds), bounds));
             line.visibleProperty().bind(Bindings.createBooleanBinding(() -> !svgPath.getBoundsInParent().contains(bounds.get()),

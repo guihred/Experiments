@@ -1,14 +1,14 @@
 package ml;
 
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import javafx.collections.ObservableMap;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 
-final class ColorConverter extends StringConverter<Entry<String, Color>> {
-    ObservableMap<String, Color> colors;
+public final class ColorConverter extends StringConverter<Entry<String, Color>> {
+    private ObservableMap<String, Color> colors;
 
     ColorConverter(ObservableMap<String, Color> color) {
         this.colors = color;

@@ -3,7 +3,7 @@ package ml;
 import java.util.ArrayList;
 import java.util.List;
 
-class CSVUtils {
+public class CSVUtils {
 
     private static final char DEFAULT_SEPARATOR = ',';
     private static final char DEFAULT_QUOTE = '"';

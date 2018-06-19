@@ -16,15 +16,16 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 class LineGraph extends Canvas {
-    double layout = 30;
-    double maxLayout = 480;
-    double lineSize = 5;
-    int bins = 20;
-    long ybins = 20;
-    double xProportion;
-    double yProportion;
-    GraphicsContext gc;
-    ObservableMap<Double, Long> histogram = FXCollections.observableHashMap();
+    private double layout = 30;
+    private double maxLayout = 480;
+    private double lineSize = 5;
+    private int bins = 20;
+    private long ybins = 20;
+    private double xProportion;
+    private double yProportion;
+    private GraphicsContext gc;
+    private ObservableMap<Double, Long> histogram = FXCollections.observableHashMap();
+    private int radius = 5;
 
     public LineGraph() {
         super(550, 550);
@@ -37,7 +38,6 @@ class LineGraph extends Canvas {
         this.histogram.putAll(histogram);
     }
 
-    int radius = 5;
     public void drawGraph() {
 
         gc.clearRect(0, 0, 550, 550);

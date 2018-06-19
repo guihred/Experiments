@@ -11,8 +11,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
-final class CheckColorItemCell extends CheckBoxListCell<Entry<String, Color>> {
-    CheckColorItemCell(Callback<Entry<String, Color>, ObservableValue<Boolean>> getSelectedProperty,
+public final class CheckColorItemCell extends CheckBoxListCell<Entry<String, Color>> {
+    public CheckColorItemCell(Callback<Entry<String, Color>, ObservableValue<Boolean>> getSelectedProperty,
             StringConverter<Entry<String, Color>> converter) {
         super(getSelectedProperty, converter);
     }

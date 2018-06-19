@@ -22,7 +22,7 @@ public class DataframeStatisticAccumulator{
     public DataframeStatisticAccumulator(DataframeML dataframeML, String header) {
         dataframe = dataframeML;
         this.header = header;
-        this.format = dataframe.formatMap.get(header);
+        this.format = dataframe.getFormat(header);
     }
 
     private void acceptNumber(Number n) {
@@ -62,23 +62,23 @@ public class DataframeStatisticAccumulator{
         }
 
         double mean = sum / count;
-        double sum2 = dataframe.dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
+        double sum2 = dataframe.list(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
                 .map(e -> e - mean).map(e -> e * e).sum();
         return Math.sqrt(sum2 / (count - 1));
     }
 
     double getCorrelation(String other) {
-        if (format == String.class||dataframe.formatMap.get(other)==String.class) {
+        if (format == String.class || dataframe.getFormat(other) == String.class) {
             return 0;
         }
         
         double mean = sum / count;
-        List<Object> variable = dataframe.dataframe.get(header);
+        List<Object> variable = dataframe.list(header);
         double sum1 = variable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
                 .map(e -> e - mean).map(e -> e * e).sum();
         double st1 = Math.sqrt(sum1 / (count - 1));
         
-        List<Object> otherVariable = dataframe.dataframe.get(other);
+        List<Object> otherVariable = dataframe.list(other);
         double mean2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).average()
                 .getAsDouble();
         double sum2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)

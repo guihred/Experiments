@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -13,8 +14,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -24,14 +23,16 @@ class PopulacionalGraph extends Canvas {
 	private DoubleProperty maxLayout = new SimpleDoubleProperty(480);
 	private DoubleProperty lineSize = new SimpleDoubleProperty(1);
 	private IntegerProperty bins = new SimpleIntegerProperty(5);
-	private String ageHeader = "Subject", sexHeader = "SEX", yearHeader = "TIME", valueHeader = "Value";
+    private String ageHeader = "Subject";
+    private String sexHeader = "SEX";
+    private String yearHeader = "TIME";
+    private String valueHeader = "Value";
+    private String countryHeader = "Country";
 	private StringProperty country = new SimpleStringProperty("Germany");
 	private IntegerProperty year = new SimpleIntegerProperty(2000);
 	private double xProportion;
 	private GraphicsContext gc;
     private DataframeML dataframe;
-	private final ObservableMap<String, Color> colors = FXCollections.observableHashMap();
-	private String countryHeader = "Country";
 	private List<String> agesSteps = Collections.emptyList();
 
     public PopulacionalGraph() {
@@ -40,11 +41,11 @@ class PopulacionalGraph extends Canvas {
         drawGraph();
 		lineSize.set(getHeight() / getWidth());
         InvalidationListener listener = observable -> drawGraph();
-        colors.addListener(listener);
         maxLayout.addListener(listener);
         lineSize.addListener(listener);
         bins.addListener(listener);
         layout.addListener(listener);
+        country.addListener(listener);
     }
 
     public void setHistogram(DataframeML dataframe) {
@@ -60,7 +61,6 @@ class PopulacionalGraph extends Canvas {
 
         }
 		gc.setFill(Color.BLUE);
-		System.out.println(dataframe);
 		gc.scale(1, lineSize.doubleValue());
 		DoubleSummaryStatistics peopleStats = new DoubleSummaryStatistics();
 		List<Number> values = dataframe.list(valueHeader, Number.class);
@@ -99,8 +99,6 @@ class PopulacionalGraph extends Canvas {
 			drawRectangle(possibleAgesMA, xMA, layout1, strip, y1, h, max, Color.BLUE);
 		}
 		gc.scale(1, 1 / lineSize.doubleValue());
-		System.out.println(possibleAgesFE);
-		System.out.println(possibleAgesMA);
 		drawAxis();
 
     }
@@ -166,9 +164,6 @@ class PopulacionalGraph extends Canvas {
 		return layout1 + (maxLayout1 - layout1) * d;
 	}
 
-	public ObservableMap<String, Color> colorsProperty() {
-		return colors;
-	}
 
 
 	public DoubleProperty lineSizeProperty() {
@@ -186,5 +181,9 @@ class PopulacionalGraph extends Canvas {
 	public IntegerProperty binsProperty() {
 		return bins;
 	}
+
+    public StringProperty countryProperty() {
+        return country;
+    }
 
 }
