@@ -298,8 +298,8 @@ public class DataframeML implements HasLogging {
                             for (int j = 0; j < i; j++) {
                                 List<Object> list = dataframe.get(header.get(j));
                                 list.remove(list.size() - 1);
-                                size--;
                             }
+                            size--;
                             break;
                         }
                     }
