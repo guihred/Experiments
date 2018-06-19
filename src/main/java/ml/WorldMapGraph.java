@@ -31,6 +31,7 @@ class WorldMapGraph extends Canvas {
     private final static double BLUE_HUE = Color.BLUE.getHue();
     private final static double RED_HUE = Color.RED.getHue();
     private DoubleSummaryStatistics summary;
+    private String header = "Country";
 
     private Color getColorForValue(double value, DoubleSummaryStatistics sum) {
         if (value < sum.getMin() || value > sum.getMax()) {
@@ -42,7 +43,7 @@ class WorldMapGraph extends Canvas {
 
     public void drawGraph() {
         gc.clearRect(0, 0, getWidth(), getHeight());
-        Countries[] values = Countries.values();
+        Country[] values = Country.values();
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.WHITE);
         if (dataframeML != null) {
@@ -50,14 +51,17 @@ class WorldMapGraph extends Canvas {
                 summary = dataframeML.summary(valueHeader.get());
             }
             for (int i = 0; i < values.length; i++) {
-                Countries countries = values[i];
+                Country countries = values[i];
                 gc.setFill(Color.BLACK);
                 gc.beginPath();
-                String countryName = countries.getCountryName();
-                dataframeML.only("Country", t -> t.matches(countryName), j -> {
+
+                dataframeML.only(header, t -> countries.matches(t), j -> {
                     Number object2 = (Number) dataframeML.list(valueHeader.get()).get(j);
                     gc.setFill(getColorForValue(object2.doubleValue(), summary));
                 });
+                if (gc.getFill().equals(Color.BLACK)) {
+                    System.out.println("COUNTRY NOT FOUND: " + countries.getCountryName());
+                }
                 gc.appendSVGPath(countries.getPath());
                 gc.fill();
                 gc.stroke();
@@ -67,7 +71,8 @@ class WorldMapGraph extends Canvas {
         }
     }
 
-    public void setDataframe(DataframeML x) {
+    public void setDataframe(DataframeML x, String header) {
+        this.header = header;
         this.dataframeML = x;
         drawGraph();
     }
