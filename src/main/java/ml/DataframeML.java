@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleUnaryOperator;
+import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
@@ -50,6 +51,10 @@ public class DataframeML implements HasLogging {
                 .map(mapper).boxed().collect(Collectors.toList()));
         formatMap.put(header, Double.class);
     }
+
+	public void map(String header, Function<Object, Object> mapper) {
+		dataframe.put(header, dataframe.get(header).stream().map(mapper).collect(Collectors.toList()));
+	}
 
     public Set<String> cols() {
         return dataframe.keySet();

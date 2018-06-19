@@ -25,7 +25,8 @@ public class PopulacionalPyramidExample extends Application {
 		DataframeML x = new DataframeML("POPULACAO.csv");
 		x.filterString("Unit", "Persons"::equals);
 		x.filterString("SEX", Pattern.compile("MA|FE").asPredicate());
-		x.filterString("Subject", e -> e.startsWith("Population"));
+		x.filterString("Subject", e -> e.matches("Population.+\\d+"));
+		x.map("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"));
 		// System.out.println(x);
 		PopulacionalGraph canvas = new PopulacionalGraph();
 		root.getChildren().add(newSlider("Prop", 0.1, 2, canvas.lineSizeProperty()));
