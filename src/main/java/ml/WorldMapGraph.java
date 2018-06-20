@@ -21,27 +21,26 @@ import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
+import simplebuilder.CommonsFX;
 
 class WorldMapGraph extends Canvas {
     //    private final static double BLUE_HUE = Color.BLUE.getHue();
-    private final static double RED_HUE = Color.RED.getHue();
+    private static final double RED_HUE = Color.RED.getHue();
     private StringProperty valueHeader = new SimpleStringProperty("Value");
     private IntegerProperty bins = new SimpleIntegerProperty(7);
     private GraphicsContext gc;
     private ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
     private DataframeML dataframeML;
     private boolean showNeighbors = false;
-    private double scaleValue = 1;
-    private double iniX;
-    private double iniY;
-    private double delta = 0.1;
-    private Scale scale = new Scale(scaleValue, scaleValue, 0, 0);
-    private Translate translate = new Translate(0, 0);
     private DoubleSummaryStatistics summary;
     private String header = "Country";
     private Map<String, Predicate<Object>> filters = new HashMap<>();
+
+    //    private double delta = 0.1;
+    //    private double iniX;
+    //    private double iniY;
+    //    private Scale scale = new Scale(1, 1, 0, 0);
+    //    private Translate translate = new Translate(0, 0);
     public WorldMapGraph() {
         super(2000, 1200);
         gc = getGraphicsContext2D();
@@ -50,33 +49,35 @@ class WorldMapGraph extends Canvas {
         valueHeader.addListener(listener);
         bins.addListener(listener);
         drawGraph();
-        getTransforms().addAll(scale, translate);
-        setOnScroll(scrollEvent -> {
-            double s = scaleValue;
-            if (scrollEvent.getDeltaY() < 0) {
-                scaleValue -= delta;
-            } else {
-                scaleValue += delta;
-            }
-            if (scaleValue <= 0.1) {
-                scaleValue = s;
-            }
-            scale.setX(scaleValue);
-            scale.setY(scaleValue);
-            scrollEvent.consume();
-        });
-
-        setOnMousePressed(evt -> {
-            iniX = evt.getX();
-            iniY = evt.getY();
-        });
-
-        setOnMouseDragged(evt -> {
-            double deltaX = evt.getX() - iniX;
-            double deltaY = evt.getY() - iniY;
-            translate.setX(translate.getX() + deltaX);
-            translate.setY(translate.getY() + deltaY);
-        });
+        CommonsFX.setZoomable(this);
+        //        getTransforms().addAll(scale, translate);
+        //        setOnScroll(scrollEvent -> {
+        //            double scaleValue = scale.getX();
+        //            double s = scaleValue;
+        //            if (scrollEvent.getDeltaY() < 0) {
+        //                scaleValue -= delta;
+        //            } else {
+        //                scaleValue += delta;
+        //            }
+        //            if (scaleValue <= 0.1) {
+        //                scaleValue = s;
+        //            }
+        //            scale.setX(scaleValue);
+        //            scale.setY(scaleValue);
+        //            scrollEvent.consume();
+        //        });
+        //
+        //        setOnMousePressed(evt -> {
+        //            iniX = evt.getX();
+        //            iniY = evt.getY();
+        //        });
+        //
+        //        setOnMouseDragged(evt -> {
+        //            double deltaX = evt.getX() - iniX;
+        //            double deltaY = evt.getY() - iniY;
+        //            translate.setX(translate.getX() + deltaX);
+        //            translate.setY(translate.getY() + deltaY);
+        //        });
 
     }
 
@@ -85,6 +86,10 @@ class WorldMapGraph extends Canvas {
         return Stream.of(values).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
                 .filter(e -> e != c).distinct()
                 .collect(Collectors.toList());
+    }
+
+    public IntegerProperty binsProperty() {
+        return bins;
     }
 
     public void coloring() {
@@ -136,9 +141,6 @@ class WorldMapGraph extends Canvas {
                 });
             }
             gc.setFill(countries.getColor() != null ? countries.getColor() : Color.GRAY);
-            //            if (gc.getFill().equals(Color.BLACK)) {
-            //                System.out.println("COUNTRY NOT FOUND: " + countries.getCountryName());
-            //            }
             gc.appendSVGPath(countries.getPath());
             gc.fill();
             gc.stroke();
@@ -158,9 +160,11 @@ class WorldMapGraph extends Canvas {
         }
     }
 
+
+
     private void drawLabels() {
         gc.setFill(Color.GRAY);
-        int x = 50;
+        double x = 50;
         double y = getHeight() / 2;
         double step = 20;
         gc.fillRect(x - 5, y - 5, getWidth() / 20, step * bins.get() + step);
@@ -183,8 +187,6 @@ class WorldMapGraph extends Canvas {
 
     }
 
-
-
     public void filter(String h, Predicate<Object> pred) {
         filters.put(h, pred);
     }
@@ -201,17 +203,13 @@ class WorldMapGraph extends Canvas {
         return Color.hsb(RED_HUE, saturation, 1.0);
     }
 
-    public StringProperty valueHeaderProperty() {
-        return valueHeader;
-    }
-
-    public IntegerProperty binsProperty() {
-        return bins;
-    }
     public void setDataframe(DataframeML x, String header) {
         this.header = header;
         this.dataframeML = x;
         drawGraph();
+    }
+    public StringProperty valueHeaderProperty() {
+        return valueHeader;
     }
 
 }

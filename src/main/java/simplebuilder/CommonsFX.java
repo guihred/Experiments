@@ -3,13 +3,21 @@ package simplebuilder;
 import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
 import javafx.animation.PathTransition.OrientationType;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.Shape;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
@@ -78,5 +86,53 @@ public final class CommonsFX {
 		textField.setPrefColumnCount(prefColumnCount);
 		return textField;
 	}
+
+    public static void setZoomable(Node node) {
+
+        setZoomable(node, false);
+    }
+
+    public static void setZoomable(Node node, boolean onlyClose) {
+        Scale scale = new Scale(1, 1);
+        Translate translate = new Translate(0, 0);
+        node.getTransforms().addAll(scale, translate);
+        double delta = 0.1;
+        DoubleProperty iniX = new SimpleDoubleProperty(0);
+        DoubleProperty iniY = new SimpleDoubleProperty(0);
+
+        node.setOnScroll(scrollEvent -> {
+            double scaleValue = scale.getX();
+            double s = scaleValue;
+            if (scrollEvent.getDeltaY() < 0) {
+                scaleValue -= delta;
+            } else {
+                scaleValue += delta;
+            }
+            if (onlyClose) {
+                if (scaleValue < 1) {
+                    scaleValue = s;
+                }
+            }
+
+            if (scaleValue <= 0.1) {
+                scaleValue = s;
+            }
+            scale.setX(scaleValue);
+            scale.setY(scaleValue);
+            scrollEvent.consume();
+        });
+
+        node.setOnMousePressed(evt -> {
+            iniX.set(evt.getX());
+            iniY.set(evt.getY());
+        });
+
+        node.setOnMouseDragged(evt -> {
+            double deltaX = evt.getX() - iniX.get();
+            double deltaY = evt.getY() - iniY.get();
+            translate.setX(translate.getX() + deltaX);
+            translate.setY(translate.getY() + deltaY);
+        });
+    }
 
 }
