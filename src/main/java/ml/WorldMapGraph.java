@@ -2,11 +2,18 @@ package ml;
 
 import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javafx.beans.InvalidationListener;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -18,32 +25,30 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
 class WorldMapGraph extends Canvas {
-    private final static double BLUE_HUE = Color.BLUE.getHue();
+    //    private final static double BLUE_HUE = Color.BLUE.getHue();
     private final static double RED_HUE = Color.RED.getHue();
     private StringProperty valueHeader = new SimpleStringProperty("Value");
+    private IntegerProperty bins = new SimpleIntegerProperty(7);
     private GraphicsContext gc;
     private ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
-    private ObservableMap<String, Color> colors = FXCollections.observableHashMap();
     private DataframeML dataframeML;
     private boolean showNeighbors = false;
     private double scaleValue = 1;
-    private double iniX, iniY;
-
+    private double iniX;
+    private double iniY;
     private double delta = 0.1;
     private Scale scale = new Scale(scaleValue, scaleValue, 0, 0);
-
-
-
     private Translate translate = new Translate(0, 0);
     private DoubleSummaryStatistics summary;
     private String header = "Country";
+    private Map<String, Predicate<Object>> filters = new HashMap<>();
     public WorldMapGraph() {
         super(2000, 1200);
         gc = getGraphicsContext2D();
         InvalidationListener listener = observable -> drawGraph();
         stats.addListener(listener);
-        colors.addListener(listener);
         valueHeader.addListener(listener);
+        bins.addListener(listener);
         drawGraph();
         getTransforms().addAll(scale, translate);
         setOnScroll(scrollEvent -> {
@@ -107,20 +112,30 @@ class WorldMapGraph extends Canvas {
         gc.clearRect(0, 0, getWidth(), getHeight());
         Country[] values = Country.values();
         gc.setFill(Color.BLACK);
-        gc.setStroke(Color.WHITE);
+        gc.setStroke(Color.BLACK);
         if (summary == null && dataframeML != null) {
             summary = dataframeML.summary(valueHeader.get());
+        }
+        if (dataframeML != null) {
+            drawLabels();
         }
         for (int i = 0; i < values.length; i++) {
             Country countries = values[i];
             gc.beginPath();
             if (dataframeML != null) {
                 dataframeML.only(header, t -> countries.matches(t), j -> {
+                    Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
+                    for (Entry<String, Predicate<Object>> fil : entrySet) {
+                        Object t = dataframeML.list(fil.getKey()).get(j);
+                        if (!fil.getValue().test(t)) {
+                            return;
+                        }
+                    }
                     Number object2 = (Number) dataframeML.list(valueHeader.get()).get(j);
                     countries.setColor(getColorForValue(object2.doubleValue(), summary));
                 });
             }
-            gc.setFill(countries.getColor() != null ? countries.getColor() : Color.BLACK);
+            gc.setFill(countries.getColor() != null ? countries.getColor() : Color.GRAY);
             //            if (gc.getFill().equals(Color.BLACK)) {
             //                System.out.println("COUNTRY NOT FOUND: " + countries.getCountryName());
             //            }
@@ -129,6 +144,7 @@ class WorldMapGraph extends Canvas {
             gc.stroke();
             gc.closePath();
         }
+
         if (showNeighbors) {
             gc.setStroke(Color.RED);
             gc.setLineWidth(1);
@@ -142,15 +158,56 @@ class WorldMapGraph extends Canvas {
         }
     }
 
+    private void drawLabels() {
+        gc.setFill(Color.GRAY);
+        int x = 50;
+        double y = getHeight() / 2;
+        double step = 20;
+        gc.fillRect(x - 5, y - 5, getWidth() / 20, step * bins.get() + step);
+        double max = summary.getMax();
+        double min = summary.getMin();
+        int millin = 100000;
+        summary.accept(Math.floor(min / millin) * millin);
+        summary.accept(Math.ceil(max / millin) * millin);
+        max = summary.getMax();
+        min = summary.getMin();
+        double h = (max - min) / bins.get();
+        gc.setFill(Color.GRAY);
+        gc.setStroke(Color.BLACK);
+        for (int i = 0; i <= bins.get(); i++) {
+            double s = Math.floor((min + i * h) / millin) * millin;
+            gc.setFill(getColorForValue(s, summary));
+            gc.fillRect(x, y + step * i, 10, 10);
+            gc.strokeText(String.format("%11.0f", s), x + 15, y + step * i + 10);
+        }
+
+    }
+
+
+
+    public void filter(String h, Predicate<Object> pred) {
+        filters.put(h, pred);
+    }
+
     private Color getColorForValue(double value, DoubleSummaryStatistics sum) {
         if (value < sum.getMin() || value > sum.getMax()) {
             return Color.BLACK;
         }
-        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - sum.getMin()) / (sum.getMax() - sum.getMin());
-        return Color.hsb(hue, 1.0, 1.0);
+//        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - sum.getMin()) / (sum.getMax() - sum.getMin());
+        //        return Color.hsb(hue, 1.0, 1.0);
+//        double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin());
+//        return Color.hsb(RED_HUE, 1.0, brightness);
+        double saturation = 0.25 + (value - sum.getMin()) / (sum.getMax() - sum.getMin()) * 0.75;
+        return Color.hsb(RED_HUE, saturation, 1.0);
     }
 
+    public StringProperty valueHeaderProperty() {
+        return valueHeader;
+    }
 
+    public IntegerProperty binsProperty() {
+        return bins;
+    }
     public void setDataframe(DataframeML x, String header) {
         this.header = header;
         this.dataframeML = x;
