@@ -14,6 +14,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -34,6 +36,7 @@ class PopulacionalGraph extends Canvas {
 	private GraphicsContext gc;
     private DataframeML dataframe;
 	private List<String> agesSteps = Collections.emptyList();
+    private ObservableList<Integer> yearsOptions = FXCollections.observableArrayList();
 
     public PopulacionalGraph() {
         super(550, 550);
@@ -43,6 +46,7 @@ class PopulacionalGraph extends Canvas {
         InvalidationListener listener = observable -> drawGraph();
         maxLayout.addListener(listener);
         lineSize.addListener(listener);
+        year.addListener(listener);
         bins.addListener(listener);
         layout.addListener(listener);
         country.addListener(listener);
@@ -70,9 +74,13 @@ class PopulacionalGraph extends Canvas {
 		Map<String, Number> possibleAgesMA = new HashMap<>();
 		Map<String, Number> possibleAgesFE = new HashMap<>();
 		dataframe.only(countryHeader, t -> t.equals(country.get()), j -> {
-			if (years.get(j) != year.get()) {
-				return;
-			}
+            if (!yearsOptions.contains(years.get(j))) {
+                yearsOptions.add(years.get(j));
+                yearsOptions.sorted();
+            }
+            if (years.get(j) != year.get()) {
+                return;
+            }
 			Number number = values.get(j);
 			peopleStats.accept(number.doubleValue());
 			String sex = sexes.get(j);
@@ -184,6 +192,14 @@ class PopulacionalGraph extends Canvas {
 
     public StringProperty countryProperty() {
         return country;
+    }
+
+    public ObservableList<Integer> yearsOptionsProperty() {
+        return yearsOptions;
+    }
+
+    public IntegerProperty yearProperty() {
+        return year;
     }
 
 }

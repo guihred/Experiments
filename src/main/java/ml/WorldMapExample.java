@@ -2,8 +2,10 @@ package ml;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
+import simplebuilder.SimpleComboBoxBuilder;
 
 public class WorldMapExample extends Application {
 
@@ -23,8 +25,8 @@ public class WorldMapExample extends Application {
         // root.getChildren().add(newSlider("X Bins", 1, 30, canvas.bins));
         // root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybins));
         DataframeML x = new DataframeML.DataframeBuilder("globalGDP.csv")
-                .filter("TRANSACT", s -> "B1_GA".equals(s.toString()))
-                .filter("Unit Code", s -> "USD".equals(s.toString())).build();
+                .filter("TRANSACT", "B1_GA"::equals)
+                .filter("Unit Code", "USD"::equals).categorize("Country").build();
 //        // x.describe();
 //        x.logln(x);
 //        //        System.out.println(x.list("Country").stream().sorted().collect(Collectors.toSet()));
@@ -33,8 +35,12 @@ public class WorldMapExample extends Application {
 //                .sorted().collect(Collectors.toSet()));
 //
         x.logln(x);
-//
         canvas.setDataframe(x, "Country");
+        
+        ComboBox<String> country = new SimpleComboBoxBuilder<String>()
+                .items(x.categorize("Country"))
+                .build();
+        
         //        ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList()
         // canvas.stats.addListener((InvalidationListener) o -> {
         // Set<Entry<String, Color>> entrySet = canvas.colors.entrySet();
@@ -43,6 +49,7 @@ public class WorldMapExample extends Application {
 		// canvas.setHistogram(x);
         //        canvas.coloring();
 
+        root.getChildren().add(country);
         root.getChildren().add(canvas);
 		theStage.show();
 	}

@@ -1,6 +1,7 @@
 package ml;
 
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
 
 public class PopulacionalPyramidExample extends Application {
@@ -27,14 +29,16 @@ public class PopulacionalPyramidExample extends Application {
         Scene theScene = new Scene(root, 800, 600);
 		theStage.setScene(theScene);
 
-		DataframeML x = new DataframeML("POPULACAO.csv");
-		x.filterString("Unit", "Persons"::equals);
-		x.filterString("SEX", Pattern.compile("MA|FE").asPredicate());
-		x.filterString("Subject", e -> e.matches("Population.+\\d+"));
-		x.map("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"));
-        Set<String> categorize = x.categorize("Country");
+		Predicate<String> asPredicate = Pattern.compile("MA|FE").asPredicate();
+		DataframeML x = new DataframeML.DataframeBuilder("POPULACAO.csv")
+                .filter("Unit", "Persons"::equals)
+                .filter("SEX", e->asPredicate.test(e.toString()))
+                .filter("Subject", e -> e.toString().matches("Population.+\\d+"))
+                .categorize("Country")
+                .categorize("TIME")
+                .map("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
+                .build();
 
-		// System.out.println(x);
 		PopulacionalGraph canvas = new PopulacionalGraph();
 		root.getChildren().add(newSlider("Prop", 0.1, 2, canvas.lineSizeProperty()));
         root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
@@ -42,20 +46,22 @@ public class PopulacionalPyramidExample extends Application {
         root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
 		canvas.widthProperty().bind(root.widthProperty().add(-20));
 
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.setItems(FXCollections.observableArrayList(categorize.stream().sorted().collect(Collectors.toList())));
-        comboBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    canvas.countryProperty().set(newValue);
+        Set<String> categorize = x.categorize("Country");
+        ComboBox<String> comboBox = new SimpleComboBoxBuilder<String>()
+                .items(FXCollections.observableArrayList(categorize.stream().sorted().collect(Collectors.toList())))
+                .select(0)
+                .onSelect(v -> canvas.countryProperty().set(v)).build();
+        ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>()
+                .items(canvas.yearsOptionsProperty())
+                .onSelect(v -> canvas.yearProperty().set(v != null ? v : 2000)).build();
 
-        });
-        comboBox.getSelectionModel().select(0);
 		canvas.lineSizeProperty().set(canvas.getHeight() / canvas.getWidth());
 		canvas.maxLayoutProperty().set(canvas.getWidth() - canvas.layoutProperty().doubleValue() - 20);
 
 		canvas.setHistogram(x);
 
         root.getChildren().add(comboBox);
+        root.getChildren().add(year);
         root.getChildren().add(canvas);
 		theStage.show();
 	}

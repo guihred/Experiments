@@ -50,6 +50,7 @@ public class DataframeML implements HasLogging {
     private Map<String, List<Object>> dataframe = new LinkedHashMap<>();
     private Map<String, Set<String>> categories = new LinkedHashMap<>();
     private Map<String, Class<?>> formatMap = new LinkedHashMap<>();
+    private Map<String, Function<Object, Object>> mapping = new LinkedHashMap<>();
 	private int size;
 
     private Map<String, DataframeStatisticAccumulator> stats;
@@ -73,6 +74,16 @@ public class DataframeML implements HasLogging {
 
         public DataframeBuilder filter(String d, Predicate<Object> fil) {
             dataframeML.filters.put(d, fil);
+            return this;
+        }
+
+        public DataframeBuilder categorize(String d) {
+            dataframeML.categories.put(d, new HashSet<>());
+            return this;
+        }
+
+        public DataframeBuilder map(String d, Function<Object, Object> mapping) {
+            dataframeML.mapping.put(d, mapping);
             return this;
         }
 
@@ -302,6 +313,16 @@ public class DataframeML implements HasLogging {
                             size--;
                             break;
                         }
+                    }
+                    if (categories.containsKey(key)) {
+                        Set<String> set = categories.get(key);
+                        String string = Objects.toString(tryNumber);
+                        if (!set.contains(string)) {
+                            set.add(string);
+                        }
+                    }
+                    if (mapping.containsKey(key)) {
+                        tryNumber = mapping.get(key).apply(tryNumber);
                     }
 
                     dataframe.get(key).add(tryNumber);
