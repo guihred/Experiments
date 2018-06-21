@@ -71,8 +71,8 @@ public class MapGraph extends Application {
                 }
                 svgPath.setFill(initialColor);
                 svgPath.setStroke(gray);
+                text.setVisible(false);
                 if (!svgPath.contains(o.getX(), o.getY())) {
-                    text.setVisible(false);
                     currentCountry.set(null);
                 }
             };

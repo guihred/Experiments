@@ -75,7 +75,6 @@ public class PieGraph extends Canvas {
 
 	public static List<Color> generateColors(int size) {
         List<Color> availableColors = new ArrayList<>();
-		;
 		int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
         for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
             Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
