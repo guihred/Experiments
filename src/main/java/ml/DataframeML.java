@@ -2,6 +2,7 @@ package ml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,8 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart.Data;
@@ -37,13 +40,20 @@ public class DataframeML implements HasLogging {
     private static final List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class,
 			Double.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // DataframeML x = new DataframeML("california_housing_train.csv")
-        DataframeML x = new DataframeML("POPULACAO.csv");
-        x.logln(x);
+        //        DataframeML x = new DataframeML("POPULACAO.csv");
+        //        x.logln(x);
         // x.describe()
 		// x.filterString("Flag Codes", "B"::equalsIgnoreCase);
-        x.logln(x);
+        //        x.logln(x);
+
+        System.out.println(Number.class.isAssignableFrom(Integer.class));
+
+        //        Files.lines(Paths.get("WDICountry.csv")).forEach(line -> {
+        //            System.out.println(line);
+        //        });
+
         // x.correlation()
     }
 
@@ -243,6 +253,9 @@ public class DataframeML implements HasLogging {
     }
 
 	private String formating(String s) {
+        if (StringUtils.isBlank(s)) {
+            return "%s\t";
+        }
         return "%" + s.length() + "s\t";
     }
     public int getSize() {
@@ -301,9 +314,10 @@ public class DataframeML implements HasLogging {
                     getLogger().error("ERROR FIELDS COUNT");
                 }
 
-                for (int i = 0; i < header.size() && i < line2.size(); i++) {
+                for (int i = 0; i < header.size(); i++) {
                     String key = header.get(i);
-                    Object tryNumber = tryNumber(key, line2.get(i));
+                    String field = getFromList(i, line2);
+                    Object tryNumber = tryNumber(key, field);
                     if (filters.containsKey(key)) {
                         if (!filters.get(key).test(tryNumber)) {
                             for (int j = 0; j < i; j++) {
@@ -340,6 +354,10 @@ public class DataframeML implements HasLogging {
         this.size = size;
     }
 
+    public static <T> T getFromList(int j, List<T> list) {
+        return j < list.size() ? list.get(j) : null;
+    }
+
     public DoubleSummaryStatistics summary(String header) {
         return list(header).stream().map(Number.class::cast)
                 .mapToDouble(Number::doubleValue).summaryStatistics();
@@ -364,7 +382,11 @@ public class DataframeML implements HasLogging {
             int j = i;
             dataframe.forEach((s, l) -> {
                 if (l.size() > j) {
-                    str.append(String.format(formating(s), Objects.toString(l.get(j))));
+                    String string = Objects.toString(l.get(j), "");
+                    if (string.length() > s.length() + 3) {
+                        string = string.substring(0, s.length() + 3);
+                    }
+                    str.append(String.format(formating(s), string));
                 }
             });
             str.append("\n");
@@ -378,8 +400,16 @@ public class DataframeML implements HasLogging {
     }
 
     private Object tryNumber(String header, String field) {
+        if (StringUtils.isBlank(field)) {
+            return null;
+        }
         String number = field;
         Class<?> currentFormat = formatMap.get(header);
+        if (currentFormat == String.class && size > 1
+                && list(header).stream().anyMatch(e -> String.class.isInstance(e))) {
+            return field;
+        }
+
         if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
             number = field.replaceAll("\\.0+", "");
         }
@@ -416,6 +446,10 @@ public class DataframeML implements HasLogging {
             }
         } catch (NumberFormatException e) {
             getLogger().trace("FORMAT ERROR", e);
+        }
+        if (Number.class.isAssignableFrom(formatMap.get(header))) {
+            formatMap.put(header, String.class);
+            map(header, e -> Objects.toString(e, ""));
         }
         
         return number;

@@ -36,6 +36,8 @@ class WorldMapGraph extends Canvas {
     private String header = "Country";
     private Map<String, Predicate<Object>> filters = new HashMap<>();
     private Map<String, Color> categoryMap = new HashMap<>();
+    private double max;
+    private double min;
 
     public WorldMapGraph() {
         super(2000, 1200);
@@ -103,7 +105,7 @@ class WorldMapGraph extends Canvas {
                     List<Object> list = dataframeML.list(valueHeader.get());
                     Object object = DataframeML.getFromList(j, list);
                     if (object instanceof Number) {
-                        countries.setColor(getColorForValue(((Number) object).doubleValue(), summary));
+                        countries.setColor(getColorForValue(((Number) object).doubleValue()));
                     } else if (object instanceof String) {
                         countries.setColor(categoryMap.get(object));
                     }
@@ -176,19 +178,15 @@ class WorldMapGraph extends Canvas {
 
     private void createNumberLabels(double x, double y, double step) {
         gc.fillRect(x - 5, y - 5, getWidth() / 20, step * bins.get() + step);
-        double max = summary.getMax();
-        double min = summary.getMin();
         int millin = 100000;
-        summary.accept(Math.floor(min / millin) * millin);
-        summary.accept(Math.ceil(max / millin) * millin);
-        max = summary.getMax();
-        min = summary.getMin();
+        min = Math.floor(summary.getMin() / millin) * millin;
+        max = Math.ceil(summary.getMax() / millin) * millin;
         double h = (max - min) / bins.get();
         gc.setFill(Color.GRAY);
         gc.setStroke(Color.BLACK);
         for (int i = 0; i <= bins.get(); i++) {
             double s = Math.floor((min + i * h) / millin) * millin;
-            gc.setFill(getColorForValue(s, summary));
+            gc.setFill(getColorForValue(s));
             gc.fillRect(x, y + step * i, 10, 10);
             gc.strokeText(String.format("%11.0f", s), x + 15, y + step * i + 10);
         }
@@ -200,15 +198,15 @@ class WorldMapGraph extends Canvas {
         filters.put(h, pred);
     }
 
-    private Color getColorForValue(double value, DoubleSummaryStatistics sum) {
-        if (value < sum.getMin() || value > sum.getMax()) {
+    private Color getColorForValue(double value) {
+        if (value < min || value > max) {
             return Color.BLACK;
         }
         //        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - sum.getMin()) / (sum.getMax() - sum.getMin());
         //        return Color.hsb(hue, 1.0, 1.0);
         //        double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin());
         //        return Color.hsb(RED_HUE, 1.0, brightness);
-        double saturation = (value - sum.getMin()) / (sum.getMax() - sum.getMin());
+        double saturation = (value - min) / (max - min);
         return Color.hsb(RED_HUE, saturation, 1.0);
     }
 
