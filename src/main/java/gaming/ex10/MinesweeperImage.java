@@ -8,7 +8,6 @@ package gaming.ex10;
 import java.io.Serializable;
 import java.util.function.Function;
 import java.util.stream.DoubleStream;
-
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -57,6 +56,7 @@ public enum MinesweeperImage {
     }
 
 	public static interface F<T, R> extends Function<T, R>, Serializable {
+		// DOES NOTHING
 	}
 
 }

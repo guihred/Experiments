@@ -2,7 +2,6 @@ package labyrinth;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -62,7 +61,7 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 		}
 	}
 
-	private void initializeLabyrinth(Group root) {
+	private void initializeLabyrinth(Group root1) {
 		for (int k = mapa.length - 1; k >= 0; k--) {
 			for (int l = mapa[k].length - 1; l >= 0; l--) {
 				String string = mapa[k][l];
@@ -73,7 +72,7 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 					rectangle.getRy().setAngle(90);
 				}
 				cubes.add(rectangle);
-				root.getChildren().add(rectangle);
+				root1.getChildren().add(rectangle);
 			}
 		}
 	}

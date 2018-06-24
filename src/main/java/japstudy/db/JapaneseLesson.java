@@ -3,7 +3,6 @@ package japstudy.db;
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -26,15 +25,16 @@ public class JapaneseLesson implements Serializable {
 	@Column(length = 2000)
 	private String romaji;
 
-	public void addEnglish(String english) {
-		this.english = Objects.toString(this.english, "") + english;
-	}
-	public void addJapanese(String japanese) {
-		this.japanese = Objects.toString(this.japanese, "") + japanese.trim();
+	public void addEnglish(String english1) {
+		english = Objects.toString(english, "") + english1;
 	}
 
-	public void addRomaji(String romaji) {
-		this.romaji = Objects.toString(this.romaji, "") + romaji.trim();
+	public void addJapanese(String japanese1) {
+		japanese = Objects.toString(japanese, "") + japanese1.trim();
+	}
+
+	public void addRomaji(String romaji1) {
+		romaji = Objects.toString(romaji, "") + romaji1.trim();
 	}
 
 	@Override

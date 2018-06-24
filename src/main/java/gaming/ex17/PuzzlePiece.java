@@ -1,6 +1,5 @@
 package gaming.ex17;
 
-import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -40,9 +39,9 @@ public class PuzzlePiece extends Group {
         setLayoutY(getLayoutY() + subtract.getY());
     }
 
-    public void move(double x, double y) {
-        setLayoutX(getLayoutX() + x);
-        setLayoutY(getLayoutY() + y);
+	public void move(double x1, double y1) {
+		setLayoutX(getLayoutX() + x1);
+		setLayoutY(getLayoutY() + y1);
     }
 
     // public void draw(GraphicsContext gc) {
@@ -63,7 +62,7 @@ public class PuzzlePiece extends Group {
     // gc.closePath();
     // }
 
-    public ImagePattern getImagePattern(Bounds layout) {
+    public ImagePattern getImagePattern() {
         if (imagePattern == null) {
             imagePattern = new ImagePattern(image, -x * width, -y * height, image.getWidth(), image.getHeight(), false);
         }
@@ -87,12 +86,11 @@ public class PuzzlePiece extends Group {
             path.getElements().addAll(right.getPath(0, height));
             path.getElements().addAll(down.getPath(-width, 0));
             path.getElements().addAll(left.getPath(0, -height));
-            Bounds layoutBounds = path.getBoundsInLocal();
 
-            ImagePattern imagePattern = getImagePattern(layoutBounds);
+			ImagePattern imagePattern1 = getImagePattern();
             path.prefWidth(width);
             path.prefHeight(height);
-            path.setFill(imagePattern);
+			path.setFill(imagePattern1);
         }
         return path;
     }

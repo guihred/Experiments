@@ -35,7 +35,7 @@ public class GolfBall extends Application {
 		primaryStage.show();
 	}
 
-	List<Point3D> createSpheres(final int division, final float radius) {
+	List<Point3D> createSpheres(final int division, final float radius1) {
 		List<Point3D> spheres = new ArrayList<>();
 		final int div2 = division / 2;
 
@@ -49,16 +49,16 @@ public class GolfBall extends Application {
 				double a = rDiv * i * 2 * (float) Math.PI;
 				float hSin = (float) Math.sin(a);
 				float hCos = (float) Math.cos(a);
-				double x = hSin * cosVal * radius;
-				double z = hCos * cosVal * radius;
-				double y = sinVal * radius;
+				double x = hSin * cosVal * radius1;
+				double z = hCos * cosVal * radius1;
+				double y = sinVal * radius1;
 
 				spheres.add(new Point3D(x, y, z));
 			}
 
 		}
-		spheres.add(new Point3D(0, -radius, 0));
-		spheres.add(new Point3D(0, radius, 0));
+		spheres.add(new Point3D(0, -radius1, 0));
+		spheres.add(new Point3D(0, radius1, 0));
 		return spheres;
 	}
 

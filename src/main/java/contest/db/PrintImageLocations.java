@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.imageio.ImageIO;
-
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -43,8 +41,8 @@ public class PrintImageLocations extends PDFStreamEngine {
         addOperator(new SetMatrix());
     }
 
-    public List<PDFImage> processPage(PDPage page, int pageNumber) throws IOException {
-        this.pageNumber = pageNumber;
+	public List<PDFImage> processPage(PDPage page, int pageNumber1) throws IOException {
+		pageNumber = pageNumber1;
         int size = images.size();
         super.processPage(page);
         if (images.size() > size) {

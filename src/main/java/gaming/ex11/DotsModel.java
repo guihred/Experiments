@@ -14,7 +14,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -336,11 +335,11 @@ public class DotsModel {
 		selected = null;
 	}
 
-	private void initializeMaze(Group gridPane) {
+	private void initializeMaze(Group gridPane1) {
 		for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
                 maze[i][j] = new DotsSquare(i, j);
-                gridPane.getChildren().add(maze[i][j]);
+				gridPane1.getChildren().add(maze[i][j]);
             }
         }
 	}

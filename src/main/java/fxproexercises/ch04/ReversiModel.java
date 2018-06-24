@@ -2,7 +2,11 @@ package fxproexercises.ch04;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.binding.*;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.NumberBinding;
+import javafx.beans.binding.NumberExpression;
+import javafx.beans.binding.ObjectExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -89,23 +93,25 @@ public final class ReversiModel {
         }
     }
 
-    public void flip(int cellX, int cellY, int directionX, int directionY, ObjectProperty<Owner> turn) {
-        if (canFlip(cellX, cellY, directionX, directionY, turn).get()) {
+	public void flip(int cellX, int cellY, int directionX, int directionY, ObjectProperty<Owner> turn1) {
+		if (canFlip(cellX, cellY, directionX, directionY, turn1).get()) {
             int x = cellX + directionX;
             int y = cellY + directionY;
             while (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && board[x][y].get()
-                    != turn.get()) {
-                board[x][y].setValue(turn.get());
+			!= turn1.get()) {
+				board[x][y].setValue(turn1.get());
                 x += directionX;
                 y += directionY;
             }
         }
     }
-    public BooleanBinding canFlip(final int cellX, final int cellY, final int directionX, final int directionY, final ObjectProperty<Owner> turn) {
+
+	public BooleanBinding canFlip(final int cellX, final int cellY, final int directionX, final int directionY,
+			final ObjectProperty<Owner> turn1) {
 
 		List<ObjectExpression<?>> binds = new ArrayList<>();
 
-		binds.add(turn);
+		binds.add(turn1);
 		int dx = cellX + directionX;
 		int dy = cellY + directionY;
 		while (dx >= 0 && dx < BOARD_SIZE && dy >= 0 && dy < BOARD_SIZE) {
@@ -115,7 +121,7 @@ public final class ReversiModel {
 		}
 
 		return Bindings.createBooleanBinding(() -> {
-			Owner turnVal = turn.get();
+			Owner turnVal = turn1.get();
 			int x = cellX + directionX;
 			int y = cellY + directionY;
 			boolean first = true;

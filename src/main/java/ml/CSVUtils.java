@@ -16,8 +16,10 @@ public class CSVUtils {
         return parseLine(cvsLine, separators, DEFAULT_QUOTE);
     }
 
-    public static List<String> parseLine(String cvsLine, char separators, char customQuote) {
+	public static List<String> parseLine(String cvsLine, char separator, char quote) {
         List<String> result = new ArrayList<>();
+		char separators = separator;
+		char customQuote = quote;
         // if empty, return!
         if (cvsLine == null || cvsLine.isEmpty()) {
             return result;

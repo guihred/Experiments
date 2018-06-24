@@ -23,7 +23,7 @@ public class Square2048Launcher extends Application {
         final GridPane gridPane = new GridPane();
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        final Square2048Model memoryModel = new Square2048Model(gridPane);
+		final Square2048Model memoryModel = new Square2048Model();
 
         for (int i = 0; i < memoryModel.getMap().length; i++) {
             for (int j = 0; j < memoryModel.getMap()[i].length; j++) {

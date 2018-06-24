@@ -47,7 +47,7 @@ public class JapaneseLessonApplication extends Application {
 		gridpane.setHgap(10);
 		gridpane.setVgap(10);
 		root.setCenter(gridpane);
-		TableView<JapaneseLesson> tabelaJapaneseLessons = tabelaJapaneseLessons(gridpane);
+		TableView<JapaneseLesson> tabelaJapaneseLessons = tabelaJapaneseLessons();
 		Label estoqueRosario = new Label("Lessons");
 		Button button = new Button("Start");
 		button.setOnAction(e -> {
@@ -74,7 +74,7 @@ public class JapaneseLessonApplication extends Application {
 		return JapaneseLessonReader.getLessons();
 	}
 
-	private TableView<JapaneseLesson> tabelaJapaneseLessons(FlowPane gridpane) {
+	private TableView<JapaneseLesson> tabelaJapaneseLessons() {
 
 		final TableView<JapaneseLesson> medicamentosTable = new TableView<>();
 

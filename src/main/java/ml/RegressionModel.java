@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart.Data;
@@ -53,7 +52,7 @@ class RegressionModel {
     }
 
 	@SuppressWarnings("unchecked")
-	public ObservableList<Series<Number, Number>> createSeries(List<?> features, List<?> target) {
+	public ObservableList<Series<Number, Number>> createSeries(List<?> features1, List<?> target1) {
         Random random = new Random();
         slope = (random.nextDouble() - .5) * 10;
         initial = (random.nextDouble() - .5) * 10;
@@ -61,11 +60,11 @@ class RegressionModel {
         bestSlope = (random.nextDouble() - .5) * 10;
         bestInitial = (random.nextDouble() - .5) * 10;
 
-        this.features = features.stream().map(Number.class::cast).filter(e -> e != null).map(e -> e.doubleValue())
+		features = features1.stream().map(Number.class::cast).filter(e -> e != null).map(e -> e.doubleValue())
 
                 .limit(MAX_SIZE)
 				.collect(Collectors.toList());
-        this.target = target.stream().map(Number.class::cast).filter(e -> e != null).map(e -> e.doubleValue())
+		target = target1.stream().map(Number.class::cast).filter(e -> e != null).map(e -> e.doubleValue())
                 .limit(MAX_SIZE)
 				.collect(Collectors.toList());
 		c = 0;
@@ -74,7 +73,7 @@ class RegressionModel {
         series.setName("Numbers");
         series.setData(observableArrayList);
 
-        this.target.stream().map(this::mapToData).forEach(e -> observableArrayList.add(e));
+        target.stream().map(this::mapToData).forEach(e -> observableArrayList.add(e));
 		return FXCollections.observableArrayList(series);
 	}
     private DoubleStream doubleStream() {

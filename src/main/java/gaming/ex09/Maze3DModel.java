@@ -95,8 +95,8 @@ public class Maze3DModel {
 		timeline.stop();
 	}
 
-	private boolean getBackIn(List<Maze3DSquare> history) {
-		final Maze3DSquare remove = history.remove(history.size() - 1);
+	private boolean getBackIn(List<Maze3DSquare> history1) {
+		final Maze3DSquare remove = history1.remove(history1.size() - 1);
 		for (int i = 0; i < maze.length; i++) {
 			for (int j = 0; j < maze.length; j++) {
 				if (maze[i][j] == remove) {

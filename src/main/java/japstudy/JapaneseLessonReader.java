@@ -1,24 +1,22 @@
 package japstudy;
 
+import japstudy.db.HibernateUtil;
+import japstudy.db.JapaneseLesson;
+import japstudy.db.LessonDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
 import java.util.List;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import japstudy.db.HibernateUtil;
-import japstudy.db.JapaneseLesson;
-import japstudy.db.LessonDAO;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public final class JapaneseLessonReader {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JapaneseLessonReader.class);
@@ -81,7 +79,9 @@ public final class JapaneseLessonReader {
 							japaneseLesson.addJapanese(text.replaceAll(".*([\u2E80-\u6FFF]+.*)$", "$1"));
 						}
 					} else if (text.matches(".*[\u2E80-\u6FFF]+.*")) {
-						japaneseLesson.addJapanese(text.trim());
+						if (japaneseLesson != null) {
+							japaneseLesson.addJapanese(text.trim());
+						}
 					} else if (japaneseLesson != null) {
 						japaneseLesson.addRomaji(text.trim());
 					}

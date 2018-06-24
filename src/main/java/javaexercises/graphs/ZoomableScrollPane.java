@@ -10,8 +10,8 @@ import javafx.scene.transform.Scale;
 public class ZoomableScrollPane extends ScrollPane {
 	private Group zoomGroup;
 	private Scale scaleTransform;
-	private double scaleValue = 1.0;
-	private double delta = 0.1;
+	protected double scaleValue = 1.0;
+	protected double delta = 0.1;
 
 	public ZoomableScrollPane(Node content) {
 		Group contentGroup = new Group();

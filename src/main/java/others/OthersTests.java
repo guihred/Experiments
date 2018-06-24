@@ -2,7 +2,11 @@ package others;
 
 import static com.google.common.collect.ImmutableMap.of;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.IntSummaryStatistics;
+import java.util.List;
+import java.util.Map;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,11 +24,18 @@ public class OthersTests {
 	}
 
 	enum Estado {
-		ERROR(null), CLOSED(null), LAST_ACK(of("RCV_ACK", Estado.CLOSED)), CLOSE_WAIT(of("APP_CLOSE", LAST_ACK)), TIME_WAIT(of("APP_TIMEOUT", CLOSED)), CLOSING(
-				of("RCV_ACK", TIME_WAIT)), FIN_WAIT_2(of("RCV_FIN", TIME_WAIT)), FIN_WAIT_1(of("RCV_FIN", CLOSING, "RCV_FIN_ACK", TIME_WAIT,
-				"RCV_ACK", FIN_WAIT_2)), ESTABLISHED(of("APP_CLOSE", FIN_WAIT_1, "RCV_FIN", CLOSE_WAIT)), SYN_RCVD(of("APP_CLOSE", Estado.FIN_WAIT_1,
-				"RCV_ACK", ESTABLISHED)), SYN_SENT(of("RCV_SYN", SYN_RCVD, "RCV_SYN_ACK", ESTABLISHED, "APP_CLOSE", CLOSED)), LISTEN(of("RCV_SYN",
-				Estado.SYN_RCVD, "APP_SEND", Estado.SYN_SENT, "APP_CLOSE", Estado.CLOSED));
+		ERROR(null),
+		CLOSED(null),
+		LAST_ACK(of("RCV_ACK", Estado.CLOSED)),
+		CLOSE_WAIT(of("APP_CLOSE", LAST_ACK)),
+		TIME_WAIT(of("APP_TIMEOUT", CLOSED)),
+		CLOSING(of("RCV_ACK", TIME_WAIT)),
+		FIN_WAIT_2(of("RCV_FIN", TIME_WAIT)),
+		FIN_WAIT_1(of("RCV_FIN", CLOSING, "RCV_FIN_ACK", TIME_WAIT, "RCV_ACK", FIN_WAIT_2)),
+		ESTABLISHED(of("APP_CLOSE", FIN_WAIT_1, "RCV_FIN", CLOSE_WAIT)),
+		SYN_RCVD(of("APP_CLOSE", Estado.FIN_WAIT_1, "RCV_ACK", ESTABLISHED)),
+		SYN_SENT(of("RCV_SYN", SYN_RCVD, "RCV_SYN_ACK", ESTABLISHED, "APP_CLOSE", CLOSED)),
+		LISTEN(of("RCV_SYN", Estado.SYN_RCVD, "APP_SEND", Estado.SYN_SENT, "APP_CLOSE", Estado.CLOSED));
 		private Map<String, Estado> map;
 
 		Estado(Map<String, Estado> map) {

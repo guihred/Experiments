@@ -4,14 +4,12 @@ import static labyrinth.LabyrinthWall.SIZE;
 import static simplebuilder.ResourceFXUtils.toExternalForm;
 import static simplebuilder.ResourceFXUtils.toFullPath;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -94,7 +92,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 	}
 
 
-	private void createLabyrinth(Group root) {
+	private void createLabyrinth(Group root1) {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
@@ -105,13 +103,13 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 					wall.getRy().setAngle(90);
 				}
 				labyrinthWalls.add(wall);
-				root.getChildren().add(wall);
+				root1.getChildren().add(wall);
 				Sphere ball = new Sphere(SIZE / 20);
 				balls[i][j] = ball;
 				ball.setMaterial(new PhongMaterial(Color.YELLOW));
 				ball.setTranslateX(i * SIZE);
 				ball.setTranslateZ(j * SIZE);
-				root.getChildren().add(ball);
+				root1.getChildren().add(ball);
 
 			}
 		}

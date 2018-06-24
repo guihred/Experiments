@@ -3,15 +3,13 @@ package labyrinth;
 import static simplebuilder.ResourceFXUtils.toExternalForm;
 import static simplebuilder.ResourceFXUtils.toURL;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -92,7 +90,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	}
 
 
-	private void createLabyrinth(Group root) {
+	private void createLabyrinth(Group root1) {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
@@ -103,13 +101,13 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 					wall.getRy().setAngle(90);
 				}
 				labyrinthWalls.add(wall);
-				root.getChildren().add(wall);
+				root1.getChildren().add(wall);
 				Sphere ball = new Sphere(SIZE / 20);
 				balls[i][j] = ball;
 				ball.setTranslateX(i * SIZE);
 				ball.setTranslateZ(j * SIZE);
 				ball.setMaterial(new PhongMaterial(Color.YELLOW));
-				root.getChildren().add(ball);
+				root1.getChildren().add(ball);
 
 			}
 		}

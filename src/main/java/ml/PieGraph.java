@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -87,7 +86,7 @@ public class PieGraph extends Canvas {
         return availableColors;
     }
 
-    public void drawLegend(List<Entry<String, Long>> collect, List<Color> availableColors) {
+	public void drawLegend(List<Entry<String, Long>> collect, List<Color> availableColors1) {
         double x = gc.getCanvas().getWidth() / 10;
         double y = gc.getCanvas().getHeight() * 7 / 8;
         int columns = (int) Math.sqrt(collect.size()) + 1;
@@ -101,7 +100,7 @@ public class PieGraph extends Canvas {
             double x2 = x + a * (i % columns);
             double y2 = y + b * j;
             gc.strokeText(entry.getKey(), x2, y2);
-            gc.setFill(availableColors.get(index));
+			gc.setFill(availableColors1.get(index));
             gc.fillRect(x2 - 10, y2 - 8, 8, 8);
             gc.strokeRect(x2 - 10, y2 - 8, 8, 8);
         }

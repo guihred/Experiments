@@ -13,10 +13,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.scene.paint.Color;
+import org.apache.commons.lang3.StringUtils;
 
 public enum Country {
     // ASIA
@@ -297,7 +295,7 @@ public enum Country {
     }
 
     private double[] computeCentroid() {
-        List<double[]> points = getPoints();
+		List<double[]> points1 = getPoints();
         double[] centroid = { 0, 0 };
         double signedArea = 0.0;
         double x0; // Current vertex X
@@ -308,11 +306,11 @@ public enum Country {
 
         // For all vertices except last
         int i = 0;
-        for (i = 0; i < points.size() - 1; ++i) {
-            x0 = points.get(i)[0];
-            y0 = points.get(i)[1];
-            x1 = points.get(i + 1)[0];
-            y1 = points.get(i + 1)[1];
+		for (i = 0; i < points1.size() - 1; ++i) {
+			x0 = points1.get(i)[0];
+			y0 = points1.get(i)[1];
+			x1 = points1.get(i + 1)[0];
+			y1 = points1.get(i + 1)[1];
             a = x0 * y1 - x1 * y0;
             signedArea += a;
             centroid[0] += (x0 + x1) * a;
@@ -321,10 +319,10 @@ public enum Country {
 
         // Do last vertex separately to avoid performing an expensive
         // modulus operation in each iteration.
-        x0 = points.get(i)[0];
-        y0 = points.get(i)[1];
-        x1 = points.get(0)[0];
-        y1 = points.get(0)[1];
+		x0 = points1.get(i)[0];
+		y0 = points1.get(i)[1];
+		x1 = points1.get(0)[0];
+		y1 = points1.get(0)[1];
         a = x0 * y1 - x1 * y0;
         signedArea += a;
         centroid[0] += (x0 + x1) * a;

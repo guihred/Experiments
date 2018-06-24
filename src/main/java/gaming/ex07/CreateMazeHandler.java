@@ -3,7 +3,6 @@ package gaming.ex07;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -96,8 +95,8 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 		timeline.stop();
 	}
 
-	private boolean getBackIn(List<MazeSquare> history) {
-		final MazeSquare remove = history.remove(history.size() - 1);
+	private boolean getBackIn(List<MazeSquare> history1) {
+		final MazeSquare remove = history1.remove(history1.size() - 1);
 		for (int i = 0; i < createdMaze.length; i++) {
 			for (int j = 0; j < createdMaze.length; j++) {
 				if (createdMaze[i][j] == remove) {

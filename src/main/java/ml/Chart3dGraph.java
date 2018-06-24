@@ -1,9 +1,9 @@
+
 package ml;
 
 import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.DepthTest;
@@ -151,15 +151,15 @@ public class Chart3dGraph extends Application {
     }
 
     /**
-     * Create texture for uv mapping
-     * 
-     * @param size
-     * @param noise
-     * @return
-     */
-    public Image createImage(double size, float[][] noise) {
-        int width = (int) size;
-        int height = (int) size;
+	 * Create texture for uv mapping
+	 * 
+	 * @param size1
+	 * @param noise
+	 * @return
+	 */
+	public Image createImage(double size1, float[][] noise) {
+		int width = (int) size1;
+		int height = (int) size1;
 
         WritableImage wr = new WritableImage(width, height);
         PixelWriter pw = wr.getPixelWriter();
@@ -262,97 +262,98 @@ public class Chart3dGraph extends Application {
     /**
      * Create axis walls
      * 
-     * @param size
+     * @param length
      * @return
      */
-    private Group createCube(int size) {
+    private Group createCube(int length) {
         Group cube = new Group();
         // size of the cube
         Color color = Color.DARKCYAN;
         List<Axis> cubeFaces = new ArrayList<>();
         Axis r;
         // back face
-        r = new Axis(size);
+        r = new Axis(length);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.5 * 1, 1.0));
-        r.setTranslateX(-0.5 * size);
-        r.setTranslateY(-0.5 * size);
-        r.setTranslateZ(0.5 * size);
+        r.setTranslateX(-0.5 * length);
+        r.setTranslateY(-0.5 * length);
+        r.setTranslateZ(0.5 * length);
         cubeFaces.add(r);
         // bottom face
-        r = new Axis(size);
+        r = new Axis(length);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.4 * 1, 1.0));
-        r.setTranslateX(-0.5 * size);
+        r.setTranslateX(-0.5 * length);
         r.setTranslateY(0);
         r.setRotationAxis(Rotate.X_AXIS);
         r.setRotate(90);
         cubeFaces.add(r);
         // right face
-        r = new Axis(size);
+        r = new Axis(length);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.3 * 1, 1.0));
-        r.setTranslateX(-1 * size);
-        r.setTranslateY(-0.5 * size);
+        r.setTranslateX(-1 * length);
+        r.setTranslateY(-0.5 * length);
         r.setRotationAxis(Rotate.Y_AXIS);
         r.setRotate(90);
         // cubeFaces.add( r);
         // left face
-        r = new Axis(size);
+        r = new Axis(length);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.2 * 1, 1.0));
         r.setTranslateX(0);
-        r.setTranslateY(-0.5 * size);
+        r.setTranslateY(-0.5 * length);
         r.setRotationAxis(Rotate.Y_AXIS);
         r.setRotate(90);
         cubeFaces.add(r);
         // top face
-        r = new Axis(size);
+        r = new Axis(length);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.1 * 1, 1.0));
-        r.setTranslateX(-0.5 * size);
-        r.setTranslateY(-1 * size);
+        r.setTranslateX(-0.5 * length);
+        r.setTranslateY(-1 * length);
         r.setRotationAxis(Rotate.X_AXIS);
         r.setRotate(90);
         // cubeFaces.add( r);
         // front face
-        r = new Axis(size);
+        r = new Axis(length);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.1 * 1, 1.0));
-        r.setTranslateX(-0.5 * size);
-        r.setTranslateY(-0.5 * size);
-        r.setTranslateZ(-0.5 * size);
+        r.setTranslateX(-0.5 * length);
+        r.setTranslateY(-0.5 * length);
+        r.setTranslateZ(-0.5 * length);
         // cubeFaces.add( r);
         cube.getChildren().addAll(cubeFaces);
         return cube;
     }
 
     /**
-     * Create an array of the given size with values of perlin noise
-     * 
-     * @param size
-     * @return
-     * @return
-     */
+	 * Create an array of the given size with values of perlin noise
+	 * 
+	 * @param size1
+	 * @return
+	 * @return
+	 */
 
     /* T(°C) = (T(°F) - minF) × (size)/(maxF-minF) */
 
-    private double convert(double f, double size, double maxF, double minF) {
-        return (f - minF) * size / (maxF - minF);
+	private double convert(double f, double size1, double maxF, double minF) {
+		return (f - minF) * size1 / (maxF - minF);
     }
 
-    private float[][] createPlane(int size) {
+	private float[][] createPlane(int size1) {
         DataframeML dataframeML = new DataframeML("california_housing_train.csv");
         DoubleSummaryStatistics lat = dataframeML.summary("latitude");
         DoubleSummaryStatistics lon = dataframeML.summary("longitude");
         DoubleSummaryStatistics pop = dataframeML.summary("population");
         int total = dataframeML.getSize();
-        List<Double> xLatitude = dataframeML.crossFeature("x", d -> convert(d[0], size - 1, lat.getMax(), lat.getMin()),
+		List<Double> xLatitude = dataframeML.crossFeature("x",
+				d -> convert(d[0], size1 - 1, lat.getMax(), lat.getMin()),
                 "latitude");
         List<Double> yLongitude = dataframeML.crossFeature("y",
-                d -> convert(d[0], size - 1, lon.getMax(), lon.getMin()),
+				d -> convert(d[0], size1 - 1, lon.getMax(), lon.getMin()),
                 "longitude");
         List<Double> z = dataframeML.crossFeature("z", d -> -convert(d[0], 5, pop.getMax(), 0), "population");
 
-        float[][] noiseArray = new float[size][size];
+		float[][] noiseArray = new float[size1][size1];
         for (int i = 0; i < total; i++) {
             int x = xLatitude.get(i).intValue();
             int y = yLongitude.get(i).intValue();
-            if (x > size || y > size) {
+			if (x > size1 || y > size1) {
                 System.out.println("ERRRRROOOOOOOOOO");
                 return noiseArray;
             }

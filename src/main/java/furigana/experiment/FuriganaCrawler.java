@@ -43,7 +43,7 @@ public class FuriganaCrawler implements HasLogging {
 					currentWord += currentLetter;
 				}
 				if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
-					System.out.println(currentWord + "=" + getReading(currentWord, currentLetter));
+					System.out.println(currentWord + "=" + getReading(currentWord));
 
 					currentWord = "";
 				}
@@ -63,7 +63,7 @@ public class FuriganaCrawler implements HasLogging {
 		// HibernateUtil.shutdown();
 	}
 
-	String getReading(String currentWord, char currentLetter) {
+	String getReading(String currentWord) {
 		Connection connect = Jsoup.connect("http://jisho.org/search/" + URLEncoder.encode(currentWord));
 
 		try {

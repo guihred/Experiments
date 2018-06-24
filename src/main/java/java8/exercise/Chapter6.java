@@ -16,9 +16,20 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.*;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
@@ -32,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public final class Chapter6 {
 	static class Matrix {
-		private int[][] mat = { { 1, 1 }, { 1, 0 } };
+		protected int[][] mat = { { 1, 1 }, { 1, 0 } };
 		public Matrix() {
 		}
 		public Matrix(int[][] mat) {

@@ -9,12 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
 
 /**
  *
@@ -24,26 +20,21 @@ public class Square2048Model {
     public static final int MAP_HEIGHT = 4;
     public static final int MAP_WIDTH = 4;
 
-    private GridPane gridPane;
     private final Square2048[][] map = new Square2048[MAP_WIDTH][MAP_HEIGHT];
-    private IntegerProperty nPlayed = new SimpleIntegerProperty(0);
-    private long startTime;
     private List<Square2048> mapAsList = new ArrayList<>();
     final Random random = new Random();
 
-    public Square2048Model(GridPane gridPane) {
-        this.gridPane = gridPane;
-
+	public Square2048Model() {
         for (int i = 0; i < getMap().length; i++) {
             for (int j = 0; j < getMap()[i].length; j++) {
-                getMap()[i][j] = new Square2048(i, j);
+                getMap()[i][j] = new Square2048();
                 mapAsList.add(getMap()[i][j]);
             }
         }
         getMap()[random.nextInt(MAP_WIDTH)][random.nextInt(MAP_HEIGHT)].setNumber(newNumber());
         getMap()[random.nextInt(MAP_WIDTH)][random.nextInt(MAP_HEIGHT)].setNumber(newNumber());
 
-        startTime = System.currentTimeMillis();
+		System.currentTimeMillis();
     }
 
     private int newNumber() {
@@ -101,7 +92,7 @@ public class Square2048Model {
         
         List<Square2048> collect = mapAsList.stream().filter(Square2048::isEmpty).collect(Collectors.toList());
         if (!collect.isEmpty()) {
-            collect.get(random.nextInt(collect.size())).setNumber(this.newNumber());
+            collect.get(random.nextInt(collect.size())).setNumber(newNumber());
         }
 
     }

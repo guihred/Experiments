@@ -19,7 +19,7 @@ public class PlatformMain extends Application {
 	private long lastNanoTime;
 	private Player jungle = new Player(ImageResource.JUNGLE);
 
-	private void gameLoop(Leopard cat, Bird bird, Dog dog, List<Player> grounds, List<Enemy> enemies,
+	protected void gameLoop(Leopard cat, Bird bird, Dog dog, List<Player> grounds, List<Enemy> enemies,
 			GraphicsContext gc) {
 		jungle.render(gc);
 		long time = lastNanoTime++ % 36 + 1;

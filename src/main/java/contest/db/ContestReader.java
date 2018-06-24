@@ -14,7 +14,8 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
@@ -27,13 +28,10 @@ import org.apache.pdfbox.text.TextPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 public final class ContestReader {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
     private static final Logger LOGGER = LoggerFactory.getLogger(ContestReader.class);
-    private static final String TEXT_PATTERN = "Texto \\d+\\s*";
+	public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
     enum ReaderState {
@@ -225,15 +223,15 @@ public final class ContestReader {
                 PDDocument pdDoc = new PDDocument(cosDoc);) {
             PDFTextStripper pdfStripper = new PDFTextStripper() {
                 @Override
-                protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
-                    super.writeString(text, textPositions);
-                    if (text != null && text.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN)
+				protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
+					super.writeString(text1, textPositions);
+					if (text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN)
                             && !textPositions.isEmpty()) {
                         TextPosition textPosition = textPositions.get(0);
                         float x = textPosition.getXDirAdj();
                         float y = textPosition.getYDirAdj();
                         QuestionPosition qp = new QuestionPosition();
-                        qp.line = text;
+						qp.line = text1;
                         qp.x = x;
                         qp.y = y;
                         qp.page = pageNumber;

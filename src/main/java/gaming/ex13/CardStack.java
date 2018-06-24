@@ -60,33 +60,36 @@ class CardStack extends Pane {
 		getChildren().remove(solitaireCard);
 		return solitaireCard;
 	}
-	public void addCards(List<SolitaireCard> cards) {
-		addCards(cards.toArray(new SolitaireCard[0]));
+
+	public void addCards(List<SolitaireCard> cards1) {
+		addCards(cards1.toArray(new SolitaireCard[0]));
 	}
 
-	public void addCardsVertically(List<SolitaireCard> cards) {
-		addCardsVertically(cards.toArray(new SolitaireCard[0]));
+	public void addCardsVertically(List<SolitaireCard> cards1) {
+		addCardsVertically(cards1.toArray(new SolitaireCard[0]));
 	}
-	public void addCardsVertically(SolitaireCard... cards) {
-		for (SolitaireCard solitaireCard : cards) {
-			if (!this.cards.contains(solitaireCard)) {
-				this.cards.add(solitaireCard);
+
+	public void addCardsVertically(SolitaireCard... cards1) {
+		for (SolitaireCard solitaireCard : cards1) {
+			if (!cards.contains(solitaireCard)) {
+				cards.add(solitaireCard);
 				solitaireCard.setLayoutX(0);
 				getChildren().add(solitaireCard);
 			}
 		}
 		double layout = 0;
-		for (int i = 0; i < this.cards.size(); i++) {
-			SolitaireCard solitaireCard = this.cards.get(i);
+		for (int i = 0; i < cards.size(); i++) {
+			SolitaireCard solitaireCard = cards.get(i);
 			solitaireCard.setLayoutY(layout);
 			layout += solitaireCard.isShown() ? 30 : 15;
 		}
 
 	}
-	public void addCards(SolitaireCard... cards) {
-		for (SolitaireCard solitaireCard : cards) {
-			if (!this.cards.contains(solitaireCard)) {
-				this.cards.add(solitaireCard);
+
+	public void addCards(SolitaireCard... cards1) {
+		for (SolitaireCard solitaireCard : cards1) {
+			if (!cards.contains(solitaireCard)) {
+				cards.add(solitaireCard);
 				solitaireCard.setLayoutX(0);
 				solitaireCard.setLayoutY(0);
 				getChildren().add(solitaireCard);
@@ -94,13 +97,14 @@ class CardStack extends Pane {
 		}
 	}
 
-	public void removeCards(List<SolitaireCard> cards) {
-		removeCards(cards.toArray(new SolitaireCard[0]));
+	public void removeCards(List<SolitaireCard> cards1) {
+		removeCards(cards1.toArray(new SolitaireCard[0]));
 	}
-	public void removeCards(SolitaireCard... cards) {
-		for (SolitaireCard solitaireCard : cards) {
-			if (this.cards.contains(solitaireCard)) {
-				this.cards.remove(solitaireCard);
+
+	public void removeCards(SolitaireCard... cards1) {
+		for (SolitaireCard solitaireCard : cards1) {
+			if (cards.contains(solitaireCard)) {
+				cards.remove(solitaireCard);
 				getChildren().remove(solitaireCard);
 			}
 		}

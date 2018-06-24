@@ -1,15 +1,13 @@
 
 package labyrinth;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -74,7 +72,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 				.findFirst().orElse(null);
 	}
 
-	private void createLabyrinth(Group root) {
+	private void createLabyrinth(Group root1) {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
@@ -85,13 +83,13 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 					wall.getRy().setAngle(90);
 				}
 				labyrinthWalls.add(wall);
-				root.getChildren().add(wall);
+				root1.getChildren().add(wall);
 				Sphere ball = new Sphere(SIZE / 20);
 				balls[i][j] = ball;
 				ball.setMaterial(new PhongMaterial(Color.YELLOW));
 				ball.setTranslateZ(j * SIZE);
 				ball.setTranslateX(i * SIZE);
-				root.getChildren().add(ball);
+				root1.getChildren().add(ball);
 
 			}
 		}

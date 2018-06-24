@@ -18,7 +18,7 @@ import simplebuilder.SimpleTimelineBuilder;
 public class Pacman extends Arc {
 	public enum PacmanDirection {
 		DOWN(90), LEFT(180), RIGHT(0), UP(270);
-		private final int angle;
+		protected final int angle;
 
 		private PacmanDirection(int angle) {
 			this.angle = angle;
@@ -103,11 +103,11 @@ public class Pacman extends Arc {
 		}
 	}
 
-	public void turn(PacmanDirection direction) {
+	public void turn(PacmanDirection direction1) {
 		if (eatingAnimation.getStatus() == Status.RUNNING) {
-			this.direction = direction;
-			if (direction != null) {
-				setRotate(direction.angle);
+			direction = direction1;
+			if (direction1 != null) {
+				setRotate(direction1.angle);
 			}
 		}
 	}

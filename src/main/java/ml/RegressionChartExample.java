@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 public class RegressionChartExample extends Application {
     public static void main(String[] args) {
-        RegressionChartExample.launch(args);
+		launch(args);
     }
 
     private LineChart<Number, Number> lineChart(ObservableList<Series<Number, Number>> data, String value) {

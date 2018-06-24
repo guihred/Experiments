@@ -3,7 +3,6 @@ package fxproexercises.ch07;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -16,7 +15,6 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class Chart3dSampleApp extends Application {
 
@@ -126,7 +124,7 @@ public class Chart3dSampleApp extends Application {
         world.getChildren().addAll(pyramid);
     }
 
-    private void handleMouse(Scene scene, final Node root) {
+    private void handleMouse(Scene scene) {
         scene.setOnMousePressed(me -> {
             mousePosX = me.getSceneX();
             mousePosY = me.getSceneY();
@@ -164,10 +162,8 @@ public class Chart3dSampleApp extends Application {
         });
     }
 
-    private void handleKeyboard(Scene scene, final Node root) {
-        final boolean moveCamera = true;
+    private void handleKeyboard(Scene scene) {
         scene.setOnKeyPressed(event -> {
-            Duration currentTime;
             switch (event.getCode()) {
                 case Z:
                     if (event.isShiftDown()) {
@@ -257,6 +253,8 @@ public class Chart3dSampleApp extends Application {
                         cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER); // -
                     }
                     break;
+			default:
+				break;
             }
         });
     }
@@ -270,8 +268,8 @@ public class Chart3dSampleApp extends Application {
 
         Scene scene = new Scene(root, 1600, 900, true);
         scene.setFill(Color.GREY);
-        handleKeyboard(scene, world);
-        handleMouse(scene, world);
+        handleKeyboard(scene);
+        handleMouse(scene);
 
         primaryStage.setScene(scene);
         primaryStage.show();

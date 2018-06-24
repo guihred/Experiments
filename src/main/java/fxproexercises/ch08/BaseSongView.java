@@ -21,7 +21,5 @@ public abstract class BaseSongView {
         return viewNode;
     }
 
-	public void setNextHandler() {
-    }
     protected abstract Node initView();
 }

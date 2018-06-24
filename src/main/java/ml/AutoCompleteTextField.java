@@ -8,9 +8,6 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import org.deeplearning4j.models.word2vec.Word2Vec;
-
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +17,7 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.deeplearning4j.models.word2vec.Word2Vec;
 
 public class AutoCompleteTextField extends TextField {
     private final SortedSet<String> entries;
@@ -29,13 +27,11 @@ public class AutoCompleteTextField extends TextField {
     private boolean popupHidden = false;
     private String textOccurenceStyle = "-fx-font-weight: bold; -fx-fill: red;";
     private int maxEntries = 10;
-    private Word2Vec word2Vec;
 
     public AutoCompleteTextField(SortedSet<String> entrySet, Word2Vec word2Vec) {
         super();
-        this.word2Vec = word2Vec;
-        this.entries = entrySet == null ? new TreeSet<>() : entrySet;
-        this.filteredEntries.addAll(entries);
+        entries = entrySet == null ? new TreeSet<>() : entrySet;
+        filteredEntries.addAll(entries);
         entriesPopup = new ContextMenu();
         textProperty().addListener((ChangeListener<String>) (observableVadlue, ds, sb2) -> {
             if (getText().length() == 0) {

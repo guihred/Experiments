@@ -3,20 +3,8 @@ package ml;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.Function;
@@ -25,13 +13,11 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
@@ -58,13 +44,13 @@ public class DataframeML implements HasLogging {
     }
 
     private Map<String, List<Object>> dataframe = new LinkedHashMap<>();
-    private Map<String, Set<String>> categories = new LinkedHashMap<>();
+	protected Map<String, Set<String>> categories = new LinkedHashMap<>();
     private Map<String, Class<?>> formatMap = new LinkedHashMap<>();
-    private Map<String, Function<Object, Object>> mapping = new LinkedHashMap<>();
+	protected Map<String, Function<Object, Object>> mapping = new LinkedHashMap<>();
 	private int size;
 
     private Map<String, DataframeStatisticAccumulator> stats;
-    private Map<String, Predicate<Object>> filters = new HashMap<>();
+	protected Map<String, Predicate<Object>> filters = new HashMap<>();
 
     public DataframeML() {
     }

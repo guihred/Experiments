@@ -26,13 +26,9 @@ import javafx.scene.text.TextAlignment;
 public class Square2048 extends Region {
 
     private final IntegerProperty number = new SimpleIntegerProperty();
-    private final int i;
-    private final int j;
 
 
-    public Square2048(int i, int j) {
-        this.i = i;
-        this.j = j;
+    public Square2048() {
         setPadding(new Insets(10));
         setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
         setStyle("-fx-background-color: burlywood;-fx-border-color: black;-fx-border-width: 1;");

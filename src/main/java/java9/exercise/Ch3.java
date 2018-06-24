@@ -216,7 +216,7 @@ public class Ch3 {
 		collect.forEach(Thread::start);
 
 		while (collect.stream().anyMatch(e -> e.isAlive())) {
-			;
+			// DOES NOTHING
 		}
 	}
 

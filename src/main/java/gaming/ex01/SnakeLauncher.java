@@ -70,12 +70,12 @@ public class SnakeLauncher extends Application {
         stage.show();
     }
 
-    int i = 0;
+    int currentI = 0;
 	private void gameLoop(final Timeline timeline) {
         KeyFrame remove = timeline.getKeyFrames().get(0);
         if (remove.getTime().greaterThan(new Duration(50))) {
-            i++;
-            if (i % 50 == 0) {
+            currentI++;
+            if (currentI % 50 == 0) {
                 timeline.stop();
                 timeline.getKeyFrames().clear();
                 Duration add = remove.getTime().add(new Duration(-2));

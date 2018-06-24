@@ -21,9 +21,9 @@ public class MadCell {
         return y;
     }
 
-    public void relocate(float x, float y) {
-        this.x = x;
-        this.y = y;
+	public void relocate(float x1, float y1) {
+		x = x1;
+		y = y1;
     }
 
     public void setId(int id) {

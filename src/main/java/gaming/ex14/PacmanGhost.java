@@ -1,10 +1,9 @@
 package gaming.ex14;
 
+import gaming.ex07.MazeSquare;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
-
-import gaming.ex07.MazeSquare;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -22,7 +21,7 @@ public class PacmanGhost extends Group {
 	public enum GhostColor {
 		RED(Color.RED), BLUE(Color.BLUE), ORANGE(Color.ORANGE), GREEN(Color.GREEN);
 
-		private final transient Color color;
+		final transient Color color;
 
 		private GhostColor(Color color) {
 			this.color = color;
@@ -42,8 +41,8 @@ public class PacmanGhost extends Group {
         SOUTHEAST(1, -1),
         NORTHWEST(-1, 1),
         SOUTHWEST(-1, -1);
-        private final int x;
-		private final int y;
+		protected final int x;
+		protected final int y;
 
 		private GhostDirection(int x, int y) {
 			this.x = x;
@@ -262,13 +261,11 @@ public class PacmanGhost extends Group {
 		if (map == null) {
 			return null;
 		}
-		
-		MazeSquare mazeSquare = map.get(maze[hx][hy]);
 
 		// System.out.println("f " + maze[hxg][hyg] + " t" + maze[hx][hy] + " b " +
 		// mazeSquare);
 
-		return mazeSquare;
+		return map.get(maze[hx][hy]);
 	}
 
 	public void setStartPosition(double startX, double startY) {

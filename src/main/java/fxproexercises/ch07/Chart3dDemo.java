@@ -2,7 +2,6 @@ package fxproexercises.ch07;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.DepthTest;
@@ -161,16 +160,16 @@ public class Chart3dDemo extends Application {
     }
 
     /**
-     * Create texture for uv mapping
-     * 
-     * @param size
-     * @param noise
-     * @return
-     */
-    public Image createImage(double size, float[][] noise) {
+	 * Create texture for uv mapping
+	 * 
+	 * @param size1
+	 * @param noise
+	 * @return
+	 */
+	public Image createImage(double size1, float[][] noise) {
 
-        int width = (int) size;
-        int height = (int) size;
+		int width = (int) size1;
+		int height = (int) size1;
 
         WritableImage wr = new WritableImage(width, height);
         PixelWriter pw = wr.getPixelWriter();
@@ -271,12 +270,12 @@ public class Chart3dDemo extends Application {
     }
 
     /**
-     * Create axis walls
-     * 
-     * @param size
-     * @return
-     */
-    private Group createCube(int size) {
+	 * Create axis walls
+	 * 
+	 * @param size1
+	 * @return
+	 */
+	private Group createCube(int size1) {
 
         Group cube = new Group();
 
@@ -287,18 +286,18 @@ public class Chart3dDemo extends Application {
         Axis r;
 
         // back face
-        r = new Axis(size);
+		r = new Axis(size1);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.5 * 1, 1.0));
-        r.setTranslateX(-0.5 * size);
-        r.setTranslateY(-0.5 * size);
-        r.setTranslateZ(0.5 * size);
+		r.setTranslateX(-0.5 * size1);
+		r.setTranslateY(-0.5 * size1);
+		r.setTranslateZ(0.5 * size1);
 
         cubeFaces.add(r);
 
         // bottom face
-        r = new Axis(size);
+		r = new Axis(size1);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.4 * 1, 1.0));
-        r.setTranslateX(-0.5 * size);
+		r.setTranslateX(-0.5 * size1);
         r.setTranslateY(0);
         r.setRotationAxis(Rotate.X_AXIS);
         r.setRotate(90);
@@ -306,41 +305,41 @@ public class Chart3dDemo extends Application {
         cubeFaces.add(r);
 
         // right face
-        r = new Axis(size);
+		r = new Axis(size1);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.3 * 1, 1.0));
-        r.setTranslateX(-1 * size);
-        r.setTranslateY(-0.5 * size);
+		r.setTranslateX(-1 * size1);
+		r.setTranslateY(-0.5 * size1);
         r.setRotationAxis(Rotate.Y_AXIS);
         r.setRotate(90);
 
         // cubeFaces.add( r);
 
         // left face
-        r = new Axis(size);
+		r = new Axis(size1);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.2 * 1, 1.0));
         r.setTranslateX(0);
-        r.setTranslateY(-0.5 * size);
+		r.setTranslateY(-0.5 * size1);
         r.setRotationAxis(Rotate.Y_AXIS);
         r.setRotate(90);
 
         cubeFaces.add(r);
 
         // top face
-        r = new Axis(size);
+		r = new Axis(size1);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.1 * 1, 1.0));
-        r.setTranslateX(-0.5 * size);
-        r.setTranslateY(-1 * size);
+		r.setTranslateX(-0.5 * size1);
+		r.setTranslateY(-1 * size1);
         r.setRotationAxis(Rotate.X_AXIS);
         r.setRotate(90);
 
         // cubeFaces.add( r);
 
         // front face
-        r = new Axis(size);
+		r = new Axis(size1);
         r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.1 * 1, 1.0));
-        r.setTranslateX(-0.5 * size);
-        r.setTranslateY(-0.5 * size);
-        r.setTranslateZ(-0.5 * size);
+		r.setTranslateX(-0.5 * size1);
+		r.setTranslateY(-0.5 * size1);
+		r.setTranslateZ(-0.5 * size1);
 
         // cubeFaces.add( r);
 
@@ -350,18 +349,18 @@ public class Chart3dDemo extends Application {
     }
 
     /**
-     * Create an array of the given size with values of perlin noise
-     * 
-     * @param size
-     * @return
-     */
-    private float[][] createNoise(int size) {
-        float[][] noiseArray = new float[size][size];
+	 * Create an array of the given size with values of perlin noise
+	 * 
+	 * @param size1
+	 * @return
+	 */
+	private float[][] createNoise(int size1) {
+		float[][] noiseArray = new float[size1][size1];
 
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
+		for (int x = 0; x < size1; x++) {
+			for (int y = 0; y < size1; y++) {
 
-                double frequency = 10.0 / size;
+				double frequency = 10.0 / size1;
 
                 double noise = ImprovedNoise.noise(x * frequency, y * frequency, 0);
 

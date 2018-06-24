@@ -2,7 +2,11 @@ package javaexercises;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,7 +53,7 @@ public final class JavaExercise1to11 {
 	}
 	static class Person {
 		private String name;
-		private int age;
+		protected int age;
 		private float height;
 
 		public Person(String n, int a, float h) {
