@@ -18,17 +18,33 @@ import simplebuilder.HasLogging;
 
 public class Word2VecExample implements HasLogging {
 
-    private static final String PATH_TO_SAVE_MODEL_TXT = "pathToSaveModel.txt";
+    private static final String RAW_SENTENCES_TXT = "raw_sentences.txt";
+    private static final String PATH_TO_SAVE_MODEL_TXT = "pathToSaveModel.zip";
+    static Logger log = LoggerFactory.getLogger(Word2VecExample.class);
 
 
+    public static void fit() throws FileNotFoundException {
+        Word2Vec word2Vec = createWord2Vec();
+
+        SentenceIterator iterator = new BasicLineIterator(RAW_SENTENCES_TXT);
+        TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
+        tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+
+        word2Vec.setTokenizerFactory(tokenizerFactory);
+        word2Vec.setSentenceIterator(iterator);
+
+        log.info("Word2vec uptraining...");
+
+        word2Vec.fit();
+
+    }
     public static Word2Vec createWord2Vec() throws FileNotFoundException {
         if (new File(PATH_TO_SAVE_MODEL_TXT).exists()) {
             return WordVectorSerializer.readWord2VecModel(PATH_TO_SAVE_MODEL_TXT);
 
         }
 
-        File filePath = Paths.get("raw_sentences.txt").toFile().getAbsoluteFile();
-        Logger log = LoggerFactory.getLogger(Word2VecExample.class);
+        File filePath = Paths.get(RAW_SENTENCES_TXT).toFile().getAbsoluteFile();
         log.info("Load & Vectorize Sentences....");
         // Strip white space before and after for each line
         SentenceIterator iter = new BasicLineIterator(filePath);
