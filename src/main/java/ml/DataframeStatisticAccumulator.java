@@ -22,7 +22,7 @@ public class DataframeStatisticAccumulator{
     public DataframeStatisticAccumulator(DataframeML dataframeML, String header) {
         dataframe = dataframeML;
         this.header = header;
-        this.format = dataframe.getFormat(header);
+        format = dataframe.getFormat(header);
     }
 
     private void acceptNumber(Number n) {
@@ -32,13 +32,14 @@ public class DataframeStatisticAccumulator{
         min = Math.min(min, o);
         max = Math.max(max, o);
 
-        if (count == dataframe.getSize() / 4) {
+        int size = dataframe.getSize();
+		if (count == size / 4) {
             median25 = o;
         }
-        if (count == dataframe.getSize() / 2) {
+        if (count == size / 2) {
             median50 = o;
         }
-        if (count == dataframe.getSize() * 3 / 4) {
+        if (count == size * 3 / 4) {
             median75 = o;
         }
     }
@@ -52,7 +53,7 @@ public class DataframeStatisticAccumulator{
         max = Math.max(max, n.max);
     }
     double getMean() {
-        return sum / count;
+		return count == 0 ? 0 : sum / count;
     }
 
 
@@ -106,7 +107,7 @@ public class DataframeStatisticAccumulator{
 
 
     public double getMin() {
-        return min;
+		return count == 0 ? 0 : min;
     }
 
 
