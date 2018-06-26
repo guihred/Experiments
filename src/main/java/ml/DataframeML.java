@@ -28,13 +28,11 @@ public class DataframeML implements HasLogging {
 
     public static void main(String[] args) throws IOException {
         // DataframeML x = new DataframeML("california_housing_train.csv")
-        //        DataframeML x = new DataframeML("POPULACAO.csv");
-        //        x.logln(x);
-        // x.describe()
+		DataframeML x = new DataframeML("POPULACAO.csv");
+		x.logln(x);
+		x.describe();
 		// x.filterString("Flag Codes", "B"::equalsIgnoreCase);
         //        x.logln(x);
-
-        System.out.println(Number.class.isAssignableFrom(Integer.class));
 
         //        Files.lines(Paths.get("WDICountry.csv")).forEach(line -> {
         //            System.out.println(line);
@@ -127,6 +125,35 @@ public class DataframeML implements HasLogging {
         }
 
     }
+
+	public void trim(String header, int trimmingSize) {
+		List<Object> list = dataframe.get(header);
+		List<List<Object>> collect = dataframe.entrySet().stream().filter(e -> !e.getKey().equals(header))
+				.map(e -> e.getValue()).collect(Collectors.toList());
+
+		Class<?> class1 = formatMap.get(header);
+		if (class1 == String.class) {
+			QuickSortML.sort(typedList(list, String.class), (i, j) -> {
+				for (List<Object> list2 : collect) {
+					Object object = list2.get(i);
+					list2.set(i, list2.get(j));
+					list2.set(j, object);
+				}
+			}, String::compareTo);
+		}
+		List<Entry<String, List<Object>>> entrySet = dataframe.entrySet().stream().collect(Collectors.toList());
+		for (int i = 0; i < entrySet.size(); i++) {
+			Entry<String, List<Object>> entry = entrySet.get(i);
+			List<Object> value = entry.getValue();
+			dataframe.put(entry.getKey(), value.subList(trimmingSize, value.size() - trimmingSize - 1));
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "unused" })
+	private <T> List<T> typedList(List<Object> list, Class<T> c) {
+		return (List<T>) list;
+	}
+
 
     public List<Entry<Number, Number>> createNumberEntries(String feature, String target) {
 	    List<Object> list = dataframe.get(feature);
