@@ -189,6 +189,15 @@ public class DataframeML implements HasLogging {
         return collect;
     }
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public List<Double> crossFeatureObject(String header, ToDoubleFunction<Object[]> mapper, String... dependent) {
+		List<Double> collect = IntStream.range(0, size).mapToObj(i -> toArray(i, dependent)).mapToDouble(mapper).boxed()
+				.collect(Collectors.toList());
+		dataframe.put(header, (List) collect);
+		formatMap.put(header, Double.class);
+		return collect;
+	}
+
     public void describe() {
         if (stats == null) {
             stats = dataframe.entrySet().stream()
@@ -383,6 +392,14 @@ public class DataframeML implements HasLogging {
         }
         return d;
     }
+
+	private Object[] toArray(int i, String... dependent) {
+		Object[] d = new Object[dependent.length];
+		for (int j = 0; j < dependent.length; j++) {
+			d[j] = dataframe.get(dependent[j]).get(i);
+		}
+		return d;
+	}
 
     @Override
     public String toString() {
