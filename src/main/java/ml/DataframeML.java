@@ -2,9 +2,20 @@ package ml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.DoubleSummaryStatistics;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.Function;
@@ -13,11 +24,13 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import org.apache.commons.lang3.StringUtils;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import org.apache.commons.lang3.StringUtils;
 import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
@@ -26,19 +39,10 @@ public class DataframeML implements HasLogging {
     private static final List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class,
 			Double.class);
 
-    public static void main(String[] args) throws IOException {
-        // DataframeML x = new DataframeML("california_housing_train.csv")
+    public static void main(String[] args) {
 		DataframeML x = new DataframeML("POPULACAO.csv");
 		x.logln(x);
 		x.describe();
-		// x.filterString("Flag Codes", "B"::equalsIgnoreCase);
-        //        x.logln(x);
-
-        //        Files.lines(Paths.get("WDICountry.csv")).forEach(line -> {
-        //            System.out.println(line);
-        //        });
-
-        // x.correlation()
     }
 
     private Map<String, List<Object>> dataframe = new LinkedHashMap<>();
@@ -129,7 +133,7 @@ public class DataframeML implements HasLogging {
 	public void trim(String header, int trimmingSize) {
 		List<Object> list = dataframe.get(header);
 		List<List<Object>> collect = dataframe.entrySet().stream().filter(e -> !e.getKey().equals(header))
-				.map(e -> e.getValue()).collect(Collectors.toList());
+                .map(Entry<String, List<Object>>::getValue).collect(Collectors.toList());
 
 		Class<?> class1 = formatMap.get(header);
 		if (class1 == String.class) {
@@ -301,10 +305,9 @@ public class DataframeML implements HasLogging {
 		return dataframe.get(header);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "rawtypes", "unused" })
     public <T> List<T> list(String header, Class<T> c) {
-		List list = dataframe.get(header);
-		return Collections.checkedList(list, c);
+        return (List) dataframe.get(header);
 	}
 
     public List<Object> row(int i) {
@@ -340,15 +343,13 @@ public class DataframeML implements HasLogging {
                     String key = header.get(i);
                     String field = getFromList(i, line2);
                     Object tryNumber = tryNumber(key, field);
-                    if (filters.containsKey(key)) {
-                        if (!filters.get(key).test(tryNumber)) {
-                            for (int j = 0; j < i; j++) {
-                                List<Object> list = dataframe.get(header.get(j));
-                                list.remove(list.size() - 1);
-                            }
-                            size--;
-                            break;
+                    if (filters.containsKey(key) && !filters.get(key).test(tryNumber)) {
+                        for (int j = 0; j < i; j++) {
+                            List<Object> list = dataframe.get(header.get(j));
+                            list.remove(list.size() - 1);
                         }
+                        size--;
+                        break;
                     }
                     if (categories.containsKey(key)) {
                         Set<String> set = categories.get(key);
@@ -436,7 +437,7 @@ public class DataframeML implements HasLogging {
         String number = field;
         Class<?> currentFormat = formatMap.get(header);
         if (currentFormat == String.class && size > 1
-                && list(header).stream().anyMatch(e -> String.class.isInstance(e))) {
+                && list(header).stream().anyMatch(String.class::isInstance)) {
             return field;
         }
 

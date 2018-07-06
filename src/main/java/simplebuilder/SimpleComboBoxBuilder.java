@@ -1,6 +1,7 @@
 package simplebuilder;
 
 import java.util.Collection;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javafx.collections.FXCollections;
@@ -20,6 +21,7 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
     public SimpleComboBoxBuilder<T> converter(StringConverter<T> value) {
         comboBox.setConverter(value);
+
         return this;
     }
 
@@ -29,6 +31,33 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         } else {
             comboBox.setItems(FXCollections.observableArrayList(value));
         }
+        return this;
+    }
+
+    public SimpleComboBoxBuilder<T> nullOption(String option) {
+        StringConverter<T> converter = comboBox.getConverter();
+
+        StringConverter<T> stringConverter = new StringConverter<T>() {
+
+            @Override
+            public String toString(T object) {
+                if (object == null) {
+                    return option;
+                }
+
+                return converter.toString(object);
+            }
+
+            @Override
+            public T fromString(String string) {
+                if (string.equals(option)) {
+                    return null;
+                }
+                return converter.fromString(string);
+            }
+
+        };
+        comboBox.setConverter(stringConverter);
         return this;
     }
 
@@ -45,6 +74,13 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
     public SimpleComboBoxBuilder<T> onSelect(Consumer<T> obj) {
         comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
             obj.accept(newValue);
+        });
+        return this;
+    }
+
+    public SimpleComboBoxBuilder<T> onChange(BiConsumer<T, T> obj) {
+        comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
+            obj.accept(old, newValue);
         });
         return this;
     }

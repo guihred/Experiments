@@ -8,6 +8,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleSliderBuilder;
 
 public class WorldMapExample2 extends Application {
@@ -26,16 +27,15 @@ public class WorldMapExample2 extends Application {
 		root.getChildren().add(newSlider("Radius", -2, 2, canvas.radiusProperty()));
 		root.getChildren().add(newSlider("X", -360, 360, canvas.yScaleProperty()));
 		root.getChildren().add(newSlider("Y", -360, 360, canvas.xScaleProperty()));
-		DataframeML points = new DataframeML.DataframeBuilder("cities.csv")
+        DataframeML points = new DataframeML.DataframeBuilder(ResourceFXUtils.toFullPath("cities.csv"))
 
 				.build();
 		String latDegree = "Lat Degree";
-		points.crossFeatureObject(latDegree, d -> convertToDegrees(d), "Lat Degree", "Lat Minute");
+        points.crossFeatureObject(latDegree, WorldMapExample2::convertToDegrees, "Lat Degree", "Lat Minute");
 		String lonDegree = "Lon Degree";
-		points.crossFeatureObject(lonDegree, d -> convertToDegrees(d), "Lon Degree", "Lon Minute");
-		System.out.println(points);
-
-		// canvas.setDataframe(x, "Country");
+        points.crossFeatureObject(lonDegree, WorldMapExample2::convertToDegrees, "Lon Degree", "Lon Minute");
+        canvas.valueHeaderProperty().set("Time");
+        canvas.setDataframe(points, "Country");
 		canvas.setPoints(points, latDegree, lonDegree);
         root.getChildren().add(canvas);
 		theStage.show();

@@ -3,11 +3,11 @@ package ml;
 import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.DoubleBinaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,9 +15,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -26,46 +24,32 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import simplebuilder.CommonsFX;
 
-class WorldMapGraph2 extends Canvas {
+class WorldPointMapGraph2 extends Canvas {
     private static final String NO_INFO = "No info";
     public static final double BLUE_HUE = Color.BLUE.getHue();
     private static final double RED_HUE = Color.RED.getHue();
-	private DoubleProperty radius = new SimpleDoubleProperty(1);
     private StringProperty valueHeader = new SimpleStringProperty("Value");
     private IntegerProperty bins = new SimpleIntegerProperty(7);
-	private DoubleProperty xScale = new SimpleDoubleProperty(0);
-	private DoubleProperty yScale = new SimpleDoubleProperty(0);
     private GraphicsContext gc;
     private DataframeML dataframeML;
     private boolean showNeighbors = false;
     private DoubleSummaryStatistics summary;
     private String header = "Country";
-	private String cityHeader = "City";
     private Map<String, Predicate<Object>> filters = new HashMap<>();
     private Map<String, Color> categoryMap = new HashMap<>();
     private double max;
     private double min;
-	private DataframeML points;
-	private String latHeader;
-	private String lonHeader;
 
-    public WorldMapGraph2() {
+    public WorldPointMapGraph2() {
         super(2000, 1200);
         gc = getGraphicsContext2D();
         InvalidationListener listener = observable -> drawGraph();
         valueHeader.addListener(listener);
-		radius.addListener(listener);
-		xScale.addListener(listener);
-		yScale.addListener(listener);
         bins.addListener(listener);
         drawGraph();
         CommonsFX.setZoomable(this);
 
     }
-
-	public DoubleProperty radiusProperty() {
-		return radius;
-	}
 
     public List<Country> anyAdjacents(Country c) {
         Country[] values = Country.values();
@@ -96,7 +80,8 @@ class WorldMapGraph2 extends Canvas {
 
     public void drawGraph() {
         gc.clearRect(0, 0, getWidth(), getHeight());
-		gc.setFill(Color.BLUE);
+        Country[] values = Country.values();
+        gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
         if (summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class) {
             summary = dataframeML.summary(valueHeader.get());
@@ -106,12 +91,26 @@ class WorldMapGraph2 extends Canvas {
         if (dataframeML != null) {
             drawLabels();
         }
-		Country[] values = Country.values();
         for (int i = 0; i < values.length; i++) {
             Country countries = values[i];
             gc.beginPath();
             if (dataframeML != null) {
-				setCountriesColor(countries);
+                dataframeML.only(header, t -> countries.matches(t), j -> {
+                    Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
+                    for (Entry<String, Predicate<Object>> fil : entrySet) {
+                        Object t = dataframeML.list(fil.getKey()).get(j);
+                        if (!fil.getValue().test(t)) {
+                            return;
+                        }
+                    }
+                    List<Object> list = dataframeML.list(valueHeader.get());
+                    Object object = DataframeML.getFromList(j, list);
+                    if (object instanceof Number) {
+                        countries.setColor(getColorForValue(((Number) object).doubleValue()));
+                    } else if (object instanceof String) {
+                        countries.setColor(categoryMap.get(object));
+                    }
+                });
             }
             gc.setFill(countries.getColor() != null ? countries.getColor() : categoryMap.get(NO_INFO));
             gc.appendSVGPath(countries.getPath());
@@ -119,85 +118,66 @@ class WorldMapGraph2 extends Canvas {
             gc.stroke();
             gc.closePath();
         }
-		if (points != null) {
-			drawPoints();
-		}
+
         if (showNeighbors) {
-			drawNeighbors(values);
+            gc.setStroke(Color.RED);
+            gc.setLineWidth(1);
+            for (int i = 0; i < values.length; i++) {
+                Country countries = values[i];
+                for (Country country : countries.neighbors()) {
+                    gc.strokeLine(countries.getCenterX(), countries.getCenterY(), country.getCenterX(),
+                            country.getCenterY());
+                }
+            }
         }
     }
 
-	private void setCountriesColor(Country countries) {
-        dataframeML.only(header, countries::matches, j -> {
-			Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
-			for (Entry<String, Predicate<Object>> fil : entrySet) {
-				Object t = dataframeML.list(fil.getKey()).get(j);
-				if (!fil.getValue().test(t)) {
-					return;
-				}
-			}
-			List<Object> list = dataframeML.list(valueHeader.get());
-			Object object = DataframeML.getFromList(j, list);
-			if (object instanceof Number) {
-				countries.setColor(getColorForValue(((Number) object).doubleValue()));
-			} else if (object instanceof String) {
-				countries.setColor(categoryMap.get(object));
-			}
-		});
-	}
+    private void latToXY(double phi, double lambda) {
+        double lambda0 = 0;
+        double a = 6378.137;
+        double f = 1 / 298.257223563;
+        double n = f / (2 - f);
+        double a1 = n / 2 - 2 * n * n / 3 + 5 * n * n * n / 16;
+        double a2 = 13 * n * n / 48 - 3 * n * n * n / 3;
+        double a3 = 61 * n * n * n / 240;
+        double t = Math.sinh(
+                atanh(Math.sin(phi)) - 2 * Math.sqrt(n) / (1 + n) * atanh(2 * Math.sqrt(n) / (1 + n) * Math.sin(phi)));
+        double xsi = Math.atan(t / Math.cos(lambda - lambda0));
+        double eta = atanh(Math.sin(lambda - lambda0) / Math.sqrt(1 + t * t));
 
-	private void drawNeighbors(Country[] values) {
-		gc.setStroke(Color.RED);
-		gc.setLineWidth(1);
-		for (int i = 0; i < values.length; i++) {
-		    Country countries = values[i];
-		    for (Country country : countries.neighbors()) {
-		        gc.strokeLine(countries.getCenterX(), countries.getCenterY(), country.getCenterX(),
-		                country.getCenterY());
-		    }
-		}
-	}
+        DoubleBinaryOperator o = (j, b) -> 2 * j * b * Math.cos(2 * j * xsi) * Math.cosh(2 * j * eta);
+        double sigma = 1 + sum(o.applyAsDouble(1, a1), o.applyAsDouble(2, a2), o.applyAsDouble(3, a3));
+        DoubleBinaryOperator i = (j, b) -> 2 * j * b * Math.sin(2 * j * xsi) * Math.sinh(2 * j * eta);
+        double tau = sum(i.applyAsDouble(1, a1), i.applyAsDouble(2, a2), i.applyAsDouble(3, a3));
+        //        double E = 
 
-	private void drawPoints() {
-		gc.setFill(Color.RED);
-		MercatorMap mercatorMap = new MercatorMap(getWidth(), getHeight());
-		List<Double> list = points.list(lonHeader, Double.class);
-		List<Double> lis2t = points.list(latHeader, Double.class);
-		List<String> citu = points.list(cityHeader, String.class);
-		for (int i = 0; i < points.getSize(); i++) {
-			System.out.println("X=" + xScale.get());
-			System.out.println("Y=" + yScale.get());
-            double latitudeInDegrees = list.get(i).doubleValue();
-            double longitudeInDegrees = lis2t.get(i).doubleValue();
-			double[] screenLocation = mercatorMap.getScreenLocation(latitudeInDegrees, longitudeInDegrees);
-			double x = xScale.get() + screenLocation[0] * radius.get();
-			double y = yScale.get() + screenLocation[1] * radius.get();
-			gc.fillOval(x, y, radius.get(), radius.get());
-			gc.fillText(citu.get(i), x, y);
-		}
-	}
+        sum(sigma, tau, a);
+    }
 
-	public DoubleProperty xScaleProperty() {
-		return xScale;
-	}
+    private double sum(double... x) {
+        double sum0 = 0;
+        for (int i = 0; i < x.length; i++) {
+            sum0 += x[i];
+        }
+        return sum0;
+    }
 
-	public DoubleProperty yScaleProperty() {
-		return yScale;
-	}
+    double atanh(double x) {
+        return 0.5 * Math.log((x + 1.0) / (x - 1.0));
+    }
 
     private void createCategoryMap() {
         Set<String> categorize = dataframeML.categorize(valueHeader.get());
         categorize.removeIf(StringUtils::isBlank);
 
-        Set<String> keySet = new HashSet<>(categoryMap.keySet());
-        keySet.remove(NO_INFO);
-        if (categorize.size() + 1 == categoryMap.size() && keySet.equals(categorize)) {
+        if (categorize.size() == categoryMap.size() && categoryMap.keySet().equals(categorize)) {
             return;
         }
 
-        List<Color> generateColors = PieGraph.generateRandomColors(categorize.size() + 1);
+        List<Color> generateColors = PieGraph.generateColors(categorize.size() + 1);
         int k = 0;
-        for (String label : categorize) {
+        List<String> collect = categorize.stream().sorted().collect(Collectors.toList());
+        for (String label : collect) {
             categoryMap.put(label, generateColors.get(k));
             k++;
         }
@@ -247,16 +227,8 @@ class WorldMapGraph2 extends Canvas {
         }
 
         categoryMap.put(NO_INFO, Color.GRAY);
-
     }
 
-
-	public void setPoints(DataframeML points, String latHeader, String lonHeader) {
-		this.points = points;
-		this.latHeader = latHeader;
-		this.lonHeader = lonHeader;
-		drawGraph();
-	}
     public void filter(String h, Predicate<Object> pred) {
         filters.put(h, pred);
     }
@@ -275,7 +247,7 @@ class WorldMapGraph2 extends Canvas {
 
     public void setDataframe(DataframeML x, String header) {
         this.header = header;
-        dataframeML = x;
+        this.dataframeML = x;
         drawGraph();
     }
 

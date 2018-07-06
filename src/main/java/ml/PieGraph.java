@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -32,7 +33,7 @@ public class PieGraph extends Canvas {
 
     public void setHistogram(Map<String, Long> histogram) {
         this.histogram.putAll(histogram);
-		availableColors = generateColors(histogram.size());
+        availableColors = generateRandomColors(histogram.size());
         drawGraph();
     }
 
@@ -75,6 +76,19 @@ public class PieGraph extends Canvas {
 	public static List<Color> generateColors(int size) {
         List<Color> availableColors = new ArrayList<>();
 		int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
+        for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
+            Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
+                    Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
+                    Math.abs(255 - i % cubicRoot * 256 / cubicRoot) % 256);
+
+            availableColors.add(rgb);
+        }
+        return availableColors;
+    }
+
+    public static List<Color> generateRandomColors(int size) {
+        List<Color> availableColors = new ArrayList<>();
+        int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
         for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
             Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
                     Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,

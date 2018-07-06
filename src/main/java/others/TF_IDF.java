@@ -6,9 +6,16 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,16 +26,18 @@ public final class TF_IDF {
 		// equals.
 		@Override
 		public int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
-			Double da = 0D;
+            double da = 0D;
 			for (Entry<File, Double> entry : a.getValue().entrySet()) {
-				da = da < entry.getValue() ? entry.getValue() : da;
+                double value = entry.getValue().doubleValue();
+                da = da < value ? value : da;
 			}
-			Double db = 0D;
+            double db = 0D;
 			for (Entry<File, Double> entry : b.getValue().entrySet()) {
-				db = db < entry.getValue() ? entry.getValue() : db;
+                double value = entry.getValue().doubleValue();
+                db = db < value ? value : db;
 			}
 
-			return db.compareTo(da);
+            return Double.compare(db, da);
 		}
 	}
 
@@ -141,7 +150,8 @@ public final class TF_IDF {
 					List<String> asList = Arrays.asList(split);
 					asList.parallelStream().filter(a -> !a.isEmpty()).reduce(collect, (mapa, a) -> {
 						if (mapa.containsKey(a.toLowerCase())) {
-							mapa.put(a.toLowerCase(), mapa.get(a.toLowerCase()) + 1L);
+                            Long long1 = mapa.get(a.toLowerCase());
+                            mapa.put(a.toLowerCase(), long1 + 1L);
 						} else {
 							mapa.put(a.toLowerCase(), 1L);
 						}
@@ -149,7 +159,6 @@ public final class TF_IDF {
 					}, (mapa1, mapa2) -> mapa1);
 				}
 			} while (readLine != null);
-			bufferedReader.close();
 
 			return collect;
 		} catch (IOException e) {
@@ -170,7 +179,7 @@ public final class TF_IDF {
 		return Math.log(MAPA_DOCUMENTO.size() / idf);
 	}
 
-	private static double getTermFrequency(Long fre) {
+    private static double getTermFrequency(long fre) {
 		return fre == 0 ? 0D : 1 + Math.log(fre);
 	}
 
@@ -184,7 +193,7 @@ public final class TF_IDF {
 				if (!TF_IDF.MAP_TF_IDF.containsKey(p)) {
 					MAP_TF_IDF.put(p, new HashMap<File, Double>());
 				}
-				Double termFrequency = getTermFrequency(fre);
+                double termFrequency = getTermFrequency(fre);
 				MAP_TF_IDF.get(p).put(c, idf * termFrequency);
 			}));
 			// MAP_TF_IDF =

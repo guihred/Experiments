@@ -59,7 +59,7 @@ class WorldMapGraph extends Canvas {
     public void coloring() {
 
         Country[] values = Country.values();
-        List<Color> availableColors = PieGraph.generateColors(10);
+        List<Color> availableColors = PieGraph.generateRandomColors(10);
         int i = 0;
         List<Country> vertices = Stream.of(values)
                 .sorted(Comparator.comparing((Country e) -> e.neighbors().size()).reversed())
@@ -140,7 +140,7 @@ class WorldMapGraph extends Canvas {
             return;
         }
 
-        List<Color> generateColors = PieGraph.generateColors(categorize.size() + 1);
+        List<Color> generateColors = PieGraph.generateRandomColors(categorize.size() + 1);
         int k = 0;
         for (String label : categorize) {
             categoryMap.put(label, generateColors.get(k));

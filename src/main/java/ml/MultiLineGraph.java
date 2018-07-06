@@ -50,7 +50,7 @@ class MultiLineGraph extends Canvas {
 
 		dataframe.forEach((col, items) -> {
             if (colors == null || colors.size() < stats.size()) {
-                List<Color> generateColors = PieGraph.generateColors(stats.size());
+                List<Color> generateColors = PieGraph.generateRandomColors(stats.size());
                 Iterator<Color> iterator = generateColors.iterator();
                 stats.forEach((col2, itens) -> colors.put(col2, iterator.next()));
             }

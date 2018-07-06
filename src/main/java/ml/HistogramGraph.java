@@ -8,6 +8,7 @@ import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -53,7 +54,7 @@ class HistogramGraph extends Canvas {
         this.dataframe = dataframe;
 
 		dataframe.forEach((col, items) -> {
-            List<Color> generateColors = PieGraph.generateColors(stats.size());
+            List<Color> generateColors = PieGraph.generateRandomColors(stats.size());
             Iterator<Color> iterator = generateColors.iterator();
             colors.put(col, iterator.next());
             Map<Double, Long> histogram = dataframe.histogram(col, bins.get());
