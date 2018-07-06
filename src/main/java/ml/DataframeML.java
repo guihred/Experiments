@@ -35,7 +35,7 @@ import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
 
-	private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
+    private static final int FRAME_MAX_SIZE = 46;
     private static final List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class,
 			Double.class);
 
@@ -312,6 +312,12 @@ public class DataframeML implements HasLogging {
 
     public List<Object> row(int i) {
         return dataframe.values().stream().map(e -> e.get(i)).collect(Collectors.toList());
+    }
+
+    public Map<String, Object> rowMap(int i) {
+        return dataframe.entrySet().stream()
+                .filter(e -> e.getValue().get(i) != null)
+                .collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i)));
     }
 
     public void log(String s, Object... e) {
