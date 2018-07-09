@@ -191,9 +191,16 @@ class WorldMapGraph extends Canvas {
         gc.setStroke(Color.BLACK);
         for (int i = 0; i <= bins.get(); i++) {
             double s = Math.floor((min + i * h) / millin) * millin;
-            gc.setFill(getColorForValue(s));
-            gc.fillRect(x, y + step * i, 10, 10);
-            gc.strokeText(String.format("%11.0f", s), x + 15, y + step * i + 10);
+            if (h < 2) {
+                s = min + i * h;
+                gc.strokeText(String.format("%11.2f", s), x + 15, y + step * i + 10);
+                gc.setFill(getColorForValue(s));
+                gc.fillRect(x, y + step * i, 10, 10);
+            } else {
+                gc.setFill(getColorForValue(s));
+                gc.fillRect(x, y + step * i, 10, 10);
+                gc.strokeText(String.format("%11.0f", s), x + 15, y + step * i + 10);
+            }
         }
 
         categoryMap.put(NO_INFO, Color.GRAY);
