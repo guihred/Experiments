@@ -25,7 +25,7 @@ class TimelineGraph extends Canvas {
 	private DoubleProperty lineSize = new SimpleDoubleProperty(5);
 	private IntegerProperty bins = new SimpleIntegerProperty(20);
 	private IntegerProperty ybins = new SimpleIntegerProperty(20);
-	private double xProportion;
+    private final DoubleProperty xProportion = new SimpleDoubleProperty();
 	private double yProportion;
 	private GraphicsContext gc;
 	private DataframeML dataframe;
@@ -33,7 +33,6 @@ class TimelineGraph extends Canvas {
     private IntSummaryStatistics colStats = new IntSummaryStatistics();
 	private ObservableMap<String, Color> colors = FXCollections.observableHashMap();
 	private IntegerProperty radius = new SimpleIntegerProperty(5);
-    private String label;
 
 
 	public TimelineGraph() {
@@ -49,9 +48,8 @@ class TimelineGraph extends Canvas {
 		ybins.addListener(listener);
 	}
 
-    public void setHistogram(DataframeML dataframe, String label) {
+    public void setHistogram(DataframeML dataframe) {
 		this.dataframe = dataframe;
-        this.label = label;
 
 		dataframe.forEach((col, items) -> {
 
@@ -63,6 +61,7 @@ class TimelineGraph extends Canvas {
                     colStats.accept(Integer.valueOf(col));
                     stats.combine(
                             summaryStatistics);
+
                 }
             }
         });
@@ -78,7 +77,7 @@ class TimelineGraph extends Canvas {
 
         int maxYear = colStats.getMax();
         int minYear = colStats.getMin();
-        xProportion = (maxYear - minYear) / (double) bins.get();
+        xProportion.set((maxYear - minYear) / (double) bins.get());
 
         double max2 = stats.getMax();
 
@@ -88,11 +87,20 @@ class TimelineGraph extends Canvas {
         double d = layout.get();
         double j = (maxLayout - d) / bins.doubleValue();
         double j2 = (maxLayout - d) / ybins.get();
+        boolean colorEmpty = colors.isEmpty();
+
         List<Color> generateRandomColors = PieGraph.generateRandomColors(list.size());
         for (int i = 0; i < list.size(); i++) {
             String labelRow = list.get(i);
-            Color value = generateRandomColors.get(i);
-            colors.put(labelRow, value);
+            Color value = colors.get(labelRow);
+            if (!colors.containsKey(labelRow)) {
+                if (!colorEmpty) {
+                    continue;
+                }
+                value = generateRandomColors.get(i);
+                colors.put(labelRow, value);
+            }
+
             Map<String, Object> row = dataframe.rowMap(i);
             gc.setFill(value);
             gc.setStroke(value);
@@ -102,7 +110,7 @@ class TimelineGraph extends Canvas {
                     continue;
                 }
 
-                double k = (year - minYear) / xProportion;
+                double k = (year - minYear) / xProportion.get();
                 double x1 = k * j + d;
                 double y = object.doubleValue() - stats.getMin();
                 double y1 = maxLayout - y / yProportion * j2;
@@ -112,7 +120,7 @@ class TimelineGraph extends Canvas {
             }
             for (int year = minYear; year <= maxYear; year++) {
                 double x = year - minYear;
-                double m = x / xProportion;
+                double m = x / xProportion.get();
                 double x1 = m * j + d;
                 Number object = (Number) row.get("" + year);
                 if (object == null) {
@@ -123,7 +131,7 @@ class TimelineGraph extends Canvas {
                 int searchYear = year;
                 while (searchYear < maxYear) {
                     double x2 = ++searchYear - minYear;
-                    double i2 = x2 / xProportion;
+                    double i2 = x2 / xProportion.get();
                     double x12 = i2 * j + d;
                     Number object2 = (Number) row.get("" + searchYear);
                     if (object2 != null) {
@@ -151,7 +159,7 @@ class TimelineGraph extends Canvas {
 		for (int i = 1; i <= bins.get(); i++) {
 			double x1 = i * j + e;
 			gc.strokeLine(x1, maxLayout, x1, maxLayout + d);
-            String xLabel = String.format("%.0f", i * xProportion + colStats.getMin());
+            String xLabel = String.format("%.0f", i * xProportion.get() + colStats.getMin());
 			gc.strokeText(xLabel, x1 - d * xLabel.length() / 2,
 					maxLayout + d * (4 + 3 * (i % 2)));
 
@@ -169,62 +177,25 @@ class TimelineGraph extends Canvas {
 		return layout;
 	}
 
-	public final double getLayout() {
-		return layoutProperty().get();
-	}
-
-	public final void setLayout(final double layout) {
-		layoutProperty().set(layout);
-	}
-
 	public final DoubleProperty lineSizeProperty() {
 		return lineSize;
-	}
-
-	public final double getLineSize() {
-		return lineSizeProperty().get();
-	}
-
-	public final void setLineSize(final double lineSize) {
-		lineSizeProperty().set(lineSize);
 	}
 
 	public final IntegerProperty binsProperty() {
 		return bins;
 	}
 
-	public final int getBins() {
-		return binsProperty().get();
-	}
-
-	public final void setBins(final int bins) {
-		binsProperty().set(bins);
-	}
+    public DoubleProperty xProportionProperty() {
+        return xProportion;
+    }
 
 	public final IntegerProperty ybinsProperty() {
 		return ybins;
 	}
 
-	public final int getYbins() {
-		return ybinsProperty().get();
-	}
-
-	public final void setYbins(final int ybins) {
-		ybinsProperty().set(ybins);
-	}
-
 	public final IntegerProperty radiusProperty() {
 		return radius;
 	}
-
-	public final int getRadius() {
-		return radiusProperty().get();
-	}
-
-	public final void setRadius(final int radius) {
-		radiusProperty().set(radius);
-	}
-
 
 	public ObservableMap<String, Color> colorsProperty() {
 		return colors;
