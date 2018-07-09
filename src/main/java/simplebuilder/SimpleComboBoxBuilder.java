@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -23,6 +24,11 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         comboBox.setConverter(value);
 
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public SimpleComboBoxBuilder<T> items(T... value) {
+        return items(Arrays.asList(value));
     }
 
     public SimpleComboBoxBuilder<T> items(Collection<T> value) {

@@ -82,6 +82,10 @@ class WorldMapGraph extends Canvas {
         Country[] values = Country.values();
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
+        if (dataframeML != null) {
+            dataframeML.filterString(header, s -> Country.hasName(s));
+        }
+
         if (summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class) {
             summary = dataframeML.summary(valueHeader.get());
         } else if (dataframeML != null && dataframeML.getFormat(valueHeader.get()) == String.class) {
@@ -94,6 +98,7 @@ class WorldMapGraph extends Canvas {
             Country countries = values[i];
             gc.beginPath();
             if (dataframeML != null) {
+                countries.setColor(null);
                 dataframeML.only(header, t -> countries.matches(t), j -> {
                     Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
                     for (Entry<String, Predicate<Object>> fil : entrySet) {
@@ -178,7 +183,7 @@ class WorldMapGraph extends Canvas {
 
     private void createNumberLabels(double x, double y, double step) {
         gc.fillRect(x - 5, y - 5, getWidth() / 20, step * bins.get() + step);
-        int millin = 100000;
+        int millin = 1;
         min = Math.floor(summary.getMin() / millin) * millin;
         max = Math.ceil(summary.getMax() / millin) * millin;
         double h = (max - min) / bins.get();
@@ -213,6 +218,7 @@ class WorldMapGraph extends Canvas {
     public void setDataframe(DataframeML x, String header) {
         this.header = header;
         this.dataframeML = x;
+        this.summary = null;
         drawGraph();
     }
 

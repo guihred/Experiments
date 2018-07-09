@@ -1,13 +1,17 @@
 package ml;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.beans.property.Property;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
 
 public class WorldMapExample extends Application {
@@ -22,55 +26,47 @@ public class WorldMapExample extends Application {
 		theStage.setScene(theScene);
 
 		WorldMapGraph canvas = new WorldMapGraph();
-        // root.getChildren().add(newSlider("Radius", 1, 375, canvas.radius));
-        // root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSize));
-        // root.getChildren().add(newSlider("Padding", 10, 100, canvas.layout));
-        // root.getChildren().add(newSlider("X Bins", 1, 30, canvas.bins));
         root.getChildren().add(newSlider("Labels", 1, 10, canvas.binsProperty()));
-        //        DataframeML x = new DataframeML.DataframeBuilder("WDICountry.csv")
-        //                .categorize("Short Name")
-        //                .categorize("Region")
-        //                .build();
-        DataframeML x = new DataframeML.DataframeBuilder("POPULACAO.csv")
-                .filter("Unit", "Persons"::equals)
-                .filter("SEX", "TT"::equals)
-                .filter("Country", e -> !e.toString().matches("World|OECD - Total|G7"))
-                .filter("SUBJECT", "YP99TLL1_ST"::equals)
-                .categorize("Country")
-                .categorize("TIME").build();
-        System.out.println(x);
-        System.out.println(x.categorize("Country"));
-		
-//        DataframeML x = new DataframeML.DataframeBuilder("globalGDP.csv")
-//                .filter("TRANSACT", "B1_GA"::equals)
-//                .filter("Unit Code", "USD"::equals).categorize("Country").build();
-//        // x.describe();
-//        x.logln(x);
-//        //        System.out.println(x.list("Country").stream().sorted().collect(Collectors.toSet()));
-//        System.out.println("COUNTRIES NOT FOUND: " + x.list("Country").stream().distinct().map(Objects::toString)
-//                .filter(e -> !Country.hasName(e))
-//                .sorted().collect(Collectors.toSet()));
-//
-        //        ComboBox<String> year = new SimpleComboBoxBuilder<String>()
-        //                .items(x.categorize("TIME").stream().sorted().collect(Collectors.toList())).onSelect(e -> {
-        //                    Integer valueOf = Integer.valueOf(e);
-        //                    canvas.filter("TIME", valueOf::equals);
-        //                    canvas.drawGraph();
-        //                }).select("2000").build();
-        
-        //        ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList()
-        // canvas.stats.addListener((InvalidationListener) o -> {
-        // Set<Entry<String, Color>> entrySet = canvas.colors.entrySet();
-        // itens.setAll(entrySet);
-        // });
-        //        canvas.valueHeaderProperty().set("System of trade");
-        canvas.setDataframe(x, "Country");
-        //        canvas.coloring();
+        //        DataframeML x = new DataframeML.DataframeBuilder("POPULACAO.csv")
+        //                .filter("Unit", "Persons"::equals)
+        //                .filter("SEX", "TT"::equals)
+        //                .filter("Country", e -> !e.toString().matches("World|OECD - Total|G7"))
+        //                .filter("SUBJECT", "YP99TLL1_ST"::equals)
+        //                .categorize("Country")
+        //                .categorize("TIME").build();
 
-        //        root.getChildren().add(year);
+        DataframeML x = new DataframeML.DataframeBuilder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
+        canvas.valueHeaderProperty().set("2016");
+        canvas.setDataframe(x,
+                x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
+        File file = new File("out");
+        Text text = new Text();
+        String[] list = file.list();
+        ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(list).select("WDIDataEG.ELC.ACCS.ZS.csv")
+                .onSelect(s -> {
+                    DataframeML x2 = new DataframeML.DataframeBuilder("out/" + s).build();
+                    canvas.valueHeaderProperty().set("2016");
+
+                    extracted(text, x2);
+                    canvas.setDataframe(x2,
+                            x2.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
+
+        }).build();
+
+        root.getChildren().add(build);
+        root.getChildren().add(text);
         root.getChildren().add(canvas);
 		theStage.show();
 	}
+
+    private void extracted(Text text, DataframeML x2) {
+
+        try {
+            text.setText(x2.list("Indicator Name").get(0).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private VBox newSlider(String string, double min, int max, Property<Number> radius) {
         Slider build = new SimpleSliderBuilder().min(min).max(max).build();

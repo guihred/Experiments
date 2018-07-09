@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,7 +36,7 @@ import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
 
-    private static final int FRAME_MAX_SIZE = 46;
+    private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
     private static final List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class,
 			Double.class);
 
@@ -343,6 +344,10 @@ public class DataframeML implements HasLogging {
                 List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
                 if (header.size() != line2.size()) {
                     getLogger().error("ERROR FIELDS COUNT");
+                    if (line2.size() < header.size()) {
+                        line2.addAll(Stream.generate(() -> "").limit(header.size() - line2.size())
+                                .collect(Collectors.toList()));
+                    }
                 }
 
                 for (int i = 0; i < header.size(); i++) {
@@ -388,7 +393,7 @@ public class DataframeML implements HasLogging {
     }
 
     public DoubleSummaryStatistics summary(String header) {
-        return list(header).stream().map(Number.class::cast)
+        return list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
                 .mapToDouble(Number::doubleValue).summaryStatistics();
     }
 
