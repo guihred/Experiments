@@ -46,12 +46,10 @@ public class WorldMapExample extends Application {
                 .onSelect(s -> {
                     DataframeML x2 = new DataframeML.DataframeBuilder("out/" + s).build();
                     canvas.valueHeaderProperty().set("2016");
-
-                    extracted(text, x2);
+                    updateIndicatorName(text, x2);
                     canvas.setDataframe(x2,
                             x2.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
-
-        }).build();
+                }).build();
 
         root.getChildren().add(build);
         root.getChildren().add(text);
@@ -59,7 +57,7 @@ public class WorldMapExample extends Application {
 		theStage.show();
 	}
 
-    private void extracted(Text text, DataframeML x2) {
+    private void updateIndicatorName(Text text, DataframeML x2) {
 
         try {
             text.setText(x2.list("Indicator Name").get(0).toString());

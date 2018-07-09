@@ -43,7 +43,11 @@ class WorldMapGraph extends Canvas {
         super(2000, 1200);
         gc = getGraphicsContext2D();
         InvalidationListener listener = observable -> drawGraph();
-        valueHeader.addListener(listener);
+        valueHeader.addListener(s -> {
+            summary = null;
+            categoryMap.clear();
+            drawGraph();
+        });
         bins.addListener(listener);
         drawGraph();
         CommonsFX.setZoomable(this);
