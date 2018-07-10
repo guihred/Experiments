@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.ResourceFXUtils;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 
 public class WorldMapExample2 extends Application {
@@ -37,6 +38,8 @@ public class WorldMapExample2 extends Application {
         canvas.valueHeaderProperty().set("Time");
         canvas.setDataframe(points, "Country");
 		canvas.setPoints(points, latDegree, lonDegree);
+        root.getChildren()
+                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
         root.getChildren().add(canvas);
 		theStage.show();
 	}

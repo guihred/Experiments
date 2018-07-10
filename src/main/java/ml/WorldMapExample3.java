@@ -1,15 +1,7 @@
 package ml;
 
-import java.io.File;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.application.Application;
 import javafx.beans.property.Property;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
@@ -22,7 +14,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
 
-public class WorldMapExample extends Application {
+public class WorldMapExample3 extends Application {
 
 
     @Override
@@ -43,51 +35,23 @@ public class WorldMapExample extends Application {
         //                .categorize("Country")
         //                .categorize("TIME").build();
 
-        DataframeML x = new DataframeML.DataframeBuilder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
-        canvas.valueHeaderProperty().set("2016");
+        DataframeML x = new DataframeML.DataframeBuilder("WDICountry.csv").build();
+        canvas.valueHeaderProperty().set("Currency Unit");
         canvas.setDataframe(x,
-                x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
-        File file = new File("out");
+                x.cols().stream().filter(e -> e.contains("able N")).findFirst().orElse("﻿Table Name"));
         Text text = new Text();
-        String[] list = file.list();
-        ComboBox<String> build2 = new SimpleComboBoxBuilder<String>().items("2016").select("2016")
-                .onSelect(canvas.valueHeaderProperty()::set).build();
-
-        ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(list).select("WDIDataEG.ELC.ACCS.ZS.csv")
+        ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(x.cols()).select("Currency Unit")
                 .onSelect(s -> {
-                    DataframeML x2 = new DataframeML.DataframeBuilder("out/" + s).build();
-                    ObservableList<String> itens = FXCollections.observableArrayList(
-                            x2.cols().stream().filter(StringUtils::isNumeric).sorted()
-                                    .filter(e -> x2.list(e).stream().anyMatch(Objects::nonNull))
-                                    .collect(Collectors.toList()));
-
-                    build2.setItems(itens);
-                    updateIndicatorName(text, x2);
-                    if (!itens.contains(canvas.valueHeaderProperty().get())) {
-                        build2.getSelectionModel().select(itens.size() - 1);
-                    }
-                    canvas.setDataframe(x2,
-                            x2.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
+                    canvas.valueHeaderProperty().set(s);
+                    text.setText(s);
                 }).build();
-
         root.getChildren().add(build);
-        root.getChildren().add(build2);
         root.getChildren().add(text);
         root.getChildren()
                 .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
-
         root.getChildren().add(canvas);
 		theStage.show();
 	}
-
-    private void updateIndicatorName(Text text, DataframeML x2) {
-
-        try {
-            text.setText(x2.list("Indicator Name").get(0).toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private VBox newSlider(String string, double min, int max, Property<Number> radius) {
         Slider build = new SimpleSliderBuilder().min(min).max(max).build();

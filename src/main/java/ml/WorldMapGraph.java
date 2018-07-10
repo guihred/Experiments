@@ -87,7 +87,7 @@ class WorldMapGraph extends Canvas {
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
         if (dataframeML != null) {
-            dataframeML.filterString(header, s -> Country.hasName(s));
+            dataframeML.filterString(header, Country::hasName);
         }
 
         if (summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class) {

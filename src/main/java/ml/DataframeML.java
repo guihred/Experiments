@@ -389,10 +389,13 @@ public class DataframeML implements HasLogging {
     }
 
     public static <T> T getFromList(int j, List<T> list) {
-        return j < list.size() ? list.get(j) : null;
+        return list != null && j < list.size() ? list.get(j) : null;
     }
 
     public DoubleSummaryStatistics summary(String header) {
+        if (!dataframe.containsKey(header)) {
+            return new DoubleSummaryStatistics();
+        }
         return list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
                 .mapToDouble(Number::doubleValue).summaryStatistics();
     }
