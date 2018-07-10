@@ -15,9 +15,12 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 public class PointsExample extends Application {
 
@@ -52,6 +55,8 @@ public class PointsExample extends Application {
 		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
 		root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
 		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        root.getChildren()
+                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
 
         ObservableList<String> itens = FXCollections.observableArrayList();
 		canvas.statsProperty().addListener((InvalidationListener) o -> itens.setAll(canvas.statsProperty().keySet()));
@@ -60,9 +65,7 @@ public class PointsExample extends Application {
 		ListView<String> xSelected = createSelection(itens, canvas.xHeaderProperty());
 		ListView<String> ySelected = createSelection(itens, canvas.yHeaderProperty());
 
-        root.getChildren().add(canvas);
-        root.getChildren().add(xSelected);
-        root.getChildren().add(ySelected);
+        root.getChildren().add(new HBox(xSelected, ySelected, canvas));
 
 
 		theStage.show();

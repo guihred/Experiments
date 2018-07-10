@@ -37,6 +37,7 @@ import simplebuilder.HasLogging;
 public class DataframeML implements HasLogging {
 
     private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
+    private int maxSize = FRAME_MAX_SIZE;
     private static final List<Class<?>> formatHierarchy = Arrays.asList(String.class, Integer.class, Long.class,
 			Double.class);
 
@@ -86,11 +87,17 @@ public class DataframeML implements HasLogging {
             return this;
         }
 
+        public DataframeBuilder setMaxSize(int maxSize) {
+            dataframeML.maxSize = maxSize;
+            return this;
+        }
+
         public DataframeML build() {
             dataframeML.readCSV(csvFile);
             return dataframeML;
         }
     }
+
 
     public void apply(String header, DoubleUnaryOperator mapper) {
         dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
@@ -375,7 +382,7 @@ public class DataframeML implements HasLogging {
 
                     dataframe.get(key).add(tryNumber);
                 }
-                if (size > FRAME_MAX_SIZE) {
+                if (size > maxSize) {
                     break;
                 }
             }

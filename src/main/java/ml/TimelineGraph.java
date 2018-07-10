@@ -18,6 +18,7 @@ import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 
 class TimelineGraph extends Canvas {
 	private DoubleProperty layout = new SimpleDoubleProperty(30);
@@ -33,7 +34,7 @@ class TimelineGraph extends Canvas {
     private IntSummaryStatistics colStats = new IntSummaryStatistics();
 	private ObservableMap<String, Color> colors = FXCollections.observableHashMap();
 	private IntegerProperty radius = new SimpleIntegerProperty(5);
-
+    private String title;
 
 	public TimelineGraph() {
 		super(550, 550);
@@ -50,7 +51,8 @@ class TimelineGraph extends Canvas {
 
     public void setHistogram(DataframeML dataframe) {
 		this.dataframe = dataframe;
-
+        stats = new DoubleSummaryStatistics();
+        colStats = new IntSummaryStatistics();
 		dataframe.forEach((col, items) -> {
 
 
@@ -104,12 +106,13 @@ class TimelineGraph extends Canvas {
             Map<String, Object> row = dataframe.rowMap(i);
             gc.setFill(value);
             gc.setStroke(value);
+            boolean hasPoint = false;
             for (int year = minYear; year <= maxYear; year++) {
                 Number object = (Number) row.get("" + year);
                 if (object == null) {
                     continue;
                 }
-
+                hasPoint = true;
                 double k = (year - minYear) / xProportion.get();
                 double x1 = k * j + d;
                 double y = object.doubleValue() - stats.getMin();
@@ -118,6 +121,10 @@ class TimelineGraph extends Canvas {
                 double h = radius.get();
                 gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
             }
+            if (!hasPoint) {
+                colors.remove(labelRow);
+            }
+
             for (int year = minYear; year <= maxYear; year++) {
                 double x = year - minYear;
                 double m = x / xProportion.get();
@@ -150,7 +157,9 @@ class TimelineGraph extends Canvas {
 
 		gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
-		gc.setLineWidth(1);
+        gc.setLineWidth(1);
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
 		double e = layout.get();
 		gc.strokeLine(e, e, e, maxLayout);
 		gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
@@ -158,18 +167,18 @@ class TimelineGraph extends Canvas {
 		double d = lineSize.get();
 		for (int i = 1; i <= bins.get(); i++) {
 			double x1 = i * j + e;
-			gc.strokeLine(x1, maxLayout, x1, maxLayout + d);
+            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
             String xLabel = String.format("%.0f", i * xProportion.get() + colStats.getMin());
-			gc.strokeText(xLabel, x1 - d * xLabel.length() / 2,
-					maxLayout + d * (4 + 3 * (i % 2)));
+            gc.strokeText(xLabel, x1,
+                    maxLayout + 5 * (4 + 3 * (i % 2)));
 
 		}
 		j = (maxLayout - e) / ybins.get();
 		for (int i = 0; i <= ybins.get(); i++) {
 			double y1 = maxLayout - i * j;
-			gc.strokeLine(e, y1, e - d, y1);
+            gc.strokeLine(e, y1, e - 5, y1);
             String yLabel = String.format("%.1f", i * yProportion + stats.getMin());
-			gc.strokeText(yLabel, e - d * 4, y1);
+            gc.strokeText(yLabel, e - d * 2, y1);
 		}
 	}
 
@@ -200,4 +209,8 @@ class TimelineGraph extends Canvas {
 	public ObservableMap<String, Color> colorsProperty() {
 		return colors;
 	}
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

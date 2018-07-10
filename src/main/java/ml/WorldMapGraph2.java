@@ -3,7 +3,6 @@ package ml;
 import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,10 +52,14 @@ class WorldMapGraph2 extends Canvas {
         super(2000, 1200);
         gc = getGraphicsContext2D();
         InvalidationListener listener = observable -> drawGraph();
-        valueHeader.addListener(listener);
-		radius.addListener(listener);
-		xScale.addListener(listener);
-		yScale.addListener(listener);
+        valueHeader.addListener(s -> {
+            summary = null;
+            categoryMap.clear();
+            drawGraph();
+        });
+        radius.addListener(listener);
+        xScale.addListener(listener);
+        yScale.addListener(listener);
         bins.addListener(listener);
         drawGraph();
         CommonsFX.setZoomable(this);
@@ -96,8 +99,13 @@ class WorldMapGraph2 extends Canvas {
 
     public void drawGraph() {
         gc.clearRect(0, 0, getWidth(), getHeight());
-		gc.setFill(Color.BLUE);
+        Country[] values = Country.values();
+        gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
+        if (dataframeML != null) {
+            dataframeML.filterString(header, Country::hasName);
+        }
+
         if (summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class) {
             summary = dataframeML.summary(valueHeader.get());
         } else if (dataframeML != null && dataframeML.getFormat(valueHeader.get()) == String.class) {
@@ -106,7 +114,6 @@ class WorldMapGraph2 extends Canvas {
         if (dataframeML != null) {
             drawLabels();
         }
-		Country[] values = Country.values();
         for (int i = 0; i < values.length; i++) {
             Country countries = values[i];
             gc.beginPath();
@@ -128,22 +135,23 @@ class WorldMapGraph2 extends Canvas {
     }
 
 	private void setCountriesColor(Country countries) {
+	    countries.setColor(null);
         dataframeML.only(header, countries::matches, j -> {
-			Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
-			for (Entry<String, Predicate<Object>> fil : entrySet) {
-				Object t = dataframeML.list(fil.getKey()).get(j);
-				if (!fil.getValue().test(t)) {
-					return;
-				}
-			}
-			List<Object> list = dataframeML.list(valueHeader.get());
-			Object object = DataframeML.getFromList(j, list);
-			if (object instanceof Number) {
-				countries.setColor(getColorForValue(((Number) object).doubleValue()));
-			} else if (object instanceof String) {
-				countries.setColor(categoryMap.get(object));
-			}
-		});
+            Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
+            for (Entry<String, Predicate<Object>> fil : entrySet) {
+                Object t = dataframeML.list(fil.getKey()).get(j);
+                if (!fil.getValue().test(t)) {
+                    return;
+                }
+            }
+            List<Object> list = dataframeML.list(valueHeader.get());
+            Object object = DataframeML.getFromList(j, list);
+            if (object instanceof Number) {
+                countries.setColor(getColorForValue(((Number) object).doubleValue()));
+            } else if (object instanceof String) {
+                countries.setColor(categoryMap.get(object));
+            }
+        });
 	}
 
 	private void drawNeighbors(Country[] values) {
@@ -189,9 +197,7 @@ class WorldMapGraph2 extends Canvas {
         Set<String> categorize = dataframeML.categorize(valueHeader.get());
         categorize.removeIf(StringUtils::isBlank);
 
-        Set<String> keySet = new HashSet<>(categoryMap.keySet());
-        keySet.remove(NO_INFO);
-        if (categorize.size() + 1 == categoryMap.size() && keySet.equals(categorize)) {
+        if (categorize.size() == categoryMap.size() && categoryMap.keySet().equals(categorize)) {
             return;
         }
 
@@ -233,7 +239,7 @@ class WorldMapGraph2 extends Canvas {
 
     private void createNumberLabels(double x, double y, double step) {
         gc.fillRect(x - 5, y - 5, getWidth() / 20, step * bins.get() + step);
-        int millin = 100000;
+        int millin = 1;
         min = Math.floor(summary.getMin() / millin) * millin;
         max = Math.ceil(summary.getMax() / millin) * millin;
         double h = (max - min) / bins.get();
@@ -241,13 +247,19 @@ class WorldMapGraph2 extends Canvas {
         gc.setStroke(Color.BLACK);
         for (int i = 0; i <= bins.get(); i++) {
             double s = Math.floor((min + i * h) / millin) * millin;
-            gc.setFill(getColorForValue(s));
-            gc.fillRect(x, y + step * i, 10, 10);
-            gc.strokeText(String.format("%11.0f", s), x + 15, y + step * i + 10);
+            if (h < 2) {
+                s = min + i * h;
+                gc.strokeText(String.format("%11.2f", s), x + 15, y + step * i + 10);
+                gc.setFill(getColorForValue(s));
+                gc.fillRect(x, y + step * i, 10, 10);
+            } else {
+                gc.setFill(getColorForValue(s));
+                gc.fillRect(x, y + step * i, 10, 10);
+                gc.strokeText(String.format("%11.0f", s), x + 15, y + step * i + 10);
+            }
         }
 
         categoryMap.put(NO_INFO, Color.GRAY);
-
     }
 
 
@@ -275,7 +287,8 @@ class WorldMapGraph2 extends Canvas {
 
     public void setDataframe(DataframeML x, String header) {
         this.header = header;
-        dataframeML = x;
+        this.dataframeML = x;
+        this.summary = null;
         drawGraph();
     }
 

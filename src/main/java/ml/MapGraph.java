@@ -98,12 +98,7 @@ public class MapGraph extends Application {
             }
         });
         imageView.setZoom(0.15);
-        //        imageView.setOnScroll(e -> imageView.setZoom(imageView.getZoom() + (e.getDeltaY() < 0 ? -0.01 : 0.01)));
-        // Creating a scene object
-        // Setting title to the Stage
         stage.setTitle("Drawing the world");
-        // Adding scene to the stage
-        // Displaying the contents of the stage
         stage.show();
     }
 
