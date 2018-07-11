@@ -8,6 +8,7 @@ import java.util.IntSummaryStatistics;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -20,6 +21,7 @@ import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 
 public class HeatGraph extends Canvas {
 	private final DoubleProperty layout = new SimpleDoubleProperty(30);
@@ -37,6 +39,7 @@ public class HeatGraph extends Canvas {
 
 	private DoubleProperty radius = new SimpleDoubleProperty(30);
     private DataframeML data;
+    private String title;
 
     public HeatGraph() {
         super(550, 550);
@@ -56,28 +59,41 @@ public class HeatGraph extends Canvas {
 	public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
 		return stats;
 	}
+
     public void drawAxis(DoubleSummaryStatistics xStats, DoubleSummaryStatistics yStats) {
 
         gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
-        gc.strokeLine(layout.doubleValue(), layout.doubleValue(), layout.doubleValue(), maxLayout);
-        gc.strokeLine(layout.doubleValue(), maxLayout, maxLayout, maxLayout);
-        double j = (maxLayout - layout.doubleValue()) / bins.intValue();
-        for (int i = 1; i <= bins.intValue(); i++) {
-            double x1 = i * j + layout.doubleValue();
-            gc.strokeLine(x1, maxLayout, x1, maxLayout + lineSize.doubleValue());
-            String xLabel = String.format("%.1f", i * xProportion + xStats.getMin());
-            gc.strokeText(xLabel, x1 - lineSize.doubleValue() * xLabel.length() / 2,
-                    maxLayout + lineSize.doubleValue() * (4 + 3 * (i % 2)));
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
+        double e = layout.get();
+        gc.strokeLine(e, e, e, maxLayout);
+        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
+        double j = (maxLayout - e) / bins.get();
+        double d = lineSize.get();
+
+        double min = xStats.getMin();
+
+        for (int i = 1; i <= bins.get(); i++) {
+            double x1 = i * j + e;
+            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
+            String xLabel = String.format("%.0f", i * xProportion + min);
+            gc.strokeText(xLabel, x1, maxLayout + 5 * (4 + 3 * (i % 2)));
 
         }
-        j = (maxLayout - layout.doubleValue()) / ybins.intValue();
-        for (int i = 0; i <= ybins.intValue(); i++) {
+        min = yStats.getMin();
+        j = (maxLayout - e) / ybins.get();
+        for (int i = 0; i <= ybins.get(); i++) {
             double y1 = maxLayout - i * j;
-            gc.strokeLine(layout.doubleValue(), y1, layout.doubleValue() - lineSize.doubleValue(), y1);
-            String yLabel = String.format("%.1f", i * yProportion + yStats.getMin());
-            gc.strokeText(yLabel, layout.doubleValue() - lineSize.doubleValue() * 4, y1);
+            gc.strokeLine(e, y1, e - 5, y1);
+            String yLabel = String.format("%.1f", i * yProportion + min);
+            gc.strokeText(yLabel, e - d * 2, y1);
         }
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void drawGraph() {
@@ -129,7 +145,7 @@ public class HeatGraph extends Canvas {
 
 	private Color getColorForValue(double value, int min, int max) {
 		if (value < min || value > max) {
-			return Color.WHITE;
+            return Color.TRANSPARENT;
 		}
 		double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - min) / (max - min);
 		return Color.hsb(hue, 0.5, 1.0);

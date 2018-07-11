@@ -17,6 +17,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import simplebuilder.ResourceFXUtils;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 
 public class MultilineExample extends Application {
@@ -57,13 +59,17 @@ public class MultilineExample extends Application {
 		canvas.statsProperty().addListener((InvalidationListener) o -> {
 			itens.setAll(canvas.colorsProperty().entrySet());
         });
+        canvas.setTitle("California Housing");
         canvas.setHistogram(x);
-        ListView<Entry<String, Color>> e = new ListView<>(itens);
+        ListView<Entry<String, Color>> itensList = new ListView<>(itens);
 		Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(
 				canvas.colorsProperty());
-		e.setCellFactory(list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
+        itensList.setCellFactory(
+                list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
 
-        root.getChildren().add(e);
+        root.getChildren()
+                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
+        root.getChildren().add(itensList);
         root.getChildren().add(canvas);
 		theStage.show();
 	}

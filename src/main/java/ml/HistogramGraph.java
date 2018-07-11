@@ -21,6 +21,7 @@ import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 
 class HistogramGraph extends Canvas {
 	private DoubleProperty layout = new SimpleDoubleProperty(30);
@@ -35,6 +36,7 @@ class HistogramGraph extends Canvas {
 	private final ObservableMap<String, LongSummaryStatistics> stats = FXCollections.observableHashMap();
 	private final ObservableMap<String, DoubleSummaryStatistics> xstats = FXCollections.observableHashMap();
 	private final ObservableMap<String, Color> colors = FXCollections.observableHashMap();
+    private String title;
 
     public HistogramGraph() {
         super(550, 550);
@@ -119,32 +121,39 @@ class HistogramGraph extends Canvas {
         drawAxis();
 
     }
-
     public void drawAxis() {
-        double layout1 = layout.get();
 
-        double xbins = bins.get();
         gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
-        double maxLayout1 = maxLayout.get();
-        double lineSize1 = lineSize.get();
-        gc.strokeLine(layout1, layout1, layout1, maxLayout1);
-        gc.strokeLine(layout1, maxLayout1, maxLayout1, maxLayout1);
-        double j = (maxLayout1 - layout1) / xbins;
-        for (int i = 1; i <= xbins; i++) {
-            double x1 = i * j + layout1;
-            gc.strokeLine(x1, maxLayout1, x1, maxLayout1 + lineSize1);
-            String xLabel = String.format("%.1f", i * xProportion);
-            gc.strokeText(xLabel, x1 - lineSize1 * xLabel.length() / 2, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText(title, layout.get() + (maxLayout.get() - layout.get()) / 2, layout.get() - 20);
+        double e = layout.get();
+        gc.strokeLine(e, e, e, maxLayout.get());
+        gc.strokeLine(e, maxLayout.get(), maxLayout.get(), maxLayout.get());
+        double j = (maxLayout.get() - e) / bins.get();
+        double d = lineSize.get();
+
+        double min = stats.values().stream().mapToDouble(f -> f.getMin()).min().orElse(0);
+
+        for (int i = 1; i <= bins.get(); i++) {
+            double x1 = i * j + e;
+            gc.strokeLine(x1, maxLayout.get(), x1, maxLayout.get() + 5);
+            String xLabel = String.format("%.0f", i * xProportion + min);
+            gc.strokeText(xLabel, x1, maxLayout.get() + 5 * (4 + 3 * (i % 2)));
 
         }
-        j = (maxLayout1 - layout1) / ybins.get();
-        for (int i = 1; i <= ybins.get(); i++) {
-            double y1 = maxLayout1 - i * j;
-            gc.strokeLine(layout1, y1, layout1 - lineSize1, y1);
-            String yLabel = String.format("%.0f", i * yProportion);
-            gc.strokeText(yLabel, layout1 - lineSize1 * 4, y1);
+        j = (maxLayout.get() - e) / ybins.get();
+        for (int i = 0; i <= ybins.get(); i++) {
+            double y1 = maxLayout.get() - i * j;
+            gc.strokeLine(e, y1, e - 5, y1);
+            String yLabel = String.format("%.1f", i * yProportion + min);
+            gc.strokeText(yLabel, e - d * 2, y1);
         }
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 	public ObservableMap<String, Color> colorsProperty() {

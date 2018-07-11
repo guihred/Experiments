@@ -1,6 +1,7 @@
 package ml;
 
 import java.util.List;
+
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;
@@ -17,6 +18,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 public class HeatGraphExample extends Application {
 
@@ -31,6 +34,7 @@ public class HeatGraphExample extends Application {
 		HeatGraph canvas = new HeatGraph();
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
+        canvas.setTitle("California Housing");
 		root.getChildren().add(newSlider("Radius", 10, 40, canvas.radiusProperty()));
 		root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSizeProperty()));
 		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
@@ -43,6 +47,8 @@ public class HeatGraphExample extends Application {
 
 		ListView<String> xSelected = createSelection(itens, canvas.xHeaderProperty());
 		ListView<String> ySelected = createSelection(itens, canvas.yHeaderProperty());
+        root.getChildren()
+                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
 
         root.getChildren().add(canvas);
         root.getChildren().add(xSelected);

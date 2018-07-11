@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -16,8 +18,10 @@ import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import simplebuilder.HasLogging;
 
-class MultiLineGraph extends Canvas {
+class MultiLineGraph extends Canvas implements HasLogging {
 	private DoubleProperty layout = new SimpleDoubleProperty(30);
 	private double maxLayout = 480;
 	private DoubleProperty lineSize = new SimpleDoubleProperty(5);
@@ -30,6 +34,7 @@ class MultiLineGraph extends Canvas {
 	private ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
 	private ObservableMap<String, Color> colors = FXCollections.observableHashMap();
 	private IntegerProperty radius = new SimpleIntegerProperty(5);
+    private String title;
 
 
 	public MultiLineGraph() {
@@ -118,35 +123,46 @@ class MultiLineGraph extends Canvas {
 			}
 		});
 		drawAxis();
-		System.out.println(dataframe);
+        Logger logger = getLogger();
+        if (logger.isInfoEnabled()) {
+            logger.info(dataframe.toString());
+        }
 	}
 
 	public void drawAxis() {
 
-		gc.setFill(Color.BLACK);
+        gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
-		gc.setLineWidth(1);
-		double e = layout.get();
-		gc.strokeLine(e, e, e, maxLayout);
-		gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
-		double j = (maxLayout - e) / bins.get();
-		double d = lineSize.get();
-		for (int i = 1; i <= bins.get(); i++) {
-			double x1 = i * j + e;
-			gc.strokeLine(x1, maxLayout, x1, maxLayout + d);
-			String xLabel = String.format("%.1f", i * xProportion);
-			gc.strokeText(xLabel, x1 - d * xLabel.length() / 2,
-					maxLayout + d * (4 + 3 * (i % 2)));
+        gc.setLineWidth(1);
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
+        double e = layout.get();
+        gc.strokeLine(e, e, e, maxLayout);
+        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
+        double j = (maxLayout - e) / bins.get();
+        double d = lineSize.get();
 
-		}
-		j = (maxLayout - e) / ybins.get();
-		for (int i = 0; i <= ybins.get(); i++) {
-			double y1 = maxLayout - i * j;
-			gc.strokeLine(e, y1, e - d, y1);
-			String yLabel = String.format("%.0f", i * yProportion);
-			gc.strokeText(yLabel, e - d * 4, y1);
-		}
-	}
+        double min = stats.values().stream().mapToDouble(DoubleSummaryStatistics::getMin).min().orElse(0);
+
+        for (int i = 1; i <= bins.get(); i++) {
+            double x1 = i * j + e;
+            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
+            String xLabel = String.format("%.0f", i * xProportion + min);
+            gc.strokeText(xLabel, x1, maxLayout + 5 * (4 + 3 * (i % 2)));
+
+        }
+        j = (maxLayout - e) / ybins.get();
+        for (int i = 0; i <= ybins.get(); i++) {
+            double y1 = maxLayout - i * j;
+            gc.strokeLine(e, y1, e - 5, y1);
+            String yLabel = String.format("%.1f", i * yProportion + min);
+            gc.strokeText(yLabel, e - d * 2, y1);
+        }
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
 	public final DoubleProperty layoutProperty() {
 		return layout;

@@ -18,6 +18,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import simplebuilder.ResourceFXUtils;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 
 public class HistogramExample extends Application {
@@ -49,6 +51,7 @@ public class HistogramExample extends Application {
 //        canvas.setHistogram(collect);
         // canvas.setPoints(points);
         // root.getChildren().add(newSlider("Radius", 1, 375, canvas.radius));
+        canvas.setTitle("California Housing");
         root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSizeProperty()));
         root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
         root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
@@ -60,12 +63,15 @@ public class HistogramExample extends Application {
             itens.setAll(entrySet);
         });
         canvas.setHistogram(x);
-        ListView<Entry<String, Color>> e = new ListView<>(itens);
+        ListView<Entry<String, Color>> itensList = new ListView<>(itens);
         Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(
                 canvas.colorsProperty());
-        e.setCellFactory(list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
+        itensList.setCellFactory(
+                list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
+        root.getChildren()
+                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
 
-        root.getChildren().add(e);
+        root.getChildren().add(itensList);
         root.getChildren().add(canvas);
 		theStage.show();
 	}
