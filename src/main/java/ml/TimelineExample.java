@@ -41,7 +41,7 @@ public class TimelineExample extends Application {
 
         TimelineGraph canvas = new TimelineGraph();
 
-        DataframeML x = new DataframeML.DataframeBuilder("out/WDIDataGC.TAX.TOTL.GD.ZS.csv")
+        DataframeML x = DataframeML.builder("out/WDIDataGC.TAX.TOTL.GD.ZS.csv")
                 .setMaxSize(46)
                 .build();
         canvas.setTitle(x.list("Indicator Name").get(0).toString());
@@ -63,7 +63,7 @@ public class TimelineExample extends Application {
         File file = new File("out");
         String[] list = file.list();
         ComboBox<String> build2 = new SimpleComboBoxBuilder<String>().items(list).select(0).onSelect(s -> {
-            DataframeML x2 = new DataframeML.DataframeBuilder("out/" + s).setMaxSize(46).build();
+            DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(46).build();
             canvas.setTitle(x2.list("Indicator Name").get(0).toString());
             canvas.setHistogram(x2);
             itens.setAll(sortedLabels(canvas.colorsProperty()));

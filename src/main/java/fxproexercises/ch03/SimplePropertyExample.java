@@ -56,18 +56,22 @@ public final class SimplePropertyExample {
     private static void bindAndUnbindOnePropertyToAnother() {
         System.out.println();
         IntegerProperty otherProperty = new SimpleIntegerProperty(0);
-        System.out.println("otherProperty.get() = " + otherProperty.get());
+        logOtherProperty(otherProperty);
         System.out.println("Binding otherProperty to intProperty.");
         otherProperty.bind(intProperty);
-        System.out.println("otherProperty.get() = " + otherProperty.get());
+        logOtherProperty(otherProperty);
         System.out.println("Calling intProperty.set(7168).");
         intProperty.set(7168);
-        System.out.println("otherProperty.get() = " + otherProperty.get());
+        logOtherProperty(otherProperty);
         System.out.println("Unbinding otherProperty from intProperty.");
         otherProperty.unbind();
-        System.out.println("otherProperty.get() = " + otherProperty.get());
+        logOtherProperty(otherProperty);
         System.out.println("Calling intProperty.set(8192).");
         intProperty.set(8192);
+        logOtherProperty(otherProperty);
+    }
+
+    private static void logOtherProperty(IntegerProperty otherProperty) {
         System.out.println("otherProperty.get() = " + otherProperty.get());
     }
 

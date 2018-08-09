@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -32,6 +33,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
+
 import simplebuilder.HasLogging;
 
 public class ExcelService implements HasLogging {
@@ -234,59 +236,66 @@ public class ExcelService implements HasLogging {
 
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void alterarValorCell(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell c) {
 		Cell cell = c;
 		if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-			double numericCellValue = cell.getNumericCellValue();
-			printDebug(numericCellValue);
-			if (map.containsKey(numericCellValue)) {
-				Object object = map.get(numericCellValue);
-				if (object instanceof Map) {
-					object = ((Map) object).get(sheet.getSheetName());
-				}
-				if (object instanceof Number) {
-					cell.setCellValue(((Number) object).doubleValue());
-				}
-				if (object instanceof String) {
-					cell.setCellValue((String) object);
-					cell.setCellType(CellType.STRING);
-				}
-			}
+            alterNumeric(map, sheet, cell);
 		}
 		if (cell.getCellTypeEnum() == CellType.STRING) {
-			String stringCellValue = cell.getStringCellValue();
-			printDebug(stringCellValue);
+            alterString(map, sheet, row, cell);
+        }
+    }
 
-			if (map.containsKey(cell.getStringCellValue())) {
-				Object cellValue = map.get(stringCellValue);
-				if (cellValue instanceof Map) {
-					cellValue = ((Map) cellValue).get(sheet.getSheetName());
-				}
-				if (cellValue instanceof String) {
-					cell.setCellValue((String) cellValue);
-				}
-				if (cellValue instanceof List) {
-					int rowNum = row.getRowNum();
-					int columnIndex = cell.getColumnIndex();
-					List listValue = (List) cellValue;
-					if (listValue.isEmpty()) {
-						cell.setCellValue("");
-					}
-					for (Object object : listValue) {
-						cell.setCellValue(Objects.toString(object,""));
-						++rowNum;
-						Row next = sheet.getRow(rowNum);
-						cell = next.getCell(columnIndex);
+    private void alterString(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell cell) {
+        String stringCellValue = cell.getStringCellValue();
+        printDebug(stringCellValue);
 
-					}
+        if (map.containsKey(cell.getStringCellValue())) {
+            Object cellValue = map.get(stringCellValue);
+            if (cellValue instanceof Map) {
+                cellValue = ((Map) cellValue).get(sheet.getSheetName());
+            }
+            if (cellValue instanceof String) {
+                cell.setCellValue((String) cellValue);
+            }
+            if (cellValue instanceof List) {
+                int rowNum = row.getRowNum();
+                int columnIndex = cell.getColumnIndex();
+                List listValue = (List) cellValue;
+                if (listValue.isEmpty()) {
+                    cell.setCellValue("");
+                }
+                for (Object object : listValue) {
+                    cell.setCellValue(Objects.toString(object, ""));
+                    ++rowNum;
+                    Row next = sheet.getRow(rowNum);
+                    cell = next.getCell(columnIndex);
 
-					map.remove(stringCellValue);
-				}
+                }
 
-			}
-		}
-	}
+                map.remove(stringCellValue);
+            }
+
+        }
+    }
+
+    private void alterNumeric(Map<Object, Object> map, XSSFSheet sheet, Cell cell) {
+        double numericCellValue = cell.getNumericCellValue();
+        printDebug(numericCellValue);
+        if (map.containsKey(numericCellValue)) {
+        	Object object = map.get(numericCellValue);
+        	if (object instanceof Map) {
+        		object = ((Map) object).get(sheet.getSheetName());
+        	}
+        	if (object instanceof Number) {
+        		cell.setCellValue(((Number) object).doubleValue());
+        	}
+        	if (object instanceof String) {
+        		cell.setCellValue((String) object);
+        		cell.setCellType(CellType.STRING);
+        	}
+        }
+    }
 
 	public void printDebug(Object value) {
 		System.out.println(value);

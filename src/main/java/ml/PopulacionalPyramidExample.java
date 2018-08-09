@@ -30,7 +30,7 @@ public class PopulacionalPyramidExample extends Application {
 		theStage.setScene(theScene);
 
 		Predicate<String> asPredicate = Pattern.compile("MA|FE").asPredicate();
-		DataframeML x = new DataframeML.DataframeBuilder("POPULACAO.csv")
+        DataframeML x = DataframeML.builder("POPULACAO.csv")
                 .filter("Unit", "Persons"::equals)
                 .filter("SEX", e->asPredicate.test(e.toString()))
                 .filter("Subject", e -> e.toString().matches("Population.+\\d+"))

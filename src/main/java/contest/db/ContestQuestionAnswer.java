@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Entity
 @Table
 public class ContestQuestionAnswer extends BaseEntity {
-	private static int KEY;
+	private static int KEY_COUNTER;
 	@Column(length = 5000)
 	private String answer;
 
@@ -25,7 +25,7 @@ public class ContestQuestionAnswer extends BaseEntity {
 	private ContestQuestion exercise;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Integer key = KEY++;
+	private Integer key = KEY_COUNTER++;
     @Column
     private Integer number;
 

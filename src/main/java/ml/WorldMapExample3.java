@@ -35,7 +35,7 @@ public class WorldMapExample3 extends Application {
         //                .categorize("Country")
         //                .categorize("TIME").build();
 
-        DataframeML x = new DataframeML.DataframeBuilder("WDICountry.csv").build();
+        DataframeML x = DataframeML.builder("WDICountry.csv").build();
         canvas.valueHeaderProperty().set("Currency Unit");
         canvas.setDataframe(x,
                 x.cols().stream().filter(e -> e.contains("able N")).findFirst().orElse("﻿Table Name"));

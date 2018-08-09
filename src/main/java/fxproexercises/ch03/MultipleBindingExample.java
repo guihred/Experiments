@@ -21,12 +21,16 @@ public final class MultipleBindingExample {
 			return x.get() * y.get();
 		}, x, y);
 
-        System.out.println("area.get() = " + area.get());
-        System.out.println("area.get() = " + area.get());
+        logBinding(area);
+        logBinding(area);
         System.out.println("Setting x to 5");
         x.set(5);
         System.out.println("Setting y to 7");
         y.set(7);
+        logBinding(area);
+    }
+
+    private static void logBinding(DoubleBinding area) {
         System.out.println("area.get() = " + area.get());
     }
 }

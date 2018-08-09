@@ -14,8 +14,7 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
@@ -27,6 +26,9 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public final class ContestReader {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
@@ -57,7 +59,7 @@ public final class ContestReader {
         return INSTANCE.listQuestions;
     }
 
-    public static ObservableList<ContestText> getContestTexts(File file) {
+    public static ObservableList<ContestText> getContestTexts(@SuppressWarnings("unused") File file) {
         if (INSTANCE == null) {
             INSTANCE = new ContestReader();
         }
@@ -133,12 +135,10 @@ public final class ContestReader {
 
         if (s.matches(TEXTS_PATTERN)) {
             state = STATE_TEXT;
-
 			String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
             IntSummaryStatistics stats = Stream.of(split).mapToInt(this::intValue).summaryStatistics();
             text.setMin(stats.getMin());
             text.setMax(stats.getMax());
-
             return;
         }
         if (s.matches(LINE_PATTERN)) {
@@ -183,6 +183,14 @@ public final class ContestReader {
             state = STATE_IGNORE;
         }
 
+        executeAppending(linhas, i, s);
+
+        if (StringUtils.isNotBlank(s) && state != STATE_IGNORE) {
+            log(s);
+        }
+    }
+
+    private void executeAppending(String[] linhas, int i, String s) {
         switch (state) {
             case STATE_IGNORE:
                 contestQuestion.setContest(contest);
@@ -211,10 +219,10 @@ public final class ContestReader {
             default:
                 break;
         }
+    }
 
-        if (StringUtils.isNotBlank(s) && state != STATE_IGNORE) {
-            log(s);
-        }
+    private boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
+        return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
     }
 
     private void readFile(File file) {
@@ -225,8 +233,7 @@ public final class ContestReader {
                 @Override
 				protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
 					super.writeString(text1, textPositions);
-					if (text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN)
-                            && !textPositions.isEmpty()) {
+                    if (matchesQuestionPattern(text1, textPositions)) {
                         TextPosition textPosition = textPositions.get(0);
                         float x = textPosition.getXDirAdj();
                         float y = textPosition.getYDirAdj();
@@ -241,6 +248,7 @@ public final class ContestReader {
 
                     }
                 }
+
 
             };
             int numberOfPages = pdDoc.getNumberOfPages();

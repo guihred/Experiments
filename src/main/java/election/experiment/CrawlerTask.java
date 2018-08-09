@@ -74,7 +74,8 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
             }
     
         });
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+        boolean b = true;
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
     }
 
     @Override

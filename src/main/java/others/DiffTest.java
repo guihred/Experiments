@@ -1,14 +1,17 @@
 package others;
 
-import difflib.DiffRow;
-import difflib.DiffRowGenerator;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import difflib.DiffRow;
+import difflib.DiffRowGenerator;
 
 public final class DiffTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DiffTest.class);
@@ -30,8 +33,8 @@ public final class DiffTest {
 	}
 
 	private static List<String> fileToLines(String string) {
-		try {
-			return Files.lines(Paths.get(string)).collect(Collectors.toList());
+        try (Stream<String> lines = Files.lines(Paths.get(string));) {
+            return lines.collect(Collectors.toList());
 		} catch (IOException e) {
 			LOGGER.error("", e);
 			return null;

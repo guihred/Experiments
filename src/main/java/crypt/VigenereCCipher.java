@@ -26,6 +26,9 @@ public class VigenereCCipher {
 		for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
 			sum += a[i];
 		}
+        if (sum == 0) {
+            return 0;
+        }
 		int bestRotate = 0;
 		for (int rotate = 0; rotate < NUMBER_OF_LETTERS; rotate++) {
 			double fit = 0;
@@ -64,7 +67,10 @@ public class VigenereCCipher {
 		for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
 			sum += accu[i];
 		}
-		for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
+        if (sum == 0) {
+            return 0;
+        }
+        for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
 			double d = accu[i] / sum - FREQ[i];
 			ret += d * d / FREQ[i];
 		}

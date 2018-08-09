@@ -4,7 +4,11 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsFirst;
 import static java.util.Comparator.nullsLast;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -12,15 +16,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public final class Chapter8 {
@@ -249,7 +267,7 @@ public final class Chapter8 {
 	}
 
 	public static void main(String[] args) {
-		ex16();
+        ex10();
 	}
 
 	private static Stream<String> streamOfLines(Scanner scanner) {
@@ -338,20 +356,24 @@ public final class Chapter8 {
 	 * Unzip the src.zip file from the JDK. Using Files.walk, find all Java
 	 * files that contain the keywords transient and volatile.
 	 */
-	public static void ex10() throws IOException {
+    public static void ex10() {
 		File original = new File("src");
-		Files.walk(original.toPath(), 20).map(Path::toFile).filter(file -> {
-			try {
-				if (file.canRead() && file.isFile()) {
-					List<String> wordsAsList = getWordsAsList(file.toPath());
-					return wordsAsList.contains("transient") && wordsAsList.contains("volatile");
-				}
+        try (Stream<Path> walk = Files.walk(original.toPath(), 20);) {
+            walk.map(Path::toFile).filter(file -> {
+            	try {
+            		if (file.canRead() && file.isFile()) {
+            			List<String> wordsAsList = getWordsAsList(file.toPath());
+            			return wordsAsList.contains("transient") && wordsAsList.contains("volatile");
+            		}
 
-			} catch (Exception e) {
-				LOGGER.error("", e);
-			}
-			return true;
-		}).filter(File::isFile).forEach(System.out::println);
+            	} catch (Exception e) {
+            		LOGGER.error("", e);
+            	}
+            	return true;
+            }).filter(File::isFile).forEach(System.out::println);
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
+        }
 
 	}
 
@@ -380,7 +402,7 @@ public final class Chapter8 {
 
 	}
 
-	private static void printLines(URLConnection connection) throws IOException {
+    private static void printLines(URLConnection connection) {
 		try (InputStream inputStream = connection.getInputStream();
 				BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
 			a.lines().forEach(System.out::print);
@@ -405,8 +427,8 @@ public final class Chapter8 {
 	 */
 	public static void ex15() {
 		// Lines that contain some number
-		try {
-			Files.lines(ResourceFXUtils.toPath("alice.txt")).filter(Pattern.compile(".*\\d+.*$").asPredicate())
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"));) {
+            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate())
 					.forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
@@ -422,8 +444,8 @@ public final class Chapter8 {
 	 */
 	public static void ex16() {
 		// Lines that contain some number
-		try {
-			Files.lines(ResourceFXUtils.toPath("alice.txt")).filter(Pattern.compile(".*\\d+.*$").asPredicate())
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"));) {
+            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate())
 					.forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);

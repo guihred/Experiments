@@ -12,4 +12,13 @@ public interface HasLogging {
     default void logln(Object x) {
         System.out.println(x);
     }
+
+    public static Logger log(Class<?> cls) {
+        return LoggerFactory.getLogger(cls);
+    }
+
+    public static Logger log() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        return LoggerFactory.getLogger(stackTrace[stackTrace.length - 1].getClassName());
+    }
 }

@@ -5,6 +5,9 @@
  */
 package fxproexercises.ch02;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -17,7 +20,12 @@ import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -25,12 +33,17 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import simplebuilder.*;
+import simplebuilder.SimpleFlowPaneBuilder;
+import simplebuilder.SimpleHyperlinkBuilder;
+import simplebuilder.SimpleLabelBuilder;
+import simplebuilder.SimpleRadioButtonBuilder;
+import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.SimpleTextBuilder;
 
 public class CSSStylingExample extends Application {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CSSStylingExample.class);
+    private static final String EMPHASIZED_TEXT_CLASS = "emphasized-text";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CSSStylingExample.class);
 
 	private ObservableList<Cursor> cursors = FXCollections.observableArrayList(Cursor.DEFAULT, Cursor.CROSSHAIR,
 			Cursor.WAIT, Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE,
@@ -46,12 +59,12 @@ public class CSSStylingExample extends Application {
 	private Scene sceneRef;
 	private Slider sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255).orientation(Orientation.VERTICAL)
 			.build();
-	private Text textSceneH = new SimpleTextBuilder().styleClass("emphasized-text").id("sceneHeightText").build();
+    private Text textSceneH = new SimpleTextBuilder().styleClass(EMPHASIZED_TEXT_CLASS).id("sceneHeightText").build();
 
-	private Text textSceneW = new SimpleTextBuilder().styleClass("emphasized-text").build();
+    private Text textSceneW = new SimpleTextBuilder().styleClass(EMPHASIZED_TEXT_CLASS).build();
 
-	private Text textSceneX = new SimpleTextBuilder().styleClass("emphasized-text").build();
-	private Text textSceneY = new SimpleTextBuilder().styleClass("emphasized-text").build();
+    private Text textSceneX = new SimpleTextBuilder().styleClass(EMPHASIZED_TEXT_CLASS).build();
+    private Text textSceneY = new SimpleTextBuilder().styleClass(EMPHASIZED_TEXT_CLASS).build();
 	@Override
 	public void start(Stage stage) {
 		final ToggleGroup toggleGrp = new ToggleGroup();

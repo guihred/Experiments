@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import election.experiment.CrawlerTask;
+import simplebuilder.HasLogging;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
 
@@ -31,8 +33,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     protected String task() {
         insertProxyConfig();
         List<String> lines = new ArrayList<>();
-        try {
-            lines.addAll(Files.lines(Paths.get("hp1Tex2.tex")).collect(Collectors.toList()));
+        try (Stream<String> lines2 = Files.lines(Paths.get("hp1Tex2.tex"));) {
+            lines.addAll(lines2.collect(Collectors.toList()));
         } catch (IOException e) {
             getLogger().error("ERROR ", e);
         }
@@ -114,28 +116,32 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
             UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
 
-    public void migrateCities() throws IOException {
-		// insertProxyConfig();
-        Files.lines(Paths.get("hp1Tex2.tex")).forEach(line -> {
-            String[] split = line.split("");
-            String currentWord = "";
-            UnicodeBlock currentBlock = null;
-            for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
-                char currentLetter = split[i].charAt(0);
-                UnicodeBlock of = UnicodeBlock.of(currentLetter);
-                if (KANJI_BLOCK.contains(of)) {
-                    currentWord += currentLetter;
-                }
-                if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
-                    System.out.println(currentWord + "=" + getReading(currentWord, currentLetter));
+    public void migrateCities() {
+        // insertProxyConfig()
+        try (Stream<String> lines = Files.lines(Paths.get("hp1Tex2.tex"));) {
+            lines.forEach(line -> {
+                String[] split = line.split("");
+                String currentWord = "";
+                UnicodeBlock currentBlock = null;
+                for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
+                    char currentLetter = split[i].charAt(0);
+                    UnicodeBlock of = UnicodeBlock.of(currentLetter);
+                    if (KANJI_BLOCK.contains(of)) {
+                        currentWord += currentLetter;
+                    }
+                    if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
+                        System.out.println(currentWord + "=" + getReading(currentWord, currentLetter));
 
-                    currentWord = "";
+                        currentWord = "";
+                    }
+                    currentBlock = of;
                 }
-                currentBlock = of;
-            }
 
-        });
-        System.out.println();
+            });
+            System.out.println();
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
+        }
     }
 
 
@@ -163,7 +169,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                     return string;
                 }
                 List<String> collect2 = kun.stream().map(Element::text).collect(Collectors.toList());
-
                 List<String> collect = collect2.stream().map(e -> e.split("\\.")[0]).distinct()
                         .collect(Collectors.toList());
                 if (collect.size() == 1) {
@@ -188,7 +193,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                                 String[] split = e.split("\\.");
                                 mapReading.put(currentWord + split[1].charAt(0), split[0]);
                             }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
-
                     if(findFirst.isPresent()) {
                         String string = findFirst.get().split("\\.")[0];
                         mapReading.put(key, string);
@@ -203,7 +207,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 			Elements select = parse.select(".concept_light-representation ");
 			for (Element element : select) {
 				Element link = element.select(".text").first();
-				if (link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter)) {
+                if (matchesCurrentWord(currentWord, currentLetter, link)) {
 					String text = element.select(".furigana").text();
 					mapReading.put(key, text);
 					return text;
@@ -225,6 +229,10 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             }
         }
         return currentWord;
+    }
+
+    private boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {
+        return link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter);
     }
 
 

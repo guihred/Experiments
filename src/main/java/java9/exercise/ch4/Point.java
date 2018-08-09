@@ -16,10 +16,6 @@ public class Point implements Cloneable {
         this.y = y;
     }
 
-    @Override
-    protected Point clone() throws CloneNotSupportedException {
-        return (Point) super.clone();
-    }
 
     @Override
     public boolean equals(Object obj) {

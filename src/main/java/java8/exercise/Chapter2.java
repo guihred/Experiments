@@ -3,8 +3,15 @@ package java8.exercise;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,15 +21,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public final class Chapter2 {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Chapter2.class);
 
-	private static final String TXT_FILE = "warAndPeace.txt";
+    private static final String TXT_FILE = "warAndPeace.txts";
 
 	private Chapter2() {
 	}
@@ -65,9 +75,13 @@ public final class Chapter2 {
 	 */
 	public static void ex1() throws Exception {
 		Pattern compile = Pattern.compile("[\\P{L}]+");
-		System.out.println(Files.lines(Paths.get(TXT_FILE), StandardCharsets.UTF_8).parallel()
-				.flatMap(compile::splitAsStream).filter(s -> s.length() > 12).count());
-		System.out.println(countConcurrentWithoutStreams());
+
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8);) {
+            System.out.println(lines.parallel().flatMap(compile::splitAsStream).filter(s -> s.length() > 12).count());
+            System.out.println(countConcurrentWithoutStreams());
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
+        }
 	}
 
 	/**
@@ -135,16 +149,21 @@ public final class Chapter2 {
 	 * method once the fifth long word has been found. Simply log each method
 	 * call.
 	 */
-	public static void ex2() throws IOException {
+    public static void ex2() {
 		Pattern compile = Pattern.compile("[\\P{L}]+");
 		System.out.println();
-		Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8).parallel().flatMap(compile::splitAsStream)
-				.filter(s -> {
-			if (s.length() > 12) {
-				System.out.printf("Long word %s%n", s);
-			}
-			return s.length() > 12;
-		}).limit(5).forEach(System.out::println);
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8);) {
+            lines.parallel().flatMap(compile::splitAsStream)
+            		.filter(s -> {
+            	if (s.length() > 12) {
+            		System.out.printf("Long word %s%n", s);
+            	}
+            	return s.length() > 12;
+            }).limit(5).forEach(System.out::println);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
 	/**
@@ -258,10 +277,10 @@ public final class Chapter2 {
 		return Arrays.asList(contents.split("[\\P{L}]+"));
 	}
 
-	public static void main(String[] args) {
-		// ex1();
-		// ex2();
-		ex13();
+    public static void main(String[] args) throws Exception {
+        ex1();
+        //        ex2();
+        //		ex13();
 	}
 
 	private static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {

@@ -26,7 +26,8 @@ import simplebuilder.SimpleTextBuilder;
 
 public class AudioConfigLauncher extends Application {
 
-	private AudioConfigModel acModel = new AudioConfigModel();
+    private static final String COLOR_AUDIO = "#131021";
+    private AudioConfigModel acModel = new AudioConfigModel();
 	private Text textDb;
 	private Slider slider;
 	private CheckBox mutingCheckBox;
@@ -38,7 +39,7 @@ public class AudioConfigLauncher extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		textDb = new SimpleTextBuilder().x(18).y(69).textOrigin(VPos.TOP).fill(Color.web("#131021"))
+        textDb = new SimpleTextBuilder().x(18).y(69).textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SansSerif", FontWeight.BOLD, 18)).build();
 		genreChoiceBox = new ChoiceBox<>(AudioConfigModel.GENRES);
 		genreChoiceBox.setLayoutX(204);
@@ -50,10 +51,10 @@ public class AudioConfigLauncher extends Application {
 		mutingCheckBox = newCheckBox(x, y);
 		slider = new SimpleSliderBuilder().layoutX(135).layoutY(135).prefWidth(162).min(AudioConfigModel.MIN_DECIBELS)
 				.max(AudioConfigModel.MAX_DECIBELS).build();
-		final Text genreText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web("#131021"))
+        final Text genreText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SanSerif", FontWeight.BOLD, 18)).text("Genre").build();
 		final Line line3 = new SimpleLineBuilder().startX(9).startY(141).endX(309).endY(141).stroke(Color.color(0.66, 0.67, 0.69)).build();
-		final Text mutingText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web("#131021"))
+        final Text mutingText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SanSerif", FontWeight.BOLD, 18)).text("Muting").build();
 		final Line line2 = new SimpleLineBuilder().startX(9).startY(97).endX(309).endY(97).stroke(Color.color(0.66, 0.67, 0.69)).build();
 		final Rectangle whiteRectangle = new SimpleRectangleBuilder().x(9).y(54).width(300).height(130).arcHeight(20)

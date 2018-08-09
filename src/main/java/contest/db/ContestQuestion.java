@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Table
 public class ContestQuestion extends BaseEntity implements HasImage {
-    private static int KEY;
+    private static int KEY_COUNTER;
     @ManyToOne
     @JoinColumn
     private Contest contest;
@@ -21,7 +21,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     private String subject;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer key = KEY++;
+    private Integer key = KEY_COUNTER++;
 
     @Column
     private Integer number;

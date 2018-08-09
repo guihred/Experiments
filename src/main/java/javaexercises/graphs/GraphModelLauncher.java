@@ -8,6 +8,10 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
@@ -26,8 +30,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import simplebuilder.ResourceFXUtils;
 
 public class GraphModelLauncher extends Application {
@@ -171,8 +173,8 @@ public class GraphModelLauncher extends Application {
 	}
 
 	private String[] getWords() {
-		try {
-			return Files.lines(ResourceFXUtils.toPath("alice.txt")).flatMap((String e) -> Stream.of(e.split("[^a-zA-Z]")))
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"));) {
+            return lines.flatMap((String e) -> Stream.of(e.split("[^a-zA-Z]")))
 					.filter(s -> s.length() == 4).map(String::toLowerCase).distinct().toArray(String[]::new);
 		} catch (IOException e) {
 			LOGGER.error("", e);

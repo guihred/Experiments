@@ -1,6 +1,8 @@
 package extract;
 
 
+import static simplebuilder.HasLogging.log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +12,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
@@ -26,23 +29,31 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
-public class WordService {
+import simplebuilder.HasLogging;
+
+public class WordService implements HasLogging {
 
 
 	public static void getPowerPointImages(String arquivo) {
 		try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo));) {
 			List<XSLFPictureData> pictureData = a.getPictureData();
 			for (XSLFPictureData data : pictureData) {
-				FileOutputStream fileOutputStream = new FileOutputStream(new File(data.getFileName()));
-				InputStream inputStream = data.getInputStream();
-				IOUtils.copy(inputStream, fileOutputStream);
-				System.out.println();
+                recordPicture(data);
 			}
 
 		} catch (IOException e) {
-			e.printStackTrace();
+            log(WordService.class).error("FILE ERROR", e);
 		}
 	}
+
+    private static void recordPicture(XSLFPictureData data) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(data.getFileName()));) {
+            InputStream inputStream = data.getInputStream();
+            IOUtils.copy(inputStream, fileOutputStream);
+        } catch (IOException e) {
+            log(WordService.class).error("FILE ERROR", e);
+        }
+    }
 
 	public static void main(String[] args) {
 		getPowerPointImages("Kit-Toilette-Prata-Adamascado.pptx");

@@ -16,10 +16,12 @@ import com.aspose.imaging.imageoptions.PngOptions;
 import com.aspose.imaging.imageoptions.TiffOptions;
 import com.aspose.imaging.sources.FileCreateSource;
 
+import simplebuilder.HasLogging;
+
 public class ImageLoading {
     public static void main(String[] args) {
         String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
-        String nameFile = dataDir + "eu3.jpg";
+        //        String nameFile = dataDir + "eu3.jpg";
         String svgFile = dataDir + "Video_game.svg";
 
         // createThumnails(dataDir, nameFile);
@@ -151,20 +153,25 @@ public class ImageLoading {
         Color[] pixels = thumbnail.loadPixels(new Rectangle(0, 0, thumbnail.getWidth(), thumbnail.getHeight()));
 
         // To save the thumbnail as BMP image, create an instance of BmpOptions
-        BmpOptions bmpOptions = new BmpOptions();
-
-        // Set file source in which the results will be stores; last Boolean
-        // parameter denotes isTemporal
-        bmpOptions.setSource(new FileCreateSource(dataDir + "RetrieveThumbnailBitmapInformation_out.jpg", false));
 
         // Create a BmpImage while using the instance of BmpOptions and
         // providing resultant dimensions
-        BmpImage bmpImage = (BmpImage) Image.create(bmpOptions, thumbnail.getWidth(), thumbnail.getHeight());
+        try (BmpOptions bmpOptions = options(dataDir);
+                BmpImage bmpImage = (BmpImage) Image.create(bmpOptions, thumbnail.getWidth(), thumbnail.getHeight());) {
+            // Copy the thumbnail pixels onto the newly created canvas
+            bmpImage.savePixels(bmpImage.getBounds(), pixels);
+            // Save the results
+            bmpImage.save();
+        } catch (Exception e) {
+            HasLogging.log(ImageLoading.class).error("ERROR SAVING IMAGE", e);
+        }
+    }
 
-        // Copy the thumbnail pixels onto the newly created canvas
-        bmpImage.savePixels(bmpImage.getBounds(), pixels);
-
-        // Save the results
-        bmpImage.save();
+    private static BmpOptions options(String dataDir) {
+        BmpOptions bmpOptions = new BmpOptions();
+        // Set file source in which the results will be stores; last Boolean
+        // parameter denotes isTemporal
+        bmpOptions.setSource(new FileCreateSource(dataDir + "RetrieveThumbnailBitmapInformation_out.jpg", false));
+        return bmpOptions;
     }
 }

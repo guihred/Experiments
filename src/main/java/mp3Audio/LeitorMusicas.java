@@ -1,13 +1,13 @@
 package mp3Audio;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -50,18 +50,22 @@ public final class LeitorMusicas {
 			ObservableList<Musica> musicas;
 			musicas = getMusicas(file);
 			musicas.forEach(System.out::println);
-		} catch (IOException e) {
+        } catch (Exception e) {
 			LOGGER.error("", e);
 		}
 	}
 
 
-	public static ObservableList<Musica> getMusicas(File file) throws IOException {
+    public static ObservableList<Musica> getMusicas(File file) {
 
 		ObservableList<Musica> musicas = FXCollections.observableArrayList();
 		Path start = file.toPath();
-		Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3")).forEach(
-				path -> musicas.add(readTags(path.toFile())));
+        try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"));) {
+            find.forEach(
+            		path -> musicas.add(readTags(path.toFile())));
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
 		
 
 

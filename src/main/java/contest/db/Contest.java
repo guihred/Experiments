@@ -12,11 +12,11 @@ import javax.persistence.Table;
 @Table
 @Entity
 public class Contest extends BaseEntity {
-	private static int KEY;
+	private static int KEY_COUNTER;
 	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
-	private Integer key = KEY++;
+	private Integer key = KEY_COUNTER++;
     @Column
     private String name;
     @Column

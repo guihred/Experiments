@@ -1,6 +1,9 @@
 package log.analyze;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,21 +18,25 @@ import java.util.function.Predicate;
 import java.util.function.ToLongFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public class StatsLogAccess {
-	private static final Logger LOGGER = LoggerFactory.getLogger(StatsLogAccess.class);
+    private static final Logger LOGGER = HasLogging.log();
 
-	public static void statisticaDemoraArquivo() throws IOException {
-		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
-				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new FileOutputStream(ResourceFXUtils.toFile("acessos.txt")), true,
+    public static void statisticaDemoraArquivo() {
+        try (Stream<Path> list = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"));
+                PrintStream out = new PrintStream(new FileOutputStream(ResourceFXUtils.toFile("acessos.txt")), true,
 				StandardCharsets.UTF_8.name());) {
+            List<Path> lista = list.filter(p -> p.toFile().getName().startsWith("localhost_access_log"))
+                    .collect(Collectors.toList());
 			for (Path path : lista) {
-				try {
-					Map<String, LongSummaryStatistics> stats = Files.lines(path)
+                try (Stream<String> lines = Files.lines(path);) {
+                    Map<String, LongSummaryStatistics> stats = lines
 							.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
 							.collect(Collectors.groupingBy(tentarFuncao(linha -> {
 								String string = linha.split(" ")[6];
@@ -67,64 +74,70 @@ public class StatsLogAccess {
 	public static void main(String[] args) {
 		try {
 			statisticaDemoraArquivo();
-		} catch (IOException e) {
+        } catch (Exception e) {
 			LOGGER.error("", e);
 		}
 	}
 
-	public static void statisticaTamanhoArquivos1() throws IOException {
-		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
-				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		for (Path path : lista) {
-			try {
-				LongSummaryStatistics summaryStatistics = Files.lines(path).map(tentarFuncao(linha -> {
-					if (linha == null || linha.isEmpty()) {
-						return "0";
-					}
+    public static void statisticaTamanhoArquivos1() {
+        try (Stream<Path> list = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"));) {
+            List<Path> lista = list.filter(p -> p.toFile().getName().startsWith("localhost_access_log"))
+                    .collect(Collectors.toList());
+            for (Path path : lista) {
+                try (Stream<String> lines = Files.lines(path);) {
+                    LongSummaryStatistics summaryStatistics = lines.map(tentarFuncao(linha -> {
+            			if (linha == null || linha.isEmpty()) {
+            				return "0";
+            			}
 
-					String[] a = linha.split(" ");
-					return a[a.length - 1];
-				})).map(tentarFuncao(Long::parseLong)).mapToLong(a -> a != null ? a : 0).summaryStatistics();
-				System.out.println(
-						path.toString() + " = " + summaryStatistics.getAverage() + ",\t" + summaryStatistics.getMax()
-								+ ",\t" + summaryStatistics.getMin() + ",\t" + summaryStatistics.getCount());
+            			String[] a = linha.split(" ");
+            			return a[a.length - 1];
+            		})).map(tentarFuncao(Long::parseLong)).mapToLong(a -> a != null ? a : 0).summaryStatistics();
+            		System.out.println(
+            				path.toString() + " = " + summaryStatistics.getAverage() + ",\t" + summaryStatistics.getMax()
+            						+ ",\t" + summaryStatistics.getMin() + ",\t" + summaryStatistics.getCount());
 
-			} catch (Exception e) {
-				LOGGER.error("", e);
-			}
-		}
-
-		// fo
+            	} catch (Exception e) {
+            		LOGGER.error("", e);
+            	}
+            }
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
+        }
 
 	}
 
-	public static void ajustarArquivos() throws IOException {
+    public static void ajustarArquivos() {
 
 		Predicate<String> asPredicate = Pattern.compile("siga-dia.log.2016-\\d+-\\d+-\\d+").asPredicate();
-		List<Path> lista = Files.list(Paths.get("C:\\tmp")).filter(p -> asPredicate.test(p.toFile().getName()))
-				.collect(Collectors.toList());
-		for (Path path : lista) {
-			File file = new File(path.toFile().getName().replaceAll("siga-dia.log.2016-(\\d+)-(\\d+)-(\\d+)",
-					"siga-dia.2016-$1-$2.log"));
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			try (PrintWriter out = new PrintWriter(new FileOutputStream(file));) {
-				Files.lines(path).forEach(out::println);
-			} catch (Exception e) {
-				LOGGER.error("", e);
-			}
-		}
+        try (Stream<Path> list = Files.list(Paths.get("C:\\tmp"));) {
+            List<Path> lista = list.filter(p -> asPredicate.test(p.toFile().getName())).collect(Collectors.toList());
+            for (Path path : lista) {
+                File file = new File(path.toFile().getName().replaceAll("siga-dia.log.2016-(\\d+)-(\\d+)-(\\d+)",
+                        "siga-dia.2016-$1-$2.log"));
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                try (PrintWriter out = new PrintWriter(new FileOutputStream(file));
+                        Stream<String> lines = Files.lines(path);) {
+                    lines.forEach(out::println);
+                } catch (Exception e) {
+                    LOGGER.error("", e);
+                }
+            }
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
+        }
 
-		// fo
 
 	}
 
-	public static void statisticaTamanhoArquivos() throws IOException {
-		List<Path> lista = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"))
-				.filter(p -> p.toFile().getName().startsWith("localhost_access_log")).collect(Collectors.toList());
-		try (PrintStream out = new PrintStream(new FileOutputStream(ResourceFXUtils.toFile("acessos.txt")), true,
+    public static void statisticaTamanhoArquivos() {
+        try (Stream<Path> list = Files.list(Paths.get("C:\\Users\\Note\\Documents\\Log"));
+                PrintStream out = new PrintStream(new FileOutputStream(ResourceFXUtils.toFile("acessos.txt")), true,
 				StandardCharsets.UTF_8.name());) {
+            List<Path> lista = list.filter(p -> p.toFile().getName().startsWith("localhost_access_log"))
+                    .collect(Collectors.toList());
 			for (Path path : lista) {
 				tryGetMeanSize(out, path);
 
@@ -135,8 +148,8 @@ public class StatsLogAccess {
 	}
 
 	private static void tryGetMeanSize(PrintStream out, Path path) {
-		try {
-			Map<String, Long> stats = Files.lines(path)
+        try (Stream<String> lines = Files.lines(path);) {
+            Map<String, Long> stats = lines
 					.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
 					.collect(Collectors.groupingBy(tentarFuncao(linha -> linha.split(" ")[6]), Collectors.counting()));
 			out.println(path + "--------------------------");
@@ -157,7 +170,7 @@ public class StatsLogAccess {
 		return f -> {
 			try {
 				return t.apply(f);
-			} catch (Exception e) {
+            } catch (@SuppressWarnings("unused") Exception e) {
 				return null;
 			}
 		};

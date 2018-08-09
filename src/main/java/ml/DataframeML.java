@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +46,10 @@ public class DataframeML implements HasLogging {
 		x.describe();
     }
 
+    public static DataframeBuilder builder(String csvFile) {
+        return new DataframeBuilder(csvFile);
+    }
+
     private Map<String, List<Object>> dataframe = new LinkedHashMap<>();
 	protected Map<String, Set<String>> categories = new LinkedHashMap<>();
     private Map<String, Class<?>> formatMap = new LinkedHashMap<>();
@@ -67,7 +70,7 @@ public class DataframeML implements HasLogging {
         private DataframeML dataframeML;
         private String csvFile;
 
-        public DataframeBuilder(String csvFile) {
+        private DataframeBuilder(String csvFile) {
             this.csvFile = csvFile;
             dataframeML = new DataframeML();
         }
@@ -247,7 +250,7 @@ public class DataframeML implements HasLogging {
             return categories.get(header);
         }
         Set hashSet = new HashSet<>(dataframe.get(header));
-        Set<String> checkedSet = Collections.checkedSet(hashSet, String.class);
+        Set<String> checkedSet = hashSet;
         categories.put(header, checkedSet);
         return checkedSet;
 
@@ -363,8 +366,13 @@ public class DataframeML implements HasLogging {
                     Object tryNumber = tryNumber(key, field);
                     if (filters.containsKey(key) && !filters.get(key).test(tryNumber)) {
                         for (int j = 0; j < i; j++) {
-                            List<Object> list = dataframe.get(header.get(j));
-                            list.remove(list.size() - 1);
+                            String key2 = header.get(j);
+
+                            List<Object> list = dataframe.get(key2);
+                            Object remove = list.remove(list.size() - 1);
+                            if (categories.containsKey(key2)) {
+                                categories.get(key2).remove(remove);
+                            }
                         }
                         size--;
                         break;

@@ -43,7 +43,7 @@ public class WorldMapExample extends Application {
         //                .categorize("Country")
         //                .categorize("TIME").build();
 
-        DataframeML x = new DataframeML.DataframeBuilder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
+        DataframeML x = DataframeML.builder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
         canvas.valueHeaderProperty().set("2016");
         canvas.setDataframe(x,
                 x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
@@ -55,7 +55,7 @@ public class WorldMapExample extends Application {
 
         ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(list).select("WDIDataEG.ELC.ACCS.ZS.csv")
                 .onSelect(s -> {
-                    DataframeML x2 = new DataframeML.DataframeBuilder("out/" + s).build();
+                    DataframeML x2 = DataframeML.builder("out/" + s).build();
                     ObservableList<String> itens = FXCollections.observableArrayList(
                             x2.cols().stream().filter(StringUtils::isNumeric).sorted()
                                     .filter(e -> x2.list(e).stream().anyMatch(Objects::nonNull))

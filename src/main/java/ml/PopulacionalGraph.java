@@ -73,6 +73,7 @@ class PopulacionalGraph extends Canvas {
 		List<Integer> years = dataframe.list(yearHeader, Integer.class);
 		Map<String, Number> possibleAgesMA = new HashMap<>();
 		Map<String, Number> possibleAgesFE = new HashMap<>();
+
 		dataframe.only(countryHeader, t -> t.equals(country.get()), j -> {
             if (!yearsOptions.contains(years.get(j))) {
                 yearsOptions.add(years.get(j));
