@@ -32,13 +32,15 @@ import javafx.stage.Stage;
 
 public class JapaneseLessonApplication extends Application {
 
-	public static void main(String[] args) {
+	private static final String LESSON = "Lesson";
+
+    public static void main(String[] args) {
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Lesson");
+		primaryStage.setTitle(LESSON);
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 600, 250, Color.WHITE);
 		// create a grid pane
@@ -79,7 +81,7 @@ public class JapaneseLessonApplication extends Application {
 		final TableView<JapaneseLesson> medicamentosTable = new TableView<>();
 
 		medicamentosTable.setScaleShape(false);
-		TableColumn<JapaneseLesson, String> registroJapaneseLesson = new TableColumn<>("Lesson");
+		TableColumn<JapaneseLesson, String> registroJapaneseLesson = new TableColumn<>(LESSON);
 		registroJapaneseLesson.setCellValueFactory(new PropertyValueFactory<>("lesson"));
 		registroJapaneseLesson.setSortable(true);
 		registroJapaneseLesson.prefWidthProperty().bind(medicamentosTable.prefWidthProperty().multiply(1.5 / 12));
@@ -161,7 +163,7 @@ public class JapaneseLessonApplication extends Application {
 			setWidth(400);
 			current.set(0);
 			centerOnScreen();
-			Label label = new Label("Lesson");
+			Label label = new Label(LESSON);
 			Label label2 = new Label();
 			label2.textProperty().bind(score.multiply(100).asString("%.02f%%"));
 			HBox hBox = new HBox(label, new Label(" Score:　"), label2);

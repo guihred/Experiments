@@ -3,12 +3,14 @@ package gaming.ex07;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public class CreateMazeHandler implements EventHandler<ActionEvent> {
-	private int r, c;
+    private int r;
+    private int c;
 	private final Random random = new Random();
 	private final Timeline timeline;
 	private final List<MazeSquare> history = new ArrayList<>();
@@ -27,18 +29,7 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 			createdMaze[r][c].setVisited(true);
 			check.clear();
 
-			if (c > 0 && !createdMaze[r][c - 1].isVisited()) {
-				check.add("L");
-			}
-			if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
-				check.add("U");
-			}
-			if (c < createdMaze.length - 1 && !createdMaze[r][c + 1].isVisited()) {
-				check.add("R");
-			}
-			if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
-				check.add("D");
-			}
+            addPossibleSides();
 			if (!check.isEmpty()) {
 				history.add(createdMaze[r][c]);
 				final String direction = check.get(random.nextInt(check.size()));
@@ -69,7 +60,12 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 				}
 			}
 		}
-		for (int i = 0; i < createdMaze.length; i++) {
+        setSides();
+        timeline.stop();
+    }
+
+    private void setSides() {
+        for (int i = 0; i < createdMaze.length; i++) {
 			for (int j = 0; j < createdMaze[i].length; j++) {
 				MazeSquare mazeSquare = createdMaze[i][j];
 				if (i > 0 && !mazeSquare.isEast() && !mazeSquare.isNorth() && !mazeSquare.isWest()) {
@@ -92,8 +88,22 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 				}
 			}
 		}
-		timeline.stop();
-	}
+    }
+
+    private void addPossibleSides() {
+        if (c > 0 && !createdMaze[r][c - 1].isVisited()) {
+        	check.add("L");
+        }
+        if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
+        	check.add("U");
+        }
+        if (c < createdMaze.length - 1 && !createdMaze[r][c + 1].isVisited()) {
+        	check.add("R");
+        }
+        if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
+        	check.add("D");
+        }
+    }
 
 	private boolean getBackIn(List<MazeSquare> history1) {
 		final MazeSquare remove = history1.remove(history1.size() - 1);

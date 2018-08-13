@@ -27,30 +27,27 @@ import simplebuilder.SimpleTimelineBuilder;
  */
 public class MoleculeSampleApp extends Application {
 
-	private static final double CONTROL_MULTIPLIER = 0.1;
-	private static final double SHIFT_MULTIPLIER = 0.1;
-	private static final double CAMERA_DISTANCE = 450;
-	private static final double ALT_MULTIPLIER = 0.5;
-	private final Group axisGroup = new Group();
-	private final PerspectiveCamera camera = new PerspectiveCamera(true);
-	private final Xform cameraXform = new Xform();
-	private final Xform cameraXform2 = new Xform();
-	private final Xform cameraXform3 = new Xform();
-	private final Xform moleculeGroup = new Xform();
-	private double mouseDeltaX;
-	private double mouseDeltaY;
-	private double mouseOldX;
-	private double mouseOldY;
-	private double mousePosX;
-	private double mousePosY;
-	private final Group root = new Group();
-	private final Xform world = new Xform();
-	private Timeline timeline = new SimpleTimelineBuilder()
-			.cycleCount(Animation.INDEFINITE)
-			.keyFrames(new KeyFrame(Duration.minutes(1), new KeyValue(world.rotateYProperty(), 360.0)))
-			.build();
-	private boolean timelinePlaying;
-
+    private static final double CONTROL_MULTIPLIER = 0.1;
+    private static final double SHIFT_MULTIPLIER = 0.1;
+    private static final double CAMERA_DISTANCE = 450;
+    private static final double ALT_MULTIPLIER = 0.5;
+    private final Group axisGroup = new Group();
+    private final PerspectiveCamera camera = new PerspectiveCamera(true);
+    private final Xform cameraXform = new Xform();
+    private final Xform cameraXform2 = new Xform();
+    private final Xform cameraXform3 = new Xform();
+    private final Xform moleculeGroup = new Xform();
+    private double mouseDeltaX;
+    private double mouseDeltaY;
+    private double mouseOldX;
+    private double mouseOldY;
+    private double mousePosX;
+    private double mousePosY;
+    private final Group root = new Group();
+    private final Xform world = new Xform();
+    private Timeline timeline = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
+            .keyFrames(new KeyFrame(Duration.minutes(1), new KeyValue(world.rotateYProperty(), 360.0))).build();
+    private boolean timelinePlaying;
 
     private void buildAxes() {
         final PhongMaterial redMaterial = new PhongMaterial();
@@ -84,11 +81,11 @@ public class MoleculeSampleApp extends Application {
         cameraXform3.getChildren().add(camera);
         cameraXform3.setRz(180.0);
 
-		camera.setTranslateZ(-CAMERA_DISTANCE);
-		camera.setFarClip(10000.0);
+        camera.setTranslateZ(-CAMERA_DISTANCE);
+        camera.setFarClip(10000.0);
         camera.setNearClip(0.1);
-		cameraXform.setRy(320.0);
-		cameraXform.setRx(40);
+        cameraXform.setRy(320.0);
+        cameraXform.setRx(40);
     }
 
     private void buildMolecule() {
@@ -168,138 +165,150 @@ public class MoleculeSampleApp extends Application {
         world.getChildren().addAll(moleculeGroup);
     }
 
-	private void handleKeyEvent(KeyEvent event) {
-		switch (event.getCode()) {
-		    case Z:
-		        if (event.isShiftDown()) {
-				cameraXform.setRy(0.0);
-				cameraXform.setRx(0.0);
-		            camera.setTranslateZ(-300.0);
-		        }
-			cameraXform2.setTx(0.0);
-			cameraXform2.setTy(0.0);
-		        break;
-		    case X:
-		        if (event.isControlDown()) {
-		            if (axisGroup.isVisible()) {
-		                axisGroup.setVisible(false);
-		            } else {
-		                axisGroup.setVisible(true);
-		            }
-		        }
-		        break;
-		    case S:
-		        if (event.isControlDown()) {
-		            if (moleculeGroup.isVisible()) {
-		                moleculeGroup.setVisible(false);
-		            } else {
-		                moleculeGroup.setVisible(true);
-		            }
-		        }
-		        break;
-		    case SPACE:
-		        if (timelinePlaying) {
-		            timeline.pause();
-		            timelinePlaying = false;
-		        } else {
-		            timeline.play();
-		            timelinePlaying = true;
-		        }
-		        break;
-		    case UP:
-			upAndDownMovement(event, -1);
-		        break;
-		    case DOWN:
-			upAndDownMovement(event, 1);
-		        break;
-		    case RIGHT:
-			leftAndRightMovement(event, 1);
-		        break;
-		    case LEFT:
-			leftAndRightMovement(event, -1);
-		        break;
-		default:
-			break;
-		}
-	}
+    private void handleKeyEvent(KeyEvent event) {
+        switch (event.getCode()) {
+            case Z:
+                if (event.isShiftDown()) {
+                    cameraXform.setRy(0.0);
+                    cameraXform.setRx(0.0);
+                    camera.setTranslateZ(-300.0);
+                }
+                cameraXform2.setTx(0.0);
+                cameraXform2.setTy(0.0);
+                break;
+            case X:
+                toggleAxisVisible(event);
+                break;
+            case S:
+                toggleMoleculeVisible(event);
+                break;
+            case SPACE:
+                toggleAnimation();
+                break;
+            case UP:
+                upAndDownMovement(event, -1);
+                break;
+            case DOWN:
+                upAndDownMovement(event, 1);
+                break;
+            case RIGHT:
+                leftAndRightMovement(event, 1);
+                break;
+            case LEFT:
+                leftAndRightMovement(event, -1);
+                break;
+            default:
+                break;
+        }
+    }
 
-	private void handleMouse(Scene scene) {
+    private void toggleAnimation() {
+        if (timelinePlaying) {
+            timeline.pause();
+            timelinePlaying = false;
+        } else {
+            timeline.play();
+            timelinePlaying = true;
+        }
+    }
+
+    private void toggleMoleculeVisible(KeyEvent event) {
+        if (event.isControlDown()) {
+            if (moleculeGroup.isVisible()) {
+                moleculeGroup.setVisible(false);
+            } else {
+                moleculeGroup.setVisible(true);
+            }
+        }
+    }
+
+    private void toggleAxisVisible(KeyEvent event) {
+        if (event.isControlDown()) {
+            if (axisGroup.isVisible()) {
+                axisGroup.setVisible(false);
+            } else {
+                axisGroup.setVisible(true);
+            }
+        }
+    }
+
+    private void handleMouse(Scene scene) {
         scene.setOnMousePressed((MouseEvent me) -> {
             mousePosX = me.getSceneX();
             mousePosY = me.getSceneY();
             mouseOldX = me.getSceneX();
             mouseOldY = me.getSceneY();
         });
-		scene.setOnMouseDragged(this::handleMouseDragged);
+        scene.setOnMouseDragged(this::handleMouseDragged);
     }
 
-	private void handleMouseDragged(MouseEvent me) {
-		mouseOldX = mousePosX;
-		mouseOldY = mousePosY;
-		mousePosX = me.getSceneX();
-		mousePosY = me.getSceneY();
-		mouseDeltaX = mousePosX - mouseOldX;
-		mouseDeltaY = mousePosY - mouseOldY;
-		double modifier = me.isShiftDown() ? 10.0 : me.isControlDown() ? 0.1 : 1.0;
-		double modifierFactor = 0.1;
-		if (me.isPrimaryButtonDown()) {
-			cameraXform.setRy(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
-			cameraXform.setRx(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
-		} else if (me.isSecondaryButtonDown()) {
-		    double z = camera.getTranslateZ();
-		    double newZ = z + mouseDeltaX * modifierFactor * modifier;
-		    camera.setTranslateZ(newZ);
-		} else if (me.isMiddleButtonDown()) {
-			cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
-			cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
-		}
-	}
+    private void handleMouseDragged(MouseEvent me) {
+        mouseOldX = mousePosX;
+        mouseOldY = mousePosY;
+        mousePosX = me.getSceneX();
+        mousePosY = me.getSceneY();
+        mouseDeltaX = mousePosX - mouseOldX;
+        mouseDeltaY = mousePosY - mouseOldY;
+        double modifier = me.isShiftDown() ? 10.0 : me.isControlDown() ? 0.1 : 1.0;
+        double modifierFactor = 0.1;
+        if (me.isPrimaryButtonDown()) {
+            cameraXform.setRy(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
+            cameraXform.setRx(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
+        } else if (me.isSecondaryButtonDown()) {
+            double z = camera.getTranslateZ();
+            double newZ = z + mouseDeltaX * modifierFactor * modifier;
+            camera.setTranslateZ(newZ);
+        } else if (me.isMiddleButtonDown()) {
+            cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
+            cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
+        }
+    }
 
-	private void leftAndRightMovement(KeyEvent event, int i) {
-		if (event.isControlDown() && event.isShiftDown()) {
-			cameraXform2.setTx(cameraXform2.getTx() + i * 10.0 * CONTROL_MULTIPLIER);
-		} else if (event.isAltDown() && event.isShiftDown()) {
-			cameraXform.setRy(cameraXform.getRotateY() - i * 10.0 * ALT_MULTIPLIER);
-		} else if (event.isControlDown()) {
-			cameraXform2.setTx(cameraXform2.getTx() + i * 1.0 * CONTROL_MULTIPLIER);
-		} else if (event.isAltDown()) {
-			cameraXform.setRy(cameraXform.getRotateY() - i * 2.0 * ALT_MULTIPLIER);
-		}
-	}
+    private void leftAndRightMovement(KeyEvent event, int i) {
+        if (event.isControlDown() && event.isShiftDown()) {
+            cameraXform2.setTx(cameraXform2.getTx() + i * 10.0 * CONTROL_MULTIPLIER);
+        } else if (event.isAltDown() && event.isShiftDown()) {
+            cameraXform.setRy(cameraXform.getRotateY() - i * 10.0 * ALT_MULTIPLIER);
+        } else if (event.isControlDown()) {
+            cameraXform2.setTx(cameraXform2.getTx() + i * 1.0 * CONTROL_MULTIPLIER);
+        } else if (event.isAltDown()) {
+            cameraXform.setRy(cameraXform.getRotateY() - i * 2.0 * ALT_MULTIPLIER);
+        }
+    }
 
-	@Override
-	public void start(Stage primaryStage) {
-		root.getChildren().add(world);
-		buildCamera();
-		buildAxes();
-		buildMolecule();
+    @Override
+    public void start(Stage primaryStage) {
+        root.getChildren().add(world);
+        buildCamera();
+        buildAxes();
+        buildMolecule();
 
-		Scene scene = new Scene(root, 1024, 768, true);
-		scene.setFill(Color.GREY);
-		scene.setOnKeyPressed(this::handleKeyEvent);
-		handleMouse(scene);
+        Scene scene = new Scene(root, 1024, 768, true);
+        scene.setFill(Color.GREY);
+        scene.setOnKeyPressed(this::handleKeyEvent);
+        handleMouse(scene);
 
-		primaryStage.setTitle("Molecule Sample Application");
-		primaryStage.setScene(scene);
-		primaryStage.show();
+        primaryStage.setTitle("Molecule Sample Application");
+        primaryStage.setScene(scene);
+        primaryStage.show();
 
-		scene.setCamera(camera);
+        scene.setCamera(camera);
 
-	}
+    }
 
-	private void upAndDownMovement(KeyEvent event, int i) {
-		if (event.isControlDown() && event.isShiftDown()) {
-			cameraXform2.setTy(cameraXform2.getTy() + i * 10.0 * CONTROL_MULTIPLIER);
-		} else if (event.isAltDown() && event.isShiftDown()) {
-			cameraXform.setRx(cameraXform.getRotateX() + i * 10.0 * ALT_MULTIPLIER);
-		} else if (event.isControlDown()) {
-			cameraXform2.setTy(cameraXform2.getTy() + i * 1.0 * CONTROL_MULTIPLIER);
-		} else if (event.isAltDown()) {
-			cameraXform.setRx(cameraXform.getRotateX() + i * 2.0 * ALT_MULTIPLIER);
-		} else if (event.isShiftDown()) {
-			camera.setTranslateZ(camera.getTranslateZ() - i * 5.0 * SHIFT_MULTIPLIER);
-		}
-	}
+    private void upAndDownMovement(KeyEvent event, int i) {
+        if (event.isControlDown() && event.isShiftDown()) {
+            cameraXform2.setTy(cameraXform2.getTy() + i * 10.0 * CONTROL_MULTIPLIER);
+        } else if (event.isAltDown() && event.isShiftDown()) {
+            cameraXform.setRx(cameraXform.getRotateX() + i * 10.0 * ALT_MULTIPLIER);
+        } else if (event.isControlDown()) {
+            cameraXform2.setTy(cameraXform2.getTy() + i * 1.0 * CONTROL_MULTIPLIER);
+        } else if (event.isAltDown()) {
+            cameraXform.setRx(cameraXform.getRotateX() + i * 2.0 * ALT_MULTIPLIER);
+        } else if (event.isShiftDown()) {
+            camera.setTranslateZ(camera.getTranslateZ() - i * 5.0 * SHIFT_MULTIPLIER);
+        }
+    }
 
     public static void main(String[] args) {
         System.setProperty("prism.dirtyopts", "false");

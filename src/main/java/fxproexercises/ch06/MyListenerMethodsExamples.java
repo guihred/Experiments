@@ -1,5 +1,7 @@
 package fxproexercises.ch06;
 
+import java.util.stream.Stream;
+
 import javafx.collections.ListChangeListener;
 
 class MyListenerMethodsExamples implements ListChangeListener<String> {
@@ -17,11 +19,7 @@ class MyListenerMethodsExamples implements ListChangeListener<String> {
 			sb.append("\t\tcursor = ")
 			.append(i++)
 			.append("\n");
-			final String kind
-			= change.wasPermutated() ? "permutted"
-					: change.wasReplaced() ? "replaced"
-							: change.wasRemoved() ? "removed"
-									: change.wasAdded() ? "added" : "none";
+            final String kind = getChangeType(change);
 			sb.append("\t\tKind of change: ")
 			.append(kind)
 			.append("\n");
@@ -30,7 +28,7 @@ class MyListenerMethodsExamples implements ListChangeListener<String> {
 			.append(", ")
 			.append(change.getTo())
 			.append("]\n");
-			if ("added".equals(kind) || "replaced".equals(kind)) {
+            if (Stream.of("added", "replaced").anyMatch(kind::equals)) {
 				sb.append("\t\tAdded size: ")
 				.append(change.getAddedSize())
 				.append("\n");
@@ -63,4 +61,20 @@ class MyListenerMethodsExamples implements ListChangeListener<String> {
 		}
 		return sb.toString();
 	}
+
+    private String getChangeType(Change<? extends String> change) {
+        if (change.wasPermutated()) {
+            return "permutted";
+        }
+        if (change.wasReplaced()) {
+            return "replaced";
+        }
+        if (change.wasRemoved()) {
+            return "removed";
+        }
+        if (change.wasAdded()) {
+            return "added";
+        }
+        return "none";
+    }
 }

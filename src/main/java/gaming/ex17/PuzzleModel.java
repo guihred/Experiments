@@ -10,6 +10,7 @@ import java.util.Random;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import simplebuilder.ResourceFXUtils;
 
 public class PuzzleModel extends Group {
@@ -37,53 +38,57 @@ public class PuzzleModel extends Group {
     }
 
 	private void addDragEvents(PuzzlePiece piece) {
-		piece.setOnMousePressed(e -> {
-            if (intersectedPoint == null) {
-				intersectedPoint = e.getPickResult().getIntersectedPoint();
-				source = e.getSource();
-				piece.toFront();
-            }
-        });
-		piece.setOnMouseDragged(e -> {
-            if (intersectedPoint == null || source != e.getSource()) {
-                return;
-            }
-            Point3D intersectedPoint2 = e.getPickResult().getIntersectedPoint();
-            Point3D subtract = intersectedPoint2.subtract(intersectedPoint);
-			Optional<List<PuzzlePiece>> findAny = groupWhichContains(piece);
-			if (findAny.isPresent() && subtract.magnitude() <= width) {
+        piece.setOnMousePressed(e -> onMousePressed(piece, e));
+        piece.setOnMouseDragged(e -> onMouseDragged(piece, e));
+        piece.setOnMouseReleased(e -> onMouseReleased(piece));
+    }
 
-				findAny.get().forEach(i -> i.move(subtract));
+    private void onMousePressed(PuzzlePiece piece, MouseEvent e) {
+        if (intersectedPoint == null) {
+            intersectedPoint = e.getPickResult().getIntersectedPoint();
+            source = e.getSource();
+            piece.toFront();
+        }
+    }
 
-            }
-        });
-		piece.setOnMouseReleased(e -> {
+    private void onMouseDragged(PuzzlePiece piece, MouseEvent e) {
+        if (intersectedPoint == null || source != e.getSource()) {
+            return;
+        }
+        Point3D intersectedPoint2 = e.getPickResult().getIntersectedPoint();
+        Point3D subtract = intersectedPoint2.subtract(intersectedPoint);
+        Optional<List<PuzzlePiece>> findAny = groupWhichContains(piece);
+        if (findAny.isPresent() && subtract.magnitude() <= width) {
 
-			List<List<PuzzlePiece>> collect = linkedPieces.stream().filter(l -> !l.contains(piece)).collect(toList());
-			for (int i = 0; i < collect.size(); i++) {
-				for (int j = 0; j < collect.get(i).size(); j++) {
-					PuzzlePiece puzzlePiece = collect.get(i).get(j);
-					if (checkNeighbours(piece, puzzlePiece)) {
-						if (distance(puzzlePiece, piece) < width * width / 4) {
-							Optional<List<PuzzlePiece>> containsP = groupWhichContains(piece);
-							Optional<List<PuzzlePiece>> containsPuzzle = groupWhichContains(puzzlePiece);
-							if (containsP.isPresent() && containsPuzzle.isPresent()
-									&& !containsP.get().equals(containsPuzzle.get())) {
-								containsPuzzle.get().addAll(containsP.get());
-								linkedPieces.remove(containsP.get());
-								double a = xDistance(puzzlePiece, piece);
-								double b = yDistance(puzzlePiece, piece);
-								containsPuzzle.get().forEach(PuzzlePiece::toFront);
-								containsP.get().forEach(z -> z.move(a, b));
-								return;
-                            }
+            findAny.get().forEach(i -> i.move(subtract));
+
+        }
+    }
+
+    private void onMouseReleased(PuzzlePiece piece) {
+        List<List<PuzzlePiece>> collect = linkedPieces.stream().filter(l -> !l.contains(piece)).collect(toList());
+        for (int i = 0; i < collect.size(); i++) {
+        	for (int j = 0; j < collect.get(i).size(); j++) {
+        		PuzzlePiece puzzlePiece = collect.get(i).get(j);
+        		if (checkNeighbours(piece, puzzlePiece)) {
+        			if (distance(puzzlePiece, piece) < width * width / 4) {
+        				Optional<List<PuzzlePiece>> containsP = groupWhichContains(piece);
+        				Optional<List<PuzzlePiece>> containsPuzzle = groupWhichContains(puzzlePiece);
+        				if (containsP.isPresent() && containsPuzzle.isPresent()
+        						&& !containsP.get().equals(containsPuzzle.get())) {
+        					containsPuzzle.get().addAll(containsP.get());
+        					linkedPieces.remove(containsP.get());
+        					double a = xDistance(puzzlePiece, piece);
+        					double b = yDistance(puzzlePiece, piece);
+        					containsPuzzle.get().forEach(PuzzlePiece::toFront);
+        					containsP.get().forEach(z -> z.move(a, b));
+        					return;
                         }
                     }
-				}
-			}
-            intersectedPoint = null;
-
-        });
+                }
+        	}
+        }
+        intersectedPoint = null;
     }
 
 	private Optional<List<PuzzlePiece>> groupWhichContains(PuzzlePiece p) {

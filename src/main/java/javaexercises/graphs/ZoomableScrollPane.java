@@ -102,10 +102,7 @@ public class ZoomableScrollPane extends ScrollPane {
 
 	}
 
-	private class ZoomHandler implements EventHandler<ScrollEvent> {
-
-		public ZoomHandler() {
-		}
+    class ZoomHandler implements EventHandler<ScrollEvent> {
 
 		@Override
 		public void handle(ScrollEvent scrollEvent) {

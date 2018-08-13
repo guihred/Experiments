@@ -1,6 +1,7 @@
 package fxsamples;
 
 import java.util.stream.Stream;
+
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -11,13 +12,21 @@ import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -200,28 +209,12 @@ public class BoundsPlayground extends Application {
 		boundsToggles.getChildren().addAll(useLayoutBounds, useBoundsInLocal, useBoundsInParent);
 		// change the layout bounds display depending on which bounds type has
 		// been selected.
-		useLayoutBounds.selectedProperty().addListener(
-				(o, a, isSelected) -> {
-					if (isSelected) {
-						boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast).forEach(b->b.monitorBounds(BoundsType.LAYOUT_BOUNDS));
-						getSelectedBoundsType().set(BoundsType.LAYOUT_BOUNDS);
-						testIntersections();
-					}
-				});
-		useBoundsInLocal.selectedProperty().addListener((o, a, isSelected) -> {
-					if (isSelected) {
-						boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast).forEach(b->b.monitorBounds(BoundsType.BOUNDS_IN_LOCAL));
-						getSelectedBoundsType().set(BoundsType.BOUNDS_IN_LOCAL);
-						testIntersections();
-					}
-				});
-		useBoundsInParent.selectedProperty().addListener((o, a, isSelected) -> {
-					if (isSelected) {
-						boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast).forEach(b->b.monitorBounds(BoundsType.BOUNDS_IN_PARENT));
-						getSelectedBoundsType().set(BoundsType.BOUNDS_IN_PARENT);
-						testIntersections();
-					}
-				});
+        useLayoutBounds.selectedProperty().addListener(
+                (o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.LAYOUT_BOUNDS));
+        useBoundsInLocal.selectedProperty().addListener(
+                (o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.BOUNDS_IN_LOCAL));
+        useBoundsInParent.selectedProperty().addListener(
+                (o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.BOUNDS_IN_PARENT));
 		useLayoutBounds.selectedProperty().set(true);
 		WebView boundsExplanation = new WebView();
 		boundsExplanation.getEngine().loadContent(
@@ -246,6 +239,15 @@ public class BoundsPlayground extends Application {
 		// ensure the utility window closes when the main app window closes.
 		stage.setOnCloseRequest(windowEvent -> reportingStage.close());
 	}
+
+    private void changeBoundsType(final Group boundsOverlay, Boolean isSelected, BoundsType boundsInParent) {
+        if (isSelected) {
+            boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast)
+                    .forEach(b -> b.monitorBounds(boundsInParent));
+            getSelectedBoundsType().set(boundsInParent);
+            testIntersections();
+        }
+    }
 
 	public ObjectProperty<BoundsType> getSelectedBoundsType() {
 		return selectedBoundsType;

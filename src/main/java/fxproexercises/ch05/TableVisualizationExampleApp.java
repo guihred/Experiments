@@ -71,7 +71,9 @@ import simplebuilder.SimpleRectangleBuilder;
  */
 public class TableVisualizationExampleApp extends Application {
 
-	private Stage stage;
+	private static final String MENU_ITEM_B = "MenuItem B";
+    private static final String MENU_ITEM_A = "MenuItem A";
+    private Stage stage;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -357,10 +359,10 @@ public class TableVisualizationExampleApp extends Application {
 		hyperlink.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Hyperlink"));
 		final Button button = new Button("Button");
 		button.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Button"));
-		final MenuItem menItemA = new MenuItem("MenuItem A");
-		menItemA.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A"));
+		final MenuItem menItemA = new MenuItem(MENU_ITEM_A);
+        menItemA.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A "));
 		final MenuButton menuButton = new MenuButton("MenuButton");
-		menuButton.getItems().addAll(menItemA, new MenuItem("MenuItem B"));
+		menuButton.getItems().addAll(menItemA, new MenuItem(MENU_ITEM_B));
 		final ToggleGroup radioToggleGroup = new ToggleGroup();
 		final RadioButton radioButton1 = new RadioButton("RadioButton1");
 		radioButton1.setToggleGroup(radioToggleGroup);
@@ -373,16 +375,16 @@ public class TableVisualizationExampleApp extends Application {
 				System.out.println(rb.getText() + " selected");
 			}
 		});
-		final MenuItem menuItem = new MenuItem("MenuItem A");
+		final MenuItem menuItem = new MenuItem(MENU_ITEM_A);
 		menuItem.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A"));
-		final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem("MenuItem B"));
+		final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem(MENU_ITEM_B));
 		splitMenu.setText("SplitMenuButton");
 		splitMenu.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on SplitMenuButton"));
 		VBox variousControls = new VBox(20, button, checkBox, new HBox(10, radioButton1, radioButton2), hyperlink,choiceBox, menuButton, splitMenu, textField, passwordField,new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
 		variousControls.setPadding(new Insets(10, 10, 10, 10));
-		final MenuItem menuItemA = new MenuItem("MenuItem A");
+		final MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
 		menuItemA.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A"));
-		ContextMenu contextMenu = new ContextMenu(menuItemA, new MenuItem("MenuItem B"));
+		ContextMenu contextMenu = new ContextMenu(menuItemA, new MenuItem(MENU_ITEM_B));
 		ScrollPane scrollPane = new ScrollPane(variousControls);
 		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);

@@ -42,7 +42,8 @@ import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public final class Chapter8 {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Chapter8.class);
+	private static final String ALICE_TXT = "alice.txt";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Chapter8.class);
 
 	private Chapter8() {
 	}
@@ -157,14 +158,14 @@ public final class Chapter8 {
 	public static void ex5() {
 		try {
 
-			List<String> wordsAsList = getWordsAsList(ResourceFXUtils.toPath("alice.txt"));
+			List<String> wordsAsList = getWordsAsList(ResourceFXUtils.toPath(ALICE_TXT));
 
 			Instant now = Instant.now();
 			long size = wordsAsList.stream().filter(w -> w.length() <= 12).count();
 			Instant end = Instant.now();
 			System.out.println("size=" + size + " time " + Duration.between(now, end).toMillis() + " ms");
 
-			wordsAsList = getWordsAsList(ResourceFXUtils.toPath("alice.txt"));
+			wordsAsList = getWordsAsList(ResourceFXUtils.toPath(ALICE_TXT));
 			now = Instant.now();
 			wordsAsList.removeIf(w -> w.length() > 12);
 			size = wordsAsList.size();
@@ -217,22 +218,22 @@ public final class Chapter8 {
 	 * BufferedReader.lines.
 	 */
 	public static void ex9() {
-		try (Scanner scanner = new Scanner(ResourceFXUtils.toPath("alice.txt"), StandardCharsets.UTF_8.name());) {
+		try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name());) {
 			streamOfLines(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-		try (Scanner scanner = new Scanner(ResourceFXUtils.toPath("alice.txt"), StandardCharsets.UTF_8.name());) {
+		try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name());) {
 			streamOfWords(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-		try (Scanner scanner = new Scanner(ResourceFXUtils.toPath("alice.txt"), StandardCharsets.UTF_8.name());) {
+		try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name());) {
 			streamOfInteger(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-		try (Scanner scanner = new Scanner(ResourceFXUtils.toPath("alice.txt"), StandardCharsets.UTF_8.name());) {
+		try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name());) {
 			streamOfDouble(scanner).forEach(System.out::println);
 		} catch (Exception e) {
 			LOGGER.error("", e);
@@ -427,7 +428,7 @@ public final class Chapter8 {
 	 */
 	public static void ex15() {
 		// Lines that contain some number
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"));) {
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT));) {
             lines.filter(Pattern.compile(".*\\d+.*$").asPredicate())
 					.forEach(System.out::println);
 		} catch (Exception e) {
@@ -444,7 +445,7 @@ public final class Chapter8 {
 	 */
 	public static void ex16() {
 		// Lines that contain some number
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"));) {
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT));) {
             lines.filter(Pattern.compile(".*\\d+.*$").asPredicate())
 					.forEach(System.out::println);
 		} catch (Exception e) {

@@ -2,6 +2,7 @@ package sample.cubesystem;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -150,7 +151,7 @@ public class GolfBall extends Application {
 
 				faces[fIndex + 0] = p0;
 				faces[fIndex + 1] = t0;
-				faces[fIndex + 2] = p1 % division == 0 ? p1 - division : p1;
+                faces[fIndex + 2] = index(division, p1);
 				faces[fIndex + 3] = t1;
 				faces[fIndex + 4] = p2;
 				faces[fIndex + 5] = t2;
@@ -158,11 +159,11 @@ public class GolfBall extends Application {
 
 				// add p3, p2, p1
 
-				faces[fIndex + 0] = p3 % division == 0 ? p3 - division : p3;
+                faces[fIndex + 0] = index(division, p3);
 				faces[fIndex + 1] = t3;
 				faces[fIndex + 2] = p2;
 				faces[fIndex + 3] = t2;
-				faces[fIndex + 4] = p1 % division == 0 ? p1 - division : p1;
+                faces[fIndex + 4] = index(division, p1);
 				faces[fIndex + 5] = t1;
 				fIndex += 6;
 			}
@@ -192,7 +193,7 @@ public class GolfBall extends Application {
 			faces[fIndex + 1] = t0;
 			faces[fIndex + 2] = p1;
 			faces[fIndex + 3] = t1;
-			faces[fIndex + 4] = p2 % division == 0 ? p2 - division : p2;
+            faces[fIndex + 4] = index(division, p2);
 			faces[fIndex + 5] = t2;
 			fIndex += 6;
 		}
@@ -204,6 +205,10 @@ public class GolfBall extends Application {
 
 		return m;
 	}
+
+    private static int index(final int division, int p3) {
+        return p3 % division == 0 ? p3 - division : p3;
+    }
 
 	private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
 		Rotate rotate = new Rotate(180, centerOtherSphere);

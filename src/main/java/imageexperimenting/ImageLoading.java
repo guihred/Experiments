@@ -21,16 +21,15 @@ import simplebuilder.HasLogging;
 public class ImageLoading {
     public static void main(String[] args) {
         String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
-        //        String nameFile = dataDir + "eu3.jpg";
+        //        String nameFile = dataDir + "eu3.jpg" 
         String svgFile = dataDir + "Video_game.svg";
 
-        // createThumnails(dataDir, nameFile);
+        // createThumnails(dataDir, nameFile)
         convertSVG(dataDir, svgFile);
 
     }
 
     static void convertSVG(String dataDir, String nameFile) {
-        // TODO Auto-generated method stub
         Image image = Image.load(nameFile);
 
         // Create an instance of PNG options
@@ -61,8 +60,7 @@ public class ImageLoading {
 
     static void grayScale(String dataDir, String nameFile) {
         Image original = Image.load( nameFile);
-        try {
-            JpegOptions jpegOptions = new JpegOptions();
+        try (JpegOptions jpegOptions = new JpegOptions();) {
             jpegOptions.setColorType(JpegCompressionColorMode.Grayscale);
             jpegOptions.setCompressionType(JpegCompressionMode.Progressive);
             original.save(dataDir + "result.jpg", jpegOptions);

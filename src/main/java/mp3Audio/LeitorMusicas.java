@@ -73,6 +73,16 @@ public final class LeitorMusicas {
 		return musicas;
 	}
 
+    @SuppressWarnings("unchecked")
+    private static <T> T notNull(T... objects) {
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] != null) {
+                return objects[i];
+            }
+        }
+        return null;
+    }
+
 	public static Musica readTags(File sourceFile) {
 		Musica musica = new Musica();
 		String title = "", artist = "", album = "", year = "", track = "", genre2 = "";
@@ -87,36 +97,20 @@ public final class LeitorMusicas {
 				if (lesTags[i] instanceof ID3V1_0Tag) {
 					v1 = true;
 					ID3V1_0Tag leTag = (ID3V1_0Tag) lesTags[i];
-					if (leTag.getTitle() != null) {
-						title = leTag.getTitle();
-					}
-					if (leTag.getArtist() != null) {
-						artist = leTag.getArtist();
-					}
-					if (leTag.getAlbum() != null) {
-						album = leTag.getAlbum();
-					}
+                    title = notNull(leTag.getTitle(), title);
+                    artist = notNull(leTag.getArtist(), artist);
+                    album = notNull(leTag.getAlbum(), album);
 					year = trySetYear(year, leTag);
-					if (leTag.getGenre() != null) {
-						genre = leTag.getGenre();
-					}
+                    genre = notNull(leTag.getGenre(), genre);
 
 				} else if (lesTags[i] instanceof ID3V2_3_0Tag) {
 					ID3V2_3_0Tag leTag = (ID3V2_3_0Tag) lesTags[i];
-					if (leTag.getTitle() != null) {
-						title = leTag.getTitle();
-					}
-					if (leTag.getArtist() != null) {
-						artist = leTag.getArtist();
-					}
-					if (leTag.getAlbum() != null) {
-						album = leTag.getAlbum();
-					}
+                    title = notNull(leTag.getTitle(), title);
+                    artist = notNull(leTag.getArtist(), artist);
+                    album = notNull(leTag.getAlbum(), album);
 					year = trySetYear(year, leTag);
 					track = trySetTrack(track, leTag);
-					if (leTag.getGenre() != null) {
-						genre2 = leTag.getGenre();
-					}
+                    genre2 = notNull(leTag.getGenre(), genre2);
 				}
 			}
 

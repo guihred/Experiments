@@ -2,6 +2,7 @@ package japstudy.db;
 
 import java.time.LocalTime;
 import java.util.List;
+
 import org.hibernate.Session;
 
 public class LessonDAO {
@@ -19,7 +20,7 @@ public class LessonDAO {
 		session.beginTransaction();
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT l ");
-		hql.append("FROM JapaneseLesson l ");
+        hql.append("FROM JapaneseLesson l  ");
 		hql.append("ORDER BY lesson, exercise");
 		List<JapaneseLesson> list = session
 				.createQuery(hql.toString(), JapaneseLesson.class).list();

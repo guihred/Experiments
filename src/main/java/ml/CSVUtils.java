@@ -42,10 +42,16 @@ public class CSVUtils {
         if (separators == ' ') {
             separators = DEFAULT_SEPARATOR;
         }
-        StringBuilder curVal = new StringBuilder();
+        StringBuilder curVal = getField(cvsLine, result, separators, customQuote);
+        result.add(curVal.toString());
+        return result;
+    }
+
+    private static StringBuilder getField(String cvsLine, List<String> result, char separators, char customQuote) {
         boolean inQuotes = false;
         boolean startCollectChar = false;
         boolean doubleQuotesInColumn = false;
+        StringBuilder curVal = new StringBuilder();
         char[] chars = cvsLine.toCharArray();
         for (char ch : chars) {
             if (inQuotes) {
@@ -53,43 +59,37 @@ public class CSVUtils {
                 if (ch == customQuote) {
                     inQuotes = false;
                     doubleQuotesInColumn = false;
-                } else {
-                    // Fixed : allow "" in custom quote enclosed
-                    if (ch == '\"') {
-                        if (!doubleQuotesInColumn) {
-                            curVal.append(ch);
-                            doubleQuotesInColumn = true;
-                        }
-                    } else {
+                } else if (ch == '\"') {
+                    if (!doubleQuotesInColumn) {
                         curVal.append(ch);
+                        doubleQuotesInColumn = true;
                     }
-                }
-            } else {
-                if (ch == customQuote) {
-                    inQuotes = true;
-                    // Fixed : allow "" in empty quote enclosed
-                    if (chars[0] != '"' && customQuote == '\"') {
-                        curVal.append('"');
-                    }
-                    // double quotes in column will hit this!
-                    if (startCollectChar) {
-                        curVal.append('"');
-                    }
-                } else if (ch == separators) {
-                    result.add(curVal.toString().replaceFirst("" + DEFAULT_QUOTE, ""));
-                    curVal = new StringBuilder();
-                    startCollectChar = false;
-                } else if (ch == '\r') {
-                    continue;
-                } else if (ch == '\n') {
-                    break;
                 } else {
                     curVal.append(ch);
                 }
+            } else if (ch == customQuote) {
+                inQuotes = true;
+                // Fixed : allow "" in empty quote enclosed
+                if (chars[0] != '"' && customQuote == '\"') {
+                    curVal.append('"');
+                }
+                // double quotes in column will hit this!
+                if (startCollectChar) {
+                    curVal.append('"');
+                }
+            } else if (ch == separators) {
+                result.add(curVal.toString().replaceFirst("" + DEFAULT_QUOTE, ""));
+                curVal = new StringBuilder();
+                startCollectChar = false;
+            } else if (ch == '\r') {
+                continue;
+            } else if (ch == '\n') {
+                break;
+            } else {
+                curVal.append(ch);
             }
         }
-        result.add(curVal.toString());
-        return result;
+        return curVal;
     }
 
     public static void splitFile(String csvFile, int columnIndex) {

@@ -55,8 +55,7 @@ class WorldMapGraph extends Canvas {
     }
 
     public List<Country> anyAdjacents(Country c) {
-        Country[] values = Country.values();
-        return Stream.of(values).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
+        return Stream.of(Country.values()).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
                 .filter(e -> e != c).distinct().collect(Collectors.toList());
     }
 
@@ -90,9 +89,9 @@ class WorldMapGraph extends Canvas {
             dataframeML.filterString(header, Country::hasName);
         }
 
-        if (summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class) {
+        if (isSuitableForSummary()) {
             summary = dataframeML.summary(valueHeader.get());
-        } else if (dataframeML != null && dataframeML.getFormat(valueHeader.get()) == String.class) {
+        } else if (isSuitableForCategory()) {
             createCategoryMap();
         }
         if (dataframeML != null) {
@@ -103,7 +102,7 @@ class WorldMapGraph extends Canvas {
             gc.beginPath();
             if (dataframeML != null) {
                 countries.setColor(null);
-                dataframeML.only(header, t -> countries.matches(t), j -> {
+                dataframeML.only(header, countries::matches, j -> {
                     Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
                     for (Entry<String, Predicate<Object>> fil : entrySet) {
                         Object t = dataframeML.list(fil.getKey()).get(j);
@@ -113,11 +112,7 @@ class WorldMapGraph extends Canvas {
                     }
                     List<Object> list = dataframeML.list(valueHeader.get());
                     Object object = DataframeML.getFromList(j, list);
-                    if (object instanceof Number) {
-                        countries.setColor(getColorForValue(((Number) object).doubleValue()));
-                    } else if (object instanceof String) {
-                        countries.setColor(categoryMap.get(object));
-                    }
+                    countries.setColor(getColor(countries, object));
                 });
             }
             gc.setFill(countries.getColor() != null ? countries.getColor() : categoryMap.get(NO_INFO));
@@ -128,16 +123,38 @@ class WorldMapGraph extends Canvas {
         }
 
         if (showNeighbors) {
-            gc.setStroke(Color.RED);
-            gc.setLineWidth(1);
-            for (int i = 0; i < values.length; i++) {
-                Country countries = values[i];
-                for (Country country : countries.neighbors()) {
-                    gc.strokeLine(countries.getCenterX(), countries.getCenterY(), country.getCenterX(),
-                            country.getCenterY());
-                }
+            drawLinks(values);
+        }
+    }
+
+    private void drawLinks(Country[] values) {
+        gc.setStroke(Color.RED);
+        gc.setLineWidth(1);
+        for (int i = 0; i < values.length; i++) {
+            Country countries = values[i];
+            for (Country country : countries.neighbors()) {
+                gc.strokeLine(countries.getCenterX(), countries.getCenterY(), country.getCenterX(),
+                        country.getCenterY());
             }
         }
+    }
+
+    private Color getColor(Country countries, Object object) {
+        Color color = countries.getColor();
+        if (object instanceof Number) {
+            color = getColorForValue(((Number) object).doubleValue());
+        } else if (object instanceof String) {
+            color = categoryMap.get(object);
+        }
+        return color;
+    }
+
+    private boolean isSuitableForCategory() {
+        return dataframeML != null && dataframeML.getFormat(valueHeader.get()) == String.class;
+    }
+
+    private boolean isSuitableForSummary() {
+        return summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class;
     }
 
 
@@ -218,10 +235,10 @@ class WorldMapGraph extends Canvas {
         if (value < min || value > max) {
             return Color.BLACK;
         }
-        //        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - sum.getMin()) / (sum.getMax() - sum.getMin());
-        //        return Color.hsb(hue, 1.0, 1.0);
-        //        double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin());
-        //        return Color.hsb(RED_HUE, 1.0, brightness);
+        //        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - sum.getMin()) / (sum.getMax() - sum.getMin())
+        //        return Color.hsb(hue, 1.0, 1.0)
+        //        double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin())
+        //        return Color.hsb(RED_HUE, 1.0, brightness)
         double saturation = (value - min) / (max - min);
         return Color.hsb(RED_HUE, saturation, 1.0);
     }

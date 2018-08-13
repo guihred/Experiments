@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -87,21 +88,21 @@ public class DotsModel {
 	private int getCountMap(DotsSquare a, DotsSquare b) {
         a.addAdj(b);
         int sum = 0;
-        int i = a.getI() < b.getI() ? a.getI() : b.getI();
-        int j = a.getJ() < b.getJ() ? a.getJ() : b.getJ();
+        int i = Integer.min(a.getI(), b.getI());
+        int j = Integer.min(a.getJ(), b.getJ());
         if (a.getI() == b.getI()) {
             if (i > 0) {
                 DotsSquare c = maze[i - 1][j];
                 DotsSquare d = maze[i - 1][j + 1];
-                if (a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a)) {
+                if (extracted1(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(a, c);
                 }
-                if (a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a)) {
+                if (extracted2(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(b, d);
                 }
-                if (a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a)) {
+                if (extracted3(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(d, c);
                 }
@@ -109,15 +110,15 @@ public class DotsModel {
             if (i < MAZE_SIZE - 1) {
                 DotsSquare c = maze[i + 1][j];
                 DotsSquare d = maze[i + 1][j + 1];
-                if (a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a)) {
+                if (extracted2(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(b, d);
                 }
-				if (a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a)) {
+                if (extracted1(a, b, c, d)) {
 					sum++;
 					sum += getCountMap(a, c);
 				}
-                if (a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a)) {
+                if (extracted3(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(d, c);
                 }
@@ -126,15 +127,15 @@ public class DotsModel {
             if (j > 0) {
                 DotsSquare c = maze[i][j - 1];
                 DotsSquare d = maze[i + 1][j - 1];
-                if (a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a)) {
+                if (extracted1(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(a, c);
                 }
-                if (a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a)) {
+                if (extracted2(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(b, d);
                 }
-                if (a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a)) {
+                if (extracted3(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(d, c);
                 }
@@ -142,15 +143,15 @@ public class DotsModel {
             if (j < MAZE_SIZE - 1) {
                 DotsSquare c = maze[i][j + 1];
                 DotsSquare d = maze[i + 1][j + 1];
-                if (a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a)) {
+                if (extracted1(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(a, c);
                 }
-                if (a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a)) {
+                if (extracted2(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(b, d);
                 }
-                if (a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a)) {
+                if (extracted3(a, b, c, d)) {
                     sum++;
                     sum += getCountMap(d, c);
                 }
@@ -161,6 +162,18 @@ public class DotsModel {
         a.removeAdj(b);
 
         return sum;
+    }
+
+    private boolean extracted1(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
+    }
+
+    private boolean extracted2(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a);
+    }
+
+    private boolean extracted3(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
     }
 	public Line getLine() {
 		return line;
@@ -248,8 +261,7 @@ public class DotsModel {
 			return;
 		}
 
-		if (Math.abs(over.getI() - selected.getI()) + Math.abs(over.getJ() - selected.getJ()) == 1
-				&& !over.contains(selected)) {
+        if (isPointNeighborToCurrent(over)) {
 			final Line line1 = new Line(selected.getCenter()[0], selected.getCenter()[1], over.getCenter()[0],
 					over.getCenter()[1]);
 			gridPane.getChildren().add(line1);
@@ -273,10 +285,8 @@ public class DotsModel {
 				int nplayed = 0;
 				while (currentPlayer == 0) {
 					List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = getMelhorPossibilidades();
-
 					possibilidades = possibilidades.isEmpty() ? getMelhorPossibilidades2() : possibilidades;
 					possibilidades = possibilidades.isEmpty() ? getMelhorPossibilidades3() : possibilidades;
-
 					possibilidades = possibilidades.isEmpty() ? getPossibilidades() : possibilidades;
 					if (possibilidades.isEmpty()) {
 						currentPlayer = (currentPlayer + 1) % jogadores.length;
@@ -334,6 +344,11 @@ public class DotsModel {
 		line.setStartY(0);
 		selected = null;
 	}
+
+    private boolean isPointNeighborToCurrent(DotsSquare over) {
+        return Math.abs(over.getI() - selected.getI()) + Math.abs(over.getJ() - selected.getJ()) == 1
+				&& !over.contains(selected);
+    }
 
 	private void initializeMaze(Group gridPane1) {
 		for (int i = 0; i < MAZE_SIZE; i++) {

@@ -350,7 +350,6 @@ public class DataframeML implements HasLogging {
 
             while (scanner.hasNext()) {
                 size++;
-
                 List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
                 if (header.size() != line2.size()) {
                     getLogger().error("ERROR FIELDS COUNT");
@@ -367,7 +366,6 @@ public class DataframeML implements HasLogging {
                     if (filters.containsKey(key) && !filters.get(key).test(tryNumber)) {
                         for (int j = 0; j < i; j++) {
                             String key2 = header.get(j);
-
                             List<Object> list = dataframe.get(key2);
                             Object remove = list.remove(list.size() - 1);
                             if (categories.containsKey(key2)) {

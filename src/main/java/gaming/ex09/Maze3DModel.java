@@ -8,6 +8,7 @@ package gaming.ex09;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -53,18 +54,7 @@ public class Maze3DModel {
 		while (!history.isEmpty()) {
 			maze[row][column].setVisited(true);
 			check.clear();
-			if (column > 0 && !maze[row][column - 1].isVisited()) {
-				check.add("L");
-			}
-			if (row > 0 && !maze[row - 1][column].isVisited()) {
-				check.add("U");
-			}
-			if (column < MAZE_SIZE - 1 && !maze[row][column + 1].isVisited()) {
-				check.add("R");
-			}
-			if (row < MAZE_SIZE - 1 && !maze[row + 1][column].isVisited()) {
-				check.add("D");
-			}
+            addSides(check);
 			if (!check.isEmpty()) {
 				history.add(maze[row][column]);
 				final String direction = check.get(random.nextInt(check.size()));
@@ -94,6 +84,21 @@ public class Maze3DModel {
 		}
 		timeline.stop();
 	}
+
+    private void addSides(List<String> check) {
+        if (column > 0 && !maze[row][column - 1].isVisited()) {
+        	check.add("L");
+        }
+        if (row > 0 && !maze[row - 1][column].isVisited()) {
+        	check.add("U");
+        }
+        if (column < MAZE_SIZE - 1 && !maze[row][column + 1].isVisited()) {
+        	check.add("R");
+        }
+        if (row < MAZE_SIZE - 1 && !maze[row + 1][column].isVisited()) {
+        	check.add("D");
+        }
+    }
 
 	private boolean getBackIn(List<Maze3DSquare> history1) {
 		final Maze3DSquare remove = history1.remove(history1.size() - 1);

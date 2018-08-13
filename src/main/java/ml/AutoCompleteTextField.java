@@ -8,7 +8,9 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javafx.beans.value.ChangeListener;
+
+import org.deeplearning4j.models.word2vec.Word2Vec;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
@@ -17,7 +19,6 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import org.deeplearning4j.models.word2vec.Word2Vec;
 
 public class AutoCompleteTextField extends TextField {
     private final SortedSet<String> entries;
@@ -33,55 +34,53 @@ public class AutoCompleteTextField extends TextField {
         entries = entrySet == null ? new TreeSet<>() : entrySet;
         filteredEntries.addAll(entries);
         entriesPopup = new ContextMenu();
-        textProperty().addListener((ChangeListener<String>) (observableVadlue, ds, sb2) -> {
-            if (getText().length() == 0) {
-                filteredEntries.clear();
-                filteredEntries.addAll(entries);
-                entriesPopup.hide();
-                return;
+        textProperty().addListener((obs, ds, sb2) -> onTextChange(word2Vec));
+        focusedProperty().addListener((obs, a, a2) -> entriesPopup.hide());
+    }
+
+    private void onTextChange(Word2Vec word2Vec) {
+        if (getText().isEmpty()) {
+            filteredEntries.clear();
+            filteredEntries.addAll(entries);
+            entriesPopup.hide();
+            return;
+        }
+        LinkedList<String> searchResult = new LinkedList<>();
+        //Check if the entered Text is part of some entry
+        String text = getText();
+        addSearches(searchResult, text);
+        if (!searchResult.isEmpty()) {
+            filteredEntries.clear();
+            filteredEntries.addAll(searchResult);
+            //Only show popup if not in filter mode
+            if (!isPopupHidden()) {
+                populatePopup(searchResult, text);
+                if (!entriesPopup.isShowing()) {
+                    entriesPopup.show(AutoCompleteTextField.this, Side.BOTTOM, 0, 0);
+                }
             }
-            LinkedList<String> searchResult = new LinkedList<>();
-            //Check if the entered Text is part of some entry
-            String text = getText();
-            addSearches(searchResult, text);
-            if (!searchResult.isEmpty()) {
+            return;
+        }
+        entriesPopup.hide();
+        if (text.contains(" ")) {
+            String[] split = text.split(" ");
+            if (split.length > 0) {
+                String s = split[split.length - 1];
+                if (word2Vec.hasWord(s)) {
+                    Collection<String> wordsNearestSum = word2Vec.wordsNearestSum(s, maxEntries + 1);
+                    searchResult.addAll(wordsNearestSum.stream().filter(e -> !s.equals(e)).map(e -> text + " " + e)
+                            .collect(Collectors.toList()));
+                }
                 filteredEntries.clear();
                 filteredEntries.addAll(searchResult);
-                //Only show popup if not in filter mode
                 if (!isPopupHidden()) {
-                    populatePopup(searchResult, text);
+                    populatePopup(searchResult, s);
                     if (!entriesPopup.isShowing()) {
                         entriesPopup.show(AutoCompleteTextField.this, Side.BOTTOM, 0, 0);
                     }
                 }
-            } else {
-                entriesPopup.hide();
-                if (text.contains(" ")) {
-                    String[] split = text.split(" ");
-                    if (split.length > 0) {
-                        String s = split[split.length - 1];
-
-                        if (word2Vec.hasWord(s)) {
-                            Collection<String> wordsNearestSum = word2Vec.wordsNearestSum(s, maxEntries + 1);
-                            searchResult.addAll(
-                                    wordsNearestSum.stream().filter(e -> !s.equals(e)).map(e -> text + " " + e)
-                                            .collect(Collectors.toList()));
-                        }
-
-                        filteredEntries.clear();
-                        filteredEntries.addAll(searchResult);
-                        if (!isPopupHidden()) {
-                            populatePopup(searchResult, s);
-                            if (!entriesPopup.isShowing()) {
-                                entriesPopup.show(AutoCompleteTextField.this, Side.BOTTOM, 0, 0);
-                            }
-                        }
-                    }
-                }
             }
-        });
-        focusedProperty()
-                .addListener((ChangeListener<Boolean>) (observableValue, aBoolean, aBoolean2) -> entriesPopup.hide());
+        }
     }
 
     private void addSearches(LinkedList<String> searchResult, String text) {

@@ -25,19 +25,12 @@ import simplebuilder.HasLogging;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
 
-    // private CidadeDAO cidadeDAO = new CidadeDAO();
-
     private static final int NUMBER_THREADS = 5;
 
     @Override
     protected String task() {
         insertProxyConfig();
-        List<String> lines = new ArrayList<>();
-        try (Stream<String> lines2 = Files.lines(Paths.get("hp1Tex2.tex"));) {
-            lines.addAll(lines2.collect(Collectors.toList()));
-        } catch (IOException e) {
-            getLogger().error("ERROR ", e);
-        }
+        List<String> lines = getLines();
         updateTitle("Example Task");
         updateMessage("Starting...");
         int total = lines.size();
@@ -47,30 +40,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             int k = j;
             Thread thread = new Thread(() -> {
                 String line = lines.get(k);
-                String[] split = line.split("");
-                String currentWord = "";
-                StringBuilder currentLine = new StringBuilder();
-                UnicodeBlock currentBlock = null;
-                for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
-                    char currentLetter = split[i].charAt(0);
-                    UnicodeBlock of = UnicodeBlock.of(currentLetter);
-                    if (KANJI_BLOCK.contains(of)) {
-                        currentWord += currentLetter;
-                    }
-                    if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
-                        String reading = getReading(currentWord, currentLetter);
-                        if (currentWord.equals(reading)) {
-                            currentLine.append(currentWord);
-                        } else {
-                            currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
-                        }
-                        currentWord = "";
-                    }
-                    if (!KANJI_BLOCK.contains(of)) {
-                        currentLine.append(currentLetter);
-                    }
-                    currentBlock = of;
-                }
+                StringBuilder currentLine = placeFurigana(line);
                 System.out.println(currentLine);
                 lines.set(k, currentLine.toString());
 
@@ -106,7 +76,45 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return "Completed at " + LocalTime.now();
     }
 
-    public static void main(String[] args) throws IOException {
+    private StringBuilder placeFurigana(String line) {
+        String[] split = line.split("");
+        String currentWord = "";
+        StringBuilder currentLine = new StringBuilder();
+        UnicodeBlock currentBlock = null;
+        for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
+            char currentLetter = split[i].charAt(0);
+            UnicodeBlock of = UnicodeBlock.of(currentLetter);
+            if (KANJI_BLOCK.contains(of)) {
+                currentWord += currentLetter;
+            }
+            if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
+                String reading = getReading(currentWord, currentLetter);
+                if (currentWord.equals(reading)) {
+                    currentLine.append(currentWord);
+                } else {
+                    currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
+                }
+                currentWord = "";
+            }
+            if (!KANJI_BLOCK.contains(of)) {
+                currentLine.append(currentLetter);
+            }
+            currentBlock = of;
+        }
+        return currentLine;
+    }
+
+    private List<String> getLines() {
+        List<String> lines = new ArrayList<>();
+        try (Stream<String> lines2 = Files.lines(Paths.get("hp1Tex2.tex"));) {
+            lines.addAll(lines2.collect(Collectors.toList()));
+        } catch (IOException e) {
+            getLogger().error("ERROR ", e);
+        }
+        return lines;
+    }
+
+    public static void main(String[] args) {
         new CrawlerFuriganaTask().migrateCities();
     }
 

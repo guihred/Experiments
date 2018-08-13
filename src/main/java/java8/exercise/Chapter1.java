@@ -5,7 +5,12 @@ import static java.lang.System.out;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -24,12 +29,8 @@ public final class Chapter1 {
 
 	}
 
-	private static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
+    static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
 		private static final long serialVersionUID = 1L;
-
-		public Collection2Impl() {
-		}
-
 	}
 
 	@FunctionalInterface

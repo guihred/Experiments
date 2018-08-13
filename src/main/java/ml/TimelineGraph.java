@@ -86,9 +86,8 @@ class TimelineGraph extends Canvas {
         yProportion = (max2 - stats.getMin()) / ybins.get();
 
         List<String> list = dataframe.list("﻿Country Name", String.class);
-        double d = layout.get();
-        double j = (maxLayout - d) / bins.doubleValue();
-        double j2 = (maxLayout - d) / ybins.get();
+        double j = (maxLayout - layout.get()) / bins.doubleValue();
+        double j2 = (maxLayout - layout.get()) / ybins.get();
         boolean colorEmpty = colors.isEmpty();
 
         List<Color> generateRandomColors = PieGraph.generateRandomColors(list.size());
@@ -104,54 +103,64 @@ class TimelineGraph extends Canvas {
             }
 
             Map<String, Object> row = dataframe.rowMap(i);
-            gc.setFill(value);
-            gc.setStroke(value);
-            boolean hasPoint = false;
-            for (int year = minYear; year <= maxYear; year++) {
-                Number object = (Number) row.get("" + year);
-                if (object == null) {
-                    continue;
-                }
-                hasPoint = true;
-                double k = (year - minYear) / xProportion.get();
-                double x1 = k * j + d;
-                double y = object.doubleValue() - stats.getMin();
-                double y1 = maxLayout - y / yProportion * j2;
-                // gc.strokeLine(x1, maxLayout, x1, y1)
-                double h = radius.get();
-                gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
-            }
-            if (!hasPoint) {
-                colors.remove(labelRow);
-            }
+            drawPoints(maxYear, minYear, layout.get(), j, j2, labelRow, value, row);
 
-            for (int year = minYear; year <= maxYear; year++) {
-                double x = year - minYear;
-                double m = x / xProportion.get();
-                double x1 = m * j + d;
-                Number object = (Number) row.get("" + year);
-                if (object == null) {
-                    continue;
-                }
-                double y = object.doubleValue() - stats.getMin();
-                double y1 = maxLayout - y / yProportion * j2;
-                int searchYear = year;
-                while (searchYear < maxYear) {
-                    double x2 = ++searchYear - minYear;
-                    double i2 = x2 / xProportion.get();
-                    double x12 = i2 * j + d;
-                    Number object2 = (Number) row.get("" + searchYear);
-                    if (object2 != null) {
-                        double y2 = object2.doubleValue() - stats.getMin();
-                        double y12 = maxLayout - y2 / yProportion * j2;
-                        gc.strokeLine(x1, y1, x12, y12);
-                        break;
-                    }
-                }
-            }
+            drawLines(maxYear, minYear, layout.get(), j, j2, row);
         }
 		drawAxis();
 	}
+
+    private boolean drawPoints(int maxYear, int minYear, double d, double j, double j2, String labelRow, Color value,
+            Map<String, Object> row) {
+        gc.setFill(value);
+        gc.setStroke(value);
+        boolean hasPoint = false;
+        for (int year = minYear; year <= maxYear; year++) {
+            Number object = (Number) row.get("" + year);
+            if (object == null) {
+                continue;
+            }
+            hasPoint = true;
+            double k = (year - minYear) / xProportion.get();
+            double x1 = k * j + d;
+            double y = object.doubleValue() - stats.getMin();
+            double y1 = maxLayout - y / yProportion * j2;
+            // gc.strokeLine(x1, maxLayout, x1, y1)
+            double h = radius.get();
+            gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
+        }
+        if (!hasPoint) {
+            colors.remove(labelRow);
+        }
+        return hasPoint;
+    }
+
+    private void drawLines(int maxYear, int minYear, double d, double j, double j2, Map<String, Object> row) {
+        for (int year = minYear; year <= maxYear; year++) {
+            double x = year - minYear;
+            double m = x / xProportion.get();
+            double x1 = m * j + d;
+            Number object = (Number) row.get("" + year);
+            if (object == null) {
+                continue;
+            }
+            double y = object.doubleValue() - stats.getMin();
+            double y1 = maxLayout - y / yProportion * j2;
+            int searchYear = year;
+            while (searchYear < maxYear) {
+                double x2 = ++searchYear - minYear;
+                double i2 = x2 / xProportion.get();
+                double x12 = i2 * j + d;
+                Number object2 = (Number) row.get("" + searchYear);
+                if (object2 != null) {
+                    double y2 = object2.doubleValue() - stats.getMin();
+                    double y12 = maxLayout - y2 / yProportion * j2;
+                    gc.strokeLine(x1, y1, x12, y12);
+                    break;
+                }
+            }
+        }
+    }
 
 	public void drawAxis() {
 

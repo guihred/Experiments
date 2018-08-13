@@ -47,7 +47,8 @@ import javafx.collections.ObservableList;
 import simplebuilder.ResourceFXUtils;
 
 public final class LeitorArquivos {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LeitorArquivos.class);
+	private static final String CODPRODUTO = "codproduto";
+    private static final Logger LOGGER = LoggerFactory.getLogger(LeitorArquivos.class);
 
 	private LeitorArquivos() {
 	}
@@ -229,13 +230,13 @@ public final class LeitorArquivos {
 		try {
 			String s = linhas[i];
 			String[] split = s.trim().split("\\s+");
-			if (split.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains("codproduto")
+			if (split.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains(CODPRODUTO)
 					|| s.toLowerCase().contains("qtestoquecomercial"))) {
-				if (split[1].equalsIgnoreCase("codproduto")) {
-					mapaCampos.put("codproduto", j -> j - 2);
+				if (split[1].equalsIgnoreCase(CODPRODUTO)) {
+					mapaCampos.put(CODPRODUTO, j -> j - 2);
 				}
-				if (split[0].equalsIgnoreCase("codproduto")) {
-					mapaCampos.put("codproduto", j -> 0);
+				if (split[0].equalsIgnoreCase(CODPRODUTO)) {
+					mapaCampos.put(CODPRODUTO, j -> 0);
 				}
 				mapaCampos.put("qtestoquecomercial", j -> j - 1);
 			}
@@ -244,7 +245,7 @@ public final class LeitorArquivos {
 			}
 			if (split.length >= 2) {
 				Medicamento medicamento = new Medicamento();
-				String s2 = split[mapaCampos.getOrDefault("codproduto", j -> 0).applyAsInt(split.length)];
+				String s2 = split[mapaCampos.getOrDefault(CODPRODUTO, j -> 0).applyAsInt(split.length)];
 
 					medicamento.setCodigo(
 							Integer

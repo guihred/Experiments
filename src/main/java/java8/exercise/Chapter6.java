@@ -42,7 +42,9 @@ import org.slf4j.LoggerFactory;
 
 
 public final class Chapter6 {
-	static class Matrix {
+	private static final String ALICE_TXT = "alice.txt";
+
+    static class Matrix {
 		protected int[][] mat = { { 1, 1 }, { 1, 0 } };
 		public Matrix() {
 		}
@@ -163,7 +165,7 @@ public final class Chapter6 {
 		ConcurrentHashMap<String, Set<File>> concurrentHashMap = new ConcurrentHashMap<>();
 		ExecutorService pool;
 		pool = Executors.newCachedThreadPool();
-		Stream.of(toFile("alice.txt"), toFile("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
+		Stream.of(toFile(ALICE_TXT), toFile("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
 			try {
 				Stream<String> wordsAsList = getWords(u.toURI());
 				wordsAsList.forEach(w -> {
@@ -197,7 +199,7 @@ public final class Chapter6 {
 		ConcurrentHashMap<String, Set<File>> concurrentHashMap = new ConcurrentHashMap<>();
 		ExecutorService pool;
 		pool = Executors.newCachedThreadPool();
-		Stream.of(toFile("alice.txt"), toFile("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
+		Stream.of(toFile(ALICE_TXT), toFile("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
 			try {
 				getWords(u.toURI())
 						.forEach(w -> concurrentHashMap.computeIfAbsent(w, t -> ConcurrentHashMap.newKeySet()).add(u));
@@ -216,7 +218,7 @@ public final class Chapter6 {
 	 * (breaking ties arbitrarily). Hint: reduceEntries.
 	 */
 	public static void ex7() throws IOException {
-		Map<String, Long> collect = getWords(toURI("alice.txt")).parallel()
+		Map<String, Long> collect = getWords(toURI(ALICE_TXT)).parallel()
 				.collect(
 				Collectors.groupingBy(w -> w, Collectors.counting()));
 

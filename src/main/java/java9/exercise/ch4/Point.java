@@ -15,7 +15,10 @@ public class Point implements Cloneable {
         this.x = x;
         this.y = y;
     }
-
+    @Override
+    protected Point clone() throws CloneNotSupportedException {
+        return new Point(x, y);
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -32,10 +35,7 @@ public class Point implements Cloneable {
         if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x)) {
             return false;
         }
-        if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y)) {
-            return false;
-        }
-        return true;
+        return Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y);
     }
 
     @Override
