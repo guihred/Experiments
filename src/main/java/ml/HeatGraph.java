@@ -24,6 +24,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 
 public class HeatGraph extends Canvas {
+    private static final double SQR_ROOT_OF_3 = Math.sqrt(3);
 	private final DoubleProperty layout = new SimpleDoubleProperty(30);
 	private double maxLayout = 480;
 	private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
@@ -149,17 +150,15 @@ public class HeatGraph extends Canvas {
 		}
 		double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - min) / (max - min);
 		return Color.hsb(hue, 0.5, 1.0);
-		// double brightness = 1 - (value - sum.getMin()) / (sum.getMax() -
-		// sum.getMin());
-		// return Color.hsb(RED_HUE, 1.0, brightness);
-		// double saturation = (value - min) / (max - min);
-		// return Color.hsb(RED_HUE, saturation, 1.0);
+        // double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin())
+        // return Color.hsb(RED_HUE, 1.0, brightness)
+        // double saturation = (value - min) / (max - min)
+        // return Color.hsb(RED_HUE, saturation, 1.0)
 	}
 
 	private List<double[]> triangles() {
 		List<double[]> arrayList = new ArrayList<>();
 		
-		double SQR_ROOT_OF_3 = Math.sqrt(3);
 		double width = maxLayout - layout.doubleValue();
 		int sqrt = (int) (width / radius.get());
 		double triangleSide = width/ sqrt;
@@ -181,16 +180,14 @@ public class HeatGraph extends Canvas {
 		double j = (maxLayout - layout.doubleValue()) / bins.intValue();
 		double x = ((Number) object).doubleValue();
 		double x1 = (x - xStats.getMin()) / xProportion * j + layout.doubleValue();
-		double finalX = x1 - radius.doubleValue() / 2;
-		return finalX;
+		return x1 - radius.doubleValue() / 2;
 	}
 
 	private double finalY(DoubleSummaryStatistics yStats, Object object2) {
 		double j2 = (maxLayout - layout.doubleValue()) / ybins.intValue();
 		double y = ((Number) object2).doubleValue();
 		double y1 = maxLayout - (y - yStats.getMin()) / yProportion * j2;
-		double finalY = y1 - radius.doubleValue() / 2;
-		return finalY;
+		return y1 - radius.doubleValue() / 2;
 	}
 
 

@@ -19,7 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class TF_IDF {
+import simplebuilder.HasLogging;
+
+public final class TermFrequencyIndex {
 	public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
 
 		// Note: this comparator imposes orderings that are inconsistent with
@@ -41,7 +43,7 @@ public final class TF_IDF {
 		}
 	}
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TF_IDF.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TermFrequencyIndex.class);
 
 	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
 
@@ -102,14 +104,14 @@ public final class TF_IDF {
 
 	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
 
-	private TF_IDF() {
+	private TermFrequencyIndex() {
 	}
 
 	public static Map<File, Map<String, Long>> getDocumentMap(File f) throws IOException {
 
 		if (!f.isDirectory()) {
 			if (f.getName().endsWith(".java")) {
-				Map<String, Long> frequencyMap = TF_IDF.getFrequencyMap(f);
+				Map<String, Long> frequencyMap = TermFrequencyIndex.getFrequencyMap(f);
 				MAPA_DOCUMENTO.put(f, frequencyMap);
 			}
 		} else {
@@ -190,7 +192,7 @@ public final class TF_IDF {
 			Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
 			documentMap.forEach((c, v) -> v.forEach((p, fre) -> {
 				double idf = getInverseDocumentFrequency(p);
-				if (!TF_IDF.MAP_TF_IDF.containsKey(p)) {
+				if (!TermFrequencyIndex.MAP_TF_IDF.containsKey(p)) {
 					MAP_TF_IDF.put(p, new HashMap<File, Double>());
 				}
                 double termFrequency = getTermFrequency(fre);
@@ -203,14 +205,13 @@ public final class TF_IDF {
 			// MAP
 			File file = new File("resultado.txt");
 
-			System.out.println(file.getAbsolutePath());
 			printWordFound(entrySet, file);
 		} catch (Exception e2) {
 			LOGGER.error("", e2);
 		}
 	}
 
-	private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) throws Exception {
+    private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
 		try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName());) {
 			List<String> javaKeywords = Arrays.asList("abstract", "continue", "for", "new", "switch", "assert",
 					"default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break",
@@ -227,7 +228,7 @@ public final class TF_IDF {
 				}
 			});
 		} catch (Exception e2) {
-			throw e2;
+            HasLogging.log().error("", e2);
 		}
 	}
 }

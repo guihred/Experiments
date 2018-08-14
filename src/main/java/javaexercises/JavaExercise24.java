@@ -2,6 +2,8 @@ package javaexercises;
 
 import java.util.Arrays;
 
+import simplebuilder.HasLogging;
+
 /**
  * 24. Hash Problem. An array of data contains not more than 500 positive
  * numbers of type double which are reasonably well scattered in the range 0 : 0
@@ -62,7 +64,7 @@ public final class JavaExercise24 {
 				duplicates++;
 			}
 		}
-		System.out.println(duplicates);
+        HasLogging.log().info("{}", duplicates);
 
 	}
 

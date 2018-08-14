@@ -1,6 +1,5 @@
 package java8.exercise;
 
-import static java.lang.System.out;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -15,9 +14,17 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 public final class Chapter1 {
 
-	static interface Collection2<T> extends Collection<T> {
+
+    private static final String DOCUMENTS_FOLDER = "C:/Users/Note/Documents";
+    private static final Logger LOGGER = HasLogging.log();
+
+    static interface Collection2<T> extends Collection<T> {
 
 		default void forEachIf(Consumer<? super T> action, Predicate<? super T> p) {
 			forEach(t -> {
@@ -64,10 +71,10 @@ public final class Chapter1 {
 	 */
 	public static void ex1(Integer[] a) {
 
-		out.println(Thread.currentThread().getName());
+        LOGGER.info(Thread.currentThread().getName());
 
 		Arrays.sort(a, (o1, o2) -> {
-			out.println(Thread.currentThread().getName());
+            LOGGER.info(Thread.currentThread().getName());
 			return Integer.compare(o1, o2);
 		});
 
@@ -82,8 +89,8 @@ public final class Chapter1 {
 	public static void ex2(File directory) {
 
 		Arrays.asList(directory.listFiles(File::isDirectory)).forEach(
-				out::println);
-		Arrays.asList(directory.listFiles((FileFilter) File::isDirectory)).forEach(out::println);
+                s -> LOGGER.info("{}", s));
+        Arrays.asList(directory.listFiles((FileFilter) File::isDirectory)).forEach(s -> LOGGER.info("{}", s));
 
 	}
 
@@ -94,7 +101,8 @@ public final class Chapter1 {
 	 * from the enclosing scope does it capture?
 	 */
 	public static void ex3(File directory, String extension) {
-		Arrays.asList(directory.listFiles((FilenameFilter) (dir, name) -> name.endsWith(extension))).forEach(out::println);
+        Arrays.asList(directory.listFiles((FilenameFilter) (dir, name) -> name.endsWith(extension)))
+                .forEach(s -> LOGGER.info("{}", s));
 
 	}
 
@@ -107,9 +115,11 @@ public final class Chapter1 {
 		List<File> asList = Arrays.asList(listFiles);
 		Collections.shuffle(asList);
 
-		out.println(asList.stream().map(File::getName).collect(Collectors.joining(", ", "Before: ", "")));
+        String unsorted = asList.stream().map(File::getName).collect(Collectors.joining(", ", "Before: ", ""));
+        LOGGER.info(unsorted);
 		asList.sort(Comparator.comparing(File::isFile).thenComparing(File::getName));
-		out.println(asList.stream().map(File::getName).collect(Collectors.joining(", ", "After: ", "")));
+        String sorted = asList.stream().map(File::getName).collect(Collectors.joining(", ", "After: ", ""));
+        LOGGER.info(sorted);
 
 	}
 
@@ -119,61 +129,60 @@ public final class Chapter1 {
 	}
 
 	/**
-	 * Didn't you always hate it that you had to deal with checked exceptions in
-	 * a Runnable? Write a method uncheck that catches all checked exceptions
-	 * and turns them into unchecked exceptions. For example, new
-	 * Thread(uncheck( () -> { System.out.println("Zzz"); Thread.sleep(1000);
-	 * })).start(); // Look, no catch (InterruptedException)! Hint: Define an
-	 * interface RunnableEx whose run method may throw any exceptions. Then
-	 * implement public static Runnable uncheck(RunnableEx runner). Use a lambda
-	 * expression inside the uncheck function. Why can't you just use
-	 * Callable<Void> instead of RunnableEx?
-	 * 
-	 * A: Can't use Callable<Void> because it causes a compilation error if you
-	 * don't return a Void Object.
-	 */
+     * Didn't you always hate it that you had to deal with checked exceptions in
+     * a Runnable? Write a method uncheck that catches all checked exceptions
+     * and turns them into unchecked exceptions. For example, new
+     * Thread(uncheck( () -> { LOGGER.info("Zzz"); Thread.sleep(1000);
+     * })).start(); // Look, no catch (InterruptedException)! Hint: Define an
+     * interface RunnableEx whose run method may throw any exceptions. Then
+     * implement public static Runnable uncheck(RunnableEx runner). Use a lambda
+     * expression inside the uncheck function. Why can't you just use
+     * Callable<Void> instead of RunnableEx?
+     * 
+     * A: Can't use Callable<Void> because it causes a compilation error if you
+     * don't return a Void Object.
+     */
 	public static void ex6() {
 		new Thread(unckeck(() -> {
-			System.out.println("Zzzz!!");
+            LOGGER.info("Zzzz!!");
 			Thread.sleep(1000);
-			System.out.println("!!!!");
+            LOGGER.info("!!!!");
 		})).start();
 	}
 
 	public static void ex7() {
 		andThen(
-				() -> out.println("first"), 
-				() -> out.println("second")
+                () -> LOGGER.info("first"), () -> LOGGER.info("second")
 		).run();
 	}
 
 	/**
-	 * What happens when a lambda expression captures values in an enhanced for
-	 * loop such as this one? String[] names = { "Peter", "Paul", "Mary" };
-	 * List<Runnable> runners = new ArrayList<>(); for (String name : names)
-	 * runners.add(() -> System.out.println(name));
-	 * 
-	 * Is it legal? Does each lambda expression capture a different value, or do
-	 * they all get the last value? What happens if you use a traditional loop
-	 * for (int i = 0; i < names.length; i++)?
-	 * 
-	 * A: They all get a different value.
-	 */
+     * What happens when a lambda expression captures values in an enhanced for
+     * loop such as this one? String[] names = { "Peter", "Paul", "Mary" };
+     * List<Runnable> runners = new ArrayList<>(); for (String name : names)
+     * runners.add(() -> LOGGER.info(name));
+     * 
+     * Is it legal? Does each lambda expression capture a different value, or do
+     * they all get the last value? What happens if you use a traditional loop
+     * for (int i = 0; i < names.length; i++)?
+     * 
+     * A: They all get a different value.
+     */
 	public static void ex8() {
 		String[] names = { "Peter", "Paul", "Mary" };
 		List<Runnable> runners = new ArrayList<>();
 		for (String name : names) {
-			runners.add(() -> System.out.println(name));
+            runners.add(() -> LOGGER.info(name));
 		}
 
 		runners.forEach(r -> new Thread(r).start());
 
 		for (int i = 0; i < names.length; i++) {
 			// This would give you a compilation error because 'i' is changeable
-			// runners.add(() -> System.out.println(names[i]));
+            // runners.add(() -> LOGGER.info(names[i]));
 			String name = names[i];
 			// But this works perfectly fine
-			runners.add(() -> System.out.println(name));
+            runners.add(() -> LOGGER.info(name));
 
 		}
 
@@ -188,15 +197,15 @@ public final class Chapter1 {
 		a.add("");
 		a.add("d");
 
-		a.forEachIf(out::println, s -> !s.isEmpty());
+        a.forEachIf(LOGGER::info, s -> !s.isEmpty());
 
 	}
 	
 	public static void main(String[] args) {
 		ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 });
 		ex2(new File("."));
-		ex3(new File("C:/Users/Note/Documents"), "log");
-		ex4(new File("C:/Users/Note/Documents").listFiles());
+        ex3(new File(DOCUMENTS_FOLDER), "log");
+        ex4(new File(DOCUMENTS_FOLDER).listFiles());
 		ex6();
 		ex7();
 		ex8();
@@ -208,7 +217,7 @@ public final class Chapter1 {
 			try {
 				runner.run();
 			} catch (Exception ex) {
-				System.err.println(ex);
+				LOGGER.error("",ex);
 			}
 		};
 	}

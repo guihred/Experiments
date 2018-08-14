@@ -55,7 +55,7 @@ public class ImageLoading {
         image.save(dataDir + "ExportImageToDifferentFormats_out.tiff", new TiffOptions(TiffExpectedFormat.Default));
 
         // Display Status.
-        System.out.println("Image exported to BMP, JPG, PNG and TIFF formats successfully!");
+        HasLogging.log().info("Image exported to BMP, JPG, PNG and TIFF formats successfully!");
     }
 
     static void grayScale(String dataDir, String nameFile) {

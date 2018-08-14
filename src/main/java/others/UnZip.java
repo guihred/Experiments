@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +45,11 @@ public final class UnZip {
 				String fileName = ze.getName().replaceAll(" ", "");
 				File newFile = new File(saida, fileName);
 
-				System.out.println("file unzip : " + newFile.getAbsoluteFile());
+                LOGGER.info("file unzip : {}", newFile.getAbsoluteFile());
 
 				// create all non exists folders
 				// else you will hit FileNotFoundException for compressed folder
-				// new File(newFile.getParent()).mkdirs();
+                // new File(newFile.getParent()).mkdirs()
 
 				if (ze.isDirectory()) {
 					newFile.mkdirs();

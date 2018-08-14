@@ -71,7 +71,6 @@ public class CSSStylingExample extends Application {
 
 
 		Hyperlink build = new SimpleHyperlinkBuilder().text("lookup()").onAction(e -> {
-			LOGGER.info("sceneRef:" + sceneRef);
 			Text textRef = (Text) sceneRef.lookup("#sceneHeightText");
 			LOGGER.info(textRef.getText());
 		}).build();

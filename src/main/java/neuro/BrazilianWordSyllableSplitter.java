@@ -11,13 +11,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public final class BrazilianWordSyllableSplitter {
 	private static final boolean DEBUG = true;
-	private static final Logger LOGGER = LoggerFactory.getLogger(BrazilianWordSyllableSplitter.class);
+    private static final Logger LOGGER = HasLogging.log();
 	private static final String VOWELS = "[aeiouáéíóúâêîôûàèìòùãõ]";
 	private static final String CONSONANT_CLUSTER = "[bcdfgkptv][rl]|[cnlst][h]|mn|bs|tch";
 	private static final String REGEX_VOWEL_CLUSTER_VOWEL = "(?i)" + VOWELS + "(" + CONSONANT_CLUSTER + ")" + VOWELS;
@@ -103,7 +103,7 @@ public final class BrazilianWordSyllableSplitter {
 		String collect = syllable.stream().flatMap((String sy) -> Stream.of(sy.split(REGEX_HIATUS)))
 				.collect(Collectors.joining("-"));
 		if (DEBUG) {
-			System.out.println(word + " " + collect);
+            LOGGER.info("{} {}", word, collect);
 		}
 		return collect;
 

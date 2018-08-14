@@ -9,21 +9,30 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import mp3Audio.LeitorMusicas;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 
-public final class SongModel {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SongModel.class);
+public final class SongModel implements HasLogging {
+    private static final String DEFAULT_IMAGE = "C:\\Users\\Note\\Pictures\\fb.jpg";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SongModel.class);
 
     private static final String DEFAULT_IMG_URL
-            = new File("C:\\Users\\Note\\Pictures\\fb.jpg").toURI().toString();
+            = new File(DEFAULT_IMAGE).toURI().toString();
     private static final Image DEFAULT_ALBUM_COVER
             = new Image(DEFAULT_IMG_URL);
     private final StringProperty album
@@ -102,11 +111,11 @@ public final class SongModel {
 
             mediaPlayer.get().setOnError(() -> {
                 String errorMessage = mediaPlayer.get().getError().getMessage();
-                System.out.println("MediaPlayer Error: " + errorMessage);
+                getLogger().info("MediaPlayer Error: {}", errorMessage);
             });
         } catch (RuntimeException re) {
 			LOGGER.error("", re);
-            System.out.println("Caught Exception: " + re.getMessage());
+            getLogger().info("Caught Exception: {}", re.getMessage());
         }
     }
 
@@ -121,7 +130,7 @@ public final class SongModel {
 	}
 
     private void handleMetadata(String key, Object value) {
-		System.out.println("Key=" + key + ",Value=" + value);
+        getLogger().info("Key={},Value={}", key, value);
 		if ("album".equals(key)) {
             setAlbum(value.toString());
 		} else if ("artist".equals(key)) {

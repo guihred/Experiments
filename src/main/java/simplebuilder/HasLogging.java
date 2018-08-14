@@ -17,6 +17,11 @@ public interface HasLogging {
         return LoggerFactory.getLogger(cls);
     }
 
+    default void printf(String s, Object... objects) {
+        String format = String.format(s, objects);
+        getLogger().info(format);
+    }
+
     public static Logger log() {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         return LoggerFactory.getLogger(stackTrace[stackTrace.length - 1].getClassName());

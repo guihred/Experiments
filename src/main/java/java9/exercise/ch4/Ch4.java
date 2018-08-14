@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
 
 public class Ch4 {
     /**
@@ -18,20 +21,23 @@ public class Ch4 {
      * type represented by the Class object. How do they differ when applied to
      * arrays, generic types, inner classes, and primitive types?
      */
+    private static final Logger LOGGER = HasLogging.log();
 
     public static void classRepresentations() {
         for (Class<?> class1 : Arrays.asList(int[].class, List.class, Map.Entry.class, int.class)) {
-            System.out.println(class1.getCanonicalName());
-            System.out.println(class1.getName());
-            System.out.println(class1.getSimpleName());
-            System.out.println(class1.getTypeName());
-            System.out.println(class1.toString());
-            System.out.println(class1.toGenericString());
+            LOGGER.info("{}", class1.getCanonicalName());
+            LOGGER.info("{}", class1.getName());
+            LOGGER.info("{}", class1.getSimpleName());
+            LOGGER.info("{}", class1.getTypeName());
+            LOGGER.info("{}", class1);
+            String genericString = class1.toGenericString();
+            LOGGER.info("{}", genericString);
         }
     }
 
     public static void main(String[] args) {
-        System.out.println(cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
+        String cyclicToString = cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3)));
+        LOGGER.info("{}", cyclicToString);
     }
 
     /**
@@ -67,6 +73,7 @@ public class Ch4 {
                 }
                 return e.getName() + "=" + cyclicToString;
             } catch (IllegalAccessException e1) {
+                LOGGER.error("", e1);
                 return "";
             }
         }).filter(StringUtils::isNotBlank)
@@ -88,6 +95,7 @@ public class Ch4 {
             e.setAccessible(true);
             e.get(s);
         } catch (Exception ex) {
+            LOGGER.trace("", ex);
             return false;
         }
         return !Modifier.isStatic(e.getModifiers());

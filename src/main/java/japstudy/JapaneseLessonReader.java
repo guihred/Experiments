@@ -1,16 +1,12 @@
 package japstudy;
 
-import japstudy.db.HibernateUtil;
-import japstudy.db.JapaneseLesson;
-import japstudy.db.LessonDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
 import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -18,7 +14,14 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class JapaneseLessonReader {
+import japstudy.db.HibernateUtil;
+import japstudy.db.JapaneseLesson;
+import japstudy.db.LessonDAO;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import simplebuilder.HasLogging;
+
+public final class JapaneseLessonReader implements HasLogging {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JapaneseLessonReader.class);
 	private static LessonDAO lessonDAO = new LessonDAO();
 	private JapaneseLessonReader() {
@@ -53,44 +56,53 @@ public final class JapaneseLessonReader {
 		InputStream resourceAsStream = new FileInputStream(new File(arquivo));
 		ObservableList<JapaneseLesson> listaExercises = FXCollections.observableArrayList();
 		try (XWPFDocument document1 = new XWPFDocument(resourceAsStream);) {
-			JapaneseLesson japaneseLesson = null;
-			List<IBodyElement> bodyElements = document1.getBodyElements();
-			int lesson = 1;
-			for (IBodyElement e : bodyElements) {
-				if (e.getElementType() == BodyElementType.PARAGRAPH) {
-					XWPFParagraph a = (XWPFParagraph) e;
-					String text = a.getText();
-					if (text.isEmpty()) {
-						continue;
-					} else if (text.matches("\\d+\\..+")) {
-						Integer exerciseNumber = Integer.valueOf(text.replaceAll("^(\\d+)\\..+", "$1"));
-						if (japaneseLesson != null) {
-							lessonDAO.saveOrUpdate(japaneseLesson);
-							listaExercises.add(japaneseLesson);
-							if (japaneseLesson.getExercise() > exerciseNumber) {
-								lesson++;
-							}
-						}
-						japaneseLesson = new JapaneseLesson();
-						japaneseLesson.setLesson(lesson);
-						japaneseLesson.setExercise(exerciseNumber);
-						japaneseLesson.addEnglish(text.replaceAll("^\\d+\\.", "").trim());
-						if (text.matches(".*[\u2E80-\u6FFF]+.*")) {
-							japaneseLesson.addJapanese(text.replaceAll(".*([\u2E80-\u6FFF]+.*)$", "$1"));
-						}
-					} else if (text.matches(".*[\u2E80-\u6FFF]+.*")) {
-						if (japaneseLesson != null) {
-							japaneseLesson.addJapanese(text.trim());
-						}
-					} else if (japaneseLesson != null) {
-						japaneseLesson.addRomaji(text.trim());
-					}
-				}
-			}
+            addJapaneseLessons(listaExercises, document1);
 		} catch (Exception e) {
-			e.printStackTrace();
+            HasLogging.log().error("", e);
 		}
 		return listaExercises;
 	}
+
+    private static void addJapaneseLessons(ObservableList<JapaneseLesson> listaExercises, XWPFDocument document1) {
+        JapaneseLesson japaneseLesson = null;
+        List<IBodyElement> bodyElements = document1.getBodyElements();
+        int lesson = 1;
+        for (IBodyElement e : bodyElements) {
+        	if (e.getElementType() == BodyElementType.PARAGRAPH) {
+        		XWPFParagraph a = (XWPFParagraph) e;
+        		String text = a.getText();
+                if (text.isEmpty()) {
+                    continue;
+                }
+                if (text.matches("\\d+\\..+")) {
+        			Integer exerciseNumber = Integer.valueOf(text.replaceAll("^(\\d+)\\..+", "$1"));
+        			if (japaneseLesson != null) {
+        				lessonDAO.saveOrUpdate(japaneseLesson);
+        				listaExercises.add(japaneseLesson);
+        				if (japaneseLesson.getExercise() > exerciseNumber) {
+        					lesson++;
+        				}
+        			}
+        			japaneseLesson = new JapaneseLesson();
+        			japaneseLesson.setLesson(lesson);
+        			japaneseLesson.setExercise(exerciseNumber);
+        			japaneseLesson.addEnglish(text.replaceAll("^\\d+\\.", "").trim());
+        			if (text.matches(".*[\u2E80-\u6FFF]+.*")) {
+        				japaneseLesson.addJapanese(text.replaceAll(".*([\u2E80-\u6FFF]+.*)$", "$1"));
+        			}
+        		} else if (text.matches(".*[\u2E80-\u6FFF]+.*")) {
+                    addJapanese(japaneseLesson, text);
+        		} else if (japaneseLesson != null) {
+        			japaneseLesson.addRomaji(text.trim());
+        		}
+        	}
+        }
+    }
+
+    private static void addJapanese(JapaneseLesson japaneseLesson, String text) {
+        if (japaneseLesson != null) {
+        	japaneseLesson.addJapanese(text.trim());
+        }
+    }
 
 }

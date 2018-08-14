@@ -1,10 +1,24 @@
 package javaexercises;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-class Vertex {
+import com.aspose.imaging.internal.Exceptions.Exception;
+
+import simplebuilder.HasLogging;
+
+class Vertex implements HasLogging {
 	public static final boolean NAMED = true;
 
 	private Map<Vertex, Integer> edges = new HashMap<>();
@@ -44,7 +58,7 @@ class Vertex {
 			if (num.get(w) > num.get(v)) {
 				w.assignLow(num, low);
 				if (low.get(w) >= num.get(v)) {
-					System.out.println(v.getName() + " is an articulation point");
+                    getLogger().info("{} is an articulation point", v.getName());
 				}
 				low.put(v, Integer.min(low.get(v), low.get(w)));
 
@@ -91,8 +105,7 @@ class Vertex {
 		}
 		distance.put(this, 0);
 		while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
-			Vertex v = distance.entrySet().stream().filter(e -> !known.get(e.getKey())).min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
-					.orElse(null).getKey();
+            Vertex v = getMinDistanceVertex(distance, known);
 			known.put(v, true);
 			for (Vertex w : v.adjacents()) {
 				if (!known.get(w)) {
@@ -106,6 +119,11 @@ class Vertex {
 		}
 		return distance;
 	}
+
+    private Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
+        return distance.entrySet().stream().filter(e -> !known.get(e.getKey())).min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
+                .orElseThrow(() -> new Exception("There should be something")).getKey();
+    }
 
 	@Override
 	public boolean equals(Object obj) {
@@ -219,8 +237,10 @@ class Vertex {
 	}
 
 	public static void chain(String nome1, String nome2, List<Vertex> vertices) {
-		Vertex v1 = vertices.stream().filter(v -> v.name.equals(nome1)).findFirst().get();
-		Vertex v2 = vertices.stream().filter(v -> v.name.equals(nome2)).findFirst().get();
+        Vertex v1 = vertices.stream().filter(v -> v.name.equals(nome1)).findFirst()
+                .orElseThrow(() -> new Exception("There should be someone"));
+        Vertex v2 = vertices.stream().filter(v -> v.name.equals(nome2)).findFirst()
+                .orElseThrow(() -> new Exception("There should be someone"));
 		for (Vertex v : vertices) {
 			v.dijkstra(vertices);
 		}
@@ -236,7 +256,9 @@ class Vertex {
 				chain.add(path);
 			}
 		}
-		System.out.println(chain.stream().map(v -> v.getName()).sequential().collect(Collectors.joining("->")));
+
+        String chainString = chain.stream().map(Vertex::getName).sequential().collect(Collectors.joining("->"));
+        HasLogging.log().info(chainString);
 	}
 
 	static List<Edge> kruskal(List<Vertex> totalVertices) {
@@ -268,7 +290,9 @@ class Vertex {
 		}
 
 		while (!heap.isEmpty()) {
-			Entry<Vertex, Integer> minVertex = heap.entrySet().stream().min(Comparator.comparing(Entry<Vertex, Integer>::getValue)).get();
+            Entry<Vertex, Integer> minVertex = heap.entrySet().stream()
+                    .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
+                    .orElseThrow(() -> new Exception("There should be someone"));
 			heap.remove(minVertex.getKey());
 			Set<Entry<Vertex, Integer>> entrySet = minVertex.getKey().edges.entrySet();
 			for (Entry<Vertex, Integer> edge : entrySet) {
@@ -308,10 +332,10 @@ class Vertex {
 			}
 
 		}
-		vertices.forEach(v -> System.out.println(v.id + "=" + v.topNum));
+        vertices.forEach(v -> HasLogging.log().info("{}={}", v.id, v.topNum));
 
 		if (counter != vertices.size()) {
-			System.out.println("CYCLE FOUND");
+            HasLogging.log().info("CYCLE FOUND");
 		}
 	}
 }

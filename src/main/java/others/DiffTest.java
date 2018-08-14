@@ -3,6 +3,7 @@ package others;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +29,7 @@ public final class DiffTest {
 		DiffRowGenerator generator = new DiffRowGenerator.Builder().build();
 
 		List<DiffRow> rows = generator.generateDiffRows(original, revised);
-		rows.forEach(System.out::println);
+        rows.forEach(s -> LOGGER.info("{}", s));
 
 	}
 
@@ -37,7 +38,7 @@ public final class DiffTest {
             return lines.collect(Collectors.toList());
 		} catch (IOException e) {
 			LOGGER.error("", e);
-			return null;
+            return Collections.emptyList();
 		}
 
 	}

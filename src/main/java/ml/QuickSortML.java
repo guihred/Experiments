@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import simplebuilder.HasLogging;
+
 public class QuickSortML {
 
 	@FunctionalInterface
@@ -84,8 +86,7 @@ public class QuickSortML {
 		Comparator<Integer> c = Integer::compareTo;
 		QuickSortML.sort(input, c.reversed());
 		for (Integer i : input) {
-			System.out.print(i);
-			System.out.print(" ");
+            HasLogging.log().info("{}", i);
 		}
 	}
 

@@ -1,5 +1,7 @@
 package imageexperimenting;
 
+import org.slf4j.Logger;
+
 import com.aspose.imaging.Color;
 import com.aspose.imaging.Figure;
 import com.aspose.imaging.HatchStyle;
@@ -7,6 +9,8 @@ import com.aspose.imaging.Pen;
 import com.aspose.imaging.PointF;
 import com.aspose.imaging.RectangleF;
 import com.aspose.imaging.SizeF;
+
+import simplebuilder.HasLogging;
 
 public class ImageCreating {
     public static void main(String[] args) {
@@ -17,6 +21,8 @@ public class ImageCreating {
     }
 
     public static void creating(String dataDir, String nameFile) {
+        Logger log = HasLogging.log();
+
         // For complete examples and data files, please go to
         // https://github.com/Muhammad-Adnan-Ahmad/Aspose.Imaging-for-Java
         // Create an instance of BmpCreateOptions and set its various properties
@@ -72,6 +78,6 @@ public class ImageCreating {
         image.save();
 
         // Display Status.
-        System.out.println("Processing completed successfully!");
+        log.info("Processing completed successfully!");
     }
 }

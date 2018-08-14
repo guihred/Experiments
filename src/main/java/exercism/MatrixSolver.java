@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public final class MatrixSolver {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MatrixSolver.class);
 
-	private static boolean debug;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MatrixSolver.class);
+	private static boolean debug=true;
 
 	private MatrixSolver() {
 	}
@@ -76,7 +76,9 @@ public final class MatrixSolver {
 
 		};
 		double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
-		LOGGER.info(Arrays.toString(MatrixSolver.solve(matr, coef2)));
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(Arrays.toString(MatrixSolver.solve(matr, coef2)));
+        }
 
 	}
 
@@ -116,7 +118,7 @@ public final class MatrixSolver {
 	private static void printMatrix(double[][] matr, double[] coef) {
         if (debug && LOGGER.isInfoEnabled()) {
 			for (int i = 0; i < matr.length; i++) {
-                LOGGER.info(Arrays.toString(matr[i]) + "[" + coef[i] + "]");
+                LOGGER.info("{}[{}]", Arrays.toString(matr[i]), coef[i]);
 			}
 			LOGGER.info("\n");
 		}

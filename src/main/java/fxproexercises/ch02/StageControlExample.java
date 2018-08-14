@@ -5,6 +5,7 @@ import static simplebuilder.CommonsFX.newCheckBox;
 import static simplebuilder.CommonsFX.newTextField;
 
 import java.util.List;
+
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -25,11 +26,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import simplebuilder.HasLogging;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 
-public class StageControlExample extends Application {
+public class StageControlExample extends Application implements HasLogging {
 
 	private StringProperty title = new SimpleStringProperty();
 	private Text textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
@@ -37,7 +39,6 @@ public class StageControlExample extends Application {
 	private Text textStageW = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
 	private Text textStageH = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
 	private Text textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-	private CheckBox checkBoxResizable;
 	private CheckBox checkBoxFullScreen = new CheckBox("fullScreen");
 	private double dragAnchorX;
 	private double dragAnchorY;
@@ -68,7 +69,7 @@ public class StageControlExample extends Application {
 		final Button closeButton = newButton("close()", e -> stageRef.close());
 		final Button toBackButton = newButton("toBack()", e -> stageRef.toBack());
 		final HBox hbox = new HBox(10, new Label("title:"), titleTextField);
-		checkBoxResizable = newCheckBox("resizable",
+        CheckBox checkBoxResizable = newCheckBox("resizable",
 				stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);
 		Node[] children = { textStageX, textStageY, textStageW, textStageH, textStageF, checkBoxResizable,
 				checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton };
@@ -102,7 +103,7 @@ public class StageControlExample extends Application {
 		stage.setScene(scene);
 		stage.titleProperty().bind(title);
 		stage.initStyle(stageStyle);
-		stage.setOnCloseRequest(we -> System.out.println("Stage is closing"));
+        stage.setOnCloseRequest(we -> getLogger().info("Stage is closing"));
 		stage.show();
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
 		stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);

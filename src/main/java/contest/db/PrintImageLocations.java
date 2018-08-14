@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.imageio.ImageIO;
+
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -23,16 +25,19 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
 
+import simplebuilder.HasLogging;
+
 /**
  * This is an example on how to get the x/y coordinates of image locations.
  *
  * @author Ben Litchfield
  */
-public class PrintImageLocations extends PDFStreamEngine {
+public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
     int num = 0;
     List<PDFImage> images = new ArrayList<>();
     private int pageNumber;
-    public PrintImageLocations() throws IOException {
+
+    public PrintImageLocations() {
         addOperator(new Concatenate());
         addOperator(new DrawObject());
         addOperator(new SetGraphicsStateParameters());
@@ -84,8 +89,8 @@ public class PrintImageLocations extends PDFStreamEngine {
             pdfImage.y = translateY - ctmNew.getScalingFactorY();
             pdfImage.pageNumber = pageNumber;
             images.add(pdfImage);
-            System.out.println(image);
-            System.out.println(pdfImage.file + " at (" + pdfImage.x + "," + pdfImage.y + ") page " + pageNumber);
+            getLogger().trace("{}", image);
+            getLogger().trace("{} at ({},{}) page {}", pdfImage.file, pdfImage.x, pdfImage.y, pageNumber);
 
         }
 
@@ -97,7 +102,7 @@ public class PrintImageLocations extends PDFStreamEngine {
         try {
             ImageIO.write(image, ext, file); // ignore returned boolean
         } catch (IOException e) {
-            System.err.println("Write error for " + file.getPath() + ": " + e.getMessage());
+            HasLogging.log().error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
         }
         return file;
     }
@@ -105,6 +110,7 @@ public class PrintImageLocations extends PDFStreamEngine {
 }
 class PDFImage{
     File file;
-    float x, y;
+    float x;
+    float y;
     int pageNumber;
 }

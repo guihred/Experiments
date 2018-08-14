@@ -13,6 +13,10 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 public class Ch3 {
 	/*
 	 * 1. Provide an interface Measurable with a method double getMeasure() that
@@ -26,7 +30,8 @@ public class Ch3 {
 
 	public static class Employee implements Measurable {
 		private static int i = 0;
-		private static List<String> NAMES = Arrays.asList("Michael", "Charlie", "Jonas", "Margareth", "Juliet", "Frank",
+        private static final List<String> NAMES = Arrays.asList("Michael", "Charlie", "Jonas", "Margareth", "Juliet",
+                "Frank",
 				"Harry");
 
 		private String name;
@@ -215,7 +220,7 @@ public class Ch3 {
 		List<Thread> collect = Stream.of(tasks).parallel().map(Thread::new).collect(toList());
 		collect.forEach(Thread::start);
 
-		while (collect.stream().anyMatch(e -> e.isAlive())) {
+		while (collect.stream().anyMatch(Thread::isAlive)) {
 			// DOES NOTHING
 		}
 	}
@@ -285,40 +290,40 @@ public class Ch3 {
 		List<Employee> collect = random.ints(1, 11).map(e -> ++e * 500).limit(5).mapToObj(Employee::new)
 				.collect(toList());
 
-		System.out.println(average(collect));
-		System.out.println(largest(collect));
-		// IntSequence.of(1, 2, 3).foreach(e -> System.out.println(e));
-		// IntSequence.constant(1).foreach(e -> System.out.println(e));
-		// new SquareSequence().foreach(e -> System.out.println(e));
-		// System.out.println(isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo));
+		log.info("{}",average(collect));
+		log.info("{}",largest(collect));
+        // IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
+        // IntSequence.constant(1).foreach(e -> log.info("{}",e))
+        // new SquareSequence().foreach(e -> log.info("{}",e))
+        // log.info("{}",isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo))
 		//
-		// List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e",
-		// "e");
-		// System.out.println(asList);
-		// luckySort(asList, String::compareTo);
-		// System.out.println(asList);
-		// System.out.println(subdirectories(new File(".")));
-		System.out.println(sortFiles(new File(".").listFiles()));
+        // List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e")
+        // log.info("{}",asList)
+        // luckySort(asList, String::compareTo)
+        // log.info("{}",asList)
+        // log.info("{}",subdirectories(new File(".")))
+		log.info("{}",sortFiles(new File(".").listFiles()));
 	}
 
+    static Logger log = HasLogging.log();
 	public static void tasks() {
 		Runnable[] tasks= new Runnable[] {
-				()->System.out.println("1"),
-				()->System.out.println("2"),
-				()->System.out.println("3"),
-				()->System.out.println("4"),
-				()->System.out.println("5"),
-				()->System.out.println("6"),
-				()->System.out.println("7"),
-				()->System.out.println("8"),
-				()->System.out.println("9"),
-				()->System.out.println("10"),
-				()->System.out.println("11"),
+				()->log.info("{}","1"),
+				()->log.info("{}","2"),
+				()->log.info("{}","3"),
+				()->log.info("{}","4"),
+				()->log.info("{}","5"),
+				()->log.info("{}","6"),
+				()->log.info("{}","7"),
+				()->log.info("{}","8"),
+				()->log.info("{}","9"),
+				()->log.info("{}","10"),
+				()->log.info("{}","11"),
 				
 		};
-		System.out.println("In Order");
+		log.info("{}","In Order");
 		runInOrder(tasks);
-		System.out.println("Together");
+		log.info("{}","Together");
 		runTogether(tasks);
 	}
 }

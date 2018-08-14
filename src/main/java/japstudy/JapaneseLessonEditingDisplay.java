@@ -32,8 +32,9 @@ import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.HasLogging;
 
-public class JapaneseLessonEditingDisplay extends Application {
+public class JapaneseLessonEditingDisplay extends Application implements HasLogging {
 	private IntegerProperty current = new SimpleIntegerProperty(1);
 	private ObservableList<JapaneseLesson> lessons = getLessons();
 	private static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder().appendValue(HOUR_OF_DAY, 2)
@@ -192,10 +193,11 @@ public class JapaneseLessonEditingDisplay extends Application {
 			LocalTime start = japaneseLesson.getStart();
 			Duration totalDuration = mediaPlayer.get().getTotalDuration();
 			Duration startDuration = totalDuration.multiply(toMilli(start) / totalDuration.toMillis());
-			System.out.println("current:" + mediaPlayer.get().getCurrentTime());
-			System.out.println(" start:" + mediaPlayer.get().getStartTime());
-			System.out.println(" stop:" + mediaPlayer.get().getStopTime());
-			System.out.println(" seek:" + startDuration);
+
+            getLogger().info("current:{}", mediaPlayer.get().getCurrentTime());
+            getLogger().info(" start:{}", mediaPlayer.get().getStartTime());
+            getLogger().info(" stop:{}", mediaPlayer.get().getStopTime());
+            getLogger().info(" seek: {}", startDuration);
 			// sound.get
 			mediaPlayer.get().seek(startDuration);
 			// mediaPlayer.onS

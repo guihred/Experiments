@@ -4,14 +4,19 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 public final class ElementWiseOp {
+    private static final Logger LOGGER = HasLogging.log();
 	enum Operation {
 		NONE((a, b) -> a), 
 		ADD((a, b) -> a + b), 
 		SUB((a, b) -> a - b), 
 		MUL((a, b) -> a * b), 
 		DIV((a, b) -> a / b), 
-		POW((a, b) -> Math.pow(a, b)), 
+        POW(Math::pow),
 		MOD((a, b) -> a % b);
 
 		private final transient BiFunction<Double, Double, Double> function;
@@ -50,7 +55,8 @@ public final class ElementWiseOp {
 	}
 
 	public static void printMatrix(Double[][] matr) {
-		Stream.of(matr).map(Arrays::toString).forEach(System.out::println);
+
+        Stream.of(matr).map(Arrays::toString).forEach(s -> LOGGER.info("{}", s));
 	}
 	public static void main(String[] args) {
 		printMatrix(scalarOp(Operation.MUL, new Double[][] {

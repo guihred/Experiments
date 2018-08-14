@@ -1,14 +1,17 @@
 package physics;
 
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.StrokeLineCap;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.FixtureDef;
+import org.slf4j.Logger;
+
+import javafx.scene.Node;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.StrokeLineCap;
+import simplebuilder.HasLogging;
 
 /**
  *
@@ -16,6 +19,7 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public class Ramp extends BasePhysicalObject {
 
+    private static final Logger LOGGER = HasLogging.log();
     private float startX;
     private float startY;
     private float endX;
@@ -33,7 +37,7 @@ public class Ramp extends BasePhysicalObject {
 		fudgeX = (float) Math.cos(angle) * Physics.toPixelWidth(1.0F)
 				+ (float) Math.sin(angle) * Physics.toPixelHeight(1.0F);
 		fudgeY = (float) Math.sin(angle) * Physics.toPixelHeight(1.0F);
-        System.out.println("ramp angle="+Math.toDegrees(angle)+"fudgeX="+fudgeX+";fudgeY="+fudgeY);
+        LOGGER.info("ramp angle={}fudgeX={};fudgeY={}", Math.toDegrees(angle), fudgeX, fudgeY);
         build();
     }
 

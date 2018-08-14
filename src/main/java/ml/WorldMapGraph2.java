@@ -24,6 +24,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import simplebuilder.CommonsFX;
+import simplebuilder.HasLogging;
 
 class WorldMapGraph2 extends Canvas {
     private static final String NO_INFO = "No info";
@@ -173,8 +174,8 @@ class WorldMapGraph2 extends Canvas {
 		List<Double> lis2t = points.list(latHeader, Double.class);
 		List<String> citu = points.list(cityHeader, String.class);
 		for (int i = 0; i < points.getSize(); i++) {
-			System.out.println("X=" + xScale.get());
-			System.out.println("Y=" + yScale.get());
+            HasLogging.log().info("X={}", xScale.get());
+            HasLogging.log().info("Y={}", yScale.get());
             double latitudeInDegrees = list.get(i).doubleValue();
             double longitudeInDegrees = lis2t.get(i).doubleValue();
 			double[] screenLocation = mercatorMap.getScreenLocation(latitudeInDegrees, longitudeInDegrees);

@@ -10,7 +10,10 @@ import java.util.Map;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import org.apache.commons.math3.complex.Complex;
+
+import simplebuilder.HasLogging;
 
 public class OthersTests {
 	private static final class EanFactorReducer implements IntBinaryOperator {
@@ -69,9 +72,9 @@ public class OthersTests {
 
 	public static void main(String[] args) {
 		Complex p = p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5));
-		System.out.println(p);
+        HasLogging.log().info("{}", p);
 
-		System.out.println(getStateMachine(Estado.CLOSED, Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
+        //		System.out.println(getStateMachine(Estado.CLOSED, Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
 	}
 
 	public static int[] unique(int[] integers) {

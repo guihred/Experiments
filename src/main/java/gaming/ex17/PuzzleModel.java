@@ -70,20 +70,18 @@ public class PuzzleModel extends Group {
         for (int i = 0; i < collect.size(); i++) {
         	for (int j = 0; j < collect.get(i).size(); j++) {
         		PuzzlePiece puzzlePiece = collect.get(i).get(j);
-        		if (checkNeighbours(piece, puzzlePiece)) {
-        			if (distance(puzzlePiece, piece) < width * width / 4) {
-        				Optional<List<PuzzlePiece>> containsP = groupWhichContains(piece);
-        				Optional<List<PuzzlePiece>> containsPuzzle = groupWhichContains(puzzlePiece);
-        				if (containsP.isPresent() && containsPuzzle.isPresent()
-        						&& !containsP.get().equals(containsPuzzle.get())) {
-        					containsPuzzle.get().addAll(containsP.get());
-        					linkedPieces.remove(containsP.get());
-        					double a = xDistance(puzzlePiece, piece);
-        					double b = yDistance(puzzlePiece, piece);
-        					containsPuzzle.get().forEach(PuzzlePiece::toFront);
-        					containsP.get().forEach(z -> z.move(a, b));
-        					return;
-                        }
+                if (checkNeighbours(piece, puzzlePiece) && distance(puzzlePiece, piece) < width * width / 4) {
+                    Optional<List<PuzzlePiece>> containsP = groupWhichContains(piece);
+                    Optional<List<PuzzlePiece>> containsPuzzle = groupWhichContains(puzzlePiece);
+                    if (containsP.isPresent() && containsPuzzle.isPresent()
+                            && !containsP.get().equals(containsPuzzle.get())) {
+                        containsPuzzle.get().addAll(containsP.get());
+                        linkedPieces.remove(containsP.get());
+                        double a = xDistance(puzzlePiece, piece);
+                        double b = yDistance(puzzlePiece, piece);
+                        containsPuzzle.get().forEach(PuzzlePiece::toFront);
+                        containsP.get().forEach(z -> z.move(a, b));
+                        return;
                     }
                 }
         	}

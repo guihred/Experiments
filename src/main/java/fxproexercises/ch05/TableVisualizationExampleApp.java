@@ -63,13 +63,14 @@ import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import simplebuilder.HasLogging;
 import simplebuilder.SimpleRectangleBuilder;
 
 /**
  *
  * @author Note
  */
-public class TableVisualizationExampleApp extends Application {
+public class TableVisualizationExampleApp extends Application implements HasLogging {
 
 	private static final String MENU_ITEM_B = "MenuItem B";
     private static final String MENU_ITEM_A = "MenuItem A";
@@ -99,7 +100,7 @@ public class TableVisualizationExampleApp extends Application {
 		final MenuItem newMenuItem = new MenuItem("New...",
 				new ImageView(new Image("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png")));
 		newMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-		newMenuItem.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on MenuItem New"));
+        newMenuItem.setOnAction(e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()));
 		final Menu fileMenu = new Menu("File");
 		fileMenu.getItems().addAll(newMenuItem, new MenuItem("Save"));
 		MenuBar menuBar = new MenuBar();
@@ -155,7 +156,7 @@ public class TableVisualizationExampleApp extends Application {
 				new ImageView(new Image("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png")));
 		newButton.setId("newButton");
 		newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
-		newButton.setOnAction((ActionEvent e) -> System.out.println("New toolbar button clicked"));
+        newButton.setOnAction((ActionEvent e) -> getLogger().info("New toolbar button clicked"));
 
 		final Button editButton = new Button(null, new Circle(8, Color.GREEN));
 		editButton.setId("editButton");
@@ -167,14 +168,14 @@ public class TableVisualizationExampleApp extends Application {
 		boldButton.setId("boldButton");
 		boldButton.setOnAction((ActionEvent e) -> {
 			ToggleButton tb = (ToggleButton) e.getTarget();
-			System.out.print(e.getEventType() + " occurred on ToggleButton " + tb.getId());
+            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
             logSelectedProperty(tb.selectedProperty().getValue());
 		});
 		final ToggleButton italicButton = new ToggleButton(null, new Circle(8, Color.YELLOW));
 		italicButton.setId("italicButton");
 		italicButton.setOnAction((ActionEvent e) -> {
 			ToggleButton tb = (ToggleButton) e.getTarget();
-			System.out.print(e.getEventType() + " occurred on ToggleButton " + tb.getId());
+            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
             logSelectedProperty(tb.selectedProperty().getValue());
 		});
 
@@ -194,7 +195,7 @@ public class TableVisualizationExampleApp extends Application {
 		alignToggleGroup.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
 			ToggleButton tb = (ToggleButton) alignToggleGroup.getSelectedToggle();
 			if (tb != null) {
-				System.out.println(tb.getId() + " selected");
+                getLogger().info("{} selected", tb.getId());
 			}
 		});
 
@@ -233,7 +234,7 @@ public class TableVisualizationExampleApp extends Application {
 			String randomWebSite = TableVisualizationModel.getRandomWebSite();
 			if (webViewTab.isSelected()) {
 				webView.getEngine().load(randomWebSite);
-				System.out.println("WebView tab is selected, loading: " + randomWebSite);
+                getLogger().info("WebView tab is selected, loading: {}", randomWebSite);
 			}
 		});
 
@@ -260,7 +261,7 @@ public class TableVisualizationExampleApp extends Application {
 		table.getColumns().addAll(Arrays.asList(firstNameColumn, lastNameColumn, phoneNumberColumn));
 		table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			Person selectedPerson = newValue;
-			System.out.println(selectedPerson + " chosen in TableView");
+            getLogger().info("{} chosen in TableView", selectedPerson);
 		});
 		return table;
 	}
@@ -313,17 +314,19 @@ public class TableVisualizationExampleApp extends Application {
 	Node createScrollMiscDemoNode() {
 		ChoiceBox<String> choiceBox = new ChoiceBox<>(TableVisualizationModel.CHOICE_BOX_ITEMS);
 		choiceBox.getSelectionModel().selectFirst();
-		choiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue + " chosen in ChoiceBox"));
+        choiceBox.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> getLogger().info("{} chosen in ChoiceBox", newValue));
 		final TextField textField = new TextField();
 		textField.setPromptText("Enter user name");
 		textField.setPrefColumnCount(16);
-		textField.textProperty().addListener((ov, oldValue, newValue) -> System.out.println("TextField text is: " + textField.getText()));
+        textField.textProperty()
+                .addListener((ov, oldValue, newValue) -> getLogger().info("TextField text is: {}" , textField.getText()));
 		final PasswordField passwordField = new PasswordField();
 		passwordField.setPromptText("Enter password");
 		passwordField.setPrefColumnCount(16);
 		passwordField.focusedProperty().addListener((ov, oldValue, newValue) -> {
 			if (!passwordField.isFocused()) {
-				System.out.println("PasswordField text is: " + passwordField.getText());
+                getLogger().info("PasswordField text is: {}", passwordField.getText());
 			}
 		});
 		final TextArea textArea = new TextArea();
@@ -331,7 +334,7 @@ public class TableVisualizationExampleApp extends Application {
 		textArea.setPrefRowCount(4);
 		textArea.focusedProperty().addListener((ov, oldValue, newValue) -> {
 			if (!textArea.isFocused()) {
-				System.out.println("TextArea text is: " + textArea.getText());
+                getLogger().info("TextArea text is: {}", textArea.getText());
 			}
 		});
 		Slider slider = new Slider();
@@ -352,15 +355,15 @@ public class TableVisualizationExampleApp extends Application {
 		scrollBar.valueProperty().bindBidirectional(TableVisualizationModel.KPH);
 		CheckBox checkBox = new CheckBox("CheckBox");
 		checkBox.setOnAction((ActionEvent e) -> {
-			System.out.print(e.getEventType() + " occurred on CheckBox");
+            getLogger().info("{} occurred on CheckBox", e.getEventType());
             logSelectedProperty(checkBox.selectedProperty().getValue());
 		});
 		final Hyperlink hyperlink = new Hyperlink("Hyperlink");
-		hyperlink.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Hyperlink"));
+        hyperlink.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Hyperlink", e.getEventType()));
 		final Button button = new Button("Button");
-		button.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Button"));
+        button.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Button", e.getEventType()));
 		final MenuItem menItemA = new MenuItem(MENU_ITEM_A);
-        menItemA.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A "));
+        menItemA.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Menu Item A ", e.getEventType()));
 		final MenuButton menuButton = new MenuButton("MenuButton");
 		menuButton.getItems().addAll(menItemA, new MenuItem(MENU_ITEM_B));
 		final ToggleGroup radioToggleGroup = new ToggleGroup();
@@ -372,18 +375,18 @@ public class TableVisualizationExampleApp extends Application {
 		radioToggleGroup.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
 			RadioButton rb = (RadioButton) radioToggleGroup.getSelectedToggle();
 			if (rb != null) {
-				System.out.println(rb.getText() + " selected");
+                getLogger().info("{} selected", rb.getText());
 			}
 		});
 		final MenuItem menuItem = new MenuItem(MENU_ITEM_A);
-		menuItem.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A"));
+        menuItem.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
 		final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem(MENU_ITEM_B));
 		splitMenu.setText("SplitMenuButton");
-		splitMenu.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on SplitMenuButton"));
+        splitMenu.setOnAction((ActionEvent e) -> getLogger().info( "{} occurred on SplitMenuButton",e.getEventType() ));
 		VBox variousControls = new VBox(20, button, checkBox, new HBox(10, radioButton1, radioButton2), hyperlink,choiceBox, menuButton, splitMenu, textField, passwordField,new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
 		variousControls.setPadding(new Insets(10, 10, 10, 10));
 		final MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
-		menuItemA.setOnAction((ActionEvent e) -> System.out.println(e.getEventType() + " occurred on Menu Item A"));
+        menuItemA.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
 		ContextMenu contextMenu = new ContextMenu(menuItemA, new MenuItem(MENU_ITEM_B));
 		ScrollPane scrollPane = new ScrollPane(variousControls);
 		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -397,6 +400,6 @@ public class TableVisualizationExampleApp extends Application {
 	}
 
     private void logSelectedProperty(Boolean value) {
-        System.out.println(", and selectedProperty is: " + value);
+        getLogger().info(", and selectedProperty is: {}", value);
     }
 }

@@ -66,7 +66,6 @@ public class WordService implements HasLogging {
 				List<XWPFParagraph> paragraphs = p.getParagraphs();
 				for (XWPFParagraph paragraph : paragraphs) {
 					String text = paragraph.getText();
-					printDebug(text);
 					if (mapaSubstituicao.containsKey(text) || mapaSubstituicao.containsKey(text.trim())) {
 						Object object = getObject(mapaSubstituicao, text);
 						substituirParagrafo(paragraph, Objects.toString(object, ""));
@@ -81,7 +80,7 @@ public class WordService implements HasLogging {
 					.forEach(tabela -> substituirTabela(tabela, mapaSubstituicao));
 			document1.write(outStream);
 		} catch (Exception e) {
-			e.printStackTrace();
+            log().error("", e);
 		}
 	}
 
@@ -114,7 +113,6 @@ public class WordService implements HasLogging {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void removerLinks(XWPFParagraph paragraph) {
 		int size = paragraph.getCTP().getHyperlinkArray().length;
 		for (int i = 0; i < size; i++) {
@@ -141,7 +139,6 @@ public class WordService implements HasLogging {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void substituirTabela(IBodyElement element, Map<String, Object> map) {
 		XWPFTable tabela = (XWPFTable) element;
 		int numberOfRows = tabela.getNumberOfRows();
@@ -152,7 +149,6 @@ public class WordService implements HasLogging {
 			for (int j = 0; j < tableCells.size(); j++) {
 				XWPFTableCell cell = row.getCell(j);
 				String cellText = cell.getText();
-				printDebug(cellText);
 				if (map.containsKey(cellText) || map.containsKey(cellText.trim())) {
 					Object object = getObject(map, cellText);
 					if (object instanceof String) {
@@ -164,11 +160,6 @@ public class WordService implements HasLogging {
 			}
 
 		}
-	}
-
-	private void printDebug(String cellText) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private static Object getObject(Map<String, Object> map, String cellText) {

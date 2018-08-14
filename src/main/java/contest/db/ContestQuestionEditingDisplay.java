@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -31,8 +32,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import simplebuilder.HasLogging;
 
-public class ContestQuestionEditingDisplay extends Application {
+public class ContestQuestionEditingDisplay extends Application implements HasLogging {
     private IntegerProperty current = new SimpleIntegerProperty(-1);
     private final ObservableList<ContestQuestion> lessons;
     private ObservableList<ContestQuestionAnswer> options = FXCollections.observableArrayList();
@@ -157,12 +159,15 @@ public class ContestQuestionEditingDisplay extends Application {
         int index = current.get();
         ContestQuestion contestQuestion = lessons.get(index);
         lessons.set(index, contestQuestion);
-		System.out.println(ContestReader.INSTANCE.contest.toSQL());
-		System.out.println(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
-		System.out.println(lessons.stream().flatMap(e -> e.getOptions().stream()).map(e -> e.toSQL())
-				.collect(Collectors.joining("\n")));
-		System.out.println(
-				ContestReader.INSTANCE.texts.stream().map(ContestText::toSQL).collect(Collectors.joining("\n")));
+        Logger logger = getLogger();
+        if (logger.isInfoEnabled()) {
+            logger.info(ContestReader.INSTANCE.contest.toSQL());
+            logger.info(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
+            logger.info(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
+                    .collect(Collectors.joining("\n")));
+            logger.info(
+                    ContestReader.INSTANCE.texts.stream().map(ContestText::toSQL).collect(Collectors.joining("\n")));
+        }
 
         primaryStage.close();
     }

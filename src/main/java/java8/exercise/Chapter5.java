@@ -1,6 +1,11 @@
 package java8.exercise;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
@@ -9,14 +14,21 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Predicate;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 public final class Chapter5 {
-	private Chapter5() {
+    private static final Logger LOGGER = HasLogging.log();
+
+    private Chapter5() {
+
 	}
 
 	/* Compute Programmer's Day without using plusDays. */
 	public static void ex1() {
 		LocalDate programmerDay = LocalDate.ofYearDay(2015, 256);
-		System.out.println(programmerDay);
+        LOGGER.info("{}", programmerDay);
 	}
 
 	/*
@@ -27,7 +39,7 @@ public final class Chapter5 {
 	 */
 	public static void ex2() {
 		LocalDate plusYears = LocalDate.of(2000, 2, 29).plusYears(1L);
-		System.out.println(plusYears);
+        LOGGER.info("{}", plusYears);
 	}
 
 	/*
@@ -41,7 +53,7 @@ public final class Chapter5 {
 	public static void ex3() {
 
 		LocalDate with = LocalDate.now().with(next(w -> w.getDayOfWeek().getValue() < 6));
-		System.out.println(with);
+        LOGGER.info("{}", with);
 	}
 
 	private static TemporalAdjuster next(Predicate<LocalDate> predicate) {
@@ -76,20 +88,22 @@ public final class Chapter5 {
 		int month = now.get(ChronoField.MONTH_OF_YEAR);
 		int year = now.get(ChronoField.YEAR);
 		now = LocalDate.of(year, month, 1);
+        StringBuilder s = new StringBuilder();
 		while (month == now.get(ChronoField.MONTH_OF_YEAR)) {
 			for (int j = 1; j <= 7; j++) {
 				if (month != now.get(ChronoField.MONTH_OF_YEAR)) {
 					break;
 				}
 				if (now.get(ChronoField.DAY_OF_WEEK) == j) {
-					System.out.printf(" %2d", now.get(ChronoField.DAY_OF_MONTH));
+                    s.append(String.format(" %2d", now.get(ChronoField.DAY_OF_MONTH)));
 					now = now.plusDays(1);
 				} else {
-					System.out.print("   ");
+                    s.append("   ");
 				}
 			}
-			System.out.println();
+            s.append("\n");
 		}
+        LOGGER.info("\n{}", s);
 	}
 
 
@@ -98,7 +112,7 @@ public final class Chapter5 {
 		
 		LocalDate birth = LocalDate.of(1992, 2, 21);
 		long l = birth.until(LocalDate.now(), ChronoUnit.DAYS);
-		System.out.println(l + " days");
+        LOGGER.info("{} days", l);
 
 	}
 
@@ -115,7 +129,7 @@ public final class Chapter5 {
 				return l;
 			});
 
-			System.out.println(nextFriday);
+            LOGGER.info("{}", nextFriday);
 			nextFriday = nextFriday.plusDays(7);
 		}
 	}
@@ -140,7 +154,7 @@ public final class Chapter5 {
 		ZoneId.getAvailableZoneIds().stream().map(ZoneId::of).map(now::atZone)
 				.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
 				.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) + "\t" + o.getOffset())
-				.forEach(System.out::println);
+                .forEach(LOGGER::info);
 
 	}
 
@@ -156,7 +170,7 @@ public final class Chapter5 {
 				.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
 				.filter(z -> z.getOffset().getTotalSeconds() % 3600 != 0)
 				.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) + "\t" + o.getOffset())
-				.forEach(System.out::println);
+                .forEach(LOGGER::info);
 		
 	}
 
@@ -177,10 +191,10 @@ public final class Chapter5 {
 		Instant from = Instant.from(addTo);
 		ZoneId frankfurt = ZoneId.of("Europe/Berlin");
 		ZonedDateTime flightArrivalDateTime = from.atZone(frankfurt);
-		System.out.println(flightBegining);
-		System.out.println(flightArrivalDateTime);
+		LOGGER.info("{}",flightBegining);
+		LOGGER.info("{}",flightArrivalDateTime);
 
-		System.out.println();
+        LOGGER.info("\n");
 
 	}
 
@@ -197,10 +211,12 @@ public final class Chapter5 {
 		ZonedDateTime flightBegining = ZonedDateTime.of(date, LocalTime.of(14, 5), frankfurt);
 		ZonedDateTime flightArrivalDateTime = ZonedDateTime.of(date, LocalTime.of(16, 40), losAngeles);
 
-		System.out.println(flightBegining);
-		System.out.println(flightArrivalDateTime);
-		System.out.println(Duration.between(flightBegining, flightArrivalDateTime).toString().replace("H", " hours ").replace("M", " minutes")
-				.replace("PT", ""));
+        LOGGER.info("{}", flightBegining);
+        LOGGER.info("{}", flightArrivalDateTime);
+        String replace = Duration.between(flightBegining, flightArrivalDateTime).toString().replace("H", " hours ")
+                .replace("M", " minutes")
+				.replace("PT", "");
+        LOGGER.info(replace);
 
 	}
 

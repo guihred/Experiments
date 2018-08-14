@@ -14,6 +14,7 @@ import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import simplebuilder.HasLogging;
 
 class LineGraph extends Canvas {
     private double layout = 30;
@@ -89,8 +90,7 @@ class LineGraph extends Canvas {
             }
         }
         drawAxis();
-
-        System.out.println(histogram);
+        HasLogging.log().info("{}", histogram);
 
 
     }

@@ -1,6 +1,8 @@
 package fxproexercises.ch03;
 
-public class JavaFXBeanViewExample {
+import simplebuilder.HasLogging;
+
+public class JavaFXBeanViewExample implements HasLogging {
 
     private JavaFXBeanModelExample model;
 
@@ -10,11 +12,11 @@ public class JavaFXBeanViewExample {
     }
 
     private void hookupChangeListeners() {
-		model.iProperty().addListener((observableValue, oldValue, newValue) -> System.out
-				.println("Property i changed: old value = " + oldValue + ", new value =" + newValue));
-		model.strProperty().addListener((observableValue, oldValue, newValue) -> System.out
-				.println("Property str changed: old value = " + oldValue + ", new value =" + newValue));
-		model.colorProperty().addListener((observableValue, oldValue, newValue) -> System.out
-				.println("Property color changed: old value = " + oldValue + ",new value =" + newValue));
+        model.iProperty().addListener((observableValue, oldValue, newValue) -> getLogger()
+                .info("Property i changed: old value = {}, new value ={}", oldValue, newValue));
+        model.strProperty().addListener((observableValue, oldValue, newValue) -> getLogger()
+                .info("Property str changed: old value = {}, new value ={}", oldValue, newValue));
+        model.colorProperty().addListener((observableValue, oldValue, newValue) -> getLogger()
+                .info("Property color changed: old value = {},new value ={}", oldValue, newValue));
     }
 }

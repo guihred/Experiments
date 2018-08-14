@@ -12,9 +12,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 public final class JavaExercise1to11 {
 
-	private JavaExercise1to11() {
+	private static final Logger LOG = HasLogging.log();
+
+    private JavaExercise1to11() {
 	}
 
 	public static void main(String[] args) {
@@ -48,7 +54,7 @@ public final class JavaExercise1to11 {
 		Arrays.sort(p, Comparator.comparing((Person pe) -> pe.age));
 
 		for (Person i : p) {
-			System.out.printf("%s%n", i);
+            LOG.info("{}", i);
 		}
 	}
 	static class Person {
@@ -80,7 +86,7 @@ public final class JavaExercise1to11 {
 
 	public static void recurringFractionProblem() {
 		for (int i = 0; i < 10; i++) {
-			System.out.println(f(i));
+            LOG.info("{}", f(i));
 		}
 	}
 
@@ -117,8 +123,8 @@ public final class JavaExercise1to11 {
 			}
 			oldx = x;
 		}
-		System.out.println(oldx);
-		System.out.println(Math.sqrt(5));
+        LOG.info("{}", oldx);
+        LOG.info("{}", Math.sqrt(5));
 	}
 
 	/**
@@ -135,7 +141,7 @@ public final class JavaExercise1to11 {
 		for (int i = 1; i <= 16; i++) {
 			sum += (2 << i) / 100.0;
 		}
-		System.out.println(sum);
+        LOG.info("{}", sum);
 		sum = 0;
 
 		for (int i = 1; i <= 16; i++) {
@@ -143,7 +149,7 @@ public final class JavaExercise1to11 {
 				sum += 1.0 / 100.0;
 			}
 		}
-		System.out.println(sum);
+        LOG.info("{}", sum);
 	}
 
 	/**
@@ -167,8 +173,8 @@ public final class JavaExercise1to11 {
 				break;
 			}
 		}
-		System.out.println(n);
-		System.out.println(sum);
+        LOG.info("{}", n);
+        LOG.info("{}", sum);
 		sum = 0;
 		while (true) {
 			double item = 1 / (1000 * n + Math.PI);
@@ -178,7 +184,7 @@ public final class JavaExercise1to11 {
 				break;
 			}
 		}
-		System.out.println(sum);
+        LOG.info("{}", sum);
 
 	}
 
@@ -190,7 +196,7 @@ public final class JavaExercise1to11 {
 		LocalDate begin = LocalDate.of(1900, 1, 1);
 		Map<DayOfWeek, Long> histogram = Stream.iterate(begin, d -> d.plusDays(1)).filter(d -> d.getDayOfMonth() == 13).limit(4800)
 				.collect(Collectors.groupingBy(LocalDate::getDayOfWeek, Collectors.counting()));
-		System.out.println(histogram);
+        LOG.info("{}", histogram);
 	}
 
 	/**
@@ -212,7 +218,8 @@ public final class JavaExercise1to11 {
 		int m = (a + 11 * h + 22 * l) / 451;
 		int n = (h + l - 7 * m + 114) / 31;
 		int p = (h + l - 7 * m + 114) % 31;
-		System.out.println(String.format("%02d/%02d/%d", p + 1, n, y));
+        String format = String.format("%02d/%02d/%d", p + 1, n, y);
+        LOG.info(format);
 	}
 
 	/**
@@ -223,7 +230,8 @@ public final class JavaExercise1to11 {
 	 * organised so that there are ten prime num bers on eac h line.
 	 */
 	public static void allPrimeLessThan600Problem() {
-		final int size = 600, sqrtSize = 25;
+        final int size = 600;
+        final int sqrtSize = 25;
 		boolean[] primes = Arrays.copyOf(new boolean[0], size);
 		Arrays.fill(primes, 2, size, true);
 		for (int i = 0; i < primes.length; i++) {
@@ -234,15 +242,17 @@ public final class JavaExercise1to11 {
 			}
 		}
 		int j = 1;
+        StringBuilder s = new StringBuilder();
 		for (int i = 0; i < primes.length; i++) {
 			if (primes[i]) {
-				System.out.print(String.format("%03d ", i));
+                s.append(String.format("%03d ", i));
 				if (j++ % 10 == 0) {
-					System.out.println();
+                    s.append("\n");
 				}
 			}
 
 		}
+        LOG.info("{}", s);
 	}
 
 	/**
@@ -263,9 +273,10 @@ public final class JavaExercise1to11 {
 			of = of.parallelStream().flatMap(g -> g.reproduce(j)).collect(Collectors.toList());
 		}
 		Greenfly.MAPA
-				.forEach((day, count) -> System.out.println("At day " + (day + 1) + " = " + count + " greenflies"));
+                .forEach((day, count) -> LOG.info("{}",
+                        "At day " + (day + 1) + " = " + count + " greenflies"));
 
-		System.out.println("Total = " + of.size());
+        LOG.info("Total = {}", of.size());
 	}
 
 	public static class Greenfly {
@@ -305,14 +316,14 @@ public final class JavaExercise1to11 {
 			j.set(i);
 			return k;
 		}).limit(1000).filter(i -> i > 1000).findFirst().orElse(0);
-		System.out.println("firstTerm=" + firstTerm);
+        LOG.info("firstTerm={}" , firstTerm);
 		j.set(0);
 		int sum = IntStream.iterate(1, i -> {
 			int k = i + j.get();
 			j.set(i);
 			return k;
 		}).limit(1000).filter(i -> i < 1000).sum();
-		System.out.println("sum=" + sum);
+        LOG.info("sum={}" , sum);
 	}
 
 }

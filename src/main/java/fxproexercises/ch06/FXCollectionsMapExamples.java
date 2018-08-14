@@ -8,8 +8,12 @@ package fxproexercises.ch06;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.slf4j.Logger;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import simplebuilder.HasLogging;
 
 /**
  *
@@ -21,22 +25,24 @@ public final class FXCollectionsMapExamples {
 	}
 
     public static void main(String[] args) {
+        Logger log = HasLogging.log();
+
         ObservableMap<String, Integer> map = FXCollections.observableHashMap();
         map.addListener(new MyListenerMapExamples());
-        System.out.println("Calling put(\"First\", 1): ");
+        log.info("Calling put(\"First\", 1): ");
         map.put("First", 1);
-        System.out.println("Calling put(\"First\", 100): ");
+        log.info("Calling put(\"First\", 100): ");
         map.put("First", 100);
         Map<String, Integer> anotherMap = new HashMap<>();
         anotherMap.put("Second", 2);
         anotherMap.put("Third", 3);
-        System.out.println("Calling putAll(anotherMap): ");
+        log.info("Calling putAll(anotherMap): ");
         map.putAll(anotherMap);
         final Iterator<Map.Entry<String, Integer>> entryIterator = map.entrySet().iterator();
         while (entryIterator.hasNext()) {
             final Map.Entry<String, Integer> next = entryIterator.next();
 			if ("Second".equals(next.getKey())) {
-                System.out.println("Calling remove on entryIterator: ");
+                log.info("Calling remove on entryIterator: ");
                 entryIterator.remove();
             }
         }
@@ -44,7 +50,7 @@ public final class FXCollectionsMapExamples {
         while (valueIterator.hasNext()) {
             final Integer next = valueIterator.next();
             if (next == 3) {
-                System.out.println("Calling remove on valueIterator: ");
+                log.info("Calling remove on valueIterator: ");
                 valueIterator.remove();
             }
         }

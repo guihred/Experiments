@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -25,13 +24,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.HasLogging;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class RubiksCubeLauncher extends Application {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 	public static final int CUBE_COMPLEXITY = 3;
 
-	static final Logger LOGGER = LoggerFactory.getLogger(RubiksCubeLauncher.class);
+    static final Logger LOGGER = HasLogging.log();
 
 	public static final int RUBIKS_CUBE_SIZE = 50;
 	private RubiksPiece[][][] pieces = new RubiksPiece[CUBE_COMPLEXITY][CUBE_COMPLEXITY][CUBE_COMPLEXITY];
@@ -96,16 +96,18 @@ public class RubiksCubeLauncher extends Application {
 	}
 	private void unbindAll() {
         Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(RubiksPiece::unbindAngle);
-		if (RubiksCubeLauncher.DEBUG) {
+        if (RubiksCubeLauncher.DEBUG && LOGGER.isInfoEnabled()) {
+            StringBuilder s = new StringBuilder();
 			for (int i = 0; i < CUBE_COMPLEXITY; i++) {
 				for (int j = 0; j < CUBE_COMPLEXITY; j++) {
 					for (int k = 0; k < CUBE_COMPLEXITY; k++) {
-						System.out.print(pieces[i][j][k] + " ");
+                        s.append(pieces[i][j][k] + " ");
 					}
-					System.out.println();
+                    s.append("\n");
 				}
 			}
-			System.out.println();
+            s.append("\n");
+            LOGGER.info(s.toString());
 		}
 	}
 
@@ -116,7 +118,7 @@ public class RubiksCubeLauncher extends Application {
         }
 		timeline.playFromStart();
         if (RubiksCubeLauncher.DEBUG) {
-            System.out.println(face);
+            LOGGER.info("{}", face);
         }
 		List<RubiksPiece> arrayList = new ArrayList<>();
 		for (int i = 0; i < collect.size(); i++) {

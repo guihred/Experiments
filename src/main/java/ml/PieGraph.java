@@ -16,6 +16,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import simplebuilder.HasLogging;
 
 public class PieGraph extends Canvas {
 	private GraphicsContext gc;
@@ -45,11 +46,11 @@ public class PieGraph extends Canvas {
         double centerY = gc.getCanvas().getHeight() / 4;
         double startAngle = 90;
         gc.setLineWidth(0.5);
-        List<Entry<String, Long>> collect = histogram.entrySet().stream()
+        List<Entry<String, Long>> histogramLevels = histogram.entrySet().stream()
                 .sorted(Comparator.comparing(Entry<String, Long>::getValue)).collect(Collectors.toList());
         int radius2 = radius.get();
-        for (int i = 0; i < collect.size(); i++) {
-            Entry<String, Long> entry = collect.get(i);
+        for (int i = 0; i < histogramLevels.size(); i++) {
+            Entry<String, Long> entry = histogramLevels.get(i);
             double arcExtent = entry.getValue() * 360d / sum;
             gc.setFill(availableColors.get(i));
 
@@ -59,8 +60,8 @@ public class PieGraph extends Canvas {
             startAngle += arcExtent;
         }
         startAngle = 90;
-        for (int i = 0; i < collect.size(); i++) {
-            Entry<String, Long> entry = collect.get(i);
+        for (int i = 0; i < histogramLevels.size(); i++) {
+            Entry<String, Long> entry = histogramLevels.get(i);
             double arcExtent = entry.getValue() * 360d / sum;
             double x = Math.sin(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 / 1.5 + centerX + radius2 / 2
                     - 4 * entry.getKey().length();
@@ -69,8 +70,8 @@ public class PieGraph extends Canvas {
 
             startAngle += arcExtent;
         }
-        System.out.println(collect);
-        drawLegend(collect, availableColors);
+        HasLogging.log().info("{}", histogramLevels);
+        drawLegend(histogramLevels, availableColors);
     }
 
 	public static List<Color> generateColors(int size) {

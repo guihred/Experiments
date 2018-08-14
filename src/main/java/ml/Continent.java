@@ -13,7 +13,7 @@ public enum Continent {
 
     private final Color color;
 
-    private Continent(Color color) {
+    Continent(Color color) {
         this.color = color;
 
     }

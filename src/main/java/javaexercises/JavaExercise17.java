@@ -1,5 +1,9 @@
 package javaexercises;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 /**
  * 17. Reversing a List. Consider a class Link whose definition begins thus: Any
  * given Link can point to a sequence of others to form a list. Incorporate into
@@ -11,6 +15,7 @@ package javaexercises;
  */
 public final class JavaExercise17 {
 
+    private static final Logger LOGGER = HasLogging.log();
 	private JavaExercise17() {
 	}
 
@@ -18,9 +23,9 @@ public final class JavaExercise17 {
 
 		Link link = new Link(3);
 		link.put(4).put(6).put(7);
-		System.out.println(link);
+        LOGGER.info("{}", link);
 		Link reverse = link.reverse();
-		System.out.println(reverse);
+        LOGGER.info("{}", reverse);
 	}
 
 }

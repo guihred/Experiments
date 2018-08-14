@@ -2,12 +2,15 @@ package gaming.ex15;
 
 import java.util.EnumSet;
 
+import org.slf4j.Logger;
+
 import javafx.event.EventHandler;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import simplebuilder.HasLogging;
 
-public class RubiksKeyboard implements EventHandler<KeyEvent> {
+public class RubiksKeyboard implements EventHandler<KeyEvent> , HasLogging{
 	/**
 	 * 
 	 */
@@ -96,10 +99,11 @@ public class RubiksKeyboard implements EventHandler<KeyEvent> {
 	}
 
 	public static void main(String[] args) {
+        Logger log = HasLogging.log();
 		for (int i = 0; i < 9; i++) {
 			int j = rotateClockWise(i);
 			int k = rotateAntiClockWise(j);
-			System.out.println(i + "=" + j + "=" + k);
+            log.info("{}={}={}", i, j, k);
 		}
 	}
 

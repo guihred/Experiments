@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -81,7 +82,7 @@ public class ExcelService implements HasLogging {
 
 			IOUtils.copy(new FileInputStream(createTempFile), response);
 
-			createTempFile.delete();
+            Files.delete(createTempFile.toPath());
 
 		} catch (IOException e) {
 			logger.error("ERRO ", e);
@@ -152,7 +153,7 @@ public class ExcelService implements HasLogging {
 
 			IOUtils.copy(new FileInputStream(createTempFile), response);
 
-			createTempFile.delete();
+            Files.delete(createTempFile.toPath());
 
 		} catch (IOException e) {
 			logger.error("ERRO ", e);
@@ -298,7 +299,7 @@ public class ExcelService implements HasLogging {
     }
 
 	public void printDebug(Object value) {
-		System.out.println(value);
+        getLogger().trace("{}", value);
 	}
 
 	public void exportarDemanda(OutputStream response) {

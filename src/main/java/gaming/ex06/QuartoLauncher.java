@@ -1,10 +1,11 @@
 package gaming.ex06;
 
-import fxsamples.Xform;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import fxsamples.Xform;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventTarget;
@@ -23,9 +24,10 @@ import javafx.scene.shape.Shape3D;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import simplebuilder.HasLogging;
 import simplebuilder.SimpleCircleBuilder;
 
-public class QuartoLauncher extends Application {
+public class QuartoLauncher extends Application implements HasLogging{
 
 	private static final double ALT_MULTIPLIER = 0.5;
 	private static final double CONTROL_MULTIPLIER = 0.1;
@@ -59,8 +61,8 @@ public class QuartoLauncher extends Application {
 		cs2.setRotate(90);
 		final Group group = new Group(board, cs2, cs);
 		for (int i = 0; i < 16; i++) {
-			final Circle circle = new SimpleCircleBuilder().radius(10).fill(Color.WHITE).translateX(i % 4 * 40 - 60)
-					.translateZ(i / 4 * 40 - 60).translateY(3).rotationAxis(Rotate.X_AXIS).rotate(90).build();
+            final Circle circle = new SimpleCircleBuilder().radius(10).fill(Color.WHITE).translateX(getPosition(i % 4))
+                    .translateZ(getPosition(i / 4)).translateY(3).rotationAxis(Rotate.X_AXIS).rotate(90).build();
 			circle.fillProperty().bind(Bindings.when(circle.hoverProperty()).then(Color.BLUE).otherwise(Color.WHITE));
 			model.getMap()[i % 4][i / 4] = circle;
 			group.getChildren().add(circle);
@@ -68,8 +70,8 @@ public class QuartoLauncher extends Application {
 			final QuartoPiece piece = new QuartoPiece(i);
 			int j = i % 4;
 			int k = i / 4;
-			piece.setTranslateX(j == 0 ? -110 : j == 1 ? -90 : j == 2 ? 90 : 110);
-			piece.setTranslateZ(k == 0 ? -110 : k == 1 ? -90 : k == 2 ? 90 : 110);
+            piece.setTranslateX(getTranslate(j));
+            piece.setTranslateZ(getTranslate(k));
 			world.getChildren().add(piece);
 			model.getPieces().add(piece);
 
@@ -77,6 +79,25 @@ public class QuartoLauncher extends Application {
 
 		world.getChildren().addAll(group);
 	}
+
+    private int getPosition(int i) {
+        return i * 40 - 60;
+    }
+
+    public static int getTranslate(int j) {
+        switch (j) {
+            case 0:
+                return -110;
+            case 1:
+                return -90;
+            case 2:
+                return 90;
+            case 3:
+            default:
+                return 110;
+
+        }
+    }
 
 	private void buildCamera() {
         root.getChildren().add(cameraXform);
@@ -132,14 +153,15 @@ public class QuartoLauncher extends Application {
 			}
 		}
 		if (target instanceof Circle && Stream.of(model.getMap()).flatMap(Stream::of).anyMatch(target::equals)) {
-			List<QuartoPiece>selectedPiece=model.getPieces().stream().filter(p -> p.isSelected()).collect(Collectors.toList());
+            List<QuartoPiece> selectedPiece = model.getPieces().stream().filter(QuartoPiece::isSelected)
+                    .collect(Collectors.toList());
 			for(QuartoPiece p:selectedPiece) {
 		        p.setTranslateX(((Circle) target).getTranslateX());
 		        p.setTranslateZ(((Circle) target).getTranslateZ());
 				p.setSelected(false);
 				setQuartoPiece(target, p);
 		        if (model.checkEnd()) {
-		            System.out.println("ACABOU");
+		            getLogger().info("ACABOU");
 		            final Text text = new Text("You Got " + 0 + " points");
 		            final Button button = new Button("Reset");
 		            final Stage stage1 = new Stage();

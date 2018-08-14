@@ -8,6 +8,7 @@ class MyListenerExamples implements ListChangeListener<String> {
 
     @Override
     public void onChanged(Change<? extends String> change) {
+
         System.out.println("\tlist = " + change.getList());
         System.out.println(prettyPrint(change));
     }

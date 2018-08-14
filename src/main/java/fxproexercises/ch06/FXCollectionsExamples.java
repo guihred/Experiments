@@ -5,8 +5,11 @@
  */
 package fxproexercises.ch06;
 
+import org.slf4j.Logger;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import simplebuilder.HasLogging;
 
 /**
  *
@@ -18,17 +21,18 @@ public final class FXCollectionsExamples {
 	}
 
 	public static void main(String[] args) {
+        Logger log = HasLogging.log();
         ObservableList<String> strings = FXCollections.observableArrayList();
         strings.addListener(new MyListenerExamples());
-        System.out.println("Calling addAll(\"Zero\", \"One\", \"Two\", \"Three\"): ");
+        log.info("Calling addAll(\"Zero\", \"One\", \"Two\", \"Three\"): ");
         strings.addAll("Zero", "One", "Two", "Three");
-        System.out.println("Calling FXCollections.sort(strings): ");
+        log.info("Calling FXCollections.sort(strings): ");
         FXCollections.sort(strings);
-        System.out.println("Calling set(1, \"Three_1\"): ");
+        log.info("Calling set(1, \"Three_1\"): ");
         strings.set(1, "Three_1");
-        System.out.println("Calling setAll(\"One_1\", \"Three_1\", \"Two_1\", \"Zero_1\"): ");
+        log.info("Calling setAll(\"One_1\", \"Three_1\", \"Two_1\", \"Zero_1\"): ");
         strings.setAll("One_1", "Three_1", "Two_1", "Zero_1");
-        System.out.println("Calling removeAll(\"One_1\", \"Two_1\", \"Zero_1\"): ");
+        log.info("Calling removeAll(\"One_1\", \"Two_1\", \"Zero_1\"): ");
         strings.removeAll("One_1", "Two_1", "Zero_1");
     }
 

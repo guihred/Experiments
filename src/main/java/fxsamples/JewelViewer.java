@@ -39,7 +39,7 @@ public class JewelViewer extends Application {
 	private static final double MODEL_X_OFFSET = 0; // standard
 	private static final double MODEL_Y_OFFSET = 0; // standard
 
-	private static final int VIEWPORT_SIZE = 800;
+    private static final double VIEWPORT_SIZE = 800;
 
 	private static final double CAMERA_MODIFIER = 50.0;
 	private static final double CAMERA_QUANTITY = 10.0;
@@ -50,9 +50,9 @@ public class JewelViewer extends Application {
 
 	private PerspectiveCamera addCamera(Scene scene) {
 		camera = new PerspectiveCamera();
-		System.out.println("Near Clip: " + camera.getNearClip());
-		System.out.println("Far Clip:  " + camera.getFarClip());
-		System.out.println("FOV:       " + camera.getFieldOfView());
+        LOGGER.info("Near Clip: {}", camera.getNearClip());
+        LOGGER.info("Far Clip:  {}", camera.getFarClip());
+        LOGGER.info("FOV:       {}", camera.getFieldOfView());
 
 		scene.setCamera(camera);
 		return camera;
@@ -160,7 +160,7 @@ public class JewelViewer extends Application {
 			boolean success = false;
 			if (db.hasFiles()) {
 				success = true;
-				if (db.getFiles().size() > 0) {
+                if (!db.getFiles().isEmpty()) {
 					tryLoadMeshViews(db);
 				}
 			} else {

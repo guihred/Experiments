@@ -4,6 +4,7 @@ package ml;
 import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
+
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.DepthTest;
@@ -29,6 +30,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import simplebuilder.HasLogging;
 
 public class Chart3dGraph extends Application {
 
@@ -354,7 +356,7 @@ public class Chart3dGraph extends Application {
             int x = xLatitude.get(i).intValue();
             int y = yLongitude.get(i).intValue();
 			if (x > size1 || y > size1) {
-                System.out.println("ERRRRROOOOOOOOOO");
+                HasLogging.log().info("ERRRRROOOOOOOOOO");
                 return noiseArray;
             }
             noiseArray[x][y] += z.get(i);

@@ -410,7 +410,7 @@ public class BrazilianVerbsConjugator {
 				}
 				return printIrregular(verb, key, firstConjugation);
 			}
-			System.out.println("CADÊ ->" + key);
+            LOGGER.info("CADÊ ->{}", key);
 		}
 
 		return null;
@@ -471,18 +471,20 @@ public class BrazilianVerbsConjugator {
 			enumMap.put(entry.getKey(), addDesinencia);
 		}
 		if (DEBUG) {
-			System.out.println(verb);
-			System.out.println();
+            LOGGER.info(verb);
+            StringBuilder s = new StringBuilder();
+
 			int bigger = tens.stream().flatMap(List<String>::stream).mapToInt(String::length).max().getAsInt();
 			for (int i = 0; i < tens.get(0).size(); i++) {
 				for (int j = 0; j < tens.size(); j++) {
 					String string = tens.get(j).get(i);
 					String rightPad = StringUtils.rightPad(string, bigger, " ");
-					System.out.print(rightPad + " ");
+                    s.append(rightPad + " ");
 				}
-				System.out.println();
+                s.append("\n");
 			}
-			System.out.println();
+            s.append("\n");
+            LOGGER.info("{}", s);
 		}
 		return enumMap;
 

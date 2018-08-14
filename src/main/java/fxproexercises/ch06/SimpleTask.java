@@ -1,14 +1,19 @@
 package fxproexercises.ch06;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+
 import javafx.concurrent.Task;
+import simplebuilder.HasLogging;
 
 class SimpleTask extends Task<String> {
 
-	private AtomicBoolean shouldThrow;
+    private static final Logger LOGGER = HasLogging.log();
+    private AtomicBoolean shouldThrow;
 
 	public SimpleTask(AtomicBoolean shouldThrow) {
-		this.shouldThrow = shouldThrow;
+        this.shouldThrow = shouldThrow;
 	}
 
 	@Override
@@ -20,7 +25,8 @@ class SimpleTask extends Task<String> {
 		for (int i = 1; i <= total; i++) {
 			try {
 				Thread.sleep(20);
-			} catch (InterruptedException e) {
+            } catch (Exception e) {
+                LOGGER.error("", e);
 				return "Cancelled at " + System.currentTimeMillis();
 			}
 			if (shouldThrow.get()) {

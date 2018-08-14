@@ -7,8 +7,12 @@ package fxproexercises.ch06;
 
 import java.util.Arrays;
 import java.util.Random;
+
+import org.slf4j.Logger;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import simplebuilder.HasLogging;
 
 /**
  *
@@ -20,27 +24,28 @@ public final class FXCollectionsMethodsExamples {
 	}
 
     public static void main(String[] args) {
+        Logger log = HasLogging.log();
         ObservableList<String> strings = FXCollections.observableArrayList();
         strings.addListener(new MyListenerMethodsExamples());
-        System.out.println("Calling addAll(\"Zero\", \"One\", \"Two\", \"Three\"): ");
+        log.info("Calling addAll(\"Zero\", \"One\", \"Two\", \"Three\"): ");
         strings.addAll("Zero", "One", "Two", "Three");
-        System.out.println("Calling copy: ");
+        log.info("Calling copy: ");
         FXCollections.copy(strings, Arrays.asList("Four", "Five"));
-        System.out.println("Calling replaceAll: ");
+        log.info("Calling replaceAll: ");
         FXCollections.replaceAll(strings, "Two", "Two_1");
-        System.out.println("Calling reverse: ");
+        log.info("Calling reverse: ");
         FXCollections.reverse(strings);
-        System.out.println("Calling rotate(strings, 2: ");
+        log.info("Calling rotate(strings, 2: ");
         FXCollections.rotate(strings, 2);
-        System.out.println("Calling shuffle(strings): ");
+        log.info("Calling shuffle(strings): ");
         FXCollections.shuffle(strings);
-        System.out.println("Calling shuffle(strings, new Random(0L)): ");
+        log.info("Calling shuffle(strings, new Random(0L)): ");
         FXCollections.shuffle(strings, new Random(0L));
-        System.out.println("Calling sort(strings): ");
+        log.info("Calling sort(strings): ");
         FXCollections.sort(strings);
-        System.out.println("Calling sort(strings, c) with custom comparator: ");
+        log.info("Calling sort(strings, c) with custom comparator: ");
         FXCollections.sort(strings, (String lhs, String rhs) -> rhs.compareTo(lhs));
-        System.out.println("Calling fill(strings, \"Ten\"): ");
+        log.info("Calling fill(strings, \"Ten\"): ");
         FXCollections.fill(strings, "Ten");
     }
 

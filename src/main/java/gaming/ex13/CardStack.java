@@ -1,8 +1,10 @@
 package gaming.ex13;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,7 +44,7 @@ class CardStack extends Pane {
 
 	public List<SolitaireCard> removeLastCards(int n) {
 		if (cards.isEmpty()) {
-			return null;
+            return Collections.emptyList();
 		}
 		List<SolitaireCard> lastCards = new ArrayList<>();
 		for (int i = 0; i < n; i++) {

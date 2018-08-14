@@ -8,24 +8,29 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 public final class GraphAlgorithms {
+    private static final Logger LOGGER = HasLogging.log();
 	private GraphAlgorithms() {
 	}
 
 	public static void main(String[] args) {
-		List<Vertex> vertices = createGraph8();
+        List<Vertex> vertices = createGraph8();
 
-		vertices.forEach(System.out::println);
+        vertices.forEach(v -> LOGGER.info("{}", v));
 
 		Map<Vertex, Integer> num = new HashMap<>();
 		Map<Vertex, Integer> low = new HashMap<>();
 
 		vertices.get(0).assignNum(num, 0);
 		vertices.get(0).assignLow(num, low);
-		System.out.println(num);
-		System.out.println(low);
-		System.out.println(Vertex.kruskal(vertices));
-		System.out.println(Vertex.prim(vertices));
+        LOGGER.info("{}", num);
+        LOGGER.info("{}", low);
+        LOGGER.info("{}", Vertex.kruskal(vertices));
+        LOGGER.info("{}", Vertex.prim(vertices));
 		Vertex.sortTopology(vertices);
 
 	}

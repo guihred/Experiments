@@ -93,13 +93,12 @@ public class DataframeStatisticAccumulator{
     }
 
     public DataframeStatisticAccumulator accept(Object o) {
-        if (format.isInstance(o)) {
-            if (format == Integer.class || format == Long.class || format == Double.class) {
-                acceptNumber((Number) o);
-            }
+        if (format.isInstance(o) && Number.class.isAssignableFrom(format)) {
+            acceptNumber((Number) o);
         }
         return this;
     }
+
 
     public int getCount() {
         return count;

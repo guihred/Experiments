@@ -33,26 +33,7 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 			if (!check.isEmpty()) {
 				history.add(createdMaze[r][c]);
 				final String direction = check.get(random.nextInt(check.size()));
-				if ("L".equals(direction)) {
-					createdMaze[r][c].setWest(true);
-					c = c - 1;
-					createdMaze[r][c].setEast(true);
-				}
-				if ("U".equals(direction)) {
-					createdMaze[r][c].setNorth(true);
-					r = r - 1;
-					createdMaze[r][c].setSouth(true);
-				}
-				if ("R".equals(direction)) {
-					createdMaze[r][c].setEast(true);
-					c = c + 1;
-					createdMaze[r][c].setWest(true);
-				}
-				if ("D".equals(direction)) {
-					createdMaze[r][c].setSouth(true);
-					r = r + 1;
-					createdMaze[r][c].setNorth(true);
-				}
+                setSidesByDirection(direction);
 			} else {
 				boolean backIn = getBackIn(history);
 				if (backIn) {
@@ -62,6 +43,29 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 		}
         setSides();
         timeline.stop();
+    }
+
+    private void setSidesByDirection(final String direction) {
+        if ("L".equals(direction)) {
+        	createdMaze[r][c].setWest(true);
+        	c = c - 1;
+        	createdMaze[r][c].setEast(true);
+        }
+        if ("U".equals(direction)) {
+        	createdMaze[r][c].setNorth(true);
+        	r = r - 1;
+        	createdMaze[r][c].setSouth(true);
+        }
+        if ("R".equals(direction)) {
+        	createdMaze[r][c].setEast(true);
+        	c = c + 1;
+        	createdMaze[r][c].setWest(true);
+        }
+        if ("D".equals(direction)) {
+        	createdMaze[r][c].setSouth(true);
+        	r = r + 1;
+        	createdMaze[r][c].setNorth(true);
+        }
     }
 
     private void setSides() {

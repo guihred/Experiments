@@ -37,6 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +96,7 @@ public final class Chapter6 {
 		}
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
-		System.out.println(reference.get());
+        LOGGER.info("{}", reference.get());
 	}
 
 	/**
@@ -108,7 +109,7 @@ public final class Chapter6 {
 	public static void ex10() {
 		String url = "http://www.google.com";
 		CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(Chapter6::getLinks)
-				.thenAccept(l -> l.forEach(System.out::println));
+                .thenAccept(l -> l.forEach(LOGGER::info));
 		ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
 
 	}
@@ -136,7 +137,7 @@ public final class Chapter6 {
 		}
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
-		System.out.println(b.sum() + " time " + Duration.between(now, Instant.now()));
+        LOGGER.info("{} time {}", b.sum(), Duration.between(now, Instant.now()));
 
 		now = Instant.now();
 		AtomicLong a = new AtomicLong();
@@ -151,7 +152,7 @@ public final class Chapter6 {
 		}
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
-		System.out.println(a.get() + " time " + Duration.between(now, Instant.now()));
+        LOGGER.info("{} time {}", a.get(), Duration.between(now, Instant.now()));
 
 	}
 
@@ -184,7 +185,7 @@ public final class Chapter6 {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
 		concurrentHashMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.forEach(u -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
+                .forEach(u -> LOGGER.info("{}", "word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
 
@@ -210,7 +211,7 @@ public final class Chapter6 {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
 		concurrentHashMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.forEach(u -> System.out.println("word=" + u.getKey() + " files=" + u.getValue()));
+                .forEach(u -> LOGGER.info("{}", "word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
 	/**
@@ -223,7 +224,7 @@ public final class Chapter6 {
 				Collectors.groupingBy(w -> w, Collectors.counting()));
 
 		Entry<String, Long> entries = new ConcurrentHashMap<>(collect).reduceEntries(4, (t, u) -> t.getValue() > u.getValue() ? t : u);
-		System.out.println(" The word \"" + entries.getKey() + "\" appeared " + entries.getValue() + " times");
+        LOGGER.info("{}", " The word \"" + entries.getKey() + "\" appeared " + entries.getValue() + " times");
 
 	}
 
@@ -243,15 +244,17 @@ public final class Chapter6 {
 			Instant now = Instant.now();
 			Arrays.sort(array);
 			long untilSort = now.until(Instant.now(), ChronoUnit.MILLIS);
-			System.out.println("sort size " + size + " " + untilSort + " ms");
+            LOGGER.info("sort size {} {} ms", size, untilSort);
 
 			int[] array2 = random.ints(size).toArray();
 			now = Instant.now();
 			Arrays.parallelSort(array2);
 			long untilParallel = now.until(Instant.now(), ChronoUnit.MILLIS);
-			System.out.println("parallelSort size " + size + " " + untilParallel + " ms");
+            String arg = "parallelSort size " + size + " " + untilParallel + " ms";
+            LOGGER.info("{}", arg);
 
-			System.out.println(untilParallel > untilSort ? "Sequential Sort won" : "Parallel Sort won");
+            Object arg2 = untilParallel > untilSort ? "Sequential Sort won" : "Parallel Sort won";
+            LOGGER.info("{}", arg2);
 
 		}
 
@@ -271,7 +274,7 @@ public final class Chapter6 {
 		Arrays.parallelSetAll(a, i -> new Matrix());
 		Arrays.parallelPrefix(a, (t, u) -> t.multiply(u));
 
-		System.out.println(a[a.length - 1].mat[0][0]);
+        LOGGER.info("{}", a[a.length - 1].mat[0][0]);
 	}
 
 	public static List<String> getLinks(String content) {
@@ -295,7 +298,7 @@ public final class Chapter6 {
 	public static void main(String[] args) {
 		try {
 			ex7();
-		} catch (IOException e) {
+        } catch (Exception e) {
 			LOGGER.error("", e);
 		}
 	}
@@ -315,7 +318,7 @@ public final class Chapter6 {
 			}
 			return content.toString();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+            throw new RuntimeException(e);
 		}
 	}
 

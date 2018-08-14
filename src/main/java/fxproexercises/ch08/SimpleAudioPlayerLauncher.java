@@ -7,6 +7,9 @@ package fxproexercises.ch08;
 
 import java.io.File;
 import java.net.URL;
+
+import org.slf4j.Logger;
+
 import javafx.application.Application;
 import javafx.collections.MapChangeListener;
 import javafx.geometry.Insets;
@@ -23,16 +26,14 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 
 public class SimpleAudioPlayerLauncher extends Application {
-	private Label album;
+    private static final String DEFAULT_IMAGE = "C:\\Users\\Note\\Pictures\\fb.jpg";
+    private Label album;
     private ImageView albumCover;
     private Label artist;
-	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAudioPlayerLauncher.class);
-    private Media media;
-    private MediaPlayer mediaPlayer;
+    private static final Logger LOGGER = HasLogging.log();
     private Label title;
     private Label year;
     private void createControls() {
@@ -46,7 +47,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         year.setId("year");
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.2);
-        final Image image = new Image(new File("C:\\Users\\Note\\Pictures\\fb.jpg").toURI().toString());
+        final Image image = new Image(new File(DEFAULT_IMAGE).toURI().toString());
         albumCover = new ImageView(image);
         albumCover.setFitWidth(240);
         albumCover.setPreserveRatio(true);
@@ -73,11 +74,11 @@ public class SimpleAudioPlayerLauncher extends Application {
     }
 
     public void createMedia()  {
-		media = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
-         mediaPlayer = new MediaPlayer(media);
+        Media media = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setOnError(() -> {
             final String errorMessage = media.getError().getMessage();
-            System.err.println("error:" + errorMessage);
+            LOGGER.error("error:{}", errorMessage);
         });
 		media.getMetadata().addListener((MapChangeListener<String, Object>) ch -> {
                 if (ch.wasAdded()) {
@@ -88,7 +89,7 @@ public class SimpleAudioPlayerLauncher extends Application {
     }
 
     private void handleMetadata(String key, Object value) {
-		System.out.println("Key=" + key + ",Value=" + value);
+        LOGGER.info("Key={},Value={}", key, value);
 		if ("album".equals(key)) {
             album.setText(value.toString());
 		} else if ("artist".equals(key)) {

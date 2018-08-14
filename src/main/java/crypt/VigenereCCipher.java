@@ -3,7 +3,9 @@ package crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VigenereCCipher {
+import simplebuilder.HasLogging;
+
+public class VigenereCCipher implements HasLogging {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VigenereCCipher.class);
 	private static final int NUMBER_OF_LETTERS = 26;
 	private static final String ENCODED = "MOMUD EKAPV TQEFM OEVHP AJMII CDCTI FGYAG JSPXY ALUYM NSMYH"
@@ -93,7 +95,7 @@ public class VigenereCCipher {
 
 		for (int j = 1; j < 30; j++) {
 			double fit = freqEveryNth(txt, len, j, key);
-			System.out.printf("%f, key length: %2d, %s", fit, j, key);
+            getLogger().trace("{}, key length: {}, {}", fit, j, key);
 			if (fit < bestFit) {
 				bestFit = fit;
 				LOGGER.info(" <--- best so far");

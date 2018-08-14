@@ -35,48 +35,53 @@ public class CreateMadMaze {
 
                     .findAny();
 
-            if (openA.isPresent()) {
-                check.add('A');
-            }
-            if (openB.isPresent()) {
-                check.add('B');
-            }
-            if (openC.isPresent()) {
-                check.add('C');
-            }
+            addIfPresent(check, openA, 'A');
+            addIfPresent(check, openB, 'B');
+            addIfPresent(check, openC, 'C');
 
             if (!check.isEmpty()) {
                 history.add(maze.get(r));
                 Character direction = check.get(random.nextInt(check.size()));
-                if ('A' == direction && openA.isPresent()) {
-                    MadTriangle madTriangle = openA.get();
-                    MadCell cellB = maze.get(r).getB().getCell();
-                    MadCell cellC = maze.get(r).getC().getCell();
-                    allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellB)
-                            || e.getSource().equals(cellB) && e.getTarget().equals(cellC));
-                    r = maze.indexOf(madTriangle);
-                }
-                if ('B' == direction && openB.isPresent()) {
-                    MadTriangle madTriangle = openB.get();
-                    MadCell cellA = maze.get(r).getA().getCell();
-                    MadCell cellC = maze.get(r).getC().getCell();
-                    allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellA)
-                            || e.getSource().equals(cellA) && e.getTarget().equals(cellC));
-                    r = maze.indexOf(madTriangle);
-                }
-                if ('C' == direction && openC.isPresent()) {
-                    MadTriangle madTriangle = openC.get();
-                    MadCell cellA = maze.get(r).getA().getCell();
-                    MadCell cellB = maze.get(r).getB().getCell();
-                    allEdges.removeIf(e -> e.getSource().equals(cellB) && e.getTarget().equals(cellA)
-                            || e.getSource().equals(cellA) && e.getTarget().equals(cellB));
-                    r = maze.indexOf(madTriangle);
-                }
+                removeEdgeOfTriangle(maze, allEdges, openC, openB, openA, direction);
             } else {
                 getBackIn(maze, history);
             }
         }
 
+    }
+
+    private void removeEdgeOfTriangle(List<MadTriangle> maze, List<MadEdge> allEdges, Optional<MadTriangle> openC,
+            Optional<MadTriangle> openB, Optional<MadTriangle> openA, Character direction) {
+        if ('A' == direction && openA.isPresent()) {
+            MadTriangle madTriangle = openA.get();
+            MadCell cellB = maze.get(r).getB().getCell();
+            MadCell cellC = maze.get(r).getC().getCell();
+            allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellB)
+                    || e.getSource().equals(cellB) && e.getTarget().equals(cellC));
+            r = maze.indexOf(madTriangle);
+        }
+        if ('B' == direction && openB.isPresent()) {
+            MadTriangle madTriangle = openB.get();
+            MadCell cellA = maze.get(r).getA().getCell();
+            MadCell cellC = maze.get(r).getC().getCell();
+            allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellA)
+                    || e.getSource().equals(cellA) && e.getTarget().equals(cellC));
+            r = maze.indexOf(madTriangle);
+        }
+        if ('C' == direction && openC.isPresent()) {
+            MadTriangle madTriangle = openC.get();
+            MadCell cellA = maze.get(r).getA().getCell();
+            MadCell cellB = maze.get(r).getB().getCell();
+            allEdges.removeIf(e -> e.getSource().equals(cellB) && e.getTarget().equals(cellA)
+                    || e.getSource().equals(cellA) && e.getTarget().equals(cellB));
+            r = maze.indexOf(madTriangle);
+        }
+    }
+
+    private void addIfPresent(final List<Character> check, Optional<MadTriangle> openA, char a) {
+        if (openA.isPresent()) {
+            check.add(a);
+        }
     }
 
     private boolean getBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {

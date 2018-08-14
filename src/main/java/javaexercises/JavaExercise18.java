@@ -1,5 +1,9 @@
 package javaexercises;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 /**
  * 18. The Tree Sort Problem In the program outlined below, class Node is has
  * three data fields. The middle one, val , holds a value if type int . The
@@ -10,7 +14,7 @@ package javaexercises;
  * methods in class Node .
  */
 public final class JavaExercise18 {
-
+    private static final Logger LOGGER = HasLogging.log();
 	private JavaExercise18() {
 	}
 
@@ -20,8 +24,8 @@ public final class JavaExercise18 {
 		tree.put(4);
 		tree.put(64);
 		tree.put(32);
-		System.out.printf("Tree		elements:		%s%n", tree);
-		System.out.printf("Element		sum:		%d%n", tree.sum());
+        LOGGER.info("Tree elements: {}", tree);
+        LOGGER.info("Element sum: {}", tree.sum());
 	}
 
 }

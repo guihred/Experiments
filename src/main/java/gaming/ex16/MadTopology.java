@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
+import com.aspose.imaging.internal.Exceptions.Exception;
+
 import gaming.ex16.MadTriangle.MadEdgeDistance;
 import javaexercises.DisjSets;
 import javafx.scene.canvas.GraphicsContext;
@@ -100,9 +102,10 @@ public class MadTopology {
                 }
                 MadLinha edge = findFirst.get().edge;
 
-                MadTriangle first = triangleSoup.stream().filter(t4 -> t4.isNeighbour(edge)).findFirst().orElse(null);
+                MadTriangle first = triangleSoup.stream().filter(t4 -> t4.isNeighbour(edge)).findFirst()
+                        .orElseThrow(() -> new Exception("There should be someone"));
                 MadTriangle second = triangleSoup.stream().filter(t5 -> t5.isNeighbour(edge) && t5 != first).findFirst()
-                        .orElse(null);
+                        .orElseThrow(() -> new Exception("There should be someone"));
 
                 MadPonto firstNoneEdgeVertex = first.getNoneEdgeVertex(edge);
                 MadPonto secondNoneEdgeVertex = second.getNoneEdgeVertex(edge);

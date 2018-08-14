@@ -21,8 +21,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import simplebuilder.HasLogging;
 
-public class FormValidation extends Application {
+public class FormValidation extends Application implements HasLogging {
 	private static final String MY_PASS = "senha";
 	private static final BooleanProperty GRANTED_ACCESS = new SimpleBooleanProperty(false);
 	private static final int MAX_ATTEMPTS = 3;
@@ -94,14 +95,14 @@ public class FormValidation extends Application {
 		// user hits the enter key
 		passwordField.setOnAction(actionEvent -> {
 			if (GRANTED_ACCESS.get()) {
-				System.out.printf("User %s is granted access.%n", user.getUserName());
-				System.out.printf("User %s entered the password: %s%n", user.getUserName(), user.getPassword());
+                getLogger().info("User {} is granted access.%n", user.getUserName());
+                getLogger().info("User {} entered the password: {}%n", user.getUserName(), user.getPassword());
 				Platform.exit();
 			} else {
 				deniedIcon.setVisible(true);
 			}
 			attempts.set(attempts.add(1).get());
-			System.out.println("Attempts: " + attempts.get());
+            getLogger().info("Attempts: {}", attempts.get());
 		});
 		// listener when the user types into the password field
 		passwordField.textProperty().addListener((obs, ov, nv) -> {
@@ -115,7 +116,7 @@ public class FormValidation extends Application {
 		attempts.addListener((obs, ov, nv) -> {
 			if (MAX_ATTEMPTS == nv.intValue()) {
 				// failed attemps
-				System.out.printf("User %s is denied access.%n", user.getUserName());
+                getLogger().info("User {} is denied access.%n", user.getUserName());
 				Platform.exit();
 			}
 		});

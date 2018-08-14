@@ -1,5 +1,6 @@
 package javaexercises;
 
+import simplebuilder.HasLogging;
 
 public final class JavaExercise19 {
 	private JavaExercise19() {
@@ -15,7 +16,7 @@ public final class JavaExercise19 {
 
 		Jack ink = new Jack();
 		fred(ink, 3000);
-		System.out.printf("Value is %d%n", K.k);
+        HasLogging.log().info("Value is {}", K.k);
 	}
 	private static void fred(JJ uk, int n) {
 		int a = 10 * n;

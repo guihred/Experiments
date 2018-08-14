@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -121,7 +122,7 @@ public class CSVUtils {
         try {
             File file = new File(csvFile);
             if (file.exists()) {
-                file.delete();
+                Files.delete(file.toPath());
             }
             file.createNewFile();
             return new BufferedWriter(new FileWriter(csvFile, true));

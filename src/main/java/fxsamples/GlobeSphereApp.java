@@ -36,9 +36,20 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.scene.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -48,6 +59,7 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 /**
@@ -98,116 +110,99 @@ import simplebuilder.ResourceFXUtils;
  * @playground earth.cullFace
  * @conditionalFeatures SCENE3D
  */
-public class GlobeSphereApp extends Application {
+public class GlobeSphereApp extends Application implements HasLogging {
 
-	private Sphere earth;
-	private PhongMaterial material;
-	private PointLight sunObj;
-	private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
-	private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
-	private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
-	private final BooleanProperty specularColorNull = new SimpleBooleanProperty(
-			true);
-	private final ObjectProperty<Color> specularColor = new SimpleObjectProperty<>(
-			Color.WHITE);
-	private final DoubleProperty specularColorOpacity = new SimpleDoubleProperty(
-			1);
-	private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
-	private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
-	private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(
-			true);
+    private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
+    private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
+    private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
+    private final BooleanProperty specularColorNull = new SimpleBooleanProperty(true);
+    private final ObjectProperty<Color> specularColor = new SimpleObjectProperty<>(Color.WHITE);
+    private final DoubleProperty specularColorOpacity = new SimpleDoubleProperty(1);
+    private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
+    private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
+    private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
 
-	public Parent createContent() throws Exception {
+    public Parent createContent() {
 
-		Image dImage = new Image(ResourceFXUtils.toExternalForm("earth-d.jpg"));
+        Image dImage = new Image(ResourceFXUtils.toExternalForm("earth-d.jpg"));
 
-		material = new PhongMaterial();
-		material.setDiffuseColor(Color.WHITE);
-		material.diffuseMapProperty().bind(
-				Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
+        PhongMaterial material = new PhongMaterial();
+        material.setDiffuseColor(Color.WHITE);
+        material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
 
-		material.specularColorProperty().bind(Bindings.createObjectBinding(() -> {
-				if (specularColorNull.get()) {
-					return null;
-				}
-				return specularColor.get().deriveColor(0, 1, 1, specularColorOpacity.get());
-		}, specularColor, specularColorNull, specularColorOpacity));
+        material.specularColorProperty().bind(Bindings.createObjectBinding(() -> {
+            if (specularColorNull.get()) {
+                return null;
+            }
+            return specularColor.get().deriveColor(0, 1, 1, specularColorOpacity.get());
+        }, specularColor, specularColorNull, specularColorOpacity));
 
-		Image sImage = new Image(ResourceFXUtils.toExternalForm("earth-s.jpg"));
-		material.specularMapProperty()
-				.bind(Bindings.when(specularMap).then(sImage)
-						.otherwise((Image) null));
-		Image nImage = new Image(ResourceFXUtils.toExternalForm("earth-n.jpg"));
-		material.bumpMapProperty().bind(
-				Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
-		Image siImage = new Image(ResourceFXUtils.toExternalForm("earth-l.jpg"));
-		material.selfIlluminationMapProperty().bind(
-				Bindings.when(selfIlluminationMap).then(siImage)
-						.otherwise((Image) null));
+        Image sImage = new Image(ResourceFXUtils.toExternalForm("earth-s.jpg"));
+        material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
+        Image nImage = new Image(ResourceFXUtils.toExternalForm("earth-n.jpg"));
+        material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
+        Image siImage = new Image(ResourceFXUtils.toExternalForm("earth-l.jpg"));
+        material.selfIlluminationMapProperty()
+                .bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
-		earth = new Sphere(5);
-		earth.setMaterial(material);
-		earth.setRotationAxis(Rotate.Y_AXIS);
+        Sphere earth = new Sphere(5);
+        earth.setMaterial(material);
+        earth.setRotationAxis(Rotate.Y_AXIS);
 
-		material.specularColorProperty().addListener(
-				(ChangeListener<Color>) (ov, t, t1) -> System.out
-						.println("specularColor = " + t1));
-		material.specularPowerProperty().addListener(
-				(ChangeListener<Number>) (ov, t, t1) -> System.out
-						.println("specularPower = " + t1));
+        material.specularColorProperty().addListener((ov, t, t1) -> getLogger().info("specularColor = {}", t1));
+        material.specularPowerProperty().addListener((ov, t, t1) -> getLogger().info("specularPower = {}", t1));
 
-		// Create and position camera
-		PerspectiveCamera camera = new PerspectiveCamera(true);
-		camera.getTransforms().addAll(new Rotate(-20, Rotate.Y_AXIS),
-				new Rotate(-20, Rotate.X_AXIS), new Translate(0, 0, -20));
+        // Create and position camera
+        PerspectiveCamera camera = new PerspectiveCamera(true);
+        camera.getTransforms().addAll(new Rotate(-20, Rotate.Y_AXIS), new Rotate(-20, Rotate.X_AXIS),
+                new Translate(0, 0, -20));
 
-		sunObj = new PointLight(Color.rgb(255, 243, 234));
-		sunObj.translateXProperty().bind(sunDistance.multiply(-0.82));
-		sunObj.translateYProperty().bind(sunDistance.multiply(-0.41));
-		sunObj.translateZProperty().bind(sunDistance.multiply(-0.41));
-		sunObj.lightOnProperty().bind(sunLight);
+        PointLight sunObj = new PointLight(Color.rgb(255, 243, 234));
+        sunObj.translateXProperty().bind(sunDistance.multiply(-0.82));
+        sunObj.translateYProperty().bind(sunDistance.multiply(-0.41));
+        sunObj.translateZProperty().bind(sunDistance.multiply(-0.41));
+        sunObj.lightOnProperty().bind(sunLight);
 
-		AmbientLight ambient = new AmbientLight(Color.rgb(1, 1, 1));
+        AmbientLight ambient = new AmbientLight(Color.rgb(1, 1, 1));
 
-		// Build the Scene Graph
-		Group root = new Group();
-		root.getChildren().add(camera);
-		root.getChildren().add(earth);
-		root.getChildren().add(sunObj);
-		root.getChildren().add(ambient);
+        // Build the Scene Graph
+        Group root = new Group();
+        root.getChildren().add(camera);
+        root.getChildren().add(earth);
+        root.getChildren().add(sunObj);
+        root.getChildren().add(ambient);
 
-		RotateTransition rt = new RotateTransition(Duration.seconds(24), earth);
-		rt.setByAngle(360);
-		rt.setInterpolator(Interpolator.LINEAR);
-		rt.setCycleCount(Animation.INDEFINITE);
-		rt.play();
+        RotateTransition rt = new RotateTransition(Duration.seconds(24), earth);
+        rt.setByAngle(360);
+        rt.setInterpolator(Interpolator.LINEAR);
+        rt.setCycleCount(Animation.INDEFINITE);
+        rt.play();
 
-		// Use a SubScene
-		SubScene subScene = new SubScene(root, 400, 300, true,
-				SceneAntialiasing.BALANCED);
-		subScene.setFill(Color.TRANSPARENT);
-		subScene.setCamera(camera);
+        // Use a SubScene
+        SubScene subScene = new SubScene(root, 400, 300, true, SceneAntialiasing.BALANCED);
+        subScene.setFill(Color.TRANSPARENT);
+        subScene.setCamera(camera);
 
-		return new Group(subScene);
-	}
+        return new Group(subScene);
+    }
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setResizable(false);
-		primaryStage.initStyle(StageStyle.TRANSPARENT);
-		Scene scene = new Scene(createContent());
-		scene.setFill(Color.TRANSPARENT);
-		primaryStage.setScene(scene);
-		primaryStage.show();
-	}
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setResizable(false);
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        Scene scene = new Scene(createContent());
+        scene.setFill(Color.TRANSPARENT);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 
-	/**
-	 * Java main for when running without JavaFX launcher
-	 * 
-	 * @param args
-	 *            command line arguments
-	 */
-	public static void main(String[] args) {
-		launch(args);
-	}
+    /**
+     * Java main for when running without JavaFX launcher
+     * 
+     * @param args
+     *            command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

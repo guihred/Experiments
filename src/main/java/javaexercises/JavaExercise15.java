@@ -2,6 +2,10 @@ package javaexercises;
 
 import java.math.BigInteger;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 /**
  * The following program makes use of a class BigNo which is used to represent
  * large integers and contains methods for operating on these integers.The
@@ -13,32 +17,31 @@ import java.math.BigInteger;
  */
 
 public final class JavaExercise15 {
+    private static final Logger LOGGER = HasLogging.log();
 
 	private JavaExercise15() {
 	}
 	public static void main(String[] args) {
-		BigNo ten = new BigNo(12345678);
-		System.out.println(ten);
+        BigNo ten = new BigNo(12345678);
+        LOGGER.info("{}", ten);
 		BigNo multiply = new BigNo(55).multiply(new BigNo(55));
-		System.out.println(multiply);
+        LOGGER.info("{}", multiply);
 		BigNo b = power(2, 2241);
-		System.out.printf("%s%n", b);
-		BigInteger pow = new BigInteger("2").pow(2241);
-		System.out.println(pow);
+        LOGGER.info("{}", b);
+        BigInteger pow = BigInteger.valueOf(2).pow(2241);
+        LOGGER.info("{}", pow);
 		
 	}
 
 	private static BigNo power(int m, int pow) {
-		BigNo p, s;
+        BigNo p;
 		int n = pow;
-
 		p = n % 2 != 0 ? new BigNo(m) : new BigNo(1);
-		s = new BigNo(m);
+        BigNo s = new BigNo(m);
 		while (n > 1) {
 			s = s.multiply(s);
 			n /= 2;
 			if (n % 2 != 0) {
-
 				p = p.multiply(s);
 			}
 		}

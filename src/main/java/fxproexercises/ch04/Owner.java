@@ -14,7 +14,14 @@ public enum Owner {
     BLACK;
 
     public Owner opposite() {
-        return this == WHITE ? BLACK : this == BLACK ? WHITE : NONE;
+        if (this == WHITE) {
+            return BLACK;
+        }
+        if (this == BLACK) {
+            return WHITE;
+        }
+        return NONE;
+
     }
 
     public Color getColor() {

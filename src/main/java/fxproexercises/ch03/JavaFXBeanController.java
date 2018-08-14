@@ -5,14 +5,16 @@
  */
 package fxproexercises.ch03;
 
+import org.slf4j.Logger;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.paint.Color;
+import simplebuilder.HasLogging;
 
 public class JavaFXBeanController {
 
@@ -33,7 +35,6 @@ public class JavaFXBeanController {
             model.setStr("Hello");
         }
     }
-
     public void switchColorPropertyOnModel() {
         final Color color = model.getColor();
         if (color.equals(Color.BLACK)) {
@@ -44,30 +45,32 @@ public class JavaFXBeanController {
     }
 
     public static void main(String[] args) {
+
+        Logger log = HasLogging.log();
+
         ObjectProperty<Lighting> root = new SimpleObjectProperty<>();
         final ObjectBinding<Color> selectBinding = Bindings.select(root, "light", "color");
-		selectBinding.addListener((ObservableValue<? extends Color> observableValue, Color oldValue,
-				Color newValue) -> System.out.println(
-						"\tThe color changed:\n\t\told color = " + oldValue + ",\n\t\tnew color = " + newValue));
-        System.out.println("firstLight is black.");
+        selectBinding.addListener((observableValue, oldValue, newValue) -> log
+                .info("The color changed:\n\t\told color = {},\n\t\tnew color = {}", oldValue, newValue));
+        log.info("firstLight is black.");
         Light firstLight = new Light.Point();
         firstLight.setColor(Color.BLACK);
-        System.out.println("secondLight is white.");
+        log.info("secondLight is white.");
         Light secondLight = new Light.Point();
         secondLight.setColor(Color.WHITE);
-        System.out.println("firstLighting has firstLight.");
+        log.info("firstLighting has firstLight.");
         Lighting firstLighting = new Lighting();
         firstLighting.setLight(firstLight);
-        System.out.println("secondLighting has secondLight.");
+        log.info("secondLighting has secondLight.");
         Lighting secondLighting = new Lighting();
         secondLighting.setLight(secondLight);
-        System.out.println("Making root observe firstLighting.");
+        log.info("Making root observe firstLighting.");
         root.set(firstLighting);
-        System.out.println("Making root observe secondLighting.");
+        log.info("Making root observe secondLighting.");
         root.set(secondLighting);
-        System.out.println("Changing secondLighting's light to firstLight");
+        log.info("Changing secondLighting's light to firstLight");
         secondLighting.setLight(firstLight);
-        System.out.println("Changing firstLight's color to red");
+        log.info("Changing firstLight's color to red");
         firstLight.setColor(Color.RED);
     }
 }

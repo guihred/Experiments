@@ -1,6 +1,8 @@
 package fxsamples;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -17,16 +19,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import simplebuilder.HasLogging;
 
 /**
  *
  * @author Mark Heckler, @MkHeck
  */
-public class RaspiCycle extends Application {
+public class RaspiCycle extends Application implements HasLogging {
 	private int speed = 1;
 	private static final double SCREEN_HEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
 	private static final double SCREEN_WIDTH = Screen.getPrimary().getVisualBounds().getWidth();
-	private Canvas canvas;
 	private GraphicsContext gc;
 	private Point2D startPos;
 	private Point2D curPos;
@@ -61,7 +63,7 @@ public class RaspiCycle extends Application {
 		// Define starting point for our Light Cycle (bottom center)
 		startPos = curPos = new Point2D(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 10);
 		// Prepare the Game Grid (screen)
-		canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
+        Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
 		gc = canvas.getGraphicsContext2D();
 		gc.setFill(Color.rgb(2, 2, 47));
 		gc.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -214,8 +216,7 @@ public class RaspiCycle extends Application {
 	}
 
 	private void checkCollision() {
-		System.out.println("Current Position: (" + curPos.getX() + ", "
-				+ curPos.getY() + ")");
+        getLogger().info("Current Position: ({}, {})", curPos.getX(), curPos.getY());
 		walls.stream()
 				.filter(line -> line.getStartX() <= curPos.getX()
 						&& curPos.getX() <= line.getEndX()
@@ -223,7 +224,7 @@ public class RaspiCycle extends Application {
 								.getEndY())
 				.forEach(line -> {
 					animTimer.stop();
-					System.out.println("COLLISION!");
+                    getLogger().info("COLLISION!");
 					Platform.exit();
 				});
 	}

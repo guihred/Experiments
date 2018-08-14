@@ -29,8 +29,9 @@ import org.slf4j.LoggerFactory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import simplebuilder.HasLogging;
 
-public final class ContestReader {
+public final class ContestReader implements HasLogging {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
     private static final Logger LOGGER = LoggerFactory.getLogger(ContestReader.class);
 	public static final String TEXT_PATTERN = "Texto \\d+\\s*";
@@ -116,10 +117,6 @@ public final class ContestReader {
 
     }
 
-    private void log(String s) {
-        // System.out.println(s);
-    }
-
     private COSDocument parseAndGet(RandomAccessFile source) throws IOException {
         PDFParser parser = new PDFParser(source);
         parser.parse();
@@ -152,7 +149,7 @@ public final class ContestReader {
             if (state == STATE_TEXT) {
                 addNewText();
             }
-            log(s);
+            logln(s);
             contestQuestion.setNumber(intValue(s));
             state = STATE_QUESTION;
             return;
@@ -186,7 +183,7 @@ public final class ContestReader {
         executeAppending(linhas, i, s);
 
         if (StringUtils.isNotBlank(s) && state != STATE_IGNORE) {
-            log(s);
+            logln(s);
         }
     }
 
@@ -242,8 +239,7 @@ public final class ContestReader {
                         qp.x = x;
                         qp.y = y;
                         qp.page = pageNumber;
-
-                        System.out.println(qp.line + " at (" + qp.x + "," + qp.y + ") page " + pageNumber);
+                        getLogger().trace(qp.line + " at (" + qp.x + "," + qp.y + ") page " + pageNumber);
                         questionPosition.add(qp);
 
                     }
@@ -281,10 +277,10 @@ public final class ContestReader {
                             });
                 }
 
-                // concat.forEach(action);
+                // concat.forEach(action)
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("", e);
         }
     }
 

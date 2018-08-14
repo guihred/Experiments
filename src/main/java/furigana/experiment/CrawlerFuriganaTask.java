@@ -41,7 +41,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             Thread thread = new Thread(() -> {
                 String line = lines.get(k);
                 StringBuilder currentLine = placeFurigana(line);
-                System.out.println(currentLine);
+                getLogger().info("{}", currentLine);
                 lines.set(k, currentLine.toString());
 
             });
@@ -138,7 +138,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                         currentWord += currentLetter;
                     }
                     if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
-                        System.out.println(currentWord + "=" + getReading(currentWord, currentLetter));
+                        getLogger().info("{}={}", currentWord, getReading(currentWord, currentLetter));
 
                         currentWord = "";
                     }
@@ -146,7 +146,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 }
 
             });
-            System.out.println();
+            getLogger().info("\n");
         } catch (Exception e) {
             HasLogging.log().error("", e);
         }

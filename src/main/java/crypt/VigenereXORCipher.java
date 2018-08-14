@@ -2,7 +2,6 @@
 package crypt;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,12 +36,8 @@ public class VigenereXORCipher {
 	private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 
     @SuppressWarnings({ "unchecked" })
-    private List<Integer>[] keysList = Stream.generate(() -> new ArrayList<>()).limit(keys.length).toArray(List[]::new);
-	private PrintStream out;
+    private List<Integer>[] keysList = Stream.generate(ArrayList::new).limit(keys.length).toArray(List[]::new);
 
-	public VigenereXORCipher() {
-		out = System.out;
-	}
 
 	public void bruteForce(int i, List<Integer> collect) {
 		List<Integer> d = keysList[i];
@@ -52,8 +47,10 @@ public class VigenereXORCipher {
 				bruteForce(i + 1, collect);
 				continue;
 			}
-			out.println(Arrays.toString(keys));
-			out.println(encrypt(keys, collect));
+            String keysString = Arrays.toString(keys);
+            LOGGER.info(keysString);
+            String encrypt = encrypt(keys, collect);
+            LOGGER.info(encrypt);
 		}
 	}
 
@@ -79,11 +76,12 @@ public class VigenereXORCipher {
 	public void findKey(long keySize) throws IOException {
 		String line = Files.readAllLines(ResourceFXUtils.toPath("ctext.txt")).get(0);
 		String[] split = line.split("(?<=\\G..)");
-		List<Integer> collect = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
+        List<Integer> numbers = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
 		for (int i = 0; i < keySize; i++) {
 			current = 0;
 			int j = i;
-			List<Integer> stream = collect.stream().sequential().filter(bite -> current++ % keySize == j).collect(Collectors.toList());
+            List<Integer> stream = numbers.stream().sequential().filter(bite -> current++ % keySize == j)
+                    .collect(Collectors.toList());
 			double maxSum = 0.0;
 			for (int b = 0; b < 256; b++) {
 				int n = b;
@@ -91,7 +89,7 @@ public class VigenereXORCipher {
 				if (map.parallelStream().allMatch(m -> m > 32 && m < 128 && !Character.isDigit(m))) {
 					int size = map.size();
 					Map<Integer, Long> collect2 = map.parallelStream().map(c -> Character.valueOf((char) c.intValue()))
-							.map(c -> Integer.valueOf(c.charValue()))
+                            .map(c -> (int) c)
 							.collect(Collectors.groupingBy(c -> c, Collectors.counting()));
 					double sum = 0.0;
 					for (int k = 0; k < 256; k++) {
@@ -100,7 +98,7 @@ public class VigenereXORCipher {
 					}
 					if (maxSum < sum) {
 						maxSum = sum;
-						out.println(i + "," + maxSum + "," + n);
+                        LOGGER.info("{},{},{}", i, maxSum, n);
 						keys[i] = n;
 						keysList[i].add(n);
 					}
@@ -108,12 +106,14 @@ public class VigenereXORCipher {
 				}
 			}
 		}
-		bruteForce(0, collect);
+        bruteForce(0, numbers);
 
-		out.println(Arrays.toString(keys));
-		out.println(encrypt(keys, collect));
+        String keysString = Arrays.toString(keys);
+        LOGGER.info(keysString);
+        String encrypt = encrypt(keys, numbers);
+        LOGGER.info(encrypt);
 		current = 0;
-		out.println(Stream.of(keysList).map(l -> "" + current++ + l + "\n").collect(Collectors.toList()));
+        LOGGER.info("{}", Stream.of(keysList).map(l -> "" + current++ + l + "\n").collect(Collectors.toList()));
 
 	}
 
@@ -136,11 +136,11 @@ public class VigenereXORCipher {
 				bestKeySize = keySize;
 			}
 
-			out.println("keysize=" + keySize + sorted);
+            LOGGER.info("keysize={}{}", keySize, sorted);
 
 		}
 
-		out.println(collect);
+        LOGGER.info("{}", collect);
 		return bestKeySize;
 	}
 	public static void main(String[] args) {

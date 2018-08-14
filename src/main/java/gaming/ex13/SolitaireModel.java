@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -175,7 +176,7 @@ public class SolitaireModel {
 		if (dragContext.cards.size() == 1) {
 			for (CardStack cardStack : getHoveredStacks(ascendingStacks)) {
 				if (isNotAscendingStackCompatible(cardStack, dragContext.cards.get(0))) {
-					break;
+                    continue;
 				}
 				cardStack.addCards(dragContext.cards);
 				if (isStackAllHidden(dragContext.stack)) {
@@ -188,7 +189,7 @@ public class SolitaireModel {
 
 		for (CardStack cardStack : getHoveredStacks(simpleStacks)) {
 			if (isCardNotCompatibleWithStack(cardStack, dragContext.cards.get(0))) {
-				break;
+                continue;
 			}
 			cardStack.addCardsVertically(dragContext.cards);
 			if (isStackAllHidden(dragContext.stack)) {

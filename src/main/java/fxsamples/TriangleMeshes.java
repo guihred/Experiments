@@ -2,7 +2,11 @@ package fxsamples;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.*;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
@@ -11,12 +15,15 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-public class TriangleMeshes extends Application {
+import simplebuilder.HasLogging;
+
+public class TriangleMeshes extends Application implements HasLogging {
 	private static final double SCENE_WIDTH = 600;
 	private static final double SCENE_HEIGHT = 600;
 	private double anchorAngleX;
 	private double anchorAngleY;
-	private double scenex, sceney;
+    private double scenex;
+    private double sceney;
 	private final DoubleProperty angleX = new SimpleDoubleProperty(0);
 	private final DoubleProperty angleY = new SimpleDoubleProperty(0);
 	@Override
@@ -105,7 +112,7 @@ public class TriangleMeshes extends Application {
 		// for now we'll just make an empty texCoordinate group
 		mesh.getTexCoords().addAll(0, 0);
 		int texCoordElementSize = mesh.getTexCoordElementSize();
-		System.out.println(texCoordElementSize);
+        getLogger().info("{}", texCoordElementSize);
 		// End Step 2c
 		// Step 2d: Add the faces "winding" the points generally counter clock
 		// wise

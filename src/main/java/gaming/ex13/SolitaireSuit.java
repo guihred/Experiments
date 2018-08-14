@@ -5,6 +5,7 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 import java.util.function.Supplier;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -20,10 +21,9 @@ public enum SolitaireSuit {
 	private final transient Supplier<Shape> creator;
 	private final transient Color color;
 
-	private SolitaireSuit(Color color, Supplier<Shape> creator) {
+    SolitaireSuit(Color color, Supplier<Shape> creator) {
 		this.color = color;
 		this.creator = creator;
-
 	}
 
 	public Color getColor() {

@@ -332,11 +332,11 @@ public class DataframeML implements HasLogging {
     }
 
     public void log(String s, Object... e) {
-        System.out.printf(s, e);
+        getLogger().info(s, e);
     }
 
     public void logln() {
-        System.out.println();
+        getLogger().info("");
     }
 
     public void readCSV(String csvFile) {
@@ -348,53 +348,74 @@ public class DataframeML implements HasLogging {
                 formatMap.put(column, String.class);
             }
 
-            while (scanner.hasNext()) {
-                size++;
-                List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
-                if (header.size() != line2.size()) {
-                    getLogger().error("ERROR FIELDS COUNT");
-                    if (line2.size() < header.size()) {
-                        line2.addAll(Stream.generate(() -> "").limit(header.size() - line2.size())
-                                .collect(Collectors.toList()));
-                    }
-                }
-
-                for (int i = 0; i < header.size(); i++) {
-                    String key = header.get(i);
-                    String field = getFromList(i, line2);
-                    Object tryNumber = tryNumber(key, field);
-                    if (filters.containsKey(key) && !filters.get(key).test(tryNumber)) {
-                        for (int j = 0; j < i; j++) {
-                            String key2 = header.get(j);
-                            List<Object> list = dataframe.get(key2);
-                            Object remove = list.remove(list.size() - 1);
-                            if (categories.containsKey(key2)) {
-                                categories.get(key2).remove(remove);
-                            }
-                        }
-                        size--;
-                        break;
-                    }
-                    if (categories.containsKey(key)) {
-                        Set<String> set = categories.get(key);
-                        String string = Objects.toString(tryNumber);
-                        if (!set.contains(string)) {
-                            set.add(string);
-                        }
-                    }
-                    if (mapping.containsKey(key)) {
-                        tryNumber = mapping.get(key).apply(tryNumber);
-                    }
-
-                    dataframe.get(key).add(tryNumber);
-                }
-                if (size > maxSize) {
-                    break;
-                }
-            }
+            readRows(scanner, header);
         } catch (FileNotFoundException e) {
             getLogger().error("FILE NOT FOUND", e);
         }
+    }
+
+    private void readRows(Scanner scanner, List<String> header) {
+        while (scanner.hasNext()) {
+            size++;
+            List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
+            if (header.size() != line2.size()) {
+                getLogger().error("ERROR FIELDS COUNT");
+                createNullRow(header, line2);
+            }
+
+            for (int i = 0; i < header.size(); i++) {
+                String key = header.get(i);
+                String field = getFromList(i, line2);
+                Object tryNumber = tryNumber(key, field);
+                if (filters.containsKey(key) && !filters.get(key).test(tryNumber)) {
+                    removeRow(header, i);
+                    break;
+                }
+                categorizeIfCategorizable(key, tryNumber);
+                tryNumber = mapIfMappable(key, tryNumber);
+
+                dataframe.get(key).add(tryNumber);
+            }
+            if (size > maxSize) {
+                break;
+            }
+        }
+    }
+
+    private void createNullRow(List<String> header, List<String> line2) {
+        if (line2.size() < header.size()) {
+            line2.addAll(Stream.generate(() -> "").limit(header.size() - line2.size())
+                    .collect(Collectors.toList()));
+        }
+    }
+
+    private void removeRow(List<String> header, int i) {
+        for (int j = 0; j < i; j++) {
+            String key2 = header.get(j);
+            List<Object> list = dataframe.get(key2);
+            Object remove = list.remove(list.size() - 1);
+            if (categories.containsKey(key2)) {
+                categories.get(key2).remove(remove);
+            }
+        }
+        size--;
+    }
+
+    private void categorizeIfCategorizable(String key, Object tryNumber) {
+        if (categories.containsKey(key)) {
+            Set<String> set = categories.get(key);
+            String string = Objects.toString(tryNumber);
+            if (!set.contains(string)) {
+                set.add(string);
+            }
+        }
+    }
+
+    private Object mapIfMappable(String key, Object tryNumber) {
+        if (mapping.containsKey(key)) {
+            tryNumber = mapping.get(key).apply(tryNumber);
+        }
+        return tryNumber;
     }
 
     public void setSize(int size) {

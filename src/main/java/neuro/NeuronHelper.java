@@ -1,28 +1,35 @@
 package neuro;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
+
+import org.slf4j.Logger;
+
+import com.google.common.collect.ImmutableMap;
+
+import simplebuilder.HasLogging;
 
 public class NeuronHelper {
 
 	public void trains() {
-		double i=0;
+        Logger log = HasLogging.log();
+
+        double i = 0;
 		
 		ImmutableMap<Double, Double> trainingData = ImmutableMap.<Double, Double> builder()
 				.put(++i, i*i)
 				.put(++i, i*i)
 				.put(++i, i*i)
 				.build();
-		System.out.println(trainingData);
+        log.info("{}", trainingData);
 		NeuralNetwork create = NetworkFactory.getInstance().create(3L, 3L, 3L);
 		create.trainNetwork(trainingData);
 		create.trainNetwork(trainingData);
 		create.trainNetwork(trainingData);
 
 		create.getLayers().forEach(l -> l.getNeurons().forEach(n -> n.getInputs().forEach(
-				(a, b) -> System.out.println(a.getId() + "->\t" + b * n.getBiasValue() + "->\t" + n.getId()))));
+                (a, b) -> log.info("{}->\t{}->\t{}", a.getId(), b * n.getBiasValue(), n.getId()))));
 
-		System.out.println(create.runNetwork(new ArrayList<>(trainingData.keySet())));
+        log.info("{}", create.runNetwork(new ArrayList<>(trainingData.keySet())));
 
 	}
 

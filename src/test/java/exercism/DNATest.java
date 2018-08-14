@@ -1,16 +1,16 @@
 package exercism;
 
-import com.google.common.collect.ImmutableMap;
-import exercism.DNA;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
 
 public class DNATest {
 
 	@Test
 	public void testEmptyDnaStringHasNoAdenosine() {
 		DNA dna = new DNA("");
-		Assert.assertEquals(dna.count('A'), 0);
+        Assert.assertEquals(0, dna.count('A'));
 	}
 
 
@@ -26,7 +26,7 @@ public class DNATest {
 	@Test
 	public void testRepetitiveCytidineGetsCounted() {
 		DNA dna = new DNA("CCCCC");
-		Assert.assertEquals(dna.count('C'), 5);
+        Assert.assertEquals(5, dna.count('C'));
 	}
 
 
@@ -42,7 +42,7 @@ public class DNATest {
 	@Test
 	public void testCountsOnlyThymidine() {
 		DNA dna = new DNA("GGGGGTAACCCGG");
-		Assert.assertEquals(dna.count('T'), 1);
+        Assert.assertEquals(1, dna.count('T'));
 	}
 
 
@@ -50,7 +50,7 @@ public class DNATest {
 	public void testCountsANucleotideOnlyOnce() {
 		DNA dna = new DNA("CGATTGGG");
 		dna.count('T');
-		Assert.assertEquals(dna.count('T'), 2);
+        Assert.assertEquals(2, dna.count('T'));
 	}
 
 

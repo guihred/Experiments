@@ -108,10 +108,8 @@ public final class CommonsFX {
             } else {
                 scaleValue += delta;
             }
-            if (onlyClose) {
-                if (scaleValue < 1) {
-                    scaleValue = s;
-                }
+            if (onlyClose && scaleValue < 1) {
+                scaleValue = s;
             }
 
             if (scaleValue <= 0.1) {

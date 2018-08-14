@@ -1,6 +1,7 @@
 package crypt;
 
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +30,10 @@ public class VigenereCipher {
 	public static void main(String[] args) {
 		VigenereCipher vigenereCypher = new VigenereCipher();
 		String k = "spy";
-		LOGGER.info(vigenereCypher.encrypt(k, "seeyouatnoon"));
-		LOGGER.info(vigenereCypher.decrypt(k, vigenereCypher.encrypt(k, "seeyouatnoon")));
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(vigenereCypher.encrypt(k, "seeyouatnoon"));
+            LOGGER.info(vigenereCypher.decrypt(k, vigenereCypher.encrypt(k, "seeyouatnoon")));
+        }
 
 	}
 

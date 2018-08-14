@@ -1,4 +1,9 @@
 package fxsamples;
+
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -8,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.HasLogging;
 
 public class ChangingTextFonts extends Application {
     private static final String INTRO_TEXT = "JavaFX 8: Intro. by Example";
@@ -18,11 +24,12 @@ public class ChangingTextFonts extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Chapter 2 Changing Text Fonts");
-		System.out.println("Font families: ");
-		Font.getFamilies().stream().forEach(System.out::println);
-		System.out.println("Font names: ");
-		Font.getFontNames().stream().forEach(System.out::println);
+        Logger log = HasLogging.log();
+        primaryStage.setTitle("Chapter 2 Changing Text Fonts");
+        if (log.isInfoEnabled()) {
+            log.info("Font families: {}", Font.getFamilies().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
+            log.info("Font names: {}", Font.getFontNames().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
+        }
 		Group root = new Group();
 		Scene scene = new Scene(root, 580, 250, Color.WHITE);
 		// Serif with drop shadow

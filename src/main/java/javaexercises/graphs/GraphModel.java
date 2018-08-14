@@ -1,11 +1,25 @@
 package javaexercises.graphs;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.aspose.imaging.internal.Exceptions.Exception;
+
 import javaexercises.DisjSets;
 import javafx.scene.paint.Color;
+import simplebuilder.HasLogging;
 
 public class GraphModel {
 
@@ -270,8 +284,7 @@ public class GraphModel {
 		Map<Cell, Integer> distance = new HashMap<>();
 		Map<Cell, Boolean> known = createDistanceMap(s, distance);
 		while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
-			Cell v = distance.entrySet().stream().filter(e -> !known.get(e.getKey())).min(Comparator.comparing(Entry<Cell, Integer>::getValue))
-					.orElse(null).getKey();
+            Cell v = getMinDistanceCell(distance, known);
 			known.put(v, true);
 			for (Cell w : adjacents(v)) {
 				if (!known.get(w)) {
@@ -285,6 +298,12 @@ public class GraphModel {
 		}
 		return distance;
 	}
+
+    private Cell getMinDistanceCell(Map<Cell, Integer> distance, Map<Cell, Boolean> known) {
+        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
+                .min(Comparator.comparing(Entry<Cell, Integer>::getValue))
+                .orElseThrow(() -> new Exception("There should be someone")).getKey();
+    }
 
 	public Map<Cell, Integer> dijkstra(String s) {
 		return dijkstra(cellMap.get(s));
@@ -405,7 +424,9 @@ public class GraphModel {
 		}
 
 		while (!heap.isEmpty()) {
-			Entry<Cell, Integer> minVertex = heap.entrySet().stream().min(Comparator.comparing(Entry<Cell, Integer>::getValue)).get();
+            Entry<Cell, Integer> minVertex = heap.entrySet().stream()
+                    .min(Comparator.comparing(Entry<Cell, Integer>::getValue))
+                    .orElseThrow(() -> new Exception("There should be someone"));
 			heap.remove(minVertex.getKey());
 			List<Edge> entrySet = edges(minVertex.getKey());
 			for (Edge edge : entrySet) {
@@ -417,7 +438,7 @@ public class GraphModel {
 
 		}
 
-		List<Edge> mst = mstHolder.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
+        List<Edge> mst = mstHolder.entrySet().stream().map(Entry<Cell, Edge>::getValue).collect(Collectors.toList());
 		List<Edge> collect = allEdges.stream()
 				.filter(e -> mst.stream().anyMatch(ed -> ed.getSource() == e.getTarget() && ed.getTarget() == e.getSource()))
 				.collect(Collectors.toList());
@@ -481,7 +502,7 @@ public class GraphModel {
 		topNum.forEach((v, tn) -> v.addText(Integer.toString(tn)));
 
 		if (counter != allCells.size()) {
-			System.out.println("CYCLE FOUND");
+            HasLogging.log().info("CYCLE FOUND");
 		}
 	}
 

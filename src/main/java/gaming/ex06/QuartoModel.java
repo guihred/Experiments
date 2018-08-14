@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javafx.scene.shape.Circle;
 
 /**
@@ -31,21 +32,18 @@ public class QuartoModel {
         for (QuartoPiece piece : getPieces()) {
             int j = piece.getNumber() % 4;
             int k = piece.getNumber() / 4;
-            piece.setTranslateX(j == 0 ? -110 : j == 1 ? -90 : j == 2 ? 90 : 110);
-            piece.setTranslateZ(k == 0 ? -110 : k == 1 ? -90 : k == 2 ? 90 : 110);
+            piece.setTranslateX(QuartoLauncher.getTranslate(j));
+            piece.setTranslateZ(QuartoLauncher.getTranslate(k));
         }
 
     }
 
     boolean checkEnd() {
-
-
 		if (Stream.of(getMapQuarto()).filter(d -> Stream.of(d).noneMatch(Objects::isNull))
-				.map(d -> Stream.of(d).map(q -> q.getNumber()).collect(Collectors.toList()))
+                .map(d -> Stream.of(d).map(QuartoPiece::getNumber).collect(Collectors.toList()))
 				.anyMatch(this::somethingInCommon)) {
 			return true;
 		}
-
 
         for (int i = 0; i < 4; i++) {
             List<Integer> a = new ArrayList<>();
@@ -61,7 +59,7 @@ public class QuartoModel {
         }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null || getMapQuarto()[i + 1][j + 1] == null) {
+                if (neighborsNotNull(i, j)) {
 					continue;
                 }
                 List<Integer> a = new ArrayList<>();
@@ -76,6 +74,10 @@ public class QuartoModel {
             }
         }
         return false;
+    }
+
+    private boolean neighborsNotNull(int i, int j) {
+        return getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null || getMapQuarto()[i + 1][j + 1] == null;
     }
 
 	private boolean somethingInCommon(List<Integer> a) {

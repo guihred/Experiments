@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -24,8 +28,6 @@ import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PhotoViewer extends Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PhotoViewer.class);
@@ -125,7 +127,7 @@ public class PhotoViewer extends Application {
 	private void tryAddImage(File file) {
 		try {
 			addImage(file.toURI().toURL().toString());
-			System.out.println(imageFiles);
+            LOGGER.info("{}", imageFiles);
 		} catch (MalformedURLException ex) {
 			LOGGER.error("", ex);
 		}
@@ -152,7 +154,7 @@ public class PhotoViewer extends Application {
 		leftButton.getStyleClass().add("left-arrow");
 		// return to previous image
 		leftButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-			System.out.println("busy loading? " + loading.get());
+            LOGGER.info("busy loading? {}", loading.get());
 			// if no previous image or currently loading.
 				if (currentIndex == 0 || loading.get()) {
 					return;
@@ -169,7 +171,7 @@ public class PhotoViewer extends Application {
 		rightButton.getStyleClass().add("right-arrow");
 		// advance to next image
 		rightButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-			System.out.println("busy loading? " + loading.get());
+            LOGGER.info("busy loading? {}", loading.get());
 			// if no next image or currently loading.
 				if (currentIndex == imageFiles.size() - 1 || loading.get()) {
 					return;
@@ -276,7 +278,7 @@ public class PhotoViewer extends Application {
 				Image image = new Image(url, false);
 				Platform.runLater(() -> {
 					// on the JavaFX Application Thread....
-					System.out.println("done loading image " + url);
+                    LOGGER.info("done loading image {}", url);
 					currentImageView.setImage(image);
 					progressIndicator.setVisible(false);
 					loading.set(false);

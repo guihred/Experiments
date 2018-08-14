@@ -27,8 +27,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import simplebuilder.HasLogging;
 
-public class PacmanModel {
+public class PacmanModel implements HasLogging {
 
 	public static final int MAZE_SIZE = 5;
 	public static final double SQUARE_SIZE = 60;
@@ -84,7 +85,8 @@ public class PacmanModel {
 		pacman.setLayoutX(30);
 		for (int i = 0; i < ghosts.size(); i++) {
 			PacmanGhost ghost = ghosts.get(i);
-			ghost.setStartPosition(265 + i % 2 * SQUARE_SIZE, 265 + i / 2 * SQUARE_SIZE);
+            int location = i / 2;
+            ghost.setStartPosition(265 + i % 2 * SQUARE_SIZE, 265 + location * SQUARE_SIZE);
 			group.getChildren().add(ghost.circle);
 		}
 		scene.setOnKeyPressed(this::handleKeyPressed);
@@ -164,14 +166,8 @@ public class PacmanModel {
 				maze[i][j].dijkstra(maze);
 			}
 		}
-		MazeSquare.paths.forEach((from, map) -> {
-
-			map.forEach((to, by) -> {
-				System.out.println("from " + from + " to " + to + " by " + by);
-
-			});
-
-		});
+        MazeSquare.paths.forEach(
+                (from, map) -> map.forEach((to, by) -> getLogger().info("from {} to {} by {}", from, to, by)));
 
 		return maze;
 	}

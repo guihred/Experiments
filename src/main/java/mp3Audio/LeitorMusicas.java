@@ -47,9 +47,9 @@ public final class LeitorMusicas {
 		try {
 			String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
 			File file = new File(new File(path).getParentFile(), "Music");
-			ObservableList<Musica> musicas;
+            ObservableList<Musica>
 			musicas = getMusicas(file);
-			musicas.forEach(System.out::println);
+            musicas.forEach(s -> LOGGER.info("{}", s));
         } catch (Exception e) {
 			LOGGER.error("", e);
 		}
@@ -185,11 +185,12 @@ public final class LeitorMusicas {
 			}
 			ID3V2Tag id3v2Tag = mp3.getID3V2Tag();
 			ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
-			System.out.println("SingleFrames=" + Arrays.toString(singleFrames));
+            String singleFramesStr = Arrays.toString(singleFrames);
+            LOGGER.info("SingleFrames={}", singleFramesStr);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-		return null;
+        return new byte[0];
 	}
 
 	public static List<String> getImagens(String artista) {

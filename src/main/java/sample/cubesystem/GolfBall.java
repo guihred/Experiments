@@ -24,7 +24,6 @@ public class GolfBall extends Application {
 	public void start(Stage primaryStage) throws Exception {
 
 		List<Point3D> createSpheres = createSpheres(18, radius * 1.98F);
-		System.out.println(createSpheres);
 		final TriangleMesh triangleMesh = createMesh(DIVISION, radius, createSpheres);
 		MeshView a = new MeshView(triangleMesh);
 		a.setDrawMode(DrawMode.FILL);

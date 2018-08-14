@@ -55,11 +55,10 @@ public final class LeitorArquivos {
 
 	public static void main(String[] args) {
 		File file = ResourceFXUtils.toFile("sngpc.pdf");
-		System.out.println(file.exists());
 		try {
 			ObservableList<Medicamento> medicamentosSNGPCPDF;
 			medicamentosSNGPCPDF = getMedicamentosSNGPCPDF(file);
-			medicamentosSNGPCPDF.forEach(System.out::println);
+            medicamentosSNGPCPDF.forEach(s -> LOGGER.info("{}", s));
 		} catch (IOException e) {
 			LOGGER.error("", e);
 		}
@@ -115,7 +114,7 @@ public final class LeitorArquivos {
 				medicamento.setQuantidade(Integer.valueOf(split[split.length - 1]));
 			}
 		} catch (Exception e) {
-			System.out.println("ERRO LINHA =" + i);
+            LOGGER.info("ERRO LINHA ={}", i);
 			LOGGER.error("", e);
 		}
 		return medicamento;
@@ -201,8 +200,6 @@ public final class LeitorArquivos {
 			pdfStripper.setStartPage(1);
 			String parsedText = pdfStripper.getText(pdDoc);
 			String[] linhas = parsedText.split("\r\n");
-			IntUnaryOperator mapper = e -> e;
-			IntStream.of(1, 2, 3).map(mapper);
 			Map<String, IntUnaryOperator> hashMap = new HashMap<>();
 
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
@@ -315,7 +312,7 @@ public final class LeitorArquivos {
 			medicamento.setQuantidade((int) next.getCell(next.getLastCellNum() - 1).getNumericCellValue());
 			medicamentos.add(medicamento);
 		} catch (Exception e) {
-			System.out.println("ERRO LINHA=" + i);
+            LOGGER.info("ERRO LINHA={}", i);
 			LOGGER.error("", e);
 		}
 		return true;
@@ -343,7 +340,7 @@ public final class LeitorArquivos {
 			medicamento.setQuantidade((int) next.getCell(2).getNumericCellValue());
 			medicamentos.add(medicamento);
 		} catch (Exception e) {
-			System.out.println("ERRO LINHA=" + i);
+            LOGGER.info("ERRO LINHA={}", i);
 			LOGGER.error("", e);
 		}
 		return true;
@@ -375,7 +372,7 @@ public final class LeitorArquivos {
 	}
 
 	public static void exportarArquivo(ObservableList<Medicamento> medicamentosLoja,
-			List<Medicamento> medicamentosSNGPC, ObservableList<Medicamento> medicamentosAnvisa) throws IOException {
+            List<Medicamento> medicamentosSNGPC, ObservableList<Medicamento> medicamentosAnvisa) {
 
 		XSSFWorkbook wb = new XSSFWorkbook();
 		Sheet sheetLoja = wb.createSheet("Estoque Loja");

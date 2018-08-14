@@ -2,7 +2,6 @@ package others;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,14 +24,14 @@ public final class TermFrequency {
 
 	public static void main(String[] args) {
 
-		File file = new File(TermFrequency.class.getResource("").getFile());
+        File file = new File("src");
 		if (file.exists()) {
 			try {
-				Map<File, Map<String, Long>> mapa;
-				mapa = getMapaDocumentos(file);
-				mapa.forEach((k, v) -> v.forEach((p, f) -> LOGGER.error(k + "," + p + "," + f)));
-			} catch (IOException e) {
-				LOGGER.error("", e);
+                Map<File, Map<String, Long>> mapa = getMapaDocumentos(file);
+                mapa.forEach((File k, Map<String, Long> v) -> v
+                        .forEach((String p, Long f) -> LOGGER.error("{},{},{}", k.getName(), p, f)));
+            } catch (Exception e) {
+                LOGGER.debug("", e);
 			}
 
 		}
@@ -56,7 +56,7 @@ public final class TermFrequency {
 		return Math.log(mapaDocumentos.size() / idf);
 	}
 
-	public static Map<File, Map<String, Long>> getMapaDocumentos(File file) throws IOException {
+    public static Map<File, Map<String, Long>> getMapaDocumentos(File file) {
 		if (!file.isDirectory()) {
 			Map<String, Long> termFrequencyMap = getFrequencyMap(file);
 			mapaDocumentos.put(file, termFrequencyMap);
@@ -76,7 +76,7 @@ public final class TermFrequency {
 		return mapaDocumentos;
 	}
 
-	public static Map<String, Long> getFrequencyMap(File f) throws IOException {
+    public static Map<String, Long> getFrequencyMap(File f) {
 		Map<String, Long> map = new ConcurrentHashMap<>();
 		try (BufferedReader buff = Files.newBufferedReader(f.toPath());) {
 
@@ -99,9 +99,8 @@ public final class TermFrequency {
 					}, (m1, m2) -> m1);
 				}
 			} while (readLine != null);
-			buff.close();
 		} catch (Exception e) {
-			LOGGER.error("", e);
+            LOGGER.error("", e);
 		}
 		return map;
 	}

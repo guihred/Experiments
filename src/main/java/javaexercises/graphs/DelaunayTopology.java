@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import com.aspose.imaging.internal.Exceptions.Exception;
+
 public class DelaunayTopology extends BaseTopology {
 
 
@@ -95,10 +97,12 @@ public class DelaunayTopology extends BaseTopology {
 
 			if (triangle == null) {
 				Ponto point2 = pointSet.get(i);
-				Linha edge = triangleSoup.stream().map(t7 -> t7.findNearestEdge(point2)).sorted().findFirst().get().edge;
+				Linha edge = triangleSoup.stream().map(t7 -> t7.findNearestEdge(point2)).sorted().findFirst().orElseThrow(()->new Exception("There should be someone")).edge;
 
-				Triangle first = triangleSoup.stream().filter(t4 -> t4.isNeighbour(edge)).findFirst().orElse(null);
-				Triangle second = triangleSoup.stream().filter(t5 -> t5.isNeighbour(edge) && t5 != first).findFirst().orElse(null);
+                Triangle first = triangleSoup.stream().filter(t4 -> t4.isNeighbour(edge)).findFirst()
+                        .orElseThrow(() -> new Exception("There should be someone"));
+                Triangle second = triangleSoup.stream().filter(t5 -> t5.isNeighbour(edge) && t5 != first).findFirst()
+                        .orElseThrow(() -> new Exception("There should be someone"));
 
 				Ponto firstNoneEdgeVertex = first.getNoneEdgeVertex(edge);
 				Ponto secondNoneEdgeVertex = second.getNoneEdgeVertex(edge);

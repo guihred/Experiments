@@ -1,9 +1,10 @@
 package gaming.ex14;
 
-import gaming.ex07.MazeSquare;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
+
+import gaming.ex07.MazeSquare;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,14 +17,15 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import simplebuilder.HasLogging;
 
-public class PacmanGhost extends Group {
+public class PacmanGhost extends Group implements HasLogging {
 	public enum GhostColor {
 		RED(Color.RED), BLUE(Color.BLUE), ORANGE(Color.ORANGE), GREEN(Color.GREEN);
 
 		final transient Color color;
 
-		private GhostColor(Color color) {
+        GhostColor(Color color) {
 			this.color = color;
 		}
 
@@ -61,7 +63,7 @@ public class PacmanGhost extends Group {
 	private double startX;
 	private double startY;
 	private MazeSquare mazeSquare;
-	Circle circle = new Circle(2);
+    Circle circle = new Circle(2);
 	private GhostColor color;
 	public PacmanGhost(GhostColor color) {
 		this.color = color;
@@ -241,7 +243,7 @@ public class PacmanGhost extends Group {
 	}
 
 	private MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
-		if (MazeSquare.paths == null) {
+        if (MazeSquare.paths == null) {
 			return null;
 		}
 		if (hx < 0) {
@@ -257,13 +259,13 @@ public class PacmanGhost extends Group {
 			hyg = 0;
 		}
 
-		Map<MazeSquare, MazeSquare> map = MazeSquare.paths.get(maze[hxg][hyg]);
+        Map<MazeSquare, MazeSquare> map = MazeSquare.paths.get(maze[hxg][hyg]);
 		if (map == null) {
 			return null;
 		}
 
-		// System.out.println("f " + maze[hxg][hyg] + " t" + maze[hx][hy] + " b " +
-		// mazeSquare);
+        // getLogger().info("f " + maze[hxg][hyg] + " t" + maze[hx][hy] + " b " +
+        // mazeSquare)
 
 		return map.get(maze[hx][hy]);
 	}
@@ -326,7 +328,7 @@ public class PacmanGhost extends Group {
 
 	public void setDirection(GhostDirection direction) {
 		if (color == GhostColor.RED) {
-			System.out.println(direction);
+            getLogger().info("{} -> {}", color, direction);
 		}
 		adjustEyes(-1);
 		this.direction = direction;

@@ -5,6 +5,8 @@
  */
 package fxproexercises.ch03;
 
+import org.slf4j.Logger;
+
 /**
  *
  * @author Note
@@ -14,8 +16,11 @@ import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
+import simplebuilder.HasLogging;
 
 public final class SimplePropertyExample {
+    private static Logger log = HasLogging.log();
+
 
 	private static IntegerProperty intProperty;
 
@@ -23,64 +28,64 @@ public final class SimplePropertyExample {
 	}
 
     private static void addAndRemoveChangeListener() {
-        System.out.println();
-		final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> System.out
-				.println("The observableValue has changed: oldValue = " + oldValue + ", newValue = " + newValue);
+        log.info("\n");
+        final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> log
+                .info("The observableValue has changed: oldValue = {}, newValue = {}", oldValue, newValue);
         intProperty.addListener(changeListener);
-        System.out.println("Added change listener.");
-        System.out.println("Calling intProperty.set(5120).");
+        log.info("Added change listener.");
+        log.info("Calling intProperty.set(5120).");
         intProperty.set(5120);
         intProperty.removeListener(changeListener);
-        System.out.println("Removed change listener.");
-        System.out.println("Calling intProperty.set(6144).");
+        log.info("Removed change listener.");
+        log.info("Calling intProperty.set(6144).");
         intProperty.set(6144);
     }
 
     private static void addAndRemoveInvalidationListener() {
-        System.out.println();
+        log.info("\n");
         final InvalidationListener invalidationListener
-				= (Observable observable) -> System.out
-						.println("The observable has been invalidated: " + observable + ".");
+                = (Observable observable) -> log.info("The observable has been invalidated: {}.", observable);
         intProperty.addListener(invalidationListener);
-        System.out.println("Added invalidation listener.");
-        System.out.println("Calling intProperty.set(2048).");
+        log.info("Added invalidation listener.");
+        log.info("Calling intProperty.set(2048).");
         intProperty.set(2048);
-        System.out.println("Calling intProperty.setValue(3072).");
+        log.info("Calling intProperty.setValue(3072).");
         intProperty.setValue(Integer.valueOf(3072));
         intProperty.removeListener(invalidationListener);
-        System.out.println("Removed invalidation listener.");
-        System.out.println("Calling intProperty.set(4096).");
+        log.info("Removed invalidation listener.");
+        log.info("Calling intProperty.set(4096).");
         intProperty.set(4096);
     }
 
     private static void bindAndUnbindOnePropertyToAnother() {
-        System.out.println();
+        log.info("\n");
         IntegerProperty otherProperty = new SimpleIntegerProperty(0);
         logOtherProperty(otherProperty);
-        System.out.println("Binding otherProperty to intProperty.");
+        log.info("Binding otherProperty to intProperty.");
         otherProperty.bind(intProperty);
         logOtherProperty(otherProperty);
-        System.out.println("Calling intProperty.set(7168).");
+        log.info("Calling intProperty.set(7168).");
         intProperty.set(7168);
         logOtherProperty(otherProperty);
-        System.out.println("Unbinding otherProperty from intProperty.");
+        log.info("Unbinding otherProperty from intProperty.");
         otherProperty.unbind();
         logOtherProperty(otherProperty);
-        System.out.println("Calling intProperty.set(8192).");
+        log.info("Calling intProperty.set(8192).");
         intProperty.set(8192);
         logOtherProperty(otherProperty);
     }
 
     private static void logOtherProperty(IntegerProperty otherProperty) {
-        System.out.println("otherProperty.get() = " + otherProperty.get());
+        log.info("otherProperty.get() = {}", otherProperty.get());
     }
 
     private static void createProperty() {
-        System.out.println();
+        log.info("\n");
         intProperty = new SimpleIntegerProperty(1024);
-        System.out.println("intProperty = " + intProperty);
-        System.out.println("intProperty.get() = " + intProperty.get());
-        System.out.println("intProperty.getValue() = " + intProperty.getValue().intValue());
+        log.info("intProperty = {}", intProperty);
+        log.info("intProperty.get() = {}", intProperty.get());
+        int intValue = intProperty.getValue().intValue();
+        log.info("intProperty.getValue() = {}", intValue);
     }
 
     public static void main(String[] args) {

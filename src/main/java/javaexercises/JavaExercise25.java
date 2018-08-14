@@ -2,6 +2,8 @@ package javaexercises;
 
 import java.util.Locale;
 
+import simplebuilder.HasLogging;
+
 /**
  * 25. The Quadratic Equation Problem Write a program which solves quadratic
  * equations of the form: ax 2 + bx + c = 0; Data should be organised into lines
@@ -13,13 +15,18 @@ import java.util.Locale;
  * coefficient values and other awkward cases. The following test cases should
  * be used:
  */
-public final class JavaExercise25 {
+public final class JavaExercise25 implements HasLogging {
 
 	private JavaExercise25() {
 	}
 
 	public static void main(String[] args) {
-		Locale.setDefault(Locale.ENGLISH);
+        new JavaExercise25().solveQuadraticEquation();
+
+	}
+
+    private void solveQuadraticEquation() {
+        Locale.setDefault(Locale.ENGLISH);
 
 		double[] coefA = { 1, 0.1, 0, 0, 0, 0, 0, 0, 1, 0.1, 10e-34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10e34, 10e-34, 1, 1,
 				10e-10 };
@@ -34,11 +41,11 @@ public final class JavaExercise25 {
 			double b = coefB[i];
 			double c = coefC[i];
 			if (a == 0.0) {
-				System.out.printf("%.1fx + %.1f = 0 %n", b, c);
-				System.out.printf("x=%f%n", -c / b);
+                printf("%.1fx + %.1f = 0 %n", b, c);
+                printf("x=%f%n", -c / b);
 				continue;
 			}
-			System.out.printf("%fx^2 + %fx + %f = 0 %n", a, b, c);
+            printf("%fx^2 + %fx + %f = 0 %n", a, b, c);
 
 			double delta = b * b - 4 * a * c;
 
@@ -47,14 +54,13 @@ public final class JavaExercise25 {
 				double x1i = Math.sqrt(Math.abs(delta)) / 2 / a;
 				double x2 = -b / 2 / a;
 				double x2i = -Math.sqrt(Math.abs(delta)) / 2 / a;
-				System.out.printf("x1=%.1f%+.1fi, x2=%.1f%+.1fi%n", x1, x1i, x2, x2i);
+                printf("x1=%.1f%+.1fi, x2=%.1f%+.1fi%n", x1, x1i, x2, x2i);
 			} else {
 				double x1 = (-b + Math.sqrt(delta)) / 2 / a;
 				double x2 = (-b - Math.sqrt(delta)) / 2 / a;
-				System.out.printf("x1=%.1f, x2=%.1f%n", x1, x2);
+                printf("x1=%.1f, x2=%.1f%n", x1, x2);
 			}
 		}
-
-	}
+    }
 
 }

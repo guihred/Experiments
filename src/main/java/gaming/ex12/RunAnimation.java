@@ -11,7 +11,6 @@ class RunAnimation {
 	private int offsetY;
 	private int columns;
 	private int count;
-	private boolean debug;
 
 	public RunAnimation(ImageResource image, int index, int count) {
 		this.image = image;
@@ -31,9 +30,6 @@ class RunAnimation {
 		final int index = Math.min(floor, count - 1);
 		if (index != lastIndex) {
 			lastIndex = (lastIndex + 1) % count;
-			if (debug) {
-				System.out.println(index);
-			}
 		}
 
 	}

@@ -14,8 +14,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.BoundingBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Line;
+import simplebuilder.HasLogging;
 
-public class MazeSquare extends BorderPane {
+public class MazeSquare extends BorderPane implements HasLogging {
 	public static final int SQUARE_SIZE = 20;
 
 	private final BooleanProperty visited = new SimpleBooleanProperty(false);
@@ -24,7 +25,8 @@ public class MazeSquare extends BorderPane {
 	private final BooleanProperty north = new SimpleBooleanProperty(false);
 	private final BooleanProperty south = new SimpleBooleanProperty(false);
 
-	public final int i, j;
+    public final int i;
+    public final int j;
 
 	private List<BoundingBox> bounds;
 
@@ -110,7 +112,7 @@ public class MazeSquare extends BorderPane {
 		this.north.set(north);
 	}
 
-	public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
+    public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
 
 	public boolean isInBounds(double x, double y) {
 		if (bounds == null) {
@@ -159,13 +161,13 @@ public class MazeSquare extends BorderPane {
 	}
 
 	public static void setPath(MazeSquare from, MazeSquare to, MazeSquare by) {
-		if (paths == null) {
-			paths = new LinkedHashMap<>();
+        if (paths == null) {
+            paths = new LinkedHashMap<>();
+        }
+        if (!paths.containsKey(from)) {
+            paths.put(from, new LinkedHashMap<>());
 		}
-		if (!paths.containsKey(from)) {
-			paths.put(from, new LinkedHashMap<>());
-		}
-		paths.get(from).put(to, by);
+        paths.get(from).put(to, by);
 	}
 
 	List<MazeSquare> adjacents;
@@ -189,7 +191,7 @@ public class MazeSquare extends BorderPane {
 			if (el.south.get() && i + 1 < map.length) {
 				adjacents.add(map[i + 1][j]);
 			}
-			System.out.println(this + " ->" + adjacents);
+            getLogger().info("{} -> {}", this, adjacents);
 		}
 
 		return adjacents;

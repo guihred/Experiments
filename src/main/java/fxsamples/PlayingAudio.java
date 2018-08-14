@@ -2,6 +2,10 @@ package fxsamples;
 
 import java.net.MalformedURLException;
 import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -16,14 +20,16 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import simplebuilder.SimpleCircleBuilder;
 
 /**
@@ -143,7 +149,7 @@ public class PlayingAudio extends Application {
 			boolean success = false;
 			if (db.hasFiles()) {
 				success = true;
-				if (db.getFiles().size() > 0) {
+                if (!db.getFiles().isEmpty()) {
 					tryPlayMedia(db);
 				}
 			} else {
@@ -271,7 +277,7 @@ public class PlayingAudio extends Application {
 		Media media = new Media(url);
 		// display media's metadata
 		for (String s : media.getMetadata().keySet()) {
-			System.out.println(s);
+            LOGGER.info(s);
 		}
 		mediaPlayer = new MediaPlayer(media);
 		// as the media is playing move the slider for progress

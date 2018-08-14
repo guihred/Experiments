@@ -15,7 +15,7 @@ enum RubiksCubeFaces {
 	private final RubiksSetFaceFunction set;
 
 
-	private RubiksCubeFaces(RubiksGetFaceFunction get, RubiksSetFaceFunction set, Point3D axis) {
+    RubiksCubeFaces(RubiksGetFaceFunction get, RubiksSetFaceFunction set, Point3D axis) {
 		getFunc = get;
 		this.set = set;
 		this.axis = axis;

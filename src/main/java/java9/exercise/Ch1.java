@@ -12,6 +12,10 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+
+import simplebuilder.HasLogging;
+
 public class Ch1 {
 
 	/**
@@ -19,8 +23,10 @@ public class Ch1 {
 	 * values. Hint: Look up Math.nextUp in the Java API.
 	 */
 	public static void extremeDoubles() {
-		System.out.println(Double.MAX_VALUE);
-		System.out.println(Math.nextUp(0));
+        Logger log = HasLogging.log();
+
+        log.info("{}", Double.MAX_VALUE);
+        log.info("{}", Math.nextUp(0));
 
 	}
 
@@ -43,7 +49,8 @@ public class Ch1 {
 	public static String randomLetters() {
 
 		Random random = new Random();
-		return Long.toString(abs(random.nextLong()), 36);
+		long nextLong = random.nextLong();
+        return Long.toString(abs(nextLong), 36);
 	}
 
 
@@ -85,10 +92,10 @@ public class Ch1 {
 
 	public static void main(String[] args) {
 		extremeDoubles();
-		// System.out.println(factorial(1000));
-		// System.out.println(lotteryCombination());
-		// System.out.println(pascalTriangle(10));
-		// System.out.println(average(1,2,3,4,5,6,7,8));
+        // System.out.println(factorial(1000))
+        // System.out.println(lotteryCombination())
+        // System.out.println(pascalTriangle(10))
+        // System.out.println(average(1,2,3,4,5,6,7,8))
 	}
 
 }
