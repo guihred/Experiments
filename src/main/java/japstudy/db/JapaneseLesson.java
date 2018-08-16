@@ -18,6 +18,8 @@ public class JapaneseLesson implements Serializable {
 
 	private LocalTime start;
 	private LocalTime end;
+    @Column(length = 2000)
+    private String audio;
 
 	@EmbeddedId
 	private LessonPK pk = new LessonPK();
@@ -127,5 +129,13 @@ public class JapaneseLesson implements Serializable {
 	public void setEnd(LocalTime end) {
 		this.end = end;
 	}
+
+    public String getAudio() {
+        return audio;
+    }
+
+    public void setAudio(String audio) {
+        this.audio = audio;
+    }
 	
 }

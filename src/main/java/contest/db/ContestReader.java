@@ -47,28 +47,32 @@ public final class ContestReader implements HasLogging {
     private static final String SUBJECT_PATTERN = "Questões de \\d+ a \\d+\\s*";
     public static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
 
-	public static ContestReader INSTANCE;
+    private static ContestReader instance;
+
+    public static ContestReader getInstance() {
+        return instance;
+    }
 
     public static ObservableList<ContestQuestion> getContestQuestions(File file, Runnable... r) {
-        if (INSTANCE == null) {
-            INSTANCE = new ContestReader();
+        if (instance == null) {
+            instance = new ContestReader();
         }
         new Thread(() -> {
-            INSTANCE.readFile(file);
+            instance.readFile(file);
             Stream.of(r).forEach(Runnable::run);
         }).start();
-        return INSTANCE.listQuestions;
+        return instance.listQuestions;
     }
 
     public static ObservableList<ContestText> getContestTexts(@SuppressWarnings("unused") File file) {
-        if (INSTANCE == null) {
-            INSTANCE = new ContestReader();
+        if (instance == null) {
+            instance = new ContestReader();
         }
-        if (INSTANCE.texts.isEmpty()) {
+        if (instance.texts.isEmpty()) {
             // new Thread(() -> INSTANCE.readFile(file)).start();
         }
 
-        return INSTANCE.texts;
+        return instance.texts;
     }
     private ContestQuestionAnswer answer = new ContestQuestionAnswer();
 	Contest contest;
@@ -112,6 +116,7 @@ public final class ContestReader implements HasLogging {
         try {
             return Integer.valueOf(v.replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
+            LOGGER.trace("", e);
             return null;
         }
 

@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import japstudy.db.HibernateUtil;
 
 final class CrawlerCandidateTask extends CrawlerTask {
+    private static final int MAX_THREAD_COUNT = 5;
 
     private CidadeDAO cidadeDAO = new CidadeDAO();
     @Override
@@ -30,7 +31,7 @@ final class CrawlerCandidateTask extends CrawlerTask {
             ths.add(thread);
             thread.start();
             long count = ths.stream().filter(Thread::isAlive).count();
-            while (count > 5) {
+            while (count > MAX_THREAD_COUNT) {
                 count = ths.stream().filter(Thread::isAlive).count();
                 long i = ths.size() - count;
                 updateAll(i, total);
