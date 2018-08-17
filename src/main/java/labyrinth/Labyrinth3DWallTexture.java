@@ -4,8 +4,6 @@ import static labyrinth.LabyrinthWall.SIZE;
 import static simplebuilder.ResourceFXUtils.toExternalForm;
 import static simplebuilder.ResourceFXUtils.toFullPath;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,6 +34,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
@@ -151,10 +150,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 	}
 
 	private MeshView generateGhost(String arquivo, Color enemyColor) {
-		File file = new File(arquivo);
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
+        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
 		MeshView enemy = new MeshView(mesh);
 
 		PhongMaterial sample = new PhongMaterial(enemyColor);

@@ -31,7 +31,7 @@ import javafx.stage.Stage;
 public class Chart3dDemo extends Application {
 
     // size of graph
-    int size = 400;
+    private int size = 400;
 
     // variables for mouse interaction
     private double mousePosX, mousePosY;
@@ -192,7 +192,7 @@ public class Chart3dDemo extends Application {
      */
     public static class Axis extends Pane {
 
-        Rectangle wall;
+        private Rectangle wall;
 
         public Axis(double size) {
 
@@ -436,7 +436,9 @@ public class Chart3dDemo extends Application {
             return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
 
-        static final int p[] = new int[512], permutation[] = { 151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194,
+        private static final int[] p = new int[512];
+        private static final int[] permutation = { 151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96,
+                53, 194,
                 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0,
                 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125, 136,
                 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211,

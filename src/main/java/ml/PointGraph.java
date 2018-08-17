@@ -3,7 +3,6 @@ package ml;
 import java.util.DoubleSummaryStatistics;
 import java.util.Iterator;
 import java.util.List;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -83,7 +82,7 @@ public class PointGraph extends Canvas {
         }
     }
 
-    public void drawGraph() {
+    public final void drawGraph() {
         DoubleSummaryStatistics xStats = stats.get(xHeader.get());
         DoubleSummaryStatistics yStats = stats.get(yHeader.get());
         if (xStats == null || yStats == null) {

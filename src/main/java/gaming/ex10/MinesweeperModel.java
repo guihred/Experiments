@@ -5,10 +5,9 @@
  */
 package gaming.ex10;
 
+import gaming.ex10.MinesweeperSquare.State;
 import java.util.Random;
 import java.util.stream.Stream;
-
-import gaming.ex10.MinesweeperSquare.State;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.EventHandler;
@@ -81,7 +80,7 @@ public class MinesweeperModel {
 		        if (l == 0 && k == 0) {
 		            continue;
 		        }
-				if (i + k >= 0 && i + k < MAP_WIDTH && j + l >= 0 && j + l < MAP_HEIGHT
+                if (withinRange(i, k, MAP_WIDTH) && withinRange(l, j, MAP_HEIGHT)
                         && map[i + k][j + l].getMinesweeperImage() == MinesweeperImage.BOMB) {
 					num++;
 				}
@@ -89,6 +88,10 @@ public class MinesweeperModel {
 		}
 		return num;
 	}
+
+    private boolean withinRange(int i, int k, int mapWidth) {
+        return i + k >= 0 && i + k < mapWidth;
+    }
 
     final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
         EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(event, mem);
@@ -206,7 +209,7 @@ public class MinesweeperModel {
                 if (l == 0 && k == 0) {
                     continue;
                 }
-				if (i + k >= 0 && i + k < MAP_WIDTH && j + l >= 0 && j + l < MAP_HEIGHT) {
+                if (withinRange(i, k, MAP_WIDTH) && withinRange(j, l, MAP_HEIGHT)) {
 					if (map[i + k][j + l].getMinesweeperImage().equals(MinesweeperImage.BLANK)
 							&& map[i + k][j + l].getState().equals(MinesweeperSquare.State.HIDDEN)) {
 						showNeighbours(i + k, j + l);

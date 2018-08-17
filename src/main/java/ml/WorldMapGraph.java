@@ -10,9 +10,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -21,6 +18,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.CommonsFX;
 
 class WorldMapGraph extends Canvas {
@@ -80,7 +78,7 @@ class WorldMapGraph extends Canvas {
         drawGraph();
     }
 
-    public void drawGraph() {
+    public final void drawGraph() {
         gc.clearRect(0, 0, getWidth(), getHeight());
         Country[] values = Country.values();
         gc.setFill(Color.BLACK);

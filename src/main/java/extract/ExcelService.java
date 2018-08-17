@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -34,12 +33,11 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 
 public class ExcelService implements HasLogging {
 
-	public Logger logger = getLogger();
+    public static final Logger LOGGER = HasLogging.log();
 
 	public <T> void getExcel(BiFunction<Integer, Integer, List<T>> lista, Map<String, Function<T, Object>> mapa,
 			OutputStream response) {
@@ -78,14 +76,13 @@ public class ExcelService implements HasLogging {
 			File createTempFile = File.createTempFile("auditoria", ".xlsx");
 			OutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(createTempFile));
 			xssfWorkbook.write(fileOutputStream);
-			xssfWorkbook.close();
 
 			IOUtils.copy(new FileInputStream(createTempFile), response);
 
             Files.delete(createTempFile.toPath());
 
 		} catch (IOException e) {
-			logger.error("ERRO ", e);
+            LOGGER.error("ERRO ", e);
 		}
 	}
 
@@ -149,22 +146,22 @@ public class ExcelService implements HasLogging {
 			FileOutputStream fileOutputStream = new FileOutputStream(createTempFile);
 			workbook.write(fileOutputStream);
 
-			workbook.close();
 
 			IOUtils.copy(new FileInputStream(createTempFile), response);
 
             Files.delete(createTempFile.toPath());
 
 		} catch (IOException e) {
-			logger.error("ERRO ", e);
+            LOGGER.error("ERRO ", e);
 		}
 	}
 
 	public <T> Function<T, Object> tentarFuncao(Function<T, Object> campoFunction) {
-		return (t) -> {
+        return t -> {
 			try {
 				return campoFunction.apply(t);
 			} catch (Exception e) {
+                LOGGER.trace("", e);
 				return null;
 			}
 		};
@@ -207,7 +204,7 @@ public class ExcelService implements HasLogging {
 			workbookXLSX.write(response);
 
 		} catch (IOException e) {
-			logger.error("ERRO DE ENTRADA DE DADOS", e);
+            LOGGER.error("ERRO DE ENTRADA DE DADOS", e);
 		}
 	}
 
@@ -232,7 +229,7 @@ public class ExcelService implements HasLogging {
 			workbookXLSX.write(outStream);
 
 		} catch (IOException e) {
-			logger.error("ERRO DE ENTRADA DE DADOS", e);
+            LOGGER.error("ERRO DE ENTRADA DE DADOS", e);
 		}
 
 	}
@@ -247,6 +244,7 @@ public class ExcelService implements HasLogging {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private void alterString(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell cell) {
         String stringCellValue = cell.getStringCellValue();
         printDebug(stringCellValue);
@@ -280,6 +278,7 @@ public class ExcelService implements HasLogging {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private void alterNumeric(Map<Object, Object> map, XSSFSheet sheet, Cell cell) {
         double numericCellValue = cell.getNumericCellValue();
         printDebug(numericCellValue);

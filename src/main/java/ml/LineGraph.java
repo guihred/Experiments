@@ -7,7 +7,6 @@ import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -39,7 +38,7 @@ class LineGraph extends Canvas {
         this.histogram.putAll(histogram);
     }
 
-    public void drawGraph() {
+    public final void drawGraph() {
 
         gc.clearRect(0, 0, 550, 550);
         DoubleSummaryStatistics xStats = histogram.entrySet().stream().mapToDouble(Entry<Double, Long>::getKey)

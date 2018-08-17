@@ -3,7 +3,6 @@ package labyrinth;
 import static simplebuilder.ResourceFXUtils.toExternalForm;
 import static simplebuilder.ResourceFXUtils.toURL;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +35,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 
 public class Labyrinth3DMouseControl extends Application implements CommomLabyrinth {
 
@@ -150,9 +150,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	}
 
 	private MeshView generateGhost(URL arquivo, Color enemyColor) {
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(arquivo);
-		Mesh mesh = importer.getImport();
+        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
 		MeshView enemy = new MeshView(mesh);
 		PhongMaterial sample = new PhongMaterial(enemyColor);
 		sample.setSpecularColor(LIGHT_COLOR);

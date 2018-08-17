@@ -5,9 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -19,6 +16,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 class MultiLineGraph extends Canvas implements HasLogging {
@@ -124,8 +122,8 @@ class MultiLineGraph extends Canvas implements HasLogging {
 		});
 		drawAxis();
         Logger logger = getLogger();
-        if (logger.isInfoEnabled()) {
-            logger.info(dataframe.toString());
+        if (logger.isTraceEnabled()) {
+            logger.trace(dataframe.toString());
         }
 	}
 

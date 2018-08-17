@@ -68,36 +68,52 @@ public class MazeModel {
 		maze[x][y].setCenter(null);
 		final KeyCode code = event.getCode();
 		switch (code) {
-		case W:
-		case UP:
-			if (x > 0 && maze[x][y].isNorth()) {
-				x--;
-			}
-			break;
-		case S:
-		case DOWN:
-			if (x < MazeModel.MAZE_SIZE - 1 && maze[x][y].isSouth()) {
-				x++;
-			}
-			break;
-		case D:
-		case RIGHT:
-			if (y < MazeModel.MAZE_SIZE - 1 && maze[x][y].isEast()) {
-				y++;
-			}
-			break;
-		case A:
-		case LEFT:
-			if (y > 0 && maze[x][y].isWest()) {
-				y--;
-			}
-			break;
-		default:
-			break;
+            case W:
+            case UP:
+                goUp();
+                break;
+            case S:
+            case DOWN:
+                goDown();
+                break;
+            case D:
+            case RIGHT:
+                goRight();
+                break;
+            case A:
+            case LEFT:
+                goLeft();
+                break;
+            default:
+                break;
 
 		}
 		maze[x][y].setCenter(circle);
 	}
+
+    private void goLeft() {
+        if (y > 0 && maze[x][y].isWest()) {
+            y--;
+        }
+    }
+
+    private void goRight() {
+        if (y < MazeModel.MAZE_SIZE - 1 && maze[x][y].isEast()) {
+            y++;
+        }
+    }
+
+    private void goDown() {
+        if (x < MazeModel.MAZE_SIZE - 1 && maze[x][y].isSouth()) {
+            x++;
+        }
+    }
+
+    private void goUp() {
+        if (x > 0 && maze[x][y].isNorth()) {
+        	x--;
+        }
+    }
 	public static MazeModel create(GridPane gridPane, Scene scene) {
 		return new MazeModel(gridPane, scene);
 	}

@@ -15,10 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import simplebuilder.HasLogging;
 
 public final class TermFrequencyIndex {
@@ -61,45 +59,45 @@ public final class TermFrequencyIndex {
 	 */
 
 	/**
-	 * 
-	 * Tf, in its basic form, is just the frequency that we look up in
-	 * appropriate table. In this case, it's one.
-	 * 
-	 * Idf is a bit more involved:
-	 * 
-	 * idf("this", D) = log( N/f(t,D))
-	 * 
-	 * The numerator of the fraction is the number of documents, which is two.
-	 * The number of documents in which "this" appears is also two, giving
-	 * 
-	 * idf("this", D) = log (2/2) = 0
-	 * 
-	 * So tf-idf is zero for this term, and with the basic definition this is
-	 * true of any term that occurs in all documents.
-	 * 
-	 * A slightly more interesting example arises from the word "example", which
-	 * occurs three times but in only one document. For this document, tf�idf of
-	 * "example" is:
-	 * 
-	 * D = conjunto total de documento
-	 * 
-	 * d_i = um documento i
-	 * 
-	 * tf("example", d_i) = 3 idf("example", D) = log (2/1) ~= 0.3010
-	 * tfidf("example", d_i) = tf("example", d_i) x idf("example", D) = 3 x
-	 * 0.3010 = 0.9030
-	 * 
-	 * Modos de calcular tf(t,d)=
-	 * 
-	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
-	 * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
-	 * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
-	 * documents, e.g. raw frequency divided by the maximum raw frequency of any
-	 * term in the document:
-	 * 
-	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
-	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
-	 */
+     * 
+     * Tf, in its basic form, is just the frequency that we look up in
+     * appropriate table. In this case, it's one.
+     * 
+     * Idf is a bit more involved:
+     * 
+     * idf("this", D) = log( N/f(t,D))
+     * 
+     * The numerator of the fraction is the number of documents, which is two.
+     * The number of documents in which "this" appears is also two, giving
+     * 
+     * idf("this", D) = log (2/2) = 0
+     * 
+     * So tf-idf is zero for this term, and with the basic definition this is
+     * true of any term that occurs in all documents.
+     * 
+     * A slightly more interesting example arises from the word "example", which
+     * occurs three times but in only one document. For this document, tf-idf of
+     * "example" is:
+     * 
+     * D = conjunto total de documento
+     * 
+     * d_i = um documento i
+     * 
+     * tf("example", d_i) = 3 idf("example", D) = log (2/1) ~= 0.3010
+     * tfidf("example", d_i) = tf("example", d_i) x idf("example", D) = 3 x
+     * 0.3010 = 0.9030
+     * 
+     * Modos de calcular tf(t,d)=
+     * 
+     * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
+     * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
+     * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
+     * documents, e.g. raw frequency divided by the maximum raw frequency of any
+     * term in the document:
+     * 
+     * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
+     * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
+     */
 	private static final Map<File, Map<String, Long>> MAPA_DOCUMENTO = new HashMap<>();
 
 	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";

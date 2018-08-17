@@ -4,7 +4,6 @@ package ml;
 import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.DepthTest;
@@ -184,7 +183,7 @@ public class Chart3dGraph extends Application {
      */
     public static class Axis extends Pane {
 
-        Rectangle wall;
+        private Rectangle wall;
 
         public Axis(double size) {
 

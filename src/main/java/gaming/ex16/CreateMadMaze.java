@@ -11,9 +11,9 @@ public class CreateMadMaze {
         new CreateMadMaze().handle(maze, allEdges);
     }
 
-    int r = 0;
+    private int r = 0;
 
-    void handle(List<MadTriangle> maze, List<MadEdge> allEdges) {
+    private void handle(List<MadTriangle> maze, List<MadEdge> allEdges) {
         final Random random = new Random();
         final List<MadTriangle> history = new ArrayList<>();
         final List<Character> check = new ArrayList<>();

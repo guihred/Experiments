@@ -2,7 +2,6 @@ package fxsamples;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -216,7 +215,7 @@ public class RaspiCycle extends Application implements HasLogging {
 	}
 
 	private void checkCollision() {
-        getLogger().info("Current Position: ({}, {})", curPos.getX(), curPos.getY());
+        getLogger().trace("Current Position: ({}, {})", curPos.getX(), curPos.getY());
 		walls.stream()
 				.filter(line -> line.getStartX() <= curPos.getX()
 						&& curPos.getX() <= line.getEndX()

@@ -3,7 +3,6 @@ package ml;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
-
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.text.sentenceiterator.BasicLineIterator;
@@ -12,15 +11,13 @@ import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreproc
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import simplebuilder.HasLogging;
 
-public class Word2VecExample implements HasLogging {
+public class Word2VecExample {
 
     private static final String RAW_SENTENCES_TXT = "raw_sentences.txt";
     private static final String PATH_TO_SAVE_MODEL_TXT = "pathToSaveModel.zip";
-    static Logger log = LoggerFactory.getLogger(Word2VecExample.class);
+    private static final Logger LOG = HasLogging.log();
 
 
     public static void fit() throws FileNotFoundException {
@@ -33,7 +30,7 @@ public class Word2VecExample implements HasLogging {
         word2Vec.setTokenizerFactory(tokenizerFactory);
         word2Vec.setSentenceIterator(iterator);
 
-        log.info("Word2vec uptraining...");
+        LOG.info("Word2vec uptraining...");
 
         word2Vec.fit();
 
@@ -45,7 +42,7 @@ public class Word2VecExample implements HasLogging {
         }
 
         File filePath = Paths.get(RAW_SENTENCES_TXT).toFile().getAbsoluteFile();
-        log.info("Load & Vectorize Sentences....");
+        LOG.info("Load & Vectorize Sentences....");
         // Strip white space before and after for each line
         SentenceIterator iter = new BasicLineIterator(filePath);
         // Split on white spaces in the line to get words
@@ -58,7 +55,7 @@ public class Word2VecExample implements HasLogging {
          */
         t.setTokenPreProcessor(new CommonPreprocessor());
 
-        log.info("Building model....");
+        LOG.info("Building model....");
         Word2Vec vec = new Word2Vec.Builder()
                 .minWordFrequency(5)
                 .iterations(1)
@@ -69,13 +66,13 @@ public class Word2VecExample implements HasLogging {
                 .iterate(iter)
                 .tokenizerFactory(t)
                 .build();
-        log.info("Fitting Word2Vec model....");
+        LOG.info("Fitting Word2Vec model....");
         vec.fit();
 
-        log.info("Writing word vectors to text file....");
+        LOG.info("Writing word vectors to text file....");
         WordVectorSerializer.writeWord2VecModel(vec, PATH_TO_SAVE_MODEL_TXT);
         // Prints out the closest 10 words to "day". An example on what to do with these Word Vectors.
-        log.info("Closest Words:");
+        LOG.info("Closest Words:");
         return vec;
     }
 

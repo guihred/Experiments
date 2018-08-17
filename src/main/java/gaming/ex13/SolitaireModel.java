@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -225,10 +224,10 @@ public class SolitaireModel {
 	}
 
 	private boolean isCardNotCompatibleWithStack(CardStack cardStack, SolitaireCard solitaireCard) {
-		return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.KING || !cardStack
-				.getCards().isEmpty()
-				&& (solitaireCard.getSuit().getColor() == cardStack.getLastCards().getSuit().getColor() || solitaireCard
-						.getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1);
+        return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.KING || !cardStack
+                .getCards().isEmpty()
+                && (solitaireCard.getSuit().getColor() == cardStack.getLastCards().getSuit().getColor() || solitaireCard
+                        .getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1);
 	}
 
 	private boolean isStackAllHidden(CardStack stack) {

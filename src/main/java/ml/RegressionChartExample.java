@@ -31,13 +31,13 @@ public class RegressionChartExample extends Application {
         ObservableList<Series<Number, Number>> data = regressionModel.createSeries(x.list("total_rooms"),
                 x.list("total_rooms"));
         LineChart<Number, Number> lineChart = lineChart(data,
-                String.format("Speculations(%.1f*x + %.1f)", regressionModel.slope, regressionModel.initial));
+                String.format("Speculations(%.1f*x + %.1f)", regressionModel.getSlope(), regressionModel.getInitial()));
 
         ObservableList<Series<Number, Number>> error = regressionModel.getErrorSeries();
 		ObservableList<Series<Number, Number>> expected = regressionModel.getExpectedSeries();
         data.addAll(expected);
         LineChart<Number, Number> errorGraph = lineChart(error,
-                String.format("Error(%.1f*x + %.1f)", regressionModel.bestSlope, regressionModel.bestInitial));
+                String.format("Error(%.1f*x + %.1f)", regressionModel.getBestSlope(), regressionModel.getBestInitial()));
         FlowPane root = new FlowPane();
 
         root.getChildren().add(lineChart);

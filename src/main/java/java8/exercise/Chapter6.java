@@ -37,7 +37,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -261,13 +260,13 @@ public final class Chapter6 {
 	}
 
 	/**
-	 * You can use the parallelPrefix method to parallelize the computation of
-	 * Fibonacci numbers. We use the fact that the nth Fibonacci number is the
-	 * top left coefficient of Fn, where F = ( 1 1 1 0 ) . Make an array filled
-	 * with 2 � 2 matrices. Define a Matrix class with a multiplication method,
-	 * use parallelSetAll to make an array of matrices, and use parallelPrefix
-	 * to multiply them.
-	 */
+     * You can use the parallelPrefix method to parallelize the computation of
+     * Fibonacci numbers. We use the fact that the nth Fibonacci number is the
+     * top left coefficient of Fn, where F = ( 1 1 1 0 ) . Make an array filled
+     * with 2 x 2 matrices. Define a Matrix class with a multiplication method,
+     * use parallelSetAll to make an array of matrices, and use parallelPrefix
+     * to multiply them.
+     */
 	public static void ex9() {
 		Matrix[] a = new Matrix[8];
 

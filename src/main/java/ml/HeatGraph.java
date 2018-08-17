@@ -8,7 +8,6 @@ import java.util.IntSummaryStatistics;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -97,7 +96,7 @@ public class HeatGraph extends Canvas {
         this.title = title;
     }
 
-    public void drawGraph() {
+    public final void drawGraph() {
         DoubleSummaryStatistics xStats = stats.get(xHeader.get());
         DoubleSummaryStatistics yStats = stats.get(yHeader.get());
         if (xStats == null || yStats == null) {

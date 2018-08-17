@@ -1,14 +1,12 @@
 package japstudy;
 
+import japstudy.db.HibernateUtil;
+import japstudy.db.JapaneseLesson;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import japstudy.db.HibernateUtil;
-import japstudy.db.JapaneseLesson;
 import javafx.collections.ObservableList;
 import simplebuilder.ResourceFXUtils;
 
@@ -55,7 +53,7 @@ public enum JapaneseAudio {
         return lesson;
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessons();
         /*
           CREATE TABLE "android_metadata" ("locale" TEXT DEFAULT 'en_US'); 

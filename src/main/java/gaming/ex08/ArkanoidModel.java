@@ -21,7 +21,7 @@ public class ArkanoidModel {
 
 	private Circle circle = new Circle(190, 250, 5, Color.RED);
 	private Group group;
-	private int x = 1, y = 1;
+    private int x = 1, y = 2;
 
 	public ArkanoidModel(Group group, Scene scene) {
 		this.group = group;
@@ -61,26 +61,30 @@ public class ArkanoidModel {
 
 	private void gameLoop() {
 		circle.setCenterX(circle.getCenterX() + x);
-		Node orElse = group.getChildren().stream().filter(c -> c != circle && circle.intersects(c.getBoundsInLocal()))
+        Node touchingNode = group.getChildren().stream()
+                .filter(c -> c != circle && circle.intersects(c.getBoundsInLocal()))
 				.findAny().orElse(null);
-		if (orElse != null || circle.getCenterX() <= 5 || circle.getCenterX() > 390) {
+        if (touchingNode != null || circle.getCenterX() <= 5 || circle.getCenterX() > 390) {
 			x = -x;
 		}
-        if (orElse instanceof Rectangle && ((Rectangle) orElse).getFill() == Color.AQUA) {
-			group.getChildren().remove(orElse);
-		}
+        removeIfBlock(touchingNode);
 		circle.setCenterY(circle.getCenterY() + y);
-		Node orElse2 = group.getChildren().stream().filter(c -> c != circle && circle.intersects(c.getBoundsInLocal()))
+        Node touchingNode2 = group.getChildren().stream()
+                .filter(c -> c != circle && circle.intersects(c.getBoundsInLocal()))
 				.findAny().orElse(null);
-		if (orElse2 != null || circle.getCenterY() <= 5 || circle.getCenterY() > 570) {
+        if (touchingNode2 != null || circle.getCenterY() <= 5 || circle.getCenterY() > 570) {
 			y = -y;
 		}
-        if (orElse2 instanceof Rectangle && ((Rectangle) orElse2).getFill() == Color.AQUA) {
-			group.getChildren().remove(orElse2);
-		}
+        removeIfBlock(touchingNode2);
 		circle.setCenterX(circle.getCenterX() + x);
 		circle.setCenterY(circle.getCenterY() + y);
 	}
+
+    private void removeIfBlock(Node orElse) {
+        if (orElse instanceof Rectangle && ((Rectangle) orElse).getFill() == Color.AQUA) {
+			group.getChildren().remove(orElse);
+		}
+    }
 
 	public static ArkanoidModel create(Group group, Scene scene) {
 		return new ArkanoidModel(group, scene);

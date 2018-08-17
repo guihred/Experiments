@@ -15,10 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import simplebuilder.ResourceFXUtils;
 
 public class BrazilianWordRulesTest {
@@ -83,7 +81,6 @@ public class BrazilianWordRulesTest {
         List<String> a = Arrays.asList("inf", "ppa", "pp", "c", "f", "ip", "i", "pic", "p", "pmp", "pc", "pi", "fc");
         for (String s : a) {
 
-            System.out.println(s);
             getWords(ResourceFXUtils.toURI("pt_PT.dic"))
                     .filter(e -> e.contains("T=" + s))
                     .map(e -> e.split("\t")[0].replaceAll("/\\w+", ""))
@@ -91,7 +88,6 @@ public class BrazilianWordRulesTest {
                         System.out.print(e + " ");
                     });
 
-            System.out.println();
 
         }
 

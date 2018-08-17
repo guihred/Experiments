@@ -1,5 +1,6 @@
 package japstudy;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,11 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
-
-import com.google.common.collect.ImmutableMap;
-
 import simplebuilder.HasLogging;
 
 public class HiraganaMaker {
@@ -72,31 +69,8 @@ public class HiraganaMaker {
             .put("‘", "").put("’", "")
             .build();
     private static final String LESSON_REGEX = "INSERT INTO JAPANESE_LESSON\\(english,japanese,romaji,exercise,lesson\\) VALUES\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
-
     private static final String TXT_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\mobileApps\\AndroidTest\\app\\src\\main\\assets\\create_database2.sql";
-
-    static Logger LOG = HasLogging.log();
-    public static void main(String[] args) {
-
-        try (Stream<String> lines = Files.lines(new File(TXT_FILE).toPath(), StandardCharsets.UTF_8);) {
-            lines.forEach(t -> {
-                if (!t.matches(LESSON_REGEX)) {
-                    return;
-                }
-                String[] split = t.replaceAll(LESSON_REGEX, "$1@$2@$3@$4@$5").split("@");
-
-                String replaceAll = split[2].replaceAll("\\([^\n]*\\)", "");
-                String convertHiragana = convertHiragana(replaceAll);
-                LOG.info("{}={}={}", replaceAll, convertHiragana, split[1]);
-
-
-            });
-        } catch (Exception e) {
-            HasLogging.log(HiraganaMaker.class).error("ERROR", e);
-        }
-
-    }
-
+    private static final Logger LOG = HasLogging.log();
     private static final List<String> SPECIAL_LETTERS = Arrays.asList("n", "m", "h");
 
     public static String convertHiragana(String romaji) {
@@ -122,6 +96,26 @@ public class HiraganaMaker {
         }
 
         return result.toString();
+    }
+
+    public static void main(String[] args) {
+
+        try (Stream<String> lines = Files.lines(new File(TXT_FILE).toPath(), StandardCharsets.UTF_8);) {
+            lines.forEach(t -> {
+                if (!t.matches(LESSON_REGEX)) {
+                    return;
+                }
+                String[] split = t.replaceAll(LESSON_REGEX, "$1@$2@$3@$4@$5").split("@");
+
+                String replaceAll = split[2].replaceAll("\\([^\n]*\\)", "");
+                String convertHiragana = convertHiragana(replaceAll);
+                LOG.info("{}={}={}", replaceAll, convertHiragana, split[1]);
+
+            });
+        } catch (Exception e) {
+            HasLogging.log(HiraganaMaker.class).error("ERROR", e);
+        }
+
     }
 
 }

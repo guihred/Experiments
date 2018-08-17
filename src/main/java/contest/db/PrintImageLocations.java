@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.imageio.ImageIO;
-
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -24,7 +22,6 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
-
 import simplebuilder.HasLogging;
 
 /**
@@ -33,8 +30,8 @@ import simplebuilder.HasLogging;
  * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
-    int num = 0;
-    List<PDFImage> images = new ArrayList<>();
+    private int num = 0;
+    private List<PDFImage> images = new ArrayList<>();
     private int pageNumber;
 
     public PrintImageLocations() {
@@ -109,8 +106,8 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
 
 }
 class PDFImage{
-    File file;
-    float x;
-    float y;
-    int pageNumber;
+    protected File file;
+    protected float x;
+    protected float y;
+    protected int pageNumber;
 }

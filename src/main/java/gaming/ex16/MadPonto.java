@@ -3,8 +3,9 @@ package gaming.ex16;
 import java.util.Objects;
 
 public class MadPonto {
-    float x, y;
-    MadCell cell;
+    private float x;
+    private float y;
+    private MadCell cell;
 
     public MadPonto(float x, float y, MadCell c) {
         this.x = x;
@@ -12,29 +13,8 @@ public class MadPonto {
         cell = c;
     }
 
-    public float getX() {
-        return x;
-    }
 
-    public void setX(float x) {
-        this.x = x;
-    }
 
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public MadCell getCell() {
-        return cell;
-    }
-
-    public void setCell(MadCell cell) {
-        this.cell = cell;
-    }
 
     public MadPonto add(MadPonto vector) {
         return new MadPonto(x + vector.x, y + vector.y, cell);
@@ -74,5 +54,39 @@ public class MadPonto {
     @Override
     public String toString() {
         return "(" + x + "," + y + ")";
+    }
+
+
+
+    public float getX() {
+        return x;
+    }
+
+
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+
+
+
+    public MadCell getCell() {
+        return cell;
+    }
+
+
+
+
+    public void setCell(MadCell cell) {
+        this.cell = cell;
     }
 }

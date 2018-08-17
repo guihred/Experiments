@@ -5,7 +5,6 @@ import static simplebuilder.CommonsFX.newCheckBox;
 import static simplebuilder.CommonsFX.newTextField;
 
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -50,17 +49,20 @@ public class StageControlExample extends Application implements HasLogging {
 	@Override
 	public void start(Stage stage) {
 		StageStyle stageStyle = StageStyle.UTILITY;
-		List<String> unnamedParams = getParameters().getUnnamed();
-		if (!unnamedParams.isEmpty()) {
-			String stageStyleParam = unnamedParams.get(0);
-			if (StageStyle.TRANSPARENT.name().equalsIgnoreCase(stageStyleParam)) {
-				stageStyle = StageStyle.TRANSPARENT;
-			} else if (StageStyle.UNDECORATED.name().equalsIgnoreCase(stageStyleParam)) {
-				stageStyle = StageStyle.UNDECORATED;
-			} else if (StageStyle.UTILITY.name().equalsIgnoreCase(stageStyleParam)) {
-				stageStyle = StageStyle.UTILITY;
-			}
-		}
+		Parameters parameters = getParameters();
+        if (parameters != null) {
+            List<String> unnamedParams = parameters.getUnnamed();
+            if (!unnamedParams.isEmpty()) {
+                String stageStyleParam = unnamedParams.get(0);
+                if (StageStyle.TRANSPARENT.name().equalsIgnoreCase(stageStyleParam)) {
+                    stageStyle = StageStyle.TRANSPARENT;
+                } else if (StageStyle.UNDECORATED.name().equalsIgnoreCase(stageStyleParam)) {
+                    stageStyle = StageStyle.UNDECORATED;
+                } else if (StageStyle.UTILITY.name().equalsIgnoreCase(stageStyleParam)) {
+                    stageStyle = StageStyle.UTILITY;
+                }
+            }
+        }
 		final Stage stageRef = stage;
 		TextField titleTextField = newTextField("Stage Coach", 15);
 		final Rectangle skyBlueRect = new SimpleRectangleBuilder().x(0).y(0).width(250).height(350).arcHeight(50)

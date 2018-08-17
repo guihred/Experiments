@@ -7,9 +7,6 @@ package fxproexercises.ch08;
 
 import java.io.File;
 import java.net.URL;
-
-import org.slf4j.Logger;
-
 import javafx.application.Application;
 import javafx.collections.MapChangeListener;
 import javafx.geometry.Insets;
@@ -26,6 +23,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class SimpleAudioPlayerLauncher extends Application {
@@ -33,7 +31,7 @@ public class SimpleAudioPlayerLauncher extends Application {
     private Label album;
     private ImageView albumCover;
     private Label artist;
-    private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log(SimpleAudioPlayerLauncher.class);
     private Label title;
     private Label year;
     private void createControls() {

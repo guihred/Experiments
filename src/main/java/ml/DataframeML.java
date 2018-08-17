@@ -2,19 +2,8 @@ package ml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.Function;
@@ -24,13 +13,11 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
@@ -42,7 +29,6 @@ public class DataframeML implements HasLogging {
 
     public static void main(String[] args) {
 		DataframeML x = new DataframeML("POPULACAO.csv");
-		x.logln(x);
 		x.describe();
     }
 
@@ -339,7 +325,7 @@ public class DataframeML implements HasLogging {
         getLogger().info("");
     }
 
-    public void readCSV(String csvFile) {
+    public final void readCSV(String csvFile) {
         try (Scanner scanner = new Scanner(new File(csvFile));) {
             List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
                     .collect(Collectors.toList());

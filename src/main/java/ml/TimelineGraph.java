@@ -5,9 +5,6 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -19,6 +16,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import org.apache.commons.lang3.StringUtils;
 
 class TimelineGraph extends Canvas {
 	private DoubleProperty layout = new SimpleDoubleProperty(30);
@@ -70,7 +68,7 @@ class TimelineGraph extends Canvas {
         drawGraph();
 	}
 
-	public void drawGraph() {
+    public final void drawGraph() {
         gc.clearRect(0, 0, 550, 550);
 		if (dataframe == null) {
 			drawAxis();

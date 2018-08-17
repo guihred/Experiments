@@ -2,12 +2,6 @@ package fxsamples;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 import javafx.application.Application;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
@@ -25,14 +19,15 @@ import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import labyrinth.Labyrinth3DWallTexture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 public class JewelViewer extends Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JewelViewer.class);
 	private static final Color JEWEL_COLOR = Color.BURLYWOOD;
 	private static final Color LIGHT_COLOR = Color.rgb(125, 125, 125);
-	public static final String ORIGINAL_FILENAME = Labyrinth3DWallTexture.class.getClassLoader()
-			.getResource("original.stl").getFile();
+    public static final String ORIGINAL_FILENAME = ResourceFXUtils.toFullPath("original.stl");
 
 	private static final double MODEL_SCALE_FACTOR = 4;
 
@@ -174,9 +169,7 @@ public class JewelViewer extends Application {
 	}
 
 	private void loadMeshViews(File file) {
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
+        Mesh mesh = ResourceFXUtils.importStlMesh(file);
 		MeshView meshViews = new MeshView(mesh);
 		meshViews.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
 		meshViews.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
@@ -219,10 +212,7 @@ public class JewelViewer extends Application {
 	}
 
 	static MeshView loadMeshViews() {
-		File file = new File(ORIGINAL_FILENAME);
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
+        Mesh mesh = ResourceFXUtils.importStlMesh(ORIGINAL_FILENAME);
 		return new MeshView(mesh);
 	}
 

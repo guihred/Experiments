@@ -1,8 +1,6 @@
 
 package labyrinth;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -132,10 +130,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	}
 
 	private MeshView generateGhost(String arquivo, Color animalColor) {
-		File file = new File(arquivo);
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
+        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
 		MeshView animal = new MeshView(mesh);
 		PhongMaterial sample = new PhongMaterial(animalColor);
 		sample.setSpecularColor(lightColor);

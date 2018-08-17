@@ -1,12 +1,8 @@
 package labyrinth;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -61,9 +57,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 	}
 
 	private MeshView gerarFantasma(String arquivo, Color animalColor) {
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(new File(arquivo));
-		Mesh mesh = importer.getImport();
+        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
 		MeshView animal = new MeshView(mesh);
 		PhongMaterial sample = new PhongMaterial(animalColor);
 		sample.setSpecularColor(lightColor);
@@ -87,6 +81,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 
 		return animal;
 	}
+
 
 	@Override
 	public PerspectiveCamera getCamera() {

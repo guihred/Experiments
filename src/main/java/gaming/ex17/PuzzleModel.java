@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -18,7 +17,7 @@ public class PuzzleModel extends Group {
     public static final int PUZZLE_WIDTH = 8;
     public static final int PUZZLE_HEIGHT = 4;
 
-    PuzzlePiece[][] puzzle = initializePieces();
+    private PuzzlePiece[][] puzzle = initializePieces();
     private int width;
     private int height;
     private Point3D intersectedPoint;

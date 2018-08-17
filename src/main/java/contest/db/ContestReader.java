@@ -14,7 +14,8 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
@@ -25,15 +26,11 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import simplebuilder.HasLogging;
 
 public final class ContestReader implements HasLogging {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContestReader.class);
+    private static final Logger LOGGER = HasLogging.log();
 	public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
@@ -68,14 +65,14 @@ public final class ContestReader implements HasLogging {
         if (instance == null) {
             instance = new ContestReader();
         }
-        if (instance.texts.isEmpty()) {
+        if (instance.getTexts().isEmpty()) {
             // new Thread(() -> INSTANCE.readFile(file)).start();
         }
 
-        return instance.texts;
+        return instance.getTexts();
     }
     private ContestQuestionAnswer answer = new ContestQuestionAnswer();
-	Contest contest;
+    private Contest contest;
     private ContestQuestion contestQuestion = new ContestQuestion();
 	private ObservableList<ContestQuestion> listQuestions = FXCollections.observableArrayList();
 
@@ -87,13 +84,13 @@ public final class ContestReader implements HasLogging {
     private String subject;
     private ContestText text = new ContestText();
 
-	final ObservableList<ContestText> texts = FXCollections.observableArrayList();
+    private final ObservableList<ContestText> texts = FXCollections.observableArrayList();
 
-    int pageNumber;
+    private int pageNumber;
 
     private void addNewText() {
         text.setContest(contest);
-        texts.add(text);
+        getTexts().add(text);
         text = new ContestText(contest);
     }
 
@@ -154,7 +151,7 @@ public final class ContestReader implements HasLogging {
             if (state == STATE_TEXT) {
                 addNewText();
             }
-            logln(s);
+            LOGGER.trace(s);
             contestQuestion.setNumber(intValue(s));
             state = STATE_QUESTION;
             return;
@@ -188,7 +185,7 @@ public final class ContestReader implements HasLogging {
         executeAppending(linhas, i, s);
 
         if (StringUtils.isNotBlank(s) && state != STATE_IGNORE) {
-            logln(s);
+            LOGGER.trace(s);
         }
     }
 
@@ -264,7 +261,7 @@ public final class ContestReader implements HasLogging {
                 String parsedText = pdfStripper.getText(pdDoc);
                 String[] lines = parsedText.split("\r\n");
                 tryReadQuestionFromLines(lines);
-                List<HasImage> collect = Stream.concat(texts.stream(), listQuestions.stream())
+                List<HasImage> collect = Stream.concat(getTexts().stream(), listQuestions.stream())
                         .collect(Collectors.toList());
                 final int j = i;
                 for (PDFImage pdfImage : images) {
@@ -304,5 +301,14 @@ public final class ContestReader implements HasLogging {
         }
         return null;
     }
+
+    public Contest getContest() {
+        return contest;
+    }
+
+    public ObservableList<ContestText> getTexts() {
+        return texts;
+    }
+
 
 }

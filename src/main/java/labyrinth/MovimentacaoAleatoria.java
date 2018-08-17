@@ -1,7 +1,6 @@
 package labyrinth;
 
 import java.util.Random;
-
 import javafx.animation.AnimationTimer;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
@@ -65,10 +64,12 @@ class MovimentacaoAleatoria extends AnimationTimer {
 
     private boolean checkCollision(MeshView enemy) {
         return labyrinth3dWallTexture.checkColision(enemy.getBoundsInParent())
-        		|| enemy.getTranslateZ() < 0
-        		|| enemy.getTranslateZ() > Labyrinth3DWallTexture.mapa[0].length * LabyrinthWall.SIZE
-        		|| enemy.getTranslateX() < 0
-        		|| enemy.getTranslateX() > Labyrinth3DWallTexture.mapa.length * LabyrinthWall.SIZE;
+                || notWithinRange(enemy.getTranslateZ(), Labyrinth3DWallTexture.mapa[0].length * LabyrinthWall.SIZE)
+                || notWithinRange(enemy.getTranslateX(), Labyrinth3DWallTexture.mapa.length * LabyrinthWall.SIZE);
+    }
+
+    private boolean notWithinRange(double coord, double maxSize) {
+        return coord < 0 || coord > maxSize;
     }
 
 

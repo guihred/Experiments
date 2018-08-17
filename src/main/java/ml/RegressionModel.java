@@ -2,6 +2,7 @@ package ml;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -14,26 +15,14 @@ import javafx.scene.chart.XYChart.Series;
 class RegressionModel {
 
     private static final int MAX_SIZE = 20;
-    double slope;
-    double initial;
-
+    private double slope;
+    private double initial;
     private int c;
-
 	private List<Double> target;
 	private List<Double> features;
-
-    double bestSlope;
-    double bestInitial;
-	public ObservableList<Series<Number, Number>> getExpectedSeries() {
-        Series<Number, Number> series = new Series<>();
-        c = 0;
-        series.setName("Prediction");
-        List<Data<Number, Number>> collect = IntStream.range(0, MAX_SIZE)
-                .mapToObj(i -> toData(i, bestInitial + bestSlope * i)).collect(Collectors.toList());
-        series.setData(FXCollections.observableArrayList(collect));
-        // return FXCollections.observableArrayList(series); FIXME
-        return FXCollections.observableArrayList();
-    }
+    private double bestSlope;
+    private double bestInitial;
+	private double learningRate = 0.001;
     @SuppressWarnings("unchecked")
 	public ObservableList<Series<Number, Number>> createRandomSeries() {
         Series<Number, Number> series = new Series<>();
@@ -60,11 +49,15 @@ class RegressionModel {
         bestSlope = (random.nextDouble() - .5) * 10;
         bestInitial = (random.nextDouble() - .5) * 10;
 
-		features = features1.stream().map(Number.class::cast).filter(e -> e != null).map(e -> e.doubleValue())
-
+        features = features1.stream().map(Number.class::cast)
+                .filter(Objects::nonNull)
+                .map(Number::doubleValue)
                 .limit(MAX_SIZE)
 				.collect(Collectors.toList());
-		target = target1.stream().map(Number.class::cast).filter(e -> e != null).map(e -> e.doubleValue())
+		target = target1.stream()
+		        .map(Number.class::cast)
+		        .filter(Objects::nonNull)
+		        .map(Number::doubleValue)
                 .limit(MAX_SIZE)
 				.collect(Collectors.toList());
 		c = 0;
@@ -73,23 +66,16 @@ class RegressionModel {
         series.setName("Numbers");
         series.setData(observableArrayList);
 
-        target.stream().map(this::mapToData).forEach(e -> observableArrayList.add(e));
+        target.stream().map(this::mapToData).forEach(observableArrayList::add);
 		return FXCollections.observableArrayList(series);
 	}
-    private DoubleStream doubleStream() {
-        Random random = new Random();
-        slope = (random.nextDouble() - .5) * 10;
-        initial = (random.nextDouble() - .5) * 10;
-        c = 0;
-        return DoubleStream.generate(() -> random(random)).limit(MAX_SIZE);
+    public double getBestInitial() {
+        return bestInitial;
     }
 
-    private double random(Random random) {
-        double e = (random.nextDouble() - .5) * 5;
-        return initial + e + slope * c++;
+    public double getBestSlope() {
+        return bestSlope;
     }
-
-    double learningRate = 0.001;
 
     @SuppressWarnings("unchecked")
     public ObservableList<Series<Number, Number>> getErrorSeries() {
@@ -113,7 +99,7 @@ class RegressionModel {
             bestSlope -= adjust;
             c = 0;
 			target.stream().mapToDouble(e -> e).map(e -> -e + bestInitial + bestSlope * features.get(c++))
-					.map(e -> Math.abs(e)).sum();
+                    .map(Math::abs).sum();
         }
 		for (int i = 0; i < 5000; i++) {
 
@@ -131,10 +117,50 @@ class RegressionModel {
         return FXCollections.observableArrayList(series2, series);
     }
 
+    public ObservableList<Series<Number, Number>> getExpectedSeries() {
+        Series<Number, Number> series = new Series<>();
+        c = 0;
+        series.setName("Prediction");
+        List<Data<Number, Number>> collect = IntStream.range(0, MAX_SIZE)
+                .mapToObj(i -> toData(i, bestInitial + bestSlope * i)).collect(Collectors.toList());
+        series.setData(FXCollections.observableArrayList(collect));
+        // return FXCollections.observableArrayList(series); FIXME
+        return FXCollections.observableArrayList();
+    }
+
+    public double getInitial() {
+        return initial;
+    }
+
+    public double getSlope() {
+        return slope;
+    }
+    public void setBestInitial(double bestInitial) {
+        this.bestInitial = bestInitial;
+    }
+    public void setBestSlope(double bestSlope) {
+        this.bestSlope = bestSlope;
+    }
+    public void setInitial(double initial) {
+        this.initial = initial;
+    }
+    public void setSlope(double slope) {
+        this.slope = slope;
+    }
+    private DoubleStream doubleStream() {
+        Random random = new Random();
+        slope = (random.nextDouble() - .5) * 10;
+        initial = (random.nextDouble() - .5) * 10;
+        c = 0;
+        return DoubleStream.generate(() -> random(random)).limit(MAX_SIZE);
+    }
     private Data<Number, Number> mapToData(double e) {
 		return new Data<>(features.get(c++), e);
     }
-
+    private double random(Random random) {
+        double e = (random.nextDouble() - .5) * 5;
+        return initial + e + slope * c++;
+    }
     private Data<Number, Number> toData(double e1, double e2) {
         return new Data<>(e1, e2);
     }

@@ -50,11 +50,7 @@ public class SlidingPuzzleModel {
 	private void slideIfPossible(SlidingPuzzleSquare mem) {
 		for (int i = 0; i < MAP_SIZE; i++) {
 		    for (int j = 0; j < MAP_SIZE; j++) {
-				if (map[i][j] == mem && (
-						isNeighborEmpty(i, j, 0, -1) 
-						|| isNeighborEmpty(i, j, 0, 1)
-						|| isNeighborEmpty(i, j, 1, 0) 
-						|| isNeighborEmpty(i, j, -1, 0))) {
+                if (map[i][j] == mem && neighborEmpty(i, j)) {
 					swapEmptyNeighbor(i, j);
 					moves++;
 					if (verifyEnd()) {
@@ -78,6 +74,13 @@ public class SlidingPuzzleModel {
 		    }
 		}
 	}
+
+    private boolean neighborEmpty(int i, int j) {
+        return isNeighborEmpty(i, j, 0, -1) 
+        || isNeighborEmpty(i, j, 0, 1)
+        || isNeighborEmpty(i, j, 1, 0) 
+        || isNeighborEmpty(i, j, -1, 0);
+    }
 
 	boolean isNeighborEmpty(int i, int j, int h, int v) {
 		if (i + h >= 0 && i + h < MAP_SIZE && j + v >= 0 && j + v < MAP_SIZE) {

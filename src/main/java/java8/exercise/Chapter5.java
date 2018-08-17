@@ -13,9 +13,7 @@ import java.time.temporal.TemporalAdjuster;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Predicate;
-
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 
 public final class Chapter5 {
@@ -144,10 +142,10 @@ public final class Chapter5 {
 	}
 
 	/*
-	 * Obtain the offsets of today�s date in all supported time zones for the
-	 * current time instant, turning ZoneId.getAvailableIds into a stream and
-	 * using stream operations.
-	 */
+     * Obtain the offsets of today's date in all supported time zones for the
+     * current time instant, turning ZoneId.getAvailableIds into a stream and
+     * using stream operations.
+     */
 	public static void ex8() {
 		
 		Instant now = Instant.now();
@@ -159,9 +157,9 @@ public final class Chapter5 {
 	}
 
 	/*
-	 * Again using stream operations, find all time zones whose offsets aren�t
-	 * full hours.
-	 */
+     * Again using stream operations, find all time zones whose offsets aren't
+     * full hours.
+     */
 
 	public static void ex9() {
 

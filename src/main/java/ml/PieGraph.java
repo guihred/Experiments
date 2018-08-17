@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -38,7 +37,7 @@ public class PieGraph extends Canvas {
         drawGraph();
     }
 
-    public void drawGraph() {
+    public final void drawGraph() {
         long sum = histogram.values().stream().mapToLong(e -> e).sorted().sum();
         gc.clearRect(0, 0, 550, 550);
 

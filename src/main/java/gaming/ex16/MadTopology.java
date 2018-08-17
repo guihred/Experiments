@@ -1,22 +1,30 @@
 package gaming.ex16;
 
+import com.aspose.imaging.internal.Exceptions.Exception;
+import gaming.ex16.MadTriangle.MadEdgeDistance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
-
-import com.aspose.imaging.internal.Exceptions.Exception;
-
-import gaming.ex16.MadTriangle.MadEdgeDistance;
 import javaexercises.DisjSets;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class MadTopology {
-    List<MadCell> allCells = new ArrayList<>();
-    List<MadEdge> allEdges = new ArrayList<>();
+    private List<MadCell> allCells = new ArrayList<>();
+    private List<MadEdge> allEdges = new ArrayList<>();
 
+    public void drawShapes(GraphicsContext gc) {
+        gc.setStroke(Color.BLUE);
+        gc.setLineWidth(1);
+
+        for (MadEdge c : allEdges) {
+
+            gc.setStroke(c.isMain() ? Color.RED : Color.BLUE);
+            gc.strokeLine(c.getSource().getX(), c.getSource().getY(), c.getTarget().getX(), c.getTarget().getY());
+        }
+    }
     public List<MadTriangle> execute(float maxWidth, float maxHeight) {
 
         int sqrt = 10;
@@ -39,15 +47,38 @@ public class MadTopology {
         CreateMadMaze.createLabyrinth(triangulate, allEdges);
         return triangulate;
     }
-    public void drawShapes(GraphicsContext gc) {
-        gc.setStroke(Color.BLUE);
-        gc.setLineWidth(1);
 
-        for (MadEdge c : allEdges) {
-
-            gc.setStroke(c.isMain() ? Color.RED : Color.BLUE);
-            gc.strokeLine(c.getSource().x, c.getSource().y, c.getTarget().x, c.getTarget().y);
+    public int indexOf(int s) {
+        for (int i = 0; i < allCells.size(); i++) {
+            if (allCells.get(i).getId() == s) {
+                return i;
+            }
         }
+        return -1;
+    }
+
+    public List<MadEdge> kruskal() {
+        int numVertices = allCells.size();
+        DisjSets ds = new DisjSets(numVertices);
+        PriorityQueue<MadEdge> pq = new PriorityQueue<>(allEdges);
+        List<MadEdge> mst = new ArrayList<>();
+        while (mst.size() != numVertices - 1) {
+            MadEdge e1 = pq.poll();
+            int uset = ds.find(indexOf(e1.getSource().getId()));
+            int vset = ds.find(indexOf(e1.getTarget().getId()));
+            if (uset != vset) {
+                mst.add(e1);
+                ds.union(uset, vset);
+            }
+        }
+        List<MadEdge> collect = allEdges.stream().filter(
+                e -> mst.stream().anyMatch(ed -> ed.getSource() == e.getTarget() && ed.getTarget() == e.getSource()))
+                .collect(Collectors.toList());
+
+        mst.addAll(collect);
+        mst.forEach(e -> e.setMain(true));
+
+        return mst;
     }
 
     private List<MadPonto> getPointSet(List<MadCell> all) {
@@ -64,14 +95,14 @@ public class MadTopology {
 
             MadPonto noneEdgeVertex = neighbourMadTriangle.getNoneEdgeVertex(edge);
 
-            MadTriangle firstMadTriangle = new MadTriangle(noneEdgeVertex, edge.a, newVertex);
-            MadTriangle secondMadTriangle = new MadTriangle(noneEdgeVertex, edge.b, newVertex);
+            MadTriangle firstMadTriangle = new MadTriangle(noneEdgeVertex, edge.getA(), newVertex);
+            MadTriangle secondMadTriangle = new MadTriangle(noneEdgeVertex, edge.getB(), newVertex);
 
             triangleSoup1.add(firstMadTriangle);
             triangleSoup1.add(secondMadTriangle);
 
-            legalizeEdge(triangleSoup1, firstMadTriangle, new MadLinha(noneEdgeVertex, edge.a), newVertex);
-            legalizeEdge(triangleSoup1, secondMadTriangle, new MadLinha(noneEdgeVertex, edge.b), newVertex);
+            legalizeEdge(triangleSoup1, firstMadTriangle, new MadLinha(noneEdgeVertex, edge.getA()), newVertex);
+            legalizeEdge(triangleSoup1, secondMadTriangle, new MadLinha(noneEdgeVertex, edge.getB()), newVertex);
         }
     }
 
@@ -80,7 +111,7 @@ public class MadTopology {
         float maxOfAnyCoordinate = 0.0f;
         List<MadPonto> pointSet = getPointSet(all);
         for (MadPonto vector : pointSet) {
-            maxOfAnyCoordinate = Math.max(Math.max(vector.x, vector.y), maxOfAnyCoordinate);
+            maxOfAnyCoordinate = Math.max(Math.max(vector.getX(), vector.getY()), maxOfAnyCoordinate);
         }
 
         maxOfAnyCoordinate *= 16.0D;
@@ -113,20 +144,20 @@ public class MadTopology {
                 triangleSoup.remove(first);
                 triangleSoup.remove(second);
 
-                MadTriangle triangle1 = new MadTriangle(edge.a, firstNoneEdgeVertex, pointSet.get(i));
-                MadTriangle triangle2 = new MadTriangle(edge.b, firstNoneEdgeVertex, pointSet.get(i));
-                MadTriangle triangle3 = new MadTriangle(edge.a, secondNoneEdgeVertex, pointSet.get(i));
-                MadTriangle triangle4 = new MadTriangle(edge.b, secondNoneEdgeVertex, pointSet.get(i));
+                MadTriangle triangle1 = new MadTriangle(edge.getA(), firstNoneEdgeVertex, pointSet.get(i));
+                MadTriangle triangle2 = new MadTriangle(edge.getB(), firstNoneEdgeVertex, pointSet.get(i));
+                MadTriangle triangle3 = new MadTriangle(edge.getA(), secondNoneEdgeVertex, pointSet.get(i));
+                MadTriangle triangle4 = new MadTriangle(edge.getB(), secondNoneEdgeVertex, pointSet.get(i));
 
                 triangleSoup.add(triangle1);
                 triangleSoup.add(triangle2);
                 triangleSoup.add(triangle3);
                 triangleSoup.add(triangle4);
 
-                legalizeEdge(triangleSoup, triangle1, new MadLinha(edge.a, firstNoneEdgeVertex), pointSet.get(i));
-                legalizeEdge(triangleSoup, triangle2, new MadLinha(edge.b, firstNoneEdgeVertex), pointSet.get(i));
-                legalizeEdge(triangleSoup, triangle3, new MadLinha(edge.a, secondNoneEdgeVertex), pointSet.get(i));
-                legalizeEdge(triangleSoup, triangle4, new MadLinha(edge.b, secondNoneEdgeVertex), pointSet.get(i));
+                legalizeEdge(triangleSoup, triangle1, new MadLinha(edge.getA(), firstNoneEdgeVertex), pointSet.get(i));
+                legalizeEdge(triangleSoup, triangle2, new MadLinha(edge.getB(), firstNoneEdgeVertex), pointSet.get(i));
+                legalizeEdge(triangleSoup, triangle3, new MadLinha(edge.getA(), secondNoneEdgeVertex), pointSet.get(i));
+                legalizeEdge(triangleSoup, triangle4, new MadLinha(edge.getB(), secondNoneEdgeVertex), pointSet.get(i));
             } else {
                 MadPonto a = triangle.getA();
                 MadPonto b = triangle.getB();
@@ -162,38 +193,5 @@ public class MadTopology {
         }
 
         return triangleSoup;
-    }
-
-    public List<MadEdge> kruskal() {
-        int numVertices = allCells.size();
-        DisjSets ds = new DisjSets(numVertices);
-        PriorityQueue<MadEdge> pq = new PriorityQueue<>(allEdges);
-        List<MadEdge> mst = new ArrayList<>();
-        while (mst.size() != numVertices - 1) {
-            MadEdge e1 = pq.poll();
-            int uset = ds.find(indexOf(e1.getSource().getId()));
-            int vset = ds.find(indexOf(e1.getTarget().getId()));
-            if (uset != vset) {
-                mst.add(e1);
-                ds.union(uset, vset);
-            }
-        }
-        List<MadEdge> collect = allEdges.stream().filter(
-                e -> mst.stream().anyMatch(ed -> ed.getSource() == e.getTarget() && ed.getTarget() == e.getSource()))
-                .collect(Collectors.toList());
-
-        mst.addAll(collect);
-        mst.forEach(e -> e.setMain(true));
-
-        return mst;
-    }
-
-    public int indexOf(int s) {
-        for (int i = 0; i < allCells.size(); i++) {
-            if (allCells.get(i).getId() == s) {
-                return i;
-            }
-        }
-        return -1;
     }
 }

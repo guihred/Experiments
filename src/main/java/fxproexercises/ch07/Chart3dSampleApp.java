@@ -18,44 +18,42 @@ import javafx.stage.Stage;
 import simplebuilder.SimpleRotateBuilder;
 
 public class Chart3dSampleApp extends Application {
+    private static final double CAMERA_DISTANCE = 1450;
+    private static final double CONTROL_MULTIPLIER = 10.1;
+    private static final double SHIFT_MULTIPLIER = 0.1;
+    private static final double ALT_MULTIPLIER = 0.5;
 
-    final Group root = new Group();
-    final Group axisGroup = new Group();
-    final Xform world = new Xform();
-    final PerspectiveCamera camera = new PerspectiveCamera(true);
-    final Xform cameraXform = new Xform();
-    final Xform cameraXform2 = new Xform();
-    final Xform cameraXform3 = new Xform();
-    final double cameraDistance = 1450;
-    boolean timelinePlaying = false;
-    double ONE_FRAME = 1.0 / 24.0;
-    double DELTA_MULTIPLIER = 200.0;
-    double CONTROL_MULTIPLIER = 10.1;
-    double SHIFT_MULTIPLIER = 0.1;
-    double ALT_MULTIPLIER = 0.5;
-    double mousePosX;
-    double mousePosY;
-    double mouseOldX;
-    double mouseOldY;
-    double mouseDeltaX;
-    double mouseDeltaY;
+    private final Group root = new Group();
+    private final Group axisGroup = new Group();
+    private final Xform world = new Xform();
+    private final PerspectiveCamera camera = new PerspectiveCamera(true);
+    private final Xform cameraXform = new Xform();
+    private final Xform cameraXform2 = new Xform();
+    private final Xform cameraXform3 = new Xform();
+    private double mousePosX;
+    private double mousePosY;
+    private double mouseOldX;
+    private double mouseOldY;
+    private double mouseDeltaX;
+    private double mouseDeltaY;
 
-    private void buildScene() {
-        root.getChildren().add(world);
-    }
+    @Override
+    public void start(Stage primaryStage) {
+        buildScene();
+        buildCamera();
+        buildAxes();
+        buildChart();
 
-    private void buildCamera() {
-        root.getChildren().add(cameraXform);
-        cameraXform.getChildren().add(cameraXform2);
-        cameraXform2.getChildren().add(cameraXform3);
-        cameraXform3.getChildren().add(camera);
-        cameraXform3.setRotateZ(0);
+        Scene scene = new Scene(root, 1600, 900, true);
+        scene.setFill(Color.GREY);
+        handleKeyboard(scene);
+        handleMouse(scene);
 
-        camera.setNearClip(0.1);
-        camera.setFarClip(10000.0);
-        camera.setTranslateZ(-cameraDistance);
-        cameraXform.ry.setAngle(0);
-        cameraXform.rx.setAngle(0);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        scene.setCamera(camera);
+
     }
 
     private void buildAxes() {
@@ -86,6 +84,20 @@ public class Chart3dSampleApp extends Application {
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
         world.getChildren().addAll(axisGroup);
+    }
+
+    private void buildCamera() {
+        root.getChildren().add(cameraXform);
+        cameraXform.getChildren().add(cameraXform2);
+        cameraXform2.getChildren().add(cameraXform3);
+        cameraXform3.getChildren().add(camera);
+        cameraXform3.setRotateZ(0);
+
+        camera.setNearClip(0.1);
+        camera.setFarClip(10000.0);
+        camera.setTranslateZ(-CAMERA_DISTANCE);
+        cameraXform.ry.setAngle(0);
+        cameraXform.rx.setAngle(0);
     }
 
     private void buildChart() {
@@ -121,6 +133,38 @@ public class Chart3dSampleApp extends Application {
         pyramid.setTranslateY(-h);
 
         world.getChildren().addAll(pyramid);
+    }
+
+    private void buildScene() {
+        root.getChildren().add(world);
+    }
+
+    private void handleKeyboard(Scene scene) {
+        scene.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case Z:
+                    resetPosition(event);
+                    break;
+                case X:
+                    toggleVisible(event);
+                    break;
+
+                case UP:
+                    moveUp(event);
+                    break;
+                case DOWN:
+                    moveDown(event);
+                    break;
+                case RIGHT:
+                    moveRight(event);
+                    break;
+                case LEFT:
+                    moveLeft(event);
+                    break;
+			default:
+				break;
+            }
+        });
     }
 
     private void handleMouse(Scene scene) {
@@ -161,51 +205,19 @@ public class Chart3dSampleApp extends Application {
         });
     }
 
-    private void handleKeyboard(Scene scene) {
-        scene.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case Z:
-                    resetPosition(event);
-                    break;
-                case X:
-                    toggleVisible(event);
-                    break;
-
-                case UP:
-                    moveUp(event);
-                    break;
-                case DOWN:
-                    moveDown(event);
-                    break;
-                case RIGHT:
-                    moveRight(event);
-                    break;
-                case LEFT:
-                    moveLeft(event);
-                    break;
-			default:
-				break;
-            }
-        });
-    }
-
-    private void resetPosition(KeyEvent event) {
-        if (event.isShiftDown()) {
-            cameraXform.ry.setAngle(0.0);
-            cameraXform.rx.setAngle(0.0);
-            camera.setTranslateZ(-300.0);
-        }
-        cameraXform2.t.setX(0.0);
-        cameraXform2.t.setY(0.0);
-    }
-
-    private void toggleVisible(KeyEvent event) {
-        if (event.isControlDown()) {
-            if (axisGroup.isVisible()) {
-                axisGroup.setVisible(false);
-            } else {
-                axisGroup.setVisible(true);
-            }
+    private void moveDown(KeyEvent event) {
+        if (event.isControlDown() && event.isShiftDown()) {
+            cameraXform2.t.setY(cameraXform2.t.getY() + 10.0 * CONTROL_MULTIPLIER);
+        } else if (event.isAltDown() && event.isShiftDown()) {
+            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 10.0 * ALT_MULTIPLIER);
+        } else if (event.isControlDown()) {
+            cameraXform2.t.setY(cameraXform2.t.getY() + 1.0 * CONTROL_MULTIPLIER);
+        } else if (event.isAltDown()) {
+            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 2.0 * ALT_MULTIPLIER);
+        } else if (event.isShiftDown()) {
+            double z2 = camera.getTranslateZ();
+            double newZ2 = z2 - 5.0 * SHIFT_MULTIPLIER;
+            camera.setTranslateZ(newZ2);
         }
     }
 
@@ -233,22 +245,6 @@ public class Chart3dSampleApp extends Application {
         }
     }
 
-    private void moveDown(KeyEvent event) {
-        if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.t.setY(cameraXform2.t.getY() + 10.0 * CONTROL_MULTIPLIER);
-        } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 10.0 * ALT_MULTIPLIER);
-        } else if (event.isControlDown()) {
-            cameraXform2.t.setY(cameraXform2.t.getY() + 1.0 * CONTROL_MULTIPLIER);
-        } else if (event.isAltDown()) {
-            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 2.0 * ALT_MULTIPLIER);
-        } else if (event.isShiftDown()) {
-            double z2 = camera.getTranslateZ();
-            double newZ2 = z2 - 5.0 * SHIFT_MULTIPLIER;
-            camera.setTranslateZ(newZ2);
-        }
-    }
-
     private void moveUp(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
             cameraXform2.t.setY(cameraXform2.t.getY() - 10.0 * CONTROL_MULTIPLIER);
@@ -265,23 +261,24 @@ public class Chart3dSampleApp extends Application {
         }
     }
 
-    @Override
-    public void start(Stage primaryStage) {
-        buildScene();
-        buildCamera();
-        buildAxes();
-        buildChart();
+    private void resetPosition(KeyEvent event) {
+        if (event.isShiftDown()) {
+            cameraXform.ry.setAngle(0.0);
+            cameraXform.rx.setAngle(0.0);
+            camera.setTranslateZ(-300.0);
+        }
+        cameraXform2.t.setX(0.0);
+        cameraXform2.t.setY(0.0);
+    }
 
-        Scene scene = new Scene(root, 1600, 900, true);
-        scene.setFill(Color.GREY);
-        handleKeyboard(scene);
-        handleMouse(scene);
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
-        scene.setCamera(camera);
-
+    private void toggleVisible(KeyEvent event) {
+        if (event.isControlDown()) {
+            if (axisGroup.isVisible()) {
+                axisGroup.setVisible(false);
+            } else {
+                axisGroup.setVisible(true);
+            }
+        }
     }
 
     /**
@@ -300,23 +297,14 @@ public class Chart3dSampleApp extends Application {
 
     public static class Xform extends Group {
 
-        public enum RotateOrder {
-            XYZ,
-            XZY,
-            YXZ,
-            YZX,
-            ZXY,
-            ZYX
-        }
-
         public Translate t = new Translate();
+
         public Translate p = new Translate();
         public Translate ip = new Translate();
         public Rotate rx = new SimpleRotateBuilder().axis(Rotate.X_AXIS).build();
         public Rotate ry = new SimpleRotateBuilder().axis(Rotate.Y_AXIS).build();
         public Rotate rz = new SimpleRotateBuilder().axis(Rotate.Z_AXIS).build();
         public Scale s = new Scale();
-
         public Xform() {
             super();
             getTransforms().addAll(t, rz, ry, rx, s);
@@ -349,32 +337,46 @@ public class Chart3dSampleApp extends Application {
             }
         }
 
-        public void setTranslate(double x, double y, double z) {
-            t.setX(x);
-            t.setY(y);
-            t.setZ(z);
+        public void reset() {
+            t.setX(0.0);
+            t.setY(0.0);
+            t.setZ(0.0);
+            rx.setAngle(0.0);
+            ry.setAngle(0.0);
+            rz.setAngle(0.0);
+            s.setX(1.0);
+            s.setY(1.0);
+            s.setZ(1.0);
+            p.setX(0.0);
+            p.setY(0.0);
+            p.setZ(0.0);
+            ip.setX(0.0);
+            ip.setY(0.0);
+            ip.setZ(0.0);
         }
 
-        public void setTranslate(double x, double y) {
-            t.setX(x);
-            t.setY(y);
+        public void resetTSP() {
+            t.setX(0.0);
+            t.setY(0.0);
+            t.setZ(0.0);
+            s.setX(1.0);
+            s.setY(1.0);
+            s.setZ(1.0);
+            p.setX(0.0);
+            p.setY(0.0);
+            p.setZ(0.0);
+            ip.setX(0.0);
+            ip.setY(0.0);
+            ip.setZ(0.0);
         }
 
-        // Cannot override these methods as they are final:
-        // public void setTranslateX(double x) { t.setX(x); }
-        // public void setTranslateY(double y) { t.setY(y); }
-        // public void setTranslateZ(double z) { t.setZ(z); }
-        // Use these methods instead:
-        public void setTx(double x) {
-            t.setX(x);
-        }
-
-        public void setTy(double y) {
-            t.setY(y);
-        }
-
-        public void setTz(double z) {
-            t.setZ(z);
+        public void setPivot(double x, double y, double z) {
+            p.setX(x);
+            p.setY(y);
+            p.setZ(z);
+            ip.setX(-x);
+            ip.setY(-y);
+            ip.setZ(-z);
         }
 
         public void setRotate(double x, double y, double z) {
@@ -436,46 +438,41 @@ public class Chart3dSampleApp extends Application {
             s.setZ(z);
         }
 
-        public void setPivot(double x, double y, double z) {
-            p.setX(x);
-            p.setY(y);
-            p.setZ(z);
-            ip.setX(-x);
-            ip.setY(-y);
-            ip.setZ(-z);
+        public void setTranslate(double x, double y) {
+            t.setX(x);
+            t.setY(y);
         }
 
-        public void reset() {
-            t.setX(0.0);
-            t.setY(0.0);
-            t.setZ(0.0);
-            rx.setAngle(0.0);
-            ry.setAngle(0.0);
-            rz.setAngle(0.0);
-            s.setX(1.0);
-            s.setY(1.0);
-            s.setZ(1.0);
-            p.setX(0.0);
-            p.setY(0.0);
-            p.setZ(0.0);
-            ip.setX(0.0);
-            ip.setY(0.0);
-            ip.setZ(0.0);
+        public void setTranslate(double x, double y, double z) {
+            t.setX(x);
+            t.setY(y);
+            t.setZ(z);
         }
 
-        public void resetTSP() {
-            t.setX(0.0);
-            t.setY(0.0);
-            t.setZ(0.0);
-            s.setX(1.0);
-            s.setY(1.0);
-            s.setZ(1.0);
-            p.setX(0.0);
-            p.setY(0.0);
-            p.setZ(0.0);
-            ip.setX(0.0);
-            ip.setY(0.0);
-            ip.setZ(0.0);
+        // Cannot override these methods as they are final:
+        // public void setTranslateX(double x) { t.setX(x); }
+        // public void setTranslateY(double y) { t.setY(y); }
+        // public void setTranslateZ(double z) { t.setZ(z); }
+        // Use these methods instead:
+        public void setTx(double x) {
+            t.setX(x);
+        }
+
+        public void setTy(double y) {
+            t.setY(y);
+        }
+
+        public void setTz(double z) {
+            t.setZ(z);
+        }
+
+        public enum RotateOrder {
+            XYZ,
+            XZY,
+            YXZ,
+            YZX,
+            ZXY,
+            ZYX
         }
     }
 

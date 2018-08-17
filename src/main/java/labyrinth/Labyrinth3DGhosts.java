@@ -1,12 +1,8 @@
 package labyrinth;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -46,10 +42,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 
 
 	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
-		File file = new File(arquivo);
-		StlMeshImporter importer = new StlMeshImporter();
-		importer.read(file);
-		Mesh mesh = importer.getImport();
+        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
 		MeshView animal = new MeshView(mesh);
 		PhongMaterial sample = new PhongMaterial(jewelColor);
 		sample.setSpecularColor(lightColor);

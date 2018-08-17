@@ -22,7 +22,7 @@ public class Square2048Model {
 
     private final Square2048[][] map = new Square2048[MAP_WIDTH][MAP_HEIGHT];
     private List<Square2048> mapAsList = new ArrayList<>();
-    final Random random = new Random();
+    private final Random random = new Random();
 
 	public Square2048Model() {
         for (int i = 0; i < getMap().length; i++) {
@@ -41,7 +41,7 @@ public class Square2048Model {
         return (random.nextInt(2) + 1) * 2;
     }
 
-    public Square2048[][] getMap() {
+    public final Square2048[][] getMap() {
         return map;
     }
 
@@ -74,8 +74,7 @@ public class Square2048Model {
             changed = false;
             for (int i = 0; i < getMap().length; i++) {
                 for (int j = 0; j < getMap()[i].length; j++) {
-                    if (!getMap()[i][j].isEmpty() && i + x >= 0 && i + x < MAP_WIDTH && j + y >= 0
-                            && j + y < MAP_HEIGHT) {
+                    if (!getMap()[i][j].isEmpty() && withinRange(x, y, i, j, MAP_WIDTH, MAP_HEIGHT)) {
                         if (getMap()[i + x][j + y].isEmpty()) {
                             getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber());
                             getMap()[i][j].setNumber(0);
@@ -95,6 +94,11 @@ public class Square2048Model {
             collect.get(random.nextInt(collect.size())).setNumber(newNumber());
         }
 
+    }
+
+    private boolean withinRange(int x, int y, int i, int j, int mapWidth, int mapHeight) {
+        return i + x >= 0 && i + x < mapWidth && j + y >= 0
+                && j + y < mapHeight;
     }
 
 }

@@ -1,17 +1,16 @@
 
 package gaming.ex14;
 
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
-
 import gaming.ex07.CreateMazeHandler;
 import gaming.ex07.MazeSquare;
 import gaming.ex14.Pacman.PacmanDirection;
 import gaming.ex14.PacmanGhost.GhostColor;
 import gaming.ex14.PacmanGhost.GhostStatus;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -87,7 +86,7 @@ public class PacmanModel implements HasLogging {
 			PacmanGhost ghost = ghosts.get(i);
             int location = i / 2;
             ghost.setStartPosition(265 + i % 2 * SQUARE_SIZE, 265 + location * SQUARE_SIZE);
-			group.getChildren().add(ghost.circle);
+			group.getChildren().add(ghost.getCircle());
 		}
 		scene.setOnKeyPressed(this::handleKeyPressed);
 
@@ -167,7 +166,7 @@ public class PacmanModel implements HasLogging {
 			}
 		}
         MazeSquare.paths.forEach(
-                (from, map) -> map.forEach((to, by) -> getLogger().info("from {} to {} by {}", from, to, by)));
+                (from, map) -> map.forEach((to, by) -> getLogger().trace("from {} to {} by {}", from, to, by)));
 
 		return maze;
 	}

@@ -1,9 +1,6 @@
 package fxsamples;
 
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -13,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class ChangingTextFonts extends Application {
@@ -24,11 +22,11 @@ public class ChangingTextFonts extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-        Logger log = HasLogging.log();
-        primaryStage.setTitle("Chapter 2 Changing Text Fonts");
-        if (log.isInfoEnabled()) {
-            log.info("Font families: {}", Font.getFamilies().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
-            log.info("Font names: {}", Font.getFontNames().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
+        Logger log = HasLogging.log(ChangingTextFonts.class);
+        primaryStage.setTitle("Changing Text Fonts");
+        if (log.isTraceEnabled()) {
+            log.trace("Font families: {}", Font.getFamilies().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
+            log.trace("Font names: {}", Font.getFontNames().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
         }
 		Group root = new Group();
 		Scene scene = new Scene(root, 580, 250, Color.WHITE);

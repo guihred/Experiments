@@ -8,7 +8,6 @@ import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -72,7 +71,7 @@ class HistogramGraph extends Canvas {
 
     }
 
-    public void drawGraph() {
+    public final void drawGraph() {
         if (dataframe == null) {
             drawAxis();
             return;

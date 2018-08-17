@@ -6,15 +6,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
-
-import javax.imageio.ImageIO;
-
-import org.slf4j.LoggerFactory;
-
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.WritableImage;
+import javafx.scene.shape.Mesh;
+import javax.imageio.ImageIO;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Note
@@ -50,6 +48,25 @@ public final class ResourceFXUtils {
 	public static Path toPath(String arquivo) {
 		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toPath();
 	}
+
+    public static Mesh importStlMesh(String arquivo) {
+        File file = new File(arquivo);
+        return importStlMesh(file);
+    }
+
+    public static Mesh importStlMesh(File file) {
+        //        StlMeshImporter importer = new StlMeshImporter();
+        //        importer.read(file);
+        //        return importer.getImport();
+        return null;
+    }
+
+    public static Mesh importStlMesh(URL file) {
+        //        StlMeshImporter importer = new StlMeshImporter();
+        //        importer.read(file);
+        //        return importer.getImport();
+        return null;
+    }
 
     public static String take(final Canvas canvas) {
         try {

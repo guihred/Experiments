@@ -21,10 +21,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
@@ -88,7 +86,7 @@ public final class Chapter2 {
 
     /**
      * Write a call to reduce that can be used to compute the average of a
-     * Stream<Double>. Why can�t you simply compute the sum and divide by
+     * Stream<Double>. Why can't you simply compute the sum and divide by
      * count()?
      * 
      * You can't compute sum and divide by count because both sum() and count()
@@ -119,7 +117,7 @@ public final class Chapter2 {
 
     /**
      * Count all short words in a parallel Stream<String>, as described in
-     * Section 2.13, �Parallel Streams,� on page 40, by updating an array of
+     * Section 2.13, Parallel Streams, on page 40, by updating an array of
      * AtomicInteger. Use the atomic getAndIncrement method to safely increment
      * each counter.
      */

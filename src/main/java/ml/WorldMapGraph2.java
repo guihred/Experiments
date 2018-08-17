@@ -10,9 +10,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -23,10 +20,13 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import simplebuilder.CommonsFX;
 import simplebuilder.HasLogging;
 
 class WorldMapGraph2 extends Canvas {
+    private static final Logger LOG = HasLogging.log();
     private static final String NO_INFO = "No info";
     public static final double BLUE_HUE = Color.BLUE.getHue();
     private static final double RED_HUE = Color.RED.getHue();
@@ -98,7 +98,7 @@ class WorldMapGraph2 extends Canvas {
         drawGraph();
     }
 
-    public void drawGraph() {
+    public final void drawGraph() {
         gc.clearRect(0, 0, getWidth(), getHeight());
         Country[] values = Country.values();
         gc.setFill(Color.BLACK);
@@ -167,6 +167,7 @@ class WorldMapGraph2 extends Canvas {
 		}
 	}
 
+
 	private void drawPoints() {
 		gc.setFill(Color.RED);
 		MercatorMap mercatorMap = new MercatorMap(getWidth(), getHeight());
@@ -174,8 +175,8 @@ class WorldMapGraph2 extends Canvas {
 		List<Double> lis2t = points.list(latHeader, Double.class);
 		List<String> citu = points.list(cityHeader, String.class);
 		for (int i = 0; i < points.getSize(); i++) {
-            HasLogging.log().info("X={}", xScale.get());
-            HasLogging.log().info("Y={}", yScale.get());
+            LOG.trace("X={}", xScale.get());
+            LOG.trace("Y={}", yScale.get());
             double latitudeInDegrees = list.get(i).doubleValue();
             double longitudeInDegrees = lis2t.get(i).doubleValue();
 			double[] screenLocation = mercatorMap.getScreenLocation(latitudeInDegrees, longitudeInDegrees);

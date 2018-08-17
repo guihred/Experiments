@@ -1,18 +1,20 @@
 package gaming.ex15;
 
 import java.awt.Robot;
-
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import org.slf4j.Logger;
+import simplebuilder.HasLogging;
 
 final class RubiksMouseEvent implements EventHandler<MouseEvent> {
+    private static final Logger LOG = HasLogging.log();
 	private double mouseOldX;
 	private double mousePosX;
+    private PerspectiveCamera camera;
 	private Scene sc;
-	private PerspectiveCamera camera;
 
 	public RubiksMouseEvent(Scene sc, PerspectiveCamera camera) {
 		this.sc = sc;
@@ -33,7 +35,7 @@ final class RubiksMouseEvent implements EventHandler<MouseEvent> {
 					mouseOldX = 0;
 					mousePosX = 0;
 				} catch (Exception e) {
-					RubiksCubeLauncher.LOGGER.error("", e);
+                    LOG.error("", e);
 				}
 			});
 		}
@@ -46,7 +48,7 @@ final class RubiksMouseEvent implements EventHandler<MouseEvent> {
 					mouseOldX = width;
 					mousePosX = width;
 				} catch (Exception e) {
-					RubiksCubeLauncher.LOGGER.error("", e);
+                    LOG.error("", e);
 				}
 			});
 		}

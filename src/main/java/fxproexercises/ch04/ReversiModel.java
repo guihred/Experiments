@@ -97,13 +97,16 @@ public final class ReversiModel {
 		if (canFlip(cellX, cellY, directionX, directionY, turn1).get()) {
             int x = cellX + directionX;
             int y = cellY + directionY;
-            while (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && board[x][y].get()
-			!= turn1.get()) {
+            while (xAndYWithinBoardSize(x, y) && board[x][y].get() != turn1.get()) {
 				board[x][y].setValue(turn1.get());
                 x += directionX;
                 y += directionY;
             }
         }
+    }
+
+    private boolean xAndYWithinBoardSize(int x, int y) {
+        return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
     }
 
 	public BooleanBinding canFlip(final int cellX, final int cellY, final int directionX, final int directionY,
@@ -125,7 +128,7 @@ public final class ReversiModel {
 			int x = cellX + directionX;
 			int y = cellY + directionY;
 			boolean first = true;
-			while (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && board[x][y].get() != Owner.NONE) {
+            while (xAndYWithinBoardSize(x, y) && board[x][y].get() != Owner.NONE) {
 				if (board[x][y].get() == turnVal) {
 					return !first;
 				}

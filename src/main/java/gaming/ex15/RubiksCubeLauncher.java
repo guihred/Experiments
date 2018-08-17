@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import org.slf4j.Logger;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -24,6 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 import simplebuilder.SimpleTimelineBuilder;
 
@@ -31,10 +29,46 @@ public class RubiksCubeLauncher extends Application {
     public static final boolean DEBUG = true;
 	public static final int CUBE_COMPLEXITY = 3;
 
-    static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log();
 
 	public static final int RUBIKS_CUBE_SIZE = 50;
 	private RubiksPiece[][][] pieces = new RubiksPiece[CUBE_COMPLEXITY][CUBE_COMPLEXITY][CUBE_COMPLEXITY];
+
+    private DoubleProperty angle = new SimpleDoubleProperty(0);
+	
+    private Timeline timeline = new SimpleTimelineBuilder()
+			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(angle, 0)),
+					new KeyFrame(Duration.seconds(1), new KeyValue(angle, 90)))
+			.onFinished(e -> unbindAll()).build();
+
+	public int rotateAntiClockWise(int i) {
+		return 6 - i % 3 * 3 + i / 3;
+	}
+
+	public int rotateClockWise(int j) {
+		return j % 3 * 3 + 2 - j / 3;
+	}
+	public void rotateCube(RubiksCubeFaces face, boolean clockwise) {
+		List<RubiksPiece> collect = getFacePieces(face);
+        for (RubiksPiece e : collect) {
+            e.rotate(face, angle, clockwise);
+        }
+		timeline.playFromStart();
+        if (RubiksCubeLauncher.DEBUG) {
+            LOGGER.info("{}", face);
+        }
+		List<RubiksPiece> arrayList = new ArrayList<>();
+		for (int i = 0; i < collect.size(); i++) {
+			int j = !clockwise ? rotateAntiClockWise(i) : rotateClockWise(i);
+			RubiksPiece rubiksPiece2 = collect.get(j);
+			arrayList.add(rubiksPiece2);
+		}
+		for (int i = 0; i < CUBE_COMPLEXITY; i++) {
+			for (int j = 0; j < CUBE_COMPLEXITY; j++) {
+				face.set(pieces, i, j, arrayList.get(i * CUBE_COMPLEXITY + j));
+			}
+		}
+	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -76,24 +110,21 @@ public class RubiksCubeLauncher extends Application {
 		sc.setOnMouseMoved(a);
 		setPivot();
 	}
-	
-	public int rotateAntiClockWise(int i) {
-		return 6 - i % 3 * 3 + i / 3;
+	private List<RubiksPiece> getFacePieces(RubiksCubeFaces face) {
+		return IntStream
+                .range(0, CUBE_COMPLEXITY)
+				.boxed()
+				.flatMap(i -> IntStream
+						.range(0, CUBE_COMPLEXITY)
+						.mapToObj(j -> face.get(pieces, i, j))
+						.map(RubiksPiece.class::cast))
+				.collect(Collectors.toList());
 	}
-
-	public int rotateClockWise(int j) {
-		return j % 3 * 3 + 2 - j / 3;
-	}
-
-	DoubleProperty angle = new SimpleDoubleProperty(0);
-	Timeline timeline = new SimpleTimelineBuilder()
-			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(angle, 0)),
-					new KeyFrame(Duration.seconds(1), new KeyValue(angle, 90)))
-			.onFinished(e -> unbindAll()).build();
 
 	private void setPivot() {
 		Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(p -> p.setPivot(pieces[1][1][1]));
 	}
+
 	private void unbindAll() {
         Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(RubiksPiece::unbindAngle);
         if (RubiksCubeLauncher.DEBUG && LOGGER.isInfoEnabled()) {
@@ -109,39 +140,6 @@ public class RubiksCubeLauncher extends Application {
             s.append("\n");
             LOGGER.info(s.toString());
 		}
-	}
-
-	public void rotateCube(RubiksCubeFaces face, boolean clockwise) {
-		List<RubiksPiece> collect = getFacePieces(face);
-        for (RubiksPiece e : collect) {
-            e.rotate(face, angle, clockwise);
-        }
-		timeline.playFromStart();
-        if (RubiksCubeLauncher.DEBUG) {
-            LOGGER.info("{}", face);
-        }
-		List<RubiksPiece> arrayList = new ArrayList<>();
-		for (int i = 0; i < collect.size(); i++) {
-			int j = !clockwise ? rotateAntiClockWise(i) : rotateClockWise(i);
-			RubiksPiece rubiksPiece2 = collect.get(j);
-			arrayList.add(rubiksPiece2);
-		}
-		for (int i = 0; i < CUBE_COMPLEXITY; i++) {
-			for (int j = 0; j < CUBE_COMPLEXITY; j++) {
-				face.set(pieces, i, j, arrayList.get(i * CUBE_COMPLEXITY + j));
-			}
-		}
-	}
-
-	private List<RubiksPiece> getFacePieces(RubiksCubeFaces face) {
-		return IntStream
-                .range(0, CUBE_COMPLEXITY)
-				.boxed()
-				.flatMap(i -> IntStream
-						.range(0, CUBE_COMPLEXITY)
-						.mapToObj(j -> face.get(pieces, i, j))
-						.map(RubiksPiece.class::cast))
-				.collect(Collectors.toList());
 	}
 
 	public static void main(String[] args) {

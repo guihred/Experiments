@@ -16,28 +16,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
@@ -100,7 +87,7 @@ public final class Chapter8 {
     }
 
     /*
-     * Euclid�s algorithm (which is over two thousand years old) computes the
+     * Euclid's algorithm (which is over two thousand years old) computes the
      * greatest common divisor of two numbers as gcd(a, b) = a if b is zero, and
      * gcd(b, rem(a, b)) otherwise, where rem is the remainder. Clearly, the gcd
      * should not be negative, even if a or b are (since its negation would then
@@ -134,7 +121,7 @@ public final class Chapter8 {
      * generator.nextDouble() ever yield 0? The documentation says it can yield
      * any value between 0 inclusive and 1 exclusive. But, given that there are
      * 253 such floating-point numbers, will you ever get a zero? Indeed, you
-     * do. The random number generator computes the next seed as next(s) = s � m
+     * do. The random number generator computes the next seed as next(s) = s'm
      * + a % N, where m = 25214903917, a = 11, and N = 248. The inverse of m
      * modulo N is v = 246154705703781, and therefore you can compute the
      * predecessor of a seed as prev(s) = (s � a) � v % N. To make a double, two

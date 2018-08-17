@@ -9,14 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public final class BrazilianWordSyllableSplitter {
-	private static final boolean DEBUG = true;
     private static final Logger LOGGER = HasLogging.log();
 	private static final String VOWELS = "[aeiouáéíóúâêîôûàèìòùãõ]";
 	private static final String CONSONANT_CLUSTER = "[bcdfgkptv][rl]|[cnlst][h]|mn|bs|tch";
@@ -102,20 +99,26 @@ public final class BrazilianWordSyllableSplitter {
 
 		String collect = syllable.stream().flatMap((String sy) -> Stream.of(sy.split(REGEX_HIATUS)))
 				.collect(Collectors.joining("-"));
-		if (DEBUG) {
-            LOGGER.info("{} {}", word, collect);
-		}
+        LOGGER.trace("{} {}", word, collect);
 		return collect;
 
 	}
 
 	private static boolean splitSyllableCondition(int i, String a, String b, String c, String d) {
 		return (a + b + c).matches(REGEX_VOWEL_CONSONANT_VOWEL)
-				|| isConsonant(a) && isConsonant(b) && !isConsonantCluster(a + b) && isVowel(c) && i != 0
-				|| isConsonant(a) && isConsonant(b)&& isConsonant(c) && !isConsonantCluster(a + b) && isConsonantCluster(b + c) && isVowel(d)
-				&& i != 0
+				|| twoNonClusterConsonantsAndAVowel(i, a, b, c)
+				|| threeNonClusterConsonantsAndAVowel(i, a, b, c, d)
 				|| (a + b + c + d).matches(REGEX_VOWEL_CLUSTER_VOWEL);
 	}
+
+    private static boolean threeNonClusterConsonantsAndAVowel(int i, String a, String b, String c, String d) {
+        return isConsonant(a) && isConsonant(b)&& isConsonant(c) && !isConsonantCluster(a + b) && isConsonantCluster(b + c) && isVowel(d)
+        && i != 0;
+    }
+
+    private static boolean twoNonClusterConsonantsAndAVowel(int i, String a, String b, String c) {
+        return isConsonant(a) && isConsonant(b) && !isConsonantCluster(a + b) && isVowel(c) && i != 0;
+    }
 
 	private static boolean isConsonantCluster(String a) {
 		return a.matches(REGEX_CONSONANT_CLUSTER);

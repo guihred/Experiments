@@ -15,7 +15,7 @@ public class DataframeStatisticAccumulator{
     private double median50;
     private double median75;
     private double max = Double.NEGATIVE_INFINITY;
-    String unique, top, freq;
+    private String unique, top, freq;
     private String header;
     private Class<?> format;
 

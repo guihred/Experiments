@@ -12,18 +12,18 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 
 public class Ch3 {
-	/*
-	 * 1. Provide an interface Measurable with a method double getMeasure() that
-	 * measures an object in some way. Make Employee implement Measurable . Provide
-	 * a method double average(Measurable[] objects) that computes the average
-	 * measure. Use it to compute the average salary of an array of employees.
-	 */
+    private static final Logger LOG = HasLogging.log();
+
+    /*
+     * 1. Provide an interface Measurable with a method double getMeasure() that
+     * measures an object in some way. Make Employee implement Measurable . Provide
+     * a method double average(Measurable[] objects) that computes the average
+     * measure. Use it to compute the average salary of an array of employees.
+     */
 	static interface Measurable {
 		double getMeasure();
 	}
@@ -290,8 +290,8 @@ public class Ch3 {
 		List<Employee> collect = random.ints(1, 11).map(e -> ++e * 500).limit(5).mapToObj(Employee::new)
 				.collect(toList());
 
-		log.info("{}",average(collect));
-		log.info("{}",largest(collect));
+		LOG.info("{}",average(collect));
+		LOG.info("{}",largest(collect));
         // IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
         // IntSequence.constant(1).foreach(e -> log.info("{}",e))
         // new SquareSequence().foreach(e -> log.info("{}",e))
@@ -302,28 +302,28 @@ public class Ch3 {
         // luckySort(asList, String::compareTo)
         // log.info("{}",asList)
         // log.info("{}",subdirectories(new File(".")))
-		log.info("{}",sortFiles(new File(".").listFiles()));
+		LOG.info("{}",sortFiles(new File(".").listFiles()));
 	}
 
-    static Logger log = HasLogging.log();
+    
 	public static void tasks() {
 		Runnable[] tasks= new Runnable[] {
-				()->log.info("{}","1"),
-				()->log.info("{}","2"),
-				()->log.info("{}","3"),
-				()->log.info("{}","4"),
-				()->log.info("{}","5"),
-				()->log.info("{}","6"),
-				()->log.info("{}","7"),
-				()->log.info("{}","8"),
-				()->log.info("{}","9"),
-				()->log.info("{}","10"),
-				()->log.info("{}","11"),
+				()->LOG.info("{}","1"),
+				()->LOG.info("{}","2"),
+				()->LOG.info("{}","3"),
+				()->LOG.info("{}","4"),
+				()->LOG.info("{}","5"),
+				()->LOG.info("{}","6"),
+				()->LOG.info("{}","7"),
+				()->LOG.info("{}","8"),
+				()->LOG.info("{}","9"),
+				()->LOG.info("{}","10"),
+				()->LOG.info("{}","11"),
 				
 		};
-		log.info("{}","In Order");
+		LOG.info("{}","In Order");
 		runInOrder(tasks);
-		log.info("{}","Together");
+		LOG.info("{}","Together");
 		runTogether(tasks);
 	}
 }

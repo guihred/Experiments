@@ -161,12 +161,12 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         lessons.set(index, contestQuestion);
         Logger logger = getLogger();
         if (logger.isInfoEnabled()) {
-            logger.info(ContestReader.getInstance().contest.toSQL());
+            logger.info(ContestReader.getInstance().getContest().toSQL());
             logger.info(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
             logger.info(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
                     .collect(Collectors.joining("\n")));
             logger.info(
-                    ContestReader.getInstance().texts.stream().map(ContestText::toSQL)
+                    ContestReader.getInstance().getTexts().stream().map(ContestText::toSQL)
                             .collect(Collectors.joining("\n")));
         }
 

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -57,7 +56,7 @@ class PopulacionalGraph extends Canvas {
 		drawGraph();
     }
 
-    public void drawGraph() {
+    public final void drawGraph() {
 		gc.clearRect(0, 0, getWidth(), getHeight());
         if (dataframe == null) {
             drawAxis();
