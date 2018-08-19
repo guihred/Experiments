@@ -40,8 +40,6 @@ public class SudokuLauncher extends Application {
         stage.setHeight(400);
 
 		scene.setOnKeyPressed(sudokuModel::handleKeyPressed);
-		scene.setOnKeyPressed(sudokuModel::handleKeyPressed);
-		scene.setOnKeyPressed(sudokuModel::handleKeyPressed);
         stage.show();
     }
     public static void main(String[] args) {
