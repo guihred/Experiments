@@ -43,18 +43,22 @@ public class SudokuModel {
 					}
 				}
 				if (getMapAt(i, j).isEmpty()) {
-					j = 0;
 					nTries++;
+					j = -1;
+					int row1=i;
+					sudokuSquares.stream().filter(e -> e.isInRow(row1)).forEach(SudokuSquare::setEmpty);
 					if (nTries > 100) {
-						i = 0;
+						i = -1;
 						nTries = 0;
+						sudokuSquares.forEach(SudokuSquare::setEmpty);
+						break;
 					}
 					System.out.println("Trying again");
 				}
 			}
 		}
-		for (int i = 0; i < 100; i++) {
-			handleKeyPressed(null);
+		for (int i = 0; i < MAP_N_SQUARED * MAP_N_SQUARED; i++) {
+			// handleKeyPressed(null);
 		}
 
 	}

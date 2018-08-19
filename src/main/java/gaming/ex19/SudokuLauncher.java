@@ -28,7 +28,7 @@ public class SudokuLauncher extends Application {
 		for (int i = 0; i < SudokuModel.MAP_N_SQUARED; i++) {
 			for (int j = 0; j < SudokuModel.MAP_N_SQUARED; j++) {
 				SudokuSquare map1 = sudokuModel.getMapAt(i, j);
-                gridPane.add(map1, i, j);
+				gridPane.add(map1, i, j);
             }
         }
 
