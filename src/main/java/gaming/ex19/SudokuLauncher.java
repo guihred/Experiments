@@ -41,9 +41,8 @@ public class SudokuLauncher extends Application {
         stage.setWidth(400);
         stage.setHeight(400);
 
-		scene.setOnKeyPressed(sudokuModel::handleKeyPressed);
         gridPane.setOnMousePressed(sudokuModel::handleMousePressed);
-        gridPane.setOnMouseMoved(sudokuModel::handleMouseMoved);
+        gridPane.setOnMouseDragged(sudokuModel::handleMouseMoved);
         gridPane.setOnMouseReleased(sudokuModel::handleMouseReleased);
         stage.show();
     }

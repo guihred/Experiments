@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,26 +32,15 @@ public final class SudokuSquare extends Region {
 	private final int row;
 	private final int col;
 	private ObservableList<Integer> possibilities = FXCollections.observableArrayList();
-
+    private boolean permanent = true;
+    private BooleanProperty wrong = new SimpleBooleanProperty(false);
 
 	public SudokuSquare(int i, int j) {
 		row = i;
 		col = j;
 		setPadding(new Insets(10));
         setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
-		StringBuilder style = new StringBuilder();
-		style.append("-fx-background-color: white;");
-		style.append("-fx-border-color: black;");
-
-		style.append("-fx-border-width: ");
-		style.append(j % SudokuModel.MAP_NUMBER == 0 ? " 2" : " 1");
-		style.append(i % SudokuModel.MAP_NUMBER == SudokuModel.MAP_NUMBER - 1 ? " 2" : " 1");
-		style.append(j % SudokuModel.MAP_NUMBER == SudokuModel.MAP_NUMBER - 1 ? " 2" : " 1");
-		style.append(i % SudokuModel.MAP_NUMBER == 0 ? " 2" : " 1");
-
-		style.append(";");
-		setStyle(style.toString());
-		// setEffect(new InnerShadow());
+        updateStyle();
         Text text = new Text();
         text.textProperty().bind(Bindings.when(number.isNotEqualTo(0)).then(number.asString()).otherwise(""));
         text.wrappingWidthProperty().bind(widthProperty());
@@ -61,7 +52,7 @@ public final class SudokuSquare extends Region {
         text.setTextAlignment(TextAlignment.CENTER);
         getChildren().add(text);
         setPrefSize(50, 50);
-
+        text.fillProperty().bind(Bindings.when(wrong).then(Color.RED).otherwise(Color.BLACK));
 		Text possibilitiesText = new Text();
 		possibilitiesText.setTextAlignment(TextAlignment.CENTER);
         possibilitiesText.setFont(Font.font(default1.getFamily(), FontWeight.THIN, default1.getSize() * 3 / 4));
@@ -74,13 +65,47 @@ public final class SudokuSquare extends Region {
 
     }
 
-	public void setPossibilities(List<Integer> possibilities) {
+    private void updateStyle() {
+        StringBuilder style = new StringBuilder();
+
+        if (permanent) {
+            style.append("-fx-background-color: lightgray;");
+        } else {
+            style.append("-fx-background-color: white;");
+        }
+
+        style.append("-fx-border-color: black;");
+
+        style.append("-fx-border-width: ");
+        style.append(col % SudokuModel.MAP_NUMBER == 0 ? " 2" : " 1");
+        style.append(row % SudokuModel.MAP_NUMBER == SudokuModel.MAP_NUMBER - 1 ? " 2" : " 1");
+        style.append(col % SudokuModel.MAP_NUMBER == SudokuModel.MAP_NUMBER - 1 ? " 2" : " 1");
+        style.append(row % SudokuModel.MAP_NUMBER == 0 ? " 2" : " 1");
+
+        style.append(";");
+        setStyle(style.toString());
+    }
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
+        updateStyle();
+    }
+
+    public void setPossibilities(List<Integer> possibilities) {
 		this.possibilities.setAll(possibilities);
 	}
 
+    public List<Integer> getPossibilities() {
+        return possibilities;
+    }
     public void setNumber(int value) {
         number.set(value);
     }
+
 
 	public int setEmpty() {
 		int k = number.get();
@@ -100,6 +125,10 @@ public final class SudokuSquare extends Region {
 	public boolean isInRow(int row1) {
 		return row == row1;
 	}
+
+    public boolean isInPosition(int row1, int col1) {
+        return row == row1 && col1 == col;
+    }
 
     public boolean isEmpty() {
 		return number.get() == 0;
@@ -133,4 +162,12 @@ public final class SudokuSquare extends Region {
 	public int getCol() {
 		return col;
 	}
+
+    public boolean isWrong() {
+        return wrong.get();
+    }
+
+    public void setWrong(boolean wrong) {
+        this.wrong.set(wrong);
+    }
 }
