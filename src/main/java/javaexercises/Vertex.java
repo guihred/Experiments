@@ -1,21 +1,9 @@
 package javaexercises;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.aspose.imaging.internal.Exceptions.Exception;
-
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import simplebuilder.HasLogging;
 
 class Vertex implements HasLogging {

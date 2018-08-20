@@ -2,7 +2,6 @@ package exercism;
 
 import static org.junit.Assert.assertEquals;
 
-import exercism.Scrabble;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;

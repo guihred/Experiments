@@ -1,7 +1,6 @@
 package fxproexercises.ch06;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.concurrent.Worker;

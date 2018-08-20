@@ -2,7 +2,6 @@ package sample.cubesystem;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;

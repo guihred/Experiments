@@ -1,9 +1,8 @@
 package exercism;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableMap;
 
 public class DNATest {
 

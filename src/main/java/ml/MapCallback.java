@@ -1,7 +1,6 @@
 package ml;
 
 import java.util.Map.Entry;
-
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;

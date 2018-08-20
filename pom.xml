@@ -7,8 +7,14 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<dl4j.version>1.0.0-beta</dl4j.version>
-		<nd4j.version>1.0.0-beta</nd4j.version>
-	</properties>
+	<nd4j.version>1.0.0-beta</nd4j.version>
+	
+	<jacoco.version>0.6.4.201312101107</jacoco.version>
+	<skip.jacoco>false</skip.jacoco>
+   	</properties>
+   	<!-- 
+   	mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false 
+   	-->
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
@@ -31,6 +37,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19.1</version>
 				<configuration>
+					<runOrder>random</runOrder>
 					<includes>
 						<include>*Test</include>
 					</includes>
@@ -48,6 +55,7 @@
 					<additionalAppResources>src/main/resources</additionalAppResources>
 				</configuration>
 			</plugin>
+	
 		</plugins>
 	</build>
 	<dependencies>
@@ -218,7 +226,18 @@
             <artifactId>nd4j-native-platform</artifactId>
             <version>${nd4j.version}</version>
         </dependency>
-
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-junit</artifactId>
+			<version>4.0.13-alpha</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.testfx</groupId>
+		    <artifactId>testfx-core</artifactId>
+		    <version>4.0.13-alpha</version>
+		    <scope>test</scope>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>

@@ -1,7 +1,6 @@
 package ml;
 
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;

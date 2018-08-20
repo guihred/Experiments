@@ -5,7 +5,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
-import exercism.Robot;
 import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import org.junit.Test;

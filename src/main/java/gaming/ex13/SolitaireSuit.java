@@ -5,7 +5,6 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 import java.util.function.Supplier;
-
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;

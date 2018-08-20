@@ -1,11 +1,8 @@
 package neuro;
 
-import java.util.ArrayList;
-
-import org.slf4j.Logger;
-
 import com.google.common.collect.ImmutableMap;
-
+import java.util.ArrayList;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class NeuronHelper {

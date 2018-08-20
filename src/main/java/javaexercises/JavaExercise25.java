@@ -1,7 +1,6 @@
 package javaexercises;
 
 import java.util.Locale;
-
 import simplebuilder.HasLogging;
 
 /**

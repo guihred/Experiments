@@ -1,11 +1,10 @@
 package furigana.experiment;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.common.collect.ImmutableMap;
 
 public class JapaneseVerbConjugate {
 

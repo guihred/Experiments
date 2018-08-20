@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.apache.commons.math3.complex.Complex;
-
 import simplebuilder.HasLogging;
 
 public class OthersTests {

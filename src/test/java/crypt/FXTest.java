@@ -52,10 +52,7 @@ import gaming.ex15.RubiksCubeLauncher;
 import gaming.ex16.MadMazeLauncher;
 import gaming.ex17.PuzzleLauncher;
 import gaming.ex18.Square2048Launcher;
-import java.util.Arrays;
-import java.util.List;
 import javaexercises.graphs.GraphModelLauncher;
-import javafx.application.Application;
 import ml.*;
 import mp3Audio.OrganizadorMusicas;
 import org.junit.Test;
@@ -66,26 +63,24 @@ import sample.cubesystem.SphereSystemApp;
 import simplebuilder.HasLogging;
 import xylophone.XylophoneApp;
 
-public final class FXTesting2 implements HasLogging {
+public final class FXTest implements HasLogging {
     @Test
-    public void test() throws Exception {
-        List<Class<? extends Application>> applicationClasses = Arrays.asList(AreaChartExample.class,
-                AudioConfigLauncher.class, BackgroundProcesses.class, BarChartExample.class, BoundsPlayground.class,
-                BubbleChartExample.class, CenterUsingBind.class, CenterUsingStack.class, ChangingTextFonts.class,
-                Chart3dDemo.class, Chart3dGraph.class, Chart3dSampleApp.class, ContestQuestionEditingDisplay.class,
-                CSSStylingExample.class, Cubes3D.class, DeathStar.class, DotsLauncher.class, DrawingColors.class,
-                DrawingLines.class, DrawingShape.class, DrawingText.class, EarthriseChristmasApp.class,
-                ElectionCrawlerApp.class, FormValidation.class, FuriganaCrawlerApp.class, GlobeSphereApp.class,
-                GolfBall.class, GraphModelLauncher.class, GridPaneForm.class, HeatGraphExample.class,
-                HelloWorldApp.class, HistogramExample.class, InlineModelViewer.class, 
-                LineChartExample.class, LineManipulator.class, LookNFeelChooser.class, MadMazeLauncher.class,
-                ArkanoidLauncher.class);
-        new FXTesting().testApplications(applicationClasses);
+    public void test() throws Throwable {
+        FXTesting.testApps(AreaChartExample.class, AudioConfigLauncher.class, BackgroundProcesses.class,
+                BarChartExample.class, BoundsPlayground.class, BubbleChartExample.class, CenterUsingBind.class,
+                CenterUsingStack.class, ChangingTextFonts.class, Chart3dDemo.class, Chart3dGraph.class,
+                Chart3dSampleApp.class, ContestQuestionEditingDisplay.class, CSSStylingExample.class, Cubes3D.class,
+                DeathStar.class, DotsLauncher.class, DrawingColors.class, DrawingLines.class, DrawingShape.class,
+                DrawingText.class, EarthriseChristmasApp.class, ElectionCrawlerApp.class, FormValidation.class,
+                FuriganaCrawlerApp.class, GlobeSphereApp.class, GolfBall.class, GraphModelLauncher.class,
+                GridPaneForm.class, HeatGraphExample.class, HelloWorldApp.class, HistogramExample.class,
+                InlineModelViewer.class, LineChartExample.class, LineManipulator.class, LookNFeelChooser.class,
+                MadMazeLauncher.class, ArkanoidLauncher.class);
     }
 
     @Test
-    public void test2() throws Exception {
-        List<Class<? extends Application>> applicationClasses = Arrays.asList(MapGraph.class, Maze3DLauncher.class,
+    public void test2() throws Throwable {
+        FXTesting.testApps(MapGraph.class, Maze3DLauncher.class,
                 MazeLauncher.class, MediaPlayerExample.class, MemoryLauncher.class, MinesweeperLauncher.class,
                 MoleculeSampleApp.class, MultilineExample.class, NumberDisplayLauncher.class, NumberPad.class,
                 OrganizadorMusicas.class, PacmanLauncher.class, PathTransitionExample.class,
@@ -94,12 +89,11 @@ public final class FXTesting2 implements HasLogging {
                 PopulacionalPyramidExample.class, PuzzleLauncher.class, QuartoLauncher.class, RaspiCycle.class,
                 RegressionChartExample.class, ResponsiveUIApp.class, ReversiMain.class, ReversiPieceTest.class,
                 ReversiSquareTest.class, RosarioComparadorArquivos.class, RubiksCubeLauncher.class, SandboxFX.class);
-        new FXTesting().testApplications(applicationClasses);
     }
 
     @Test
-    public void test3() throws Exception {
-        List<Class<? extends Application>> applicationClasses = Arrays.asList(ContestApplication.class,
+    public void test3() throws Throwable {
+        FXTesting.testApps(ContestApplication.class,
                 AnimationExample.class, XylophoneApp.class, ScatterChartWithFillExample.class, Shapes3DTexture.class,
                 Simple3DBoxApp.class, SimpleAudioPlayerLauncher.class, SimpleScene3D.class, SnakeLauncher.class,
                 SlidingPuzzleLauncher.class, SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class,
@@ -107,7 +101,6 @@ public final class FXTesting2 implements HasLogging {
                 TheMenuGrid.class, ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class,
                 TronLauncher.class, VanishingCirclesApp.class, WordSearchApp.class, WordSuggetionApp.class,
                 WorkingListsViews.class, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class);
-        new FXTesting().testApplications(applicationClasses);
 
     }
 }

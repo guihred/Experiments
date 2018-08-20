@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;

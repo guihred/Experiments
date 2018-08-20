@@ -2,7 +2,6 @@ package exercism;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

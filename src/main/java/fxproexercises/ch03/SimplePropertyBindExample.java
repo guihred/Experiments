@@ -5,10 +5,9 @@
  */
 package fxproexercises.ch03;
 
-import org.slf4j.Logger;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class SimplePropertyBindExample {

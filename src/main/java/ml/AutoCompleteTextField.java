@@ -8,9 +8,6 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import org.deeplearning4j.models.word2vec.Word2Vec;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
@@ -19,6 +16,7 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.deeplearning4j.models.word2vec.Word2Vec;
 
 public class AutoCompleteTextField extends TextField {
     private final SortedSet<String> entries;

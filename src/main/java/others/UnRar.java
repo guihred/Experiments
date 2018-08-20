@@ -1,19 +1,16 @@
 package others;
 
+import com.github.junrar.Archive;
+import com.github.junrar.exception.RarException;
+import com.github.junrar.exception.RarException.RarExceptionType;
+import com.github.junrar.rarfile.FileHeader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.slf4j.Logger;
-
-import com.github.junrar.Archive;
-import com.github.junrar.exception.RarException;
-import com.github.junrar.exception.RarException.RarExceptionType;
-import com.github.junrar.rarfile.FileHeader;
-
 import simplebuilder.HasLogging;
 
 public final class UnRar {

@@ -3,11 +3,6 @@ package mp3Audio;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
-
-import javax.swing.filechooser.FileSystemView;
-
-import org.slf4j.Logger;
-
 import javafx.application.Application;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -32,6 +27,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javax.swing.filechooser.FileSystemView;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class OrganizadorMusicas extends Application {

@@ -1,7 +1,6 @@
 package javaexercises;
 
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 
 /**

@@ -5,10 +5,9 @@
  */
 package fxproexercises.ch06;
 
-import org.slf4j.Logger;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 /**

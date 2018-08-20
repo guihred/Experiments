@@ -1,8 +1,7 @@
 package gaming.ex16;
 
-import java.util.Arrays;
-
 import exercism.MatrixSolver;
+import java.util.Arrays;
 
 public class MadTriangle {
 

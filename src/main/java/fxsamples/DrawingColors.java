@@ -2,12 +2,20 @@ package fxsamples;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import simplebuilder.*;
+import simplebuilder.SimpleEllipseBuilder;
+import simplebuilder.SimpleLineBuilder;
+import simplebuilder.SimpleLinearGradientBuilder;
+import simplebuilder.SimpleRadialGradientBuilder;
+import simplebuilder.SimpleRectangleBuilder;
 
 public class DrawingColors extends Application {
 	public static void main(String[] args) {

@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.stream.Stream;
-
 import simplebuilder.HasLogging;
 
 public class JapanRefactoring {

@@ -5,8 +5,6 @@
  */
 package fxproexercises.ch03;
 
-import org.slf4j.Logger;
-
 /**
  *
  * @author Note
@@ -16,6 +14,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class SimplePropertyExample {

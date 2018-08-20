@@ -8,13 +8,11 @@ package fxproexercises.ch06;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import org.slf4j.Logger;
-
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 /**

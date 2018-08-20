@@ -1,7 +1,6 @@
 package ml;
 
 import java.util.Map.Entry;
-
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.cell.CheckBoxListCell;

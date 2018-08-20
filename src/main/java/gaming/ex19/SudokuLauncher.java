@@ -10,9 +10,10 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -32,7 +33,8 @@ public class SudokuLauncher extends Application {
             }
         }
 
-        final BorderPane borderPane = new BorderPane(gridPane);
+        Region numberBoard = sudokuModel.getNumberBoard();
+        final StackPane borderPane = new StackPane(gridPane, numberBoard);
 		gridPane.minWidthProperty().bind(borderPane.widthProperty());
         final Scene scene = new Scene(borderPane);
         stage.setScene(scene);
@@ -40,6 +42,9 @@ public class SudokuLauncher extends Application {
         stage.setHeight(400);
 
 		scene.setOnKeyPressed(sudokuModel::handleKeyPressed);
+        gridPane.setOnMousePressed(sudokuModel::handleMousePressed);
+        gridPane.setOnMouseMoved(sudokuModel::handleMouseMoved);
+        gridPane.setOnMouseReleased(sudokuModel::handleMouseReleased);
         stage.show();
     }
     public static void main(String[] args) {

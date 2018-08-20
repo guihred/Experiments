@@ -45,9 +45,9 @@ public final class LeitorMusicas {
 			File file = new File(new File(path).getParentFile(), "Music");
             ObservableList<Musica>
 			musicas = getMusicas(file);
-            musicas.forEach(s -> LOGGER.info("{}", s));
+            musicas.forEach(s -> LOGGER.trace("{}", s));
         } catch (Exception e) {
-			LOGGER.error("", e);
+            LOGGER.trace("", e);
 		}
 	}
 
@@ -115,7 +115,7 @@ public final class LeitorMusicas {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("", e);
+            LOGGER.trace("", e);
 		}
 
 		if (genre2.indexOf('(') == 0 || "".equals(genre2)) {
@@ -208,7 +208,7 @@ public final class LeitorMusicas {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("", e);
+            LOGGER.trace("", e);
 		}
 		return Collections.emptyList();
 	}

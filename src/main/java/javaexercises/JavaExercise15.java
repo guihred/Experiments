@@ -1,9 +1,7 @@
 package javaexercises;
 
 import java.math.BigInteger;
-
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 
 /**

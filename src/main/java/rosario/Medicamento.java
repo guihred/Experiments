@@ -2,12 +2,10 @@ package rosario;
 
 import java.io.Serializable;
 import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
 
 public class Medicamento implements Serializable {
 	private String registro;

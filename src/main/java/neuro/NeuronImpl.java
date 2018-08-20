@@ -1,6 +1,10 @@
 package neuro;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class NeuronImpl implements Neuron {
 	private NeuronStrategy strategy;

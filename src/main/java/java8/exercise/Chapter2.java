@@ -197,12 +197,12 @@ public final class Chapter2 {
     /**
      * It should be possible to concurrently collect stream results in a single
      * ArrayList, instead of merging multiple array lists, provided it has been
-     * constructed with the stream�s size, since concurrent set operations at
+     * constructed with the stream's size, since concurrent set operations at
      * disjoint positions are threadsafe. How can you achieve that?
      */
 
     /**
-     * Using Stream.iterate, make an infinite stream of random numbers�not by
+     * Using Stream.iterate, make an infinite stream of random numbers'not by
      * calling Math.random but by directly implementing a linear congruential
      * generator. In such a generator, you start with x0 = seed and then produce
      * xn + 1 = (a xn + c) % m, for appropriate values of a, c, and m. You

@@ -3,9 +3,7 @@ package sample.cubesystem;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 
 public final class ElementWiseOp {

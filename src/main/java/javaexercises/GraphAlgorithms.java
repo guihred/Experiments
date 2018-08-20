@@ -7,9 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 
 public final class GraphAlgorithms {

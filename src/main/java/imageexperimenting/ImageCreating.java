@@ -1,7 +1,5 @@
 package imageexperimenting;
 
-import org.slf4j.Logger;
-
 import com.aspose.imaging.Color;
 import com.aspose.imaging.Figure;
 import com.aspose.imaging.HatchStyle;
@@ -9,7 +7,7 @@ import com.aspose.imaging.Pen;
 import com.aspose.imaging.PointF;
 import com.aspose.imaging.RectangleF;
 import com.aspose.imaging.SizeF;
-
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class ImageCreating {

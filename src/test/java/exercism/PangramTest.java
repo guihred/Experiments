@@ -3,7 +3,6 @@ package exercism;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import exercism.Pangram;
 import org.junit.Test;
 
 public class PangramTest {

@@ -2,7 +2,6 @@ package japstudy.db;
 
 import java.time.LocalTime;
 import java.util.List;
-
 import org.hibernate.Session;
 
 public class LessonDAO {

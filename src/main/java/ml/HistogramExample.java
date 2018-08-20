@@ -2,7 +2,6 @@ package ml;
 
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;

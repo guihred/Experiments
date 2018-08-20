@@ -5,7 +5,6 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;

@@ -1,14 +1,12 @@
 package election.experiment;
 
+import japstudy.db.HibernateUtil;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
-import japstudy.db.HibernateUtil;
 
 final class CrawlerCompleteCandidateTask extends CrawlerTask {
 

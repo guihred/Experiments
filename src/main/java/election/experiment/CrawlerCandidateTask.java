@@ -1,14 +1,12 @@
 package election.experiment;
 
+import japstudy.db.HibernateUtil;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import japstudy.db.HibernateUtil;
 
 final class CrawlerCandidateTask extends CrawlerTask {
     private static final int MAX_THREAD_COUNT = 5;

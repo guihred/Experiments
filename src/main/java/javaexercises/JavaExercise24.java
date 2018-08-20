@@ -1,7 +1,6 @@
 package javaexercises;
 
 import java.util.Arrays;
-
 import simplebuilder.HasLogging;
 
 /**

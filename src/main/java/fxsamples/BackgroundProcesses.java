@@ -1,6 +1,5 @@
 package fxsamples;
 import java.util.Random;
-
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;

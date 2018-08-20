@@ -5,8 +5,6 @@
  */
 package fxproexercises.ch03;
 
-import org.slf4j.Logger;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ObjectProperty;
@@ -14,6 +12,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class JavaFXBeanController {

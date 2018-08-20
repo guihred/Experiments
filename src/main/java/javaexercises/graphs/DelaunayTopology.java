@@ -1,11 +1,10 @@
 package javaexercises.graphs;
 
+import com.aspose.imaging.internal.Exceptions.Exception;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import com.aspose.imaging.internal.Exceptions.Exception;
 
 public class DelaunayTopology extends BaseTopology {
 

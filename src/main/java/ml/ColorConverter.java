@@ -2,7 +2,6 @@ package ml;
 
 import java.util.Map.Entry;
 import java.util.Objects;
-
 import javafx.collections.ObservableMap;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;

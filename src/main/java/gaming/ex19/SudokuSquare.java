@@ -64,7 +64,7 @@ public final class SudokuSquare extends Region {
 
 		Text possibilitiesText = new Text();
 		possibilitiesText.setTextAlignment(TextAlignment.CENTER);
-		possibilitiesText.setFont(Font.font(default1.getFamily(), FontWeight.THIN, default1.getSize() / 2));
+        possibilitiesText.setFont(Font.font(default1.getFamily(), FontWeight.THIN, default1.getSize() * 3 / 4));
 		possibilitiesText.setTextOrigin(VPos.TOP);
 		possibilitiesText.visibleProperty().bind(Bindings.createBooleanBinding(this::isEmpty, number));
 		possibilitiesText.textProperty().bind(Bindings.createStringBinding(
@@ -103,6 +103,10 @@ public final class SudokuSquare extends Region {
 
     public boolean isEmpty() {
 		return number.get() == 0;
+    }
+
+    public boolean isNotEmpty() {
+        return !isEmpty();
     }
 
     public int getNumber() {

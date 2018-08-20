@@ -1,6 +1,5 @@
 package fxsamples;
 import java.util.Random;
-
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;

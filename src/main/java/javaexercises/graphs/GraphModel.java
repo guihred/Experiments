@@ -1,22 +1,10 @@
 package javaexercises.graphs;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import com.aspose.imaging.internal.Exceptions.Exception;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.aspose.imaging.internal.Exceptions.Exception;
-
 import javaexercises.DisjSets;
 import javafx.scene.paint.Color;
 import simplebuilder.HasLogging;

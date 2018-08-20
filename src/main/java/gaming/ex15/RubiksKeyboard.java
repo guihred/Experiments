@@ -1,13 +1,11 @@
 package gaming.ex15;
 
 import java.util.EnumSet;
-
-import org.slf4j.Logger;
-
 import javafx.event.EventHandler;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class RubiksKeyboard implements EventHandler<KeyEvent> , HasLogging{

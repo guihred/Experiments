@@ -1,7 +1,6 @@
 package gaming.ex12;
 
 import gaming.ex12.resources.ImageResource;
-
 import javafx.scene.canvas.GraphicsContext;
 
 public class Land extends Player {

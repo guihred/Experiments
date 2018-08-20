@@ -23,7 +23,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import simplebuilder.*;
+import simplebuilder.SimpleDropShadowBuilder;
+import simplebuilder.SimpleEllipseBuilder;
+import simplebuilder.SimpleFlowPaneBuilder;
+import simplebuilder.SimpleTextBuilder;
+import simplebuilder.SimpleVBoxBuilder;
 
 public class CenterUsingBind extends Application {
 

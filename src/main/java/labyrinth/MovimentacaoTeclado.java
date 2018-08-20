@@ -1,7 +1,6 @@
 package labyrinth;
 
 import java.util.EnumSet;
-
 import javafx.event.EventHandler;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.input.KeyCode;

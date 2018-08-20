@@ -13,10 +13,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.scene.paint.Color;
+import org.apache.commons.lang3.StringUtils;
 
 public enum Country {
     // ASIA

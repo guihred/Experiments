@@ -1,9 +1,8 @@
 package japstudy;
 
-import java.util.Random;
-
 import japstudy.db.HibernateUtil;
 import japstudy.db.JapaneseLesson;
+import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;

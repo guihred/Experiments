@@ -124,7 +124,7 @@ public final class Chapter8 {
      * do. The random number generator computes the next seed as next(s) = s'm
      * + a % N, where m = 25214903917, a = 11, and N = 248. The inverse of m
      * modulo N is v = 246154705703781, and therefore you can compute the
-     * predecessor of a seed as prev(s) = (s � a) � v % N. To make a double, two
+     * predecessor of a seed as prev(s) = (s x a) x v % N. To make a double, two
      * random numbers are generated, and the top 26 and 27 bits are taken each
      * time. When s is 0, next(s) is 11, so that�s what we want to hit: two
      * consecutive numbers whose top bits are zero. Now, working backwards,

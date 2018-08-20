@@ -1,7 +1,6 @@
 package fxproexercises.ch06;
 
 import java.util.stream.Stream;
-
 import javafx.collections.ListChangeListener;
 
 class MyListenerExamples implements ListChangeListener<String> {

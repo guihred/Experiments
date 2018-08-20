@@ -3,7 +3,6 @@ package contest.db;
 import java.io.File;
 import java.io.IOException;
 import java.util.stream.Stream;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;

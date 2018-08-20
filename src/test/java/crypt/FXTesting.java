@@ -1,6 +1,7 @@
 package crypt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javafx.application.Application;
@@ -13,10 +14,18 @@ import simplebuilder.HasLogging;
 public final class FXTesting implements HasLogging {
     JFXPanel jfxPanel = new JFXPanel();
     Class<? extends Application> classError;
+    Throwable exception;
 
+    private FXTesting() {
+    }
 
-    public void testApplications(List<Class<? extends Application>> applicationClasses)
-            throws InstantiationException, IllegalAccessException {
+    @SafeVarargs
+    public static void testApps(Class<? extends Application>... applicationClasses)
+            throws Throwable {
+        new FXTesting().testApplications(Arrays.asList(applicationClasses));
+    }
+    private void testApplications(List<Class<? extends Application>> applicationClasses)
+            throws Throwable {
         List<Object> testedApps = Collections.synchronizedList(new ArrayList<>());
         long currentTimeMillis = System.currentTimeMillis();
         for (Class<? extends Application> class1 : applicationClasses) {
@@ -32,7 +41,7 @@ public final class FXTesting implements HasLogging {
                     testedApps.add(newInstance);
                 } catch (Throwable e) {
                     getLogger().error("", e);
-                    setClass(class1);
+                    setClass(class1, e);
                 }
             });
         }
@@ -49,12 +58,14 @@ public final class FXTesting implements HasLogging {
         }
         if (classError != null) {
             Assert.fail("Class " + classError.getSimpleName() + " threw an exception");
+            throw exception;
         }
         Assert.assertTrue("TESTS SUCCESSFULL", true);
     }
 
 
-    private synchronized void setClass(Class<? extends Application> class1) {
+    private synchronized void setClass(Class<? extends Application> class1, Throwable e) {
         classError = class1;
+        exception = e;
     }
 }

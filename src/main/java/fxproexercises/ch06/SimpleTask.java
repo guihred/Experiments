@@ -1,10 +1,8 @@
 package fxproexercises.ch06;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.slf4j.Logger;
-
 import javafx.concurrent.Task;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 class SimpleTask extends Task<String> {

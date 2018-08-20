@@ -2,7 +2,6 @@ package exercism;
 
 import static org.junit.Assert.assertEquals;
 
-import exercism.Bob;
 import org.junit.Test;
 
 public class BobTest {

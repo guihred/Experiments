@@ -19,9 +19,7 @@ import java.util.function.ToLongFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
-
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 

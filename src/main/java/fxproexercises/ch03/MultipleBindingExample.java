@@ -1,11 +1,10 @@
 package fxproexercises.ch03;
 
-import org.slf4j.Logger;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class MultipleBindingExample {

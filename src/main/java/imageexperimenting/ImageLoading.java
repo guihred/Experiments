@@ -15,7 +15,6 @@ import com.aspose.imaging.imageoptions.JpegOptions;
 import com.aspose.imaging.imageoptions.PngOptions;
 import com.aspose.imaging.imageoptions.TiffOptions;
 import com.aspose.imaging.sources.FileCreateSource;
-
 import simplebuilder.HasLogging;
 
 public class ImageLoading {

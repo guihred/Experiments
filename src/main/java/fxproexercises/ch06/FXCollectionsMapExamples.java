@@ -8,11 +8,9 @@ package fxproexercises.ch06;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.slf4j.Logger;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 /**

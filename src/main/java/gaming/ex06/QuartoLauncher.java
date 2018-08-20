@@ -1,11 +1,10 @@
 package gaming.ex06;
 
+import fxsamples.Xform;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import fxsamples.Xform;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventTarget;

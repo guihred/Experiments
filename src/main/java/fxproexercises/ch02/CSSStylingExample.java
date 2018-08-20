@@ -5,9 +5,6 @@
  */
 package fxproexercises.ch02;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -33,6 +30,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import simplebuilder.SimpleFlowPaneBuilder;
 import simplebuilder.SimpleHyperlinkBuilder;
 import simplebuilder.SimpleLabelBuilder;

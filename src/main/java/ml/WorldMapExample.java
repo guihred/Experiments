@@ -3,9 +3,6 @@ package ml;
 import java.io.File;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-
 import javafx.application.Application;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
@@ -17,6 +14,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
