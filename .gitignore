@@ -7,3 +7,6 @@
 /sonar-project.properties
 
 /resultado.xlsx
+/*.png
+/*.jpg
+/out/
