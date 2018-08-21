@@ -12,21 +12,15 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 /**
@@ -191,13 +185,12 @@ public class SudokuModel {
             stage1.setScene(new Scene(group));
             stage1.show();
         }
-
     }
 
     private void reset() {
-        createRandomNumbers();
+		createRandomNumbers();
         for (int i = 0; i < MAP_N_SQUARED * MAP_N_SQUARED; i++) {
-            removeRandomNumbers();
+			removeRandomNumbers();
         }
     }
 
@@ -205,32 +198,4 @@ public class SudokuModel {
 	private boolean isNumberFit(SudokuSquare sudokuSquare, int n) {
 		return isNumberFit(n, sudokuSquare.getRow(), sudokuSquare.getCol());
 	}
-
-}
-
-final class NumberButton extends Region {
-
-    private final int number;
-    private BooleanProperty over = new SimpleBooleanProperty(false);
-    public NumberButton(int i) {
-        this.number = i;
-        styleProperty().bind(Bindings.when(over).then("-fx-background-color: white;")
-                .otherwise("-fx-background-color: lightgray;"));
-        setEffect(new InnerShadow());
-        Text text = new Text(i == 0 ? "X" : Integer.toString(i));
-        text.wrappingWidthProperty().bind(widthProperty());
-        text.setTextOrigin(VPos.CENTER);
-        text.layoutYProperty().bind(heightProperty().divide(2));
-        text.setTextAlignment(TextAlignment.CENTER);
-        getChildren().add(text);
-        setPrefSize(30, 30);
-
-    }
-
-    public void setOver(boolean over) {
-        this.over.set(over);
-    }
-    public int getNumber() {
-        return number;
-    }
 }
