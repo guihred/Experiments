@@ -1,53 +1,27 @@
 package election.experiment;
 
-import japstudy.db.HibernateUtil;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-final class CrawlerCompleteCandidateTask extends CrawlerTask {
+final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Integer> {
 
-    private static final int STEP = 100;
+    private static final int STEP = 50;
     private CandidatoDAO candidatoDAO = new CandidatoDAO();
-    private AtomicInteger completeCandidates = new AtomicInteger(0);
+    @Override
+    protected List<Integer> getList() {
+        long total = candidatoDAO.size();
+        return Stream.iterate(0, i -> i + STEP).limit(total / STEP).collect(Collectors.toList());
+    }
 
     @Override
-    protected String task() {
-        updateTitle("Example Task");
-        updateMessage("Starting...");
-        insertProxyConfig();
-        long total = candidatoDAO.size();
-        updateProgress(0, total);
-        List<Thread> ths = new ArrayList<>();
-        for (int i = 0; i < total; i += STEP) {
-            if (isCancelled()) {
-                return "Cancelled";
-            }
-
-            final int j = i;
-            Thread thread = new Thread(() -> {
-                List<Candidato> candidatos = candidatoDAO.list(j, STEP);
-                for (Candidato candidato : candidatos) {
-                    extractCandidateInfo(candidato);
-                }
-            });
-            ths.add(thread);
-            thread.start();
-            long count = ths.stream().filter(Thread::isAlive).count();
-            while (count > 10) {
-                count = ths.stream().filter(Thread::isAlive).count();
-                updateAll(completeCandidates.get(), total);
-            }
+    public void performTask(Integer j) {
+        List<Candidato> candidatos = candidatoDAO.list(j, STEP);
+        for (Candidato candidato : candidatos) {
+            extractCandidateInfo(candidato);
         }
-        while (ths.stream().anyMatch(Thread::isAlive)) {
-            updateAll(completeCandidates.get(), total);
-        }
-        updateAll(completeCandidates.get(), total);
-        HibernateUtil.shutdown();
-        return "Completed at " + LocalTime.now();
     }
 
     private void extractCandidateInfo(Candidato candidato) {
@@ -63,7 +37,6 @@ final class CrawlerCompleteCandidateTask extends CrawlerTask {
                 candidato.setOcupacao(children.get(5).child(1).text());
                 candidato.setGrauInstrucao(children.get(6).child(1).text());
                 candidatoDAO.saveOrUpdate(candidato);
-                completeCandidates.getAndIncrement();
                 break;
             } catch (Exception e) {
                 getLogger().error("ERRO candidato " + candidato, e);

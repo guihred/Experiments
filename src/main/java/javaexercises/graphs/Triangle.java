@@ -79,7 +79,7 @@ class Triangle {
 	}
 
 	public boolean isNeighbour(Linha edge) {
-		return (a == edge.a || b == edge.a || c == edge.a) && (a == edge.b || b == edge.b || c == edge.b);
+        return Stream.of(a, b, c).anyMatch(s -> s == edge.a) && Stream.of(a, b, c).anyMatch(s -> s == edge.b);
 	}
 
 	public boolean isOrientedCCW() {

@@ -2,6 +2,7 @@ package gaming.ex16;
 
 import exercism.MatrixSolver;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class MadTriangle {
 
@@ -90,7 +91,8 @@ public class MadTriangle {
 
     public boolean isNeighbour(MadLinha edge) {
 
-        return (a == edge.getA() || b == edge.getA() || c == edge.getA()) && (a == edge.getB() || b == edge.getB() || c == edge.getB());
+        return Stream.of(a, b, c).anyMatch(edge.getA()::equals)
+                && Stream.of(a, b, c).anyMatch(edge.getB()::equals);
     }
 
     public boolean isOrientedCCW() {

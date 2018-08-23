@@ -126,37 +126,41 @@ public final class LeitorArquivos {
 		Elements select = parse.body().select("TR");
 		for (Element element : select) {
 			Elements children = element.children();
-			List<String> collect = children.stream().map(Element::text).map(String::trim)
+			List<String> lineElements = children.stream().map(Element::text).map(String::trim)
 					.filter(s -> !StringUtil.isBlank(s.trim()) && (s.length() > 1 || StringUtil.isNumeric(s)))
 					.collect(Collectors.toList());
-			if (collect.isEmpty()) {
+			if (lineElements.isEmpty()) {
 				continue;
 			}
 
-			int size = collect.size();
+			int size = lineElements.size();
 
-			String text2 = collect.get(size - 1);
+			String text2 = lineElements.get(size - 1);
 
-			if (size == 5 && StringUtil.isNumeric(text2) || size == 4 && !StringUtil.isNumeric(collect.get(1))
-					|| size == 3 && !StringUtil.isNumeric(collect.get(1))) {
-				String text = collect.get(0);
+            if (isLinhaMedicamento(lineElements, size, text2)) {
+				String text = lineElements.get(0);
 				if (StringUtil.isNumeric(text)) {
-					medicamento.setCodigo(Integer.valueOf(collect.get(0)));
-					medicamento.setNome(collect.get(1));
+					medicamento.setCodigo(Integer.valueOf(lineElements.get(0)));
+					medicamento.setNome(lineElements.get(1));
 
 					medicamento.setQuantidade(Integer.valueOf(text2));
 
 				}
 			} else if (size == 4 && StringUtil.isNumeric(text2)) {
-				medicamento.setLote(collect.get(0));
-				medicamento.setRegistro(collect.get(1).replaceAll("\\D+", ""));
-				medicamento.setQuantidade(Integer.valueOf(collect.get(3)));
+				medicamento.setLote(lineElements.get(0));
+				medicamento.setRegistro(lineElements.get(1).replaceAll("\\D+", ""));
+				medicamento.setQuantidade(Integer.valueOf(lineElements.get(3)));
 				arrayList.add(medicamento);
 				medicamento = medicamento.clonar();
 			}
 		}
 		return arrayList;
 	}
+
+    private static boolean isLinhaMedicamento(List<String> collect, int size, String text2) {
+        return size == 5 && StringUtil.isNumeric(text2) || size == 4 && !StringUtil.isNumeric(collect.get(1))
+        		|| size == 3 && !StringUtil.isNumeric(collect.get(1));
+    }
 
 	public static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) throws IOException {
 		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);

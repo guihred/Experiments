@@ -62,7 +62,7 @@ class MultiLineGraph extends Canvas implements HasLogging {
 
 	}
 
-	public void drawGraph() {
+    public final void drawGraph() {
 		if (dataframe == null) {
 			drawAxis();
 			return;

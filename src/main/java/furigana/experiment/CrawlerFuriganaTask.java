@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         new CrawlerFuriganaTask().migrateCities();
     }
 
-    private Map<String, String> mapReading = new HashMap<>();
+    private Map<String, String> mapReading = Collections.synchronizedMap(new HashMap<>());
 
     private List<String> getLines() {
         List<String> lines = new ArrayList<>();

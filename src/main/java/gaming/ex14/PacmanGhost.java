@@ -319,7 +319,7 @@ public class PacmanGhost extends Group implements HasLogging {
 		}
 	}
 
-	public Circle getCircle() {
+    public final Circle getCircle() {
         return circle;
     }
 
