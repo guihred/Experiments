@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -105,13 +100,13 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		subScene.widthProperty().bind(primaryStage.widthProperty());
 		camera = new PerspectiveCamera(true);
 		camera.setNearClip(0.1);
+        camera.setTranslateZ(-100);
 		camera.setFarClip(1000.0);
-		camera.setTranslateZ(-100);
 		subScene.setCamera(camera);
 		PointLight light = new PointLight(Color.rgb(125, 125, 125));
-		light.translateXProperty().bind(camera.translateXProperty());
-		light.translateYProperty().bind(camera.translateYProperty());
-		light.translateZProperty().bind(camera.translateZProperty());
+        light.translateXProperty().bind(camera.translateXProperty());
+        light.translateYProperty().bind(camera.translateYProperty());
+        light.translateZProperty().bind(camera.translateZProperty());
 		root.getChildren().add(light);
 
 		MeshView[] fantasmas = { 
@@ -134,10 +129,10 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		// Step 2b: Add a Movement Keyboard Handler
 		sc.setFill(Color.TRANSPARENT);
 		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+        sc.setOnKeyReleased(value::keyReleased);
 		sc.setOnKeyPressed(value);
-		sc.setOnKeyReleased(value::keyReleased);
+        primaryStage.setScene(sc);
 		primaryStage.setTitle("EXP 1: Labyrinth");
-		primaryStage.setScene(sc);
 		primaryStage.show();
 	}
 

@@ -30,8 +30,7 @@ final class MouseMovementHandler implements EventHandler<MouseEvent> {
 			// Reached right edge of the screen
 			Platform.runLater(() -> {
 				try {
-					Robot robot = new Robot();
-					robot.mouseMove(1, (int) me.getY());
+					new Robot().mouseMove(1, (int) me.getY());
 					mouseOldX = 0;
 					mousePosX = 0;
 				} catch (Exception e) {

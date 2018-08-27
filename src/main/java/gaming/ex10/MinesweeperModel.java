@@ -43,32 +43,7 @@ public class MinesweeperModel {
                 map[i][j] = new MinesweeperSquare(i, j);
             }
         }
-        final Random random = new Random();
-
-        long count = 0;
-        while (count < NUMBER_OF_BOMBS) {
-
-            int j = random.nextInt(MAP_WIDTH);
-            int k = random.nextInt(MAP_HEIGHT);
-
-            final MinesweeperSquare mem = map[j][k];
-			mem.setMinesweeperImage(MinesweeperImage.BOMB);
-            count = Stream.of(map).flatMap(Stream::of).filter(e -> e.getMinesweeperImage() == MinesweeperImage.BOMB)
-                    .count();
-        }
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            for (int j = 0; j < MAP_HEIGHT; j++) {
-				if (map[i][j].getMinesweeperImage() == MinesweeperImage.BLANK) {
-					int num = countBombsAround(i, j);
-                    if (num != 0) {
-                        map[i][j].setNum(num);
-						map[i][j].setMinesweeperImage(MinesweeperImage.NUMBER);
-                    }
-
-                }
-                createMouseClickedEvent(map[i][j]);
-            }
-        }
+        setBombs();
         startTime = System.currentTimeMillis();
 
     }
@@ -168,6 +143,18 @@ public class MinesweeperModel {
 				map[i][j].setState(MinesweeperSquare.State.HIDDEN);
             }
         }
+        setBombs();
+        gridPane.getChildren().clear();
+        for (int i = 0; i < MAP_WIDTH; i++) {
+            for (int j = 0; j < MAP_HEIGHT; j++) {
+                MinesweeperSquare map1 = map[i][j];
+                gridPane.add(new StackPane(map1, map1.getFinalShape(), map1.getFlag()), i, j);
+            }
+        }
+        startTime = System.currentTimeMillis();
+    }
+
+    private void setBombs() {
         final Random random = new Random();
         long count = 0;
         while (count < NUMBER_OF_BOMBS) {
@@ -193,14 +180,6 @@ public class MinesweeperModel {
                 createMouseClickedEvent(map[i][j]);
             }
         }
-        gridPane.getChildren().clear();
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            for (int j = 0; j < MAP_HEIGHT; j++) {
-                MinesweeperSquare map1 = map[i][j];
-                gridPane.add(new StackPane(map1, map1.getFinalShape(), map1.getFlag()), i, j);
-            }
-        }
-        startTime = System.currentTimeMillis();
     }
     void showNeighbours(int i, int j) {
 		map[i][j].setState(MinesweeperSquare.State.SHOWN);

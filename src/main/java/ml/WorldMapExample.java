@@ -15,12 +15,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import simplebuilder.ResourceFXUtils;
-import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleComboBoxBuilder;
-import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.*;
 
-public class WorldMapExample extends Application {
+public class WorldMapExample extends Application implements HasLogging {
 
 
     @Override
@@ -30,24 +27,15 @@ public class WorldMapExample extends Application {
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root, 800, 600);
 		theStage.setScene(theScene);
-
 		WorldMapGraph canvas = new WorldMapGraph();
         root.getChildren().add(newSlider("Labels", 1, 10, canvas.binsProperty()));
-        //        DataframeML x = new DataframeML.DataframeBuilder("POPULACAO.csv")
-        //                .filter("Unit", "Persons"::equals)
-        //                .filter("SEX", "TT"::equals)
-        //                .filter("Country", e -> !e.toString().matches("World|OECD - Total|G7"))
-        //                .filter("SUBJECT", "YP99TLL1_ST"::equals)
-        //                .categorize("Country")
-        //                .categorize("TIME").build();
-
         DataframeML x = DataframeML.builder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
         canvas.valueHeaderProperty().set("2016");
         canvas.setDataframe(x,
                 x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
-        File file = new File("out");
         Text text = new Text();
-        String[] list = file.list();
+        File file = ResourceFXUtils.toFile("out");
+        String[] list = file.list((dir, name) -> name.endsWith(".csv"));
         ComboBox<String> build2 = new SimpleComboBoxBuilder<String>().items("2016").select("2016")
                 .onSelect(canvas.valueHeaderProperty()::set).build();
 
@@ -83,7 +71,7 @@ public class WorldMapExample extends Application {
         try {
             text.setText(x2.list("Indicator Name").get(0).toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            getLogger().error("ERROR CHANGING INDICATOR", e);
         }
     }
 

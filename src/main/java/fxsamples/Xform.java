@@ -1,4 +1,5 @@
 package fxsamples;
+
 /*
  * Copyright (c) 2013, 2014 Oracle and/or its affiliates.
  * All rights reserved. Use is subject to license terms.
@@ -206,4 +207,17 @@ public class Xform extends Group {
 				+ p.getY() + ", " + p.getZ() + ")  " + "ip = (" + ip.getX()
 				+ ", " + ip.getY() + ", " + ip.getZ() + ")]";
 	}
+
+    public void setRotateX(double x) {
+        rx.setAngle(x);
+    }
+
+    public void setRotateY(double y) {
+        ry.setAngle(y);
+    }
+
+    public void setRotateZ(double z) {
+        rz.setAngle(z);
+    }
+
 }

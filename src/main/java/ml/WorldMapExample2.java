@@ -28,7 +28,7 @@ public class WorldMapExample2 extends Application {
 		root.getChildren().add(newSlider("Radius", -2, 2, canvas.radiusProperty()));
 		root.getChildren().add(newSlider("X", -360, 360, canvas.yScaleProperty()));
 		root.getChildren().add(newSlider("Y", -360, 360, canvas.xScaleProperty()));
-        DataframeML points = DataframeML.builder(ResourceFXUtils.toFullPath("cities.csv"))
+        DataframeML points = DataframeML.builder("cities.csv")
 
 				.build();
 		String latDegree = "Lat Degree";

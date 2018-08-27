@@ -10,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -76,9 +75,8 @@ public class HistogramExample extends Application {
 	}
 
     private VBox newSlider(String string, int min, int max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
+        return new VBox(new Text(string),
+                new SimpleSliderBuilder().min(min).max(max).bindBidirectional(radius).build());
     }
 
     public static void main(String[] args) {

@@ -7,7 +7,7 @@ import java.util.Objects;
  * protected. Show that the LabeledPoint class can access these variables only
  * in LabeledPoint instances.
  */
-public class Point implements Cloneable {
+public class Point {
     protected double y;
     protected double x;
 
@@ -15,8 +15,8 @@ public class Point implements Cloneable {
         this.x = x;
         this.y = y;
     }
-    @Override
-    protected Point clone() throws CloneNotSupportedException {
+
+    public Point copy() {
         return new Point(x, y);
     }
 

@@ -1,15 +1,9 @@
 package ml;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
-import java.util.function.DoubleUnaryOperator;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -19,6 +13,7 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public class DataframeML implements HasLogging {
 
@@ -324,9 +319,8 @@ public class DataframeML implements HasLogging {
     public void logln() {
         getLogger().info("");
     }
-
     public final void readCSV(String csvFile) {
-        try (Scanner scanner = new Scanner(new File(csvFile));) {
+        try (Scanner scanner = new Scanner(ResourceFXUtils.toFile(csvFile));) {
             List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
                     .collect(Collectors.toList());
             for (String column : header) {

@@ -135,7 +135,7 @@ public class JapaneseLessonApplication extends Application {
 
 	public class JapaneseLessonDisplayer extends Stage {
 		private ObservableList<JapaneseLesson> lessons;
-		private IntegerProperty current = new SimpleIntegerProperty(1);
+		private IntegerProperty currentIndex = new SimpleIntegerProperty(1);
 		private BooleanProperty tested = new SimpleBooleanProperty(false);
 		private DoubleProperty score = new SimpleDoubleProperty(1);
 
@@ -147,7 +147,7 @@ public class JapaneseLessonApplication extends Application {
 			Label romaji = new Label();
 			romaji.setTextAlignment(TextAlignment.CENTER);
 			lessons = observableList;
-			current.addListener((observable, oldValue, newValue) -> {
+			currentIndex.addListener((observable, oldValue, newValue) -> {
 				if (newValue != null) {
 					english.setText(lessons.get(newValue.intValue()).getEnglish());
 					romaji.setText(lessons.get(newValue.intValue()).getRomaji());
@@ -161,7 +161,7 @@ public class JapaneseLessonApplication extends Application {
             next.setOnAction(e -> nextLesson(answer));
 
 			setWidth(400);
-			current.set(0);
+			currentIndex.set(0);
 			centerOnScreen();
 			Label label = new Label(LESSON);
 			Label label2 = new Label();
@@ -184,12 +184,12 @@ public class JapaneseLessonApplication extends Application {
 		private void nextLesson(TextField answer) {
 			if (!tested.get()) {
 				tested.set(true);
-				String japanese2 = lessons.get(current.get()).getJapanese();
+				String japanese2 = lessons.get(currentIndex.get()).getJapanese();
 				String text = answer.getText();
 				double compare = CompareAnswers.compare(japanese2, text);
 				score.set((score.get() + compare) / 2);
 			} else {
-				current.set((current.get() + 1) % lessons.size());
+				currentIndex.set((currentIndex.get() + 1) % lessons.size());
 				tested.set(false);
 				answer.setText("");
 			}

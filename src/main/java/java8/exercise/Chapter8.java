@@ -123,7 +123,7 @@ public final class Chapter8 {
      * consecutive numbers whose top bits are zero. Now, working backwards,
      * let's start with s = prev(prev(prev(0))). Since the Random constructor
      * sets s = (initialSeed ^ m) % N, offer it s = prev(prev(prev(0))) ^ m =
-     * 164311266871034, and you�ll get a zero after two calls to nextDouble. But
+     * 164311266871034, and you'll get a zero after two calls to nextDouble. But
      * that is still too obvious. Generate a million predecessors, using a
      * stream of course, and pick the minimum seed. Hint: You will get a zero
      * after 376050 calls to nextDouble.

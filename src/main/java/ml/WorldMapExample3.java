@@ -24,18 +24,10 @@ public class WorldMapExample3 extends Application {
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root, 800, 600);
 		theStage.setScene(theScene);
+        WorldMapGraph canvas = new WorldMapGraph();
 
-		WorldMapGraph canvas = new WorldMapGraph();
         root.getChildren().add(newSlider("Labels", 1, 10, canvas.binsProperty()));
-        //        DataframeML x = new DataframeML.DataframeBuilder("POPULACAO.csv")
-        //                .filter("Unit", "Persons"::equals)
-        //                .filter("SEX", "TT"::equals)
-        //                .filter("Country", e -> !e.toString().matches("World|OECD - Total|G7"))
-        //                .filter("SUBJECT", "YP99TLL1_ST"::equals)
-        //                .categorize("Country")
-        //                .categorize("TIME").build();
-
-        DataframeML x = DataframeML.builder("WDICountry.csv").build();
+        DataframeML x = new DataframeML("WDICountry.csv");
         canvas.valueHeaderProperty().set("Currency Unit");
         canvas.setDataframe(x,
                 x.cols().stream().filter(e -> e.contains("able N")).findFirst().orElse("﻿Table Name"));

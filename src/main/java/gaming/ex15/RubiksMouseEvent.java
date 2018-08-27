@@ -32,8 +32,8 @@ final class RubiksMouseEvent implements EventHandler<MouseEvent> {
 				try {
 					Robot robot = new Robot();
 					robot.mouseMove(1, (int) me.getY());
+                    mousePosX = 0;
 					mouseOldX = 0;
-					mousePosX = 0;
 				} catch (Exception e) {
                     LOG.error("", e);
 				}

@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
 import javafx.geometry.Point3D;
-import javafx.scene.DepthTest;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
+import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -19,12 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.CullFace;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.TriangleMesh;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -32,35 +23,23 @@ public class Chart3dDemo extends Application {
 
     // size of graph
     private int size = 400;
-
     // variables for mouse interaction
     private double mousePosX, mousePosY;
     private double mouseOldX, mouseOldY;
     private final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
     private final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
-
     @Override
     public void start(Stage primaryStage) {
-
-        // create axis walls
         Group cube = createCube(size);
-
-        // initial cube rotation
         cube.getTransforms().addAll(rotateX, rotateY);
-
-        // add objects to scene
         StackPane root = new StackPane();
         root.getChildren().add(cube);
-
         // perlin noise
         float[][] noiseArray = createNoise(size);
-
         // mesh
         TriangleMesh mesh = new TriangleMesh();
-
         // create points for x/z
         float amplification = 100; // amplification of noise
-
         for (int x = 0; x < size; x++) {
             for (int z = 0; z < size; z++) {
                 mesh.getPoints().addAll(x, noiseArray[x][z] * amplification, z);

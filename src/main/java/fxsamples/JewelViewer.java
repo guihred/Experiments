@@ -3,12 +3,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javafx.application.Application;
-import javafx.scene.AmbientLight;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -61,23 +56,18 @@ public class JewelViewer extends Application {
 		meshViews.setScaleX(MODEL_SCALE_FACTOR);
 		meshViews.setScaleY(MODEL_SCALE_FACTOR);
 		meshViews.setScaleZ(MODEL_SCALE_FACTOR);
-
 		PhongMaterial sample = new PhongMaterial(JEWEL_COLOR);
 		sample.setSpecularColor(LIGHT_COLOR);
 		sample.setSpecularPower(16);
 		meshViews.setMaterial(sample);
-
 		meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS),
 					new Rotate(-90, Rotate.X_AXIS));
-
 		pointLight = new PointLight(LIGHT_COLOR);
-		pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
 		pointLight.setTranslateY(VIEWPORT_SIZE / 2);
 		pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
-
+        pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
 		Color ambientColor = Color.rgb(80, 80, 80, 0);
 		AmbientLight ambient = new AmbientLight(ambientColor);
-
 		root = new Group(meshViews);
 		root.getChildren().add(pointLight);
 		root.getChildren().add(ambient);

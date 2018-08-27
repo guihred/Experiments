@@ -1,20 +1,8 @@
 package ml;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.IntSummaryStatistics;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
@@ -26,18 +14,18 @@ public class HeatGraph extends Canvas {
     private static final double SQR_ROOT_OF_3 = Math.sqrt(3);
 	private final DoubleProperty layout = new SimpleDoubleProperty(30);
 	private double maxLayout = 480;
+    private double xProportion;
+    private double yProportion;
 	private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
 	private final IntegerProperty bins = new SimpleIntegerProperty(20);
 	private final IntegerProperty ybins = new SimpleIntegerProperty(20);
-	private double xProportion;
-	private double yProportion;
+    private DoubleProperty radius = new SimpleDoubleProperty(30);
 	private final StringProperty xHeader = new SimpleStringProperty();
 	private final StringProperty yHeader = new SimpleStringProperty();
 
 	private GraphicsContext gc;
 	private ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
 
-	private DoubleProperty radius = new SimpleDoubleProperty(30);
     private DataframeML data;
     private String title;
 
@@ -47,11 +35,11 @@ public class HeatGraph extends Canvas {
         drawGraph();
         InvalidationListener listener = observable -> drawGraph();
         stats.addListener(listener);
-        xHeader.addListener(listener);
-        yHeader.addListener(listener);
-        lineSize.addListener(listener);
-        bins.addListener(listener);
         ybins.addListener(listener);
+        bins.addListener(listener);
+        yHeader.addListener(listener);
+        xHeader.addListener(listener);
+        lineSize.addListener(listener);
         radius.addListener(listener);
         layout.addListener(listener);
     }

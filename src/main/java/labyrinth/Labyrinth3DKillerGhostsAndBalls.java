@@ -5,19 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -64,10 +58,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	private Group root = new Group();
 
 	private Sphere checkBalls(Bounds boundsInParent) {
-		return Stream.of(balls).flatMap(Stream::of)
-				.filter(b -> b != null)
-				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
-				.findFirst().orElse(null);
+        return checkBalls(boundsInParent, balls);
 	}
 
 	private void createLabyrinth(Group root1) {
@@ -96,37 +87,37 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	@Override
 	public void endKeyboard() {
 		Sphere ballGot = checkBalls(camera.getBoundsInParent());
-		if (ballGot != null) {
-			root.getChildren().remove(ballGot);
-			for (int i = 0; i < balls.length; i++) {
-				for (int j = 0; j < balls[i].length; j++) {
-					if (ballGot == balls[i][j]) {
-						balls[i][j] = null;
-					}
-				}
-			}
-			ghostCount.set(ghostCount.get() - 1);
-			if (ghostCount.get() == 0) {
-				movimentacao.stop();
-				Stage dialogStage = new Stage();
-				dialogStage.initModality(Modality.WINDOW_MODAL);
-				Button button = new Button("Ok.");
-				button.setOnAction(e -> {
-					camera.setTranslateX(0);
-					camera.setTranslateY(0);
-					camera.setTranslateZ(0);
-					movimentacao.start();
-					dialogStage.close();
-				});
-				VBox vbox = new VBox();
-				vbox.getChildren().addAll(new Text("Você Venceu"), button);
-				vbox.setAlignment(Pos.CENTER);
-				vbox.setPadding(new Insets(5));
-				dialogStage.setScene(new Scene(vbox));
-				dialogStage.show();
-			}
-
-		}
+        if (ballGot == null) {
+            return;
+        }
+        root.getChildren().remove(ballGot);
+        for (int i = 0; i < balls.length; i++) {
+            for (int j = 0; j < balls[i].length; j++) {
+                if (ballGot == balls[i][j]) {
+                    balls[i][j] = null;
+                }
+            }
+        }
+        ghostCount.set(ghostCount.get() - 1);
+        if (ghostCount.get() == 0) {
+            movimentacao.stop();
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            Button button = new Button("Ok.");
+            button.setOnAction(e -> {
+                camera.setTranslateZ(0);
+                camera.setTranslateY(0);
+                camera.setTranslateX(0);
+                movimentacao.start();
+                dialogStage.close();
+            });
+            VBox vbox = new VBox();
+            vbox.getChildren().addAll(new Text("Você Venceu"), button);
+            vbox.setAlignment(Pos.CENTER);
+            vbox.setPadding(new Insets(5));
+            dialogStage.setScene(new Scene(vbox));
+            dialogStage.show();
+        }
 	}
 
 	private MeshView generateGhost(String arquivo, Color animalColor) {

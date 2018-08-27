@@ -1,6 +1,7 @@
 package labyrinth;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Stream;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -9,6 +10,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +26,14 @@ public interface CommomLabyrinth {
 				.map(LabyrinthWall::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
+
+    default Sphere checkBalls(Bounds boundsInParent, Sphere[][] balls2) {
+        return Stream.of(balls2).flatMap(Stream::of)
+                .filter(Objects::nonNull)
+                .filter(b -> b.getBoundsInParent().intersects(boundsInParent))
+                .findFirst().orElse(null);
+    }
+
 
 	default void displayEndOfGame(Runnable run) {
 		Stage dialogStage = new Stage();

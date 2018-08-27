@@ -7,14 +7,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
-	/**
-	 * 
-	 */
 	private final CommomLabyrinth labyrinth3dWallTexture;
 	private PerspectiveCamera camera;
 	private static final double CAMERA_MODIFIER = 50.0;
 	private static final double CAMERA_QUANTITY = 5.0;
-	private final EnumSet<KeyCode> enumSet = EnumSet.noneOf(KeyCode.class);
+	private final EnumSet<KeyCode> keysPressed = EnumSet.noneOf(KeyCode.class);
 	public MovimentacaoTeclado(CommomLabyrinth labyrinth3dWallTexture) {
 		this.labyrinth3dWallTexture = labyrinth3dWallTexture;
 		camera = labyrinth3dWallTexture.getCamera();
@@ -22,21 +19,18 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 
 	public void keyReleased(KeyEvent event) {
 		KeyCode keycode = event.getCode();
-		enumSet.remove(keycode);
+		keysPressed.remove(keycode);
 	}
 
 	@Override
 	public void handle(KeyEvent event) {
 		double change = CAMERA_QUANTITY;
-		// Add shift modifier to simulate "Running Speed"
 		if (event.isShiftDown()) {
 			change = CAMERA_MODIFIER;
 		}
-		// What key did the user press?
 		KeyCode keycode = event.getCode();
-		enumSet.add(keycode);
-		// Step 2c: Add Zoom controls
-		if (enumSet.contains(KeyCode.W)) {
+		keysPressed.add(keycode);
+		if (keysPressed.contains(KeyCode.W)) {
 			double sin = Math.sin(Math.toRadians(camera.getRotate()))
 					* change;
 			double cos = Math.cos(Math.toRadians(camera.getRotate()))
@@ -51,7 +45,7 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 				camera.setTranslateZ(camera.getTranslateZ() - cos);
 			}
 		}
-		if (enumSet.contains(KeyCode.S)) {
+		if (keysPressed.contains(KeyCode.S)) {
 			double sin = Math.sin(Math.toRadians(camera.getRotate()))
 					* change;
 			double cos = Math.cos(Math.toRadians(camera.getRotate()))
@@ -67,7 +61,7 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 			}
 		}
 		// Step 2d: Add Strafe controls
-		if (enumSet.contains(KeyCode.A)) {
+		if (keysPressed.contains(KeyCode.A)) {
 
 			double sin = Math.sin(Math.toRadians(camera.getRotate() + 90)) * change;
 			double cos = Math.cos(Math.toRadians(camera.getRotate() + 90)) * change;
@@ -81,10 +75,10 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 				camera.setTranslateZ(camera.getTranslateZ() + cos);
 			}
 		}
-		if (enumSet.contains(KeyCode.DOWN)) {
+		if (keysPressed.contains(KeyCode.DOWN)) {
 			camera.setTranslateY(camera.getTranslateY() + change);
 		}
-		if (enumSet.contains(KeyCode.D)) {
+		if (keysPressed.contains(KeyCode.D)) {
 			double sin = Math.sin(Math.toRadians(camera.getRotate() - 90)) * change;
 			double cos = Math.cos(Math.toRadians(camera.getRotate() - 90)) * change;
 
@@ -97,7 +91,7 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 				camera.setTranslateZ(camera.getTranslateZ() + cos);
 			}
 		}
-		if (enumSet.contains(KeyCode.UP)) {
+		if (keysPressed.contains(KeyCode.UP)) {
 			camera.setTranslateY(camera.getTranslateY() - change);
 		}
 

@@ -18,19 +18,19 @@ public class GabrielTopology extends BaseTopology {
 		Random rnd = new Random();
 		int bound = 100;
 		int nextInt = rnd.nextInt(180) - 180;
+        double y = bound * Math.sin(Math.toRadians(nextInt));
 		double x = bound * Math.cos(Math.toRadians(nextInt));
-		double y = bound * Math.sin(Math.toRadians(nextInt));
 		for (int i = 0; i < size; i++) {
 			Cell cell = graph.getModel().addCell(BaseTopology.identifier(i), CellType.CIRCLE);
 			nextInt = rnd.nextInt(360);
+            x += bound * Math.cos(Math.toRadians(nextInt));
 			y += bound * Math.sin(Math.toRadians(nextInt));
-			x += bound * Math.cos(Math.toRadians(nextInt));
 			cell.relocate(x, y);
 		}
 		List<Cell> cells = graph.getModel().getAddedCells();
 		for (Cell cell : cells) {
+            double y1 = cell.getLayoutY();
 			double x1 = cell.getLayoutX();
-			double y1 = cell.getLayoutY();
 			for (Cell cell2 : cells) {
 				double m = (x1 + cell2.getLayoutX()) / 2;
 				double n = (y1 + cell2.getLayoutY()) / 2;

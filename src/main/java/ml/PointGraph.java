@@ -4,12 +4,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.Iterator;
 import java.util.List;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
@@ -41,18 +36,15 @@ public class PointGraph extends Canvas {
         drawGraph();
         InvalidationListener listener = observable -> drawGraph();
         stats.addListener(listener);
-        xHeader.addListener(listener);
-        yHeader.addListener(listener);
         lineSize.addListener(listener);
         bins.addListener(listener);
-        ybins.addListener(listener);
         radius.addListener(listener);
+        ybins.addListener(listener);
+        xHeader.addListener(listener);
+        yHeader.addListener(listener);
         layout.addListener(listener);
     }
 
-	public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
-		return stats;
-	}
 
     public void drawAxis(DoubleSummaryStatistics xStats, DoubleSummaryStatistics yStats) {
         String title = xHeader.get() + " X " + yHeader.get();
@@ -216,5 +208,9 @@ public class PointGraph extends Canvas {
 	public final void setRadius(final double radius) {
 		radiusProperty().set(radius);
 	}
+
+    public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
+        return stats;
+    }
 
 }

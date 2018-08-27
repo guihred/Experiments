@@ -4,12 +4,7 @@ import japstudy.db.HibernateUtil;
 import japstudy.db.JapaneseLesson;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -85,8 +80,8 @@ public class JapaneseLessonDisplay extends Application {
 	private void nextLesson(TextField answer) {
 		if (!tested.get()) {
 			tested.set(true);
+            String text = answer.getText();
 			String japanese2 = lessons.get(current.get()).getJapanese();
-			String text = answer.getText();
 			double compare = CompareAnswers.compare(japanese2, text);
 			score.set((score.get() + compare) / 2);
 		} else {

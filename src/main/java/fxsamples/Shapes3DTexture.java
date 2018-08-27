@@ -93,14 +93,12 @@ public class Shapes3DTexture extends Application {
 		pyramid.setMaterial(material);
 		group.getChildren().add(pyramid);
 		// scene
-
 		StackPane root = new StackPane();
 		root.getChildren().add(group);
 		Scene scene = new Scene(root, 1600, 900, true,
 				SceneAntialiasing.BALANCED);
 		scene.setCamera(new PerspectiveCamera());
 		// interaction listeners
-
 		scene.setOnMousePressed(me -> {
 			mouseOldX = me.getSceneX();
 			mouseOldY = me.getSceneY();

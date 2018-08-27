@@ -1,5 +1,6 @@
 package fxproexercises.ch07;
 
+import fxsamples.Xform;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -11,13 +12,10 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import simplebuilder.SimpleRotateBuilder;
 
 public class Chart3dSampleApp extends Application {
+    private static final int DEPTH = 300;
     private static final double CAMERA_DISTANCE = 1450;
     private static final double CONTROL_MULTIPLIER = 10.1;
     private static final double SHIFT_MULTIPLIER = 0.1;
@@ -60,24 +58,19 @@ public class Chart3dSampleApp extends Application {
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setDiffuseColor(Color.DARKRED);
         redMaterial.setSpecularColor(Color.RED);
-
         final PhongMaterial greenMaterial = new PhongMaterial();
         greenMaterial.setDiffuseColor(Color.DARKGREEN);
         greenMaterial.setSpecularColor(Color.GREEN);
-
         final PhongMaterial blueMaterial = new PhongMaterial();
         blueMaterial.setDiffuseColor(Color.DARKBLUE);
         blueMaterial.setSpecularColor(Color.BLUE);
-
-        final Box xAxis = new Box(300, 1, 300);
-        final Box yAxis = new Box(1, 300, 300);
-        final Box zAxis = new Box(300, 300, 1);
-
+        final Box xAxis = new Box(DEPTH, 1, DEPTH);
+        final Box yAxis = new Box(1, DEPTH, DEPTH);
+        final Box zAxis = new Box(DEPTH, DEPTH, 1);
         yAxis.setTranslateY(-150);
         yAxis.setTranslateX(150);
         zAxis.setTranslateY(-150);
         zAxis.setTranslateZ(150);
-
         xAxis.setMaterial(redMaterial);
         yAxis.setMaterial(greenMaterial);
         zAxis.setMaterial(blueMaterial);
@@ -96,8 +89,8 @@ public class Chart3dSampleApp extends Application {
         camera.setNearClip(0.1);
         camera.setFarClip(10000.0);
         camera.setTranslateZ(-CAMERA_DISTANCE);
-        cameraXform.ry.setAngle(0);
-        cameraXform.rx.setAngle(0);
+        cameraXform.setRotateY(0);
+        cameraXform.setRotateX(0);
     }
 
     private void buildChart() {
@@ -192,28 +185,28 @@ public class Chart3dSampleApp extends Application {
                 modifier = 10.0;
             }
             if (me.isPrimaryButtonDown()) {
-                cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
-                cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
+                cameraXform.setRotateY(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
+                cameraXform.setRotateX(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
             } else if (me.isSecondaryButtonDown()) {
                 double z = camera.getTranslateZ();
                 double newZ = z + mouseDeltaX * modifierFactor * modifier;
                 camera.setTranslateZ(newZ);
             } else if (me.isMiddleButtonDown()) {
-                cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
-                cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
+                cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
+                cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
             }
         });
     }
 
     private void moveDown(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.t.setY(cameraXform2.t.getY() + 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() + 10.0 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 10.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateX(cameraXform.getRotateX() + 10.0 * ALT_MULTIPLIER);
         } else if (event.isControlDown()) {
-            cameraXform2.t.setY(cameraXform2.t.getY() + 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() + 1.0 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown()) {
-            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 2.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateX(cameraXform.getRotateX() + 2.0 * ALT_MULTIPLIER);
         } else if (event.isShiftDown()) {
             double z2 = camera.getTranslateZ();
             double newZ2 = z2 - 5.0 * SHIFT_MULTIPLIER;
@@ -223,37 +216,37 @@ public class Chart3dSampleApp extends Application {
 
     private void moveLeft(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.t.setX(cameraXform2.t.getX() - 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() - 10.0 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 10.0 * ALT_MULTIPLIER); // -
+            cameraXform.setRotateY(cameraXform.getRotateY() + 10.0 * ALT_MULTIPLIER); // -
         } else if (event.isControlDown()) {
-            cameraXform2.t.setX(cameraXform2.t.getX() - 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() - 1.0 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown()) {
-            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER); // -
+            cameraXform.setRotateY(cameraXform.getRotateY() + 2.0 * ALT_MULTIPLIER); // -
         }
     }
 
     private void moveRight(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.t.setX(cameraXform2.t.getX() + 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() + 10.0 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 10.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateY(cameraXform.getRotateY() - 10.0 * ALT_MULTIPLIER);
         } else if (event.isControlDown()) {
-            cameraXform2.t.setX(cameraXform2.t.getX() + 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() + 1.0 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown()) {
-            cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 2.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateY(cameraXform.getRotateY() - 2.0 * ALT_MULTIPLIER);
         }
     }
 
     private void moveUp(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.t.setY(cameraXform2.t.getY() - 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() - 10.0 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 10.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateX(cameraXform.getRotateX() - 10.0 * ALT_MULTIPLIER);
         } else if (event.isControlDown()) {
-            cameraXform2.t.setY(cameraXform2.t.getY() - 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() - 1.0 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown()) {
-            cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 2.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateX(cameraXform.getRotateX() - 2.0 * ALT_MULTIPLIER);
         } else if (event.isShiftDown()) {
             double z1 = camera.getTranslateZ();
             double newZ1 = z1 + 5.0 * SHIFT_MULTIPLIER;
@@ -263,12 +256,12 @@ public class Chart3dSampleApp extends Application {
 
     private void resetPosition(KeyEvent event) {
         if (event.isShiftDown()) {
-            cameraXform.ry.setAngle(0.0);
-            cameraXform.rx.setAngle(0.0);
-            camera.setTranslateZ(-300.0);
+            cameraXform.setRotateY(0.0);
+            cameraXform.setRotateX(0.0);
+            camera.setTranslateZ(-DEPTH);
         }
-        cameraXform2.t.setX(0.0);
-        cameraXform2.t.setY(0.0);
+        cameraXform2.setTx(0.0);
+        cameraXform2.setTy(0.0);
     }
 
     private void toggleVisible(KeyEvent event) {
@@ -295,185 +288,6 @@ public class Chart3dSampleApp extends Application {
         launch(args);
     }
 
-    public static class Xform extends Group {
 
-        public Translate t = new Translate();
-
-        public Translate p = new Translate();
-        public Translate ip = new Translate();
-        public Rotate rx = new SimpleRotateBuilder().axis(Rotate.X_AXIS).build();
-        public Rotate ry = new SimpleRotateBuilder().axis(Rotate.Y_AXIS).build();
-        public Rotate rz = new SimpleRotateBuilder().axis(Rotate.Z_AXIS).build();
-        public Scale s = new Scale();
-        public Xform() {
-            super();
-            getTransforms().addAll(t, rz, ry, rx, s);
-        }
-
-        public Xform(RotateOrder rotateOrder) {
-            super();
-            // choose the order of rotations based on the rotateOrder
-            switch (rotateOrder) {
-                case XYZ:
-                    getTransforms().addAll(t, p, rz, ry, rx, s, ip);
-                    break;
-                case XZY:
-                    getTransforms().addAll(t, p, ry, rz, rx, s, ip);
-                    break;
-                case YXZ:
-                    getTransforms().addAll(t, p, rz, rx, ry, s, ip);
-                    break;
-                case YZX:
-                    getTransforms().addAll(t, p, rx, rz, ry, s, ip); // For Camera
-                    break;
-                case ZXY:
-                    getTransforms().addAll(t, p, ry, rx, rz, s, ip);
-                    break;
-                case ZYX:
-                    getTransforms().addAll(t, p, rx, ry, rz, s, ip);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public void reset() {
-            t.setX(0.0);
-            t.setY(0.0);
-            t.setZ(0.0);
-            rx.setAngle(0.0);
-            ry.setAngle(0.0);
-            rz.setAngle(0.0);
-            s.setX(1.0);
-            s.setY(1.0);
-            s.setZ(1.0);
-            p.setX(0.0);
-            p.setY(0.0);
-            p.setZ(0.0);
-            ip.setX(0.0);
-            ip.setY(0.0);
-            ip.setZ(0.0);
-        }
-
-        public void resetTSP() {
-            t.setX(0.0);
-            t.setY(0.0);
-            t.setZ(0.0);
-            s.setX(1.0);
-            s.setY(1.0);
-            s.setZ(1.0);
-            p.setX(0.0);
-            p.setY(0.0);
-            p.setZ(0.0);
-            ip.setX(0.0);
-            ip.setY(0.0);
-            ip.setZ(0.0);
-        }
-
-        public void setPivot(double x, double y, double z) {
-            p.setX(x);
-            p.setY(y);
-            p.setZ(z);
-            ip.setX(-x);
-            ip.setY(-y);
-            ip.setZ(-z);
-        }
-
-        public void setRotate(double x, double y, double z) {
-            rx.setAngle(x);
-            ry.setAngle(y);
-            rz.setAngle(z);
-        }
-
-        public void setRotateX(double x) {
-            rx.setAngle(x);
-        }
-
-        public void setRotateY(double y) {
-            ry.setAngle(y);
-        }
-
-        public void setRotateZ(double z) {
-            rz.setAngle(z);
-        }
-
-        public void setRx(double x) {
-            rx.setAngle(x);
-        }
-
-        public void setRy(double y) {
-            ry.setAngle(y);
-        }
-
-        public void setRz(double z) {
-            rz.setAngle(z);
-        }
-
-        public void setScale(double scaleFactor) {
-            s.setX(scaleFactor);
-            s.setY(scaleFactor);
-            s.setZ(scaleFactor);
-        }
-
-        public void setScale(double x, double y, double z) {
-            s.setX(x);
-            s.setY(y);
-            s.setZ(z);
-        }
-
-        // Cannot override these methods as they are final:
-        // public void setScaleX(double x) { s.setX(x); }
-        // public void setScaleY(double y) { s.setY(y); }
-        // public void setScaleZ(double z) { s.setZ(z); }
-        // Use these methods instead:
-        public void setSx(double x) {
-            s.setX(x);
-        }
-
-        public void setSy(double y) {
-            s.setY(y);
-        }
-
-        public void setSz(double z) {
-            s.setZ(z);
-        }
-
-        public void setTranslate(double x, double y) {
-            t.setX(x);
-            t.setY(y);
-        }
-
-        public void setTranslate(double x, double y, double z) {
-            t.setX(x);
-            t.setY(y);
-            t.setZ(z);
-        }
-
-        // Cannot override these methods as they are final:
-        // public void setTranslateX(double x) { t.setX(x); }
-        // public void setTranslateY(double y) { t.setY(y); }
-        // public void setTranslateZ(double z) { t.setZ(z); }
-        // Use these methods instead:
-        public void setTx(double x) {
-            t.setX(x);
-        }
-
-        public void setTy(double y) {
-            t.setY(y);
-        }
-
-        public void setTz(double z) {
-            t.setZ(z);
-        }
-
-        public enum RotateOrder {
-            XYZ,
-            XZY,
-            YXZ,
-            YZX,
-            ZXY,
-            ZYX
-        }
-    }
 
 }

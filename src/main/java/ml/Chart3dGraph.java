@@ -6,11 +6,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import javafx.application.Application;
 import javafx.geometry.Point3D;
-import javafx.scene.DepthTest;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
+import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -21,12 +17,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.CullFace;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.TriangleMesh;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import simplebuilder.HasLogging;
@@ -84,7 +75,6 @@ public class Chart3dGraph extends Application {
         meshView.setDrawMode(DrawMode.FILL);
         meshView.setDepthTest(DepthTest.ENABLE);
         cube.getChildren().addAll(meshView);
-
         // testing / debugging stuff: show diffuse map on chart
         ImageView iv = new ImageView(diffuseMap);
         iv.setTranslateX(-0.5 * size);
@@ -92,14 +82,12 @@ public class Chart3dGraph extends Application {
         iv.setRotate(90);
         iv.setRotationAxis(new Point3D(1, 0, 0));
         cube.getChildren().add(iv);
-
         // scene
         Scene scene = new Scene(root, 1600, 900, true, SceneAntialiasing.BALANCED);
         scene.setCamera(new PerspectiveCamera());
-
         scene.setOnMousePressed(me -> {
-            mouseOldX = me.getSceneX();
             mouseOldY = me.getSceneY();
+            mouseOldX = me.getSceneX();
         });
         scene.setOnMouseDragged(me -> {
             mousePosX = me.getSceneX();

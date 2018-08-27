@@ -1,12 +1,7 @@
 package ml;
 
-import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,32 +52,11 @@ class WorldMapGraph extends Canvas {
                 .filter(e -> e != c).distinct().collect(Collectors.toList());
     }
 
-    public void coloring() {
-
-        Country[] values = Country.values();
-        List<Color> availableColors = PieGraph.generateRandomColors(10);
-        int i = 0;
-        List<Country> vertices = Stream.of(values)
-                .sorted(Comparator.comparing((Country e) -> e.neighbors().size()).reversed())
-                .peek(p -> p.setColor(null)).collect(Collectors.toList());
-        while (vertices.stream().anyMatch(v -> v.getColor() == null)) {
-            List<Country> v = vertices.stream().filter(c -> c.getColor() == null).collect(Collectors.toList());
-            Color color = availableColors.get(i);
-            for (int j = 0; j < v.size(); j++) {
-                if (anyAdjacents(v.get(j)).stream().noneMatch(c -> c.getColor() == color)) {
-                    v.get(j).setColor(color);
-                }
-            }
-            i = (i + 1) % availableColors.size();
-        }
-        drawGraph();
-    }
-
     public final void drawGraph() {
         gc.clearRect(0, 0, getWidth(), getHeight());
         Country[] values = Country.values();
-        gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
+        gc.setFill(Color.BLACK);
         if (dataframeML != null) {
             dataframeML.filterString(header, Country::hasName);
         }

@@ -7,15 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class JapaneseVerbConjugate {
-
-    // (～い)る -iru[v] ～ます -masu ～ない -nai ～て -te ～た -ta
-    // (～え)る -eru[v]
-
-    // (～い)る -iru ～られる -rareru[v] ～れば -reba ～よう -yō
-    // (～え)る -eru
-
     public static final Map<String, String[]> CONJUGATION_MAP = ImmutableMap.<String, String[]>builder()
-
             .put("[^\\n]+い", new String[] { "く", "くない", "くて", "かった", "くなかった", "ければ" })
             .put("[^\\n]+う", new String[] { "います", "わない", "わなかった", "って", "った", "える", "えば", "おう" })
             .put("[^\\n]+つ", new String[] { "ちます", "たない", "たなかった", "って", "った", "てる", "てば", "とう" })

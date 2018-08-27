@@ -78,8 +78,7 @@ public class PointsExample extends Application {
             c.next();
             List<? extends String> addedSubList = c.getAddedSubList();
             if (!addedSubList.isEmpty()) {
-                String string = addedSubList.get(0);
-                xHeader.set(string);
+                xHeader.set(addedSubList.get(0));
             }
         });
         ySelected.selectionModelProperty().get().select(0);

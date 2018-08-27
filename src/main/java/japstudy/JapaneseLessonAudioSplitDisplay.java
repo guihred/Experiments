@@ -70,8 +70,8 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
 			if (newValue != null) {
 				JapaneseLesson japaneseLesson = lessons.get(newValue.intValue());
 				lesson.setText("" + japaneseLesson.getExercise());
+                romaji.setText(japaneseLesson.getRomaji());
 				english.setText(japaneseLesson.getEnglish());
-				romaji.setText(japaneseLesson.getRomaji());
 				japanese.setText(japaneseLesson.getJapanese());
 				setStartEnd(japaneseLesson);
 				start.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getStart()));

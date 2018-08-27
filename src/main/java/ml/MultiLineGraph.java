@@ -129,10 +129,10 @@ class MultiLineGraph extends Canvas implements HasLogging {
 
 	public void drawAxis() {
 
-        gc.setFill(Color.BLACK);
-        gc.setStroke(Color.BLACK);
-        gc.setLineWidth(1);
         gc.setTextAlign(TextAlignment.CENTER);
+        gc.setLineWidth(1);
+        gc.setStroke(Color.BLACK);
+        gc.setFill(Color.BLACK);
         gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
         double e = layout.get();
         gc.strokeLine(e, e, e, maxLayout);

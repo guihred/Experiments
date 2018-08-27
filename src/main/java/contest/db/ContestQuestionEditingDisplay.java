@@ -44,7 +44,6 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
 
     public ContestQuestionEditingDisplay() {
         File file = ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf");
-        getLogger().info("File exists={}", file.exists());
         lessons = ContestReader.getContestQuestions(file, () -> current.set(0));
     }
 

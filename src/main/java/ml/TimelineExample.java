@@ -22,10 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import simplebuilder.ResourceFXUtils;
-import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleComboBoxBuilder;
-import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.*;
 
 public class TimelineExample extends Application {
 
@@ -54,17 +51,20 @@ public class TimelineExample extends Application {
                 .addListener((InvalidationListener) o -> itens.setAll(sortedLabels(canvas.colorsProperty())));
         ListView<Entry<String, Color>> listVies = new ListView<>(itens);
 		Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(
-                canvas.colorsProperty(), () -> canvas.drawGraph());
+                canvas.colorsProperty(), canvas::drawGraph);
         listVies.setCellFactory(
                 list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
-        canvas.setHistogram(x);
+
+        HasLogging.log().info("Available Columns {}", x.cols());
+        String countryNameColumn = x.cols().stream().findFirst().orElse("﻿Country Name");
+        canvas.setHistogram(x, countryNameColumn);
         itens.setAll(sortedLabels(canvas.colorsProperty()));
-        File file = new File("out");
-        String[] list = file.list();
+        File file = ResourceFXUtils.toFile("out");
+        String[] list = file.list((dir, name) -> name.endsWith(".csv"));
         ComboBox<String> build2 = new SimpleComboBoxBuilder<String>().items(list).select(0).onSelect(s -> {
             DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(46).build();
             canvas.setTitle(x2.list("Indicator Name").get(0).toString());
-            canvas.setHistogram(x2);
+            canvas.setHistogram(x2, countryNameColumn);
             itens.setAll(sortedLabels(canvas.colorsProperty()));
         }).build();
 
@@ -79,7 +79,8 @@ public class TimelineExample extends Application {
 
     private List<Entry<String, Color>> sortedLabels(ObservableMap<String, Color> colorsProperty) {
         return colorsProperty
-                .entrySet().stream().sorted(Comparator.comparing(e -> e.getKey())).collect(Collectors.toList());
+                .entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
+                .collect(Collectors.toList());
     }
 
     private VBox newSlider(String string, int min, int max, Property<Number> radius) {

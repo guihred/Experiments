@@ -1,22 +1,12 @@
 package ml;
 
-import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -75,27 +65,6 @@ class WorldMapGraph2 extends Canvas {
         Country[] values = Country.values();
         return Stream.of(values).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
                 .filter(e -> e != c).distinct().collect(Collectors.toList());
-    }
-
-    public void coloring() {
-
-        Country[] values = Country.values();
-        List<Color> availableColors = PieGraph.generateRandomColors(10);
-        int i = 0;
-        List<Country> vertices = Stream.of(values)
-                .sorted(Comparator.comparing((Country e) -> e.neighbors().size()).reversed())
-                .peek(p -> p.setColor(null)).collect(Collectors.toList());
-        while (vertices.stream().anyMatch(v -> v.getColor() == null)) {
-            List<Country> v = vertices.stream().filter(c -> c.getColor() == null).collect(Collectors.toList());
-            Color color = availableColors.get(i);
-            for (int j = 0; j < v.size(); j++) {
-                if (anyAdjacents(v.get(j)).stream().noneMatch(c -> c.getColor() == color)) {
-                    v.get(j).setColor(color);
-                }
-            }
-            i = (i + 1) % availableColors.size();
-        }
-        drawGraph();
     }
 
     public final void drawGraph() {

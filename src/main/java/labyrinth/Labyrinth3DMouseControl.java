@@ -8,20 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -83,10 +76,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	private Group root = new Group();
 
 	private Sphere checkBalls(Bounds boundsInParent) {
-		return Stream.of(balls).flatMap(Stream::of)
-				.filter(b -> b != null)
-				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
-				.findFirst().orElse(null);
+        return checkBalls(boundsInParent, balls);
 	}
 
 

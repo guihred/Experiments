@@ -166,8 +166,8 @@ public final class GraphAlgorithms {
 		Vertex c = graph.get(2);
 		Vertex d = graph.get(3);
 		Vertex e = graph.get(4);
+        Vertex g = graph.get(6);
 		Vertex f = graph.get(5);
-		Vertex g = graph.get(6);
 		Vertex h = graph.get(7);
 		Vertex i = graph.get(8);
 		Vertex j = graph.get(9);

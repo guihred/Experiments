@@ -1,10 +1,6 @@
 package ml;
 
-import java.util.DoubleSummaryStatistics;
-import java.util.IntSummaryStatistics;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -19,7 +15,8 @@ import javafx.scene.text.TextAlignment;
 import org.apache.commons.lang3.StringUtils;
 
 class TimelineGraph extends Canvas {
-	private DoubleProperty layout = new SimpleDoubleProperty(30);
+    private String countryNameColumn = "﻿Country Name";
+    private DoubleProperty layout = new SimpleDoubleProperty(30);
 	private double maxLayout = 480;
 	private DoubleProperty lineSize = new SimpleDoubleProperty(5);
 	private IntegerProperty bins = new SimpleIntegerProperty(20);
@@ -47,8 +44,9 @@ class TimelineGraph extends Canvas {
 		ybins.addListener(listener);
 	}
 
-    public void setHistogram(DataframeML dataframe) {
+    public void setHistogram(DataframeML dataframe, String countryNameColumn) {
 		this.dataframe = dataframe;
+        this.countryNameColumn = countryNameColumn;
         stats = new DoubleSummaryStatistics();
         colStats = new IntSummaryStatistics();
 		dataframe.forEach((col, items) -> {
@@ -83,7 +81,7 @@ class TimelineGraph extends Canvas {
 
         yProportion = (max2 - stats.getMin()) / ybins.get();
 
-        List<String> list = dataframe.list("﻿Country Name", String.class);
+        List<String> list = dataframe.list(countryNameColumn, String.class);
         double j = (maxLayout - layout.get()) / bins.doubleValue();
         double j2 = (maxLayout - layout.get()) / ybins.get();
         boolean colorEmpty = colors.isEmpty();
@@ -162,9 +160,9 @@ class TimelineGraph extends Canvas {
 
 	public void drawAxis() {
 
-		gc.setFill(Color.BLACK);
-        gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
+        gc.setStroke(Color.BLACK);
+        gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
 		double e = layout.get();

@@ -2,17 +2,9 @@ package rosario;
 
 import java.awt.Color;
 import java.awt.Desktop;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -26,12 +18,7 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -42,6 +29,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public final class LeitorArquivos {
@@ -158,11 +146,17 @@ public final class LeitorArquivos {
 	}
 
     private static boolean isLinhaMedicamento(List<String> collect, int size, String text2) {
-        return size == 5 && StringUtil.isNumeric(text2) || size == 4 && !StringUtil.isNumeric(collect.get(1))
-        		|| size == 3 && !StringUtil.isNumeric(collect.get(1));
+        if (size == 5 && StringUtil.isNumeric(text2)) {
+            return true;
+        }
+        if (size == 4 && !StringUtil.isNumeric(collect.get(1))) {
+            return true;
+        }
+
+        return size == 3 && !StringUtil.isNumeric(collect.get(1));
     }
 
-	public static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) throws IOException {
+    public static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) {
 		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
 				Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream);) {
 			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
@@ -179,7 +173,8 @@ public final class LeitorArquivos {
 			return medicamentos;
 
 		} catch (IOException e) {
-			throw e;
+            HasLogging.log().error("ERROR WHEN READING EXCEL", e);
+            return FXCollections.observableArrayList();
 		}
 
 	}
@@ -216,7 +211,8 @@ public final class LeitorArquivos {
 			}
 			return medicamentos;
 		} catch (Exception e) {
-			throw e;
+            HasLogging.log().error("ERROR WHEN READING EXCEL", e);
+            return FXCollections.observableArrayList();
 		}
 
 	}

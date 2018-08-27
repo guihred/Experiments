@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -76,12 +71,11 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 
 
 		animal.setScaleX(0.4);
+        animal.setScaleZ(0.4);
 		animal.setScaleY(1);
-		animal.setScaleZ(0.4);
 
 		return animal;
 	}
-
 
 	@Override
 	public PerspectiveCamera getCamera() {

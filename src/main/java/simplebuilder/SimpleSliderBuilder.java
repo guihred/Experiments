@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import javafx.beans.property.Property;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Slider;
 
@@ -30,6 +31,11 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
 		slider.setValue(i);
 		return this;
 	}
+
+    public SimpleSliderBuilder bindBidirectional(Property<Number> other) {
+        slider.valueProperty().bindBidirectional(other);
+        return this;
+    }
 
 
 }
