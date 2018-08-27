@@ -1,13 +1,12 @@
 package contest.db;
+
 import static contest.db.ContestReader.ReaderState.STATE_IGNORE;
 import static contest.db.ContestReader.ReaderState.STATE_OPTION;
 import static contest.db.ContestReader.ReaderState.STATE_QUESTION;
 import static contest.db.ContestReader.ReaderState.STATE_TEXT;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.IntSummaryStatistics;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -31,9 +29,10 @@ import simplebuilder.HasLogging;
 public final class ContestReader implements HasLogging {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
     private final Logger log = getLogger();
-	public static final String TEXT_PATTERN = "Texto \\d+\\s*";
+    public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
+
     enum ReaderState {
         STATE_IGNORE,
         STATE_OPTION,
@@ -71,10 +70,11 @@ public final class ContestReader implements HasLogging {
 
         return instance.getTexts();
     }
+
     private ContestQuestionAnswer answer = new ContestQuestionAnswer();
     private Contest contest;
     private ContestQuestion contestQuestion = new ContestQuestion();
-	private ObservableList<ContestQuestion> listQuestions = FXCollections.observableArrayList();
+    private ObservableList<ContestQuestion> listQuestions = FXCollections.observableArrayList();
 
     private int option = 0;
 
@@ -104,10 +104,6 @@ public final class ContestReader implements HasLogging {
         option = 0;
     }
 
-    public void copyStream(Object numb, InputStream obj) throws IOException {
-        InputStream createInputStream = obj;
-        IOUtils.copy(createInputStream, new FileOutputStream(new File("teste" + numb)));
-    }
 
     Integer intValue(String v) {
         try {
@@ -124,6 +120,7 @@ public final class ContestReader implements HasLogging {
         parser.parse();
         return parser.getDocument();
     }
+
     private void processQuestion(String[] linhas, int i) {
         String s = linhas[i];
 
@@ -134,7 +131,7 @@ public final class ContestReader implements HasLogging {
 
         if (s.matches(TEXTS_PATTERN)) {
             state = STATE_TEXT;
-			String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
+            String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
             IntSummaryStatistics stats = Stream.of(split).mapToInt(this::intValue).summaryStatistics();
             text.setMin(stats.getMin());
             text.setMax(stats.getMax());
@@ -230,14 +227,14 @@ public final class ContestReader implements HasLogging {
                 PDDocument pdDoc = new PDDocument(cosDoc);) {
             PDFTextStripper pdfStripper = new PDFTextStripper() {
                 @Override
-				protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
-					super.writeString(text1, textPositions);
+                protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
+                    super.writeString(text1, textPositions);
                     if (matchesQuestionPattern(text1, textPositions)) {
                         TextPosition textPosition = textPositions.get(0);
                         float x = textPosition.getXDirAdj();
                         float y = textPosition.getYDirAdj();
                         QuestionPosition qp = new QuestionPosition();
-						qp.line = text1;
+                        qp.line = text1;
                         qp.x = x;
                         qp.y = y;
                         qp.page = pageNumber;
@@ -246,7 +243,6 @@ public final class ContestReader implements HasLogging {
 
                     }
                 }
-
 
             };
             int numberOfPages = pdDoc.getNumberOfPages();
@@ -309,6 +305,5 @@ public final class ContestReader implements HasLogging {
     public ObservableList<ContestText> getTexts() {
         return texts;
     }
-
 
 }
