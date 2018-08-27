@@ -15,7 +15,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class SnakeLauncher extends Application {
-	private final SnakeModel newGameModel = new SnakeModel();
+    public static final int UPDATE_MILLIS = 200;
+
+    private final SnakeModel newGameModel = new SnakeModel();
 
 	private int currentI = 0;
 
@@ -31,7 +33,7 @@ public class SnakeLauncher extends Application {
         final Scene scene = new Scene(gridPane);
 		scene.setOnKeyPressed(this::handleKeyPressed);
         final Timeline timeline = new Timeline();
-        timeline.getKeyFrames().add(new KeyFrame(new Duration(200), t -> gameLoop(timeline)));
+        timeline.getKeyFrames().add(new KeyFrame(new Duration(UPDATE_MILLIS), t -> gameLoop(timeline)));
 		timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
         stage.setScene(scene);

@@ -30,7 +30,7 @@ import simplebuilder.HasLogging;
 
 public final class ContestReader implements HasLogging {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
-    private static final Logger LOGGER = HasLogging.log();
+    private final Logger log = getLogger();
 	public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
@@ -113,7 +113,7 @@ public final class ContestReader implements HasLogging {
         try {
             return Integer.valueOf(v.replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
-            LOGGER.trace("", e);
+            log.trace("", e);
             return null;
         }
 
@@ -151,7 +151,7 @@ public final class ContestReader implements HasLogging {
             if (state == STATE_TEXT) {
                 addNewText();
             }
-            LOGGER.trace(s);
+            log.trace(s);
             contestQuestion.setNumber(intValue(s));
             state = STATE_QUESTION;
             return;
@@ -185,7 +185,7 @@ public final class ContestReader implements HasLogging {
         executeAppending(linhas, i, s);
 
         if (StringUtils.isNotBlank(s) && state != STATE_IGNORE) {
-            LOGGER.trace(s);
+            log.trace(s);
         }
     }
 
@@ -282,7 +282,7 @@ public final class ContestReader implements HasLogging {
                 // concat.forEach(action)
             }
         } catch (Exception e) {
-            LOGGER.error("", e);
+            log.error("", e);
         }
     }
 
@@ -297,7 +297,7 @@ public final class ContestReader implements HasLogging {
                 processQuestion(lines, i);
             }
         } catch (Exception e) {
-            LOGGER.error("", e);
+            log.error("", e);
         }
         return null;
     }

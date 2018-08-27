@@ -224,8 +224,11 @@ public class SolitaireModel {
 	}
 
 	private boolean isCardNotCompatibleWithStack(CardStack cardStack, SolitaireCard solitaireCard) {
-        return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.KING || !cardStack
-                .getCards().isEmpty()
+        if (cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.KING) {
+            return true;
+        }
+
+        return !cardStack.getCards().isEmpty()
                 && (solitaireCard.getSuit().getColor() == cardStack.getLastCards().getSuit().getColor() || solitaireCard
                         .getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1);
 	}

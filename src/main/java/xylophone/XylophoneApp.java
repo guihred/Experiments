@@ -32,18 +32,9 @@ package xylophone;
  */
 
 import fxsamples.Xform;
-import javafx.animation.Animation;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
@@ -51,6 +42,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class XylophoneApp extends Application {
@@ -73,14 +65,14 @@ public class XylophoneApp extends Application {
 					new KeyValue(sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D))))
 			.build();
 	// I didn't have any xylophone sounds so I added piano sounds :P
-	private final AudioClip bar1Note = new AudioClip(XylophoneApp.class.getResource("C.wav").toString());
-	private final AudioClip bar2Note = new AudioClip(XylophoneApp.class.getResource("D.wav").toString());
-	private final AudioClip bar3Note = new AudioClip(XylophoneApp.class.getResource("E.wav").toString());
-	private final AudioClip bar4Note = new AudioClip(XylophoneApp.class.getResource("F.wav").toString());
-	private final AudioClip bar5Note = new AudioClip(XylophoneApp.class.getResource("G.wav").toString());
-	private final AudioClip bar6Note = new AudioClip(XylophoneApp.class.getResource("A.wav").toString());
-	private final AudioClip bar7Note = new AudioClip(XylophoneApp.class.getResource("B.wav").toString());
-	private final AudioClip bar8Note = new AudioClip(XylophoneApp.class.getResource("mC.wav").toString());
+    private final AudioClip bar1Note = new AudioClip(ResourceFXUtils.toURL("waves/C.wav").toString());
+    private final AudioClip bar2Note = new AudioClip(ResourceFXUtils.toURL("waves/D.wav").toString());
+    private final AudioClip bar3Note = new AudioClip(ResourceFXUtils.toURL("waves/E.wav").toString());
+    private final AudioClip bar4Note = new AudioClip(ResourceFXUtils.toURL("waves/F.wav").toString());
+    private final AudioClip bar5Note = new AudioClip(ResourceFXUtils.toURL("waves/G.wav").toString());
+    private final AudioClip bar6Note = new AudioClip(ResourceFXUtils.toURL("waves/A.wav").toString());
+    private final AudioClip bar7Note = new AudioClip(ResourceFXUtils.toURL("waves/B.wav").toString());
+    private final AudioClip bar8Note = new AudioClip(ResourceFXUtils.toURL("waves/mC.wav").toString());
 
 	public Parent createContent() {
 		sceneRoot.setRx(45.0);

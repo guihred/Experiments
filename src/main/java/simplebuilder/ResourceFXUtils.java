@@ -3,8 +3,11 @@ package simplebuilder;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Path;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -12,8 +15,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.image.WritableImage;
 import javafx.scene.shape.Mesh;
 import javax.imageio.ImageIO;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * @author Note
  *
@@ -22,7 +25,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class ResourceFXUtils {
 
-	private ResourceFXUtils() {
+    private static final Logger LOGGER = HasLogging.log(ResourceFXUtils.class);
+
+    private ResourceFXUtils() {
 	}
 
 	public static URL toURL(String arquivo) {
@@ -34,12 +39,23 @@ public final class ResourceFXUtils {
 	}
 
 	public static String toFullPath(String arquivo) {
+
 		return ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile();
 	}
 
-	public static File toFile(String arquivo) {
-		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile());
-	}
+    public static File toFile(String arquivo) {
+        try {
+            String file = ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile();
+            return new File(URLDecoder.decode(file, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error("File Error", e);
+            return null;
+        }
+    }
+
+    public static InputStream toStream(String arquivo) {
+        return ResourceFXUtils.class.getClassLoader().getResourceAsStream(arquivo);
+    }
 
 	public static URI toURI(String arquivo) {
 		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();

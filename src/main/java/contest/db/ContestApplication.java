@@ -24,8 +24,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
-public class ContestApplication extends Application {
+public class ContestApplication extends Application implements HasLogging {
 
 
     public static void main(String[] args) {
@@ -44,7 +46,9 @@ public class ContestApplication extends Application {
         // gridpane.setVgap(10);
 
         root.setCenter(gridpane);
-        File file = new File("102 - Analista de Tecnologia da Informacao - Tipo D.pdf");
+        String arquivo = "102 - Analista de Tecnologia da Informacao - Tipo D.pdf";
+        File file = ResourceFXUtils.toFile(arquivo);
+        getLogger().info("File exists={}", file.exists());
         ObservableList<HasImage> observableArrayList = FXCollections.observableArrayList();
         FilteredList<HasImage> li = observableArrayList.filtered(e -> true);
         ObservableList<ContestQuestion> questions = ContestReader.getContestQuestions(file,

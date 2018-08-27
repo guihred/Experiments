@@ -1,11 +1,6 @@
 package java8.exercise;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
@@ -26,7 +21,7 @@ public final class Chapter5 {
 	/* Compute Programmer's Day without using plusDays. */
 	public static void ex1() {
 		LocalDate programmerDay = LocalDate.ofYearDay(2015, 256);
-        LOGGER.info("{}", programmerDay);
+        LOGGER.trace("{}", programmerDay);
 	}
 
 	/*
@@ -37,7 +32,7 @@ public final class Chapter5 {
 	 */
 	public static void ex2() {
 		LocalDate plusYears = LocalDate.of(2000, 2, 29).plusYears(1L);
-        LOGGER.info("{}", plusYears);
+        LOGGER.trace("{}", plusYears);
 	}
 
 	/*
@@ -51,7 +46,7 @@ public final class Chapter5 {
 	public static void ex3() {
 
 		LocalDate with = LocalDate.now().with(next(w -> w.getDayOfWeek().getValue() < 6));
-        LOGGER.info("{}", with);
+        LOGGER.trace("{}", with);
 	}
 
 	private static TemporalAdjuster next(Predicate<LocalDate> predicate) {
@@ -101,7 +96,7 @@ public final class Chapter5 {
 			}
             s.append("\n");
 		}
-        LOGGER.info("\n{}", s);
+        LOGGER.trace("\n{}", s);
 	}
 
 
@@ -110,7 +105,7 @@ public final class Chapter5 {
 		
 		LocalDate birth = LocalDate.of(1992, 2, 21);
 		long l = birth.until(LocalDate.now(), ChronoUnit.DAYS);
-        LOGGER.info("{} days", l);
+        LOGGER.trace("{} days", l);
 
 	}
 
@@ -127,7 +122,7 @@ public final class Chapter5 {
 				return l;
 			});
 
-            LOGGER.info("{}", nextFriday);
+            LOGGER.trace("{}", nextFriday);
 			nextFriday = nextFriday.plusDays(7);
 		}
 	}
@@ -152,7 +147,7 @@ public final class Chapter5 {
 		ZoneId.getAvailableZoneIds().stream().map(ZoneId::of).map(now::atZone)
 				.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
 				.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) + "\t" + o.getOffset())
-                .forEach(LOGGER::info);
+                .forEach(LOGGER::trace);
 
 	}
 
@@ -168,7 +163,7 @@ public final class Chapter5 {
 				.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
 				.filter(z -> z.getOffset().getTotalSeconds() % 3600 != 0)
 				.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) + "\t" + o.getOffset())
-                .forEach(LOGGER::info);
+                .forEach(LOGGER::trace);
 		
 	}
 
@@ -189,10 +184,10 @@ public final class Chapter5 {
 		Instant from = Instant.from(addTo);
 		ZoneId frankfurt = ZoneId.of("Europe/Berlin");
 		ZonedDateTime flightArrivalDateTime = from.atZone(frankfurt);
-		LOGGER.info("{}",flightBegining);
-		LOGGER.info("{}",flightArrivalDateTime);
+        LOGGER.trace("{}", flightBegining);
+        LOGGER.trace("{}", flightArrivalDateTime);
 
-        LOGGER.info("\n");
+        LOGGER.trace("\n");
 
 	}
 
@@ -209,12 +204,12 @@ public final class Chapter5 {
 		ZonedDateTime flightBegining = ZonedDateTime.of(date, LocalTime.of(14, 5), frankfurt);
 		ZonedDateTime flightArrivalDateTime = ZonedDateTime.of(date, LocalTime.of(16, 40), losAngeles);
 
-        LOGGER.info("{}", flightBegining);
-        LOGGER.info("{}", flightArrivalDateTime);
+        LOGGER.trace("{}", flightBegining);
+        LOGGER.trace("{}", flightArrivalDateTime);
         String replace = Duration.between(flightBegining, flightArrivalDateTime).toString().replace("H", " hours ")
                 .replace("M", " minutes")
 				.replace("PT", "");
-        LOGGER.info(replace);
+        LOGGER.trace(replace);
 
 	}
 

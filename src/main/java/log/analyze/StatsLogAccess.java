@@ -169,11 +169,6 @@ public class StatsLogAccess {
 		}
 	}
 
-	@FunctionalInterface
-	protected interface FunctionEx<T, R> {
-		R apply(T t) throws Exception;
-	}
-
 	protected static <T, R> Function<T, R> tentarFuncao(FunctionEx<T, R> t) {
 		return f -> {
 			try {

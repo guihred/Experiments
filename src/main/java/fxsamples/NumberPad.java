@@ -6,6 +6,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 
 public class NumberPad extends Application {
 
@@ -13,7 +14,7 @@ public class NumberPad extends Application {
 	public void start(Stage primaryStage) {
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 180, 250);
-		scene.getStylesheets().add(getClass().getResource("mobile_buttons.css").toString());
+        scene.getStylesheets().add(ResourceFXUtils.toURL("mobile_buttons.css").toString());
 		String[] keys = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "*",
 				"0", "#" };
 		GridPane numPad = new GridPane();

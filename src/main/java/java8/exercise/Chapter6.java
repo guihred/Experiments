@@ -16,20 +16,9 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
@@ -95,7 +84,7 @@ public final class Chapter6 {
 		}
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
-        LOGGER.info("{}", reference.get());
+        LOGGER.trace("{}", reference.get());
 	}
 
 	/**
@@ -108,7 +97,7 @@ public final class Chapter6 {
 	public static void ex10() {
 		String url = "http://www.google.com";
 		CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(Chapter6::getLinks)
-                .thenAccept(l -> l.forEach(LOGGER::info));
+                .thenAccept(l -> l.forEach(LOGGER::trace));
 		ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
 
 	}
@@ -136,7 +125,7 @@ public final class Chapter6 {
 		}
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
-        LOGGER.info("{} time {}", b.sum(), Duration.between(now, Instant.now()));
+        LOGGER.trace("{} time {}", b.sum(), Duration.between(now, Instant.now()));
 
 		now = Instant.now();
 		AtomicLong a = new AtomicLong();
@@ -151,7 +140,7 @@ public final class Chapter6 {
 		}
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
-        LOGGER.info("{} time {}", a.get(), Duration.between(now, Instant.now()));
+        LOGGER.trace("{} time {}", a.get(), Duration.between(now, Instant.now()));
 
 	}
 
@@ -184,7 +173,7 @@ public final class Chapter6 {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
 		concurrentHashMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-                .forEach(u -> LOGGER.info("{}", "word=" + u.getKey() + " files=" + u.getValue()));
+                .forEach(u -> LOGGER.trace("{}", "word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
 
@@ -210,7 +199,7 @@ public final class Chapter6 {
 		pool.shutdown();
 		pool.awaitTermination(1, TimeUnit.HOURS);
 		concurrentHashMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-                .forEach(u -> LOGGER.info("{}", "word=" + u.getKey() + " files=" + u.getValue()));
+                .forEach(u -> LOGGER.trace("{}", "word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
 	/**
@@ -223,7 +212,7 @@ public final class Chapter6 {
 				Collectors.groupingBy(w -> w, Collectors.counting()));
 
 		Entry<String, Long> entries = new ConcurrentHashMap<>(collect).reduceEntries(4, (t, u) -> t.getValue() > u.getValue() ? t : u);
-        LOGGER.info("{}", " The word \"" + entries.getKey() + "\" appeared " + entries.getValue() + " times");
+        LOGGER.trace("{}", " The word \"" + entries.getKey() + "\" appeared " + entries.getValue() + " times");
 
 	}
 
@@ -243,17 +232,17 @@ public final class Chapter6 {
 			Instant now = Instant.now();
 			Arrays.sort(array);
 			long untilSort = now.until(Instant.now(), ChronoUnit.MILLIS);
-            LOGGER.info("sort size {} {} ms", size, untilSort);
+            LOGGER.trace("sort size {} {} ms", size, untilSort);
 
 			int[] array2 = random.ints(size).toArray();
 			now = Instant.now();
 			Arrays.parallelSort(array2);
 			long untilParallel = now.until(Instant.now(), ChronoUnit.MILLIS);
             String arg = "parallelSort size " + size + " " + untilParallel + " ms";
-            LOGGER.info("{}", arg);
+            LOGGER.trace("{}", arg);
 
             Object arg2 = untilParallel > untilSort ? "Sequential Sort won" : "Parallel Sort won";
-            LOGGER.info("{}", arg2);
+            LOGGER.trace("{}", arg2);
 
 		}
 
@@ -273,7 +262,7 @@ public final class Chapter6 {
 		Arrays.parallelSetAll(a, i -> new Matrix());
 		Arrays.parallelPrefix(a, (t, u) -> t.multiply(u));
 
-        LOGGER.info("{}", a[a.length - 1].mat[0][0]);
+        LOGGER.trace("{}", a[a.length - 1].mat[0][0]);
 	}
 
 	public static List<String> getLinks(String content) {

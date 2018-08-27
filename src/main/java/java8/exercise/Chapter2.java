@@ -3,15 +3,7 @@ package java8.exercise;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +24,7 @@ public final class Chapter2 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Chapter2.class);
 
-    private static final String TXT_FILE = "warAndPeace.txts";
+    private static final String TXT_FILE = "warAndPeace.txt";
 
     private Chapter2() {
     }
@@ -77,8 +69,8 @@ public final class Chapter2 {
         Pattern compile = Pattern.compile(REGEX);
 
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8);) {
-            LOGGER.info("{}", lines.parallel().flatMap(compile::splitAsStream).filter(s -> s.length() > 12).count());
-            LOGGER.info("{}", countConcurrentWithoutStreams());
+            LOGGER.trace("{}", lines.parallel().flatMap(compile::splitAsStream).filter(s -> s.length() > 12).count());
+            LOGGER.trace("{}", countConcurrentWithoutStreams());
         } catch (Exception e) {
             HasLogging.log().error("", e);
         }
@@ -96,7 +88,7 @@ public final class Chapter2 {
     public static void ex10() {
         Stream<Double> of2 = Stream.of(3D, 4D, 5D, 7D, 1D, 2D, 9D, 10D, 8D, 6D);
         // reduce knowing before handed the count of elements of the stream
-        LOGGER.info("{}", of2.reduce(0D, (a, b) -> a + b / 10));
+        LOGGER.trace("{}", of2.reduce(0D, (a, b) -> a + b / 10));
 
         of2 = Stream.of(3D, 4D, 5D, 7D, 1D, 2D, 9D, 10D, 8D, 6D);
         // reduce using the standard combiner for reducing a Stream of Double
@@ -107,7 +99,7 @@ public final class Chapter2 {
             c.combine(d);
             return c;
         }).getAverage();
-        LOGGER.info("{}", average);
+        LOGGER.trace("{}", average);
 
     }
 
@@ -130,7 +122,7 @@ public final class Chapter2 {
                 array[s.length() - 1].getAndIncrement();
             }
         });
-        Stream.of(array).forEach(m -> LOGGER.info("{}", m));
+        Stream.of(array).forEach(m -> LOGGER.trace("{}", m));
     }
 
     public static void ex13() {
@@ -138,7 +130,7 @@ public final class Chapter2 {
             Stream<String> wordsAsList = getWordsAsList().stream();
             Map<Integer, Long> collect = wordsAsList.filter(s -> s.length() > 12)
                     .collect(Collectors.groupingBy(String::length, Collectors.counting()));
-            LOGGER.info("{}", collect);
+            LOGGER.trace("{}", collect);
         } catch (Exception e) {
             LOGGER.error("", e);
         }
@@ -154,10 +146,10 @@ public final class Chapter2 {
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8);) {
             lines.parallel().flatMap(compile::splitAsStream).filter(s -> {
                 if (s.length() > 12) {
-                    LOGGER.info("Long word {}", s);
+                    LOGGER.trace("Long word {}", s);
                 }
                 return s.length() > 12;
-            }).limit(5).forEach(LOGGER::info);
+            }).limit(5).forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
         }
@@ -173,10 +165,10 @@ public final class Chapter2 {
 
         long tic = System.currentTimeMillis();
         getWordsAsList().parallelStream().filter(s -> s.length() > 12).count();
-        LOGGER.info("Paralel:{}ms", System.currentTimeMillis() - tic);
+        LOGGER.trace("Paralel:{}ms", System.currentTimeMillis() - tic);
         tic = System.currentTimeMillis();
         getWordsAsList().stream().filter(s -> s.length() > 12).count();
-        LOGGER.info("Sequential:{}ms", System.currentTimeMillis() - tic);
+        LOGGER.trace("Sequential:{}ms", System.currentTimeMillis() - tic);
 
     }
 
@@ -189,9 +181,9 @@ public final class Chapter2 {
      */
     public static void ex4() {
         int[] values = { 1, 4, 9, 16 };
-        Stream.of(values).forEach(m -> LOGGER.info("{}", m));
+        Stream.of(values).forEach(m -> LOGGER.trace("{}", m));
         // That's is how you make a Stream of int
-        IntStream.of(values).forEach(m -> LOGGER.info("{}", m));
+        IntStream.of(values).forEach(m -> LOGGER.trace("{}", m));
     }
 
     /**
@@ -214,7 +206,7 @@ public final class Chapter2 {
         long c = 11;
         long m = 2L << 48;
         Stream<Long> iterate = Stream.iterate(System.currentTimeMillis(), t -> (a * t + c) % m);
-        iterate.limit(10).forEach(s -> LOGGER.info("{}", s));
+        iterate.limit(10).forEach(s -> LOGGER.trace("{}", s));
     }
 
     /**
@@ -227,7 +219,7 @@ public final class Chapter2 {
     public static void ex6() {
         String s = "asdasdasdasd";
         Stream<Character> map = Stream.iterate(0, i -> i + 1).limit(s.length()).map(s::charAt);
-        map.forEach(m -> LOGGER.info("{}", m));
+        map.forEach(m -> LOGGER.trace("{}", m));
     }
 
     /**
@@ -236,7 +228,7 @@ public final class Chapter2 {
      * stopping when one of them runs out of elements.
      */
     public static void ex8() {
-        zip(Stream.of(1, 2, 3), Stream.of(1, 2)).forEach(m -> LOGGER.info("{}", m));
+        zip(Stream.of(1, 2, 3), Stream.of(1, 2)).forEach(m -> LOGGER.trace("{}", m));
     }
 
     /**
@@ -246,19 +238,19 @@ public final class Chapter2 {
     public static void ex9() {
         Stream<ArrayList<String>> of = Stream.of(new ArrayList<>(Arrays.asList("A", "B")),
                 new ArrayList<>(Arrays.asList("D", "C")));
-        LOGGER.info("{}", of.reduce((a, b) -> {
+        LOGGER.trace("{}", of.reduce((a, b) -> {
             a.addAll(b);
             return a;
         }).orElse(null));
         Stream<ArrayList<String>> of2 = Stream.of(new ArrayList<>(Arrays.asList("A", "B")),
                 new ArrayList<>(Arrays.asList("D", "C")));
-        LOGGER.info("{}", of2.reduce(new ArrayList<String>(), (a, b) -> {
+        LOGGER.trace("{}", of2.reduce(new ArrayList<String>(), (a, b) -> {
             a.addAll(b);
             return a;
         }));
         Stream<ArrayList<String>> of3 = Stream.of(new ArrayList<>(Arrays.asList("A", "B")),
                 new ArrayList<>(Arrays.asList("D", "C")));
-        LOGGER.info("{}", of3.reduce(new ArrayList<String>(), (a, b) -> {
+        LOGGER.trace("{}", of3.reduce(new ArrayList<String>(), (a, b) -> {
             a.addAll(b);
             return a;
         }, (c, d) -> {
@@ -275,8 +267,8 @@ public final class Chapter2 {
 
     public static void main(String[] args) {
         ex1();
-        //        ex2()
-        //		ex13()
+        ex2();
+        ex13();
     }
 
     private static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {

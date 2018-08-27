@@ -63,22 +63,15 @@ public final class MatrixSolver {
 		return sum;
 	}
 	public static void main(String[] args) {
-
-
 		double[][] matr = { 
-
 		{ 4, 5, 3 },
-
 		{ 2, -5, -2 },
-
 		{ 4, 5, 6 }
-
 		};
 		double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(Arrays.toString(MatrixSolver.solve(matr, coef2)));
+            LOGGER.trace(Arrays.toString(MatrixSolver.solve(matr, coef2)));
         }
-
 	}
 
 	private static void multiplyAndAdd(double[] ds, double[] ds2, double[] coef, int i, int j) {
@@ -117,9 +110,9 @@ public final class MatrixSolver {
 	private static void printMatrix(double[][] matr, double[] coef) {
         if (debug && LOGGER.isInfoEnabled()) {
 			for (int i = 0; i < matr.length; i++) {
-                LOGGER.info("{}[{}]", Arrays.toString(matr[i]), coef[i]);
+                LOGGER.trace("{}[{}]", Arrays.toString(matr[i]), coef[i]);
 			}
-			LOGGER.info("\n");
+            LOGGER.trace("\n");
 		}
 	}
 

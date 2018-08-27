@@ -32,6 +32,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleFlowPaneBuilder;
 import simplebuilder.SimpleHyperlinkBuilder;
 import simplebuilder.SimpleLabelBuilder;
@@ -94,7 +95,7 @@ public class CSSStylingExample extends Application {
 				.build();
 
 		sceneRef = new Scene(sceneRoot, 600, 250);
-		sceneRef.getStylesheets().addAll(CSSStylingExample.class.getResource("onTheScene.css").toExternalForm());
+        sceneRef.getStylesheets().addAll(ResourceFXUtils.toExternalForm("onTheScene.css"));
 		stage.setScene(sceneRef);
 		choiceBoxRef.getSelectionModel().selectFirst();
 		// Setup various property binding

@@ -7,27 +7,12 @@ import furigana.experiment.FuriganaCrawlerApp;
 import fxproexercises.ch01.AudioConfigLauncher;
 import fxproexercises.ch01.EarthriseChristmasApp;
 import fxproexercises.ch01.HelloWorldApp;
-import fxproexercises.ch02.CSSStylingExample;
-import fxproexercises.ch02.PathTransitionExample;
-import fxproexercises.ch02.PendulumAnimationLauncher;
-import fxproexercises.ch02.PongLauncher;
-import fxproexercises.ch02.StageControlExample;
-import fxproexercises.ch04.CenterUsingBind;
-import fxproexercises.ch04.CenterUsingStack;
-import fxproexercises.ch04.ReversiMain;
-import fxproexercises.ch04.ReversiPieceTest;
-import fxproexercises.ch04.ReversiSquareTest;
+import fxproexercises.ch02.*;
+import fxproexercises.ch04.*;
 import fxproexercises.ch06.ResponsiveUIApp;
 import fxproexercises.ch06.TaskProgressApp;
 import fxproexercises.ch06.ThreadInformationApp;
-import fxproexercises.ch07.AreaChartExample;
-import fxproexercises.ch07.BarChartExample;
-import fxproexercises.ch07.BubbleChartExample;
-import fxproexercises.ch07.Chart3dDemo;
-import fxproexercises.ch07.Chart3dSampleApp;
-import fxproexercises.ch07.LineChartExample;
-import fxproexercises.ch07.PieChartExample;
-import fxproexercises.ch07.ScatterChartWithFillExample;
+import fxproexercises.ch07.*;
 import fxproexercises.ch08.MediaPlayerExample;
 import fxproexercises.ch08.SimpleAudioPlayerLauncher;
 import fxproexercises.ch10.VanishingCirclesApp;
@@ -93,14 +78,14 @@ public final class FXTest implements HasLogging {
 
     @Test
     public void test3() throws Throwable {
-        FXTesting.testApps(ContestApplication.class,
-                AnimationExample.class, XylophoneApp.class, ScatterChartWithFillExample.class, Shapes3DTexture.class,
-                Simple3DBoxApp.class, SimpleAudioPlayerLauncher.class, SimpleScene3D.class, SnakeLauncher.class,
-                SlidingPuzzleLauncher.class, SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class,
-                Square2048Launcher.class, StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class,
-                TheMenuGrid.class, ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class,
-                TronLauncher.class, VanishingCirclesApp.class, WordSearchApp.class, WordSuggetionApp.class,
-                WorkingListsViews.class, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class);
+            FXTesting.testApps(ContestApplication.class,
+                    AnimationExample.class, XylophoneApp.class, ScatterChartWithFillExample.class, Shapes3DTexture.class,
+                    Simple3DBoxApp.class, SimpleAudioPlayerLauncher.class, SimpleScene3D.class, SnakeLauncher.class,
+                    SlidingPuzzleLauncher.class, SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class,
+                    Square2048Launcher.class, StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class,
+                    TheMenuGrid.class, ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class,
+                    TronLauncher.class, VanishingCirclesApp.class, WordSearchApp.class, WordSuggetionApp.class,
+                    WorkingListsViews.class, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class);
 
     }
 }

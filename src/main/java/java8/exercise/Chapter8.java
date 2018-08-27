@@ -4,11 +4,8 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsFirst;
 import static java.util.Comparator.nullsLast;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import election.experiment.CrawlerTask;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -43,29 +40,29 @@ public final class Chapter8 {
     public static void ex1() {
         String orderingSigned = Stream.of(1, 2, 4, -1).sorted().map(Integer::toUnsignedString)
                 .collect(Collectors.joining(" "));
-        LOGGER.info("Ordering signed: {}", orderingSigned);
+        LOGGER.trace("Ordering signed: {}", orderingSigned);
         String orderingUnsigned = Stream.of(1, 2, 4, -1).sorted(Integer::compareUnsigned).map(Integer::toUnsignedString)
                         .collect(Collectors.joining(" "));
-        LOGGER.info("\nOrdering unsigned: {}", orderingUnsigned);
+        LOGGER.trace("\nOrdering unsigned: {}", orderingUnsigned);
 
-        LOGGER.info("\nSum of MAX_VALUE and MIN_VALUE signed: {}", Integer.MAX_VALUE + Integer.MIN_VALUE);
+        LOGGER.trace("\nSum of MAX_VALUE and MIN_VALUE signed: {}", Integer.MAX_VALUE + Integer.MIN_VALUE);
         String unsignedString = Integer.toUnsignedString(Integer.MAX_VALUE + Integer.MIN_VALUE);
-        LOGGER.info("Sum of MAX_VALUE and MIN_VALUE unsigned: {}", unsignedString);
-        LOGGER.info("Sutraction of 1 and MIN_VALUE signed: {}", 1 - Integer.MIN_VALUE);
+        LOGGER.trace("Sum of MAX_VALUE and MIN_VALUE unsigned: {}", unsignedString);
+        LOGGER.trace("Sutraction of 1 and MIN_VALUE signed: {}", 1 - Integer.MIN_VALUE);
         String unsignedString2 = Integer.toUnsignedString(1 - Integer.MIN_VALUE);
-        LOGGER.info("Sutraction of 1 and MIN_VALUE unsigned: {}", unsignedString2);
+        LOGGER.trace("Sutraction of 1 and MIN_VALUE unsigned: {}", unsignedString2);
 
-        LOGGER.info("Multiplication of 2 and MAX_VALUE signed: {}", 2 * Integer.MAX_VALUE);
+        LOGGER.trace("Multiplication of 2 and MAX_VALUE signed: {}", 2 * Integer.MAX_VALUE);
         String unsignedString3 = Integer.toUnsignedString(2 * Integer.MAX_VALUE);
-        LOGGER.info("Multiplication of 2 and MAX_VALUE unsigned: {}", unsignedString3);
+        LOGGER.trace("Multiplication of 2 and MAX_VALUE unsigned: {}", unsignedString3);
 
-        LOGGER.info("Division of 2 and 4294967295 signed: {}", -1 / 2);
+        LOGGER.trace("Division of 2 and 4294967295 signed: {}", -1 / 2);
         String unsignedString4 = Integer.toUnsignedString(Integer.divideUnsigned(-1, 2));
-        LOGGER.info("Division of 2 and 4294967295 unsigned:	{}", unsignedString4);
+        LOGGER.trace("Division of 2 and 4294967295 unsigned:	{}", unsignedString4);
 
-        LOGGER.info("Remainder of 4294967295 and 2 signed: {}", -1 % 2);
+        LOGGER.trace("Remainder of 4294967295 and 2 signed: {}", -1 % 2);
         String unsignedString5 = Integer.toUnsignedString(Integer.remainderUnsigned(-1, 2));
-        LOGGER.info("Remainder of 4294967295 and 2 unsigned: {}", unsignedString5);
+        LOGGER.trace("Remainder of 4294967295 and 2 unsigned: {}", unsignedString5);
 
     }
 
@@ -78,12 +75,8 @@ public final class Chapter8 {
      * have a negative counterpart
      */
     public static void ex2() {
-        try {
 
             Math.negateExact(Integer.MIN_VALUE);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
     }
 
     /*
@@ -97,18 +90,18 @@ public final class Chapter8 {
      */
     public static void ex3() {
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("gcd1 {} ", gcd1(20, 40));
-            LOGGER.info("gcd2 {} ", gcd2(20, 40));
-            LOGGER.info("gcd3 {} ", gcd3(20, 40));
-            LOGGER.info(" gcd1 {}", gcd1(-20, 40));
-            LOGGER.info(" gcd2 {}", gcd2(-20, 40));
-            LOGGER.info(" gcd3 {}", gcd3(-20, 40));
-            LOGGER.info("gcd1 {}", gcd1(20, -40));
-            LOGGER.info("gcd2 {}", gcd2(20, -40));
-            LOGGER.info("gcd3 {}", gcd3(20, -40));
-            LOGGER.info("gcd1 {}", gcd1(-20, -40));
-            LOGGER.info("gcd2 {}", gcd2(-20, -40));
-            LOGGER.info("gcd3 {}", gcd3(-20, -40));
+            LOGGER.trace("gcd1 {} ", gcd1(20, 40));
+            LOGGER.trace("gcd2 {} ", gcd2(20, 40));
+            LOGGER.trace("gcd3 {} ", gcd3(20, 40));
+            LOGGER.trace(" gcd1 {}", gcd1(-20, 40));
+            LOGGER.trace(" gcd2 {}", gcd2(-20, 40));
+            LOGGER.trace(" gcd3 {}", gcd3(-20, 40));
+            LOGGER.trace("gcd1 {}", gcd1(20, -40));
+            LOGGER.trace("gcd2 {}", gcd2(20, -40));
+            LOGGER.trace("gcd3 {}", gcd3(20, -40));
+            LOGGER.trace("gcd1 {}", gcd1(-20, -40));
+            LOGGER.trace("gcd2 {}", gcd2(-20, -40));
+            LOGGER.trace("gcd3 {}", gcd3(-20, -40));
         }
     }
 
@@ -128,7 +121,7 @@ public final class Chapter8 {
      * random numbers are generated, and the top 26 and 27 bits are taken each
      * time. When s is 0, next(s) is 11, so that's what we want to hit: two
      * consecutive numbers whose top bits are zero. Now, working backwards,
-     * let�s start with s = prev(prev(prev(0))). Since the Random constructor
+     * let's start with s = prev(prev(prev(0))). Since the Random constructor
      * sets s = (initialSeed ^ m) % N, offer it s = prev(prev(prev(0))) ^ m =
      * 164311266871034, and you�ll get a zero after two calls to nextDouble. But
      * that is still too obvious. Generate a million predecessors, using a
@@ -153,7 +146,7 @@ public final class Chapter8 {
             Instant now = Instant.now();
             long size = wordsAsList.stream().filter(w -> w.length() <= 12).count();
             Instant end = Instant.now();
-            LOGGER.info("size={} time {} ms", size, Duration.between(now, end).toMillis());
+            LOGGER.trace("size={} time {} ms", size, Duration.between(now, end).toMillis());
 
             wordsAsList = getWordsAsList(ResourceFXUtils.toPath(ALICE_TXT));
             now = Instant.now();
@@ -161,7 +154,7 @@ public final class Chapter8 {
             size = wordsAsList.size();
             end = Instant.now();
 
-            LOGGER.info("size={} time {} ms", size, Duration.between(now, end).toMillis());
+            LOGGER.trace("size={} time {} ms", size, Duration.between(now, end).toMillis());
 
         } catch (Exception e) {
             LOGGER.error("", e);
@@ -179,7 +172,7 @@ public final class Chapter8 {
         String points = Stream.generate(() -> new Point2D(random.nextInt(30), random.nextInt(30))).limit(20)
                 .sorted(comparing(Point2D::getX).thenComparing(Point2D::getY))
                 .map(Objects::toString).collect(Collectors.joining("\n"));
-        LOGGER.info(points);
+        LOGGER.trace(points);
         String rectangles = Stream.generate(
                 () -> new Rectangle2D(random.nextInt(30), random.nextInt(30), random.nextInt(30), random.nextInt(30)))
                 .limit(20)
@@ -187,7 +180,7 @@ public final class Chapter8 {
                         .thenComparing(Rectangle2D::getWidth).thenComparing(Rectangle2D::getHeight))
                 .map(Objects::toString).collect(Collectors.joining("\n"));
 
-        LOGGER.info(rectangles);
+        LOGGER.trace(rectangles);
     }
 
     /*
@@ -197,10 +190,10 @@ public final class Chapter8 {
         Random random = new Random();
 
         Stream<Integer> iterate = Stream.iterate(0, (Integer i) -> i == null ? random.nextInt(30) : null).limit(10);
-        LOGGER.info("nullsFirst(naturalOrder()).reversed() ={}",
+        LOGGER.trace("nullsFirst(naturalOrder()).reversed() ={}",
                 iterate.sorted(nullsFirst(Comparator.<Integer>naturalOrder()).reversed()).collect(Collectors.toList()));
         iterate = Stream.iterate(0, (Integer i) -> i == null ? random.nextInt(30) : null).limit(10);
-        LOGGER.info("nullsLast(reverseOrder()) ={}",
+        LOGGER.trace("nullsLast(reverseOrder()) ={}",
                 iterate.sorted(nullsLast(Comparator.<Integer>reverseOrder())).collect(Collectors.toList()));
     }
 
@@ -211,22 +204,22 @@ public final class Chapter8 {
      */
     public static void ex9() {
         try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name());) {
-            streamOfLines(scanner).forEach(LOGGER::info);
+            streamOfLines(scanner).forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
         }
         try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name());) {
-            streamOfWords(scanner).forEach(LOGGER::info);
+            streamOfWords(scanner).forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
         }
         try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name());) {
-            streamOfInteger(scanner).map(Objects::toString).forEach(LOGGER::info);
+            streamOfInteger(scanner).map(Objects::toString).forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
         }
         try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name());) {
-            streamOfDouble(scanner).map(Objects::toString).forEach(LOGGER::info);
+            streamOfDouble(scanner).map(Objects::toString).forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
         }
@@ -363,7 +356,7 @@ public final class Chapter8 {
                     LOGGER.error("", e);
                 }
                 return true;
-            }).filter(File::isFile).map(Objects::toString).forEach(LOGGER::info);
+            }).filter(File::isFile).map(Objects::toString).forEach(LOGGER::trace);
         } catch (Exception e) {
             HasLogging.log().error("", e);
         }
@@ -380,12 +373,12 @@ public final class Chapter8 {
      */
     public static void ex11() {
         try {
-
+            CrawlerTask.insertProxyConfig();
             URL url = new URL("https://www.quora.com/");
             URLConnection connection = url.openConnection();
             String str = "username:password";
             String encode = Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
-            LOGGER.info("Basic {}", encode);
+            LOGGER.trace("Basic {}", encode);
             connection.setRequestProperty("Authorization", "Basic " + encode);
             connection.connect();
             printLines(connection);
@@ -398,7 +391,7 @@ public final class Chapter8 {
     private static void printLines(URLConnection connection) {
         try (InputStream inputStream = connection.getInputStream();
                 BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
-            a.lines().forEach(LOGGER::info);
+            a.lines().forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
         }
@@ -421,7 +414,7 @@ public final class Chapter8 {
     public static void ex15() {
         // Lines that contain some number
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT));) {
-            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::info);
+            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
 
@@ -437,7 +430,7 @@ public final class Chapter8 {
     public static void ex16() {
         // Lines that contain some number
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT));) {
-            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::info);
+            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
         }

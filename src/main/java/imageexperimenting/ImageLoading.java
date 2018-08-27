@@ -1,10 +1,6 @@
 package imageexperimenting;
 
-import com.aspose.imaging.Color;
-import com.aspose.imaging.Image;
-import com.aspose.imaging.RasterCachedImage;
-import com.aspose.imaging.RasterImage;
-import com.aspose.imaging.Rectangle;
+import com.aspose.imaging.*;
 import com.aspose.imaging.fileformats.bmp.BmpImage;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionColorMode;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionMode;
@@ -22,7 +18,6 @@ public class ImageLoading {
         String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
         //        String nameFile = dataDir + "eu3.jpg" 
         String svgFile = dataDir + "Video_game.svg";
-
         // createThumnails(dataDir, nameFile)
         convertSVG(dataDir, svgFile);
 

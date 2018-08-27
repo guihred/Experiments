@@ -49,7 +49,7 @@ public enum ImageResource {
 
 	public Image asImage() {
 		if (image == null) {
-			image = new Image(getClass().getResourceAsStream(filename));
+            image = new Image("plat/" + filename);
 		}
 		return image;
 	}

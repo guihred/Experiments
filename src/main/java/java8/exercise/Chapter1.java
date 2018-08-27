@@ -2,25 +2,24 @@ package java8.exercise;
 
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javax.swing.JFileChooser;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class Chapter1 {
 
 
-    private static final String DOCUMENTS_FOLDER = "C:/Users/Note/Documents";
-    private static final Logger LOGGER = HasLogging.log();
+    public static final String DOCUMENTS_FOLDER = new JFileChooser().getFileSystemView().getDefaultDirectory()
+            .getAbsolutePath()
+    ;
+    private static final Logger LOGGER = HasLogging.log(Chapter1.class);
 
     static interface Collection2<T> extends Collection<T> {
 
@@ -36,11 +35,6 @@ public final class Chapter1 {
 
     static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
 		private static final long serialVersionUID = 1L;
-	}
-
-	@FunctionalInterface
-	interface RunnableEx {
-		void run() throws Exception;
 	}
 
 	private Chapter1() {
@@ -62,20 +56,20 @@ public final class Chapter1 {
 	}
 
 	/**
-	 * Is the comparator code in the Arrays.sort method called in the same
-	 * thread as the call to sort or a different thread?
-	 * 
-	 * A: in the same thread.
-	 */
-	public static void ex1(Integer[] a) {
+     * Is the comparator code in the Arrays.sort method called in the same
+     * thread as the call to sort or a different thread?
+     * 
+     * A: in the same thread.
+     * @return 
+     */
+    public static String ex1(Integer[] a) {
 
-        LOGGER.info(Thread.currentThread().getName());
-
+        Property<String> property = new SimpleObjectProperty<>();
 		Arrays.sort(a, (o1, o2) -> {
-            LOGGER.info(Thread.currentThread().getName());
+            property.setValue(Thread.currentThread().getName());
 			return Integer.compare(o1, o2);
 		});
-
+        return property.getValue();
 	}
 
 	/**
@@ -87,8 +81,9 @@ public final class Chapter1 {
 	public static void ex2(File directory) {
 
 		Arrays.asList(directory.listFiles(File::isDirectory)).forEach(
-                s -> LOGGER.info("{}", s));
-        Arrays.asList(directory.listFiles((FileFilter) File::isDirectory)).forEach(s -> LOGGER.info("{}", s));
+                s -> LOGGER.trace("{}", s));
+        Arrays.asList(directory.listFiles((File pathname) -> pathname.isDirectory()))
+                .forEach(s -> LOGGER.trace("{}", s));
 
 	}
 
@@ -100,7 +95,7 @@ public final class Chapter1 {
 	 */
 	public static void ex3(File directory, String extension) {
         Arrays.asList(directory.listFiles((FilenameFilter) (dir, name) -> name.endsWith(extension)))
-                .forEach(s -> LOGGER.info("{}", s));
+                .forEach(s -> LOGGER.trace("{}", s));
 
 	}
 
@@ -114,10 +109,10 @@ public final class Chapter1 {
 		Collections.shuffle(asList);
 
         String unsorted = asList.stream().map(File::getName).collect(Collectors.joining(", ", "Before: ", ""));
-        LOGGER.info(unsorted);
+        LOGGER.trace(unsorted);
 		asList.sort(Comparator.comparing(File::isFile).thenComparing(File::getName));
         String sorted = asList.stream().map(File::getName).collect(Collectors.joining(", ", "After: ", ""));
-        LOGGER.info(sorted);
+        LOGGER.trace(sorted);
 
 	}
 
@@ -130,7 +125,7 @@ public final class Chapter1 {
      * Didn't you always hate it that you had to deal with checked exceptions in
      * a Runnable? Write a method uncheck that catches all checked exceptions
      * and turns them into unchecked exceptions. For example, new
-     * Thread(uncheck( () -> { LOGGER.info("Zzz"); Thread.sleep(1000);
+     * Thread(uncheck( () -> { LOGGER.trace("Zzz"); Thread.sleep(1000);
      * })).start(); // Look, no catch (InterruptedException)! Hint: Define an
      * interface RunnableEx whose run method may throw any exceptions. Then
      * implement public static Runnable uncheck(RunnableEx runner). Use a lambda
@@ -142,15 +137,15 @@ public final class Chapter1 {
      */
 	public static void ex6() {
 		new Thread(unckeck(() -> {
-            LOGGER.info("Zzzz!!");
+            LOGGER.trace("Zzzz!!");
 			Thread.sleep(1000);
-            LOGGER.info("!!!!");
+            LOGGER.trace("!!!!");
 		})).start();
 	}
 
 	public static void ex7() {
 		andThen(
-                () -> LOGGER.info("first"), () -> LOGGER.info("second")
+                () -> LOGGER.trace("first"), () -> LOGGER.trace("second")
 		).run();
 	}
 
@@ -158,7 +153,7 @@ public final class Chapter1 {
      * What happens when a lambda expression captures values in an enhanced for
      * loop such as this one? String[] names = { "Peter", "Paul", "Mary" };
      * List<Runnable> runners = new ArrayList<>(); for (String name : names)
-     * runners.add(() -> LOGGER.info(name));
+     * runners.add(() -> LOGGER.trace(name));
      * 
      * Is it legal? Does each lambda expression capture a different value, or do
      * they all get the last value? What happens if you use a traditional loop
@@ -170,17 +165,17 @@ public final class Chapter1 {
 		String[] names = { "Peter", "Paul", "Mary" };
 		List<Runnable> runners = new ArrayList<>();
 		for (String name : names) {
-            runners.add(() -> LOGGER.info(name));
+            runners.add(() -> LOGGER.trace(name));
 		}
 
 		runners.forEach(r -> new Thread(r).start());
 
 		for (int i = 0; i < names.length; i++) {
 			// This would give you a compilation error because 'i' is changeable
-            // runners.add(() -> LOGGER.info(names[i]));
+            // runners.add(() -> LOGGER.trace(names[i]));
 			String name = names[i];
 			// But this works perfectly fine
-            runners.add(() -> LOGGER.info(name));
+            runners.add(() -> LOGGER.trace(name));
 
 		}
 
@@ -195,7 +190,7 @@ public final class Chapter1 {
 		a.add("");
 		a.add("d");
 
-        a.forEachIf(LOGGER::info, s -> !s.isEmpty());
+        a.forEachIf(LOGGER::trace, s -> !s.isEmpty());
 
 	}
 	

@@ -11,6 +11,7 @@ import javafx.application.Application;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import simplebuilder.ResourceFXUtils;
 
 public class MediaPlayerExample extends Application {
 
@@ -20,7 +21,7 @@ public class MediaPlayerExample extends Application {
 
     @Override
     public void start(Stage primaryStage) throws MalformedURLException {
-		File resource = new File(Chapter8Resource.TEEN_TITANS.getURL().getFile());
+        File resource = ResourceFXUtils.toFile("TeenTitans.mp3");
         Media media = new Media(resource.toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();

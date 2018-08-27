@@ -31,6 +31,7 @@ import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public class ContestQuestionEditingDisplay extends Application implements HasLogging {
     private IntegerProperty current = new SimpleIntegerProperty(-1);
@@ -42,8 +43,9 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
     }
 
     public ContestQuestionEditingDisplay() {
-        lessons = ContestReader.getContestQuestions(
-				new File("102 - Analista de Tecnologia da Informacao - Tipo C.pdf"), () -> current.set(0));
+        File file = ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf");
+        getLogger().info("File exists={}", file.exists());
+        lessons = ContestReader.getContestQuestions(file, () -> current.set(0));
     }
 
     private ListView<ContestQuestionAnswer> newOptionListView() {
@@ -149,7 +151,7 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         }
     }
 
-    VBox newImage() {
+    private VBox newImage() {
         return new VBox();
     }
 

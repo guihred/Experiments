@@ -99,7 +99,6 @@ public class HiraganaMaker {
     }
 
     public static void main(String[] args) {
-
         try (Stream<String> lines = Files.lines(new File(TXT_FILE).toPath(), StandardCharsets.UTF_8);) {
             lines.forEach(t -> {
                 if (!t.matches(LESSON_REGEX)) {
