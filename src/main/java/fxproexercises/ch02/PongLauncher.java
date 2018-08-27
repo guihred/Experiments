@@ -181,8 +181,8 @@ public class PongLauncher extends Application {
                 })
                 .build();
 
-		pongComponents = new Group(topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton,
-				ball);
+        pongComponents = new Group(topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton,
+                ball);
 		pongComponents.setFocusTraversable(true);
 		pongComponents.setOnKeyPressed((KeyEvent k) -> {
 			if (k.getCode() == KeyCode.L && !rightPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {

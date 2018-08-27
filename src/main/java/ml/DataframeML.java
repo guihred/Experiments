@@ -25,6 +25,8 @@ public class DataframeML implements HasLogging {
     public static void main(String[] args) {
 		DataframeML x = new DataframeML("POPULACAO.csv");
 		x.describe();
+
+        System.out.println(x.toString());
     }
 
     public static DataframeBuilder builder(String csvFile) {
@@ -33,7 +35,7 @@ public class DataframeML implements HasLogging {
 
     private Map<String, List<Object>> dataframe = new LinkedHashMap<>();
 	protected Map<String, Set<String>> categories = new LinkedHashMap<>();
-    private Map<String, Class<?>> formatMap = new LinkedHashMap<>();
+    private Map<String, Class<? extends Comparable<?>>> formatMap = new LinkedHashMap<>();
 	protected Map<String, Function<Object, Object>> mapping = new LinkedHashMap<>();
 	private int size;
 
@@ -203,26 +205,31 @@ public class DataframeML implements HasLogging {
                                     DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                             (m1, m2) -> m1, LinkedHashMap::new));
         }
+        StringBuilder s = new StringBuilder();
+        s.append("\n");
+        stats.forEach((k, v) -> s.append(String.format("\t%s", k)));
+        s.append("\ncount");
+        stats.forEach((k, v) -> s.append(String.format(intFormating(k), v.getCount())));
+        s.append("\nmean");
+        stats.forEach((k, v) -> s.append(String.format(floatFormating(k), v.getMean())));
+        s.append("\nstd");
+        stats.forEach((k, v) -> s.append(String.format(floatFormating(k), v.getStd())));
+        s.append("\nmin");
+        stats.forEach((k, v) -> s.append(String.format(floatFormating(k), v.getMin())));
+        s.append("\n25%");
+        stats.forEach((k, v) -> s.append(String.format(floatFormating(k), v.getMedian25())));
+        s.append("\n50%");
+        stats.forEach((k, v) -> s.append(String.format(floatFormating(k), v.getMedian50())));
+        s.append("\n75%");
+        stats.forEach((k, v) -> s.append(String.format(floatFormating(k), v.getMedian75())));
+        s.append("\nmax");
+        stats.forEach((k, v) -> s.append(String.format(floatFormating(k), v.getMax())));
+        log(s.toString());
         
-        stats.forEach((k, v) -> log("\t%s", k));
-        log("\ncount");
-        stats.forEach((k, v) -> log("\t%" + k.length() + "d", v.getCount()));
-        log("\nmean");
-        stats.forEach((k, v) -> log(floatFormating(k), v.getMean()));
-        log("\nstd");
-        stats.forEach((k, v) -> log(floatFormating(k), v.getStd()));
-        log("\nmin");
-        stats.forEach((k, v) -> log(floatFormating(k), v.getMin()));
-        log("\n25%%");
-        stats.forEach((k, v) -> log(floatFormating(k), v.getMedian25()));
-        log("\n50%%");
-        stats.forEach((k, v) -> log(floatFormating(k), v.getMedian50()));
-        log("\n75%%");
-        stats.forEach((k, v) -> log(floatFormating(k), v.getMedian75()));
-        log("\nmax");
-        stats.forEach((k, v) -> log(floatFormating(k), v.getMax()));
-        logln();
-        
+    }
+
+    private String intFormating(String k) {
+        return "\t%" + k.length() + "d";
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -514,7 +521,7 @@ public class DataframeML implements HasLogging {
         return number;
     }
 
-    public Class<?> getFormat(String header) {
+    public Class<? extends Comparable<?>> getFormat(String header) {
         return formatMap.get(header);
     }
 

@@ -3,7 +3,6 @@ package javaexercises.graphs;
 import exercism.MatrixSolver;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.scene.Group;
@@ -14,8 +13,8 @@ import javafx.scene.shape.Polygon;
 public class VoronoiRegion extends Group {
 
 	public VoronoiRegion(Ponto p, List<Triangle> triangles) {
-		Function<double[], Double> keyExtractor = (double[] pon) -> Edge.getAngulo(pon[0], pon[1], x(p.getC()), y(p.getC()));
-		Comparator<double[]> comparator = Comparator.comparing(keyExtractor);
+        Comparator<double[]> comparator = Comparator
+                .comparing((double[] pon) -> Edge.getAngulo(pon[0], pon[1], x(p.getC()), y(p.getC())));
 		List<double[]> collect = triangles.stream().map(t -> centerCircle(t.getA().getC(), t.getB().getC(), t.getC().getC())).collect(Collectors.toList());
 		for (double[] es : collect) {
 			Circle circle = new Circle(2);

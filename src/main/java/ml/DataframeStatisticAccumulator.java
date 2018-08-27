@@ -1,6 +1,9 @@
 package ml;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DataframeStatisticAccumulator{
@@ -17,7 +20,8 @@ public class DataframeStatisticAccumulator{
     private double max = Double.NEGATIVE_INFINITY;
     private String unique, top, freq;
     private String header;
-    private Class<?> format;
+    private Map<String, Integer> countMap = new LinkedHashMap<>();
+    private Class<? extends Comparable<?>> format;
 
     public DataframeStatisticAccumulator(DataframeML dataframeML, String header) {
         dataframe = dataframeML;
@@ -33,7 +37,7 @@ public class DataframeStatisticAccumulator{
         max = Math.max(max, o);
 
         int size = dataframe.getSize();
-		if (count == size / 4) {
+        if (count == size / 4) {
             median25 = o;
         }
         if (count == size / 2) {
@@ -44,22 +48,39 @@ public class DataframeStatisticAccumulator{
         }
     }
 
+    private void acceptString(String n) {
+        sum++;
+        if (!countMap.containsKey(n)) {
+            countMap.put(n, 0);
+            count++;
+        }
+        countMap.put(n, countMap.get(n) + 1);
+
+    }
+
     public void combine(DataframeStatisticAccumulator n) {
         count += n.count;
-
         sum += n.sum;
-
         min = Math.min(min, n.min);
         max = Math.max(max, n.max);
-    }
-    double getMean() {
-		return count == 0 ? 0 : sum / count;
+        n.countMap.forEach((k, v) -> countMap.merge(k, v, (a, b) -> a + b));
     }
 
-
-    double getStd() {
+    public double getMean() {
         if (format == String.class) {
-            return 0;
+            return sum / countMap.size();
+        }
+
+        return count == 0 ? 0 : sum / count;
+    }
+
+
+    public double getStd() {
+        if (format == String.class) {
+            double mean = sum / countMap.size();
+            double sum2 = countMap.values().stream().mapToDouble(e -> e)
+                    .map(e -> e - mean).map(e -> e * e).sum();
+            return Math.sqrt(sum2 / (countMap.size() - 1));
         }
 
         double mean = sum / count;
@@ -68,7 +89,7 @@ public class DataframeStatisticAccumulator{
         return Math.sqrt(sum2 / (count - 1));
     }
 
-    double getCorrelation(String other) {
+    public double getCorrelation(String other) {
         if (format == String.class || dataframe.getFormat(other) == String.class) {
             return 0;
         }
@@ -96,6 +117,9 @@ public class DataframeStatisticAccumulator{
         if (format.isInstance(o) && Number.class.isAssignableFrom(format)) {
             acceptNumber((Number) o);
         }
+        if (format.isInstance(o) && String.class.isAssignableFrom(format)) {
+            acceptString((String) o);
+        }
         return this;
     }
 
@@ -106,26 +130,69 @@ public class DataframeStatisticAccumulator{
 
 
     public double getMin() {
-		return count == 0 ? 0 : min;
+        if (format == String.class) {
+            return countMap.values().stream().mapToDouble(e -> e).min().orElse(min);
+        }
+
+        return count == 0 ? 0 : min;
     }
 
 
     public double getMedian25() {
-        return median25;
+        if (format == String.class) {
+            double[] array = countMap.values().stream().mapToDouble(e -> e).sorted().toArray();
+            if (array.length > 0) {
+                return array[array.length / 4];
+            }
+        }
+        List<Double> collect = dataframe.list(header).stream().filter(e -> e != null).map(Number.class::cast)
+                .map(Number::doubleValue).sorted()
+                .collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            return 0;
+        }
+        return collect.get(count / 4).doubleValue();
     }
 
 
     public double getMedian50() {
-        return median50;
+        if (format == String.class) {
+            double[] array = countMap.values().stream().mapToDouble(e -> e).sorted().toArray();
+            if (array.length > 0) {
+                return array[array.length / 2];
+            }
+        }
+        List<Double> collect = dataframe.list(header).stream().filter(e -> e != null).map(Number.class::cast)
+                .map(Number::doubleValue).sorted()
+                .collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            return 0;
+        }
+        return collect.get(count / 2).doubleValue();
     }
 
 
     public double getMedian75() {
-        return median75;
+        if (format == String.class) {
+            double[] array = countMap.values().stream().mapToDouble(e -> e).sorted().toArray();
+            if (array.length > 0) {
+                return array[array.length * 3 / 4];
+            }
+        }
+        List<Double> collect = dataframe.list(header).stream().filter(e -> e != null).map(Number.class::cast)
+                .map(Number::doubleValue).sorted()
+                .collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            return 0;
+        }
+        return collect.get(count * 3 / 4).doubleValue();
     }
 
 
     public double getMax() {
+        if (format == String.class) {
+            return countMap.values().stream().mapToDouble(e -> e).max().orElse(max);
+        }
         return max;
     }
 

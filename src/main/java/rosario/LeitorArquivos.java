@@ -331,7 +331,7 @@ public final class LeitorArquivos {
 			}
 			medicamento.setCodigo(Integer.valueOf(registro));
 			String stringCellValue = next.getCell(1).getStringCellValue();
-			if (stringCellValue.equalsIgnoreCase("Totais")) {
+            if ("Totais".equalsIgnoreCase(stringCellValue)) {
 				return true;
 			}
 			medicamento.setNome(stringCellValue);

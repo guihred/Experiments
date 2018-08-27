@@ -142,7 +142,7 @@ public class MadTriangle {
         this.c = c;
     }
 
-    class MadEdgeDistance implements Comparable<MadEdgeDistance> {
+    protected static class MadEdgeDistance implements Comparable<MadEdgeDistance> {
 
         protected float distance;
         protected MadLinha edge;
