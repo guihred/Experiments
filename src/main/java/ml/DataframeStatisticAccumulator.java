@@ -14,9 +14,6 @@ public class DataframeStatisticAccumulator{
     private int count;
     private double sum;
     private double min = Double.MAX_VALUE;
-    private double median25;
-    private double median50;
-    private double median75;
     private double max = Double.NEGATIVE_INFINITY;
     private String unique, top, freq;
     private String header;
@@ -35,17 +32,6 @@ public class DataframeStatisticAccumulator{
         sum += o;
         min = Math.min(min, o);
         max = Math.max(max, o);
-
-        int size = dataframe.getSize();
-        if (count == size / 4) {
-            median25 = o;
-        }
-        if (count == size / 2) {
-            median50 = o;
-        }
-        if (count == size * 3 / 4) {
-            median75 = o;
-        }
     }
 
     private void acceptString(String n) {
