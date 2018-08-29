@@ -20,8 +20,10 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 public class Shapes3DTexture extends Application {
-	private double mousePosX, mousePosY;
-	private double mouseOldX, mouseOldY;
+    private double mousePosX;
+    private double mousePosY;
+    private double mouseOldX;
+    private double mouseOldY;
 	private final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
 	private final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
 	public static void main(String[] args) {

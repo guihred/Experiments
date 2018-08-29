@@ -3,11 +3,7 @@ package gaming.ex03;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -39,10 +35,7 @@ public class SlidingPuzzleSquare extends Region {
         if (obj.getClass() != SlidingPuzzleSquare.class) {
             return false;
         }
-        if (((SlidingPuzzleSquare) obj).number.get() == number.get()) {
-            return true;
-        }
-        return false;
+        return ((SlidingPuzzleSquare) obj).number.get() == number.get();
 
     }
 

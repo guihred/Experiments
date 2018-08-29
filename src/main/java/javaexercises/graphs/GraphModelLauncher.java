@@ -1,43 +1,34 @@
 package javaexercises.graphs;
 
-import static simplebuilder.CommonsFX.newButton;
-import static simplebuilder.CommonsFX.newSelect;
-
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.Animation;
-import javafx.animation.Animation.Status;
-import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.CommonsFX;
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
+import simplebuilder.SimpleTimelineBuilder;
 
-public class GraphModelLauncher extends Application {
-	private static final Logger LOGGER = LoggerFactory.getLogger(GraphModelLauncher.class);
+public class GraphModelLauncher extends Application implements HasLogging {
 	private final Graph graph = new Graph();
 	private ConvergeLayout convergeLayout = new ConvergeLayout(graph);
 	private ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph),
 			new CircleLayout(graph),
 			new RandomLayout(graph), new CustomLayout(graph), convergeLayout);
-	private ChoiceBox<Layout> selectLayout = newSelect(layouts,
+    private ChoiceBox<Layout> selectLayout = CommonsFX.newSelect(layouts,
 			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
 
 
@@ -45,12 +36,12 @@ public class GraphModelLauncher extends Application {
 		graph.getModel().clearSelected();
 		Stage dialog = new Stage();
 		dialog.setWidth(70);
-		dialog.initStyle(StageStyle.UTILITY);
 		ObservableList<String> cells = FXCollections.observableArrayList(
-				graph.getModel().getAllCells().stream().map(c -> c.getCellId()).collect(Collectors.toList()));
+                graph.getModel().getAllCells().stream().map(Cell::getCellId).collect(Collectors.toList()));
 		ChoiceBox<String> c1 = new ChoiceBox<>(cells);
 		ChoiceBox<String> c2 = new ChoiceBox<>(cells);
-		Scene scene = new Scene(new VBox(new Text("Source"), c1, new Text("Target"), c2, newButton("OK", event -> {
+        Scene scene = new Scene(
+                new VBox(new Text("Source"), c1, new Text("Target"), c2, CommonsFX.newButton("OK", event -> {
 			if (c1.getValue() != null && c2.getValue() != null) {
 				List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
 				chain.forEach(e -> {
@@ -93,49 +84,50 @@ public class GraphModelLauncher extends Application {
 		BorderPane root = new BorderPane();
 
 		VBox vBox = new VBox();
-		vBox.getChildren().add(newButton("Shortest Path", ev -> displayDialogForShortestPath()));
-		vBox.getChildren().add(newButton("Kruskal", ev -> {
+        vBox.getChildren().add(CommonsFX.newButton("Shortest Path", ev -> displayDialogForShortestPath()));
+        vBox.getChildren().add(CommonsFX.newButton("Kruskal", ev -> {
 			graph.getModel().clearSelected();
 			List<Edge> prim = graph.getModel().kruskal();
 			prim.forEach(e -> e.setSelected(true));
 		}));
-		vBox.getChildren().add(newButton("Articulations", ev -> {
+        vBox.getChildren().add(CommonsFX.newButton("Articulations", ev -> {
 			graph.getModel().clearSelected();
 			graph.getModel().findArticulations();
 		}));
 
-		vBox.getChildren().add(newButton("Sort Topology", ev -> {
+        vBox.getChildren().add(CommonsFX.newButton("Sort Topology", ev -> {
 			graph.getModel().clearSelected();
 			graph.getModel().sortTopology();
 		}));
 		Layout layout = new ConvergeLayout(graph);
 
-		vBox.getChildren().add(newButton("Color", ev -> graph.getModel().coloring()));
+        vBox.getChildren().add(CommonsFX.newButton("Color", ev -> graph.getModel().coloring()));
 
 		DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
 		ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology, new RandomTopology(50, graph), new TreeTopology(
 				30, graph), new CircleTopology(30, graph), new GabrielTopology(30, graph));
 
-		SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(l -> l.getName());
-		ChoiceBox<BaseTopology> topologySelect = newSelect(topologies, converterTopology, "Select Topology");
+        SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(BaseTopology::getName);
+        ChoiceBox<BaseTopology> topologySelect = CommonsFX.newSelect(topologies, converterTopology, "Select Topology");
 		vBox.getChildren().add(new HBox(topologySelect,
-				newButton("Go", e -> topologySelect.getSelectionModel().getSelectedItem().execute())));
+                CommonsFX.newButton("Go", e -> topologySelect.getSelectionModel().getSelectedItem().execute())));
 
-		Timeline timeline = new Timeline(new KeyFrame(new Duration(50.0), convergeLayout.getEventHandler()));
+        Timeline timeline = new SimpleTimelineBuilder()
+                .addKeyFrame(new Duration(50.0), convergeLayout.getEventHandler()).build();
 		timeline.setCycleCount(Animation.INDEFINITE);
-		vBox.getChildren().add(newButton("Triangulate", ev -> {
-			Status status = timeline.getStatus();
-			if (status == Status.RUNNING) {
+        vBox.getChildren().add(CommonsFX.newButton("Triangulate", ev -> {
+            Animation.Status status = timeline.getStatus();
+            if (status == Animation.Status.RUNNING) {
 				timeline.stop();
 			}
 			delaunayTopology.triangulate();
-			if (status == Status.RUNNING) {
+            if (status == Animation.Status.RUNNING) {
 				timeline.play();
 			}
 		}));
-		vBox.getChildren().add(newButton("Voronoi", ev -> {
-			Status status = timeline.getStatus();
-			if (status == Status.RUNNING) {
+        vBox.getChildren().add(CommonsFX.newButton("Voronoi", ev -> {
+            Animation.Status status = timeline.getStatus();
+            if (status == Animation.Status.RUNNING) {
 				timeline.stop();
 			}
 			graph.voronoi();
@@ -145,7 +137,6 @@ public class GraphModelLauncher extends Application {
 		root.setCenter(graph.getScrollPane());
 
 		Scene scene = new Scene(root, 800, 600);
-		// scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -155,39 +146,33 @@ public class GraphModelLauncher extends Application {
 		new CircleLayout(graph).execute();
 		layout.execute();
 
-		vBox.getChildren().add(newButton("Create Topology", ev -> createTopology()));
+        vBox.getChildren().add(CommonsFX.newButton("Create Topology", ev -> createTopology()));
 		vBox.getChildren().add(new HBox(selectLayout,
-				newButton("Go", e -> selectLayout.getSelectionModel().getSelectedItem().execute())));
-		vBox.getChildren().add(newButton("Pause/Play", ev -> {
-			Status status = timeline.getStatus();
-			if (status == Status.RUNNING) {
+                CommonsFX.newButton("Go", e -> selectLayout.getSelectionModel().getSelectedItem().execute())));
+        vBox.getChildren().add(CommonsFX.newButton("Pause/Play", ev -> {
+            Animation.Status status = timeline.getStatus();
+            if (status == Animation.Status.RUNNING) {
 				timeline.stop();
 			} else {
 				timeline.play();
 			}
 		}));
-		vBox.getChildren().add(newCheck("Show Weight", Graph.SHOW_WEIGHT));
+        vBox.getChildren().add(CommonsFX.newCheck("Show Weight", Graph.SHOW_WEIGHT));
 
 	}
 
 	private String[] getWords() {
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"));) {
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"))) {
             return lines.flatMap((String e) -> Stream.of(e.split("[^a-zA-Z]")))
 					.filter(s -> s.length() == 4).map(String::toLowerCase).distinct().toArray(String[]::new);
-		} catch (IOException e) {
-			LOGGER.error("", e);
+        } catch (Exception e) {
+            getLogger().error("", e);
 		}
 
 		return new String[] { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire",
 				"wind", "wing", "wink", "wins", "none", "gone", "note", "vote", "site", "nite", "bite" };
 	}
 
-	private CheckBox newCheck(String name, BooleanProperty property) {
-		CheckBox checkBox = new CheckBox(name);
-		checkBox.setSelected(property.get());
-		property.bind(checkBox.selectedProperty());
-		return checkBox;
-	}
 
 	private void addGraphComponents() {
 

@@ -2,27 +2,19 @@ package contest.db;
 
 import java.text.MessageFormat;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 @Entity
 @Table
 public class ContestText extends BaseEntity implements HasImage {
-    private static int KEY_COUNTER;
+    private static int keyCounter;
     @ManyToOne
     @JoinColumn
     private Contest contest;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer key = KEY_COUNTER++;
+    private Integer key = keyCounter++;
 
     @Column
     private Integer max;
@@ -98,6 +90,16 @@ public class ContestText extends BaseEntity implements HasImage {
     @Override
     public String getImage() {
         return image;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj) && ((ContestText) obj).key == key;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key);
     }
 
     @Override

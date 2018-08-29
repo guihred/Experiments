@@ -47,7 +47,8 @@ public class Square2048Model {
 
     public void handleKeyPressed(KeyEvent e) {
         final KeyCode code = e.getCode();
-        int x = 0, y = 0;
+        int x = 0;
+        int y = 0;
 
         switch (code) {
             case UP:

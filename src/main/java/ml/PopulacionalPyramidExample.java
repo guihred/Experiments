@@ -33,9 +33,9 @@ public class PopulacionalPyramidExample extends Application {
                 .filter("Unit", "Persons"::equals)
                 .filter("SEX", e->asPredicate.test(e.toString()))
                 .filter("Subject", e -> e.toString().matches("Population.+\\d+"))
-                .categorize("Country")
-                .categorize("TIME")
-                .map("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
+                .addCategory("Country")
+                .addCategory("TIME")
+                .addMapping("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
                 .build();
 
 		PopulacionalGraph canvas = new PopulacionalGraph();

@@ -153,7 +153,8 @@ public class HeatGraph extends Canvas {
 		int size = sqrt * m;
 		for (int i = 0; i < size; i++) {
 
-			double x = i % sqrt * triangleSide + (i / sqrt % 2 == 0 ? 0 : -triangleSide / 2) + radius.get() / 2
+            int o = i / sqrt;
+            double x = i % sqrt * triangleSide + (o % 2 == 0 ? 0 : -triangleSide / 2) + radius.get() / 2
 					+ layout.get();
 			int j = i / sqrt;
 			double k = j * triangleSide;

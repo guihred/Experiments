@@ -1,6 +1,5 @@
 package mp3Audio;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
 import javafx.application.Application;
@@ -11,11 +10,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -125,10 +120,9 @@ public class OrganizadorMusicas extends Application {
 			root.getChildren().addAll(criarField("Artista", selectedItem.artistaProperty()));
 			root.getChildren().addAll(criarField("Álbum", selectedItem.albumProperty()));
 
-			byte[] extractEmbeddedImageData = LeitorMusicas.extractEmbeddedImageData(selectedItem.getArquivo());
-			if (extractEmbeddedImageData != null) {
-				Image image = new Image(new ByteArrayInputStream(extractEmbeddedImageData));
-				root.getChildren().addAll(new ImageView(image));
+            Image imageData = LeitorMusicas.extractEmbeddedImage(selectedItem.getArquivo());
+            if (imageData != null) {
+                root.getChildren().addAll(new ImageView(imageData));
 			} else {
 				Button button = new Button("Escolha a Foto");
 				root.getChildren().add(button);
@@ -137,7 +131,7 @@ public class OrganizadorMusicas extends Application {
 					FlowPane flow = new FlowPane();
 					flow.setPrefWrapLength(300);
 
-					List<String> imagens = LeitorMusicas.getImagens("\"" + selectedItem.getArtista() + "\" \""
+                    List<String> imagens = GoogleImagesUtils.getImagens("\"" + selectedItem.getArtista() + "\" \""
 							+ selectedItem.getTitulo() + "\" \"" + selectedItem.getAlbum() + "\"");
 					for (String url : imagens) {
 						ImageView pages = new ImageView(url);

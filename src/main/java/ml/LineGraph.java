@@ -1,10 +1,6 @@
 package ml;
 
-import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.LongSummaryStatistics;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.InvalidationListener;
@@ -67,7 +63,8 @@ class LineGraph extends Canvas {
             Long y = entry.getValue();
             double y1 = maxLayout - y / yProportion * j2;
             // gc.strokeLine(x1, maxLayout, x1, y1)
-            gc.fillOval(x1 - radius / 2, y1 - radius / 2, radius, radius);
+            int l = radius / 2;
+            gc.fillOval(x1 - l, y1 - l, radius, radius);
         }
         for (int k = 0; k < entrySet.size(); k++) {
             Entry<Double, Long> entry = entrySet.get(k);

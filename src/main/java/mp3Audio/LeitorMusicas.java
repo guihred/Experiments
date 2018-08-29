@@ -1,24 +1,14 @@
 package mp3Audio;
 
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.apache.ApacheHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.customsearch.Customsearch;
-import com.google.api.services.customsearch.Customsearch.Cse;
-import com.google.api.services.customsearch.CustomsearchRequestInitializer;
-import com.google.api.services.customsearch.model.Result;
-import com.google.api.services.customsearch.model.Search;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 import javax.swing.filechooser.FileSystemView;
 import org.apache.commons.lang3.StringUtils;
 import org.blinkenlights.jid3.ID3Tag;
@@ -30,10 +20,10 @@ import org.blinkenlights.jid3.v2.ID3V2Frame;
 import org.blinkenlights.jid3.v2.ID3V2Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 
 public final class LeitorMusicas {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LeitorMusicas.class);
+    private static final Logger LOGGER = HasLogging.log(LeitorMusicas.class);
 
 	private LeitorMusicas() {
 	}
@@ -56,7 +46,7 @@ public final class LeitorMusicas {
 
 		ObservableList<Musica> musicas = FXCollections.observableArrayList();
 		Path start = file.toPath();
-        try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"));) {
+        try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
             find.forEach(
             		path -> musicas.add(readTags(path.toFile())));
         } catch (Exception e) {
@@ -81,8 +71,12 @@ public final class LeitorMusicas {
 
 	public static Musica readTags(File sourceFile) {
 		Musica musica = new Musica();
-		String title = "", artist = "", album = "", year = "", track = "", genre2 = "";
-
+        String title = "";
+        String artist = "";
+        String album = "";
+        String year = "";
+        String track = "";
+        String genre2 = "";
 		MP3File mediaFile = new MP3File(sourceFile);
 		boolean v1 = false;
 		try {
@@ -129,7 +123,6 @@ public final class LeitorMusicas {
 		musica.setAno(year);
 		musica.setTrilha(track);
 		musica.setArquivo(sourceFile);
-		extractEmbeddedImageData(mediaFile);
 
 
 		return musica;
@@ -160,57 +153,31 @@ public final class LeitorMusicas {
 		return y;
 	}
 
-	public static byte[] extractEmbeddedImageData(File mp3) {
-		return extractEmbeddedImageData(new MP3File(mp3));
-	}
+    public static Image extractEmbeddedImage(File mp3) {
+        MP3File mp31 = new MP3File(mp3);
+        try {
+            for (ID3Tag tag : mp31.getTags()) {
 
-	public static byte[] extractEmbeddedImageData(MP3File mp3) {
+                if (tag instanceof ID3V2_3_0Tag) {
+                    ID3V2_3_0Tag tag2 = (ID3V2_3_0Tag) tag;
 
-		try {
-			for (ID3Tag tag : mp3.getTags()) {
-
-				if (tag instanceof ID3V2_3_0Tag) {
-					ID3V2_3_0Tag tag2 = (ID3V2_3_0Tag) tag;
-
-					if (tag2.getAPICFrames() != null && tag2.getAPICFrames().length > 0) {
-						// Simply take the first image that is available.
-						APICID3V2Frame frame = tag2.getAPICFrames()[0];
-						return frame.getPictureData();
-					}
-				}
-			}
-			ID3V2Tag id3v2Tag = mp3.getID3V2Tag();
-			ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
+                    if (tag2.getAPICFrames() != null && tag2.getAPICFrames().length > 0) {
+                        // Simply take the first image that is available.
+                        APICID3V2Frame frame = tag2.getAPICFrames()[0];
+                        return new Image(new ByteArrayInputStream(frame.getPictureData()));
+                    }
+                }
+            }
+            ID3V2Tag id3v2Tag = mp31.getID3V2Tag();
+            ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
             String singleFramesStr = Arrays.toString(singleFrames);
             LOGGER.trace("SingleFrames={}", singleFramesStr);
-		} catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.trace("", e);
-		}
-        return new byte[0];
-	}
+        }
+        return null;
+    }
 
-	public static List<String> getImagens(String artista) {
-		try {
-			HttpTransport transport = new ApacheHttpTransport();
-			JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-			Customsearch build = new Customsearch.Builder(transport, jsonFactory, null)
-					.setCustomsearchRequestInitializer(
-							new CustomsearchRequestInitializer("AIzaSyBAsSX8EPLHAZlother07UAMPF7vqBA2dWcisc"))
-					.setApplicationName("wdmsim").build();
-			Cse cse = build.cse();
 
-			Search execute = cse.list(artista).setCx("001081779786768539865:7f2uwv0iufy").setSearchType("image")
-					.execute();
-
-			List<Result> items = execute.getItems();
-			if (items != null) {
-				return items.stream().map(Result::getLink).collect(Collectors.toList());
-			}
-
-		} catch (Exception e) {
-            LOGGER.trace("", e);
-		}
-		return Collections.emptyList();
-	}
 
 }

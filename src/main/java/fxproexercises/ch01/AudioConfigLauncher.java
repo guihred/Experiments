@@ -28,10 +28,6 @@ public class AudioConfigLauncher extends Application {
 
     private static final String COLOR_AUDIO = "#131021";
     private AudioConfigModel acModel = new AudioConfigModel();
-	private Text textDb;
-	private Slider slider;
-	private CheckBox mutingCheckBox;
-	private ChoiceBox<String> genreChoiceBox;
 
 	public static void main(String[] args) {
 		Application.launch(args);
@@ -39,17 +35,18 @@ public class AudioConfigLauncher extends Application {
 
 	@Override
 	public void start(Stage stage) {
-        textDb = new SimpleTextBuilder().x(18).y(69).textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
+        Text textDb = new SimpleTextBuilder().x(18).y(69).textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SansSerif", FontWeight.BOLD, 18)).build();
-		genreChoiceBox = new ChoiceBox<>(AudioConfigModel.GENRES);
+        ChoiceBox<String> genreChoiceBox = new ChoiceBox<>(AudioConfigModel.GENRES);
 		genreChoiceBox.setLayoutX(204);
 		genreChoiceBox.setLayoutY(154);
 		genreChoiceBox.setPrefWidth(93);
 
 		int x = 280;
 		int y = 113;
-		mutingCheckBox = newCheckBox(x, y);
-		slider = new SimpleSliderBuilder().layoutX(135).layoutY(135).prefWidth(162).min(AudioConfigModel.MIN_DECIBELS)
+        CheckBox mutingCheckBox = newCheckBox(x, y);
+        Slider slider = new SimpleSliderBuilder().layoutX(135).layoutY(135).prefWidth(162)
+                .min(AudioConfigModel.MIN_DECIBELS)
 				.max(AudioConfigModel.MAX_DECIBELS).build();
         final Text genreText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SanSerif", FontWeight.BOLD, 18)).text("Genre").build();

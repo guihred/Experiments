@@ -1,22 +1,16 @@
 package contest.db;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Objects;
+import javax.persistence.*;
 
 @Table
 @Entity
 public class Contest extends BaseEntity {
-	private static int KEY_COUNTER;
+    private static int keyCounter;
 	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
-	private Integer key = KEY_COUNTER++;
+    private Integer key = keyCounter++;
     @Column
     private String name;
     @Column
@@ -55,4 +49,13 @@ public class Contest extends BaseEntity {
         this.organization = organization;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj) && ((Contest) obj).key == key;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key);
+    }
 }

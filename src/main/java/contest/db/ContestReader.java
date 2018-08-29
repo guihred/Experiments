@@ -1,10 +1,5 @@
 package contest.db;
 
-import static contest.db.ContestReader.ReaderState.STATE_IGNORE;
-import static contest.db.ContestReader.ReaderState.STATE_OPTION;
-import static contest.db.ContestReader.ReaderState.STATE_QUESTION;
-import static contest.db.ContestReader.ReaderState.STATE_TEXT;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,12 +18,10 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
-import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class ContestReader implements HasLogging {
     private static final String LINE_PATTERN = "^\\d+\\s+$";
-    private final Logger log = getLogger();
     public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
@@ -76,10 +69,10 @@ public final class ContestReader implements HasLogging {
     private ContestQuestion contestQuestion = new ContestQuestion();
     private ObservableList<ContestQuestion> listQuestions = FXCollections.observableArrayList();
 
-    private int option = 0;
+    private int option;
 
     private List<QuestionPosition> questionPosition = new ArrayList<>();
-    private ReaderState state = STATE_IGNORE;
+    private ReaderState state = ReaderState.STATE_IGNORE;
 
     private String subject;
     private ContestText text = new ContestText();
@@ -109,7 +102,7 @@ public final class ContestReader implements HasLogging {
         try {
             return Integer.valueOf(v.replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
-            log.trace("", e);
+            getLogger().trace("", e);
             return null;
         }
 
@@ -130,7 +123,7 @@ public final class ContestReader implements HasLogging {
         }
 
         if (s.matches(TEXTS_PATTERN)) {
-            state = STATE_TEXT;
+            state = ReaderState.STATE_TEXT;
             String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
             IntSummaryStatistics stats = Stream.of(split).mapToInt(this::intValue).summaryStatistics();
             text.setMin(stats.getMin());
@@ -142,19 +135,19 @@ public final class ContestReader implements HasLogging {
         }
 
         if (s.matches(QUESTION_PATTERN)) {
-            if (option == 5 && state == STATE_OPTION) {
+            if (option == 5 && state == ReaderState.STATE_OPTION) {
                 addQuestion();
             }
-            if (state == STATE_TEXT) {
+            if (state == ReaderState.STATE_TEXT) {
                 addNewText();
             }
-            log.trace(s);
+            getLogger().trace(s);
             contestQuestion.setNumber(intValue(s));
-            state = STATE_QUESTION;
+            state = ReaderState.STATE_QUESTION;
             return;
         }
         if (s.matches(OPTION_PATTERN)) {
-            if (state == STATE_OPTION) {
+            if (state == ReaderState.STATE_OPTION) {
                 contestQuestion.addOption(answer);
 
                 answer = new ContestQuestionAnswer();
@@ -163,26 +156,26 @@ public final class ContestReader implements HasLogging {
 
             answer.setNumber(option);
             option++;
-            state = STATE_OPTION;
+            state = ReaderState.STATE_OPTION;
 
         }
-        if (StringUtils.isBlank(s) && state == STATE_TEXT && !listQuestions.isEmpty()) {
+        if (StringUtils.isBlank(s) && state == ReaderState.STATE_TEXT && !listQuestions.isEmpty()) {
             addNewText();
-            state = STATE_IGNORE;
+            state = ReaderState.STATE_IGNORE;
         }
-        if (state == STATE_OPTION && StringUtils.isBlank(s)) {
+        if (state == ReaderState.STATE_OPTION && StringUtils.isBlank(s)) {
             contestQuestion.addOption(answer);
             if (option == 5) {
                 addQuestion();
             }
 
-            state = STATE_IGNORE;
+            state = ReaderState.STATE_IGNORE;
         }
 
         executeAppending(linhas, i, s);
 
-        if (StringUtils.isNotBlank(s) && state != STATE_IGNORE) {
-            log.trace(s);
+        if (StringUtils.isNotBlank(s) && state != ReaderState.STATE_IGNORE) {
+            getLogger().trace(s);
         }
     }
 
@@ -224,7 +217,7 @@ public final class ContestReader implements HasLogging {
     private void readFile(File file) {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
-                PDDocument pdDoc = new PDDocument(cosDoc);) {
+                PDDocument pdDoc = new PDDocument(cosDoc)) {
             PDFTextStripper pdfStripper = new PDFTextStripper() {
                 @Override
                 protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
@@ -238,7 +231,7 @@ public final class ContestReader implements HasLogging {
                         qp.x = x;
                         qp.y = y;
                         qp.page = pageNumber;
-                        getLogger().trace(qp.line + " at (" + qp.x + "," + qp.y + ") page " + pageNumber);
+                        getLogger().trace("{} at ({},{}) page {}", qp.line, qp.x, qp.y, pageNumber);
                         questionPosition.add(qp);
 
                     }
@@ -278,14 +271,14 @@ public final class ContestReader implements HasLogging {
                 // concat.forEach(action)
             }
         } catch (Exception e) {
-            log.error("", e);
+            getLogger().error("", e);
         }
     }
 
     private ContestQuestion tryReadQuestionFromLines(String[] lines) {
 
         try {
-            state = STATE_IGNORE;
+            state = ReaderState.STATE_IGNORE;
             option = 0;
             text = new ContestText(contest);
             answer.setExercise(contestQuestion);
@@ -293,7 +286,7 @@ public final class ContestReader implements HasLogging {
                 processQuestion(lines, i);
             }
         } catch (Exception e) {
-            log.error("", e);
+            getLogger().error("", e);
         }
         return null;
     }

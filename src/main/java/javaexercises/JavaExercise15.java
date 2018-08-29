@@ -20,7 +20,7 @@ public final class JavaExercise15 {
 	private JavaExercise15() {
 	}
 	public static void main(String[] args) {
-        BigNo ten = new BigNo(12345678);
+        BigNo ten = new BigNo(12_345_678);
         LOGGER.info("{}", ten);
 		BigNo multiply = new BigNo(55).multiply(new BigNo(55));
         LOGGER.info("{}", multiply);

@@ -22,7 +22,6 @@ public class VigenereCCipher implements HasLogging {
 			0.02758, 0.00978, 0.02360, 0.00150, 0.01974, 0.00074 };
 
 	public int bestMatch(final double[] a, final double[] b) {
-		double bestFit = 1e100;
 		double sum = 0;
 		for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
 			sum += a[i];
@@ -31,6 +30,7 @@ public class VigenereCCipher implements HasLogging {
             return 0;
         }
 		int bestRotate = 0;
+        double bestFit = 1e100;
 		for (int rotate = 0; rotate < NUMBER_OF_LETTERS; rotate++) {
 			double fit = 0;
 			for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
@@ -64,13 +64,14 @@ public class VigenereCCipher implements HasLogging {
 				accu[i] += out[(i + rot) % NUMBER_OF_LETTERS];
 			}
 		}
-		double sum = 0, ret = 0;
+        double sum = 0;
 		for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
 			sum += accu[i];
 		}
         if (sum == 0) {
             return 0;
         }
+        double ret = 0;
         for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
 			double d = accu[i] / sum - FREQ[i];
 			ret += d * d / FREQ[i];

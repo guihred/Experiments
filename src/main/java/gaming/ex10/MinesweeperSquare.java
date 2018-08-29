@@ -29,7 +29,8 @@ public class MinesweeperSquare extends Region {
         FLAGGED
     }
 
-	private final int i, j;
+    private final int i;
+    private final int j;
 	private ObjectProperty<MinesweeperImage> minesweeperImage = new SimpleObjectProperty<>(MinesweeperImage.BLANK);
 	private int num;
     private Shape shape;

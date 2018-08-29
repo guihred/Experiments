@@ -19,7 +19,8 @@ class Vertex implements HasLogging {
 
 	private Map<Integer, Vertex> path = new HashMap<>();
 
-	private int topNum, indegree;
+    private int topNum;
+    private int indegree;
 
 	public Vertex(int id) {
 		this.id = id;

@@ -35,7 +35,8 @@ public class MadTopology {
         int size = 10 * m;
         for (int i = 0; i < size; i++) {
             MadCell cell = new MadCell(i);
-            float x = i % sqrt * radius + (i / sqrt % 2 == 0 ? 0f : -radius / 2) + 30;
+            int n = i / sqrt;
+            float x = i % sqrt * radius + (n % 2 == 0 ? 0f : -radius / 2) + 30;
             int j = i / sqrt;
             float k = j * radius;
             float y = k * sqrt2 / 2;

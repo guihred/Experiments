@@ -1,6 +1,5 @@
 package contest.db;
 
-import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -29,7 +28,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
@@ -38,44 +36,8 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
     private final ObservableList<ContestQuestion> lessons;
     private ObservableList<ContestQuestionAnswer> options = FXCollections.observableArrayList();
 
-    public IntegerProperty currentProperty() {
-        return current;
-    }
-
     public ContestQuestionEditingDisplay() {
-        File file = ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf");
-        lessons = ContestReader.getContestQuestions(file, () -> current.set(0));
-    }
-
-    private ListView<ContestQuestionAnswer> newOptionListView() {
-        ListView<ContestQuestionAnswer> listView = new ListView<>();
-        listView.setItems(options);
-        listView.setFixedCellSize(Region.USE_COMPUTED_SIZE);
-        listView.setCellFactory(ChoiceBoxListCell.forListView(new StringConverter<ContestQuestionAnswer>() {
-            @Override
-            public String toString(ContestQuestionAnswer object) {
-                return object.getAnswer();
-            }
-
-            @Override
-            public ContestQuestionAnswer fromString(String string) {
-                return options.stream().filter(e -> e.getAnswer().equals(string)).findFirst().orElse(null);
-            }
-        }, options));
-
-        listView.selectionModelProperty().get().selectedItemProperty().addListener((o, v, n) -> {
-            if (n != null) {
-                options.forEach(e -> e.setCorrect(false));
-                n.setCorrect(true);
-            }
-        });
-        options.addListener((ListChangeListener<ContestQuestionAnswer>) c -> {
-            c.next();
-            ContestQuestionAnswer orElse = c.getAddedSubList().stream().filter(ContestQuestionAnswer::getCorrect)
-                    .findAny().orElse(null);
-            listView.selectionModelProperty().get().select(orElse);
-        });
-        return listView;
+        lessons = ContestReader.getContestQuestions(ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), () -> current.set(0));
     }
 
     @Override
@@ -139,55 +101,47 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         primaryStage.show();
     }
 
-    private void setImage(VBox newImage, String image) {
-        if (image != null) {
-            List<ImageView> collect = Stream.of(image.split(";")).map(i -> new ImageView("file:" + i))
-                    .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
-            newImage.getChildren().setAll(collect);
-        } else if (!newImage.getChildren().isEmpty()) {
-            newImage.getChildren().clear();
-
-        }
-    }
-
     private VBox newImage() {
         return new VBox();
     }
 
-    private void saveAndClose(Stage primaryStage) {
-        int index = current.get();
-        ContestQuestion contestQuestion = lessons.get(index);
-        lessons.set(index, contestQuestion);
-        Logger logger = getLogger();
-        if (logger.isInfoEnabled()) {
-            logger.info(ContestReader.getInstance().getContest().toSQL());
-            logger.info(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
-            logger.info(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
-                    .collect(Collectors.joining("\n")));
-            logger.info(
-                    ContestReader.getInstance().getTexts().stream().map(ContestText::toSQL)
-                            .collect(Collectors.joining("\n")));
-        }
-
-        primaryStage.close();
+    public IntegerProperty currentProperty() {
+        return current;
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public void setCurrent(ContestQuestion selectedItem) {
+        current.set(lessons.indexOf(selectedItem));
     }
 
-    private void setTextField(String newV, BiConsumer<ContestQuestion, String> a) {
-        if (newV != null) {
-            ContestQuestion contestQuestion = lessons.get(current.intValue());
-            a.accept(contestQuestion, newV);
-        }
-    }
+    private ListView<ContestQuestionAnswer> newOptionListView() {
+        ListView<ContestQuestionAnswer> listView = new ListView<>();
+        listView.setItems(options);
+        listView.setFixedCellSize(Region.USE_COMPUTED_SIZE);
+        listView.setCellFactory(ChoiceBoxListCell.forListView(new StringConverter<ContestQuestionAnswer>() {
+            @Override
+            public ContestQuestionAnswer fromString(String string) {
+                return options.stream().filter(e -> e.getAnswer().equals(string)).findFirst().orElse(null);
+            }
 
-    private void setNumberField(String newV, BiConsumer<ContestQuestion, Integer> a) {
-        if (newV != null) {
-            ContestQuestion contestQuestion = lessons.get(current.intValue());
-            a.accept(contestQuestion, Integer.valueOf(newV));
-        }
+            @Override
+            public String toString(ContestQuestionAnswer object) {
+                return object.getAnswer();
+            }
+        }, options));
+
+        listView.selectionModelProperty().get().selectedItemProperty().addListener((o, v, n) -> {
+            if (n != null) {
+                options.forEach(e -> e.setCorrect(false));
+                n.setCorrect(true);
+            }
+        });
+        options.addListener((ListChangeListener<ContestQuestionAnswer>) c -> {
+            c.next();
+            ContestQuestionAnswer orElse = c.getAddedSubList().stream().filter(ContestQuestionAnswer::getCorrect)
+                    .findAny().orElse(null);
+            listView.selectionModelProperty().get().select(orElse);
+        });
+        return listView;
     }
 
     private TextField newText() {
@@ -213,8 +167,50 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         current.set((lessons.size() + current.get() - 1) % lessons.size());
     }
 
-    public void setCurrent(ContestQuestion selectedItem) {
-        current.set(lessons.indexOf(selectedItem));
+    private void saveAndClose(Stage primaryStage) {
+        int index = current.get();
+        ContestQuestion contestQuestion = lessons.get(index);
+        lessons.set(index, contestQuestion);
+        if (getLogger().isInfoEnabled()) {
+            getLogger().info(ContestReader.getInstance().getContest().toSQL());
+            getLogger().info(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
+            getLogger().info(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
+                    .collect(Collectors.joining("\n")));
+            getLogger().info(
+                    ContestReader.getInstance().getTexts().stream().map(ContestText::toSQL)
+                            .collect(Collectors.joining("\n")));
+        }
+
+        primaryStage.close();
+    }
+
+    private void setImage(VBox newImage, String image) {
+        if (image != null) {
+            List<ImageView> collect = Stream.of(image.split(";")).map(i -> new ImageView("file:" + i))
+                    .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
+            newImage.getChildren().setAll(collect);
+        } else if (!newImage.getChildren().isEmpty()) {
+            newImage.getChildren().clear();
+
+        }
+    }
+
+    private void setNumberField(String newV, BiConsumer<ContestQuestion, Integer> a) {
+        if (newV != null) {
+            ContestQuestion contestQuestion = lessons.get(current.intValue());
+            a.accept(contestQuestion, Integer.valueOf(newV));
+        }
+    }
+
+    private void setTextField(String newV, BiConsumer<ContestQuestion, String> a) {
+        if (newV != null) {
+            ContestQuestion contestQuestion = lessons.get(current.intValue());
+            a.accept(contestQuestion, newV);
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }

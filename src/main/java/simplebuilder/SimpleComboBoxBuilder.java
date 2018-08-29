@@ -77,16 +77,13 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
     }
 
     public SimpleComboBoxBuilder<T> onSelect(Consumer<T> obj) {
-        comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
-            obj.accept(newValue);
-        });
+        comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> obj.accept(newValue));
         return this;
     }
 
     public SimpleComboBoxBuilder<T> onChange(BiConsumer<T, T> obj) {
-        comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
-            obj.accept(old, newValue);
-        });
+        comboBox.getSelectionModel().selectedItemProperty()
+                .addListener((ob, old, newValue) -> obj.accept(old, newValue));
         return this;
     }
 

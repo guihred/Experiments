@@ -55,9 +55,8 @@ public class MultilineExample extends Application {
 		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
 
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
-		canvas.statsProperty().addListener((InvalidationListener) o -> {
-			itens.setAll(canvas.colorsProperty().entrySet());
-        });
+        canvas.statsProperty()
+                .addListener((InvalidationListener) o -> itens.setAll(canvas.colorsProperty().entrySet()));
         canvas.setTitle("California Housing");
         canvas.setHistogram(x);
         ListView<Entry<String, Color>> itensList = new ListView<>(itens);

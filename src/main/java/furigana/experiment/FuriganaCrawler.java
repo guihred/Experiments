@@ -30,7 +30,7 @@ public class FuriganaCrawler implements HasLogging {
 
 
     public void migrateCities() {
-        try (Stream<String> lines = Files.lines(Paths.get("hp1Tex2.tex"));) {
+        try (Stream<String> lines = Files.lines(Paths.get("hp1Tex2.tex"))) {
             lines.forEach(line -> {
             	String[] split = line.split("");
             	String currentWord = "";

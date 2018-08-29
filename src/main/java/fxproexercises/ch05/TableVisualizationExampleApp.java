@@ -1,28 +1,22 @@
 package fxproexercises.ch05;
 
+import election.experiment.CrawlerTask;
 import java.util.Arrays;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
@@ -41,7 +35,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
     private Stage stage;
 
 	public static void main(String[] args) {
-		launch(args);
+        CrawlerTask.insertProxyConfig();
+        launch(args);
 	}
 
 	@Override
@@ -60,9 +55,10 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		stage.show();
 	}
 
-	MenuBar createMenus() {
-		final MenuItem newMenuItem = new MenuItem("New...",
-				new ImageView(new Image("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png")));
+    private MenuBar createMenus() {
+
+        final MenuItem newMenuItem = new MenuItem("New...",
+                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
 		newMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
         newMenuItem.setOnAction(e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()));
 		final Menu fileMenu = new Menu("File");
@@ -75,52 +71,49 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return menuBar;
 	}
 
-	Node createHtmlEditorDemoNode() {
-		final BorderPane htmlEditorDemo;
+    private Node createHtmlEditorDemoNode() {
 		final HTMLEditor htmlEditor = new HTMLEditor();
 		htmlEditor.setHtmlText("<p>Replace this text</p>");
 
 		Button viewHtmlButton = new Button("View HTML");
-		viewHtmlButton.setOnAction((ActionEvent e) -> {
+        viewHtmlButton.setOnAction(e -> {
 			Popup alertPopup1 = createAlertPopup(htmlEditor.getHtmlText());
 			alertPopup1.show(stage, (stage.getWidth() - alertPopup1.getWidth()) / 2 + stage.getX(),
 					(stage.getHeight() - alertPopup1.getHeight()) / 2 + stage.getY());
 		});
 
-		htmlEditorDemo = new BorderPane(htmlEditor, null, null, viewHtmlButton, null);
+        final BorderPane htmlEditorDemo = new BorderPane(htmlEditor, null, null, viewHtmlButton, null);
 		BorderPane.setAlignment(viewHtmlButton, Pos.CENTER);
 		BorderPane.setMargin(viewHtmlButton, new Insets(10, 0, 10, 0));
 		return htmlEditorDemo;
 	}
 
-	Popup createAlertPopup(String text) {
+    private Popup createAlertPopup(String text) {
 
 		Popup alertPopup = new Popup();
 
 		Button okButton = new Button("OK");
 		okButton.setOnAction(e -> alertPopup.hide());
-		final Rectangle rectangle = new SimpleRectangleBuilder().width(300).height(200).fill(Color.LIGHTBLUE)
-				.arcWidth(20).arcHeight(20).stroke(Color.GRAY).strokeWidth(2).build();
-
 		final Label htmlLabel = new Label(text);
 		htmlLabel.setWrapText(true);
 		htmlLabel.setMaxWidth(280);
 		htmlLabel.setMaxHeight(140);
 		final BorderPane borderPane = new BorderPane(htmlLabel, null, null, okButton, null);
 
-		alertPopup.getContent().add(new StackPane(rectangle, borderPane));
+		alertPopup.getContent().add(new StackPane(new SimpleRectangleBuilder().width(300).height(200).fill(Color.LIGHTBLUE)
+				.arcWidth(20).arcHeight(20).stroke(Color.GRAY).strokeWidth(2).build(), borderPane));
 
 		BorderPane.setAlignment(okButton, Pos.CENTER);
 		BorderPane.setMargin(okButton, new Insets(10, 0, 10, 0));
 		return alertPopup;
 	}
 
-	ToolBar createToolBar() {
+    private ToolBar createToolBar() {
 		final Button newButton = new Button(null,
-				new ImageView(new Image("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png")));
+                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
 		newButton.setId("newButton");
 		newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
-        newButton.setOnAction((ActionEvent e) -> getLogger().info("New toolbar button clicked"));
+        newButton.setOnAction(e -> getLogger().info("New toolbar button clicked"));
 
 		final Button editButton = new Button(null, new Circle(8, Color.GREEN));
 		editButton.setId("editButton");
@@ -130,14 +123,14 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
 		final ToggleButton boldButton = new ToggleButton(null, new Circle(8, Color.MAROON));
 		boldButton.setId("boldButton");
-		boldButton.setOnAction((ActionEvent e) -> {
+        boldButton.setOnAction(e -> {
 			ToggleButton tb = (ToggleButton) e.getTarget();
             getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
             logSelectedProperty(tb.selectedProperty().getValue());
 		});
 		final ToggleButton italicButton = new ToggleButton(null, new Circle(8, Color.YELLOW));
 		italicButton.setId("italicButton");
-		italicButton.setOnAction((ActionEvent e) -> {
+        italicButton.setOnAction(e -> {
 			ToggleButton tb = (ToggleButton) e.getTarget();
             getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
             logSelectedProperty(tb.selectedProperty().getValue());
@@ -163,12 +156,12 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 			}
 		});
 
-		return new ToolBar(newButton, editButton, deleteButton, new Separator(Orientation.VERTICAL),
-				boldButton, italicButton, new Separator(Orientation.VERTICAL), leftAlignButton, centerAlignButton,
+        return new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton, leftAlignButton,
+                centerAlignButton,
 				rightAlignButton);
 	}
 
-	TabPane createTabs() {
+    private TabPane createTabs() {
 
 		final Tab tableView = new Tab("TableView");
 		tableView.setContent(createTableDemoNode());
@@ -184,7 +177,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
 		final Tab scrollMisc = new Tab("ScrollPane/Miscellaneous");
 		scrollMisc.setContent(createScrollMiscDemoNode());
-		scrollMisc.setClosable(false);
+        scrollMisc.setClosable(false);
 
 		final Tab htmlEditor = new Tab("HTMLEditor");
 		htmlEditor.setContent(createHtmlEditorDemoNode());
@@ -194,7 +187,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		Tab webViewTab = new Tab("WebView");
 		webViewTab.setContent(webView);
 		webViewTab.setClosable(false);
-		webViewTab.setOnSelectionChanged((Event evt) -> {
+        webViewTab.setOnSelectionChanged(evt -> {
 			String randomWebSite = TableVisualizationModel.getRandomWebSite();
 			if (webViewTab.isSelected()) {
 				webView.getEngine().load(randomWebSite);
@@ -208,7 +201,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return tabPane;
 	}
 
-	Node createTableDemoNode() {
+    @SuppressWarnings("unchecked")
+    private Node createTableDemoNode() {
 		final TableColumn<Person, String> firstNameColumn = new TableColumn<>("First Name");
 		firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
 		firstNameColumn.setPrefWidth(180);
@@ -222,7 +216,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		phoneNumberColumn.setPrefWidth(150);
 
 		TableView<Person> table = new TableView<>(TableVisualizationModel.getTeamMembers());
-		table.getColumns().addAll(Arrays.asList(firstNameColumn, lastNameColumn, phoneNumberColumn));
+        table.getColumns().addAll(firstNameColumn, lastNameColumn, phoneNumberColumn);
 		table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			Person selectedPerson = newValue;
             getLogger().info("{} chosen in TableView", selectedPerson);
@@ -230,7 +224,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return table;
 	}
 
-	Node createAccordionTitledDemoNode() {
+    private Node createAccordionTitledDemoNode() {
 		TitledPane firstPane = new TitledPane("TitledPane A", new TextArea("TitledPane A content"));
 		final TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
 		final TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
@@ -240,7 +234,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return accordion;
 	}
 
-	Node createSplitTreeListDemoNode() {
+    private Node createSplitTreeListDemoNode() {
 		final TreeItem<String> animalItem = new TreeItem<>("Animal");
 		animalItem.getChildren()
 				.addAll(Arrays.asList(new TreeItem<>("Lion"), new TreeItem<>("Tiger"), new TreeItem<>("Bear")));
@@ -275,7 +269,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return splitPane;
 	}
 
-	Node createScrollMiscDemoNode() {
+    private Node createScrollMiscDemoNode() {
 		ChoiceBox<String> choiceBox = new ChoiceBox<>(TableVisualizationModel.CHOICE_BOX_ITEMS);
 		choiceBox.getSelectionModel().selectFirst();
         choiceBox.getSelectionModel().selectedItemProperty()
@@ -318,16 +312,16 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		scrollBar.setMax(TableVisualizationModel.MAX_KPH);
 		scrollBar.valueProperty().bindBidirectional(TableVisualizationModel.KPH);
 		CheckBox checkBox = new CheckBox("CheckBox");
-		checkBox.setOnAction((ActionEvent e) -> {
+        checkBox.setOnAction(e -> {
             getLogger().info("{} occurred on CheckBox", e.getEventType());
             logSelectedProperty(checkBox.selectedProperty().getValue());
 		});
 		final Hyperlink hyperlink = new Hyperlink("Hyperlink");
-        hyperlink.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Hyperlink", e.getEventType()));
+        hyperlink.setOnAction(e -> getLogger().info("{} occurred on Hyperlink", e.getEventType()));
 		final Button button = new Button("Button");
-        button.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Button", e.getEventType()));
+        button.setOnAction(e -> getLogger().info("{} occurred on Button", e.getEventType()));
 		final MenuItem menItemA = new MenuItem(MENU_ITEM_A);
-        menItemA.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Menu Item A ", e.getEventType()));
+        menItemA.setOnAction(e -> getLogger().info("{} occurred on Menu Item A ", e.getEventType()));
 		final MenuButton menuButton = new MenuButton("MenuButton");
 		menuButton.getItems().addAll(menItemA, new MenuItem(MENU_ITEM_B));
 		final ToggleGroup radioToggleGroup = new ToggleGroup();
@@ -343,20 +337,20 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 			}
 		});
 		final MenuItem menuItem = new MenuItem(MENU_ITEM_A);
-        menuItem.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
+        menuItem.setOnAction(e -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
 		final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem(MENU_ITEM_B));
 		splitMenu.setText("SplitMenuButton");
-        splitMenu.setOnAction((ActionEvent e) -> getLogger().info( "{} occurred on SplitMenuButton",e.getEventType() ));
+        splitMenu.setOnAction(e -> getLogger().info("{} occurred on SplitMenuButton", e.getEventType()));
 		VBox variousControls = new VBox(20, button, checkBox, new HBox(10, radioButton1, radioButton2), hyperlink,choiceBox, menuButton, splitMenu, textField, passwordField,new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
 		variousControls.setPadding(new Insets(10, 10, 10, 10));
 		final MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
-        menuItemA.setOnAction((ActionEvent e) -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
+        menuItemA.setOnAction(e -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
 		ContextMenu contextMenu = new ContextMenu(menuItemA, new MenuItem(MENU_ITEM_B));
 		ScrollPane scrollPane = new ScrollPane(variousControls);
 		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-		scrollPane.setOnMousePressed((MouseEvent me) -> {
-			if (me.getButton() == MouseButton.SECONDARY) {
+        scrollPane.setOnMousePressed(me -> {
+            if (me.isSecondaryButtonDown()) {
 				contextMenu.show(stage, me.getScreenX(), me.getScreenY());
 			}
 		});

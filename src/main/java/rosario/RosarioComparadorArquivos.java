@@ -14,32 +14,24 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 
-public class RosarioComparadorArquivos extends Application {
-	private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
-	private static final Logger LOGGER = LoggerFactory.getLogger(RosarioComparadorArquivos.class);
+public class RosarioComparadorArquivos extends Application implements HasLogging {
+	private static final String LOTE = "Lote";
+    private static final String NOME = "Nome";
+    private static final String REGISTRO = "Registro";
+    private static final String QUANTIDADE = "Quantidade";
+    private static final String CODIGO = "Codigo";
+    private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
 
 	public static void main(String[] args) {
 		launch(args);
@@ -49,7 +41,6 @@ public class RosarioComparadorArquivos extends Application {
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Comparação Estoque e ANVISA");
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 600, 250, Color.WHITE);
 		// create a grid pane
 		FlowPane gridpane = new FlowPane();
 		gridpane.setPadding(new Insets(5));
@@ -71,7 +62,7 @@ public class RosarioComparadorArquivos extends Application {
 			if (selectedFile != null) {
 				if (LeitorArquivos.isExcel(selectedFile)) {
 					showImportDialog(selectedFile,
-							FXCollections.observableArrayList("Codigo", "Nome", "Quantidade", ""),
+							FXCollections.observableArrayList(CODIGO, NOME, QUANTIDADE, ""),
 							meds -> configurarFiltroRapido(filterField, medicamentosEstoqueTable, meds));
 					return;
 				}
@@ -95,7 +86,7 @@ public class RosarioComparadorArquivos extends Application {
 			if (selectedFile != null) {
 				if (LeitorArquivos.isExcel(selectedFile)) {
 					showImportDialog(selectedFile,
-							FXCollections.observableArrayList("Registro", "Nome", "Lote", "Quantidade", "Codigo", ""),
+							FXCollections.observableArrayList(REGISTRO, NOME, LOTE, QUANTIDADE, CODIGO, ""),
 							meds -> {
 						configurarFiltroRapido(filterField, medicamentosEstoqueSNGPCTable, meds);
 						atualizarPorCodigo(meds, medicamentosEstoqueTable);
@@ -119,7 +110,7 @@ public class RosarioComparadorArquivos extends Application {
 			if (selectedFile != null) {
 				if (LeitorArquivos.isExcel(selectedFile)) {
 					showImportDialog(selectedFile,
-							FXCollections.observableArrayList("Registro", "Nome", "Lote", "Quantidade", ""), meds -> {
+							FXCollections.observableArrayList(REGISTRO, NOME, LOTE, QUANTIDADE, ""), meds -> {
 						configurarFiltroRapido(filterField, medicamentosAnvisaTable, meds);
 						atualizar(medicamentosEstoqueSNGPCTable.getItems(), medicamentosAnvisaTable);
 						atualizar(medicamentosAnvisaTable.getItems(), medicamentosEstoqueSNGPCTable);
@@ -133,33 +124,38 @@ public class RosarioComparadorArquivos extends Application {
 			}
 		});
 		gridpane.getChildren().add(new VBox(estoqueAnvisa, button2, medicamentosAnvisaTable));
-		exportar.setOnAction(a -> {
-			try {
-				ObservableList<Medicamento> items0 = medicamentosEstoqueTable.getItems();
-				ObservableList<Medicamento> items1 = medicamentosEstoqueSNGPCTable.getItems();
-				ObservableList<Medicamento> items2 = medicamentosAnvisaTable.getItems();
-				items0.stream().peek(m -> m.quantidadeCodigoValidoProperty(items1))
-						.forEach(m -> m.codigoValidoProperty(items1));
-				items1.stream().peek(m -> m.registroValidoProperty(items2)).peek(m -> m.loteValidoProperty(items2))
-						.forEach(m -> m.quantidadeValidoProperty(items2));
-				items2.stream().peek(m -> m.registroValidoProperty(items1)).peek(m -> m.loteValidoProperty(items1))
-						.forEach(m -> m.quantidadeValidoProperty(items1));
-
-				LeitorArquivos.exportarArquivo(items0, items1, items2);
-			} catch (Exception e1) {
-				LOGGER.error("", e1);
-			}
-		});
-
+        exportar.setOnAction(a -> exportarMedicamentos(medicamentosEstoqueTable, medicamentosEstoqueSNGPCTable,
+                medicamentosAnvisaTable));
 		// selection listening
-		primaryStage.setScene(scene);
+        primaryStage.setScene(new Scene(root, 600, 250, Color.WHITE));
 		primaryStage.show();
 	}
+
+    private void exportarMedicamentos(final TableView<Medicamento> medicamentosEstoqueTable,
+            final TableView<Medicamento> medicamentosEstoqueSNGPCTable,
+            final TableView<Medicamento> medicamentosAnvisaTable) {
+        try {
+        	ObservableList<Medicamento> items0 = medicamentosEstoqueTable.getItems();
+        	ObservableList<Medicamento> items1 = medicamentosEstoqueSNGPCTable.getItems();
+        	ObservableList<Medicamento> items2 = medicamentosAnvisaTable.getItems();
+        	items0.stream().peek(m -> m.quantidadeCodigoValidoProperty(items1))
+        			.forEach(m -> m.codigoValidoProperty(items1));
+        	items1.stream().peek(m -> m.registroValidoProperty(items2)).peek(m -> m.loteValidoProperty(items2))
+        			.forEach(m -> m.quantidadeValidoProperty(items2));
+        	items2.stream().peek(m -> m.registroValidoProperty(items1)).peek(m -> m.loteValidoProperty(items1))
+        			.forEach(m -> m.quantidadeValidoProperty(items1));
+
+        	LeitorArquivos.exportarArquivo(items0, items1, items2);
+        } catch (Exception e1) {
+            getLogger().error("", e1);
+        }
+    }
 
 	private FileChooser choseFile(String value) {
 		FileChooser fileChooser2 = new FileChooser();
 		fileChooser2.setTitle(value);
-		fileChooser2.getExtensionFilters().addAll(new ExtensionFilter("Excel ou PDF", "*.xlsx", "*.xls", "*.pdf"));
+        fileChooser2.getExtensionFilters()
+                .addAll(new FileChooser.ExtensionFilter("Excel ou PDF", "*.xlsx", "*.xls", "*.pdf"));
 		return fileChooser2;
 	}
 
@@ -288,35 +284,34 @@ public class RosarioComparadorArquivos extends Application {
 		medicamentosTable.setPrefWidth(300);
 		medicamentosTable.setScaleShape(false);
 		if (completa) {
-
-			TableColumn<Medicamento, String> registroMedicamento = new TableColumn<>("Registro");
+			TableColumn<Medicamento, String> registroMedicamento = new TableColumn<>(REGISTRO);
 			registroMedicamento.setCellValueFactory(new PropertyValueFactory<>("registro"));
 			registroMedicamento.setSortable(true);
 			registroMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 			medicamentosTable.getColumns().add(registroMedicamento);
 		}
 
-		TableColumn<Medicamento, String> nomeMedicamento = new TableColumn<>("Nome");
+		TableColumn<Medicamento, String> nomeMedicamento = new TableColumn<>(NOME);
 		nomeMedicamento.setSortable(true);
 		nomeMedicamento.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		nomeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 		medicamentosTable.getColumns().add(nomeMedicamento);
 
 		if (completa) {
-			TableColumn<Medicamento, String> loteMedicamento = new TableColumn<>("Lote");
+			TableColumn<Medicamento, String> loteMedicamento = new TableColumn<>(LOTE);
 			loteMedicamento.setSortable(true);
 			loteMedicamento.setCellValueFactory(new PropertyValueFactory<>("lote"));
 			loteMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 			medicamentosTable.getColumns().add(loteMedicamento);
 		}
 
-		TableColumn<Medicamento, String> quantidadeMedicamento = new TableColumn<>("Quantidade");
+		TableColumn<Medicamento, String> quantidadeMedicamento = new TableColumn<>(QUANTIDADE);
 		quantidadeMedicamento.setSortable(true);
 		quantidadeMedicamento.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
 		quantidadeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
 		medicamentosTable.getColumns().add(quantidadeMedicamento);
 
-		TableColumn<Medicamento, String> codigoMedicamento = new TableColumn<>("Código");
+        TableColumn<Medicamento, String> codigoMedicamento = new TableColumn<>(CODIGO);
 		codigoMedicamento.setSortable(true);
 		codigoMedicamento.setCellValueFactory(new PropertyValueFactory<>("codigo"));
 		codigoMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
@@ -329,7 +324,7 @@ public class RosarioComparadorArquivos extends Application {
 		try {
 			return LeitorArquivos.getMedicamentosRosario(file);
 		} catch (Exception e) {
-			LOGGER.error("", e);
+            getLogger().error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}
@@ -338,7 +333,7 @@ public class RosarioComparadorArquivos extends Application {
 		try {
 			return LeitorArquivos.getMedicamentosSNGPCPDF(file);
 		} catch (Exception e) {
-			LOGGER.error("", e);
+            getLogger().error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}
@@ -347,7 +342,7 @@ public class RosarioComparadorArquivos extends Application {
 		try {
 			return LeitorArquivos.getMedicamentosAnvisa(selectedFile);
 		} catch (Exception e) {
-			LOGGER.error("", e);
+            getLogger().error("", e);
 			return FXCollections.emptyObservableList();
 		}
 	}
@@ -419,24 +414,24 @@ public class RosarioComparadorArquivos extends Application {
 			String selectedItem = coluna.getSelectionModel().getSelectedItem();
 			if (!item.isEmpty()) {
 				switch (selectedItem) {
-				case "Registro":
+				case REGISTRO:
 					medicamento.setRegistro(Objects.toString(medicamento.getRegistro(), "")
 							+ item.get(i % item.size()).replaceAll("\\D+", ""));
 					break;
-				case "Nome":
+				case NOME:
 					medicamento.setNome(Objects.toString(medicamento.getNome(), "") + item.get(i % item.size()));
 					break;
-				case "Lote":
+				case LOTE:
 					String string = item.get(i % item.size());
 					medicamento.setLote(Objects.toString(medicamento.getLote(), "") + string);
 					break;
-				case "Quantidade":
+				case QUANTIDADE:
 					Integer qnt = intValue(item.get(i % item.size()));
 					if (qnt != null) {
 						medicamento.setQuantidade(qnt);
 					}
 					break;
-				case "Codigo":
+				case CODIGO:
 					Integer codigo = intValue(item.get(i % item.size()));
 					if (codigo != null) {
 						medicamento.setCodigo(codigo);
@@ -453,6 +448,7 @@ public class RosarioComparadorArquivos extends Application {
 		try {
 			return Integer.valueOf(s.replaceAll("\\D+", ""));
 		} catch (NumberFormatException e) {
+            getLogger().trace("", e);
 			return null;
 		}
 	}

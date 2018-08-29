@@ -208,7 +208,7 @@ public class PacmanGhost extends Group implements HasLogging {
 	}
 
 	private MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
-        if (MazeSquare.paths == null) {
+        if (MazeSquare.getPaths() == null) {
 			return null;
 		}
 		if (hx < 0) {
@@ -224,7 +224,7 @@ public class PacmanGhost extends Group implements HasLogging {
 			hyg = 0;
 		}
 
-        Map<MazeSquare, MazeSquare> map = MazeSquare.paths.get(maze[hxg][hyg]);
+        Map<MazeSquare, MazeSquare> map = MazeSquare.getPaths().get(maze[hxg][hyg]);
 		if (map == null) {
 			return null;
 		}

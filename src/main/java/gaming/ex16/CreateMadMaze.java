@@ -6,12 +6,7 @@ import java.util.Optional;
 import java.util.Random;
 
 public class CreateMadMaze {
-
-    public static void createLabyrinth(List<MadTriangle> maze, List<MadEdge> allEdges) {
-        new CreateMadMaze().handle(maze, allEdges);
-    }
-
-    private int r = 0;
+    private int r;
 
     private void handle(List<MadTriangle> maze, List<MadEdge> allEdges) {
         final Random random = new Random();
@@ -89,4 +84,9 @@ public class CreateMadMaze {
         r = createdMaze.indexOf(remove);
         return false;
     }
+
+    public static void createLabyrinth(List<MadTriangle> maze, List<MadEdge> allEdges) {
+        new CreateMadMaze().handle(maze, allEdges);
+    }
+
 }

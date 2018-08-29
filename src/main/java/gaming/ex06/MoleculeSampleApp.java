@@ -37,8 +37,6 @@ public class MoleculeSampleApp extends Application {
     private final Xform cameraXform2 = new Xform();
     private final Xform cameraXform3 = new Xform();
     private final Xform moleculeGroup = new Xform();
-    private double mouseDeltaX;
-    private double mouseDeltaY;
     private double mouseOldX;
     private double mouseOldY;
     private double mousePosX;
@@ -247,8 +245,8 @@ public class MoleculeSampleApp extends Application {
         mouseOldY = mousePosY;
         mousePosX = me.getSceneX();
         mousePosY = me.getSceneY();
-        mouseDeltaX = mousePosX - mouseOldX;
-        mouseDeltaY = mousePosY - mouseOldY;
+        double mouseDeltaX = mousePosX - mouseOldX;
+        double mouseDeltaY = mousePosY - mouseOldY;
         double modifier = me.isShiftDown() ? 10.0 : me.isControlDown() ? 0.1 : 1.0;
         double modifierFactor = 0.1;
         if (me.isPrimaryButtonDown()) {

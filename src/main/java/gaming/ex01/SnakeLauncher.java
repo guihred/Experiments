@@ -19,7 +19,7 @@ public class SnakeLauncher extends Application {
 
     private final SnakeModel newGameModel = new SnakeModel();
 
-	private int currentI = 0;
+    private int currentI;
 
     @Override
     public void start(Stage stage) throws Exception {

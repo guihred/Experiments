@@ -1,16 +1,8 @@
 package ml;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,15 +22,15 @@ public class CSVUtils {
 
 	public static List<String> parseLine(String cvsLine, char separator, char quote) {
         List<String> result = new ArrayList<>();
-		char separators = separator;
-		char customQuote = quote;
         // if empty, return!
         if (cvsLine == null || cvsLine.isEmpty()) {
             return result;
         }
+        char customQuote = quote;
         if (customQuote == ' ') {
             customQuote = DEFAULT_QUOTE;
         }
+        char separators = separator;
         if (separators == ' ') {
             separators = DEFAULT_SEPARATOR;
         }
@@ -99,7 +91,7 @@ public class CSVUtils {
             file.mkdir();
         }
 
-	    try (Scanner scanner = new Scanner(new File(csvFile));) {
+        try (Scanner scanner = new Scanner(new File(csvFile))) {
             String firstLine = scanner.nextLine();
             while (scanner.hasNext()) {
                 String nextLine = scanner.nextLine();
@@ -123,7 +115,8 @@ public class CSVUtils {
             if (file.exists()) {
                 Files.delete(file.toPath());
             }
-            file.createNewFile();
+            boolean created = file.createNewFile();
+            LOGGER.info("file created {}", created);
             return new BufferedWriter(new FileWriter(csvFile, true));
         } catch (Exception e) {
             throw e;

@@ -1,18 +1,18 @@
 package ml;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.sin;
+import static java.lang.Math.*;
 
 import java.util.List;
 import java.util.stream.DoubleStream;
 import org.apache.commons.math3.complex.Complex;
+import org.slf4j.Logger;
+import simplebuilder.HasLogging;
 
 public class FastFourierTransform {
+    private static final Logger LOGGER = HasLogging.log();
 
     public static int bitReverse(int n, int bits) {
+
         int reversedN = n;
         int count = bits - 1;
 
@@ -62,9 +62,9 @@ public class FastFourierTransform {
 
         Complex[] cinput = fft(input);
 
-        System.out.println("Results:");
+        LOGGER.info("Results:");
         for (Complex c : cinput) {
-            System.out.println(c);
+            LOGGER.info("{}", c);
         }
     }
 

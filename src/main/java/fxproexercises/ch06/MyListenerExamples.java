@@ -1,14 +1,16 @@
 package fxproexercises.ch06;
 
 import javafx.collections.ListChangeListener;
+import simplebuilder.HasLogging;
 
-class MyListenerExamples implements ListChangeListener<String> {
+class MyListenerExamples implements ListChangeListener<String>, HasLogging {
 
     @Override
     public void onChanged(Change<? extends String> change) {
 
-        System.out.println("\tlist = " + change.getList());
-        System.out.println(prettyPrint(change));
+        getLogger().info("\tlist = " + change.getList());
+        String prettyPrint = prettyPrint(change);
+        getLogger().info(prettyPrint);
     }
 
     private String prettyPrint(Change<? extends String> change) {

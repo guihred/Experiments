@@ -16,8 +16,10 @@ public class PuzzlePiece extends Group {
     private Path path;
     private PuzzlePath right = PuzzlePath.STRAIGHT;
     private PuzzlePath up = PuzzlePath.STRAIGHT;
-    private double width = 50, height = 50;
-    private int x = 0, y = 0;
+    private double width = 50;
+    private double height = 50;
+    private int x;
+    private int y;
     public PuzzlePiece(int x, int y, double width, double height) {
         this.x = x;
         this.y = y;
@@ -43,24 +45,6 @@ public class PuzzlePiece extends Group {
 		setLayoutX(getLayoutX() + x1);
 		setLayoutY(getLayoutY() + y1);
     }
-
-    // public void draw(GraphicsContext gc) {
-    // gc.beginPath();
-    //
-    // gc.setStroke(Color.ALICEBLUE);
-    //
-    // gc.setFillRule(FillRule.EVEN_ODD);
-    // gc.setFill(getImagePattern());
-    //
-    // String string = getPosition();
-    // String svgpath = string + up.getPath(1 * width, 0) + right.getPath(0, 1 *
-    // height) + down.getPath(-1 * width, 0)
-    // + left.getPath(0, -1 * height);
-    // gc.appendSVGPath(svgpath);
-    // gc.fill();
-    // gc.stroke();
-    // gc.closePath();
-    // }
 
     public ImagePattern getImagePattern() {
         if (imagePattern == null) {

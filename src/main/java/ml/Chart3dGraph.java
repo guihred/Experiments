@@ -12,12 +12,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.*;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import simplebuilder.HasLogging;
@@ -28,8 +29,10 @@ public class Chart3dGraph extends Application {
     private int size = 400;
 
     // variables for mouse interaction
-    private double mousePosX, mousePosY;
-    private double mouseOldX, mouseOldY;
+    private double mousePosX;
+    private double mousePosY;
+    private double mouseOldX;
+    private double mouseOldY;
     private final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
     private final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
 
@@ -166,60 +169,6 @@ public class Chart3dGraph extends Application {
 
     }
 
-    /**
-     * Axis wall
-     */
-    public static class Axis extends Pane {
-
-        private Rectangle wall;
-
-        public Axis(double size) {
-
-            // wall
-            // first the wall, then the lines => overlapping of lines over walls
-            // works
-            wall = new Rectangle(size, size);
-            getChildren().add(wall);
-
-            // grid
-            double zTranslate = 0;
-            double lineWidth = 1.0;
-            Color gridColor = Color.WHITE;
-
-            for (int y = 0; y <= size; y += size / 10) {
-
-                Line line = new Line(0, 0, size, 0);
-                line.setStroke(gridColor);
-                line.setFill(gridColor);
-                line.setTranslateY(y);
-                line.setTranslateZ(zTranslate);
-                line.setStrokeWidth(lineWidth);
-
-                getChildren().addAll(line);
-
-            }
-
-            for (int x = 0; x <= size; x += size / 10) {
-
-                Line line = new Line(0, 0, 0, size);
-                line.setStroke(gridColor);
-                line.setFill(gridColor);
-                line.setTranslateX(x);
-                line.setTranslateZ(zTranslate);
-                line.setStrokeWidth(lineWidth);
-
-                getChildren().addAll(line);
-
-            }
-
-        }
-
-        public void setFill(Paint paint) {
-            wall.setFill(paint);
-        }
-
-    }
-
     public void makeZoomable(StackPane control) {
 
         final double MAX_SCALE = 20.0;
@@ -254,7 +203,7 @@ public class Chart3dGraph extends Application {
      * @param length
      * @return
      */
-    private Group createCube(int length) {
+    private Group createCube(double length) {
         Group cube = new Group();
         // size of the cube
         Color color = Color.DARKCYAN;
@@ -331,10 +280,10 @@ public class Chart3dGraph extends Application {
         DoubleSummaryStatistics pop = dataframeML.summary("population");
         int total = dataframeML.getSize();
 		List<Double> xLatitude = dataframeML.crossFeature("x",
-				d -> convert(d[0], size1 - 1, lat.getMax(), lat.getMin()),
+                d -> convert(d[0], size1 - 1d, lat.getMax(), lat.getMin()),
                 "latitude");
         List<Double> yLongitude = dataframeML.crossFeature("y",
-				d -> convert(d[0], size1 - 1, lon.getMax(), lon.getMin()),
+                d -> convert(d[0], size1 - 1d, lon.getMax(), lon.getMin()),
                 "longitude");
         List<Double> z = dataframeML.crossFeature("z", d -> -convert(d[0], 5, pop.getMax(), 0), "population");
 

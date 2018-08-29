@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Table
 public class ContestQuestion extends BaseEntity implements HasImage {
-    private static int KEY_COUNTER;
+    private static int keyCounter;
     @ManyToOne
     @JoinColumn
     private Contest contest;
@@ -21,7 +21,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     private String subject;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer key = KEY_COUNTER++;
+    private Integer key = keyCounter++;
 
     @Column
     private Integer number;
@@ -115,6 +115,16 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     @Override
     public String getImage() {
         return image;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj) && ((ContestQuestion) obj).key == key;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key);
     }
 
     @Override

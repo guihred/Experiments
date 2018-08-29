@@ -1,11 +1,7 @@
 package gaming.ex07;
 
 import gaming.ex14.PacmanModel;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -17,7 +13,7 @@ import simplebuilder.HasLogging;
 
 public class MazeSquare extends BorderPane implements HasLogging {
 	public static final int SQUARE_SIZE = 20;
-    public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
+    private static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
 
 	private final BooleanProperty visited = new SimpleBooleanProperty(false);
 	private final BooleanProperty west = new SimpleBooleanProperty(false);
@@ -206,4 +202,7 @@ public class MazeSquare extends BorderPane implements HasLogging {
         paths.get(from).put(to, by);
 	}
 
+    public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> getPaths() {
+        return paths;
+    }
 }

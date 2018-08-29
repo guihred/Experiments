@@ -103,7 +103,7 @@ public class Medicamento implements Serializable {
 		if (quantidadeValido == null) {
 			quantidadeValido = Bindings.createBooleanBinding(() -> medicamentos.stream()
 					.filter(m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo)))
-					.mapToInt(c -> c.getQuantidade()).sum() == quantidade, medicamentos);
+                    .mapToInt(Medicamento::getQuantidade).sum() == quantidade, medicamentos);
 		}
 
 		return quantidadeValido;

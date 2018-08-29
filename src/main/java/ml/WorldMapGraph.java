@@ -24,7 +24,7 @@ class WorldMapGraph extends Canvas {
     private IntegerProperty bins = new SimpleIntegerProperty(7);
     private GraphicsContext gc;
     private DataframeML dataframeML;
-    private boolean showNeighbors = false;
+    private boolean showNeighbors;
     private DoubleSummaryStatistics summary;
     private String header = "Country";
     private Map<String, Predicate<Object>> filters = new HashMap<>();
@@ -70,33 +70,36 @@ class WorldMapGraph extends Canvas {
             drawLabels();
         }
         for (int i = 0; i < values.length; i++) {
-            Country countries = values[i];
-            gc.beginPath();
-            if (dataframeML != null) {
-                countries.setColor(null);
-                dataframeML.only(header, countries::matches, j -> {
-                    Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
-                    for (Entry<String, Predicate<Object>> fil : entrySet) {
-                        Object t = dataframeML.list(fil.getKey()).get(j);
-                        if (!fil.getValue().test(t)) {
-                            return;
-                        }
-                    }
-                    List<Object> list = dataframeML.list(valueHeader.get());
-                    Object object = DataframeML.getFromList(j, list);
-                    countries.setColor(getColor(countries, object));
-                });
-            }
-            gc.setFill(countries.getColor() != null ? countries.getColor() : categoryMap.get(NO_INFO));
-            gc.appendSVGPath(countries.getPath());
-            gc.fill();
-            gc.stroke();
-            gc.closePath();
+            drawCountry(values[i]);
         }
 
         if (showNeighbors) {
             drawLinks(values);
         }
+    }
+
+    private void drawCountry(Country countries) {
+        gc.beginPath();
+        if (dataframeML != null) {
+            countries.setColor(null);
+            dataframeML.only(header, countries::matches, j -> {
+                Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
+                for (Entry<String, Predicate<Object>> fil : entrySet) {
+                    Object t = dataframeML.list(fil.getKey()).get(j);
+                    if (!fil.getValue().test(t)) {
+                        return;
+                    }
+                }
+                List<Object> list = dataframeML.list(valueHeader.get());
+                Object object = DataframeUtils.getFromList(j, list);
+                countries.setColor(getColor(countries, object));
+            });
+        }
+        gc.setFill(countries.getColor() != null ? countries.getColor() : categoryMap.get(NO_INFO));
+        gc.appendSVGPath(countries.getPath());
+        gc.fill();
+        gc.stroke();
+        gc.closePath();
     }
 
     private void drawLinks(Country[] values) {

@@ -3,7 +3,8 @@ package gaming.ex16;
 public class MadCell {
 
     private int id;
-    private float x, y;
+    private float x;
+    private float y;
 
     public MadCell(int id) {
         this.id = id;

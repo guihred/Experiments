@@ -133,7 +133,7 @@ class TimelineGraph extends Canvas {
 
     private void drawLines(int maxYear, int minYear, double d, double j, double j2, Map<String, Object> row) {
         for (int year = minYear; year <= maxYear; year++) {
-            double x = year - minYear;
+            double x = (double) year - minYear;
             double m = x / xProportion.get();
             double x1 = m * j + d;
             Number object = (Number) row.get("" + year);
@@ -144,7 +144,7 @@ class TimelineGraph extends Canvas {
             double y1 = maxLayout - y / yProportion * j2;
             int searchYear = year;
             while (searchYear < maxYear) {
-                double x2 = ++searchYear - minYear;
+                double x2 = ++searchYear - (double) minYear;
                 double i2 = x2 / xProportion.get();
                 double x12 = i2 * j + d;
                 Number object2 = (Number) row.get("" + searchYear);

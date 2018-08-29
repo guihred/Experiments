@@ -1,21 +1,14 @@
 package japstudy;
 
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MILLI_OF_SECOND;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
-
 import japstudy.db.JapaneseLesson;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.function.BiConsumer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -27,23 +20,23 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.HasLogging;
 
 public class JapaneseLessonEditingDisplay extends Application implements HasLogging {
-	private IntegerProperty current = new SimpleIntegerProperty(1);
+    private SimpleIntegerProperty current = new SimpleIntegerProperty(1);
 	private ObservableList<JapaneseLesson> lessons = getLessons();
-	private static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder().appendValue(HOUR_OF_DAY, 2)
-			.appendLiteral('h').appendValue(MINUTE_OF_HOUR, 2).optionalStart().appendLiteral('m')
-			.appendValue(SECOND_OF_MINUTE, 2).appendLiteral('s').optionalStart().appendValue(MILLI_OF_SECOND, 3)
+    private static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder()
+            .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('h').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+            .optionalStart().appendLiteral('m').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('s')
+            .optionalStart().appendValue(ChronoField.MILLI_OF_SECOND, 3)
 			.appendLiteral("ms").toFormatter();
 	private Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
-	private ObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
+    private SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
 
-    public IntegerProperty currentProperty() {
+    public SimpleIntegerProperty currentProperty() {
         return current;
     }
 	@Override
@@ -95,9 +88,6 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		}
 
 		primaryStage.centerOnScreen();
-		HBox hBox = new HBox(lesson);
-		Text japaneseText = new Text("Japanese");
-		Text romajiText = new Text("Romaji");
 		Text currentText = new Text();
 		mediaPlayer.addListener((obj, oldM, newO) -> {
 
@@ -109,17 +99,16 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 			});
 			newO.setStartTime(Duration.ZERO);
 
-			StringBinding stringBinding = Bindings.createStringBinding(() -> {
+			currentText.textProperty().bind(Bindings.createStringBinding(() -> {
 				Duration currentTimeProperty = newO.getCurrentTime();
-				double millis = currentTimeProperty.toMillis();
-				LocalTime ofNanoOfDay = LocalTime.ofNanoOfDay((long) millis * 1000000);
+                long millis = (long) currentTimeProperty.toMillis();
+                LocalTime ofNanoOfDay = LocalTime
+                        .ofNanoOfDay(millis * JapaneseLessonAudioSplitDisplay.NANO_IN_A_MILLI_SECOND);
 				return TIME_FORMAT.format(ofNanoOfDay);
-			}, newO.currentTimeProperty());
-
-			currentText.textProperty().bind(stringBinding);
+			}, newO.currentTimeProperty()));
 		});
 		Scene value = new Scene(
-				new VBox(hBox, english, romajiText, romaji, japaneseText, japanese,
+				new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"), japanese,
 						new HBox(new VBox(new Text("Start"), start), currentText, new VBox(new Text("End"), end)),
                         new HBox(previous, play, next, save)));
 		primaryStage.setScene(value);
@@ -200,7 +189,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 			// sound.get
 			mediaPlayer.get().seek(startDuration);
 			// mediaPlayer.onS
-			if (mediaPlayer.get().getStatus() != Status.PLAYING) {
+            if (mediaPlayer.get().getStatus() != MediaPlayer.Status.PLAYING) {
 				mediaPlayer.get().play();
 			}
 		}
@@ -242,7 +231,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 	}
 
 	private LocalTime milliToLocalTime(long offset) {
-		return LocalTime.ofNanoOfDay(offset * 1000000);
+        return LocalTime.ofNanoOfDay(offset * JapaneseLessonAudioSplitDisplay.NANO_IN_A_MILLI_SECOND);
 	}
 
 	public static void main(String[] args) {

@@ -54,7 +54,7 @@ public class ImageLoading {
 
     static void grayScale(String dataDir, String nameFile) {
         Image original = Image.load( nameFile);
-        try (JpegOptions jpegOptions = new JpegOptions();) {
+        try (JpegOptions jpegOptions = new JpegOptions()) {
             jpegOptions.setColorType(JpegCompressionColorMode.Grayscale);
             jpegOptions.setCompressionType(JpegCompressionMode.Progressive);
             original.save(dataDir + "result.jpg", jpegOptions);
@@ -149,7 +149,7 @@ public class ImageLoading {
         // Create a BmpImage while using the instance of BmpOptions and
         // providing resultant dimensions
         try (BmpOptions bmpOptions = options(dataDir);
-                BmpImage bmpImage = (BmpImage) Image.create(bmpOptions, thumbnail.getWidth(), thumbnail.getHeight());) {
+                BmpImage bmpImage = (BmpImage) Image.create(bmpOptions, thumbnail.getWidth(), thumbnail.getHeight())) {
             // Copy the thumbnail pixels onto the newly created canvas
             bmpImage.savePixels(bmpImage.getBounds(), pixels);
             // Save the results

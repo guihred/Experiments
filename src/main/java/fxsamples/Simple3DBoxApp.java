@@ -32,12 +32,7 @@ package fxsamples;
  */
 
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -47,15 +42,13 @@ import javafx.stage.Stage;
 
 public class Simple3DBoxApp extends Application {
 
-	private Box testBox;
-	private PhongMaterial material;
 
-	public Parent createContent() throws Exception {
+    public Parent createContent() {
 
 		// Box
-		testBox = new Box(5, 5, 5);
+        Box testBox = new Box(5, 5, 5);
 
-		material = new PhongMaterial(Color.RED);
+        PhongMaterial material = new PhongMaterial(Color.RED);
 		testBox.setMaterial(material);
 
 		// Create and position camera

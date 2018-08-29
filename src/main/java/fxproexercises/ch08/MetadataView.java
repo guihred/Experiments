@@ -23,11 +23,8 @@ import javafx.scene.layout.RowConstraints;
  * @author Note
  */
 public class MetadataView extends BaseSongView {
-    private Label artist;
-    private Label album;
-    private Label title;
-    private Label year;
-    private ImageView albumCover;
+
+    private static final String DEFAULT_PICTURE = "C:\\Users\\Note\\Pictures\\fb.jpg";
 
     public MetadataView(SongModel song) {
         super(song);
@@ -35,22 +32,22 @@ public class MetadataView extends BaseSongView {
 
     @Override
     protected Node initView() {
-        artist = new Label();
+        Label artist = new Label();
         artist.setId("artist");
         artist.textProperty().bind(songModel.artistProperty());
-        album = new Label();
+        Label album = new Label();
         album.setId("album");
         album.textProperty().bind(songModel.albumProperty());
-        title = new Label();
+        Label title = new Label();
         title.textProperty().bind(songModel.titleProperty());
         title.setId("title");
-        year = new Label();
+        Label year = new Label();
         year.setId("year");
         year.textProperty().bind(songModel.yearProperty());
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.2);
-        final Image image = new Image(new File("C:\\Users\\Note\\Pictures\\fb.jpg").toURI().toString());
-        albumCover = new ImageView(image);
+        final Image image = new Image(new File(DEFAULT_PICTURE).toURI().toString());
+        ImageView albumCover = new ImageView(image);
         albumCover.setFitWidth(240);
         albumCover.setPreserveRatio(true);
         albumCover.setSmooth(true);

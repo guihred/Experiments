@@ -33,8 +33,6 @@ import javafx.util.Duration;
 public class PlayerControlView extends BaseSongView {
 
 	private Label statusLabel;
-	private Slider volumeSlider;
-	private Label totalDurationLabel;
 	private Label currentTimeLabel;
 	private Slider positionSlider;
 	private Image pauseImg;
@@ -50,7 +48,7 @@ public class PlayerControlView extends BaseSongView {
 	protected Node initView() {
 		final Button openButton = createOpenButton();
 		controlPanel = createControlPanel();
-		volumeSlider = createSlider("volumeSlider");
+        Slider volumeSlider = createSlider("volumeSlider");
 		statusLabel = createLabel("Buffering", "statusDisplay");
 		positionSlider = createSlider("positionSlider");
 		volumeSlider.valueChangingProperty()
@@ -79,7 +77,7 @@ public class PlayerControlView extends BaseSongView {
 			newValue.currentTimeProperty().addListener(new CurrentTimeListener());
 		});
 
-		totalDurationLabel = createLabel("00:00", "mediaText");
+        Label totalDurationLabel = createLabel("00:00", "mediaText");
 		currentTimeLabel = createLabel("00:00", "mediaText");
 		final ImageView volLow = new ImageView();
 		volLow.setId("volumeLow");

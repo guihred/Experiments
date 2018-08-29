@@ -5,7 +5,9 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -32,8 +34,6 @@ public class Chart3dSampleApp extends Application {
     private double mousePosY;
     private double mouseOldX;
     private double mouseOldY;
-    private double mouseDeltaX;
-    private double mouseDeltaY;
 
     @Override
     public void start(Stage primaryStage) {
@@ -44,7 +44,7 @@ public class Chart3dSampleApp extends Application {
 
         Scene scene = new Scene(root, 1600, 900, true);
         scene.setFill(Color.GREY);
-        handleKeyboard(scene);
+        scene.setOnKeyPressed(this::handleKeyPressed);
         handleMouse(scene);
 
         primaryStage.setScene(scene);
@@ -52,6 +52,33 @@ public class Chart3dSampleApp extends Application {
 
         scene.setCamera(camera);
 
+    }
+
+    private void handleKeyPressed(KeyEvent event) {
+        KeyCode code = event.getCode();
+        switch (code) {
+            case Z:
+                resetPosition(event);
+                break;
+            case X:
+                toggleVisible(event);
+                break;
+      
+            case UP:
+                moveUp(event);
+                break;
+            case DOWN:
+                moveDown(event);
+                break;
+            case RIGHT:
+                moveRight(event);
+                break;
+            case LEFT:
+                moveLeft(event);
+                break;
+        default:
+        	break;
+        }
     }
 
     private void buildAxes() {
@@ -132,34 +159,6 @@ public class Chart3dSampleApp extends Application {
         root.getChildren().add(world);
     }
 
-    private void handleKeyboard(Scene scene) {
-        scene.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case Z:
-                    resetPosition(event);
-                    break;
-                case X:
-                    toggleVisible(event);
-                    break;
-
-                case UP:
-                    moveUp(event);
-                    break;
-                case DOWN:
-                    moveDown(event);
-                    break;
-                case RIGHT:
-                    moveRight(event);
-                    break;
-                case LEFT:
-                    moveLeft(event);
-                    break;
-			default:
-				break;
-            }
-        });
-    }
-
     private void handleMouse(Scene scene) {
         scene.setOnMousePressed(me -> {
             mousePosX = me.getSceneX();
@@ -167,35 +166,38 @@ public class Chart3dSampleApp extends Application {
             mouseOldX = me.getSceneX();
             mouseOldY = me.getSceneY();
         });
-        scene.setOnMouseDragged(me -> {
-            mouseOldX = mousePosX;
-            mouseOldY = mousePosY;
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseDeltaX = mousePosX - mouseOldX;
-            mouseDeltaY = mousePosY - mouseOldY;
+        scene.setOnMouseDragged(this::onMouseDragged);
+    }
 
-            double modifier = 1.0;
-            double modifierFactor = 0.1;
+    private void onMouseDragged(MouseEvent me) {
+        mouseOldX = mousePosX;
+        mouseOldY = mousePosY;
+        mousePosX = me.getSceneX();
 
-            if (me.isControlDown()) {
-                modifier = 0.1;
-            }
-            if (me.isShiftDown()) {
-                modifier = 10.0;
-            }
-            if (me.isPrimaryButtonDown()) {
-                cameraXform.setRotateY(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
-                cameraXform.setRotateX(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
-            } else if (me.isSecondaryButtonDown()) {
-                double z = camera.getTranslateZ();
-                double newZ = z + mouseDeltaX * modifierFactor * modifier;
-                camera.setTranslateZ(newZ);
-            } else if (me.isMiddleButtonDown()) {
-                cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
-                cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
-            }
-        });
+        mousePosY = me.getSceneY();
+        double mouseDeltaX = mousePosX - mouseOldX;
+        double mouseDeltaY = mousePosY - mouseOldY;
+
+        double modifier = 1.0;
+        double modifierFactor = 0.1;
+
+        if (me.isControlDown()) {
+            modifier = 0.1;
+        }
+        if (me.isShiftDown()) {
+            modifier = 10.0;
+        }
+        if (me.isPrimaryButtonDown()) {
+            cameraXform.setRotateY(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
+            cameraXform.setRotateX(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
+        } else if (me.isSecondaryButtonDown()) {
+            double z = camera.getTranslateZ();
+            double newZ = z + mouseDeltaX * modifierFactor * modifier;
+            camera.setTranslateZ(newZ);
+        } else if (me.isMiddleButtonDown()) {
+            cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
+            cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
+        }
     }
 
     private void moveDown(KeyEvent event) {

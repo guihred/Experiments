@@ -33,10 +33,7 @@ class Edge implements Comparable<Edge> {
 		if (Objects.equals(u, other.u) && Objects.equals(v, other.v)) {
 			return true;
 		}
-		if (Objects.equals(v, other.u) && Objects.equals(u, other.v)) {
-			return true;
-		}
-		return true;
+        return Objects.equals(v, other.u) && Objects.equals(u, other.v);
 	}
 
 	@Override

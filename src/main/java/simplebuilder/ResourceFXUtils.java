@@ -1,9 +1,7 @@
 package simplebuilder;
 
 import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -98,4 +96,22 @@ public final class ResourceFXUtils {
 
     }
 
+    public static void executeInConsole(String cmd) {
+        try {
+
+            LOGGER.info("Executing \"{}\"", cmd);
+            Process p = Runtime.getRuntime().exec(cmd);
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                if (line.contains("Success")) {
+                    LOGGER.info("\"{}\"", line);
+                }
+            }
+            p.waitFor();
+            in.close();
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
+    }
 }

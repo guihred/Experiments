@@ -2,18 +2,14 @@ package simplebuilder;
 
 import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
-import javafx.animation.PathTransition.OrientationType;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
@@ -64,7 +60,8 @@ public final class CommonsFX {
 	}
 
 	public static PathTransition newPathTransistion(Duration duration, Shape path, Node node,
-			OrientationType orientation, Interpolator interpolator, boolean autoReverse, int cycleCount) {
+            PathTransition.OrientationType orientation, Interpolator interpolator, boolean autoReverse,
+            int cycleCount) {
 		PathTransition build = new PathTransition(duration, path, node);
 		build.setOrientation(orientation);
 		build.setInterpolator(interpolator);
@@ -90,6 +87,13 @@ public final class CommonsFX {
     public static void setZoomable(Node node) {
 
         setZoomable(node, false);
+    }
+
+    public static CheckBox newCheck(String name, BooleanProperty showWeight) {
+        CheckBox checkBox = new CheckBox(name);
+        checkBox.setSelected(showWeight.get());
+        showWeight.bind(checkBox.selectedProperty());
+        return checkBox;
     }
 
     public static void setZoomable(Node node, boolean onlyClose) {
@@ -132,5 +136,7 @@ public final class CommonsFX {
             translate.setY(translate.getY() + deltaY);
         });
     }
+
+
 
 }

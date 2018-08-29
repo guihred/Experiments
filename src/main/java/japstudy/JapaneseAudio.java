@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public enum JapaneseAudio {
@@ -28,6 +29,7 @@ public enum JapaneseAudio {
     AUDIO_15(15, "jaf15lesson122216"),
     AUDIO_16(16, "jaf16lesson122216"),
     AUDIO_17(17, "jaf17lesson122216");
+    private static final String OUTPUT_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\mobileApps\\AndroidTest\\app\\src\\main\\assets\\create_database.sql";
     private final String file;
     private final int lesson;
 
@@ -56,20 +58,20 @@ public enum JapaneseAudio {
     public static void main(String[] args) {
         ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessons();
         /*
-          CREATE TABLE "android_metadata" ("locale" TEXT DEFAULT 'en_US'); 
-            INSERT INTO "android_metadata" VALUES ('en_US');
+            CREATE TABLE "android_metadata" ("locale" TEXT DEFAULT 'en_US') 
+            INSERT INTO "android_metadata" VALUES ('en_US')
+            
             CREATE TABLE "JAPANESE_LESSON" (
-            english TEXT,
-            japanese TEXT,
-            romaji TEXT,
-            exercise INT,
-            lesson INT,
-            PRIMARY KEY (exercise,lesson)); 
+                    english TEXT,
+                    japanese TEXT,
+                    romaji TEXT,
+                    exercise INT,
+                    lesson INT,
+                    PRIMARY KEY (exercise,lesson)) 
          */
-        File file2 = new File(
-                "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\mobileApps\\AndroidTest\\app\\src\\main\\assets\\create_database.sql");
+        File file2 = new File(OUTPUT_FILE);
 
-        try (PrintStream out = new PrintStream(file2);) {
+        try (PrintStream out = new PrintStream(file2)) {
 
             for (JapaneseLesson lesson : lessons) {
 
@@ -80,7 +82,7 @@ public enum JapaneseAudio {
                 out.println(format);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            HasLogging.log().error("", e);
         }
         HibernateUtil.shutdown();
     }

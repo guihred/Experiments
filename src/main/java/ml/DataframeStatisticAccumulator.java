@@ -1,8 +1,7 @@
 package ml;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -15,7 +14,7 @@ public class DataframeStatisticAccumulator{
     private double sum;
     private double min = Double.MAX_VALUE;
     private double max = Double.NEGATIVE_INFINITY;
-    private String unique, top, freq;
+    private String freq;
     private String header;
     private Map<String, Integer> countMap = new LinkedHashMap<>();
     private Class<? extends Comparable<?>> format;
@@ -32,6 +31,21 @@ public class DataframeStatisticAccumulator{
         sum += o;
         min = Math.min(min, o);
         max = Math.max(max, o);
+    }
+
+    public Set<String> getUnique() {
+        return countMap.keySet();
+    }
+
+    public String getTop() {
+        return countMap.entrySet().stream().max(Comparator.comparing(Entry<String, Integer>::getValue))
+                .map(Entry<String, Integer>::getKey)
+                .orElse(null);
+    }
+
+    public String getBottom() {
+        return countMap.entrySet().stream().min(Comparator.comparing(Entry<String, Integer>::getValue))
+                .map(Entry<String, Integer>::getKey).orElse(null);
     }
 
     private void acceptString(String n) {
@@ -131,13 +145,13 @@ public class DataframeStatisticAccumulator{
                 return array[array.length / 4];
             }
         }
-        List<Double> collect = dataframe.list(header).stream().filter(e -> e != null).map(Number.class::cast)
+        List<Double> sortedNumber = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
                 .map(Number::doubleValue).sorted()
                 .collect(Collectors.toList());
-        if (collect.isEmpty()) {
+        if (sortedNumber.isEmpty()) {
             return 0;
         }
-        return collect.get(count / 4).doubleValue();
+        return sortedNumber.get(count / 4).doubleValue();
     }
 
 
@@ -148,7 +162,7 @@ public class DataframeStatisticAccumulator{
                 return array[array.length / 2];
             }
         }
-        List<Double> collect = dataframe.list(header).stream().filter(e -> e != null).map(Number.class::cast)
+        List<Double> collect = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
                 .map(Number::doubleValue).sorted()
                 .collect(Collectors.toList());
         if (collect.isEmpty()) {
@@ -165,7 +179,7 @@ public class DataframeStatisticAccumulator{
                 return array[array.length * 3 / 4];
             }
         }
-        List<Double> collect = dataframe.list(header).stream().filter(e -> e != null).map(Number.class::cast)
+        List<Double> collect = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
                 .map(Number::doubleValue).sorted()
                 .collect(Collectors.toList());
         if (collect.isEmpty()) {

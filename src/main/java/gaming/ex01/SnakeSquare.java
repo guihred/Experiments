@@ -18,7 +18,8 @@ import javafx.scene.layout.Region;
  */
 public class SnakeSquare extends Region {
 
-	private final int i, j;
+    private final int i;
+    private final int j;
 
 	private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
 
@@ -45,10 +46,7 @@ public class SnakeSquare extends Region {
         if (obj.getClass() != SnakeSquare.class) {
             return false;
         }
-        if (((SnakeSquare) obj).i == i && ((SnakeSquare) obj).getJ() == getJ()) {
-            return true;
-        }
-        return false;
+        return ((SnakeSquare) obj).i == i && ((SnakeSquare) obj).j == j;
 
     }
 

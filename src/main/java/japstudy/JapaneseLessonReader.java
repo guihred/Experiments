@@ -53,7 +53,7 @@ public final class JapaneseLessonReader implements HasLogging {
 	public static ObservableList<JapaneseLesson> getLessons(String arquivo) throws IOException {
 		InputStream resourceAsStream = new FileInputStream(new File(arquivo));
 		ObservableList<JapaneseLesson> listaExercises = FXCollections.observableArrayList();
-		try (XWPFDocument document1 = new XWPFDocument(resourceAsStream);) {
+        try (XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
             addJapaneseLessons(listaExercises, document1);
 		} catch (Exception e) {
             HasLogging.log().error("", e);

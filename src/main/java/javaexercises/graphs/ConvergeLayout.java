@@ -20,7 +20,8 @@ public class ConvergeLayout implements Layout {
 			return;
 		}
 
-		double bound = (allCells.size() / 50 + 1) * 100;
+        int c = allCells.size() / 50;
+        double bound = (c + 1) * 100d;
 
 		Cell cell = allCells.get(rnd.nextInt(allCells.size()));
 		List<Edge> edges = graph.getModel().edges(cell);

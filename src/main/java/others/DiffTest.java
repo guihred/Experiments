@@ -32,7 +32,7 @@ public final class DiffTest {
 	}
 
 	private static List<String> fileToLines(String string) {
-        try (Stream<String> lines = Files.lines(Paths.get(string));) {
+        try (Stream<String> lines = Files.lines(Paths.get(string))) {
             return lines.collect(Collectors.toList());
 		} catch (IOException e) {
 			LOGGER.error("", e);

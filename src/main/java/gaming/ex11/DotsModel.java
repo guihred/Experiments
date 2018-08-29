@@ -5,18 +5,10 @@
  */
 package gaming.ex11;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -24,7 +16,6 @@ import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventTarget;
 import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -34,6 +25,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import simplebuilder.SimpleTimelineBuilder;
 
 /**
  *
@@ -206,8 +198,7 @@ public class DotsModel {
     }
 
     private void handleMouseDragged(MouseEvent e) {
-		final EventTarget target = e.getTarget();
-		if (target instanceof DotsSquare) {
+		if (e.getTarget() instanceof DotsSquare) {
 			line.setEndX(e.getX());
 			line.setEndY(e.getY());
 		}
@@ -279,16 +270,13 @@ public class DotsModel {
 					final List<Set<DotsSquare>> collect3 = check2.stream().filter(s -> !collect2.contains(s))
 							.collect(Collectors.toList());
 
-					final KeyFrame keyFrame = new KeyFrame(Duration.seconds(nplayed * 0.5),
-							new KeyValue(line2.endXProperty(), center[0]));
-					final KeyFrame keyFrame1 = new KeyFrame(Duration.seconds(0.5 + nplayed * 0.5),
-							new KeyValue(line2.endXProperty(), center2[0]));
-
-					final Timeline timeline = new Timeline(keyFrame, keyFrame1,
-							new KeyFrame(Duration.seconds(nplayed * 0.5),
-									new KeyValue(line2.endYProperty(), center[1])),
-							new KeyFrame(Duration.seconds(0.5 + nplayed * 0.5),
-									new KeyValue(line2.endYProperty(), center2[1])));
+					final Timeline timeline = new SimpleTimelineBuilder()
+                            .addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endXProperty(), center[0])
+                            .addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endXProperty(), center2[0])
+                            .addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endYProperty(), center[1])
+                            .addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endYProperty(), center2[1])
+                            .build();
+					
 					nplayed++;
 					timeline.play();
 					if (!collect3.isEmpty()) {
@@ -298,8 +286,7 @@ public class DotsModel {
 									.mapToDouble(Double::valueOf).toArray();
 							final Polygon polygon = new Polygon(toArray);
 							polygon.setFill(colors[currentPlayer]);
-							final EventHandler<ActionEvent> onFinished = timeline.getOnFinished();
-							timeline.setOnFinished(f -> addPolygonOnFinished(polygon, onFinished, f));
+							timeline.setOnFinished(f -> addPolygonOnFinished(polygon, timeline.getOnFinished(), f));
 						});
 					} else {
 						currentPlayer = (currentPlayer + 1) % jogadores.length;

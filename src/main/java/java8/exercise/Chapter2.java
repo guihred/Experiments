@@ -68,7 +68,7 @@ public final class Chapter2 {
     public static void ex1() {
         Pattern compile = Pattern.compile(REGEX);
 
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8);) {
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8)) {
             LOGGER.trace("{}", lines.parallel().flatMap(compile::splitAsStream).filter(s -> s.length() > 12).count());
             LOGGER.trace("{}", countConcurrentWithoutStreams());
         } catch (Exception e) {
@@ -143,7 +143,7 @@ public final class Chapter2 {
      */
     public static void ex2() {
         Pattern compile = Pattern.compile(REGEX);
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8);) {
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8)) {
             lines.parallel().flatMap(compile::splitAsStream).filter(s -> {
                 if (s.length() > 12) {
                     LOGGER.trace("Long word {}", s);
@@ -202,7 +202,7 @@ public final class Chapter2 {
      * Stream<Long>. Try out a = 25214903917, c = 11, and m = 248.
      */
     public static void ex5() {
-        long a = 25214903917L;
+        long a = 25_214_903_917L;
         long c = 11;
         long m = 2L << 48;
         Stream<Long> iterate = Stream.iterate(System.currentTimeMillis(), t -> (a * t + c) % m);

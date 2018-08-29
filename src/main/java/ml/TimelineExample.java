@@ -1,12 +1,10 @@
 package ml;
 
-import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -15,7 +13,6 @@ import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -30,7 +27,6 @@ public class TimelineExample extends Application {
     @Override
 	public void start(Stage theStage) {
 		theStage.setTitle("Timeline Example");
-
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root, 1050, 600);
 		theStage.setScene(theScene);
@@ -48,7 +44,7 @@ public class TimelineExample extends Application {
 		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
         canvas.xProportionProperty()
-                .addListener((InvalidationListener) o -> itens.setAll(sortedLabels(canvas.colorsProperty())));
+                .addListener(o -> itens.setAll(sortedLabels(canvas.colorsProperty())));
         ListView<Entry<String, Color>> listVies = new ListView<>(itens);
 		Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(
                 canvas.colorsProperty(), canvas::drawGraph);
@@ -59,8 +55,7 @@ public class TimelineExample extends Application {
         String countryNameColumn = x.cols().stream().findFirst().orElse("﻿Country Name");
         canvas.setHistogram(x, countryNameColumn);
         itens.setAll(sortedLabels(canvas.colorsProperty()));
-        File file = ResourceFXUtils.toFile("out");
-        String[] list = file.list((dir, name) -> name.endsWith(".csv"));
+        String[] list = ResourceFXUtils.toFile("out").list((dir, name) -> name.endsWith(".csv"));
         ComboBox<String> build2 = new SimpleComboBoxBuilder<String>().items(list).select(0).onSelect(s -> {
             DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(46).build();
             canvas.setTitle(x2.list("Indicator Name").get(0).toString());
@@ -84,9 +79,11 @@ public class TimelineExample extends Application {
     }
 
     private VBox newSlider(String string, int min, int max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
+        return new VBox(new Text(string), new SimpleSliderBuilder()
+                .min(min)
+                .max(max)
+                .bindBidirectional(radius)
+                .build());
     }
 
     public static void main(String[] args) {

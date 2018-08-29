@@ -1,12 +1,8 @@
 package java8.exercise;
 
-import static simplebuilder.ResourceFXUtils.toFile;
-import static simplebuilder.ResourceFXUtils.toURI;
-
-import java.io.BufferedReader;
+import election.experiment.CrawlerTask;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -26,8 +22,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import simplebuilder.ResourceFXUtils;
 
 
 public final class Chapter6 {
@@ -95,10 +93,11 @@ public final class Chapter6 {
 	 * TimeUnit.SECONDS);
 	 */
 	public static void ex10() {
+        CrawlerTask.insertProxyConfig();
 		String url = "http://www.google.com";
 		CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(Chapter6::getLinks)
-                .thenAccept(l -> l.forEach(LOGGER::trace));
-		ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
+                .thenAccept(l -> l.forEach(LOGGER::info));
+        ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
 
 	}
 
@@ -117,7 +116,7 @@ public final class Chapter6 {
 		pool = Executors.newCachedThreadPool();
 		for (int i = 0; i < 1000; i++) {
 			pool.submit(() -> {
-				for (int j = 0; j < 100000; j++) {
+                for (int j = 0; j < 100_000; j++) {
 					b.increment();
 				}
 			});
@@ -132,7 +131,7 @@ public final class Chapter6 {
 		pool = Executors.newCachedThreadPool();
 		for (int i = 0; i < 1000; i++) {
 			pool.submit(() -> {
-				for (int j = 0; j < 100000; j++) {
+                for (int j = 0; j < 100_000; j++) {
 					a.incrementAndGet();
 				}
 			});
@@ -154,7 +153,8 @@ public final class Chapter6 {
 		ConcurrentHashMap<String, Set<File>> concurrentHashMap = new ConcurrentHashMap<>();
 		ExecutorService pool;
 		pool = Executors.newCachedThreadPool();
-		Stream.of(toFile(ALICE_TXT), toFile("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
+        Stream.of(ResourceFXUtils.toFile(ALICE_TXT), ResourceFXUtils.toFile("warAndPeace.txt"))
+                .forEach(u -> pool.submit(() -> {
 			try {
 				Stream<String> wordsAsList = getWords(u.toURI());
 				wordsAsList.forEach(w -> {
@@ -188,7 +188,8 @@ public final class Chapter6 {
 		ConcurrentHashMap<String, Set<File>> concurrentHashMap = new ConcurrentHashMap<>();
 		ExecutorService pool;
 		pool = Executors.newCachedThreadPool();
-		Stream.of(toFile(ALICE_TXT), toFile("warAndPeace.txt")).forEach(u -> pool.submit(() -> {
+        Stream.of(ResourceFXUtils.toFile(ALICE_TXT), ResourceFXUtils.toFile("warAndPeace.txt"))
+                .forEach(u -> pool.submit(() -> {
 			try {
 				getWords(u.toURI())
 						.forEach(w -> concurrentHashMap.computeIfAbsent(w, t -> ConcurrentHashMap.newKeySet()).add(u));
@@ -207,7 +208,7 @@ public final class Chapter6 {
 	 * (breaking ties arbitrarily). Hint: reduceEntries.
 	 */
 	public static void ex7() throws IOException {
-		Map<String, Long> collect = getWords(toURI(ALICE_TXT)).parallel()
+        Map<String, Long> collect = getWords(ResourceFXUtils.toURI(ALICE_TXT)).parallel()
 				.collect(
 				Collectors.groupingBy(w -> w, Collectors.counting()));
 
@@ -285,27 +286,19 @@ public final class Chapter6 {
 
 	public static void main(String[] args) {
 		try {
-			ex7();
+            ex10();
         } catch (Exception e) {
 			LOGGER.error("", e);
 		}
 	}
 
 	public static String readPage(String urlString) {
-		URL url;
 		try {
-			url = new URL(urlString);
+            URL url = new URL(urlString);
 			URLConnection conn = url.openConnection();
-			StringBuilder content = new StringBuilder();
-			try (BufferedReader br = new BufferedReader(
-					new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
-				String inputLine;
-				while ((inputLine = br.readLine()) != null) {
-					content.append(inputLine);
-				}
-			}
-			return content.toString();
+            return IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
 		} catch (Exception e) {
+            LOGGER.error("", e);
             throw new RuntimeException(e);
 		}
 	}

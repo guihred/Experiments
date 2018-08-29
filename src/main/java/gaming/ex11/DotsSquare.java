@@ -1,10 +1,6 @@
 package gaming.ex11;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
@@ -16,7 +12,8 @@ public class DotsSquare extends Region {
 
     public static final int SQUARE_SIZE = 40;
 
-	private final int i, j;
+    private final int i;
+    private final int j;
     private final Set<DotsSquare> adjacencies = new HashSet<>();
 
     public DotsSquare(int i, int j) {
@@ -59,13 +56,10 @@ public class DotsSquare extends Region {
             return false;
         }
         final DotsSquare other = (DotsSquare) obj;
-        if (getI() != other.getI()) {
+        if (i != other.i) {
             return false;
         }
-        if (getJ() != other.getJ()) {
-            return false;
-        }
-        return true;
+        return j == other.j;
     }
 
     public void addAdj(DotsSquare selected) {

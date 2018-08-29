@@ -1,13 +1,15 @@
 package fxproexercises.ch06;
 
 import javafx.collections.MapChangeListener;
+import simplebuilder.HasLogging;
 
-class MyListenerMapExamples implements MapChangeListener<String, Integer> {
+class MyListenerMapExamples implements MapChangeListener<String, Integer>, HasLogging {
 
 	@Override
 	public void onChanged(Change<? extends String, ? extends Integer> change) {
-		System.out.println("\tmap = " + change.getMap());
-		System.out.println(prettyPrint(change));
+        getLogger().info("\tmap = {}", change.getMap());
+        String prettyPrint = prettyPrint(change);
+        getLogger().info(prettyPrint);
 	}
 	
 	private String prettyPrint(Change<? extends String, ? extends Integer> change) {

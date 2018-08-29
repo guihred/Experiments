@@ -75,7 +75,7 @@ public final class UnRar {
         s = s.substring(s.length() - 3);
         if ("rar".equalsIgnoreCase(s)) {
             LOGGER.info("{}", file);
-            try (Archive arc = new Archive(file);) {
+            try (Archive arc = new Archive(file)) {
                 if (arc.isEncrypted()) {
                     LOGGER.info("archive is encrypted cannot extreact");
                     unsupportedFiles.add(file.toString());
@@ -113,7 +113,7 @@ public final class UnRar {
     }
 
     private static boolean tryExtractFile(File file2, FileHeader fh, Archive arc, File file) throws IOException {
-        try (FileOutputStream os = new FileOutputStream(file2);) {
+        try (FileOutputStream os = new FileOutputStream(file2)) {
             arc.extractFile(fh, os);
         } catch (RarException e) {
             if (e.getType().equals(RarExceptionType.notImplementedYet)) {

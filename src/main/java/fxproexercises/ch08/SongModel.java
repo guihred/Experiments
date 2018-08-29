@@ -5,16 +5,11 @@
  */
 package fxproexercises.ch08;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.MapChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
@@ -119,9 +114,9 @@ public final class SongModel implements HasLogging {
 
 	private void tryGetAlbumCover(String url) {
 		try {
-			byte[] extractEmbeddedImageData = LeitorMusicas
-					.extractEmbeddedImageData(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
-			setAlbumCover(new Image(new ByteArrayInputStream(extractEmbeddedImageData)));
+            Image extractEmbeddedImageData = LeitorMusicas
+                    .extractEmbeddedImage(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
+            setAlbumCover(extractEmbeddedImageData);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}

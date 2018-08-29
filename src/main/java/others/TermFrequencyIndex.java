@@ -6,14 +6,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +132,7 @@ public final class TermFrequencyIndex {
 	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
 	 */
 	public static Map<String, Long> getFrequencyMap(File d) throws IOException {
-		try (BufferedReader bufferedReader = Files.newBufferedReader(d.toPath());) {
+        try (BufferedReader bufferedReader = Files.newBufferedReader(d.toPath())) {
 
 			String readLine;
 			Map<String, Long> collect = new ConcurrentHashMap<>();
@@ -210,7 +204,7 @@ public final class TermFrequencyIndex {
 	}
 
     private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
-		try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName());) {
+        try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
 			List<String> javaKeywords = Arrays.asList("abstract", "continue", "for", "new", "switch", "assert",
 					"default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break",
 					"double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",

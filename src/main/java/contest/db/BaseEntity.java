@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import simplebuilder.HasLogging;
 
-public abstract class BaseEntity implements Serializable {
+public abstract class BaseEntity implements Serializable, HasLogging {
 
 	protected abstract Serializable getKey();
 
@@ -41,9 +42,9 @@ public abstract class BaseEntity implements Serializable {
 
 	public String toSQL() {
 
-		List<Field> collect = Stream.of(getClass().getDeclaredFields()).filter(e -> isFieldOk(e))
+        List<Field> collect = Stream.of(getClass().getDeclaredFields()).filter(this::isFieldOk)
 				.collect(Collectors.toList());
-		String fields = collect.stream().map(e -> e.getName()).collect(Collectors.joining(","));
+        String fields = collect.stream().map(Field::getName).collect(Collectors.joining(","));
 		String fieldsValues = collect.stream().map(this::getFieldValue)
 				.map(this::type)
 				.collect(Collectors.joining(","));
@@ -60,7 +61,7 @@ public abstract class BaseEntity implements Serializable {
 			e.setAccessible(true);
 			return e.get(this);
 		} catch (Exception e1) {
-			e1.printStackTrace();
+            getLogger().error("", e1);
 		}
 		return null;
 	}

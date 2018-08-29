@@ -19,8 +19,6 @@ import javafx.stage.Stage;
  */
 public class BasicAudioPlayerWithControlLauncher extends Application {
 
-	private MetadataView metaDataView;
-    private PlayerControlView playerControlsView;
     private final SongModel songModel = new SongModel();
 
     private void initSceneDragAndDrop(Scene scene) {
@@ -52,8 +50,8 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
     @Override
     public void start(Stage primaryStage) {
 		songModel.setURL(Chapter8Resource.TEEN_TITANS.getURL().toString());
-        metaDataView = new MetadataView(songModel);
-        playerControlsView = new PlayerControlView(songModel);
+        MetadataView metaDataView = new MetadataView(songModel);
+        PlayerControlView playerControlsView = new PlayerControlView(songModel);
         final BorderPane root = new BorderPane();
         root.setCenter(metaDataView.getViewNode());
         root.setBottom(playerControlsView.getViewNode());

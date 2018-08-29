@@ -17,7 +17,7 @@ public final class EWSTest {
 	}
 
 	public static void main(String[] args) {
-		try (ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);) {
+        try (ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2)) {
 			service.setTraceEnabled(true);
 			ExchangeCredentials credentials = new WebCredentials("guilherme.fernandes", "11_juuICHI");
 			service.setCredentials(credentials);

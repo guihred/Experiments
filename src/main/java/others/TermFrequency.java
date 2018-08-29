@@ -77,7 +77,7 @@ public final class TermFrequency {
 
     public static Map<String, Long> getFrequencyMap(File f) {
 		Map<String, Long> map = new ConcurrentHashMap<>();
-		try (BufferedReader buff = Files.newBufferedReader(f.toPath());) {
+        try (BufferedReader buff = Files.newBufferedReader(f.toPath())) {
 
 			String readLine;
 			do {

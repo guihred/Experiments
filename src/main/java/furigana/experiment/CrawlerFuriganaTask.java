@@ -8,13 +8,7 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jsoup.nodes.Document;
@@ -40,7 +34,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private List<String> getLines() {
         List<String> lines = new ArrayList<>();
-        try (Stream<String> lines2 = Files.lines(Paths.get("hp1Tex2.tex"));) {
+        try (Stream<String> lines2 = Files.lines(Paths.get("hp1Tex2.tex"))) {
             lines.addAll(lines2.collect(Collectors.toList()));
         } catch (IOException e) {
             getLogger().error("ERROR ", e);
@@ -137,7 +131,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     public void migrateCities() {
         // insertProxyConfig()
-        try (Stream<String> lines = Files.lines(Paths.get("hp1Tex2.tex"));) {
+        try (Stream<String> lines = Files.lines(Paths.get("hp1Tex2.tex"))) {
             lines.forEach(line -> {
                 String[] split = line.split("");
                 StringBuilder currentWord = new StringBuilder();
@@ -224,7 +218,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             long i = ths.size() - count;
             updateAll(i, total);
         }
-        try (PrintStream printStream = new PrintStream("hp1Tex2Converted.tex");) {
+        try (PrintStream printStream = new PrintStream("hp1Tex2Converted.tex")) {
             for (String s : lines) {
                 printStream.println(s);
             }

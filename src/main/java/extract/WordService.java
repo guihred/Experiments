@@ -1,55 +1,42 @@
 package extract;
 
-
-import static simplebuilder.HasLogging.log;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
-import org.apache.poi.xwpf.usermodel.BodyElementType;
-import org.apache.poi.xwpf.usermodel.IBodyElement;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFHeader;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRelation;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class WordService implements HasLogging {
 
 
-	public static void getPowerPointImages(String arquivo) {
-		try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo));) {
+    private static final Logger LOG = HasLogging.log(WordService.class);
+
+    public static void getPowerPointImages(String arquivo) {
+        try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo))) {
 			List<XSLFPictureData> pictureData = a.getPictureData();
 			for (XSLFPictureData data : pictureData) {
                 recordPicture(data);
 			}
 
 		} catch (IOException e) {
-            log(WordService.class).error("FILE ERROR", e);
+            LOG.error("FILE ERROR", e);
 		}
 	}
 
     private static void recordPicture(XSLFPictureData data) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(data.getFileName()));) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(data.getFileName()))) {
             InputStream inputStream = data.getInputStream();
             IOUtils.copy(inputStream, fileOutputStream);
         } catch (IOException e) {
-            log(WordService.class).error("FILE ERROR", e);
+            LOG.error("FILE ERROR", e);
         }
     }
 
@@ -59,7 +46,7 @@ public class WordService implements HasLogging {
 	public void getWord(Map<String, Object> mapaSubstituicao, String arquivo, OutputStream outStream) {
 		InputStream resourceAsStream = getClass().getResourceAsStream("/../../resources/doc/" + arquivo);
 
-		try (XWPFDocument document1 = new XWPFDocument(resourceAsStream);) {
+        try (XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
 			for (XWPFHeader p : document1.getHeaderList()) {
 				List<XWPFParagraph> paragraphs = p.getParagraphs();
 				for (XWPFParagraph paragraph : paragraphs) {
@@ -78,7 +65,7 @@ public class WordService implements HasLogging {
 					.forEach(tabela -> substituirTabela(tabela, mapaSubstituicao));
 			document1.write(outStream);
 		} catch (Exception e) {
-            log().error("", e);
+            LOG.error("", e);
 		}
 	}
 

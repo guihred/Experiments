@@ -11,12 +11,10 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import simplebuilder.CommonsFX;
 import simplebuilder.HasLogging;
 
-class WorldMapGraph2 extends Canvas {
-    private static final Logger LOG = HasLogging.log();
+class WorldMapGraph2 extends Canvas implements HasLogging {
     private static final String NO_INFO = "No info";
     public static final double BLUE_HUE = Color.BLUE.getHue();
     private static final double RED_HUE = Color.RED.getHue();
@@ -27,7 +25,7 @@ class WorldMapGraph2 extends Canvas {
 	private DoubleProperty yScale = new SimpleDoubleProperty(0);
     private GraphicsContext gc;
     private DataframeML dataframeML;
-    private boolean showNeighbors = false;
+    private boolean showNeighbors;
     private DoubleSummaryStatistics summary;
     private String header = "Country";
 	private String cityHeader = "City";
@@ -69,7 +67,7 @@ class WorldMapGraph2 extends Canvas {
 
     public final void drawGraph() {
         gc.clearRect(0, 0, getWidth(), getHeight());
-        Country[] values = Country.values();
+        Country[] countries = Country.values();
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
         if (dataframeML != null) {
@@ -84,24 +82,27 @@ class WorldMapGraph2 extends Canvas {
         if (dataframeML != null) {
             drawLabels();
         }
-        for (int i = 0; i < values.length; i++) {
-            Country countries = values[i];
-            gc.beginPath();
-            if (dataframeML != null) {
-				setCountriesColor(countries);
-            }
-            gc.setFill(countries.getColor() != null ? countries.getColor() : categoryMap.get(NO_INFO));
-            gc.appendSVGPath(countries.getPath());
-            gc.fill();
-            gc.stroke();
-            gc.closePath();
+        for (int i = 0; i < countries.length; i++) {
+            drawCountry(countries[i]);
         }
 		if (points != null) {
 			drawPoints();
 		}
         if (showNeighbors) {
-			drawNeighbors(values);
+			drawNeighbors(countries);
         }
+    }
+
+    private void drawCountry(Country country) {
+        gc.beginPath();
+        if (dataframeML != null) {
+            setCountriesColor(country);
+        }
+        gc.setFill(country.getColor() != null ? country.getColor() : categoryMap.get(NO_INFO));
+        gc.appendSVGPath(country.getPath());
+        gc.fill();
+        gc.stroke();
+        gc.closePath();
     }
 
 	private void setCountriesColor(Country countries) {
@@ -115,7 +116,7 @@ class WorldMapGraph2 extends Canvas {
                 }
             }
             List<Object> list = dataframeML.list(valueHeader.get());
-            Object object = DataframeML.getFromList(j, list);
+            Object object = DataframeUtils.getFromList(j, list);
             if (object instanceof Number) {
                 countries.setColor(getColorForValue(((Number) object).doubleValue()));
             } else if (object instanceof String) {
@@ -144,8 +145,8 @@ class WorldMapGraph2 extends Canvas {
 		List<Double> lis2t = points.list(latHeader, Double.class);
 		List<String> citu = points.list(cityHeader, String.class);
 		for (int i = 0; i < points.getSize(); i++) {
-            LOG.trace("X={}", xScale.get());
-            LOG.trace("Y={}", yScale.get());
+            getLogger().trace("X={}", xScale.get());
+            getLogger().trace("Y={}", yScale.get());
             double latitudeInDegrees = list.get(i).doubleValue();
             double longitudeInDegrees = lis2t.get(i).doubleValue();
 			double[] screenLocation = mercatorMap.getScreenLocation(latitudeInDegrees, longitudeInDegrees);

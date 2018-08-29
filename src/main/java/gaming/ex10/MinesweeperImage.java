@@ -20,7 +20,7 @@ public enum MinesweeperImage {
 
     BLANK(j -> new Rectangle(5, 5, Color.WHITE)),
     BOMB(j -> {
-        int pontas = 8;
+        long pontas = 8;
         double[] points = DoubleStream.iterate(0, i -> i + 1).limit(pontas * 2)
                 .flatMap(i -> DoubleStream.of(5 * (i % 2 + 1) * Math.cos(Math.toRadians(i * 360 / pontas / 2)),
                         5 * (i % 2 + 1) * Math.sin(Math.toRadians(i * 360 / pontas / 2))))

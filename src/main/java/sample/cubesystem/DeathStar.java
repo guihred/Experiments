@@ -72,9 +72,11 @@ public class DeathStar extends Application {
 		float[] points = new float[nPoints * 3];
 		float[] tPoints = new float[nTPoints * 2];
 		int[] faces = new int[nFaces * 6];
-		int pPos = 0, tPos = 0;
+        int pPos = 0;
+        int tPos = 0;
 		for (int y = 0; y < div2 - 1; ++y) {
-			float va = rDiv * (y + 1 - div2 / 2) * 2 * (float) Math.PI;
+            int m = div2 / 2;
+            float va = rDiv * (y + 1 - m) * 2 * (float) Math.PI;
 			float sinVal = (float) Math.sin(va);
 			float cosVal = (float) Math.cos(va);
 
@@ -106,7 +108,6 @@ public class DeathStar extends Application {
 		points[pPos + 4] = radius;
 		points[pPos + 5] = 0;
 		checkDistance(radius, centerOtherSphere, points, pPos + 3);
-		pPos += 6;
 
 		int pS = (div2 - 1) * division;
 
@@ -161,7 +162,9 @@ public class DeathStar extends Application {
 		int p0 = pS;
 		int tB = (div2 - 1) * (division + 1);
 		for (int x = 0; x < division; ++x) {
-			int p2 = x, p1 = x + 1, t0 = tB + x;
+            int p2 = x;
+            int p1 = x + 1;
+            int t0 = tB + x;
 			faces[fIndex + 0] = p0;
 			faces[fIndex + 1] = t0;
 			faces[fIndex + 2] = p1 == division ? 0 : p1;
@@ -176,8 +179,11 @@ public class DeathStar extends Application {
 		int pB = (div2 - 2) * division;
 
 		for (int x = 0; x < division; ++x) {
-			int p1 = pB + x, p2 = pB + x + 1, t0 = tB + x;
-			int t1 = (div2 - 2) * (division + 1) + x, t2 = t1 + 1;
+            int p1 = pB + x;
+            int p2 = pB + x + 1;
+            int t0 = tB + x;
+            int t1 = (div2 - 2) * (division + 1) + x;
+            int t2 = t1 + 1;
 			faces[fIndex + 0] = p0;
 			faces[fIndex + 1] = t0;
 			faces[fIndex + 2] = p1;

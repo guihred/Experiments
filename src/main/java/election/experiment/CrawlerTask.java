@@ -19,8 +19,11 @@ import simplebuilder.HasLogging;
 
 public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
+    private static final String LOGIN = "guilherme.hmedeiros";
+    private static final String PASS = "13-juuSAN";
+    private static final String PROXY_CONFIG = "10.70." + "124.16";
     private Instant start;
-    private boolean cancelled = false;
+    private boolean cancelled;
     private String encoded = Base64.getEncoder()
             .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes());
 
@@ -51,17 +54,17 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
     }
 
     public static String getHTTPPassword() {
-        return "13-juuSAN";
+        return PASS;
     }
 
     public static String getHTTPUsername() {
-        return "guilherme.hmedeiros";
+        return LOGIN;
     }
 
     public static void insertProxyConfig() {
-        System.setProperty("http.proxyHost", "10.70.124.16");
+        System.setProperty("http.proxyHost", PROXY_CONFIG);
         System.setProperty("http.proxyPort", "3128");
-        System.setProperty("https.proxyHost", "10.70.124.16");
+        System.setProperty("https.proxyHost", PROXY_CONFIG);
         System.setProperty("https.proxyPort", "3128");
         System.setProperty("javax.net.ssl.trustStore", "C:/Users/guilherme.hmedeiros/Downloads/Instaladores/cacerts");
 

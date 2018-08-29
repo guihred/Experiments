@@ -21,7 +21,8 @@ public class TetrisModel {
 
 	public static final int MAP_HEIGHT = 20;
 	public static final int MAP_WIDTH = 10;
-	private int currentI, currentJ;
+    private int currentI;
+    private int currentJ;
 	private TetrisDirection direction = TetrisDirection.UP;
 	private final TetrisSquare[][] map = new TetrisSquare[MAP_WIDTH][MAP_HEIGHT];
 	private TetrisPiece piece = TetrisPiece.L;

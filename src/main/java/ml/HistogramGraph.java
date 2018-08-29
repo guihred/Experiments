@@ -1,20 +1,10 @@
 package ml;
 
-import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LongSummaryStatistics;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
@@ -83,11 +73,15 @@ class HistogramGraph extends Canvas {
         List<Entry<String, DoubleSummaryStatistics>> collect2 = xstats.entrySet().stream()
                 .filter(e -> colors.containsKey(e.getKey())).collect(Collectors.toList());
 
-        long max = collect.stream().map(e -> e.getValue()).mapToLong(e -> e.getMax()).max().orElse(0);
-        double min = collect.stream().map(e -> e.getValue()).mapToLong(e -> e.getMin()).min().orElse(0);
+        long max = collect.stream().map(Entry<String, LongSummaryStatistics>::getValue)
+                .mapToLong(LongSummaryStatistics::getMax).max().orElse(0);
+        double min = collect.stream().map(Entry<String, LongSummaryStatistics>::getValue)
+                .mapToLong(LongSummaryStatistics::getMin).min().orElse(0);
         yProportion = (max - min) / ybins.get();
-        double xmax = collect2.stream().map(e -> e.getValue()).mapToDouble(e -> e.getMax()).max().orElse(0);
-        double xmin = collect2.stream().map(e -> e.getValue()).mapToDouble(e -> e.getMin()).min().orElse(0);
+        double xmax = collect2.stream().map(Entry<String, DoubleSummaryStatistics>::getValue)
+                .mapToDouble(DoubleSummaryStatistics::getMax).max().orElse(0);
+        double xmin = collect2.stream().map(Entry<String, DoubleSummaryStatistics>::getValue)
+                .mapToDouble(DoubleSummaryStatistics::getMin).min().orElse(0);
         double xbins = bins.get();
         xProportion = (xmax - xmin) / xbins;
 
@@ -133,7 +127,7 @@ class HistogramGraph extends Canvas {
         double j = (maxLayout.get() - e) / bins.get();
         double d = lineSize.get();
 
-        double min = stats.values().stream().mapToDouble(f -> f.getMin()).min().orElse(0);
+        double min = stats.values().stream().mapToDouble(LongSummaryStatistics::getMin).min().orElse(0);
 
         for (int i = 1; i <= bins.get(); i++) {
             double x1 = i * j + e;

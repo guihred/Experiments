@@ -1,4 +1,3 @@
-
 package labyrinth;
 
 import java.util.ArrayList;
@@ -6,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -16,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
@@ -47,7 +44,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 
 	private PerspectiveCamera camera;
 
-	private final IntegerProperty ghostCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
+    private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
 
 	private final Color lightColor = Color.rgb(125, 125, 125);
@@ -121,8 +118,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	}
 
 	private MeshView generateGhost(String arquivo, Color animalColor) {
-        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
-		MeshView animal = new MeshView(mesh);
+        MeshView animal = new MeshView(ResourceFXUtils.importStlMesh(arquivo));
 		PhongMaterial sample = new PhongMaterial(animalColor);
 		sample.setSpecularColor(lightColor);
 		sample.setSpecularPower(16);

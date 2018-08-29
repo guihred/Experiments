@@ -21,7 +21,8 @@ public class ArkanoidModel {
 
 	private Circle circle = new Circle(190, 250, 5, Color.RED);
 	private Group group;
-    private int x = 1, y = 2;
+    private int x = 1;
+    private int y = 2;
 
 	public ArkanoidModel(Group group, Scene scene) {
 		this.group = group;

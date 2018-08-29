@@ -1,10 +1,6 @@
 package ml;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,8 +18,8 @@ public class AutoCompleteTextField extends TextField {
     private final SortedSet<String> entries;
     private ObservableList<String> filteredEntries = FXCollections.observableArrayList();
     private ContextMenu entriesPopup;
-    private boolean caseSensitive = false;
-    private boolean popupHidden = false;
+    private boolean caseSensitive;
+    private boolean popupHidden;
     private String textOccurenceStyle = "-fx-font-weight: bold; -fx-fill: red;";
     private int maxEntries = 10;
 

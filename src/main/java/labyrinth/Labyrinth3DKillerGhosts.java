@@ -29,19 +29,18 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 	};
 
 	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
-	private static final int SIZE = 60;
+    private static final int SIZE = 60;
 
 	private PerspectiveCamera camera;
 
 	private final List<LabyrinthWall> cubes = new ArrayList<>();
-	private MovimentacaoAleatoria movimentacao;
 	private void criarLabirinto(Group root) {
 		for (int i = mapa.length - 1; i >= 0; i--) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
 				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
-				rectangle.setTranslateZ(j * SIZE);
-				rectangle.setTranslateX(i * SIZE);
+                rectangle.setTranslateZ(j * (double) SIZE);
+                rectangle.setTranslateX(i * (double) SIZE);
 				if ("_".equals(string)) {
 					rectangle.getRy().setAngle(90);
 				}
@@ -131,7 +130,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 				gerarFantasma(MESH_GHOST, Color.YELLOWGREEN),
 		};
 
-		movimentacao = new MovimentacaoAleatoria(this, fantasmas);
+        MovimentacaoAleatoria movimentacao = new MovimentacaoAleatoria(this, fantasmas);
 		movimentacao.start();
 
 		root.getChildren().addAll(fantasmas);

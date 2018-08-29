@@ -1,10 +1,6 @@
 package javaexercises.graphs;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ConcentricLayout implements Layout {
 
@@ -29,7 +25,7 @@ public class ConcentricLayout implements Layout {
 			}
 		}
 		int size = groups.size();
-		groups.sort(Comparator.comparing((Set<Cell> e) -> e.size()).reversed());
+        groups.sort(Comparator.comparing(Set<Cell>::size).reversed());
 
 		Set<Cell> cells = groups.get(0);
 		int size2 = cells.size();

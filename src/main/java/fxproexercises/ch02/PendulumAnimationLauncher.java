@@ -1,11 +1,7 @@
 package fxproexercises.ch02;
 import static simplebuilder.CommonsFX.newButton;
 
-import javafx.animation.Animation;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -24,11 +20,6 @@ import simplebuilder.SimpleTimelineBuilder;
 public class PendulumAnimationLauncher extends Application {
 
 	private DoubleProperty startXVal = new SimpleDoubleProperty(100.0);
-	private Button startButton;
-	private Button pauseButton;
-	private Button resumeButton;
-	private Button stopButton;
-	private Line line;
 	private Timeline anim = new SimpleTimelineBuilder()
 			.autoReverse(true)
 			.cycleCount(Animation.INDEFINITE)
@@ -43,7 +34,7 @@ public class PendulumAnimationLauncher extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		line = new SimpleLineBuilder()
+        Line line = new SimpleLineBuilder()
 				.startX(0)
 				.startY(50)
 				.endX(200)
@@ -51,10 +42,10 @@ public class PendulumAnimationLauncher extends Application {
 				.stroke(Color.BLUE)
 				.strokeWidth(4)
 				.build();
-		stopButton = newButton("Stop", e -> anim.stop());
-		resumeButton = newButton("Resume", e -> anim.play());
-		pauseButton = newButton("Pause", e -> anim.pause());
-		startButton = newButton("Start", e -> anim.playFromStart());
+        Button stopButton = newButton("Stop", e -> anim.stop());
+        Button resumeButton = newButton("Resume", e -> anim.play());
+        Button pauseButton = newButton("Pause", e -> anim.pause());
+        Button startButton = newButton("Start", e -> anim.playFromStart());
 		HBox hbox = new SimpleHBoxBuilder()
 				.children(startButton, pauseButton, resumeButton, stopButton)
 				.layoutX(60)

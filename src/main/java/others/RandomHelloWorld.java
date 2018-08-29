@@ -10,9 +10,9 @@ public final class RandomHelloWorld {
 
 	public static void main(String[] args) {
         // EQUIVALENT TO HELLO
-        String randomString = randomString(-229985452);
+        String randomString = randomString(-229_985_452);
         // EQUIVALENT TO WORLD
-        String randomString2 = randomString(-147909649);
+        String randomString2 = randomString(-147_909_649);
         HasLogging.log().info("{} {}", randomString, randomString2);
 	}
 

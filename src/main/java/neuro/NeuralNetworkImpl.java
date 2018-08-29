@@ -120,7 +120,7 @@ class NeuralNetworkImpl implements NeuralNetwork {
 
 	@Override
 	public List<Double> getOutput() { 
-		return getOutputLayer().getNeurons().stream().map(o -> o.getOutputValue())
+        return getOutputLayer().getNeurons().stream().map(Neuron::getOutputValue)
 				.collect(Collectors.toList());
 	}
 

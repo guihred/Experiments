@@ -5,11 +5,7 @@
  */
 package gaming.ex19;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.geometry.Bounds;
@@ -76,18 +72,18 @@ public class SudokuModel {
                 Collections.shuffle(numbers);
                 Optional<Integer> fitNumbers = numbers.stream().filter(n -> isNumberFit(n, row, col)).findFirst();
                 getMapAt(i, j).setPermanent(true);
-                if (fitNumbers.isPresent()) {
+                if (!fitNumbers.isPresent()) {
+                    nTries++;
+                    j = -1;
+                    sudokuSquares.stream().filter(e -> e.isInRow(row)).forEach(SudokuSquare::setEmpty);
+                    if (nTries > 100) {
+                        i = -1;
+                        nTries = 0;
+                        sudokuSquares.forEach(SudokuSquare::setEmpty);
+                        break;
+                    }
+                } else {
                     getMapAt(i, j).setNumber(fitNumbers.get());
-                    continue;
-                }
-                nTries++;
-                j = -1;
-                sudokuSquares.stream().filter(e -> e.isInRow(row)).forEach(SudokuSquare::setEmpty);
-                if (nTries > 100) {
-                    i = -1;
-                    nTries = 0;
-                    sudokuSquares.forEach(SudokuSquare::setEmpty);
-                    break;
                 }
 			}
 		}

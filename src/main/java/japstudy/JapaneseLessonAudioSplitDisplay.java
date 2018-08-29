@@ -1,17 +1,11 @@
 package japstudy;
 
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MILLI_OF_SECOND;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
-
 import japstudy.db.HibernateUtil;
 import japstudy.db.JapaneseLesson;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.function.BiConsumer;
 import javafx.application.Application;
@@ -30,7 +24,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -38,15 +31,18 @@ import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public class JapaneseLessonAudioSplitDisplay extends Application implements HasLogging {
+    public static final long NANO_IN_A_MILLI_SECOND = 1_000_000;
     private static final String FFMPEG = "C:\\Users\\guilherme.hmedeiros\\Downloads\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";
-    private static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder().appendValue(HOUR_OF_DAY, 2)
-            .appendLiteral('h').appendValue(MINUTE_OF_HOUR, 2).optionalStart().appendLiteral('m')
-            .appendValue(SECOND_OF_MINUTE, 2).appendLiteral('s').optionalStart().appendValue(MILLI_OF_SECOND, 3)
+    private static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder()
+            .appendValue(ChronoField.HOUR_OF_DAY, 2)
+            .appendLiteral('h').appendValue(ChronoField.MINUTE_OF_HOUR, 2).optionalStart().appendLiteral('m')
+            .appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('s').optionalStart()
+            .appendValue(ChronoField.MILLI_OF_SECOND, 3)
             .appendLiteral("ms").toFormatter();
     private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
-            .appendValue(MINUTE_OF_HOUR, 2).optionalStart().appendLiteral(':')
-            .appendValue(SECOND_OF_MINUTE, 2).optionalStart().appendLiteral('.')
-            .appendValue(MILLI_OF_SECOND, 3)
+            .appendValue(ChronoField.MINUTE_OF_HOUR, 2).optionalStart().appendLiteral(':')
+            .appendValue(ChronoField.SECOND_OF_MINUTE, 2).optionalStart().appendLiteral('.')
+            .appendValue(ChronoField.MILLI_OF_SECOND, 3)
             .toFormatter();
 
     private IntegerProperty current = new SimpleIntegerProperty(1);
@@ -119,7 +115,7 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
         });
         Button stop = new Button("St_op");
         stop.setOnAction(e -> {
-            if (mediaPlayer.get().getStatus() == Status.PLAYING) {
+            if (mediaPlayer.get().getStatus() == MediaPlayer.Status.PLAYING) {
                 mediaPlayer.get().pause();
             }
         });
@@ -129,15 +125,9 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
 		current.set(0);
 
 		primaryStage.centerOnScreen();
-		HBox hBox = new HBox(lesson);
-		Text japaneseText = new Text("Japanese");
-		Text romajiText = new Text("Romaji");
 		Text currentText = new Text();
 		mediaPlayer.addListener((obj, oldM, newO) -> {
 
-			newO.currentTimeProperty().addListener((ob, old, newV) -> {
-
-			});
 			newO.setStartTime(Duration.ZERO);
 
 			StringBinding stringBinding = Bindings.createStringBinding(() -> {
@@ -149,7 +139,7 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
 			currentText.textProperty().bind(stringBinding);
 		});
 		Scene value = new Scene(
-				new VBox(hBox, english, romajiText, romaji, japaneseText, japanese,
+                new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"), japanese,
 						new HBox(new VBox(new Text("Start"), start), currentText, new VBox(new Text("End"), end)),
                         new HBox(previous, splay, stop, split, next, save)));
 		primaryStage.setScene(value);
@@ -177,35 +167,20 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
     
     
     private void splitAudio(String mp3File, String mp4File, LocalTime start, LocalTime end) {
-        try {
-
-            StringBuilder cmd = new StringBuilder();
-            cmd.append(FFMPEG + " -i ");
-            cmd.append(ResourceFXUtils.toFile(mp3File));
-            cmd.append(" -ss ");
-            cmd.append(TIME_OF_SECONDS_FORMAT.format(start));
-            cmd.append(" -r 1 -to ");
-            cmd.append(TIME_OF_SECONDS_FORMAT.format(end));
-            cmd.append(" ");
-            cmd.append(mp4File);
-            // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
-            System.out.println(cmd);
-            Process p = Runtime.getRuntime().exec(cmd.toString());
-            BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                if (line.contains("Success")) {
-                    System.out.println(line);
-                    System.out.println("file " + mp4File + " successfull");
-                }
-            }
-            p.waitFor();
-            in.close();
-        } catch (Exception e) {
-            getLogger().error("", e);
-        }
+        StringBuilder cmd = new StringBuilder();
+        cmd.append(FFMPEG + " -i ");
+        cmd.append(ResourceFXUtils.toFile(mp3File));
+        cmd.append(" -ss ");
+        cmd.append(TIME_OF_SECONDS_FORMAT.format(start));
+        cmd.append(" -r 1 -to ");
+        cmd.append(TIME_OF_SECONDS_FORMAT.format(end));
+        cmd.append(" ");
+        cmd.append(mp4File);
+        // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
+        ResourceFXUtils.executeInConsole(cmd.toString());
 
     }
+
 
     private void saveAndClose(Stage primaryStage) {
         int index = current.get();
@@ -274,16 +249,11 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
 			// sound.get
 			mediaPlayer.get().seek(startDuration);
 			// mediaPlayer.onS
-			if (mediaPlayer.get().getStatus() != Status.PLAYING) {
+            if (mediaPlayer.get().getStatus() != MediaPlayer.Status.PLAYING) {
 				mediaPlayer.get().play();
 			}
 		}
 
-	}
-
-	private Duration convertDuration(LocalTime start) {
-		return Duration
-				.valueOf(toMilli(start) + "ms");
 	}
 
 	private void setStartEnd(JapaneseLesson japaneseLesson) {
@@ -316,7 +286,7 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
 	}
 
 	private LocalTime milliToLocalTime(long offset) {
-		return LocalTime.ofNanoOfDay(offset * 1000000);
+        return LocalTime.ofNanoOfDay(offset * NANO_IN_A_MILLI_SECOND);
 	}
 
 	public static void main(String[] args) {

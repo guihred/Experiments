@@ -1,5 +1,6 @@
 package fxproexercises.ch06;
 
+import java8.exercise.RunnableEx;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -11,8 +12,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import simplebuilder.HasLogging;
 
-final class ResponsiveUIView {
+final class ResponsiveUIView implements HasLogging {
 
 	private HBox buttonHBox;
 	private Button changeFillButton;
@@ -58,21 +60,16 @@ final class ResponsiveUIView {
 
 	public static Runnable tryTo(RunnableEx e) {
 		return () -> {
-
-			try {
-			e.run();
-		} catch (Exception e2) {
-			// IGNORE
-		}
+            try {
+                e.run();
+            } catch (Exception e2) {
+                // IGNORE
+                HasLogging.log().trace("", e2);
+            }
 		};
 	}
 	public Scene getScene() {
 		return scene;
 	}
 
-}
-
-@FunctionalInterface
-interface RunnableEx {
-	void run() throws Exception;
 }

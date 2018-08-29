@@ -18,7 +18,8 @@ import javafx.scene.layout.Region;
  */
 public class TronSquare extends Region {
 
-	private final int i, j;
+    private final int i;
+    private final int j;
 
 	private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
 
@@ -45,10 +46,7 @@ public class TronSquare extends Region {
         if (obj.getClass() != TronSquare.class) {
             return false;
         }
-        if (((TronSquare) obj).getI() == getI() && ((TronSquare) obj).getJ() == getJ()) {
-            return true;
-        }
-        return false;
+        return ((TronSquare) obj).i == i && ((TronSquare) obj).j == j;
 
     }
 

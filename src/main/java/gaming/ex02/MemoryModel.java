@@ -76,8 +76,8 @@ public class MemoryModel {
                 if (nPlayed.get() % 2 == 0) {
 					final List<MemorySquare> collect = Stream.of(map).flatMap(Stream::of)
 							.filter(s -> s.getState() == MemorySquare.State.SHOWN).collect(Collectors.toList());
-					if (collect.stream().map(m -> m.getMemoryImage()).distinct().count() == 1
-							&& collect.stream().map(m -> m.getColor()).distinct().count() == 1) {
+                    if (collect.stream().map(MemorySquare::getMemoryImage).distinct().count() == 1
+                            && collect.stream().map(MemorySquare::getColor).distinct().count() == 1) {
 						collect.forEach((MemorySquare c) -> c.setState(MemorySquare.State.FOUND));
                     } else {
 						collect.forEach((MemorySquare c) -> new Timeline(

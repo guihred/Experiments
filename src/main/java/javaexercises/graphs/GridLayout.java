@@ -35,9 +35,10 @@ public class GridLayout implements Layout {
 				w.putAll(graph.getModel().unweightedUndirected(cell.getCellId()));
 				Arrays.sort(cells, i, size, comparing);
 			}
-			double x = i % sqrt * radius + (i / sqrt % 2 == 0 ? 0 : -radius / 2) + rnd.nextInt(11) - 5;
-			double j = i / sqrt;
-			double k = j * radius;
+            int j = i / sqrt;
+            int f = -radius / 2;
+            double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + rnd.nextInt(11) - 5d;
+            int k = j * radius;
 			double y = k * sqrt2 / 2;
 
 			cell.relocate(x, y);

@@ -81,51 +81,53 @@ class MultiLineGraph extends Canvas implements HasLogging {
                 .mapToDouble(DoubleSummaryStatistics::getMax).max().orElse(0);
         yProportion = max2 / ybins.get();
 
-		stats.forEach((col, yStats) -> {
-            Color p = colors.get(col);
-            if (p == null) {
-                return;
-            }
-			List<Double> entrySet = dataframe.list(col).stream().map(Number.class::cast)
-                    .mapToDouble(Number::doubleValue).sorted().boxed().collect(Collectors.toList());
-			double d = layout.get();
-			double j = (maxLayout - d) / bins.doubleValue();
-			double j2 = (maxLayout - d) / ybins.get();
-            gc.setFill(p);
-            gc.setStroke(p);
-			gc.setLineWidth(0.5);
-			for (int k = 0; k < entrySet.size(); k++) {
-				double i = k / xProportion;
-				double x1 = i * j + d;
-				Double y = entrySet.get(k);
-				double y1 = maxLayout - y / yProportion * j2;
-				// gc.strokeLine(x1, maxLayout, x1, y1)
-                double h = radius.get();
-				gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
-			}
-			for (int k = 0; k < entrySet.size(); k++) {
-				double x = k;
-				double i = x / xProportion;
-				double x1 = i * j + d;
-				double y = entrySet.get(k);
-				double y1 = maxLayout - y / yProportion * j2;
-				if (k < entrySet.size() - 1) {
-					double x2 = 1D + k;
-					double i2 = x2 / xProportion;
-					double x12 = i2 * j + d;
-					double y2 = entrySet.get(k + 1);
-					double y12 = maxLayout - y2 / yProportion * j2;
-					gc.strokeLine(x1, y1, x12, y12);
-
-				}
-			}
-		});
+        stats.forEach((col, yStats) -> drawLines(col));
 		drawAxis();
         Logger logger = getLogger();
         if (logger.isTraceEnabled()) {
             logger.trace(dataframe.toString());
         }
 	}
+
+    private void drawLines(String col) {
+        Color p = colors.get(col);
+        if (p == null) {
+            return;
+        }
+        List<Double> entrySet = dataframe.list(col).stream().map(Number.class::cast)
+                .mapToDouble(Number::doubleValue).sorted().boxed().collect(Collectors.toList());
+        double d = layout.get();
+        double j = (maxLayout - d) / bins.doubleValue();
+        double j2 = (maxLayout - d) / ybins.get();
+        gc.setFill(p);
+        gc.setStroke(p);
+        gc.setLineWidth(0.5);
+        for (int k = 0; k < entrySet.size(); k++) {
+        	double i = k / xProportion;
+        	double x1 = i * j + d;
+        	Double y = entrySet.get(k);
+        	double y1 = maxLayout - y / yProportion * j2;
+        	// gc.strokeLine(x1, maxLayout, x1, y1)
+            double h = radius.get();
+        	gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
+        }
+        for (int k = 0; k < entrySet.size(); k++) {
+        	double x = k;
+        	double i = x / xProportion;
+        	double x1 = i * j + d;
+        	double y = entrySet.get(k);
+        	double y1 = maxLayout - y / yProportion * j2;
+        	if (k < entrySet.size() - 1) {
+        		double x2 = 1D + k;
+        		double i2 = x2 / xProportion;
+        		double x12 = i2 * j + d;
+        		double y2 = entrySet.get(k + 1);
+        		double y12 = maxLayout - y2 / yProportion * j2;
+        		gc.strokeLine(x1, y1, x12, y12);
+
+        	}
+        }
+    }
 
 	public void drawAxis() {
 

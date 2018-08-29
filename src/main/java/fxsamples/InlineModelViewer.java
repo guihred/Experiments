@@ -6,11 +6,7 @@ import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -27,15 +23,14 @@ import simplebuilder.ResourceFXUtils;
 
 public class InlineModelViewer extends Application {
 
-	private static final int VIEWPORT_SIZE = 800;
+    private static final double VIEWPORT_SIZE = 800;
 
 	private static final double MODEL_SCALE_FACTOR = 40;
 	private static final double MODEL_X_OFFSET = 0;
 	private static final double MODEL_Y_OFFSET = 0;
-	private static final double MODEL_Z_OFFSET = (double) VIEWPORT_SIZE / 2;
+	private static final double MODEL_Z_OFFSET = VIEWPORT_SIZE / 2;
 
 
-	private Image texture;
 	private PhongMaterial texturedMaterial = new PhongMaterial();
 
 	private MeshView meshView = loadMeshView();
@@ -66,7 +61,7 @@ public class InlineModelViewer extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		texture = new Image(ResourceFXUtils.toExternalForm("wall.jpg"));
+        Image texture = new Image(ResourceFXUtils.toExternalForm("wall.jpg"));
 		texturedMaterial.setDiffuseMap(texture);
 
 		Group group = buildScene();

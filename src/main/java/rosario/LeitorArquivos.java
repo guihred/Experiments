@@ -33,7 +33,8 @@ import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public final class LeitorArquivos {
-	private static final String CODPRODUTO = "codproduto";
+	private static final String QTESTOQUECOMERCIAL = "qtestoquecomercial";
+    private static final String CODPRODUTO = "codproduto";
     private static final Logger LOGGER = LoggerFactory.getLogger(LeitorArquivos.class);
 
 	private LeitorArquivos() {
@@ -55,7 +56,7 @@ public final class LeitorArquivos {
 
 		try (RandomAccessFile source = new RandomAccessFile(file, "r");
 				COSDocument cosDoc = parseAndGet(source);
-				PDDocument pdDoc = new PDDocument(cosDoc);) {
+                PDDocument pdDoc = new PDDocument(cosDoc)) {
 			pdfStripper.setStartPage(1);
 			String parsedText = pdfStripper.getText(pdDoc);
 			cosDoc.close();
@@ -68,7 +69,8 @@ public final class LeitorArquivos {
 			}
 			return listaMedicamentos;
 		} catch (Exception e) {
-			throw e;
+            LOGGER.error("", e);
+            throw e;
 		}
 
 	}
@@ -158,7 +160,7 @@ public final class LeitorArquivos {
 
     public static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) {
 		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-				Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream);) {
+                Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream)) {
 			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
 			Iterator<Row> iterator = sheetAt.iterator();
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
@@ -193,7 +195,7 @@ public final class LeitorArquivos {
 		PDFTextStripper pdfStripper = new PDFTextStripper();
 		try (RandomAccessFile source = new RandomAccessFile(file, "r");
 				COSDocument cosDoc = parseAndGet(source);
-				PDDocument pdDoc = new PDDocument(cosDoc);) {
+                PDDocument pdDoc = new PDDocument(cosDoc)) {
 			pdfStripper.setStartPage(1);
 			String parsedText = pdfStripper.getText(pdDoc);
 			String[] linhas = parsedText.split("\r\n");
@@ -226,14 +228,14 @@ public final class LeitorArquivos {
 			String s = linhas[i];
 			String[] split = s.trim().split("\\s+");
 			if (split.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains(CODPRODUTO)
-					|| s.toLowerCase().contains("qtestoquecomercial"))) {
+					|| s.toLowerCase().contains(QTESTOQUECOMERCIAL))) {
 				if (split[1].equalsIgnoreCase(CODPRODUTO)) {
 					mapaCampos.put(CODPRODUTO, j -> j - 2);
 				}
 				if (split[0].equalsIgnoreCase(CODPRODUTO)) {
 					mapaCampos.put(CODPRODUTO, j -> 0);
 				}
-				mapaCampos.put("qtestoquecomercial", j -> j - 1);
+				mapaCampos.put(QTESTOQUECOMERCIAL, j -> j - 1);
 			}
 			if (!s.endsWith(",00")) {
 				return null;
@@ -251,7 +253,7 @@ public final class LeitorArquivos {
 						.mapToObj(e -> split[e])
 								.collect(Collectors.joining(" ")));
 				medicamento.setQuantidade(
-						Integer.valueOf(split[mapaCampos.getOrDefault("qtestoquecomercial", j -> j - 1)
+						Integer.valueOf(split[mapaCampos.getOrDefault(QTESTOQUECOMERCIAL, j -> j - 1)
 								.applyAsInt(split.length)].replace(",00", "").replace(".", "")));
 				return medicamento;
 			}
@@ -273,7 +275,7 @@ public final class LeitorArquivos {
 		}
 
 		try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-				Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream);) {
+                Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream)) {
 			Sheet sheetAt = xssfWorkbook.getSheetAt(0);
 			Iterator<Row> iterator = sheetAt.iterator();
 			ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
@@ -287,7 +289,8 @@ public final class LeitorArquivos {
 			return medicamentos;
 
 		} catch (Exception e) {
-			throw e;
+            LOGGER.error("", e);
+            throw e;
 		}
 	}
 
@@ -324,11 +327,11 @@ public final class LeitorArquivos {
 			if (cell0 == null) {
 				return false;
 			}
-			Medicamento medicamento = new Medicamento();
 			String registro = getRegistro(cell0);
 			if (registro.isEmpty()) {
 				return true;
 			}
+            Medicamento medicamento = new Medicamento();
 			medicamento.setCodigo(Integer.valueOf(registro));
 			String stringCellValue = next.getCell(1).getStringCellValue();
             if ("Totais".equalsIgnoreCase(stringCellValue)) {
@@ -381,7 +384,7 @@ public final class LeitorArquivos {
 		criarAba(medicamentosAnvisa, wb, sheet);
 
 		File file2 = new File("resultado.xlsx");
-		try (OutputStream file = new FileOutputStream(file2);) {
+        try (OutputStream file = new FileOutputStream(file2)) {
 			wb.write(file);
 			Desktop.getDesktop().open(file2);
 		} catch (Exception e) {
@@ -466,7 +469,7 @@ public final class LeitorArquivos {
 		ObservableList<String> list = FXCollections.observableArrayList();
 		Platform.runLater(() -> {
 			try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-					Workbook workbook = getWorkbook(selectedFile, fileInputStream);) {
+                    Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
 				int numberOfSheets = workbook.getNumberOfSheets();
 				for (int i = 0; i < numberOfSheets; i++) {
 					list.add(workbook.getSheetAt(i).getSheetName());
@@ -483,7 +486,7 @@ public final class LeitorArquivos {
 		ObservableList<List<String>> list = FXCollections.observableArrayList();
 		Platform.runLater(() -> {
 			try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-					Workbook workbook = getWorkbook(selectedFile, fileInputStream);) {
+                    Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
 				Sheet sheetAt = sheetName == null ? workbook.getSheetAt(0) : workbook.getSheet(sheetName);
 				for (Row row : sheetAt) {
 					List<String> arrayList = new ArrayList<>();

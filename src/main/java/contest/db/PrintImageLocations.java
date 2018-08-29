@@ -26,7 +26,7 @@ import simplebuilder.HasLogging;
  * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
-    private int num = 0;
+    private int num;
     private List<PDFImage> images = new ArrayList<>();
     private int pageNumber;
 

@@ -22,7 +22,9 @@ enum PrimaryColor {
     MAGENTA(255, 0, 255),
     YELLOW(255, 255, 0),
     WHITE(255, 255, 255);
-    private int red, green, blue;
+    private int red;
+    private int green;
+    private int blue;
 
     private PrimaryColor(int red, int green, int blue) {
         this.red = red;

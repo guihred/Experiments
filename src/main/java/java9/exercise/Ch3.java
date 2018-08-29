@@ -4,11 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Stream;
@@ -29,7 +25,7 @@ public class Ch3 {
 	}
 
 	public static class Employee implements Measurable {
-		private static int i = 0;
+        private static int i;
         private static final List<String> NAMES = Arrays.asList("Michael", "Charlie", "Jonas", "Margareth", "Juliet",
                 "Frank",
 				"Harry");
@@ -118,7 +114,7 @@ public class Ch3 {
 
 		public static IntSequence of(int... seq) {
 			return new IntSequence() {
-				private int i = 0;
+                private int i;
 
 				@Override
 				public int next() {
@@ -155,7 +151,7 @@ public class Ch3 {
 		@SafeVarargs
 		public static <T> Sequence<T> of(T... seq) {
 			return new Sequence<T>() {
-				private int i = 0;
+                private int i;
 
 				@Override
 				public T next() {

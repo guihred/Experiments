@@ -27,7 +27,8 @@ public class MazeModel {
 	public static final int MAZE_SIZE = 24;
 
 	private MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
-	private int x, y;
+    private int x;
+    private int y;
 	private Circle circle;
 	public MazeModel(GridPane gridPane, Scene scene) {
 		initializeMaze(gridPane);

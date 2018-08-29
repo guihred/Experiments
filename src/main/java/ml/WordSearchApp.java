@@ -39,7 +39,7 @@ public class WordSearchApp extends Application {
         Scene theScene = new Scene(root, 800, 600);
         theStage.setScene(theScene);
 
-        ObservableMap<String, Set<String>> observableMap = FXCollections.observableMap(createMap());
+        ObservableMap<String, Set<String>> wordMap = FXCollections.observableMap(createMap());
 
         ListView<String> listView = new ListView<>();
 
@@ -52,48 +52,50 @@ public class WordSearchApp extends Application {
         root.getChildren().add(filters);
         Button button = new Button("Add");
         root.getChildren().add(button);
-        button.setOnAction(a -> {
-            Set<String> collect = observableMap.values().stream().flatMap(Set<String>::stream)
-                    .collect(Collectors.toSet());
-            collect.add(null);
-            ObservableList<String> values = FXCollections.observableArrayList(collect);
-            FilteredList<String> filtered = values.sorted().filtered(e -> true);
-            ComboBox<String> category = new SimpleComboBoxBuilder<String>()
-                    .items(observableMap.keySet())
-                    .onChange((old, nVal) -> {
-                        filtersMap.remove(old);
-                        filtered.setPredicate(e -> {
-                            Set<String> set = observableMap.get(nVal);
-                            return e == null || set != null && set.contains(e);
-                        });
-                    }).nullOption("Categoria").build();
-
-
-            ComboBox<String> val = new SimpleComboBoxBuilder<String>().items(filtered).onSelect(s -> {
-                String selectedItem = category.selectionModelProperty().get().getSelectedItem();
-                if (s == null) {
-                    filtersMap.remove(selectedItem);
-                    return;
-                }
-                filtersMap.put(selectedItem, s);
-
-                lines.setPredicate(e -> {
-                    Set<Entry<String, String>> entrySet = filtersMap.entrySet();
-                    for (Entry<String, String> entry : entrySet) {
-                        String s2 = entry.getKey() + "=" + entry.getValue();
-                        if (!e.contains(s2 + ",") && !e.contains(s2 + "]")) {
-                            return false;
-                        }
-                    }
-                    return true;
-                });
-            }).build();
-
-            filters.getChildren().add(new HBox(category, val));
-        });
+        button.setOnAction(a -> search(wordMap, filters, lines));
 
         theStage.show();
 
+    }
+
+    private void search(ObservableMap<String, Set<String>> observableMap, VBox filters, FilteredList<String> lines) {
+        Set<String> collect = observableMap.values().stream().flatMap(Set<String>::stream)
+                .collect(Collectors.toSet());
+        collect.add(null);
+        ObservableList<String> values = FXCollections.observableArrayList(collect);
+        FilteredList<String> filtered = values.sorted().filtered(e -> true);
+        ComboBox<String> category = new SimpleComboBoxBuilder<String>()
+                .items(observableMap.keySet())
+                .onChange((old, nVal) -> {
+                    filtersMap.remove(old);
+                    filtered.setPredicate(e -> {
+                        Set<String> set = observableMap.get(nVal);
+                        return e == null || set != null && set.contains(e);
+                    });
+                }).nullOption("Categoria").build();
+
+
+        ComboBox<String> val = new SimpleComboBoxBuilder<String>().items(filtered).onSelect(s -> {
+            String selectedItem = category.selectionModelProperty().get().getSelectedItem();
+            if (s == null) {
+                filtersMap.remove(selectedItem);
+                return;
+            }
+            filtersMap.put(selectedItem, s);
+
+            lines.setPredicate(e -> {
+                Set<Entry<String, String>> entrySet = filtersMap.entrySet();
+                for (Entry<String, String> entry : entrySet) {
+                    String s2 = entry.getKey() + "=" + entry.getValue();
+                    if (!e.contains(s2 + ",") && !e.contains(s2 + "]")) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }).build();
+
+        filters.getChildren().add(new HBox(category, val));
     }
 
     public static void main(String[] args) {

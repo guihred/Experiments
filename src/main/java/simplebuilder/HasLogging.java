@@ -9,17 +9,14 @@ public interface HasLogging {
 		return LoggerFactory.getLogger(getClass());
 	}
 
-    default void logln(Object x) {
-        System.out.println(x);
-    }
-
     public static Logger log(Class<?> cls) {
         return LoggerFactory.getLogger(cls);
     }
 
-    default void printf(String s, Object... objects) {
+    default String printf(String s, Object... objects) {
         String format = String.format(s, objects);
         getLogger().info(format);
+        return format;
     }
 
     public static Logger log() {

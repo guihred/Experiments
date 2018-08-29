@@ -67,7 +67,8 @@ public class TronModel {
 
     public final boolean updateMap() {
         final TronSquare head = getSnake().get(0);
-        int i = head.getI(), j = head.getJ();
+        int i = head.getI();
+        int j = head.getJ();
         switch (getDirection()) {
             case LEFT:
                 i = (i - 1 + MAP_SIZE) % MAP_SIZE;

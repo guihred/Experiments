@@ -29,7 +29,8 @@ public class Maze3DModel {
 	private Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
 	private final Random random = new Random();
 	private List<Maze3DSquare> history = new ArrayList<>();
-	private int row, column;
+    private int row;
+    private int column;
 
 	public Maze3DModel(GridPane gridPane) {
 		initializeMaze(gridPane);

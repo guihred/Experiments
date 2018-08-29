@@ -82,7 +82,7 @@ public final class Chapter1 {
 
 		Arrays.asList(directory.listFiles(File::isDirectory)).forEach(
                 s -> LOGGER.trace("{}", s));
-        Arrays.asList(directory.listFiles((File pathname) -> pathname.isDirectory()))
+        Arrays.asList(directory.listFiles(File::isDirectory))
                 .forEach(s -> LOGGER.trace("{}", s));
 
 	}

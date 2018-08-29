@@ -6,6 +6,7 @@ import static simplebuilder.ResourceFXUtils.toFullPath;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -79,7 +80,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 
 	Sphere checkBalls(Bounds boundsInParent) {
 		return Stream.of(balls).flatMap(Stream::of)
-				.filter(b -> b != null)
+                .filter(Objects::nonNull)
 				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
 				.findFirst().orElse(null);
 	}

@@ -39,49 +39,9 @@ public class MapGraph extends Application {
         imageView.setMaxWidth(96);
         imageView.setMaxHeight(72);
         CommonsFX.setZoomable(flowPane, true);
-        List<SVGPath> countries = Stream.of(Country.values()).map(country -> {
-            SVGPath svgPath = new SVGPath();
-            svgPath.setContent(country.getPath());
-            Text text = new Text();
-            text.setVisible(false);
-            text.setText(country.getCountryName());
-            Color initialColor = country.getContinent() != null ? country.getContinent().getColor() : Color.BLACK;
-            svgPath.setFill(initialColor);
-            Color gray = Color.GRAY;
-            svgPath.setStroke(gray);
-            EventHandler<MouseEvent> value = ev -> {
-                svgPath.setFill(Color.PURPLE);
-                svgPath.setStroke(Color.RED);
-                text.setVisible(true);
-                svgPath.toFront();
-                updateLayout(country, text);
-                texts.forEach(Node::toFront);
-                imageView.setLayoutX(country.getCenterX());
-                imageView.setLayoutY(country.getCenterY());
-                imageView.toFront();
-                currentCountry.set(country);
-            };
-            svgPath.setOnMouseEntered(value);
-            text.setOnMouseEntered(value);
-
-            EventHandler<? super MouseEvent> value2 = o -> {
-                if (!imageView.isVisible()) {
-                    return;
-                }
-                svgPath.setFill(initialColor);
-                svgPath.setStroke(gray);
-                text.setVisible(false);
-                if (!svgPath.contains(o.getX(), o.getY())) {
-                    currentCountry.set(null);
-                }
-            };
-            svgPath.setOnMouseExited(value2);
-            text.setOnMouseExited(value2);
-            updateLayout(country, text);
-
-            texts.add(text);
-            return svgPath;
-        }).collect(Collectors.toList());
+        List<SVGPath> countries = Stream.of(Country.values())
+                .map(country -> mapCountryToPath(texts, imageView, country))
+                .collect(Collectors.toList());
         // Creating a Group object
         root.getChildren().addAll(imageView);
         root.getChildren().addAll(countries);
@@ -99,6 +59,50 @@ public class MapGraph extends Application {
         imageView.setZoom(0.15);
         stage.setTitle("Drawing the world");
         stage.show();
+    }
+
+    private SVGPath mapCountryToPath(List<Text> texts, WebView imageView, Country country) {
+        SVGPath svgPath = new SVGPath();
+        svgPath.setContent(country.getPath());
+        Text text = new Text();
+        text.setVisible(false);
+        text.setText(country.getCountryName());
+        Color initialColor = country.getContinent() != null ? country.getContinent().getColor() : Color.BLACK;
+        svgPath.setFill(initialColor);
+        Color gray = Color.GRAY;
+        svgPath.setStroke(gray);
+        EventHandler<MouseEvent> value = ev -> {
+            svgPath.setFill(Color.PURPLE);
+            svgPath.setStroke(Color.RED);
+            text.setVisible(true);
+            svgPath.toFront();
+            updateLayout(country, text);
+            texts.forEach(Node::toFront);
+            imageView.setLayoutX(country.getCenterX());
+            imageView.setLayoutY(country.getCenterY());
+            imageView.toFront();
+            currentCountry.set(country);
+        };
+        svgPath.setOnMouseEntered(value);
+        text.setOnMouseEntered(value);
+
+        EventHandler<? super MouseEvent> value2 = o -> {
+            if (!imageView.isVisible()) {
+                return;
+            }
+            svgPath.setFill(initialColor);
+            svgPath.setStroke(gray);
+            text.setVisible(false);
+            if (!svgPath.contains(o.getX(), o.getY())) {
+                currentCountry.set(null);
+            }
+        };
+        svgPath.setOnMouseExited(value2);
+        text.setOnMouseExited(value2);
+        updateLayout(country, text);
+
+        texts.add(text);
+        return svgPath;
     }
 
     private void updateLayout(Country country, Text text) {

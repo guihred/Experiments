@@ -165,7 +165,7 @@ public class PacmanModel implements HasLogging {
 				maze[i][j].dijkstra(maze);
 			}
 		}
-        MazeSquare.paths.forEach(
+        MazeSquare.getPaths().forEach(
                 (from, map) -> map.forEach((to, by) -> getLogger().trace("from {} to {} by {}", from, to, by)));
 
 		return maze;
