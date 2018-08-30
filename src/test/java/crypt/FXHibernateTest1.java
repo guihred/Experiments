@@ -8,7 +8,7 @@ import japstudy.db.HibernateUtil;
 import org.junit.Test;
 import simplebuilder.HasLogging;
 
-public final class FXHibernateTest implements HasLogging {
+public final class FXHibernateTest1 implements HasLogging {
     @Test
     public void test() throws Throwable {
         HibernateUtil.getSessionFactory();

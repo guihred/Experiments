@@ -99,7 +99,6 @@ public class VigenereCCipher implements HasLogging {
 				bestFit = fit;
                 LOGGER.info("{} <--- best so far", bestFit);
 			}
-			LOGGER.info("\n");
 		}
 
 		return 0;

@@ -174,7 +174,8 @@ public class ContestApplication extends Application implements HasLogging {
                 super.setGraphic(null);
             } else {
                 super.setGraphic(new VBox(
-                        Stream.of(item.split(";")).map(i -> new ImageView("file:" + i)).toArray(ImageView[]::new)));
+                        Stream.of(item.split(";")).map(i -> new ImageView(ResourceFXUtils.toExternalForm("out/" + i)))
+                                .toArray(ImageView[]::new)));
             }
         }
     }

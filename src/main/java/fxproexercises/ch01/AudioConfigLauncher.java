@@ -48,21 +48,23 @@ public class AudioConfigLauncher extends Application {
         Slider slider = new SimpleSliderBuilder().layoutX(135).layoutY(135).prefWidth(162)
                 .min(AudioConfigModel.MIN_DECIBELS)
 				.max(AudioConfigModel.MAX_DECIBELS).build();
-        final Text genreText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
+        Text genreText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SanSerif", FontWeight.BOLD, 18)).text("Genre").build();
-		final Line line3 = new SimpleLineBuilder().startX(9).startY(141).endX(309).endY(141).stroke(Color.color(0.66, 0.67, 0.69)).build();
-        final Text mutingText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
+        Line line3 = new SimpleLineBuilder().startX(9).startY(141).endX(309).endY(141)
+                .stroke(Color.color(0.66, 0.67, 0.69)).build();
+        Text mutingText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SanSerif", FontWeight.BOLD, 18)).text("Muting").build();
-		final Line line2 = new SimpleLineBuilder().startX(9).startY(97).endX(309).endY(97).stroke(Color.color(0.66, 0.67, 0.69)).build();
-		final Rectangle whiteRectangle = new SimpleRectangleBuilder().x(9).y(54).width(300).height(130).arcHeight(20)
+        Line line2 = new SimpleLineBuilder().startX(9).startY(97).endX(309).endY(97)
+                .stroke(Color.color(0.66, 0.67, 0.69)).build();
+        Rectangle whiteRectangle = new SimpleRectangleBuilder().x(9).y(54).width(300).height(130).arcHeight(20)
 				.arcWidth(20).fill(Color.WHITE).stroke(Color.color(0.66, 0.67, 0.69)).build();
-		final Text audioConfigText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.WHITE)
+        Text audioConfigText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.WHITE)
 				.font(Font.font("SansSerif", FontWeight.BOLD, 20)).text("Audio Configuration").build();
-		final LinearGradient linearGradient = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+        LinearGradient linearGradient = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
 				new Stop(0, Color.web("0xAEBBCC")), new Stop(1, Color.web("0x6D84A3")));
-		final Rectangle whitishRectangle = new Rectangle(320, 300, Color.rgb(199, 206, 213));
+        Rectangle whitishRectangle = new Rectangle(320, 300, Color.rgb(199, 206, 213));
 		whitishRectangle.setY(43);
-		final Rectangle gradientRectangle = new Rectangle(320, 45, linearGradient);
+        Rectangle gradientRectangle = new Rectangle(320, 45, linearGradient);
 
 		Scene scene = new Scene(new Group(gradientRectangle, audioConfigText, whitishRectangle, whiteRectangle, textDb,
 				slider, line2, mutingText, mutingCheckBox, line3, genreText, genreChoiceBox));

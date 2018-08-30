@@ -54,7 +54,12 @@ public final class FXTesting implements HasLogging {
                 size = testedApps.size();
             }
             if (System.currentTimeMillis() - currentTimeMillis > 2 * 60 * 1000) {//2 minutes
-                Assert.fail("Test is taking too long");
+                List<Class<? extends Application>> notExecutedApps = applicationClasses.stream()
+                        .collect(Collectors.toList());
+                notExecutedApps.removeAll(testedApps);
+                String notExecuted = notExecutedApps.stream().map(e -> e.getSimpleName())
+                        .collect(Collectors.joining(",", "(", ")"));
+                Assert.fail("Test is taking too long, not executed " + notExecuted);
                 break;
             }
         }

@@ -92,7 +92,7 @@ public class HiraganaMaker {
             }
         }
         if (c.length() != 0) {
-            LOG.info("NOT JAPANESE----{}", romaji);
+            LOG.trace("NOT JAPANESE----{}", romaji);
         }
 
         return result.toString();
@@ -113,7 +113,7 @@ public class HiraganaMaker {
 
                 String replaceAll = split[2].replaceAll("\\([^\n]*\\)", "");
                 String convertHiragana = convertHiragana(replaceAll);
-                LOG.info("{}={}={}", replaceAll, convertHiragana, split[1]);
+                LOG.trace("{}={}={}", replaceAll, convertHiragana, split[1]);
 
             });
         } catch (Exception e) {
