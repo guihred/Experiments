@@ -1,16 +1,10 @@
 package ml;
 
-import static ml.DataframeUtils.readCSV;
-
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.chart.XYChart.Data;
-import javafx.scene.chart.XYChart.Series;
 import simplebuilder.HasLogging;
 
 public class DataframeML implements HasLogging {
@@ -30,7 +24,7 @@ public class DataframeML implements HasLogging {
     }
 
     public DataframeML(String csvFile) {
-        readCSV(this, csvFile);
+        DataframeUtils.readCSV(this, csvFile);
     }
 
     public void apply(String header, DoubleUnaryOperator mapper) {
@@ -67,20 +61,6 @@ public class DataframeML implements HasLogging {
         IntStream.range(0, size).filter(i -> list.get(i) != null && list2.get(i) != null).forEach(
                 (int i) -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
         return data;
-    }
-
-    @SuppressWarnings("unchecked")
-    public ObservableList<Series<Number, Number>> createNumberSeries(String feature, String target) {
-        Series<Number, Number> series = new Series<>();
-        series.setName(feature + " X " + target);
-
-        List<Object> list = dataframe.get(feature);
-        List<Object> list2 = dataframe.get(target);
-        ObservableList<Data<Number, Number>> data = FXCollections.observableArrayList();
-        IntStream.range(0, size).filter(i -> list.get(i) != null && list2.get(i) != null)
-                .forEach((int i) -> data.add(new Data<>((Number) list.get(i), (Number) list2.get(i))));
-        series.setData(data);
-        return FXCollections.observableArrayList(series);
     }
 
     public List<Double> crossFeature(String header, ToDoubleFunction<double[]> mapper, String... dependent) {

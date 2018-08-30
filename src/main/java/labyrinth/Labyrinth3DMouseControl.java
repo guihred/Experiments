@@ -1,15 +1,11 @@
 package labyrinth;
 
-import static simplebuilder.ResourceFXUtils.toExternalForm;
-import static simplebuilder.ResourceFXUtils.toURL;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -21,7 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
@@ -54,19 +49,19 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 			{ "_", "_", "_", "_", "_", "_" },
 	};
 
-	private static final URL MESH_GHOST = toURL("ghost2.STL");
+    private static final URL MESH_GHOST = ResourceFXUtils.toURL("ghost2.STL");
 
 
 	private static final int SIZE = 60;
 
-	private static final Image WALL_IMAGE = new Image(toExternalForm("wall.jpg"));
-	private static final Image WALL_IMAGE2 = new Image(toExternalForm("wall2.jpg"));
+    private static final Image WALL_IMAGE = new Image(ResourceFXUtils.toExternalForm("wall.jpg"));
+    private static final Image WALL_IMAGE2 = new Image(ResourceFXUtils.toExternalForm("wall2.jpg"));
 
 	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 
 	private PerspectiveCamera camera;
 
-	private final IntegerProperty ghostCount = new SimpleIntegerProperty(
+    private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(
 			mapa.length * mapa[0].length);
 
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
@@ -140,8 +135,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	}
 
 	private MeshView generateGhost(URL arquivo, Color enemyColor) {
-        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
-		MeshView enemy = new MeshView(mesh);
+        MeshView enemy = new MeshView(ResourceFXUtils.importStlMesh(arquivo));
 		PhongMaterial sample = new PhongMaterial(enemyColor);
 		sample.setSpecularColor(LIGHT_COLOR);
 		enemy.setDrawMode(DrawMode.FILL);

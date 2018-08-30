@@ -8,7 +8,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
@@ -23,6 +22,7 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import simplebuilder.HasLogging;
 import simplebuilder.SimpleRectangleBuilder;
+import simplebuilder.SimpleTableViewBuilder;
 
 /**
  *
@@ -201,27 +201,14 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return tabPane;
 	}
 
-    @SuppressWarnings("unchecked")
     private Node createTableDemoNode() {
-		final TableColumn<Person, String> firstNameColumn = new TableColumn<>("First Name");
-		firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-		firstNameColumn.setPrefWidth(180);
-
-		final TableColumn<Person, String> lastNameColumn = new TableColumn<>("Last Name");
-		lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-		lastNameColumn.setPrefWidth(180);
-
-		final TableColumn<Person, String> phoneNumberColumn = new TableColumn<>("Phone Number");
-		phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-		phoneNumberColumn.setPrefWidth(150);
-
-		TableView<Person> table = new TableView<>(TableVisualizationModel.getTeamMembers());
-        table.getColumns().addAll(firstNameColumn, lastNameColumn, phoneNumberColumn);
-		table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			Person selectedPerson = newValue;
-            getLogger().info("{} chosen in TableView", selectedPerson);
-		});
-		return table;
+        return new SimpleTableViewBuilder<Person>()
+                .items(TableVisualizationModel.getTeamMembers())
+                .addColumn("First Name", "firstName")
+                .addColumn("Last Name", "lastName")
+                .addColumn("Phone Number", "phone")
+                .onSelect((old,newValue)->getLogger().info("{} chosen in TableView", newValue))
+                .build();
 	}
 
     private Node createAccordionTitledDemoNode() {
