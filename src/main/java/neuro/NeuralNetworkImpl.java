@@ -103,9 +103,9 @@ class NeuralNetworkImpl implements NeuralNetwork {
 		int i=0;
 		for (Neuron someNeuron : getInputLayer().getNeurons()) {
 			if (i < getInputLayer().getNeurons().size()) {
-				someNeuron = getInputLayer().getNeurons().get(i);
+                //                someNeuron = getInputLayer().getNeurons().get(i);
 				Double inputValue = inputs.get(i);
-				someNeuron.setOutputValue(inputValue);
+                someNeuron.setOutputValue(inputValue);
 			}
 		}
 //		'Step1: Find the output of each hidden neuron layer

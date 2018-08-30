@@ -1,6 +1,7 @@
 package ml;
 
 import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -160,7 +161,7 @@ public class DataframeUtils extends DataframeML {
     }
 
     public static void readCSV(DataframeML dataframe, String csvFile) {
-        try (Scanner scanner = new Scanner(ResourceFXUtils.toFile(csvFile));) {
+        try (Scanner scanner = new Scanner(ResourceFXUtils.toFile(csvFile), StandardCharsets.UTF_8.displayName())) {
             List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
                     .collect(Collectors.toList());
             for (String column : header) {

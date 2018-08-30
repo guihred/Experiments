@@ -1,4 +1,4 @@
-package java8.exercise;
+package exercise.java8;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,12 +6,12 @@ import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class Chapter3 {
+    private static final Logger LOGGER = HasLogging.log(Chapter3.class);
 
-    private static final Logger LOGGER = HasLogging.log();
-	private Chapter3() {
+    private Chapter3() {
 	}
 
-	private static Integer getRich(List<Integer> l, int low, int high) {
+    public static Integer getRich(List<Integer> l, int low, int high) {
         LOGGER.info("{},{}", low, high);
 		if (low + 1 == high) {
 			int i = l.get(high) - l.get(low);

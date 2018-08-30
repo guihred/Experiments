@@ -1,11 +1,10 @@
 package crypt;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import simplebuilder.HasLogging;
 
 public class VigenereCCipher implements HasLogging {
-	private static final Logger LOGGER = LoggerFactory.getLogger(VigenereCCipher.class);
+    private static final Logger LOGGER = HasLogging.log(VigenereCCipher.class);
 	private static final int NUMBER_OF_LETTERS = 26;
 	private static final String ENCODED = "MOMUD EKAPV TQEFM OEVHP AJMII CDCTI FGYAG JSPXY ALUYM NSMYH"
 			+ "VUXJE LEPXJ FXGCM JHKDZ RYICU HYPUS PGIGM OIYHF WHTCQ KMLRD" + "ITLXZ LJFVQ GHOLW CUHLO MDSOE KTALU VYLNZ RFGBX PHVGA LWQIS"
@@ -98,7 +97,7 @@ public class VigenereCCipher implements HasLogging {
             getLogger().trace("{}, key length: {}, {}", fit, j, key);
 			if (fit < bestFit) {
 				bestFit = fit;
-				LOGGER.info(" <--- best so far");
+                LOGGER.info("{} <--- best so far", bestFit);
 			}
 			LOGGER.info("\n");
 		}
@@ -106,8 +105,5 @@ public class VigenereCCipher implements HasLogging {
 		return 0;
 	}
 
-	public static void main(String[] args) {
-		new VigenereCCipher().inicio();
-	}
 
 }

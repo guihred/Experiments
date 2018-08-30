@@ -40,10 +40,7 @@ public class TronSquare extends Region {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj.getClass() != TronSquare.class) {
+        if (obj == null || !getClass().isInstance(obj)) {
             return false;
         }
         return ((TronSquare) obj).i == i && ((TronSquare) obj).j == j;

@@ -43,6 +43,11 @@ public class ContestQuestionAnswer extends BaseEntity {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(number);
+    }
+
+    @Override
     public Integer getKey() {
         return key;
     }

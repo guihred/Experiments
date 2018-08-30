@@ -18,7 +18,7 @@ public enum SolitaireNumber {
 	private final int number;
 	private final String representation;
 
-	private SolitaireNumber(int number,String representation){
+    SolitaireNumber(int number, String representation) {
 		this.number = number;
 		this.representation = representation;
 		

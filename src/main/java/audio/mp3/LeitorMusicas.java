@@ -1,4 +1,4 @@
-package mp3Audio;
+package audio.mp3;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

@@ -34,7 +34,7 @@ public enum TetrisPiece {
     });
 	private final int[][] map;
 
-    private TetrisPiece(int[][] map) {
+    TetrisPiece(int[][] map) {
         this.map = map;
     }
 

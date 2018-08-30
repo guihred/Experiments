@@ -38,7 +38,7 @@ class ShapePair {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof ShapePair)) {
+        if (other == null || !getClass().isInstance(other)) {
 			return false;
 		}
 		ShapePair o = (ShapePair) other;

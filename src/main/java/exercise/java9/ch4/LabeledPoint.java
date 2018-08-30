@@ -1,4 +1,4 @@
-package java9.exercise.ch4;
+package exercise.java9.ch4;
 
 import java.util.Objects;
 
@@ -15,7 +15,7 @@ import java.util.Objects;
  * preceding exercise.
  */
 
-class LabeledPoint extends Point {
+public class LabeledPoint extends Point {
 
     private String label;
 

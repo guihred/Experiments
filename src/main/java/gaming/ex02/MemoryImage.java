@@ -32,7 +32,7 @@ public enum MemoryImage {
     TRIANGULO(() -> new Polygon(0, 0, 20, 0, 10, -Math.sqrt(300)));
 	private transient Supplier<Shape> shape;
 
-    private MemoryImage(Supplier<Shape> shape) {
+    MemoryImage(Supplier<Shape> shape) {
         this.shape = shape;
     }
 

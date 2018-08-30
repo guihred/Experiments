@@ -1,4 +1,4 @@
-package java9.exercise;
+package exercise.java9;
 
 import static java.lang.Math.abs;
 import static java.util.stream.Collectors.toList;

@@ -78,7 +78,7 @@ public class QuickSortML {
 		onSwap.consume(i, j);
 	}
 
-	public static void main(String a[]) {
+    public static void main(String[] a) {
 
 		List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
 

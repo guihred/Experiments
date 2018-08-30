@@ -92,8 +92,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		mediaPlayer.addListener((obj, oldM, newO) -> {
 
 			newO.currentTimeProperty().addListener((ob, old, newV) -> {
-				Duration endDuration = convertDuration(lessons.get(current.get()).getEnd());
-				if (newV.greaterThanOrEqualTo(endDuration)) {
+				if (newV.greaterThanOrEqualTo(convertDuration(lessons.get(current.get()).getEnd()))) {
 					newO.pause();
 				}
 			});

@@ -58,7 +58,6 @@ public class FastFourierTransform {
 
     public static void main(String[] args) {
         double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
-        double d = log2(8);
 
         Complex[] cinput = fft(input);
 
@@ -72,7 +71,7 @@ public class FastFourierTransform {
         return 1 << (int) (log(x) / log(2));
     }
 
-    private static long log2(double x) {
+    public static long log2(double x) {
         return (long) floor(log(x) / log(2));
     }
 

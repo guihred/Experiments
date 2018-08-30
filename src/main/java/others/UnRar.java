@@ -95,7 +95,8 @@ public final class UnRar {
                     LOGGER.info("start: {}", new Date());
                     File file2 = new File(output, fh.getFileNameString());
                     if (!file2.exists()) {
-                        file2.createNewFile();
+                        boolean createNewFile = file2.createNewFile();
+                        LOGGER.info("file {} created {}", file2, createNewFile);
                     }
                     if (!tryExtractFile(file2, fh, arc, file)) {
                         return;

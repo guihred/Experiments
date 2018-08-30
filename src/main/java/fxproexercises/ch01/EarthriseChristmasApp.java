@@ -1,5 +1,6 @@
 package fxproexercises.ch01;
 
+import election.experiment.CrawlerTask;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
@@ -21,6 +22,7 @@ import simplebuilder.SimpleTextBuilder;
 
 public class EarthriseChristmasApp extends Application {
     public static void main(String[] args) {
+        CrawlerTask.insertProxyConfig();
         Application.launch(args);
     }
 

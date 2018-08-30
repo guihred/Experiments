@@ -3,6 +3,7 @@ package election.experiment;
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +26,8 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
     private Instant start;
     private boolean cancelled;
     private String encoded = Base64.getEncoder()
-            .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes());
+            .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes(StandardCharsets.UTF_8));
+
 
     protected Document getDocument(String url) throws IOException {
         Connection connect = Jsoup.connect(url);

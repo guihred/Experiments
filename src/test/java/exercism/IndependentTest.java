@@ -1,16 +1,27 @@
 package exercism;
 
-import com.google.api.client.repackaged.com.google.common.base.Supplier;
+import static crypt.FXTesting.measureTime;
+import static java.util.stream.Collectors.toList;
+
+import exercise.java9.Ch1;
+import exercise.java9.Ch3;
+import exercise.java9.Ch3.Employee;
+import exercise.java9.ch4.Ch4;
+import exercise.java9.ch4.LabeledPoint;
+import exercise.java9.ch4.Line;
+import exercise.java9.ch4.Point;
+import japstudy.HiraganaMaker;
 import java.io.File;
-import java8.exercise.*;
-import org.apache.commons.lang3.time.DurationFormatUtils;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class IndependentTest implements HasLogging {
-    public static final Logger LOGGER = HasLogging.log(IndependentTest.class);
+    private static final Logger LOGGER = HasLogging.log(IndependentTest.class);
 
     @Test
     public void matrixTest() {
@@ -21,124 +32,40 @@ public class IndependentTest implements HasLogging {
     }
 
     @Test
-
-    public void testChapter8() throws Exception {
-
-        measureTime("Chapter8.ex1", () -> Chapter8.ex1());
-        measureTimeExpectException("Chapter8.ex2", () -> Chapter8.ex2());
-        measureTime("Chapter8.ex3", () -> Chapter8.ex3());
-        measureTime("Chapter8.ex4", () -> Chapter8.ex4());
-        measureTime("Chapter8.ex5", () -> Chapter8.ex5());
-        measureTime("Chapter8.ex6", () -> Chapter8.ex6());
-        measureTime("Chapter8.ex7", () -> Chapter8.ex7());
-        measureTime("Chapter8.ex9", () -> Chapter8.ex9());
-        measureTime("Chapter8.ex10", () -> Chapter8.ex10());
-        measureTime("Chapter8.ex11", () -> Chapter8.ex11());
-        measureTime("Chapter8.ex15", () -> Chapter8.ex15());
-        measureTime("Chapter8.ex16", () -> Chapter8.ex16());
-        try {
-            Chapter8.ex14();
-        } catch (Exception e) {
-            Assert.assertNotNull("Expected NullPointer Exception", e);
-        }
+    public void testCh1() {
+        measureTime("Ch1.extremeDoubles", () -> Ch1.extremeDoubles());
+        measureTime("Ch1.factorial", () -> Ch1.factorial(1000));
+        measureTime("Ch1.lotteryCombination", () -> Ch1.lotteryCombination());
+        measureTime("Ch1.pascalTriangle", () -> Ch1.pascalTriangle(10));
+        measureTime("Ch1.average", () -> Ch1.average(1, 2, 3, 4, 5, 6, 7, 8));
     }
 
     @Test
-    public void testChapter6() throws Exception {
-        measureTime("Chapter6.ex1", () -> Chapter6.ex1());
-        measureTime("Chapter6.ex3", () -> Chapter6.ex3());
-        measureTime("Chapter6.ex5", () -> Chapter6.ex5());
-        measureTime("Chapter6.ex6", () -> Chapter6.ex6());
-        measureTime("Chapter6.ex7", () -> Chapter6.ex7());
-        measureTime("Chapter6.ex8", () -> Chapter6.ex8());
-        measureTime("Chapter6.ex9", () -> Chapter6.ex9());
-        measureTime("Chapter6.ex10", () -> Chapter6.ex10());
-    }
+    public void testCh3() {
+        Random random = new Random();
+        List<Employee> collect = random.ints(1, 11).map(e -> ++e * 500).limit(5).mapToObj(Employee::new)
+                .collect(toList());
+        measureTime("Ch3.average", () -> Ch3.average(collect));
+        measureTime("Ch3.largest", () -> Ch3.largest(collect));
+        measureTime("Ch3.IntSequence.of", () -> Ch3.IntSequence.of(1, 2, 3).foreach(e -> LOGGER.trace("{}", e)));
+        measureTime("new Ch3.SquareSequence",
+                () -> new Ch3.SquareSequence().limit(10).foreach(e -> LOGGER.trace("{}", e)));
+        measureTime("Ch3.isSorted", () -> Ch3.isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo));
+        measureTime("Ch3.luckySort",
+                () -> Ch3.luckySort(Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e"), String::compareTo));
+        measureTime("Ch3.subdirectories", () -> Ch3.subdirectories(new File(".")));
+        measureTime("Ch3.sortFiles", () -> Ch3.sortFiles(new File(".").listFiles()));
 
-    public static void measureTime(String name, RunnableEx runnable) {
-        long currentTimeMillis = System.currentTimeMillis();
-        try {
-            runnable.run();
-        } catch (Throwable e) {
-            LOGGER.error("Exception in " + name, e);
-        }
-        long currentTimeMillis2 = System.currentTimeMillis();
-        long arg2 = currentTimeMillis2 - currentTimeMillis;
-        String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
-        LOGGER.info("{} took {}", name, formatDuration);
-    }
-    
-    public static void measureTimeExpectException(String name, RunnableEx runnable) {
-        long currentTimeMillis = System.currentTimeMillis();
-        try {
-            runnable.run();
-        } catch (Throwable e) {
-            long currentTimeMillis2 = System.currentTimeMillis();
-            long arg2 = currentTimeMillis2 - currentTimeMillis;
-            String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
-            LOGGER.info("{} took {}", name, formatDuration);
-            LOGGER.trace("Exception in " + name, e);
-        }
-    }
-
-    public static <T> T measureTime(String name, Supplier<T> runnable) {
-        long currentTimeMillis = System.currentTimeMillis();
-        T t = null;
-        try {
-            t = runnable.get();
-        } catch (Exception e) {
-            LOGGER.error("Exception thrown", e);
-            Assert.fail("Exception in " + name);
-        }
-        long currentTimeMillis2 = System.currentTimeMillis();
-        long arg2 = currentTimeMillis2 - currentTimeMillis;
-        String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
-        LOGGER.info("{} took {}", name, formatDuration);
-        return t;
     }
 
     @Test
-    public void testChapter5() {
-        measureTime("Chapter5.ex1", () -> Chapter5.ex1());
-        measureTime("Chapter5.ex2", () -> Chapter5.ex2());
-        measureTime("Chapter5.ex3", () -> Chapter5.ex3());
-        measureTime("Chapter5.ex4", () -> Chapter5.ex4());
-        measureTime("Chapter5.ex5", () -> Chapter5.ex5());
-        measureTime("Chapter5.ex6", () -> Chapter5.ex6());
-        measureTime("Chapter5.ex7", () -> Chapter5.ex7());
-        measureTime("Chapter5.ex8", () -> Chapter5.ex8());
-        measureTime("Chapter5.ex9", () -> Chapter5.ex9());
-        measureTime("Chapter5.ex10", () -> Chapter5.ex10());
-        measureTime("Chapter5.ex11", () -> Chapter5.ex11());
+    public void testHiragana() {
+        measureTime("HiraganaMaker.displayInHiragana", HiraganaMaker::displayInHiragana);
     }
 
     @Test
-    public void testChapter2() {
-        measureTime("Chapter2.ex1", () -> Chapter2.ex1());
-        measureTime("Chapter2.ex2", () -> Chapter2.ex2());
-        measureTime("Chapter2.ex3", () -> Chapter2.ex3());
-        measureTime("Chapter2.ex4", () -> Chapter2.ex4());
-        measureTime("Chapter2.ex5", () -> Chapter2.ex5());
-        measureTime("Chapter2.ex6", () -> Chapter2.ex6());
-        measureTime("Chapter2.ex8", () -> Chapter2.ex8());
-        measureTime("Chapter2.ex9", () -> Chapter2.ex9());
-        measureTime("Chapter2.ex10", () -> Chapter2.ex10());
-        measureTime("Chapter2.ex11", () -> Chapter2.ex11());
-        measureTime("Chapter2.ex12", () -> Chapter2.ex12());
-        measureTime("Chapter2.ex13", () -> Chapter2.ex13());
-    }
-
-    @Test
-    public void testChapter1() {
-        String threadName = measureTime("Chapter1.ex5", () -> Chapter1.ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 }));
-        Assert.assertEquals("Thread name must be equal", Thread.currentThread().getName(), threadName);
-        measureTime("Chapter1.ex5", () -> Chapter1.ex2(new File(".")));
-        measureTime("Chapter1.ex5", () -> Chapter1.ex3(new File(Chapter1.DOCUMENTS_FOLDER), "log"));
-        measureTime("Chapter1.ex5", () -> Chapter1.ex4(new File(Chapter1.DOCUMENTS_FOLDER).listFiles()));
-        measureTime("Chapter1.ex5", () -> Chapter1.ex5());
-        measureTime("Chapter1.ex6", () -> Chapter1.ex6());
-        measureTime("Chapter1.ex7", () -> Chapter1.ex7());
-        measureTime("Chapter1.ex8", () -> Chapter1.ex8());
-        measureTime("Chapter1.ex9", () -> Chapter1.ex9());
+    public void testCh4() {
+        measureTime("Ch4.cyclicToString",
+                () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
     }
 }

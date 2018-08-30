@@ -134,7 +134,7 @@ public class StatsLogAccess {
 	}
 
     private static void printLines(Path path, File file) {
-        try (PrintWriter out = new PrintWriter(new FileOutputStream(file));
+        try (PrintWriter out = new PrintWriter(file, StandardCharsets.UTF_8.displayName());
                 Stream<String> lines = Files.lines(path)) {
             lines.forEach(out::println);
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package java9.exercise;
+package exercise.java9;
 
 public class Ch2 {
 	/*

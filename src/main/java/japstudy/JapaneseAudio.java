@@ -5,6 +5,7 @@ import japstudy.db.JapaneseLesson;
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
@@ -33,7 +34,7 @@ public enum JapaneseAudio {
     private final String file;
     private final int lesson;
 
-    private JapaneseAudio(int lesson, String file) {
+    JapaneseAudio(int lesson, String file) {
         this.lesson = lesson;
         this.file = file;
 
@@ -71,7 +72,7 @@ public enum JapaneseAudio {
          */
         File file2 = new File(OUTPUT_FILE);
 
-        try (PrintStream out = new PrintStream(file2)) {
+        try (PrintStream out = new PrintStream(file2, StandardCharsets.UTF_8.displayName())) {
 
             for (JapaneseLesson lesson : lessons) {
 

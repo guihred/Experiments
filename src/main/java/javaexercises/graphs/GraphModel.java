@@ -50,13 +50,6 @@ public class GraphModel {
         addedEdges.add(edge2);
     }
 
-    private Cell addCell(Cell cell) {
-        addedCells.add(cell);
-        cellMap.put(cell.getCellId(), cell);
-        return cell;
-
-    }
-
     public Cell addCell(String id, CellType type) {
         switch (type) {
             case CIRCLE:
@@ -89,40 +82,6 @@ public class GraphModel {
 
     public List<Cell> adjacents(Cell c) {
         return allEdges.stream().filter(e -> e.source.equals(c)).map(Edge::getTarget).collect(Collectors.toList());
-    }
-
-    private List<Cell> anyAdjacents(Cell c) {
-        return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c))
-                .flatMap(e -> Stream.of(e.getTarget(), e.getSource())).filter(e -> e != c).distinct()
-                .collect(Collectors.toList());
-    }
-
-    private void assignLow(Map<Cell, Integer> num, Map<Cell, Integer> low, Map<Cell, Cell> parent, Cell v) {
-        low.put(v, num.get(v));
-        for (Cell w : adjacents(v)) {
-            if (num.get(w) > num.get(v)) {
-                assignLow(num, low, parent, w);
-                if (low.get(w) >= num.get(v)) {
-                    v.setSelected(true);
-                }
-                low.put(v, Integer.min(low.get(v), low.get(w)));
-
-            } else if (parent.get(v) != w) {
-                low.put(v, Integer.min(low.get(v), num.get(w)));
-            }
-
-        }
-    }
-
-    private void assignNum(Map<Cell, Integer> num, Map<Cell, Cell> parent, int c, Cell s) {
-        int counter = c;
-        num.put(s, counter++);
-        for (Cell w : adjacents(s)) {
-            if (!num.containsKey(w)) {
-                parent.put(w, s);
-                assignNum(num, parent, counter, w);
-            }
-        }
     }
 
     public void attachOrphansToGraphParent(List<Cell> cellList) {
@@ -162,20 +121,6 @@ public class GraphModel {
         return chain;
     }
 
-    public final void clear() {
-
-        allCells = new ArrayList<>();
-        addedCells = new ArrayList<>();
-        removedCells = new ArrayList<>();
-
-        allEdges = new ArrayList<>();
-        addedEdges = new ArrayList<>();
-        removedEdges = new ArrayList<>();
-
-        cellMap = new HashMap<>(); // <id,cell>
-
-    }
-
     public void clearSelected() {
         allCells.forEach(c -> c.setSelected(false));
         allEdges.forEach(c -> c.setSelected(false));
@@ -198,40 +143,6 @@ public class GraphModel {
         }
     }
 
-    public Integer cost(Cell v, Cell w) {
-        return allEdges.stream().filter(e -> e.source.equals(v) && e.target.equals(w)).map(Edge::getValor).findFirst()
-                .orElse(null);
-    }
-
-    private Map<Cell, Integer> dijkstra(Cell s) {
-        Map<Cell, Integer> distance = new HashMap<>();
-        Map<Cell, Boolean> known = createDistanceMap(s, distance);
-        while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
-            Cell v = getMinDistanceCell(distance, known);
-            known.put(v, true);
-            for (Cell w : adjacents(v)) {
-                if (!known.get(w)) {
-                    Integer cvw = cost(v, w);
-                    if (distance.get(v) + cvw < distance.get(w)) {
-                        distance.put(w, distance.get(v) + cvw);
-                        setPath(w, s, v);
-                    }
-                }
-            }
-        }
-        return distance;
-    }
-
-    private Cell getMinDistanceCell(Map<Cell, Integer> distance, Map<Cell, Boolean> known) {
-        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
-                .min(Comparator.comparing(Entry<Cell, Integer>::getValue))
-                .orElseThrow(() -> new Exception("There should be someone")).getKey();
-    }
-
-    public Map<Cell, Integer> dijkstra(String s) {
-        return dijkstra(cellMap.get(s));
-    }
-
     public void disconnectFromGraphParent(List<Cell> cellList) {
 
         for (Cell cell : cellList) {
@@ -241,10 +152,6 @@ public class GraphModel {
 
     public List<Edge> edges(Cell c) {
         return allEdges.stream().filter(e -> e.source.equals(c)).collect(Collectors.toList());
-    }
-
-    private long edgesNumber(Cell c) {
-        return allEdges.stream().filter(e -> e.source.equals(c)).count();
     }
 
     public void findArticulations() {
@@ -276,17 +183,9 @@ public class GraphModel {
         return removedCells;
     }
 
+
     public List<Edge> getRemovedEdges() {
         return removedEdges;
-    }
-
-    private int indexOf(String s) {
-        for (int i = 0; i < allCells.size(); i++) {
-            if (allCells.get(i).getCellId().equals(s)) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     public List<Edge> kruskal() {
@@ -330,14 +229,6 @@ public class GraphModel {
 
     }
 
-    private Cell pathTo(Cell from, Cell to) {
-        Map<Cell, Cell> map = paths.get(from);
-        if (map == null) {
-            return null;
-        }
-        return map.get(to);
-    }
-
     public void removeAllCells() {
         removedCells.addAll(allCells);
 
@@ -345,16 +236,6 @@ public class GraphModel {
 
     public void removeAllEdges() {
         removedEdges.addAll(allEdges);
-    }
-
-    public void setPath(Cell from, Cell to, Cell by) {
-        if (paths == null) {
-            paths = new HashMap<>();
-        }
-        if (!paths.containsKey(from)) {
-            paths.put(from, new HashMap<>());
-        }
-        paths.get(from).put(to, by);
     }
 
     public void sortTopology() {
@@ -389,40 +270,6 @@ public class GraphModel {
         }
     }
 
-    public Map<Cell, Integer> unweighted(String s) {
-        Cell source = cellMap.get(s);
-
-        Map<Cell, Integer> distance = new HashMap<>();
-        Map<Cell, Boolean> known = createDistanceMap(source, distance);
-        for (int i = 0; i < allCells.size(); i++) {
-            for (Cell v : allCells) {
-                if (!known.get(v) && distance.get(v) == i) {
-                    known.put(v, true);
-                    List<Cell> unreachables = adjacents(v).stream()
-                            .filter(w -> Objects.equals(distance.get(w), Integer.MAX_VALUE))
-                            .collect(Collectors.toList());
-                    for (Cell w : unreachables) {
-                        distance.put(w, i + 1);
-                        setPath(w, source, v);
-                    }
-
-                }
-            }
-        }
-        return distance;
-
-    }
-
-    private Map<Cell, Boolean> createDistanceMap(Cell source, Map<Cell, Integer> distance) {
-        Map<Cell, Boolean> known = new HashMap<>();
-        for (Cell v : allCells) {
-            distance.put(v, Integer.MAX_VALUE);
-            known.put(v, false);
-        }
-        distance.put(source, 0);
-        return known;
-    }
-
     public Map<Cell, Integer> unweightedUndirected(String s) {
         Cell source = cellMap.get(s);
 
@@ -446,33 +293,132 @@ public class GraphModel {
 
     }
 
-    public Map<Cell, Integer> weightedNegative(String s) {
-        Cell source = cellMap.get(s);
-        Map<Cell, Integer> distance = new HashMap<>();
-        Queue<Cell> q = new LinkedList<>();
+    private Cell addCell(Cell cell) {
+        addedCells.add(cell);
+        cellMap.put(cell.getCellId(), cell);
+        return cell;
 
+    }
+
+    private List<Cell> anyAdjacents(Cell c) {
+        return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c))
+                .flatMap(e -> Stream.of(e.getTarget(), e.getSource())).filter(e -> e != c).distinct()
+                .collect(Collectors.toList());
+    }
+
+    private void assignLow(Map<Cell, Integer> num, Map<Cell, Integer> low, Map<Cell, Cell> parent, Cell v) {
+        low.put(v, num.get(v));
+        for (Cell w : adjacents(v)) {
+            if (num.get(w) > num.get(v)) {
+                assignLow(num, low, parent, w);
+                if (low.get(w) >= num.get(v)) {
+                    v.setSelected(true);
+                }
+                low.put(v, Integer.min(low.get(v), low.get(w)));
+
+            } else if (parent.get(v) != w) {
+                low.put(v, Integer.min(low.get(v), num.get(w)));
+            }
+
+        }
+    }
+
+    private void assignNum(Map<Cell, Integer> num, Map<Cell, Cell> parent, int c, Cell s) {
+        int counter = c;
+        num.put(s, counter++);
+        for (Cell w : adjacents(s)) {
+            if (!num.containsKey(w)) {
+                parent.put(w, s);
+                assignNum(num, parent, counter, w);
+            }
+        }
+    }
+
+    private final void clear() {
+
+        allCells = new ArrayList<>();
+        addedCells = new ArrayList<>();
+        removedCells = new ArrayList<>();
+
+        allEdges = new ArrayList<>();
+        addedEdges = new ArrayList<>();
+        removedEdges = new ArrayList<>();
+
+        cellMap = new HashMap<>(); // <id,cell>
+
+    }
+
+    private Integer cost(Cell v, Cell w) {
+        return allEdges.stream().filter(e -> e.source.equals(v) && e.target.equals(w)).map(Edge::getValor).findFirst()
+                .orElse(null);
+    }
+
+    private Map<Cell, Boolean> createDistanceMap(Cell source, Map<Cell, Integer> distance) {
+        Map<Cell, Boolean> known = new HashMap<>();
         for (Cell v : allCells) {
             distance.put(v, Integer.MAX_VALUE);
+            known.put(v, false);
         }
         distance.put(source, 0);
-        q.add(source);
-        while (!q.isEmpty()) {
-            Cell v = q.poll();
+        return known;
+    }
 
+    private Map<Cell, Integer> dijkstra(Cell s) {
+        Map<Cell, Integer> distance = new HashMap<>();
+        Map<Cell, Boolean> known = createDistanceMap(s, distance);
+        while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
+            Cell v = getMinDistanceCell(distance, known);
+            known.put(v, true);
             for (Cell w : adjacents(v)) {
-                Integer cvw = cost(v, w);
-                if (distance.get(v) + cvw < distance.get(w)) {
-                    distance.put(w, distance.get(v) + cvw);
-                    setPath(w, source, v);
-
-                    if (!q.contains(w)) {
-                        q.add(w);
+                if (!known.get(w)) {
+                    Integer cvw = cost(v, w);
+                    if (distance.get(v) + cvw < distance.get(w)) {
+                        distance.put(w, distance.get(v) + cvw);
+                        setPath(w, s, v);
                     }
                 }
-
             }
         }
         return distance;
     }
+
+    private long edgesNumber(Cell c) {
+        return allEdges.stream().filter(e -> e.source.equals(c)).count();
+    }
+
+    private Cell getMinDistanceCell(Map<Cell, Integer> distance, Map<Cell, Boolean> known) {
+        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
+                .min(Comparator.comparing(Entry<Cell, Integer>::getValue))
+                .orElseThrow(() -> new Exception("There should be someone")).getKey();
+    }
+
+    private int indexOf(String s) {
+        for (int i = 0; i < allCells.size(); i++) {
+            if (allCells.get(i).getCellId().equals(s)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+    private Cell pathTo(Cell from, Cell to) {
+        Map<Cell, Cell> map = paths.get(from);
+        if (map == null) {
+            return null;
+        }
+        return map.get(to);
+    }
+
+    private void setPath(Cell from, Cell to, Cell by) {
+        if (paths == null) {
+            paths = new HashMap<>();
+        }
+        if (!paths.containsKey(from)) {
+            paths.put(from, new HashMap<>());
+        }
+        paths.get(from).put(to, by);
+    }
+
 
 }

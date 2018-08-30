@@ -1,4 +1,4 @@
-package java9.exercise.ch4;
+package exercise.java9.ch4;
 
 class Rectangle extends Shape {
 

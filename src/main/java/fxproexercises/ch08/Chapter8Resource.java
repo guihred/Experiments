@@ -9,7 +9,7 @@ public enum Chapter8Resource {
 	MEDIA("media.css");
 	private String file;
 
-	private Chapter8Resource(String file) {
+    Chapter8Resource(String file) {
 		this.file = file;
 	}
 

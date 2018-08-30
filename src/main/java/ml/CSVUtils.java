@@ -1,8 +1,13 @@
 package ml;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +64,7 @@ public class CSVUtils {
                 } else {
                     curVal.append(ch);
                 }
+                
             } else if (ch == customQuote) {
                 inQuotes = true;
                 // Fixed : allow "" in empty quote enclosed
@@ -73,11 +79,9 @@ public class CSVUtils {
                 result.add(curVal.toString().replaceFirst("" + DEFAULT_QUOTE, ""));
                 curVal = new StringBuilder();
                 startCollectChar = false;
-            } else if (ch == '\r') {
-                continue;
             } else if (ch == '\n') {
                 break;
-            } else {
+            } else if (ch != '\r') {
                 curVal.append(ch);
             }
         }
@@ -91,7 +95,7 @@ public class CSVUtils {
             file.mkdir();
         }
 
-        try (Scanner scanner = new Scanner(new File(csvFile))) {
+        try (Scanner scanner = new Scanner(new File(csvFile), StandardCharsets.UTF_8.displayName())) {
             String firstLine = scanner.nextLine();
             while (scanner.hasNext()) {
                 String nextLine = scanner.nextLine();
@@ -117,8 +121,9 @@ public class CSVUtils {
             }
             boolean created = file.createNewFile();
             LOGGER.info("file created {}", created);
-            return new BufferedWriter(new FileWriter(csvFile, true));
+            return new BufferedWriter(new FileWriterWithEncoding(csvFile, StandardCharsets.UTF_8, true));
         } catch (Exception e) {
+            LOGGER.error("", e);
             throw e;
         }
     }

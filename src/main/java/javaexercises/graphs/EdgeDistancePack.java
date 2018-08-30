@@ -14,5 +14,4 @@ class EdgeDistancePack implements Comparable<EdgeDistancePack> {
 	public int compareTo(EdgeDistancePack o) {
 		return Double.compare(distance, o.distance);
 	}
-
 }

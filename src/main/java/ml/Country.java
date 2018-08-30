@@ -1,17 +1,8 @@
 package ml;
 
-import static ml.Continent.AFRICA;
-import static ml.Continent.ASIA;
-import static ml.Continent.EUROPE;
-import static ml.Continent.NORTH_AMERICA;
-import static ml.Continent.OCEANIA;
-import static ml.Continent.SOUTH_AMERICA;
+import static ml.Continent.*;
 
-import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
@@ -256,7 +247,7 @@ public enum Country {
 
     private Color color;
 
-    private Country(Continent continent, String name, String code, String path) {
+    Country(Continent continent, String name, String code, String path) {
         this.continent = continent;
         countryName = name;
         this.code = code;
@@ -405,7 +396,7 @@ public enum Country {
         return neighbors;
     }
 
-    public void setColor(Color color) {
+    void setColor(Color color) {
         this.color = color;
     }
 

@@ -1,4 +1,4 @@
-package mp3Audio;
+package audio.mp3;
 
 import java.io.File;
 import java.util.List;

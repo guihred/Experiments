@@ -116,12 +116,9 @@ class Vertex implements HasLogging {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Vertex)) {
-			return false;
-		}
+        if (obj == null || !getClass().isInstance(obj)) {
+            return false;
+        }
 		Vertex other = (Vertex) obj;
 		return id == other.id;
 	}

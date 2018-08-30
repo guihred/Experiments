@@ -1,4 +1,4 @@
-package java9.exercise;
+package exercise.java9;
 
 import static java.util.stream.Collectors.toList;
 
@@ -67,7 +67,7 @@ public class Ch3 {
 		}
 	}
 
-	static double average(List<? extends Measurable> objects) {
+    public static double average(List<? extends Measurable> objects) {
 		return objects.stream().mapToDouble(Measurable::getMeasure).average().orElse(0);
 	}
 
@@ -78,7 +78,7 @@ public class Ch3 {
 	 * largest(Measurable[] objects) . Use it to find the name of the employee with
 	 * the largest salary. Why do you need a cast?
 	 */
-	static <T extends Measurable> T largest(List<T> objects) {
+    public static <T extends Measurable> T largest(List<T> objects) {
 		return objects.stream().max(Comparator.comparing(Measurable::getMeasure)).orElse(null);
 	}
 
@@ -102,7 +102,7 @@ public class Ch3 {
 		// By default, sequences are infinite
 		int next();
 
-		public static IntSequence constant(int seq) {
+        static IntSequence constant(int seq) {
 			return () -> seq;
 		}
 
@@ -112,7 +112,7 @@ public class Ch3 {
 			}
 		}
 
-		public static IntSequence of(int... seq) {
+        static IntSequence of(int... seq) {
 			return new IntSequence() {
                 private int i;
 
@@ -138,7 +138,7 @@ public class Ch3 {
 		// By default, sequences are infinite
 		T next();
 
-		public static <T> Sequence<T> constant(T seq) {
+        static <T> Sequence<T> constant(T seq) {
 			return () -> seq;
 		}
 
@@ -149,7 +149,7 @@ public class Ch3 {
 		}
 
 		@SafeVarargs
-		public static <T> Sequence<T> of(T... seq) {
+        static <T> Sequence<T> of(T... seq) {
 			return new Sequence<T>() {
                 private int i;
 
@@ -175,12 +175,24 @@ public class Ch3 {
 	 */
 	public static class SquareSequence implements Sequence<BigInteger> {
 		private BigInteger i = BigInteger.ZERO;
-
+        private int c = 0;
+        int limit = 50;
 		@Override
 		public BigInteger next() {
+            c++;
 			i = i.add(BigInteger.ONE);
 			return i.multiply(i);
 		}
+
+        public SquareSequence limit(int limit1) {
+            this.limit = limit1;
+            return this;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return c < limit;
+        }
 	}
 
 	/*

@@ -9,7 +9,7 @@ public interface HasLogging {
 		return LoggerFactory.getLogger(getClass());
 	}
 
-    public static Logger log(Class<?> cls) {
+    static Logger log(Class<?> cls) {
         return LoggerFactory.getLogger(cls);
     }
 
@@ -19,7 +19,7 @@ public interface HasLogging {
         return format;
     }
 
-    public static Logger log() {
+    static Logger log() {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         return LoggerFactory.getLogger(stackTrace[stackTrace.length - 1].getClassName());
     }

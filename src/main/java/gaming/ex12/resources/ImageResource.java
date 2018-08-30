@@ -18,7 +18,7 @@ public enum ImageResource {
 	private int columns = 1;
 	private transient Image image;
 
-	private ImageResource(String file, int width, int height, double scale) {
+    ImageResource(String file, int width, int height, double scale) {
 		filename = file;
 		this.width = width;
 		this.height = height;
@@ -26,7 +26,7 @@ public enum ImageResource {
 
 	}
 
-	private ImageResource(String file, int width, int height, double scale, int count, int columns) {
+    ImageResource(String file, int width, int height, double scale, int count, int columns) {
 		filename = file;
 		this.height = height;
 		this.width = width;

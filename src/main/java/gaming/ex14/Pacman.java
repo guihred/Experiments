@@ -20,7 +20,7 @@ public class Pacman extends Arc {
 		DOWN(90), LEFT(180), RIGHT(0), UP(270);
 		protected final int angle;
 
-		private PacmanDirection(int angle) {
+        PacmanDirection(int angle) {
 			this.angle = angle;
 		}
 

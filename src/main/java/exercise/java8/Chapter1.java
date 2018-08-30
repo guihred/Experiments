@@ -1,4 +1,4 @@
-package java8.exercise;
+package exercise.java8;
 
 
 import java.io.File;

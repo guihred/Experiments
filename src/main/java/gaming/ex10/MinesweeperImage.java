@@ -46,7 +46,7 @@ public enum MinesweeperImage {
     ;
 	private F<Integer, Shape> shape;
 
-	private MinesweeperImage(F<Integer, Shape> shape) {
+    MinesweeperImage(F<Integer, Shape> shape) {
         this.shape = shape;
 
     }

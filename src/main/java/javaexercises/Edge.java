@@ -23,12 +23,9 @@ class Edge implements Comparable<Edge> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Edge)) {
-			return false;
-		}
+        if (obj == null || !getClass().isInstance(obj)) {
+            return false;
+        }
 		Edge other = (Edge) obj;
 		if (Objects.equals(u, other.u) && Objects.equals(v, other.v)) {
 			return true;

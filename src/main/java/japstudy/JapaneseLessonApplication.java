@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 
 public class JapaneseLessonApplication extends Application {
 
-	static final String LESSON = "Lesson";
+    public static final String LESSON = "Lesson";
 
     public static void main(String[] args) {
 		launch(args);

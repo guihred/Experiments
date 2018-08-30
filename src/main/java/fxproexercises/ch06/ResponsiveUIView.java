@@ -1,6 +1,6 @@
 package fxproexercises.ch06;
 
-import java8.exercise.RunnableEx;
+import exercise.java8.RunnableEx;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;

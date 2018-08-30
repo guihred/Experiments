@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.Character.UnicodeBlock;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,6 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
 
@@ -27,14 +28,14 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
 
     public static void main(String[] args) {
-        new CrawlerFuriganaTask().migrateCities();
+        new CrawlerFuriganaTask().addFuriganaReading();
     }
 
     private Map<String, String> mapReading = Collections.synchronizedMap(new HashMap<>());
 
     private List<String> getLines() {
         List<String> lines = new ArrayList<>();
-        try (Stream<String> lines2 = Files.lines(Paths.get("hp1Tex2.tex"))) {
+        try (Stream<String> lines2 = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
             lines.addAll(lines2.collect(Collectors.toList()));
         } catch (IOException e) {
             getLogger().error("ERROR ", e);
@@ -129,9 +130,9 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter);
     }
 
-    public void migrateCities() {
-        // insertProxyConfig()
-        try (Stream<String> lines = Files.lines(Paths.get("hp1Tex2.tex"))) {
+    public void addFuriganaReading() {
+        CrawlerTask.insertProxyConfig();
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
             lines.forEach(line -> {
                 String[] split = line.split("");
                 StringBuilder currentWord = new StringBuilder();
@@ -218,7 +219,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             long i = ths.size() - count;
             updateAll(i, total);
         }
-        try (PrintStream printStream = new PrintStream("hp1Tex2Converted.tex")) {
+        try (PrintStream printStream = new PrintStream(ResourceFXUtils.toFile("out/hp1Tex2Converted.tex"),
+                StandardCharsets.UTF_8.displayName())) {
             for (String s : lines) {
                 printStream.println(s);
             }

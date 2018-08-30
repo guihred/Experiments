@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -67,17 +68,19 @@ public final class ResourceFXUtils {
         return importStlMesh(file);
     }
 
+    @SuppressWarnings("unused")
     public static Mesh importStlMesh(File file) {
-        //        StlMeshImporter importer = new StlMeshImporter();
-        //        importer.read(file);
-        //        return importer.getImport();
+        //        StlMeshImporter importer = new StlMeshImporter()
+        //        importer.read(file)
+        //        return importer.getImport()
         return null;
     }
 
+    @SuppressWarnings("unused")
     public static Mesh importStlMesh(URL file) {
-        //        StlMeshImporter importer = new StlMeshImporter();
-        //        importer.read(file);
-        //        return importer.getImport();
+        //        StlMeshImporter importer = new StlMeshImporter()
+        //        importer.read(file)
+        //        return importer.getImport()
         return null;
     }
 
@@ -101,7 +104,7 @@ public final class ResourceFXUtils {
 
             LOGGER.info("Executing \"{}\"", cmd);
             Process p = Runtime.getRuntime().exec(cmd);
-            BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8));
             String line;
             while ((line = in.readLine()) != null) {
                 if (line.contains("Success")) {

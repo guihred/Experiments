@@ -1,15 +1,20 @@
 package crypt;
 
+import com.google.api.client.repackaged.com.google.common.base.Supplier;
+import exercise.java8.RunnableEx;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Assert;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class FXTesting implements HasLogging {
+    private static final Logger LOGGER = HasLogging.log(FXTesting.class);
     JFXPanel jfxPanel = new JFXPanel();
 
     Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
@@ -19,11 +24,11 @@ public final class FXTesting implements HasLogging {
 
     @SafeVarargs
     public static void testApps(Class<? extends Application>... applicationClasses)
-            throws Throwable {
+            throws Exception {
         new FXTesting().testApplications(Arrays.asList(applicationClasses));
     }
     private void testApplications(List<Class<? extends Application>> applicationClasses)
-            throws Throwable {
+            throws Exception {
         List<Object> testedApps = Collections.synchronizedList(new ArrayList<>());
         long currentTimeMillis = System.currentTimeMillis();
         for (Class<? extends Application> class1 : applicationClasses) {
@@ -63,6 +68,47 @@ public final class FXTesting implements HasLogging {
         Assert.assertTrue("TESTS SUCCESSFULL", true);
     }
 
+    public static void measureTime(String name, RunnableEx runnable) {
+        long currentTimeMillis = System.currentTimeMillis();
+        try {
+            runnable.run();
+        } catch (Throwable e) {
+            LOGGER.error("Exception in " + name, e);
+        }
+        long currentTimeMillis2 = System.currentTimeMillis();
+        long arg2 = currentTimeMillis2 - currentTimeMillis;
+        String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
+        LOGGER.info("{} took {}", name, formatDuration);
+    }
+
+    public static void measureTimeExpectException(String name, RunnableEx runnable) {
+        long currentTimeMillis = System.currentTimeMillis();
+        try {
+            runnable.run();
+        } catch (Throwable e) {
+            long currentTimeMillis2 = System.currentTimeMillis();
+            long arg2 = currentTimeMillis2 - currentTimeMillis;
+            String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
+            LOGGER.info("{} took {}", name, formatDuration);
+            LOGGER.trace("Exception in " + name, e);
+        }
+    }
+
+    public static <T> T measureTime(String name, Supplier<T> runnable) {
+        long currentTimeMillis = System.currentTimeMillis();
+        T t = null;
+        try {
+            t = runnable.get();
+        } catch (Exception e) {
+            LOGGER.error("Exception thrown", e);
+            Assert.fail("Exception in " + name);
+        }
+        long currentTimeMillis2 = System.currentTimeMillis();
+        long arg2 = currentTimeMillis2 - currentTimeMillis;
+        String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
+        LOGGER.info("{} took {}", name, formatDuration);
+        return t;
+    }
 
     private synchronized void setClass(Class<? extends Application> class1, Throwable e) {
         exceptionMap.put(class1, e);

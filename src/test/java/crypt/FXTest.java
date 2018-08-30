@@ -1,5 +1,6 @@
 package crypt;
 
+import audio.mp3.OrganizadorMusicas;
 import contest.db.ContestApplication;
 import contest.db.ContestQuestionEditingDisplay;
 import election.experiment.ElectionCrawlerApp;
@@ -39,7 +40,6 @@ import gaming.ex17.PuzzleLauncher;
 import gaming.ex18.Square2048Launcher;
 import javaexercises.graphs.GraphModelLauncher;
 import ml.*;
-import mp3Audio.OrganizadorMusicas;
 import org.junit.Test;
 import rosario.RosarioComparadorArquivos;
 import sample.cubesystem.DeathStar;

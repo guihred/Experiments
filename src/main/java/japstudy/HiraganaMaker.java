@@ -68,8 +68,8 @@ public class HiraganaMaker {
             .put("''", "")
             .put("‘", "").put("’", "")
             .build();
-    private static final String LESSON_REGEX = "INSERT INTO JAPANESE_LESSON\\(english,japanese,romaji,exercise,lesson\\) VALUES\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
-    private static final String TXT_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\mobileApps\\AndroidTest\\app\\src\\main\\assets\\create_database2.sql";
+    public static final String LESSON_REGEX = "INSERT INTO JAPANESE_LESSON\\(english,japanese,romaji,exercise,lesson\\) VALUES\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
+    public static final String TXT_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\mobileApps\\AndroidTest\\app\\src\\main\\assets\\create_database2.sql";
     private static final Logger LOG = HasLogging.log();
     private static final List<String> SPECIAL_LETTERS = Arrays.asList("n", "m", "h");
 
@@ -99,6 +99,11 @@ public class HiraganaMaker {
     }
 
     public static void main(String[] args) {
+        displayInHiragana();
+
+    }
+
+    public static void displayInHiragana() {
         try (Stream<String> lines = Files.lines(new File(TXT_FILE).toPath(), StandardCharsets.UTF_8)) {
             lines.forEach(t -> {
                 if (!t.matches(LESSON_REGEX)) {
@@ -114,7 +119,6 @@ public class HiraganaMaker {
         } catch (Exception e) {
             HasLogging.log(HiraganaMaker.class).error("ERROR", e);
         }
-
     }
 
 }

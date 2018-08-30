@@ -8,7 +8,6 @@ package fxproexercises.ch02;
 import static simplebuilder.CommonsFX.newButton;
 
 import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
@@ -96,14 +95,14 @@ public class PongLauncher extends Application {
 	 */
 	private Timeline pongAnimation = new SimpleTimelineBuilder()
 			.cycleCount(Animation.INDEFINITE)
-			.keyFrames(new KeyFrame(
+            .addKeyFrame(
 					new Duration(10.0), t -> {
 						checkForCollision();
 						int horzPixels = movingRight ? 1 : -1;
 						int vertPixels = movingDown ? 1 : -1;
 						centerX.setValue(centerX.getValue() + horzPixels);
 						centerY.setValue(centerY.getValue() + vertPixels);
-					}))
+                    })
 			.build();
 	private Button startButton = newButton(225, 470, "Start!", e -> {
 		startVisible.set(false);

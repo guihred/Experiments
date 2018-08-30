@@ -102,7 +102,7 @@ public class Medicamento implements Serializable {
 	public BooleanBinding quantidadeCodigoValidoProperty(ObservableList<Medicamento> medicamentos) {
 		if (quantidadeValido == null) {
 			quantidadeValido = Bindings.createBooleanBinding(() -> medicamentos.stream()
-					.filter(m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo)))
+                    .filter(m -> Objects.equals(Integer.valueOf(m.getCodigo()), codigo))
                     .mapToInt(Medicamento::getQuantidade).sum() == quantidade, medicamentos);
 		}
 
@@ -113,7 +113,7 @@ public class Medicamento implements Serializable {
 		if (codigoValido == null) {
 			codigoValido = Bindings.createBooleanBinding(
 					() -> medicamentos.stream()
-							.anyMatch(m -> Objects.equals(Integer.valueOf(m.getCodigo()), Integer.valueOf(codigo))),
+                            .anyMatch(m -> Objects.equals(Integer.valueOf(m.getCodigo()), codigo)),
 					medicamentos);
 		}
 

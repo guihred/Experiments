@@ -40,10 +40,7 @@ public class SnakeSquare extends Region {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj.getClass() != SnakeSquare.class) {
+        if (obj == null || !getClass().isInstance(obj)) {
             return false;
         }
         return ((SnakeSquare) obj).i == i && ((SnakeSquare) obj).j == j;

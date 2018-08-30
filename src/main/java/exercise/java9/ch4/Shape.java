@@ -1,4 +1,4 @@
-package java9.exercise.ch4;
+package exercise.java9.ch4;
 
 /**
  * 4. Define an abstract class Shape with an instance variable of class Point, a

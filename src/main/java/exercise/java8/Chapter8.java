@@ -1,4 +1,4 @@
-package java8.exercise;
+package exercise.java8;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsFirst;

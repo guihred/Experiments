@@ -1,4 +1,4 @@
-package java9.exercise.ch4;
+package exercise.java9.ch4;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

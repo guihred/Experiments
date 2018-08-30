@@ -5,6 +5,7 @@
  */
 package fxproexercises.ch08;
 
+import audio.mp3.LeitorMusicas;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -14,7 +15,6 @@ import javafx.collections.MapChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import mp3Audio.LeitorMusicas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import simplebuilder.HasLogging;

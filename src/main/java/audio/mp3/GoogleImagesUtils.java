@@ -1,4 +1,4 @@
-package mp3Audio;
+package audio.mp3;
 
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;

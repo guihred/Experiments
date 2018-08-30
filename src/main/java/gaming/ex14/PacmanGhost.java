@@ -349,7 +349,7 @@ public class PacmanGhost extends Group implements HasLogging {
 		protected final int x;
 		protected final int y;
 
-		private GhostDirection(int x, int y) {
+        GhostDirection(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}

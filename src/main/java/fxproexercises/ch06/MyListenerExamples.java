@@ -1,6 +1,7 @@
 package fxproexercises.ch06;
 
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import simplebuilder.HasLogging;
 
 class MyListenerExamples implements ListChangeListener<String>, HasLogging {
@@ -8,7 +9,8 @@ class MyListenerExamples implements ListChangeListener<String>, HasLogging {
     @Override
     public void onChanged(Change<? extends String> change) {
 
-        getLogger().info("\tlist = " + change.getList());
+        ObservableList<? extends String> list = change.getList();
+        getLogger().info("\tlist = {}", list);
         String prettyPrint = prettyPrint(change);
         getLogger().info(prettyPrint);
     }

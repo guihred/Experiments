@@ -29,10 +29,7 @@ public class SlidingPuzzleSquare extends Region {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj.getClass() != SlidingPuzzleSquare.class) {
+        if (obj == null || !getClass().isInstance(obj)) {
             return false;
         }
         return ((SlidingPuzzleSquare) obj).number.get() == number.get();

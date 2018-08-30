@@ -1,4 +1,4 @@
-package java9.exercise.ch4;
+package exercise.java9.ch4;
 
 /**
  * 6. Suppose that in Section 4.2.2, “The equals Method” (page 148), the
@@ -26,7 +26,7 @@ enum PrimaryColor {
     private int green;
     private int blue;
 
-    private PrimaryColor(int red, int green, int blue) {
+    PrimaryColor(int red, int green, int blue) {
         this.red = red;
         this.green = green;
         this.blue = blue;

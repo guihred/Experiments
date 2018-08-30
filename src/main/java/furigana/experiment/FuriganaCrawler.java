@@ -3,7 +3,6 @@ package furigana.experiment;
 import java.lang.Character.UnicodeBlock;
 import java.net.URLEncoder;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -13,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public class FuriganaCrawler implements HasLogging {
 
@@ -30,7 +30,7 @@ public class FuriganaCrawler implements HasLogging {
 
 
     public void migrateCities() {
-        try (Stream<String> lines = Files.lines(Paths.get("hp1Tex2.tex"))) {
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
             lines.forEach(line -> {
             	String[] split = line.split("");
             	String currentWord = "";

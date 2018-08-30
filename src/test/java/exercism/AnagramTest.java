@@ -10,7 +10,8 @@ public class AnagramTest {
 	@Test
 	public void testNoMatches() {
 		Anagram detector = new Anagram("diaper");
-		Assert.assertTrue(detector.match(Arrays.asList("hello", "world", "zombies", "pants")).isEmpty());
+        Assert.assertTrue("It should not match",
+                detector.match(Arrays.asList("hello", "world", "zombies", "pants")).isEmpty());
 	}
 
 
@@ -18,7 +19,7 @@ public class AnagramTest {
 	public void testSimpleAnagram() {
 		Anagram detector = new Anagram("ant");
 		List<String> anagram = detector.match(Arrays.asList("tan", "stand", "at"));
-		Assert.assertTrue(anagram.equals(Arrays.asList("tan")));
+        Assert.assertTrue("There should be only one match", anagram.equals(Arrays.asList("tan")));
 	}
 
 
@@ -26,7 +27,7 @@ public class AnagramTest {
 	public void testDetectMultipleAnagrams() {
 		Anagram detector = new Anagram("master");
 		List<String> anagrams = detector.match(Arrays.asList("stream", "pigeon", "maters"));
-		Assert.assertTrue(anagrams.contains("maters") && anagrams.contains("stream"));
+        Assert.assertTrue("It should contain both", anagrams.containsAll(Arrays.asList("maters", "stream")));
 	}
 
 
@@ -34,7 +35,7 @@ public class AnagramTest {
 	public void testDoesNotConfuseDifferentDuplicates() {
 		Anagram detector = new Anagram("galea");
 		List<String> anagrams = detector.match(Arrays.asList("eagle"));
-		assertTrue(anagrams.isEmpty());
+        assertTrue("It should be empty", anagrams.isEmpty());
 	}
 
 
@@ -42,21 +43,21 @@ public class AnagramTest {
 	public void testIdenticalWordIsNotAnagram() {
 		Anagram detector = new Anagram("corn");
 		List<String> anagrams = detector.match(Arrays.asList("corn", "dark", "Corn", "rank", "CORN", "cron", "park"));
-		assertTrue(anagrams.equals(Arrays.asList("cron")));
+        assertTrue("There should be only one match", anagrams.equals(Arrays.asList("cron")));
 	}
 
 
 	@Test
 	public void testEliminateAnagramsWithSameChecksum() {
 		Anagram detector = new Anagram("mass");
-		assertTrue(detector.match(Arrays.asList("last")).isEmpty());
+        assertTrue("Same checksum does not influence", detector.match(Arrays.asList("last")).isEmpty());
 	}
 
 
 	@Test
 	public void testEliminateAnagramSubsets() {
 		Anagram detector = new Anagram("good");
-		assertTrue(detector.match(Arrays.asList("dog", "goody")).isEmpty());
+        assertTrue("There should be no matches", detector.match(Arrays.asList("dog", "goody")).isEmpty());
 	}
 
 
@@ -64,7 +65,7 @@ public class AnagramTest {
 	public void testDetectAnagrams() {
 		Anagram detector = new Anagram("listen");
 		List<String> anagrams = detector.match(Arrays.asList("enlists", "google", "inlets", "banana"));
-		assertTrue(anagrams.contains("inlets"));
+        assertTrue("Should contain the word", anagrams.contains("inlets"));
 	}
 
 
@@ -72,9 +73,9 @@ public class AnagramTest {
 	public void testMultipleAnagrams() {
 		Anagram detector = new Anagram("allergy");
 		List<String> anagrams = detector.match(Arrays.asList("gallery", "ballerina", "regally", "clergy", "largely", "leading"));
-		assertTrue(anagrams.contains("gallery"));
-		assertTrue(anagrams.contains("largely"));
-		assertTrue(anagrams.contains("regally"));
+        assertTrue("Word should be in list", anagrams.contains("gallery"));
+        assertTrue("Word should be in list", anagrams.contains("largely"));
+        assertTrue("Word should be in list", anagrams.contains("regally"));
 	}
 
 
@@ -82,7 +83,7 @@ public class AnagramTest {
 	public void testAnagramsAreCaseInsensitive() {
 		Anagram detector = new Anagram("Orchestra");
 		List<String> anagrams = detector.match(Arrays.asList("cashregister", "Carthorse", "radishes"));
-		assertTrue(anagrams.contains("Carthorse"));
+        assertTrue("Case insensitive did not work", anagrams.contains("Carthorse"));
 	}
 
 }
