@@ -8,7 +8,8 @@ import simplebuilder.HasLogging;
 
 public final class ElementWiseOp {
     private static final Logger LOGGER = HasLogging.log();
-	enum Operation {
+
+    public enum Operation {
 		NONE((a, b) -> a), 
 		ADD((a, b) -> a + b), 
 		SUB((a, b) -> a - b), 

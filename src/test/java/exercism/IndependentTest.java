@@ -13,11 +13,20 @@ import exercise.java9.ch4.Point;
 import japstudy.HiraganaMaker;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.DoubleStream;
+import ml.FastFourierTransform;
+import ml.QuickSortML;
+import org.apache.commons.math3.complex.Complex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
+import others.RandomHelloWorld;
+import others.TermFrequency;
+import others.TermFrequencyIndex;
+import sample.cubesystem.ElementWiseOp;
 import simplebuilder.HasLogging;
 
 public class IndependentTest implements HasLogging {
@@ -28,7 +37,8 @@ public class IndependentTest implements HasLogging {
         double[][] matr = { { 4, 5, 3 }, { 2, -5, -2 }, { 4, 5, 6 } };
         double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
         double[] solve = MatrixSolver.solve(matr, coef2);
-        Assert.assertArrayEquals(solve, new double[] { -0.3, 0.5, 0.6 }, 0.01);
+        Assert.assertArrayEquals("The solved Matrix should match the solution", solve, new double[] { -0.3, 0.5, 0.6 },
+                0.01);
     }
 
     @Test
@@ -61,6 +71,51 @@ public class IndependentTest implements HasLogging {
     @Test
     public void testHiragana() {
         measureTime("HiraganaMaker.displayInHiragana", HiraganaMaker::displayInHiragana);
+    }
+
+    @Test
+    public void testTermFrequencyIndex() {
+        measureTime("TermFrequencyIndex.identifyKeyWordsInSourceFiles",
+                TermFrequencyIndex::identifyKeyWordsInSourceFiles);
+    }
+
+    @Test
+    public void testQuickSort() {
+        List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
+        Comparator<Integer> c = Integer::compareTo;
+        measureTime("QuickSortML.sort", () -> QuickSortML.sort(input, c.reversed()));
+        Assert.assertTrue("List should be sorted", Ch3.isSorted(input, c.reversed()));
+
+    }
+
+    @Test
+    public void testFastFourierTransform() {
+        double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
+        Complex[] cinput = measureTime("FastFourierTransform.fft", () -> FastFourierTransform.fft(input));
+        for (Complex c : cinput) {
+            LOGGER.trace("{}", c);
+        }
+    }
+
+    @Test
+    public void testRandomHelloWorld() {
+        measureTime("RandomHelloWorld.displayHelloWorld", RandomHelloWorld::displayHelloWorld);
+    }
+
+    @Test
+    public void testTermFrequency() {
+        measureTime("TermFrequency.displayTermFrequency", TermFrequency::displayTermFrequency);
+    }
+
+    @Test
+    public void testElementWiseOperations() {
+        measureTime("ElementWiseOp.scalarOp",
+                () -> ElementWiseOp.printMatrix(ElementWiseOp.scalarOp(ElementWiseOp.Operation.MUL,
+                        new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } }, 3.0)));
+        measureTime("ElementWiseOp.matrOp",
+                () -> ElementWiseOp.printMatrix(ElementWiseOp.matrOp(ElementWiseOp.Operation.DIV,
+                        new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } },
+                        new Double[][] { { 1.0, 2.0 }, { 3.0, 4.0 } })));
     }
 
     @Test

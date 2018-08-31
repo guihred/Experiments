@@ -12,7 +12,7 @@ public final class JavaExercise19 {
 	 * the program in and trying it.
 	 */
 
-	public static void main(String[] args) {
+    public static void testingJavaConcepts() {
 
 		Jack ink = new Jack();
 		fred(ink, 3000);

@@ -21,12 +21,12 @@ public final class TermFrequency {
 	private TermFrequency() {
 	}
 
-	public static void main(String[] args) {
+    public static void displayTermFrequency() {
 
         File file = new File("src");
 		if (file.exists()) {
 			try {
-                Map<File, Map<String, Long>> mapa = getMapaDocumentos(file);
+                Map<File, Map<String, Long>> mapa = getMapaDocumentos(file, ".java");
                 mapa.forEach((File k, Map<String, Long> v) -> v
                         .forEach((String p, Long f) -> LOGGER.error("{},{},{}", k.getName(), p, f)));
             } catch (Exception e) {
@@ -55,16 +55,16 @@ public final class TermFrequency {
 		return Math.log(mapaDocumentos.size() / idf);
 	}
 
-    public static Map<File, Map<String, Long>> getMapaDocumentos(File file) {
+    public static Map<File, Map<String, Long>> getMapaDocumentos(File file,String suffix) {
 		if (!file.isDirectory()) {
 			Map<String, Long> termFrequencyMap = getFrequencyMap(file);
 			mapaDocumentos.put(file, termFrequencyMap);
 		} else {
-			String[] list = file.list();
+			String[] list = file.list((a,b)->b.endsWith(suffix));
 			if (list != null) {
 				Arrays.asList(list).forEach(f -> {
 					try {
-						TermFrequency.getMapaDocumentos(new File(file, f));
+                        TermFrequency.getMapaDocumentos(new File(file, f), suffix);
 					} catch (Exception e) {
 						LOGGER.error("", e);
 					}

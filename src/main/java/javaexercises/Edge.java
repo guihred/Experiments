@@ -2,7 +2,7 @@ package javaexercises;
 
 import java.util.Objects;
 
-class Edge implements Comparable<Edge> {
+public class Edge implements Comparable<Edge> {
 	private Vertex u;
 	private Vertex v;
 	private Integer weight;

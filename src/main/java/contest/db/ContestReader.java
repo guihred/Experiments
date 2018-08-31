@@ -53,7 +53,7 @@ public final class ContestReader implements HasLogging {
         return instance.listQuestions;
     }
 
-    public static ObservableList<ContestText> getContestTexts(@SuppressWarnings("unused") File file) {
+    public static ObservableList<ContestText> getContestTexts() {
         if (instance == null) {
             instance = new ContestReader();
         }

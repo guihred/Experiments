@@ -5,7 +5,9 @@ import static crypt.FXTesting.measureTimeExpectException;
 
 import exercise.java8.*;
 import java.io.File;
+import java.math.BigInteger;
 import java.util.Arrays;
+import javaexercises.*;
 import org.junit.Assert;
 import org.junit.Test;
 import simplebuilder.HasLogging;
@@ -101,4 +103,45 @@ public final class Java8ExercisesTest implements HasLogging {
         }
     }
 
+    @Test
+    public void testJavaExercise() throws Exception {
+        measureTime("new BigNo", () -> new BigNo(12_345_678));
+        measureTime("BigNo.multiply", () -> new BigNo(55).multiply(new BigNo(55)));
+        BigNo b = measureTime("BigNo.power", () -> BigNo.power(2, 2241));
+        BigInteger pow = BigInteger.valueOf(2).pow(2241);
+        Assert.assertEquals("BigNo and BigInteger should be the same", b.toString(), pow.toString());
+
+        Link link = new Link(3);
+        Link reverseReverse = measureTime("Link.reverse", () -> {
+            link.put(4).put(6).put(7);
+            return link.reverse().reverse();
+        });
+        Assert.assertEquals("Reverse of reverse should be equal", link.toString(), reverseReverse.toString());
+
+        Integer nodeSum = measureTime("Node.sum", () -> {
+            Node tree = new Node(16);
+            tree.put(8);
+            tree.put(4);
+            tree.put(32);
+            tree.put(64);
+            return tree.sum();
+        });
+
+        Assert.assertEquals("Sum should match", Integer.valueOf(124), nodeSum);
+
+        measureTime("JavaExercise19.testingJavaConcepts", JavaExercise19::testingJavaConcepts);
+        measureTime("JavaExercise1to11.fibonacciSeriesProblem", JavaExercise1to11::fibonacciSeriesProblem);
+        measureTime("JavaExercise1to11.greenflyProblem", JavaExercise1to11::greenflyProblem);
+        measureTime("JavaExercise1to11.allPrimeLessThan600Problem", JavaExercise1to11::allPrimeLessThan600Problem);
+        measureTime("JavaExercise1to11.easter", () -> JavaExercise1to11.easter(2017));
+        measureTime("JavaExercise1to11.friday13thProblem", JavaExercise1to11::friday13thProblem);
+        measureTime("JavaExercise1to11.forwardBackwardCountProblem", JavaExercise1to11::forwardBackwardCountProblem);
+        measureTime("JavaExercise1to11.accumulatingRoundingErrors", JavaExercise1to11::accumulatingRoundingErrors);
+        measureTime("JavaExercise1to11.sqrtByIteration", JavaExercise1to11::sqrtByIteration);
+        measureTime("JavaExercise1to11.recurringFractionProblem", JavaExercise1to11::recurringFractionProblem);
+        measureTime("JavaExercise1to11.sortingRecords", JavaExercise1to11::sortingRecords);
+        measureTime("JavaExercise24.countDuplicates", JavaExercise24::countDuplicates);
+        measureTime("JavaExercise25.solveQuadraticEquation", () -> new JavaExercise25().solveQuadraticEquation());
+
+    }
 }

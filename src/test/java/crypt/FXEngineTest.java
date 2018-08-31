@@ -7,10 +7,9 @@ import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 
 
-public class FXEngineTest1 extends ApplicationTest {
+public class FXEngineTest extends ApplicationTest {
 
     @Override
-
     public void start(Stage stage) throws Exception {
         new SnakeLauncher().start(stage);
     }
@@ -20,7 +19,6 @@ public class FXEngineTest1 extends ApplicationTest {
         KeyCode[] keys = { KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT };
         for (KeyCode keyCode : keys) {
             press(keyCode);
-            sleep(SnakeLauncher.UPDATE_MILLIS);
         }
         closeCurrentWindow();
     }

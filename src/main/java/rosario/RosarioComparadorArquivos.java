@@ -212,7 +212,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
 				}
 			}
-
 		});
 		TableColumn<Medicamento, Integer> colunaQntd = (TableColumn<Medicamento, Integer>) columns
 				.get(columns.size() - 2);

@@ -2,10 +2,7 @@ package gaming.ex17;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -22,7 +19,7 @@ public class PuzzleModel extends Group {
     private int height;
     private Point3D intersectedPoint;
     private Object source;
-    private List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
+    private List<List<PuzzlePiece>> linkedPieces = new LinkedList<>();
 
     public PuzzleModel() {
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
@@ -75,6 +72,7 @@ public class PuzzleModel extends Group {
                     if (containsP.isPresent() && containsPuzzle.isPresent()
                             && !containsP.get().equals(containsPuzzle.get())) {
                         containsPuzzle.get().addAll(containsP.get());
+
                         linkedPieces.remove(containsP.get());
                         double a = xDistance(puzzlePiece, piece);
                         double b = yDistance(puzzlePiece, piece);

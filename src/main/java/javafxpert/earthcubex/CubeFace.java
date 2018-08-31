@@ -9,6 +9,7 @@
  */
 package javafxpert.earthcubex;
 
+import election.experiment.CrawlerTask;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
@@ -62,6 +63,7 @@ public class CubeFace extends Parent {
 	}
 
 	final Node createMapTiles(int face) {
+        CrawlerTask.insertProxyConfig();
 		if (face == FRONT_FACE || face == RIGHT_FACE || face == REAR_FACE
 				|| face == LEFT_FACE) {
 			return createSideMapTiles(face);

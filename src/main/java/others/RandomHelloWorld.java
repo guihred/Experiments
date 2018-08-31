@@ -8,7 +8,7 @@ public final class RandomHelloWorld {
 	private RandomHelloWorld() {
 	}
 
-	public static void main(String[] args) {
+    public static void displayHelloWorld() {
         // EQUIVALENT TO HELLO
         String randomString = randomString(-229_985_452);
         // EQUIVALENT TO WORLD

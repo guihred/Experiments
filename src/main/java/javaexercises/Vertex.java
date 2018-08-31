@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import simplebuilder.HasLogging;
 
-class Vertex implements HasLogging {
+public class Vertex implements HasLogging {
 	public static final boolean NAMED = true;
 
 	private Map<Vertex, Integer> edges = new HashMap<>();
@@ -39,7 +39,7 @@ class Vertex implements HasLogging {
 		return topNum;
 	}
 
-	void assignLow(Map<Vertex, Integer> num, Map<Vertex, Integer> low) {
+    public void assignLow(Map<Vertex, Integer> num, Map<Vertex, Integer> low) {
 		Vertex v = this;
 		low.put(v, num.get(v));
 		Set<Vertex> adjacents = adjacents();
@@ -247,7 +247,7 @@ class Vertex implements HasLogging {
         HasLogging.log().info(chainString);
 	}
 
-	static List<Edge> kruskal(List<Vertex> totalVertices) {
+    public static List<Edge> kruskal(List<Vertex> totalVertices) {
 
 		int numVertices = totalVertices.size();
 		List<Edge> totalEdges = totalVertices.stream()

@@ -60,7 +60,8 @@ public class BrazilianVerbsTest {
 	}
 	@Test
 	public void testPresent() {
-		assertEquals(input.getValue(), BrazilianVerbsConjugator.conjugate(input.getKey()).get(Mode.PRESENT));
+        assertEquals("The conjugation should match", input.getValue(),
+                BrazilianVerbsConjugator.conjugate(input.getKey()).get(Mode.PRESENT));
 	}
 }
 

@@ -2,11 +2,7 @@ package fxproexercises.ch04;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.NumberBinding;
-import javafx.beans.binding.NumberExpression;
-import javafx.beans.binding.ObjectExpression;
+import javafx.beans.binding.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -148,10 +144,8 @@ public final class ReversiModel {
 		this.turn = turn;
 	}
 
-	private static class ReversiModelHolder {
-
+    private static final class ReversiModelHolder {
         private static final ReversiModel INSTANCE = new ReversiModel();
-
 		private ReversiModelHolder() {
 		}
     }

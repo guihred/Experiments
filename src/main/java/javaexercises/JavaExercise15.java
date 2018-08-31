@@ -24,25 +24,12 @@ public final class JavaExercise15 {
         LOGGER.info("{}", ten);
 		BigNo multiply = new BigNo(55).multiply(new BigNo(55));
         LOGGER.info("{}", multiply);
-		BigNo b = power(2, 2241);
+        BigNo b = BigNo.power(2, 2241);
         LOGGER.info("{}", b);
         BigInteger pow = BigInteger.valueOf(2).pow(2241);
         LOGGER.info("{}", pow);
 		
 	}
 
-	private static BigNo power(int m, int pow) {
-        BigNo p;
-		int n = pow;
-		p = n % 2 != 0 ? new BigNo(m) : new BigNo(1);
-        BigNo s = new BigNo(m);
-		while (n > 1) {
-			s = s.multiply(s);
-			n /= 2;
-			if (n % 2 != 0) {
-				p = p.multiply(s);
-			}
-		}
-		return p;
-	}
+
 }

@@ -175,7 +175,7 @@ public class Ch3 {
 	 */
 	public static class SquareSequence implements Sequence<BigInteger> {
 		private BigInteger i = BigInteger.ZERO;
-        private int c = 0;
+        private int c;
         int limit = 50;
 		@Override
 		public BigInteger next() {

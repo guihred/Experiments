@@ -29,6 +29,7 @@ public final class FXTesting implements HasLogging {
     }
     private void testApplications(List<Class<? extends Application>> applicationClasses)
             throws Exception {
+
         List<Object> testedApps = Collections.synchronizedList(new ArrayList<>());
         long currentTimeMillis = System.currentTimeMillis();
         for (Class<? extends Application> class1 : applicationClasses) {
@@ -38,6 +39,7 @@ public final class FXTesting implements HasLogging {
                     Application newInstance = class1.newInstance();
                     Stage primaryStage = new Stage();
                     newInstance.start(primaryStage);
+
                     primaryStage.close();
                     getLogger().info("ENDED " + class1.getSimpleName());
                     testedApps.add(newInstance);
@@ -64,11 +66,11 @@ public final class FXTesting implements HasLogging {
             }
         }
         if (!exceptionMap.isEmpty()) {
-            String collect = exceptionMap.entrySet().stream().peek(e -> {
-                getLogger().error("Class " + e.getKey().getSimpleName() + " threw an exception", e);
-            }).map(e -> e.getKey().getSimpleName()).map(e -> String.format("Class %s threw an exception", e))
+            String classesExceptions = exceptionMap.entrySet().stream()
+                    .peek(e -> getLogger().error("Class " + e.getKey().getSimpleName() + " threw an exception", e))
+                    .map(e -> e.getKey().getSimpleName()).map(e -> String.format("Class %s threw an exception", e))
                     .collect(Collectors.joining("\n", "\n", "\n"));
-            Assert.fail(collect);
+            Assert.fail(classesExceptions);
         }
         Assert.assertTrue("TESTS SUCCESSFULL", true);
     }

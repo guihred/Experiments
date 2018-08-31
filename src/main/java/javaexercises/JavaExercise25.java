@@ -16,17 +16,12 @@ import simplebuilder.HasLogging;
  */
 public final class JavaExercise25 implements HasLogging {
 
-	private JavaExercise25() {
-	}
 
 	public static void main(String[] args) {
         new JavaExercise25().solveQuadraticEquation();
-
 	}
 
-    private void solveQuadraticEquation() {
-        Locale.setDefault(Locale.ENGLISH);
-
+    public void solveQuadraticEquation() {
 		double[] coefA = { 1, 0.1, 0, 0, 0, 0, 0, 0, 1, 0.1, 10e-34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10e34, 10e-34, 1, 1,
 				10e-10 };
 		double[] coefB = { 5, 0.5, 0, 1, 1, 10000, 10e-34, 10e34, -20000, -20000, -2, 0, 1, 10e-34, 0, 1, 10, 100, 1000,
@@ -34,17 +29,22 @@ public final class JavaExercise25 implements HasLogging {
 				10e34, -10e30 };
 		double[] coefC = { 6, 0.6, 2, 0, 1, 1, -10e34, -10e-34, 10e8, 10e7, 10e34, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, -10e34,
 				-10e-34, -10e34, 10e-34, 10e-10 };
-		for (int i = 0; i < coefA.length; i++) {
+        solveQuadradicEquation(coefA, coefB, coefC);
+    }
+
+    private void solveQuadradicEquation(double[] coefA, double[] coefB, double[] coefC) {
+        Locale.setDefault(Locale.ENGLISH);
+        for (int i = 0; i < coefA.length; i++) {
 
 			double a = coefA[i];
 			double b = coefB[i];
 			double c = coefC[i];
 			if (a == 0.0) {
-                printf("%.1fx + %.1f = 0 %n", b, c);
-                printf("x=%f%n", -c / b);
+                printf("%.1fx + %.1f = 0 ", b, c);
+                printf("x=%.1f", -c / b);
 				continue;
 			}
-            printf("%fx^2 + %fx + %f = 0 %n", a, b, c);
+            printf("%.1fx^2 + %.1fx + %.1f = 0 ", a, b, c);
 
 			double delta = b * b - 4 * a * c;
 
@@ -53,11 +53,11 @@ public final class JavaExercise25 implements HasLogging {
 				double x1i = Math.sqrt(Math.abs(delta)) / 2 / a;
 				double x2 = -b / 2 / a;
 				double x2i = -Math.sqrt(Math.abs(delta)) / 2 / a;
-                printf("x1=%.1f%+.1fi, x2=%.1f%+.1fi%n", x1, x1i, x2, x2i);
+                printf("x1=%.1f%+.1fi, x2=%.1f%+.1fi", x1, x1i, x2, x2i);
 			} else {
 				double x1 = (-b + Math.sqrt(delta)) / 2 / a;
 				double x2 = (-b - Math.sqrt(delta)) / 2 / a;
-                printf("x1=%.1f, x2=%.1f%n", x1, x2);
+                printf("x1=%.1f, x2=%.1f", x1, x2);
 			}
 		}
     }

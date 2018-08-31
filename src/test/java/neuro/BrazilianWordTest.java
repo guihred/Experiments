@@ -39,7 +39,8 @@ public class BrazilianWordTest {
 
 	@Test
 	public void test() {
-		assertEquals(input, BrazilianWordSyllableSplitter.splitSyllables(input.replaceAll("-", "")));
+        assertEquals("The syllables should match", input,
+                BrazilianWordSyllableSplitter.splitSyllables(input.replaceAll("-", "")));
 	}
 }
 

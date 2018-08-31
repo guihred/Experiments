@@ -1,6 +1,6 @@
 package javaexercises;
 
-class BigNo {
+public class BigNo {
 		private static final int BASE = 10000;
 		private static final int DIGS = 4;
 		private static final String FORMAT = "%0" + DIGS + "d";
@@ -53,6 +53,21 @@ class BigNo {
 			}
 
 			return result;
-		}
+    }
+
+    public static BigNo power(int m, int pow) {
+        BigNo p;
+        int n = pow;
+        p = n % 2 != 0 ? new BigNo(m) : new BigNo(1);
+        BigNo s = new BigNo(m);
+        while (n > 1) {
+            s = s.multiply(s);
+            n /= 2;
+            if (n % 2 != 0) {
+                p = p.multiply(s);
+            }
+        }
+        return p;
+    }
 
 }

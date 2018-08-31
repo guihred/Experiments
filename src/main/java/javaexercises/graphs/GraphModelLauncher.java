@@ -109,8 +109,14 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
         SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(BaseTopology::getName);
         ChoiceBox<BaseTopology> topologySelect = CommonsFX.newSelect(topologies, converterTopology, "Select Topology");
+        topologySelect.getSelectionModel().select(0);
 		vBox.getChildren().add(new HBox(topologySelect,
-                CommonsFX.newButton("Go", e -> topologySelect.getSelectionModel().getSelectedItem().execute())));
+                CommonsFX.newButton("Go", e -> {
+                    BaseTopology selectedItem = topologySelect.getSelectionModel().getSelectedItem();
+                    if (selectedItem != null) {
+                        selectedItem.execute();
+                    }
+                })));
 
         Timeline timeline = new SimpleTimelineBuilder()
                 .addKeyFrame(new Duration(50.0), convergeLayout.getEventHandler()).build();
@@ -147,8 +153,14 @@ public class GraphModelLauncher extends Application implements HasLogging {
 		layout.execute();
 
         vBox.getChildren().add(CommonsFX.newButton("Create Topology", ev -> createTopology()));
-		vBox.getChildren().add(new HBox(selectLayout,
-                CommonsFX.newButton("Go", e -> selectLayout.getSelectionModel().getSelectedItem().execute())));
+        selectLayout.getSelectionModel().select(0);
+        vBox.getChildren().add(new HBox(selectLayout,
+                CommonsFX.newButton("Go", e -> {
+                    Layout selectedItem = selectLayout.getSelectionModel().getSelectedItem();
+                    if (selectedItem != null) {
+                        selectedItem.execute();
+                    }
+                })));
         vBox.getChildren().add(CommonsFX.newButton("Pause/Play", ev -> {
             Animation.Status status = timeline.getStatus();
             if (status == Animation.Status.RUNNING) {

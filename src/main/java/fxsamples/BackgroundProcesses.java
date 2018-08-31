@@ -1,24 +1,27 @@
 package fxsamples;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.apache.poi.util.IOUtils;
 
 public class BackgroundProcesses extends Application {
 	private Task<Boolean> copyWorker;
 
-	private static void copyFile(String src, String dest) throws InterruptedException {
+    private static void copyFile(String src, String dest) throws InterruptedException, IOException {
 		// simulate a long time
-		Random rnd = new Random(System.currentTimeMillis());
+        IOUtils.copy(new FileInputStream(src), new FileOutputStream(dest));
+
+        Random rnd = new Random(System.currentTimeMillis());
 		long millis = rnd.nextInt(1000);
 		Thread.sleep(millis);
 	}
@@ -27,7 +30,7 @@ public class BackgroundProcesses extends Application {
 		return new Task<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
-				for (int i = 0; i < numFiles; i++) {
+                for (long i = 0; i < numFiles; i++) {
 					long elapsedTime = System.currentTimeMillis();
 					copyFile("some file", "some dest file");
 					elapsedTime = System.currentTimeMillis() - elapsedTime;

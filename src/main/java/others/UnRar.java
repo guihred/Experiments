@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
@@ -92,7 +92,7 @@ public final class UnRar {
                     if (fh.isFileHeader() && fh.isUnicode()) {
                         LOGGER.info("unicode name: {}", fh.getFileNameW());
                     }
-                    LOGGER.info("start: {}", new Date());
+                    LOGGER.info("start: {}", LocalTime.now());
                     File file2 = new File(output, fh.getFileNameString());
                     if (!file2.exists()) {
                         boolean createNewFile = file2.createNewFile();
@@ -101,7 +101,7 @@ public final class UnRar {
                     if (!tryExtractFile(file2, fh, arc, file)) {
                         return;
                     }
-                    LOGGER.info("end: {}", new Date());
+                    LOGGER.info("end: {}", LocalTime.now());
                 }
                 LOGGER.info("successfully tested archive: {}", file);
                 successfulFiles.add(file.toString());

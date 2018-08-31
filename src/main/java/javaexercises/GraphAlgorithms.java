@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class GraphAlgorithms {
-    private static final Logger LOGGER = HasLogging.log();
+    public static final Logger LOGGER = HasLogging.log();
 	private GraphAlgorithms() {
 	}
 

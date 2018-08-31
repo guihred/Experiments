@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
-public class DataframeUtils extends DataframeML {
+public final class DataframeUtils extends DataframeML {
 
     private DataframeUtils() {
     }

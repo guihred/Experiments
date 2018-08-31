@@ -53,7 +53,7 @@ public class ContestApplication extends Application implements HasLogging {
         FilteredList<HasImage> li = observableArrayList.filtered(e -> true);
         ObservableList<ContestQuestion> questions = ContestReader.getContestQuestions(file,
                 () -> li.setPredicate(e -> e.getImage() != null));
-        ObservableList<ContestText> texts = ContestReader.getContestTexts(file);
+        ObservableList<ContestText> texts = ContestReader.getContestTexts();
 
 
 

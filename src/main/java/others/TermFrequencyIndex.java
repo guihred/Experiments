@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public final class TermFrequencyIndex {
 	public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
@@ -177,7 +178,7 @@ public final class TermFrequencyIndex {
 		return fre == 0 ? 0D : 1 + Math.log(fre);
 	}
 
-	public static void main(String[] args) {
+    public static void identifyKeyWordsInSourceFiles() {
 		try {
 
 			File arquivo = new File("src");
@@ -195,7 +196,7 @@ public final class TermFrequencyIndex {
 
 			entrySet.sort(new ValueComparator());
 			// MAP
-			File file = new File("resultado.txt");
+            File file = ResourceFXUtils.toFile("out/resultado.txt");
 
 			printWordFound(entrySet, file);
 		} catch (Exception e2) {

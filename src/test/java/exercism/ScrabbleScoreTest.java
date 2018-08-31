@@ -26,7 +26,7 @@ public class ScrabbleScoreTest {
 	@Test
 	public void test() {
 		Scrabble scrabble = new Scrabble(input);
-		assertEquals(expectedOutput, scrabble.getScore());
+        assertEquals("The pontuation should match", expectedOutput, scrabble.getScore());
 	}
 
 	@Parameterized.Parameters

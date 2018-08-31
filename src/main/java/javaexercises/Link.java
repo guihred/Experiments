@@ -1,6 +1,6 @@
 package javaexercises;
 
-class Link {
+public class Link {
 	private int val;
 	private Link next;
 

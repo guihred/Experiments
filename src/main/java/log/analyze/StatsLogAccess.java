@@ -175,7 +175,8 @@ public class StatsLogAccess {
 		return f -> {
 			try {
 				return t.apply(f);
-            } catch (@SuppressWarnings("unused") Exception e) {
+            } catch (Exception e) {
+                LOGGER.trace("", e);
 				return null;
 			}
 		};

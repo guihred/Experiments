@@ -47,7 +47,8 @@ public final class JavaExercise24 {
 
 	private JavaExercise24() {
 	}
-	public static void main(String[] args) {
+
+    public static void countDuplicates() {
 		double[] table = new double[630];
 		Arrays.fill(table, -1);
 		int duplicates = 0;

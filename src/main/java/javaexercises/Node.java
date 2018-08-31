@@ -1,6 +1,6 @@
 package javaexercises;
 
-class Node {
+public class Node {
 	private Node left;
 	private int val;
 	private Node right;

@@ -42,6 +42,7 @@ public final class CommonsFX {
 
 	public static Button newButton(String nome, EventHandler<ActionEvent> onAction) {
 		Button button = new Button(nome);
+        button.setId(nome);
 		button.setOnAction(onAction);
 		return button;
 	}

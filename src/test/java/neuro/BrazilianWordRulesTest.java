@@ -5,11 +5,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,7 +59,6 @@ public class BrazilianWordRulesTest {
 		);
 	}
 
-    @SuppressWarnings("boxing")
     public static void main(String[] args) throws IOException {
         Stream<String> words = getWords(ResourceFXUtils.toURI("pt_PT.dic"));
         Map<String, Set<String>> collect = words.filter(e -> e.contains("\t"))
@@ -84,9 +79,7 @@ public class BrazilianWordRulesTest {
             getWords(ResourceFXUtils.toURI("pt_PT.dic"))
                     .filter(e -> e.contains("T=" + s))
                     .map(e -> e.split("\t")[0].replaceAll("/\\w+", ""))
-                    .forEach(e -> {
-                        System.out.print(e + " ");
-                    });
+                    .forEach(e -> System.out.print(e + " "));
 
 
         }

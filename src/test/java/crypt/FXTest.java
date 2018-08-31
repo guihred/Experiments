@@ -39,6 +39,7 @@ import gaming.ex16.MadMazeLauncher;
 import gaming.ex17.PuzzleLauncher;
 import gaming.ex18.Square2048Launcher;
 import javaexercises.graphs.GraphModelLauncher;
+import javafxpert.earthcubex.EarthCubeMain;
 import ml.*;
 import org.junit.Test;
 import rosario.RosarioComparadorArquivos;
@@ -59,8 +60,8 @@ public final class FXTest implements HasLogging {
                 DrawingText.class, EarthriseChristmasApp.class, ElectionCrawlerApp.class, FormValidation.class,
                 FuriganaCrawlerApp.class, GlobeSphereApp.class, GolfBall.class, GraphModelLauncher.class,
                 GridPaneForm.class, HeatGraphExample.class, HelloWorldApp.class, HistogramExample.class,
-                InlineModelViewer.class, LineChartExample.class, LineManipulator.class, LookNFeelChooser.class,
-                MadMazeLauncher.class, ArkanoidLauncher.class);
+                EarthCubeMain.class, InlineModelViewer.class, LineChartExample.class, LineManipulator.class,
+                LookNFeelChooser.class, MadMazeLauncher.class, ArkanoidLauncher.class);
     }
 
     @Test
@@ -78,14 +79,13 @@ public final class FXTest implements HasLogging {
 
     @Test
     public void test3() throws Throwable {
-            FXTesting.testApps(ContestApplication.class,
-                    AnimationExample.class, XylophoneApp.class, ScatterChartWithFillExample.class, Shapes3DTexture.class,
-                    Simple3DBoxApp.class, SimpleAudioPlayerLauncher.class, SimpleScene3D.class, SnakeLauncher.class,
-                    SlidingPuzzleLauncher.class, SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class,
-                    Square2048Launcher.class, StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class,
-                    TheMenuGrid.class, ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class,
-                    TronLauncher.class, VanishingCirclesApp.class, WordSearchApp.class, WordSuggetionApp.class,
-                    WorkingListsViews.class, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class);
-
+        FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
+                ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class,
+                SimpleAudioPlayerLauncher.class, SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class,
+                SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class, Square2048Launcher.class,
+                StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class, TheMenuGrid.class,
+                ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class, TronLauncher.class,
+                VanishingCirclesApp.class, WordSearchApp.class, WordSuggetionApp.class, WorkingListsViews.class,
+                WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class);
     }
 }
