@@ -4,21 +4,17 @@ package crypt;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public class VigenereXORCipher {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(VigenereXORCipher.class);
+    public static final Logger LOGGER = HasLogging.log(VigenereXORCipher.class);
 	private static final Map<Integer,Double> MAPA_FREQUENCIA = ImmutableMap.<Integer,Double>builder()
 			.put('e' + 0, 12.702D).put('t' + 0, 9.056D).put('a' + 0, 8.167D).put('o' + 0, 7.507D).put('i' + 0, 6.966D)
 			.put('n' + 0, 6.749D).put('s' + 0, 6.327D).put('h' + 0, 6.094D).put('r' + 0, 5.987D).put('d' + 0, 4.253D)
@@ -64,7 +60,12 @@ public class VigenereXORCipher {
 		return s.stream().map(i -> i ^ k[current++ % length]).map(i -> Character.valueOf((char) i.intValue()))
 				.map(Object::toString).collect(Collectors.joining());
 	}
-	public String encrypt(String k, List<Integer> s) {
+
+    public String encrypt(String k, String s) {
+        return encrypt(k, s.chars().boxed().collect(Collectors.toList()));
+    }
+
+    public String encrypt(String k, List<Integer> s) {
 		current = 0;
 		int length = k.length();
 		return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
@@ -140,9 +141,10 @@ public class VigenereXORCipher {
         LOGGER.info("{}", collect);
 		return bestKeySize;
 	}
-	public static void main(String[] args) {
+
+    public static void main(String[] args) {
 		try {
-		VigenereXORCipher vigenereCypher = new VigenereXORCipher();
+            VigenereXORCipher vigenereCypher = new VigenereXORCipher();
 			vigenereCypher.findKey(7L);
 		} catch (IOException e) {
 			LOGGER.error("", e);

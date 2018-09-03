@@ -28,5 +28,19 @@ public final class ShiftCipherTest implements HasLogging {
         Assert.assertEquals("Vigenere Cipher should be equal", msg, decrypt);
     }
 
+    @Test
+    public void vigenereXORTest() {
+        try {
+            VigenereXORCipher vigenereCypher = new VigenereXORCipher();
+            String k = "spy";
+            String msg = "seeyouatnoon";
+            String encrypt = vigenereCypher.encrypt(k, msg);
+            String decrypt = vigenereCypher.decrypt(k, encrypt);
+            Assert.assertEquals("Vigenere Cipher should be equal", msg, decrypt);
+        } catch (Exception e) {
+            VigenereXORCipher.LOGGER.error("", e);
+        }
+    }
+
 
 }

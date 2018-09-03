@@ -14,6 +14,8 @@ import fxproexercises.ch06.ResponsiveUIApp;
 import fxproexercises.ch06.TaskProgressApp;
 import fxproexercises.ch06.ThreadInformationApp;
 import fxproexercises.ch07.*;
+import fxproexercises.ch08.BasicAudioClipExample;
+import fxproexercises.ch08.BasicAudioPlayerWithControlLauncher;
 import fxproexercises.ch08.MediaPlayerExample;
 import fxproexercises.ch08.SimpleAudioPlayerLauncher;
 import fxproexercises.ch10.VanishingCirclesApp;
@@ -74,7 +76,9 @@ public final class FXTest implements HasLogging {
                 PieChartExample.class, PlatformMain.class, PlayingAudio.class, PointsExample.class, PongLauncher.class,
                 PopulacionalPyramidExample.class, PuzzleLauncher.class, QuartoLauncher.class, RaspiCycle.class,
                 RegressionChartExample.class, ResponsiveUIApp.class, ReversiMain.class, ReversiPieceTest.class,
-                ReversiSquareTest.class, RosarioComparadorArquivos.class, RubiksCubeLauncher.class, SandboxFX.class);
+                ReversiSquareTest.class, RosarioComparadorArquivos.class, RubiksCubeLauncher.class, SandboxFX.class,
+                AlignUsingStackAndTile.class, ScatterChartExample.class, BasicAudioClipExample.class,
+                BasicAudioPlayerWithControlLauncher.class, Shapes3DApp.class);
     }
 
     @Test

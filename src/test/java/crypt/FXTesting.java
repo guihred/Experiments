@@ -15,9 +15,9 @@ import simplebuilder.HasLogging;
 
 public final class FXTesting implements HasLogging {
     private static final Logger LOGGER = HasLogging.log(FXTesting.class);
-    JFXPanel jfxPanel = new JFXPanel();
+    protected JFXPanel jfxPanel = new JFXPanel();
 
-    Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
+    private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 
     private FXTesting() {
     }
@@ -39,7 +39,6 @@ public final class FXTesting implements HasLogging {
                     Application newInstance = class1.newInstance();
                     Stage primaryStage = new Stage();
                     newInstance.start(primaryStage);
-
                     primaryStage.close();
                     getLogger().info("ENDED " + class1.getSimpleName());
                     testedApps.add(newInstance);
