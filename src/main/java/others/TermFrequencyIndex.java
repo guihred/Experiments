@@ -196,7 +196,9 @@ public final class TermFrequencyIndex {
 
 			entrySet.sort(new ValueComparator());
 			// MAP
-            File file = ResourceFXUtils.toFile("out/resultado.txt");
+            File file2 = ResourceFXUtils.toFile("out");
+
+            File file = new File(file2, "resultado.txt");
 
 			printWordFound(entrySet, file);
 		} catch (Exception e2) {

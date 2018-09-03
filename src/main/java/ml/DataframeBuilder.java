@@ -25,8 +25,8 @@ public class DataframeBuilder extends DataframeML {
         return this;
     }
 
-    public DataframeBuilder addMapping(String d, Function<Object, Object> mapping) {
-        dataframeML.mapping.put(d, mapping);
+    public DataframeBuilder addMapping(String d, Function<Object, Object> mapper) {
+        dataframeML.mapping.put(d, mapper);
         return this;
     }
 

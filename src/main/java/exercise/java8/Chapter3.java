@@ -12,10 +12,10 @@ public final class Chapter3 {
 	}
 
     public static Integer getRich(List<Integer> l, int low, int high) {
-        LOGGER.info("{},{}", low, high);
+        LOGGER.trace("{},{}", low, high);
 		if (low + 1 == high) {
 			int i = l.get(high) - l.get(low);
-            LOGGER.info("{}", i);
+            LOGGER.trace("{}", i);
 			return i;
 		}
 		int mid = (low + high) / 2;
@@ -24,7 +24,7 @@ public final class Chapter3 {
 		int z = highest(l, mid, high) - lowest(l, low, mid);
 
         int i = Integer.max(Integer.max(x, y), z);
-        LOGGER.info("{}", i);
+        LOGGER.trace("{}", i);
 		return i;
 	}
 
@@ -39,7 +39,7 @@ public final class Chapter3 {
 
 	public static void main(String[] args) {
 		Integer rich = getRich(Arrays.asList(20, 66, 12, 48, 38, 38, 20, 65, 54), 0, 8);
-        LOGGER.info("{}", rich);
+        LOGGER.trace("{}", rich);
 	}
 
 }
