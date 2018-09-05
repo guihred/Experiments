@@ -56,7 +56,7 @@ import xylophone.XylophoneApp;
 public final class FXTest implements HasLogging {
     @Test
     public void test() throws Throwable {
-        FXTesting.testApps(AreaChartExample.class, BackgroundProcesses.class,
+        FXTesting.testApps(AreaChartExample.class, BackgroundProcesses.class, PieGraphExample.class,
                 BarChartExample.class, BoundsPlayground.class, BubbleChartExample.class, CenterUsingBind.class,
                 CenterUsingStack.class, ChangingTextFonts.class, Chart3dDemo.class, Chart3dGraph.class,
                 Chart3dSampleApp.class, ContestQuestionEditingDisplay.class, CSSStylingExample.class, Cubes3D.class,

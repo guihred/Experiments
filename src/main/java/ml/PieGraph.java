@@ -1,10 +1,6 @@
 package ml;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
@@ -15,13 +11,15 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
-import simplebuilder.HasLogging;
 
 public class PieGraph extends Canvas {
 	private GraphicsContext gc;
 	private ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
 	private IntegerProperty radius = new SimpleIntegerProperty(275);
+    private IntegerProperty bins = new SimpleIntegerProperty(10);
     private List<Color> availableColors;
+    private String column = "Region";
+    private DataframeML dataframe;
 
     public PieGraph() {
         super(550, 550);
@@ -29,12 +27,35 @@ public class PieGraph extends Canvas {
         drawGraph();
         radius.set((int) (gc.getCanvas().getWidth() / 2));
         radius.addListener(e -> drawGraph());
+        bins.addListener(e -> {
+
+            Map<String, Long> collect = convertToHistogram();
+            histogram.clear();
+            histogram.putAll(collect);
+            availableColors = generateRandomColors(histogram.size());
+            drawGraph();
+        });
     }
 
-    public void setHistogram(Map<String, Long> histogram) {
-        this.histogram.putAll(histogram);
+    public void setDataframe(DataframeML dataframe, String column) {
+        this.dataframe = dataframe;
+        this.column = column;
+        histogram.putAll(convertToHistogram());
         availableColors = generateRandomColors(histogram.size());
         drawGraph();
+    }
+
+    private Map<String, Long> convertToHistogram() {
+        Map<String, Long> collect;
+        if (dataframe.getFormat(column) != String.class) {
+            Map<Double, Long> dataframeHistogram = dataframe.histogram(column, bins.get());
+            collect = dataframeHistogram.entrySet().stream()
+                    .collect(Collectors.toMap(t -> String.format("%.0f", t.getKey()),
+                            Entry<Double, Long>::getValue, (a, b) -> a + b));
+        } else {
+            collect = dataframe.histogram(column);
+        }
+        return collect;
     }
 
     public final void drawGraph() {
@@ -66,11 +87,12 @@ public class PieGraph extends Canvas {
             double x = Math.sin(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 / 1.5 + centerX + j
                     - 4 * entry.getKey().length();
             double y = Math.cos(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 / 1.5 + centerY + j;
-            gc.strokeText(entry.getKey(), x, y);
+
+            gc.setFill(Color.BLACK);
+            gc.fillText(entry.getKey(), x, y);
 
             startAngle += arcExtent;
         }
-        HasLogging.log().info("{}", histogramLevels);
         drawLegend(histogramLevels, availableColors);
     }
 
@@ -114,11 +136,20 @@ public class PieGraph extends Canvas {
             int j = i / columns;
             double x2 = x + a * (i % columns);
             double y2 = y + b * j;
-            gc.strokeText(entry.getKey(), x2, y2);
+            gc.setFill(Color.BLACK);
+            gc.fillText(entry.getKey(), x2, y2);
 			gc.setFill(availableColors1.get(index));
             gc.fillRect(x2 - 10, y2 - 8, 8, 8);
             gc.strokeRect(x2 - 10, y2 - 8, 8, 8);
         }
+    }
+
+    public IntegerProperty radiusProperty() {
+        return radius;
+    }
+
+    public IntegerProperty binsProperty() {
+        return bins;
     }
 
 }

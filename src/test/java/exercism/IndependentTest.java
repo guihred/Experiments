@@ -23,9 +23,7 @@ import org.apache.commons.math3.complex.Complex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
-import others.RandomHelloWorld;
-import others.TermFrequency;
-import others.TermFrequencyIndex;
+import others.*;
 import sample.cubesystem.ElementWiseOp;
 import simplebuilder.HasLogging;
 
@@ -122,5 +120,11 @@ public class IndependentTest implements HasLogging {
     public void testCh4() {
         measureTime("Ch4.cyclicToString",
                 () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
+    }
+
+    @Test
+    public void testRarAndZIP() {
+        measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
+        measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
     }
 }

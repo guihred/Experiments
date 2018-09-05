@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 
 public final class UnZip {
-    private static final String ZIPPED_FILE_FOLDER = "C:\\Users\\Note\\Contacts";
-    private static final Logger LOGGER = LoggerFactory.getLogger(UnZip.class);
+    public static final String ZIPPED_FILE_FOLDER = "C:\\Users\\guilherme.hmedeiros\\git\\FXperiment";
+    private static final Logger LOGGER = HasLogging.log(UnZip.class);
 
 	private UnZip() {
 	}
@@ -19,21 +19,28 @@ public final class UnZip {
 	public static void main(String[] args) {
 
         File jap = new File(ZIPPED_FILE_FOLDER);
-		if (jap.isDirectory()) {
+        extractZippedFiles(jap);
+
+	}
+
+    public static void extractZippedFiles(String jap) {
+        extractZippedFiles(new File(jap));
+    }
+
+    public static void extractZippedFiles(File jap) {
+        if (jap.isDirectory()) {
 			File[] listFiles = jap.listFiles();
-			File output = new File(jap, "arquivos");
+            File output = new File(jap, "out");
 			if (!output.exists()) {
 				output.mkdir();
 			}
 			for (File file : listFiles) {
-
 				if (file.getName().endsWith("zip")) {
 					extractZip(output, file);
 				}
 			}
 		}
-
-	}
+    }
 
 	private static void extractZip(File saida, File file) {
 

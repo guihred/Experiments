@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class UnRar {
-    private static final String SRC_DIRECTORY = "C:\\Users\\Guilherme\\Videos\\FantasticBeasts\\Fantastic.Beasts.and.Where.to.Find.Them";
+    public static final String SRC_DIRECTORY = "C:\\Users\\guilherme.hmedeiros\\git\\FXperiment";
 
     private static final Logger LOGGER = HasLogging.log();
 
@@ -27,7 +27,15 @@ public final class UnRar {
 
     public static void main(String[] args) {
         File file = new File(SRC_DIRECTORY);
-        File output = new File(file, "arquivos3");
+        extractRarFiles(file);
+    }
+
+    public static void extractRarFiles(String file) {
+        extractRarFiles(new File(file));
+    }
+
+    public static void extractRarFiles(File file) {
+        File output = new File(file, "out");
         if (!output.exists()) {
             output.mkdir();
         }
