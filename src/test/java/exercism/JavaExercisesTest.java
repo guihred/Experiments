@@ -1,9 +1,12 @@
-package crypt;
+package exercism;
 
 import static crypt.FXTesting.measureTime;
 import static crypt.FXTesting.measureTimeExpectException;
 
+import crypt.FXTesting;
 import exercise.java8.*;
+import extract.ExcelService;
+import extract.WordService;
 import fxproexercises.ch03.JavaFXBeanController;
 import fxproexercises.ch03.MultipleBindingExample;
 import fxproexercises.ch03.SimplePropertyBindExample;
@@ -15,10 +18,17 @@ import fxproexercises.ch06.FXCollectionsMethodsExamples;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javaexercises.*;
+import javafx.collections.ObservableList;
+import log.analyze.FunctionEx;
 import org.junit.Assert;
 import org.junit.Test;
+import rosario.LeitorArquivos;
+import rosario.Medicamento;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public final class JavaExercisesTest implements HasLogging {
     @Test
@@ -163,5 +173,21 @@ public final class JavaExercisesTest implements HasLogging {
         measureTime("JavaExercise24.countDuplicates", JavaExercise24::countDuplicates);
         measureTime("JavaExercise25.solveQuadraticEquation", () -> new JavaExercise25().solveQuadraticEquation());
 
+    }
+
+    @Test
+    public void testExcelAndWordFile() throws Exception {
+        ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
+                () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
+        Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
+        campos.put("Registro", Medicamento::getRegistro);
+        campos.put("Codigo", Medicamento::getCodigo);
+        campos.put("Lote", Medicamento::getLote);
+        campos.put("Nome", Medicamento::getNome);
+        campos.put("Quantidade", Medicamento::getQuantidade);
+        measureTime("ExcelService.exportList",
+                () -> ExcelService.exportList(medicamentosSNGPCPDF, campos, "sngpcMeds.xlsx"));
+        measureTime("WordService.getPowerPointImages",
+                () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
     }
 }

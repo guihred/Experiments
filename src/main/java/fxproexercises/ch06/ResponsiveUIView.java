@@ -43,7 +43,7 @@ final class ResponsiveUIView implements HasLogging {
 		changeFillButton.setOnAction((ActionEvent actionEvent) -> {
 			final Paint fillPaint = model.getFillPaint().get();
 			model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
-			new Thread(tryTo(() -> {
+            new Thread(RunnableEx.makeRunnable(() -> {
 				Thread.sleep(3000);
 				Platform.runLater(() -> {
 					final Rectangle rect = rectangle;
@@ -57,17 +57,6 @@ final class ResponsiveUIView implements HasLogging {
 				.set(model.getStrokePaint().get().equals(Color.DARKGRAY) ? Color.BLACK : Color.DARKGRAY));
     }
 
-
-	public static Runnable tryTo(RunnableEx e) {
-		return () -> {
-            try {
-                e.run();
-            } catch (Exception e2) {
-                // IGNORE
-                HasLogging.log().trace("", e2);
-            }
-		};
-	}
 	public Scene getScene() {
 		return scene;
 	}

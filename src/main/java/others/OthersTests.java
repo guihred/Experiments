@@ -2,11 +2,7 @@ package others;
 
 import static com.google.common.collect.ImmutableMap.of;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.IntSummaryStatistics;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -85,7 +81,7 @@ public class OthersTests {
 		return asList.stream().collect(Collectors.joining());
 	}
 
-	public int squareDigits(int n) {
+    public static int squareDigits(int n) {
 		return Integer.valueOf(String.valueOf(n).chars().mapToObj(Character::getNumericValue).map(i -> String.valueOf(i * i))
 				.collect(Collectors.joining()));
 	}

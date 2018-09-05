@@ -127,4 +127,16 @@ public class IndependentTest implements HasLogging {
         measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
         measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
     }
+
+    @Test
+    public void testOthersTest() {
+        int[] arr = { 3, 5, 6, 8, 7, 2 };
+        measureTime("OthersTests.minMax", () -> OthersTests.minMax(arr));
+        measureTime("OthersTests.nth", () -> OthersTests.nth(5));
+        measureTime("OthersTests.squareDigits", () -> OthersTests.squareDigits(5));
+        measureTime("OthersTests.unique", () -> OthersTests.unique(arr));
+        measureTime("OthersTests.reverse", () -> OthersTests.reverse("HIHI"));
+        measureTime("OthersTests.p", () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3),
+                new Complex(-1, 1), new Complex(-9, -5)));
+    }
 }

@@ -1,7 +1,6 @@
 package rosario;
 
 import java.awt.Color;
-import java.awt.Desktop;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -372,7 +371,7 @@ public final class LeitorArquivos {
 		return "";
 	}
 
-	public static void exportarArquivo(ObservableList<Medicamento> medicamentosLoja,
+    public static File exportarArquivo(ObservableList<Medicamento> medicamentosLoja,
             List<Medicamento> medicamentosSNGPC, ObservableList<Medicamento> medicamentosAnvisa) {
 
 		XSSFWorkbook wb = new XSSFWorkbook();
@@ -386,11 +385,11 @@ public final class LeitorArquivos {
 		File file2 = new File("resultado.xlsx");
         try (OutputStream file = new FileOutputStream(file2)) {
 			wb.write(file);
-			Desktop.getDesktop().open(file2);
+
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-
+        return file2;
 	}
 
 	private static void criarAba(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {

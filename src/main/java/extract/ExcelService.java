@@ -2,21 +2,26 @@ package extract;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.commons.io.IOUtils;
+import javafx.collections.ObservableList;
+import log.analyze.FunctionEx;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
+import org.slf4j.Logger;
+import rosario.LeitorArquivos;
+import rosario.Medicamento;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
-public class ExcelService implements HasLogging {
+public class ExcelService {
 
+    private static final Logger LOG = HasLogging.log(ExcelService.class);
 
-	public <T> void getExcel(BiFunction<Integer, Integer, List<T>> lista, Map<String, Function<T, Object>> mapa,
+    public static <T> void getExcel(BiFunction<Integer, Integer, List<T>> lista,
+            Map<String, FunctionEx<T, Object>> mapa,
 			OutputStream response) {
         try (SXSSFWorkbook xssfWorkbook = new SXSSFWorkbook(500)) {
 			Sheet sheetAt = xssfWorkbook.createSheet();
@@ -37,8 +42,8 @@ public class ExcelService implements HasLogging {
 					T entidade = apply.get(j);
 					Row row = sheetAt.createRow(i + 1 + j);
 					int k = 0;
-					for (Function<T, Object> campoFunction : mapa.values()) {
-						Object campo = tentarFuncao(campoFunction).apply(entidade);
+                    for (FunctionEx<T, Object> campoFunction : mapa.values()) {
+                        Object campo = FunctionEx.makeFunction(campoFunction).apply(entidade);
 						setValorPorClasse(formatoDate, formatoBigDecimal, row, k, campo);
 						k++;
 					}
@@ -50,20 +55,13 @@ public class ExcelService implements HasLogging {
 				}
 			}
 
-			File createTempFile = File.createTempFile("auditoria", ".xlsx");
-			OutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(createTempFile));
-			xssfWorkbook.write(fileOutputStream);
-
-			IOUtils.copy(new FileInputStream(createTempFile), response);
-
-            Files.delete(createTempFile.toPath());
-
+            xssfWorkbook.write(response);
 		} catch (IOException e) {
-            HasLogging.log().error("ERRO ", e);
+            LOG.error("ERRO ", e);
 		}
 	}
 
-	public static void setValorPorClasse(CellStyle dateFormat, CellStyle formatoBigDecimal, Row row, int k,
+    public static void setValorPorClasse(CellStyle dateFormat, CellStyle formatoBigDecimal, Row row, int k,
 			Object campo) {
 		if (campo instanceof Date) {
 			Cell createCell = row.createCell(k, CellType.NUMERIC);
@@ -88,7 +86,7 @@ public class ExcelService implements HasLogging {
 		}
 	}
 
-	public <T> void getExcel(List<T> lista, Map<String, Function<T, Object>> mapa, OutputStream response) {
+    public static <T> void getExcel(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, OutputStream response) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
 			XSSFSheet sheetAt = workbook.createSheet();
 			XSSFRow row2 = sheetAt.createRow(0);
@@ -108,8 +106,8 @@ public class ExcelService implements HasLogging {
 				T entidade = lista.get(i);
 				XSSFRow row = sheetAt.createRow(i + 1);
 				int k = 0;
-				for (Function<T, Object> campoFunction : mapa.values()) {
-					Object campo = tentarFuncao(campoFunction).apply(entidade);
+                for (FunctionEx<T, Object> campoFunction : mapa.values()) {
+                    Object campo = FunctionEx.makeFunction(campoFunction).apply(entidade);
 					setValorPorClasse(formatoData, formatoBigDecimal, row, k, campo);
 					k++;
 				}
@@ -119,34 +117,16 @@ public class ExcelService implements HasLogging {
 				sheetAt.autoSizeColumn(k);
 			}
 
-			File createTempFile = File.createTempFile("auditoria", ".xlsx");
-			FileOutputStream fileOutputStream = new FileOutputStream(createTempFile);
-			workbook.write(fileOutputStream);
-
-
-			IOUtils.copy(new FileInputStream(createTempFile), response);
-
-            Files.delete(createTempFile.toPath());
+            workbook.write(response);
 
 		} catch (IOException e) {
-            HasLogging.log().error("ERRO ", e);
+            LOG.error("ERRO ", e);
 		}
 	}
 
-	public <T> Function<T, Object> tentarFuncao(Function<T, Object> campoFunction) {
-        return t -> {
-			try {
-				return campoFunction.apply(t);
-			} catch (Exception e) {
-                HasLogging.log().trace("", e);
-				return null;
-			}
-		};
-	}
-
-	public void getExcel(String documento, Map<Object, Object> map, List<String> abas, int sheetClonada,
+    public static void getExcel(String documento, Map<Object, Object> map, List<String> abas, int sheetClonada,
 			OutputStream response) {
-		try (InputStream file = getClass().getResourceAsStream("/../../resources/doc/" + documento);
+        try (InputStream file = ResourceFXUtils.toStream(documento);
                 XSSFWorkbook workbookXLSX = new XSSFWorkbook(file)) {
 
 			List<String> abasPresentes = new ArrayList<>();
@@ -181,13 +161,13 @@ public class ExcelService implements HasLogging {
 			workbookXLSX.write(response);
 
 		} catch (IOException e) {
-            HasLogging.log().error("ERRO DE ENTRADA DE DADOS", e);
+            LOG.error("ERRO DE ENTRADA DE DADOS", e);
 		}
 	}
 
 
-	public void getExcel(String arquivo, Map<Object, Object> map, OutputStream outStream) {
-		try (InputStream file = getClass().getResourceAsStream("/../../resources/doc/" + arquivo);
+    public static void getExcel(String arquivo, Map<Object, Object> map, OutputStream outStream) {
+        try (InputStream file = ResourceFXUtils.toStream(arquivo);
 		// Get the workbook instance for XLS file
                 XSSFWorkbook workbookXLSX = new XSSFWorkbook(file)) {
 			// Get first sheet from the workbook
@@ -206,12 +186,12 @@ public class ExcelService implements HasLogging {
 			workbookXLSX.write(outStream);
 
 		} catch (IOException e) {
-            HasLogging.log().error("ERRO DE ENTRADA DE DADOS", e);
+            LOG.error("ERRO DE ENTRADA DE DADOS", e);
 		}
 
 	}
 
-	public void alterarValorCell(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell c) {
+    public static void alterarValorCell(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell c) {
 		Cell cell = c;
 		if (cell.getCellTypeEnum() == CellType.NUMERIC) {
             alterNumeric(map, sheet, cell);
@@ -222,7 +202,7 @@ public class ExcelService implements HasLogging {
     }
 
     @SuppressWarnings("rawtypes")
-    private void alterString(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell cell) {
+    private static void alterString(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell cell) {
         String stringCellValue = cell.getStringCellValue();
         printDebug(stringCellValue);
 
@@ -256,7 +236,7 @@ public class ExcelService implements HasLogging {
     }
 
     @SuppressWarnings("rawtypes")
-    private void alterNumeric(Map<Object, Object> map, XSSFSheet sheet, Cell cell) {
+    private static void alterNumeric(Map<Object, Object> map, XSSFSheet sheet, Cell cell) {
         double numericCellValue = cell.getNumericCellValue();
         printDebug(numericCellValue);
         if (map.containsKey(numericCellValue)) {
@@ -274,32 +254,31 @@ public class ExcelService implements HasLogging {
         }
     }
 
-	public void printDebug(Object value) {
-        getLogger().trace("{}", value);
+    public static void printDebug(Object value) {
+        LOG.trace("{}", value);
 	}
 
-	public void exportarDemanda(OutputStream response) {
-//		Map<String, Function<Demanda, Object>> campos = new LinkedHashMap<>();
-//		campos.put("Tipo de Documento", (Demanda p) -> p.getTipoDocumentoExterno().getNome());
-//		campos.put("Tipo de Demanda", (Demanda p) -> p.getTipoDemanda().getNome());
-//		campos.put("SIPPS", Demanda::getSipps);
-//		campos.put("Data de Demanda", Demanda::getDtDenuncia);
-//		campos.put("Ente Federativo", (Demanda p) -> p.getEnte().getNome());
-//		campos.put("UF", (Demanda p) -> p.getEnte().getUf());
-//		campos.put("Órgao de Origem", Demanda::getOrgaoDenunciante);
-//		campos.put("Responsável", (Demanda p) -> p.getCriadorDemanda().getNome());
-//		campos.put("Assunto", Demanda::getDenuncia);
-//		campos.put("Acompanhamento", Demanda::getUltimoAcompanhamento);
-//		campos.put("Prazo", Demanda::getDiasParaComecar);
-//		campos.put("Prazo em Dias", Demanda::getPrazo);
-//		BiFunction<Integer, Integer, List<Object>> funcao = (Integer offset, Integer limite) -> {
-//			filtro.setOffset(offset);
-//			filtro.setMaxResults(limite);
-//			return new ArrayList<>();
-//		};
-//
-//		getExcel(funcao, campos, response);
+    public static <T> void exportList(List<T> lis, Map<String, FunctionEx<T, Object>> campos, String fileResult) {
+        File file = new File(ResourceFXUtils.toFile("out"), fileResult);
+        try (FileOutputStream response = new FileOutputStream(file);) {
+            getExcel(lis, campos, response);
+        } catch (Exception e) {
+            LOG.error("", e);
+        }
 	}
+
+    public static void main(String[] args) throws IOException {
+        ObservableList<Medicamento> medicamentosSNGPCPDF = LeitorArquivos
+                .getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf"));
+        Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
+        campos.put("Registro", Medicamento::getRegistro);
+        campos.put("Codigo", Medicamento::getCodigo);
+        campos.put("Lote", Medicamento::getLote);
+        campos.put("Nome", Medicamento::getNome);
+        campos.put("Quantidade", Medicamento::getQuantidade);
+        exportList(medicamentosSNGPCPDF, campos, "sngpcMeds.xlsx");
+
+    }
 
 
 

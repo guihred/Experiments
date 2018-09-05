@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToLongFunction;
 import java.util.regex.Pattern;
@@ -48,7 +47,7 @@ public class StatsLogAccess {
         try (Stream<String> lines = Files.lines(path)) {
             Map<String, LongSummaryStatistics> stats = lines
                     .filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
-                    .collect(Collectors.groupingBy(tentarFuncao(linha -> {
+                    .collect(Collectors.groupingBy(FunctionEx.makeFunction(linha -> {
                         String string = linha.split(" ")[6];
                         if (string.contains("?")) {
                             return string.substring(0, string.indexOf('?'));
@@ -96,14 +95,14 @@ public class StatsLogAccess {
 
     private static void printSummary(Path path) {
         try (Stream<String> lines = Files.lines(path)) {
-            LongSummaryStatistics summary = lines.map(tentarFuncao(linha -> {
+            LongSummaryStatistics summary = lines.map(FunctionEx.makeFunction(linha -> {
         		if (linha == null || linha.isEmpty()) {
         			return "0";
         		}
 
         		String[] a = linha.split(" ");
         		return a[a.length - 1];
-        	})).map(tentarFuncao(Long::parseLong)).mapToLong(a -> a != null ? a : 0).summaryStatistics();
+            })).map(FunctionEx.makeFunction(Long::parseLong)).mapToLong(a -> a != null ? a : 0).summaryStatistics();
             LOGGER.info("{} = {},\t{},\t{},\t{}", path, summary.getAverage(), summary.getMax(), summary.getMin(),
                     summary.getCount());
 
@@ -161,7 +160,8 @@ public class StatsLogAccess {
         try (Stream<String> lines = Files.lines(path)) {
             Map<String, Long> stats = lines
 					.filter(l -> !l.endsWith("-") && !l.split(" ")[6].contains("resources"))
-					.collect(Collectors.groupingBy(tentarFuncao(linha -> linha.split(" ")[6]), Collectors.counting()));
+                    .collect(Collectors.groupingBy(FunctionEx.makeFunction(linha -> linha.split(" ")[6]),
+                            Collectors.counting()));
 			out.println(path + "--------------------------");
 
 			stats.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
@@ -171,14 +171,4 @@ public class StatsLogAccess {
 		}
 	}
 
-	protected static <T, R> Function<T, R> tentarFuncao(FunctionEx<T, R> t) {
-		return f -> {
-			try {
-				return t.apply(f);
-            } catch (Exception e) {
-                LOGGER.trace("", e);
-				return null;
-			}
-		};
-	}
 }

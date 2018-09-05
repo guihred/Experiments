@@ -41,11 +41,13 @@ import gaming.ex15.RubiksCubeLauncher;
 import gaming.ex16.MadMazeLauncher;
 import gaming.ex17.PuzzleLauncher;
 import gaming.ex18.Square2048Launcher;
+import gaming.ex19.SudokuLauncher;
 import javaexercises.graphs.GraphModelLauncher;
 import javafxpert.earthcubex.EarthCubeMain;
 import labyrinth.*;
 import ml.*;
 import org.junit.Test;
+import physics.Physics;
 import rosario.RosarioComparadorArquivos;
 import sample.cubesystem.DeathStar;
 import sample.cubesystem.GolfBall;
@@ -93,11 +95,12 @@ public final class FXTest implements HasLogging {
     public void test3() throws Throwable {
         FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
                 ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class,
-                SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class,
+                SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class, SudokuLauncher.class,
                 SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class, Square2048Launcher.class,
                 StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class, TheMenuGrid.class,
                 ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class, TronLauncher.class,
                 VanishingCirclesApp.class, WordSearchApp.class, WordSuggetionApp.class, WorkingListsViews.class,
+                Physics.class,
                 WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class);
     }
 

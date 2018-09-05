@@ -2,7 +2,6 @@ package ml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Paths;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.text.sentenceiterator.BasicLineIterator;
@@ -12,6 +11,7 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFac
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public class Word2VecExample {
 
@@ -23,7 +23,7 @@ public class Word2VecExample {
     public static void fit() throws FileNotFoundException {
         Word2Vec word2Vec = createWord2Vec();
 
-        SentenceIterator iterator = new BasicLineIterator(RAW_SENTENCES_TXT);
+        SentenceIterator iterator = new BasicLineIterator(ResourceFXUtils.toFile(RAW_SENTENCES_TXT));
         TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
         tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
 
@@ -41,7 +41,7 @@ public class Word2VecExample {
 
         }
 
-        File filePath = Paths.get(RAW_SENTENCES_TXT).toFile().getAbsoluteFile();
+        File filePath = ResourceFXUtils.toFile(RAW_SENTENCES_TXT).getAbsoluteFile();
         LOG.info("Load & Vectorize Sentences....");
         // Strip white space before and after for each line
         SentenceIterator iter = new BasicLineIterator(filePath);

@@ -13,6 +13,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public class WordService implements HasLogging {
 
@@ -32,7 +33,8 @@ public class WordService implements HasLogging {
 	}
 
     private static void recordPicture(XSLFPictureData data) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(data.getFileName()))) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(
+                new File(ResourceFXUtils.toFile("out"), data.getFileName()))) {
             InputStream inputStream = data.getInputStream();
             IOUtils.copy(inputStream, fileOutputStream);
         } catch (IOException e) {
@@ -41,10 +43,11 @@ public class WordService implements HasLogging {
     }
 
 	public static void main(String[] args) {
-		getPowerPointImages("Kit-Toilette-Prata-Adamascado.pptx");
+        getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx"));
 	}
-	public void getWord(Map<String, Object> mapaSubstituicao, String arquivo, OutputStream outStream) {
-		InputStream resourceAsStream = getClass().getResourceAsStream("/../../resources/doc/" + arquivo);
+
+    public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, OutputStream outStream) {
+        InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
 
         try (XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
 			for (XWPFHeader p : document1.getHeaderList()) {
@@ -69,7 +72,7 @@ public class WordService implements HasLogging {
 		}
 	}
 
-	private void substituirParagrafo(Map<String, Object> mapaSubstituicao, XWPFParagraph paragraph) {
+    private static void substituirParagrafo(Map<String, Object> mapaSubstituicao, XWPFParagraph paragraph) {
 		String text = paragraph.getText();
 		if (mapaSubstituicao.containsKey(text) || mapaSubstituicao.containsKey(text.trim())) {
 			Object object = getObject(mapaSubstituicao, text);
@@ -124,7 +127,7 @@ public class WordService implements HasLogging {
 		}
 	}
 
-	public void substituirTabela(IBodyElement element, Map<String, Object> map) {
+    private static void substituirTabela(IBodyElement element, Map<String, Object> map) {
 		XWPFTable tabela = (XWPFTable) element;
 		int numberOfRows = tabela.getNumberOfRows();
 

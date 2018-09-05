@@ -1,5 +1,9 @@
-package crypt;
+package exercism;
 
+import crypt.ShiftCipherExercise;
+import crypt.VigenereCCipher;
+import crypt.VigenereCipher;
+import crypt.VigenereXORCipher;
 import org.junit.Assert;
 import org.junit.Test;
 import simplebuilder.HasLogging;

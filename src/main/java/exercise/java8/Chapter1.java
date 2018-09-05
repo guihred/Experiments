@@ -136,7 +136,7 @@ public final class Chapter1 {
      * don't return a Void Object.
      */
 	public static void ex6() {
-		new Thread(unckeck(() -> {
+        new Thread(RunnableEx.makeRunnable(() -> {
             LOGGER.trace("Zzzz!!");
 			Thread.sleep(1000);
             LOGGER.trace("!!!!");
@@ -205,13 +205,4 @@ public final class Chapter1 {
 		ex9();
 	}
 
-	public static Runnable unckeck(RunnableEx runner) {
-		return () -> {
-			try {
-				runner.run();
-			} catch (Exception ex) {
-				LOGGER.error("",ex);
-			}
-		};
-	}
 }

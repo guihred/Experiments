@@ -1,16 +1,15 @@
 package log.analyze;
 
-import java.util.function.Function;
 import simplebuilder.HasLogging;
 
 @FunctionalInterface
-public interface FunctionEx<T, R> {
-	R apply(T t) throws Exception;
+public interface SupplierEx<T> {
+    T get() throws Exception;
 
-    static <A, B> Function<A, B> makeFunction(FunctionEx<A, B> run) {
-        return (A a) -> {
+    static <A> SupplierEx<A> makeFunction(SupplierEx<A> run) {
+        return () -> {
             try {
-                return run.apply(a);
+                return run.get();
             } catch (Exception e) {
                 HasLogging.log().error("", e);
                 return null;

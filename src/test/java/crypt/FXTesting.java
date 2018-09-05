@@ -1,6 +1,5 @@
 package crypt;
 
-import com.google.api.client.repackaged.com.google.common.base.Supplier;
 import exercise.java8.RunnableEx;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -8,6 +7,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
+import log.analyze.SupplierEx;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -100,7 +100,7 @@ public final class FXTesting implements HasLogging {
         }
     }
 
-    public static <T> T measureTime(String name, Supplier<T> runnable) {
+    public static <T> T measureTime(String name, SupplierEx<T> runnable) {
         long currentTimeMillis = System.currentTimeMillis();
         T t = null;
         try {

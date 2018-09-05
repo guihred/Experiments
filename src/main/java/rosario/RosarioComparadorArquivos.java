@@ -1,5 +1,6 @@
 package rosario;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
@@ -30,7 +31,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
     private static final String QUANTIDADE = "Quantidade";
     private static final String CODIGO = "Codigo";
     private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
-
+    private boolean openAtExport = true;
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -143,7 +144,10 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
         	items2.stream().peek(m -> m.registroValidoProperty(items1)).peek(m -> m.loteValidoProperty(items1))
         			.forEach(m -> m.quantidadeValidoProperty(items1));
 
-        	LeitorArquivos.exportarArquivo(items0, items1, items2);
+            File exportarArquivo = LeitorArquivos.exportarArquivo(items0, items1, items2);
+            if (openAtExport) {
+                Desktop.getDesktop().open(exportarArquivo);
+            }
         } catch (Exception e1) {
             getLogger().error("", e1);
         }
@@ -456,5 +460,9 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 			return null;
 		}
 	}
+
+    public void setOpenAtExport(boolean openAtExport) {
+        this.openAtExport = openAtExport;
+    }
 
 }

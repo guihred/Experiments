@@ -50,71 +50,71 @@ public final class UnRar {
     }
 
     private static void printSummary() {
-        LOGGER.info("\n\n\nSuccessfully tested archives:\n");
+        LOGGER.trace("\n\n\nSuccessfully tested archives:\n");
         for (String sf : successfulFiles) {
-            LOGGER.info(sf);
+            LOGGER.trace(sf);
         }
-        LOGGER.info("");
-        LOGGER.info("Unsupported archives:\n");
+        LOGGER.trace("");
+        LOGGER.trace("Unsupported archives:\n");
         for (String uf : unsupportedFiles) {
-            LOGGER.info(uf);
+            LOGGER.trace(uf);
         }
-        LOGGER.info("");
-        LOGGER.info("Failed archives:");
+        LOGGER.trace("");
+        LOGGER.trace("Failed archives:");
         for (String ff : errorFiles) {
-            LOGGER.info(ff);
+            LOGGER.trace(ff);
         }
-        LOGGER.info("");
-        LOGGER.info("\n\n\nSummary\n");
-        LOGGER.info("tested:\t\t{}", successfulFiles.size() + unsupportedFiles.size() + errorFiles.size());
-        LOGGER.info("successful:\t{}", successfulFiles.size());
-        LOGGER.info("unsupported:\t{}", unsupportedFiles.size());
-        LOGGER.info("failed:\t\t{}", errorFiles.size());
+        LOGGER.trace("");
+        LOGGER.trace("\n\n\nSummary\n");
+        LOGGER.trace("tested:\t\t{}", successfulFiles.size() + unsupportedFiles.size() + errorFiles.size());
+        LOGGER.trace("successful:\t{}", successfulFiles.size());
+        LOGGER.trace("unsupported:\t{}", unsupportedFiles.size());
+        LOGGER.trace("failed:\t\t{}", errorFiles.size());
     }
 
     private static void testFile(File file, File output) {
         if (file == null || !file.exists()) {
-            LOGGER.info("error file {} does not exist", file);
+            LOGGER.trace("error file {} does not exist", file);
             return;
         }
-        LOGGER.info(">>>>>> testing archive: {}", file);
+        LOGGER.trace(">>>>>> testing archive: {}", file);
         String s = file.toString();
 
         s = s.substring(s.length() - 3);
         if ("rar".equalsIgnoreCase(s)) {
-            LOGGER.info("{}", file);
+            LOGGER.trace("{}", file);
             try (Archive arc = new Archive(file)) {
                 if (arc.isEncrypted()) {
-                    LOGGER.info("archive is encrypted cannot extreact");
+                    LOGGER.trace("archive is encrypted cannot extreact");
                     unsupportedFiles.add(file.toString());
                     return;
                 }
                 List<FileHeader> files = arc.getFileHeaders();
                 for (FileHeader fh : files) {
                     if (fh.isEncrypted()) {
-                        LOGGER.info("file is encrypted cannot extract: {}", fh.getFileNameString());
+                        LOGGER.trace("file is encrypted cannot extract: {}", fh.getFileNameString());
                         unsupportedFiles.add(file.toString());
                         return;
                     }
-                    LOGGER.info("extracting file: {}", fh.getFileNameString());
+                    LOGGER.trace("extracting file: {}", fh.getFileNameString());
                     if (fh.isFileHeader() && fh.isUnicode()) {
-                        LOGGER.info("unicode name: {}", fh.getFileNameW());
+                        LOGGER.trace("unicode name: {}", fh.getFileNameW());
                     }
-                    LOGGER.info("start: {}", LocalTime.now());
+                    LOGGER.trace("start: {}", LocalTime.now());
                     File file2 = new File(output, fh.getFileNameString());
                     if (!file2.exists()) {
                         boolean createNewFile = file2.createNewFile();
-                        LOGGER.info("file {} created {}", file2, createNewFile);
+                        LOGGER.trace("file {} created {}", file2, createNewFile);
                     }
                     if (!tryExtractFile(file2, fh, arc, file)) {
                         return;
                     }
-                    LOGGER.info("end: {}", LocalTime.now());
+                    LOGGER.trace("end: {}", LocalTime.now());
                 }
-                LOGGER.info("successfully tested archive: {}", file);
+                LOGGER.trace("successfully tested archive: {}", file);
                 successfulFiles.add(file.toString());
             } catch (Exception e) {
-                LOGGER.info("file: {} extraction error - does the file exist?{}", file, e);
+                LOGGER.trace("file: {} extraction error - does the file exist?{}", file, e);
                 errorFiles.add(file.toString());
             }
 
@@ -126,11 +126,11 @@ public final class UnRar {
             arc.extractFile(fh, os);
         } catch (RarException e) {
             if (e.getType().equals(RarExceptionType.notImplementedYet)) {
-                LOGGER.info("error extracting unsupported file: {}", fh.getFileNameString() + e);
+                LOGGER.trace("error extracting unsupported file: {}", fh.getFileNameString() + e);
                 unsupportedFiles.add(file.toString());
                 return false;
             }
-            LOGGER.info("error extracting file: {}", fh.getFileNameString() + e);
+            LOGGER.trace("error extracting file: {}", fh.getFileNameString() + e);
             errorFiles.add(file.toString());
             return false;
         }
