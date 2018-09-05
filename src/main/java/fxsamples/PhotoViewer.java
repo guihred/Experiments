@@ -48,7 +48,7 @@ public class PhotoViewer extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Chapter 5 Photo Viewer");
+        primaryStage.setTitle("Photo Viewer");
 		Group root = new Group();
 		Scene scene = new Scene(root, 551, 400, Color.BLACK);
 		// scene.getStylesheets().add(

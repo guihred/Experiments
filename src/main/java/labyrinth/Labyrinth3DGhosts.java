@@ -132,7 +132,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
         sc.setOnKeyReleased(value::keyReleased);
 		sc.setOnKeyPressed(value);
         primaryStage.setScene(sc);
-		primaryStage.setTitle("EXP 1: Labyrinth");
+        primaryStage.setTitle("Labyrinth 3D With Ghosts");
 		primaryStage.show();
 	}
 

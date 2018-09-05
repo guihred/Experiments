@@ -1,9 +1,7 @@
 package rosario;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -66,7 +64,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 							meds -> configurarFiltroRapido(filterField, medicamentosEstoqueTable, meds));
 					return;
 				}
-
 				ObservableList<Medicamento> medicamentosRosario = getMedicamentosRosario(selectedFile);
 				configurarFiltroRapido(filterField, medicamentosEstoqueTable, medicamentosRosario);
 			}
@@ -81,6 +78,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		FileChooser fileChooserSNGPC = choseFile("Carregar Arquivo SNGPC");
 		final TableView<Medicamento> medicamentosEstoqueSNGPCTable = tabelaMedicamentos(true);
 		Button buttonEstoqueSNGPC = new Button("Carregar Arquivo SNGPC");
+        buttonEstoqueSNGPC.setId("SNGPC");
 		buttonEstoqueSNGPC.setOnAction(a -> {
 			File selectedFile = fileChooserSNGPC.showOpenDialog(primaryStage);
 			if (selectedFile != null) {
@@ -127,7 +125,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
         exportar.setOnAction(a -> exportarMedicamentos(medicamentosEstoqueTable, medicamentosEstoqueSNGPCTable,
                 medicamentosAnvisaTable));
 		// selection listening
-        primaryStage.setScene(new Scene(root, 600, 250, Color.WHITE));
+        primaryStage.setScene(new Scene(root, 1000, 500, Color.WHITE));
 		primaryStage.show();
 	}
 
@@ -156,20 +154,27 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		fileChooser2.setTitle(value);
         fileChooser2.getExtensionFilters()
                 .addAll(new FileChooser.ExtensionFilter("Excel ou PDF", "*.xlsx", "*.xls", "*.pdf"));
+        fileChoose.put(value, fileChooser2);
 		return fileChooser2;
 	}
+
+    private Map<String, FileChooser> fileChoose = new HashMap<>();
+
+    public Map<String, FileChooser> getFileChoose() {
+        return fileChoose;
+    }
 
 	private void configurarFiltroRapido(TextField filterField, final TableView<Medicamento> medicamentosEstoqueTable,
 			ObservableList<Medicamento> medicamentosRosario) {
 		FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosRosario, p -> true);
 		medicamentosEstoqueTable.setItems(filteredData);
 		filterField.textProperty()
-				.addListener((observable, oldValue, newValue) -> filteredData.setPredicate(medicamento -> {
-					if (newValue == null || newValue.isEmpty()) {
-						return true;
-					}
-					return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
-				}));
+                .addListener((observable, oldValue, newValue) -> filteredData.setPredicate(medicamento -> {
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+                    return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
+                }));
 	}
 
 	@SuppressWarnings("unchecked")

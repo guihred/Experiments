@@ -72,7 +72,7 @@ public class RaspiCycle extends Application implements HasLogging {
 		Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 		scene.setCursor(Cursor.NONE);
 		scene.setOnKeyPressed(this::handleKeyPress);
-		primaryStage.setTitle("RaspiCycle");
+        primaryStage.setTitle("Raspi Cycle");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 

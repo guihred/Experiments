@@ -17,7 +17,7 @@ public class WorldMapExample2 extends Application {
 
     @Override
 	public void start(Stage theStage) {
-		theStage.setTitle("Timeline Example");
+        theStage.setTitle("World Map Example 2");
 
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root, 800, 600);

@@ -237,7 +237,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		sc.setOnKeyReleased(value::keyReleased);
 		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));
 		primaryStage.setFullScreen(true);
-		primaryStage.setTitle("EXP 1: Labyrinth");
+        primaryStage.setTitle("Labyrinth 3D With Wall Texture");
 		primaryStage.setScene(sc);
 		primaryStage.show();
 	}

@@ -18,7 +18,7 @@ public class ElectionCrawlerApp extends Application {
 
 	@Override
     public void start(Stage stage) throws Exception {
-        stage.setTitle("Worker and Task Example");
+        stage.setTitle("Election Crawler");
         stage.setScene(view.getScene());
         stage.show();
         stage.setOnCloseRequest(e -> HibernateUtil.shutdown());

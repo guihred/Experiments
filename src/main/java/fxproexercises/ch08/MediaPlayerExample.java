@@ -25,7 +25,7 @@ public class MediaPlayerExample extends Application {
         Media media = new Media(resource.toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
-        primaryStage.setTitle("Audio Player 1");
+        primaryStage.setTitle("Media Player");
         primaryStage.setWidth(200);
         primaryStage.setHeight(200);
         primaryStage.show();

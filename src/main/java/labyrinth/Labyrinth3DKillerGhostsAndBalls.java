@@ -203,7 +203,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
 		sc.setOnKeyPressed(value);
 		sc.setOnKeyReleased(value::keyReleased);
-		primaryStage.setTitle("EXP 1: Labyrinth");
+        primaryStage.setTitle("Labyrinth 3D With Balls");
 		primaryStage.setScene(sc);
 		primaryStage.show();
 	}

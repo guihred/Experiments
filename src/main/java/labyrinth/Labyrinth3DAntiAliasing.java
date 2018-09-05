@@ -3,12 +3,7 @@ package labyrinth;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -78,7 +73,7 @@ public class Labyrinth3DAntiAliasing extends Application implements CommomLabyri
 		sc.setOnKeyPressed(value);
 		sc.setOnKeyReleased(value::keyReleased);
 
-		primaryStage.setTitle("EXP 1: Labyrinth");
+        primaryStage.setTitle("Labyrinth 3D With Anti-Aliasing");
 		primaryStage.setScene(sc);
 		primaryStage.show();
 	}

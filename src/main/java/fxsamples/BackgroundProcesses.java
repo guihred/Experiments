@@ -47,7 +47,7 @@ public class BackgroundProcesses extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage
-				.setTitle("BackgroundProcesses: Chapter 4 Background Processes");
+                .setTitle("Background Processes");
 		// ... Layout and UI controls code here
 		VBox root = new VBox();
 		Scene scene = new Scene(root, 380, 150, Color.WHITE);

@@ -4,15 +4,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.CubicCurve;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.QuadCurve;
-import javafx.scene.shape.QuadCurveTo;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeType;
+import javafx.scene.shape.*;
 import javafx.stage.Stage;
 import simplebuilder.SimpleCubicCurveBuilder;
 
@@ -23,7 +15,7 @@ public class DrawingShape extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Chapter 2 Drawing Shapes");
+        primaryStage.setTitle("Drawing Shapes");
 		Group root = new Group();
 		Scene scene = new Scene(root, 306, 550, Color.WHITE);
 

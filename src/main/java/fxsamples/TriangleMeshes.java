@@ -2,11 +2,7 @@ package fxsamples;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.AmbientLight;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
@@ -81,7 +77,7 @@ public class TriangleMeshes extends Application implements HasLogging {
 		sceneRoot.getChildren().add(light);
 		light.setTranslateZ(-SCENE_WIDTH / 2);
 		light.setTranslateY(-SCENE_HEIGHT / 2);
-		primaryStage.setTitle("TriangleMeshes");
+        primaryStage.setTitle("Triangle Meshes");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

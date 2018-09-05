@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 public class DrawingLines extends Application {
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Chapter 2 Drawing Lines");
+        primaryStage.setTitle("Drawing Lines");
 		Group root = new Group();
 		Scene scene = new Scene(root, 300, 150, Color.GRAY);
 

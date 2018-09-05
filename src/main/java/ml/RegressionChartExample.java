@@ -43,7 +43,7 @@ public class RegressionChartExample extends Application {
         root.getChildren().add(lineChart);
         root.getChildren().add(errorGraph);
 
-        primaryStage.setTitle("LineChart example");
+        primaryStage.setTitle("Regrssion Chart Example");
         primaryStage.setScene(new Scene(root, 1000, 400));
         primaryStage.show();
     }

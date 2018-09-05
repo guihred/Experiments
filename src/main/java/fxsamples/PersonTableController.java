@@ -75,7 +75,7 @@ public class PersonTableController extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("PersonFilter");
+        primaryStage.setTitle("Person Table");
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 600, 250, Color.WHITE);
 		// create a grid pane

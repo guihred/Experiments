@@ -218,7 +218,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		primaryStage.setFullScreen(true);
 		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));
 
-		primaryStage.setTitle("EXP 1: Labyrinth");
+        primaryStage.setTitle("Labyrinth 3D With Mouse Control");
 		primaryStage.setScene(sc);
 		primaryStage.show();
 	}

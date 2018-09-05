@@ -19,7 +19,7 @@ public class TaskProgressApp extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		stage.setTitle("Worker and Task Example");
+        stage.setTitle("Simple Task Progress Example");
 		stage.setScene(view.getScene());
 		stage.show();
 	}

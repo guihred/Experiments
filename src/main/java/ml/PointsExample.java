@@ -26,7 +26,7 @@ public class PointsExample extends Application {
 
     @Override
 	public void start(Stage theStage) {
-		theStage.setTitle("Timeline Example");
+        theStage.setTitle("Points Graph Example");
 
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root, 1100, 600);

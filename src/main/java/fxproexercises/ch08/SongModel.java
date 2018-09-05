@@ -101,7 +101,7 @@ public final class SongModel implements HasLogging {
 			Platform.runLater(() -> tryGetAlbumCover(url));
 
             mediaPlayer.setValue(new MediaPlayer(media));
-
+            mediaPlayer.getValue().volumeProperty().set(0);
             mediaPlayer.get().setOnError(() -> {
                 String errorMessage = mediaPlayer.get().getError().getMessage();
                 getLogger().info("MediaPlayer Error: {}", errorMessage);

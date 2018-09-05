@@ -30,7 +30,7 @@ public class ScatterChartWithFillExample extends Application {
         scatterChart.setTitle("speculations");
         scatterChart.setAlternativeRowFillVisible(false);
         scatterChart.setAlternativeColumnFillVisible(true);
-        primaryStage.setTitle("ScatterChart example");
+        primaryStage.setTitle("Scatter Chart Filled Example");
         StackPane root = new StackPane();
         root.getChildren().add(scatterChart);
         primaryStage.setScene(new Scene(root, 400, 250));

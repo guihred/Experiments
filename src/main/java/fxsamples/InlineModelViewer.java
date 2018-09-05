@@ -70,7 +70,7 @@ public class InlineModelViewer extends Application {
 
 		VBox layout = new VBox(createControls(rotate), createScene3D(group));
 
-		stage.setTitle("Model Viewer");
+        stage.setTitle("Inline Model Viewer");
 
 		Scene scene = new Scene(layout, Color.CORNSILK);
 		stage.setScene(scene);

@@ -117,7 +117,7 @@ public class SimpleAudioPlayerLauncher extends Application {
 			LOGGER.error("", e);
         }
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Audio Player 2");
+        primaryStage.setTitle("Simple Audio Player");
         primaryStage.show();
     }
 

@@ -35,7 +35,7 @@ public class OrganizadorMusicas extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Organizador ");
+        primaryStage.setTitle("Organizador de Músicas");
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 600, 250, Color.WHITE);
 		FlowPane gridpane = new FlowPane();

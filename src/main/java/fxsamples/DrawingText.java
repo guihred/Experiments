@@ -14,7 +14,7 @@ public class DrawingText extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Chapter 2 Drawing Text");
+        primaryStage.setTitle("Drawing Text");
 		Group root = new Group();
 		Scene scene = new Scene(root, 300, 250, Color.WHITE);
 		Random rand = new Random(System.currentTimeMillis());

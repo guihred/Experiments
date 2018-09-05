@@ -16,7 +16,7 @@ public class MadMazeLauncher extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Drawing Operations Test");
+        primaryStage.setTitle("Mad Maze");
         Group root = new Group();
         Canvas canvas = new Canvas(500, 500);
         MadTopology madTopology = new MadTopology();

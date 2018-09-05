@@ -51,7 +51,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		stage.setScene(scene);
 		stage.setWidth(800);
 		stage.setHeight(600);
-		stage.setTitle("Starter App");
+        stage.setTitle("Table Visualization Example");
 		stage.show();
 	}
 

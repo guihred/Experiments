@@ -5,6 +5,7 @@
  */
 package fxproexercises.ch08;
 
+import election.experiment.CrawlerTask;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.DragEvent;
@@ -60,12 +61,13 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
 
 		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Audio Player 3");
+        primaryStage.setTitle("Basic Audio Player With Control");
         primaryStage.show();
         songModel.getPlayer().play();
     }
 
     public static void main(String[] args) {
+        CrawlerTask.insertProxyConfig();
         launch(args);
 	}
 }

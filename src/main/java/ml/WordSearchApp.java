@@ -34,7 +34,7 @@ public class WordSearchApp extends Application {
 
     @Override
     public void start(Stage theStage) throws Exception {
-        theStage.setTitle("Timeline Example");
+        theStage.setTitle("Word Search Example");
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root, 800, 600);
         theStage.setScene(theScene);

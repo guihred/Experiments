@@ -31,7 +31,7 @@ public class JapaneseLessonApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle(LESSON);
+        primaryStage.setTitle("Japanese Lesson Table Displayer");
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 600, 250, Color.WHITE);
 		// create a grid pane

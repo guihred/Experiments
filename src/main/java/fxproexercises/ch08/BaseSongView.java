@@ -10,10 +10,11 @@ import javafx.scene.Node;
 public abstract class BaseSongView {
 
     protected final SongModel songModel;
-    protected final Node viewNode = initView();
+    protected final Node viewNode;
 
     public BaseSongView(SongModel songModel) {
         this.songModel = songModel;
+        viewNode = initView();
     }
 
     public Node getViewNode() {

@@ -150,7 +150,7 @@ public class SimpleScene3D extends Application {
 				});
 		// End Step 3
 
-		primaryStage.setTitle("SimpleScene3D");
+        primaryStage.setTitle("Simple Scene 3D");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

@@ -79,7 +79,7 @@ public class Labyrinth2D extends Application {
 		Scene scene = new Scene(root);
 
 		scene.setOnMouseClicked(event -> handleMouseClick(root));
-		primaryStage.setTitle("EXP 1: Labyrinth");
+        primaryStage.setTitle("Labyrinth 2D");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

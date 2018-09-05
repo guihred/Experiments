@@ -57,7 +57,7 @@ public class MapGraph extends Application {
             }
         });
         imageView.setZoom(0.15);
-        stage.setTitle("Drawing the world");
+        stage.setTitle("Map Graph Example");
         stage.show();
     }
 

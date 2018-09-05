@@ -8,12 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -29,7 +24,7 @@ public class WorkingWithTableView extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage
-				.setTitle("Bosses and Employees: Chapter 4 Working with Tables");
+                .setTitle("Chapter 4 Working with Tables");
 		BorderPane root = new BorderPane();
 		// create a grid pane
 		GridPane gridpane = new GridPane();

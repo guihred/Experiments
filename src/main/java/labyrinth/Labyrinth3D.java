@@ -101,7 +101,7 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
 		scene.setOnKeyPressed(value);
 		scene.setOnKeyReleased(value::keyReleased);
-		primaryStage.setTitle("EXP 1: Labyrinth");
+        primaryStage.setTitle("Labyrinth 3D");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

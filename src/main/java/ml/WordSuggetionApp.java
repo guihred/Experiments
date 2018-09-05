@@ -15,7 +15,7 @@ public class WordSuggetionApp extends Application {
 
     @Override
     public void start(Stage theStage) throws Exception {
-        theStage.setTitle("Timeline Example");
+        theStage.setTitle("Word Suggestion Example");
 
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root, 800, 600);

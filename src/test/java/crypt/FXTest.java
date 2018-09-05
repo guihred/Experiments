@@ -10,6 +10,7 @@ import fxproexercises.ch01.EarthriseChristmasApp;
 import fxproexercises.ch01.HelloWorldApp;
 import fxproexercises.ch02.*;
 import fxproexercises.ch04.*;
+import fxproexercises.ch05.TableVisualizationExampleApp;
 import fxproexercises.ch06.ResponsiveUIApp;
 import fxproexercises.ch06.TaskProgressApp;
 import fxproexercises.ch06.ThreadInformationApp;
@@ -42,6 +43,7 @@ import gaming.ex17.PuzzleLauncher;
 import gaming.ex18.Square2048Launcher;
 import javaexercises.graphs.GraphModelLauncher;
 import javafxpert.earthcubex.EarthCubeMain;
+import labyrinth.*;
 import ml.*;
 import org.junit.Test;
 import rosario.RosarioComparadorArquivos;
@@ -54,7 +56,7 @@ import xylophone.XylophoneApp;
 public final class FXTest implements HasLogging {
     @Test
     public void test() throws Throwable {
-        FXTesting.testApps(AreaChartExample.class, AudioConfigLauncher.class, BackgroundProcesses.class,
+        FXTesting.testApps(AreaChartExample.class, BackgroundProcesses.class,
                 BarChartExample.class, BoundsPlayground.class, BubbleChartExample.class, CenterUsingBind.class,
                 CenterUsingStack.class, ChangingTextFonts.class, Chart3dDemo.class, Chart3dGraph.class,
                 Chart3dSampleApp.class, ContestQuestionEditingDisplay.class, CSSStylingExample.class, Cubes3D.class,
@@ -63,7 +65,8 @@ public final class FXTest implements HasLogging {
                 FuriganaCrawlerApp.class, GlobeSphereApp.class, GolfBall.class, GraphModelLauncher.class,
                 GridPaneForm.class, HeatGraphExample.class, HelloWorldApp.class, HistogramExample.class,
                 EarthCubeMain.class, InlineModelViewer.class, LineChartExample.class, LineManipulator.class,
-                LookNFeelChooser.class, MadMazeLauncher.class, ArkanoidLauncher.class);
+                LookNFeelChooser.class, TableVisualizationExampleApp.class, MadMazeLauncher.class,
+                ArkanoidLauncher.class);
     }
 
     @Test
@@ -73,23 +76,35 @@ public final class FXTest implements HasLogging {
                 MoleculeSampleApp.class, MultilineExample.class, NumberDisplayLauncher.class, NumberPad.class,
                 OrganizadorMusicas.class, PacmanLauncher.class, PathTransitionExample.class,
                 PendulumAnimationLauncher.class, PersonTableController.class, PhotoViewer.class, 
-                PieChartExample.class, PlatformMain.class, PlayingAudio.class, PointsExample.class, PongLauncher.class,
+                PieChartExample.class, PlatformMain.class, PointsExample.class, PongLauncher.class,
                 PopulacionalPyramidExample.class, PuzzleLauncher.class, QuartoLauncher.class, RaspiCycle.class,
                 RegressionChartExample.class, ResponsiveUIApp.class, ReversiMain.class, ReversiPieceTest.class,
                 ReversiSquareTest.class, RosarioComparadorArquivos.class, RubiksCubeLauncher.class, SandboxFX.class,
-                AlignUsingStackAndTile.class, ScatterChartExample.class, BasicAudioClipExample.class,
-                BasicAudioPlayerWithControlLauncher.class, Shapes3DApp.class);
+                AlignUsingStackAndTile.class, ScatterChartExample.class, Shapes3DApp.class);
+    }
+
+    @Test
+    public void test5() throws Throwable {
+        FXTesting.testApps(BasicAudioPlayerWithControlLauncher.class, BasicAudioClipExample.class,
+                AudioConfigLauncher.class, SimpleAudioPlayerLauncher.class, PlayingAudio.class);
     }
 
     @Test
     public void test3() throws Throwable {
         FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
                 ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class,
-                SimpleAudioPlayerLauncher.class, SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class,
+                SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class,
                 SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class, Square2048Launcher.class,
                 StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class, TheMenuGrid.class,
                 ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class, TronLauncher.class,
                 VanishingCirclesApp.class, WordSearchApp.class, WordSuggetionApp.class, WorkingListsViews.class,
                 WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class);
+    }
+
+    @Test
+    public void test4() throws Throwable {
+        FXTesting.testApps(Labyrinth2D.class, Labyrinth3D.class, Labyrinth3DAntiAliasing.class,
+                Labyrinth3DCollisions.class, Labyrinth3DGhosts.class, Labyrinth3DKillerGhosts.class,
+                Labyrinth3DKillerGhostsAndBalls.class, Labyrinth3DMouseControl.class, Labyrinth3DWallTexture.class);
     }
 }

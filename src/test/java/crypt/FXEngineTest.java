@@ -17,10 +17,7 @@ public class FXEngineTest extends ApplicationTest {
     @Test
     public void verify() throws Exception {
         KeyCode[] keys = { KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT };
-        for (KeyCode keyCode : keys) {
-            press(keyCode);
-        }
-        closeCurrentWindow();
+        type(keys);
     }
 
 }

@@ -6,11 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
@@ -24,7 +20,7 @@ public class GridPaneForm extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("GridPaneForm ");
+        primaryStage.setTitle("Grid Pane Form");
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 380, 150, Color.WHITE);
 		GridPane gridpane = new GridPane();

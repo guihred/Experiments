@@ -70,7 +70,7 @@ public class EarthriseChristmasApp extends Application {
         stage.setWidth(516);
         stage.setHeight(387);
         stage.setScene(scene);
-        stage.setTitle("Hello Earthrise");
+        stage.setTitle("Earthrise Christmas");
         stage.show();
         transTransition.play();
     }

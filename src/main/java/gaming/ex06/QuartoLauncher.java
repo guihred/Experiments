@@ -234,7 +234,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 		scene.setOnMouseClicked(this::handleMouseClick);
 		scene.setOnMouseDragReleased(null);
 
-        primaryStage.setTitle("Molecule Sample Application");
+        primaryStage.setTitle("Quarto Application");
         primaryStage.setScene(scene);
         primaryStage.show();
 

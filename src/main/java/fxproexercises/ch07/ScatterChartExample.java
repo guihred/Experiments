@@ -29,7 +29,7 @@ public class ScatterChartExample extends Application {
         ScatterChart<Number, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
         scatterChart.setData(getChartData());
         scatterChart.setTitle("Speculations");
-        primaryStage.setTitle("Chart App 3");
+        primaryStage.setTitle("Scatter Chart");
         StackPane root = new StackPane();
         root.getChildren().add(scatterChart);
         primaryStage.setScene(new Scene(root, 400, 250));

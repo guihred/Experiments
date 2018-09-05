@@ -21,7 +21,6 @@ public class FXEngineGraphTest extends ApplicationTest {
         for (Node e : queryButtons) {
             clickOn(e);
         }
-        closeCurrentWindow();
     }
 
 }

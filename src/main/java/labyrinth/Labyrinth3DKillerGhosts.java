@@ -142,7 +142,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
 		sc.setOnKeyPressed(value);
 		sc.setOnKeyReleased(value::keyReleased);
-		primaryStage.setTitle("EXP 1: Labyrinth");
+        primaryStage.setTitle("Labyrinth 3D With Killer Ghost");
 		primaryStage.setScene(sc);
 		primaryStage.show();
 	}
