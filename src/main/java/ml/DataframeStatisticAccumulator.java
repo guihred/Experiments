@@ -14,7 +14,6 @@ public class DataframeStatisticAccumulator{
     private double sum;
     private double min = Double.MAX_VALUE;
     private double max = Double.NEGATIVE_INFINITY;
-    private String freq;
     private String header;
     private Map<String, Integer> countMap = new LinkedHashMap<>();
     private Class<? extends Comparable<?>> format;

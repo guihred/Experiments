@@ -5,21 +5,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
 import log.analyze.SupplierEx;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
+import simplebuilder.ResourceFXUtils;
 
 public final class FXTesting implements HasLogging {
     private static final Logger LOGGER = HasLogging.log(FXTesting.class);
-    protected JFXPanel jfxPanel = new JFXPanel();
 
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 
     private FXTesting() {
+        ResourceFXUtils.initializeFX();
     }
 
     @SafeVarargs

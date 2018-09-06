@@ -36,7 +36,7 @@ public class JavaFXBeanController {
     }
     public void switchColorPropertyOnModel() {
         final Color color = model.getColor();
-        if (color.equals(Color.BLACK)) {
+        if (Color.BLACK.equals(color)) {
             model.setColor(Color.WHITE);
         } else {
             model.setColor(Color.BLACK);
@@ -44,6 +44,11 @@ public class JavaFXBeanController {
     }
 
     public static void main(String[] args) {
+
+        JavaFXBeanController javaFXBeanController = new JavaFXBeanController(new JavaFXBeanModelExample());
+        javaFXBeanController.incrementIPropertyOnModel();
+        javaFXBeanController.changeStrPropertyOnModel();
+        javaFXBeanController.switchColorPropertyOnModel();
 
         Logger log = HasLogging.log();
 

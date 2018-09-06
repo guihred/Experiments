@@ -1,9 +1,12 @@
 package rosario;
 
+import static rosario.LeitorArquivos.*;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,22 +24,15 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.apache.commons.lang3.StringUtils;
 import simplebuilder.HasLogging;
 
 public class RosarioComparadorArquivos extends Application implements HasLogging {
-	private static final String LOTE = "Lote";
-    private static final String NOME = "Nome";
-    private static final String REGISTRO = "Registro";
-    private static final String QUANTIDADE = "Quantidade";
-    private static final String CODIGO = "Codigo";
-    private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
-    private boolean openAtExport = true;
-	public static void main(String[] args) {
-		launch(args);
-	}
 
-	@Override
+    private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
+    private Map<String, FileChooser> fileChoose = new HashMap<>();
+    private boolean openAtExport = true;
+
+    @Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Comparação Estoque e ANVISA");
 		BorderPane root = new BorderPane();
@@ -130,57 +126,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		primaryStage.show();
 	}
 
-    private void exportarMedicamentos(final TableView<Medicamento> medicamentosEstoqueTable,
-            final TableView<Medicamento> medicamentosEstoqueSNGPCTable,
-            final TableView<Medicamento> medicamentosAnvisaTable) {
-        try {
-        	ObservableList<Medicamento> items0 = medicamentosEstoqueTable.getItems();
-        	ObservableList<Medicamento> items1 = medicamentosEstoqueSNGPCTable.getItems();
-        	ObservableList<Medicamento> items2 = medicamentosAnvisaTable.getItems();
-        	items0.stream().peek(m -> m.quantidadeCodigoValidoProperty(items1))
-        			.forEach(m -> m.codigoValidoProperty(items1));
-        	items1.stream().peek(m -> m.registroValidoProperty(items2)).peek(m -> m.loteValidoProperty(items2))
-        			.forEach(m -> m.quantidadeValidoProperty(items2));
-        	items2.stream().peek(m -> m.registroValidoProperty(items1)).peek(m -> m.loteValidoProperty(items1))
-        			.forEach(m -> m.quantidadeValidoProperty(items1));
-
-            File exportarArquivo = LeitorArquivos.exportarArquivo(items0, items1, items2);
-            if (openAtExport) {
-                Desktop.getDesktop().open(exportarArquivo);
-            }
-        } catch (Exception e1) {
-            getLogger().error("", e1);
-        }
-    }
-
-	private FileChooser choseFile(String value) {
-		FileChooser fileChooser2 = new FileChooser();
-		fileChooser2.setTitle(value);
-        fileChooser2.getExtensionFilters()
-                .addAll(new FileChooser.ExtensionFilter("Excel ou PDF", "*.xlsx", "*.xls", "*.pdf"));
-        fileChoose.put(value, fileChooser2);
-		return fileChooser2;
-	}
-
-    private Map<String, FileChooser> fileChoose = new HashMap<>();
-
-    public Map<String, FileChooser> getFileChoose() {
-        return fileChoose;
-    }
-
-	private void configurarFiltroRapido(TextField filterField, final TableView<Medicamento> medicamentosEstoqueTable,
-			ObservableList<Medicamento> medicamentosRosario) {
-		FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosRosario, p -> true);
-		medicamentosEstoqueTable.setItems(filteredData);
-		filterField.textProperty()
-                .addListener((observable, oldValue, newValue) -> filteredData.setPredicate(medicamento -> {
-                    if (newValue == null || newValue.isEmpty()) {
-                        return true;
-                    }
-                    return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
-                }));
-	}
-
 	@SuppressWarnings("unchecked")
 	private void atualizar(ObservableList<Medicamento> medicamentos,
 			final TableView<Medicamento> medicamentosAnvisaTable) {
@@ -242,7 +187,9 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
 	}
 
-	@SuppressWarnings("unchecked")
+
+
+    @SuppressWarnings("unchecked")
 	private void atualizarPorCodigo(ObservableList<Medicamento> medicamentos,
 			final TableView<Medicamento> medicamentosAnvisaTable) {
 		ObservableList<TableColumn<Medicamento, ?>> columns = medicamentosAnvisaTable.getColumns();
@@ -286,46 +233,58 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
 	}
 
-	private TableView<Medicamento> tabelaMedicamentos(boolean completa) {
+	private FileChooser choseFile(String value) {
+		FileChooser fileChooser2 = new FileChooser();
+		fileChooser2.setTitle(value);
+        fileChooser2.getExtensionFilters()
+                .addAll(new FileChooser.ExtensionFilter("Excel ou PDF", "*.xlsx", "*.xls", "*.pdf"));
+        fileChoose.put(value, fileChooser2);
+		return fileChooser2;
+	}
 
-		final TableView<Medicamento> medicamentosTable = new TableView<>();
-		medicamentosTable.setPrefWidth(300);
-		medicamentosTable.setScaleShape(false);
-		if (completa) {
-			TableColumn<Medicamento, String> registroMedicamento = new TableColumn<>(REGISTRO);
-			registroMedicamento.setCellValueFactory(new PropertyValueFactory<>("registro"));
-			registroMedicamento.setSortable(true);
-			registroMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-			medicamentosTable.getColumns().add(registroMedicamento);
+	private void configurarFiltroRapido(TextField filterField, final TableView<Medicamento> medicamentosEstoqueTable,
+			ObservableList<Medicamento> medicamentosRosario) {
+		FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosRosario, p -> true);
+		medicamentosEstoqueTable.setItems(filteredData);
+		filterField.textProperty()
+                .addListener((observable, oldValue, newValue) -> filteredData.setPredicate(medicamento -> {
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+                    return medicamento.toString().toLowerCase().contains(newValue.toLowerCase());
+                }));
+	}
+
+	private void exportarMedicamentos(final TableView<Medicamento> medicamentosEstoqueTable,
+            final TableView<Medicamento> medicamentosEstoqueSNGPCTable,
+            final TableView<Medicamento> medicamentosAnvisaTable) {
+        try {
+        	ObservableList<Medicamento> items0 = medicamentosEstoqueTable.getItems();
+        	ObservableList<Medicamento> items1 = medicamentosEstoqueSNGPCTable.getItems();
+        	ObservableList<Medicamento> items2 = medicamentosAnvisaTable.getItems();
+        	items0.stream().peek(m -> m.quantidadeCodigoValidoProperty(items1))
+        			.forEach(m -> m.codigoValidoProperty(items1));
+        	items1.stream().peek(m -> m.registroValidoProperty(items2)).peek(m -> m.loteValidoProperty(items2))
+        			.forEach(m -> m.quantidadeValidoProperty(items2));
+        	items2.stream().peek(m -> m.registroValidoProperty(items1)).peek(m -> m.loteValidoProperty(items1))
+        			.forEach(m -> m.quantidadeValidoProperty(items1));
+
+            File exportarArquivo = LeitorArquivos.exportarArquivo(items0, items1, items2);
+            if (openAtExport) {
+                Desktop.getDesktop().open(exportarArquivo);
+            }
+        } catch (Exception e1) {
+            getLogger().error("", e1);
+        }
+    }
+
+	private ObservableList<Medicamento> getMedicamentosAnvisa(File selectedFile) {
+		try {
+			return LeitorArquivos.getMedicamentosAnvisa(selectedFile);
+		} catch (Exception e) {
+            getLogger().error("", e);
+			return FXCollections.emptyObservableList();
 		}
-
-		TableColumn<Medicamento, String> nomeMedicamento = new TableColumn<>(NOME);
-		nomeMedicamento.setSortable(true);
-		nomeMedicamento.setCellValueFactory(new PropertyValueFactory<>("nome"));
-		nomeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-		medicamentosTable.getColumns().add(nomeMedicamento);
-
-		if (completa) {
-			TableColumn<Medicamento, String> loteMedicamento = new TableColumn<>(LOTE);
-			loteMedicamento.setSortable(true);
-			loteMedicamento.setCellValueFactory(new PropertyValueFactory<>("lote"));
-			loteMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-			medicamentosTable.getColumns().add(loteMedicamento);
-		}
-
-		TableColumn<Medicamento, String> quantidadeMedicamento = new TableColumn<>(QUANTIDADE);
-		quantidadeMedicamento.setSortable(true);
-		quantidadeMedicamento.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-		quantidadeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-		medicamentosTable.getColumns().add(quantidadeMedicamento);
-
-        TableColumn<Medicamento, String> codigoMedicamento = new TableColumn<>(CODIGO);
-		codigoMedicamento.setSortable(true);
-		codigoMedicamento.setCellValueFactory(new PropertyValueFactory<>("codigo"));
-		codigoMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-		medicamentosTable.getColumns().add(codigoMedicamento);
-
-		return medicamentosTable;
 	}
 
 	private ObservableList<Medicamento> getMedicamentosRosario(File file) {
@@ -340,15 +299,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 	private ObservableList<Medicamento> getMedicamentosSNGPC(File file) {
 		try {
 			return LeitorArquivos.getMedicamentosSNGPCPDF(file);
-		} catch (Exception e) {
-            getLogger().error("", e);
-			return FXCollections.emptyObservableList();
-		}
-	}
-
-	private ObservableList<Medicamento> getMedicamentosAnvisa(File selectedFile) {
-		try {
-			return LeitorArquivos.getMedicamentosAnvisa(selectedFile);
 		} catch (Exception e) {
             getLogger().error("", e);
 			return FXCollections.emptyObservableList();
@@ -393,7 +343,9 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		}
 		Button button = new Button("Importar Arquivo");
 		button.setOnAction(a -> {
-			ObservableList<Medicamento> medicamentos = converterMedicamentos(medicamentosTable.getItems(), colunas);
+            ObservableList<Medicamento> medicamentos = LeitorArquivos
+                    .converterMedicamentos(medicamentosTable.getItems(), colunas.stream()
+                            .map(e -> e.getSelectionModel().getSelectedItem()).collect(Collectors.toList()));
 			consumer.accept(medicamentos);
 			stage.hide();
 		});
@@ -402,67 +354,60 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		stage.show();
 	}
 
-	private ObservableList<Medicamento> converterMedicamentos(ObservableList<List<String>> items2,
-			List<ChoiceBox<String>> colunas) {
-		ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
-		for (List<String> item : items2) {
-			Medicamento medicamento = new Medicamento();
-			setCampos(colunas, item, medicamento);
-			if (medicamento.getQuantidade() != null && StringUtils.isNotBlank(medicamento.getNome())) {
-				medicamentos.add(medicamento);
-			}
+	private TableView<Medicamento> tabelaMedicamentos(boolean completa) {
 
+		final TableView<Medicamento> medicamentosTable = new TableView<>();
+		medicamentosTable.setPrefWidth(300);
+		medicamentosTable.setScaleShape(false);
+		if (completa) {
+			TableColumn<Medicamento, String> registroMedicamento = new TableColumn<>(REGISTRO);
+			registroMedicamento.setCellValueFactory(new PropertyValueFactory<>("registro"));
+			registroMedicamento.setSortable(true);
+			registroMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
+			medicamentosTable.getColumns().add(registroMedicamento);
 		}
-		return medicamentos;
+
+		TableColumn<Medicamento, String> nomeMedicamento = new TableColumn<>(NOME);
+		nomeMedicamento.setSortable(true);
+		nomeMedicamento.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		nomeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
+		medicamentosTable.getColumns().add(nomeMedicamento);
+
+		if (completa) {
+			TableColumn<Medicamento, String> loteMedicamento = new TableColumn<>(LOTE);
+			loteMedicamento.setSortable(true);
+			loteMedicamento.setCellValueFactory(new PropertyValueFactory<>("lote"));
+			loteMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
+			medicamentosTable.getColumns().add(loteMedicamento);
+		}
+
+		TableColumn<Medicamento, String> quantidadeMedicamento = new TableColumn<>(QUANTIDADE);
+		quantidadeMedicamento.setSortable(true);
+		quantidadeMedicamento.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
+		quantidadeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
+		medicamentosTable.getColumns().add(quantidadeMedicamento);
+
+        TableColumn<Medicamento, String> codigoMedicamento = new TableColumn<>(CODIGO);
+		codigoMedicamento.setSortable(true);
+		codigoMedicamento.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+		codigoMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
+		medicamentosTable.getColumns().add(codigoMedicamento);
+
+		return medicamentosTable;
 	}
 
-	private void setCampos(List<ChoiceBox<String>> colunas, List<String> item, Medicamento medicamento) {
-		for (int i = 0; i < colunas.size(); i++) {
-			ChoiceBox<String> coluna = colunas.get(i);
-			String selectedItem = coluna.getSelectionModel().getSelectedItem();
-			if (!item.isEmpty()) {
-				switch (selectedItem) {
-				case REGISTRO:
-					medicamento.setRegistro(Objects.toString(medicamento.getRegistro(), "")
-							+ item.get(i % item.size()).replaceAll("\\D+", ""));
-					break;
-				case NOME:
-					medicamento.setNome(Objects.toString(medicamento.getNome(), "") + item.get(i % item.size()));
-					break;
-				case LOTE:
-					String string = item.get(i % item.size());
-					medicamento.setLote(Objects.toString(medicamento.getLote(), "") + string);
-					break;
-				case QUANTIDADE:
-					Integer qnt = intValue(item.get(i % item.size()));
-					if (qnt != null) {
-						medicamento.setQuantidade(qnt);
-					}
-					break;
-				case CODIGO:
-					Integer codigo = intValue(item.get(i % item.size()));
-					if (codigo != null) {
-						medicamento.setCodigo(codigo);
-					}
-					break;
-				default:
-					break;
-				}
-			}
-		}
-	}
 
-	private Integer intValue(String s) {
-		try {
-			return Integer.valueOf(s.replaceAll("\\D+", ""));
-		} catch (NumberFormatException e) {
-            getLogger().trace("", e);
-			return null;
-		}
-	}
+    public Map<String, FileChooser> getFileChoose() {
+        return fileChoose;
+    }
 
     public void setOpenAtExport(boolean openAtExport) {
         this.openAtExport = openAtExport;
     }
+
+
+    public static void main(String[] args) {
+		launch(args);
+	}
 
 }

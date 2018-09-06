@@ -5,14 +5,12 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import javafx.collections.ObservableList;
 import log.analyze.FunctionEx;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
-import rosario.LeitorArquivos;
-import rosario.Medicamento;
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
@@ -21,12 +19,14 @@ public class ExcelService {
     private static final Logger LOG = HasLogging.log(ExcelService.class);
 
     public static <T> void getExcel(BiFunction<Integer, Integer, List<T>> lista,
-            Map<String, FunctionEx<T, Object>> mapa,
-			OutputStream response) {
-        try (SXSSFWorkbook xssfWorkbook = new SXSSFWorkbook(500)) {
-			Sheet sheetAt = xssfWorkbook.createSheet();
+            Map<String, FunctionEx<T, Object>> fields,
+            File file) {
+        try (FileOutputStream response = new FileOutputStream(file);
+                SXSSFWorkbook xssfWorkbook = new SXSSFWorkbook(500)) {
+            SXSSFSheet sheetAt = xssfWorkbook.createSheet();
+            sheetAt.trackAllColumnsForAutoSizing();
 			Row row2 = sheetAt.createRow(0);
-			List<String> keySet = new ArrayList<>(mapa.keySet());
+            List<String> keySet = new ArrayList<>(fields.keySet());
 			for (int i = 0; i < keySet.size(); i++) {
 				row2.createCell(i, CellType.STRING).setCellValue(keySet.get(i));
 			}
@@ -42,19 +42,17 @@ public class ExcelService {
 					T entidade = apply.get(j);
 					Row row = sheetAt.createRow(i + 1 + j);
 					int k = 0;
-                    for (FunctionEx<T, Object> campoFunction : mapa.values()) {
+                    for (FunctionEx<T, Object> campoFunction : fields.values()) {
                         Object campo = FunctionEx.makeFunction(campoFunction).apply(entidade);
 						setValorPorClasse(formatoDate, formatoBigDecimal, row, k, campo);
 						k++;
 					}
 				}
-				if (i == 0) {
-					for (int k = 0; k < mapa.size(); k++) {
-						sheetAt.autoSizeColumn(k);
-					}
-				}
 			}
 
+            for (int k = 0; k < fields.size(); k++) {
+                sheetAt.autoSizeColumn(k);
+            }
             xssfWorkbook.write(response);
 		} catch (IOException e) {
             LOG.error("ERRO ", e);
@@ -76,7 +74,7 @@ public class ExcelService {
 			createCell.setCellValue(((Number) campo).doubleValue());
 		} else if (campo instanceof String) {
 			Cell createCell = row.createCell(k, CellType.STRING);
-			createCell.setCellValue((String) campo);
+            createCell.setCellValue(Objects.toString(campo, ""));
 		} else if (campo instanceof Boolean) {
 			Cell createCell = row.createCell(k, CellType.STRING);
 			Boolean campo2 = (Boolean) campo;
@@ -86,8 +84,9 @@ public class ExcelService {
 		}
 	}
 
-    public static <T> void getExcel(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, OutputStream response) {
-        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+    public static <T> void getExcel(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, File file) {
+
+        try (FileOutputStream response = new FileOutputStream(file); XSSFWorkbook workbook = new XSSFWorkbook()) {
 			XSSFSheet sheetAt = workbook.createSheet();
 			XSSFRow row2 = sheetAt.createRow(0);
 			int j = 0;
@@ -191,7 +190,7 @@ public class ExcelService {
 
 	}
 
-    public static void alterarValorCell(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell c) {
+    private static void alterarValorCell(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell c) {
 		Cell cell = c;
 		if (cell.getCellTypeEnum() == CellType.NUMERIC) {
             alterNumeric(map, sheet, cell);
@@ -257,29 +256,5 @@ public class ExcelService {
     public static void printDebug(Object value) {
         LOG.trace("{}", value);
 	}
-
-    public static <T> void exportList(List<T> lis, Map<String, FunctionEx<T, Object>> campos, String fileResult) {
-        File file = new File(ResourceFXUtils.toFile("out"), fileResult);
-        try (FileOutputStream response = new FileOutputStream(file);) {
-            getExcel(lis, campos, response);
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
-	}
-
-    public static void main(String[] args) throws IOException {
-        ObservableList<Medicamento> medicamentosSNGPCPDF = LeitorArquivos
-                .getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf"));
-        Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
-        campos.put("Registro", Medicamento::getRegistro);
-        campos.put("Codigo", Medicamento::getCodigo);
-        campos.put("Lote", Medicamento::getLote);
-        campos.put("Nome", Medicamento::getNome);
-        campos.put("Quantidade", Medicamento::getQuantidade);
-        exportList(medicamentosSNGPCPDF, campos, "sngpcMeds.xlsx");
-
-    }
-
-
 
 }

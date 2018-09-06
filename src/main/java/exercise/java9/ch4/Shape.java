@@ -12,7 +12,7 @@ package exercise.java9.ch4;
 /**
  * 5. Define clone methods for the classes of the preceding exercise.
  */
-abstract class Shape {
+public abstract class Shape {
     protected Point center;
 
     public Shape(Point center) {

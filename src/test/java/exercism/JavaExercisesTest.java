@@ -186,7 +186,8 @@ public final class JavaExercisesTest implements HasLogging {
         campos.put("Nome", Medicamento::getNome);
         campos.put("Quantidade", Medicamento::getQuantidade);
         measureTime("ExcelService.exportList",
-                () -> ExcelService.exportList(medicamentosSNGPCPDF, campos, "sngpcMeds.xlsx"));
+                () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos,
+                        new File(ResourceFXUtils.toFile("out"), "sngpcMeds.xlsx")));
         measureTime("WordService.getPowerPointImages",
                 () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
     }

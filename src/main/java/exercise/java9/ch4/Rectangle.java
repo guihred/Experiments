@@ -1,6 +1,6 @@
 package exercise.java9.ch4;
 
-class Rectangle extends Shape {
+public class Rectangle extends Shape {
 
     private double width;
     private double height;

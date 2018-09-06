@@ -176,7 +176,7 @@ public class Ch3 {
 	public static class SquareSequence implements Sequence<BigInteger> {
 		private BigInteger i = BigInteger.ZERO;
         private int c;
-        int limit = 50;
+        private int limit = 50;
 		@Override
 		public BigInteger next() {
             c++;
@@ -185,7 +185,7 @@ public class Ch3 {
 		}
 
         public SquareSequence limit(int limit1) {
-            this.limit = limit1;
+            limit = limit1;
             return this;
         }
 

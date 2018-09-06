@@ -7,6 +7,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -40,6 +42,11 @@ public final class ResourceFXUtils {
 
 		return ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile();
 	}
+
+    public static void initializeFX() {
+        Platform.setImplicitExit(false);
+        new JFXPanel().toString();
+    }
 
     public static File toFile(String arquivo) {
         try {

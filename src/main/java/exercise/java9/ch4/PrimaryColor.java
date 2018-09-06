@@ -13,7 +13,7 @@ package exercise.java9.ch4;
  * BLACK, RED, BLUE, GREEN, CYAN, MAGENTA, YELLOW, WHITE with methods getRed,
  * getGreen, and getBlue.
  */
-enum PrimaryColor {
+public enum PrimaryColor {
     BLACK(0, 0, 0),
     RED(255, 0, 0),
     BLUE(0, 0, 255),
