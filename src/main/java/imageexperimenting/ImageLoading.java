@@ -63,7 +63,7 @@ public class ImageLoading {
         }
     }
 
-    private static void cropImage(String dataDir, String nameFile) {
+    static void cropImage(String dataDir, String nameFile) {
 
         RasterImage rasterImage = (RasterImage) Image.load(nameFile);
         // setting for image data to be cashed

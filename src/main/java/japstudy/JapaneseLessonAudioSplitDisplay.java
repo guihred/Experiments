@@ -63,7 +63,7 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
 		TextField end = newText();
 		Text lesson = new Text("Lesson");
 		current.addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
+            if (newValue != null && !lessons.isEmpty()) {
 				JapaneseLesson japaneseLesson = lessons.get(newValue.intValue());
 				lesson.setText("" + japaneseLesson.getExercise());
                 romaji.setText(japaneseLesson.getRomaji());

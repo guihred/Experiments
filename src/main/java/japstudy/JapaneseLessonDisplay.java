@@ -44,7 +44,9 @@ public class JapaneseLessonDisplay extends Application {
 		Button next = new Button("Next");
 		next.setOnAction(e -> nextLesson(answer));
 		primaryStage.setWidth(600);
-		current.set(new Random().nextInt(lessons.size()));
+        if (!lessons.isEmpty()) {
+            current.set(new Random().nextInt(lessons.size()));
+        }
 		primaryStage.centerOnScreen();
 		Text scoreText = new Text();
 		scoreText.textProperty().bind(score.multiply(100).asString(" Score: %.02f%%"));

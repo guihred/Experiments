@@ -43,10 +43,7 @@ public class JapaneseLessonApplication extends Application {
 		TableView<JapaneseLesson> tabelaJapaneseLessons = tabelaJapaneseLessons();
 		Label estoqueRosario = new Label("Lessons");
 		Button button = new Button("Start");
-		button.setOnAction(e -> {
-			JapaneseLessonDisplayer display = new JapaneseLessonDisplayer(tabelaJapaneseLessons.getItems());
-			display.show();
-		});
+        button.setOnAction(e -> new JapaneseLessonDisplayer(tabelaJapaneseLessons.getItems()).show());
 		gridpane.getChildren().add(new VBox(estoqueRosario, tabelaJapaneseLessons, button));
 		GridPane.setHalignment(estoqueRosario, HPos.CENTER);
 		tabelaJapaneseLessons.setItems(getLessons());

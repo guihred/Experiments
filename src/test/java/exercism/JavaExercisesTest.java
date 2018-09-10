@@ -7,6 +7,7 @@ import crypt.FXTesting;
 import exercise.java8.*;
 import extract.ExcelService;
 import extract.WordService;
+import furigana.experiment.JapaneseVerbConjugate;
 import fxproexercises.ch03.JavaFXBeanController;
 import fxproexercises.ch03.MultipleBindingExample;
 import fxproexercises.ch03.SimplePropertyBindExample;
@@ -15,11 +16,10 @@ import fxproexercises.ch06.FXCollectionsChangeExamples;
 import fxproexercises.ch06.FXCollectionsExamples;
 import fxproexercises.ch06.FXCollectionsMapExamples;
 import fxproexercises.ch06.FXCollectionsMethodsExamples;
+import japstudy.CompareAnswers;
 import java.io.File;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import javaexercises.*;
 import javafx.collections.ObservableList;
 import log.analyze.FunctionEx;
@@ -176,6 +176,16 @@ public final class JavaExercisesTest implements HasLogging {
     }
 
     @Test
+    public void testJapaneseConjugate() throws Exception {
+        List<String> measureTime2 = measureTime("JapaneseVerbConjugate.conjugateVerb",
+                () -> JapaneseVerbConjugate.conjugateVerb("よい"));
+        Assert.assertTrue("Conjugation must contain all these",
+                measureTime2.containsAll(Arrays.asList("よく", "よくない", "よくて", "よかった", "よくなかった", "よければ")));
+        Double comparedAnswer = measureTime("CompareAnswers.compare", () -> CompareAnswers.compare("oi", "oi"));
+        Assert.assertEquals("Comparison must 100 percent", 1.0, comparedAnswer, 0.01);
+    }
+
+    @Test
     public void testExcelAndWordFile() throws Exception {
         ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
                 () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
@@ -190,5 +200,12 @@ public final class JavaExercisesTest implements HasLogging {
                         new File(ResourceFXUtils.toFile("out"), "sngpcMeds.xlsx")));
         measureTime("WordService.getPowerPointImages",
                 () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
+        measureTime("WordService.getWord", () -> {
+            Map<String, Object> mapaSubstituicao = new HashMap<>();
+            File file = new File(new File("out"), "resultado.docx");
+            mapaSubstituicao.put("443", "444");
+            WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
+
+        });
     }
 }

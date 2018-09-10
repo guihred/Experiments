@@ -50,8 +50,8 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		TextField end = newText();
 		Text lesson = new Text("Lesson");
 		current.addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				JapaneseLesson japaneseLesson = lessons.get(newValue.intValue());
+            if (newValue != null && !lessons.isEmpty()) {
+                JapaneseLesson japaneseLesson = lessons.get(newValue.intValue() % lessons.size());
 				lesson.setText("" + japaneseLesson.getExercise());
 				english.setText(japaneseLesson.getEnglish());
 				romaji.setText(japaneseLesson.getRomaji());

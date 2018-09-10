@@ -26,6 +26,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
 	private final Graph graph = new Graph();
 	private ConvergeLayout convergeLayout = new ConvergeLayout(graph);
 	private ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph),
+            new ConcentricLayout(graph),
 			new CircleLayout(graph),
 			new RandomLayout(graph), new CustomLayout(graph), convergeLayout);
     private ChoiceBox<Layout> selectLayout = CommonsFX.newSelect(layouts,

@@ -247,7 +247,7 @@ public class MoleculeSampleApp extends Application {
         mousePosY = me.getSceneY();
         double mouseDeltaX = mousePosX - mouseOldX;
         double mouseDeltaY = mousePosY - mouseOldY;
-        double modifier = me.isShiftDown() ? 10.0 : me.isControlDown() ? 0.1 : 1.0;
+        double modifier = getModifier(me);
         double modifierFactor = 0.1;
         if (me.isPrimaryButtonDown()) {
             cameraXform.setRy(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
@@ -260,6 +260,16 @@ public class MoleculeSampleApp extends Application {
             cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
             cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
         }
+    }
+
+    private double getModifier(MouseEvent me) {
+        if (me.isShiftDown()) {
+            return 10.0;
+        }
+        if (me.isControlDown()) {
+            return 0.1;
+        }
+        return 1.0;
     }
 
     private void leftAndRightMovement(KeyEvent event, int i) {

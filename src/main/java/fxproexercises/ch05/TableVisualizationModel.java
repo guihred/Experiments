@@ -1,5 +1,6 @@
 package fxproexercises.ch05;
 
+import java.util.Random;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -33,7 +34,7 @@ public final class TableVisualizationModel {
             "http://www.weiqigao.com/blog",
             "http://google.com"
         };
-        int randomIdx = (int) (Math.random() * webSites.length);
+        int randomIdx = new Random().nextInt(webSites.length);
         return webSites[randomIdx];
     }
 

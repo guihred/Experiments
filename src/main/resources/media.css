@@ -2,7 +2,7 @@
 -fx-base: #606060;
 -fx-background-color: radial-gradient(center 50% 50%, radius 60%,
 #666a6b, #2b2f32);
--fx-background-image: url("resources/cross.png");
+-fx-background-image: url("cross.png");
 -fx-background-position: left top;
 }
 .button {

@@ -16,7 +16,7 @@ public class RandomTopology extends BaseTopology {
 		graph.getModel().removeAllEdges();
 		Random random = new Random();
 		for (int i = 0; i < size; i++) {
-			Cell addCell = graph.getModel().addCell(identifier(i), CellType.CIRCLE);
+            Cell addCell = graph.getModel().addCell(identifier(i), i % 2 == 0 ? CellType.CIRCLE : CellType.TRIANGLE);
 			addCell.relocate(random.nextGaussian() * 500, random.nextGaussian() * 500);
 		}
 		int nextInt = random.nextInt(size * (size - 1) / 2) + 1;

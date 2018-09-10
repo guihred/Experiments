@@ -42,14 +42,11 @@ public class WordService implements HasLogging {
         }
     }
 
-	public static void main(String[] args) {
-        getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx"));
-	}
 
-    public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, OutputStream outStream) {
-        InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
+    public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
 
-        try (XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
+        try (InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
+                XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
 			for (XWPFHeader p : document1.getHeaderList()) {
 				List<XWPFParagraph> paragraphs = p.getParagraphs();
 				for (XWPFParagraph paragraph : paragraphs) {
@@ -66,7 +63,7 @@ public class WordService implements HasLogging {
 					.forEach((IBodyElement element) -> substituirParagrafo(mapaSubstituicao, (XWPFParagraph) element));
 			bodyElements.stream().filter(e -> e.getElementType() == BodyElementType.TABLE)
 					.forEach(tabela -> substituirTabela(tabela, mapaSubstituicao));
-			document1.write(outStream);
+            document1.write(new FileOutputStream(outStream));
 		} catch (Exception e) {
             LOG.error("", e);
 		}
@@ -74,6 +71,7 @@ public class WordService implements HasLogging {
 
     private static void substituirParagrafo(Map<String, Object> mapaSubstituicao, XWPFParagraph paragraph) {
 		String text = paragraph.getText();
+
 		if (mapaSubstituicao.containsKey(text) || mapaSubstituicao.containsKey(text.trim())) {
 			Object object = getObject(mapaSubstituicao, text);
 			if (object instanceof String) {
@@ -136,7 +134,7 @@ public class WordService implements HasLogging {
 			List<XWPFTableCell> tableCells = row.getTableCells();
 			for (int j = 0; j < tableCells.size(); j++) {
 				XWPFTableCell cell = row.getCell(j);
-				String cellText = cell.getText();
+                String cellText = cell.getText();
 				if (map.containsKey(cellText) || map.containsKey(cellText.trim())) {
 					Object object = getObject(map, cellText);
 					if (object instanceof String) {

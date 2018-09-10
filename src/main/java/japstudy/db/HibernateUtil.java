@@ -30,7 +30,9 @@ public class HibernateUtil {
 	public static void shutdown() {
         if (shutdownEnabled) {
 		// Close caches and connection pools
-            getSessionFactory().close();
+            if (!getSessionFactory().isClosed()) {
+                getSessionFactory().close();
+            }
         }
 	}
 

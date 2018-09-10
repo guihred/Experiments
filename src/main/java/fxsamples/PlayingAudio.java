@@ -1,5 +1,6 @@
 package fxsamples;
 
+import fxproexercises.ch08.Chapter8Resource;
 import java.net.MalformedURLException;
 import java.util.Random;
 import javafx.application.Application;
@@ -16,11 +17,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -62,7 +59,7 @@ public class PlayingAudio extends Application {
 		Group root = new Group();
 		Scene scene = new Scene(root, 551, 270, Color.rgb(0, 0, 0, 0));
 		// load JavaFX CSS style
-		scene.getStylesheets().add("file:playing-audio.css");
+        scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
 		mainStage.setScene(scene);
 		// Initialize stage to be movable via mouse
 		initMovablePlayer();

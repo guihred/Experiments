@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.poi.xwpf.usermodel.BodyElementType;
@@ -36,7 +37,9 @@ public final class JapaneseLessonReader implements HasLogging {
 	}
 
 	public static ObservableList<JapaneseLesson> getLessons() {
-		return FXCollections.observableArrayList(lessonDAO.list());
+        ObservableList<JapaneseLesson> lessons = FXCollections.observableArrayList();
+        Platform.runLater(() -> lessons.addAll(lessonDAO.list()));
+        return lessons;
 	}
 
 	public static Long getCountExerciseByLesson(Integer lesson) {
