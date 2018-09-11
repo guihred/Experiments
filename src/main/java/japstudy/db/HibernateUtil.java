@@ -5,7 +5,7 @@ import org.hibernate.cfg.Configuration;
 
 public class HibernateUtil {
 
-	private static final SessionFactory sessionFactory = buildSessionFactory();
+    private static SessionFactory sessionFactory = buildSessionFactory();
     private static boolean shutdownEnabled;
 
 	private static SessionFactory buildSessionFactory() {
@@ -20,7 +20,11 @@ public class HibernateUtil {
 	}
 
 	public static SessionFactory getSessionFactory() {
-		return sessionFactory;
+        if (sessionFactory == null || sessionFactory.isClosed()) {
+            sessionFactory = buildSessionFactory();
+        }
+
+        return sessionFactory;
 	}
 
     public static void setShutdownEnabled(boolean shutdownEnabled) {
@@ -28,11 +32,9 @@ public class HibernateUtil {
     }
 
 	public static void shutdown() {
-        if (shutdownEnabled) {
-		// Close caches and connection pools
-            if (!getSessionFactory().isClosed()) {
-                getSessionFactory().close();
-            }
+        // Close caches and connection pools
+        if (shutdownEnabled && !getSessionFactory().isClosed()) {
+            getSessionFactory().close();
         }
 	}
 

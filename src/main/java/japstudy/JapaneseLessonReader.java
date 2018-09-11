@@ -1,6 +1,6 @@
 package japstudy;
 
-import japstudy.db.HibernateUtil;
+import exercise.java8.RunnableEx;
 import japstudy.db.JapaneseLesson;
 import japstudy.db.LessonDAO;
 import java.io.File;
@@ -17,11 +17,10 @@ import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import simplebuilder.HasLogging;
 
 public final class JapaneseLessonReader implements HasLogging {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JapaneseLessonReader.class);
+    private static final Logger LOGGER = HasLogging.log(JapaneseLessonReader.class);
 	private static LessonDAO lessonDAO = new LessonDAO();
 	private JapaneseLessonReader() {
 	}
@@ -30,7 +29,7 @@ public final class JapaneseLessonReader implements HasLogging {
 		try {
 			ObservableList<JapaneseLesson> lessons = getLessons("jaftranscript.docx");
             lessons.forEach(JapaneseLessonReader::update);
-			HibernateUtil.shutdown();
+            //			HibernateUtil.shutdown();
 		} catch (IOException e) {
 			LOGGER.error("", e);
 		}
@@ -38,7 +37,7 @@ public final class JapaneseLessonReader implements HasLogging {
 
 	public static ObservableList<JapaneseLesson> getLessons() {
         ObservableList<JapaneseLesson> lessons = FXCollections.observableArrayList();
-        Platform.runLater(() -> lessons.addAll(lessonDAO.list()));
+        Platform.runLater(RunnableEx.makeRunnable(() -> lessons.addAll(lessonDAO.list())));
         return lessons;
 	}
 
@@ -69,7 +68,7 @@ public final class JapaneseLessonReader implements HasLogging {
         List<IBodyElement> bodyElements = document1.getBodyElements();
         int lesson = 1;
         for (IBodyElement e : bodyElements) {
-        	if (e.getElementType() == BodyElementType.PARAGRAPH) {
+            if (e.getElementType() == BodyElementType.PARAGRAPH) {
         		XWPFParagraph a = (XWPFParagraph) e;
         		String text = a.getText();
                 if (text.isEmpty()) {

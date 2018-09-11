@@ -32,7 +32,7 @@ public class JapaneseLessonDisplay extends Application {
 		Text lesson = new Text("Lesson");
 		current.addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				lesson.setText("Lesson: " + lessons.get(newValue.intValue()).getLesson());
+                lesson.setText("Lesson: " + lessons.get(newValue.intValue()).getLesson());
 				english.setText(lessons.get(newValue.intValue()).getEnglish());
 				romaji.setText(lessons.get(newValue.intValue()).getRomaji());
 				japanese.setText(lessons.get(newValue.intValue()).getJapanese());

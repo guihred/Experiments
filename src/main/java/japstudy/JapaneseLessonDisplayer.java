@@ -28,7 +28,7 @@ public class JapaneseLessonDisplayer extends Stage {
 		romaji.setTextAlignment(TextAlignment.CENTER);
 		lessons = observableList;
 		currentIndex.addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
+            if (newValue != null && !lessons.isEmpty()) {
 				english.setText(lessons.get(newValue.intValue()).getEnglish());
 				romaji.setText(lessons.get(newValue.intValue()).getRomaji());
 				japanese.setText(lessons.get(newValue.intValue()).getJapanese());
@@ -62,14 +62,16 @@ public class JapaneseLessonDisplayer extends Stage {
 	}
 
 	private void nextLesson(TextField answer) {
-		if (!tested.get()) {
+        if (!tested.get() && currentIndex.get() < lessons.size()) {
 			tested.set(true);
 			String japanese2 = lessons.get(currentIndex.get()).getJapanese();
 			String text = answer.getText();
 			double compare = CompareAnswers.compare(japanese2, text);
 			score.set((score.get() + compare) / 2);
 		} else {
-			currentIndex.set((currentIndex.get() + 1) % lessons.size());
+            if (!lessons.isEmpty()) {
+                currentIndex.set((currentIndex.get() + 1) % lessons.size());
+            }
 			tested.set(false);
 			answer.setText("");
 		}

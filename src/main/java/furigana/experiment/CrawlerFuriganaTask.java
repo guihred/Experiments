@@ -1,6 +1,7 @@
 package furigana.experiment;
 
 import election.experiment.CrawlerTask;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.Character.UnicodeBlock;
@@ -145,7 +146,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                     }
                     if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() != 0) {
                         String w = currentWord.toString();
-                        getLogger().info("{}={}", w, getReading(w, currentLetter));
+                        getLogger().trace("{}={}", w, getReading(w, currentLetter));
                         currentWord.delete(0, currentWord.length());
                     }
                     currentBlock = of;
@@ -195,6 +196,9 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         List<Thread> ths = new ArrayList<>();
         for (int j = 0; j < lines.size(); j++) {
             int k = j;
+            if (isCancelled()) {
+                return "Cancelled";
+            }
             Thread thread = new Thread(() -> {
                 String line = lines.get(k);
                 StringBuilder currentLine = placeFurigana(line);
@@ -219,7 +223,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             long i = ths.size() - count;
             updateAll(i, total);
         }
-        try (PrintStream printStream = new PrintStream(ResourceFXUtils.toFile("out/hp1Tex2Converted.tex"),
+        try (PrintStream printStream = new PrintStream(
+                new File(ResourceFXUtils.toFile("out"), "hp1Tex2Converted.tex"),
                 StandardCharsets.UTF_8.displayName())) {
             for (String s : lines) {
                 printStream.println(s);

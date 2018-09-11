@@ -9,31 +9,31 @@ public class HammingTest {
 
 	@Test
 	public void testNoDifferenceBetweenIdenticalStrands() {
-		assertThat(Hamming.compute("A", "A"), is(0));
+        assertThat("", Hamming.compute("A", "A"), is(0));
 	}
 
 
 	@Test
 	public void testCompleteHammingDistanceOfForSingleNucleotideStrand() {
-		assertThat(Hamming.compute("A", "G"), is(1));
+        assertThat("", Hamming.compute("A", "G"), is(1));
 	}
 
 
 	@Test
 	public void testCompleteHammingDistanceForSmallStrand() {
-		assertThat(Hamming.compute("AG", "CT"), is(2));
+        assertThat("", Hamming.compute("AG", "CT"), is(2));
 	}
 
 
 	@Test
 	public void testSmallHammingDistance() {
-		assertThat(Hamming.compute("AT", "CT"), is(1));
+        assertThat("", Hamming.compute("AT", "CT"), is(1));
 	}
 
 
 	@Test
 	public void testSmallHammingDistanceInLongerStrand() {
-		assertThat(Hamming.compute("GGACG", "GGTCG"), is(1));
+        assertThat("", Hamming.compute("GGACG", "GGTCG"), is(1));
 	}
 
 
@@ -51,13 +51,13 @@ public class HammingTest {
 
 	@Test
 	public void testLargeHammingDistance() {
-		assertThat(Hamming.compute("GATACA", "GCATAA"), is(4));
+        assertThat("", Hamming.compute("GATACA", "GCATAA"), is(4));
 	}
 
 
 	@Test
 	public void testHammingDistanceInVeryLongStrand() {
-		assertThat(Hamming.compute("GGACGGATTCTG", "AGGACGGATTCT"), is(9));
+        assertThat("", Hamming.compute("GGACGGATTCTG", "AGGACGGATTCT"), is(9));
 	}
 
 }

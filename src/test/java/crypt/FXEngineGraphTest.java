@@ -3,7 +3,6 @@ package crypt;
 import java.util.Set;
 import javaexercises.graphs.Cell;
 import javaexercises.graphs.GraphModelLauncher;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -12,7 +11,6 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.util.WaitForAsyncUtils;
 import simplebuilder.ResourceFXUtils;
 
 
@@ -54,8 +52,7 @@ public class FXEngineGraphTest extends ApplicationTest {
             ObservableList<?> items = e.getItems();
             for (int i = 0; i < items.size(); i++) {
                 int j = i;
-                Platform.runLater(() -> e.getSelectionModel().select(j));
-                WaitForAsyncUtils.waitForFxEvents();
+                interact(() -> e.getSelectionModel().select(j));
                 queryAll.forEach(b -> clickOn(b));
             }
 

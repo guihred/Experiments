@@ -24,7 +24,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 import simplebuilder.SimpleCircleBuilder;
 
 /**
@@ -33,7 +33,7 @@ import simplebuilder.SimpleCircleBuilder;
  * @author cdea
  */
 public class PlayingAudio extends Application {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PlayingAudio.class);
+    private static final Logger LOGGER = HasLogging.log(PlayingAudio.class);
 	private MediaPlayer mediaPlayer;
 	private Point2D anchorPt;
 	private Point2D previousLocation;

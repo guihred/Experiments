@@ -117,6 +117,7 @@ class RegressionModel {
         return FXCollections.observableArrayList(series2, series);
     }
 
+    @SuppressWarnings("unchecked")
     public ObservableList<Series<Number, Number>> getExpectedSeries() {
         Series<Number, Number> series = new Series<>();
         c = 0;
@@ -124,8 +125,7 @@ class RegressionModel {
         List<Data<Number, Number>> collect = IntStream.range(0, MAX_SIZE)
                 .mapToObj(i -> toData(i, bestInitial + bestSlope * i)).collect(Collectors.toList());
         series.setData(FXCollections.observableArrayList(collect));
-        // return FXCollections.observableArrayList(series); FIXME
-        return FXCollections.observableArrayList();
+        return FXCollections.observableArrayList(series);
     }
 
     public double getInitial() {

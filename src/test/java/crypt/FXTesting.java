@@ -30,6 +30,7 @@ public final class FXTesting implements HasLogging {
     private void testApplications(List<Class<? extends Application>> applicationClasses)
             throws Exception {
 
+        ResourceFXUtils.initializeFX();
         List<Object> testedApps = Collections.synchronizedList(new ArrayList<>());
         long currentTimeMillis = System.currentTimeMillis();
         for (Class<? extends Application> class1 : applicationClasses) {
@@ -107,7 +108,7 @@ public final class FXTesting implements HasLogging {
             t = runnable.get();
         } catch (Exception e) {
             LOGGER.error("Exception thrown", e);
-            Assert.fail("Exception in " + name);
+            throw new RuntimeException("Exception in " + name, e);
         }
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;

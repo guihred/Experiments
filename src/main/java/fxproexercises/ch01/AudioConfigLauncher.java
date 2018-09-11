@@ -51,13 +51,13 @@ public class AudioConfigLauncher extends Application {
         Text genreText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SanSerif", FontWeight.BOLD, 18)).text("Genre").build();
         Line line3 = new SimpleLineBuilder().startX(9).startY(141).endX(309).endY(141)
-                .stroke(Color.color(0.66, 0.67, 0.69)).build();
+                .stroke(Color.GRAY).build();
         Text mutingText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
 				.font(Font.font("SanSerif", FontWeight.BOLD, 18)).text("Muting").build();
         Line line2 = new SimpleLineBuilder().startX(9).startY(97).endX(309).endY(97)
-                .stroke(Color.color(0.66, 0.67, 0.69)).build();
+                .stroke(Color.GRAY).build();
         Rectangle whiteRectangle = new SimpleRectangleBuilder().x(9).y(54).width(300).height(130).arcHeight(20)
-				.arcWidth(20).fill(Color.WHITE).stroke(Color.color(0.66, 0.67, 0.69)).build();
+				.arcWidth(20).fill(Color.WHITE).stroke(Color.GRAY).build();
         Text audioConfigText = new SimpleTextBuilder().textOrigin(VPos.TOP).fill(Color.WHITE)
 				.font(Font.font("SansSerif", FontWeight.BOLD, 20)).text("Audio Configuration").build();
         LinearGradient linearGradient = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,

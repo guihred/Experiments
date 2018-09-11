@@ -5,7 +5,7 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
-class SimpleTask extends Task<String> {
+public class SimpleTask extends Task<String> {
 
     private static final Logger LOGGER = HasLogging.log();
     private AtomicBoolean shouldThrow;

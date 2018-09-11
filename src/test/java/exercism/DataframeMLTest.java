@@ -2,20 +2,27 @@ package exercism;
 
 import static crypt.FXTesting.measureTime;
 
-import japstudy.JapaneseLessonReader;
+import java.io.File;
 import ml.DataframeBuilder;
 import ml.DataframeML;
+import ml.Word2VecExample;
 import org.junit.Test;
 
 
 public class DataframeMLTest {
 
-	@Test
-    public void testJapaneseLessonReader() {
-        measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
+
+
+    @Test
+    public void testWord2Vec() {
+        File file = new File(Word2VecExample.PATH_TO_SAVE_MODEL_TXT);
+        if (file.exists()) {
+            file.delete();
+        }
+        measureTime("Word2VecExample.createWord2Vec", () -> Word2VecExample.createWord2Vec());
     }
 
-    //    @Test
+    @Test
     public void testTransformOneValue() {
         DataframeBuilder b = DataframeML.builder("california_housing_train.csv");
         DataframeML x = measureTime("DataframeML.build", () -> b.build());

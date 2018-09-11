@@ -24,7 +24,6 @@ public class WordSuggetionApp extends Application {
         VocabCache<VocabWord> vocab = word2Vec.getVocab();
         Collection<String> words = vocab.words();
         SortedSet<String> entrySet = new TreeSet<>(words);
-
         root.getChildren().add(new AutoCompleteTextField(entrySet, word2Vec));
 
         theStage.show();

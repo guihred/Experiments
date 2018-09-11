@@ -16,7 +16,7 @@ public class EtlTest {
 		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A"));
 		Map<String, Integer> expected = ImmutableMap.of("a", 1);
 
-		Assert.assertEquals(etl.transform(old), expected);
+        Assert.assertEquals("", etl.transform(old), expected);
 
 	}
 
@@ -25,7 +25,7 @@ public class EtlTest {
 		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A", "E", "I", "O", "U"));
 		Map<String, Integer> expected = ImmutableMap.of("a", 1, "e", 1, "i", 1, "o", 1, "u", 1);
 
-		Assert.assertEquals(etl.transform(old), expected);
+        Assert.assertEquals("", etl.transform(old), expected);
 	}
 
 	@Test
@@ -33,7 +33,7 @@ public class EtlTest {
 		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A", "E"), 2, Arrays.asList("D", "G"));
 		Map<String, Integer> expected = ImmutableMap.of("a", 1, "e", 1, "d", 2, "g", 2);
 
-		Assert.assertEquals(etl.transform(old), expected);
+        Assert.assertEquals("", etl.transform(old), expected);
 	}
 
 	@Test
@@ -46,6 +46,6 @@ public class EtlTest {
 				.put("f", 4).put("g", 2).put("h", 4).put("i", 1).put("j", 8).put("k", 5).put("l", 1).put("m", 3).put("n", 1).put("o", 1).put("p", 3)
 				.put("q", 10).put("r", 1).put("s", 1).put("t", 1).put("u", 1).put("v", 4).put("w", 4).put("x", 8).put("y", 4).put("z", 10).build();
 
-		Assert.assertEquals(etl.transform(old), expected);
+        Assert.assertEquals("", etl.transform(old), expected);
 	}
 }
