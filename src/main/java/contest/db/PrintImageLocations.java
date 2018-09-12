@@ -80,7 +80,7 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
             pdfImage.file = save;
             pdfImage.x = translateX;
             pdfImage.y = translateY - ctmNew.getScalingFactorY();
-            pdfImage.pageNumber = pageNumber;
+            pdfImage.pageN = pageNumber;
             images.add(pdfImage);
             getLogger().trace("{}", image);
             getLogger().trace("{} at ({},{}) page {}", pdfImage.file, pdfImage.x, pdfImage.y, pageNumber);
@@ -100,10 +100,11 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
         return file;
     }
 
-}
-class PDFImage{
-    protected File file;
-    protected float x;
-    protected float y;
-    protected int pageNumber;
+    static class PDFImage {
+        protected File file;
+        protected float x;
+        protected float y;
+        protected int pageN;
+    }
+
 }

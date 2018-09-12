@@ -38,13 +38,3 @@ enum RubiksCubeFaces {
 		set.apply(cube, i, j, newPiece);
 	}
 }
-
-@FunctionalInterface
-interface RubiksGetFaceFunction {
-	RubiksPiece apply(RubiksPiece[][][] cube, int i, int j);
-}
-
-@FunctionalInterface
-interface RubiksSetFaceFunction {
-	void apply(RubiksPiece[][][] cube, int i, int j, RubiksPiece newPiece);
-}

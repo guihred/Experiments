@@ -82,11 +82,11 @@ public class MadTopology {
         return mst;
     }
 
-    private List<MadPonto> getPointSet(List<MadCell> all) {
+    private static List<MadPonto> getPointSet(List<MadCell> all) {
         return all.stream().map(c -> new MadPonto(c.getX(), c.getY(), c)).collect(Collectors.toList());
     }
 
-    private void legalizeEdge(List<MadTriangle> triangleSoup1, MadTriangle triangle, MadLinha edge,
+    private static void legalizeEdge(List<MadTriangle> triangleSoup1, MadTriangle triangle, MadLinha edge,
             MadPonto newVertex) {
         MadTriangle neighbourMadTriangle = triangleSoup1.stream().filter(t -> t.isNeighbour(edge) && t != triangle)
                 .findFirst().orElse(null);

@@ -31,23 +31,10 @@ public class MultilineExample extends Application {
         Scene theScene = new Scene(root, 800, 600);
 		theStage.setScene(theScene);
 
-        // PieGraph canvas = new PieGraph();
-        // PointGraph canvas = new PointGraph();
-		// HistogramGraph canvas = new HistogramGraph();
 		MultiLineGraph canvas = new MultiLineGraph();
 
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
-//        List<Entry<Number, Number>> points = x.createNumberEntries("longitude", "latitude");
-		// Map<Double, Long> histogram = x.histogram("population", 55);
-        // Map<String, Long> collect = histogram.entrySet().stream()
-        // .collect(Collectors.toMap(t -> t.getKey() >= 6 ? "Others" :
-        // String.format("%.0f Rooms", t.getKey()),
-        // Entry<Double, Long>::getValue,
-        // (a, b) -> a + b));
-
-//        canvas.setHistogram(collect);
-        // canvas.setPoints(points);
 		root.getChildren().add(newSlider("Radius", 1, 375, canvas.radiusProperty()));
 		root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSizeProperty()));
 		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));

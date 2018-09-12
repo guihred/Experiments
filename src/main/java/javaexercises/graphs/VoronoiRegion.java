@@ -47,7 +47,7 @@ public class VoronoiRegion extends Group {
 		getChildren().add(0, polygon);
 	}
 
-	private double[] centerCircle(Cell a, Cell b, Cell c) {
+    private static double[] centerCircle(Cell a, Cell b, Cell c) {
 		double ay = y(a);
 		double ax = x(a);
 		double bx = x(b);
@@ -68,11 +68,11 @@ public class VoronoiRegion extends Group {
 		return b;
 	}
 
-	private double x(Cell d) {
+    private static double x(Cell d) {
 		return d.getLayoutX() + d.getBoundsInLocal().getWidth() / 2;
 	}
 
-	private double y(Cell d) {
+    private static double y(Cell d) {
 		return d.getLayoutY() + d.getBoundsInLocal().getHeight() / 2;
 	}
 

@@ -84,7 +84,7 @@ public class GraphModel {
         return allEdges.stream().filter(e -> e.source.equals(c)).map(Edge::getTarget).collect(Collectors.toList());
     }
 
-    public void attachOrphansToGraphParent(List<Cell> cellList) {
+    public void attachOrphansToGraphParent(Iterable<Cell> cellList) {
 
         for (Cell cell : cellList) {
             if (cell.getCellParents().isEmpty()) {
@@ -143,7 +143,7 @@ public class GraphModel {
         }
     }
 
-    public void disconnectFromGraphParent(List<Cell> cellList) {
+    public void disconnectFromGraphParent(Iterable<Cell> cellList) {
 
         for (Cell cell : cellList) {
             graphParent.removeCellChild(cell);

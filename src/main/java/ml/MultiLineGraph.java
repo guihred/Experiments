@@ -20,38 +20,38 @@ import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 class MultiLineGraph extends Canvas implements HasLogging {
-	private DoubleProperty layout = new SimpleDoubleProperty(30);
-	private double maxLayout = 480;
-	private DoubleProperty lineSize = new SimpleDoubleProperty(5);
-	private IntegerProperty bins = new SimpleIntegerProperty(20);
-	private IntegerProperty ybins = new SimpleIntegerProperty(20);
-	private double xProportion;
-	private double yProportion;
-	private GraphicsContext gc;
-	private DataframeML dataframe;
-	private ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
-	private ObservableMap<String, Color> colors = FXCollections.observableHashMap();
-	private IntegerProperty radius = new SimpleIntegerProperty(5);
+    private DoubleProperty layout = new SimpleDoubleProperty(30);
+    private double maxLayout = 480;
+    private DoubleProperty lineSize = new SimpleDoubleProperty(5);
+    private IntegerProperty bins = new SimpleIntegerProperty(20);
+    private IntegerProperty ybins = new SimpleIntegerProperty(20);
+    private double xProportion;
+    private double yProportion;
+    private GraphicsContext gc;
+    private DataframeML dataframe;
+    private ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
+    private ObservableMap<String, Color> colors = FXCollections.observableHashMap();
+    private IntegerProperty radius = new SimpleIntegerProperty(5);
     private String title;
 
-
-	public MultiLineGraph() {
-		super(550, 550);
-		gc = getGraphicsContext2D();
-		drawGraph();
-		InvalidationListener listener = observable -> drawGraph();
-		stats.addListener(listener);
-		radius.addListener(listener);
+    public MultiLineGraph() {
+        super(550, 550);
+        gc = getGraphicsContext2D();
+        drawGraph();
+        InvalidationListener listener = observable -> drawGraph();
+        stats.addListener(listener);
+        radius.addListener(listener);
         colors.addListener(listener);
-		lineSize.addListener(listener);
-		layout.addListener(listener);
-		bins.addListener(listener);
-		ybins.addListener(listener);
-	}
-	public void setHistogram(DataframeML dataframe) {
-		this.dataframe = dataframe;
+        lineSize.addListener(listener);
+        layout.addListener(listener);
+        bins.addListener(listener);
+        ybins.addListener(listener);
+    }
 
-		dataframe.forEach((col, items) -> {
+    public void setHistogram(DataframeML dataframe) {
+        this.dataframe = dataframe;
+
+        dataframe.forEach((col, items) -> {
             if (colors == null || colors.size() < stats.size()) {
                 List<Color> generateColors = PieGraph.generateRandomColors(stats.size());
                 Iterator<Color> iterator = generateColors.iterator();
@@ -60,17 +60,16 @@ class MultiLineGraph extends Canvas implements HasLogging {
             stats.put(col, items.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).summaryStatistics());
         });
 
-	}
+    }
 
-    public final void drawGraph() {
-		if (dataframe == null) {
-			drawAxis();
-			return;
+    private final void drawGraph() {
+        if (dataframe == null) {
+            drawAxis();
+            return;
 
-		}
+        }
 
-
-		gc.clearRect(0, 0, 550, 550);
+        gc.clearRect(0, 0, 550, 550);
         int max = dataframe.getSize() - 1;
         double min = 0;
         xProportion = (max - min) / bins.get();
@@ -82,20 +81,20 @@ class MultiLineGraph extends Canvas implements HasLogging {
         yProportion = max2 / ybins.get();
 
         stats.forEach((col, yStats) -> drawLines(col));
-		drawAxis();
+        drawAxis();
         Logger logger = getLogger();
         if (logger.isTraceEnabled()) {
             logger.trace(dataframe.toString());
         }
-	}
+    }
 
     private void drawLines(String col) {
         Color p = colors.get(col);
         if (p == null) {
             return;
         }
-        List<Double> entrySet = dataframe.list(col).stream().map(Number.class::cast)
-                .mapToDouble(Number::doubleValue).sorted().boxed().collect(Collectors.toList());
+        List<Double> entrySet = dataframe.list(col).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
+                .sorted().boxed().collect(Collectors.toList());
         double d = layout.get();
         double j = (maxLayout - d) / bins.doubleValue();
         double j2 = (maxLayout - d) / ybins.get();
@@ -103,33 +102,33 @@ class MultiLineGraph extends Canvas implements HasLogging {
         gc.setStroke(p);
         gc.setLineWidth(0.5);
         for (int k = 0; k < entrySet.size(); k++) {
-        	double i = k / xProportion;
-        	double x1 = i * j + d;
-        	Double y = entrySet.get(k);
-        	double y1 = maxLayout - y / yProportion * j2;
-        	// gc.strokeLine(x1, maxLayout, x1, y1)
+            double i = k / xProportion;
+            double x1 = i * j + d;
+            Double y = entrySet.get(k);
+            double y1 = maxLayout - y / yProportion * j2;
+            // gc.strokeLine(x1, maxLayout, x1, y1)
             double h = radius.get();
-        	gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
+            gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
         }
         for (int k = 0; k < entrySet.size(); k++) {
-        	double x = k;
-        	double i = x / xProportion;
-        	double x1 = i * j + d;
-        	double y = entrySet.get(k);
-        	double y1 = maxLayout - y / yProportion * j2;
-        	if (k < entrySet.size() - 1) {
-        		double x2 = 1D + k;
-        		double i2 = x2 / xProportion;
-        		double x12 = i2 * j + d;
-        		double y2 = entrySet.get(k + 1);
-        		double y12 = maxLayout - y2 / yProportion * j2;
-        		gc.strokeLine(x1, y1, x12, y12);
+            double x = k;
+            double i = x / xProportion;
+            double x1 = i * j + d;
+            double y = entrySet.get(k);
+            double y1 = maxLayout - y / yProportion * j2;
+            if (k < entrySet.size() - 1) {
+                double x2 = 1D + k;
+                double i2 = x2 / xProportion;
+                double x12 = i2 * j + d;
+                double y2 = entrySet.get(k + 1);
+                double y12 = maxLayout - y2 / yProportion * j2;
+                gc.strokeLine(x1, y1, x12, y12);
 
-        	}
+            }
         }
     }
 
-	public void drawAxis() {
+    private void drawAxis() {
 
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setLineWidth(1);
@@ -164,71 +163,31 @@ class MultiLineGraph extends Canvas implements HasLogging {
         this.title = title;
     }
 
-	public final DoubleProperty layoutProperty() {
-		return layout;
-	}
+    public final DoubleProperty layoutProperty() {
+        return layout;
+    }
 
-	public final double getLayout() {
-		return layoutProperty().get();
-	}
+    public final DoubleProperty lineSizeProperty() {
+        return lineSize;
+    }
 
-	public final void setLayout(final double layout) {
-		layoutProperty().set(layout);
-	}
+    public final IntegerProperty binsProperty() {
+        return bins;
+    }
 
-	public final DoubleProperty lineSizeProperty() {
-		return lineSize;
-	}
+    public final IntegerProperty ybinsProperty() {
+        return ybins;
+    }
 
-	public final double getLineSize() {
-		return lineSizeProperty().get();
-	}
+    public final IntegerProperty radiusProperty() {
+        return radius;
+    }
 
-	public final void setLineSize(final double lineSize) {
-		lineSizeProperty().set(lineSize);
-	}
+    public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
+        return stats;
+    }
 
-	public final IntegerProperty binsProperty() {
-		return bins;
-	}
-
-	public final int getBins() {
-		return binsProperty().get();
-	}
-
-	public final void setBins(final int bins) {
-		binsProperty().set(bins);
-	}
-
-	public final IntegerProperty ybinsProperty() {
-		return ybins;
-	}
-
-	public final int getYbins() {
-		return ybinsProperty().get();
-	}
-
-	public final void setYbins(final int ybins) {
-		ybinsProperty().set(ybins);
-	}
-
-	public final IntegerProperty radiusProperty() {
-		return radius;
-	}
-
-	public final int getRadius() {
-		return radiusProperty().get();
-	}
-
-	public final void setRadius(final int radius) {
-		radiusProperty().set(radius);
-	}
-
-	public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
-		return stats;
-	}
-
-	public ObservableMap<String, Color> colorsProperty() {
-		return colors;
-	}
+    public ObservableMap<String, Color> colorsProperty() {
+        return colors;
+    }
 }

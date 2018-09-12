@@ -49,7 +49,7 @@ public class DelaunayTopology extends BaseTopology {
 				.collect(Collectors.toList());
 	}
 
-	private void legalizeEdge(List<Triangle> triangleSoup1, Triangle triangle, Linha edge, Ponto newVertex) {
+    private static void legalizeEdge(List<Triangle> triangleSoup1, Triangle triangle, Linha edge, Ponto newVertex) {
 		Triangle neighbourTriangle = triangleSoup1.stream().filter(t -> t.isNeighbour(edge) && t != triangle).findFirst().orElse(null);
 		if (neighbourTriangle != null && neighbourTriangle.isPointInCircumcircle(newVertex)) {
 			triangleSoup1.remove(triangle);

@@ -445,7 +445,7 @@ public final class LeitorArquivos {
         return list;
     }
 
-    public static ObservableList<Medicamento> converterMedicamentos(List<List<String>> items2,
+    public static ObservableList<Medicamento> converterMedicamentos(Iterable<List<String>> items2,
             List<String> columns) {
 
 

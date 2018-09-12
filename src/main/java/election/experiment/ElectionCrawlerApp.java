@@ -8,20 +8,20 @@ import javafx.stage.Stage;
 
 public class ElectionCrawlerApp extends Application {
 
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-
     public final Worker<String> worker = new CrawlerCompleteCandidateTask();
+
     private TaskProgressView view = new TaskProgressView(worker);
-
-
-	@Override
+    @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("Election Crawler");
         stage.setScene(view.getScene());
         stage.show();
         stage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+    }
+
+
+	public static void main(String[] args) {
+        Application.launch(args);
     }
 
 }

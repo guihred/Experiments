@@ -168,11 +168,9 @@ class PopulacionalGraph extends Canvas {
 		gc.scale(1, 1 / lineSize.doubleValue());
     }
 
-	private double prop(double layout1, double maxLayout1, double d) {
+	private  static double prop(double layout1, double maxLayout1, double d) {
 		return layout1 + (maxLayout1 - layout1) * d;
 	}
-
-
 
 	public DoubleProperty lineSizeProperty() {
 		return lineSize;

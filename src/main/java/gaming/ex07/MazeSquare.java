@@ -178,7 +178,7 @@ public class MazeSquare extends BorderPane implements HasLogging {
 		return west;
 	}
 
-	private Map<MazeSquare, Boolean> createDistanceMap(MazeSquare source, Map<MazeSquare, Integer> distance,
+    private static Map<MazeSquare, Boolean> createDistanceMap(MazeSquare source, Map<MazeSquare, Integer> distance,
 			final MazeSquare[][] map) {
 		Map<MazeSquare, Boolean> known = new LinkedHashMap<>();
 		for (MazeSquare[] v : map) {

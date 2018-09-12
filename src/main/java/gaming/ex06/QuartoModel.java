@@ -40,7 +40,7 @@ public class QuartoModel {
     boolean checkEnd() {
 		if (Stream.of(getMapQuarto()).filter(d -> Stream.of(d).noneMatch(Objects::isNull))
                 .map(d -> Stream.of(d).map(QuartoPiece::getNumber).collect(Collectors.toList()))
-				.anyMatch(this::somethingInCommon)) {
+                .anyMatch(QuartoModel::somethingInCommon)) {
 			return true;
 		}
 
@@ -79,7 +79,7 @@ public class QuartoModel {
         return getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null || getMapQuarto()[i + 1][j + 1] == null;
     }
 
-	private boolean somethingInCommon(List<Integer> a) {
+    private static boolean somethingInCommon(List<Integer> a) {
 		int[] arr = new int[] { 1, 2, 4, 8 };
 		for (int k = 0; k < arr.length; k++) {
 		    int l = arr[k];

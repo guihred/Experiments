@@ -1,5 +1,6 @@
 package exercism;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -22,7 +23,7 @@ public class Anagram {
 		return Stream.of(st.toLowerCase().split("")).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 	}
 
-	public List<String> match(List<String> listOfAnagram) {
+    public List<String> match(Collection<String> listOfAnagram) {
 		return listOfAnagram.stream().filter(this::isAnagram).collect(Collectors.toList());
 	}
 

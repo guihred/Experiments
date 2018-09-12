@@ -28,20 +28,32 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
             UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
 
-    public static void main(String[] args) {
-        new CrawlerFuriganaTask().addFuriganaReading();
-    }
-
     private Map<String, String> mapReading = Collections.synchronizedMap(new HashMap<>());
 
-    private List<String> getLines() {
-        List<String> lines = new ArrayList<>();
-        try (Stream<String> lines2 = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
-            lines.addAll(lines2.collect(Collectors.toList()));
-        } catch (IOException e) {
-            getLogger().error("ERROR ", e);
+    public void addFuriganaReading() {
+        CrawlerTask.insertProxyConfig();
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
+            lines.forEach(line -> {
+                String[] split = line.split("");
+                StringBuilder currentWord = new StringBuilder();
+                UnicodeBlock currentBlock = null;
+                for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
+                    char currentLetter = split[i].charAt(0);
+                    UnicodeBlock of = UnicodeBlock.of(currentLetter);
+                    if (KANJI_BLOCK.contains(of)) {
+                        currentWord.append(currentLetter);
+                    }
+                    if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() != 0) {
+                        String w = currentWord.toString();
+                        getLogger().trace("{}={}", w, getReading(w, currentLetter));
+                        currentWord.delete(0, currentWord.length());
+                    }
+                    currentBlock = of;
+                }
+            });
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
         }
-        return lines;
     }
 
     public String getReading(String currentWord, char currentLetter) {
@@ -126,65 +138,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return currentWord;
     }
 
-
-    private boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {
-        return link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter);
-    }
-
-    public void addFuriganaReading() {
-        CrawlerTask.insertProxyConfig();
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
-            lines.forEach(line -> {
-                String[] split = line.split("");
-                StringBuilder currentWord = new StringBuilder();
-                UnicodeBlock currentBlock = null;
-                for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
-                    char currentLetter = split[i].charAt(0);
-                    UnicodeBlock of = UnicodeBlock.of(currentLetter);
-                    if (KANJI_BLOCK.contains(of)) {
-                        currentWord.append(currentLetter);
-                    }
-                    if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() != 0) {
-                        String w = currentWord.toString();
-                        getLogger().trace("{}={}", w, getReading(w, currentLetter));
-                        currentWord.delete(0, currentWord.length());
-                    }
-                    currentBlock = of;
-                }
-            });
-        } catch (Exception e) {
-            HasLogging.log().error("", e);
-        }
-    }
-
-    private StringBuilder placeFurigana(String line) {
-        String[] split = line.split("");
-        String currentWord = "";
-        StringBuilder currentLine = new StringBuilder();
-        UnicodeBlock currentBlock = null;
-        for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
-            char currentLetter = split[i].charAt(0);
-            UnicodeBlock of = UnicodeBlock.of(currentLetter);
-            if (KANJI_BLOCK.contains(of)) {
-                currentWord += currentLetter;
-            }
-            if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
-                String reading = getReading(currentWord, currentLetter);
-                if (currentWord.equals(reading)) {
-                    currentLine.append(currentWord);
-                } else {
-                    currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
-                }
-                currentWord = "";
-            }
-            if (!KANJI_BLOCK.contains(of)) {
-                currentLine.append(currentLetter);
-            }
-            currentBlock = of;
-        }
-        return currentLine;
-    }
-
     @Override
     protected String task() {
         insertProxyConfig();
@@ -195,10 +148,10 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         updateProgress(0, total);
         List<Thread> ths = new ArrayList<>();
         for (int j = 0; j < lines.size(); j++) {
-            int k = j;
             if (isCancelled()) {
                 return "Cancelled";
             }
+            int k = j;
             Thread thread = new Thread(() -> {
                 String line = lines.get(k);
                 StringBuilder currentLine = placeFurigana(line);
@@ -237,6 +190,53 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
 
         return "Completed at " + LocalTime.now();
+    }
+
+
+    private List<String> getLines() {
+        List<String> lines = new ArrayList<>();
+        try (Stream<String> lines2 = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
+            lines.addAll(lines2.collect(Collectors.toList()));
+        } catch (IOException e) {
+            getLogger().error("ERROR ", e);
+        }
+        return lines;
+    }
+
+    private static boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {
+        return link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter);
+    }
+
+    private StringBuilder placeFurigana(String line) {
+        String[] split = line.split("");
+        String currentWord = "";
+        StringBuilder currentLine = new StringBuilder();
+        UnicodeBlock currentBlock = null;
+        for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
+            char currentLetter = split[i].charAt(0);
+            UnicodeBlock of = UnicodeBlock.of(currentLetter);
+            if (KANJI_BLOCK.contains(of)) {
+                currentWord += currentLetter;
+            }
+            if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
+                String reading = getReading(currentWord, currentLetter);
+                if (currentWord.equals(reading)) {
+                    currentLine.append(currentWord);
+                } else {
+                    currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
+                }
+                currentWord = "";
+            }
+            if (!KANJI_BLOCK.contains(of)) {
+                currentLine.append(currentLetter);
+            }
+            currentBlock = of;
+        }
+        return currentLine;
+    }
+
+    public static void main(String[] args) {
+        new CrawlerFuriganaTask().addFuriganaReading();
     }
 
 

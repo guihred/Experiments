@@ -60,7 +60,7 @@ public class JapaneseLessonApplication extends Application {
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 	}
 
-	private ObservableList<JapaneseLesson> getLessons() {
+    private static ObservableList<JapaneseLesson> getLessons() {
 		return JapaneseLessonReader.getLessons();
 	}
 

@@ -226,15 +226,11 @@ public enum Country {
     GP(NORTH_AMERICA, "Guadeloupe", "GP", "m 636.4,471.1 0.2,-0.2 0,-0.3 -0.2,-0.3 -0.2,0.1 -0.2,0.3 0,0.3 0.1,0.1 0.3,0 z m -1.9,-0.8 0.2,-0.2 0,-1.2 0.1,-0.3 -0.2,-0.1 -0.2,-0.2 -0.6,-0.2 -0.1,0.1 -0.2,0.3 0.1,1.5 0.2,0.5 0.2,0.1 0.5,-0.3 z m 1.6,-1.4 0.8,-0.2 -0.9,-0.6 -0.2,-0.4 0,-0.3 -0.4,-0.3 -0.2,0.2 -0.1,0.3 0.1,0.5 -0.3,0.4 0.1,0.4 0.4,0.1 0.7,-0.1 z"),
     CW(NORTH_AMERICA, "Curaco|Curacao", "CW", "m 595.9,494.9 0,-0.6 -0.9,-0.4 0,0.3 0.1,0.2 0.3,0.1 0.1,0.2 -0.1,0.6 0.2,0.3 0.3,-0.7 z"),
     IC(AFRICA, "Canary Islands", "IC", "m 879.6,395.2 -0.2,-0.2 -0.7,0.5 -0.6,0 0.1,0.2 0.1,0.2 0.7,0.4 0.6,-1.1 z m 13.5,-2.1 0,-0.1 -0.1,0 -0.1,0.1 -1.3,-0.1 -0.2,0.6 -0.5,0.4 0,0.7 0.5,0.7 0.3,0.1 0.5,0.1 0.7,-0.4 0.2,-0.4 0.1,-0.8 -0.1,-0.4 0,-0.5 z m -9.7,0.8 0.5,-0.4 0,-0.2 -0.1,-0.3 -0.5,-0.3 -0.2,0 -0.2,0.2 -0.2,0.4 0.3,0.5 0.2,0.1 0.2,0 z m 4.7,-2.3 1.2,-1 0,-0.3 -1,0.1 -1.1,1 -0.3,0.1 -1,0.1 -0.5,0 -0.4,0.2 0.2,0.3 0.4,1 0.7,0.9 0.6,-0.2 0.3,-0.2 0.4,-0.6 0.5,-1.4 z m 11.6,1.3 1.5,-0.5 0.3,-1 0.3,-1.1 0,-0.7 -0.2,-0.3 -0.1,0 -0.4,0 -0.3,0.2 -0.1,0.6 -0.7,1.3 -0.5,1.2 -0.7,0.6 -0.7,0.2 0.1,0.1 0.7,0.1 0.8,-0.7 z m -19.7,-2 0.5,-0.5 0.1,-0.3 -0.1,-0.5 0.2,-0.2 -0.1,-0.4 -0.3,-0.4 -0.7,0 -0.4,0.6 0.6,1.2 0.1,0.5 0.1,0 z m 22.4,-2.7 0.9,-0.3 0.5,-0.3 0.1,-0.9 0.2,-0.3 -0.2,-0.3 -0.2,0.2 -0.2,0.4 -0.6,0.2 -0.8,0.4 -0.2,0.3 -0.2,0.9 0.4,0.1 0.3,-0.4 z");
-    public static boolean hasName(String name) {
-        return Stream.of(values()).anyMatch(e -> name.matches(e.countryName));
-    }
     private final String countryName;
-
     private final String code;
+
     private final String path;
     private final Continent continent;
-
     private double[] center;
 
     private List<double[]> points = new ArrayList<>();
@@ -253,6 +249,101 @@ public enum Country {
         this.code = code;
         this.path = path;
     }
+
+    public double getCenterX() {
+        if (center == null) {
+            center = computeCentroid();
+        }
+        return center[0];
+    }
+    public double getCenterY() {
+        if (center == null) {
+            center = computeCentroid();
+        }
+
+        return center[1];
+    }
+    public String getCode() {
+        return code;
+    }
+    public Color getColor() {
+        return color;
+    }
+
+    public Continent getContinent() {
+        return continent;
+    }
+
+    public String getCountryName() {
+        return countryName.replaceAll("\\|.+", "");
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public List<double[]> getPoints() {
+        if (points.isEmpty()) {
+            String[] regions = Stream.of(path.split("[mz]")).filter(StringUtils::isNotBlank).toArray(String[]::new);
+            double x = 0;
+            double y = 0;
+            for (int i = 0; i < regions.length; i++) {
+                String[] pointPairs = regions[i].split(" ");
+                for (int j = 0; j < pointPairs.length; j++) {
+                    String[] xYCoord = pointPairs[j].split(",");
+                    if (xYCoord.length == 2) {
+                        x += Double.parseDouble(xYCoord[0]);
+                        y += Double.parseDouble(xYCoord[1]);
+                        points.add(new double[] { x, y });
+                    }
+                }
+            }
+            xStats = points.stream().mapToDouble(e -> e[0]).summaryStatistics();
+            yStats = points.stream().mapToDouble(e -> e[1]).summaryStatistics();
+        }
+        return points;
+    }
+
+
+    public DoubleSummaryStatistics getxStats() {
+        getPoints();
+        return xStats;
+    }
+
+    public DoubleSummaryStatistics getyStats() {
+        getPoints();
+        return yStats;
+    }
+
+    public boolean matches(String name) {
+        return name.matches(countryName);
+    }
+
+    public Set<Country> neighbors() {
+
+        if (neighbors == null) {
+            neighbors = new LinkedHashSet<>();
+            Country[] values = values();
+            for (int i = 0; i < values.length; i++) {
+                Country country = values[i];
+                if (country != this) {
+                    DoubleSummaryStatistics countryX = country.getxStats();
+                    DoubleSummaryStatistics countryY = country.getyStats();
+                    if (intersect(countryX.getMin(), countryY.getMin(), countryX.getMax() - countryX.getMin(),
+                            countryY.getMax() - countryY.getMin())) {
+
+                        neighbors.add(country);
+                        if (country.neighbors != null) {
+                            country.neighbors.add(this);
+                        }
+                    }
+                }
+            }
+
+        }
+        return neighbors;
+    }
+
     private double[] computeCentroid() {
 		List<double[]> points1 = getPoints();
         double[] centroid = { 0, 0 };
@@ -293,72 +384,6 @@ public enum Country {
 
         return centroid;
     }
-    public double getCenterX() {
-        if (center == null) {
-            center = computeCentroid();
-        }
-        return center[0];
-    }
-    public double getCenterY() {
-        if (center == null) {
-            center = computeCentroid();
-        }
-
-        return center[1];
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public Continent getContinent() {
-        return continent;
-    }
-
-    public String getCountryName() {
-        return countryName.replaceAll("\\|.+", "");
-    }
-
-
-    public String getPath() {
-        return path;
-    }
-
-    public List<double[]> getPoints() {
-        if (points.isEmpty()) {
-            String[] regions = Stream.of(path.split("[mz]")).filter(StringUtils::isNotBlank).toArray(String[]::new);
-            double x = 0;
-            double y = 0;
-            for (int i = 0; i < regions.length; i++) {
-                String[] pointPairs = regions[i].split(" ");
-                for (int j = 0; j < pointPairs.length; j++) {
-                    String[] xYCoord = pointPairs[j].split(",");
-                    if (xYCoord.length == 2) {
-                        x += Double.parseDouble(xYCoord[0]);
-                        y += Double.parseDouble(xYCoord[1]);
-                        points.add(new double[] { x, y });
-                    }
-                }
-            }
-            xStats = points.stream().mapToDouble(e -> e[0]).summaryStatistics();
-            yStats = points.stream().mapToDouble(e -> e[1]).summaryStatistics();
-        }
-        return points;
-    }
-
-    public DoubleSummaryStatistics getxStats() {
-        getPoints();
-        return xStats;
-    }
-
-    public DoubleSummaryStatistics getyStats() {
-        getPoints();
-        return yStats;
-    }
 
     private boolean intersect(double x, double y, double width, double height) {
         getPoints();
@@ -367,37 +392,12 @@ public enum Country {
 
     }
 
-    public boolean matches(String name) {
-        return name.matches(countryName);
-    }
-
-    public Set<Country> neighbors() {
-
-        if (neighbors == null) {
-            neighbors = new LinkedHashSet<>();
-            Country[] values = values();
-            for (int i = 0; i < values.length; i++) {
-                Country country = values[i];
-                if (country != this) {
-                    DoubleSummaryStatistics countryX = country.getxStats();
-                    DoubleSummaryStatistics countryY = country.getyStats();
-                    if (intersect(countryX.getMin(), countryY.getMin(), countryX.getMax() - countryX.getMin(),
-                            countryY.getMax() - countryY.getMin())) {
-
-                        neighbors.add(country);
-                        if (country.neighbors != null) {
-                            country.neighbors.add(this);
-                        }
-                    }
-                }
-            }
-
-        }
-        return neighbors;
-    }
-
     void setColor(Color color) {
         this.color = color;
+    }
+
+    public static boolean hasName(String name) {
+        return Stream.of(values()).anyMatch(e -> name.matches(e.countryName));
     }
 
 }

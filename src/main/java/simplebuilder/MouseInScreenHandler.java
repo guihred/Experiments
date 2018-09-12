@@ -1,4 +1,4 @@
-package labyrinth;
+package simplebuilder;
 
 import java.awt.Robot;
 import javafx.application.Platform;
@@ -7,18 +7,17 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-final class MouseMovementHandler implements EventHandler<MouseEvent> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MouseMovementHandler.class);
+public final class MouseInScreenHandler implements EventHandler<MouseEvent> {
+    private static final Logger LOG = HasLogging.log();
 	private double mouseOldX;
 	private double mousePosX;
+    private PerspectiveCamera camera;
 	private Scene sc;
-	private PerspectiveCamera camera;
 
-	public MouseMovementHandler(Scene sc, CommomLabyrinth labyrinth) {
+	public MouseInScreenHandler(Scene sc, PerspectiveCamera camera) {
 		this.sc = sc;
-		camera = labyrinth.getCamera();
+		this.camera = camera;
 	}
 
 	@Override
@@ -46,17 +45,18 @@ final class MouseMovementHandler implements EventHandler<MouseEvent> {
             mouseOldX = width;
             mousePosX = width;
         } catch (Exception e) {
-            LOGGER.error("", e);
+            LOG.error("", e);
         }
     }
 
     private void moveMouseLeft(MouseEvent me) {
         try {
-        	new Robot().mouseMove(1, (int) me.getY());
+        	Robot robot = new Robot();
+        	robot.mouseMove(1, (int) me.getY());
+            mousePosX = 0;
         	mouseOldX = 0;
-        	mousePosX = 0;
         } catch (Exception e) {
-        	LOGGER.error("", e);
+            LOG.error("", e);
         }
     }
 }

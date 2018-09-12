@@ -48,7 +48,7 @@ public class OthersTests {
 
 	}
 
-	public static Estado getStateMachine(Estado estado, List<String> eventList) {
+    public static Estado getStateMachine(Estado estado, Collection<String> eventList) {
 
 		return eventList.stream().sequential().reduce(estado, (e, s) -> e.getMap().getOrDefault(s, Estado.ERROR), (e, f) -> e);
 	}

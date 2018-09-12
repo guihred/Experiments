@@ -64,7 +64,7 @@ public class MinesweeperModel {
 		return num;
 	}
 
-    private boolean withinRange(int i, int k, int mapWidth) {
+    private static boolean withinRange(int i, int k, int mapWidth) {
         return i + k >= 0 && i + k < mapWidth;
     }
 

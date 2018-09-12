@@ -134,14 +134,14 @@ public class PacmanGhost extends Group implements HasLogging {
 	}
 
 
-	private int adjustedX(double layoutX) {
+    private static int adjustedX(double layoutX) {
 		double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
 		return (int) (paci > PacmanModel.MAZE_SIZE ? -paci + 2 * PacmanModel.MAZE_SIZE - 1
 				: paci) % PacmanModel.MAZE_SIZE;
 	}
 
 
-	private int adjustedY(double layoutX) {
+    private static int adjustedY(double layoutX) {
 		double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
 		return (int) (paci > PacmanModel.MAZE_SIZE ? -paci - 1 + 2 * PacmanModel.MAZE_SIZE : paci)
 				% PacmanModel.MAZE_SIZE;
@@ -154,7 +154,7 @@ public class PacmanGhost extends Group implements HasLogging {
 		leftEye.setLayoutX(leftEye.getLayoutX() + mul * direction.x);
 	}
 
-	private GhostDirection changeDirection(final double hx, final double hy) {
+    private static GhostDirection changeDirection(final double hx, final double hy) {
 		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
 			if (hx < 0) {
 				return hy < 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
@@ -169,7 +169,7 @@ public class PacmanGhost extends Group implements HasLogging {
 		return hy > 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
 	}
 
-	private GhostDirection changeDirection2(double hx, double hy) {
+    private static GhostDirection changeDirection2(double hx, double hy) {
 		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
 			if (hx > 0) {
 				return hy < 0 ? GhostDirection.NORTHEAST : GhostDirection.SOUTHEAST;
@@ -207,7 +207,7 @@ public class PacmanGhost extends Group implements HasLogging {
 
 	}
 
-	private MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
+    private static MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
         if (MazeSquare.getPaths() == null) {
 			return null;
 		}
@@ -235,7 +235,7 @@ public class PacmanGhost extends Group implements HasLogging {
 		return map.get(maze[hx][hy]);
 	}
 
-	private MazeSquare getSquareInBounds(MazeSquare[][] maze, double x, double y) {
+    private static MazeSquare getSquareInBounds(MazeSquare[][] maze, double x, double y) {
 		for (int i = 0; i < maze.length; i++) {
 			for (int j = 0; j < maze[i].length; j++) {
 				boolean inBounds = maze[i][j].isInBounds(x, y);

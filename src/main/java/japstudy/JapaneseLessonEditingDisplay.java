@@ -152,7 +152,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		return new TextField();
 	}
 
-	private ObservableList<JapaneseLesson> getLessons() {
+    private static ObservableList<JapaneseLesson> getLessons() {
 		return JapaneseLessonReader.getLessons();
 	}
 
@@ -225,11 +225,11 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		}
 	}
 
-	private long toMilli(LocalTime maxTime) {
+    private static long toMilli(LocalTime maxTime) {
 		return ChronoUnit.MILLIS.between(LocalTime.MIDNIGHT, maxTime);
 	}
 
-	private LocalTime milliToLocalTime(long offset) {
+    private static LocalTime milliToLocalTime(long offset) {
         return LocalTime.ofNanoOfDay(offset * JapaneseLessonAudioSplitDisplay.NANO_IN_A_MILLI_SECOND);
 	}
 

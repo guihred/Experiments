@@ -24,6 +24,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import simplebuilder.ResourceFXUtils;
+import simplebuilder.MouseInScreenHandler;
 
 public class Labyrinth3DMouseControl extends Application implements CommomLabyrinth {
 
@@ -216,7 +217,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		sc.setOnKeyPressed(value);
 		sc.setOnKeyReleased(value::keyReleased);
 		primaryStage.setFullScreen(true);
-		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));
+        sc.setOnMouseMoved(new MouseInScreenHandler(sc, camera));
 
         primaryStage.setTitle("Labyrinth 3D With Mouse Control");
 		primaryStage.setScene(sc);

@@ -68,7 +68,7 @@ class MovimentacaoAleatoria extends AnimationTimer {
                 || notWithinRange(enemy.getTranslateX(), Labyrinth3DWallTexture.mapa.length * LabyrinthWall.SIZE);
     }
 
-    private boolean notWithinRange(double coord, double maxSize) {
+    private static boolean notWithinRange(double coord, double maxSize) {
         return coord < 0 || coord > maxSize;
     }
 

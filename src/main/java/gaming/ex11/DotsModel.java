@@ -127,15 +127,15 @@ public class DotsModel {
         return sum;
     }
 
-    private boolean cNotContainsA(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+    private static boolean cNotContainsA(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
         return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
     }
 
-    private boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+    private static boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
         return a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a);
     }
 
-    private boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+    private static boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
         return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
     }
 	public Line getLine() {
@@ -306,7 +306,8 @@ public class DotsModel {
     private boolean squareOverNotSuitable(DotsSquare over) {
         return selected == null || over == null || selected == over;
     }
-    private List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilidades,
+
+    private static List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilidades,
             List<Entry<DotsSquare, DotsSquare>> melhorPossibilidades2) {
         return possibilidades.isEmpty() ? melhorPossibilidades2 : possibilidades;
     }

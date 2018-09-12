@@ -85,7 +85,7 @@ public class Vertex implements HasLogging {
 		return this;
 	}
 
-	public Map<Vertex, Integer> dijkstra(List<Vertex> graph) {
+    public Map<Vertex, Integer> dijkstra(Iterable<Vertex> graph) {
 		Map<Vertex, Integer> distance = new HashMap<>();
 		Map<Vertex, Boolean> known = new HashMap<>();
 		for (Vertex v : graph) {
@@ -165,7 +165,7 @@ public class Vertex implements HasLogging {
 		return sb.toString();
 	}
 
-	public Map<Vertex, Integer> unweighted(List<Vertex> graph) {
+    public Map<Vertex, Integer> unweighted(Collection<Vertex> graph) {
 		Map<Vertex, Integer> distance = new HashMap<>();
 		Map<Vertex, Boolean> known = new HashMap<>();
 		for (Vertex v : graph) {
@@ -195,7 +195,7 @@ public class Vertex implements HasLogging {
 		return edges.get(v);
 	}
 
-	public Map<Vertex, Integer> weightedNegative(List<Vertex> graph) {
+    public Map<Vertex, Integer> weightedNegative(Iterable<Vertex> graph) {
 		Map<Vertex, Integer> distance = new HashMap<>();
 		Queue<Vertex> q = new LinkedList<>();
 
@@ -247,7 +247,7 @@ public class Vertex implements HasLogging {
         HasLogging.log().info(chainString);
 	}
 
-    public static List<Edge> kruskal(List<Vertex> totalVertices) {
+    public static List<Edge> kruskal(Collection<Vertex> totalVertices) {
 
 		int numVertices = totalVertices.size();
 		List<Edge> totalEdges = totalVertices.stream()
@@ -268,7 +268,7 @@ public class Vertex implements HasLogging {
 		return mst;
 	}
 
-	public static List<Edge> prim(List<Vertex> vertices) {
+    public static List<Edge> prim(Iterable<Vertex> vertices) {
 		Map<Vertex, Integer> heap = new HashMap<>();
 		Map<Vertex, Vertex> mstHolder = new HashMap<>();
 		for (Vertex v : vertices) {
@@ -294,7 +294,7 @@ public class Vertex implements HasLogging {
 
 	}
 
-	public static void sortTopology(List<Vertex> vertices) {
+    public static void sortTopology(Collection<Vertex> vertices) {
 		int counter = 0;
 
 		Queue<Vertex> q = new LinkedList<>();

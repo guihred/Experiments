@@ -67,7 +67,7 @@ public class Ch3 {
 		}
 	}
 
-    public static double average(List<? extends Measurable> objects) {
+    public static double average(Collection<? extends Measurable> objects) {
 		return objects.stream().mapToDouble(Measurable::getMeasure).average().orElse(0);
 	}
 
@@ -78,7 +78,7 @@ public class Ch3 {
 	 * largest(Measurable[] objects) . Use it to find the name of the employee with
 	 * the largest salary. Why do you need a cast?
 	 */
-    public static <T extends Measurable> T largest(List<T> objects) {
+    public static <T extends Measurable> T largest(Collection<T> objects) {
 		return objects.stream().max(Comparator.comparing(Measurable::getMeasure)).orElse(null);
 	}
 

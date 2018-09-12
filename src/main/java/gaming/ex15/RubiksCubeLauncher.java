@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.HasLogging;
+import simplebuilder.MouseInScreenHandler;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class RubiksCubeLauncher extends Application {
@@ -102,7 +103,7 @@ public class RubiksCubeLauncher extends Application {
 		stage.setScene(sc);
 		stage.show();
 
-		EventHandler<MouseEvent> a = new RubiksMouseEvent(sc, camera);
+		EventHandler<MouseEvent> a = new MouseInScreenHandler(sc, camera);
 		RubiksKeyboard value = new RubiksKeyboard(camera, this);
 		sc.setOnKeyPressed(value);
 		sc.setOnKeyReleased(value::keyReleased);

@@ -166,7 +166,7 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
     
     
     
-    private void splitAudio(String mp3File, String mp4File, LocalTime start, LocalTime end) {
+    private static void splitAudio(String mp3File, String mp4File, LocalTime start, LocalTime end) {
         StringBuilder cmd = new StringBuilder();
         cmd.append(FFMPEG + " -i ");
         cmd.append(ResourceFXUtils.toFile(mp3File));
@@ -213,7 +213,7 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
 		return new TextField();
 	}
 
-	private ObservableList<JapaneseLesson> getLessons() {
+    private static ObservableList<JapaneseLesson> getLessons() {
 		return JapaneseLessonReader.getLessons();
 	}
 
@@ -281,11 +281,11 @@ public class JapaneseLessonAudioSplitDisplay extends Application implements HasL
 		}
 	}
 
-	private long toMilli(LocalTime maxTime) {
+    private static long toMilli(LocalTime maxTime) {
 		return ChronoUnit.MILLIS.between(LocalTime.MIDNIGHT, maxTime);
 	}
 
-	private LocalTime milliToLocalTime(long offset) {
+    private static LocalTime milliToLocalTime(long offset) {
         return LocalTime.ofNanoOfDay(offset * NANO_IN_A_MILLI_SECOND);
 	}
 

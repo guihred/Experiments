@@ -18,16 +18,11 @@ public class FuriganaCrawler implements HasLogging {
 
 
 
-    public static void main(String[] args) {
-		new FuriganaCrawler().migrateCities();
-	}
-
     private static final List<UnicodeBlock> KANJI_BLOCK = Arrays.asList(UnicodeBlock.CJK_COMPATIBILITY,
 			UnicodeBlock.CJK_COMPATIBILITY_FORMS, UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
 			UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS,
 			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
 			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
-
 
     public void migrateCities() {
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
@@ -53,6 +48,7 @@ public class FuriganaCrawler implements HasLogging {
         }
 	}
 
+
     @SuppressWarnings("deprecation")
     private String getReading(String currentWord) {
 		Connection connect = Jsoup.connect("http://jisho.org/search/" + URLEncoder.encode(currentWord));
@@ -77,6 +73,10 @@ public class FuriganaCrawler implements HasLogging {
 			getLogger().error("ERRO " + currentWord, e);
 		}
 		return currentWord;
+	}
+
+    public static void main(String[] args) {
+		new FuriganaCrawler().migrateCities();
 	}
 
 

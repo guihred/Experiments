@@ -101,7 +101,7 @@ public final class ReversiModel {
         }
     }
 
-    private boolean xAndYWithinBoardSize(int x, int y) {
+    private static boolean xAndYWithinBoardSize(int x, int y) {
         return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
     }
 

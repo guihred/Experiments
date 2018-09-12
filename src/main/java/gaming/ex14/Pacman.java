@@ -65,43 +65,41 @@ public class Pacman extends Arc {
 		}
 
 		int step = 2;
-		switch (direction) {
-		case RIGHT:
-                if (!checkCollision(observableList)) {
-                    setLayoutX(getLayoutX() + step);
-                    if (checkCollision(observableList)) {
-                        setLayoutX(getLayoutX() - step);
-                    }
-                }
-			break;
-		case UP:
-                if (!checkCollision(observableList)) {
-                    setLayoutY(getLayoutY() - step);
-                    if (checkCollision(observableList)) {
-                        setLayoutY(getLayoutY() + step);
-                    }
-                }
-			break;
-		case DOWN:
-                if (!checkCollision(observableList)) {
-                    setLayoutY(getLayoutY() + step);
-                    if (checkCollision(observableList)) {
-                        setLayoutY(getLayoutY() - 2 * step);
-                    }
-			}
-			break;
-		case LEFT:
-                if (!checkCollision(observableList)) {
-                    setLayoutX(getLayoutX() - step);
-                    if (checkCollision(observableList)) {
-                        setLayoutX(getLayoutX() + 2 * step);
-                    }
-                }
-			break;
-		default:
-			break;
-		}
+        switch (direction) {
+            case RIGHT:
+                moveSideways(observableList, -step);
+                break;
+            case UP:
+                moveUpAndDown(observableList, step);
+                break;
+            case DOWN:
+                moveUpAndDown(observableList, -step);
+                break;
+            case LEFT:
+                moveSideways(observableList, step);
+                break;
+            default:
+                break;
+        }
 	}
+
+    private void moveUpAndDown(ObservableList<Node> observableList, int step) {
+        if (!checkCollision(observableList)) {
+            setLayoutY(getLayoutY() - step);
+            if (checkCollision(observableList)) {
+                setLayoutY(getLayoutY() + step);
+            }
+        }
+    }
+
+    private void moveSideways(ObservableList<Node> observableList, int step) {
+        if (!checkCollision(observableList)) {
+            setLayoutX(getLayoutX() - step);
+            if (checkCollision(observableList)) {
+                setLayoutX(getLayoutX() + step);
+            }
+        }
+    }
 
 	public void turn(PacmanDirection direction1) {
 		if (eatingAnimation.getStatus() == Status.RUNNING) {

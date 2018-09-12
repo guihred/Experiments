@@ -30,14 +30,15 @@ public class CreateMadMaze {
 
                     .findAny();
 
-            addIfPresent(check, openA, 'A');
-            addIfPresent(check, openB, 'B');
-            addIfPresent(check, openC, 'C');
+            addIfPresent(check, openA.orElse(null), 'A');
+            addIfPresent(check, openB.orElse(null), 'B');
+            addIfPresent(check, openC.orElse(null), 'C');
 
             if (!check.isEmpty()) {
                 history.add(maze.get(r));
                 Character direction = check.get(random.nextInt(check.size()));
-                removeEdgeOfTriangle(maze, allEdges, openC, openB, openA, direction);
+                removeEdgeOfTriangle(maze, allEdges, openC.orElse(null), openB.orElse(null), openA.orElse(null),
+                        direction);
             } else {
                 getBackIn(maze, history);
             }
@@ -45,26 +46,26 @@ public class CreateMadMaze {
 
     }
 
-    private void removeEdgeOfTriangle(List<MadTriangle> maze, List<MadEdge> allEdges, Optional<MadTriangle> openC,
-            Optional<MadTriangle> openB, Optional<MadTriangle> openA, Character direction) {
-        if ('A' == direction && openA.isPresent()) {
-            MadTriangle madTriangle = openA.get();
+    private void removeEdgeOfTriangle(List<MadTriangle> maze, List<MadEdge> allEdges, MadTriangle openC,
+            MadTriangle openB, MadTriangle openA, Character direction) {
+        if ('A' == direction && openA != null) {
+            MadTriangle madTriangle = openA;
             MadCell cellB = maze.get(r).getB().getCell();
             MadCell cellC = maze.get(r).getC().getCell();
             allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellB)
                     || e.getSource().equals(cellB) && e.getTarget().equals(cellC));
             r = maze.indexOf(madTriangle);
         }
-        if ('B' == direction && openB.isPresent()) {
-            MadTriangle madTriangle = openB.get();
+        if ('B' == direction && openB != null) {
+            MadTriangle madTriangle = openB;
             MadCell cellA = maze.get(r).getA().getCell();
             MadCell cellC = maze.get(r).getC().getCell();
             allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellA)
                     || e.getSource().equals(cellA) && e.getTarget().equals(cellC));
             r = maze.indexOf(madTriangle);
         }
-        if ('C' == direction && openC.isPresent()) {
-            MadTriangle madTriangle = openC.get();
+        if ('C' == direction && openC != null) {
+            MadTriangle madTriangle = openC;
             MadCell cellA = maze.get(r).getA().getCell();
             MadCell cellB = maze.get(r).getB().getCell();
             allEdges.removeIf(e -> e.getSource().equals(cellB) && e.getTarget().equals(cellA)
@@ -73,8 +74,8 @@ public class CreateMadMaze {
         }
     }
 
-    private void addIfPresent(final List<Character> check, Optional<MadTriangle> openA, char a) {
-        if (openA.isPresent()) {
+    private static void addIfPresent(final List<Character> check, MadTriangle openA, char a) {
+        if (openA != null) {
             check.add(a);
         }
     }

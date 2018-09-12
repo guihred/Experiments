@@ -217,7 +217,7 @@ public class PhotoViewer extends Application {
 	 * @return boolean returns true if URL's extension matches jpg, jpeg, png
 	 * and gif.
 	 */
-	private boolean isValidImageFile(String url) {
+    private static boolean isValidImageFile(String url) {
 		List<String> imgTypes = Arrays.asList(".jpg", ".jpeg", ".png", ".gif",
 				".bmp");
 		return imgTypes.stream().anyMatch(url::endsWith);

@@ -79,7 +79,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 		world.getChildren().addAll(group);
 	}
 
-    private int getPosition(int i) {
+    private static int getPosition(int i) {
         return i * 40 - 60;
     }
 
@@ -114,31 +114,35 @@ public class QuartoLauncher extends Application implements HasLogging{
 
 	private void handleKeyPressed(KeyEvent event) {
 		switch (event.getCode()) {
-		case Z:
-			if (event.isShiftDown()) {
-				cameraXform.setRy(0.0);
-				cameraXform.setRx(0.0);
-				camera.setTranslateZ(-CAMERA_DISTANCE);
-			}
-			cameraXform2.setTx(0.0);
-			cameraXform2.setTy(0.0);
-			break;
-		case UP:
-			moveUpAndDown(event, 1);
-			break;
-		case DOWN:
-			moveUpAndDown(event, -1);
-			break;
-		case RIGHT:
-			moveSideways(event, 1);
-			break;
-		case LEFT:
-			moveSideways(event, -1);
-			break;
-		default:
-			break;
+            case Z:
+                reset(event);
+                break;
+            case UP:
+                moveUpAndDown(event, 1);
+                break;
+            case DOWN:
+                moveUpAndDown(event, -1);
+                break;
+            case RIGHT:
+                moveSideways(event, 1);
+                break;
+            case LEFT:
+                moveSideways(event, -1);
+                break;
+            default:
+                break;
 		}
 	}
+
+    private void reset(KeyEvent event) {
+        if (event.isShiftDown()) {
+        	cameraXform.setRy(0.0);
+        	cameraXform.setRx(0.0);
+        	camera.setTranslateZ(-CAMERA_DISTANCE);
+        }
+        cameraXform2.setTx(0.0);
+        cameraXform2.setTy(0.0);
+    }
 
 	private void handleMouseClick(MouseEvent event) {
 		final EventTarget target = event.getTarget();

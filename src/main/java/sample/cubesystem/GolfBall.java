@@ -74,7 +74,7 @@ public class GolfBall extends Application {
 
 		float[] points = new float[nPoints * 3];
 		float[] tPoints = new float[nTPoints * 2];
-		int[] faces = new int[nFaces * 6];
+
 
         int pPos = 0;
         int tPos = 0;
@@ -133,7 +133,18 @@ public class GolfBall extends Application {
 			tPoints[tPos + 1] = 1 - textureDelta;
 			tPos += 2;
 		}
+        int[] faces = createFaces(division, div2, nFaces, pS);
 
+        TriangleMesh m = new TriangleMesh();
+        m.getPoints().setAll(points);
+        m.getTexCoords().setAll(tPoints);
+        m.getFaces().setAll(faces);
+
+        return m;
+    }
+
+    private static int[] createFaces(final int division, final int div2, final int nFaces, int pS) {
+        int[] faces = new int[nFaces * 6];
 		int fIndex = 0;
 		for (int y = 0; y < div2 - 2; ++y) {
 			for (int x = 0; x < division; ++x) {
@@ -202,14 +213,8 @@ public class GolfBall extends Application {
 			faces[fIndex + 5] = t2;
 			fIndex += 6;
 		}
-
-		TriangleMesh m = new TriangleMesh();
-		m.getPoints().setAll(points);
-		m.getTexCoords().setAll(tPoints);
-		m.getFaces().setAll(faces);
-
-		return m;
-	}
+        return faces;
+    }
 
     private static int index(final int division, int p3) {
         return p3 % division == 0 ? p3 - division : p3;

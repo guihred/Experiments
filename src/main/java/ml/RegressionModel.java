@@ -1,9 +1,6 @@
 package ml;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -41,7 +38,7 @@ class RegressionModel {
     }
 
 	@SuppressWarnings("unchecked")
-	public ObservableList<Series<Number, Number>> createSeries(List<?> features1, List<?> target1) {
+    public ObservableList<Series<Number, Number>> createSeries(Collection<?> features1, Collection<?> target1) {
         Random random = new Random();
         slope = (random.nextDouble() - .5) * 10;
         initial = (random.nextDouble() - .5) * 10;

@@ -1,5 +1,8 @@
 package fxproexercises.ch07;
 
+import static ml.Chart3dGraph.createImage;
+import static ml.Chart3dGraph.makeZoomable;
+
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
@@ -7,9 +10,6 @@ import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -20,23 +20,17 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import ml.Axis;
+import simplebuilder.CommonsFX;
 
 public class Chart3dDemo extends Application {
 
     // size of graph
     private int size = 400;
     // variables for mouse interaction
-    private double mousePosX;
-    private double mousePosY;
-    private double mouseOldX;
-    private double mouseOldY;
-    private final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
-    private final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
 
     @Override
     public void start(Stage primaryStage) {
         Group cube = createCube(size);
-        cube.getTransforms().addAll(rotateX, rotateY);
         StackPane root = new StackPane();
         root.getChildren().add(cube);
         // perlin noise
@@ -121,20 +115,7 @@ public class Chart3dDemo extends Application {
         Scene scene = new Scene(root, 1600, 900, true, SceneAntialiasing.BALANCED);
         scene.setCamera(new PerspectiveCamera());
 
-        scene.setOnMousePressed(me -> {
-            mouseOldX = me.getSceneX();
-            mouseOldY = me.getSceneY();
-        });
-        scene.setOnMouseDragged(me -> {
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            rotateX.setAngle(rotateX.getAngle() - (mousePosY - mouseOldY));
-            rotateY.setAngle(rotateY.getAngle() + (mousePosX - mouseOldX));
-            mouseOldX = mousePosX;
-            mouseOldY = mousePosY;
-
-        });
-
+        CommonsFX.setSpinnable(cube, scene);
         makeZoomable(root);
 
         primaryStage.setResizable(false);
@@ -143,59 +124,6 @@ public class Chart3dDemo extends Application {
 
     }
 
-    /**
-     * Create texture for uv mapping
-     * 
-     * @param size1
-     * @param noise
-     * @return
-     */
-    public Image createImage(double size1, float[][] noise) {
-
-        int width = (int) size1;
-        int height = (int) size1;
-
-        WritableImage wr = new WritableImage(width, height);
-        PixelWriter pw = wr.getPixelWriter();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                float value = noise[x][y];
-                double gray = normalizeValue(value, -.5, .5, 0., 1.);
-                gray = clamp(gray, 0, 1);
-                Color color = Color.RED.interpolate(Color.YELLOW, gray);
-                pw.setColor(x, y, color);
-            }
-        }
-        return wr;
-    }
-
-    public void makeZoomable(StackPane control) {
-
-        final double MAX_SCALE = 20.0;
-        final double MIN_SCALE = 0.1;
-
-        control.addEventFilter(ScrollEvent.ANY, event -> {
-
-            double delta = 1.2;
-
-            double scale = control.getScaleX();
-
-            if (event.getDeltaY() < 0) {
-                scale /= delta;
-            } else {
-                scale *= delta;
-            }
-
-            scale = clamp(scale, MIN_SCALE, MAX_SCALE);
-
-            control.setScaleX(scale);
-            control.setScaleY(scale);
-
-            event.consume();
-
-        });
-
-    }
 
     /**
      * Create axis walls
@@ -282,7 +210,7 @@ public class Chart3dDemo extends Application {
      * @param size1
      * @return
      */
-    private float[][] createNoise(int size1) {
+    private static float[][] createNoise(int size1) {
         float[][] noiseArray = new float[size1][size1];
 
         for (int x = 0; x < size1; x++) {
@@ -300,24 +228,6 @@ public class Chart3dDemo extends Application {
 
     }
 
-    public static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
-
-        return (value - min) * (newMax - newMin) / (max - min) + newMin;
-
-    }
-
-    public static double clamp(double value, double min, double max) {
-
-        if (Double.compare(value, min) < 0) {
-            return min;
-        }
-
-        if (Double.compare(value, max) > 0) {
-            return max;
-        }
-
-        return value;
-    }
 
     public static void main(String[] args) {
         launch(args);

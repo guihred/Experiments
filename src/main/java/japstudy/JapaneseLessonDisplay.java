@@ -75,7 +75,7 @@ public class JapaneseLessonDisplay extends Application {
 		return romaji;
 	}
 
-	private ObservableList<JapaneseLesson> getLessons() {
+    private static ObservableList<JapaneseLesson> getLessons() {
 		return JapaneseLessonReader.getLessons();
 	}
 

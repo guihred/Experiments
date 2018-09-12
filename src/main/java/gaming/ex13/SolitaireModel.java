@@ -204,7 +204,7 @@ public class SolitaireModel {
 		dragContext.stack.addCards(dragContext.cards);
 	}
 
-	private boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {
+    private static boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {
 		return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard)
 				|| isNotNextCardInStack(cardStack, solitaireCard);
 	}
@@ -223,7 +223,7 @@ public class SolitaireModel {
 				.collect(Collectors.toList());
 	}
 
-	private boolean isCardNotCompatibleWithStack(CardStack cardStack, SolitaireCard solitaireCard) {
+    private static boolean isCardNotCompatibleWithStack(CardStack cardStack, SolitaireCard solitaireCard) {
         if (cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.KING) {
             return true;
         }
@@ -237,11 +237,11 @@ public class SolitaireModel {
 		return !stack.getCards().isEmpty() && stack.getCards().stream().noneMatch(SolitaireCard::isShown);
 	}
 
-	private boolean isStackEmptyAndCardIsNotAce(CardStack cardStack, SolitaireCard solitaireCard) {
+    private static boolean isStackEmptyAndCardIsNotAce(CardStack cardStack, SolitaireCard solitaireCard) {
 		return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.ACE;
 	}
 
-	private boolean isNotNextCardInStack(CardStack cardStack, SolitaireCard solitaireCard) {
+    private static boolean isNotNextCardInStack(CardStack cardStack, SolitaireCard solitaireCard) {
 		return !cardStack.getCards().isEmpty() && (solitaireCard.getSuit() != cardStack.getLastCards().getSuit()
 				|| solitaireCard.getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() + 1);
 	}

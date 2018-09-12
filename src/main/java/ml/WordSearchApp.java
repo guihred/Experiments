@@ -107,7 +107,7 @@ public class WordSearchApp extends Application {
                 .filter(s -> !s.isEmpty()).distinct();
     }
 
-    private Map<String, Set<String>> createMap() throws IOException {
+    private static Map<String, Set<String>> createMap() throws IOException {
 
         return getLines(ResourceFXUtils.toURI("pt_PT.dic"))
                 .filter(e -> e.contains("\t"))

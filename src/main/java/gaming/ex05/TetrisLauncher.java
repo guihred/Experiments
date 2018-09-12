@@ -23,39 +23,41 @@ public class TetrisLauncher extends Application {
 	private void handleKeyPressed(KeyEvent e) {
 		final KeyCode code = e.getCode();
 		switch (code) {
-		case UP:
-		case W:
-			tetrisModel.changeDirection();
-			break;
-		case LEFT:
-		case A:
-			if (!tetrisModel.checkCollision(tetrisModel.getCurrentI() - 1, tetrisModel.getCurrentJ())) {
-				tetrisModel.setCurrentI(tetrisModel.getCurrentI() - 1);
-				tetrisModel.clearMovingPiece();
-				tetrisModel.drawPiece();
-			}
-
-			break;
-		case RIGHT:
-		case D:
-			if (!tetrisModel.checkCollision(tetrisModel.getCurrentI() + 1, tetrisModel.getCurrentJ())) {
-				tetrisModel.setCurrentI(tetrisModel.getCurrentI() + 1);
-				tetrisModel.clearMovingPiece();
-				tetrisModel.drawPiece();
-			}
-			break;
-		case DOWN:
-		case S:
-			if (!tetrisModel.checkCollision(tetrisModel.getCurrentI(), tetrisModel.getCurrentJ() + 1)) {
-				tetrisModel.setCurrentJ(tetrisModel.getCurrentJ() + 1);
-				tetrisModel.clearMovingPiece();
-				tetrisModel.drawPiece();
-			}
-
-			break;
-		default:
+            case UP:
+            case W:
+                tetrisModel.changeDirection();
+                break;
+            case LEFT:
+            case A:
+                moveSideways(-1);
+                break;
+            case RIGHT:
+            case D:
+                moveSideways(1);
+                break;
+            case DOWN:
+            case S:
+                moveDown();
+                break;
+            default:
 		}
 	}
+
+    private void moveDown() {
+        if (!tetrisModel.checkCollision(tetrisModel.getCurrentI(), tetrisModel.getCurrentJ() + 1)) {
+            tetrisModel.setCurrentJ(tetrisModel.getCurrentJ() + 1);
+            tetrisModel.clearMovingPiece();
+            tetrisModel.drawPiece();
+        }
+    }
+
+    private void moveSideways(int i) {
+        if (!tetrisModel.checkCollision(tetrisModel.getCurrentI() + i, tetrisModel.getCurrentJ())) {
+            tetrisModel.setCurrentI(tetrisModel.getCurrentI() + i);
+            tetrisModel.clearMovingPiece();
+            tetrisModel.drawPiece();
+        }
+    }
     @Override
     public void start(Stage stage) throws Exception {
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));

@@ -30,6 +30,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import simplebuilder.ResourceFXUtils;
+import simplebuilder.MouseInScreenHandler;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
@@ -235,7 +236,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
 		sc.setOnKeyPressed(value);
 		sc.setOnKeyReleased(value::keyReleased);
-		sc.setOnMouseMoved(new MouseMovementHandler(sc, this));
+        sc.setOnMouseMoved(new MouseInScreenHandler(sc, camera));
 		primaryStage.setFullScreen(true);
         primaryStage.setTitle("Labyrinth 3D With Wall Texture");
 		primaryStage.setScene(sc);

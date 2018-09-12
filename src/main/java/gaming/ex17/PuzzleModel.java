@@ -95,7 +95,7 @@ public class PuzzleModel extends Group {
 		return (-puzzlePiece.getY() + p.getY()) * height + puzzlePiece.getLayoutY() - p.getLayoutY();
 	}
 
-    private boolean checkNeighbours(PuzzlePiece p, PuzzlePiece puzzlePiece) {
+    private static boolean checkNeighbours(PuzzlePiece p, PuzzlePiece puzzlePiece) {
         return Math.abs(puzzlePiece.getX() - p.getX()) == 1 && puzzlePiece.getY() - p.getY() == 0
                 || Math.abs(puzzlePiece.getY() - p.getY()) == 1 && puzzlePiece.getX() - p.getX() == 0;
     }

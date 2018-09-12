@@ -166,13 +166,7 @@ public class MoleculeSampleApp extends Application {
     private void handleKeyEvent(KeyEvent event) {
         switch (event.getCode()) {
             case Z:
-                if (event.isShiftDown()) {
-                    cameraXform.setRy(0.0);
-                    cameraXform.setRx(0.0);
-                    camera.setTranslateZ(-300.0);
-                }
-                cameraXform2.setTx(0.0);
-                cameraXform2.setTy(0.0);
+                reset(event);
                 break;
             case X:
                 toggleAxisVisible(event);
@@ -198,6 +192,16 @@ public class MoleculeSampleApp extends Application {
             default:
                 break;
         }
+    }
+
+    private void reset(KeyEvent event) {
+        if (event.isShiftDown()) {
+            cameraXform.setRy(0.0);
+            cameraXform.setRx(0.0);
+            camera.setTranslateZ(-300.0);
+        }
+        cameraXform2.setTx(0.0);
+        cameraXform2.setTy(0.0);
     }
 
     private void toggleAnimation() {

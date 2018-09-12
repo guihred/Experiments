@@ -76,7 +76,7 @@ public class MercatorMap {
 		return new double[] { getScreenX(latitudeInDegrees), getScreenY(longitudeInDegrees) };
 	}
 
-	private double getScreenYRelative(double latitudeInDegrees) {
+    private static double getScreenYRelative(double latitudeInDegrees) {
 		return Math.log(Math.tan(latitudeInDegrees / 360f * Math.PI + Math.PI / 4));
 	}
 
@@ -85,7 +85,7 @@ public class MercatorMap {
 				/ (bottomLatitudeRelative - topLatitudeRelative);
 	}
 
-	private double getRadians(double deg) {
+    private static double getRadians(double deg) {
 		return deg * Math.PI / 180;
 	}
 

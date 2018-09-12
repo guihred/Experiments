@@ -15,7 +15,7 @@ class ThreadInformationModel {
 		update();
 	}
 
-	private String formatStackTrace(StackTraceElement[] value) {
+    private static String formatStackTrace(StackTraceElement[] value) {
 		return Stream.of(value).map(StackTraceElement::toString)
 				.collect(Collectors.joining("\n at ", "StackTrace: ", ""));
 	}

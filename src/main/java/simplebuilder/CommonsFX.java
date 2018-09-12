@@ -9,9 +9,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.Shape;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
@@ -88,6 +90,29 @@ public final class CommonsFX {
     public static void setZoomable(Node node) {
 
         setZoomable(node, false);
+    }
+
+    public static void setSpinnable(Node cube, Scene scene) {
+        DoubleProperty mousePosX = new SimpleDoubleProperty();
+        DoubleProperty mousePosY = new SimpleDoubleProperty();
+        DoubleProperty mouseOldX = new SimpleDoubleProperty();
+        DoubleProperty mouseOldY = new SimpleDoubleProperty();
+        final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
+        final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
+
+        cube.getTransforms().addAll(rotateX, rotateY);
+        scene.setOnMousePressed(me -> {
+            mouseOldY.set(me.getSceneY());
+            mouseOldX.set(me.getSceneX());
+        });
+        scene.setOnMouseDragged(me -> {
+            mousePosX.set(me.getSceneX());
+            mousePosY.set(me.getSceneY());
+            rotateX.setAngle(rotateX.getAngle() - (mousePosY.get() - mouseOldY.get()));
+            rotateY.setAngle(rotateY.getAngle() + (mousePosX.get() - mouseOldX.get()));
+            mouseOldX.set(mousePosX.get());
+            mouseOldY.set(mousePosY.get());
+        });
     }
 
     public static CheckBox newCheck(String name, BooleanProperty showWeight) {

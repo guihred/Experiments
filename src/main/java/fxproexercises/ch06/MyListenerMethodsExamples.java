@@ -69,7 +69,7 @@ class MyListenerMethodsExamples implements ListChangeListener<String>, HasLoggin
         }
     }
 
-    private String getChangeType(Change<? extends String> change) {
+    public static String getChangeType(Change<? extends String> change) {
         if (change.wasPermutated()) {
             return "permutted";
         }

@@ -57,7 +57,7 @@ public class Chart3dGraph extends Application {
             }
         }
         // texture
-        int length = createTexture(mesh);
+        int length = createTexture(mesh, size);
 
         // faces
         createFaces(mesh, length);
@@ -101,6 +101,8 @@ public class Chart3dGraph extends Application {
             mouseOldY = mousePosY;
         });
         makeZoomable(root);
+        //        CommonsFX.setSpinnable(cube, scene);
+        //        CommonsFX.setZoomable(root);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -121,8 +123,8 @@ public class Chart3dGraph extends Application {
         }
     }
 
-    private int createTexture(TriangleMesh mesh) {
-        int length = size;
+    private int createTexture(TriangleMesh mesh, int size1) {
+        int length = size1;
         float total = length;
         for (float x = 0; x < length - 1; x++) {
             for (float y = 0; y < length - 1; y++) {
@@ -149,7 +151,7 @@ public class Chart3dGraph extends Application {
 	 * @param noise
 	 * @return
 	 */
-	public Image createImage(double size1, float[][] noise) {
+    public static Image createImage(double size1, float[][] noise) {
 		int width = (int) size1;
 		int height = (int) size1;
 
@@ -169,28 +171,22 @@ public class Chart3dGraph extends Application {
 
     }
 
-    public void makeZoomable(StackPane control) {
+    public static void makeZoomable(StackPane control) {
 
         final double MAX_SCALE = 20.0;
         final double MIN_SCALE = 0.1;
 
         control.addEventFilter(ScrollEvent.ANY, event -> {
-
             double delta = 1.2;
-
             double scale = control.getScaleX();
-
             if (event.getDeltaY() < 0) {
                 scale /= delta;
             } else {
                 scale *= delta;
             }
-
             scale = clamp(scale, MIN_SCALE, MAX_SCALE);
-
             control.setScaleX(scale);
             control.setScaleY(scale);
-
             event.consume();
 
         });
@@ -269,11 +265,11 @@ public class Chart3dGraph extends Application {
 
     /* T(°C) = (T(°F) - minF) × (size)/(maxF-minF) */
 
-	private double convert(double f, double size1, double maxF, double minF) {
+    private static double convert(double f, double size1, double maxF, double minF) {
 		return (f - minF) * size1 / (maxF - minF);
     }
 
-	private float[][] createPlane(int size1) {
+    private static float[][] createPlane(int size1) {
         DataframeML dataframeML = new DataframeML("california_housing_train.csv");
         DoubleSummaryStatistics lat = dataframeML.summary("latitude");
         DoubleSummaryStatistics lon = dataframeML.summary("longitude");
@@ -296,8 +292,6 @@ public class Chart3dGraph extends Application {
                 return noiseArray;
             }
             noiseArray[x][y] += z.get(i);
-            // noiseArray[x.intValue()][y.intValue()] =
-            // Float.min(noiseArray[x.intValue()][y.intValue()], -size);
 
         }
         return noiseArray;

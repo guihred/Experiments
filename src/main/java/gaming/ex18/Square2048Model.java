@@ -97,7 +97,7 @@ public class Square2048Model {
 
     }
 
-    private boolean withinRange(int x, int y, int i, int j, int mapWidth, int mapHeight) {
+    private static boolean withinRange(int x, int y, int i, int j, int mapWidth, int mapHeight) {
         return i + x >= 0 && i + x < mapWidth && j + y >= 0
                 && j + y < mapHeight;
     }
