@@ -76,7 +76,6 @@ public final class ResourceFXUtils {
         return importStlMesh(file);
     }
 
-    @SuppressWarnings("unused")
     public static Mesh importStlMesh(File file) {
         StlMeshImporter importer = new StlMeshImporter();
         importer.read(file);
@@ -84,7 +83,6 @@ public final class ResourceFXUtils {
 //        return null;
     }
 
-    @SuppressWarnings("unused")
     public static Mesh importStlMesh(URL file) {
         StlMeshImporter importer = new StlMeshImporter();
         importer.read(file);
