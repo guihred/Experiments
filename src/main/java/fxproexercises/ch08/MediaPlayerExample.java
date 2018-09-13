@@ -24,6 +24,7 @@ public class MediaPlayerExample extends Application {
         File resource = ResourceFXUtils.toFile("TeenTitans.mp3");
         Media media = new Media(resource.toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setVolume(0);
         mediaPlayer.play();
         primaryStage.setTitle("Media Player");
         primaryStage.setWidth(200);

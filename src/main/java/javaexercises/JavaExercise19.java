@@ -16,41 +16,41 @@ public final class JavaExercise19 {
 
 		Jack ink = new Jack();
 		fred(ink, 3000);
-        HasLogging.log().info("Value is {}", K.k);
+        HasLogging.log().info("Value is {}", K.el);
 	}
 	private static void fred(JJ uk, int n) {
 		int a = 10 * n;
 		uk.upk();
 		if (n > 1000) {
-			K.k++;
+			K.el++;
 			Jill ink = new Jill();
 			fred(ink, n - 1000);
 			a += n;
 		}
-		K.k += a;
+		K.el += a;
 	}
 
 }
 
-class Jack extends JJ {
+class Jack implements JJ {
 	@Override
 	public void upk() {
-		K.k += 10;
+		K.el += 10;
 	}
 }
-class Jill extends JJ {
+class Jill implements JJ {
 	@Override
 	public void upk() {
 		Jack ink = new Jack();
 		ink.upk();
-		K.k += 200;
+		K.el += 200;
 	}
 }
 
-abstract class JJ {
-	public abstract void upk();
+interface JJ {
+	void upk();
 }
 
 class K {
-	public static int k;
+	public static int el;
 }

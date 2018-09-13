@@ -130,8 +130,8 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
                 dialogStage.centerOnScreen();
 				Button button = new Button("Ok.");
 				button.setOnAction(e -> {
-                    camera.setTranslateZ(0);
                     camera.setTranslateY(0);
+                    camera.setTranslateZ(0);
 					camera.setTranslateX(0);
 					movimentacao.start();
 					dialogStage.close();

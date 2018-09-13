@@ -15,11 +15,11 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public class JewelViewer extends Application {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JewelViewer.class);
+    private static final Logger LOGGER = HasLogging.log(JewelViewer.class);
 	private static final Color JEWEL_COLOR = Color.BURLYWOOD;
 	private static final Color LIGHT_COLOR = Color.rgb(125, 125, 125);
     public static final String ORIGINAL_FILENAME = ResourceFXUtils.toFullPath("original.stl");

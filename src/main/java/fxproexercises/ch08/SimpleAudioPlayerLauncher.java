@@ -78,6 +78,7 @@ public class SimpleAudioPlayerLauncher extends Application {
             final String errorMessage = media.getError().getMessage();
             LOGGER.error("error:{}", errorMessage);
         });
+        mediaPlayer.setVolume(0);
 		media.getMetadata().addListener((MapChangeListener<String, Object>) ch -> {
                 if (ch.wasAdded()) {
                     handleMetadata(ch.getKey(), ch.getValueAdded());

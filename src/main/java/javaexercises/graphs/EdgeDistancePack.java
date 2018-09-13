@@ -1,6 +1,6 @@
 package javaexercises.graphs;
 
-class EdgeDistancePack implements Comparable<EdgeDistancePack> {
+public class EdgeDistancePack implements Comparable<EdgeDistancePack> {
 
 	protected Linha edge;
 	protected double distance;

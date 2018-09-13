@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -54,9 +53,6 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	private final Random random = new Random();
 	private Group root = new Group();
 
-	private Sphere checkBalls(Bounds boundsInParent) {
-        return checkBalls(boundsInParent, balls);
-	}
 
     public static void createLabyrinth(Group root1, List<LabyrinthWall> labyrinthWalls, Sphere[][] balls,
             String[][] mapa) {
@@ -84,7 +80,12 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 
 	@Override
 	public void endKeyboard() {
-		Sphere ballGot = checkBalls(camera.getBoundsInParent());
+        end(camera, root, balls, ghostCount, movimentacao);
+	}
+
+    public static void end(PerspectiveCamera camera, Group root, Sphere[][] balls, SimpleIntegerProperty ghostCount,
+            MovimentacaoAleatoria movimentacao) {
+        Sphere ballGot = CommomLabyrinth.checkBalls(camera.getBoundsInParent(), balls);
         if (ballGot == null) {
             return;
         }
@@ -103,20 +104,19 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
             dialogStage.initModality(Modality.WINDOW_MODAL);
             Button button = new Button("Ok.");
             button.setOnAction(e -> {
+                movimentacao.start();
                 camera.setTranslateZ(0);
                 camera.setTranslateY(0);
                 camera.setTranslateX(0);
-                movimentacao.start();
                 dialogStage.close();
             });
-            VBox vbox = new VBox();
-            vbox.getChildren().addAll(new Text("Você Venceu"), button);
+            VBox vbox = new VBox(new Text("Você Venceu"), button);
             vbox.setAlignment(Pos.CENTER);
             vbox.setPadding(new Insets(5));
             dialogStage.setScene(new Scene(vbox));
             dialogStage.show();
         }
-	}
+    }
 
 	private MeshView generateGhost(String arquivo, Color animalColor) {
         MeshView animal = new MeshView(ResourceFXUtils.importStlMesh(arquivo));

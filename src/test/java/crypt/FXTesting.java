@@ -103,13 +103,7 @@ public final class FXTesting implements HasLogging {
 
     public static <T> T measureTime(String name, SupplierEx<T> runnable) {
         long currentTimeMillis = System.currentTimeMillis();
-        T t = null;
-        try {
-            t = runnable.get();
-        } catch (Exception e) {
-            LOGGER.error("Exception thrown", e);
-            throw new RuntimeException("Exception in " + name, e);
-        }
+        T t = SupplierEx.makeSupplier(runnable).get();
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");

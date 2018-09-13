@@ -23,6 +23,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.CommonsFX;
 import simplebuilder.HasLogging;
 
 public class JapaneseLessonEditingDisplay extends Application implements HasLogging {
@@ -43,41 +44,23 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 	public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Japanese Lesson Editing Display");
+        TextField japanese = newText();
 		TextField english = newText();
-		TextField japanese = newText();
-		TextField romaji = newText();
 		TextField start = newText();
 		TextField end = newText();
+        TextField romaji = newText();
 		Text lesson = new Text("Lesson");
-		current.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && !lessons.isEmpty()) {
-                JapaneseLesson japaneseLesson = lessons.get(newValue.intValue() % lessons.size());
-				lesson.setText("" + japaneseLesson.getExercise());
-				english.setText(japaneseLesson.getEnglish());
-				romaji.setText(japaneseLesson.getRomaji());
-				japanese.setText(japaneseLesson.getJapanese());
-				setStartEnd(japaneseLesson);
-				start.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getStart()));
-				end.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getEnd()));
-			}
-		});
+        current.addListener((observable, oldValue, newValue) -> updateCurrentLesson(english, japanese, romaji, start,
+                end, lesson, newValue));
 
-		japanese.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setJapanese));
-		english.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setEnglish));
-		romaji.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setRomaji));
-		start.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setStart));
-		end.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setEnd));
-        Button previous = new Button("P_revious");
-		previous.setOnAction(e -> previousLesson());
+        setListeners(english, japanese, romaji, start, end);
+        Button previous = CommonsFX.newButton("P_revious", e -> previousLesson());
 		previous.disableProperty().bind(current.isEqualTo(0));
-        Button save = new Button("_Save and Close");
-        save.setOnAction(e -> saveAndClose(primaryStage));
+        Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
 
-        Button next = new Button("_Next");
-		next.setOnAction(e -> nextLesson());
+        Button next = CommonsFX.newButton("_Next", e -> nextLesson());
 		next.disableProperty().bind(current.isEqualTo(lessons.size() - 1));
-        Button play = new Button("_Play");
-		play.setOnAction(e -> playLesson());
+        Button play = CommonsFX.newButton("_Play", e -> playLesson());
 		primaryStage.setWidth(600);
 		current.set(0);
 		for (int i = 0; i < lessons.size(); i++) {
@@ -120,6 +103,30 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		mediaPlayer.set(new MediaPlayer(sound));
 		primaryStage.show();
 	}
+
+    protected void setListeners(TextField english, TextField japanese, TextField romaji, TextField start,
+            TextField end) {
+        japanese.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setJapanese));
+		english.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setEnglish));
+		romaji.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setRomaji));
+		start.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setStart));
+		end.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setEnd));
+    }
+
+    protected void updateCurrentLesson(TextField english, TextField japanese, TextField romaji, TextField start,
+            TextField end,
+            Text lesson, Number newValue) {
+        if (newValue != null && !lessons.isEmpty()) {
+            JapaneseLesson japaneseLesson = lessons.get(newValue.intValue() % lessons.size());
+        	lesson.setText("" + japaneseLesson.getExercise());
+            romaji.setText(japaneseLesson.getRomaji());
+        	english.setText(japaneseLesson.getEnglish());
+        	japanese.setText(japaneseLesson.getJapanese());
+        	setStartEnd(japaneseLesson);
+        	start.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getStart()));
+        	end.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getEnd()));
+        }
+    }
 
     protected void saveAndClose(Stage primaryStage) {
         int index = current.get();

@@ -88,7 +88,8 @@ public final class FXTest implements HasLogging {
     @Test
     public void test5() throws Throwable {
         FXTesting.testApps(BasicAudioPlayerWithControlLauncher.class, BasicAudioClipExample.class,
-                AudioConfigLauncher.class, SimpleAudioPlayerLauncher.class, PlayingAudio.class);
+                AudioConfigLauncher.class, SimpleAudioPlayerLauncher.class, PlayingAudio.class, Physics.class,
+                JewelViewer.class);
     }
 
     @Test
@@ -100,7 +101,6 @@ public final class FXTest implements HasLogging {
                 StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class, TheMenuGrid.class,
                 ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class, TronLauncher.class,
                 VanishingCirclesApp.class, WordSearchApp.class, WordSuggetionApp.class, WorkingListsViews.class,
-                Physics.class,
                 WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class);
     }
 

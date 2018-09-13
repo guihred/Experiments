@@ -43,24 +43,10 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
 		TextField start = newText();
 		TextField end = newText();
 		Text lesson = new Text("Lesson");
-		current.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && !lessons.isEmpty()) {
-				JapaneseLesson japaneseLesson = lessons.get(newValue.intValue());
-				lesson.setText("" + japaneseLesson.getExercise());
-                romaji.setText(japaneseLesson.getRomaji());
-				english.setText(japaneseLesson.getEnglish());
-				japanese.setText(japaneseLesson.getJapanese());
-				setStartEnd(japaneseLesson);
-				start.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getStart()));
-				end.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getEnd()));
-			}
-		});
+        current.addListener((observable, oldValue, newValue) -> updateCurrentLesson(english, japanese, romaji, start,
+                end, lesson, newValue));
 
-		japanese.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setJapanese));
-		english.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setEnglish));
-		romaji.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setRomaji));
-		start.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setStart));
-		end.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setEnd));
+        setListeners(english, japanese, romaji, start, end);
         Button previous = new Button("P_revious");
 		previous.setOnAction(e -> previousLesson());
 		previous.disableProperty().bind(current.isEqualTo(0));
@@ -135,13 +121,12 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
 		primaryStage.show();
 	}
 
+
     private LocalTime convertDurationToLocalTime(Duration currentDuration) {
         int millis = (int) currentDuration.toMillis();
         LocalTime currentTime = LocalTime.of(millis / 1000 / 60 / 60, millis / 1000 / 60 % 60, millis / 1000 % 60);
         return currentTime.plus(millis % 1000, ChronoUnit.MILLIS);
     }
-
-    
     
     
     private static void splitAudio(String mp3File, String mp4File, LocalTime start, LocalTime end) {

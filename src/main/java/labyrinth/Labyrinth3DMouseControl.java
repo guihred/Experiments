@@ -7,22 +7,14 @@ import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import simplebuilder.MouseInScreenHandler;
 import simplebuilder.ResourceFXUtils;
 
@@ -68,46 +60,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	public final Random random = new Random();
 	private Group root = new Group();
 
-	private Sphere checkBalls(Bounds boundsInParent) {
-        return checkBalls(boundsInParent, balls);
-	}
-
-
 	@Override
 	public void endKeyboard() {
-		Sphere ballGot = checkBalls(camera.getBoundsInParent());
-        if (ballGot == null) {
-            return;
-        }
-
-        root.getChildren().remove(ballGot);
-        for (int i = 0; i < balls.length; i++) {
-            for (int j = 0; j < balls[i].length; j++) {
-                if (ballGot == balls[i][j]) {
-                    balls[i][j] = null;
-				}
-			}
-        }
-        ghostCount.set(ghostCount.get() - 1);
-        if (ghostCount.get() == 0) {
-            movimentacao.stop();
-            Stage dialogStage = new Stage(StageStyle.DECORATED);
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            Button button = new Button("Ok.");
-            button.setOnAction(e -> {
-                camera.setTranslateX(0);
-                camera.setTranslateY(0);
-                camera.setTranslateZ(0);
-                movimentacao.start();
-                dialogStage.close();
-            });
-            VBox vbox = new VBox(new Text("Você Venceu"), button);
-            vbox.setAlignment(Pos.CENTER);
-            vbox.setPadding(new Insets(5));
-            dialogStage.setScene(new Scene(vbox));
-            dialogStage.show();
-        }
-
+        Labyrinth3DKillerGhostsAndBalls.end(camera, root, balls, ghostCount, movimentacao);
 	}
 
 	private MeshView generateGhost(URL arquivo, Color enemyColor) {

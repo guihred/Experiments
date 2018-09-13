@@ -28,6 +28,9 @@ import simplebuilder.HasLogging;
 
 public class RosarioComparadorArquivos extends Application implements HasLogging {
 
+
+
+
     private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
     private Map<String, FileChooser> fileChoose = new HashMap<>();
     private boolean openAtExport = true;
@@ -131,59 +134,36 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 			final TableView<Medicamento> medicamentosAnvisaTable) {
 		ObservableList<TableColumn<Medicamento, ?>> columns = medicamentosAnvisaTable.getColumns();
 		TableColumn<Medicamento, String> tableColumn = (TableColumn<Medicamento, String>) columns.get(0);
-		tableColumn.setCellFactory(param -> new TableCell<Medicamento, String>() {
-			@Override
-			protected void updateItem(String item, boolean empty) {
-				super.updateItem(item, empty);
-				int index = getIndex();
-				int size = getTableView().getItems().size();
-				if (index >= 0 && index < size) {
-					Medicamento auxMed = getTableView().getItems().get(index);
-					setText(auxMed.getRegistro());
-
-					styleProperty().bind(
-							Bindings.when(auxMed.registroValidoProperty(medicamentos)).then("")
-									.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
-				}
-			}
-
+        tableColumn.setCellFactory(param -> new CustomableTableCell<String>() {
+            @Override
+            void setStyleable(Medicamento auxMed) {
+                setText(auxMed.getRegistro());
+                styleProperty().bind(Bindings.when(auxMed.registroValidoProperty(medicamentos)).then("")
+                        .otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
+            }
 		});
 
 		TableColumn<Medicamento, String> colunaLote = (TableColumn<Medicamento, String>) columns
 				.get(columns.size() - 3);
-		colunaLote.setCellFactory(param -> new TableCell<Medicamento, String>() {
-			@Override
-			protected void updateItem(String item, boolean empty) {
-				super.updateItem(item, empty);
-				int index = getIndex();
-				int size = getTableView().getItems().size();
-				if (index >= 0 && index < size) {
-					Medicamento auxMed = getTableView().getItems().get(index);
-					setText(auxMed.getLote());
-					styleProperty().bind(
-							Bindings.when(auxMed.loteValidoProperty(medicamentos)).then("")
-									.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
-
-				}
-			}
-		});
-		TableColumn<Medicamento, Integer> colunaQntd = (TableColumn<Medicamento, Integer>) columns
-				.get(columns.size() - 2);
-		colunaQntd.setCellFactory(param -> new TableCell<Medicamento, Integer>() {
-			@Override
-			protected void updateItem(Integer item, boolean empty) {
-				super.updateItem(item, empty);
-				int index = getIndex();
-				int size = getTableView().getItems().size();
-				if (index >= 0 && index < size) {
-					Medicamento auxMed = getTableView().getItems().get(index);
-					setText(Integer.toString(auxMed.getQuantidade()));
-					styleProperty().bind(Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
-							.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
-				}
-			}
+        colunaLote.setCellFactory(param -> new CustomableTableCell<String>() {
+            @Override
+            void setStyleable(Medicamento auxMed) {
+                setText(auxMed.getLote());
+                styleProperty().bind(Bindings.when(auxMed.loteValidoProperty(medicamentos)).then("")
+                        .otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
+            }
 
 		});
+        TableColumn<Medicamento, Integer> colunaQntd = (TableColumn<Medicamento, Integer>) columns
+                .get(columns.size() - 2);
+        colunaQntd.setCellFactory(param -> new CustomableTableCell<Integer>() {
+            @Override
+            void setStyleable(Medicamento auxMed) {
+                setText(Integer.toString(auxMed.getQuantidade()));
+                styleProperty().bind(Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
+                        .otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
+            }
+        });
 
 	}
 
@@ -196,37 +176,26 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
 		TableColumn<Medicamento, Integer> colunaQntd = (TableColumn<Medicamento, Integer>) columns
 				.get(columns.size() - 2);
-		colunaQntd.setCellFactory(param -> new TableCell<Medicamento, Integer>() {
-			@Override
-			protected void updateItem(Integer item, boolean empty) {
-				super.updateItem(item, empty);
-				int index = getIndex();
-				int size = getTableView().getItems().size();
-				if (index >= 0 && index < size) {
-					Medicamento auxMed = getTableView().getItems().get(index);
+        colunaQntd.setCellFactory(param -> new CustomableTableCell<Integer>() {
+            @Override
+            void setStyleable(Medicamento auxMed) {
 					setText(Integer.toString(auxMed.getQuantidade()));
 					styleProperty().bind(
 							Bindings.when(auxMed.quantidadeCodigoValidoProperty(medicamentos)).then("")
 									.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
-				}
 			}
 
 		});
 		TableColumn<Medicamento, Integer> colunaCodigo = (TableColumn<Medicamento, Integer>) columns
 				.get(columns.size() - 1);
-		colunaCodigo.setCellFactory(param -> new TableCell<Medicamento, Integer>() {
-			@Override
-			protected void updateItem(Integer item, boolean empty) {
-				super.updateItem(item, empty);
-				int index = getIndex();
-				int size = getTableView().getItems().size();
-				if (index >= 0 && index < size) {
-					Medicamento auxMed = getTableView().getItems().get(index);
+        colunaCodigo.setCellFactory(param -> new CustomableTableCell<Integer>() {
+            @Override
+            void setStyleable(Medicamento auxMed) {
 					setText(Integer.toString(auxMed.getCodigo()));
 					styleProperty().bind(
 							Bindings.when(auxMed.codigoValidoProperty(medicamentos)).then("")
 									.otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
-				}
+
 			}
 
 		});
@@ -405,7 +374,21 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
         this.openAtExport = openAtExport;
     }
 
+    private abstract class CustomableTableCell<T> extends TableCell<Medicamento, T> {
 
+        @Override
+        protected void updateItem(T item, boolean empty) {
+            super.updateItem(item, empty);
+            int index = getIndex();
+            int size = getTableView().getItems().size();
+            if (index >= 0 && index < size) {
+                Medicamento auxMed = getTableView().getItems().get(index);
+                setStyleable(auxMed);
+            }
+        }
+
+        abstract void setStyleable(Medicamento auxMed);
+    }
     public static void main(String[] args) {
 		launch(args);
 	}

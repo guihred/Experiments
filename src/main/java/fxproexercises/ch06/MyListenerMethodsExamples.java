@@ -16,17 +16,6 @@ class MyListenerMethodsExamples implements ListChangeListener<String>, HasLoggin
         String prettyPrint = prettyPrint(change);
         getLogger().info(prettyPrint);
 	}
-	
-	private String prettyPrint(Change<? extends String> change) {
-		StringBuilder sb = new StringBuilder("\tChange event data:\n");
-		int i = 0;
-		while (change.next()) {
-            sb.append("\t\tcursor = ").append(i++).append("\n");
-            final String kind = getChangeType(change);
-            appendKindOfChange(change, sb, kind);
-		}
-		return sb.toString();
-	}
 
     public static void appendKindOfChange(Change<? extends String> change, StringBuilder sb, final String kind) {
         sb.append("\t\tKind of change: ")
@@ -83,5 +72,16 @@ class MyListenerMethodsExamples implements ListChangeListener<String>, HasLoggin
             return "added";
         }
         return "none";
+    }
+
+    private String prettyPrint(Change<? extends String> change) {
+        StringBuilder sb = new StringBuilder("\tChange event data:\n");
+        int i = 0;
+        while (change.next()) {
+            sb.append("\t\tcursor = ").append(i++).append("\n");
+            final String kind = getChangeType(change);
+            appendKindOfChange(change, sb, kind);
+        }
+        return sb.toString();
     }
 }

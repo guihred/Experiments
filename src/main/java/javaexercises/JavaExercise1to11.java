@@ -2,11 +2,7 @@ package javaexercises;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -287,10 +283,14 @@ public final class JavaExercise1to11 {
 			if (birthday < 0) {
 				++count;
 			} else {
-				count += 8;
+                increase8();
 			}
 			MAPA.put(birthday, count);
 		}
+
+        private static void increase8() {
+            count += 8;
+        }
 
 		public Stream<Greenfly> reproduce(int day) {
 			if (day - birthday >= 7) {
