@@ -24,7 +24,7 @@ import simplebuilder.ResourceFXUtils;
 public class Labyrinth3DKillerGhostsAndBalls extends Application implements CommomLabyrinth {
 
 
-	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
+    private static final String[][] MAPA = { { "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" },
@@ -40,11 +40,11 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 
 	private static final int SIZE = 60;
 
-	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
+    private Sphere[][] balls = new Sphere[MAPA.length][MAPA[0].length];
 
 	private PerspectiveCamera camera;
 
-    private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
+    private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(MAPA.length * MAPA[0].length);
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
 
 	private final Color lightColor = Color.rgb(125, 125, 125);
@@ -58,7 +58,8 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
         return checkBalls(boundsInParent, balls);
 	}
 
-	private void createLabyrinth(Group root1) {
+    public static void createLabyrinth(Group root1, List<LabyrinthWall> labyrinthWalls, Sphere[][] balls,
+            String[][] mapa) {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
@@ -125,9 +126,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		animal.setMaterial(sample);
 		animal.setTranslateY(14);
 
-		int posicaoInicialZ = random.nextInt(mapa[0].length * SIZE);
+        int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
 		animal.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
+        int posicaoInicialX = random.nextInt(MAPA.length * SIZE);
 		animal.setTranslateX(posicaoInicialX);
 		while (checkColision(animal.getBoundsInParent())) {
 			animal.setTranslateZ(animal.getTranslateZ() + 1);
@@ -151,7 +152,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		createLabyrinth(root);
+        createLabyrinth(root, labyrinthWalls, balls, MAPA);
 		SubScene subScene = new SubScene(root, 640, 480, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());

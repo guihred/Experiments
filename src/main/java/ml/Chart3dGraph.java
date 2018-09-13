@@ -71,18 +71,18 @@ public class Chart3dGraph extends Application {
 
         // mesh view
         MeshView meshView = new MeshView(mesh);
-        meshView.setTranslateX(-0.5 * size);
         meshView.setTranslateZ(-0.5 * size);
+        meshView.setTranslateX(-0.5 * size);
         meshView.setMaterial(material);
-        meshView.setCullFace(CullFace.NONE);
         meshView.setDrawMode(DrawMode.FILL);
+        meshView.setCullFace(CullFace.NONE);
         meshView.setDepthTest(DepthTest.ENABLE);
         cube.getChildren().addAll(meshView);
         // testing / debugging stuff: show diffuse map on chart
         ImageView iv = new ImageView(diffuseMap);
-        iv.setTranslateX(-0.5 * size);
-        iv.setTranslateY(-0.10 * size);
         iv.setRotate(90);
+        iv.setTranslateY(-0.10 * size);
+        iv.setTranslateX(-0.5 * size);
         iv.setRotationAxis(new Point3D(1, 0, 0));
         cube.getChildren().add(iv);
         // scene

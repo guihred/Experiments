@@ -7,7 +7,9 @@ import simplebuilder.HasLogging;
 
 class MyListenerMethodsExamples implements ListChangeListener<String>, HasLogging {
 	
-	@Override
+	private static final String REPLACED = "replaced";
+
+    @Override
 	public void onChanged(Change<? extends String> change) {
         ObservableList<? extends String> list = change.getList();
         getLogger().info("\tlist = {}", list);
@@ -19,9 +21,7 @@ class MyListenerMethodsExamples implements ListChangeListener<String>, HasLoggin
 		StringBuilder sb = new StringBuilder("\tChange event data:\n");
 		int i = 0;
 		while (change.next()) {
-			sb.append("\t\tcursor = ")
-			.append(i++)
-			.append("\n");
+            sb.append("\t\tcursor = ").append(i++).append("\n");
             final String kind = getChangeType(change);
             appendKindOfChange(change, sb, kind);
 		}
@@ -37,7 +37,7 @@ class MyListenerMethodsExamples implements ListChangeListener<String>, HasLoggin
         .append(", ")
         .append(change.getTo())
         .append("]\n");
-        if (Stream.of("added", "replaced").anyMatch(kind::equals)) {
+        if (Stream.of("added", REPLACED).anyMatch(kind::equals)) {
         	sb.append("\t\tAdded size: ")
         	.append(change.getAddedSize())
         	.append("\n");
@@ -45,7 +45,7 @@ class MyListenerMethodsExamples implements ListChangeListener<String>, HasLoggin
         	.append(change.getAddedSubList())
         	.append("\n");
         }
-        if ("removed".equals(kind) || "replaced".equals(kind)) {
+        if ("removed".equals(kind) || REPLACED.equals(kind)) {
         	sb.append("\t\tRemoved size: ")
         	.append(change.getRemovedSize())
         	.append("\n");
@@ -74,7 +74,7 @@ class MyListenerMethodsExamples implements ListChangeListener<String>, HasLoggin
             return "permutted";
         }
         if (change.wasReplaced()) {
-            return "replaced";
+            return REPLACED;
         }
         if (change.wasRemoved()) {
             return "removed";

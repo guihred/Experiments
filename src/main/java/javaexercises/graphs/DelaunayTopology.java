@@ -99,9 +99,9 @@ public class DelaunayTopology extends BaseTopology {
 				Linha edge = triangleSoup.stream().map(t7 -> t7.findNearestEdge(point2)).sorted().findFirst().orElseThrow(()->new Exception("There should be someone")).edge;
 
                 Triangle first = triangleSoup.stream().filter(t4 -> t4.isNeighbour(edge)).findFirst()
-                        .orElseThrow(() -> new Exception("There should be someone"));
+                        .orElseThrow(() -> new Exception("There should be some triangle"));
                 Triangle second = triangleSoup.stream().filter(t5 -> t5.isNeighbour(edge) && t5 != first).findFirst()
-                        .orElseThrow(() -> new Exception("There should be someone"));
+                        .orElseThrow(() -> new Exception("There should be some triangle"));
 
 				Ponto firstNoneEdgeVertex = first.getNoneEdgeVertex(edge);
 				Ponto secondNoneEdgeVertex = second.getNoneEdgeVertex(edge);

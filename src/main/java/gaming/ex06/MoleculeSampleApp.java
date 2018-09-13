@@ -48,25 +48,22 @@ public class MoleculeSampleApp extends Application {
     private boolean timelinePlaying;
 
     private void buildAxes() {
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(Color.DARKRED);
+        final PhongMaterial redMaterial = new PhongMaterial(Color.DARKRED);
         redMaterial.setSpecularColor(Color.RED);
 
-        final PhongMaterial greenMaterial = new PhongMaterial();
-        greenMaterial.setDiffuseColor(Color.DARKGREEN);
+        final PhongMaterial greenMaterial = new PhongMaterial(Color.DARKGREEN);
         greenMaterial.setSpecularColor(Color.GREEN);
 
-        final PhongMaterial blueMaterial = new PhongMaterial();
-        blueMaterial.setDiffuseColor(Color.DARKBLUE);
+        final PhongMaterial blueMaterial = new PhongMaterial(Color.DARKBLUE);
         blueMaterial.setSpecularColor(Color.BLUE);
 
         final Box xAxis = new Box(240.0, 1, 1);
         final Box yAxis = new Box(1, 240.0, 1);
         final Box zAxis = new Box(1, 1, 240.0);
 
-        xAxis.setMaterial(redMaterial);
-        yAxis.setMaterial(greenMaterial);
         zAxis.setMaterial(blueMaterial);
+        yAxis.setMaterial(greenMaterial);
+        xAxis.setMaterial(redMaterial);
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
         world.getChildren().addAll(axisGroup);

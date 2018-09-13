@@ -46,8 +46,8 @@ public class Cubes3D extends Application {
 		// create root group
 		Group root = new Group(c, c2, c3);
 		// translate and rotate group so that origin is center and +Y is up
-		root.setTranslateX(400 / 2);
-		root.setTranslateY(150 / 2);
+        root.setTranslateX(200);
+        root.setTranslateY(75);
 		root.getTransforms().add(new Rotate(180, Rotate.X_AXIS));
 		// create scene
 		Scene scene = new Scene(root, 400, 150);

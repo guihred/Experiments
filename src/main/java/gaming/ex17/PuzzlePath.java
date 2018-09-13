@@ -28,7 +28,7 @@ public enum PuzzlePath {
 		boolean d = y == 0;
 		return Arrays.asList(
 				new ArcTo((x + y) / 4, (x + y) / 4, 0, x / 2, y / 2, false, b && c ^ !b && d),
-				new ArcTo((x + y) / 4, (x + y) / 4, 0, x / 2, y / 2, false, !b || !(c ^ !b) || !d));
+                new ArcTo((x + y) / 4, (x + y) / 4, 0, x / 2, y / 2, false, !b || !(c ^ !b) || !d));
     })
     ;
 

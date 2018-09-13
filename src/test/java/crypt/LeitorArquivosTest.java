@@ -1,5 +1,8 @@
-package exercism;
+package crypt;
 
+import static crypt.FXTesting.measureTime;
+
+import exercise.java8.Chapter4;
 import extract.ExcelService;
 import java.io.File;
 import java.io.IOException;
@@ -7,9 +10,12 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.JFXPanel;
 import log.analyze.FunctionEx;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
 import rosario.LeitorArquivos;
@@ -17,9 +23,12 @@ import rosario.Medicamento;
 import simplebuilder.ResourceFXUtils;
 
 public class LeitorArquivosTest {
-    public LeitorArquivosTest() {
-        ResourceFXUtils.initializeFX();
+    @BeforeClass
+    public static void init() {
+        new JFXPanel().toString();
+        Platform.setImplicitExit(false);
     }
+
     @Test
     public void testLeitorArquivos() {
         File file = ResourceFXUtils.toFile("anvisa2208.xlsx");
@@ -71,5 +80,11 @@ public class LeitorArquivosTest {
         ExcelService.getExcel((i, s) -> medicamentos.subList(Integer.min(i, maxI), Integer.min(i + s, maxI)), campos,
                 new File(new File("out"), "sngpcMeds.xlsx"));
 
+    }
+
+    @Test
+    public void testChapter4() {
+        measureTime("Chapter4.testApps", () -> FXTesting.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class,
+                Chapter4.Ex5.class, Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class, Chapter4.Ex10.class));
     }
 }

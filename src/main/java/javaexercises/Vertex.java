@@ -224,7 +224,7 @@ public class Vertex implements HasLogging {
 
 	public static void chain(String nome1, String nome2, List<Vertex> vertices) {
         Vertex v1 = vertices.stream().filter(v -> v.name.equals(nome1)).findFirst()
-                .orElseThrow(() -> new Exception("There should be someone"));
+                .orElseThrow(() -> new Exception("There should be some vertex called " + nome1));
         Vertex v2 = vertices.stream().filter(v -> v.name.equals(nome2)).findFirst()
                 .orElseThrow(() -> new Exception("There should be someone"));
 		for (Vertex v : vertices) {

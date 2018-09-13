@@ -112,19 +112,20 @@ public final class BrazilianWordSyllableSplitter {
 	}
 
     private static boolean threeNonClusterConsonantsAndAVowel(int i, String a, String b, String c, String d) {
-        return isConsonant(a) && isConsonant(b)&& isConsonant(c) && !isConsonantCluster(a + b) && isConsonantCluster(b + c) && isVowel(d)
+        return isConsonant(a, b, c) && !isConsonantCluster(a + b) && isConsonantCluster(b + c) && isVowel(d)
         && i != 0;
     }
 
     private static boolean twoNonClusterConsonantsAndAVowel(int i, String a, String b, String c) {
-        return isConsonant(a) && isConsonant(b) && !isConsonantCluster(a + b) && isVowel(c) && i != 0;
+        return isConsonant(a, b) && !isConsonantCluster(a + b) && isVowel(c) && i != 0;
     }
 
 	private static boolean isConsonantCluster(String a) {
 		return a.matches(REGEX_CONSONANT_CLUSTER);
 	}
-	private static boolean isConsonant(String b) {
-		return b.matches(REGEX_CONSONANTS);
+
+    private static boolean isConsonant(String... b) {
+        return Stream.of(b).allMatch(s -> s.matches(REGEX_CONSONANTS));
 	}
 
 	private static boolean isAscending(String b) {

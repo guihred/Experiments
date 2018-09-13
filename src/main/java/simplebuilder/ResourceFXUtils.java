@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.awt.Desktop;
 import java.io.*;
 import java.net.URI;
@@ -77,18 +78,18 @@ public final class ResourceFXUtils {
 
     @SuppressWarnings("unused")
     public static Mesh importStlMesh(File file) {
-        //        StlMeshImporter importer = new StlMeshImporter()
-        //        importer.read(file)
-        //        return importer.getImport()
-        return null;
+        StlMeshImporter importer = new StlMeshImporter();
+        importer.read(file);
+        return importer.getImport();
+//        return null;
     }
 
     @SuppressWarnings("unused")
     public static Mesh importStlMesh(URL file) {
-        //        StlMeshImporter importer = new StlMeshImporter()
-        //        importer.read(file)
-        //        return importer.getImport()
-        return null;
+        StlMeshImporter importer = new StlMeshImporter();
+        importer.read(file);
+        return importer.getImport();
+//        return null;
     }
 
     public static String take(final Canvas canvas) {

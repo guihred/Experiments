@@ -29,8 +29,8 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
 import simplebuilder.MouseInScreenHandler;
+import simplebuilder.ResourceFXUtils;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
@@ -155,24 +155,18 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		enemy.setMaterial(sample);
 		enemy.setTranslateY(14);
 		enemy.setDrawMode(DrawMode.FILL);
-		int posicaoInicialZ = random.nextInt(mapa[0].length * SIZE);
-		enemy.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
-		enemy.setTranslateX(posicaoInicialX);
+		enemy.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
+		enemy.setTranslateX(random.nextInt(mapa.length * SIZE));
 		while (checkColision(enemy.getBoundsInParent())) {
+            enemy.setTranslateX(enemy.getTranslateX() + 1);
 			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
-			enemy.setTranslateX(enemy.getTranslateX() + 1);
 		}
+        enemy.setScaleZ(0.4);
+        enemy.setScaleY(1);
 		enemy.setScaleX(0.4);
-		enemy.setScaleY(1);
-		enemy.setScaleZ(0.4);
 		return enemy;
 	}
 
-	@Override
-	public PerspectiveCamera getCamera() {
-		return camera;
-	}
 
 	@Override
 	public List<LabyrinthWall> getLabyrinthWalls() {
@@ -181,6 +175,11 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 
 
 	@Override
+    public PerspectiveCamera getCamera() {
+        return camera;
+    }
+
+    @Override
 	public void start(Stage primaryStage) throws Exception {
 
 

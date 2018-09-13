@@ -54,8 +54,8 @@ public class PointGraph extends Canvas {
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
         double e = layout.get();
-        gc.strokeLine(e, e, e, maxLayout);
         gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
+        gc.strokeLine(e, e, e, maxLayout);
         double j = (maxLayout - e) / bins.get();
         double d = lineSize.get();
         for (int i = 1; i <= bins.get(); i++) {

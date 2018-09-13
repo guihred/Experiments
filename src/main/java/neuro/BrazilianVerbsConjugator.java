@@ -6,13 +6,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -543,33 +538,33 @@ public class BrazilianVerbsConjugator {
 		if (root.endsWith("a")) {
 			addLetter("a", present, past, incompletePast, pluPerfect, future, futureImpefect);
 			present = new String[] { "aio", "ais", "ai", "aímos", "aís", "aem" };
+            incompletePast = new String[] { "aía", "aías", "aía", "aíamos", "aíeis", "aíam" };
 			past = new String[] { "aí", "aíste", "aiu", "aímos", "aístes", "aíram" };
-			incompletePast = new String[] { "aía", "aías", "aía", "aíamos", "aíeis", "aíam" };
 			root = root.substring(0, root.length() - 1);
 		} else if (root.endsWith("c")) {
 			addLetter("c", present, past, incompletePast, pluPerfect, future, futureImpefect);
+            root = root.substring(0, root.length() - 1);
 			present[0] = "ço";
-			root = root.substring(0, root.length() - 1);
 		} else if (root.endsWith("u")) {
 			addLetter("u", present, past, incompletePast, pluPerfect, future, futureImpefect);
-			present = new String[] { "uo", "uis", "ui", "uímos", "uís", "uem" };
 			past = new String[] { "uí", "uíste", "uiu", "uímos", "uístes", "uíram" };
 			incompletePast = new String[] { "uía", "uías", "uía", "uíamos", "uíeis", "uíam" };
+            present = new String[] { "uo", "uis", "ui", "uímos", "uís", "uem" };
 			root = root.substring(0, root.length() - 1);
 		} else if (root.endsWith("g")) {
 			addLetter("g", present, past, incompletePast, pluPerfect, future, futureImpefect);
+            root = root.substring(0, root.length() - 1);
 			present[0] = "jo";
-			root = root.substring(0, root.length() - 1);
 		}
-		Map<Mode, String[]> hashMap = new EnumMap<>(Mode.class);
-		hashMap.put(Mode.CONDITIONAL, futureImpefect);
-		hashMap.put(Mode.FUTURE, future);
-		hashMap.put(Mode.IMPERFECT, incompletePast);
-		hashMap.put(Mode.PLUPERFECT, pluPerfect);
-		hashMap.put(Mode.PRESENT, present);
-		hashMap.put(Mode.PRETERITE, past);
+        Map<Mode, String[]> conjugations = new EnumMap<>(Mode.class);
+        conjugations.put(Mode.FUTURE, future);
+        conjugations.put(Mode.CONDITIONAL, futureImpefect);
+        conjugations.put(Mode.PLUPERFECT, pluPerfect);
+        conjugations.put(Mode.IMPERFECT, incompletePast);
+        conjugations.put(Mode.PRETERITE, past);
+        conjugations.put(Mode.PRESENT, present);
 
-		return printVerb(verb, root, hashMap);
+        return printVerb(verb, root, conjugations);
 
 	}
 

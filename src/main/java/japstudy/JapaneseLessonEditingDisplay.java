@@ -26,15 +26,15 @@ import javafx.util.Duration;
 import simplebuilder.HasLogging;
 
 public class JapaneseLessonEditingDisplay extends Application implements HasLogging {
-    private SimpleIntegerProperty current = new SimpleIntegerProperty(1);
-	private ObservableList<JapaneseLesson> lessons = getLessons();
-    private static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder()
+    protected SimpleIntegerProperty current = new SimpleIntegerProperty(1);
+    protected ObservableList<JapaneseLesson> lessons = getLessons();
+    protected static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder()
             .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('h').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
             .optionalStart().appendLiteral('m').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('s')
             .optionalStart().appendValue(ChronoField.MILLI_OF_SECOND, 3)
 			.appendLiteral("ms").toFormatter();
-	private Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
-    private SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
+    protected Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
+    protected SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
 
     public SimpleIntegerProperty currentProperty() {
         return current;
@@ -42,7 +42,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 	@Override
 	public void start(Stage primaryStage) {
 
-
+        primaryStage.setTitle("Japanese Lesson Editing Display");
 		TextField english = newText();
 		TextField japanese = newText();
 		TextField romaji = newText();
@@ -121,7 +121,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		primaryStage.show();
 	}
 
-    private void saveAndClose(Stage primaryStage) {
+    protected void saveAndClose(Stage primaryStage) {
         int index = current.get();
         JapaneseLesson japaneseLesson = lessons.get(index);
         JapaneseLessonReader.update(japaneseLesson);
@@ -130,14 +130,14 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
         primaryStage.close();
     }
 
-	private void setTextField(String newV, BiConsumer<JapaneseLesson, String> a) {
+    protected void setTextField(String newV, BiConsumer<JapaneseLesson, String> a) {
 		if (newV != null) {
 			JapaneseLesson japaneseLesson = lessons.get(current.intValue());
 			a.accept(japaneseLesson, newV);
 		}
 	}
 
-	private void setDateField(String newV, BiConsumer<JapaneseLesson, LocalTime> a) {
+    protected void setDateField(String newV, BiConsumer<JapaneseLesson, LocalTime> a) {
 		if (newV != null) {
 			LocalTime from = LocalTime.from(TIME_FORMAT.parse(newV));
 			JapaneseLesson japaneseLesson = lessons.get(current.intValue());
@@ -148,27 +148,27 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 	/*	
 			*/
 
-	private TextField newText() {
+    protected TextField newText() {
 		return new TextField();
 	}
 
-    private static ObservableList<JapaneseLesson> getLessons() {
+    protected static ObservableList<JapaneseLesson> getLessons() {
 		return JapaneseLessonReader.getLessons();
 	}
 
-	private void nextLesson() {
+    protected void nextLesson() {
 		JapaneseLesson japaneseLesson = lessons.get(current.get());
 		JapaneseLessonReader.update(japaneseLesson);
 		current.set((current.get() + 1) % lessons.size());
 	}
 
-	private void previousLesson() {
+    protected void previousLesson() {
 		JapaneseLesson japaneseLesson = lessons.get(current.get());
 		JapaneseLessonReader.update(japaneseLesson);
 		current.set((lessons.size() + current.get() - 1) % lessons.size());
 	}
 
-	private void playLesson() {
+    protected void playLesson() {
 		JapaneseLesson japaneseLesson = lessons.get(current.get());
 		JapaneseAudio audio = JapaneseAudio.getAudio(japaneseLesson.getLesson());
 		if (audio != null) {
@@ -195,12 +195,12 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 
 	}
 
-	private Duration convertDuration(LocalTime start) {
+    protected Duration convertDuration(LocalTime start) {
 		return Duration
 				.valueOf(toMilli(start) + "ms");
 	}
 
-	private void setStartEnd(JapaneseLesson japaneseLesson) {
+    protected void setStartEnd(JapaneseLesson japaneseLesson) {
 		if (japaneseLesson.getStart() == null || japaneseLesson.getEnd() == null
 				|| japaneseLesson.getEnd().equals(LocalTime.MIDNIGHT)
 				|| japaneseLesson.getStart().equals(LocalTime.MIDNIGHT)) {
@@ -225,11 +225,11 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		}
 	}
 
-    private static long toMilli(LocalTime maxTime) {
+    protected static long toMilli(LocalTime maxTime) {
 		return ChronoUnit.MILLIS.between(LocalTime.MIDNIGHT, maxTime);
 	}
 
-    private static LocalTime milliToLocalTime(long offset) {
+    protected static LocalTime milliToLocalTime(long offset) {
         return LocalTime.ofNanoOfDay(offset * JapaneseLessonAudioSplitDisplay.NANO_IN_A_MILLI_SECOND);
 	}
 

@@ -3,7 +3,6 @@ package exercism;
 import static crypt.FXTesting.measureTime;
 import static crypt.FXTesting.measureTimeExpectException;
 
-import crypt.FXTesting;
 import exercise.java8.*;
 import extract.ExcelService;
 import extract.WordService;
@@ -67,11 +66,7 @@ public final class JavaExercisesTest implements HasLogging {
                 () -> Chapter3.getRich(Arrays.asList(20, 66, 12, 48, 38, 38, 20, 65, 54), 0, 8));
     }
 
-    @Test
-    public void testChapter4() {
-        measureTime("Chapter4.testApps", () -> FXTesting.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class,
-                Chapter4.Ex5.class, Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class, Chapter4.Ex10.class));
-    }
+
 
     @Test
     public void testChapter5() {

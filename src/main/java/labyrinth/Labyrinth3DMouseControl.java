@@ -12,7 +12,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -23,13 +22,14 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
+import javafx.stage.StageStyle;
 import simplebuilder.MouseInScreenHandler;
+import simplebuilder.ResourceFXUtils;
 
 public class Labyrinth3DMouseControl extends Application implements CommomLabyrinth {
 
 	private static final Color LIGHT_COLOR = Color.rgb(125, 125, 125);
-	private static String[][] mapa = { 
+    private static final String[][] MAPA = {
 			{ "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, 
 			{ "|", "|", "_", "|", "_", "|" },
@@ -55,15 +55,12 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 
 	private static final int SIZE = 60;
 
-    private static final Image WALL_IMAGE = new Image(ResourceFXUtils.toExternalForm("wall.jpg"));
-    private static final Image WALL_IMAGE2 = new Image(ResourceFXUtils.toExternalForm("wall2.jpg"));
-
-	private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
+    private Sphere[][] balls = new Sphere[MAPA.length][MAPA[0].length];
 
 	private PerspectiveCamera camera;
 
     private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(
-			mapa.length * mapa[0].length);
+            MAPA.length * MAPA[0].length);
 
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
 	private MovimentacaoAleatoria movimentacao;
@@ -76,63 +73,41 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	}
 
 
-	private void createLabyrinth(Group root1) {
-		for (int i = 0; i < mapa.length; i++) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE, WALL_IMAGE, WALL_IMAGE2);
-				wall.setTranslateX(i * SIZE);
-				wall.setTranslateZ(j * SIZE);
-				if ("_".equals(string)) {
-					wall.getRy().setAngle(90);
-				}
-				labyrinthWalls.add(wall);
-				root1.getChildren().add(wall);
-				Sphere ball = new Sphere(SIZE / 20);
-				balls[i][j] = ball;
-				ball.setTranslateX(i * SIZE);
-				ball.setTranslateZ(j * SIZE);
-				ball.setMaterial(new PhongMaterial(Color.YELLOW));
-				root1.getChildren().add(ball);
-
-			}
-		}
-	}
-
 	@Override
 	public void endKeyboard() {
 		Sphere ballGot = checkBalls(camera.getBoundsInParent());
-		if (ballGot != null) {
-			root.getChildren().remove(ballGot);
-			for (int i = 0; i < balls.length; i++) {
-				for (int j = 0; j < balls[i].length; j++) {
-					if (ballGot == balls[i][j]) {
-						balls[i][j] = null;
-					}
+        if (ballGot == null) {
+            return;
+        }
+
+        root.getChildren().remove(ballGot);
+        for (int i = 0; i < balls.length; i++) {
+            for (int j = 0; j < balls[i].length; j++) {
+                if (ballGot == balls[i][j]) {
+                    balls[i][j] = null;
 				}
 			}
-			ghostCount.set(ghostCount.get() - 1);
-			if (ghostCount.get() == 0) {
-				movimentacao.stop();
-				Stage dialogStage = new Stage();
-				dialogStage.initModality(Modality.WINDOW_MODAL);
-				Button button = new Button("Ok.");
-				button.setOnAction(e -> {
-					camera.setTranslateY(0);
-					camera.setTranslateZ(0);
-					camera.setTranslateX(0);
-					movimentacao.start();
-					dialogStage.close();
-				});
-				VBox vbox = new VBox();
-				vbox.getChildren().addAll(new Text("Você Venceu"), button);
-				vbox.setAlignment(Pos.CENTER);
-				vbox.setPadding(new Insets(5));
-				dialogStage.setScene(new Scene(vbox));
-				dialogStage.show();
-			}
+        }
+        ghostCount.set(ghostCount.get() - 1);
+        if (ghostCount.get() == 0) {
+            movimentacao.stop();
+            Stage dialogStage = new Stage(StageStyle.DECORATED);
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            Button button = new Button("Ok.");
+            button.setOnAction(e -> {
+                camera.setTranslateX(0);
+                camera.setTranslateY(0);
+                camera.setTranslateZ(0);
+                movimentacao.start();
+                dialogStage.close();
+            });
+            VBox vbox = new VBox(new Text("Você Venceu"), button);
+            vbox.setAlignment(Pos.CENTER);
+            vbox.setPadding(new Insets(5));
+            dialogStage.setScene(new Scene(vbox));
+            dialogStage.show();
+        }
 
-		}
 	}
 
 	private MeshView generateGhost(URL arquivo, Color enemyColor) {
@@ -142,9 +117,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		enemy.setDrawMode(DrawMode.FILL);
 		enemy.setTranslateY(14);
 		enemy.setMaterial(sample);
-		int posicaoInicialZ = random.nextInt(mapa[0].length * SIZE);
+        int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
 		enemy.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = random.nextInt(mapa.length * SIZE);
+        int posicaoInicialX = random.nextInt(MAPA.length * SIZE);
 		enemy.setTranslateX(posicaoInicialX);
 		while (checkColision(enemy.getBoundsInParent())) {
 			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
@@ -168,7 +143,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		createLabyrinth(root);
+        Labyrinth3DKillerGhostsAndBalls.createLabyrinth(root, labyrinthWalls, balls, MAPA);
 		SubScene subScene = new SubScene(root, 640, 480, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());

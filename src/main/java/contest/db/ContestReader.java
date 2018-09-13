@@ -193,11 +193,11 @@ public final class ContestReader implements HasLogging {
                         float x = textPosition.getXDirAdj();
                         float y = textPosition.getYDirAdj();
                         QuestionPosition qp = new QuestionPosition();
-                        qp.line = text1;
-                        qp.x = x;
-                        qp.y = y;
-                        qp.page = pageNumber;
-                        getLogger().trace("{} at ({},{}) page {}", qp.line, qp.x, qp.y, pageNumber);
+                        qp.setLine(text1);
+                        qp.setX(x);
+                        qp.setY(y);
+                        qp.setPage(pageNumber);
+                        getLogger().trace("{} at ({},{}) page {}", qp.getLine(), qp.getX(), qp.getY(), pageNumber);
                         questionPosition.add(qp);
 
                     }
@@ -220,14 +220,14 @@ public final class ContestReader implements HasLogging {
                         .collect(Collectors.toList());
                 final int j = i;
                 for (PDFImage pdfImage : images) {
-                    questionPosition.stream().filter(e -> e.page == j)
+                    questionPosition.stream().filter(e -> e.getPage() == j)
                             .min(Comparator.comparing((QuestionPosition e) -> {
-                                float a = pdfImage.x - e.x;
-                                float b = pdfImage.y - e.y;
+                                float a = pdfImage.x - e.getX();
+                                float b = pdfImage.y - e.getY();
                                 return a * a + b * b;
                             })).ifPresent(orElse -> {
                                 for (HasImage pdfImage2 : collect) {
-                                    if (pdfImage2.matches(orElse.line)) {
+                                    if (pdfImage2.matches(orElse.getLine())) {
                                         pdfImage2.appendImage(pdfImage.file.getName());
                                     }
                                 }

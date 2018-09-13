@@ -107,7 +107,26 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		light.translateZProperty().bind(camera.translateZProperty());
 		root.getChildren().add(light);
 
-		MeshView[] fantasmas = { 
+        MeshView[] ghosts = createGhosts();
+
+        new MovimentacaoAleatoria(this, ghosts).start();
+
+        root.getChildren().addAll(ghosts);
+
+		// End Step 2a
+		// Step 2b: Add a Movement Keyboard Handler
+        Scene sc = new Scene(new Group(subScene));
+		sc.setFill(Color.TRANSPARENT);
+		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+		sc.setOnKeyPressed(value);
+		sc.setOnKeyReleased(value::keyReleased);
+        primaryStage.setTitle("Labyrinth 3D With Killer Ghost");
+		primaryStage.setScene(sc);
+		primaryStage.show();
+	}
+
+    private MeshView[] createGhosts() {
+        return new MeshView[] { 
 				gerarFantasma(MESH_GHOST, Color.AQUAMARINE),
 				gerarFantasma(MESH_GHOST, Color.BROWN),
 				gerarFantasma(MESH_GHOST, Color.CHARTREUSE),
@@ -127,25 +146,9 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 				gerarFantasma(MESH_GHOST, Color.TRANSPARENT),
 				gerarFantasma(MESH_GHOST, Color.VIOLET),
 				gerarFantasma(MESH_GHOST, Color.WHITESMOKE),
-				gerarFantasma(MESH_GHOST, Color.YELLOWGREEN),
+                gerarFantasma(MESH_GHOST, Color.YELLOWGREEN)
 		};
-
-        MovimentacaoAleatoria movimentacao = new MovimentacaoAleatoria(this, fantasmas);
-		movimentacao.start();
-
-		root.getChildren().addAll(fantasmas);
-
-		Scene sc = new Scene(new Group(subScene));
-		// End Step 2a
-		// Step 2b: Add a Movement Keyboard Handler
-		sc.setFill(Color.TRANSPARENT);
-		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
-		sc.setOnKeyPressed(value);
-		sc.setOnKeyReleased(value::keyReleased);
-        primaryStage.setTitle("Labyrinth 3D With Killer Ghost");
-		primaryStage.setScene(sc);
-		primaryStage.show();
-	}
+    }
 
 	public static void main(String[] args) {
 		launch(args);

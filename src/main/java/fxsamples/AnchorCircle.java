@@ -25,17 +25,17 @@ public class AnchorCircle extends Circle {
 		final Delta dragDelta = new Delta();
 		setOnMousePressed(mouseEvent -> {
 			// record a delta distance for the drag and drop operation.
-			dragDelta.x = getCenterX() - mouseEvent.getX();
-			dragDelta.y = getCenterY() - mouseEvent.getY();
+			dragDelta.setX(getCenterX() - mouseEvent.getX());
+			dragDelta.setY(getCenterY() - mouseEvent.getY());
 			getScene().setCursor(Cursor.MOVE);
 		});
 		setOnMouseReleased(mouseEvent -> getScene().setCursor(Cursor.HAND));
 		setOnMouseDragged(mouseEvent -> {
-			double newX = mouseEvent.getX() + dragDelta.x;
+			double newX = mouseEvent.getX() + dragDelta.getX();
 			if (newX > 0 && newX < getScene().getWidth()) {
 				setCenterX(newX);
 			}
-			double newY = mouseEvent.getY() + dragDelta.y;
+			double newY = mouseEvent.getY() + dragDelta.getY();
 			if (newY > 0 && newY < getScene().getHeight()) {
 				setCenterY(newY);
 			}

@@ -25,7 +25,8 @@ public class JapaneseLessonDisplay extends Application {
 	private CheckBox showRomaji = new CheckBox();
 	@Override
 	public void start(Stage primaryStage) {
-		Text english = newText();
+        primaryStage.setTitle("Japanese Lesson Display");
+        Text english = newText();
 		Text japanese = new Text();
 		japanese.setTextAlignment(TextAlignment.CENTER);
 		Text romaji = newText();

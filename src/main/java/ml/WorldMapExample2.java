@@ -37,7 +37,7 @@ public class WorldMapExample2 extends Application {
         points.crossFeatureObject(lonDegree, WorldMapExample2::convertToDegrees, "Lon Degree", "Lon Minute");
         canvas.valueHeaderProperty().set("Time");
         canvas.setDataframe(points, "Country");
-		canvas.setPoints(points, latDegree, lonDegree);
+        canvas.setPoints(latDegree, lonDegree);
         root.getChildren()
                 .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
         root.getChildren().add(canvas);
