@@ -77,7 +77,7 @@ public class JapaneseLessonDisplay extends Application {
 	}
 
     private static ObservableList<JapaneseLesson> getLessons() {
-		return JapaneseLessonReader.getLessons();
+        return JapaneseLessonReader.getLessonsWait();
 	}
 
 	private void nextLesson(TextField answer) {

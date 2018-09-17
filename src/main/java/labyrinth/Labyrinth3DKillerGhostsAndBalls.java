@@ -54,7 +54,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	private Group root = new Group();
 
 
-    public static void createLabyrinth(Group root1, List<LabyrinthWall> labyrinthWalls, Sphere[][] balls,
+    public static void createLabyrinth(Group root1, Collection<LabyrinthWall> labyrinthWalls, Sphere[][] balls,
             String[][] mapa) {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {

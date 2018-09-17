@@ -56,11 +56,11 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
         setListeners(english, japanese, romaji, start, end);
         Button previous = CommonsFX.newButton("P_revious", e -> previousLesson());
 		previous.disableProperty().bind(current.isEqualTo(0));
-        Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
+
 
         Button next = CommonsFX.newButton("_Next", e -> nextLesson());
 		next.disableProperty().bind(current.isEqualTo(lessons.size() - 1));
-        Button play = CommonsFX.newButton("_Play", e -> playLesson());
+
 		primaryStage.setWidth(600);
 		current.set(0);
 		for (int i = 0; i < lessons.size(); i++) {
@@ -89,6 +89,8 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 				return TIME_FORMAT.format(ofNanoOfDay);
 			}, newO.currentTimeProperty()));
 		});
+        Button play = CommonsFX.newButton("_Play", e -> playLesson());
+        Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
 		Scene value = new Scene(
 				new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"), japanese,
 						new HBox(new VBox(new Text("Start"), start), currentText, new VBox(new Text("End"), end)),
@@ -160,7 +162,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 	}
 
     protected static ObservableList<JapaneseLesson> getLessons() {
-		return JapaneseLessonReader.getLessons();
+        return JapaneseLessonReader.getLessonsWait();
 	}
 
     protected void nextLesson() {

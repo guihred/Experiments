@@ -6,7 +6,6 @@ import javax.persistence.*;
 @Entity
 @Table
 public class ContestQuestionAnswer extends BaseEntity {
-    private static int keyCounter;
 	@Column(length = 5000)
 	private String answer;
 
@@ -17,7 +16,7 @@ public class ContestQuestionAnswer extends BaseEntity {
 	private ContestQuestion exercise;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer key = keyCounter++;
+    private Integer key;
     @Column
     private Integer number;
 

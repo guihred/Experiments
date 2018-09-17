@@ -1,6 +1,6 @@
 package japstudy;
 
-import exercise.java8.RunnableEx;
+import japstudy.db.HibernateUtil;
 import japstudy.db.JapaneseLesson;
 import japstudy.db.LessonDAO;
 import java.io.File;
@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
 import java.util.List;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.poi.xwpf.usermodel.BodyElementType;
@@ -29,17 +28,17 @@ public final class JapaneseLessonReader implements HasLogging {
 		try {
 			ObservableList<JapaneseLesson> lessons = getLessons("jaftranscript.docx");
             lessons.forEach(JapaneseLessonReader::update);
-            //			HibernateUtil.shutdown();
+            HibernateUtil.shutdown();
 		} catch (IOException e) {
 			LOGGER.error("", e);
 		}
 	}
 
-	public static ObservableList<JapaneseLesson> getLessons() {
+    public static ObservableList<JapaneseLesson> getLessonsWait() {
         ObservableList<JapaneseLesson> lessons = FXCollections.observableArrayList();
-        Platform.runLater(RunnableEx.makeRunnable(() -> lessons.addAll(lessonDAO.list())));
+        lessons.addAll(lessonDAO.list());
         return lessons;
-	}
+    }
 
 	public static Long getCountExerciseByLesson(Integer lesson) {
 		return lessonDAO.getCountExerciseByLesson(lesson);

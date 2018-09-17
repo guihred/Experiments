@@ -16,6 +16,7 @@ import fxproexercises.ch06.FXCollectionsExamples;
 import fxproexercises.ch06.FXCollectionsMapExamples;
 import fxproexercises.ch06.FXCollectionsMethodsExamples;
 import japstudy.CompareAnswers;
+import japstudy.JapanRefactoring;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.*;
@@ -201,6 +202,10 @@ public final class JavaExercisesTest implements HasLogging {
             mapaSubstituicao.put("443", "444");
             WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
 
+        });
+        measureTime("JapanRefactoring.refactorJapaneseFile", () -> {
+            JapanRefactoring.refactorJapaneseFile(JapanRefactoring.TXT_FILE,
+                    JapanRefactoring.renameFile(JapanRefactoring.TXT_FILE));
         });
     }
 }

@@ -36,7 +36,9 @@ public final class ResourceFXUtils {
 	}
 
 	public static String toExternalForm(String arquivo) {
-		return ResourceFXUtils.class.getClassLoader().getResource(arquivo).toExternalForm();
+		String externalForm = ResourceFXUtils.class.getClassLoader().getResource(arquivo).toExternalForm();
+        LOGGER.info(externalForm);
+        return externalForm;
 	}
 
 	public static String toFullPath(String arquivo) {

@@ -1,5 +1,6 @@
 package contest.db;
 
+import japstudy.db.HibernateUtil;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -28,6 +29,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
+import simplebuilder.CommonsFX;
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
@@ -74,14 +76,11 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
 
         subject.textProperty().addListener((o, old, newV) -> setTextField(newV, ContestQuestion::setSubject));
         image.textProperty().addListener((o, old, newV) -> setTextField(newV, ContestQuestion::setImage));
-        Button previous = new Button("P_revious");
-        previous.setOnAction(e -> previousLesson());
+        Button previous = CommonsFX.newButton("P_revious", e -> previousLesson());
         previous.disableProperty().bind(current.lessThanOrEqualTo(0));
-        Button save = new Button("_Save and Close");
-        save.setOnAction(e -> saveAndClose(primaryStage));
+        Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
         save.disableProperty().bind(current.lessThan(0));
-        Button next = new Button("_Next");
-        next.setOnAction(e -> nextLesson());
+        Button next = CommonsFX.newButton("_Next", e -> nextLesson());
         next.disableProperty()
                 .bind(current.greaterThanOrEqualTo(Bindings.createIntegerBinding(() -> lessons.size() - 1, lessons))
                         .or(current.lessThan(0)));
@@ -98,6 +97,8 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
                 nextLesson();
             }
         });
+        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+
         primaryStage.show();
     }
 
@@ -176,9 +177,10 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
             getLogger().info(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
             getLogger().info(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
                     .collect(Collectors.joining("\n")));
-            getLogger().info(
-                    ContestReader.getInstance().getTexts().stream().map(ContestText::toSQL)
-                            .collect(Collectors.joining("\n")));
+            getLogger().info(ContestReader.getInstance().getTexts()
+                    .stream().filter(e -> StringUtils.isNotBlank(e.getText())).map(ContestText::toSQL)
+                    .collect(Collectors.joining("\n")));
+            ContestReader.saveAll();
         }
 
         primaryStage.close();
@@ -186,7 +188,8 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
 
     private void setImage(VBox newImage, String image) {
         if (image != null) {
-            List<ImageView> collect = Stream.of(image.split(";")).map(i -> new ImageView("file:" + i))
+            List<ImageView> collect = Stream.of(image.split(";"))
+                    .map(i -> new ImageView(ResourceFXUtils.toExternalForm("out/" + i)))
                     .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
             newImage.getChildren().setAll(collect);
         } else if (!newImage.getChildren().isEmpty()) {

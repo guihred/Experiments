@@ -253,7 +253,7 @@ public final class Chapter8 {
     }
 
     public static void main(String[] args) {
-        ex10();
+        ex11();
     }
 
     private static Stream<String> streamOfLines(Scanner scanner) {
@@ -374,7 +374,7 @@ public final class Chapter8 {
     public static void ex11() {
         try {
             CrawlerTask.insertProxyConfig();
-            URL url = new URL("https://www.quora.com/");
+            URL url = new URL("https://www.google.com/");
             URLConnection connection = url.openConnection();
             String str = "username:password";
             String encode = Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));

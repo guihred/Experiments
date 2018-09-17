@@ -49,7 +49,7 @@ public enum JapaneseAudio {
     }
 
     public URL getURL() {
-        return ResourceFXUtils.toURL(file);
+        return ResourceFXUtils.toURL("jap/" + file);
     }
 
     public int getLesson() {
@@ -57,7 +57,7 @@ public enum JapaneseAudio {
     }
 
     public static void main(String[] args) {
-        ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessons();
+        ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
         /*
             CREATE TABLE "android_metadata" ("locale" TEXT DEFAULT 'en_US') 
             INSERT INTO "android_metadata" VALUES ('en_US')

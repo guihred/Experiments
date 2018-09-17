@@ -1,29 +1,26 @@
 package contest.db;
 
-import japstudy.db.HibernateUtil;
+import japstudy.db.BaseDAO;
 import java.util.List;
-import org.hibernate.Session;
 
-public class ContestQuestionDAO {
+public class ContestQuestionDAO extends BaseDAO {
 
-	public void saveOrUpdate(ContestQuestion jap) {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.beginTransaction();
-		session.saveOrUpdate(jap);
-		session.flush();
-		session.getTransaction().commit();
+    public void saveOrUpdate(BaseEntity jap) {
+        executeRun(session -> session.saveOrUpdate(jap));
 	}
 
+    public void saveOrUpdate(List<? extends BaseEntity> jap) {
+        executeRun(session -> jap.forEach(session::saveOrUpdate));
+    }
+
 	public List<ContestQuestion> list() {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.beginTransaction();
-		StringBuilder hql = new StringBuilder();
-		hql.append("SELECT l ");
-		hql.append("FROM ContestQuestion l ");
-		hql.append("ORDER BY number");
-		List<ContestQuestion> list = session.createQuery(hql.toString(), ContestQuestion.class).list();
-		session.getTransaction().commit();
-		return list;
+        return execute(session -> {
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT l ");
+            hql.append("FROM ContestQuestion l ");
+            hql.append("ORDER BY number");
+            return session.createQuery(hql.toString(), ContestQuestion.class).list();
+        });
 	}
 
 }

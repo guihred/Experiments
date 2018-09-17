@@ -61,7 +61,7 @@ public class JapaneseLessonApplication extends Application {
 	}
 
     private static ObservableList<JapaneseLesson> getLessons() {
-		return JapaneseLessonReader.getLessons();
+        return JapaneseLessonReader.getLessonsWait();
 	}
 
 	private TableView<JapaneseLesson> tabelaJapaneseLessons() {

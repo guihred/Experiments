@@ -1,19 +1,14 @@
 package election.experiment;
 
-import java.io.Serializable;
+import contest.db.BaseEntity;
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Optional;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table
-public class Candidato implements Serializable {
+public class Candidato extends BaseEntity {
 
 	private String cargo;
 
@@ -24,9 +19,9 @@ public class Candidato implements Serializable {
 	private String fotoUrl;
 
 	private String grauInstrucao;
-
 	@Id
 	private String href;
+
 	private LocalDate nascimento;
 
 	private String naturalidade;
@@ -43,22 +38,6 @@ public class Candidato implements Serializable {
 
 	private Integer votos;
 	private Boolean eleito = false;
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Candidato other = (Candidato) obj;
-
-		return Objects.equals(other.href, href);
-	}
 
 
 
@@ -113,10 +92,7 @@ public class Candidato implements Serializable {
 	public Integer getVotos() {
 		return votos;
 	}
-	@Override
-	public int hashCode() {
-		return Objects.hash(href);
-	}
+
 	public void setCargo(String cargo) {
 		this.cargo = cargo;
 	}
@@ -181,4 +157,9 @@ public class Candidato implements Serializable {
 	public void setEleito(Boolean eleito) {
 		this.eleito = eleito;
 	}
+
+    @Override
+    public String getKey() {
+        return getHref();
+    }
 }

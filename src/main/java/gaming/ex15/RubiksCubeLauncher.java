@@ -11,13 +11,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -103,12 +97,10 @@ public class RubiksCubeLauncher extends Application {
 		stage.setScene(sc);
 		stage.show();
 
-		EventHandler<MouseEvent> a = new MouseInScreenHandler(sc, camera);
 		RubiksKeyboard value = new RubiksKeyboard(camera, this);
 		sc.setOnKeyPressed(value);
 		sc.setOnKeyReleased(value::keyReleased);
-		sc.setOnMouseMoved(a);
-		sc.setOnMouseMoved(a);
+        sc.setOnMouseMoved(new MouseInScreenHandler(sc, camera));
 		setPivot();
 	}
 	private List<RubiksPiece> getFacePieces(RubiksCubeFaces face) {

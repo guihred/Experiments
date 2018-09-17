@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Integer> {
+public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Integer> {
 
     private static final int STEP = 50;
     private CandidatoDAO candidatoDAO = new CandidatoDAO();

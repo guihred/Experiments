@@ -7,21 +7,20 @@ import javax.persistence.*;
 @Entity
 @Table
 public class ContestText extends BaseEntity implements HasImage {
-    private static int keyCounter;
     @ManyToOne
     @JoinColumn
     private Contest contest;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer key = keyCounter++;
+    private Integer key;
 
     @Column
     private Integer max;
 
     @Column
     private Integer min;
-    @Column(length = 5000)
+    @Column(length = 10000)
     private String text;
     @Transient
     private String image;

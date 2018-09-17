@@ -2,10 +2,14 @@ package crypt;
 
 import static crypt.FXTesting.measureTime;
 
+import contest.db.ContestQuestionEditingDisplay;
+import election.experiment.CrawlerCandidateTask;
+import election.experiment.CrawlerCitiesTask;
 import election.experiment.ElectionCrawlerApp;
 import exercise.java8.RunnableEx;
 import furigana.experiment.FuriganaCrawlerApp;
 import fxproexercises.ch06.TaskProgressApp;
+import fxsamples.BackgroundProcesses;
 import japstudy.*;
 import japstudy.db.HibernateUtil;
 import java.util.Set;
@@ -40,11 +44,21 @@ public class FXHibernateTest extends ApplicationTest {
         interactNoWait(RunnableEx.makeRunnable(() -> new JapaneseLessonApplication().start(currentStage)));
         clickAllButtons();
         closeCurrentWindow();
+        interactNoWait(RunnableEx.makeRunnable(() -> new BackgroundProcesses().start(currentStage)));
+        clickAllButtons();
         interactNoWait(RunnableEx.makeRunnable(() -> new FuriganaCrawlerApp().start(currentStage)));
         clickAllButtons();
         interactNoWait(RunnableEx.makeRunnable(() -> new ElectionCrawlerApp().start(currentStage)));
         clickAllButtons();
+        interactNoWait(
+                RunnableEx.makeRunnable(() -> new ElectionCrawlerApp(new CrawlerCitiesTask()).start(currentStage)));
+        clickAllButtons();
+        interactNoWait(
+                RunnableEx.makeRunnable(() -> new ElectionCrawlerApp(new CrawlerCandidateTask()).start(currentStage)));
+        clickAllButtons();
         interactNoWait(RunnableEx.makeRunnable(() -> new TaskProgressApp().start(currentStage)));
+        clickAllButtons();
+        interactNoWait(RunnableEx.makeRunnable(() -> new ContestQuestionEditingDisplay().start(currentStage)));
         clickAllButtons();
 
         FXTesting.testApps(ElectionCrawlerApp.class, JapaneseLessonApplication.class,
@@ -54,7 +68,10 @@ public class FXHibernateTest extends ApplicationTest {
     private void clickAllButtons() {
         Set<Node> queryButtons = lookup(".button").queryAll();
         for (Node e : queryButtons) {
-            clickOn(e);
+            if (e.isVisible()) {
+                clickOn(e);
+            }
+            sleep(1000);
         }
     }
 

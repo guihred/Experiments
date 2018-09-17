@@ -8,7 +8,6 @@ import javax.persistence.*;
 public class Contest extends BaseEntity {
     private static int keyCounter;
 	@Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
     private Integer key = keyCounter++;
     @Column

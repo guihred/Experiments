@@ -5,7 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
+public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
 
     private CidadeDAO cidadeDAO = new CidadeDAO();
 

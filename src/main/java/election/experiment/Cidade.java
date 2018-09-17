@@ -1,7 +1,6 @@
 package election.experiment;
 
-import java.io.Serializable;
-import java.util.Objects;
+import contest.db.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table
-public class Cidade implements Serializable {
+public class Cidade extends BaseEntity {
 	private String nome;
 	private String estado;
 	private Integer eleitores;
@@ -33,11 +32,6 @@ public class Cidade implements Serializable {
 		return nome;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(href);
-	}
-
 	public void setEleitores(Integer eleitores) {
 		this.eleitores = eleitores;
 	}
@@ -59,19 +53,9 @@ public class Cidade implements Serializable {
 		return String.format("Cidade[nome=%s,estado=%s,eleitores=%d,href=%s]", nome, estado, eleitores, href);
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Cidade other = (Cidade) obj;
 
-		return Objects.equals(other.href, href);
-	}
+    @Override
+    protected String getKey() {
+        return getHref();
+    }
 }

@@ -1,27 +1,21 @@
 package election.experiment;
 
-import japstudy.db.HibernateUtil;
+import japstudy.db.BaseDAO;
 import java.util.List;
-import org.hibernate.Session;
 
-public class CidadeDAO {
+public class CidadeDAO extends BaseDAO {
 
-	public void saveOrUpdate(Object cidade) {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.beginTransaction();
-		session.saveOrUpdate(cidade);
-		session.getTransaction().commit();
+    public synchronized void saveOrUpdate(Object cidade) {
+        executeRun(session -> session.saveOrUpdate(cidade));
 	}
 
 	public List<Cidade> list() {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.beginTransaction();
-		StringBuilder hql = new StringBuilder();
-		hql.append("SELECT l ");
-        hql.append("FROM Cidade l");
-        List<Cidade> list = session.createQuery(hql.toString(), Cidade.class).list();
-		session.getTransaction().commit();
-		return list;
+        return execute(session -> {
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT l ");
+            hql.append("FROM Cidade l");
+            return session.createQuery(hql.toString(), Cidade.class).list();
+        });
 	}
 
 }

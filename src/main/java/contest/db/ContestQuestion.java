@@ -20,7 +20,6 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     @Column(length = 5000)
     private String subject;
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer key = keyCounter++;
 
     @Column

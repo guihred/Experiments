@@ -8,9 +8,19 @@ import javafx.stage.Stage;
 
 public class ElectionCrawlerApp extends Application {
 
-    public final Worker<String> worker = new CrawlerCompleteCandidateTask();
+    public final Worker<String> worker;
+    private TaskProgressView view;
 
-    private TaskProgressView view = new TaskProgressView(worker);
+
+    public ElectionCrawlerApp() {
+        worker = new CrawlerCompleteCandidateTask();
+        view = new TaskProgressView(worker);
+    }
+
+    public ElectionCrawlerApp(Worker<String> worker) {
+        this.worker = worker;
+        view = new TaskProgressView(worker);
+    }
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("Election Crawler");
@@ -21,7 +31,7 @@ public class ElectionCrawlerApp extends Application {
 
 
 	public static void main(String[] args) {
-        Application.launch(args);
+        launch(args);
     }
 
 }

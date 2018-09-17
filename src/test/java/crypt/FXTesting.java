@@ -10,6 +10,7 @@ import log.analyze.SupplierEx;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
+import org.testfx.framework.junit.ApplicationTest;
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
@@ -20,6 +21,15 @@ public final class FXTesting implements HasLogging {
 
     private FXTesting() {
         ResourceFXUtils.initializeFX();
+    }
+    @SafeVarargs
+    public static void verifyAndRun(ApplicationTest app, Stage currentStage, Runnable consumer,
+            Class<? extends Application>... applicationClasses) throws Exception {
+        for (int i = 0; i < applicationClasses.length; i++) {
+            Class<? extends Application> class1 = applicationClasses[i];
+            app.interactNoWait(RunnableEx.makeRunnable(() -> class1.newInstance().start(currentStage)));
+            consumer.run();
+        }
     }
 
     @SafeVarargs

@@ -3,10 +3,7 @@ package contest.db;
 import contest.db.PrintImageLocations.PDFImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
@@ -49,6 +46,7 @@ public final class ContestReader implements HasLogging {
 
     private ContestText text = new ContestText();
     private final ObservableList<ContestText> texts = FXCollections.observableArrayList();
+    private ContestQuestionDAO contestQuestionDAO = new ContestQuestionDAO();
 
     public Contest getContest() {
         return contest;
@@ -61,6 +59,23 @@ public final class ContestReader implements HasLogging {
         text.setContest(contest);
         getTexts().add(text);
         text = new ContestText(contest);
+    }
+
+    public static void saveAll() {
+        instance.saveAllEntities();
+    }
+
+    public void saveAllEntities() {
+        contestQuestionDAO.saveOrUpdate(getContest());
+        contestQuestionDAO.saveOrUpdate(listQuestions);
+        contestQuestionDAO.saveOrUpdate(
+                listQuestions.stream().flatMap(e -> e.getOptions().stream()).collect(Collectors.toList()));
+        List<ContestText> collect = getTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
+                .collect(Collectors.toList());
+        getLogger().info("Text max size {}", collect.stream().map(ContestText::getText).filter(Objects::nonNull)
+                .mapToInt(String::length).max().orElse(0));
+        contestQuestionDAO.saveOrUpdate(
+                collect);
     }
 
     private void addQuestion() {
@@ -257,7 +272,7 @@ public final class ContestReader implements HasLogging {
         return null;
     }
 
-    Integer intValue(String v) {
+    private Integer intValue(String v) {
         try {
             return Integer.valueOf(v.replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
@@ -276,6 +291,10 @@ public final class ContestReader implements HasLogging {
             Stream.of(r).forEach(Runnable::run);
         }).start();
         return instance.listQuestions;
+    }
+
+    public static ObservableList<ContestQuestion> getContestQuestions() {
+        return FXCollections.observableArrayList(getInstance().contestQuestionDAO.list());
     }
 
     public static ObservableList<ContestText> getContestTexts() {
