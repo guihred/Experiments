@@ -16,11 +16,13 @@ import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
@@ -198,21 +200,31 @@ public class DotsModel {
     }
 
     private void handleMouseDragged(MouseEvent e) {
-		if (e.getTarget() instanceof DotsSquare) {
+        if (e.getTarget() instanceof DotsSquare) {
 			line.setEndX(e.getX());
 			line.setEndY(e.getY());
 		}
 	}
 
 	private void handleMousePressed(MouseEvent e) {
-		if (e.getTarget() instanceof DotsSquare) {
-			DotsSquare a = (DotsSquare) e.getTarget();
+        if (e.getTarget() instanceof DotsSquare) {
+            DotsSquare a = (DotsSquare) e.getTarget();
 			line.setStartY(a.getLayoutY() + a.getHeight() / 2);
 			line.setStartX(a.getLayoutX() + a.getWidth() / 2);
 			line.setEndX(e.getX());
 			line.setEndY(e.getY());
-			selected = a;
+            selected = a;
+            return;
 		}
+        EventTarget b = e.getTarget();
+        if (b instanceof Circle && ((Circle) b).getParent() instanceof DotsSquare) {
+            Circle a = (Circle) b;
+            selected = (DotsSquare) a.getParent();
+            line.setStartY(selected.getLayoutY() + selected.getHeight() / 2);
+            line.setStartX(selected.getLayoutX() + selected.getWidth() / 2);
+            line.setEndX(e.getX());
+            line.setEndY(e.getY());
+        }
 	}
 
 	private void handleMouseReleased(MouseEvent e) {
@@ -286,7 +298,8 @@ public class DotsModel {
 									.mapToDouble(Double::valueOf).toArray();
 							final Polygon polygon = new Polygon(toArray);
 							polygon.setFill(colors[currentPlayer]);
-							timeline.setOnFinished(f -> addPolygonOnFinished(polygon, timeline.getOnFinished(), f));
+                            EventHandler<ActionEvent> onFinished = timeline.getOnFinished();
+                            timeline.setOnFinished(f -> addPolygonOnFinished(polygon, onFinished, f));
 						});
 					} else {
 						currentPlayer = (currentPlayer + 1) % jogadores.length;

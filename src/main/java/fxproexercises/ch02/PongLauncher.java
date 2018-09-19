@@ -7,6 +7,7 @@ package fxproexercises.ch02;
 
 import static simplebuilder.CommonsFX.newButton;
 
+import fxsamples.Delta;
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -50,8 +51,7 @@ public class PongLauncher extends Application {
     /**
      * The drag anchor for left and right paddles
      */
-	private double leftPaddleDragAnchorY;
-	private double rightPaddleDragAnchorY;
+    private Delta leftPaddleDelta = new Delta();
     /**
      * The initial translateY property for the left and right paddles
      */
@@ -158,9 +158,9 @@ public class PongLauncher extends Application {
 				.cursor(Cursor.HAND)
 				.onMousePressed((MouseEvent me) -> {
 					initRightPaddleTranslateY = rightPaddle.getTranslateY();
-					rightPaddleDragAnchorY = me.getSceneY();
+                    setRightPaddleDragAnchorY(me.getSceneY());
 				}).onMouseDragged((MouseEvent me) -> {
-					double dragY = me.getSceneY() - rightPaddleDragAnchorY;
+                    double dragY = me.getSceneY() - getRightPaddleDragAnchorY();
 					rightPaddleY.setValue(initRightPaddleTranslateY + dragY);
 				})
                 .build();
@@ -172,10 +172,10 @@ public class PongLauncher extends Application {
                 .cursor(Cursor.HAND)
                 .onMousePressed((MouseEvent me) -> {
                     initLeftPaddleTranslateY = leftPaddle.getTranslateY();
-                    leftPaddleDragAnchorY = me.getSceneY();
+                    setLeftPaddleDragAnchorY(me.getSceneY());
                 })
                 .onMouseDragged((MouseEvent me) -> {
-                    double dragY = me.getSceneY() - leftPaddleDragAnchorY;
+                    double dragY = me.getSceneY() - getLeftPaddleDragAnchorY();
                     leftPaddleY.setValue(initLeftPaddleTranslateY + dragY);
                 })
                 .build();
@@ -210,5 +210,21 @@ public class PongLauncher extends Application {
         initialize();
         stage.setTitle("ZenPong Example");
         stage.show();
+    }
+
+    public double getLeftPaddleDragAnchorY() {
+        return leftPaddleDelta.getY();
+    }
+
+    public void setLeftPaddleDragAnchorY(double leftPaddleDragAnchorY) {
+        leftPaddleDelta.setY(leftPaddleDragAnchorY);
+    }
+
+    public double getRightPaddleDragAnchorY() {
+        return leftPaddleDelta.getX();
+    }
+
+    public void setRightPaddleDragAnchorY(double rightPaddleDragAnchorY) {
+        leftPaddleDelta.setX(rightPaddleDragAnchorY);
     }
 }

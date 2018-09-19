@@ -20,7 +20,7 @@ public class GabrielTopology extends BaseTopology {
 		int nextInt = rnd.nextInt(180) - 180;
         double y = bound * Math.sin(Math.toRadians(nextInt));
 		double x = bound * Math.cos(Math.toRadians(nextInt));
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < getSize(); i++) {
 			Cell cell = graph.getModel().addCell(BaseTopology.identifier(i), CellType.CIRCLE);
 			nextInt = rnd.nextInt(360);
             x += bound * Math.cos(Math.toRadians(nextInt));

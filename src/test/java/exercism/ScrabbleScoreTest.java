@@ -31,7 +31,15 @@ public class ScrabbleScoreTest {
 
 	@Parameterized.Parameters
 	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "", 0 }, { " \t\n", 0 }, { null, 0 }, { "a", 1 }, { "f", 4 }, { "street", 6 }, { "quirky", 22 },
-				{ "OXYPHENBUTAZONE", 41 }, { "alacrity", 13 }, });
+		return Arrays.asList( 
+                new Object[] { "", 0 },
+    		    new Object[]{ " \t\n", 0 },
+    		    new Object[]{ null, 0 }, 
+    		    new Object[]{ "a", 1 }, 
+    		    new Object[]{ "f", 4 }, 
+    		    new Object[]{ "street", 6 },
+    		    new Object[]{ "quirky", 22 },
+    		    new Object[]{ "OXYPHENBUTAZONE", 41 }, 
+    			new Object[]{ "alacrity", 13 });
 	}
 }

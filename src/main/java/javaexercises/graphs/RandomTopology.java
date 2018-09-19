@@ -15,18 +15,18 @@ public class RandomTopology extends BaseTopology {
 		graph.getModel().removeAllCells();
 		graph.getModel().removeAllEdges();
 		Random random = new Random();
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < getSize(); i++) {
             Cell addCell = graph.getModel().addCell(identifier(i), i % 2 == 0 ? CellType.CIRCLE : CellType.TRIANGLE);
 			addCell.relocate(random.nextGaussian() * 500, random.nextGaussian() * 500);
 		}
-		int nextInt = random.nextInt(size * (size - 1) / 2) + 1;
+		int nextInt = random.nextInt(getSize() * (getSize() - 1) / 2) + 1;
 		for (int i = 0; i < nextInt; i++) {
 			String sourceId;
 			String targetId;
-			Integer valor = random.nextInt(size) + 1;
+			Integer valor = random.nextInt(getSize()) + 1;
 			do {
-				sourceId = identifier(random.nextInt(size));
-				targetId = identifier(random.nextInt(size));
+				sourceId = identifier(random.nextInt(getSize()));
+				targetId = identifier(random.nextInt(getSize()));
 				if (!sourceId.equals(targetId) && graph.getModel().addedCost(sourceId, targetId) == null) {
 					Integer cost = graph.getModel().addedCost(targetId, sourceId);
 					if (cost != null) {

@@ -33,9 +33,7 @@ public abstract class AbstractTestExecution extends ApplicationTest {
         for (int i = 0; i < applications.size(); i++) {
 
             int j = i;
-            Platform.runLater(RunnableEx.makeRunnable(() -> {
-                apps.get(j).start(currentStage);
-            }));
+            Platform.runLater(RunnableEx.makeRunnable(() -> apps.get(j).start(currentStage)));
             WaitForAsyncUtils.waitForFxEvents();
             execute();
         }

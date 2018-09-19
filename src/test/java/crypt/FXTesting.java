@@ -69,7 +69,7 @@ public final class FXTesting implements HasLogging {
                 List<Class<? extends Application>> notExecutedApps = applicationClasses.stream()
                         .collect(Collectors.toList());
                 notExecutedApps.removeAll(testedApps);
-                String notExecuted = notExecutedApps.stream().map(e -> e.getSimpleName())
+                String notExecuted = notExecutedApps.stream().map(Class::getSimpleName)
                         .collect(Collectors.joining(",", "(", ")"));
                 Assert.fail("Test is taking too long, not executed " + notExecuted);
                 break;

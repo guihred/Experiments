@@ -118,7 +118,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj) && ((ContestQuestion) obj).key == key;
+        return obj != null && super.equals(obj) && ((ContestQuestion) obj).key == key;
     }
 
     @Override

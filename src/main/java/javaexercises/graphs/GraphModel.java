@@ -1,14 +1,10 @@
 package javaexercises.graphs;
 
-import com.aspose.imaging.internal.Exceptions.Exception;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javaexercises.DisjSets;
-import javafx.scene.paint.Color;
-import ml.PieGraph;
-import simplebuilder.HasLogging;
 
 public class GraphModel {
 
@@ -62,8 +58,7 @@ public class GraphModel {
     }
 
     public Integer addedCost(String v, String w) {
-        return addedEdges.stream().filter(e -> e.source.equals(cellMap.get(v)) && e.target.equals(cellMap.get(w)))
-                .map(Edge::getValor).findFirst().orElse(null);
+        return GraphModelAlgorithms.addedCost(v, w, addedEdges, cellMap);
     }
 
     public void addEdge(String sourceId, String targetId, Integer valor) {
@@ -81,7 +76,7 @@ public class GraphModel {
     }
 
     public List<Cell> adjacents(Cell c) {
-        return allEdges.stream().filter(e -> e.source.equals(c)).map(Edge::getTarget).collect(Collectors.toList());
+        return GraphModelAlgorithms.adjacents(c, allEdges);
     }
 
     public void attachOrphansToGraphParent(Iterable<Cell> cellList) {
@@ -95,30 +90,7 @@ public class GraphModel {
     }
 
     public List<Edge> chainEdges(String s, String t) {
-        Cell v1 = cellMap.get(s);
-        Cell v2 = cellMap.get(t);
-        for (Cell v : allCells) {
-            dijkstra(v);
-        }
-
-        Map<Cell, Integer> dijkstra = dijkstra(v1);
-        List<Edge> chain = new ArrayList<>();
-        Cell path = v2;
-        Integer integer = dijkstra.get(v2);
-        if (integer != null && integer < Integer.MAX_VALUE) {
-            while (path != v1) {
-                Cell pathTo = pathTo(path, v1);
-                if (pathTo == null) {
-                    return Collections.emptyList();
-                }
-                Cell p = path;
-                chain.addAll(allEdges.stream().filter(e -> e.source.equals(p) && e.target.equals(pathTo)
-                        || e.target.equals(p) && e.source.equals(pathTo)).collect(Collectors.toList()));
-                path = pathTo;
-
-            }
-        }
-        return chain;
+        return GraphModelAlgorithms.chainEdges(s, t, cellMap, allCells, allEdges, paths);
     }
 
     public void clearSelected() {
@@ -127,24 +99,11 @@ public class GraphModel {
     }
 
     public void coloring() {
-        List<Color> availableColors = PieGraph.generateRandomColors(allCells.size());
-        int i = 0;
-        List<Cell> vertices = allCells.stream().sorted(Comparator.comparing(this::edgesNumber).reversed())
-                .peek(p -> p.setColor(null)).collect(Collectors.toList());
-        while (vertices.stream().anyMatch(v -> v.getColor() == null)) {
-            List<Cell> v = vertices.stream().filter(c -> c.getColor() == null).collect(Collectors.toList());
-            Color color = availableColors.get(i);
-            for (int j = 0; j < v.size(); j++) {
-                if (anyAdjacents(v.get(j)).stream().noneMatch(c -> c.getColor() == color)) {
-                    v.get(j).setColor(color);
-                }
-            }
-            i = (i + 1) % availableColors.size();
-        }
+        GraphModelAlgorithms.coloring(allCells, allEdges);
     }
 
-    public void disconnectFromGraphParent(Iterable<Cell> cellList) {
 
+    public void disconnectFromGraphParent(Iterable<Cell> cellList) {
         for (Cell cell : cellList) {
             graphParent.removeCellChild(cell);
         }
@@ -155,12 +114,7 @@ public class GraphModel {
     }
 
     public void findArticulations() {
-        Map<Cell, Integer> num = new HashMap<>();
-        Map<Cell, Integer> low = new HashMap<>();
-        Map<Cell, Cell> parent = new HashMap<>();
-        Cell s2 = allCells.get(0);
-        assignNum(num, parent, 0, s2);
-        assignLow(num, low, parent, s2);
+        GraphModelAlgorithms.findArticulations(allCells, allEdges);
     }
 
     public List<Cell> getAddedCells() {
@@ -189,26 +143,7 @@ public class GraphModel {
     }
 
     public List<Edge> kruskal() {
-        int numVertices = allCells.size();
-        DisjSets ds = new DisjSets(numVertices);
-        PriorityQueue<Edge> pq = new PriorityQueue<>(allEdges);
-        List<Edge> mst = new ArrayList<>();
-        while (mst.size() != numVertices - 1) {
-            Edge e1 = pq.poll();
-            int uset = ds.find(indexOf(e1.getSource().getCellId()));
-            int vset = ds.find(indexOf(e1.getTarget().getCellId()));
-            if (uset != vset) {
-                mst.add(e1);
-                ds.union(uset, vset);
-            }
-        }
-        List<Edge> collect = allEdges.stream().filter(
-                e -> mst.stream().anyMatch(ed -> ed.getSource() == e.getTarget() && ed.getTarget() == e.getSource()))
-                .collect(Collectors.toList());
-
-        mst.addAll(collect);
-
-        return mst;
+        return GraphModelAlgorithms.kruskal(allCells, allEdges);
     }
 
     public void merge() {
@@ -239,57 +174,11 @@ public class GraphModel {
     }
 
     public void sortTopology() {
-        int counter = 0;
-        Map<Cell, Integer> indegree = new HashMap<>();
-        Map<Cell, Integer> topNum = new HashMap<>();
-
-        Queue<Cell> q = new LinkedList<>();
-        for (Cell v : allCells) {
-            for (Cell w : adjacents(v)) {
-                indegree.put(w, indegree.getOrDefault(w, 0) + 1);
-            }
-            if (indegree.getOrDefault(v, 0) == 0) {
-                q.add(v);
-            }
-        }
-        while (!q.isEmpty()) {
-            Cell v = q.poll();
-            topNum.put(v, ++counter);
-            for (Cell w : adjacents(v)) {
-                indegree.put(w, indegree.getOrDefault(w, 0) - 1);
-                if (indegree.getOrDefault(w, 0) == 0) {
-                    q.add(w);
-                }
-            }
-
-        }
-        topNum.forEach((v, tn) -> v.addText(Integer.toString(tn)));
-
-        if (counter != allCells.size()) {
-            HasLogging.log().info("CYCLE FOUND");
-        }
+        GraphModelAlgorithms.sortTopology(allCells, allEdges);
     }
 
     public Map<Cell, Integer> unweightedUndirected(String s) {
-        Cell source = cellMap.get(s);
-
-        Map<Cell, Integer> distance = new HashMap<>();
-        Map<Cell, Boolean> known = createDistanceMap(source, distance);
-        for (int i = 0; i < allCells.size(); i++) {
-            for (Cell v : allCells) {
-                if (!known.get(v) && distance.get(v) == i) {
-                    known.put(v, true);
-                    for (Cell w : anyAdjacents(v)) {
-                        if (distance.get(w) == Integer.MAX_VALUE) {
-                            distance.put(w, i + 1);
-                            setPath(w, source, v);
-                        }
-                    }
-
-                }
-            }
-        }
-        return distance;
+        return GraphModelAlgorithms.unweightedUndirected(s, cellMap, allCells, allEdges, paths);
 
     }
 
@@ -298,40 +187,6 @@ public class GraphModel {
         cellMap.put(cell.getCellId(), cell);
         return cell;
 
-    }
-
-    private List<Cell> anyAdjacents(Cell c) {
-        return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c))
-                .flatMap(e -> Stream.of(e.getTarget(), e.getSource())).filter(e -> e != c).distinct()
-                .collect(Collectors.toList());
-    }
-
-    private void assignLow(Map<Cell, Integer> num, Map<Cell, Integer> low, Map<Cell, Cell> parent, Cell v) {
-        low.put(v, num.get(v));
-        for (Cell w : adjacents(v)) {
-            if (num.get(w) > num.get(v)) {
-                assignLow(num, low, parent, w);
-                if (low.get(w) >= num.get(v)) {
-                    v.setSelected(true);
-                }
-                low.put(v, Integer.min(low.get(v), low.get(w)));
-
-            } else if (parent.get(v) != w) {
-                low.put(v, Integer.min(low.get(v), num.get(w)));
-            }
-
-        }
-    }
-
-    private void assignNum(Map<Cell, Integer> num, Map<Cell, Cell> parent, int c, Cell s) {
-        int counter = c;
-        num.put(s, counter++);
-        for (Cell w : adjacents(s)) {
-            if (!num.containsKey(w)) {
-                parent.put(w, s);
-                assignNum(num, parent, counter, w);
-            }
-        }
     }
 
     private final void clear() {
@@ -348,77 +203,6 @@ public class GraphModel {
 
     }
 
-    private Integer cost(Cell v, Cell w) {
-        return allEdges.stream().filter(e -> e.source.equals(v) && e.target.equals(w)).map(Edge::getValor).findFirst()
-                .orElse(null);
-    }
-
-    private Map<Cell, Boolean> createDistanceMap(Cell source, Map<Cell, Integer> distance) {
-        Map<Cell, Boolean> known = new HashMap<>();
-        for (Cell v : allCells) {
-            distance.put(v, Integer.MAX_VALUE);
-            known.put(v, false);
-        }
-        distance.put(source, 0);
-        return known;
-    }
-
-    private Map<Cell, Integer> dijkstra(Cell s) {
-        Map<Cell, Integer> distance = new HashMap<>();
-        Map<Cell, Boolean> known = createDistanceMap(s, distance);
-        while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
-            Cell v = getMinDistanceCell(distance, known);
-            known.put(v, true);
-            for (Cell w : adjacents(v)) {
-                if (!known.get(w)) {
-                    Integer cvw = cost(v, w);
-                    if (distance.get(v) + cvw < distance.get(w)) {
-                        distance.put(w, distance.get(v) + cvw);
-                        setPath(w, s, v);
-                    }
-                }
-            }
-        }
-        return distance;
-    }
-
-    private long edgesNumber(Cell c) {
-        return allEdges.stream().filter(e -> e.source.equals(c)).count();
-    }
-
-    private Cell getMinDistanceCell(Map<Cell, Integer> distance, Map<Cell, Boolean> known) {
-        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
-                .min(Comparator.comparing(Entry<Cell, Integer>::getValue))
-                .orElseThrow(() -> new Exception("There should be someone")).getKey();
-    }
-
-    private int indexOf(String s) {
-        for (int i = 0; i < allCells.size(); i++) {
-            if (allCells.get(i).getCellId().equals(s)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-
-    private Cell pathTo(Cell from, Cell to) {
-        Map<Cell, Cell> map = paths.get(from);
-        if (map == null) {
-            return null;
-        }
-        return map.get(to);
-    }
-
-    private void setPath(Cell from, Cell to, Cell by) {
-        if (paths == null) {
-            paths = new HashMap<>();
-        }
-        if (!paths.containsKey(from)) {
-            paths.put(from, new HashMap<>());
-        }
-        paths.get(from).put(to, by);
-    }
 
 
 }

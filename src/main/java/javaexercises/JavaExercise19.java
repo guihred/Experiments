@@ -1,9 +1,11 @@
 package javaexercises;
 
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public final class JavaExercise19 {
-	private JavaExercise19() {
+    private static final Logger LOG = HasLogging.log(JavaExercise19.class);
+    private JavaExercise19() {
 	}
 
 	/**
@@ -16,7 +18,7 @@ public final class JavaExercise19 {
 
 		Jack ink = new Jack();
 		fred(ink, 3000);
-        HasLogging.log().info("Value is {}", K.el);
+        LOG.info("Value is {}", K.el);
 	}
 	private static void fred(JJ uk, int n) {
 		int a = 10 * n;

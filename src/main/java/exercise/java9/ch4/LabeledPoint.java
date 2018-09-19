@@ -29,7 +29,7 @@ public class LabeledPoint extends Point {
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
+        if (null == obj) {
             return false;
         }
         if (getClass() != obj.getClass()) {

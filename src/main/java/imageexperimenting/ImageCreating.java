@@ -7,9 +7,12 @@ import com.aspose.imaging.shapes.ArcShape;
 import com.aspose.imaging.shapes.PolygonShape;
 import com.aspose.imaging.shapes.RectangleShape;
 import com.aspose.imaging.sources.FileCreateSource;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class ImageCreating {
+    private static final Logger LOG = HasLogging.log(ImageCreating.class);
+
     public static void main(String[] args) {
         String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
         String nameFile = dataDir + "eu3.jpg";
@@ -73,6 +76,6 @@ public class ImageCreating {
         image.save();
 
         // Display Status.
-        HasLogging.log().info("Processing completed successfully!");
+        LOG.info("Processing completed successfully!");
     }
 }

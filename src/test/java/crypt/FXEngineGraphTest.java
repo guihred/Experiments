@@ -53,7 +53,7 @@ public class FXEngineGraphTest extends ApplicationTest {
             for (int i = 0; i < items.size(); i++) {
                 int j = i;
                 interact(() -> e.getSelectionModel().select(j));
-                queryAll.forEach(b -> clickOn(b));
+                queryAll.forEach(this::clickOn);
             }
 
         }

@@ -10,11 +10,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 import simplebuilder.ResourceFXUtils;
 
 public final class DataframeUtils extends DataframeML {
 
+    private static final Logger LOG = HasLogging.log(DataframeBuilder.class);
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
             Double.class);
 
@@ -67,7 +69,7 @@ public final class DataframeUtils extends DataframeML {
 
         }
         String correlationTable = s.toString();
-        HasLogging.log().info(correlationTable);
+        LOG.info(correlationTable);
     }
 
     public static void displayStats(Map<String, DataframeStatisticAccumulator> stats) {
@@ -91,7 +93,7 @@ public final class DataframeUtils extends DataframeML {
         s.append("\nmax");
         stats.forEach((k, v) -> s.append(String.format(floatFormating(k.length()), v.getMax())));
         String description = s.toString();
-        HasLogging.log().info(description);
+        LOG.info(description);
     }
 
     public static <T> T getFromList(int j, List<T> list) {
@@ -109,7 +111,7 @@ public final class DataframeUtils extends DataframeML {
 
             readRows(dataframe, scanner, header);
         } catch (FileNotFoundException e) {
-            HasLogging.log().error("FILE NOT FOUND", e);
+            LOG.error("FILE NOT FOUND", e);
         }
     }
 
@@ -207,7 +209,7 @@ public final class DataframeUtils extends DataframeML {
             dataframe.size++;
             List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
             if (header.size() != line2.size()) {
-                HasLogging.log().error("ERROR FIELDS COUNT");
+                LOG.error("ERROR FIELDS COUNT");
                 createNullRow(header, line2);
             }
 
@@ -290,17 +292,17 @@ public final class DataframeUtils extends DataframeML {
         try {
             return tryNumber(dataframeML, Integer.class, currentFormat, number, header, Integer::valueOf);
         } catch (NumberFormatException e) {
-            HasLogging.log().trace("FORMAT ERROR ", e);
+            LOG.trace("FORMAT ERROR ", e);
         }
         try {
             return tryNumber(dataframeML, Long.class, currentFormat, number, header, Long::valueOf);
         } catch (NumberFormatException e) {
-            HasLogging.log().trace("FORMAT ERROR", e);
+            LOG.trace("FORMAT ERROR", e);
         }
         try {
             return tryNumber(dataframeML, Double.class, currentFormat, number, header, Double::valueOf);
         } catch (NumberFormatException e) {
-            HasLogging.log().trace("FORMAT ERROR", e);
+            LOG.trace("FORMAT ERROR", e);
         }
         if (Number.class.isAssignableFrom(dataframeML.getFormat(header))) {
             dataframeML.formatMap.put(header, String.class);

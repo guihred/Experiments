@@ -35,7 +35,7 @@ public class DotsSquare extends Region {
         return "(" + i + "," + j + ")";
     }
 
-    Double[] getCenter() {
+    public Double[] getCenter() {
         return new Double[] {getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2};
     }
 
@@ -67,11 +67,11 @@ public class DotsSquare extends Region {
         selected.adjacencies.add(this);
     }
 
-    boolean contains(DotsSquare selected) {
+    public boolean contains(DotsSquare selected) {
         return adjacencies.contains(selected);
     }
 
-	Set<Set<DotsSquare>> check() {
+    public Set<Set<DotsSquare>> check() {
         final List<DotsSquare> collect = adjacencies.stream()
                 .filter(a -> a.adjacencies.stream()
                         .anyMatch(b -> b != this && b.adjacencies.stream()
@@ -90,7 +90,7 @@ public class DotsSquare extends Region {
         return pontos;
     }
 
-    Stream<DotsSquare> almostSquare() {
+    public Stream<DotsSquare> almostSquare() {
         // ONE link away from being a square
         return adjacencies.stream()
                 .flatMap(a -> a.adjacencies.stream()
@@ -100,10 +100,11 @@ public class DotsSquare extends Region {
                                         && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)));
     }
 
-    List<DotsSquare> checkMelhor() {
+    public List<DotsSquare> checkMelhor() {
         return almostSquare().collect(Collectors.toList());
     }
-    boolean checkMelhor(DotsSquare adj) {
+
+    public boolean checkMelhor(DotsSquare adj) {
         final Set<DotsSquare> arrayList = new HashSet<>(adjacencies);
         arrayList.add(adj);
 
@@ -115,7 +116,7 @@ public class DotsSquare extends Region {
                                         && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1))).count() == 0;
     }
 
-    void removeAdj(DotsSquare value) {
+    public void removeAdj(DotsSquare value) {
         adjacencies.remove(value);
         value.adjacencies.remove(this);
     }

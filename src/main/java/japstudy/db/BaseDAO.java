@@ -28,7 +28,7 @@ public class BaseDAO implements HasLogging {
     }
 
 
-    private Transaction getTransaction(Session session) {
+    private static Transaction getTransaction(Session session) {
         Transaction beginTransaction = session.getTransaction();
         if (!beginTransaction.isActive()) {
             return session.beginTransaction();

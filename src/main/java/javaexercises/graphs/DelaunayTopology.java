@@ -23,14 +23,14 @@ public class DelaunayTopology extends BaseTopology {
 	public void execute() {
 
 		List<Cell> allCells = graph.getModel().getAllCells();
-		size = allCells.size();
+		setSize(allCells.size());
 		graph.clean();
 		graph.getModel().removeAllCells();
 		Random rnd = new Random();
 		int bound = 150;
 		double x = 0;
 		double y = 0;
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < getSize(); i++) {
 			Cell cell = graph.getModel().addCell(BaseTopology.identifier(i), CellType.CIRCLE);
 			double a = rnd.nextDouble() * 2 * Math.PI;
 			x += bound * Math.cos(a);

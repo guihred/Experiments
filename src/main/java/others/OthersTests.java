@@ -6,8 +6,8 @@ import java.util.*;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.apache.commons.math3.complex.Complex;
-import simplebuilder.HasLogging;
 
 public class OthersTests {
 	private static final class EanFactorReducer implements IntBinaryOperator {
@@ -20,7 +20,7 @@ public class OthersTests {
 		}
 	}
 
-	enum Estado {
+    public enum Estado {
 		ERROR(null),
 		CLOSED(null),
 		LAST_ACK(of("RCV_ACK", Estado.CLOSED)),
@@ -48,6 +48,9 @@ public class OthersTests {
 
 	}
 
+    public static Estado getStateMachine(Estado estado, Estado... eventList) {
+        return getStateMachine(estado, Stream.of(eventList).map(Object::toString).collect(Collectors.toList()));
+    }
     public static Estado getStateMachine(Estado estado, Collection<String> eventList) {
 
 		return eventList.stream().sequential().reduce(estado, (e, s) -> e.getMap().getOrDefault(s, Estado.ERROR), (e, f) -> e);
@@ -62,13 +65,6 @@ public class OthersTests {
 
 	public static String shorterReverseLonger(String a, String b) {
 		return a.length() < b.length() ? a + reverse(b) + a : b + reverse(a) + b;
-	}
-
-	public static void main(String[] args) {
-		Complex p = p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5));
-        HasLogging.log().info("{}", p);
-
-        //		System.out.println(getStateMachine(Estado.CLOSED, Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
 	}
 
 	public static int[] unique(int[] integers) {

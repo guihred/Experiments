@@ -14,6 +14,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import simplebuilder.CommonsFX;
 
 public interface CommomLabyrinth {
 	Collection<LabyrinthWall> getLabyrinthWalls();
@@ -38,16 +39,14 @@ public interface CommomLabyrinth {
 	default void displayEndOfGame(Runnable run) {
 		Stage dialogStage = new Stage();
 		dialogStage.initModality(Modality.WINDOW_MODAL);
-		Button button = new Button("Ok.");
-		button.setOnAction(e -> {
+        Button button = CommonsFX.newButton("Ok.", e -> {
 			getCamera().setTranslateX(0);
 			getCamera().setTranslateY(0);
 			getCamera().setTranslateZ(0);
 			run.run();
 			dialogStage.close();
 		});
-		VBox vbox = new VBox();
-		vbox.getChildren().addAll(new Text("Você Morreu"), button);
+        VBox vbox = new VBox(new Text("Você Morreu"), button);
 		vbox.setAlignment(Pos.CENTER);
 		vbox.setPadding(new Insets(5));
 		dialogStage.setScene(new Scene(vbox));

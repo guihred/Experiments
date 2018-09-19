@@ -9,9 +9,6 @@ import javaexercises.Vertex;
 import org.junit.Test;
 
 public class GraphAlgorithmsTest {
-    @Test
-    public void testGraph() throws Exception {
-    }
 
     @Test
     public void testGraphAlgorithms() throws Exception {

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class FastFourierTransform {
-    private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log(FastFourierTransform.class);
 
     public static int bitReverse(int n, int bits) {
 

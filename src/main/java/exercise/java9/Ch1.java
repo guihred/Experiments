@@ -21,7 +21,7 @@ public class Ch1 {
 	 * values. Hint: Look up Math.nextUp in the Java API.
 	 */
 	public static void extremeDoubles() {
-        Logger log = HasLogging.log();
+        Logger log = HasLogging.log(Ch1.class);
 
         log.info("{}", Double.MAX_VALUE);
         log.info("{}", Math.nextUp(0));

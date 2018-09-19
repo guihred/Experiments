@@ -4,10 +4,13 @@ import com.aspose.imaging.internal.Exceptions.Exception;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class Vertex implements HasLogging {
-	public static final boolean NAMED = true;
+    private static final Logger LOG = HasLogging.log(Vertex.class);
+
+    public static final boolean NAMED = true;
 
 	private Map<Vertex, Integer> edges = new HashMap<>();
 
@@ -244,7 +247,7 @@ public class Vertex implements HasLogging {
 		}
 
         String chainString = chain.stream().map(Vertex::getName).sequential().collect(Collectors.joining("->"));
-        HasLogging.log().info(chainString);
+        LOG.info(chainString);
 	}
 
     public static List<Edge> kruskal(Collection<Vertex> totalVertices) {
@@ -318,10 +321,10 @@ public class Vertex implements HasLogging {
 			}
 
 		}
-        vertices.forEach(v -> HasLogging.log().info("{}={}", v.id, v.topNum));
+        vertices.forEach(v -> LOG.info("{}={}", v.id, v.topNum));
 
 		if (counter != vertices.size()) {
-            HasLogging.log().info("CYCLE FOUND");
+            LOG.info("CYCLE FOUND");
 		}
 	}
 }

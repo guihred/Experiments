@@ -24,7 +24,7 @@ public class RubiksCubeLauncher extends Application {
     public static final boolean DEBUG = true;
 	public static final int CUBE_COMPLEXITY = 3;
 
-    private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log(RubiksCubeLauncher.class);
 
 	public static final int RUBIKS_CUBE_SIZE = 50;
 	private RubiksPiece[][][] pieces = new RubiksPiece[CUBE_COMPLEXITY][CUBE_COMPLEXITY][CUBE_COMPLEXITY];

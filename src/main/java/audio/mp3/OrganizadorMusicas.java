@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class OrganizadorMusicas extends Application {
-    private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log(OrganizadorMusicas.class);
 	public static void main(String[] args) {
 		launch(args);
 	}

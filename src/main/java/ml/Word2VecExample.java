@@ -17,7 +17,7 @@ public class Word2VecExample {
 
     private static final String RAW_SENTENCES_TXT = "raw_sentences.txt";
     public static final String PATH_TO_SAVE_MODEL_TXT = "pathToSaveModel.zip";
-    private static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log(Word2VecExample.class);
 
 
     public static void fit() throws FileNotFoundException {

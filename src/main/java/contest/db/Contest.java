@@ -50,7 +50,7 @@ public class Contest extends BaseEntity {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj) && ((Contest) obj).key == key;
+        return obj != null && super.equals(obj) && ((Contest) obj).key == key;
     }
 
     @Override

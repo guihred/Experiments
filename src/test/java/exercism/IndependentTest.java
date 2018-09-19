@@ -10,6 +10,8 @@ import exercise.java9.ch4.Ch4;
 import exercise.java9.ch4.LabeledPoint;
 import exercise.java9.ch4.Line;
 import exercise.java9.ch4.Point;
+import imageexperimenting.ImageCreating;
+import imageexperimenting.ImageLoading;
 import japstudy.HiraganaMaker;
 import java.io.File;
 import java.util.Arrays;
@@ -41,9 +43,9 @@ public class IndependentTest implements HasLogging {
 
     @Test
     public void testCh1() {
-        measureTime("Ch1.extremeDoubles", () -> Ch1.extremeDoubles());
+        measureTime("Ch1.extremeDoubles", Ch1::extremeDoubles);
         measureTime("Ch1.factorial", () -> Ch1.factorial(1000));
-        measureTime("Ch1.lotteryCombination", () -> Ch1.lotteryCombination());
+        measureTime("Ch1.lotteryCombination", Ch1::lotteryCombination);
         measureTime("Ch1.pascalTriangle", () -> Ch1.pascalTriangle(10));
         measureTime("Ch1.average", () -> Ch1.average(1, 2, 3, 4, 5, 6, 7, 8));
     }
@@ -138,5 +140,24 @@ public class IndependentTest implements HasLogging {
         measureTime("OthersTests.reverse", () -> OthersTests.reverse("HIHI"));
         measureTime("OthersTests.p", () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3),
                 new Complex(-1, 1), new Complex(-9, -5)));
+        measureTime("OthersTests.getStateMachine", () -> OthersTests.getStateMachine(OthersTests.Estado.CLOSED,
+                Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
+    }
+
+    @Test
+    public void testImagesTest() {
+        String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
+        String nameFile = dataDir + "eu3.jpg";
+        String svgFile = dataDir + "Video_game.svg";
+        String pngFile = dataDir + "teste1.png";
+        measureTime("ImageCreating.creating", () -> ImageCreating.creating(nameFile));
+        measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, svgFile));
+        measureTime("ImageLoading.binarize", () -> ImageLoading.binarize(dataDir, nameFile));
+        measureTime("ImageLoading.bradleyThreshold", () -> ImageLoading.bradleyThreshold(dataDir, pngFile));
+        measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, nameFile));
+        measureTime("ImageLoading.cropImage", () -> ImageLoading.cropImage(dataDir, nameFile));
+        measureTime("ImageLoading.exporting", () -> ImageLoading.exporting(dataDir, nameFile));
+        measureTime("ImageLoading.grayScale", () -> ImageLoading.grayScale(dataDir, nameFile));
+        measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
     }
 }

@@ -106,7 +106,8 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
 		DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
 		ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology, new RandomTopology(50, graph), new TreeTopology(
-				30, graph), new CircleTopology(30, graph), new GabrielTopology(30, graph));
+                        30, graph),
+                new CircleTopology(30, graph), new GabrielTopology(30, graph), new ProjectTopology(30, graph));
 
         SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(BaseTopology::getName);
         ChoiceBox<BaseTopology> topologySelect = CommonsFX.newSelect(topologies, converterTopology, "Select Topology");

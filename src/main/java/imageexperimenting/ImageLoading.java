@@ -11,20 +11,36 @@ import com.aspose.imaging.imageoptions.JpegOptions;
 import com.aspose.imaging.imageoptions.PngOptions;
 import com.aspose.imaging.imageoptions.TiffOptions;
 import com.aspose.imaging.sources.FileCreateSource;
+import org.slf4j.Logger;
 import simplebuilder.HasLogging;
 
 public class ImageLoading {
+    private static final Logger LOG = HasLogging.log(ImageLoading.class);
+
     public static void main(String[] args) {
         String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
-        //        String nameFile = dataDir + "eu3.jpg" 
+        String nameFile = dataDir + "eu3.jpg";
         String svgFile = dataDir + "Video_game.svg";
-        // createThumnails(dataDir, nameFile)
+        String pngFile = dataDir + "teste1.png";
         convertSVG(dataDir, svgFile);
+        binarize(dataDir, nameFile);
+        bradleyThreshold(dataDir, pngFile);
+        convertSVG(dataDir, nameFile);
+        cropImage(dataDir, nameFile);
+        exporting(dataDir, nameFile);
+        grayScale(dataDir, nameFile);
+        grayScaling(dataDir, nameFile);
 
     }
 
-    static void convertSVG(String dataDir, String nameFile) {
-        Image image = Image.load(nameFile);
+    /**
+     * Converts file in name file to PNG
+     * 
+     * @param dataDir
+     * @param svgFile
+     */
+    public static void convertSVG(String dataDir, String svgFile) {
+        Image image = Image.load(svgFile);
 
         // Create an instance of PNG options
         PngOptions pngOptions = new PngOptions();
@@ -33,26 +49,25 @@ public class ImageLoading {
         image.save(dataDir + "ConvertingSVGToRasterImages_out.png", pngOptions);
     }
 
-    static void exporting(String dataDir, String nameFile) {
+    public static void exporting(String dataDir, String nameFile) {
         // Export to BMP file format using the default options
         Image image = Image.load(nameFile);
-        image.save(dataDir + "ExportImageToDifferentFormats_out.bmp", new com.aspose.imaging.imageoptions.BmpOptions());
+        image.save(dataDir + "ExportImageToDifferentFormats_out.bmp", new BmpOptions());
 
         // Export to JPEG file format using the default options
-        image.save(dataDir + "ExportImageToDifferentFormats_out.jpeg",
-                new com.aspose.imaging.imageoptions.JpegOptions());
+        image.save(dataDir + "ExportImageToDifferentFormats_out.jpeg", new JpegOptions());
 
         // Export to PNG file format using the default options
-        image.save(dataDir + "ExportImageToDifferentFormats_out.png", new com.aspose.imaging.imageoptions.PngOptions());
+        image.save(dataDir + "ExportImageToDifferentFormats_out.png", new PngOptions());
 
         // Export to TIFF file format using the default options
         image.save(dataDir + "ExportImageToDifferentFormats_out.tiff", new TiffOptions(TiffExpectedFormat.Default));
 
         // Display Status.
-        HasLogging.log().info("Image exported to BMP, JPG, PNG and TIFF formats successfully!");
+        LOG.info("Image exported to BMP, JPG, PNG and TIFF formats successfully!");
     }
 
-    static void grayScale(String dataDir, String nameFile) {
+    public static void grayScale(String dataDir, String nameFile) {
         Image original = Image.load( nameFile);
         try (JpegOptions jpegOptions = new JpegOptions()) {
             jpegOptions.setColorType(JpegCompressionColorMode.Grayscale);
@@ -63,7 +78,7 @@ public class ImageLoading {
         }
     }
 
-    static void cropImage(String dataDir, String nameFile) {
+    public static void cropImage(String dataDir, String nameFile) {
 
         RasterImage rasterImage = (RasterImage) Image.load(nameFile);
         // setting for image data to be cashed
@@ -78,7 +93,7 @@ public class ImageLoading {
         rasterImage.save(dataDir + "ExpandandCropImages_out.jpg", new JpegOptions(), destRect);
     }
 
-    static void bradleyThreshold(String dataDir, String nameFile) {
+    public static void bradleyThreshold(String dataDir, String nameFile) {
         String sourcepath = nameFile;
         String outputPath = dataDir + "UseBradleythresholding_out.png";
 
@@ -96,7 +111,7 @@ public class ImageLoading {
         objimage.save(outputPath);
     }
 
-    static void grayScaling(String dataDir, String nameFile) {
+    public static void grayScaling(String dataDir, String nameFile) {
 
         Image image = Image.load(nameFile);
         // Cast the image to RasterCachedImage
@@ -113,7 +128,7 @@ public class ImageLoading {
 
     }
 
-    static void binarize(String dataDir, String nameFile) {
+    public static void binarize(String dataDir, String nameFile) {
         // For complete examples and data files, please go to
         // https://github.com/aspose-imaging/Aspose.Imaging-for-Java
 
@@ -133,7 +148,7 @@ public class ImageLoading {
         rasterCachedImage.save(dataDir + "BinarizationWithFixedThreshold_out.jpg");
     }
 
-    static void createThumnails(String dataDir, String nameFile) {
+    public static void createThumnails(String dataDir, String nameFile) {
         JpegImage image = (JpegImage) Image.load(nameFile);
 
         // Get the image thumbnail information and save it in an instance of
@@ -155,7 +170,7 @@ public class ImageLoading {
             // Save the results
             bmpImage.save();
         } catch (Exception e) {
-            HasLogging.log(ImageLoading.class).error("ERROR SAVING IMAGE", e);
+            LOG.error("ERROR SAVING IMAGE", e);
         }
     }
 

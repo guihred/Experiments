@@ -93,7 +93,7 @@ public class ContestText extends BaseEntity implements HasImage {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj) && ((ContestText) obj).key == key;
+        return obj != null && super.equals(obj) && ((ContestText) obj).key == key;
     }
 
     @Override

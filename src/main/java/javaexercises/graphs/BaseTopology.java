@@ -7,10 +7,13 @@ public abstract class BaseTopology {
 	private static final char[] digits = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 	protected Graph graph;
-	protected final String name;
+    private final String name;
 
-	protected int size;
+    private int size;
 
+    public BaseTopology(Graph graph, String name) {
+        this(graph, name, 0);
+    }
 	public BaseTopology(Graph graph, String name, int size) {
 		this.graph = graph;
 		this.name = name;
@@ -47,4 +50,12 @@ public abstract class BaseTopology {
 		return Objects.toString((char) ('A' + i));
 
 	}
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
 }

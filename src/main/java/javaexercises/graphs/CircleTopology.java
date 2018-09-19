@@ -14,18 +14,18 @@ public class CircleTopology extends BaseTopology {
 		graph.clean();
 		graph.getModel().removeAllCells();
 		graph.getModel().removeAllEdges();
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < getSize(); i++) {
 			graph.getModel().addCell(identifier(i), CellType.CIRCLE);
 		}
 		Random random = new Random();
-		int nextInt = random.nextInt(size * (size - 1) / 2) + 1;
+		int nextInt = random.nextInt(getSize() * (getSize() - 1) / 2) + 1;
 		for (int i = 0; i < nextInt; i++) {
             String targetId;
 			String sourceId;
-			Integer valor = random.nextInt(size) + 1;
+			Integer valor = random.nextInt(getSize()) + 1;
 			do {
-                targetId = identifier(random.nextInt(size));
-				sourceId = identifier(random.nextInt(size));
+                targetId = identifier(random.nextInt(getSize()));
+				sourceId = identifier(random.nextInt(getSize()));
 				if (!sourceId.equals(targetId) && graph.getModel().addedCost(sourceId, targetId) == null) {
 					Integer cost = graph.getModel().addedCost(targetId, sourceId);
 					if (cost != null) {

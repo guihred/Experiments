@@ -12,7 +12,7 @@ import simplebuilder.HasLogging;
 
 public final class JavaExercise1to11 {
 
-	private static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log(JavaExercise1to11.class);
 
     private JavaExercise1to11() {
 	}
