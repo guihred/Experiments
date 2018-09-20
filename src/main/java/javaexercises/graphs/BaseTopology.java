@@ -1,8 +1,9 @@
 package javaexercises.graphs;
 
 import java.util.Objects;
+import simplebuilder.HasLogging;
 
-public abstract class BaseTopology {
+public abstract class BaseTopology implements HasLogging {
 
 	private static final char[] digits = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };

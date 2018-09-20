@@ -235,6 +235,11 @@ public class GraphModelAlgorithms {
         return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c)).count();
     }
 
+    public static long edgesNumber(Cell c, List<Edge> allEdges, Collection<Cell> allCells) {
+        return allEdges.stream().filter(e -> e.source.equals(c) && allCells.contains(e.target)
+                || e.target.equals(c) && allCells.contains(e.source)).count();
+    }
+
     private static Cell getMinDistanceCell(Map<Cell, Integer> distance, Map<Cell, Boolean> known) {
         return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
                 .min(Comparator.comparing(Entry<Cell, Integer>::getValue))

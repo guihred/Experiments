@@ -16,7 +16,7 @@ public class Cell extends Pane {
 	private final String cellId;
 	protected Text text;
 	protected BooleanProperty selected = new SimpleBooleanProperty(false);
-	protected ObjectProperty<Color> color = new SimpleObjectProperty<>();
+    protected ObjectProperty<Color> color = new SimpleObjectProperty<>();
 	private List<Cell> children = new ArrayList<>();
 	private List<Cell> parents = new ArrayList<>();
 

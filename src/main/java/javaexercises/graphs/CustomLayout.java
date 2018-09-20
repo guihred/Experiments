@@ -9,7 +9,6 @@ public class CustomLayout implements Layout {
 
 	private Graph graph;
 
-	private Random rnd = new Random();
 
 	public CustomLayout(Graph graph) {
 		this.graph = graph;
@@ -19,8 +18,14 @@ public class CustomLayout implements Layout {
 	public void execute() {
 
 		GraphModel model = graph.getModel();
-		List<Cell> cells = model.getAllCells();
-		cells.get(0).relocate(50, 50);
+        graph.clean();
+        List<Cell> cells = model.getAllCells();
+        layoutInCustom(model, cells);
+	}
+
+    private static void layoutInCustom(GraphModel model, List<Cell> cells) {
+        Random rnd = new Random();
+        cells.get(0).relocate(50, 50);
 		Set<Cell> collect = cells.stream().collect(Collectors.toSet());
 		int bound = 150;
 
@@ -37,6 +42,6 @@ public class CustomLayout implements Layout {
 			}
 
 		}
-	}
+    }
 
 }

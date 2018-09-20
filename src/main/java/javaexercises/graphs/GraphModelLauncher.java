@@ -1,9 +1,7 @@
 package javaexercises.graphs;
 
-import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -19,7 +17,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.CommonsFX;
 import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class GraphModelLauncher extends Application implements HasLogging {
@@ -28,6 +25,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
 	private ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph),
             new ConcentricLayout(graph),
 			new CircleLayout(graph),
+            new LayerLayout(graph),
 			new RandomLayout(graph), new CustomLayout(graph), convergeLayout);
     private ChoiceBox<Layout> selectLayout = CommonsFX.newSelect(layouts,
 			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
@@ -57,28 +55,6 @@ public class GraphModelLauncher extends Application implements HasLogging {
 		dialog.show();
 	}
 
-	private void createTopology() {
-		graph.getModel().clearSelected();
-		graph.clean();
-		graph.getModel().removeAllCells();
-		graph.getModel().removeAllEdges();
-
-		String[] words = getWords();
-
-		Stream.of(words).sorted().forEach(a -> graph.getModel().addCell(a, CellType.CIRCLE));
-		for (String v : words) {
-			for (String w : words) {
-				if (oneCharOff(w, v)) {
-					graph.getModel().addBiEdge(v, w, 1);
-				}
-			}
-		}
-		graph.endUpdate();
-		Layout selectedItem = selectLayout.getSelectionModel().getSelectedItem();
-		if (selectedItem != null) {
-			selectedItem.execute();
-		}
-	}
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -107,7 +83,8 @@ public class GraphModelLauncher extends Application implements HasLogging {
 		DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
 		ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology, new RandomTopology(50, graph), new TreeTopology(
                         30, graph),
-                new CircleTopology(30, graph), new GabrielTopology(30, graph), new ProjectTopology(30, graph));
+                new CircleTopology(30, graph), new GabrielTopology(30, graph), new WordTopology(graph),
+                new ProjectTopology(graph));
 
         SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(BaseTopology::getName);
         ChoiceBox<BaseTopology> topologySelect = CommonsFX.newSelect(topologies, converterTopology, "Select Topology");
@@ -154,7 +131,6 @@ public class GraphModelLauncher extends Application implements HasLogging {
 		new CircleLayout(graph).execute();
 		layout.execute();
 
-        vBox.getChildren().add(CommonsFX.newButton("Create Topology", ev -> createTopology()));
         selectLayout.getSelectionModel().select(0);
         vBox.getChildren().add(new HBox(selectLayout,
                 CommonsFX.newButton("Go", e -> {
@@ -174,19 +150,6 @@ public class GraphModelLauncher extends Application implements HasLogging {
         vBox.getChildren().add(CommonsFX.newCheck("Show Weight", Graph.SHOW_WEIGHT));
 
 	}
-
-	private String[] getWords() {
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"))) {
-            return lines.flatMap((String e) -> Stream.of(e.split("[^a-zA-Z]")))
-					.filter(s -> s.length() == 4).map(String::toLowerCase).distinct().toArray(String[]::new);
-        } catch (Exception e) {
-            getLogger().error("", e);
-		}
-
-		return new String[] { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire",
-				"wind", "wing", "wink", "wins", "none", "gone", "note", "vote", "site", "nite", "bite" };
-	}
-
 
 	private void addGraphComponents() {
 
@@ -215,21 +178,6 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
 	}
 
-	public static boolean oneCharOff(String word1, String word2) {
-		if (word1.length() != word2.length()) {
-			return false;
-		}
-
-		int diffs = 0;
-
-		for (int i = 0; i < word1.length(); i++) {
-			if (word1.charAt(i) != word2.charAt(i) && ++diffs > 1) {
-				return false;
-			}
-		}
-
-		return diffs == 1;
-	}
 
 	public static void main(String[] args) {
 		launch(args);

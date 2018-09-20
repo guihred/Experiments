@@ -9,7 +9,6 @@ public class GridLayout implements Layout {
 
 	private Graph graph;
 
-	private Random rnd = new Random();
 
 	public GridLayout(Graph graph) {
 		this.graph = graph;
@@ -19,8 +18,13 @@ public class GridLayout implements Layout {
 	public void execute() {
 
 		Cell[] cells = graph.getModel().getAllCells().stream().toArray(Cell[]::new);
+        graph.clean();
+        layoutInGrid(cells, graph);
+	}
 
-		Cell cell2 = cells[0];
+    private static void layoutInGrid(Cell[] cells, Graph graph) {
+        Random rnd = new Random();
+        Cell cell2 = cells[0];
 		Map<Cell, Integer> w = graph.getModel().unweightedUndirected(cell2.getCellId());
 		Comparator<Cell> comparing = Comparator.comparing(w::get);
 		Arrays.sort(cells, comparing);
@@ -43,7 +47,7 @@ public class GridLayout implements Layout {
 
 			cell.relocate(x, y);
 		}
-	}
+    }
 
 	public static int radius(int size2) {
 		return 100 * (size2 / 50 + 1);

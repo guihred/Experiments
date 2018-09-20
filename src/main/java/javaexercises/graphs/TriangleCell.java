@@ -14,9 +14,7 @@ public class TriangleCell extends Cell {
 		double height = 50;
 
 		Polygon view1 = new Polygon(width / 2, 0, width, height, 0, height);
-
-		view1.strokeProperty().bind(
-				Bindings.when(selected).then(Color.RED).otherwise(Bindings.when(color.isNull()).then(Color.DODGERBLUE).otherwise(color)));
+        view1.setStroke(Color.BLACK);
 		view1.fillProperty().bind(
 				Bindings.when(selected).then(Color.RED).otherwise(Bindings.when(color.isNull()).then(Color.DODGERBLUE).otherwise(color)));
 

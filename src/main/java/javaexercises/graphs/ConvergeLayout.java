@@ -10,12 +10,15 @@ public class ConvergeLayout implements Layout {
 	private Random rnd = new Random();
 
 	private final EventHandler<ActionEvent> eventHandler;
+
+    private Graph graph;
 	public ConvergeLayout(Graph graph) {
-		eventHandler = t1 -> convergeLayoutLoop(graph);
+        this.graph = graph;
+        eventHandler = t1 -> convergeLayoutLoop(this.graph);
 	}
 
-	private void convergeLayoutLoop(Graph graph) {
-		List<Cell> allCells = graph.getModel().getAllCells();
+    private void convergeLayoutLoop(Graph graph1) {
+        List<Cell> allCells = graph1.getModel().getAllCells();
 		if (allCells.size() > 100) {
 			return;
 		}
@@ -24,10 +27,11 @@ public class ConvergeLayout implements Layout {
         double bound = (c + 1) * 100d;
 
 		Cell cell = allCells.get(rnd.nextInt(allCells.size()));
-		List<Edge> edges = graph.getModel().edges(cell);
+        List<Edge> edges = graph1.getModel().edges(cell);
 		if (!edges.isEmpty()) {
 
-			double media = graph.getModel().getAllEdges().parallelStream().mapToInt(Edge::getValor).average().getAsDouble();
+            double media = graph1.getModel().getAllEdges().parallelStream().mapToInt(Edge::getValor).average()
+                    .getAsDouble();
 			double sumX = edges.parallelStream().mapToDouble(e1 -> calculateXSum(bound, media, e1)).average().getAsDouble();
 			double sumY = edges.parallelStream().mapToDouble(e2 -> calculateYSum(bound, media, e2)).average().getAsDouble();
 			if (sumY < bound / 2 || sumX < bound / 2) {
@@ -52,7 +56,8 @@ public class ConvergeLayout implements Layout {
 	}
 
 	@Override
-	public void execute() {
+    public void execute() {
+        graph.clean();
 		for (int j = 0; j < 500; j++) {
 			getEventHandler().handle(null);
 		}

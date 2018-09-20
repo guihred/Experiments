@@ -52,6 +52,8 @@ public class GraphModel {
                 return addCell(new CircleCell(id));
             case TRIANGLE:
                 return addCell(new TriangleCell(id));
+            case RECTANGLE:
+                return addCell(new RectangleCell(id));
             default:
                 throw new UnsupportedOperationException("Unsupported type: " + type);
         }
@@ -90,6 +92,9 @@ public class GraphModel {
     }
 
     public List<Edge> chainEdges(String s, String t) {
+        if (paths == null) {
+            paths=new HashMap<>();
+        }
         return GraphModelAlgorithms.chainEdges(s, t, cellMap, allCells, allEdges, paths);
     }
 

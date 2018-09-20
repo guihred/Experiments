@@ -38,10 +38,10 @@ public class Edge extends Group implements Comparable<Edge> {
 		line = new Line();
 		line.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
 		line.strokeProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
-		line.startXProperty().bind(source.layoutXProperty().add(source.getBoundsInParent().getWidth() / 2.0));
-		line.startYProperty().bind(source.layoutYProperty().add(source.getBoundsInParent().getHeight() / 2.0));
-		line.endXProperty().bind(target.layoutXProperty().add(target.getBoundsInParent().getWidth() / 2.0));
-		line.endYProperty().bind(target.layoutYProperty().add(target.getBoundsInParent().getHeight() / 2.0));
+        line.startXProperty().bind(source.layoutXProperty().add(source.getBoundsInParent().getWidth() / 2.0));
+        line.startYProperty().bind(source.layoutYProperty().add(source.getBoundsInParent().getHeight() / 2.0));
+        line.endXProperty().bind(target.layoutXProperty().add(target.getBoundsInParent().getWidth() / 2.0));
+        line.endYProperty().bind(target.layoutYProperty().add(target.getBoundsInParent().getHeight() / 2.0));
 
 		getChildren().add(line);
 		if (directed) {

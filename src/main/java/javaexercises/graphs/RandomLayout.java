@@ -17,9 +17,11 @@ public class RandomLayout implements Layout {
 	public void execute() {
 
 		List<Cell> cells = graph.getModel().getAllCells();
+        graph.clean();
+        int bound = 400;
 		for (Cell cell : cells) {
-			double x = rnd.nextDouble() * 500;
-			double y = rnd.nextDouble() * 500;
+            double x = rnd.nextDouble() * bound;
+            double y = rnd.nextDouble() * bound;
 			cell.relocate(x, y);
 		}
 	}

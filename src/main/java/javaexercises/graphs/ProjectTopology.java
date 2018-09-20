@@ -5,17 +5,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.scene.paint.Color;
 import simplebuilder.HasLogging;
 
 public class ProjectTopology extends BaseTopology {
 
-	public ProjectTopology(int size, Graph graph) {
-        super(graph, "Project", size);
+	public ProjectTopology(Graph graph) {
+        super(graph, "Project");
 	}
 
 	@Override
@@ -24,14 +25,13 @@ public class ProjectTopology extends BaseTopology {
 		graph.getModel().removeAllCells();
 		graph.getModel().removeAllEdges();
 
-        double bound = 800;
 
         Map<String, Map<String, Long>> packageDependencyMap = createPackageDependencyMap();
 
         Set<String> keySet = packageDependencyMap.keySet();
 
         for (String packageName : keySet) {
-            graph.getModel().addCell(packageName, CellType.CIRCLE);
+            graph.getModel().addCell(packageName, CellType.RECTANGLE);
 		}
 		List<Cell> cells = graph.getModel().getAddedCells();
 		for (Cell cell : cells) {
@@ -40,31 +40,11 @@ public class ProjectTopology extends BaseTopology {
             map.forEach((dep, weight) -> graph.getModel().addEdge(cellId, dep, weight.intValue()));
 		}
         List<Edge> addedEdges = graph.getModel().getAddedEdges();
-        GraphModelAlgorithms.coloring(cells, addedEdges);
-        Map<Color, List<Cell>> collect = cells.stream().collect(Collectors.groupingBy(Cell::getColor));
+        LayerLayout.layoutInLayers(cells, addedEdges);
+        graph.endUpdate();
 
-        List<List<Cell>> collect2 = collect.entrySet().stream()
-                .sorted(Comparator.comparing(e -> sortByEdgesNumber(e, addedEdges)))
-                .map(Entry<Color, List<Cell>>::getValue).collect(Collectors.toList());
-        double layerHeight = bound / (collect2.size() + 1);
-        double y = layerHeight;
-        for (List<Cell> list : collect2) {
-            double xStep = bound / (list.size() + 1);
-            double x = xStep;
-            for (Cell cell : list) {
-                cell.relocate(x, y);
-                x += xStep;
-            }
-            y += layerHeight;
-        }
-        cells.forEach(e -> e.setColor(null));
-		graph.endUpdate();
-
-	}
-
-    private long sortByEdgesNumber(Entry<Color, List<Cell>> e, List<Edge> allEdges) {
-        return e.getValue().stream().mapToLong(c -> GraphModelAlgorithms.edgesNumber(c, allEdges)).sum();
     }
+
 
     private static Map<String, Map<String, Long>> createPackageDependencyMap() {
         File file = new File("src");
