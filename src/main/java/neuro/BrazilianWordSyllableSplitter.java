@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public final class BrazilianWordSyllableSplitter {
     private static final Logger LOGGER = HasLogging.log();

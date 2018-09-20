@@ -1,6 +1,5 @@
 package xylophone;
 
-import fxsamples.Xform;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.*;
@@ -10,8 +9,9 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleTimelineBuilder;
+import utils.ResourceFXUtils;
+import utils.Xform;
 
 public class XylophoneApp extends Application {
 

@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleTimelineBuilder;
 
 public class SnakeLauncher extends Application {
     public static final int UPDATE_MILLIS = 200;
@@ -20,6 +21,8 @@ public class SnakeLauncher extends Application {
     private final SnakeModel newGameModel = new SnakeModel();
 
     private int currentI;
+
+    private Timeline timeline;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -32,9 +35,10 @@ public class SnakeLauncher extends Application {
 
         final Scene scene = new Scene(gridPane);
 		scene.setOnKeyPressed(this::handleKeyPressed);
-        final Timeline timeline = new Timeline();
-        timeline.getKeyFrames().add(new KeyFrame(new Duration(UPDATE_MILLIS), t -> gameLoop(timeline)));
-		timeline.setCycleCount(Animation.INDEFINITE);
+
+        timeline = new SimpleTimelineBuilder()
+                .addKeyFrame(new Duration(UPDATE_MILLIS), t -> gameLoop())
+                .cycleCount(Animation.INDEFINITE).build();
         timeline.play();
         stage.setScene(scene);
         stage.setWidth(400);
@@ -42,7 +46,7 @@ public class SnakeLauncher extends Application {
         stage.show();
     }
 
-    private void gameLoop(final Timeline timeline) {
+    private void gameLoop() {
         KeyFrame remove = timeline.getKeyFrames().get(0);
         if (remove.getTime().greaterThan(new Duration(50))) {
             currentI++;
@@ -50,7 +54,7 @@ public class SnakeLauncher extends Application {
                 timeline.stop();
                 timeline.getKeyFrames().clear();
                 Duration add = remove.getTime().add(new Duration(-2));
-                timeline.getKeyFrames().add(new KeyFrame(add, f -> gameLoop(timeline)));
+                timeline.getKeyFrames().add(new KeyFrame(add, f -> gameLoop()));
                 timeline.play();
             }
         }

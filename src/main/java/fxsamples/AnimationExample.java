@@ -7,7 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class AnimationExample extends Application {
 

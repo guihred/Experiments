@@ -24,7 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class RosarioComparadorArquivos extends Application implements HasLogging {
 

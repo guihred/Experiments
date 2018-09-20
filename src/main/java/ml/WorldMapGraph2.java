@@ -15,7 +15,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import simplebuilder.CommonsFX;
+import utils.CommonsFX;
 
 public class WorldMapGraph2 extends WorldMapGraph {
 	private DoubleProperty radius = new SimpleDoubleProperty(1);

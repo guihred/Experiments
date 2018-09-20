@@ -17,7 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class LookNFeelChooser extends Application {
 

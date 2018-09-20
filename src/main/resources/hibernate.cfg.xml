@@ -26,9 +26,9 @@
 		<mapping class="contest.db.ContestQuestionAnswer"></mapping>
 		<mapping class="contest.db.ContestText"></mapping>
 
-		<mapping class="japstudy.db.JapaneseLesson"></mapping>
-		<mapping class="japstudy.db.LessonPK"></mapping>
-		<mapping class="election.experiment.Cidade"></mapping>
-		<mapping class="election.experiment.Candidato"></mapping>
+		<mapping class="japstudy.JapaneseLesson"></mapping>
+		<mapping class="japstudy.LessonPK"></mapping>
+		<mapping class="election.Cidade"></mapping>
+		<mapping class="election.Candidato"></mapping>
 	</session-factory>
 </hibernate-configuration>

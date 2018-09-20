@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class VigenereXORCipher {
 

@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class SandboxFX extends Application {
 

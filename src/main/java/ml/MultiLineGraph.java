@@ -17,7 +17,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.CommonsFX;
+import utils.HasLogging;
 
 class MultiLineGraph extends Canvas implements HasLogging {
     private DoubleProperty layout = new SimpleDoubleProperty(30);
@@ -53,7 +54,7 @@ class MultiLineGraph extends Canvas implements HasLogging {
 
         dataframe.forEach((col, items) -> {
             if (colors == null || colors.size() < stats.size()) {
-                List<Color> generateColors = PieGraph.generateRandomColors(stats.size());
+                List<Color> generateColors = CommonsFX.generateRandomColors(stats.size());
                 Iterator<Color> iterator = generateColors.iterator();
                 stats.forEach((col2, itens) -> colors.put(col2, iterator.next()));
             }

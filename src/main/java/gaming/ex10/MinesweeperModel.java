@@ -20,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 
 /**
  *
@@ -93,10 +94,9 @@ public class MinesweeperModel {
                 if (nPlayed.get() == 0) {
 		            reset();
 		        }
+                final Stage stage1 = new Stage();
 
-		        final Button button = new Button("Reset");
-		        final Stage stage1 = new Stage();
-		        button.setOnAction(a -> {
+                final Button button = CommonsFX.newButton("Reset", a -> {
 		            reset();
 		            stage1.close();
 		        });

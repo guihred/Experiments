@@ -16,9 +16,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.ResourceFXUtils;
 
 public class MultilineExample extends Application {
 

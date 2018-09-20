@@ -29,9 +29,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
-import simplebuilder.CommonsFX;
-import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
+import utils.CommonsFX;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class ContestQuestionEditingDisplay extends Application implements HasLogging {
     private IntegerProperty current = new SimpleIntegerProperty(-1);

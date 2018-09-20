@@ -1,6 +1,9 @@
 package ml;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
@@ -11,6 +14,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import utils.CommonsFX;
 
 public class PieGraph extends Canvas {
 	private GraphicsContext gc;
@@ -32,7 +36,7 @@ public class PieGraph extends Canvas {
             Map<String, Long> collect = convertToHistogram();
             histogram.clear();
             histogram.putAll(collect);
-            availableColors = generateRandomColors(histogram.size());
+            availableColors = CommonsFX.generateRandomColors(histogram.size());
             drawGraph();
         });
     }
@@ -41,7 +45,7 @@ public class PieGraph extends Canvas {
         this.dataframe = dataframe;
         this.column = column;
         histogram.putAll(convertToHistogram());
-        availableColors = generateRandomColors(histogram.size());
+        availableColors = CommonsFX.generateRandomColors(histogram.size());
         drawGraph();
     }
 
@@ -109,21 +113,7 @@ public class PieGraph extends Canvas {
         return availableColors;
     }
 
-    public static List<Color> generateRandomColors(int size) {
-        List<Color> availableColors = new ArrayList<>();
-        int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
-        for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
-            Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
-                    Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
-                    Math.abs(255 - i % cubicRoot * 256 / cubicRoot) % 256);
-
-            availableColors.add(rgb);
-        }
-        Collections.shuffle(availableColors);
-        return availableColors;
-    }
-
-	public void drawLegend(List<Entry<String, Long>> collect, List<Color> availableColors1) {
+    public void drawLegend(List<Entry<String, Long>> collect, List<Color> availableColors1) {
         double x = gc.getCanvas().getWidth() / 10;
         double y = gc.getCanvas().getHeight() * 7 / 8;
         int columns = (int) Math.sqrt(collect.size()) + 1;

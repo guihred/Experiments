@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 
 /**
  *
@@ -55,14 +56,12 @@ public class SlidingPuzzleModel {
 					moves++;
 					if (verifyEnd()) {
 						final Text text = new Text("You ended in " + moves + " moves");
-						final Button button = new Button("Reset");
 						final Stage stage1 = new Stage();
-						button.setOnAction(a -> {
+                        final Button button = CommonsFX.newButton("Reset", a -> {
 							reset();
 							stage1.close();
 							moves = 0;
 						});
-
 						final Group group = new Group(text, button);
 						group.setLayoutX(50);
 						group.setLayoutY(50);

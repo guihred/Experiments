@@ -1,8 +1,8 @@
 package labyrinth;
 
 import static labyrinth.LabyrinthWall.SIZE;
-import static simplebuilder.ResourceFXUtils.toExternalForm;
-import static simplebuilder.ResourceFXUtils.toFullPath;
+import static utils.ResourceFXUtils.toExternalForm;
+import static utils.ResourceFXUtils.toFullPath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +29,8 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import simplebuilder.MouseInScreenHandler;
-import simplebuilder.ResourceFXUtils;
+import utils.MouseInScreenHandler;
+import utils.ResourceFXUtils;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);

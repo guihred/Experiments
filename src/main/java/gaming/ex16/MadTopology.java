@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
-import javaexercises.DisjSets;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import utils.DisjSets;
 
 public class MadTopology {
     private List<MadCell> allCells = new ArrayList<>();

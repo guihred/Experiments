@@ -1,6 +1,5 @@
 package gaming.ex12;
 
-import gaming.ex12.resources.ImageResource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -102,6 +101,7 @@ public class PlatformMain extends Application {
 			}
 		};
 		a.start();
+
 
 	}
 

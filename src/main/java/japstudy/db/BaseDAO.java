@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class BaseDAO implements HasLogging {
 

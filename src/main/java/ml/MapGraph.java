@@ -19,8 +19,8 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import simplebuilder.CommonsFX;
-import simplebuilder.ResourceFXUtils;
+import utils.CommonsFX;
+import utils.ResourceFXUtils;
 
 public class MapGraph extends Application {
     private ObjectProperty<Country> currentCountry = new SimpleObjectProperty<>();

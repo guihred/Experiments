@@ -13,19 +13,19 @@ import java.util.stream.Stream;
 public class WordCount {
 
 	/**
-	 * Phrase.
-	 *
-	 * @param string
-	 *            the string
-	 * @return the map
-	 */
-	public Map<String, Integer> phrase(String string) {
+     * Phrase.
+     *
+     * @param phrase
+     *            the string
+     * @return the map
+     */
+    public Map<String, Integer> phrase(String phrase) {
 
-		Map<String, Long> collect = Stream.of(string.split("[^a-zA-Z0-9]+"))
+        Map<String, Long> splitWords = Stream.of(phrase.split("[^a-zA-Z0-9]+"))
 				.collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting()));
-		HashMap<String, Integer> hashMap = new HashMap<>();
-		collect.forEach((w, n) -> hashMap.put(w, n.intValue()));
-		return hashMap;
+        Map<String, Integer> wordCount = new HashMap<>();
+        splitWords.forEach((w, n) -> wordCount.put(w, n.intValue()));
+        return wordCount;
 	}
 
 }

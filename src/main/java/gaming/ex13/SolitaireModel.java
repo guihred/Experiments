@@ -70,7 +70,7 @@ public class SolitaireModel {
 		for (int i = 0; i < 7; i++) {
 			simpleStacks[i] = new CardStack();
 			simpleStacks[i].layoutXProperty().bind(scene.widthProperty().divide(7).multiply(i));
-			simpleStacks[i].setLayoutY(200);
+            simpleStacks[i].setLayoutY(100);
 			List<SolitaireCard> removeLastCards = cardStack.removeLastCards(i + 1);
 			removeLastCards.forEach(c -> c.setShown(false));
 			removeLastCards.get(i).setShown(true);

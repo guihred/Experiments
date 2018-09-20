@@ -1,7 +1,6 @@
 
 package gaming.ex06;
 
-import fxsamples.Xform;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -21,6 +20,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
+import utils.Xform;
 
 /**
  * MoleculeSampleApp

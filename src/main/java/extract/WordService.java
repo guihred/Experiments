@@ -12,8 +12,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class WordService implements HasLogging {
 

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.LocalTime;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public final class UnRar {
     public static final String SRC_DIRECTORY = "C:\\Users\\guilherme.hmedeiros\\git\\FXperiment";

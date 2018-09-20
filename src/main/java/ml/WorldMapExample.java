@@ -16,6 +16,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.*;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class WorldMapExample extends Application implements HasLogging {
 

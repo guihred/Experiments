@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 
 /**
  *
@@ -167,9 +168,8 @@ public class SudokuModel {
         }
         numberBoard.setVisible(false);
         if (sudokuSquares.stream().allMatch(e -> !e.isEmpty() && !e.isWrong())) {
-            final Button button = new Button("Reset");
             final Stage stage1 = new Stage();
-            button.setOnAction(a -> {
+            final Button button = CommonsFX.newButton("Reset", a -> {
                 reset();
                 stage1.close();
             });

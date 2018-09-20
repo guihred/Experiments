@@ -1,7 +1,6 @@
 package japstudy;
 
 import japstudy.db.HibernateUtil;
-import japstudy.db.JapaneseLesson;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -19,7 +18,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDisplay {
     public static final long NANO_IN_A_MILLI_SECOND = 1_000_000;

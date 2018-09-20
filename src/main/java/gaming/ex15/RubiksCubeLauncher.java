@@ -16,9 +16,9 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
-import simplebuilder.MouseInScreenHandler;
 import simplebuilder.SimpleTimelineBuilder;
+import utils.HasLogging;
+import utils.MouseInScreenHandler;
 
 public class RubiksCubeLauncher extends Application {
     public static final boolean DEBUG = true;

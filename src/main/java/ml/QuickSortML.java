@@ -3,7 +3,7 @@ package ml;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class QuickSortML {
 

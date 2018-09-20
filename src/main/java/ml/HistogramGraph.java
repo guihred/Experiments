@@ -11,6 +11,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import utils.CommonsFX;
 
 class HistogramGraph extends Canvas {
 	private DoubleProperty layout = new SimpleDoubleProperty(30);
@@ -45,7 +46,7 @@ class HistogramGraph extends Canvas {
         this.dataframe = dataframe;
 
 		dataframe.forEach((col, items) -> {
-            List<Color> generateColors = PieGraph.generateRandomColors(stats.size());
+            List<Color> generateColors = CommonsFX.generateRandomColors(stats.size());
             Iterator<Color> iterator = generateColors.iterator();
             colors.put(col, iterator.next());
             Map<Double, Long> histogram = dataframe.histogram(col, bins.get());

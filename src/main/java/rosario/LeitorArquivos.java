@@ -23,8 +23,8 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public final class LeitorArquivos {
     private static final String QTESTOQUECOMERCIAL = "qtestoquecomercial";

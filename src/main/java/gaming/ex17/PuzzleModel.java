@@ -7,7 +7,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class PuzzleModel extends Group {
 

@@ -11,7 +11,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class TriangleMeshes extends Application implements HasLogging {
 	private static final double SCENE_WIDTH = 600;

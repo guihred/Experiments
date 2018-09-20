@@ -9,15 +9,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import simplebuilder.SimpleTimelineBuilder;
 
 /**
  *
@@ -52,14 +51,12 @@ public class MemoryModel {
             Color c = colors[(i + i / colors.length) % colors.length];
 			List<MemorySquare> collect = Stream.of(map).flatMap(Stream::of).filter(s -> s.getMemoryImage() == null)
 					.collect(Collectors.toList());
-            final MemorySquare mem = collect.get(random.nextInt(collect.size()));
+            final MemorySquare mem = collect.remove(random.nextInt(collect.size()));
 			mem.setMemoryImage(value);
             mem.setColor(c);
             createMouseClickedEvento(mem);
 
-			collect = Stream.of(map).flatMap(Stream::of).filter(s -> s.getMemoryImage() == null)
-					.collect(Collectors.toList());
-            final MemorySquare mem2 = collect.get(random.nextInt(collect.size()));
+            final MemorySquare mem2 = collect.remove(random.nextInt(collect.size()));
 			mem2.setMemoryImage(value);
             mem2.setColor(c);
             createMouseClickedEvento(mem2);
@@ -74,15 +71,19 @@ public class MemoryModel {
                 nPlayed.set(nPlayed.get() + 1);
 				mem.setState(MemorySquare.State.SHOWN);
                 if (nPlayed.get() % 2 == 0) {
-					final List<MemorySquare> collect = Stream.of(map).flatMap(Stream::of)
-							.filter(s -> s.getState() == MemorySquare.State.SHOWN).collect(Collectors.toList());
-                    if (collect.stream().map(MemorySquare::getMemoryImage).distinct().count() == 1
-                            && collect.stream().map(MemorySquare::getColor).distinct().count() == 1) {
-						collect.forEach((MemorySquare c) -> c.setState(MemorySquare.State.FOUND));
+                    final List<MemorySquare> shownSquares = Stream.of(map).flatMap(Stream::of)
+							.filter(s -> s.getState() == MemorySquare.State.SHOWN)
+							.collect(Collectors.toList());
+                    if (shownSquares.stream().map(MemorySquare::getMemoryImage).distinct().count() == 1
+                            && shownSquares.stream().map(MemorySquare::getColor).distinct().count() == 1) {
+                        shownSquares.forEach((MemorySquare c) -> c.setState(MemorySquare.State.FOUND));
                     } else {
-						collect.forEach((MemorySquare c) -> new Timeline(
-								new KeyFrame(Duration.seconds(1), new KeyValue(c.stateProperty(), MemorySquare.State.HIDDEN)))
-										.play());
+                        shownSquares
+                                .forEach((MemorySquare c) -> 
+                                new SimpleTimelineBuilder()
+                                .addKeyFrame(Duration.seconds(1),
+                                        new KeyValue(c.stateProperty(), MemorySquare.State.HIDDEN))
+                                    .build().play());
 
                     }
                     nPlayed.set(0);

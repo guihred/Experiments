@@ -9,9 +9,6 @@ import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -21,7 +18,9 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import simplebuilder.HasLogging;
+import utils.Axis;
+import utils.CommonsFX;
+import utils.HasLogging;
 
 public class Chart3dGraph extends Application {
 
@@ -63,7 +62,7 @@ public class Chart3dGraph extends Application {
         createFaces(mesh, length);
 
         // material
-        Image diffuseMap = createImage(size, noiseArray);
+        Image diffuseMap = CommonsFX.createImage(size, noiseArray);
 
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(diffuseMap);
@@ -100,7 +99,7 @@ public class Chart3dGraph extends Application {
             mouseOldX = mousePosX;
             mouseOldY = mousePosY;
         });
-        makeZoomable(root);
+        CommonsFX.makeZoomable(root);
         //        CommonsFX.setSpinnable(cube, scene);
         //        CommonsFX.setZoomable(root);
         primaryStage.setResizable(false);
@@ -142,55 +141,6 @@ public class Chart3dGraph extends Application {
             }
         }
         return length;
-    }
-
-    /**
-	 * Create texture for uv mapping
-	 * 
-	 * @param size1
-	 * @param noise
-	 * @return
-	 */
-    public static Image createImage(double size1, float[][] noise) {
-		int width = (int) size1;
-		int height = (int) size1;
-
-        WritableImage wr = new WritableImage(width, height);
-        PixelWriter pw = wr.getPixelWriter();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                float value = noise[x][y];
-                double gray = normalizeValue(value, -.5, .5, 0., 1.);
-                gray = clamp(gray, 0, 1);
-                Color color = Color.RED.interpolate(Color.YELLOW, gray);
-                pw.setColor(x, y, color);
-            }
-        }
-
-        return wr;
-
-    }
-
-    public static void makeZoomable(StackPane control) {
-
-        final double MAX_SCALE = 20.0;
-        final double MIN_SCALE = 0.1;
-
-        control.addEventFilter(ScrollEvent.ANY, event -> {
-            double delta = 1.2;
-            double scale = control.getScaleX();
-            if (event.getDeltaY() < 0) {
-                scale /= delta;
-            } else {
-                scale *= delta;
-            }
-            scale = clamp(scale, MIN_SCALE, MAX_SCALE);
-            control.setScaleX(scale);
-            control.setScaleY(scale);
-            event.consume();
-
-        });
-
     }
 
     /**
@@ -296,19 +246,6 @@ public class Chart3dGraph extends Application {
         }
         return noiseArray;
 
-    }
-    public static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
-        return (value - min) * (newMax - newMin) / (max - min) + newMin;
-    }
-
-    public static double clamp(double value, double min, double max) {
-        if (Double.compare(value, min) < 0) {
-            return min;
-        }
-        if (Double.compare(value, max) > 0) {
-            return max;
-        }
-        return value;
     }
 
 

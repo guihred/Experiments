@@ -25,8 +25,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleComboBoxBuilder;
+import utils.ResourceFXUtils;
 
 public class WordSearchApp extends Application {
 

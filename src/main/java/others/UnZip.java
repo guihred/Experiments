@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public final class UnZip {
     public static final String ZIPPED_FILE_FOLDER = "C:\\Users\\guilherme.hmedeiros\\git\\FXperiment";

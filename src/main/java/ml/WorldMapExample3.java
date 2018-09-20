@@ -9,10 +9,10 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.ResourceFXUtils;
 
 public class WorldMapExample3 extends Application {
 

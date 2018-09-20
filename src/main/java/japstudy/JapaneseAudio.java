@@ -1,7 +1,6 @@
 package japstudy;
 
 import japstudy.db.HibernateUtil;
-import japstudy.db.JapaneseLesson;
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
@@ -9,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
-import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public enum JapaneseAudio {
     AUDIO_1(1, "jaf01lesson122216.mp3"),

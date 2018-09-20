@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class DataframeML implements HasLogging {
 

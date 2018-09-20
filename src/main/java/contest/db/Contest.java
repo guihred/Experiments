@@ -1,5 +1,6 @@
 package contest.db;
 
+import japstudy.db.BaseEntity;
 import java.util.Objects;
 import javax.persistence.*;
 

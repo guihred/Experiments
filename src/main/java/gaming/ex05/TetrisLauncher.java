@@ -1,7 +1,6 @@
 package gaming.ex05;
 
 import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -15,10 +14,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleTimelineBuilder;
 
 public class TetrisLauncher extends Application {
 	private final GridPane gridPane = new GridPane();
 	private final TetrisModel tetrisModel = new TetrisModel(gridPane);
+    private Timeline timeline;
 
 	private void handleKeyPressed(KeyEvent e) {
 		final KeyCode code = e.getCode();
@@ -62,9 +63,9 @@ public class TetrisLauncher extends Application {
     public void start(Stage stage) throws Exception {
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         final Scene scene = new Scene(gridPane);
-        final Timeline timeline = new Timeline();
-		timeline.getKeyFrames().add(new KeyFrame(new Duration(500), t -> tetrisModel.movePiecesTimeline(timeline)));
-		timeline.setCycleCount(Animation.INDEFINITE);
+        timeline = new SimpleTimelineBuilder()
+                .addKeyFrame(new Duration(500), t -> tetrisModel.movePiecesTimeline(timeline))
+                .cycleCount(Animation.INDEFINITE).build();
         timeline.play();
 		scene.setOnKeyPressed(this::handleKeyPressed);
         stage.setScene(scene);

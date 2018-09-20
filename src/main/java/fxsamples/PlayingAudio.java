@@ -1,6 +1,5 @@
 package fxsamples;
 
-import fxproexercises.ch08.Chapter8Resource;
 import java.net.MalformedURLException;
 import java.util.Random;
 import javafx.application.Application;
@@ -24,8 +23,9 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
 import simplebuilder.SimpleCircleBuilder;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 /**
  * Chapter 7 Playing Audio using JavaFX media API.
@@ -59,7 +59,7 @@ public class PlayingAudio extends Application {
 		Group root = new Group();
 		Scene scene = new Scene(root, 551, 270, Color.rgb(0, 0, 0, 0));
 		// load JavaFX CSS style
-        scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
+        scene.getStylesheets().add(ResourceFXUtils.toURL("media.css").toString());
 		mainStage.setScene(scene);
 		// Initialize stage to be movable via mouse
 		initMovablePlayer();

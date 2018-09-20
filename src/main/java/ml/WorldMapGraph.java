@@ -14,8 +14,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
-import simplebuilder.CommonsFX;
-import simplebuilder.HasLogging;
+import utils.CommonsFX;
+import utils.HasLogging;
 
 public class WorldMapGraph extends Canvas implements HasLogging {
     protected static final String NO_INFO = "No info";
@@ -127,7 +127,7 @@ public class WorldMapGraph extends Canvas implements HasLogging {
             return;
         }
 
-        List<Color> generateColors = PieGraph.generateRandomColors(categorize.size() + 1);
+        List<Color> generateColors = CommonsFX.generateRandomColors(categorize.size() + 1);
         int k = 0;
         for (String label : categorize) {
             categoryMap.put(label, generateColors.get(k));

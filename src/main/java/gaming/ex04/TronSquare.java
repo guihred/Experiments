@@ -5,7 +5,7 @@
  */
 package gaming.ex04;
 
-import static gaming.ex01.SnakeModel.MAP_SIZE;
+import static gaming.ex04.TronModel.MAP_SIZE;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -21,15 +21,15 @@ public class TronSquare extends Region {
     private final int i;
     private final int j;
 
-	private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
+	private final ObjectProperty<TronState> state = new SimpleObjectProperty<>(TronState.NONE);
 
     public TronSquare(int i, int j) {
 		this.i = i;
 		this.j = j;
         setPrefSize(10, 10);
         styleProperty().bind(
-                Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;").otherwise(
-                        Bindings.when(state.isEqualTo(SnakeState.SNAKE))
+                Bindings.when(state.isEqualTo(TronState.FOOD)).then("-fx-background-color:black;").otherwise(
+                        Bindings.when(state.isEqualTo(TronState.SNAKE))
                         .then("-fx-background-color:green;")
                         .otherwise("-fx-background-color:gray;"
                         )));
@@ -66,11 +66,11 @@ public class TronSquare extends Region {
 
 
 
-	public void setState(SnakeState value) {
+	public void setState(TronState value) {
 		state.set(value);
 	}
 
-	public SnakeState getState() {
+	public TronState getState() {
 		return state.get();
 	}
 

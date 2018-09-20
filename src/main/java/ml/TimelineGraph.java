@@ -13,6 +13,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import org.apache.commons.lang3.StringUtils;
+import utils.CommonsFX;
 
 class TimelineGraph extends Canvas {
     private String countryNameColumn = "﻿Country Name";
@@ -86,7 +87,7 @@ class TimelineGraph extends Canvas {
         double j2 = (maxLayout - layout.get()) / ybins.get();
         boolean colorEmpty = colors.isEmpty();
 
-        List<Color> generateRandomColors = PieGraph.generateRandomColors(list.size());
+        List<Color> generateRandomColors = CommonsFX.generateRandomColors(list.size());
         for (int i = 0; i < list.size(); i++) {
             String labelRow = list.get(i);
             Color value = colors.get(labelRow);

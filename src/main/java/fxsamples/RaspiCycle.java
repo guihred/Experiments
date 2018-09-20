@@ -18,7 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 /**
  *

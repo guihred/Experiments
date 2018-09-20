@@ -18,7 +18,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class Labyrinth3DKillerGhostsAndBalls extends Application implements CommomLabyrinth {
 

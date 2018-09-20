@@ -19,7 +19,7 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class InlineModelViewer extends Application {
 

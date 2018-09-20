@@ -1,8 +1,6 @@
 package japstudy;
 
 import japstudy.db.HibernateUtil;
-import japstudy.db.JapaneseLesson;
-import japstudy.db.LessonDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,7 +14,7 @@ import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public final class JapaneseLessonReader implements HasLogging {
     private static final Logger LOGGER = HasLogging.log(JapaneseLessonReader.class);

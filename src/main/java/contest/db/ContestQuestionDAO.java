@@ -1,6 +1,7 @@
 package contest.db;
 
 import japstudy.db.BaseDAO;
+import japstudy.db.BaseEntity;
 import java.util.List;
 
 public class ContestQuestionDAO extends BaseDAO {

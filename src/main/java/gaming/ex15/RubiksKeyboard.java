@@ -6,7 +6,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class RubiksKeyboard implements EventHandler<KeyEvent> , HasLogging{
 	/**

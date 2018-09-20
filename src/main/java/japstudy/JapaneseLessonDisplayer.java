@@ -1,6 +1,5 @@
 package japstudy;
 
-import japstudy.db.JapaneseLesson;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;

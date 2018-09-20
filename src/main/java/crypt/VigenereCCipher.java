@@ -1,7 +1,7 @@
 package crypt;
 
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class VigenereCCipher implements HasLogging {
     private static final Logger LOGGER = HasLogging.log(VigenereCCipher.class);

@@ -15,8 +15,8 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class JewelViewer extends Application {
     private static final Logger LOGGER = HasLogging.log(JewelViewer.class);
@@ -162,15 +162,15 @@ public class JewelViewer extends Application {
         Mesh mesh = ResourceFXUtils.importStlMesh(file);
 		MeshView meshViews = new MeshView(mesh);
 		meshViews.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
+        meshViews.setTranslateZ(VIEWPORT_SIZE / 2);
 		meshViews.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
-		meshViews.setTranslateZ(VIEWPORT_SIZE / 2);
 		meshViews.setScaleX(MODEL_SCALE_FACTOR);
+        meshViews.setScaleZ(MODEL_SCALE_FACTOR);
 		meshViews.setScaleY(MODEL_SCALE_FACTOR);
-		meshViews.setScaleZ(MODEL_SCALE_FACTOR);
 
 		PhongMaterial sample = new PhongMaterial(JEWEL_COLOR);
+        sample.setSpecularPower(16);
 		sample.setSpecularColor(LIGHT_COLOR);
-		sample.setSpecularPower(16);
 		meshViews.setMaterial(sample);
 
 		meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS), new Rotate(-90, Rotate.X_AXIS));

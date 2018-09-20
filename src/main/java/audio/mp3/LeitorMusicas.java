@@ -1,26 +1,20 @@
 package audio.mp3;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
 import javax.swing.filechooser.FileSystemView;
 import org.apache.commons.lang3.StringUtils;
 import org.blinkenlights.jid3.ID3Tag;
 import org.blinkenlights.jid3.MP3File;
 import org.blinkenlights.jid3.v1.ID3V1Tag.Genre;
 import org.blinkenlights.jid3.v1.ID3V1_0Tag;
-import org.blinkenlights.jid3.v2.APICID3V2Frame;
-import org.blinkenlights.jid3.v2.ID3V2Frame;
-import org.blinkenlights.jid3.v2.ID3V2Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public final class LeitorMusicas {
     private static final Logger LOGGER = HasLogging.log(LeitorMusicas.class);
@@ -52,10 +46,6 @@ public final class LeitorMusicas {
         } catch (Exception e) {
             LOGGER.trace("", e);
         }
-		
-
-
-		
 		return musicas;
 	}
 
@@ -153,30 +143,7 @@ public final class LeitorMusicas {
 		return y;
 	}
 
-    public static Image extractEmbeddedImage(File mp3) {
-        MP3File mp31 = new MP3File(mp3);
-        try {
-            for (ID3Tag tag : mp31.getTags()) {
 
-                if (tag instanceof ID3V2_3_0Tag) {
-                    ID3V2_3_0Tag tag2 = (ID3V2_3_0Tag) tag;
-
-                    if (tag2.getAPICFrames() != null && tag2.getAPICFrames().length > 0) {
-                        // Simply take the first image that is available.
-                        APICID3V2Frame frame = tag2.getAPICFrames()[0];
-                        return new Image(new ByteArrayInputStream(frame.getPictureData()));
-                    }
-                }
-            }
-            ID3V2Tag id3v2Tag = mp31.getID3V2Tag();
-            ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
-            String singleFramesStr = Arrays.toString(singleFrames);
-            LOGGER.trace("SingleFrames={}", singleFramesStr);
-        } catch (Exception e) {
-            LOGGER.trace("", e);
-        }
-        return null;
-    }
 
 
 

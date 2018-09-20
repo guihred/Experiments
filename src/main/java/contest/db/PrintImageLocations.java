@@ -18,7 +18,7 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 /**
  * This is an example on how to get the x/y coordinates of image locations.

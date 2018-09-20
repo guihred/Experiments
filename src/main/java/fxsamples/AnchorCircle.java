@@ -5,6 +5,7 @@ import javafx.scene.Cursor;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
+import utils.Delta;
 
 // a draggable anchor displayed around a point.
 public class AnchorCircle extends Circle {

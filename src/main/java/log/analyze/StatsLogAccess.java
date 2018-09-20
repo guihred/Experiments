@@ -19,8 +19,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
-import simplebuilder.ResourceFXUtils;
+import utils.FunctionEx;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class StatsLogAccess {
     private static final String LOG_PREFIX = "localhost_access_log";

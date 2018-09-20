@@ -20,6 +20,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import simplebuilder.*;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class TimelineExample extends Application {
 

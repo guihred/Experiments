@@ -14,7 +14,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import simplebuilder.CommonsFX;
+import utils.CommonsFX;
 
 public interface CommomLabyrinth {
 	Collection<LabyrinthWall> getLabyrinthWalls();

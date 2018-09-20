@@ -10,7 +10,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);

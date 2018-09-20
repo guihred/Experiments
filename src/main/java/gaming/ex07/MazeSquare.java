@@ -1,6 +1,5 @@
 package gaming.ex07;
 
-import gaming.ex14.PacmanModel;
 import java.util.*;
 import java.util.Map.Entry;
 import javafx.beans.binding.Bindings;
@@ -9,10 +8,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.BoundingBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Line;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class MazeSquare extends BorderPane implements HasLogging {
-	public static final int SQUARE_SIZE = 20;
+    public static final double SQUARE_SIZE = 20;
     private static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
 
 	private final BooleanProperty visited = new SimpleBooleanProperty(false);
@@ -107,17 +106,17 @@ public class MazeSquare extends BorderPane implements HasLogging {
 	public boolean isInBounds(double x, double y) {
 		if (bounds == null) {
 
-			double layoutX = i * PacmanModel.SQUARE_SIZE;
-			double layoutX2 = PacmanModel.MAZE_SIZE * 2 * PacmanModel.SQUARE_SIZE - i * PacmanModel.SQUARE_SIZE
-					- PacmanModel.SQUARE_SIZE;
-			double layoutY = j * PacmanModel.SQUARE_SIZE;
-			double layoutY2 = PacmanModel.MAZE_SIZE * 2 * PacmanModel.SQUARE_SIZE - j * PacmanModel.SQUARE_SIZE
-					- PacmanModel.SQUARE_SIZE;
+            double layoutX = i * MazeSquare.SQUARE_SIZE;
+            double layoutX2 = MazeModel.MAZE_SIZE * 2 * MazeSquare.SQUARE_SIZE - i * MazeSquare.SQUARE_SIZE
+                    - MazeSquare.SQUARE_SIZE;
+            double layoutY = j * MazeSquare.SQUARE_SIZE;
+            double layoutY2 = MazeModel.MAZE_SIZE * 2 * MazeSquare.SQUARE_SIZE - j * MazeSquare.SQUARE_SIZE
+                    - MazeSquare.SQUARE_SIZE;
 			List<BoundingBox> arrayList = new ArrayList<>();
-			arrayList.add(new BoundingBox(layoutX, layoutY, PacmanModel.SQUARE_SIZE, PacmanModel.SQUARE_SIZE));
-			arrayList.add(new BoundingBox(layoutX, layoutY2, PacmanModel.SQUARE_SIZE, PacmanModel.SQUARE_SIZE));
-			arrayList.add(new BoundingBox(layoutX2, layoutY, PacmanModel.SQUARE_SIZE, PacmanModel.SQUARE_SIZE));
-			arrayList.add(new BoundingBox(layoutX2, layoutY2, PacmanModel.SQUARE_SIZE, PacmanModel.SQUARE_SIZE));
+            arrayList.add(new BoundingBox(layoutX, layoutY, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));
+            arrayList.add(new BoundingBox(layoutX, layoutY2, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));
+            arrayList.add(new BoundingBox(layoutX2, layoutY, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));
+            arrayList.add(new BoundingBox(layoutX2, layoutY2, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));
 
 			bounds = arrayList;
 		}

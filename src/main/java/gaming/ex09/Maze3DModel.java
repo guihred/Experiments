@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import simplebuilder.SimpleTimelineBuilder;
 
 /**
  *
@@ -31,17 +29,17 @@ public class Maze3DModel {
 	private List<Maze3DSquare> history = new ArrayList<>();
     private int row;
     private int column;
+    private Timeline timeline;
 
 	public Maze3DModel(GridPane gridPane) {
 		initializeMaze(gridPane);
         maze[0][0].setCenter(new Circle(5));
         history.add(maze[0][0]);
         List<String> check = new ArrayList<>();
-        Timeline timeline = new Timeline();
-        final EventHandler<ActionEvent> eventHandler = event -> createMazeLoop(check, timeline);
-		final KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.01), eventHandler);
-        timeline.getKeyFrames().add(keyFrame);
-		timeline.setCycleCount(Animation.INDEFINITE);
+        timeline = new SimpleTimelineBuilder()
+                .addKeyFrame(Duration.seconds(0.01), event -> createMazeLoop(check))
+                .cycleCount(Animation.INDEFINITE)
+                .build();
         timeline.play();
 
         
@@ -50,7 +48,7 @@ public class Maze3DModel {
         
     }
 
-	private void createMazeLoop(List<String> check, Timeline timeline) {
+    private void createMazeLoop(List<String> check) {
 		while (!history.isEmpty()) {
 			maze[row][column].setVisited(true);
 			check.clear();

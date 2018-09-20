@@ -6,7 +6,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import simplebuilder.ResourceFXUtils;
+import utils.ResourceFXUtils;
 
 public class NumberPad extends Application {
 

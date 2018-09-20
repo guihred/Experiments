@@ -1,7 +1,7 @@
 package others;
 
 import java.util.Random;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public final class RandomHelloWorld {
 

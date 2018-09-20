@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import simplebuilder.SimpleTimelineBuilder;
 
 public class ArkanoidModel {
 
@@ -32,7 +33,6 @@ public class ArkanoidModel {
 				.addAll(range(0, 105).mapToObj(i -> new Rectangle(i % 15 * 25 + 10, i / 15 * 15 + 50, 20, 10))
 						.peek(r -> r.setFill(Color.AQUA)).collect(toList()));
 		group.getChildren().add(circle);
-		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(10), event -> gameLoop()));
 		scene.setOnKeyPressed((KeyEvent event) -> {
 			final KeyCode code = event.getCode();
             switch (code) {
@@ -55,8 +55,10 @@ public class ArkanoidModel {
 				rectangle.setX(event.getX());
 			}
 		});
-
-		timeline.setCycleCount(Animation.INDEFINITE);
+        Timeline timeline = new SimpleTimelineBuilder()
+                .addKeyFrame(new KeyFrame(Duration.millis(10), event -> gameLoop()))
+                .cycleCount(Animation.INDEFINITE)
+                .build();
 		timeline.play();
 	}
 

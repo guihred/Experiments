@@ -1,6 +1,5 @@
 package japstudy;
 
-import japstudy.db.JapaneseLesson;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -23,8 +22,8 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.CommonsFX;
-import simplebuilder.HasLogging;
+import utils.CommonsFX;
+import utils.HasLogging;
 
 public class JapaneseLessonEditingDisplay extends Application implements HasLogging {
     protected SimpleIntegerProperty current = new SimpleIntegerProperty(1);

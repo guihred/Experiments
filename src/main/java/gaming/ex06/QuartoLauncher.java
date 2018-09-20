@@ -1,6 +1,5 @@
 package gaming.ex06;
 
-import fxsamples.Xform;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -23,8 +22,9 @@ import javafx.scene.shape.Shape3D;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import simplebuilder.HasLogging;
 import simplebuilder.SimpleCircleBuilder;
+import utils.HasLogging;
+import utils.Xform;
 
 public class QuartoLauncher extends Application implements HasLogging{
 

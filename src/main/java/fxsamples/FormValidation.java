@@ -21,7 +21,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class FormValidation extends Application implements HasLogging {
 	private static final String MY_PASS = "senha";

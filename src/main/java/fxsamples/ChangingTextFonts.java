@@ -11,7 +11,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class ChangingTextFonts extends Application {
     private static final String INTRO_TEXT = "JavaFX 8: Intro. by Example";

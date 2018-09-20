@@ -1,7 +1,6 @@
 package japstudy;
 
 import japstudy.db.HibernateUtil;
-import japstudy.db.JapaneseLesson;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;

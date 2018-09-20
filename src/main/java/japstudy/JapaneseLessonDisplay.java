@@ -1,7 +1,6 @@
 package japstudy;
 
 import japstudy.db.HibernateUtil;
-import japstudy.db.JapaneseLesson;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.*;

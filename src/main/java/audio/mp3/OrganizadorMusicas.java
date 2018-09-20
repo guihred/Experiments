@@ -24,7 +24,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javax.swing.filechooser.FileSystemView;
 import org.slf4j.Logger;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class OrganizadorMusicas extends Application {
     private static final Logger LOGGER = HasLogging.log(OrganizadorMusicas.class);
@@ -120,7 +121,7 @@ public class OrganizadorMusicas extends Application {
 			root.getChildren().addAll(criarField("Artista", selectedItem.artistaProperty()));
 			root.getChildren().addAll(criarField("Álbum", selectedItem.albumProperty()));
 
-            Image imageData = LeitorMusicas.extractEmbeddedImage(selectedItem.getArquivo());
+            Image imageData = ResourceFXUtils.extractEmbeddedImage(selectedItem.getArquivo());
             if (imageData != null) {
                 root.getChildren().addAll(new ImageView(imageData));
 			} else {

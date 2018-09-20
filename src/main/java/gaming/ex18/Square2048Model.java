@@ -34,7 +34,6 @@ public class Square2048Model {
         getMap()[random.nextInt(MAP_WIDTH)][random.nextInt(MAP_HEIGHT)].setNumber(newNumber());
         getMap()[random.nextInt(MAP_WIDTH)][random.nextInt(MAP_HEIGHT)].setNumber(newNumber());
 
-		System.currentTimeMillis();
     }
 
     private int newNumber() {

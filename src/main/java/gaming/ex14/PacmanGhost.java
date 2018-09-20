@@ -16,7 +16,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import simplebuilder.HasLogging;
+import utils.HasLogging;
 
 public class PacmanGhost extends Group implements HasLogging {
 	private ObjectProperty<GhostStatus> status = new SimpleObjectProperty<>(GhostStatus.ALIVE);
