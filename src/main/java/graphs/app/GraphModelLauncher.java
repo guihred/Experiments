@@ -1,5 +1,7 @@
 package graphs.app;
 
+import graphs.entities.*;
+import graphs.topology.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.animation.Animation;
@@ -84,6 +86,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
 		ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology, new RandomTopology(50, graph), new TreeTopology(
                         30, graph),
                 new CircleTopology(30, graph), new GabrielTopology(30, graph), new WordTopology(graph),
+                new PackageTopology(graph),
                 new ProjectTopology(graph));
 
         SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(BaseTopology::getName);
@@ -105,7 +108,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
             if (status == Animation.Status.RUNNING) {
 				timeline.stop();
 			}
-			delaunayTopology.triangulate();
+            graph.triangulate();
             if (status == Animation.Status.RUNNING) {
 				timeline.play();
 			}

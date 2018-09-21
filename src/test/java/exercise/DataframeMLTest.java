@@ -2,10 +2,8 @@ package exercise;
 
 import static language.FXTesting.measureTime;
 
-import java.io.File;
-import ml.DataframeBuilder;
-import ml.DataframeML;
-import ml.Word2VecExample;
+import ml.data.DataframeBuilder;
+import ml.data.DataframeML;
 import org.junit.Test;
 import utils.HasLogging;
 
@@ -14,15 +12,7 @@ public class DataframeMLTest implements HasLogging {
 
 
 
-    @Test
-    public void testWord2Vec() {
-        File file = new File(Word2VecExample.PATH_TO_SAVE_MODEL_TXT);
-        if (file.exists()) {
-            boolean delete = file.delete();
-            getLogger().info("File deleted {}", delete);
-        }
-        measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
-    }
+
 
     @Test
     public void testTransformOneValue() {

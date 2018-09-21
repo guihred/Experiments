@@ -16,6 +16,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import ml.data.DataframeML;
+import ml.graph.HistogramGraph;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ResourceFXUtils;

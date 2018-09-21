@@ -50,6 +50,8 @@ import graphs.app.GraphModelLauncher;
 import labyrinth.*;
 import language.FXTesting;
 import ml.*;
+import ml.graph.Chart3dGraph;
+import ml.graph.MapGraph;
 import org.junit.Test;
 import physics.Physics;
 import rosario.RosarioComparadorArquivos;

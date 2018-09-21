@@ -8,6 +8,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
+import ml.data.DataframeML;
 
 public class RegressionChartExample extends Application {
     public static void main(String[] args) {

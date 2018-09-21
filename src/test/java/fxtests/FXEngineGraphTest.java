@@ -1,7 +1,7 @@
 package fxtests;
 
-import graphs.app.Cell;
 import graphs.app.GraphModelLauncher;
+import graphs.entities.Cell;
 import java.util.Set;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;

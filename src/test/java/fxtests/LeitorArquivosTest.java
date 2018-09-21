@@ -14,16 +14,21 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import language.FXTesting;
+import ml.Word2VecExample;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.testfx.util.WaitForAsyncUtils;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
 import utils.FunctionEx;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class LeitorArquivosTest {
+    private static final Logger LOG = HasLogging.log(LeitorArquivosTest.class);
+
     @BeforeClass
     public static void init() {
         new JFXPanel().toString();
@@ -81,6 +86,15 @@ public class LeitorArquivosTest {
         ExcelService.getExcel((i, s) -> medicamentos.subList(Integer.min(i, maxI), Integer.min(i + s, maxI)), campos,
                 new File(new File("out"), "sngpcMeds.xlsx"));
 
+    }
+    @Test
+    public void testWord2Vec() {
+        File file = new File(Word2VecExample.PATH_TO_SAVE_MODEL_TXT);
+        if (file.exists()) {
+            boolean delete = file.delete();
+            LOG.info("File deleted {}", delete);
+        }
+        measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
     }
 
     @Test

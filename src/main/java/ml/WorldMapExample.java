@@ -14,6 +14,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import ml.data.DataframeML;
+import ml.graph.WorldMapGraph;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.*;
 import utils.HasLogging;

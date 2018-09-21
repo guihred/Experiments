@@ -11,7 +11,6 @@ import ex.j9.ch4.Ch4;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.Line;
 import ex.j9.ch4.Point;
-import exercism.MatrixSolver;
 import image.ImageCreating;
 import image.ImageLoading;
 import japstudy.HiraganaMaker;
@@ -21,14 +20,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.DoubleStream;
-import ml.FastFourierTransform;
-import ml.QuickSortML;
+import ml.data.FastFourierTransform;
+import ml.data.QuickSortML;
 import org.apache.commons.math3.complex.Complex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import others.*;
 import utils.HasLogging;
+import utils.MatrixSolver;
 
 public class IndependentTest implements HasLogging {
     private static final Logger LOGGER = HasLogging.log(IndependentTest.class);
