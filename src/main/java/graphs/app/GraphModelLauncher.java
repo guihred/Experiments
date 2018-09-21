@@ -1,7 +1,7 @@
 package graphs.app;
 
+import graphs.app.*;
 import graphs.entities.*;
-import graphs.topology.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.animation.Animation;

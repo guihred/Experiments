@@ -308,7 +308,6 @@ public final class DataframeUtils extends DataframeML {
             dataframeML.formatMap.put(header, String.class);
             dataframeML.map(header, e -> Objects.toString(e, ""));
         }
-
         return number;
     }
 

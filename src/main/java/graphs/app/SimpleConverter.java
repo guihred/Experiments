@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Function;
 import javafx.util.StringConverter;
 
-class SimpleConverter<T> extends StringConverter<T> {
+public class SimpleConverter<T> extends StringConverter<T> {
 	private Function<T, String> func;
 	private Map<String, T> mapaLayout = new HashMap<>();
 

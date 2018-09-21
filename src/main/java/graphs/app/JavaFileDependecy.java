@@ -1,4 +1,4 @@
-package graphs.topology;
+package graphs.app;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

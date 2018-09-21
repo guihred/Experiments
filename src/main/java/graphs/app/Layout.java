@@ -1,4 +1,4 @@
-package graphs.topology;
+package graphs.app;
 
 @FunctionalInterface
 public interface Layout {

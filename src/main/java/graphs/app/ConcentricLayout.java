@@ -1,4 +1,4 @@
-package graphs.topology;
+package graphs.app;
 
 import graphs.entities.*;
 import java.util.Comparator;
