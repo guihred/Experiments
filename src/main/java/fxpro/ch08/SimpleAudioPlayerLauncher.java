@@ -5,7 +5,6 @@
  */
 package fxpro.ch08;
 
-import java.io.File;
 import java.net.URL;
 import javafx.application.Application;
 import javafx.collections.MapChangeListener;
@@ -27,7 +26,6 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class SimpleAudioPlayerLauncher extends Application {
-    private static final String DEFAULT_IMAGE = "C:\\Users\\Note\\Pictures\\fb.jpg";
     private Label album;
     private ImageView albumCover;
     private Label artist;
@@ -45,7 +43,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         year.setId("year");
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.2);
-        final Image image = new Image(new File(DEFAULT_IMAGE).toURI().toString());
+		final Image image = new Image(MetadataView.DEFAULT_PICTURE);
         albumCover = new ImageView(image);
         albumCover.setFitWidth(240);
         albumCover.setPreserveRatio(true);

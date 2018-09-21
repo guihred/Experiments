@@ -2,10 +2,15 @@ package pdfreader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -28,16 +33,21 @@ import utils.CommonsFX;
 import utils.HasLogging;
 
 public class PdfReader extends Application implements HasLogging {
-    private ObservableList<String> lines = FXCollections.observableArrayList();
+	private static final String SPLIT_WORDS_REGEX = "[\\s]+";
+	private ObservableList<String> lines = FXCollections.observableArrayList();
     private ObservableList<String> skipLines = FXCollections.observableArrayList();
     private ObservableList<String> words = FXCollections.observableArrayList();
+	private ObservableList<List<String>> pages = FXCollections.observableArrayList();
     private Timeline timeline;
     private final Text currentWord = new Text();
     private final Text currentLine = new Text();
+	private final Text currentPage = new Text();
     private int index;
     private int lineIndex;
+	private IntegerProperty pageIndex = new SimpleIntegerProperty(0);
     private static final File PDF_FILE = new File(
-            "C:\\Users\\guilherme.hmedeiros\\Documents\\BaseConhecimento\\CEH-V8\\Certified Ethical Hacker (CEH) v.8 Courseware Searchable PROPER\\CEHv8 Module 02 Footprinting and Reconnaissance.pdf");
+			"C:\\Users\\guigu\\Documents\\Estudo\\H.G.Wells The Time Machine.pdf");
+	private int numberOfPages;
     @Override
     public void start(Stage primaryStage) throws Exception {
         readFile(PDF_FILE);
@@ -53,36 +63,41 @@ public class PdfReader extends Application implements HasLogging {
         final Button nextButton = CommonsFX.newButton("_Next", e -> {
 
             if (lineIndex < lines.size()) {
-
                 String value = lines.get(lineIndex++);
                 skipLines.add(value);
                 currentLine.setText(value);
-                words.setAll(Arrays.asList(value.split(" ")));
+				words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
                 index = 0;
                 if (lineIndex >= lines.size()) {
-                    timeline.stop();
+					timeline.stop();
                 }
             }
         });
         timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(200), e -> {
             if (index >= words.size()) {
+				if (lineIndex >= lines.size()) {
+					lines.setAll(pages.get(pageIndex.get()));
+					pageIndex.set(pageIndex.get() + 1);
+					lineIndex = 0;
+					if (pageIndex.get() >= pages.size()) {
+						timeline.stop();
+					}
+				}
                 String value = lines.get(lineIndex++);
                 if (skipLines.contains(value)) {
                     value = lines.get(lineIndex++);
                 }
                 currentLine.setText(value);
-                words.setAll(Arrays.asList(value.split(" ")));
+				words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
                 index = 0;
-                if (lineIndex >= lines.size()) {
-                    timeline.stop();
-                }
             }
             if (!words.isEmpty()) {
                 currentWord.setText(words.get(index++));
             }
-        }).cycleCount(Timeline.INDEFINITE).build();
+		}).cycleCount(Animation.INDEFINITE).build();
         currentWord.setFont(Font.font(60));
-        VBox root = new VBox(currentWord, currentLine, startButton, nextButton);
+		currentPage.textProperty().bind(pageIndex.asString().concat("/" + numberOfPages));
+		VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton);
         currentLine.wrappingWidthProperty().bind(root.widthProperty().subtract(30));
         currentLine.setTextAlignment(TextAlignment.CENTER);
         root.setAlignment(Pos.CENTER);
@@ -102,22 +117,26 @@ public class PdfReader extends Application implements HasLogging {
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
             PDFTextStripper pdfStripper = new PDFTextStripper();
-            int numberOfPages = pdDoc.getNumberOfPages();
+            numberOfPages = pdDoc.getNumberOfPages();
 
-            for (int i = 3; i < numberOfPages; i++) {
+			int start = 28;
+			for (int i = start; i < numberOfPages; i++) {
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
                 String parsedText = pdfStripper.getText(pdDoc);
                 String[] pageLines = parsedText.split("\r\n");
+				List<String> lines1 = new ArrayList<>();
                 for (String string : pageLines) {
-                    if (string.split(" ").length >= 4 * string.length() / 10) {
+					if (string.split(SPLIT_WORDS_REGEX).length >= 4 * string.length() / 10) {
                         string = string.replaceAll("(?<=[^\\\\s]) (?=[^\\s])", "");
                     }
 
-                    lines.add(string);
+					lines1.add(string);
                 }
+				pages.add(lines1);
 
-            }
+			}
+			numberOfPages -= start;
         } catch (Exception e) {
             getLogger().error("", e);
         }

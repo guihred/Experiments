@@ -29,7 +29,7 @@ public enum JapaneseAudio {
     AUDIO_15(15, "jaf15lesson122216"),
     AUDIO_16(16, "jaf16lesson122216"),
     AUDIO_17(17, "jaf17lesson122216");
-    private static final String OUTPUT_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\mobileApps\\AndroidTest\\app\\src\\main\\assets\\create_database.sql";
+	private static final String OUTPUT_FILE = "out/create_database.sql";
     private final String file;
     private final int lesson;
 

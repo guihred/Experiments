@@ -9,7 +9,11 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
@@ -20,14 +24,11 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class SongModel implements HasLogging {
-    private static final String DEFAULT_IMAGE = "C:\\Users\\Note\\Pictures\\fb.jpg";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SongModel.class);
 
-    private static final String DEFAULT_IMG_URL
-            = new File(DEFAULT_IMAGE).toURI().toString();
     private static final Image DEFAULT_ALBUM_COVER
-            = new Image(DEFAULT_IMG_URL);
+			= new Image(MetadataView.DEFAULT_PICTURE);
     private final StringProperty album
             = new SimpleStringProperty(this, "album");
     private final StringProperty artist

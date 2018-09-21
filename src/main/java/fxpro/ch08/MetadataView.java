@@ -5,7 +5,6 @@
  */
 package fxpro.ch08;
 
-import java.io.File;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
@@ -17,6 +16,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import utils.ResourceFXUtils;
 
 /**
  *
@@ -24,7 +24,7 @@ import javafx.scene.layout.RowConstraints;
  */
 public class MetadataView extends BaseSongView {
 
-    private static final String DEFAULT_PICTURE = "C:\\Users\\Note\\Pictures\\fb.jpg";
+	public static final String DEFAULT_PICTURE = ResourceFXUtils.toExternalForm("fb.jpg");
 
     public MetadataView(SongModel song) {
         super(song);
@@ -46,7 +46,7 @@ public class MetadataView extends BaseSongView {
         year.textProperty().bind(songModel.yearProperty());
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.2);
-        final Image image = new Image(new File(DEFAULT_PICTURE).toURI().toString());
+		final Image image = new Image(DEFAULT_PICTURE);
         ImageView albumCover = new ImageView(image);
         albumCover.setFitWidth(240);
         albumCover.setPreserveRatio(true);
