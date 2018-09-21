@@ -1,10 +1,18 @@
 package rosario;
 
-import static rosario.LeitorArquivos.*;
+import static rosario.LeitorArquivos.CODIGO;
+import static rosario.LeitorArquivos.LOTE;
+import static rosario.LeitorArquivos.NOME;
+import static rosario.LeitorArquivos.QUANTIDADE;
+import static rosario.LeitorArquivos.REGISTRO;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -16,9 +24,19 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -27,9 +45,6 @@ import javafx.stage.StageStyle;
 import utils.HasLogging;
 
 public class RosarioComparadorArquivos extends Application implements HasLogging {
-
-
-
 
     private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
     private Map<String, FileChooser> fileChoose = new HashMap<>();

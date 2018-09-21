@@ -46,7 +46,7 @@ public class PdfReader extends Application implements HasLogging {
     private int lineIndex;
 	private IntegerProperty pageIndex = new SimpleIntegerProperty(0);
     private static final File PDF_FILE = new File(
-			"C:\\Users\\guigu\\Documents\\Estudo\\H.G.Wells The Time Machine.pdf");
+			"C:\\Users\\guigu\\Documents\\Estudo\\processoLegislativo.pdf");
 	private int numberOfPages;
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -101,7 +101,7 @@ public class PdfReader extends Application implements HasLogging {
         currentLine.wrappingWidthProperty().bind(root.widthProperty().subtract(30));
         currentLine.setTextAlignment(TextAlignment.CENTER);
         root.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(root, 500, 150, Color.WHITE);
+		Scene scene = new Scene(root, 500, 250, Color.WHITE);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -119,7 +119,7 @@ public class PdfReader extends Application implements HasLogging {
             PDFTextStripper pdfStripper = new PDFTextStripper();
             numberOfPages = pdDoc.getNumberOfPages();
 
-			int start = 28;
+			int start = 0;
 			for (int i = start; i < numberOfPages; i++) {
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
@@ -128,10 +128,10 @@ public class PdfReader extends Application implements HasLogging {
 				List<String> lines1 = new ArrayList<>();
                 for (String string : pageLines) {
 					if (string.split(SPLIT_WORDS_REGEX).length >= 4 * string.length() / 10) {
-                        string = string.replaceAll("(?<=[^\\\\s]) (?=[^\\s])", "");
+						string = string.replaceAll("(?<=[^\\s]) (?=[^\\s])", "");
                     }
 
-					lines1.add(string);
+					lines1.add(string.replaceAll("\t", " "));
                 }
 				pages.add(lines1);
 
