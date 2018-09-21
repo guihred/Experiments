@@ -17,12 +17,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -119,7 +114,8 @@ public class CSSStylingExample extends Application {
 		// stylesheet
 		toggleGrp.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
 			String radioButtonText = ((RadioButton) toggleGrp.getSelectedToggle()).getText();
-			sceneRef.getStylesheets().addAll(CSSStylingExample.class.getResource(radioButtonText).toExternalForm());
+            sceneRef.getStylesheets().clear();
+            sceneRef.getStylesheets().add(ResourceFXUtils.toExternalForm(radioButtonText));
 		});
 		stage.setTitle("On the Scene");
 		stage.show();

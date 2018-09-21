@@ -74,7 +74,6 @@ public class ProjectTopology extends BaseTopology {
         Map<String, Map<String, Long>> packageDependencyMap = createPackageDependencyMap();
 
         List<String> packNames = packageDependencyMap.keySet().stream()
-
                 .sorted(Comparator
                         .comparing(e -> packageDependencyMap.get(e).values().stream().mapToLong(l -> l).sum()))
                 .collect(Collectors.toList());
@@ -84,11 +83,11 @@ public class ProjectTopology extends BaseTopology {
                 .collect(Collectors.joining("", "\n" + mapString("", maxLength), "\n"));
         StringBuilder table = new StringBuilder();
         table.append(paddedNames);
-        for (String string : packNames) {
-            table.append(mapString(string, maxLength));
+        for (String pack : packNames) {
+            table.append(mapString(pack, maxLength));
             for (String string2 : packNames) {
-                Long orDefault = packageDependencyMap.get(string).getOrDefault(string2, 0L);
-                table.append(mapString(string.equals(string2) ? "-" : orDefault, maxLength));
+                Long orDefault = packageDependencyMap.get(pack).getOrDefault(string2, 0L);
+                table.append(mapString(pack.equals(string2) ? "-" : orDefault, maxLength));
 
             }
             table.append("\n");
