@@ -6,11 +6,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class JapanRefactoring {
     private static final String LESSON_REGEX = "INSERT INTO JAPANESE_LESSON\\(english,japanese,romaji,exercise,lesson\\) VALUES\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
 
-    public static final String TXT_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\mobileApps\\AndroidTest\\app\\src\\main\\assets\\create_database2.sql";
+	public static final String TXT_FILE = ResourceFXUtils.toFullPath("create_database.sql");
 
     private static int chapter = 1;
     private static int lesson;

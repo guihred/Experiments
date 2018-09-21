@@ -6,7 +6,12 @@ import static japstudy.JapanRefactoring.renameFile;
 import static language.FXTesting.measureTime;
 import static language.FXTesting.measureTimeExpectException;
 
-import ex.j8.*;
+import ex.j8.Chapter1;
+import ex.j8.Chapter2;
+import ex.j8.Chapter3;
+import ex.j8.Chapter5;
+import ex.j8.Chapter6;
+import ex.j8.Chapter8;
 import extract.ExcelService;
 import extract.WordService;
 import furigana.JapaneseVerbConjugate;
@@ -18,11 +23,21 @@ import fxpro.ch06.FXCollectionsChangeExamples;
 import fxpro.ch06.FXCollectionsExamples;
 import fxpro.ch06.FXCollectionsMapExamples;
 import fxpro.ch06.FXCollectionsMethodsExamples;
-import graphs.*;
+import graphs.BigNo;
+import graphs.JavaExercise19;
+import graphs.JavaExercise1to11;
+import graphs.JavaExercise24;
+import graphs.JavaExercise25;
+import graphs.Link;
+import graphs.Node;
 import japstudy.CompareAnswers;
 import java.io.File;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.collections.ObservableList;
 import org.junit.Assert;
 import org.junit.Test;
@@ -195,7 +210,7 @@ public final class JavaExercisesTest implements HasLogging {
         campos.put("Quantidade", Medicamento::getQuantidade);
         measureTime("ExcelService.exportList",
                 () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos,
-                        new File(ResourceFXUtils.toFile("out"), "sngpcMeds.xlsx")));
+						new File(new File("out"), "sngpcMeds.xlsx")));
         measureTime("WordService.getPowerPointImages",
                 () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
         measureTime("WordService.getWord", () -> {

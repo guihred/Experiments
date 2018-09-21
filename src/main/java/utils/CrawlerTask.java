@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -19,6 +20,7 @@ import org.jsoup.nodes.Document;
 
 public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
+	public static final String CERTIFICATION_FILE = "C:/Users/guilherme.hmedeiros/Downloads/Instaladores/cacerts";
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "13-juuSAN";
     private static final String PROXY_CONFIG = "10.70." + "124.16";
@@ -30,7 +32,9 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
     protected Document getDocument(String url) throws IOException {
         Connection connect = Jsoup.connect(url);
-        connect.header("Proxy-Authorization", "Basic " + encoded);
+		if (!isNotProxied()) {
+			connect.header("Proxy-Authorization", "Basic " + encoded);
+		}
         return connect
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0")
                 .get();
@@ -63,11 +67,15 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
     }
 
     public static void insertProxyConfig() {
+		if (isNotProxied()) {
+			return;
+		}
+
         System.setProperty("http.proxyHost", PROXY_CONFIG);
         System.setProperty("http.proxyPort", "3128");
         System.setProperty("https.proxyHost", PROXY_CONFIG);
         System.setProperty("https.proxyPort", "3128");
-        System.setProperty("javax.net.ssl.trustStore", "C:/Users/guilherme.hmedeiros/Downloads/Instaladores/cacerts");
+		System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
 
         Authenticator.setDefault(new Authenticator() {
             @Override
@@ -79,6 +87,11 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         boolean b = true;
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
     }
+
+	private static boolean isNotProxied() {
+		boolean notProxied = !new File(CERTIFICATION_FILE).exists();
+		return notProxied;
+	}
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
