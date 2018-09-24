@@ -1,9 +1,11 @@
 package graphs.app;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+
 import graphs.entities.*;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.scene.paint.Color;
@@ -22,17 +24,50 @@ public class LayerLayout implements Layout {
         GraphModel model = graph.getModel();
         graph.clean();
 		List<Cell> cells = model.getAllCells();
-        layoutInLayers(cells, model.getAllEdges());
+
+        displayInLayers(model.getAllEdges(), cells);
+
+    }
+
+    private void displayInLayers(List<Edge> allEdges, List<Cell> cells) {
+        Map<Cell, Integer> layers = new HashMap<>();
+        cells.forEach(e -> layers.put(e, 0));
+        Collections.shuffle(allEdges);
+        for (Edge edge : allEdges) {
+            Integer srcLayer = layers.get(edge.getSource());
+            Integer tgtLayer = layers.get(edge.getTarget());
+            if (srcLayer >= tgtLayer) {
+                layers.put(edge.getTarget(), srcLayer + 1);
+            }
+        }
+        Map<Integer, List<Cell>> layerMap = layers.entrySet().stream()
+                .collect(groupingBy(Entry<Cell, Integer>::getValue, mapping(Entry<Cell, Integer>::getKey, toList())));
+        int numOfLayers = layerMap.keySet().stream().mapToInt(e -> e).max().orElse(1);
+        double bound = 800;
+        layerMap.forEach((lay, cels) -> {
+            double layerHeight = bound / numOfLayers / 2;
+            double y = layerHeight * lay;
+            double xStep = bound / (cels.size() + 1);
+            double x = xStep;
+
+            int sqrt = Integer.max((int) Math.sqrt(cels.size()) - 1, 1);
+            for (int i = 0; i < cels.size(); i++) {
+                Cell cell = cels.get(i);
+                cell.setColor(null);
+                cell.relocate(x, y + i % sqrt * layerHeight);
+                x += xStep;
+            }
+        });
     }
 
     public static void layoutInLayers(List<Cell> cells, List<Edge> addedEdges) {
         GraphModelAlgorithms.coloring(cells, addedEdges);
         Map<Color, List<Cell>> collect = cells.stream().collect(Collectors.groupingBy(Cell::getColor));
 
-        double bound = 800;
         List<List<Cell>> collect2 = collect.entrySet().stream()
                 .sorted(Comparator.comparing(e -> numberOfEdges(e, addedEdges)))
                 .map(Entry<Color, List<Cell>>::getValue).collect(Collectors.toList());
+        double bound = 800;
         double layerHeight = bound / (collect2.size() + 1);
         double y = layerHeight;
         for (List<Cell> list : collect2) {

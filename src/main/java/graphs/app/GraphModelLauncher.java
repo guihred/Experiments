@@ -1,6 +1,5 @@
 package graphs.app;
 
-import graphs.app.*;
 import graphs.entities.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,11 +23,14 @@ import utils.HasLogging;
 public class GraphModelLauncher extends Application implements HasLogging {
 	private final Graph graph = new Graph();
 	private ConvergeLayout convergeLayout = new ConvergeLayout(graph);
-	private ObservableList<Layout> layouts = FXCollections.observableArrayList(new GridLayout(graph),
+	private ObservableList<Layout> layouts = FXCollections.observableArrayList(
+	        new GridLayout(graph),
             new ConcentricLayout(graph),
 			new CircleLayout(graph),
             new LayerLayout(graph),
-			new RandomLayout(graph), new CustomLayout(graph), convergeLayout);
+			new RandomLayout(graph), 
+			new CustomLayout(graph), 
+			convergeLayout);
     private ChoiceBox<Layout> selectLayout = CommonsFX.newSelect(layouts,
 			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
 
