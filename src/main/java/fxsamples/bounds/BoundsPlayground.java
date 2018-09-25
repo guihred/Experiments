@@ -1,4 +1,4 @@
-package fxsamples;
+package fxsamples.bounds;
 
 import java.util.stream.Stream;
 import javafx.application.Application;

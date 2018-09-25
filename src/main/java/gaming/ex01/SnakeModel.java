@@ -91,10 +91,10 @@ public class SnakeModel {
 		if (map[i][j].getState() == SnakeState.NONE) {
 			snake.remove(snake.size() - 1);
 		} else if (map[i][j].getState() == SnakeState.FOOD) {
-			final List<SnakeSquare> collect = Stream.of(map).flatMap(Stream::of)
+            final List<SnakeSquare> emptySquare = Stream.of(map).flatMap(Stream::of)
 					.filter(s -> s.getState() == SnakeState.NONE).collect(Collectors.toList());
-			if (!collect.isEmpty()) {
-				collect.get(random.nextInt(collect.size())).setState(SnakeState.FOOD);
+            if (!emptySquare.isEmpty()) {
+                emptySquare.get(random.nextInt(emptySquare.size())).setState(SnakeState.FOOD);
 			}
 
         }

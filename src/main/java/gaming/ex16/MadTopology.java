@@ -72,11 +72,11 @@ public class MadTopology {
                 ds.union(uset, vset);
             }
         }
-        List<MadEdge> collect = allEdges.stream().filter(
+        List<MadEdge> invertedEdges = allEdges.stream().filter(
                 e -> mst.stream().anyMatch(ed -> ed.getSource() == e.getTarget() && ed.getTarget() == e.getSource()))
                 .collect(Collectors.toList());
 
-        mst.addAll(collect);
+        mst.addAll(invertedEdges);
         mst.forEach(e -> e.setMain(true));
 
         return mst;

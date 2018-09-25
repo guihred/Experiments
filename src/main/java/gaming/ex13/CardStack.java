@@ -117,8 +117,8 @@ class CardStack extends Pane {
 
 	public List<SolitaireCard> removeAllCards() {
 		getChildren().clear();
-		List<SolitaireCard> collect = cards.stream().collect(Collectors.toList());
+        List<SolitaireCard> cardsCopy = cards.stream().collect(Collectors.toList());
 		cards.clear();
-		return collect;
+        return cardsCopy;
 	}
 }

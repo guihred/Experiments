@@ -95,21 +95,19 @@ public class PopulacionalGraph extends Canvas {
 		for (int i = 0; i < agesSteps.size(); i++) {
 			double y1 = maxLayout1 - (i + 1) * j;
 			String strip = agesSteps.get(i);
-			drawRectangle(possibleAgesFE, maxLayout1, xFE, strip, y1, h, max, Color.RED);
-			drawRectangle(possibleAgesMA, xMA, layout1, strip, y1, h, max, Color.BLUE);
+            drawRectangle(possibleAgesFE.getOrDefault(strip, 0), Color.RED, maxLayout1, xFE, y1, h, max);
+            drawRectangle(possibleAgesMA.getOrDefault(strip, 0), Color.BLUE, xMA, layout1, y1, h, max);
 		}
 		gc.scale(1, 1 / lineSize.doubleValue());
 		drawAxis();
 
     }
 
-	private void drawRectangle(Map<String, Number> possibleAgesFE, double maxLayout1, double xFE, String strip,
-			double y1, double h, double max, Color color) {
-		Number value = possibleAgesFE.getOrDefault(strip, 0);
+    private void drawRectangle(Number value, Color color, double maxLayout1,
+			double xFE, double y1, double h, double max) {
 		double w = (maxLayout1 - xFE) * value.doubleValue() / max;
 		gc.setFill(color);
-
-		if (color.equals(Color.RED)) {
+        if (color == Color.RED) {
 			gc.fillRect(xFE, y1, w, h);
 		} else {
 			gc.fillRect(maxLayout1-w, y1, w, h);

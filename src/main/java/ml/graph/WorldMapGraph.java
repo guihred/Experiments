@@ -19,6 +19,7 @@ import ml.data.DataframeUtils;
 import org.apache.commons.lang3.StringUtils;
 import utils.CommonsFX;
 import utils.HasLogging;
+import utils.RotateUtils;
 
 public class WorldMapGraph extends Canvas implements HasLogging {
     protected static final String NO_INFO = "No info";
@@ -47,7 +48,7 @@ public class WorldMapGraph extends Canvas implements HasLogging {
         });
         bins.addListener(listener);
         drawGraph();
-        CommonsFX.setZoomable(this);
+        RotateUtils.setZoomable(this);
 
     }
 
@@ -166,8 +167,8 @@ public class WorldMapGraph extends Canvas implements HasLogging {
 
     protected void drawCountry(Country countries) {
         gc.beginPath();
+        Map<Country, Color> countriesColors = new EnumMap<>(Country.class);
         if (dataframeML != null) {
-            countries.setColor(null);
             dataframeML.only(header, countries::matches, j -> {
                 Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
                 for (Entry<String, Predicate<Object>> fil : entrySet) {
@@ -178,10 +179,10 @@ public class WorldMapGraph extends Canvas implements HasLogging {
                 }
                 List<Object> list = dataframeML.list(valueHeader.get());
                 Object object = DataframeUtils.getFromList(j, list);
-                countries.setColor(getColor(countries, object));
+                countriesColors.put(countries, getColor(object));
             });
         }
-        gc.setFill(countries.getColor() != null ? countries.getColor() : categoryMap.get(NO_INFO));
+        gc.setFill(countriesColors.getOrDefault(countries, categoryMap.get(NO_INFO)));
         gc.appendSVGPath(countries.getPath());
         gc.fill();
         gc.stroke();
@@ -212,14 +213,13 @@ public class WorldMapGraph extends Canvas implements HasLogging {
         }
     }
 
-    private Color getColor(Country countries, Object object) {
-        Color color = countries.getColor();
+    private Color getColor(Object object) {
         if (object instanceof Number) {
-            color = getColorForValue(((Number) object).doubleValue(), min, max);
+            return getColorForValue(((Number) object).doubleValue(), min, max);
         } else if (object instanceof String) {
-            color = categoryMap.get(object);
+            return categoryMap.get(object);
         }
-        return color;
+        return null;
     }
 
     public static Color getColorForValue(double value, double min, double max) {

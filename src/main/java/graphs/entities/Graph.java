@@ -88,8 +88,8 @@ public class Graph {
 
 	public void sortChildren() {
 		ObservableList<Node> children = getCellLayer().getChildren();
-		List<Node> collect2 = children.stream().filter(Cell.class::isInstance).collect(Collectors.toList());
-		for (Node node : collect2) {
+		List<Node> cells = children.stream().filter(Cell.class::isInstance).collect(Collectors.toList());
+		for (Node node : cells) {
 			node.toFront();
 		}
 	}
@@ -103,8 +103,9 @@ public class Graph {
 	public void voronoi() {
 		clean();
         List<Triangle> triangulate = triangulate();
-		List<Ponto> collect = triangulate.stream().flatMap(Triangle::allPoints).distinct().collect(Collectors.toList());
-		for (Ponto ponto : collect) {
+        List<Ponto> allPoints = triangulate.stream().flatMap(Triangle::allPoints).distinct()
+                .collect(Collectors.toList());
+        for (Ponto ponto : allPoints) {
 			List<Triangle> tr = triangulate.stream().filter(t -> t.allPoints().anyMatch(ponto::equals)).collect(Collectors.toList());
 			VoronoiRegion voronoiRegion = new VoronoiRegion(ponto, tr);
 			getCellLayer().getChildren().add(0, voronoiRegion);

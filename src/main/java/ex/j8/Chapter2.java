@@ -128,9 +128,9 @@ public final class Chapter2 {
     public static void ex13() {
         try {
             Stream<String> wordsAsList = getWordsAsList().stream();
-            Map<Integer, Long> collect = wordsAsList.filter(s -> s.length() > 12)
+            Map<Integer, Long> wordByLength = wordsAsList.filter(s -> s.length() > 12)
                     .collect(Collectors.groupingBy(String::length, Collectors.counting()));
-            LOGGER.trace("{}", collect);
+            LOGGER.trace("{}", wordByLength);
         } catch (Exception e) {
             LOGGER.error("", e);
         }

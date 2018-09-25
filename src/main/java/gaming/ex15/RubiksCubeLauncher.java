@@ -44,8 +44,8 @@ public class RubiksCubeLauncher extends Application {
 		return j % 3 * 3 + 2 - j / 3;
 	}
 	public void rotateCube(RubiksCubeFaces face, boolean clockwise) {
-		List<RubiksPiece> collect = getFacePieces(face);
-        for (RubiksPiece e : collect) {
+        List<RubiksPiece> piecesInFace = getFacePieces(face);
+        for (RubiksPiece e : piecesInFace) {
             e.rotate(face, angle, clockwise);
         }
 		timeline.playFromStart();
@@ -53,9 +53,9 @@ public class RubiksCubeLauncher extends Application {
             LOGGER.info("{}", face);
         }
 		List<RubiksPiece> arrayList = new ArrayList<>();
-		for (int i = 0; i < collect.size(); i++) {
+        for (int i = 0; i < piecesInFace.size(); i++) {
 			int j = !clockwise ? rotateAntiClockWise(i) : rotateClockWise(i);
-			RubiksPiece rubiksPiece2 = collect.get(j);
+            RubiksPiece rubiksPiece2 = piecesInFace.get(j);
 			arrayList.add(rubiksPiece2);
 		}
 		for (int i = 0; i < CUBE_COMPLEXITY; i++) {

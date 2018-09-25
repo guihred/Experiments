@@ -83,7 +83,7 @@ public class GraphModelAlgorithms {
         DisjSets ds = new DisjSets(numVertices);
         PriorityQueue<Edge> pq = new PriorityQueue<>(allEdges);
         List<Edge> mst = new ArrayList<>();
-        while (mst.size() != numVertices - 1) {
+        while (mst.size() != numVertices - 1 && !pq.isEmpty()) {
             Edge e1 = pq.poll();
             int uset = ds.find(indexOf(e1.getSource().getCellId(), allCells));
             int vset = ds.find(indexOf(e1.getTarget().getCellId(), allCells));
@@ -92,11 +92,11 @@ public class GraphModelAlgorithms {
                 ds.union(uset, vset);
             }
         }
-        List<Edge> collect = allEdges.stream().filter(
+        List<Edge> inverted = allEdges.stream().filter(
                 e -> mst.stream().anyMatch(ed -> ed.getSource() == e.getTarget() && ed.getTarget() == e.getSource()))
                 .collect(Collectors.toList());
 
-        mst.addAll(collect);
+        mst.addAll(inverted);
 
         return mst;
     }

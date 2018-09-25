@@ -4,12 +4,15 @@ import static language.FXTesting.measureTime;
 
 import ex.j8.Chapter4;
 import extract.ExcelService;
+import graphs.app.JavaFileDependecy;
+import graphs.app.PackageTopology;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
@@ -101,5 +104,19 @@ public class LeitorArquivosTest {
     public void testChapter4() {
         measureTime("Chapter4.testApps", () -> FXTesting.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class,
                 Chapter4.Ex5.class, Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class, Chapter4.Ex10.class));
+    }
+
+    @Test
+    public void testPackageTopology() {
+        measureTime("PackageTopology.main", () -> {
+            List<JavaFileDependecy> javaFiles = PackageTopology.getJavaFileDependencies(null);
+            Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
+                    .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
+            filesByPackage.forEach((pack, files) -> {
+                HasLogging.log().info(pack);
+                Map<String, Map<String, Long>> packageDependencyMap = PackageTopology.createFileDependencyMap(files);
+                PackageTopology.printDependencyMap(packageDependencyMap);
+            });
+        });
     }
 }

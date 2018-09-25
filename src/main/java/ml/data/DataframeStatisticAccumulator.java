@@ -161,13 +161,13 @@ public class DataframeStatisticAccumulator{
                 return array[array.length / 2];
             }
         }
-        List<Double> collect = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
+        List<Double> numbersList = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
                 .map(Number::doubleValue).sorted()
                 .collect(Collectors.toList());
-        if (collect.isEmpty()) {
+        if (numbersList.isEmpty()) {
             return 0;
         }
-        return collect.get(count / 2).doubleValue();
+        return numbersList.get(count / 2).doubleValue();
     }
 
 
@@ -178,13 +178,13 @@ public class DataframeStatisticAccumulator{
                 return array[array.length * 3 / 4];
             }
         }
-        List<Double> collect = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
+        List<Double> numbers = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
                 .map(Number::doubleValue).sorted()
                 .collect(Collectors.toList());
-        if (collect.isEmpty()) {
+        if (numbers.isEmpty()) {
             return 0;
         }
-        return collect.get(count * 3 / 4).doubleValue();
+        return numbers.get(count * 3 / 4).doubleValue();
     }
 
 

@@ -1,4 +1,4 @@
-package fxsamples;
+package fxsamples.person;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -32,7 +32,7 @@ public class FormValidation extends Application implements HasLogging {
 	@Override
 	public void start(Stage primaryStage) {
 		// create a model representing a user
-		User user = new User();
+        Person user = new Person();
 		// create a transparent stage
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		Group root = new Group();

@@ -1,4 +1,4 @@
-package exercise;
+package jexercises;
 
 import static language.FXTesting.measureTime;
 
@@ -9,10 +9,6 @@ import utils.HasLogging;
 
 
 public class DataframeMLTest implements HasLogging {
-
-
-
-
 
     @Test
     public void testTransformOneValue() {

@@ -225,10 +225,9 @@ public class Ch3 {
 	 * return when the last one has completed.
 	 */
 	public static void runTogether(Runnable... tasks) {
-		List<Thread> collect = Stream.of(tasks).parallel().map(Thread::new).collect(toList());
-		collect.forEach(Thread::start);
-
-		while (collect.stream().anyMatch(Thread::isAlive)) {
+        List<Thread> threadList = Stream.of(tasks).parallel().map(Thread::new).collect(toList());
+        threadList.forEach(Thread::start);
+        while (threadList.stream().anyMatch(Thread::isAlive)) {
 			// DOES NOTHING
 		}
 	}

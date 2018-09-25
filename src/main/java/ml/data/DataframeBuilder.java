@@ -1,7 +1,5 @@
 package ml.data;
 
-import static ml.data.DataframeUtils.readCSV;
-
 import java.util.HashSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -36,7 +34,7 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public DataframeML build() {
-        readCSV(dataframeML, csvFile);
+        dataframeML.readCSV(csvFile);
         return dataframeML;
     }
 }

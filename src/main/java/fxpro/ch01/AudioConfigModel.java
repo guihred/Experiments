@@ -33,7 +33,6 @@ public class AudioConfigModel {
      */
 	public static final ObservableList<String> GENRES = FXCollections.observableArrayList(
             "Chamber",
-            "Country",
             "Cowbell",
             "Metal",
             "Polka",

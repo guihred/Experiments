@@ -25,6 +25,10 @@ import fxpro.ch08.SimpleAudioPlayerLauncher;
 import fxpro.ch10.VanishingCirclesApp;
 import fxpro.earth.EarthCubeMain;
 import fxsamples.*;
+import fxsamples.bounds.BoundsPlayground;
+import fxsamples.person.FormValidation;
+import fxsamples.person.PersonTableController;
+import fxsamples.person.WorkingWithTableView;
 import gaming.ex01.SnakeLauncher;
 import gaming.ex02.MemoryLauncher;
 import gaming.ex03.SlidingPuzzleLauncher;
@@ -53,6 +57,7 @@ import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
+import pdfreader.PdfReader;
 import physics.Physics;
 import rosario.RosarioComparadorArquivos;
 import utils.HasLogging;
@@ -84,7 +89,7 @@ public final class FXTest implements HasLogging {
                 PieChartExample.class, PlatformMain.class, PointsExample.class, PongLauncher.class,
                 PopulacionalPyramidExample.class, PuzzleLauncher.class, QuartoLauncher.class, RaspiCycle.class,
                 RegressionChartExample.class, ResponsiveUIApp.class, ReversiMain.class, ReversiPieceTest.class,
-                ReversiSquareTest.class, RosarioComparadorArquivos.class, RubiksCubeLauncher.class, SandboxFX.class,
+                ReversiSquareApp.class, RosarioComparadorArquivos.class, RubiksCubeLauncher.class, SandboxFX.class,
                 AlignUsingStackAndTile.class, ScatterChartExample.class, Shapes3DApp.class);
     }
 
@@ -98,7 +103,7 @@ public final class FXTest implements HasLogging {
     @Test
     public void test3() throws Throwable {
         FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
-                ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class,
+                ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class, PdfReader.class,
                 SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class, SudokuLauncher.class,
                 SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class, Square2048Launcher.class,
                 StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class, TheMenuGrid.class,

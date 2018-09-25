@@ -87,10 +87,10 @@ public class TronModel {
 		if (map[i][j].getState() == TronState.NONE) {
             getSnake().remove(getSnake().size() - 1);
 		} else if (map[i][j].getState() == TronState.FOOD) {
-			final List<TronSquare> collect = Stream.of(map).flatMap(Stream::of)
+            final List<TronSquare> emptySquares = Stream.of(map).flatMap(Stream::of)
 					.filter(s -> s.getState() == TronState.NONE).collect(Collectors.toList());
-            if (!collect.isEmpty()) {
-				collect.get(random.nextInt(collect.size())).setState(TronState.FOOD);
+            if (!emptySquares.isEmpty()) {
+                emptySquares.get(random.nextInt(emptySquares.size())).setState(TronState.FOOD);
             }
 
         } else {

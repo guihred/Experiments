@@ -1,6 +1,9 @@
-package fxsamples;
+package fxsamples.person;
+
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -10,10 +13,33 @@ public class Person {
 			.observableArrayList();
 	private StringProperty firstName;
 	private StringProperty lastName;
+    private static final String PASS_PROP_NAME = "password";
+    private static final String USERNAME_PROP_NAME = "user";
+    private StringProperty userName = new ReadOnlyStringWrapper(this, USERNAME_PROP_NAME, "guilherme");
+    private StringProperty password = new SimpleStringProperty(this, PASS_PROP_NAME, "senha");
 
+    public ObservableValue<String> userNameProperty() {
+        return userName;
+    }
+
+    public StringProperty passwordProperty() {
+        return password;
+    }
+
+    public String getUserName() {
+        return userName.get();
+    }
+
+    public String getPassword() {
+        return password.get();
+    }
+
+    public Person() {
+
+    }
 	public Person(String firstName, String lastName) {
-		setFirstName(firstName);
-		setLastName(lastName);
+        setFirstName(firstName);
+        setLastName(lastName);
 	}
 
 	public Person(String alias, String firstName, String lastName) {

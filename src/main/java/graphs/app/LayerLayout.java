@@ -25,11 +25,11 @@ public class LayerLayout implements Layout {
         graph.clean();
 		List<Cell> cells = model.getAllCells();
 
-        displayInLayers(model.getAllEdges(), cells);
+        displayInLayers(cells, model.getAllEdges());
 
     }
 
-    private void displayInLayers(List<Edge> allEdges, List<Cell> cells) {
+    public static void displayInLayers(List<Cell> cells, List<Edge> allEdges) {
         Map<Cell, Integer> layers = new HashMap<>();
         cells.forEach(e -> layers.put(e, 0));
         Collections.shuffle(allEdges);
@@ -62,15 +62,15 @@ public class LayerLayout implements Layout {
 
     public static void layoutInLayers(List<Cell> cells, List<Edge> addedEdges) {
         GraphModelAlgorithms.coloring(cells, addedEdges);
-        Map<Color, List<Cell>> collect = cells.stream().collect(Collectors.groupingBy(Cell::getColor));
+        Map<Color, List<Cell>> cellByColor = cells.stream().collect(Collectors.groupingBy(Cell::getColor));
 
-        List<List<Cell>> collect2 = collect.entrySet().stream()
+        List<List<Cell>> orderedCellGroups = cellByColor.entrySet().stream()
                 .sorted(Comparator.comparing(e -> numberOfEdges(e, addedEdges)))
                 .map(Entry<Color, List<Cell>>::getValue).collect(Collectors.toList());
         double bound = 800;
-        double layerHeight = bound / (collect2.size() + 1);
+        double layerHeight = bound / (orderedCellGroups.size() + 1);
         double y = layerHeight;
-        for (List<Cell> list : collect2) {
+        for (List<Cell> list : orderedCellGroups) {
             double xStep = bound / (list.size() + 1);
             double x = xStep;
             for (int i = 0; i < list.size(); i++) {

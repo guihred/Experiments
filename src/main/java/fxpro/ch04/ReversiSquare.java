@@ -49,17 +49,17 @@ public class ReversiSquare extends Region {
         setPrefSize(200, 200);
         getChildren().add(highlight);
 
-        addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, (MouseEvent t) -> {
+        addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, t -> {
             if (model.legalMove(x, y).get()) {
                 highlightTransition.setRate(1);
                 highlightTransition.play();
             }
         });
-        addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, (MouseEvent t) -> {
+        addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, t -> {
             highlightTransition.setRate(-1);
             highlightTransition.play();
         });
-        addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent t) -> {
+        addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
             model.play(x, y);
             highlightTransition.setRate(1);
             highlightTransition.play();

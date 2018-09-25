@@ -10,26 +10,41 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import utils.CommonsFX;
 import utils.HasLogging;
 
 public class PackageTopology extends BaseTopology {
 
-	public PackageTopology(Graph graph) {
+    private String chosenPackageName;
+
+    public PackageTopology(Graph graph) {
         super(graph, "Package");
 	}
 
 	@Override
 	public void execute() {
-		graph.clean();
+        chosenPackageName = null;
+        List<JavaFileDependecy> javaFiles = createGraph();
+        displayDialogForShortestPath(
+                javaFiles.stream().map(JavaFileDependecy::getPackage).distinct().collect(Collectors.toList()));
+
+    }
+
+    private List<JavaFileDependecy> createGraph() {
+        graph.clean();
 		graph.getModel().removeAllCells();
 		graph.getModel().removeAllEdges();
-
-
-        Map<String, Map<String, Long>> packageDependencyMap = createPackageDependencyMap();
-
-        Set<String> keySet = packageDependencyMap.keySet();
-
-        for (String packageName : keySet) {
+        List<JavaFileDependecy> javaFiles = getJavaFileDependencies(chosenPackageName);
+        Map<String, Map<String, Long>> packageDependencyMap = createFileDependencyMap(javaFiles);
+        for (String packageName : packageDependencyMap.keySet()) {
             graph.getModel().addCell(packageName, CellType.RECTANGLE);
 		}
 		List<Cell> cells = graph.getModel().getAddedCells();
@@ -41,35 +56,60 @@ public class PackageTopology extends BaseTopology {
         List<Edge> addedEdges = graph.getModel().getAddedEdges();
         LayerLayout.layoutInLayers(cells, addedEdges);
         graph.endUpdate();
-
+        return javaFiles;
     }
 
+    private void displayDialogForShortestPath(List<String> javaFiles) {
+        Stage dialog = new Stage();
+        dialog.setTitle("Chose Package to Display");
+        dialog.setWidth(70);
+        ChoiceBox<String> c1 = new ChoiceBox<>(FXCollections.observableArrayList(javaFiles));
+        Button okButton = CommonsFX.newButton("OK", event -> {
+            if (c1.getValue() != null) {
+                chosenPackageName = c1.getValue();
+                createGraph();
+                dialog.close();
+            }
+        });
+        VBox root = new VBox(new Text("Source"), c1, okButton);
+        root.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(root);
+        dialog.setScene(scene);
+        dialog.show();
+    }
 
-    private static Map<String, Map<String, Long>> createPackageDependencyMap() {
-        File file = new File("src");
-        try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
-            List<JavaFileDependecy> collect = walk.filter(e ->
-            e.toFile().getName().endsWith(".java"))
-                    .map(JavaFileDependecy::new)
-                    .filter(e -> e.getPackage().contains("graphs."))
-                    .collect(Collectors.toList());
-
-            List<String> collect3 = collect.stream().map(JavaFileDependecy::getName)
+    public static Map<String, Map<String, Long>> createFileDependencyMap(List<JavaFileDependecy> javaFiles) {
+        List<String> classesNames = javaFiles.stream().map(JavaFileDependecy::getName)
                     .collect(Collectors.toList());
             Map<String, Map<String, Long>> packageDependencyMap = new HashMap<>();
-            collect.forEach(k -> packageDependencyMap.put(k.getName(), k.getClasses().stream()
-                    .filter(collect3::contains).collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
-            return packageDependencyMap;
+        javaFiles.forEach(k -> packageDependencyMap.put(k.getName(), k.getClasses().stream()
+                .filter(classesNames::contains).collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
+        return packageDependencyMap;
+    }
+
+    public static List<JavaFileDependecy> getJavaFileDependencies(String packName) {
+        File file = new File("src");
+        try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
+            return walk.filter(e -> e.toFile().getName().endsWith(".java"))
+                    .map(JavaFileDependecy::new)
+                    .filter(e -> packName == null || e.getPackage().equals(packName))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             HasLogging.log().error("", e);
-            return new HashMap<>();
+            return new ArrayList<>();
         }
     }
 
     public static void main(String[] args) {
 
-        Map<String, Map<String, Long>> packageDependencyMap = createPackageDependencyMap();
-        printDependencyMap(packageDependencyMap);
+        List<JavaFileDependecy> javaFiles = getJavaFileDependencies(null);
+        Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
+                .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
+        filesByPackage.forEach((pack, files) -> {
+            HasLogging.log().info(pack);
+            Map<String, Map<String, Long>> packageDependencyMap = createFileDependencyMap(files);
+            printDependencyMap(packageDependencyMap);
+        });
 
     }
 
@@ -80,7 +120,7 @@ public class PackageTopology extends BaseTopology {
                 .collect(Collectors.toList());
         int maxLength = packNames.stream().mapToInt(String::length).max().orElse(0);
 
-        String paddedNames = packNames.stream().map(e -> mapString(e, maxLength))
+        String paddedNames = packNames.stream().map(e -> mapString(e, e.length() + 1))
                 .collect(Collectors.joining("", "\n" + mapString("", maxLength), "\n"));
         StringBuilder table = new StringBuilder();
         table.append(paddedNames);
@@ -88,7 +128,7 @@ public class PackageTopology extends BaseTopology {
             table.append(mapString(pack, maxLength));
             for (String string2 : packNames) {
                 Long orDefault = packageDependencyMap.get(pack).getOrDefault(string2, 0L);
-                table.append(mapString(pack.equals(string2) ? "-" : orDefault, maxLength));
+                table.append(mapString(pack.equals(string2) ? "-" : orDefault, string2.length() + 1));
 
             }
             table.append("\n");

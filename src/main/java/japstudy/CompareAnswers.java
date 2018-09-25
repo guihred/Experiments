@@ -26,11 +26,11 @@ public class CompareAnswers {
 	}
 
 	private static List<String> bigrams(String s) {
-		List<String> collect = s.chars().mapToObj(i -> Character.toString((char) i)).collect(Collectors.toList());
+        List<String> characters = s.chars().mapToObj(i -> Character.toString((char) i)).collect(Collectors.toList());
 		List<String> bigrams = new ArrayList<>();
-		for (int j = 0; j < collect.size() - 1; j++) {
-			String string = collect.get(j);
-			String string2 = collect.get(j + 1);
+        for (int j = 0; j < characters.size() - 1; j++) {
+            String string = characters.get(j);
+            String string2 = characters.get(j + 1);
 			bigrams.add(string + string2);
 		}
 		return bigrams;

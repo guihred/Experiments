@@ -1,4 +1,4 @@
-package exercise;
+package jexercises;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;

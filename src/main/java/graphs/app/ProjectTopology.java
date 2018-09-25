@@ -28,10 +28,9 @@ public class ProjectTopology extends BaseTopology {
 		graph.getModel().removeAllEdges();
 
 
-        Map<String, Map<String, Long>> packageDependencyMap = createPackageDependencyMap();
+        Map<String, Map<String, Long>> packageDependencyMap = createProjectDependencyMap();
 
         Set<String> keySet = packageDependencyMap.keySet();
-
         for (String packageName : keySet) {
             graph.getModel().addCell(packageName, CellType.RECTANGLE);
 		}
@@ -42,27 +41,25 @@ public class ProjectTopology extends BaseTopology {
             map.forEach((dep, weight) -> graph.getModel().addEdge(cellId, dep, weight.intValue()));
 		}
         List<Edge> addedEdges = graph.getModel().getAddedEdges();
-        LayerLayout.layoutInLayers(cells, addedEdges);
+        LayerLayout.displayInLayers(cells, addedEdges);
         graph.endUpdate();
 
     }
 
 
-    private static Map<String, Map<String, Long>> createPackageDependencyMap() {
+    private static Map<String, Map<String, Long>> createProjectDependencyMap() {
         File file = new File("src");
         try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
-            List<JavaFileDependecy> collect = walk.filter(e ->
-            //            !e.toFile().getAbsolutePath().contains("test") && 
-            e.toFile().getName().endsWith(".java"))
+            List<JavaFileDependecy> javaFileDependencies = walk.filter(e -> e.toFile().getName().endsWith(".java"))
                     .map(JavaFileDependecy::new).collect(Collectors.toList());
 
-            Map<String, List<JavaFileDependecy>> collect2 = collect.stream()
+            Map<String, List<JavaFileDependecy>> filesByPackage = javaFileDependencies.stream()
                     .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
 
             Map<String, Map<String, Long>> packageDependencyMap = new HashMap<>();
 
-            collect2.forEach((k, v) -> packageDependencyMap.put(k,
-                    v.stream().flatMap(e -> e.getDependencies().stream()).filter(collect2::containsKey)
+            filesByPackage.forEach((k, v) -> packageDependencyMap.put(k,
+                    v.stream().flatMap(e -> e.getDependencies().stream()).filter(filesByPackage::containsKey)
                             .collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
             return packageDependencyMap;
         } catch (Exception e) {
@@ -72,7 +69,7 @@ public class ProjectTopology extends BaseTopology {
     }
 
     public static void main(String[] args) {
-        Map<String, Map<String, Long>> packageDependencyMap = createPackageDependencyMap();
+        Map<String, Map<String, Long>> packageDependencyMap = createProjectDependencyMap();
         PackageTopology.printDependencyMap(packageDependencyMap);
     }
 

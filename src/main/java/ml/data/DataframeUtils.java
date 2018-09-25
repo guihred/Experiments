@@ -1,7 +1,5 @@
 package ml.data;
 
-import java.io.FileNotFoundException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -12,11 +10,10 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public final class DataframeUtils extends DataframeML {
 
-    private static final Logger LOG = HasLogging.log(DataframeBuilder.class);
+    private static final Logger LOG = HasLogging.log(DataframeUtils.class);
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
             Double.class);
 
@@ -100,20 +97,7 @@ public final class DataframeUtils extends DataframeML {
         return list != null && j < list.size() ? list.get(j) : null;
     }
 
-    public static void readCSV(DataframeML dataframe, String csvFile) {
-        try (Scanner scanner = new Scanner(ResourceFXUtils.toFile(csvFile), StandardCharsets.UTF_8.displayName())) {
-            List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
-                    .collect(Collectors.toList());
-            for (String column : header) {
-                dataframe.dataframe.put(column, new ArrayList<>());
-                dataframe.formatMap.put(column, String.class);
-            }
 
-            readRows(dataframe, scanner, header);
-        } catch (FileNotFoundException e) {
-            LOG.error("FILE NOT FOUND", e);
-        }
-    }
 
     public static String toString(DataframeML dataframe) {
         StringBuilder str = new StringBuilder();
@@ -204,7 +188,7 @@ public final class DataframeUtils extends DataframeML {
         return tryNumber;
     }
 
-    private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
+    public static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
         while (scanner.hasNext()) {
             dataframe.size++;
             List<String> line2 = CSVUtils.parseLine(scanner.nextLine());

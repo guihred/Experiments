@@ -101,17 +101,16 @@ public class TimelineGraph extends Canvas {
             }
 
             Map<String, Object> row = dataframe.rowMap(i);
-            drawPoints(maxYear, minYear, layout.get(), j, j2, labelRow, value, row);
+            gc.setFill(value);
+            gc.setStroke(value);
+            drawPoints(maxYear, minYear, layout.get(), j, j2, labelRow, row);
 
             drawLines(maxYear, minYear, layout.get(), j, j2, row);
         }
 		drawAxis();
 	}
 
-    private boolean drawPoints(int maxYear, int minYear, double d, double j, double j2, String labelRow, Color value,
-            Map<String, Object> row) {
-        gc.setFill(value);
-        gc.setStroke(value);
+    private boolean drawPoints(int maxYear, int minYear, double d, double j, double j2, String labelRow, Map<String, Object> row) {
         boolean hasPoint = false;
         for (int year = minYear; year <= maxYear; year++) {
             Number object = (Number) row.get("" + year);

@@ -1,4 +1,4 @@
-package exercise;
+package jexercises;
 
 import static java.util.stream.Collectors.toList;
 import static language.FXTesting.measureTime;

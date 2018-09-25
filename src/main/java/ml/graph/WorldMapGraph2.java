@@ -1,10 +1,7 @@
 package ml.graph;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,7 +15,7 @@ import javafx.scene.paint.Color;
 import ml.data.Country;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
-import utils.CommonsFX;
+import utils.RotateUtils;
 
 public class WorldMapGraph2 extends WorldMapGraph {
 	private DoubleProperty radius = new SimpleDoubleProperty(1);
@@ -41,7 +38,7 @@ public class WorldMapGraph2 extends WorldMapGraph {
         yScale.addListener(listener);
         bins.addListener(listener);
         drawGraph();
-        CommonsFX.setZoomable(this);
+        RotateUtils.setZoomable(this);
 
     }
 
@@ -88,18 +85,19 @@ public class WorldMapGraph2 extends WorldMapGraph {
     @Override
     protected void drawCountry(Country country) {
         getGc().beginPath();
+        Map<Country, Color> colorMap = new EnumMap<>(Country.class);
         if (dataframeML != null) {
-            setCountriesColor(country);
+            colorMap = getCountriesColor(country);
         }
-        getGc().setFill(country.getColor() != null ? country.getColor() : getCategoryMap().get(NO_INFO));
+        getGc().setFill(colorMap.getOrDefault(country, getCategoryMap().get(NO_INFO)));
         getGc().appendSVGPath(country.getPath());
         getGc().fill();
         getGc().stroke();
         getGc().closePath();
     }
 
-	private void setCountriesColor(Country countries) {
-	    countries.setColor(null);
+    private Map<Country, Color> getCountriesColor(Country countries) {
+        Map<Country, Color> enumMap = new EnumMap<>(Country.class);
         dataframeML.only(header, countries::matches, j -> {
             Set<Entry<String, Predicate<Object>>> entrySet = filters.entrySet();
             for (Entry<String, Predicate<Object>> fil : entrySet) {
@@ -111,11 +109,12 @@ public class WorldMapGraph2 extends WorldMapGraph {
             List<Object> list = dataframeML.list(valueHeader.get());
             Object object = DataframeUtils.getFromList(j, list);
             if (object instanceof Number) {
-                countries.setColor(getColorForValue(((Number) object).doubleValue(), min, max));
+                enumMap.put(countries, getColorForValue(((Number) object).doubleValue(), min, max));
             } else if (object instanceof String) {
-                countries.setColor(getCategoryMap().get(object));
+                enumMap.put(countries, getCategoryMap().get(object));
             }
         });
+        return enumMap;
 	}
 
 	private void drawNeighbors(Country[] values) {

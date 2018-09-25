@@ -15,8 +15,8 @@ public class VoronoiRegion extends Group {
 	public VoronoiRegion(Ponto p, List<Triangle> triangles) {
         Comparator<double[]> comparator = Comparator
                 .comparing((double[] pon) -> Edge.getAngulo(pon[0], pon[1], x(p.getC()), y(p.getC())));
-		List<double[]> collect = triangles.stream().map(t -> centerCircle(t.getA().getC(), t.getB().getC(), t.getC().getC())).collect(Collectors.toList());
-		for (double[] es : collect) {
+		List<double[]> centerPoints = triangles.stream().map(t -> centerCircle(t.getA().getC(), t.getB().getC(), t.getC().getC())).collect(Collectors.toList());
+		for (double[] es : centerPoints) {
 			Circle circle = new Circle(2);
 			circle.setLayoutX(es[0]);
 			circle.setLayoutY(es[1]);
@@ -28,7 +28,7 @@ public class VoronoiRegion extends Group {
 		List<double[]> pontosImportantes = triangles.stream().flatMap(Triangle::allPoints).filter(pon -> !p.equals(pon)).distinct().map(p::add)
 				.map(po -> po.mult(0.5)).map(po -> new double[] { po.getX() + w, po.getY() + h }).collect(Collectors.toList());
 
-		double[] array = collect.stream().sorted(comparator).flatMap((double[]t) -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
+		double[] array = centerPoints.stream().sorted(comparator).flatMap((double[]t) -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
 
 		Polygon polygon = new Polygon(array);
 		double x = x(p.getC());
@@ -37,8 +37,8 @@ public class VoronoiRegion extends Group {
 		for (int i = 0; i < pontosImportantes.size(); i++) {
 			double[] ds = pontosImportantes.get(i);
 			if (!polygon.contains(ds[0], ds[1])) {
-				collect.add(new double[] { ds[0], ds[1] });
-				array = collect.stream().sorted(comparator).flatMap((double[]t) -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
+				centerPoints.add(new double[] { ds[0], ds[1] });
+				array = centerPoints.stream().sorted(comparator).flatMap((double[]t) -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
 				polygon = new Polygon(array);
 			}
 		}

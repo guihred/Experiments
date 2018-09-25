@@ -15,7 +15,9 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Mesh;
 import javax.imageio.ImageIO;
 import org.blinkenlights.jid3.ID3Tag;
@@ -155,4 +157,40 @@ public final class ResourceFXUtils {
         }
         return null;
     }
+
+    public static Image createImage(double size1, float[][] noise) {
+        int width = (int) size1;
+        int height = (int) size1;
+
+        WritableImage wr = new WritableImage(width, height);
+        PixelWriter pw = wr.getPixelWriter();
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                float value = noise[x][y];
+                double gray = normalizeValue(value, -.5, .5, 0., 1.);
+                gray = clamp(gray, 0, 1);
+                Color color = Color.RED.interpolate(Color.YELLOW, gray);
+                pw.setColor(x, y, color);
+            }
+        }
+
+        return wr;
+
+    }
+
+    public static double clamp(double value, double min, double max) {
+        if (Double.compare(value, min) < 0) {
+            return min;
+        }
+        if (Double.compare(value, max) > 0) {
+            return max;
+        }
+        return value;
+    }
+
+    private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
+        return (value - min) * (newMax - newMin) / (max - min) + newMin;
+    }
+
+
 }

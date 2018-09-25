@@ -1,4 +1,4 @@
-package exercise;
+package language;
 
 import static org.junit.Assert.assertEquals;
 

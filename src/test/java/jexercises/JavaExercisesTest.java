@@ -1,4 +1,4 @@
-package exercise;
+package jexercises;
 
 import static japstudy.JapanRefactoring.TXT_FILE;
 import static japstudy.JapanRefactoring.refactorJapaneseFile;

@@ -10,15 +10,15 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class ReversiSquareTest extends Application {
-
-    public static void main(String[] args) {
-        launch(args);
-    }
+public class ReversiSquareApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
 		primaryStage.setScene(new Scene(new StackPane(new ReversiSquare())));
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

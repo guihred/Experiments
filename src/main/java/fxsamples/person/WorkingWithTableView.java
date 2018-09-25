@@ -1,4 +1,4 @@
-package fxsamples;
+package fxsamples.person;
 
 import java.util.Arrays;
 import javafx.application.Application;

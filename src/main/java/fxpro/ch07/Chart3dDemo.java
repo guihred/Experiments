@@ -17,7 +17,8 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import utils.Axis;
-import utils.CommonsFX;
+import utils.ResourceFXUtils;
+import utils.RotateUtils;
 
 public class Chart3dDemo extends Application {
 
@@ -83,7 +84,7 @@ public class Chart3dDemo extends Application {
         }
 
         // material
-        Image diffuseMap = CommonsFX.createImage(size, noiseArray);
+        Image diffuseMap = ResourceFXUtils.createImage(size, noiseArray);
 
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(diffuseMap);
@@ -112,8 +113,8 @@ public class Chart3dDemo extends Application {
         Scene scene = new Scene(root, 1600, 900, true, SceneAntialiasing.BALANCED);
         scene.setCamera(new PerspectiveCamera());
 
-        CommonsFX.setSpinnable(cube, scene);
-        CommonsFX.makeZoomable(root);
+        RotateUtils.setSpinnable(cube, scene);
+        RotateUtils.makeZoomable(root);
 
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);

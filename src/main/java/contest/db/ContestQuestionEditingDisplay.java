@@ -188,10 +188,10 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
 
     private void setImage(VBox newImage, String image) {
         if (image != null) {
-            List<ImageView> collect = Stream.of(image.split(";"))
+            List<ImageView> images = Stream.of(image.split(";"))
                     .map(i -> new ImageView(ResourceFXUtils.toExternalForm("out/" + i)))
                     .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
-            newImage.getChildren().setAll(collect);
+            newImage.getChildren().setAll(images);
         } else if (!newImage.getChildren().isEmpty()) {
             newImage.getChildren().clear();
 

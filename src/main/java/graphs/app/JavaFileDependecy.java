@@ -43,7 +43,7 @@ public class JavaFileDependecy implements HasLogging {
         if (classes == null) {
             try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
                 classes = lines
-                        .map(this::linesMatches).flatMap(List<String>::stream)
+                        .map(this::linesMatches).flatMap(List<String>::stream).filter(e -> !getName().equals(e))
                         .collect(Collectors.toList());
 
             } catch (IOException e) {

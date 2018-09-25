@@ -1,4 +1,4 @@
-package exercise;
+package jexercises;
 
 
 import exercism.Anagram;

@@ -208,11 +208,11 @@ public final class Chapter6 {
 	 * (breaking ties arbitrarily). Hint: reduceEntries.
 	 */
 	public static void ex7() throws IOException {
-        Map<String, Long> collect = getWords(ResourceFXUtils.toURI(ALICE_TXT)).parallel()
+        Map<String, Long> wordCount = getWords(ResourceFXUtils.toURI(ALICE_TXT)).parallel()
 				.collect(
 				Collectors.groupingBy(w -> w, Collectors.counting()));
 
-		Entry<String, Long> entries = new ConcurrentHashMap<>(collect).reduceEntries(4, (t, u) -> t.getValue() > u.getValue() ? t : u);
+		Entry<String, Long> entries = new ConcurrentHashMap<>(wordCount).reduceEntries(4, (t, u) -> t.getValue() > u.getValue() ? t : u);
         LOGGER.trace("{}", " The word \"" + entries.getKey() + "\" appeared " + entries.getValue() + " times");
 
 	}

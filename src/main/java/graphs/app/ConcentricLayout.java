@@ -28,12 +28,12 @@ public class ConcentricLayout implements Layout {
 
     public static void layoutConcentric(List<Cell> cells, List<Edge> allEdges) {
         GraphModelAlgorithms.coloring(cells, allEdges);
-        Map<Color, List<Cell>> collect = cells.stream().collect(Collectors.groupingBy(Cell::getColor));
-        List<List<Cell>> collect2 = collect.entrySet().stream()
+        Map<Color, List<Cell>> cellByColor = cells.stream().collect(Collectors.groupingBy(Cell::getColor));
+        List<List<Cell>> cellsGroups = cellByColor.entrySet().stream()
                 .sorted(Comparator.comparing(e -> LayerLayout.numberOfEdges(e, allEdges)))
                 .map(Entry<Color, List<Cell>>::getValue).collect(Collectors.toList());
-        for (int i = 0; i < collect2.size(); i++) {
-            List<Cell> list = collect2.get(i);
+        for (int i = 0; i < cellsGroups.size(); i++) {
+            List<Cell> list = cellsGroups.get(i);
             list.forEach(e -> e.setColor(null));
             CircleLayout.generateCircle(list, allEdges, 200, 200, 180.0 / list.size() * i, i + 1);
         }

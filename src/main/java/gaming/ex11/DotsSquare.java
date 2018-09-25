@@ -72,12 +72,12 @@ public class DotsSquare extends Region {
     }
 
     public Set<Set<DotsSquare>> check() {
-        final List<DotsSquare> collect = adjacencies.stream()
+        final List<DotsSquare> adjContainingThis = adjacencies.stream()
                 .filter(a -> a.adjacencies.stream()
                         .anyMatch(b -> b != this && b.adjacencies.stream()
                                 .anyMatch(c -> a != c && c.adjacencies.contains(this)))).collect(Collectors.toList());
         Set<Set<DotsSquare>> pontos = new HashSet<>();
-        for (DotsSquare a : collect) {
+        for (DotsSquare a : adjContainingThis) {
             for (DotsSquare b : a.adjacencies.stream()
                     .filter(b -> b != this && b.adjacencies.stream()
                             .anyMatch(c -> a != c && c.adjacencies.contains(this))).collect(Collectors.toList())) {

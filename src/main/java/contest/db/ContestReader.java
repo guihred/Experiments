@@ -70,12 +70,11 @@ public final class ContestReader implements HasLogging {
         contestQuestionDAO.saveOrUpdate(listQuestions);
         contestQuestionDAO.saveOrUpdate(
                 listQuestions.stream().flatMap(e -> e.getOptions().stream()).collect(Collectors.toList()));
-        List<ContestText> collect = getTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
+        List<ContestText> nonNullTexts = getTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
                 .collect(Collectors.toList());
-        getLogger().info("Text max size {}", collect.stream().map(ContestText::getText).filter(Objects::nonNull)
+        getLogger().info("Text max size {}", nonNullTexts.stream().map(ContestText::getText).filter(Objects::nonNull)
                 .mapToInt(String::length).max().orElse(0));
-        contestQuestionDAO.saveOrUpdate(
-                collect);
+        contestQuestionDAO.saveOrUpdate(nonNullTexts);
     }
 
     private void addQuestion() {
@@ -107,15 +106,19 @@ public final class ContestReader implements HasLogging {
                 }
                 break;
             case STATE_OPTION:
-                if (StringUtils.isNotBlank(s)) {
-                    answer.appendAnswer(s.trim() + " ");
-                    if (option == 5 && i == linhas.length - 1) {
-                        addQuestion();
-                    }
-                }
+                addAnswer(linhas, i, s);
                 break;
             default:
                 break;
+        }
+    }
+
+    private void addAnswer(String[] linhas, int i, String s) {
+        if (StringUtils.isNotBlank(s)) {
+            answer.appendAnswer(s.trim() + " ");
+            if (option == 5 && i == linhas.length - 1) {
+                addQuestion();
+            }
         }
     }
 
@@ -231,7 +234,7 @@ public final class ContestReader implements HasLogging {
                 String parsedText = pdfStripper.getText(pdDoc);
                 String[] lines = parsedText.split("\r\n");
                 tryReadQuestionFromLines(lines);
-                List<HasImage> collect = Stream.concat(getTexts().stream(), listQuestions.stream())
+                List<HasImage> imageElements = Stream.concat(getTexts().stream(), listQuestions.stream())
                         .collect(Collectors.toList());
                 final int j = i;
                 for (PDFImage pdfImage : images) {
@@ -241,7 +244,7 @@ public final class ContestReader implements HasLogging {
                                 float b = pdfImage.y - e.getY();
                                 return a * a + b * b;
                             })).ifPresent(orElse -> {
-                                for (HasImage pdfImage2 : collect) {
+                                for (HasImage pdfImage2 : imageElements) {
                                     if (pdfImage2.matches(orElse.getLine())) {
                                         pdfImage2.appendImage(pdfImage.file.getName());
                                     }

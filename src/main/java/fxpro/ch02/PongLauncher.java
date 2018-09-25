@@ -104,7 +104,7 @@ public class PongLauncher extends Application {
 						centerY.setValue(centerY.getValue() + vertPixels);
                     })
 			.build();
-    public Button startButton = newButton(225, 470, "Start!", e -> {
+    private Button startButton = newButton(225, 470, "Start!", e -> {
 		startVisible.set(false);
 		pongAnimation.playFromStart();
 		pongComponents.requestFocus();

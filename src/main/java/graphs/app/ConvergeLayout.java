@@ -48,13 +48,13 @@ public class ConvergeLayout implements Layout {
 
     private static double calculateYSum(double bound, double media, Edge e2) {
 		double angulo2 = e2.getAngulo();
-		Integer valor = e2.getValor();
+		Integer valor = 1;e2.getValor();
 		return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
 	}
 
     private static double calculateXSum(double bound, double media, Edge e1) {
 		double angulo1 = e1.getAngulo();
-		Integer valor = e1.getValor();
+		Integer valor = 1;e1.getValor();
 		return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
 	}
 

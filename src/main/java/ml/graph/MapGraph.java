@@ -20,8 +20,8 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import ml.data.Country;
-import utils.CommonsFX;
 import utils.ResourceFXUtils;
+import utils.RotateUtils;
 
 public class MapGraph extends Application {
     private ObjectProperty<Country> currentCountry = new SimpleObjectProperty<>();
@@ -39,7 +39,7 @@ public class MapGraph extends Application {
         WebView imageView = new WebView();
         imageView.setMaxWidth(96);
         imageView.setMaxHeight(72);
-        CommonsFX.setZoomable(flowPane, true);
+        RotateUtils.setZoomable(flowPane, true);
         List<SVGPath> countries = Stream.of(Country.values())
                 .map(country -> mapCountryToPath(texts, imageView, country))
                 .collect(Collectors.toList());

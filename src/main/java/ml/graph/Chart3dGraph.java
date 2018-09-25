@@ -20,8 +20,9 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import utils.Axis;
-import utils.CommonsFX;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
+import utils.RotateUtils;
 
 public class Chart3dGraph extends Application {
 
@@ -63,7 +64,7 @@ public class Chart3dGraph extends Application {
         createFaces(mesh, length);
 
         // material
-        Image diffuseMap = CommonsFX.createImage(size, noiseArray);
+        Image diffuseMap = ResourceFXUtils.createImage(size, noiseArray);
 
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(diffuseMap);
@@ -100,9 +101,9 @@ public class Chart3dGraph extends Application {
             mouseOldX = mousePosX;
             mouseOldY = mousePosY;
         });
-        CommonsFX.makeZoomable(root);
-        //        CommonsFX.setSpinnable(cube, scene);
-        //        CommonsFX.setZoomable(root);
+        RotateUtils.makeZoomable(root);
+        //        RotateUtils.setSpinnable(cube, scene);
+        //        RotateUtils.setZoomable(root);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();

@@ -33,7 +33,8 @@ import utils.CommonsFX;
 import utils.HasLogging;
 
 public class PdfReader extends Application implements HasLogging {
-	private static final String SPLIT_WORDS_REGEX = "[\\s]+";
+    private static final int WORD_DISPLAY_PERIOD = 200;
+    private static final String SPLIT_WORDS_REGEX = "[\\s]+";
 	private ObservableList<String> lines = FXCollections.observableArrayList();
     private ObservableList<String> skipLines = FXCollections.observableArrayList();
     private ObservableList<String> words = FXCollections.observableArrayList();
@@ -45,56 +46,16 @@ public class PdfReader extends Application implements HasLogging {
     private int index;
     private int lineIndex;
 	private IntegerProperty pageIndex = new SimpleIntegerProperty(0);
-    private static final File PDF_FILE = new File(
-			"C:\\Users\\guigu\\Documents\\Estudo\\processoLegislativo.pdf");
+    private static final String PDF_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\BaseConhecimento\\CEH-V8\\Certified Ethical Hacker (CEH) v.8 Courseware Searchable PROPER\\CEHv8 Module 02 Footprinting and Reconnaissance.pdf";
 	private int numberOfPages;
     @Override
     public void start(Stage primaryStage) throws Exception {
-        readFile(PDF_FILE);
+        readFile(new File(PDF_FILE));
         primaryStage.setTitle("PDF Read Helper");
-        final Button startButton = CommonsFX.newButton("_Start/Stop", e -> {
-            Status status = timeline.getStatus();
-            if (status == Status.RUNNING) {
-                timeline.stop();
-            } else {
-                timeline.play();
-            }
-        });
-        final Button nextButton = CommonsFX.newButton("_Next", e -> {
-
-            if (lineIndex < lines.size()) {
-                String value = lines.get(lineIndex++);
-                skipLines.add(value);
-                currentLine.setText(value);
-				words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
-                index = 0;
-                if (lineIndex >= lines.size()) {
-					timeline.stop();
-                }
-            }
-        });
-        timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(200), e -> {
-            if (index >= words.size()) {
-				if (lineIndex >= lines.size()) {
-					lines.setAll(pages.get(pageIndex.get()));
-					pageIndex.set(pageIndex.get() + 1);
-					lineIndex = 0;
-					if (pageIndex.get() >= pages.size()) {
-						timeline.stop();
-					}
-				}
-                String value = lines.get(lineIndex++);
-                if (skipLines.contains(value)) {
-                    value = lines.get(lineIndex++);
-                }
-                currentLine.setText(value);
-				words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
-                index = 0;
-            }
-            if (!words.isEmpty()) {
-                currentWord.setText(words.get(index++));
-            }
-		}).cycleCount(Animation.INDEFINITE).build();
+        final Button startButton = CommonsFX.newButton("_Start/Stop", e -> toggleTimelineStatus());
+        final Button nextButton = CommonsFX.newButton("_Next", e -> displayNextLine());
+        timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), e -> displayNextWord())
+                .cycleCount(Animation.INDEFINITE).build();
         currentWord.setFont(Font.font(60));
 		currentPage.textProperty().bind(pageIndex.asString().concat("/" + numberOfPages));
 		VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton);
@@ -105,6 +66,51 @@ public class PdfReader extends Application implements HasLogging {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+    }
+
+    private void toggleTimelineStatus() {
+        Status status = timeline.getStatus();
+        if (status == Status.RUNNING) {
+            timeline.stop();
+        } else {
+            timeline.play();
+        }
+    }
+
+    private void displayNextLine() {
+        if (lineIndex < lines.size()) {
+            String value = lines.get(lineIndex++);
+            skipLines.add(value);
+            currentLine.setText(value);
+        	words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
+            index = 0;
+            if (lineIndex >= lines.size()) {
+        		timeline.stop();
+            }
+        }
+    }
+
+    private void displayNextWord() {
+        if (index >= words.size()) {
+        	if (lineIndex >= lines.size()) {
+        		lines.setAll(pages.get(pageIndex.get()));
+        		pageIndex.set(pageIndex.get() + 1);
+        		lineIndex = 0;
+        		if (pageIndex.get() >= pages.size()) {
+        			timeline.stop();
+        		}
+        	}
+            String value = lines.get(lineIndex++);
+            if (skipLines.contains(value)) {
+                value = lines.get(lineIndex++);
+            }
+            currentLine.setText(value);
+        	words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
+            index = 0;
+        }
+        if (!words.isEmpty()) {
+            currentWord.setText(words.get(index++));
+        }
     }
 
     public static void main(String[] args) {

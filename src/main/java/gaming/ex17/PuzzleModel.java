@@ -62,10 +62,10 @@ public class PuzzleModel extends Group {
     }
 
     private void onMouseReleased(PuzzlePiece piece) {
-        List<List<PuzzlePiece>> collect = linkedPieces.stream().filter(l -> !l.contains(piece)).collect(toList());
-        for (int i = 0; i < collect.size(); i++) {
-        	for (int j = 0; j < collect.get(i).size(); j++) {
-        		PuzzlePiece puzzlePiece = collect.get(i).get(j);
+        List<List<PuzzlePiece>> piecesGroups = linkedPieces.stream().filter(l -> !l.contains(piece)).collect(toList());
+        for (int i = 0; i < piecesGroups.size(); i++) {
+            for (int j = 0; j < piecesGroups.get(i).size(); j++) {
+                PuzzlePiece puzzlePiece = piecesGroups.get(i).get(j);
                 if (checkNeighbours(piece, puzzlePiece) && distance(puzzlePiece, piece) < width * width / 4) {
                     Optional<List<PuzzlePiece>> containsP = groupWhichContains(piece);
                     Optional<List<PuzzlePiece>> containsPuzzle = groupWhichContains(puzzlePiece);

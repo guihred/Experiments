@@ -1,11 +1,14 @@
 package ml.data;
 
+import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class DataframeML implements HasLogging {
 
@@ -24,9 +27,23 @@ public class DataframeML implements HasLogging {
     }
 
     public DataframeML(String csvFile) {
-        DataframeUtils.readCSV(this, csvFile);
+        readCSV(csvFile);
     }
 
+    public void readCSV(String csvFile) {
+        try (Scanner scanner = new Scanner(ResourceFXUtils.toFile(csvFile), StandardCharsets.UTF_8.displayName())) {
+            List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
+                    .collect(Collectors.toList());
+            for (String column : header) {
+                dataframe.put(column, new ArrayList<>());
+                formatMap.put(column, String.class);
+            }
+
+            DataframeUtils.readRows(this, scanner, header);
+        } catch (FileNotFoundException e) {
+            getLogger().error("FILE NOT FOUND", e);
+        }
+    }
     public void apply(String header, DoubleUnaryOperator mapper) {
         dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
                 .map(mapper).boxed().collect(Collectors.toList()));
@@ -137,9 +154,9 @@ public class DataframeML implements HasLogging {
 
     public Map<String, Long> histogram(String header) {
         List<Object> list = dataframe.get(header);
-        List<String> collect = list.stream().filter(Objects::nonNull).map(String.class::cast)
+        List<String> stringList = list.stream().filter(Objects::nonNull).map(String.class::cast)
                 .collect(Collectors.toList());
-        return collect.parallelStream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+        return stringList.parallelStream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
     }
 

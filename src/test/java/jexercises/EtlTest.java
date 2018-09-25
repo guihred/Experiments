@@ -1,4 +1,4 @@
-package exercise;
+package jexercises;
 
 import com.google.common.collect.ImmutableMap;
 import exercism.Etl;

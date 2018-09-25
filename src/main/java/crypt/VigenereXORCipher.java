@@ -32,17 +32,17 @@ public class VigenereXORCipher {
     private List<Integer>[] keysList = Stream.generate(ArrayList::new).limit(keys.length).toArray(List[]::new);
 
 
-	public void bruteForce(int i, List<Integer> collect) {
+	public void bruteForce(int i, List<Integer> numbers) {
 		List<Integer> d = keysList[i];
 		for (int j = 0; j < d.size(); j++) {
 			keys[i] = d.get(j);
 			if (i < keys.length - 1) {
-				bruteForce(i + 1, collect);
+				bruteForce(i + 1, numbers);
 				continue;
 			}
             String keysString = Arrays.toString(keys);
             LOGGER.info(keysString);
-            String encrypt = encrypt(keys, collect);
+            String encrypt = encrypt(keys, numbers);
             LOGGER.info(encrypt);
 		}
 	}
@@ -86,12 +86,14 @@ public class VigenereXORCipher {
 				List<Integer> map = stream.stream().map(l -> (char) (l ^ n) & 255).collect(Collectors.toList());
 				if (map.parallelStream().allMatch(m -> m > 32 && m < 128 && !Character.isDigit(m))) {
 					int size = map.size();
-					Map<Integer, Long> collect2 = map.parallelStream().map(c -> Character.valueOf((char) c.intValue()))
+                    Map<Integer, Long> charHistogram = map.parallelStream()
+                            .map(c -> Character.valueOf((char) c.intValue()))
                             .map(c -> (int) c)
 							.collect(Collectors.groupingBy(c -> c, Collectors.counting()));
 					double sum = 0.0;
 					for (int k = 0; k < 256; k++) {
-						sum += MAPA_FREQUENCIA.getOrDefault(k, 1.0) * collect2.getOrDefault(k, 0L).doubleValue() / Double.valueOf(size);
+                        sum += MAPA_FREQUENCIA.getOrDefault(k, 1.0) * charHistogram.getOrDefault(k, 0L).doubleValue()
+                                / Double.valueOf(size);
 
 					}
 					if (maxSum < sum) {
@@ -118,13 +120,13 @@ public class VigenereXORCipher {
 	public long findKeySize() throws IOException {
 		String line = Files.readAllLines(ResourceFXUtils.toPath("ctext.txt")).get(0);
 		String[] split = line.split("(?<=\\G..)");
-		List<Integer> collect = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
+		List<Integer> keySizeList = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
 		long max = 0;
 		long bestKeySize = 0;
 		for (int keySize = 2; keySize < 14; keySize++) {
 			int i = keySize;
 			current = 0;
-			Map<Integer, Long> mapBigFreq = collect.stream().filter(bite -> current++ % i == 0)
+			Map<Integer, Long> mapBigFreq = keySizeList.stream().filter(bite -> current++ % i == 0)
 					.collect(Collectors.groupingBy(b -> b, Collectors.counting()));
 			List<Entry<Integer, Long>> sorted = mapBigFreq.entrySet().stream()
 					.sorted(Comparator.comparing(Entry<Integer, Long>::getValue).reversed())
@@ -138,7 +140,7 @@ public class VigenereXORCipher {
 
 		}
 
-        LOGGER.info("{}", collect);
+        LOGGER.info("{}", keySizeList);
 		return bestKeySize;
 	}
 

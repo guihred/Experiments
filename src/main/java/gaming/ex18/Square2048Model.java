@@ -89,9 +89,9 @@ public class Square2048Model {
             }
         }
         
-        List<Square2048> collect = mapAsList.stream().filter(Square2048::isEmpty).collect(Collectors.toList());
-        if (!collect.isEmpty()) {
-            collect.get(random.nextInt(collect.size())).setNumber(newNumber());
+        List<Square2048> emptySquares = mapAsList.stream().filter(Square2048::isEmpty).collect(Collectors.toList());
+        if (!emptySquares.isEmpty()) {
+            emptySquares.get(random.nextInt(emptySquares.size())).setNumber(newNumber());
         }
 
     }

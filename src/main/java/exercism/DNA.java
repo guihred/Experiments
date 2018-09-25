@@ -39,13 +39,13 @@ public class DNA {
 	 *            the string
 	 */
 	public DNA(String string) {
-		Map<Character, Long> collect = string.chars().mapToObj(c -> Character.valueOf((char) c))
+        Map<Character, Long> charHistogram = string.chars().mapToObj(c -> Character.valueOf((char) c))
 				.collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
-		Map<Character, Long> hashMap = new HashMap<>();
-		collect.forEach(hashMap::put);
-		DNA_NUCLEOTIDES.forEach(a -> hashMap.putIfAbsent(a, 0L));
-		nucleotideCounts = hashMap;
+        Map<Character, Long> nucleoCounts = new HashMap<>();
+        charHistogram.forEach(nucleoCounts::put);
+        DNA_NUCLEOTIDES.forEach(a -> nucleoCounts.putIfAbsent(a, 0L));
+        nucleotideCounts = nucleoCounts;
 
 	}
 

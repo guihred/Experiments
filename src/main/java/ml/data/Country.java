@@ -4,7 +4,6 @@ import static ml.data.Continent.*;
 
 import java.util.*;
 import java.util.stream.Stream;
-import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 
 public enum Country {
@@ -241,7 +240,6 @@ public enum Country {
 
     private Set<Country> neighbors;
 
-    private Color color;
 
     Country(Continent continent, String name, String code, String path) {
         this.continent = continent;
@@ -265,9 +263,6 @@ public enum Country {
     }
     public String getCode() {
         return code;
-    }
-    public Color getColor() {
-        return color;
     }
 
     public Continent getContinent() {
@@ -392,9 +387,6 @@ public enum Country {
 
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
 
     public static boolean hasName(String name) {
         return Stream.of(values()).anyMatch(e -> name.matches(e.countryName));

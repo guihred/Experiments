@@ -75,10 +75,6 @@ public class JapaneseLesson extends BaseEntity {
 		return pk.getLesson();
 	}
 
-	public LessonPK getPk() {
-		return pk;
-	}
-
 	public String getRomaji() {
 		return romaji;
 	}

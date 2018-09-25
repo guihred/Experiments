@@ -77,8 +77,8 @@ public enum JapaneseAudio {
 
                 String format = String.format(
                         "INSERT INTO JAPANESE_LESSON(english,japanese,romaji,exercise,lesson) VALUES('%s','%s','%s',%d,%d);",
-                        extracted(lesson.getEnglish()), extracted(lesson.getJapanese()), extracted(lesson.getRomaji()),
-                        lesson.getPk().getExercise(), lesson.getPk().getLesson());
+                        treatStr(lesson.getEnglish()), treatStr(lesson.getJapanese()), treatStr(lesson.getRomaji()),
+                        lesson.getExercise(), lesson.getLesson());
                 out.println(format);
             }
         } catch (Exception e) {
@@ -87,7 +87,7 @@ public enum JapaneseAudio {
         HibernateUtil.shutdown();
     }
 
-    private static String extracted(String string) {
+    private static String treatStr(String string) {
         return Objects.toString(string, "").replaceAll("'", "''").replaceAll(";", ",");
     }
 
