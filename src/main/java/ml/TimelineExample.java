@@ -76,18 +76,18 @@ public class TimelineExample extends Application {
 		theStage.show();
 	}
 
-    private List<Entry<String, Color>> sortedLabels(ObservableMap<String, Color> colorsProperty) {
-        return colorsProperty
-                .entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
-                .collect(Collectors.toList());
-    }
-
     private VBox newSlider(String string, int min, int max, Property<Number> radius) {
         return new VBox(new Text(string), new SimpleSliderBuilder()
                 .min(min)
                 .max(max)
                 .bindBidirectional(radius)
                 .build());
+    }
+
+    private List<Entry<String, Color>> sortedLabels(ObservableMap<String, Color> colorsProperty) {
+        return colorsProperty
+                .entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
+                .collect(Collectors.toList());
     }
 
     public static void main(String[] args) {

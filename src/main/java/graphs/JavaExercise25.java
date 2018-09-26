@@ -17,11 +17,7 @@ import utils.HasLogging;
 public final class JavaExercise25 implements HasLogging {
 
 
-	public static void main(String[] args) {
-        new JavaExercise25().solveQuadraticEquation();
-	}
-
-    public void solveQuadraticEquation() {
+	public void solveQuadraticEquation() {
 		double[] coefA = { 1, 0.1, 0, 0, 0, 0, 0, 0, 1, 0.1, 10e-34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10e34, 10e-34, 1, 1,
 				10e-10 };
 		double[] coefB = { 5, 0.5, 0, 1, 1, 10000, 10e-34, 10e34, -20000, -20000, -2, 0, 1, 10e-34, 0, 1, 10, 100, 1000,
@@ -61,5 +57,9 @@ public final class JavaExercise25 implements HasLogging {
 			}
 		}
     }
+
+    public static void main(String[] args) {
+        new JavaExercise25().solveQuadraticEquation();
+	}
 
 }

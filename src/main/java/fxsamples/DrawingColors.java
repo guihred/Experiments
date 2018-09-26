@@ -10,10 +10,6 @@ import javafx.stage.Stage;
 import simplebuilder.*;
 
 public class DrawingColors extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Colors");
@@ -90,5 +86,9 @@ public class DrawingColors extends Application {
 		root.getChildren().add(roundRect);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

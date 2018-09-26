@@ -33,11 +33,6 @@ public class Ch4 {
         }
     }
 
-    public static void main(String[] args) {
-        String cyclicToString = cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3)));
-        LOGGER.info("{}", cyclicToString);
-    }
-
     /**
      * 9. Write a “universal” toString method that uses reflection to yield a string
      * with all instance variables of an object. Extra credit if you can handle
@@ -45,6 +40,11 @@ public class Ch4 {
      */
     public static String cyclicToString(Object s) {
         return cyclicToString(s, new ArrayList<>());
+    }
+
+    public static void main(String[] args) {
+        String cyclicToString = cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3)));
+        LOGGER.info("{}", cyclicToString);
     }
 
     private static String cyclicToString(Object s, List<Class<?>> classes) {
@@ -80,10 +80,6 @@ public class Ch4 {
                 + "}";
     }
 
-    private static boolean isClassUsed(List<Class<?>> classes, Field e) {
-        return classes.contains(e.getType()) || e.getType().isPrimitive() || e.getType().isAssignableFrom(String.class);
-    }
-
     private static String extracted(List<Field> fields) {
         return fields.size() <= 1 ? "" : "\n";
     }
@@ -97,6 +93,10 @@ public class Ch4 {
             return false;
         }
         return !Modifier.isStatic(e.getModifiers());
+    }
+
+    private static boolean isClassUsed(List<Class<?>> classes, Field e) {
+        return classes.contains(e.getType()) || e.getType().isPrimitive() || e.getType().isAssignableFrom(String.class);
     }
 
     /**

@@ -26,8 +26,23 @@ public class Shapes3DTexture extends Application {
     private double mouseOldY;
 	private final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
 	private final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
-	public static void main(String[] args) {
-		launch(args);
+	/**
+	 * Create image with random noise
+	 */
+	public Image createImage(double size) {
+		Random rnd = new Random();
+		int width = (int) size;
+		int height = (int) size;
+		WritableImage wr = new WritableImage(width, height);
+		PixelWriter pw = wr.getPixelWriter();
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				Color color = Color.rgb(rnd.nextInt(256), rnd.nextInt(256),
+						rnd.nextInt(256));
+				pw.setColor(x, y, color);
+			}
+		}
+		return wr;
 	}
 	@Override
 	public void start(Stage primaryStage) {
@@ -117,22 +132,7 @@ public class Shapes3DTexture extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
-	/**
-	 * Create image with random noise
-	 */
-	public Image createImage(double size) {
-		Random rnd = new Random();
-		int width = (int) size;
-		int height = (int) size;
-		WritableImage wr = new WritableImage(width, height);
-		PixelWriter pw = wr.getPixelWriter();
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				Color color = Color.rgb(rnd.nextInt(256), rnd.nextInt(256),
-						rnd.nextInt(256));
-				pw.setColor(x, y, color);
-			}
-		}
-		return wr;
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

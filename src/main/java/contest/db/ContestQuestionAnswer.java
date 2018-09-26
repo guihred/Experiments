@@ -25,6 +25,11 @@ public class ContestQuestionAnswer extends BaseEntity {
 		answer = Objects.toString(answer, "") + english;
 	}
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && super.equals(obj) && Objects.equals(((ContestQuestionAnswer) obj).number, number);
+    }
+
     public String getAnswer() {
         return answer;
     }
@@ -38,22 +43,17 @@ public class ContestQuestionAnswer extends BaseEntity {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj != null && super.equals(obj) && Objects.equals(((ContestQuestionAnswer) obj).number, number);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(number);
-    }
-
-    @Override
     public Integer getKey() {
         return key;
     }
 
     public Integer getNumber() {
         return number;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number);
     }
 
     public void setAnswer(String answer) {

@@ -13,10 +13,6 @@ import javafx.stage.Stage;
 
 public class AlignUsingStackAndTile extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         StackPane left = new StackPane();
@@ -42,5 +38,9 @@ public class AlignUsingStackAndTile extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

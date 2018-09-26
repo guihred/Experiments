@@ -30,45 +30,19 @@ public class DotsSquare extends Region {
         getChildren().addAll(circle);
     }
 
-    @Override
-    public String toString() {
-        return "(" + i + "," + j + ")";
-    }
-
-    public Double[] getCenter() {
-        return new Double[] {getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2};
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash += getI() * 7;
-        hash += getJ() * 11;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final DotsSquare other = (DotsSquare) obj;
-        if (i != other.i) {
-            return false;
-        }
-        return j == other.j;
-    }
-
     public void addAdj(DotsSquare selected) {
         adjacencies.add(selected);
         selected.adjacencies.add(this);
     }
 
-    public boolean contains(DotsSquare selected) {
-        return adjacencies.contains(selected);
+    public Stream<DotsSquare> almostSquare() {
+        // ONE link away from being a square
+        return adjacencies.stream()
+                .flatMap(a -> a.adjacencies.stream()
+                        .filter(b -> b != this)
+                        .flatMap(b -> b.adjacencies.stream()
+                                .filter((DotsSquare c) -> a != c && !c.contains(this)
+                                        && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)));
     }
 
     public Set<Set<DotsSquare>> check() {
@@ -90,16 +64,6 @@ public class DotsSquare extends Region {
         return pontos;
     }
 
-    public Stream<DotsSquare> almostSquare() {
-        // ONE link away from being a square
-        return adjacencies.stream()
-                .flatMap(a -> a.adjacencies.stream()
-                        .filter(b -> b != this)
-                        .flatMap(b -> b.adjacencies.stream()
-                                .filter((DotsSquare c) -> a != c && !c.contains(this)
-                                        && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)));
-    }
-
     public List<DotsSquare> checkMelhor() {
         return almostSquare().collect(Collectors.toList());
     }
@@ -116,17 +80,53 @@ public class DotsSquare extends Region {
                                         && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1))).count() == 0;
     }
 
-    public void removeAdj(DotsSquare value) {
+    public boolean contains(DotsSquare selected) {
+        return adjacencies.contains(selected);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DotsSquare other = (DotsSquare) obj;
+        if (i != other.i) {
+            return false;
+        }
+        return j == other.j;
+    }
+
+    public Double[] getCenter() {
+        return new Double[] {getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2};
+    }
+
+    public int getI() {
+		return i;
+	}
+
+    public int getJ() {
+		return j;
+	}
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash += getI() * 7;
+        hash += getJ() * 11;
+        return hash;
+    }
+
+	public void removeAdj(DotsSquare value) {
         adjacencies.remove(value);
         value.adjacencies.remove(this);
     }
 
-	public int getI() {
-		return i;
-	}
-
-	public int getJ() {
-		return j;
-	}
+	@Override
+    public String toString() {
+        return "(" + i + "," + j + ")";
+    }
 
 }

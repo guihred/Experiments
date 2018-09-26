@@ -39,11 +39,7 @@ public class Vertex implements HasLogging {
 		return edges.keySet();
 	}
 
-	public int getTopNum() {
-		return topNum;
-	}
-
-    public void assignLow(Map<Vertex, Integer> num, Map<Vertex, Integer> low) {
+	public void assignLow(Map<Vertex, Integer> num, Map<Vertex, Integer> low) {
 		Vertex v = this;
 		low.put(v, num.get(v));
 		Set<Vertex> adjacents = adjacents();
@@ -61,7 +57,8 @@ public class Vertex implements HasLogging {
 
 		}
 	}
-	public void assignNum(Map<Vertex, Integer> num, int c) {
+
+    public void assignNum(Map<Vertex, Integer> num, int c) {
 		int counter = c;
 
 		num.put(this, counter++);
@@ -75,7 +72,6 @@ public class Vertex implements HasLogging {
 
 		}
 	}
-
 	public void biput(Vertex... vertices) {
 		for (int i = 0; i < vertices.length; i++) {
 			edges.put(vertices[i], 1);
@@ -89,7 +85,7 @@ public class Vertex implements HasLogging {
 		return this;
 	}
 
-    public Map<Vertex, Integer> dijkstra(Iterable<Vertex> graph) {
+	public Map<Vertex, Integer> dijkstra(Iterable<Vertex> graph) {
 		Map<Vertex, Integer> distance = new HashMap<>();
 		Map<Vertex, Boolean> known = new HashMap<>();
 		for (Vertex v : graph) {
@@ -113,12 +109,7 @@ public class Vertex implements HasLogging {
 		return distance;
 	}
 
-    private Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
-        return distance.entrySet().stream().filter(e -> !known.get(e.getKey())).min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
-                .orElseThrow(() -> new Exception("There should be something")).getKey();
-    }
-
-	@Override
+    @Override
 	public boolean equals(Object obj) {
         if (obj == null || !getClass().isInstance(obj)) {
             return false;
@@ -127,12 +118,16 @@ public class Vertex implements HasLogging {
 		return id == other.id;
 	}
 
-	public String getName() {
+    public String getName() {
 		if (!NAMED) {
 			return Integer.toString(id);
 		}
 
 		return name;
+	}
+
+	public int getTopNum() {
+		return topNum;
 	}
 
 	@Override
@@ -169,7 +164,7 @@ public class Vertex implements HasLogging {
 		return sb.toString();
 	}
 
-    public Map<Vertex, Integer> unweighted(Collection<Vertex> graph) {
+	public Map<Vertex, Integer> unweighted(Collection<Vertex> graph) {
 		Map<Vertex, Integer> distance = new HashMap<>();
 		Map<Vertex, Boolean> known = new HashMap<>();
 		for (Vertex v : graph) {
@@ -195,11 +190,11 @@ public class Vertex implements HasLogging {
 
 	}
 
-	public Integer weight(Vertex v) {
+    public Integer weight(Vertex v) {
 		return edges.get(v);
 	}
 
-    public Map<Vertex, Integer> weightedNegative(Iterable<Vertex> graph) {
+	public Map<Vertex, Integer> weightedNegative(Iterable<Vertex> graph) {
 		Map<Vertex, Integer> distance = new HashMap<>();
 		Queue<Vertex> q = new LinkedList<>();
 
@@ -225,6 +220,11 @@ public class Vertex implements HasLogging {
 		}
 		return distance;
 	}
+
+    private Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
+        return distance.entrySet().stream().filter(e -> !known.get(e.getKey())).min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
+                .orElseThrow(() -> new Exception("There should be something")).getKey();
+    }
 
 	public static void chain(String nome1, String nome2, List<Vertex> vertices) {
         Vertex v1 = vertices.stream().filter(v -> v.name.equals(nome1)).findFirst()

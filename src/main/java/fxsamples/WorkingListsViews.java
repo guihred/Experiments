@@ -14,10 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class WorkingListsViews extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Creating and Working with Observable Lists");
@@ -83,5 +79,9 @@ public class WorkingListsViews extends Application {
 		GridPane.setVgrow(root, Priority.ALWAYS);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

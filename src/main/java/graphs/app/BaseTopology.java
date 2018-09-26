@@ -32,7 +32,15 @@ public abstract class BaseTopology implements HasLogging {
 		return name;
 	}
 
-	public static String cellIdentifier(int n) {
+	public int getSize() {
+        return size;
+    }
+
+	public void setSize(int size) {
+        this.size = size;
+    }
+
+    public static String cellIdentifier(int n) {
 		int i = -n;
 		/* Use the faster version */
 		char[] buf = new char[33];
@@ -45,19 +53,11 @@ public abstract class BaseTopology implements HasLogging {
 		return new String(buf, charPos, 33 - charPos);
 	}
 
-	public static String identifier(int i) {
+    public static String identifier(int i) {
 		if (i > 25) {
 			return cellIdentifier(i + 1);
 		}
 		return Objects.toString((char) ('A' + i));
 
 	}
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
 }

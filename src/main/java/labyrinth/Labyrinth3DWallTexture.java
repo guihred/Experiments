@@ -79,37 +79,6 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 	public final Random random = new Random();
 	private final Group root = new Group();
 
-	Sphere checkBalls(Bounds boundsInParent) {
-		return Stream.of(balls).flatMap(Stream::of)
-                .filter(Objects::nonNull)
-				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
-				.findFirst().orElse(null);
-	}
-
-
-	private void createLabyrinth(Group root1) {
-		for (int i = 0; i < mapa.length; i++) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE, WALL_IMAGE, WALL_IMAGE2);
-				wall.setTranslateX(i * SIZE);
-				wall.setTranslateZ(j * SIZE);
-				if ("_".equals(string)) {
-					wall.getRy().setAngle(90);
-				}
-				labyrinthWalls.add(wall);
-				root1.getChildren().add(wall);
-				Sphere ball = new Sphere(SIZE / 20);
-				balls[i][j] = ball;
-				ball.setMaterial(new PhongMaterial(Color.YELLOW));
-				ball.setTranslateX(i * SIZE);
-				ball.setTranslateZ(j * SIZE);
-				root1.getChildren().add(ball);
-
-			}
-		}
-	}
-
 	@Override
 	public void endKeyboard() {
 		Sphere ballGot = checkBalls(camera.getBoundsInParent());
@@ -146,40 +115,18 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		}
 	}
 
-	private MeshView generateGhost(String arquivo, Color enemyColor) {
-        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
-		MeshView enemy = new MeshView(mesh);
-
-		PhongMaterial sample = new PhongMaterial(enemyColor);
-		sample.setSpecularColor(lightColor);
-		enemy.setMaterial(sample);
-		enemy.setTranslateY(14);
-		enemy.setDrawMode(DrawMode.FILL);
-		enemy.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
-		enemy.setTranslateX(random.nextInt(mapa.length * SIZE));
-		while (checkColision(enemy.getBoundsInParent())) {
-            enemy.setTranslateX(enemy.getTranslateX() + 1);
-			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
-		}
-        enemy.setScaleZ(0.4);
-        enemy.setScaleY(1);
-		enemy.setScaleX(0.4);
-		return enemy;
-	}
-
-
-	@Override
-	public List<LabyrinthWall> getLabyrinthWalls() {
-		return labyrinthWalls;
-	}
-
 
 	@Override
     public PerspectiveCamera getCamera() {
         return camera;
     }
 
-    @Override
+	@Override
+	public List<LabyrinthWall> getLabyrinthWalls() {
+		return labyrinthWalls;
+	}
+
+	@Override
 	public void start(Stage primaryStage) throws Exception {
 
 
@@ -240,6 +187,59 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
         primaryStage.setTitle("Labyrinth 3D With Wall Texture");
 		primaryStage.setScene(sc);
 		primaryStage.show();
+	}
+
+
+	private void createLabyrinth(Group root1) {
+		for (int i = 0; i < mapa.length; i++) {
+			for (int j = mapa[i].length - 1; j >= 0; j--) {
+				String string = mapa[i][j];
+				LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE, WALL_IMAGE, WALL_IMAGE2);
+				wall.setTranslateX(i * SIZE);
+				wall.setTranslateZ(j * SIZE);
+				if ("_".equals(string)) {
+					wall.getRy().setAngle(90);
+				}
+				labyrinthWalls.add(wall);
+				root1.getChildren().add(wall);
+				Sphere ball = new Sphere(SIZE / 20);
+				balls[i][j] = ball;
+				ball.setMaterial(new PhongMaterial(Color.YELLOW));
+				ball.setTranslateX(i * SIZE);
+				ball.setTranslateZ(j * SIZE);
+				root1.getChildren().add(ball);
+
+			}
+		}
+	}
+
+
+	private MeshView generateGhost(String arquivo, Color enemyColor) {
+        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
+		MeshView enemy = new MeshView(mesh);
+
+		PhongMaterial sample = new PhongMaterial(enemyColor);
+		sample.setSpecularColor(lightColor);
+		enemy.setMaterial(sample);
+		enemy.setTranslateY(14);
+		enemy.setDrawMode(DrawMode.FILL);
+		enemy.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
+		enemy.setTranslateX(random.nextInt(mapa.length * SIZE));
+		while (checkColision(enemy.getBoundsInParent())) {
+            enemy.setTranslateX(enemy.getTranslateX() + 1);
+			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
+		}
+        enemy.setScaleZ(0.4);
+        enemy.setScaleY(1);
+		enemy.setScaleX(0.4);
+		return enemy;
+	}
+
+    Sphere checkBalls(Bounds boundsInParent) {
+		return Stream.of(balls).flatMap(Stream::of)
+                .filter(Objects::nonNull)
+				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
+				.findFirst().orElse(null);
 	}
 
 

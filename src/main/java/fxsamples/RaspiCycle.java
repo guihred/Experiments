@@ -25,21 +25,51 @@ import utils.HasLogging;
  * @author Mark Heckler, @MkHeck
  */
 public class RaspiCycle extends Application implements HasLogging {
-	private int speed = 1;
 	private static final double SCREEN_HEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
 	private static final double SCREEN_WIDTH = Screen.getPrimary().getVisualBounds().getWidth();
+	private int speed = 1;
 	private GraphicsContext gc;
 	private Point2D startPos;
 	private Point2D curPos;
 	private Point2D newPos;
 	private final List<Line> walls = new ArrayList<>();
 
-	public enum Direction {
-		LEFT, RIGHT, UP, DOWN
-	}
-
 	private Direction curDir = Direction.UP;
+
 	private AnimationTimer animTimer;
+	public void handleKeyPress(KeyEvent event) {
+		boolean isNewDir = false;
+		if (event.getCode() == KeyCode.LEFT && curDir != Direction.LEFT) {
+			curDir = Direction.LEFT;
+			isNewDir = true;
+		} else if (event.getCode() == KeyCode.RIGHT
+				&& curDir != Direction.RIGHT) {
+			curDir = Direction.RIGHT;
+			isNewDir = true;
+		} else if (event.getCode() == KeyCode.UP && curDir != Direction.UP) {
+			curDir = Direction.UP;
+			isNewDir = true;
+		} else if (event.getCode() == KeyCode.DOWN && curDir != Direction.DOWN) {
+			curDir = Direction.DOWN;
+			isNewDir = true;
+		} else if (event.getCode() == KeyCode.DIGIT1) {
+			speed = 1;
+		} else if (event.getCode() == KeyCode.DIGIT2) {
+			speed = 2;
+		} else if (event.getCode() == KeyCode.DIGIT3) {
+			speed = 3;
+		} else if (event.getCode() == KeyCode.ESCAPE) {
+			animTimer.stop();
+			Platform.exit();
+		}
+		if (isNewDir) {
+			// User sent Light Cycle in a new direction...
+			// add the wall (light trail) to the list & start a new one
+			walls.add(getLine(startPos.getX(), startPos.getY(), curPos.getX(),
+					curPos.getY()));
+			startPos = curPos;
+		}
+	}
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -85,105 +115,6 @@ public class RaspiCycle extends Application implements HasLogging {
 		animTimer.start();
 	}
 
-	/**
-	 * The main() method is ignored in correctly deployed JavaFX application.
-	 * main() serves only as fallback in case the application can not be
-	 * launched through deployment artifacts, e.g., in IDEs with limited FX
-	 * support. NetBeans ignores main().
-	 *
-	 * @param args
-	 *            the command line arguments
-	 */
-	public static void main(String[] args) {
-		launch(args);
-	}
-
-	private void drawWalls(Rectangle2D bounds) {
-		gc.setStroke(Color.LIGHTBLUE);
-		gc.setLineWidth(2);
-		// Top wall
-		gc.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(),
-				bounds.getMinY());
-		// Right wall
-		gc.strokeLine(bounds.getMaxX(), bounds.getMinY(), bounds.getMaxX(),
-				bounds.getMaxY());
-		// Bottom wall
-		gc.strokeLine(bounds.getMinX(), bounds.getMaxY(), bounds.getMaxX(),
-				bounds.getMaxY());
-		// Left wall
-		gc.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX(),
-				bounds.getMaxY());
-	}
-
-	private void drawGameGrid() {
-		int boxSize = (int) (Math.min(SCREEN_WIDTH, SCREEN_HEIGHT) / 10);
-		int i;
-		gc.setStroke(Color.BLACK);
-		gc.setLineWidth(5);
-
-		// Draw horizontal lines
-		i = boxSize;
-		while (i < SCREEN_HEIGHT) {
-			gc.strokeLine(0, i, SCREEN_WIDTH, i);
-			i += boxSize;
-		}
-		// Draw vertical lines
-		i = boxSize;
-		while (i < SCREEN_WIDTH) {
-			gc.strokeLine(i, 0, i, SCREEN_HEIGHT);
-			i += boxSize;
-		}
-	}
-
-	private Line getLine(double x1, double y1, double x2, double y2) {
-		return new Line(Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2),
-				Math.max(y1, y2));
-	}
-
-	public void handleKeyPress(KeyEvent event) {
-		boolean isNewDir = false;
-		if (event.getCode() == KeyCode.LEFT && curDir != Direction.LEFT) {
-			curDir = Direction.LEFT;
-			isNewDir = true;
-		} else if (event.getCode() == KeyCode.RIGHT
-				&& curDir != Direction.RIGHT) {
-			curDir = Direction.RIGHT;
-			isNewDir = true;
-		} else if (event.getCode() == KeyCode.UP && curDir != Direction.UP) {
-			curDir = Direction.UP;
-			isNewDir = true;
-		} else if (event.getCode() == KeyCode.DOWN && curDir != Direction.DOWN) {
-			curDir = Direction.DOWN;
-			isNewDir = true;
-		} else if (event.getCode() == KeyCode.DIGIT1) {
-			speed = 1;
-		} else if (event.getCode() == KeyCode.DIGIT2) {
-			speed = 2;
-		} else if (event.getCode() == KeyCode.DIGIT3) {
-			speed = 3;
-		} else if (event.getCode() == KeyCode.ESCAPE) {
-			animTimer.stop();
-			Platform.exit();
-		}
-		if (isNewDir) {
-			// User sent Light Cycle in a new direction...
-			// add the wall (light trail) to the list & start a new one
-			walls.add(getLine(startPos.getX(), startPos.getY(), curPos.getX(),
-					curPos.getY()));
-			startPos = curPos;
-		}
-	}
-
-	private void runLightCycle() {
-		calculateDestination();
-		gc.setStroke(Color.YELLOW);
-		gc.setLineWidth(5);
-		gc.strokeLine(curPos.getX(), curPos.getY(), newPos.getX(),
-				newPos.getY());
-		curPos = newPos;
-		checkCollision();
-	}
-
 	private void calculateDestination() {
 		double newX = 0;
 		double newY = 0;
@@ -226,5 +157,74 @@ public class RaspiCycle extends Application implements HasLogging {
                     getLogger().info("COLLISION!");
 					Platform.exit();
 				});
+	}
+
+	private void drawGameGrid() {
+		int boxSize = (int) (Math.min(SCREEN_WIDTH, SCREEN_HEIGHT) / 10);
+		int i;
+		gc.setStroke(Color.BLACK);
+		gc.setLineWidth(5);
+
+		// Draw horizontal lines
+		i = boxSize;
+		while (i < SCREEN_HEIGHT) {
+			gc.strokeLine(0, i, SCREEN_WIDTH, i);
+			i += boxSize;
+		}
+		// Draw vertical lines
+		i = boxSize;
+		while (i < SCREEN_WIDTH) {
+			gc.strokeLine(i, 0, i, SCREEN_HEIGHT);
+			i += boxSize;
+		}
+	}
+
+	private void drawWalls(Rectangle2D bounds) {
+		gc.setStroke(Color.LIGHTBLUE);
+		gc.setLineWidth(2);
+		// Top wall
+		gc.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(),
+				bounds.getMinY());
+		// Right wall
+		gc.strokeLine(bounds.getMaxX(), bounds.getMinY(), bounds.getMaxX(),
+				bounds.getMaxY());
+		// Bottom wall
+		gc.strokeLine(bounds.getMinX(), bounds.getMaxY(), bounds.getMaxX(),
+				bounds.getMaxY());
+		// Left wall
+		gc.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX(),
+				bounds.getMaxY());
+	}
+
+	private Line getLine(double x1, double y1, double x2, double y2) {
+		return new Line(Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2),
+				Math.max(y1, y2));
+	}
+
+	private void runLightCycle() {
+		calculateDestination();
+		gc.setStroke(Color.YELLOW);
+		gc.setLineWidth(5);
+		gc.strokeLine(curPos.getX(), curPos.getY(), newPos.getX(),
+				newPos.getY());
+		curPos = newPos;
+		checkCollision();
+	}
+
+	/**
+	 * The main() method is ignored in correctly deployed JavaFX application.
+	 * main() serves only as fallback in case the application can not be
+	 * launched through deployment artifacts, e.g., in IDEs with limited FX
+	 * support. NetBeans ignores main().
+	 *
+	 * @param args
+	 *            the command line arguments
+	 */
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	public enum Direction {
+		LEFT, RIGHT, UP, DOWN
 	}
 }

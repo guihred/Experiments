@@ -30,16 +30,16 @@ public class PacmanBall extends Circle {
 		});
 	}
 
-	public final BooleanProperty specialProperty() {
-		return special;
-	}
-
 	public final boolean isSpecial() {
 		return special.get();
 	}
 
 	public final void setSpecial(final boolean special) {
 		this.special.set(special);
+	}
+
+	public final BooleanProperty specialProperty() {
+		return special;
 	}
 
 }

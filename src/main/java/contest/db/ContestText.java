@@ -34,8 +34,8 @@ public class ContestText extends BaseEntity implements HasImage {
     }
 
     @Override
-    public String toString() {
-        return MessageFormat.format("ContestText [contest={0}, key={1}, max={2}, min={3}]", contest, key, max, min);
+    public void appendImage(String english) {
+        image = Objects.toString(image, "") + english;
     }
 
     public void appendText(String english) {
@@ -43,11 +43,16 @@ public class ContestText extends BaseEntity implements HasImage {
     }
 
     @Override
-    public void appendImage(String english) {
-        image = Objects.toString(image, "") + english;
+    public boolean equals(Object obj) {
+        return obj != null && super.equals(obj) && ((ContestText) obj).key == key;
     }
     public Contest getContest() {
         return contest;
+    }
+
+    @Override
+    public String getImage() {
+        return image;
     }
 
     @Override
@@ -67,8 +72,23 @@ public class ContestText extends BaseEntity implements HasImage {
         return text;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(key);
+    }
+
+    @Override
+    public boolean matches(String s0) {
+        return s0.matches(ContestReader.TEXTS_PATTERN);
+    }
+
     public void setContest(Contest contest) {
         this.contest = contest;
+    }
+
+    @Override
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setKey(Integer key) {
@@ -88,28 +108,8 @@ public class ContestText extends BaseEntity implements HasImage {
     }
 
     @Override
-    public String getImage() {
-        return image;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null && super.equals(obj) && ((ContestText) obj).key == key;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key);
-    }
-
-    @Override
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    @Override
-    public boolean matches(String s0) {
-        return s0.matches(ContestReader.TEXTS_PATTERN);
+    public String toString() {
+        return MessageFormat.format("ContestText [contest={0}, key={1}, max={2}, min={3}]", contest, key, max, min);
     }
 
 }

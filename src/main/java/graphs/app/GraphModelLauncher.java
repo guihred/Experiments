@@ -35,31 +35,6 @@ public class GraphModelLauncher extends Application implements HasLogging {
 			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
 
 
-	private void displayDialogForShortestPath() {
-		graph.getModel().clearSelected();
-		Stage dialog = new Stage();
-		dialog.setWidth(70);
-		ObservableList<String> cells = FXCollections.observableArrayList(
-                graph.getModel().getAllCells().stream().map(Cell::getCellId).collect(Collectors.toList()));
-		ChoiceBox<String> c1 = new ChoiceBox<>(cells);
-		ChoiceBox<String> c2 = new ChoiceBox<>(cells);
-        Scene scene = new Scene(
-                new VBox(new Text("Source"), c1, new Text("Target"), c2, CommonsFX.newButton("OK", event -> {
-			if (c1.getValue() != null && c2.getValue() != null) {
-				List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
-				chain.forEach(e -> {
-					e.setSelected(true);
-					e.getTarget().setSelected(true);
-					e.getSource().setSelected(true);
-				});
-			}
-			dialog.close();
-		})));
-		dialog.setScene(scene);
-		dialog.show();
-	}
-
-
 	@Override
 	public void start(Stage primaryStage) {
 		BorderPane root = new BorderPane();
@@ -156,6 +131,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
 	}
 
+
 	private void addGraphComponents() {
 
 		GraphModel model = graph.getModel();
@@ -181,6 +157,30 @@ public class GraphModelLauncher extends Application implements HasLogging {
 		model.addBiEdge("F", "G", 1);
 		graph.endUpdate();
 
+	}
+
+	private void displayDialogForShortestPath() {
+		graph.getModel().clearSelected();
+		Stage dialog = new Stage();
+		dialog.setWidth(70);
+		ObservableList<String> cells = FXCollections.observableArrayList(
+                graph.getModel().getAllCells().stream().map(Cell::getCellId).collect(Collectors.toList()));
+		ChoiceBox<String> c1 = new ChoiceBox<>(cells);
+		ChoiceBox<String> c2 = new ChoiceBox<>(cells);
+        Scene scene = new Scene(
+                new VBox(new Text("Source"), c1, new Text("Target"), c2, CommonsFX.newButton("OK", event -> {
+			if (c1.getValue() != null && c2.getValue() != null) {
+				List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
+				chain.forEach(e -> {
+					e.setSelected(true);
+					e.getTarget().setSelected(true);
+					e.getSource().setSelected(true);
+				});
+			}
+			dialog.close();
+		})));
+		dialog.setScene(scene);
+		dialog.show();
 	}
 
 

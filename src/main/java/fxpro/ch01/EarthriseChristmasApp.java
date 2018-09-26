@@ -21,11 +21,6 @@ import simplebuilder.SimpleTextBuilder;
 import utils.CrawlerTask;
 
 public class EarthriseChristmasApp extends Application {
-    public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
-        Application.launch(args);
-    }
-
     @Override
     public void start(Stage stage) {
         String message
@@ -73,5 +68,10 @@ public class EarthriseChristmasApp extends Application {
         stage.setTitle("Earthrise Christmas");
         stage.show();
         transTransition.play();
+    }
+
+    public static void main(String[] args) {
+        CrawlerTask.insertProxyConfig();
+        Application.launch(args);
     }
 }

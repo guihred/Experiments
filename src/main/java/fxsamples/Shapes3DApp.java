@@ -27,6 +27,22 @@ public class Shapes3DApp extends Application {
     private double mouseOldY;
 	private final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
 	private final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
+	/**
+	 * Create image with random noise
+	 */
+	public Image createImage(int size) {
+		Random rnd = new Random();
+		WritableImage wr = new WritableImage(size, size);
+		PixelWriter pw = wr.getPixelWriter();
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				Color color = Color.rgb(rnd.nextInt(256), rnd.nextInt(256),
+						rnd.nextInt(256));
+				pw.setColor(x, y, color);
+			}
+		}
+		return wr;
+	}
 	@Override
 	public void start(Stage primaryStage) {
 		// cube
@@ -127,22 +143,6 @@ public class Shapes3DApp extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-	/**
-	 * Create image with random noise
-	 */
-	public Image createImage(int size) {
-		Random rnd = new Random();
-		WritableImage wr = new WritableImage(size, size);
-		PixelWriter pw = wr.getPixelWriter();
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				Color color = Color.rgb(rnd.nextInt(256), rnd.nextInt(256),
-						rnd.nextInt(256));
-				pw.setColor(x, y, color);
-			}
-		}
-		return wr;
 	}
 	public static void main(String[] args) {
 		Application.launch(args);

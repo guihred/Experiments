@@ -33,12 +33,12 @@ public class ReversiPiece extends Region {
         this();
 		this.owner.setValue(owner);
     }
-    public ObjectProperty<Owner> ownerProperty() {
-		return owner;
-    }
-
     public Owner getOwner() {
 		return owner.get();
+    }
+
+    public ObjectProperty<Owner> ownerProperty() {
+		return owner;
     }
 
     public void setOwner(Owner owner) {

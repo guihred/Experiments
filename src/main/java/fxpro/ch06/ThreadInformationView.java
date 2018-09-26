@@ -23,6 +23,10 @@ class ThreadInformationView {
 		hookupEvents(model);
 	}
 
+	public Scene getScene() {
+		return scene;
+	}
+
 	private void hookupEvents(ThreadInformationModel model) {
 		updateButton.setOnAction(e -> model.update());
 		threadNames.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> {
@@ -31,10 +35,6 @@ class ThreadInformationView {
 				stackTrace.setText(model.getStackTraces().get(index));
 			}
 		});
-	}
-
-	public Scene getScene() {
-		return scene;
 	}
 
 }

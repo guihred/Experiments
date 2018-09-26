@@ -23,18 +23,11 @@ import javafx.scene.layout.Pane;
  * @author Note
  */
 public class SolitaireModel {
-	private static class DragContext {
-		protected List<SolitaireCard> cards;
-		protected CardStack stack;
-		protected double x;
-		protected double y;
-	}
-
 	private CardStack[] ascendingStacks = new CardStack[4];
+
 	private DragContext dragContext = new DragContext();
 	private Pane gridPane;
 	private CardStack[] simpleStacks = new CardStack[7];
-
 	public SolitaireModel(Pane gridPane, Scene scene) {
 		this.gridPane = gridPane;
 		List<SolitaireCard> allCards = getAllCards();
@@ -81,6 +74,12 @@ public class SolitaireModel {
 		}
 	}
 
+	public void makeDraggable(final Node node) {
+		node.setOnMousePressed(this::handleMousePressed);
+		node.setOnMouseDragged(this::handleMouseDragged);
+		node.setOnMouseReleased(this::handleMouseReleased);
+	}
+
 	private List<SolitaireCard> getAllCards() {
 		SolitaireNumber[] solitaireNumbers = SolitaireNumber.values();
 		SolitaireSuit[] solitaireSuits = SolitaireSuit.values();
@@ -96,6 +95,12 @@ public class SolitaireModel {
 		}
 		Collections.shuffle(allCards);
 		return allCards;
+	}
+
+	private List<CardStack> getHoveredStacks(CardStack[] stacks) {
+		return Stream.of(stacks)
+				.filter(s -> s.getBoundsInParent().intersects(dragContext.cards.get(0).getBoundsInParent()))
+				.collect(Collectors.toList());
 	}
 
 	private void handleMouseDragged(MouseEvent event) {
@@ -153,7 +158,7 @@ public class SolitaireModel {
 		}
 	}
 
-	private void handleMouseReleased(MouseEvent event) {
+    private void handleMouseReleased(MouseEvent event) {
 		if (isNullOrEmpty(dragContext.cards)) {
 			return;
 		}
@@ -204,23 +209,16 @@ public class SolitaireModel {
 		dragContext.stack.addCards(dragContext.cards);
 	}
 
-    private static boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {
-		return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard)
-				|| isNotNextCardInStack(cardStack, solitaireCard);
-	}
-
-	private static boolean isNullOrEmpty(List<?> cards) {
-		return cards == null || cards.isEmpty();
-	}
-
 	private boolean isDoubleClicked(MouseEvent event) {
 		return event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2;
 	}
 
-	private List<CardStack> getHoveredStacks(CardStack[] stacks) {
-		return Stream.of(stacks)
-				.filter(s -> s.getBoundsInParent().intersects(dragContext.cards.get(0).getBoundsInParent()))
-				.collect(Collectors.toList());
+	private boolean isStackAllHidden(CardStack stack) {
+		return !stack.getCards().isEmpty() && stack.getCards().stream().noneMatch(SolitaireCard::isShown);
+	}
+
+	public static SolitaireModel create(Pane gridPane, Scene scene) {
+		return new SolitaireModel(gridPane, scene);
 	}
 
     private static boolean isCardNotCompatibleWithStack(CardStack cardStack, SolitaireCard solitaireCard) {
@@ -233,12 +231,9 @@ public class SolitaireModel {
                         .getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1);
 	}
 
-	private boolean isStackAllHidden(CardStack stack) {
-		return !stack.getCards().isEmpty() && stack.getCards().stream().noneMatch(SolitaireCard::isShown);
-	}
-
-    private static boolean isStackEmptyAndCardIsNotAce(CardStack cardStack, SolitaireCard solitaireCard) {
-		return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.ACE;
+	private static boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {
+		return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard)
+				|| isNotNextCardInStack(cardStack, solitaireCard);
 	}
 
     private static boolean isNotNextCardInStack(CardStack cardStack, SolitaireCard solitaireCard) {
@@ -246,14 +241,19 @@ public class SolitaireModel {
 				|| solitaireCard.getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() + 1);
 	}
 
-	public void makeDraggable(final Node node) {
-		node.setOnMousePressed(this::handleMousePressed);
-		node.setOnMouseDragged(this::handleMouseDragged);
-		node.setOnMouseReleased(this::handleMouseReleased);
+    private static boolean isNullOrEmpty(List<?> cards) {
+		return cards == null || cards.isEmpty();
 	}
 
-	public static SolitaireModel create(Pane gridPane, Scene scene) {
-		return new SolitaireModel(gridPane, scene);
+	private static boolean isStackEmptyAndCardIsNotAce(CardStack cardStack, SolitaireCard solitaireCard) {
+		return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.ACE;
+	}
+
+	private static class DragContext {
+		protected List<SolitaireCard> cards;
+		protected CardStack stack;
+		protected double x;
+		protected double y;
 	}
 
 }

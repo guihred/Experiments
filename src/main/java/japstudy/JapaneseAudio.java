@@ -43,16 +43,16 @@ public enum JapaneseAudio {
         return file;
     }
 
-    public static JapaneseAudio getAudio(int lesson) {
-        return Stream.of(values()).filter(e -> e.lesson == lesson).findFirst().orElse(null);
+    public int getLesson() {
+        return lesson;
     }
 
     public URL getURL() {
         return ResourceFXUtils.toURL("jap/" + file);
     }
 
-    public int getLesson() {
-        return lesson;
+    public static JapaneseAudio getAudio(int lesson) {
+        return Stream.of(values()).filter(e -> e.lesson == lesson).findFirst().orElse(null);
     }
 
     public static void main(String[] args) {

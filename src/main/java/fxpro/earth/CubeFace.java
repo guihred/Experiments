@@ -54,6 +54,57 @@ public class CubeFace extends Parent {
 				.setFill(computeFaceHSB()));
 	}
 
+	public final Double getZPos() {
+		return zPosProperty().getValue();
+	}
+
+	public final void setZPos(final double zPos) {
+		zPosProperty().set(zPos);
+	}
+
+	public final DoubleProperty zPosProperty() {
+		return zPos;
+	}
+
+	private void loadFace(TilePane tilePane, int xOffset, int y) {
+		for (int x = xOffset; x <= xOffset + 1; x++) {
+			int xm = (x + 1) % 8;
+			ImageView mapTile = new ImageView();
+			mapTile.setImage(new Image(
+					"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
+							+ "&z=3"));
+			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
+			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
+			mapTile.opacityProperty().bind(cubeModel.getMapOpacity());
+			tilePane.getChildren().add(mapTile);
+		}
+	}
+
+	final Paint computeFaceHSB() {
+		return Color.hsb(FACE_HUE, FACE_SAT,
+				Math.abs(-zPos.getValue() / (RADIUS * 2)) + 0.40);
+	}
+
+	Node createBottomMapTiles(int sideNum) {
+		TilePane tilePane;
+		int xOffset = (sideNum + 1) * 2;
+		tilePane = new TilePane();
+		tilePane.setRotate(sideNum * 90 % 360);
+		tilePane.setPrefColumns(2);
+		tilePane.setPrefRows(3);
+
+		PerspectiveTransform build = new SimplePerspectiveTransformBuilder().ulx(0).uly(0)
+				.urx(EDGE_LENGTH).ury(0).llx(EDGE_LENGTH * 0.375)
+				.lly(EDGE_LENGTH * 0.375).lrx(EDGE_LENGTH * 0.625)
+				.lry(EDGE_LENGTH * 0.375).build();
+		tilePane.setEffect(build);
+
+		for (int y = 5; y <= 7; y++) {
+			loadFace(tilePane, xOffset, y);
+		}
+		return tilePane;
+	}
+
 	final Rectangle createFaceRectangle() {
 		faceRect = new Rectangle();
 		faceRect.setWidth(EDGE_LENGTH);
@@ -138,57 +189,6 @@ public class CubeFace extends Parent {
 			loadFace(tilePane, xOffset, y);
 		}
 		return tilePane;
-	}
-
-	Node createBottomMapTiles(int sideNum) {
-		TilePane tilePane;
-		int xOffset = (sideNum + 1) * 2;
-		tilePane = new TilePane();
-		tilePane.setRotate(sideNum * 90 % 360);
-		tilePane.setPrefColumns(2);
-		tilePane.setPrefRows(3);
-
-		PerspectiveTransform build = new SimplePerspectiveTransformBuilder().ulx(0).uly(0)
-				.urx(EDGE_LENGTH).ury(0).llx(EDGE_LENGTH * 0.375)
-				.lly(EDGE_LENGTH * 0.375).lrx(EDGE_LENGTH * 0.625)
-				.lry(EDGE_LENGTH * 0.375).build();
-		tilePane.setEffect(build);
-
-		for (int y = 5; y <= 7; y++) {
-			loadFace(tilePane, xOffset, y);
-		}
-		return tilePane;
-	}
-
-	private void loadFace(TilePane tilePane, int xOffset, int y) {
-		for (int x = xOffset; x <= xOffset + 1; x++) {
-			int xm = (x + 1) % 8;
-			ImageView mapTile = new ImageView();
-			mapTile.setImage(new Image(
-					"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
-							+ "&z=3"));
-			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
-			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
-			mapTile.opacityProperty().bind(cubeModel.getMapOpacity());
-			tilePane.getChildren().add(mapTile);
-		}
-	}
-
-	final Paint computeFaceHSB() {
-		return Color.hsb(FACE_HUE, FACE_SAT,
-				Math.abs(-zPos.getValue() / (RADIUS * 2)) + 0.40);
-	}
-
-	public final DoubleProperty zPosProperty() {
-		return zPos;
-	}
-
-	public final Double getZPos() {
-		return zPosProperty().getValue();
-	}
-
-	public final void setZPos(final double zPos) {
-		zPosProperty().set(zPos);
 	}
 
 }

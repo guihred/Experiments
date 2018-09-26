@@ -26,12 +26,44 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class SimpleAudioPlayerLauncher extends Application {
+    private static final Logger LOGGER = HasLogging.log(SimpleAudioPlayerLauncher.class);
     private Label album;
     private ImageView albumCover;
     private Label artist;
-    private static final Logger LOGGER = HasLogging.log(SimpleAudioPlayerLauncher.class);
     private Label title;
     private Label year;
+    public void createMedia()  {
+        Media media = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setOnError(() -> {
+            final String errorMessage = media.getError().getMessage();
+            LOGGER.error("error:{}", errorMessage);
+        });
+        mediaPlayer.setVolume(0);
+		media.getMetadata().addListener((MapChangeListener<String, Object>) ch -> {
+                if (ch.wasAdded()) {
+                    handleMetadata(ch.getKey(), ch.getValueAdded());
+                }
+        });
+        mediaPlayer.setAutoPlay(true);
+    }
+    @Override
+    public void start(Stage primaryStage) {
+        createControls();
+        createMedia();
+        final Scene scene = new Scene(createGridPane(), 800, 400);
+        try {
+
+			final URL stylesheet = Chapter8Resource.MEDIA.getURL();
+            scene.getStylesheets().add(stylesheet.toString());
+        } catch (Exception e) {
+			LOGGER.error("", e);
+        }
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Simple Audio Player");
+        primaryStage.show();
+    }
+
     private void createControls() {
         artist = new Label();
         artist.setId("artist");
@@ -50,6 +82,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         albumCover.setSmooth(true);
         albumCover.setEffect(reflection);
     }
+
     private GridPane createGridPane() {
         final GridPane gp = new GridPane();
         gp.setPadding(new Insets(10));
@@ -69,22 +102,6 @@ public class SimpleAudioPlayerLauncher extends Application {
         return gp;
     }
 
-    public void createMedia()  {
-        Media media = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnError(() -> {
-            final String errorMessage = media.getError().getMessage();
-            LOGGER.error("error:{}", errorMessage);
-        });
-        mediaPlayer.setVolume(0);
-		media.getMetadata().addListener((MapChangeListener<String, Object>) ch -> {
-                if (ch.wasAdded()) {
-                    handleMetadata(ch.getKey(), ch.getValueAdded());
-                }
-        });
-        mediaPlayer.setAutoPlay(true);
-    }
-
     private void handleMetadata(String key, Object value) {
         LOGGER.info("Key={},Value={}", key, value);
 		if ("album".equals(key)) {
@@ -101,23 +118,6 @@ public class SimpleAudioPlayerLauncher extends Application {
 		if ("image".equals(key)) {
             albumCover.setImage((Image) value);
         }
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        createControls();
-        createMedia();
-        final Scene scene = new Scene(createGridPane(), 800, 400);
-        try {
-
-			final URL stylesheet = Chapter8Resource.MEDIA.getURL();
-            scene.getStylesheets().add(stylesheet.toString());
-        } catch (Exception e) {
-			LOGGER.error("", e);
-        }
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Simple Audio Player");
-        primaryStage.show();
     }
 
     public static void main(String[] args) {

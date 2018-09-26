@@ -58,11 +58,11 @@ public class QuartoPiece extends Group {
 		return number;
 	}
 
-	public void setSelected(boolean value) {
-		selected.set(value);
-	}
 	public Boolean isSelected() {
 		return selected.get();
+	}
+	public void setSelected(boolean value) {
+		selected.set(value);
 	}
 
 }

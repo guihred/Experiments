@@ -7,19 +7,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
-	private final CommomLabyrinth labyrinth3dWallTexture;
-	private PerspectiveCamera camera;
 	private static final double CAMERA_MODIFIER = 50.0;
 	private static final double CAMERA_QUANTITY = 5.0;
+	private final CommomLabyrinth labyrinth3dWallTexture;
+	private PerspectiveCamera camera;
 	private final EnumSet<KeyCode> keysPressed = EnumSet.noneOf(KeyCode.class);
 	public MovimentacaoTeclado(CommomLabyrinth labyrinth3dWallTexture) {
 		this.labyrinth3dWallTexture = labyrinth3dWallTexture;
 		camera = labyrinth3dWallTexture.getCamera();
-	}
-
-	public void keyReleased(KeyEvent event) {
-		KeyCode keycode = event.getCode();
-		keysPressed.remove(keycode);
 	}
 
 	@Override
@@ -96,5 +91,10 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 		}
 
 		labyrinth3dWallTexture.endKeyboard();
+	}
+
+	public void keyReleased(KeyEvent event) {
+		KeyCode keycode = event.getCode();
+		keysPressed.remove(keycode);
 	}
 }

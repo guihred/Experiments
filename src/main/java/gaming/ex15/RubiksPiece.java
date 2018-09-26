@@ -118,6 +118,11 @@ public class RubiksPiece extends Group {
         getTransforms().add(new Rotate(0));
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%02d", id);
+	}
+
 	public void unbindAngle() {
         Transform concatenation = getTransforms().get(getTransforms().size() - 1);
 
@@ -131,10 +136,5 @@ public class RubiksPiece extends Group {
         }
         getTransforms().set(getTransforms().size() - 1, concatenation);
 
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%02d", id);
 	}
 }

@@ -13,13 +13,6 @@ import utils.HasLogging;
 public class ImageCreating {
     private static final Logger LOG = HasLogging.log(ImageCreating.class);
 
-    public static void main(String[] args) {
-        String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
-        String nameFile = dataDir + "eu3.jpg";
-        creating(nameFile);
-
-    }
-
     public static void creating(String nameFile) {
         // For complete examples and data files, please go to
         // https://github.com/Muhammad-Adnan-Ahmad/Aspose.Imaging-for-Java
@@ -77,5 +70,12 @@ public class ImageCreating {
 
         // Display Status.
         LOG.info("Processing completed successfully!");
+    }
+
+    public static void main(String[] args) {
+        String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
+        String nameFile = dataDir + "eu3.jpg";
+        creating(nameFile);
+
     }
 }

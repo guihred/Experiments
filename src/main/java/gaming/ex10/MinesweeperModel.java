@@ -49,7 +49,11 @@ public class MinesweeperModel {
 
     }
 
-	private int countBombsAround(int i, int j) {
+	public MinesweeperSquare[][] getMap() {
+		return map;
+	}
+
+    private int countBombsAround(int i, int j) {
 		int num = 0;
 		for (int k = -1; k <= 1; k++) {
 		    for (int l = -1; l <= 1; l++) {
@@ -64,18 +68,6 @@ public class MinesweeperModel {
 		}
 		return num;
 	}
-
-    private static boolean withinRange(int i, int k, int mapWidth) {
-        return i + k >= 0 && i + k < mapWidth;
-    }
-
-    final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
-        EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(event, mem);
-        mem.getFinalShape().setOnMouseClicked(mouseClicked);
-        mem.getFlag().setOnMouseClicked(mouseClicked);
-        mem.setOnMouseClicked(mouseClicked);
-        return mouseClicked;
-    }
 
     private void handleClick(MouseEvent event, MinesweeperSquare mem) {
         if (event.getButton() == MouseButton.SECONDARY) {
@@ -130,29 +122,6 @@ public class MinesweeperModel {
 
 		}
 	}
-    public MinesweeperSquare[][] getMap() {
-		return map;
-	}
-
-    void reset() {
-        nPlayed.set(0);
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
-				map[i][j].setFinalShape(null);
-				map[i][j].setMinesweeperImage(MinesweeperImage.BLANK);
-				map[i][j].setState(MinesweeperSquare.State.HIDDEN);
-            }
-        }
-        setBombs();
-        gridPane.getChildren().clear();
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            for (int j = 0; j < MAP_HEIGHT; j++) {
-                MinesweeperSquare map1 = map[i][j];
-                gridPane.add(new StackPane(map1, map1.getFinalShape(), map1.getFlag()), i, j);
-            }
-        }
-        startTime = System.currentTimeMillis();
-    }
 
     private void setBombs() {
         final Random random = new Random();
@@ -181,6 +150,34 @@ public class MinesweeperModel {
             }
         }
     }
+    final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
+        EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(event, mem);
+        mem.getFinalShape().setOnMouseClicked(mouseClicked);
+        mem.getFlag().setOnMouseClicked(mouseClicked);
+        mem.setOnMouseClicked(mouseClicked);
+        return mouseClicked;
+    }
+
+    void reset() {
+        nPlayed.set(0);
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+				map[i][j].setFinalShape(null);
+				map[i][j].setMinesweeperImage(MinesweeperImage.BLANK);
+				map[i][j].setState(MinesweeperSquare.State.HIDDEN);
+            }
+        }
+        setBombs();
+        gridPane.getChildren().clear();
+        for (int i = 0; i < MAP_WIDTH; i++) {
+            for (int j = 0; j < MAP_HEIGHT; j++) {
+                MinesweeperSquare map1 = map[i][j];
+                gridPane.add(new StackPane(map1, map1.getFinalShape(), map1.getFlag()), i, j);
+            }
+        }
+        startTime = System.currentTimeMillis();
+    }
+
     void showNeighbours(int i, int j) {
 		map[i][j].setState(MinesweeperSquare.State.SHOWN);
         for (int k = -1; k <= 1; k++) {
@@ -199,10 +196,13 @@ public class MinesweeperModel {
         }
 
     }
-
-	boolean verifyEnd() {
+    boolean verifyEnd() {
 		return Stream.of(map).flatMap(Stream::of).noneMatch(s -> s.getState().equals(MinesweeperSquare.State.HIDDEN)
 				&& !s.getMinesweeperImage().equals(MinesweeperImage.BOMB));
+    }
+
+	private static boolean withinRange(int i, int k, int mapWidth) {
+        return i + k >= 0 && i + k < mapWidth;
     }
 
 }

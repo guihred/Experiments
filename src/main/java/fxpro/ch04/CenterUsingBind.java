@@ -31,10 +31,6 @@ import simplebuilder.SimpleVBoxBuilder;
 
 public class CenterUsingBind extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
 		TilePane tiles = new TilePane(createScore(Owner.BLACK), createScore(Owner.WHITE));
@@ -74,5 +70,9 @@ public class CenterUsingBind extends Application {
         score.textProperty().bind(model.getScore(owner).asString());
         remaining.textProperty().bind(model.getTurnsRemaining(owner).asString().concat(" turns remaining"));
         return stack;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

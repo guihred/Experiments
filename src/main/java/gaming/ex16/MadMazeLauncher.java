@@ -10,10 +10,6 @@ import javafx.stage.Stage;
 public class MadMazeLauncher extends Application {
 
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Mad Maze");
@@ -26,6 +22,10 @@ public class MadMazeLauncher extends Application {
         root.getChildren().add(canvas);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }

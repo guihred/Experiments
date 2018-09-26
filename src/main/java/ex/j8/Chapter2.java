@@ -29,35 +29,6 @@ public final class Chapter2 {
     private Chapter2() {
     }
 
-    private static long countConcurrentWithoutStreams() throws IOException, InterruptedException, ExecutionException {
-        List<String> words = getWordsAsList();
-        int cores = Runtime.getRuntime().availableProcessors();
-        int chunkSize = words.size() / cores;
-        List<List<String>> chunks = new LinkedList<>();
-        for (int i = 0; i < words.size(); i += chunkSize) {
-            chunks.add(words.subList(i, i + Math.min(chunkSize, words.size() - i)));
-        }
-        ExecutorService pool = Executors.newFixedThreadPool(cores);
-        Set<Future<Long>> set = new HashSet<>();
-        for (List<String> strings : chunks) {
-            set.add(pool.submit(() -> {
-                long chunkCount = 0;
-                for (String string : strings) {
-                    if (string.length() > 12) {
-                        chunkCount++;
-                    }
-                }
-                return chunkCount;
-            }));
-        }
-        long count = 0;
-        for (Future<Long> future : set) {
-            count += future.get();
-        }
-        pool.shutdown();
-        return count;
-    }
-
     /**
      * Write a parallel version of the for loop in Section 2.1, From Iteration
      * to Stream Operations, on page 22. Obtain the number of processors. Make
@@ -187,13 +158,6 @@ public final class Chapter2 {
     }
 
     /**
-     * It should be possible to concurrently collect stream results in a single
-     * ArrayList, instead of merging multiple array lists, provided it has been
-     * constructed with the stream's size, since concurrent set operations at
-     * disjoint positions are threadsafe. How can you achieve that?
-     */
-
-    /**
      * Using Stream.iterate, make an infinite stream of random numbers'not by
      * calling Math.random but by directly implementing a linear congruential
      * generator. In such a generator, you start with x0 = seed and then produce
@@ -208,6 +172,13 @@ public final class Chapter2 {
         Stream<Long> iterate = Stream.iterate(System.currentTimeMillis(), t -> (a * t + c) % m);
         iterate.limit(10).forEach(s -> LOGGER.trace("{}", s));
     }
+
+    /**
+     * It should be possible to concurrently collect stream results in a single
+     * ArrayList, instead of merging multiple array lists, provided it has been
+     * constructed with the stream's size, since concurrent set operations at
+     * disjoint positions are threadsafe. How can you achieve that?
+     */
 
     /**
      * The characterStream method in Section 2.3, The filter, map, and flatMap
@@ -260,15 +231,44 @@ public final class Chapter2 {
 
     }
 
-    private static List<String> getWordsAsList() throws IOException {
-        String contents = new String(Files.readAllBytes(ResourceFXUtils.toPath(TXT_FILE)), StandardCharsets.UTF_8);
-        return Arrays.asList(contents.split(REGEX));
-    }
-
     public static void main(String[] args) {
         ex1();
         ex2();
         ex13();
+    }
+
+    private static long countConcurrentWithoutStreams() throws IOException, InterruptedException, ExecutionException {
+        List<String> words = getWordsAsList();
+        int cores = Runtime.getRuntime().availableProcessors();
+        int chunkSize = words.size() / cores;
+        List<List<String>> chunks = new LinkedList<>();
+        for (int i = 0; i < words.size(); i += chunkSize) {
+            chunks.add(words.subList(i, i + Math.min(chunkSize, words.size() - i)));
+        }
+        ExecutorService pool = Executors.newFixedThreadPool(cores);
+        Set<Future<Long>> set = new HashSet<>();
+        for (List<String> strings : chunks) {
+            set.add(pool.submit(() -> {
+                long chunkCount = 0;
+                for (String string : strings) {
+                    if (string.length() > 12) {
+                        chunkCount++;
+                    }
+                }
+                return chunkCount;
+            }));
+        }
+        long count = 0;
+        for (Future<Long> future : set) {
+            count += future.get();
+        }
+        pool.shutdown();
+        return count;
+    }
+
+    private static List<String> getWordsAsList() throws IOException {
+        String contents = new String(Files.readAllBytes(ResourceFXUtils.toPath(TXT_FILE)), StandardCharsets.UTF_8);
+        return Arrays.asList(contents.split(REGEX));
     }
 
     private static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {

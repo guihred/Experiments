@@ -24,11 +24,7 @@ public class JapaneseLessonApplication extends Application {
 
     public static final String LESSON = "Lesson";
 
-    public static void main(String[] args) {
-		launch(args);
-	}
-
-	@Override
+    @Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Japanese Lesson Table Displayer");
 		BorderPane root = new BorderPane();
@@ -59,11 +55,18 @@ public class JapaneseLessonApplication extends Application {
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 	}
 
-    private static ObservableList<JapaneseLesson> getLessons() {
-        return JapaneseLessonReader.getLessonsWait();
-	}
+	private void editItem(final TableView<JapaneseLesson> medicamentosTable) {
+        TableViewSelectionModel<JapaneseLesson> selectionModel = medicamentosTable.getSelectionModel();
+        if (!selectionModel.isEmpty()) {
+            JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
+            Stage primaryStage = new Stage();
+            japaneseLessonEditingDisplay.start(primaryStage);
+            JapaneseLesson selectedItem = selectionModel.getSelectedItem();
+            japaneseLessonEditingDisplay.setCurrent(selectedItem);
+        }
+    }
 
-	private TableView<JapaneseLesson> tabelaJapaneseLessons() {
+    private TableView<JapaneseLesson> tabelaJapaneseLessons() {
 
 		final TableView<JapaneseLesson> medicamentosTable = new TableView<>();
 
@@ -109,15 +112,12 @@ public class JapaneseLessonApplication extends Application {
 		return medicamentosTable;
 	}
 
-    private void editItem(final TableView<JapaneseLesson> medicamentosTable) {
-        TableViewSelectionModel<JapaneseLesson> selectionModel = medicamentosTable.getSelectionModel();
-        if (!selectionModel.isEmpty()) {
-            JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
-            Stage primaryStage = new Stage();
-            japaneseLessonEditingDisplay.start(primaryStage);
-            JapaneseLesson selectedItem = selectionModel.getSelectedItem();
-            japaneseLessonEditingDisplay.setCurrent(selectedItem);
-        }
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+    private static ObservableList<JapaneseLesson> getLessons() {
+        return JapaneseLessonReader.getLessonsWait();
+	}
 }
  

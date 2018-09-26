@@ -16,12 +16,12 @@ public class Rectangle extends Shape {
         return new Point(center.x + width / 2, center.y + height / 2);
     }
 
-    public double getWidth() {
-        return width;
-    }
-
     public double getHeight() {
         return height;
+    }
+
+    public double getWidth() {
+        return width;
     }
 
 }

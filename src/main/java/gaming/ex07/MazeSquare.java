@@ -177,6 +177,20 @@ public class MazeSquare extends BorderPane implements HasLogging {
 		return west;
 	}
 
+    public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> getPaths() {
+        return paths;
+    }
+
+	public static void setPath(MazeSquare from, MazeSquare to, MazeSquare by) {
+        if (paths == null) {
+            paths = new LinkedHashMap<>();
+        }
+        if (!paths.containsKey(from)) {
+            paths.put(from, new LinkedHashMap<>());
+		}
+        paths.get(from).put(to, by);
+	}
+
     private static Map<MazeSquare, Boolean> createDistanceMap(MazeSquare source, Map<MazeSquare, Integer> distance,
 			final MazeSquare[][] map) {
 		Map<MazeSquare, Boolean> known = new LinkedHashMap<>();
@@ -190,18 +204,4 @@ public class MazeSquare extends BorderPane implements HasLogging {
 		distance.put(source, 0);
 		return known;
 	}
-
-	public static void setPath(MazeSquare from, MazeSquare to, MazeSquare by) {
-        if (paths == null) {
-            paths = new LinkedHashMap<>();
-        }
-        if (!paths.containsKey(from)) {
-            paths.put(from, new LinkedHashMap<>());
-		}
-        paths.get(from).put(to, by);
-	}
-
-    public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> getPaths() {
-        return paths;
-    }
 }

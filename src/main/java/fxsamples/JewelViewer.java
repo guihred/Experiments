@@ -38,42 +38,6 @@ public class JewelViewer extends Application {
 	private PointLight pointLight;
 	private Group root;
 
-	private PerspectiveCamera addCamera(Scene scene) {
-		camera = new PerspectiveCamera();
-        LOGGER.info("Near Clip: {}", camera.getNearClip());
-        LOGGER.info("Far Clip:  {}", camera.getFarClip());
-        LOGGER.info("FOV:       {}", camera.getFieldOfView());
-
-		scene.setCamera(camera);
-		return camera;
-	}
-
-	private Group buildScene() {
-		MeshView meshViews = loadMeshViews();
-		meshViews.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-		meshViews.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
-		meshViews.setTranslateZ(VIEWPORT_SIZE / 2);
-		meshViews.setScaleX(MODEL_SCALE_FACTOR);
-		meshViews.setScaleY(MODEL_SCALE_FACTOR);
-		meshViews.setScaleZ(MODEL_SCALE_FACTOR);
-		PhongMaterial sample = new PhongMaterial(JEWEL_COLOR);
-		sample.setSpecularColor(LIGHT_COLOR);
-		sample.setSpecularPower(16);
-		meshViews.setMaterial(sample);
-		meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS),
-					new Rotate(-90, Rotate.X_AXIS));
-		pointLight = new PointLight(LIGHT_COLOR);
-		pointLight.setTranslateY(VIEWPORT_SIZE / 2);
-		pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
-        pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
-		Color ambientColor = Color.rgb(80, 80, 80, 0);
-		AmbientLight ambient = new AmbientLight(ambientColor);
-		root = new Group(meshViews);
-		root.getChildren().add(pointLight);
-		root.getChildren().add(ambient);
-
-		return root;
-	}
 	@Override
 	public void start(Stage primaryStage) {
 		Group group = buildScene();
@@ -107,6 +71,42 @@ public class JewelViewer extends Application {
 		primaryStage.setTitle("Jewel Viewer");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	private PerspectiveCamera addCamera(Scene scene) {
+		camera = new PerspectiveCamera();
+        LOGGER.info("Near Clip: {}", camera.getNearClip());
+        LOGGER.info("Far Clip:  {}", camera.getFarClip());
+        LOGGER.info("FOV:       {}", camera.getFieldOfView());
+
+		scene.setCamera(camera);
+		return camera;
+	}
+	private Group buildScene() {
+		MeshView meshViews = loadMeshViews();
+		meshViews.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
+		meshViews.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
+		meshViews.setTranslateZ(VIEWPORT_SIZE / 2);
+		meshViews.setScaleX(MODEL_SCALE_FACTOR);
+		meshViews.setScaleY(MODEL_SCALE_FACTOR);
+		meshViews.setScaleZ(MODEL_SCALE_FACTOR);
+		PhongMaterial sample = new PhongMaterial(JEWEL_COLOR);
+		sample.setSpecularColor(LIGHT_COLOR);
+		sample.setSpecularPower(16);
+		meshViews.setMaterial(sample);
+		meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS),
+					new Rotate(-90, Rotate.X_AXIS));
+		pointLight = new PointLight(LIGHT_COLOR);
+		pointLight.setTranslateY(VIEWPORT_SIZE / 2);
+		pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
+        pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
+		Color ambientColor = Color.rgb(80, 80, 80, 0);
+		AmbientLight ambient = new AmbientLight(ambientColor);
+		root = new Group(meshViews);
+		root.getChildren().add(pointLight);
+		root.getChildren().add(ambient);
+
+		return root;
 	}
 
 	private void handleKeyPressed(KeyEvent event) {
@@ -188,6 +188,11 @@ public class JewelViewer extends Application {
 
 	}
 
+	private void tryLoadMeshViews(Dragboard db) {
+		File filePath = db.getFiles().get(0);
+		loadMeshViews(filePath);
+	}
+
 	private void tryLoadMeshViews(String url) {
 		try {
 			loadMeshViews(new File(new URL(url).getFile()));
@@ -196,18 +201,13 @@ public class JewelViewer extends Application {
 		}
 	}
 
-	private void tryLoadMeshViews(Dragboard db) {
-		File filePath = db.getFiles().get(0);
-		loadMeshViews(filePath);
+	public static void main(String[] args) {
+		System.setProperty("prism.dirtyopts", "false");
+		launch(args);
 	}
 
 	static MeshView loadMeshViews() {
         Mesh mesh = ResourceFXUtils.importStlMesh(ORIGINAL_FILENAME);
 		return new MeshView(mesh);
-	}
-
-	public static void main(String[] args) {
-		System.setProperty("prism.dirtyopts", "false");
-		launch(args);
 	}
 }

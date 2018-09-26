@@ -23,6 +23,18 @@ public class Dog extends Player implements Enemy {
 		direction = Direction.LEFT;
 	}
 
+	@Override
+	public void attack(Player player) {
+		if (status != DogStatus.ATTACKING) {
+			if (player.getPositionX() > getPositionX()) {
+				walkRight();
+			} else {
+				walkLeft();
+			}
+			jump();
+		}
+	}
+
 	public void jump() {
 		if (status == DogStatus.WALKING || status == DogStatus.STOPPED) {
 			velocityY = -15;
@@ -32,16 +44,14 @@ public class Dog extends Player implements Enemy {
 	}
 
 	@Override
-	public void verticalCollision(Player player) {
-		super.verticalCollision(player);
-		if (player instanceof Ground) {
-			status = velocityX != 0 ? DogStatus.WALKING : DogStatus.STOPPED;
+	public void render(GraphicsContext gc) {
+		if (status == DogStatus.STOPPED) {
+			stoppedAnimation.render(gc, this);
+		} else if (status == DogStatus.WALKING) {
+			walkingAnimation.render(gc, this);
+		} else {
+			jumpAnimation.render(gc, this);
 		}
-	}
-
-	public void walkLeft() {
-		velocityX = -5;
-		direction = Direction.LEFT;
 	}
 
 	public void stop() {
@@ -49,17 +59,6 @@ public class Dog extends Player implements Enemy {
 		if (status == DogStatus.WALKING) {
 			status = DogStatus.STOPPED;
 		}
-	}
-
-	public void walkRight() {
-		direction = Direction.RIGHT;
-		velocityX = 5;
-	}
-
-	enum DogStatus {
-		ATTACKING,
-		STOPPED,
-		WALKING;
 	}
 
 	@Override
@@ -84,26 +83,27 @@ public class Dog extends Player implements Enemy {
 	}
 
 	@Override
-	public void render(GraphicsContext gc) {
-		if (status == DogStatus.STOPPED) {
-			stoppedAnimation.render(gc, this);
-		} else if (status == DogStatus.WALKING) {
-			walkingAnimation.render(gc, this);
-		} else {
-			jumpAnimation.render(gc, this);
+	public void verticalCollision(Player player) {
+		super.verticalCollision(player);
+		if (player instanceof Ground) {
+			status = velocityX != 0 ? DogStatus.WALKING : DogStatus.STOPPED;
 		}
 	}
 
-	@Override
-	public void attack(Player player) {
-		if (status != DogStatus.ATTACKING) {
-			if (player.getPositionX() > getPositionX()) {
-				walkRight();
-			} else {
-				walkLeft();
-			}
-			jump();
-		}
+	public void walkLeft() {
+		velocityX = -5;
+		direction = Direction.LEFT;
+	}
+
+	public void walkRight() {
+		direction = Direction.RIGHT;
+		velocityX = 5;
+	}
+
+	enum DogStatus {
+		ATTACKING,
+		STOPPED,
+		WALKING;
 	}
 
 }

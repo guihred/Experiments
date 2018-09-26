@@ -28,10 +28,10 @@ final class NumberButton extends Region {
 
     }
 
-    public void setOver(boolean over) {
-        this.over.set(over);
-    }
     public int getNumber() {
         return number;
+    }
+    public void setOver(boolean over) {
+        this.over.set(over);
     }
 }

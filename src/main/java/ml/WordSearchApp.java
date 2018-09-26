@@ -44,8 +44,8 @@ public class WordSearchApp extends Application {
         ListView<String> listView = new ListView<>();
 
         VBox filters = new VBox();
-        List<String> collect2 = getLines(ResourceFXUtils.toURI("pt_PT.dic")).collect(Collectors.toList());
-        FilteredList<String> lines = FXCollections.observableArrayList(collect2).filtered(e -> true);
+        List<String> allLines = getLines(ResourceFXUtils.toURI("pt_PT.dic")).collect(Collectors.toList());
+        FilteredList<String> lines = FXCollections.observableArrayList(allLines).filtered(e -> true);
         listView.setItems(lines);
 
         root.getChildren().add(listView);
@@ -59,10 +59,10 @@ public class WordSearchApp extends Application {
     }
 
     private void search(ObservableMap<String, Set<String>> observableMap, VBox filters, FilteredList<String> lines) {
-        Set<String> collect = observableMap.values().stream().flatMap(Set<String>::stream)
+        Set<String> splitLines = observableMap.values().stream().flatMap(Set<String>::stream)
                 .collect(Collectors.toSet());
-        collect.add(null);
-        ObservableList<String> values = FXCollections.observableArrayList(collect);
+        splitLines.add(null);
+        ObservableList<String> values = FXCollections.observableArrayList(splitLines);
         FilteredList<String> filtered = values.sorted().filtered(e -> true);
         ComboBox<String> category = new SimpleComboBoxBuilder<String>()
                 .items(observableMap.keySet())
@@ -98,13 +98,13 @@ public class WordSearchApp extends Application {
         filters.getChildren().add(new HBox(category, val));
     }
 
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-
     public static Stream<String> getLines(URI txtFile) throws IOException {
         return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential().map(String::trim)
                 .filter(s -> !s.isEmpty()).distinct();
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
     }
 
     private static Map<String, Set<String>> createMap() throws IOException {

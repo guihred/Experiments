@@ -29,6 +29,9 @@ public enum SolitaireSuit {
 		return color;
 	}
 
+	public Shape getShape() {
+		return creator.get();
+	}
 	private static Shape fill(Shape s, Color angle) {
 		s.setFill(angle);
 		return s;
@@ -43,6 +46,7 @@ public enum SolitaireSuit {
 		}
 		return shape;
 	}
+
 	private static Polygon getTriangle(double size, double angle, double y) {
 		Polygon polygon = new Polygon();
 		for (int i = 0; i < 3; i++) {
@@ -52,9 +56,5 @@ public enum SolitaireSuit {
 			polygon.getPoints().add(b + y);
 		}
 		return polygon;
-	}
-
-	public Shape getShape() {
-		return creator.get();
 	}
 }

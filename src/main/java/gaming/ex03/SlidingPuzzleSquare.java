@@ -40,13 +40,6 @@ public class SlidingPuzzleSquare extends Region {
 		return number.get();
 	}
 
-    StackPane getStack() {
-        if (stackPane == null) {
-			stackPane = new StackPane(this, text);
-		}
-        return stackPane;
-    }
-
     @Override
     public int hashCode() {
         return number.get();
@@ -54,5 +47,12 @@ public class SlidingPuzzleSquare extends Region {
 
     public final boolean isEmpty() {
         return number.get() == SlidingPuzzleModel.MAP_SIZE * SlidingPuzzleModel.MAP_SIZE;
+    }
+
+    StackPane getStack() {
+        if (stackPane == null) {
+			stackPane = new StackPane(this, text);
+		}
+        return stackPane;
     }
 }

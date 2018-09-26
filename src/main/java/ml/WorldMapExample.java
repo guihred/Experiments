@@ -70,6 +70,12 @@ public class WorldMapExample extends Application implements HasLogging {
 		theStage.show();
 	}
 
+    private VBox newSlider(String string, double min, int max, Property<Number> radius) {
+        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
+        build.valueProperty().bindBidirectional(radius);
+        return new VBox(new Text(string), build);
+    }
+
     private void updateIndicatorName(Text text, DataframeML x2) {
 
         try {
@@ -77,12 +83,6 @@ public class WorldMapExample extends Application implements HasLogging {
         } catch (Exception e) {
             getLogger().error("ERROR CHANGING INDICATOR", e);
         }
-    }
-
-    private VBox newSlider(String string, double min, int max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
     }
 
     public static void main(String[] args) {

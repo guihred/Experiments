@@ -16,20 +16,32 @@ public class JavaFXBeanModelExample {
             Color.BLACK
     );
 
+    public ObjectProperty<Color> colorProperty() {
+        return color;
+    }
+
+    public final Color getColor() {
+        return color.get();
+    }
+
     public final int getI() {
         return i.get();
     }
 
-    public final void setI(int i) {
-        this.i.set(i);
+    public final String getStr() {
+        return str.get();
     }
 
     public IntegerProperty iProperty() {
         return i;
     }
 
-    public final String getStr() {
-        return str.get();
+    public final void setColor(Color color) {
+        this.color.set(color);
+    }
+
+    public final void setI(int i) {
+        this.i.set(i);
     }
 
     public final void setStr(String str) {
@@ -38,17 +50,5 @@ public class JavaFXBeanModelExample {
 
     public StringProperty strProperty() {
         return str;
-    }
-
-    public final Color getColor() {
-        return color.get();
-    }
-
-    public final void setColor(Color color) {
-        this.color.set(color);
-    }
-
-    public ObjectProperty<Color> colorProperty() {
-        return color;
     }
 }

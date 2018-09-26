@@ -42,6 +42,14 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         lessons = ContestReader.getContestQuestions(ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), () -> current.set(0));
     }
 
+    public IntegerProperty currentProperty() {
+        return current;
+    }
+
+    public void setCurrent(ContestQuestion selectedItem) {
+        current.set(lessons.indexOf(selectedItem));
+    }
+
     @Override
     public void start(Stage primaryStage) {
 
@@ -104,14 +112,6 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
 
     private VBox newImage() {
         return new VBox();
-    }
-
-    public IntegerProperty currentProperty() {
-        return current;
-    }
-
-    public void setCurrent(ContestQuestion selectedItem) {
-        current.set(lessons.indexOf(selectedItem));
     }
 
     private ListView<ContestQuestionAnswer> newOptionListView() {

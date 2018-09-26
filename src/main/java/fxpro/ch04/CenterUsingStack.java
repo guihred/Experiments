@@ -17,10 +17,6 @@ import javafx.stage.Stage;
 
 public class CenterUsingStack extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         Text text = new Text("JavaFX Reversi");
@@ -34,5 +30,9 @@ public class CenterUsingStack extends Application {
         ellipse.radiusYProperty().bind(scene.heightProperty().divide(2));
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

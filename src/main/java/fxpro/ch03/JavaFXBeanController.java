@@ -22,10 +22,6 @@ public class JavaFXBeanController {
         this.model = model;
     }
 
-    public void incrementIPropertyOnModel() {
-        model.setI(model.getI() + 1);
-    }
-
     public void changeStrPropertyOnModel() {
         final String str = model.getStr();
 		if ("Hello".equals(str)) {
@@ -33,6 +29,10 @@ public class JavaFXBeanController {
         } else {
             model.setStr("Hello");
         }
+    }
+
+    public void incrementIPropertyOnModel() {
+        model.setI(model.getI() + 1);
     }
     public void switchColorPropertyOnModel() {
         final Color color = model.getColor();

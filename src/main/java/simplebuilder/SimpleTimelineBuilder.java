@@ -17,13 +17,8 @@ public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, Simp
 		timeline = animation;
 	}
 
-	public SimpleTimelineBuilder keyFrames(KeyFrame... elements) {
-		timeline.getKeyFrames().setAll(elements);
-		return this;
-	}
-
-    public SimpleTimelineBuilder addKeyFrame(KeyFrame keyFrame) {
-        timeline.getKeyFrames().add(keyFrame);
+	public SimpleTimelineBuilder addKeyFrame(Duration time, EventHandler<ActionEvent> eventHandler) {
+        timeline.getKeyFrames().add(new KeyFrame(time, eventHandler));
         return this;
     }
 
@@ -37,10 +32,15 @@ public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, Simp
         return this;
     }
 
-    public SimpleTimelineBuilder addKeyFrame(Duration time, EventHandler<ActionEvent> eventHandler) {
-        timeline.getKeyFrames().add(new KeyFrame(time, eventHandler));
+    public SimpleTimelineBuilder addKeyFrame(KeyFrame keyFrame) {
+        timeline.getKeyFrames().add(keyFrame);
         return this;
     }
+
+    public SimpleTimelineBuilder keyFrames(KeyFrame... elements) {
+		timeline.getKeyFrames().setAll(elements);
+		return this;
+	}
 
 
 }

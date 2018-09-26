@@ -25,10 +25,6 @@ import utils.ResourceFXUtils;
  * will return null if the verb does not end in 'ar','er','ir' or 'or'.
  */
 public class BrazilianVerbsConjugator {
-	public enum Mode {
-		PRESENT, PRETERITE, IMPERFECT, PLUPERFECT, FUTURE, CONDITIONAL;
-	}
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(BrazilianVerbsConjugator.class);
 
 	private static final boolean DEBUG = false;
@@ -211,19 +207,6 @@ public class BrazilianVerbsConjugator {
 
 	private static Map<Mode, String[]> third = new EnumMap<>(Mode.class);
 
-	private static List<String> addDesinencia(String root, String[] tense) {
-		return Stream.of(tense).map(a -> root + a).collect(Collectors.toList());
-
-	}
-
-	private static void addLetter(String add, String[]... tenses) {
-		for (int i = 0; i < tenses.length; i++) {
-			for (int j = 0; j < tenses[i].length; j++) {
-				tenses[i][j] = add + tenses[i][j];
-			}
-		}
-	}
-
 	public static Map<Mode, List<String>> conjugate(String verb) {
 		if (isIrregular(verb)) {
             return irregularConjugation(verb);
@@ -241,6 +224,29 @@ public class BrazilianVerbsConjugator {
             return fourthConjugation(verb);
 		}
 		return null;
+	}
+
+	public static void main(String[] args) {
+
+		try {
+			Stream<String> words = getWords(ResourceFXUtils.toURI("verbs.dic"));
+			words.forEach(BrazilianVerbsConjugator::conjugate);
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
+	}
+
+	private static List<String> addDesinencia(String root, String[] tense) {
+		return Stream.of(tense).map(a -> root + a).collect(Collectors.toList());
+
+	}
+
+	private static void addLetter(String add, String[]... tenses) {
+		for (int i = 0; i < tenses.length; i++) {
+			for (int j = 0; j < tenses[i].length; j++) {
+				tenses[i][j] = add + tenses[i][j];
+			}
+		}
 	}
 
 	private static EnumMap<Mode, List<String>> firstConjugation(String verb) {
@@ -413,17 +419,6 @@ public class BrazilianVerbsConjugator {
 				.anyMatch(e -> e.getValue().stream().anyMatch(v -> (v + e.getKey()).equals(verb)));
 	}
 
-	public static void main(String[] args) {
-
-		try {
-			Stream<String> words = getWords(ResourceFXUtils.toURI("verbs.dic"));
-			words.forEach(BrazilianVerbsConjugator::conjugate);
-		} catch (IOException e) {
-			LOGGER.error("", e);
-		}
-	}
-
-
 	private static EnumMap<Mode, List<String>> printIrregular(String verb, String key,
 			Map<Mode, String[]> conjugation) {
 		Map<Mode, List<String>> map = SIMPLE_IRREGULARITIES.get(key);
@@ -453,6 +448,7 @@ public class BrazilianVerbsConjugator {
 		return printVerb(verb, "", enumMap);
 	}
 
+
 	private static EnumMap<Mode, List<String>> printVerb(String verb, String root, Map<Mode, String[]> tenses) {
 		EnumMap<Mode, List<String>> enumMap = new EnumMap<>(Mode.class);
 		List<List<String>> tens = new ArrayList<>();
@@ -481,8 +477,6 @@ public class BrazilianVerbsConjugator {
 		return enumMap;
 
 	}
-	
-	
 
 	private static EnumMap<Mode, List<String>> secondConjugation(String verb) {
 		String root = getRoot(verb);
@@ -525,6 +519,8 @@ public class BrazilianVerbsConjugator {
 		return printVerb(verb, root, hashMap);
 
 	}
+	
+	
 
 	private static EnumMap<Mode, List<String>> thirdConjugation(String verb) {
 		String root = getRoot(verb);
@@ -566,6 +562,10 @@ public class BrazilianVerbsConjugator {
 
         return printVerb(verb, root, conjugations);
 
+	}
+
+	public enum Mode {
+		PRESENT, PRETERITE, IMPERFECT, PLUPERFECT, FUTURE, CONDITIONAL;
 	}
 
 }

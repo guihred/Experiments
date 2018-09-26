@@ -21,10 +21,6 @@ public class SandboxFX extends Application {
 	private static final int WIDTH = 374;
 	private static final int HEIGHT = 243;
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("The Horse in Motion");
@@ -42,5 +38,9 @@ public class SandboxFX extends Application {
 
 		primaryStage.setScene(new Scene(new Group(imageView)));
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

@@ -26,20 +26,24 @@ import utils.CommonsFX;
 import utils.HasLogging;
 
 public class JapaneseLessonEditingDisplay extends Application implements HasLogging {
-    protected SimpleIntegerProperty current = new SimpleIntegerProperty(1);
-    protected ObservableList<JapaneseLesson> lessons = getLessons();
     protected static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder()
             .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('h').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
             .optionalStart().appendLiteral('m').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('s')
             .optionalStart().appendValue(ChronoField.MILLI_OF_SECOND, 3)
 			.appendLiteral("ms").toFormatter();
+    protected SimpleIntegerProperty current = new SimpleIntegerProperty(1);
+    protected ObservableList<JapaneseLesson> lessons = getLessons();
     protected Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
     protected SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
 
     public SimpleIntegerProperty currentProperty() {
         return current;
     }
-	@Override
+	public void setCurrent(JapaneseLesson selectedItem) {
+        current.set(lessons.indexOf(selectedItem));
+    }
+
+    @Override
 	public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Japanese Lesson Editing Display");
@@ -105,75 +109,19 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		primaryStage.show();
 	}
 
-    protected void setListeners(TextField english, TextField japanese, TextField romaji, TextField start,
-            TextField end) {
-        japanese.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setJapanese));
-		english.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setEnglish));
-		romaji.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setRomaji));
-		start.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setStart));
-		end.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setEnd));
-    }
-
-    protected void updateCurrentLesson(TextField english, TextField japanese, TextField romaji, TextField start,
-            TextField end,
-            Text lesson, Number newValue) {
-        if (newValue != null && !lessons.isEmpty()) {
-            JapaneseLesson japaneseLesson = lessons.get(newValue.intValue() % lessons.size());
-        	lesson.setText("" + japaneseLesson.getExercise());
-            romaji.setText(japaneseLesson.getRomaji());
-        	english.setText(japaneseLesson.getEnglish());
-        	japanese.setText(japaneseLesson.getJapanese());
-        	setStartEnd(japaneseLesson);
-        	start.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getStart()));
-        	end.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getEnd()));
-        }
-    }
-
-    protected void saveAndClose(Stage primaryStage) {
-        int index = current.get();
-        JapaneseLesson japaneseLesson = lessons.get(index);
-        JapaneseLessonReader.update(japaneseLesson);
-        lessons.set(index, japaneseLesson);
-
-        primaryStage.close();
-    }
-
-    protected void setTextField(String newV, BiConsumer<JapaneseLesson, String> a) {
-		if (newV != null) {
-			JapaneseLesson japaneseLesson = lessons.get(current.intValue());
-			a.accept(japaneseLesson, newV);
-		}
+    protected Duration convertDuration(LocalTime start) {
+		return Duration
+				.valueOf(toMilli(start) + "ms");
 	}
-
-    protected void setDateField(String newV, BiConsumer<JapaneseLesson, LocalTime> a) {
-		if (newV != null) {
-			LocalTime from = LocalTime.from(TIME_FORMAT.parse(newV));
-			JapaneseLesson japaneseLesson = lessons.get(current.intValue());
-			a.accept(japaneseLesson, from);
-		}
-	}
-
-	/*	
-			*/
 
     protected TextField newText() {
 		return new TextField();
-	}
-
-    protected static ObservableList<JapaneseLesson> getLessons() {
-        return JapaneseLessonReader.getLessonsWait();
 	}
 
     protected void nextLesson() {
 		JapaneseLesson japaneseLesson = lessons.get(current.get());
 		JapaneseLessonReader.update(japaneseLesson);
 		current.set((current.get() + 1) % lessons.size());
-	}
-
-    protected void previousLesson() {
-		JapaneseLesson japaneseLesson = lessons.get(current.get());
-		JapaneseLessonReader.update(japaneseLesson);
-		current.set((lessons.size() + current.get() - 1) % lessons.size());
 	}
 
     protected void playLesson() {
@@ -203,10 +151,40 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 
 	}
 
-    protected Duration convertDuration(LocalTime start) {
-		return Duration
-				.valueOf(toMilli(start) + "ms");
+	/*	
+			*/
+
+    protected void previousLesson() {
+		JapaneseLesson japaneseLesson = lessons.get(current.get());
+		JapaneseLessonReader.update(japaneseLesson);
+		current.set((lessons.size() + current.get() - 1) % lessons.size());
 	}
+
+    protected void saveAndClose(Stage primaryStage) {
+        int index = current.get();
+        JapaneseLesson japaneseLesson = lessons.get(index);
+        JapaneseLessonReader.update(japaneseLesson);
+        lessons.set(index, japaneseLesson);
+
+        primaryStage.close();
+    }
+
+    protected void setDateField(String newV, BiConsumer<JapaneseLesson, LocalTime> a) {
+		if (newV != null) {
+			LocalTime from = LocalTime.from(TIME_FORMAT.parse(newV));
+			JapaneseLesson japaneseLesson = lessons.get(current.intValue());
+			a.accept(japaneseLesson, from);
+		}
+	}
+
+    protected void setListeners(TextField english, TextField japanese, TextField romaji, TextField start,
+            TextField end) {
+        japanese.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setJapanese));
+		english.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setEnglish));
+		romaji.textProperty().addListener((o, old, newV) -> setTextField(newV, JapaneseLesson::setRomaji));
+		start.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setStart));
+		end.textProperty().addListener((o, old, newV) -> setDateField(newV, JapaneseLesson::setEnd));
+    }
 
     protected void setStartEnd(JapaneseLesson japaneseLesson) {
 		if (japaneseLesson.getStart() == null || japaneseLesson.getEnd() == null
@@ -233,20 +211,42 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		}
 	}
 
-    protected static long toMilli(LocalTime maxTime) {
-		return ChronoUnit.MILLIS.between(LocalTime.MIDNIGHT, maxTime);
+    protected void setTextField(String newV, BiConsumer<JapaneseLesson, String> a) {
+		if (newV != null) {
+			JapaneseLesson japaneseLesson = lessons.get(current.intValue());
+			a.accept(japaneseLesson, newV);
+		}
 	}
 
-    protected static LocalTime milliToLocalTime(long offset) {
-        return LocalTime.ofNanoOfDay(offset * JapaneseLessonAudioSplitDisplay.NANO_IN_A_MILLI_SECOND);
-	}
+    protected void updateCurrentLesson(TextField english, TextField japanese, TextField romaji, TextField start,
+            TextField end,
+            Text lesson, Number newValue) {
+        if (newValue != null && !lessons.isEmpty()) {
+            JapaneseLesson japaneseLesson = lessons.get(newValue.intValue() % lessons.size());
+        	lesson.setText("" + japaneseLesson.getExercise());
+            romaji.setText(japaneseLesson.getRomaji());
+        	english.setText(japaneseLesson.getEnglish());
+        	japanese.setText(japaneseLesson.getJapanese());
+        	setStartEnd(japaneseLesson);
+        	start.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getStart()));
+        	end.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getEnd()));
+        }
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		launch(args);
 	}
 
-    public void setCurrent(JapaneseLesson selectedItem) {
-        current.set(lessons.indexOf(selectedItem));
-    }
+    protected static ObservableList<JapaneseLesson> getLessons() {
+        return JapaneseLessonReader.getLessonsWait();
+	}
+
+	protected static LocalTime milliToLocalTime(long offset) {
+        return LocalTime.ofNanoOfDay(offset * JapaneseLessonAudioSplitDisplay.NANO_IN_A_MILLI_SECOND);
+	}
+
+    protected static long toMilli(LocalTime maxTime) {
+		return ChronoUnit.MILLIS.between(LocalTime.MIDNIGHT, maxTime);
+	}
 
 }

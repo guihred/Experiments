@@ -31,6 +31,14 @@ class BoundsDisplay extends Rectangle {
 		monitorBounds(BoundsType.LAYOUT_BOUNDS);
 	}
 
+	// update this bounds display to match a new set of bounds.
+	private void updateBoundsDisplay(Bounds newBounds) {
+		setX(newBounds.getMinX());
+		setY(newBounds.getMinY());
+		setWidth(newBounds.getWidth());
+		setHeight(newBounds.getHeight());
+	}
+
 	// set the type of the shape's bounds to monitor for the bounds display.
 	final void monitorBounds(final BoundsType boundsType) {
 		// remove the shape's previous boundsType.
@@ -78,13 +86,5 @@ class BoundsDisplay extends Rectangle {
 		// it in sync.
 		boundsChangeListener = (observableValue, oldBounds, newBounds) -> updateBoundsDisplay(newBounds);
 		bounds.addListener(boundsChangeListener);
-	}
-
-	// update this bounds display to match a new set of bounds.
-	private void updateBoundsDisplay(Bounds newBounds) {
-		setX(newBounds.getMinX());
-		setY(newBounds.getMinY());
-		setWidth(newBounds.getWidth());
-		setHeight(newBounds.getHeight());
 	}
 }

@@ -22,6 +22,24 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
 
     private final SongModel songModel = new SongModel();
 
+    @Override
+    public void start(Stage primaryStage) {
+		songModel.setURL(Chapter8Resource.TEEN_TITANS.getURL().toString());
+        MetadataView metaDataView = new MetadataView(songModel);
+        PlayerControlView playerControlsView = new PlayerControlView(songModel);
+        final BorderPane root = new BorderPane();
+        root.setCenter(metaDataView.getViewNode());
+        root.setBottom(playerControlsView.getViewNode());
+        final Scene scene = new Scene(root, 800, 400);
+        initSceneDragAndDrop(scene);
+
+		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Basic Audio Player With Control");
+        primaryStage.show();
+        songModel.getPlayer().play();
+    }
+
     private void initSceneDragAndDrop(Scene scene) {
         scene.setOnDragOver((DragEvent event) -> {
             Dragboard db = event.getDragboard();
@@ -46,24 +64,6 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
             event.setDropCompleted(url != null);
             event.consume();
         });
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-		songModel.setURL(Chapter8Resource.TEEN_TITANS.getURL().toString());
-        MetadataView metaDataView = new MetadataView(songModel);
-        PlayerControlView playerControlsView = new PlayerControlView(songModel);
-        final BorderPane root = new BorderPane();
-        root.setCenter(metaDataView.getViewNode());
-        root.setBottom(playerControlsView.getViewNode());
-        final Scene scene = new Scene(root, 800, 400);
-        initSceneDragAndDrop(scene);
-
-		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Basic Audio Player With Control");
-        primaryStage.show();
-        songModel.getPlayer().play();
     }
 
     public static void main(String[] args) {

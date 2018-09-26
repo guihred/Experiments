@@ -25,6 +25,11 @@ public class Contest extends BaseEntity {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj != null && super.equals(obj) && ((Contest) obj).key == key;
+    }
+
+    @Override
     public Integer getKey() {
         return key;
     }
@@ -37,6 +42,11 @@ public class Contest extends BaseEntity {
         return organization;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(key);
+    }
+
     public void setKey(Integer id) {
         key = id;
     }
@@ -47,15 +57,5 @@ public class Contest extends BaseEntity {
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null && super.equals(obj) && ((Contest) obj).key == key;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key);
     }
 }

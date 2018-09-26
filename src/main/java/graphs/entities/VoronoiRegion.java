@@ -47,7 +47,15 @@ public class VoronoiRegion extends Group {
 		getChildren().add(0, polygon);
 	}
 
-    private static double[] centerCircle(Cell a, Cell b, Cell c) {
+    private static Double[] cen(double[] a) {
+		Double[] b = new Double[a.length];
+		for (int i = 0; i < a.length; i++) {
+			b[i] = a[i];
+		}
+		return b;
+	}
+
+	private static double[] centerCircle(Cell a, Cell b, Cell c) {
 		double ay = y(a);
 		double ax = x(a);
 		double bx = x(b);
@@ -58,14 +66,6 @@ public class VoronoiRegion extends Group {
 		double[][] matr = new double[][] { { 2 * (bx - ax), 2 * (by - ay) }, { 2 * (cx - ax), 2 * (cy - ay) }, };
 
 		return MatrixSolver.solve(matr, coef2);
-	}
-
-	private static Double[] cen(double[] a) {
-		Double[] b = new Double[a.length];
-		for (int i = 0; i < a.length; i++) {
-			b[i] = a[i];
-		}
-		return b;
 	}
 
     private static double x(Cell d) {

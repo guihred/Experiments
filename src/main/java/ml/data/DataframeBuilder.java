@@ -13,11 +13,6 @@ public class DataframeBuilder extends DataframeML {
         dataframeML = new DataframeML();
     }
 
-    public DataframeBuilder filter(String d, Predicate<Object> fil) {
-        dataframeML.filters.put(d, fil);
-        return this;
-    }
-
     public DataframeBuilder addCategory(String d) {
         dataframeML.categories.put(d, new HashSet<>());
         return this;
@@ -28,13 +23,18 @@ public class DataframeBuilder extends DataframeML {
         return this;
     }
 
-    public DataframeBuilder setMaxSize(int maxSize) {
-        dataframeML.maxSize = maxSize;
-        return this;
-    }
-
     public DataframeML build() {
         dataframeML.readCSV(csvFile);
         return dataframeML;
+    }
+
+    public DataframeBuilder filter(String d, Predicate<Object> fil) {
+        dataframeML.filters.put(d, fil);
+        return this;
+    }
+
+    public DataframeBuilder setMaxSize(int maxSize) {
+        dataframeML.maxSize = maxSize;
+        return this;
     }
 }

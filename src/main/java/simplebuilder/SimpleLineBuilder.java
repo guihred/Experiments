@@ -12,23 +12,23 @@ public class SimpleLineBuilder extends SimpleShapeBuilder<Line, SimpleLineBuilde
 	}
 
 
-	public SimpleLineBuilder startX(double d) {
-		circle.setStartX(d);
-		return this;
-	}
-
 	public SimpleLineBuilder endX(double d) {
 		circle.setEndX(d);
 		return this;
 	}
 
-	public SimpleLineBuilder startY(double d) {
-		circle.setStartY(d);
+	public SimpleLineBuilder endY(double d) {
+		circle.setEndY(d);
 		return this;
 	}
 
-	public SimpleLineBuilder endY(double d) {
-		circle.setEndY(d);
+	public SimpleLineBuilder startX(double d) {
+		circle.setStartX(d);
+		return this;
+	}
+
+	public SimpleLineBuilder startY(double d) {
+		circle.setStartY(d);
 		return this;
 	}
 

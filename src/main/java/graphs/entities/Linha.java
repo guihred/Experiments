@@ -14,12 +14,12 @@ public class Linha {
         return a;
     }
 
-    public void setA(Ponto a) {
-        this.a = a;
-    }
-
     public Ponto getB() {
         return b;
+    }
+
+    public void setA(Ponto a) {
+        this.a = a;
     }
 
     public void setB(Ponto b) {

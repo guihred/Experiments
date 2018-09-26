@@ -39,6 +39,10 @@ final class ResponsiveUIView implements HasLogging {
 		hookupEvents(model);
 	}
 
+	public Scene getScene() {
+		return scene;
+	}
+
 	private void hookupEvents(ResponsiveUIModel model) {
 		changeFillButton.setOnAction((ActionEvent actionEvent) -> {
 			final Paint fillPaint = model.getFillPaint().get();
@@ -56,9 +60,5 @@ final class ResponsiveUIView implements HasLogging {
 		changeStrokeButton.setOnAction(e -> model.getStrokePaint()
 				.set(model.getStrokePaint().get().equals(Color.DARKGRAY) ? Color.BLACK : Color.DARKGRAY));
     }
-
-	public Scene getScene() {
-		return scene;
-	}
 
 }

@@ -65,11 +65,6 @@ public class MadTriangle {
         return b;
     }
 
-    @Override
-    public String toString() {
-        return "MadTriangle [a=" + a + ", b=" + b + ", c=" + c + ", visited=" + visited + "]";
-    }
-
     public MadPonto getC() {
         return c;
     }
@@ -130,6 +125,10 @@ public class MadTriangle {
         return det < 0.0D;
     }
 
+    public boolean isVisited() {
+        return visited;
+    }
+
     public void setA(MadPonto a) {
         this.a = a;
     }
@@ -142,21 +141,13 @@ public class MadTriangle {
         this.c = c;
     }
 
-    protected static class MadEdgeDistance implements Comparable<MadEdgeDistance> {
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
 
-        protected float distance;
-        protected MadLinha edge;
-
-        public MadEdgeDistance(MadLinha edge, float distance) {
-            this.edge = edge;
-            this.distance = distance;
-        }
-
-        @Override
-        public int compareTo(MadEdgeDistance o) {
-            return Double.compare(distance, o.distance);
-        }
-
+    @Override
+    public String toString() {
+        return "MadTriangle [a=" + a + ", b=" + b + ", c=" + c + ", visited=" + visited + "]";
     }
 
     private static MadPonto computeClosestPoint(MadLinha edge, MadPonto point) {
@@ -176,12 +167,21 @@ public class MadTriangle {
         return Math.signum(a1) == Math.signum(b1);
     }
 
-    public boolean isVisited() {
-        return visited;
-    }
+    protected static class MadEdgeDistance implements Comparable<MadEdgeDistance> {
 
-    public void setVisited(boolean visited) {
-        this.visited = visited;
+        protected float distance;
+        protected MadLinha edge;
+
+        public MadEdgeDistance(MadLinha edge, float distance) {
+            this.edge = edge;
+            this.distance = distance;
+        }
+
+        @Override
+        public int compareTo(MadEdgeDistance o) {
+            return Double.compare(distance, o.distance);
+        }
+
     }
 
 }

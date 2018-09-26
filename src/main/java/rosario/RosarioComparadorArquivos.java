@@ -50,6 +50,16 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
     private Map<String, FileChooser> fileChoose = new HashMap<>();
     private boolean openAtExport = true;
 
+    public Map<String, FileChooser> getFileChoose() {
+        return fileChoose;
+    }
+
+	public void setOpenAtExport(boolean openAtExport) {
+        this.openAtExport = openAtExport;
+    }
+
+
+
     @Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Comparação Estoque e ANVISA");
@@ -182,9 +192,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
 	}
 
-
-
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	private void atualizarPorCodigo(ObservableList<Medicamento> medicamentos,
 			final TableView<Medicamento> medicamentosAnvisaTable) {
 		ObservableList<TableColumn<Medicamento, ?>> columns = medicamentosAnvisaTable.getColumns();
@@ -289,7 +297,8 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		}
 	}
 
-	private void showImportDialog(File excel, ObservableList<String> items,
+
+    private void showImportDialog(File excel, ObservableList<String> items,
 			Consumer<ObservableList<Medicamento>> consumer) {
 		Stage stage = new Stage(StageStyle.UTILITY);
 		stage.initModality(Modality.APPLICATION_MODAL);
@@ -338,7 +347,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		stage.show();
 	}
 
-	private TableView<Medicamento> tabelaMedicamentos(boolean completa) {
+    private TableView<Medicamento> tabelaMedicamentos(boolean completa) {
 
 		final TableView<Medicamento> medicamentosTable = new TableView<>();
 		medicamentosTable.setPrefWidth(300);
@@ -380,15 +389,9 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		return medicamentosTable;
 	}
 
-
-    public Map<String, FileChooser> getFileChoose() {
-        return fileChoose;
-    }
-
-    public void setOpenAtExport(boolean openAtExport) {
-        this.openAtExport = openAtExport;
-    }
-
+    public static void main(String[] args) {
+		launch(args);
+	}
     private abstract class CustomableTableCell<T> extends TableCell<Medicamento, T> {
 
         @Override
@@ -404,8 +407,5 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
         abstract void setStyleable(Medicamento auxMed);
     }
-    public static void main(String[] args) {
-		launch(args);
-	}
 
 }

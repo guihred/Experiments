@@ -40,7 +40,26 @@ public class QuartoLauncher extends Application implements HasLogging{
 	private final Group root = new Group();
 	private final Xform world = new Xform();
 
-	private void buildAxes() {
+	@Override
+    public void start(Stage primaryStage) {
+        root.getChildren().add(world);
+        buildCamera();
+        buildAxes();
+        Scene scene = new Scene(root, 1024, 768, true);
+        scene.setFill(Color.GREY);
+		scene.setOnKeyPressed(this::handleKeyPressed);
+		scene.setOnMouseClicked(this::handleMouseClick);
+		scene.setOnMouseDragReleased(null);
+
+        primaryStage.setTitle("Quarto Application");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        scene.setCamera(camera);
+
+    }
+
+    private void buildAxes() {
 		final PhongMaterial blackMaterial = new PhongMaterial();
 		blackMaterial.setDiffuseColor(Color.BLACK);
 		blackMaterial.setSpecularColor(Color.GRAY);
@@ -79,26 +98,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 		world.getChildren().addAll(group);
 	}
 
-    private static int getPosition(int i) {
-        return i * 40 - 60;
-    }
-
-    public static int getTranslate(int j) {
-        switch (j) {
-            case 0:
-                return -110;
-            case 1:
-                return -90;
-            case 2:
-                return 90;
-            case 3:
-            default:
-                return 110;
-
-        }
-    }
-
-	private void buildCamera() {
+    private void buildCamera() {
         root.getChildren().add(cameraXform);
         cameraXform.getChildren().add(cameraXform2);
         cameraXform2.getChildren().add(cameraXform3);
@@ -133,16 +133,6 @@ public class QuartoLauncher extends Application implements HasLogging{
                 break;
 		}
 	}
-
-    private void reset(KeyEvent event) {
-        if (event.isShiftDown()) {
-        	cameraXform.setRy(0.0);
-        	cameraXform.setRx(0.0);
-        	camera.setTranslateZ(-CAMERA_DISTANCE);
-        }
-        cameraXform2.setTx(0.0);
-        cameraXform2.setTy(0.0);
-    }
 
 	private void handleMouseClick(MouseEvent event) {
 		final EventTarget target = event.getTarget();
@@ -185,9 +175,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 		}
 	}
 
-
-
-	private void moveSideways(KeyEvent event, int multiplier) {
+    private void moveSideways(KeyEvent event, int multiplier) {
 		if (event.isControlDown() && event.isShiftDown()) {
 			cameraXform2.setTx(cameraXform2.getTx() + multiplier * 10.0 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown() && event.isShiftDown()) {
@@ -198,9 +186,6 @@ public class QuartoLauncher extends Application implements HasLogging{
 			cameraXform.setRy(cameraXform.getRotateY() - multiplier * 2.0 * ALT_MULTIPLIER); // -
 		}
 	}
-
-
-
 
 	private void moveUpAndDown(KeyEvent event, int multiplier) {
 		if (event.isControlDown() && event.isShiftDown()) {
@@ -218,6 +203,21 @@ public class QuartoLauncher extends Application implements HasLogging{
 		}
 	}
 
+
+
+	private void reset(KeyEvent event) {
+        if (event.isShiftDown()) {
+        	cameraXform.setRy(0.0);
+        	cameraXform.setRx(0.0);
+        	camera.setTranslateZ(-CAMERA_DISTANCE);
+        }
+        cameraXform2.setTx(0.0);
+        cameraXform2.setTy(0.0);
+    }
+
+
+
+
 	private void setQuartoPiece(final EventTarget target, QuartoPiece p) {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -227,28 +227,28 @@ public class QuartoLauncher extends Application implements HasLogging{
 			}
 		}
 	}
-    @Override
-    public void start(Stage primaryStage) {
-        root.getChildren().add(world);
-        buildCamera();
-        buildAxes();
-        Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.GREY);
-		scene.setOnKeyPressed(this::handleKeyPressed);
-		scene.setOnMouseClicked(this::handleMouseClick);
-		scene.setOnMouseDragReleased(null);
 
-        primaryStage.setTitle("Quarto Application");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+	public static int getTranslate(int j) {
+        switch (j) {
+            case 0:
+                return -110;
+            case 1:
+                return -90;
+            case 2:
+                return 90;
+            case 3:
+            default:
+                return 110;
 
-        scene.setCamera(camera);
-
+        }
     }
-
     public static void main(String[] args) {
         System.setProperty("prism.dirtyopts", "false");
         launch(args);
+    }
+
+    private static int getPosition(int i) {
+        return i * 40 - 60;
     }
 }
 

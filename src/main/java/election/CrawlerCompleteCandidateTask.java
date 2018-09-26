@@ -11,17 +11,17 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
     private static final int STEP = 50;
     private CandidatoDAO candidatoDAO = new CandidatoDAO();
     @Override
-    protected List<Integer> getList() {
-        long total = candidatoDAO.size();
-        return Stream.iterate(0, i -> i + STEP).limit(total / STEP).collect(Collectors.toList());
-    }
-
-    @Override
     public void performTask(Integer j) {
         List<Candidato> candidatos = candidatoDAO.list(j, STEP);
         for (Candidato candidato : candidatos) {
             extractCandidateInfo(candidato);
         }
+    }
+
+    @Override
+    protected List<Integer> getList() {
+        long total = candidatoDAO.size();
+        return Stream.iterate(0, i -> i + STEP).limit(total / STEP).collect(Collectors.toList());
     }
 
     private void extractCandidateInfo(Candidato candidato) {

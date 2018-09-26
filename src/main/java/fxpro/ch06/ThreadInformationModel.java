@@ -15,9 +15,12 @@ class ThreadInformationModel {
 		update();
 	}
 
-    private static String formatStackTrace(StackTraceElement[] value) {
-		return Stream.of(value).map(StackTraceElement::toString)
-				.collect(Collectors.joining("\n at ", "StackTrace: ", ""));
+    public ObservableList<String> getStackTraces() {
+		return stackTraces;
+	}
+
+	public ObservableList<String> getThreadNames() {
+		return threadNames;
 	}
 
 	public final void update() {
@@ -30,11 +33,8 @@ class ThreadInformationModel {
 		});
 	}
 
-	public ObservableList<String> getStackTraces() {
-		return stackTraces;
-	}
-
-	public ObservableList<String> getThreadNames() {
-		return threadNames;
+	private static String formatStackTrace(StackTraceElement[] value) {
+		return Stream.of(value).map(StackTraceElement::toString)
+				.collect(Collectors.joining("\n at ", "StackTrace: ", ""));
 	}
 }

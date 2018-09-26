@@ -13,13 +13,13 @@ public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonB
         button = this.node;
 	}
 
-	public SimpleButtonBuilder text(String string) {
-        button.setText(string);
-		return this;
-	}
-
-    public SimpleButtonBuilder onAction(EventHandler<ActionEvent> value) {
+	public SimpleButtonBuilder onAction(EventHandler<ActionEvent> value) {
         button.setOnAction(value);
         return this;
     }
+
+    public SimpleButtonBuilder text(String string) {
+        button.setText(string);
+		return this;
+	}
 }

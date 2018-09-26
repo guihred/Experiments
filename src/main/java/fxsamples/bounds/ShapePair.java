@@ -13,6 +13,22 @@ class ShapePair {
 		b = dest;
 	}
 
+	@Override
+	public boolean equals(Object other) {
+        if (other == null || !getClass().isInstance(other)) {
+			return false;
+		}
+		ShapePair o = (ShapePair) other;
+		return a == o.a && b == o.b || a == o.b && b == o.a;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = a != null ? a.hashCode() : 0;
+		result = 31 * result + (b != null ? b.hashCode() : 0);
+		return result;
+	}
+
 	public boolean intersects(BoundsType boundsType) {
 		if (a == b) {
 			return false;
@@ -34,21 +50,5 @@ class ShapePair {
 	@Override
 	public String toString() {
 		return a.getId() + " : " + b.getId();
-	}
-
-	@Override
-	public boolean equals(Object other) {
-        if (other == null || !getClass().isInstance(other)) {
-			return false;
-		}
-		ShapePair o = (ShapePair) other;
-		return a == o.a && b == o.b || a == o.b && b == o.a;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = a != null ? a.hashCode() : 0;
-		result = 31 * result + (b != null ? b.hashCode() : 0);
-		return result;
 	}
 }

@@ -19,11 +19,11 @@ public abstract class Shape {
         this.center = center;
     }
 
+    public abstract Point getCenter();
+
     public void moveBy(double dx, double dy) {
         center.x += dx;
         center.y += dy;
     }
-
-    public abstract Point getCenter();
 
 }

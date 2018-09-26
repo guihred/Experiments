@@ -26,6 +26,13 @@ public final class SimplePropertyExample {
     private SimplePropertyExample() {
 	}
 
+    public static void main(String[] args) {
+        createProperty();
+        addAndRemoveInvalidationListener();
+        addAndRemoveChangeListener();
+        bindAndUnbindOnePropertyToAnother();
+    }
+
     private static void addAndRemoveChangeListener() {
         log.info("\n");
         final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> log
@@ -74,10 +81,6 @@ public final class SimplePropertyExample {
         logOtherProperty(otherProperty);
     }
 
-    private static void logOtherProperty(IntegerProperty otherProperty) {
-        log.info("otherProperty.get() = {}", otherProperty.get());
-    }
-
     private static void createProperty() {
         log.info("\n");
         intProperty = new SimpleIntegerProperty(1024);
@@ -87,10 +90,7 @@ public final class SimplePropertyExample {
         log.info("intProperty.getValue() = {}", intValue);
     }
 
-    public static void main(String[] args) {
-        createProperty();
-        addAndRemoveInvalidationListener();
-        addAndRemoveChangeListener();
-        bindAndUnbindOnePropertyToAnother();
+    private static void logOtherProperty(IntegerProperty otherProperty) {
+        log.info("otherProperty.get() = {}", otherProperty.get());
     }
 }

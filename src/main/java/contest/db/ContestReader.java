@@ -55,16 +55,6 @@ public final class ContestReader implements HasLogging {
         return texts;
     }
 
-    private void addNewText() {
-        text.setContest(contest);
-        getTexts().add(text);
-        text = new ContestText(contest);
-    }
-
-    public static void saveAll() {
-        instance.saveAllEntities();
-    }
-
     public void saveAllEntities() {
         contestQuestionDAO.saveOrUpdate(getContest());
         contestQuestionDAO.saveOrUpdate(listQuestions);
@@ -75,6 +65,21 @@ public final class ContestReader implements HasLogging {
         getLogger().info("Text max size {}", nonNullTexts.stream().map(ContestText::getText).filter(Objects::nonNull)
                 .mapToInt(String::length).max().orElse(0));
         contestQuestionDAO.saveOrUpdate(nonNullTexts);
+    }
+
+    private void addAnswer(String[] linhas, int i, String s) {
+        if (StringUtils.isNotBlank(s)) {
+            answer.appendAnswer(s.trim() + " ");
+            if (option == 5 && i == linhas.length - 1) {
+                addQuestion();
+            }
+        }
+    }
+
+    private void addNewText() {
+        text.setContest(contest);
+        getTexts().add(text);
+        text = new ContestText(contest);
     }
 
     private void addQuestion() {
@@ -113,24 +118,14 @@ public final class ContestReader implements HasLogging {
         }
     }
 
-    private void addAnswer(String[] linhas, int i, String s) {
-        if (StringUtils.isNotBlank(s)) {
-            answer.appendAnswer(s.trim() + " ");
-            if (option == 5 && i == linhas.length - 1) {
-                addQuestion();
-            }
+    private Integer intValue(String v) {
+        try {
+            return Integer.valueOf(v.replaceAll("\\D", ""));
+        } catch (NumberFormatException e) {
+            getLogger().trace("", e);
+            return null;
         }
-    }
 
-    private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
-        return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
-    }
-
-
-    private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
-        PDFParser parser = new PDFParser(source);
-        parser.parse();
-        return parser.getDocument();
     }
 
     private void processQuestion(String[] linhas, int i) {
@@ -197,6 +192,7 @@ public final class ContestReader implements HasLogging {
             getLogger().trace(s);
         }
     }
+
 
     private void readFile(File file) {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -275,14 +271,8 @@ public final class ContestReader implements HasLogging {
         return null;
     }
 
-    private Integer intValue(String v) {
-        try {
-            return Integer.valueOf(v.replaceAll("\\D", ""));
-        } catch (NumberFormatException e) {
-            getLogger().trace("", e);
-            return null;
-        }
-
+    public static ObservableList<ContestQuestion> getContestQuestions() {
+        return FXCollections.observableArrayList(getInstance().contestQuestionDAO.list());
     }
 
     public static ObservableList<ContestQuestion> getContestQuestions(File file, Runnable... r) {
@@ -294,10 +284,6 @@ public final class ContestReader implements HasLogging {
             Stream.of(r).forEach(Runnable::run);
         }).start();
         return instance.listQuestions;
-    }
-
-    public static ObservableList<ContestQuestion> getContestQuestions() {
-        return FXCollections.observableArrayList(getInstance().contestQuestionDAO.list());
     }
 
     public static ObservableList<ContestText> getContestTexts() {
@@ -313,6 +299,20 @@ public final class ContestReader implements HasLogging {
 
     public static ContestReader getInstance() {
         return instance;
+    }
+
+    public static void saveAll() {
+        instance.saveAllEntities();
+    }
+
+    private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
+        return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
+    }
+
+    private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
+        PDFParser parser = new PDFParser(source);
+        parser.parse();
+        return parser.getDocument();
     }
 
     enum ReaderState {

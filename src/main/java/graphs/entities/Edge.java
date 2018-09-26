@@ -70,15 +70,14 @@ public class Edge extends Group implements Comparable<Edge> {
 
 	}
 
+	@Override
+	public int compareTo(Edge o) {
+		return Integer.compare(valor, o.valor);
+	}
+
 	public final double getAngulo() {
 		double a = line.getEndX() - line.getStartX();
 		double b = line.getEndY() - line.getStartY();
-		return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
-	}
-
-	public static double getAngulo(double ax, double ay, double bx, double by) {
-		double a = ax - bx;
-		double b = ay - by;
 		return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
 	}
 
@@ -105,13 +104,14 @@ public class Edge extends Group implements Comparable<Edge> {
 	}
 
 	@Override
-	public int compareTo(Edge o) {
-		return Integer.compare(valor, o.valor);
-	}
-
-	@Override
 	public String toString() {
 		return source + "->" + target + "(" + valor + ")";
+	}
+
+	public static double getAngulo(double ax, double ay, double bx, double by) {
+		double a = ax - bx;
+		double b = ay - by;
+		return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
 	}
 
 }

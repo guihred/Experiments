@@ -24,10 +24,6 @@ import simplebuilder.SimpleCircleBuilder;
 
 public class VanishingCirclesApp extends Application {
 
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Vanishing Circles");
@@ -62,5 +58,9 @@ public class VanishingCirclesApp extends Application {
             moveCircles.getKeyFrames().add(new KeyFrame(Duration.seconds(40), moveX, moveY));
         });
         moveCircles.play();
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
     }
 }

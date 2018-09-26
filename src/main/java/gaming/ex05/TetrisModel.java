@@ -53,73 +53,14 @@ public class TetrisModel {
 
     }
 
-	void changeDirection() {
-        TetrisDirection a = direction;
-        direction = direction.next();
-        if (checkCollision(getCurrentI(), getCurrentJ())) {
-            direction = a;
-        } else {
-            clearMovingPiece();
-            drawPiece();
-        }
-    }
-
-	boolean checkCollision(int nextI, int nextJ) {
-        final int[][] get = pieceDirection.get(piece).get(direction);
-        for (int i = 0; i < get.length; i++) {
-            for (int j = 0; j < get[i].length; j++) {
-                if (get[i][j] == 1) {
-                    if (nextI + i >= MAP_WIDTH || nextI < 0) {
-                        return true;
-                    }
-                    if (nextJ + j >= MAP_HEIGHT) {
-                        return true;
-                    }
-					if (map[nextI + i][nextJ + j].getState() == TetrisPieceState.SETTLED) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    void clearMovingPiece() {
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            for (int j = 0; j < MAP_HEIGHT; j++) {
-				if (map[i][j].getState() == TetrisPieceState.TRANSITION) {
-					map[i][j].setState(TetrisPieceState.EMPTY);
-                }
-            }
-        }
-
-    }
-
-
-    void drawPiece() {
-        drawPiece(TetrisPieceState.TRANSITION);
-    }
-
-
-    void drawPiece(TetrisPieceState state) {
-        final int[][] get = pieceDirection.get(piece).get(direction);
-        for (int i = 0; i < get.length; i++) {
-            for (int j = 0; j < get[i].length; j++) {
-                if (get[i][j] == 1) {
-					map[getCurrentI() + i][getCurrentJ() + j].setState(state);
-                }
-            }
-        }
-    }
-
-    public int getCurrentI() {
+	public int getCurrentI() {
 		return currentI;
 	}
 
-    public int getCurrentJ() {
+	public int getCurrentJ() {
 		return currentJ;
 	}
-
-	public void movePiecesTimeline(Timeline timeline) {
+    public void movePiecesTimeline(Timeline timeline) {
 		clearMovingPiece();
 		if (!checkCollision(getCurrentI(), getCurrentJ() + 1)) {
 		    drawPiece();
@@ -156,6 +97,17 @@ public class TetrisModel {
 		}
 		setCurrentJ(getCurrentJ() + 1);
 	}
+
+
+    public void setCurrentI(int currentI) {
+		this.currentI = currentI;
+	}
+
+
+    public void setCurrentJ(int currentJ) {
+		this.currentJ = currentJ;
+	}
+
     private boolean isLineClear(int i) {
 		boolean clearLine = true;
 		for (int j = 0; j < MAP_WIDTH; j++) {
@@ -166,7 +118,7 @@ public class TetrisModel {
 		return clearLine;
 	}
 
-	private void removeLine(int i) {
+    private void removeLine(int i) {
 		for (int k = i; k >= 0; k--) {
 		    for (int j = 0; j < MAP_WIDTH; j++) {
 		        if (k == 0) {
@@ -177,6 +129,61 @@ public class TetrisModel {
 		    }
 		}
 	}
+
+	void changeDirection() {
+        TetrisDirection a = direction;
+        direction = direction.next();
+        if (checkCollision(getCurrentI(), getCurrentJ())) {
+            direction = a;
+        } else {
+            clearMovingPiece();
+            drawPiece();
+        }
+    }
+    boolean checkCollision(int nextI, int nextJ) {
+        final int[][] get = pieceDirection.get(piece).get(direction);
+        for (int i = 0; i < get.length; i++) {
+            for (int j = 0; j < get[i].length; j++) {
+                if (get[i][j] == 1) {
+                    if (nextI + i >= MAP_WIDTH || nextI < 0) {
+                        return true;
+                    }
+                    if (nextJ + j >= MAP_HEIGHT) {
+                        return true;
+                    }
+					if (map[nextI + i][nextJ + j].getState() == TetrisPieceState.SETTLED) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+	void clearMovingPiece() {
+        for (int i = 0; i < MAP_WIDTH; i++) {
+            for (int j = 0; j < MAP_HEIGHT; j++) {
+				if (map[i][j].getState() == TetrisPieceState.TRANSITION) {
+					map[i][j].setState(TetrisPieceState.EMPTY);
+                }
+            }
+        }
+
+    }
+	void drawPiece() {
+        drawPiece(TetrisPieceState.TRANSITION);
+    }
+
+	void drawPiece(TetrisPieceState state) {
+        final int[][] get = pieceDirection.get(piece).get(direction);
+        for (int i = 0; i < get.length; i++) {
+            for (int j = 0; j < get[i].length; j++) {
+                if (get[i][j] == 1) {
+					map[getCurrentI() + i][getCurrentJ() + j].setState(state);
+                }
+            }
+        }
+    }
 	void reset() {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
@@ -185,7 +192,7 @@ public class TetrisModel {
         }
     }
 
-	final int[][] rotateMap(int[][] pieceMap) {
+    final int[][] rotateMap(int[][] pieceMap) {
         int width = pieceMap.length;
         int height = pieceMap[0].length;
         int[][] left = new int[height][width];
@@ -196,12 +203,5 @@ public class TetrisModel {
         }
         return left;
     }
-	public void setCurrentI(int currentI) {
-		this.currentI = currentI;
-	}
-
-    public void setCurrentJ(int currentJ) {
-		this.currentJ = currentJ;
-	}
 
 }

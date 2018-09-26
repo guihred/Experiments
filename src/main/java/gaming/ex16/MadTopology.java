@@ -82,31 +82,6 @@ public class MadTopology {
         return mst;
     }
 
-    private static List<MadPonto> getPointSet(List<MadCell> all) {
-        return all.stream().map(c -> new MadPonto(c.getX(), c.getY(), c)).collect(Collectors.toList());
-    }
-
-    private static void legalizeEdge(List<MadTriangle> triangleSoup1, MadTriangle triangle, MadLinha edge,
-            MadPonto newVertex) {
-        MadTriangle neighbourMadTriangle = triangleSoup1.stream().filter(t -> t.isNeighbour(edge) && t != triangle)
-                .findFirst().orElse(null);
-        if (neighbourMadTriangle != null && neighbourMadTriangle.isPointInCircumcircle(newVertex)) {
-            triangleSoup1.remove(triangle);
-            triangleSoup1.remove(neighbourMadTriangle);
-
-            MadPonto noneEdgeVertex = neighbourMadTriangle.getNoneEdgeVertex(edge);
-
-            MadTriangle firstMadTriangle = new MadTriangle(noneEdgeVertex, edge.getA(), newVertex);
-            MadTriangle secondMadTriangle = new MadTriangle(noneEdgeVertex, edge.getB(), newVertex);
-
-            triangleSoup1.add(firstMadTriangle);
-            triangleSoup1.add(secondMadTriangle);
-
-            legalizeEdge(triangleSoup1, firstMadTriangle, new MadLinha(noneEdgeVertex, edge.getA()), newVertex);
-            legalizeEdge(triangleSoup1, secondMadTriangle, new MadLinha(noneEdgeVertex, edge.getB()), newVertex);
-        }
-    }
-
     private List<MadTriangle> triangulate(List<MadCell> all) {
         List<MadTriangle> triangleSoup = new ArrayList<>();
         float maxOfAnyCoordinate = 0.0f;
@@ -194,5 +169,30 @@ public class MadTopology {
         }
 
         return triangleSoup;
+    }
+
+    private static List<MadPonto> getPointSet(List<MadCell> all) {
+        return all.stream().map(c -> new MadPonto(c.getX(), c.getY(), c)).collect(Collectors.toList());
+    }
+
+    private static void legalizeEdge(List<MadTriangle> triangleSoup1, MadTriangle triangle, MadLinha edge,
+            MadPonto newVertex) {
+        MadTriangle neighbourMadTriangle = triangleSoup1.stream().filter(t -> t.isNeighbour(edge) && t != triangle)
+                .findFirst().orElse(null);
+        if (neighbourMadTriangle != null && neighbourMadTriangle.isPointInCircumcircle(newVertex)) {
+            triangleSoup1.remove(triangle);
+            triangleSoup1.remove(neighbourMadTriangle);
+
+            MadPonto noneEdgeVertex = neighbourMadTriangle.getNoneEdgeVertex(edge);
+
+            MadTriangle firstMadTriangle = new MadTriangle(noneEdgeVertex, edge.getA(), newVertex);
+            MadTriangle secondMadTriangle = new MadTriangle(noneEdgeVertex, edge.getB(), newVertex);
+
+            triangleSoup1.add(firstMadTriangle);
+            triangleSoup1.add(secondMadTriangle);
+
+            legalizeEdge(triangleSoup1, firstMadTriangle, new MadLinha(noneEdgeVertex, edge.getA()), newVertex);
+            legalizeEdge(triangleSoup1, secondMadTriangle, new MadLinha(noneEdgeVertex, edge.getB()), newVertex);
+        }
     }
 }

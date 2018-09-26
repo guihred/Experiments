@@ -17,25 +17,11 @@ import javafx.stage.Stage;
 import utils.CommonsFX;
 
 public interface CommomLabyrinth {
-	Collection<LabyrinthWall> getLabyrinthWalls();
-	PerspectiveCamera getCamera();
-	default void endKeyboard() {
-		// DOES NOTHING
-	}
 	default boolean checkColision(Bounds boundsInParent) {
 		Stream<Bounds> walls = getLabyrinthWalls().stream().parallel()
 				.map(LabyrinthWall::getBoundsInParent);
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
-
-    static Sphere checkBalls(Bounds boundsInParent, Sphere[][] balls2) {
-        return Stream.of(balls2).flatMap(Stream::of)
-                .filter(Objects::nonNull)
-                .filter(b -> b.getBoundsInParent().intersects(boundsInParent))
-                .findFirst().orElse(null);
-    }
-
-
 	default void displayEndOfGame(Runnable run) {
 		Stage dialogStage = new Stage();
 		dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -52,5 +38,19 @@ public interface CommomLabyrinth {
 		dialogStage.setScene(new Scene(vbox));
 		dialogStage.show();
 	}
+	default void endKeyboard() {
+		// DOES NOTHING
+	}
+	PerspectiveCamera getCamera();
+
+    Collection<LabyrinthWall> getLabyrinthWalls();
+
+
+	static Sphere checkBalls(Bounds boundsInParent, Sphere[][] balls2) {
+        return Stream.of(balls2).flatMap(Stream::of)
+                .filter(Objects::nonNull)
+                .filter(b -> b.getBoundsInParent().intersects(boundsInParent))
+                .findFirst().orElse(null);
+    }
 
 }

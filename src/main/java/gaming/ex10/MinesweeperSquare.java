@@ -23,23 +23,16 @@ import javafx.scene.shape.Shape;
  */
 public class MinesweeperSquare extends Region {
 
-    public enum State {
-        HIDDEN,
-        SHOWN,
-        FLAGGED
-    }
-
     private final int i;
-    private final int j;
-	private ObjectProperty<MinesweeperImage> minesweeperImage = new SimpleObjectProperty<>(MinesweeperImage.BLANK);
-	private int num;
-    private Shape shape;
-    private Shape flag = MinesweeperImage.FLAG.getShape(0);
 
+    private final int j;
+    private ObjectProperty<MinesweeperImage> minesweeperImage = new SimpleObjectProperty<>(MinesweeperImage.BLANK);
+	private int num;
+	private Shape shape;
+    private Shape flag = MinesweeperImage.FLAG.getShape(0);
     private ObjectProperty<State> state = new SimpleObjectProperty<>(State.HIDDEN);
 
-
-	public MinesweeperSquare(int i, int j) {
+    public MinesweeperSquare(int i, int j) {
         this.i = i;
         this.j = j;
         setPadding(new Insets(10));
@@ -53,13 +46,8 @@ public class MinesweeperSquare extends Region {
         setPrefSize(50, 50);
     }
 
-    @Override
-    public String toString() {
-        return "MinesweeperSquare [i=" + i + ", j=" + j + ", minesweeperImage=" + minesweeperImage + ", num=" + num
-                + ", state=" + state + "]";
-    }
 
-    public Shape getFinalShape() {
+	public Shape getFinalShape() {
 		if (shape == null) {
 			shape = getMinesweeperImage().getShape(getNum());
             Color color;
@@ -79,7 +67,19 @@ public class MinesweeperSquare extends Region {
 		return shape;
 	}
 
-    public final MinesweeperImage getMinesweeperImage() {
+    public Shape getFlag() {
+        return flag;
+    }
+
+    public int getI() {
+		return i;
+	}
+
+    public int getJ() {
+		return j;
+	}
+
+	public final MinesweeperImage getMinesweeperImage() {
 		return minesweeperImage.get();
 	}
 
@@ -95,33 +95,33 @@ public class MinesweeperSquare extends Region {
 		this.shape = shape;
     }
 
+
 	public final void setMinesweeperImage(final MinesweeperImage minesweeperImage) {
 		this.minesweeperImage.set(minesweeperImage);
 	}
 
-
-	public void setNum(int num) {
+    public void setNum(int num) {
 		this.num = num;
 	}
-
-    public ObjectProperty<State> stateProperty() {
-        return state;
-    }
 
 	public final void setState(final State state) {
 		this.state.set(state);
 	}
 
-	public int getJ() {
-		return j;
-	}
+	public ObjectProperty<State> stateProperty() {
+        return state;
+    }
 
-	public int getI() {
-		return i;
-	}
+	@Override
+    public String toString() {
+        return "MinesweeperSquare [i=" + i + ", j=" + j + ", minesweeperImage=" + minesweeperImage + ", num=" + num
+                + ", state=" + state + "]";
+    }
 
-    public Shape getFlag() {
-        return flag;
+    public enum State {
+        HIDDEN,
+        SHOWN,
+        FLAGGED
     }
 
 }

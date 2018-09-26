@@ -8,17 +8,17 @@ public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilde
 		super(new Text());
 	}
 
-	public SimpleTextBuilder managed(boolean x) {
-		shape.setManaged(x);
-		return this;
-	}
 	public SimpleTextBuilder font(javafx.scene.text.Font x) {
 		shape.setFont(x);
 		return this;
 	}
-
 	public SimpleTextBuilder fontSmoothingType(javafx.scene.text.FontSmoothingType x) {
 		shape.setFontSmoothingType(x);
+		return this;
+	}
+
+	public SimpleTextBuilder managed(boolean x) {
+		shape.setManaged(x);
 		return this;
 	}
 

@@ -54,33 +54,6 @@ public class Chart3dSampleApp extends Application {
 
     }
 
-    private void handleKeyPressed(KeyEvent event) {
-        KeyCode code = event.getCode();
-        switch (code) {
-            case Z:
-                resetPosition(event);
-                break;
-            case X:
-                toggleVisible(event);
-                break;
-      
-            case UP:
-                moveUp(event);
-                break;
-            case DOWN:
-                moveDown(event);
-                break;
-            case RIGHT:
-                moveRight(event);
-                break;
-            case LEFT:
-                moveLeft(event);
-                break;
-        default:
-        	break;
-        }
-    }
-
     private void buildAxes() {
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setDiffuseColor(Color.DARKRED);
@@ -159,6 +132,33 @@ public class Chart3dSampleApp extends Application {
         root.getChildren().add(world);
     }
 
+    private void handleKeyPressed(KeyEvent event) {
+        KeyCode code = event.getCode();
+        switch (code) {
+            case Z:
+                resetPosition(event);
+                break;
+            case X:
+                toggleVisible(event);
+                break;
+      
+            case UP:
+                moveUp(event);
+                break;
+            case DOWN:
+                moveDown(event);
+                break;
+            case RIGHT:
+                moveRight(event);
+                break;
+            case LEFT:
+                moveLeft(event);
+                break;
+        default:
+        	break;
+        }
+    }
+
     private void handleMouse(Scene scene) {
         scene.setOnMousePressed(me -> {
             mousePosX = me.getSceneX();
@@ -167,37 +167,6 @@ public class Chart3dSampleApp extends Application {
             mouseOldY = me.getSceneY();
         });
         scene.setOnMouseDragged(this::onMouseDragged);
-    }
-
-    private void onMouseDragged(MouseEvent me) {
-        mouseOldX = mousePosX;
-        mouseOldY = mousePosY;
-        mousePosX = me.getSceneX();
-
-        mousePosY = me.getSceneY();
-        double mouseDeltaX = mousePosX - mouseOldX;
-        double mouseDeltaY = mousePosY - mouseOldY;
-
-        double modifier = 1.0;
-        double modifierFactor = 0.1;
-
-        if (me.isControlDown()) {
-            modifier = 0.1;
-        }
-        if (me.isShiftDown()) {
-            modifier = 10.0;
-        }
-        if (me.isPrimaryButtonDown()) {
-            cameraXform.setRotateY(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
-            cameraXform.setRotateX(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
-        } else if (me.isSecondaryButtonDown()) {
-            double z = camera.getTranslateZ();
-            double newZ = z + mouseDeltaX * modifierFactor * modifier;
-            camera.setTranslateZ(newZ);
-        } else if (me.isMiddleButtonDown()) {
-            cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
-            cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
-        }
     }
 
     private void moveDown(KeyEvent event) {
@@ -253,6 +222,37 @@ public class Chart3dSampleApp extends Application {
             double z1 = camera.getTranslateZ();
             double newZ1 = z1 + 5.0 * SHIFT_MULTIPLIER;
             camera.setTranslateZ(newZ1);
+        }
+    }
+
+    private void onMouseDragged(MouseEvent me) {
+        mouseOldX = mousePosX;
+        mouseOldY = mousePosY;
+        mousePosX = me.getSceneX();
+
+        mousePosY = me.getSceneY();
+        double mouseDeltaX = mousePosX - mouseOldX;
+        double mouseDeltaY = mousePosY - mouseOldY;
+
+        double modifier = 1.0;
+        double modifierFactor = 0.1;
+
+        if (me.isControlDown()) {
+            modifier = 0.1;
+        }
+        if (me.isShiftDown()) {
+            modifier = 10.0;
+        }
+        if (me.isPrimaryButtonDown()) {
+            cameraXform.setRotateY(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
+            cameraXform.setRotateX(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
+        } else if (me.isSecondaryButtonDown()) {
+            double z = camera.getTranslateZ();
+            double newZ = z + mouseDeltaX * modifierFactor * modifier;
+            camera.setTranslateZ(newZ);
+        } else if (me.isMiddleButtonDown()) {
+            cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
+            cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
         }
     }
 

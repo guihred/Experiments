@@ -46,26 +46,41 @@ public class TimelineGraph extends Canvas {
 		ybins.addListener(listener);
 	}
 
-    public void setHistogram(DataframeML dataframe, String countryNameColumn) {
-		this.dataframe = dataframe;
-        this.countryNameColumn = countryNameColumn;
-        stats = new DoubleSummaryStatistics();
-        colStats = new IntSummaryStatistics();
-		dataframe.forEach((col, items) -> {
+    public final IntegerProperty binsProperty() {
+		return bins;
+	}
 
+    public ObservableMap<String, Color> colorsProperty() {
+		return colors;
+	}
 
-            if (StringUtils.isNumeric(col)) {
-                DoubleSummaryStatistics summaryStatistics = items.stream().filter(Objects::nonNull).map(Number.class::cast)
-                        .mapToDouble(Number::doubleValue).summaryStatistics();
-                if (summaryStatistics.getCount() > 0) {
-                    colStats.accept(Integer.valueOf(col));
-                    stats.combine(
-                            summaryStatistics);
+    public void drawAxis() {
 
-                }
-            }
-        });
-        drawGraph();
+        gc.setLineWidth(1);
+        gc.setStroke(Color.BLACK);
+        gc.setFill(Color.BLACK);
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
+		double e = layout.get();
+        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
+		gc.strokeLine(e, e, e, maxLayout);
+        double d = lineSize.get();
+		double j = (maxLayout - e) / bins.get();
+		for (int i = 1; i <= bins.get(); i++) {
+			double x1 = i * j + e;
+            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
+            String xLabel = String.format("%.0f", i * xProportion.get() + colStats.getMin());
+            gc.strokeText(xLabel, x1,
+                    maxLayout + 5 * (4 + 3 * (i % 2)));
+
+		}
+		j = (maxLayout - e) / ybins.get();
+		for (int i = 0; i <= ybins.get(); i++) {
+			double y1 = maxLayout - i * j;
+            gc.strokeLine(e, y1, e - 5, y1);
+            String yLabel = String.format("%.1f", i * yProportion + stats.getMin());
+            gc.strokeText(yLabel, e - d * 2, y1);
+		}
 	}
 
     public final void drawGraph() {
@@ -110,29 +125,53 @@ public class TimelineGraph extends Canvas {
 		drawAxis();
 	}
 
-    private boolean drawPoints(int maxYear, int minYear, double d, double j, double j2, String labelRow, Map<String, Object> row) {
-        boolean hasPoint = false;
-        for (int year = minYear; year <= maxYear; year++) {
-            Number object = (Number) row.get("" + year);
-            if (object == null) {
-                continue;
+	public final DoubleProperty layoutProperty() {
+		return layout;
+	}
+
+	public final DoubleProperty lineSizeProperty() {
+		return lineSize;
+	}
+
+	public final IntegerProperty radiusProperty() {
+		return radius;
+	}
+
+	public void setHistogram(DataframeML dataframe, String countryNameColumn) {
+		this.dataframe = dataframe;
+        this.countryNameColumn = countryNameColumn;
+        stats = new DoubleSummaryStatistics();
+        colStats = new IntSummaryStatistics();
+		dataframe.forEach((col, items) -> {
+
+
+            if (StringUtils.isNumeric(col)) {
+                DoubleSummaryStatistics summaryStatistics = items.stream().filter(Objects::nonNull).map(Number.class::cast)
+                        .mapToDouble(Number::doubleValue).summaryStatistics();
+                if (summaryStatistics.getCount() > 0) {
+                    colStats.accept(Integer.valueOf(col));
+                    stats.combine(
+                            summaryStatistics);
+
+                }
             }
-            hasPoint = true;
-            double k = (year - minYear) / xProportion.get();
-            double x1 = k * j + d;
-            double y = object.doubleValue() - stats.getMin();
-            double y1 = maxLayout - y / yProportion * j2;
-            // gc.strokeLine(x1, maxLayout, x1, y1)
-            double h = radius.get();
-            gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
-        }
-        if (!hasPoint) {
-            colors.remove(labelRow);
-        }
-        return hasPoint;
+        });
+        drawGraph();
+	}
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    private void drawLines(int maxYear, int minYear, double d, double j, double j2, Map<String, Object> row) {
+	public DoubleProperty xProportionProperty() {
+        return xProportion;
+    }
+
+	public final IntegerProperty ybinsProperty() {
+		return ybins;
+	}
+
+	private void drawLines(int maxYear, int minYear, double d, double j, double j2, Map<String, Object> row) {
         for (int year = minYear; year <= maxYear; year++) {
             double x = (double) year - minYear;
             double m = x / xProportion.get();
@@ -159,64 +198,25 @@ public class TimelineGraph extends Canvas {
         }
     }
 
-	public void drawAxis() {
-
-        gc.setLineWidth(1);
-        gc.setStroke(Color.BLACK);
-        gc.setFill(Color.BLACK);
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
-		double e = layout.get();
-        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
-		gc.strokeLine(e, e, e, maxLayout);
-        double d = lineSize.get();
-		double j = (maxLayout - e) / bins.get();
-		for (int i = 1; i <= bins.get(); i++) {
-			double x1 = i * j + e;
-            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
-            String xLabel = String.format("%.0f", i * xProportion.get() + colStats.getMin());
-            gc.strokeText(xLabel, x1,
-                    maxLayout + 5 * (4 + 3 * (i % 2)));
-
-		}
-		j = (maxLayout - e) / ybins.get();
-		for (int i = 0; i <= ybins.get(); i++) {
-			double y1 = maxLayout - i * j;
-            gc.strokeLine(e, y1, e - 5, y1);
-            String yLabel = String.format("%.1f", i * yProportion + stats.getMin());
-            gc.strokeText(yLabel, e - d * 2, y1);
-		}
-	}
-
-	public final DoubleProperty layoutProperty() {
-		return layout;
-	}
-
-	public final DoubleProperty lineSizeProperty() {
-		return lineSize;
-	}
-
-	public final IntegerProperty binsProperty() {
-		return bins;
-	}
-
-    public DoubleProperty xProportionProperty() {
-        return xProportion;
-    }
-
-	public final IntegerProperty ybinsProperty() {
-		return ybins;
-	}
-
-	public final IntegerProperty radiusProperty() {
-		return radius;
-	}
-
-	public ObservableMap<String, Color> colorsProperty() {
-		return colors;
-	}
-
-    public void setTitle(String title) {
-        this.title = title;
+    private boolean drawPoints(int maxYear, int minYear, double d, double j, double j2, String labelRow, Map<String, Object> row) {
+        boolean hasPoint = false;
+        for (int year = minYear; year <= maxYear; year++) {
+            Number object = (Number) row.get("" + year);
+            if (object == null) {
+                continue;
+            }
+            hasPoint = true;
+            double k = (year - minYear) / xProportion.get();
+            double x1 = k * j + d;
+            double y = object.doubleValue() - stats.getMin();
+            double y1 = maxLayout - y / yProportion * j2;
+            // gc.strokeLine(x1, maxLayout, x1, y1)
+            double h = radius.get();
+            gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
+        }
+        if (!hasPoint) {
+            colors.remove(labelRow);
+        }
+        return hasPoint;
     }
 }

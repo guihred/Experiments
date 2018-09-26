@@ -5,10 +5,6 @@ public class BigNo {
 		private static final int DIGS = 4;
 		private static final String FORMAT = "%0" + DIGS + "d";
 		private int[] value = new int[200];
-		private BigNo() {
-			this(0);
-		}
-
 		// This converts an ordinary int into a BigNo
 		public BigNo(int m) {
 			int i;
@@ -19,16 +15,8 @@ public class BigNo {
 			value[0] = i;
 		}
 
-		// This converts a BigNo into a String
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			for (int i = 1; i <= value[0]; i++) {
-				sb.insert(0, String.format(FORMAT, value[i]));
-			}
-
-			String replaceAll = sb.toString().replaceAll("^0+", "");
-			return replaceAll.isEmpty() ? "0" : replaceAll;
+		private BigNo() {
+			this(0);
 		}
 
 		// This multiplies one BigNo
@@ -54,6 +42,18 @@ public class BigNo {
 
 			return result;
     }
+
+		// This converts a BigNo into a String
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 1; i <= value[0]; i++) {
+				sb.insert(0, String.format(FORMAT, value[i]));
+			}
+
+			String replaceAll = sb.toString().replaceAll("^0+", "");
+			return replaceAll.isEmpty() ? "0" : replaceAll;
+		}
 
     public static BigNo power(int m, int pow) {
         BigNo p;

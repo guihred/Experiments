@@ -4,12 +4,12 @@ import javafx.util.StringConverter;
 
 class SimpleStringConverter extends StringConverter<Number> {
 	@Override
-	public String toString(Number n) {
-		return String.valueOf(n.intValue() / 10);
+	public Number fromString(String s) {
+		return Integer.valueOf(s) * 10;
 	}
 
 	@Override
-	public Number fromString(String s) {
-		return Integer.valueOf(s) * 10;
+	public String toString(Number n) {
+		return String.valueOf(n.intValue() / 10);
 	}
 }

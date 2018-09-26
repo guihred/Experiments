@@ -27,10 +27,6 @@ public class LookNFeelChooser extends Application {
 		Font.loadFont(ResourceFXUtils.toExternalForm("Roboto-Light.ttf"), 10).getName();
 	}
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		BorderPane root = new BorderPane();
@@ -68,5 +64,9 @@ public class LookNFeelChooser extends Application {
 		primaryStage.setTitle("Look N Feel Chooser");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

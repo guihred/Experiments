@@ -33,34 +33,16 @@ public class PieGraph extends Canvas {
         radius.set((int) (gc.getCanvas().getWidth() / 2));
         radius.addListener(e -> drawGraph());
         bins.addListener(e -> {
-
-            Map<String, Long> collect = convertToHistogram();
+            Map<String, Long> hist = convertToHistogram();
             histogram.clear();
-            histogram.putAll(collect);
+            histogram.putAll(hist);
             availableColors = CommonsFX.generateRandomColors(histogram.size());
             drawGraph();
         });
     }
 
-    public void setDataframe(DataframeML dataframe, String column) {
-        this.dataframe = dataframe;
-        this.column = column;
-        histogram.putAll(convertToHistogram());
-        availableColors = CommonsFX.generateRandomColors(histogram.size());
-        drawGraph();
-    }
-
-    private Map<String, Long> convertToHistogram() {
-        Map<String, Long> collect;
-        if (dataframe.getFormat(column) != String.class) {
-            Map<Double, Long> dataframeHistogram = dataframe.histogram(column, bins.get());
-            collect = dataframeHistogram.entrySet().stream()
-                    .collect(Collectors.toMap(t -> String.format("%.0f", t.getKey()),
-                            Entry<Double, Long>::getValue, (a, b) -> a + b));
-        } else {
-            collect = dataframe.histogram(column);
-        }
-        return collect;
+    public IntegerProperty binsProperty() {
+        return bins;
     }
 
     public final void drawGraph() {
@@ -101,29 +83,17 @@ public class PieGraph extends Canvas {
         drawLegend(histogramLevels, availableColors);
     }
 
-	public static List<Color> generateColors(int size) {
-        List<Color> availableColors = new ArrayList<>();
-		int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
-        for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
-            Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
-                    Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
-                    Math.abs(255 - i % cubicRoot * 256 / cubicRoot) % 256);
-
-            availableColors.add(rgb);
-        }
-        return availableColors;
-    }
-
-    public void drawLegend(List<Entry<String, Long>> collect, List<Color> availableColors1) {
+    public void drawLegend(List<Entry<String, Long>> histogramLevels, List<Color> availableColors1) {
         double x = gc.getCanvas().getWidth() / 10;
         double y = gc.getCanvas().getHeight() * 7 / 8;
-        int columns = (int) Math.sqrt(collect.size()) + 1;
-        int maxLetter = collect.stream().map(Entry<String, Long>::getKey).mapToInt(String::length).max().orElse(0);
+        int columns = (int) Math.sqrt(histogramLevels.size()) + 1;
+        int maxLetter = histogramLevels.stream().map(Entry<String, Long>::getKey).mapToInt(String::length).max()
+                .orElse(0);
         double a = gc.getCanvas().getWidth() / columns / 4 + maxLetter * 4;
         double b = gc.getCanvas().getHeight() / columns / 8;
-        for (int i = 0; i < collect.size(); i++) {
-            int index = collect.size() - i - 1;
-            Entry<String, Long> entry = collect.get(index);
+        for (int i = 0; i < histogramLevels.size(); i++) {
+            int index = histogramLevels.size() - i - 1;
+            Entry<String, Long> entry = histogramLevels.get(index);
             int j = i / columns;
             double x2 = x + a * (i % columns);
             double y2 = y + b * j;
@@ -135,12 +105,39 @@ public class PieGraph extends Canvas {
         }
     }
 
-    public IntegerProperty radiusProperty() {
+	public IntegerProperty radiusProperty() {
         return radius;
     }
 
-    public IntegerProperty binsProperty() {
-        return bins;
+    public void setDataframe(DataframeML dataframe, String column) {
+        this.dataframe = dataframe;
+        this.column = column;
+        histogram.putAll(convertToHistogram());
+        availableColors = CommonsFX.generateRandomColors(histogram.size());
+        drawGraph();
+    }
+
+    private Map<String, Long> convertToHistogram() {
+        if (dataframe.getFormat(column) != String.class) {
+            Map<Double, Long> dataframeHistogram = dataframe.histogram(column, bins.get());
+            return dataframeHistogram.entrySet().stream()
+                    .collect(Collectors.toMap(t -> String.format("%.0f", t.getKey()),
+                            Entry<Double, Long>::getValue, (a, b) -> a + b));
+        }
+        return dataframe.histogram(column);
+    }
+
+    public static List<Color> generateColors(int size) {
+        List<Color> availableColors = new ArrayList<>();
+		int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
+        for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
+            Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
+                    Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
+                    Math.abs(255 - i % cubicRoot * 256 / cubicRoot) % 256);
+
+            availableColors.add(rgb);
+        }
+        return availableColors;
     }
 
 }

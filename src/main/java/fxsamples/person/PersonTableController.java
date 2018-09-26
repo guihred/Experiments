@@ -41,6 +41,25 @@ public class PersonTableController extends Application {
 		masterData.add(new Person("Martin", "Mueller"));
 	}
 
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("Person Table");
+		BorderPane root = new BorderPane();
+		Scene scene = new Scene(root, 600, 250, Color.WHITE);
+		// create a grid pane
+		FlowPane gridpane = new FlowPane();
+		gridpane.setPadding(new Insets(5));
+		gridpane.setHgap(10);
+		gridpane.setVgap(10);
+		root.setCenter(gridpane);
+
+		gridpane.getChildren().addAll(new Label("Filter Field"), filterField, personTable);
+		personTable.getColumns().setAll(Arrays.asList(firstNameColumn, lastNameColumn));
+		initialize();
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
 	private void initialize() {
 		// 0. Initialize the columns.
 		firstNameColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
@@ -71,25 +90,6 @@ public class PersonTableController extends Application {
 
 		// 5. Add sorted (and filtered) data to the table.
 		personTable.setItems(sortedData);
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Person Table");
-		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 600, 250, Color.WHITE);
-		// create a grid pane
-		FlowPane gridpane = new FlowPane();
-		gridpane.setPadding(new Insets(5));
-		gridpane.setHgap(10);
-		gridpane.setVgap(10);
-		root.setCenter(gridpane);
-
-		gridpane.getChildren().addAll(new Label("Filter Field"), filterField, personTable);
-		personTable.getColumns().setAll(Arrays.asList(firstNameColumn, lastNameColumn));
-		initialize();
-		primaryStage.setScene(scene);
-		primaryStage.show();
 	}
 
 	public static void main(String[] args) {

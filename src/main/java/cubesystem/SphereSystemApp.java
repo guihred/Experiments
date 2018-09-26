@@ -98,7 +98,40 @@ public class SphereSystemApp extends Application {
 		return new Group(subScene);
 	}
 
-	private KeyValue[] valuesAt42(CubeXForm cube1X, CubeXForm cube11X, CubeXForm cube12X, CubeXForm cube13X,
+	public void play() {
+        animation.play();
+    }
+
+	@Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setScene(new Scene(createContent(), 640, 480, true, SceneAntialiasing.BALANCED));
+        primaryStage.show();
+        play();
+    }
+
+	@Override
+    public void stop() {
+        animation.pause();
+    }
+
+    public KeyValue[] valuesAtZero(CubeXForm cube1X, CubeXForm cube11X, CubeXForm cube12X, CubeXForm cube13X,
+			CubeXForm cube14X, CubeXForm cube15X, CubeXForm cube16X, CubeXForm cube17X, CubeXForm cube18X,
+			CubeXForm cube19X, Xsphere cube11, Xsphere cube12, Xsphere cube13, Xsphere cube14, Xsphere cube15,
+			Xsphere cube16, Xsphere cube17, Xsphere cube18, Xsphere cube19) {
+		return new KeyValue[] { new KeyValue(cube1X.getRy().angleProperty(), 0.0),
+				new KeyValue(cube11X.getRy().angleProperty(), 0.0), new KeyValue(cube12X.getRy().angleProperty(), 0.0),
+				new KeyValue(cube13X.getRy().angleProperty(), 0.0), new KeyValue(cube14X.getRy().angleProperty(), 0.0),
+				new KeyValue(cube15X.getRy().angleProperty(), 0.0), new KeyValue(cube16X.getRy().angleProperty(), 0.0),
+				new KeyValue(cube17X.getRy().angleProperty(), 0.0), new KeyValue(cube18X.getRy().angleProperty(), 0.0),
+				new KeyValue(cube19X.getRy().angleProperty(), 0.0), new KeyValue(cube1X.getRx().angleProperty(), 0.0),
+				new KeyValue(cube11.getRx().angleProperty(), 0.0), new KeyValue(cube12.getRx().angleProperty(), 0.0),
+				new KeyValue(cube13.getRx().angleProperty(), 0.0), new KeyValue(cube14.getRx().angleProperty(), 0.0),
+				new KeyValue(cube15.getRx().angleProperty(), 0.0), new KeyValue(cube16.getRx().angleProperty(), 0.0),
+				new KeyValue(cube17.getRx().angleProperty(), 0.0), new KeyValue(cube18.getRx().angleProperty(), 0.0),
+				new KeyValue(cube19.getRx().angleProperty(), 0.0) };
+	}
+
+    private KeyValue[] valuesAt42(CubeXForm cube1X, CubeXForm cube11X, CubeXForm cube12X, CubeXForm cube13X,
 			CubeXForm cube14X, CubeXForm cube15X, CubeXForm cube16X, CubeXForm cube17X, CubeXForm cube18X,
 			CubeXForm cube19X, Xsphere... spheres) {
 		Stream<KeyValue> array = Stream.of(spheres).map(c -> new KeyValue(c.getRx().angleProperty(), 7200));
@@ -116,24 +149,7 @@ public class SphereSystemApp extends Application {
 		return Stream.concat(Stream.of(keyValues), array).toArray(KeyValue[]::new);
 	}
 
-	public KeyValue[] valuesAtZero(CubeXForm cube1X, CubeXForm cube11X, CubeXForm cube12X, CubeXForm cube13X,
-			CubeXForm cube14X, CubeXForm cube15X, CubeXForm cube16X, CubeXForm cube17X, CubeXForm cube18X,
-			CubeXForm cube19X, Xsphere cube11, Xsphere cube12, Xsphere cube13, Xsphere cube14, Xsphere cube15,
-			Xsphere cube16, Xsphere cube17, Xsphere cube18, Xsphere cube19) {
-		return new KeyValue[] { new KeyValue(cube1X.getRy().angleProperty(), 0.0),
-				new KeyValue(cube11X.getRy().angleProperty(), 0.0), new KeyValue(cube12X.getRy().angleProperty(), 0.0),
-				new KeyValue(cube13X.getRy().angleProperty(), 0.0), new KeyValue(cube14X.getRy().angleProperty(), 0.0),
-				new KeyValue(cube15X.getRy().angleProperty(), 0.0), new KeyValue(cube16X.getRy().angleProperty(), 0.0),
-				new KeyValue(cube17X.getRy().angleProperty(), 0.0), new KeyValue(cube18X.getRy().angleProperty(), 0.0),
-				new KeyValue(cube19X.getRy().angleProperty(), 0.0), new KeyValue(cube1X.getRx().angleProperty(), 0.0),
-				new KeyValue(cube11.getRx().angleProperty(), 0.0), new KeyValue(cube12.getRx().angleProperty(), 0.0),
-				new KeyValue(cube13.getRx().angleProperty(), 0.0), new KeyValue(cube14.getRx().angleProperty(), 0.0),
-				new KeyValue(cube15.getRx().angleProperty(), 0.0), new KeyValue(cube16.getRx().angleProperty(), 0.0),
-				new KeyValue(cube17.getRx().angleProperty(), 0.0), new KeyValue(cube18.getRx().angleProperty(), 0.0),
-				new KeyValue(cube19.getRx().angleProperty(), 0.0) };
-	}
-
-	private KeyValue[] valuesAtZero2(CubeXForm cube1X, CubeXForm cube11X, CubeXForm cube12X, CubeXForm cube13X,
+    private KeyValue[] valuesAtZero2(CubeXForm cube1X, CubeXForm cube11X, CubeXForm cube12X, CubeXForm cube13X,
 			CubeXForm cube14X, CubeXForm cube15X, CubeXForm cube16X, CubeXForm cube17X, CubeXForm cube18X,
 			CubeXForm cube19X,
 			Xsphere... spheres) {
@@ -154,22 +170,6 @@ public class SphereSystemApp extends Application {
 		
 		return Stream.concat(Stream.of(keyValues), array).toArray(KeyValue[]::new);
 	}
-
-    public void play() {
-        animation.play();
-    }
-
-    @Override
-    public void stop() {
-        animation.pause();
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createContent(), 640, 480, true, SceneAntialiasing.BALANCED));
-        primaryStage.show();
-        play();
-    }
 
     /**
      * Java main for when running without JavaFX launcher

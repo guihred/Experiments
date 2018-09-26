@@ -46,6 +46,13 @@ public class Robot {
 	}
 
 	/**
+	 * Reset.
+	 */
+	public final void reset() {
+		name = newLetter() + newLetter() + newNumber() + newNumber() + newNumber();
+	}
+
+	/**
 	 * New letter.
 	 *
 	 * @return the string
@@ -63,13 +70,6 @@ public class Robot {
 	private String newNumber() {
 		String[] a = "0123456789".split("");
 		return a[random.nextInt(a.length)];
-	}
-
-	/**
-	 * Reset.
-	 */
-	public final void reset() {
-		name = newLetter() + newLetter() + newNumber() + newNumber() + newNumber();
 	}
 	
 }

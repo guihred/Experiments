@@ -11,10 +11,6 @@ import javafx.stage.Stage;
 
 /** Example of dragging anchors around to manipulate a line. */
 public class LineManipulator extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(final Stage stage) {
 		DoubleProperty startX = new SimpleDoubleProperty(100);
@@ -29,6 +25,10 @@ public class LineManipulator extends Application {
 		stage.setTitle("Line Manipulation Sample");
 		stage.setScene(new Scene(new Group(line, start, end), 400, 400, Color.ALICEBLUE));
 		stage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }
 

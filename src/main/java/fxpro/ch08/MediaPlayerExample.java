@@ -15,10 +15,6 @@ import utils.ResourceFXUtils;
 
 public class MediaPlayerExample extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) throws MalformedURLException {
         File resource = ResourceFXUtils.toFile("TeenTitans.mp3");
@@ -30,5 +26,9 @@ public class MediaPlayerExample extends Application {
         primaryStage.setWidth(200);
         primaryStage.setHeight(200);
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

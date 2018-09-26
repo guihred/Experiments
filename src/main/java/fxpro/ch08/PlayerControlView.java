@@ -130,24 +130,6 @@ public class PlayerControlView extends BaseSongView {
 		return hbox;
 	}
 
-	private void seekAndUpdatePosition(Duration duration) {
-		final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
-		if (mediaPlayer.getStatus() == Status.STOPPED) {
-			mediaPlayer.pause();
-		}
-		mediaPlayer.seek(duration);
-		if (mediaPlayer.getStatus() != Status.PLAYING) {
-			updatePositionSlider(duration);
-		}
-	}
-
-	private Slider createSlider(String id) {
-		final Slider slider = new Slider(0.0, 1.0, 0.1);
-		slider.setId(id);
-		slider.setValue(0);
-		return slider;
-	}
-
 	private Label createLabel(String text, String styleClass) {
 		final Label label = new Label(text);
 		label.getStyleClass().add(styleClass);
@@ -193,16 +175,28 @@ public class PlayerControlView extends BaseSongView {
 		return playPauseButton;
 	}
 
-	private class CurrentTimeListener implements InvalidationListener {
+	private Slider createSlider(String id) {
+		final Slider slider = new Slider(0.0, 1.0, 0.1);
+		slider.setId(id);
+		slider.setValue(0);
+		return slider;
+	}
 
-		@Override
-		public void invalidated(Observable observable) {
-			Platform.runLater(() -> {
-				final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
-				final Duration currentTime = mediaPlayer.getCurrentTime();
-				currentTimeLabel.setText(formatDuration(currentTime));
-				updatePositionSlider(currentTime);
-			});
+	private String formatDuration(Duration duration) {
+		double millis = duration.toMillis();
+		int seconds = (int) (millis / 1000) % 60;
+		int minutes = (int) (millis / (1000 * 60));
+		return String.format("%02d:%02d", minutes, seconds);
+	}
+
+	private void seekAndUpdatePosition(Duration duration) {
+		final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
+		if (mediaPlayer.getStatus() == Status.STOPPED) {
+			mediaPlayer.pause();
+		}
+		mediaPlayer.seek(duration);
+		if (mediaPlayer.getStatus() != Status.PLAYING) {
+			updatePositionSlider(duration);
 		}
 	}
 
@@ -216,20 +210,6 @@ public class PlayerControlView extends BaseSongView {
 			positionSlider.setValue(0);
 		} else {
 			positionSlider.setValue(currentTime.toMillis() / total.toMillis());
-		}
-	}
-
-	private String formatDuration(Duration duration) {
-		double millis = duration.toMillis();
-		int seconds = (int) (millis / 1000) % 60;
-		int minutes = (int) (millis / (1000 * 60));
-		return String.format("%02d:%02d", minutes, seconds);
-	}
-
-	private class StatusListener implements InvalidationListener {
-		@Override
-		public void invalidated(Observable observable) {
-			Platform.runLater(() -> updateStatus(songModel.getMediaPlayer().getStatus()));
 		}
 	}
 
@@ -248,6 +228,26 @@ public class PlayerControlView extends BaseSongView {
 			} else {
 				playPauseIcon.setImage(playImg);
 			}
+		}
+	}
+
+	private class CurrentTimeListener implements InvalidationListener {
+
+		@Override
+		public void invalidated(Observable observable) {
+			Platform.runLater(() -> {
+				final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
+				final Duration currentTime = mediaPlayer.getCurrentTime();
+				currentTimeLabel.setText(formatDuration(currentTime));
+				updatePositionSlider(currentTime);
+			});
+		}
+	}
+
+	private class StatusListener implements InvalidationListener {
+		@Override
+		public void invalidated(Observable observable) {
+			Platform.runLater(() -> updateStatus(songModel.getMediaPlayer().getStatus()));
 		}
 	}
 

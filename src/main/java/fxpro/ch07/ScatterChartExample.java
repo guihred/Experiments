@@ -15,10 +15,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 public class ScatterChartExample extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         NumberAxis xAxis = new NumberAxis();
@@ -34,6 +30,10 @@ public class ScatterChartExample extends Application {
         root.getChildren().add(scatterChart);
         primaryStage.setScene(new Scene(root, 400, 250));
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 

@@ -25,6 +25,23 @@ public class Labyrinth2D extends Application {
 
 	private int i;
 	private int j;
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+
+		Group root = new Group();
+		Button e = new Button();
+		root.getChildren().add(e);
+
+		initializeLabyrinth(root);
+
+		Scene scene = new Scene(root);
+
+		scene.setOnMouseClicked(event -> handleMouseClick(root));
+        primaryStage.setTitle("Labyrinth 2D");
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
 	private void handleMouseClick(Group root) {
 		String string = mapa[i][j];
 		if ("_".equals(string)) {
@@ -65,23 +82,6 @@ public class Labyrinth2D extends Application {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-
-		Group root = new Group();
-		Button e = new Button();
-		root.getChildren().add(e);
-
-		initializeLabyrinth(root);
-
-		Scene scene = new Scene(root);
-
-		scene.setOnMouseClicked(event -> handleMouseClick(root));
-        primaryStage.setTitle("Labyrinth 2D");
-		primaryStage.setScene(scene);
-		primaryStage.show();
 	}
 
 	public static void main(String[] args) {

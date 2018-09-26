@@ -44,8 +44,11 @@ public class SlidingPuzzleModel {
         }
         reset();
     }
-    final EventHandler<MouseEvent> createMouseClickedEvento(SlidingPuzzleSquare mem) {
-		return e -> slideIfPossible(mem);
+    private boolean neighborEmpty(int i, int j) {
+        return isNeighborEmpty(i, j, 0, -1) 
+        || isNeighborEmpty(i, j, 0, 1)
+        || isNeighborEmpty(i, j, 1, 0) 
+        || isNeighborEmpty(i, j, -1, 0);
     }
 
 	private void slideIfPossible(SlidingPuzzleSquare mem) {
@@ -74,11 +77,8 @@ public class SlidingPuzzleModel {
 		}
 	}
 
-    private boolean neighborEmpty(int i, int j) {
-        return isNeighborEmpty(i, j, 0, -1) 
-        || isNeighborEmpty(i, j, 0, 1)
-        || isNeighborEmpty(i, j, 1, 0) 
-        || isNeighborEmpty(i, j, -1, 0);
+    final EventHandler<MouseEvent> createMouseClickedEvento(SlidingPuzzleSquare mem) {
+		return e -> slideIfPossible(mem);
     }
 
 	boolean isNeighborEmpty(int i, int j, int h, int v) {

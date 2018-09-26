@@ -19,19 +19,19 @@ public class Anagram {
 		histogram = createHistogram(st);
 	}
 
-	private static Map<String, Long> createHistogram(String st) {
-		return Stream.of(st.toLowerCase().split("")).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-	}
-
-    public List<String> match(Collection<String> listOfAnagram) {
+	public List<String> match(Collection<String> listOfAnagram) {
 		return listOfAnagram.stream().filter(this::isAnagram).collect(Collectors.toList());
 	}
 
-	private boolean isAnagram(String s) {
+    private boolean isAnagram(String s) {
 		return histogram.equals(createHistogram(s)) && !s.equalsIgnoreCase(original);
 	}
 
 	public static boolean isAnagram(String original, String test) {
 		return createHistogram(original).equals(createHistogram(test)) && !test.equalsIgnoreCase(original);
+	}
+
+	private static Map<String, Long> createHistogram(String st) {
+		return Stream.of(st.toLowerCase().split("")).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 	}
 }

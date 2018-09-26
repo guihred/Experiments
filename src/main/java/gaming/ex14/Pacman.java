@@ -16,21 +16,9 @@ import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class Pacman extends Arc {
-	public enum PacmanDirection {
-		DOWN(90), LEFT(180), RIGHT(0), UP(270);
-		protected final int angle;
-
-        PacmanDirection(int angle) {
-			this.angle = angle;
-		}
-
-		public int getAngle() {
-			return angle;
-		}
-	}
-
-
 	private PacmanDirection direction = PacmanDirection.RIGHT;
+
+
 	private Timeline eatingAnimation = new SimpleTimelineBuilder()
 			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0F)),
 					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0F)),
@@ -46,17 +34,22 @@ public class Pacman extends Arc {
 		setType(ArcType.ROUND);
 		eatingAnimation.playFromStart();
 	}
+	public void die() {
+		if (eatingAnimation.getStatus() == Status.RUNNING) {
+			turn(null);
+			eatingAnimation.stop();
+			Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0F)),
+					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0F)),
+					new KeyFrame(Duration.seconds(2), new KeyValue(startAngleProperty(), 180.0F)),
+					new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0F)));
+			timeline.play();
+			timeline.setOnFinished(e -> {
+				setLayoutX(PacmanModel.SQUARE_SIZE / 2);
+				setLayoutY(PacmanModel.SQUARE_SIZE / 2);
+				eatingAnimation.play();
+			});
+		}
 
-	private boolean checkCollision(ObservableList<Node> observableList) {
-
-		return observableList.stream().filter(Rectangle.class::isInstance)
-                .anyMatch(p -> {
-                    Bounds boundsInParent = getBoundsInParent();
-
-                    return p.getBoundsInParent().intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
-                            boundsInParent.getWidth(), boundsInParent.getHeight());
-
-                });
 	}
 
 	public void move(ObservableList<Node> observableList) {
@@ -83,25 +76,12 @@ public class Pacman extends Arc {
         }
 	}
 
-    private void moveUpAndDown(ObservableList<Node> observableList, int step) {
-        if (!checkCollision(observableList)) {
-            setLayoutY(getLayoutY() - step);
-            if (checkCollision(observableList)) {
-                setLayoutY(getLayoutY() + step);
-            }
-        }
-    }
+	@Override
+	public String toString() {
+		return "Pacman [" + getLayoutX() + "," + getLayoutY() + "]";
+	}
 
-    private void moveSideways(ObservableList<Node> observableList, int step) {
-        if (!checkCollision(observableList)) {
-            setLayoutX(getLayoutX() - step);
-            if (checkCollision(observableList)) {
-                setLayoutX(getLayoutX() + step);
-            }
-        }
-    }
-
-	public void turn(PacmanDirection direction1) {
+    public void turn(PacmanDirection direction1) {
 		if (eatingAnimation.getStatus() == Status.RUNNING) {
 			direction = direction1;
 			if (direction1 != null) {
@@ -110,26 +90,46 @@ public class Pacman extends Arc {
 		}
 	}
 
-	public void die() {
-		if (eatingAnimation.getStatus() == Status.RUNNING) {
-			turn(null);
-			eatingAnimation.stop();
-			Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0F)),
-					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0F)),
-					new KeyFrame(Duration.seconds(2), new KeyValue(startAngleProperty(), 180.0F)),
-					new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0F)));
-			timeline.play();
-			timeline.setOnFinished(e -> {
-				setLayoutX(PacmanModel.SQUARE_SIZE / 2);
-				setLayoutY(PacmanModel.SQUARE_SIZE / 2);
-				eatingAnimation.play();
-			});
-		}
+    private boolean checkCollision(ObservableList<Node> observableList) {
 
+		return observableList.stream().filter(Rectangle.class::isInstance)
+                .anyMatch(p -> {
+                    Bounds boundsInParent = getBoundsInParent();
+
+                    return p.getBoundsInParent().intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
+                            boundsInParent.getWidth(), boundsInParent.getHeight());
+
+                });
 	}
 
-	@Override
-	public String toString() {
-		return "Pacman [" + getLayoutX() + "," + getLayoutY() + "]";
+	private void moveSideways(ObservableList<Node> observableList, int step) {
+        if (!checkCollision(observableList)) {
+            setLayoutX(getLayoutX() - step);
+            if (checkCollision(observableList)) {
+                setLayoutX(getLayoutX() + step);
+            }
+        }
+    }
+
+	private void moveUpAndDown(ObservableList<Node> observableList, int step) {
+        if (!checkCollision(observableList)) {
+            setLayoutY(getLayoutY() - step);
+            if (checkCollision(observableList)) {
+                setLayoutY(getLayoutY() + step);
+            }
+        }
+    }
+
+	public enum PacmanDirection {
+		DOWN(90), LEFT(180), RIGHT(0), UP(270);
+		protected final int angle;
+
+        PacmanDirection(int angle) {
+			this.angle = angle;
+		}
+
+		public int getAngle() {
+			return angle;
+		}
 	}
 }

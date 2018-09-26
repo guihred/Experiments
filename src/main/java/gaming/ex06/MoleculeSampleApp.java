@@ -47,6 +47,26 @@ public class MoleculeSampleApp extends Application {
             .keyFrames(new KeyFrame(Duration.minutes(1), new KeyValue(world.rotateYProperty(), 360.0))).build();
     private boolean timelinePlaying;
 
+    @Override
+    public void start(Stage primaryStage) {
+        root.getChildren().add(world);
+        buildCamera();
+        buildAxes();
+        buildMolecule();
+
+        Scene scene = new Scene(root, 1024, 768, true);
+        scene.setFill(Color.GREY);
+        scene.setOnKeyPressed(this::handleKeyEvent);
+        handleMouse(scene);
+
+        primaryStage.setTitle("Molecule Sample Application");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        scene.setCamera(camera);
+
+    }
+
     private void buildAxes() {
         final PhongMaterial redMaterial = new PhongMaterial(Color.DARKRED);
         redMaterial.setSpecularColor(Color.RED);
@@ -160,6 +180,16 @@ public class MoleculeSampleApp extends Application {
         world.getChildren().addAll(moleculeGroup);
     }
 
+    private double getModifier(MouseEvent me) {
+        if (me.isShiftDown()) {
+            return 10.0;
+        }
+        if (me.isControlDown()) {
+            return 0.1;
+        }
+        return 1.0;
+    }
+
     private void handleKeyEvent(KeyEvent event) {
         switch (event.getCode()) {
             case Z:
@@ -188,46 +218,6 @@ public class MoleculeSampleApp extends Application {
                 break;
             default:
                 break;
-        }
-    }
-
-    private void reset(KeyEvent event) {
-        if (event.isShiftDown()) {
-            cameraXform.setRy(0.0);
-            cameraXform.setRx(0.0);
-            camera.setTranslateZ(-300.0);
-        }
-        cameraXform2.setTx(0.0);
-        cameraXform2.setTy(0.0);
-    }
-
-    private void toggleAnimation() {
-        if (timelinePlaying) {
-            timeline.pause();
-            timelinePlaying = false;
-        } else {
-            timeline.play();
-            timelinePlaying = true;
-        }
-    }
-
-    private void toggleMoleculeVisible(KeyEvent event) {
-        if (event.isControlDown()) {
-            if (moleculeGroup.isVisible()) {
-                moleculeGroup.setVisible(false);
-            } else {
-                moleculeGroup.setVisible(true);
-            }
-        }
-    }
-
-    private void toggleAxisVisible(KeyEvent event) {
-        if (event.isControlDown()) {
-            if (axisGroup.isVisible()) {
-                axisGroup.setVisible(false);
-            } else {
-                axisGroup.setVisible(true);
-            }
         }
     }
 
@@ -263,16 +253,6 @@ public class MoleculeSampleApp extends Application {
         }
     }
 
-    private double getModifier(MouseEvent me) {
-        if (me.isShiftDown()) {
-            return 10.0;
-        }
-        if (me.isControlDown()) {
-            return 0.1;
-        }
-        return 1.0;
-    }
-
     private void leftAndRightMovement(KeyEvent event, int i) {
         if (event.isControlDown() && event.isShiftDown()) {
             cameraXform2.setTx(cameraXform2.getTx() + i * 10.0 * CONTROL_MULTIPLIER);
@@ -285,24 +265,44 @@ public class MoleculeSampleApp extends Application {
         }
     }
 
-    @Override
-    public void start(Stage primaryStage) {
-        root.getChildren().add(world);
-        buildCamera();
-        buildAxes();
-        buildMolecule();
+    private void reset(KeyEvent event) {
+        if (event.isShiftDown()) {
+            cameraXform.setRy(0.0);
+            cameraXform.setRx(0.0);
+            camera.setTranslateZ(-300.0);
+        }
+        cameraXform2.setTx(0.0);
+        cameraXform2.setTy(0.0);
+    }
 
-        Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.GREY);
-        scene.setOnKeyPressed(this::handleKeyEvent);
-        handleMouse(scene);
+    private void toggleAnimation() {
+        if (timelinePlaying) {
+            timeline.pause();
+            timelinePlaying = false;
+        } else {
+            timeline.play();
+            timelinePlaying = true;
+        }
+    }
 
-        primaryStage.setTitle("Molecule Sample Application");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    private void toggleAxisVisible(KeyEvent event) {
+        if (event.isControlDown()) {
+            if (axisGroup.isVisible()) {
+                axisGroup.setVisible(false);
+            } else {
+                axisGroup.setVisible(true);
+            }
+        }
+    }
 
-        scene.setCamera(camera);
-
+    private void toggleMoleculeVisible(KeyEvent event) {
+        if (event.isControlDown()) {
+            if (moleculeGroup.isVisible()) {
+                moleculeGroup.setVisible(false);
+            } else {
+                moleculeGroup.setVisible(true);
+            }
+        }
     }
 
     private void upAndDownMovement(KeyEvent event, int i) {

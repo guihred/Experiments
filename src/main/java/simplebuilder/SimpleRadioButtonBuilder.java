@@ -12,6 +12,11 @@ public class SimpleRadioButtonBuilder extends SimpleRegionBuilder<RadioButton, S
 		radioButton = region;
 	}
 
+	public SimpleRadioButtonBuilder selected(boolean toggleGrp) {
+		radioButton.setSelected(toggleGrp);
+		return this;
+	}
+
 	public SimpleRadioButtonBuilder text(String string) {
 		radioButton.setText(string);
 		return this;
@@ -19,11 +24,6 @@ public class SimpleRadioButtonBuilder extends SimpleRegionBuilder<RadioButton, S
 
 	public SimpleRadioButtonBuilder toggleGroup(ToggleGroup toggleGrp) {
 		radioButton.setToggleGroup(toggleGrp);
-		return this;
-	}
-
-	public SimpleRadioButtonBuilder selected(boolean toggleGrp) {
-		radioButton.setSelected(toggleGrp);
 		return this;
 	}
 

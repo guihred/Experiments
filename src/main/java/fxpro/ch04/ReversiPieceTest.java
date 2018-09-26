@@ -15,10 +15,6 @@ import javafx.stage.Stage;
 
 public class ReversiPieceTest extends Application {
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
 		Node white = new StackPane(new ReversiSquare(), new ReversiPiece(Owner.WHITE));
@@ -27,5 +23,9 @@ public class ReversiPieceTest extends Application {
 		HBox.setHgrow(white, Priority.ALWAYS);
 		HBox.setHgrow(black, Priority.ALWAYS);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

@@ -89,8 +89,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
     }
 
 	private static boolean isNotProxied() {
-		boolean notProxied = !new File(CERTIFICATION_FILE).exists();
-		return notProxied;
+		return !new File(CERTIFICATION_FILE).exists();
 	}
 
     @Override

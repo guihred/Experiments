@@ -37,12 +37,33 @@ public final class TermFrequency {
 
 	}
 
-	public static double getTermFrequency(String t, File d) {
-		long freq = mapaDocumentos.get(d).getOrDefault(t, 0L);
-		if (freq == 0) {
-			return 0;
+	public static Map<String, Long> getFrequencyMap(File f) {
+		Map<String, Long> map = new ConcurrentHashMap<>();
+        try (BufferedReader buff = Files.newBufferedReader(f.toPath())) {
+
+			String readLine;
+			do {
+				readLine = buff.readLine();
+				if (readLine != null) {
+					String[] split = readLine.split(REGEX);
+					List<String> asList = Arrays.asList(split);
+					asList.stream().parallel().reduce(map, (mapa, str) -> {
+						if (str.isEmpty()) {
+							return mapa;
+						}
+						String str2 = str.toLowerCase();
+						if (!mapa.containsKey(str2)) {
+							mapa.put(str2, 1L);
+						}
+						mapa.put(str2, mapa.get(str2) + 1);
+						return mapa;
+					}, (m1, m2) -> m1);
+				}
+			} while (readLine != null);
+		} catch (Exception e) {
+            LOGGER.error("", e);
 		}
-		return 1 + Math.log(freq);
+		return map;
 	}
 
 	public static double getInvertDocumentFrequency(String t) {
@@ -75,33 +96,12 @@ public final class TermFrequency {
 		return mapaDocumentos;
 	}
 
-    public static Map<String, Long> getFrequencyMap(File f) {
-		Map<String, Long> map = new ConcurrentHashMap<>();
-        try (BufferedReader buff = Files.newBufferedReader(f.toPath())) {
-
-			String readLine;
-			do {
-				readLine = buff.readLine();
-				if (readLine != null) {
-					String[] split = readLine.split(REGEX);
-					List<String> asList = Arrays.asList(split);
-					asList.stream().parallel().reduce(map, (mapa, str) -> {
-						if (str.isEmpty()) {
-							return mapa;
-						}
-						String str2 = str.toLowerCase();
-						if (!mapa.containsKey(str2)) {
-							mapa.put(str2, 1L);
-						}
-						mapa.put(str2, mapa.get(str2) + 1);
-						return mapa;
-					}, (m1, m2) -> m1);
-				}
-			} while (readLine != null);
-		} catch (Exception e) {
-            LOGGER.error("", e);
+    public static double getTermFrequency(String t, File d) {
+		long freq = mapaDocumentos.get(d).getOrDefault(t, 0L);
+		if (freq == 0) {
+			return 0;
 		}
-		return map;
+		return 1 + Math.log(freq);
 	}
 
 }

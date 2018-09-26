@@ -9,10 +9,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class EarthCubeMain extends Application {
-	public static void main(String[] args) {
-		Application.launch(EarthCubeMain.class, args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
 		CubeNode cube = new CubeNode();
@@ -30,5 +26,9 @@ public class EarthCubeMain extends Application {
 		primaryStage.show();
 
 		cube.playShowMap();
+	}
+
+	public static void main(String[] args) {
+		Application.launch(EarthCubeMain.class, args);
 	}
 }

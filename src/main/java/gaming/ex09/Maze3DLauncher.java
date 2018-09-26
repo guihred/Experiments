@@ -18,7 +18,30 @@ import javafx.stage.Stage;
 public class Maze3DLauncher extends Application {
 
 
-    private void handleKeyboard(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera) {
+    @Override
+    public void start(Stage stage) throws Exception {
+        PerspectiveCamera camera = new PerspectiveCamera(true);
+        GridPane root = new GridPane();
+        camera.setNearClip(0.01);
+        camera.setFarClip(1000.0);
+        final Translate translate = new Translate(50, 0, 50);
+        final Rotate rotate = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
+        camera.getTransforms().addAll(translate, rotate);
+
+        Scene scene = new Scene(root, 400, 600, true, SceneAntialiasing.BALANCED);
+		Maze3DModel.create(root);
+        root.getTransforms().addAll(new Rotate(90, 0, 0, 0, Rotate.X_AXIS));
+
+        handleKeyboard(scene, translate, rotate, camera);
+        stage.setScene(scene);
+        scene.setCamera(camera);
+        stage.setWidth(400);
+        stage.setHeight(600);
+        stage.show();
+
+    }
+
+	private void handleKeyboard(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera) {
 
         scene.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
 			private double mouseYold;
@@ -39,7 +62,7 @@ public class Maze3DLauncher extends Application {
 		scene.setOnKeyPressed((KeyEvent event) -> handleKeyPressed(scene, translate, rotate, camera, event));
     }
 
-	private void handleKeyPressed(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera,
+    private void handleKeyPressed(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera,
 			KeyEvent event) {
 		int change = 1;
 		KeyCode keycode = event.getCode();
@@ -92,29 +115,6 @@ public class Maze3DLauncher extends Application {
 		    camera.setFieldOfView(camera.getFieldOfView() - change);
 		}
 	}
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        PerspectiveCamera camera = new PerspectiveCamera(true);
-        GridPane root = new GridPane();
-        camera.setNearClip(0.01);
-        camera.setFarClip(1000.0);
-        final Translate translate = new Translate(50, 0, 50);
-        final Rotate rotate = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
-        camera.getTransforms().addAll(translate, rotate);
-
-        Scene scene = new Scene(root, 400, 600, true, SceneAntialiasing.BALANCED);
-		Maze3DModel.create(root);
-        root.getTransforms().addAll(new Rotate(90, 0, 0, 0, Rotate.X_AXIS));
-
-        handleKeyboard(scene, translate, rotate, camera);
-        stage.setScene(scene);
-        scene.setCamera(camera);
-        stage.setWidth(400);
-        stage.setHeight(600);
-        stage.show();
-
-    }
 
     public static void main(String[] args) {
         launch(args);

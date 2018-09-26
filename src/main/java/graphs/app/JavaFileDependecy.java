@@ -26,6 +26,21 @@ public class JavaFileDependecy implements HasLogging {
         this.javaPath = javaPath;
     }
 
+    public List<String> getClasses() {
+        if (classes == null) {
+            try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
+                classes = lines
+                        .map(JavaFileDependecy::linesMatches)
+                        .flatMap(List<String>::stream)
+                        .filter(e -> !getName().equals(e))
+                        .collect(Collectors.toList());
+
+            } catch (IOException e) {
+                getLogger().error("", e);
+            }
+        }
+        return classes;
+    }
     public List<String> getDependencies() {
         if (dependencies == null) {
             try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
@@ -38,28 +53,6 @@ public class JavaFileDependecy implements HasLogging {
             }
         }
         return dependencies;
-    }
-    public List<String> getClasses() {
-        if (classes == null) {
-            try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
-                classes = lines
-                        .map(this::linesMatches).flatMap(List<String>::stream).filter(e -> !getName().equals(e))
-                        .collect(Collectors.toList());
-
-            } catch (IOException e) {
-                getLogger().error("", e);
-            }
-        }
-        return classes;
-    }
-
-    private List<String> linesMatches(String line) {
-        Matcher matcher = Pattern.compile(CLASS_REGEX).matcher(line);
-        List<String> linkedList = new LinkedList<>();
-        while (matcher.find()) {
-            linkedList.add(matcher.group(1));
-        }
-        return linkedList;
     }
 
     public String getName() {
@@ -84,5 +77,14 @@ public class JavaFileDependecy implements HasLogging {
     @Override
     public String toString() {
         return getPackage() + "." + getName() + " " + getClasses();
+    }
+
+    private static List<String> linesMatches(String line) {
+        Matcher matcher = Pattern.compile(CLASS_REGEX).matcher(line);
+        List<String> linkedList = new LinkedList<>();
+        while (matcher.find()) {
+            linkedList.add(matcher.group(1));
+        }
+        return linkedList;
     }
 }

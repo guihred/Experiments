@@ -43,15 +43,6 @@ public class SolitaireCard extends Region {
 		setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-radius: 5;");
     }
 
-	public void setShown(Boolean value) {
-		shown.set(value);
-	}
-
-	@Override
-	public String toString() {
-		return getNumber().getRepresentation() + " " + suit;
-	}
-
 	public SolitaireNumber getNumber() {
 		return number;
 	}
@@ -62,6 +53,15 @@ public class SolitaireCard extends Region {
 
 	public boolean isShown() {
 		return shown.get();
+	}
+
+	public void setShown(Boolean value) {
+		shown.set(value);
+	}
+
+	@Override
+	public String toString() {
+		return getNumber().getRepresentation() + " " + suit;
 	}
 
 }

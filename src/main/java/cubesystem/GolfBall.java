@@ -62,6 +62,102 @@ public class GolfBall extends Application {
 		return spheres;
 	}
 
+	public static void main(String[] args) {
+
+		launch(args);
+	}
+
+    private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
+		Rotate rotate = new Rotate(180, centerOtherSphere);
+		final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
+		double distance = centerOtherSphere.distance(point3D);
+		if (distance <= radius) {
+			Point3D subtract = centerOtherSphere.subtract(point3D);
+			Point3D transform = rotate.transform(subtract);
+			points[pPos + 0] = (float) transform.getX();
+			points[pPos + 1] = (float) transform.getY();
+			points[pPos + 2] = (float) transform.getZ();
+
+		}
+	}
+
+    private static int[] createFaces(final int division, final int div2, final int nFaces, int pS) {
+        int[] faces = new int[nFaces * 6];
+		int fIndex = 0;
+		for (int y = 0; y < div2 - 2; ++y) {
+			for (int x = 0; x < division; ++x) {
+				int p0 = y * division + x;
+				int p1 = p0 + 1;
+				int p2 = p0 + division;
+				int p3 = p1 + division;
+
+				int t0 = p0 + y;
+				int t1 = t0 + 1;
+				int t2 = t0 + division + 1;
+				int t3 = t1 + division + 1;
+
+				// add p0, p1, p2
+
+				faces[fIndex + 0] = p0;
+				faces[fIndex + 1] = t0;
+                faces[fIndex + 2] = index(division, p1);
+				faces[fIndex + 3] = t1;
+				faces[fIndex + 4] = p2;
+				faces[fIndex + 5] = t2;
+				fIndex += 6;
+
+				// add p3, p2, p1
+
+                faces[fIndex + 0] = index(division, p3);
+				faces[fIndex + 1] = t3;
+				faces[fIndex + 2] = p2;
+				faces[fIndex + 3] = t2;
+                faces[fIndex + 4] = index(division, p1);
+				faces[fIndex + 5] = t1;
+				fIndex += 6;
+			}
+		}
+
+		int p0 = pS;
+		int tB = (div2 - 1) * (division + 1);
+		for (int x = 0; x < division; ++x) {
+            int p2 = x;
+            int p1 = x + 1;
+            int t0 = tB + x;
+			faces[fIndex + 0] = p0;
+			faces[fIndex + 1] = t0;
+			faces[fIndex + 2] = p1 == division ? 0 : p1;
+			faces[fIndex + 3] = p1;
+			faces[fIndex + 4] = p2;
+			faces[fIndex + 5] = p2;
+			fIndex += 6;
+		}
+
+		p0 = p0 + 1;
+		tB = tB + division;
+		int pB = (div2 - 2) * division;
+
+		for (int x = 0; x < division; ++x) {
+            int p1 = pB + x;
+            int p2 = pB + x + 1;
+            int t0 = tB + x;
+            int t1 = (div2 - 2) * (division + 1) + x;
+            int t2 = t1 + 1;
+			faces[fIndex + 0] = p0;
+			faces[fIndex + 1] = t0;
+			faces[fIndex + 2] = p1;
+			faces[fIndex + 3] = t1;
+            faces[fIndex + 4] = index(division, p2);
+			faces[fIndex + 5] = t2;
+			fIndex += 6;
+		}
+        return faces;
+    }
+
+	private static int index(final int division, int p3) {
+        return p3 % division == 0 ? p3 - division : p3;
+    }
+
 	static TriangleMesh createMesh(final int division, final float radius, final List<Point3D> spheres) {
 
 		final int div2 = division / 2;
@@ -142,101 +238,5 @@ public class GolfBall extends Application {
 
         return m;
     }
-
-    private static int[] createFaces(final int division, final int div2, final int nFaces, int pS) {
-        int[] faces = new int[nFaces * 6];
-		int fIndex = 0;
-		for (int y = 0; y < div2 - 2; ++y) {
-			for (int x = 0; x < division; ++x) {
-				int p0 = y * division + x;
-				int p1 = p0 + 1;
-				int p2 = p0 + division;
-				int p3 = p1 + division;
-
-				int t0 = p0 + y;
-				int t1 = t0 + 1;
-				int t2 = t0 + division + 1;
-				int t3 = t1 + division + 1;
-
-				// add p0, p1, p2
-
-				faces[fIndex + 0] = p0;
-				faces[fIndex + 1] = t0;
-                faces[fIndex + 2] = index(division, p1);
-				faces[fIndex + 3] = t1;
-				faces[fIndex + 4] = p2;
-				faces[fIndex + 5] = t2;
-				fIndex += 6;
-
-				// add p3, p2, p1
-
-                faces[fIndex + 0] = index(division, p3);
-				faces[fIndex + 1] = t3;
-				faces[fIndex + 2] = p2;
-				faces[fIndex + 3] = t2;
-                faces[fIndex + 4] = index(division, p1);
-				faces[fIndex + 5] = t1;
-				fIndex += 6;
-			}
-		}
-
-		int p0 = pS;
-		int tB = (div2 - 1) * (division + 1);
-		for (int x = 0; x < division; ++x) {
-            int p2 = x;
-            int p1 = x + 1;
-            int t0 = tB + x;
-			faces[fIndex + 0] = p0;
-			faces[fIndex + 1] = t0;
-			faces[fIndex + 2] = p1 == division ? 0 : p1;
-			faces[fIndex + 3] = p1;
-			faces[fIndex + 4] = p2;
-			faces[fIndex + 5] = p2;
-			fIndex += 6;
-		}
-
-		p0 = p0 + 1;
-		tB = tB + division;
-		int pB = (div2 - 2) * division;
-
-		for (int x = 0; x < division; ++x) {
-            int p1 = pB + x;
-            int p2 = pB + x + 1;
-            int t0 = tB + x;
-            int t1 = (div2 - 2) * (division + 1) + x;
-            int t2 = t1 + 1;
-			faces[fIndex + 0] = p0;
-			faces[fIndex + 1] = t0;
-			faces[fIndex + 2] = p1;
-			faces[fIndex + 3] = t1;
-            faces[fIndex + 4] = index(division, p2);
-			faces[fIndex + 5] = t2;
-			fIndex += 6;
-		}
-        return faces;
-    }
-
-    private static int index(final int division, int p3) {
-        return p3 % division == 0 ? p3 - division : p3;
-    }
-
-	private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
-		Rotate rotate = new Rotate(180, centerOtherSphere);
-		final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
-		double distance = centerOtherSphere.distance(point3D);
-		if (distance <= radius) {
-			Point3D subtract = centerOtherSphere.subtract(point3D);
-			Point3D transform = rotate.transform(subtract);
-			points[pPos + 0] = (float) transform.getX();
-			points[pPos + 1] = (float) transform.getY();
-			points[pPos + 2] = (float) transform.getZ();
-
-		}
-	}
-
-	public static void main(String[] args) {
-
-		launch(args);
-	}
 
 }

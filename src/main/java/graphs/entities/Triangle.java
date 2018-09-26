@@ -18,24 +18,6 @@ public class Triangle {
 		return Stream.of(a, b, c);
 	}
 
-	@Override
-	public String toString() {
-		return Arrays.toString(new Ponto[] { a, b, c });
-	}
-
-	private static Ponto computeClosestPoint(Linha edge, Ponto point) {
-		Ponto ab = edge.getB().sub(edge.getA());
-		double t = point.sub(edge.getA()).dot(ab) / ab.dot(ab);
-
-		if (t < 0.0D) {
-			t = 0.0D;
-		} else if (t > 1.0D) {
-			t = 1.0D;
-		}
-
-		return edge.getA().add(ab.mult(t));
-	}
-
 	public boolean contains(Ponto point) {
 		double pab = point.sub(a).cross(b.sub(a));
 		double pbc = point.sub(b).cross(c.sub(b));
@@ -58,6 +40,18 @@ public class Triangle {
 		return edges[0];
 	}
 
+	public Ponto getA() {
+		return a;
+	}
+
+	public Ponto getB() {
+		return b;
+	}
+
+	public Ponto getC() {
+		return c;
+	}
+
 	public Ponto getNoneEdgeVertex(Linha edge) {
 		if (a != edge.getA() && a != edge.getB()) {
 			return a;
@@ -68,10 +62,6 @@ public class Triangle {
 		}
 
 		return null;
-	}
-
-	private static boolean hasSameSign(double a1, double b1) {
-		return Math.signum(a1) == Math.signum(b1);
 	}
 
 	public boolean hasVertex(Ponto vertex) {
@@ -116,28 +106,38 @@ public class Triangle {
 		return det < 0.0D;
 	}
 
-	public Ponto getA() {
-		return a;
-	}
-
 	public void setA(Ponto a) {
 		this.a = a;
-	}
-
-	public Ponto getB() {
-		return b;
 	}
 
 	public void setB(Ponto b) {
 		this.b = b;
 	}
 
-	public Ponto getC() {
-		return c;
-	}
-
 	public void setC(Ponto c) {
 		this.c = c;
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(new Ponto[] { a, b, c });
+	}
+
+	private static Ponto computeClosestPoint(Linha edge, Ponto point) {
+		Ponto ab = edge.getB().sub(edge.getA());
+		double t = point.sub(edge.getA()).dot(ab) / ab.dot(ab);
+
+		if (t < 0.0D) {
+			t = 0.0D;
+		} else if (t > 1.0D) {
+			t = 1.0D;
+		}
+
+		return edge.getA().add(ab.mult(t));
+	}
+
+	private static boolean hasSameSign(double a1, double b1) {
+		return Math.signum(a1) == Math.signum(b1);
 	}
 
 }

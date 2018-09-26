@@ -8,6 +8,25 @@ public class HibernateUtil {
     private static SessionFactory sessionFactory = buildSessionFactory();
     private static boolean shutdownEnabled;
 
+	public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null || sessionFactory.isClosed()) {
+            sessionFactory = buildSessionFactory();
+        }
+
+        return sessionFactory;
+	}
+
+	public static void setShutdownEnabled(boolean shutdownEnabled) {
+        HibernateUtil.shutdownEnabled = shutdownEnabled;
+    }
+
+    public static void shutdown() {
+        // Close caches and connection pools
+        if (shutdownEnabled && !getSessionFactory().isClosed()) {
+            getSessionFactory().close();
+        }
+	}
+
 	private static SessionFactory buildSessionFactory() {
 		try {
 			return new Configuration()
@@ -17,25 +36,6 @@ public class HibernateUtil {
 		} catch (Throwable ex) {
 			throw new ExceptionInInitializerError(ex);
 		}
-	}
-
-	public static SessionFactory getSessionFactory() {
-        if (sessionFactory == null || sessionFactory.isClosed()) {
-            sessionFactory = buildSessionFactory();
-        }
-
-        return sessionFactory;
-	}
-
-    public static void setShutdownEnabled(boolean shutdownEnabled) {
-        HibernateUtil.shutdownEnabled = shutdownEnabled;
-    }
-
-	public static void shutdown() {
-        // Close caches and connection pools
-        if (shutdownEnabled && !getSessionFactory().isClosed()) {
-            getSessionFactory().close();
-        }
 	}
 
 }

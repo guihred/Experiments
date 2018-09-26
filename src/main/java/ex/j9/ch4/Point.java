@@ -38,9 +38,8 @@ public class Point {
         return Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
+    public double getX() {
+        return x;
     }
 
     public double getY() {
@@ -48,12 +47,13 @@ public class Point {
     }
 
     @Override
-    public String toString() {
-        return getClass().getName() + "[y=" + y + ", x=" + x + "]";
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
-    public double getX() {
-        return x;
+    @Override
+    public String toString() {
+        return getClass().getName() + "[y=" + y + ", x=" + x + "]";
     }
 
 }

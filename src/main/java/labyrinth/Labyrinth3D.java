@@ -40,6 +40,27 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		initializeLabyrinth();
+		Scene scene = new Scene(root);
+		camera.setNearClip(0.1);
+		camera.setFarClip(1000.0);
+		camera.setTranslateZ(-1000);
+		scene.setCamera(camera);
+
+		scene.setOnMouseClicked(e -> handleMouseClick());
+		camera.setTranslateY(camera.getTranslateY() - CAMERA_QUANTITY);
+		// End Step 2a
+		// Step 2b: Add a Movement Keyboard Handler
+		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+		scene.setOnKeyPressed(value);
+		scene.setOnKeyReleased(value::keyReleased);
+        primaryStage.setTitle("Labyrinth 3D");
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
 	private void handleMouseClick() {
 		String string = mapa[i][j];
 		if ("_".equals(string)) {
@@ -65,7 +86,6 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 			color = color == Color.RED ? Color.BLACK : Color.RED;
 		}
 	}
-
 	private void initializeLabyrinth() {
 		for (int k = mapa.length - 1; k >= 0; k--) {
 			for (int l = mapa[k].length - 1; l >= 0; l--) {
@@ -84,26 +104,6 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 				}
 			}
 		}
-	}
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		initializeLabyrinth();
-		Scene scene = new Scene(root);
-		camera.setNearClip(0.1);
-		camera.setFarClip(1000.0);
-		camera.setTranslateZ(-1000);
-		scene.setCamera(camera);
-
-		scene.setOnMouseClicked(e -> handleMouseClick());
-		camera.setTranslateY(camera.getTranslateY() - CAMERA_QUANTITY);
-		// End Step 2a
-		// Step 2b: Add a Movement Keyboard Handler
-		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
-		scene.setOnKeyPressed(value);
-		scene.setOnKeyReleased(value::keyReleased);
-        primaryStage.setTitle("Labyrinth 3D");
-		primaryStage.setScene(scene);
-		primaryStage.show();
 	}
 
 	public static void main(String[] args) {

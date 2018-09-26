@@ -22,22 +22,23 @@ public class QuartoModel {
 	private final QuartoPiece[][] mapQuarto = new QuartoPiece[4][4];
 	private final List<QuartoPiece> pieces = new ArrayList<>();
 
-    final void reset() {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                getMapQuarto()[i][j] = null;
-            }
-        }
-        for (QuartoPiece piece : getPieces()) {
-            int j = piece.getNumber() % 4;
-            int k = piece.getNumber() / 4;
-            piece.setTranslateX(QuartoLauncher.getTranslate(j));
-            piece.setTranslateZ(QuartoLauncher.getTranslate(k));
-        }
+    public Circle[][] getMap() {
+		return map;
+	}
 
+    public QuartoPiece[][] getMapQuarto() {
+		return mapQuarto;
+	}
+
+    public List<QuartoPiece> getPieces() {
+		return pieces;
+	}
+
+    private boolean neighborsNotNull(int i, int j) {
+        return getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null || getMapQuarto()[i + 1][j + 1] == null;
     }
 
-    boolean checkEnd() {
+	boolean checkEnd() {
 		if (Stream.of(getMapQuarto()).filter(d -> Stream.of(d).noneMatch(Objects::isNull))
                 .map(d -> Stream.of(d).map(QuartoPiece::getNumber).collect(Collectors.toList()))
                 .anyMatch(QuartoModel::somethingInCommon)) {
@@ -75,11 +76,22 @@ public class QuartoModel {
         return false;
     }
 
-    private boolean neighborsNotNull(int i, int j) {
-        return getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null || getMapQuarto()[i + 1][j + 1] == null;
+	final void reset() {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                getMapQuarto()[i][j] = null;
+            }
+        }
+        for (QuartoPiece piece : getPieces()) {
+            int j = piece.getNumber() % 4;
+            int k = piece.getNumber() / 4;
+            piece.setTranslateX(QuartoLauncher.getTranslate(j));
+            piece.setTranslateZ(QuartoLauncher.getTranslate(k));
+        }
+
     }
 
-    private static boolean somethingInCommon(List<Integer> a) {
+	private static boolean somethingInCommon(List<Integer> a) {
 		int[] arr = new int[] { 1, 2, 4, 8 };
 		for (int k = 0; k < arr.length; k++) {
 		    int l = arr[k];
@@ -89,18 +101,6 @@ public class QuartoModel {
 		    }
 		}
 		return false;
-	}
-
-	public Circle[][] getMap() {
-		return map;
-	}
-
-	public QuartoPiece[][] getMapQuarto() {
-		return mapQuarto;
-	}
-
-	public List<QuartoPiece> getPieces() {
-		return pieces;
 	}
 
 }

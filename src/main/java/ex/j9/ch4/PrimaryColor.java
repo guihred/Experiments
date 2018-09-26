@@ -32,15 +32,15 @@ public enum PrimaryColor {
         this.blue = blue;
     }
 
-    public int getRed() {
-        return red;
+    public int getBlue() {
+        return blue;
     }
 
     public int getGreen() {
         return green;
     }
 
-    public int getBlue() {
-        return blue;
+    public int getRed() {
+        return red;
     }
 }

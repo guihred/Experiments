@@ -34,19 +34,6 @@ public class ContestQuestion extends BaseEntity implements HasImage {
 
     private String image;
 
-    public void appendExercise(String english) {
-        exercise = Objects.toString(exercise, "") + english;
-    }
-
-    public String getFormattedOptions() {
-        if(options==null) {
-            return "";
-        }
-        
-        return options.stream().map(ContestQuestionAnswer::getAnswer).collect(Collectors.joining("\n\n"));
-        
-    }
-
     public void addOption(ContestQuestionAnswer e) {
         if(options==null) {
             options= new ArrayList<>();
@@ -55,81 +42,8 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         
     }
 
-    public Contest getContest() {
-        return contest;
-    }
-
-    public String getExercise() {
-        return exercise;
-    }
-
-    @Override
-    public Integer getKey() {
-        return key;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public QuestionType getType() {
-        return type;
-    }
-
-    public void setContest(Contest contest) {
-        this.contest = contest;
-    }
-
-    public void setExercise(String exercise) {
-        this.exercise = exercise;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
-    public void setType(QuestionType type) {
-        this.type = type;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public List<ContestQuestionAnswer> getOptions() {
-        return options;
-    }
-
-    public void setOptions(List<ContestQuestionAnswer> options) {
-        this.options = options;
-    }
-
-    @Override
-    public String getImage() {
-        return image;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null && super.equals(obj) && ((ContestQuestion) obj).key == key;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key);
-    }
-
-    @Override
-    public void setImage(String image) {
-        this.image = image;
+    public void appendExercise(String english) {
+        exercise = Objects.toString(exercise, "") + english;
     }
 
     @Override
@@ -141,6 +55,60 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         }
 
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && super.equals(obj) && ((ContestQuestion) obj).key == key;
+    }
+
+    public Contest getContest() {
+        return contest;
+    }
+
+    public String getExercise() {
+        return exercise;
+    }
+
+    public String getFormattedOptions() {
+        if(options==null) {
+            return "";
+        }
+        
+        return options.stream().map(ContestQuestionAnswer::getAnswer).collect(Collectors.joining("\n\n"));
+        
+    }
+
+    @Override
+    public String getImage() {
+        return image;
+    }
+
+    @Override
+    public Integer getKey() {
+        return key;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public List<ContestQuestionAnswer> getOptions() {
+        return options;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public QuestionType getType() {
+        return type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key);
+    }
+
     @Override
     public boolean matches(String s0) {
         boolean matches = s0.matches(ContestReader.QUESTION_PATTERN);
@@ -149,6 +117,38 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         }
         String split = s0.replaceAll(ContestReader.QUESTION_PATTERN, "$1");
         return split.equals(number + "");
+    }
+
+    public void setContest(Contest contest) {
+        this.contest = contest;
+    }
+
+    public void setExercise(String exercise) {
+        this.exercise = exercise;
+    }
+
+    @Override
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setKey(Integer key) {
+        this.key = key;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public void setOptions(List<ContestQuestionAnswer> options) {
+        this.options = options;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+    public void setType(QuestionType type) {
+        this.type = type;
     }
 
 }

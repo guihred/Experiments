@@ -110,42 +110,20 @@ public class PongLauncher extends Application {
 		pongComponents.requestFocus();
 	});
 
-    /**
-     * Sets the initial starting positions of the ball and paddles
-     */
-    void initialize() {
-        centerX.setValue(250);
-        centerY.setValue(250);
-        leftPaddleY.setValue(235);
-        rightPaddleY.setValue(235);
-        startVisible.set(true);
-        pongComponents.requestFocus();
+    public double getLeftPaddleDragAnchorY() {
+        return leftPaddleDelta.getY();
     }
 
-    /**
-     * Checks whether or not the ball has collided with either the paddles,
-     * topWall, or bottomWall. If the ball hits the wall behind the paddles, the
-     * game is over.
-     */
-    void checkForCollision() {
-        if (ball.intersects(rightWall.getBoundsInLocal())
-                || ball.intersects(leftWall.getBoundsInLocal())) {
-            pongAnimation.stop();
-            initialize();
-        } else if (ball.intersects(bottomWall.getBoundsInLocal())
-                || ball.intersects(topWall.getBoundsInLocal())) {
-            movingDown = !movingDown;
-		} else if (ball.intersects(leftPaddle.getBoundsInParent()) && !movingRight
-				|| ball.intersects(rightPaddle.getBoundsInParent()) && movingRight) {
-            movingRight = !movingRight;
-        }
+    public double getRightPaddleDragAnchorY() {
+        return leftPaddleDelta.getX();
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        Application.launch(args);
+    public void setLeftPaddleDragAnchorY(double leftPaddleDragAnchorY) {
+        leftPaddleDelta.setY(leftPaddleDragAnchorY);
+    }
+
+    public void setRightPaddleDragAnchorY(double rightPaddleDragAnchorY) {
+        leftPaddleDelta.setX(rightPaddleDragAnchorY);
     }
 
     @Override
@@ -212,19 +190,41 @@ public class PongLauncher extends Application {
         stage.show();
     }
 
-    public double getLeftPaddleDragAnchorY() {
-        return leftPaddleDelta.getY();
+    /**
+     * Checks whether or not the ball has collided with either the paddles,
+     * topWall, or bottomWall. If the ball hits the wall behind the paddles, the
+     * game is over.
+     */
+    void checkForCollision() {
+        if (ball.intersects(rightWall.getBoundsInLocal())
+                || ball.intersects(leftWall.getBoundsInLocal())) {
+            pongAnimation.stop();
+            initialize();
+        } else if (ball.intersects(bottomWall.getBoundsInLocal())
+                || ball.intersects(topWall.getBoundsInLocal())) {
+            movingDown = !movingDown;
+		} else if (ball.intersects(leftPaddle.getBoundsInParent()) && !movingRight
+				|| ball.intersects(rightPaddle.getBoundsInParent()) && movingRight) {
+            movingRight = !movingRight;
+        }
     }
 
-    public void setLeftPaddleDragAnchorY(double leftPaddleDragAnchorY) {
-        leftPaddleDelta.setY(leftPaddleDragAnchorY);
+    /**
+     * Sets the initial starting positions of the ball and paddles
+     */
+    void initialize() {
+        centerX.setValue(250);
+        centerY.setValue(250);
+        leftPaddleY.setValue(235);
+        rightPaddleY.setValue(235);
+        startVisible.set(true);
+        pongComponents.requestFocus();
     }
 
-    public double getRightPaddleDragAnchorY() {
-        return leftPaddleDelta.getX();
-    }
-
-    public void setRightPaddleDragAnchorY(double rightPaddleDragAnchorY) {
-        leftPaddleDelta.setX(rightPaddleDragAnchorY);
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        Application.launch(args);
     }
 }

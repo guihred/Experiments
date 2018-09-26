@@ -92,41 +92,21 @@ public class PacmanModel implements HasLogging {
 
 	}
 
-	private void handleKeyPressed(KeyEvent e) {
-		KeyCode code = e.getCode();
-		switch (code) {
-		case DOWN:
-			pacman.turn(PacmanDirection.DOWN);
-			break;
-		case UP:
-			pacman.turn(PacmanDirection.UP);
-			break;
-		case LEFT:
-			pacman.turn(PacmanDirection.LEFT);
-			break;
-		case RIGHT:
-			pacman.turn(PacmanDirection.RIGHT);
-			break;
-		case SPACE:
-			pacman.turn(null);
-			break;
-		default:
-			break;
-
-		}
+	public void addRectangle(Group group, double value, double value2, int width, int height, Color blue) {
+		Rectangle rectangle = new Rectangle(width, height, blue);
+		rectangle.setLayoutX(value);
+		rectangle.setLayoutY(value2);
+		group.getChildren().add(rectangle);
 	}
 
+	public IntegerProperty getPoints() {
+		return points;
+	}
 	private void addRectangle(Group group, double value, double value2, double width, double height) {
 		Rectangle rectangle = new Rectangle(width, height, Color.BLUE);
 		rectangle.setLayoutX(value);
 		rectangle.setLayoutY(value2);
 		
-		group.getChildren().add(rectangle);
-	}
-	public void addRectangle(Group group, double value, double value2, int width, int height, Color blue) {
-		Rectangle rectangle = new Rectangle(width, height, blue);
-		rectangle.setLayoutX(value);
-		rectangle.setLayoutY(value2);
 		group.getChildren().add(rectangle);
 	}
 
@@ -205,6 +185,34 @@ public class PacmanModel implements HasLogging {
 		}
 	}
 
+	private void handleKeyPressed(KeyEvent e) {
+		KeyCode code = e.getCode();
+		switch (code) {
+		case DOWN:
+			pacman.turn(PacmanDirection.DOWN);
+			break;
+		case UP:
+			pacman.turn(PacmanDirection.UP);
+			break;
+		case LEFT:
+			pacman.turn(PacmanDirection.LEFT);
+			break;
+		case RIGHT:
+			pacman.turn(PacmanDirection.RIGHT);
+			break;
+		case SPACE:
+			pacman.turn(null);
+			break;
+		default:
+			break;
+
+		}
+	}
+
+	public static PacmanModel create(Group group, Scene scene) {
+		return new PacmanModel(group, scene);
+	}
+
 	private static MazeSquare[][] initializeMaze() {
 		MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
 		for (int i = 0; i < MAZE_SIZE; i++) {
@@ -225,14 +233,6 @@ public class PacmanModel implements HasLogging {
 			}
 		}
 		return maze;
-	}
-
-	public static PacmanModel create(Group group, Scene scene) {
-		return new PacmanModel(group, scene);
-	}
-
-	public IntegerProperty getPoints() {
-		return points;
 	}
 
 }

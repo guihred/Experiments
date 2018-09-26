@@ -29,7 +29,7 @@ public class LayerLayout implements Layout {
 
     }
 
-    public static void displayInLayers(List<Cell> cells, List<Edge> allEdges) {
+    public static void displayInLayers(Iterable<Cell> cells, List<Edge> allEdges) {
         Map<Cell, Integer> layers = new HashMap<>();
         cells.forEach(e -> layers.put(e, 0));
         Collections.shuffle(allEdges);

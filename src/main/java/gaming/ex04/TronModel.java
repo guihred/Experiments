@@ -48,7 +48,19 @@ public class TronModel {
         updateMap();
     }
 
-    public final void reset() {
+    public TronDirection getDirection() {
+		return direction;
+	}
+
+    public TronSquare[][] getMap() {
+		return map;
+	}
+
+	public ObservableList<TronSquare> getSnake() {
+		return snake;
+	}
+
+	public final void reset() {
         getSnake().clear();
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
@@ -65,7 +77,11 @@ public class TronModel {
 
     }
 
-    public final boolean updateMap() {
+	public void setDirection(TronDirection direction) {
+		this.direction = direction;
+	}
+
+	public final boolean updateMap() {
         final TronSquare head = getSnake().get(0);
         int i = head.getI();
         int j = head.getJ();
@@ -105,22 +121,6 @@ public class TronModel {
         
         return false;
     }
-
-	public TronSquare[][] getMap() {
-		return map;
-	}
-
-	public ObservableList<TronSquare> getSnake() {
-		return snake;
-	}
-
-	public TronDirection getDirection() {
-		return direction;
-	}
-
-	public void setDirection(TronDirection direction) {
-		this.direction = direction;
-	}
 
 
     

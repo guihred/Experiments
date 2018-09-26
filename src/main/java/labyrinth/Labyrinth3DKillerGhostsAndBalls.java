@@ -54,90 +54,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	private Group root = new Group();
 
 
-    public static void createLabyrinth(Group root1, Collection<LabyrinthWall> labyrinthWalls, Sphere[][] balls,
-            String[][] mapa) {
-		for (int i = 0; i < mapa.length; i++) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE);
-				wall.setTranslateX(i * SIZE);
-				wall.setTranslateZ(j * SIZE);
-				if ("_".equals(string)) {
-					wall.getRy().setAngle(90);
-				}
-				labyrinthWalls.add(wall);
-				root1.getChildren().add(wall);
-				Sphere ball = new Sphere(SIZE / 20);
-				balls[i][j] = ball;
-				ball.setMaterial(new PhongMaterial(Color.YELLOW));
-				ball.setTranslateZ(j * SIZE);
-				ball.setTranslateX(i * SIZE);
-				root1.getChildren().add(ball);
-
-			}
-		}
-	}
-
-	@Override
+    @Override
 	public void endKeyboard() {
         end(camera, root, balls, ghostCount, movimentacao);
-	}
-
-    public static void end(PerspectiveCamera camera, Group root, Sphere[][] balls, SimpleIntegerProperty ghostCount,
-            MovimentacaoAleatoria movimentacao) {
-        Sphere ballGot = CommomLabyrinth.checkBalls(camera.getBoundsInParent(), balls);
-        if (ballGot == null) {
-            return;
-        }
-        root.getChildren().remove(ballGot);
-        for (int i = 0; i < balls.length; i++) {
-            for (int j = 0; j < balls[i].length; j++) {
-                if (ballGot == balls[i][j]) {
-                    balls[i][j] = null;
-                }
-            }
-        }
-        ghostCount.set(ghostCount.get() - 1);
-        if (ghostCount.get() == 0) {
-            movimentacao.stop();
-            Stage dialogStage = new Stage();
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            Button button = new Button("Ok.");
-            button.setOnAction(e -> {
-                movimentacao.start();
-                camera.setTranslateZ(0);
-                camera.setTranslateY(0);
-                camera.setTranslateX(0);
-                dialogStage.close();
-            });
-            VBox vbox = new VBox(new Text("Você Venceu"), button);
-            vbox.setAlignment(Pos.CENTER);
-            vbox.setPadding(new Insets(5));
-            dialogStage.setScene(new Scene(vbox));
-            dialogStage.show();
-        }
-    }
-
-	private MeshView generateGhost(String arquivo, Color animalColor) {
-        MeshView animal = new MeshView(ResourceFXUtils.importStlMesh(arquivo));
-		PhongMaterial sample = new PhongMaterial(animalColor);
-		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
-		animal.setMaterial(sample);
-		animal.setTranslateY(14);
-
-        int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
-		animal.setTranslateZ(posicaoInicialZ);
-        int posicaoInicialX = random.nextInt(MAPA.length * SIZE);
-		animal.setTranslateX(posicaoInicialX);
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
-		}
-		animal.setScaleX(0.4);
-		animal.setScaleY(1);
-		animal.setScaleZ(0.4);
-		return animal;
 	}
 
 	@Override
@@ -145,7 +64,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		return camera;
 	}
 
-	@Override
+    @Override
 	public Collection<LabyrinthWall> getLabyrinthWalls() {
 		return labyrinthWalls;
 	}
@@ -208,6 +127,87 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		primaryStage.setScene(sc);
 		primaryStage.show();
 	}
+
+	private MeshView generateGhost(String arquivo, Color animalColor) {
+        MeshView animal = new MeshView(ResourceFXUtils.importStlMesh(arquivo));
+		PhongMaterial sample = new PhongMaterial(animalColor);
+		sample.setSpecularColor(lightColor);
+		sample.setSpecularPower(16);
+		animal.setMaterial(sample);
+		animal.setTranslateY(14);
+
+        int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
+		animal.setTranslateZ(posicaoInicialZ);
+        int posicaoInicialX = random.nextInt(MAPA.length * SIZE);
+		animal.setTranslateX(posicaoInicialX);
+		while (checkColision(animal.getBoundsInParent())) {
+			animal.setTranslateZ(animal.getTranslateZ() + 1);
+			animal.setTranslateX(animal.getTranslateX() + 1);
+		}
+		animal.setScaleX(0.4);
+		animal.setScaleY(1);
+		animal.setScaleZ(0.4);
+		return animal;
+	}
+
+	public static void createLabyrinth(Group root1, Collection<LabyrinthWall> labyrinthWalls, Sphere[][] balls,
+            String[][] mapa) {
+		for (int i = 0; i < mapa.length; i++) {
+			for (int j = mapa[i].length - 1; j >= 0; j--) {
+				String string = mapa[i][j];
+				LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE);
+				wall.setTranslateX(i * SIZE);
+				wall.setTranslateZ(j * SIZE);
+				if ("_".equals(string)) {
+					wall.getRy().setAngle(90);
+				}
+				labyrinthWalls.add(wall);
+				root1.getChildren().add(wall);
+				Sphere ball = new Sphere(SIZE / 20);
+				balls[i][j] = ball;
+				ball.setMaterial(new PhongMaterial(Color.YELLOW));
+				ball.setTranslateZ(j * SIZE);
+				ball.setTranslateX(i * SIZE);
+				root1.getChildren().add(ball);
+
+			}
+		}
+	}
+
+	public static void end(PerspectiveCamera camera, Group root, Sphere[][] balls, SimpleIntegerProperty ghostCount,
+            MovimentacaoAleatoria movimentacao) {
+        Sphere ballGot = CommomLabyrinth.checkBalls(camera.getBoundsInParent(), balls);
+        if (ballGot == null) {
+            return;
+        }
+        root.getChildren().remove(ballGot);
+        for (int i = 0; i < balls.length; i++) {
+            for (int j = 0; j < balls[i].length; j++) {
+                if (ballGot == balls[i][j]) {
+                    balls[i][j] = null;
+                }
+            }
+        }
+        ghostCount.set(ghostCount.get() - 1);
+        if (ghostCount.get() == 0) {
+            movimentacao.stop();
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            Button button = new Button("Ok.");
+            button.setOnAction(e -> {
+                movimentacao.start();
+                camera.setTranslateZ(0);
+                camera.setTranslateY(0);
+                camera.setTranslateX(0);
+                dialogStage.close();
+            });
+            VBox vbox = new VBox(new Text("Você Venceu"), button);
+            vbox.setAlignment(Pos.CENTER);
+            vbox.setPadding(new Insets(5));
+            dialogStage.setScene(new Scene(vbox));
+            dialogStage.show();
+        }
+    }
 
 	public static void main(String[] args) {
 		launch(args);

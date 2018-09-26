@@ -13,13 +13,13 @@ public class SimpleHyperlinkBuilder extends SimpleRegionBuilder<Hyperlink, Simpl
 		hyperlink = region;
 	}
 
-	public SimpleHyperlinkBuilder text(String string) {
-		hyperlink.setText(string);
+	public SimpleHyperlinkBuilder onAction(EventHandler<ActionEvent> string) {
+		hyperlink.setOnAction(string);
 		return this;
 	}
 
-	public SimpleHyperlinkBuilder onAction(EventHandler<ActionEvent> string) {
-		hyperlink.setOnAction(string);
+	public SimpleHyperlinkBuilder text(String string) {
+		hyperlink.setText(string);
 		return this;
 	}
 

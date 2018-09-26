@@ -16,18 +16,7 @@ public final class UnZip {
 	private UnZip() {
 	}
 
-	public static void main(String[] args) {
-
-        File jap = new File(ZIPPED_FILE_FOLDER);
-        extractZippedFiles(jap);
-
-	}
-
-    public static void extractZippedFiles(String jap) {
-        extractZippedFiles(new File(jap));
-    }
-
-    public static void extractZippedFiles(File jap) {
+	public static void extractZippedFiles(File jap) {
         if (jap.isDirectory()) {
 			File[] listFiles = jap.listFiles();
             File output = new File(jap, "out");
@@ -41,6 +30,17 @@ public final class UnZip {
 			}
 		}
     }
+
+    public static void extractZippedFiles(String jap) {
+        extractZippedFiles(new File(jap));
+    }
+
+    public static void main(String[] args) {
+
+        File jap = new File(ZIPPED_FILE_FOLDER);
+        extractZippedFiles(jap);
+
+	}
 
 	private static void extractZip(File saida, File file) {
 

@@ -22,16 +22,6 @@ public class SimpleLinearGradientBuilder implements SimpleBuilder<LinearGradient
 		return new LinearGradient(startXp, startYp, endXp, endYp, proportionalp, cycleMethodp, stopsp);
 	}
 
-	public SimpleLinearGradientBuilder startX(double v) {
-		startXp = v;
-		return this;
-	}
-
-	public SimpleLinearGradientBuilder startY(double v) {
-		startYp = v;
-		return this;
-	}
-
 	public SimpleLinearGradientBuilder cycleMethod(CycleMethod v) {
 		cycleMethodp = v;
 		return this;
@@ -52,16 +42,26 @@ public class SimpleLinearGradientBuilder implements SimpleBuilder<LinearGradient
 		return this;
 	}
 
+	public SimpleLinearGradientBuilder startX(double v) {
+		startXp = v;
+		return this;
+	}
+
+	public SimpleLinearGradientBuilder startY(double v) {
+		startYp = v;
+		return this;
+	}
+
+	public SimpleLinearGradientBuilder stops(List<Stop> v) {
+		stopsp.clear();
+		stopsp.addAll(v);
+		return this;
+	}
 	public SimpleLinearGradientBuilder stops(Stop... v) {
 		stopsp.clear();
 		for (Stop element : v) {
 			stopsp.add(element);
 		}
-		return this;
-	}
-	public SimpleLinearGradientBuilder stops(List<Stop> v) {
-		stopsp.clear();
-		stopsp.addAll(v);
 		return this;
 	}
 

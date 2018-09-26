@@ -21,17 +21,17 @@ enum RubiksCubeFaces {
 		this.axis = axis;
 	}
 
-	public RubiksGetFaceFunction getFunc() {
-		return getFunc;
-	}
-
 	public RubiksPiece get(RubiksPiece[][][] cube, int i, int j) {
 		return getFunc.apply(cube, i, j);
 	}
 
-
 	public Point3D getAxis() {
 		return axis;
+	}
+
+
+	public RubiksGetFaceFunction getFunc() {
+		return getFunc;
 	}
 
 	public void set(RubiksPiece[][][] cube, int i, int j, RubiksPiece newPiece) {

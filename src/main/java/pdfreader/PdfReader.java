@@ -35,18 +35,18 @@ import utils.HasLogging;
 public class PdfReader extends Application implements HasLogging {
     private static final int WORD_DISPLAY_PERIOD = 200;
     private static final String SPLIT_WORDS_REGEX = "[\\s]+";
-	private ObservableList<String> lines = FXCollections.observableArrayList();
+	private static final String PDF_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\BaseConhecimento\\CEH-V8\\Certified Ethical Hacker (CEH) v.8 Courseware Searchable PROPER\\CEHv8 Module 02 Footprinting and Reconnaissance.pdf";
+    private ObservableList<String> lines = FXCollections.observableArrayList();
     private ObservableList<String> skipLines = FXCollections.observableArrayList();
-    private ObservableList<String> words = FXCollections.observableArrayList();
-	private ObservableList<List<String>> pages = FXCollections.observableArrayList();
+	private ObservableList<String> words = FXCollections.observableArrayList();
+    private ObservableList<List<String>> pages = FXCollections.observableArrayList();
     private Timeline timeline;
     private final Text currentWord = new Text();
-    private final Text currentLine = new Text();
-	private final Text currentPage = new Text();
+	private final Text currentLine = new Text();
+    private final Text currentPage = new Text();
     private int index;
-    private int lineIndex;
-	private IntegerProperty pageIndex = new SimpleIntegerProperty(0);
-    private static final String PDF_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\BaseConhecimento\\CEH-V8\\Certified Ethical Hacker (CEH) v.8 Courseware Searchable PROPER\\CEHv8 Module 02 Footprinting and Reconnaissance.pdf";
+	private int lineIndex;
+    private IntegerProperty pageIndex = new SimpleIntegerProperty(0);
 	private int numberOfPages;
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -66,15 +66,6 @@ public class PdfReader extends Application implements HasLogging {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-    }
-
-    private void toggleTimelineStatus() {
-        Status status = timeline.getStatus();
-        if (status == Status.RUNNING) {
-            timeline.stop();
-        } else {
-            timeline.play();
-        }
     }
 
     private void displayNextLine() {
@@ -113,10 +104,6 @@ public class PdfReader extends Application implements HasLogging {
         }
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     private void readFile(File file) {
 
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -146,6 +133,19 @@ public class PdfReader extends Application implements HasLogging {
         } catch (Exception e) {
             getLogger().error("", e);
         }
+    }
+
+    private void toggleTimelineStatus() {
+        Status status = timeline.getStatus();
+        if (status == Status.RUNNING) {
+            timeline.stop();
+        } else {
+            timeline.play();
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
     private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {

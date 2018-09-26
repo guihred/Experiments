@@ -12,14 +12,14 @@ public abstract class BasePhysicalObject {
 	protected Node node;
 	protected Body body;
 
-	final void build() {
+	public abstract Node create();
+
+	public abstract Body createBody();
+
+    public final void build() {
 		node = create();
 		body = createBody();
 		node.setUserData(body);
 	}
-
-	public abstract Node create();
-
-	public abstract Body createBody();
 
 }

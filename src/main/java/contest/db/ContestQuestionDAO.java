@@ -6,15 +6,7 @@ import java.util.List;
 
 public class ContestQuestionDAO extends BaseDAO {
 
-    public void saveOrUpdate(BaseEntity jap) {
-        executeRun(session -> session.saveOrUpdate(jap));
-	}
-
-    public void saveOrUpdate(List<? extends BaseEntity> jap) {
-        executeRun(session -> jap.forEach(session::saveOrUpdate));
-    }
-
-	public List<ContestQuestion> list() {
+    public List<ContestQuestion> list() {
         return execute(session -> {
             StringBuilder hql = new StringBuilder();
             hql.append("SELECT l ");
@@ -23,5 +15,13 @@ public class ContestQuestionDAO extends BaseDAO {
             return session.createQuery(hql.toString(), ContestQuestion.class).list();
         });
 	}
+
+    public void saveOrUpdate(BaseEntity jap) {
+        executeRun(session -> session.saveOrUpdate(jap));
+	}
+
+	public void saveOrUpdate(List<? extends BaseEntity> jap) {
+        executeRun(session -> jap.forEach(session::saveOrUpdate));
+    }
 
 }

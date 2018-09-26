@@ -61,16 +61,16 @@ public class VigenereXORCipher {
 				.map(Object::toString).collect(Collectors.joining());
 	}
 
-    public String encrypt(String k, String s) {
-        return encrypt(k, s.chars().boxed().collect(Collectors.toList()));
-    }
-
     public String encrypt(String k, List<Integer> s) {
 		current = 0;
 		int length = k.length();
 		return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
 				.map(Object::toString).collect(Collectors.joining());
 	}
+
+    public String encrypt(String k, String s) {
+        return encrypt(k, s.chars().boxed().collect(Collectors.toList()));
+    }
 	public void findKey(long keySize) throws IOException {
 		String line = Files.readAllLines(ResourceFXUtils.toPath("ctext.txt")).get(0);
 		String[] split = line.split("(?<=\\G..)");

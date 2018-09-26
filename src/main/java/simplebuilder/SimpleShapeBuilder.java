@@ -18,19 +18,6 @@ public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> ext
 	}
 
 
-	public Z strokeLineCap(StrokeLineCap value) {
-		shape.setStrokeLineCap(value);
-		return (Z) this;
-	}
-
-	public Z strokeLineJoin(StrokeLineJoin value) {
-		shape.setStrokeLineJoin(value);
-		return (Z) this;
-	}
-	public Z strokeType(StrokeType value) {
-		shape.setStrokeType(value);
-		return (Z) this;
-	}
 	public Z fill(Paint lightblue) {
 		shape.setFill(lightblue);
 		return (Z) this;
@@ -38,6 +25,19 @@ public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> ext
 
 	public Z stroke(Paint value) {
 		shape.setStroke(value);
+		return (Z) this;
+	}
+	public Z strokeLineCap(StrokeLineCap value) {
+		shape.setStrokeLineCap(value);
+		return (Z) this;
+	}
+	public Z strokeLineJoin(StrokeLineJoin value) {
+		shape.setStrokeLineJoin(value);
+		return (Z) this;
+	}
+
+	public Z strokeType(StrokeType value) {
+		shape.setStrokeType(value);
 		return (Z) this;
 	}
 

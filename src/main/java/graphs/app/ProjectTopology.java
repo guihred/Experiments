@@ -47,6 +47,11 @@ public class ProjectTopology extends BaseTopology {
     }
 
 
+    public static void main(String[] args) {
+        Map<String, Map<String, Long>> packageDependencyMap = createProjectDependencyMap();
+        PackageTopology.printDependencyMap(packageDependencyMap);
+    }
+
     private static Map<String, Map<String, Long>> createProjectDependencyMap() {
         File file = new File("src");
         try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
@@ -66,11 +71,6 @@ public class ProjectTopology extends BaseTopology {
             HasLogging.log().error("", e);
             return new HashMap<>();
         }
-    }
-
-    public static void main(String[] args) {
-        Map<String, Map<String, Long>> packageDependencyMap = createProjectDependencyMap();
-        PackageTopology.printDependencyMap(packageDependencyMap);
     }
 
 }

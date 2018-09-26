@@ -13,6 +13,14 @@ public enum Owner {
     WHITE,
     BLACK;
 
+    public Color getColor() {
+        return this == Owner.WHITE ? Color.WHITE : Color.BLACK;
+    }
+
+    public String getColorStyle() {
+        return this == Owner.WHITE ? "white" : "black";
+    }
+
     public Owner opposite() {
         if (this == WHITE) {
             return BLACK;
@@ -22,13 +30,5 @@ public enum Owner {
         }
         return NONE;
 
-    }
-
-    public Color getColor() {
-        return this == Owner.WHITE ? Color.WHITE : Color.BLACK;
-    }
-
-    public String getColorStyle() {
-        return this == Owner.WHITE ? "white" : "black";
     }
 }

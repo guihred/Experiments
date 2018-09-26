@@ -39,6 +39,24 @@ public class ReversiMain extends Application {
 
 	private ReversiModel model = ReversiModel.getInstance();
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        
+        Node game = new BorderPane(new StackPane(createBackground(), tiles()), createTitle(), null, createScoreBoxes(), null);
+        Node restart = restart();
+        primaryStage.setScene(new Scene(new AnchorPane(game, restart)));
+
+        primaryStage.setWidth(400);
+        primaryStage.setHeight(600);
+		AnchorPane.setTopAnchor(game, 0D);
+		AnchorPane.setBottomAnchor(game, 0D);
+		AnchorPane.setLeftAnchor(game, 0D);
+		AnchorPane.setRightAnchor(game, 0D);
+		AnchorPane.setRightAnchor(restart, 10D);
+		AnchorPane.setTopAnchor(restart, 10D);
+        primaryStage.show();
+    }
+
     private Node createBackground() {
         final Region region = new Region();
         region.setStyle("-fx-background-color: radial-gradient(radius 100%, white, gray);");
@@ -106,26 +124,8 @@ public class ReversiMain extends Application {
                 "width").divide(2));
         return tiles;
     }
-
     private Node restart() {
 		return newButton("Restart", (ActionEvent t) -> model.restart());
-    }
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        
-        Node game = new BorderPane(new StackPane(createBackground(), tiles()), createTitle(), null, createScoreBoxes(), null);
-        Node restart = restart();
-        primaryStage.setScene(new Scene(new AnchorPane(game, restart)));
-
-        primaryStage.setWidth(400);
-        primaryStage.setHeight(600);
-		AnchorPane.setTopAnchor(game, 0D);
-		AnchorPane.setBottomAnchor(game, 0D);
-		AnchorPane.setLeftAnchor(game, 0D);
-		AnchorPane.setRightAnchor(game, 0D);
-		AnchorPane.setRightAnchor(restart, 10D);
-		AnchorPane.setTopAnchor(restart, 10D);
-        primaryStage.show();
     }
 
   

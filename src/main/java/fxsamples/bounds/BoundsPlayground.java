@@ -29,8 +29,8 @@ public class BoundsPlayground extends Application {
 
 	private final ObjectProperty<BoundsType> selectedBoundsType = new SimpleObjectProperty<>(BoundsType.LAYOUT_BOUNDS);
 
-	public static void main(String[] args) {
-		launch(args);
+	public ObjectProperty<BoundsType> getSelectedBoundsType() {
+		return selectedBoundsType;
 	}
 
 	@Override
@@ -78,73 +78,14 @@ public class BoundsPlayground extends Application {
 		createUtilityWindow(stage, layoutBoundsOverlay, new Shape[] { greenCircle, redCircle });
 	}
 
-	// update the list of intersections.
-	private void testIntersections() {
-		intersections.clear();
-
-		// for each shape test it's intersection with all other shapes.
-		for (Shape src : shapes) {
-			for (Shape dest : shapes) {
-				ShapePair pair = new ShapePair(src, dest);
-				if (!(pair.a instanceof Anchor) && !(pair.b instanceof Anchor) && !intersections.contains(pair)
-						&& pair.intersects(getSelectedBoundsType().get())) {
-					intersections.add(pair);
-				}
-			}
-		}
-	}
-
-	// make a node movable by dragging it around with the mouse.
-	private void enableDrag(final Circle circle) {
-		final Delta dragDelta = new Delta();
-		circle.setOnMousePressed(mouseEvent -> {
-			// record a delta distance for the drag and drop operation.
-			dragDelta.x = circle.getCenterX() - mouseEvent.getX();
-			dragDelta.y = circle.getCenterY() - mouseEvent.getY();
-			circle.getScene().setCursor(Cursor.MOVE);
-		});
-		circle.setOnMouseReleased(mouseEvent -> circle.getScene().setCursor(Cursor.HAND));
-		circle.setOnMouseDragged(mouseEvent -> {
-			circle.setCenterX(mouseEvent.getX() + dragDelta.x);
-			circle.setCenterY(mouseEvent.getY() + dragDelta.y);
-		});
-		circle.setOnMouseEntered(mouseEvent -> {
-			if (!mouseEvent.isPrimaryButtonDown()) {
-				circle.getScene().setCursor(Cursor.HAND);
-			}
-		});
-		circle.setOnMouseExited(mouseEvent -> {
-			if (!mouseEvent.isPrimaryButtonDown()) {
-				circle.getScene().setCursor(Cursor.DEFAULT);
-			}
-		});
-	}
-
-	// a helper enumeration of the various types of bounds we can work with.
-	enum BoundsType {
-		LAYOUT_BOUNDS, BOUNDS_IN_LOCAL, BOUNDS_IN_PARENT
-	}
-
-	// an anchor displayed around a point.
-	class Anchor extends Circle {
-		Anchor(String id, DoubleProperty x, DoubleProperty y) {
-			super(x.get(), y.get(), 10);
-			setId(id);
-			setFill(Color.GOLD.deriveColor(1, 1, 1, 0.5));
-			setStroke(Color.GOLD);
-			setStrokeWidth(2);
-			setStrokeType(StrokeType.OUTSIDE);
-
-			x.bind(centerXProperty());
-			y.bind(centerYProperty());
-		}
-	}
-
-	// records relative x and y co-ordinates.
-	private static class Delta {
-        protected double x;
-        protected double y;
-	}
+	private void changeBoundsType(final Group boundsOverlay, Boolean isSelected, BoundsType boundsInParent) {
+        if (isSelected) {
+            boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast)
+                    .forEach(b -> b.monitorBounds(boundsInParent));
+            getSelectedBoundsType().set(boundsInParent);
+            testIntersections();
+        }
+    }
 
 	// define a utility stage for reporting intersections.
 	private void createUtilityWindow(Stage stage, final Group boundsOverlay, final Shape[] transformableShapes) {
@@ -232,16 +173,75 @@ public class BoundsPlayground extends Application {
 		stage.setOnCloseRequest(windowEvent -> reportingStage.close());
 	}
 
-    private void changeBoundsType(final Group boundsOverlay, Boolean isSelected, BoundsType boundsInParent) {
-        if (isSelected) {
-            boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast)
-                    .forEach(b -> b.monitorBounds(boundsInParent));
-            getSelectedBoundsType().set(boundsInParent);
-            testIntersections();
-        }
-    }
+	// make a node movable by dragging it around with the mouse.
+	private void enableDrag(final Circle circle) {
+		final Delta dragDelta = new Delta();
+		circle.setOnMousePressed(mouseEvent -> {
+			// record a delta distance for the drag and drop operation.
+			dragDelta.x = circle.getCenterX() - mouseEvent.getX();
+			dragDelta.y = circle.getCenterY() - mouseEvent.getY();
+			circle.getScene().setCursor(Cursor.MOVE);
+		});
+		circle.setOnMouseReleased(mouseEvent -> circle.getScene().setCursor(Cursor.HAND));
+		circle.setOnMouseDragged(mouseEvent -> {
+			circle.setCenterX(mouseEvent.getX() + dragDelta.x);
+			circle.setCenterY(mouseEvent.getY() + dragDelta.y);
+		});
+		circle.setOnMouseEntered(mouseEvent -> {
+			if (!mouseEvent.isPrimaryButtonDown()) {
+				circle.getScene().setCursor(Cursor.HAND);
+			}
+		});
+		circle.setOnMouseExited(mouseEvent -> {
+			if (!mouseEvent.isPrimaryButtonDown()) {
+				circle.getScene().setCursor(Cursor.DEFAULT);
+			}
+		});
+	}
 
-	public ObjectProperty<BoundsType> getSelectedBoundsType() {
-		return selectedBoundsType;
+	// update the list of intersections.
+	private void testIntersections() {
+		intersections.clear();
+
+		// for each shape test it's intersection with all other shapes.
+		for (Shape src : shapes) {
+			for (Shape dest : shapes) {
+				ShapePair pair = new ShapePair(src, dest);
+				if (!(pair.a instanceof Anchor) && !(pair.b instanceof Anchor) && !intersections.contains(pair)
+						&& pair.intersects(getSelectedBoundsType().get())) {
+					intersections.add(pair);
+				}
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	// records relative x and y co-ordinates.
+	private static class Delta {
+        protected double x;
+        protected double y;
+	}
+
+    // an anchor displayed around a point.
+	class Anchor extends Circle {
+		Anchor(String id, DoubleProperty x, DoubleProperty y) {
+			super(x.get(), y.get(), 10);
+			setId(id);
+			setFill(Color.GOLD.deriveColor(1, 1, 1, 0.5));
+			setStroke(Color.GOLD);
+			setStrokeWidth(2);
+			setStrokeType(StrokeType.OUTSIDE);
+
+			x.bind(centerXProperty());
+			y.bind(centerYProperty());
+		}
+	}
+
+	// a helper enumeration of the various types of bounds we can work with.
+	enum BoundsType {
+		LAYOUT_BOUNDS, BOUNDS_IN_LOCAL, BOUNDS_IN_PARENT
 	}
 }

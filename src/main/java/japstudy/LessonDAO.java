@@ -6,20 +6,6 @@ import java.util.List;
 
 public class LessonDAO extends BaseDAO {
 
-	public void saveOrUpdate(JapaneseLesson jap) {
-        executeRun(session -> session.saveOrUpdate(jap));
-	}
-
-    public synchronized List<JapaneseLesson> list() {
-        return execute(session -> {
-            StringBuilder hql = new StringBuilder();
-            hql.append("SELECT l ");
-            hql.append("FROM JapaneseLesson l  ");
-            //        hql.append("ORDER BY l.pk.lesson, l.pk.exercise")
-            return session.createQuery(hql.toString(), JapaneseLesson.class).list();
-        });
-	}
-
 	public Long getCountExerciseByLesson(Integer lesson) {
         return execute(session -> {
             StringBuilder hql = new StringBuilder();
@@ -30,7 +16,7 @@ public class LessonDAO extends BaseDAO {
         });
 	}
 
-	public LocalTime getMaxTimeLesson(Integer lesson, Integer exercise) {
+    public LocalTime getMaxTimeLesson(Integer lesson, Integer exercise) {
         return execute(session -> {
             StringBuilder hql = new StringBuilder();
             hql.append("SELECT MAX(l.end) ");
@@ -42,6 +28,20 @@ public class LessonDAO extends BaseDAO {
                     .setParameter("exercise", exercise)
                     .uniqueResult();
         });
+	}
+
+	public synchronized List<JapaneseLesson> list() {
+        return execute(session -> {
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT l ");
+            hql.append("FROM JapaneseLesson l  ");
+            //        hql.append("ORDER BY l.pk.lesson, l.pk.exercise")
+            return session.createQuery(hql.toString(), JapaneseLesson.class).list();
+        });
+	}
+
+	public void saveOrUpdate(JapaneseLesson jap) {
+        executeRun(session -> session.saveOrUpdate(jap));
 	}
 
 }

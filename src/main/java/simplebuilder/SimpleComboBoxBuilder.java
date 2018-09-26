@@ -25,11 +25,6 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public SimpleComboBoxBuilder<T> items(T... value) {
-        return items(Arrays.asList(value));
-    }
-
     public SimpleComboBoxBuilder<T> items(Collection<T> value) {
         if (value instanceof ObservableList) {
             comboBox.setItems((ObservableList<T>) value);
@@ -39,10 +34,23 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
+    @SuppressWarnings("unchecked")
+    public SimpleComboBoxBuilder<T> items(T... value) {
+        return items(Arrays.asList(value));
+    }
+
     public SimpleComboBoxBuilder<T> nullOption(String option) {
         StringConverter<T> converter = comboBox.getConverter();
 
         StringConverter<T> stringConverter = new StringConverter<T>() {
+
+            @Override
+            public T fromString(String string) {
+                if (string.equals(option)) {
+                    return null;
+                }
+                return converter.fromString(string);
+            }
 
             @Override
             public String toString(T object) {
@@ -53,26 +61,14 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
                 return converter.toString(object);
             }
 
-            @Override
-            public T fromString(String string) {
-                if (string.equals(option)) {
-                    return null;
-                }
-                return converter.fromString(string);
-            }
-
         };
         comboBox.setConverter(stringConverter);
         return this;
     }
 
-    public SimpleComboBoxBuilder<T> select(T obj) {
-        comboBox.getSelectionModel().select(obj);
-        return this;
-    }
-
-    public SimpleComboBoxBuilder<T> select(int index) {
-        comboBox.getSelectionModel().select(index);
+    public SimpleComboBoxBuilder<T> onChange(BiConsumer<T, T> obj) {
+        comboBox.getSelectionModel().selectedItemProperty()
+                .addListener((ob, old, newValue) -> obj.accept(old, newValue));
         return this;
     }
 
@@ -81,9 +77,13 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
-    public SimpleComboBoxBuilder<T> onChange(BiConsumer<T, T> obj) {
-        comboBox.getSelectionModel().selectedItemProperty()
-                .addListener((ob, old, newValue) -> obj.accept(old, newValue));
+    public SimpleComboBoxBuilder<T> select(int index) {
+        comboBox.getSelectionModel().select(index);
+        return this;
+    }
+
+    public SimpleComboBoxBuilder<T> select(T obj) {
+        comboBox.getSelectionModel().select(obj);
         return this;
     }
 

@@ -47,6 +47,10 @@ public class PointGraph extends Canvas {
     }
 
 
+    public final IntegerProperty binsProperty() {
+		return bins;
+	}
+
     public void drawAxis(DoubleSummaryStatistics xStats, DoubleSummaryStatistics yStats) {
         String title = xHeader.get() + " X " + yHeader.get();
         gc.setFill(Color.BLACK);
@@ -74,6 +78,7 @@ public class PointGraph extends Canvas {
             gc.strokeText(yLabel, e - d * 2, y1);
         }
     }
+
 
     public final void drawGraph() {
         DoubleSummaryStatistics xStats = stats.get(xHeader.get());
@@ -108,8 +113,51 @@ public class PointGraph extends Canvas {
         drawAxis(xStats, yStats);
     }
 
+	public final int getBins() {
+		return binsProperty().get();
+	}
 
-    public void setDatagram(DataframeML x) {
+	public final double getLayout() {
+		return layoutProperty().get();
+	}
+
+	public final double getLineSize() {
+		return lineSizeProperty().get();
+	}
+
+	public final double getRadius() {
+		return radiusProperty().get();
+	}
+
+	public final String getXHeader() {
+		return xHeaderProperty().get();
+	}
+
+	public final int getYbins() {
+		return ybinsProperty().get();
+	}
+
+	public final String getYHeader() {
+		return yHeaderProperty().get();
+	}
+
+	public final DoubleProperty layoutProperty() {
+		return layout;
+	}
+
+	public final DoubleProperty lineSizeProperty() {
+		return lineSize;
+	}
+
+	public final DoubleProperty radiusProperty() {
+		return radius;
+	}
+
+	public final void setBins(final int bins) {
+		binsProperty().set(bins);
+	}
+
+	public void setDatagram(DataframeML x) {
         data = x;
 		data.forEach((col, items) -> {
             DoubleSummaryStatistics summaryStatistics = items.stream().map(Number.class::cast)
@@ -126,92 +174,44 @@ public class PointGraph extends Canvas {
 
     }
 
-	public final DoubleProperty layoutProperty() {
-		return layout;
-	}
-
-	public final double getLayout() {
-		return layoutProperty().get();
-	}
-
 	public final void setLayout(final double layout) {
 		layoutProperty().set(layout);
-	}
-
-	public final DoubleProperty lineSizeProperty() {
-		return lineSize;
-	}
-
-	public final double getLineSize() {
-		return lineSizeProperty().get();
 	}
 
 	public final void setLineSize(final double lineSize) {
 		lineSizeProperty().set(lineSize);
 	}
 
-	public final IntegerProperty binsProperty() {
-		return bins;
-	}
-
-	public final int getBins() {
-		return binsProperty().get();
-	}
-
-	public final void setBins(final int bins) {
-		binsProperty().set(bins);
-	}
-
-	public final IntegerProperty ybinsProperty() {
-		return ybins;
-	}
-
-	public final int getYbins() {
-		return ybinsProperty().get();
-	}
-
-	public final void setYbins(final int ybins) {
-		ybinsProperty().set(ybins);
-	}
-
-	public final StringProperty xHeaderProperty() {
-		return xHeader;
-	}
-
-	public final String getXHeader() {
-		return xHeaderProperty().get();
+	public final void setRadius(final double radius) {
+		radiusProperty().set(radius);
 	}
 
 	public final void setXHeader(final String xHeader) {
 		xHeaderProperty().set(xHeader);
 	}
 
-	public final StringProperty yHeaderProperty() {
-		return yHeader;
-	}
-
-	public final String getYHeader() {
-		return yHeaderProperty().get();
+	public final void setYbins(final int ybins) {
+		ybinsProperty().set(ybins);
 	}
 
 	public final void setYHeader(final String yHeader) {
 		yHeaderProperty().set(yHeader);
 	}
 
-	public final DoubleProperty radiusProperty() {
-		return radius;
-	}
-
-	public final double getRadius() {
-		return radiusProperty().get();
-	}
-
-	public final void setRadius(final double radius) {
-		radiusProperty().set(radius);
-	}
-
-    public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
+	public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
         return stats;
     }
+
+	public final StringProperty xHeaderProperty() {
+		return xHeader;
+	}
+
+	public final IntegerProperty ybinsProperty() {
+		return ybins;
+	}
+
+    public final StringProperty yHeaderProperty() {
+		return yHeader;
+	}
 
 }

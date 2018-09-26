@@ -45,19 +45,47 @@ public final class SongModel implements HasLogging {
     public SongModel() {
         resetProperties();
     }
-    public StringProperty artistProperty() {
-        return artist;
-    }
-
-    public StringProperty titleProperty() {
-        return title;
-    }
-    public StringProperty yearProperty() {
-        return year;
-    }
     public ObjectProperty<Image> albumCoverProperty() {
         return albumCover;
     }
+
+    public StringProperty albumProperty() {
+        return album;
+    }
+    public StringProperty artistProperty() {
+        return artist;
+    }
+    public String getAlbum() {
+        return album.get();
+    }
+    public Image getAlbumCover() {
+        return albumCover.get();
+    }
+
+    public String getArtist() {
+        return artist.get();
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer.get();
+    }
+
+    public MediaPlayer getPlayer() {
+        return mediaPlayer.get();
+    }
+
+    public String getTitle() {
+        return title.get();
+    }
+
+	public ObjectProperty<MediaPlayer> mediaPlayerProperty() {
+		return mediaPlayer;
+    }
+
+    public void setAlbum(String value) {
+        album.set(value);
+    }
+
     public void setURL(String url) {
         if (mediaPlayer.get() != null) {
             mediaPlayer.get().stop();
@@ -65,32 +93,31 @@ public final class SongModel implements HasLogging {
         initializeMedia(url);
     }
 
-    public String getAlbum() {
-        return album.get();
+	public StringProperty titleProperty() {
+        return title;
     }
 
-    public void setAlbum(String value) {
-        album.set(value);
+    public StringProperty yearProperty() {
+        return year;
     }
 
-    public StringProperty albumProperty() {
-        return album;
-    }
+    private void handleMetadata(String key, Object value) {
+        getLogger().info("Key={},Value={}", key, value);
+		if ("album".equals(key)) {
+            setAlbum(value.toString());
+		} else if ("artist".equals(key)) {
+            setArtist(value.toString());
+        }
+		if ("title".equals(key)) {
+            setTitle(value.toString());
+        }
+		if ("year".equals(key)) {
+            setYear(value.toString());
+        }
+		if ("image".equals(key)) {
+            setAlbumCover((Image) value);
+        }
 
-    public MediaPlayer getMediaPlayer() {
-        return mediaPlayer.get();
-    }
-
-	public ObjectProperty<MediaPlayer> mediaPlayerProperty() {
-		return mediaPlayer;
-    }
-
-    private void resetProperties() {
-        setArtist("");
-        setAlbum("");
-        setTitle("");
-        setYear("");
-        setAlbumCover(DEFAULT_ALBUM_COVER);
     }
 
     private void initializeMedia(String url) {
@@ -112,8 +139,15 @@ public final class SongModel implements HasLogging {
             getLogger().info("Caught Exception: {}", re.getMessage());
         }
     }
+    private void resetProperties() {
+        setArtist("");
+        setAlbum("");
+        setTitle("");
+        setYear("");
+        setAlbumCover(DEFAULT_ALBUM_COVER);
+    }
 
-	private void tryGetAlbumCover(String url) {
+    private void tryGetAlbumCover(String url) {
 		try {
             Image extractEmbeddedImageData = ResourceFXUtils
                     .extractEmbeddedImage(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
@@ -123,40 +157,14 @@ public final class SongModel implements HasLogging {
 		}
 	}
 
-    private void handleMetadata(String key, Object value) {
-        getLogger().info("Key={},Value={}", key, value);
-		if ("album".equals(key)) {
-            setAlbum(value.toString());
-		} else if ("artist".equals(key)) {
-            setArtist(value.toString());
-        }
-		if ("title".equals(key)) {
-            setTitle(value.toString());
-        }
-		if ("year".equals(key)) {
-            setYear(value.toString());
-        }
-		if ("image".equals(key)) {
-            setAlbumCover((Image) value);
-        }
 
+    void setAlbumCover(Image value) {
+        albumCover.setValue(value);
     }
 
     void setArtist(String value) {
         artist.setValue(value);
     }
-
-    public String getArtist() {
-        return artist.get();
-    }
-    public String getTitle() {
-        return title.get();
-    }
-
-    public Image getAlbumCover() {
-        return albumCover.get();
-    }
-
 
     void setTitle(String value) {
         title.setValue(value);
@@ -164,13 +172,5 @@ public final class SongModel implements HasLogging {
 
     void setYear(String value) {
         year.setValue(value);
-    }
-
-    public MediaPlayer getPlayer() {
-        return mediaPlayer.get();
-    }
-
-    void setAlbumCover(Image value) {
-        albumCover.setValue(value);
     }
 }

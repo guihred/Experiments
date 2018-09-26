@@ -14,7 +14,6 @@ import utils.ResourceFXUtils;
 
 public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	private static final Color lightColor = Color.rgb(125, 125, 125);
-	private Random random = new Random();
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
@@ -27,62 +26,22 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 			{ "_", "_", "_", "_", "_", "_" },
 
 	};
-
 	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
+
 	private static final int SIZE = 60;
+	private Random random = new Random();
 
 	private PerspectiveCamera camera;
 
 	private final List<LabyrinthWall> cubes = new ArrayList<>();
 
 
-	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
-        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
-		MeshView animal = new MeshView(mesh);
-		PhongMaterial sample = new PhongMaterial(jewelColor);
-		sample.setSpecularColor(lightColor);
-		animal.setMaterial(sample);
-		sample.setSpecularPower(16);
-		animal.setTranslateY(14);
-
-		animal.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
-		animal.setTranslateX(random.nextInt(mapa.length * SIZE));
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
-		}
-
-
-		animal.setScaleZ(0.25);
-		animal.setScaleX(0.25);
-		animal.setScaleY(1);
-
-		return animal;
-	}
-
-
-
-	private void initializeLabyrinth(Group root) {
-		for (int i = mapa.length - 1; i >= 0; i--) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
-				rectangle.setTranslateX(i * SIZE);
-				rectangle.setTranslateZ(j * SIZE);
-				if ("_".equals(string)) {
-					rectangle.getRy().setAngle(90);
-				}
-				cubes.add(rectangle);
-
-				root.getChildren().add(rectangle);
-			}
-		}
-	}
-
 	@Override
 	public PerspectiveCamera getCamera() {
 		return camera;
 	}
+
+
 
 	@Override
 	public List<LabyrinthWall> getLabyrinthWalls() {
@@ -134,6 +93,47 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
         primaryStage.setScene(sc);
         primaryStage.setTitle("Labyrinth 3D With Ghosts");
 		primaryStage.show();
+	}
+
+	private MeshView gerarAnimal(String arquivo, Color jewelColor) {
+        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
+		MeshView animal = new MeshView(mesh);
+		PhongMaterial sample = new PhongMaterial(jewelColor);
+		sample.setSpecularColor(lightColor);
+		animal.setMaterial(sample);
+		sample.setSpecularPower(16);
+		animal.setTranslateY(14);
+
+		animal.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
+		animal.setTranslateX(random.nextInt(mapa.length * SIZE));
+		while (checkColision(animal.getBoundsInParent())) {
+			animal.setTranslateZ(animal.getTranslateZ() + 1);
+			animal.setTranslateX(animal.getTranslateX() + 1);
+		}
+
+
+		animal.setScaleZ(0.25);
+		animal.setScaleX(0.25);
+		animal.setScaleY(1);
+
+		return animal;
+	}
+
+	private void initializeLabyrinth(Group root) {
+		for (int i = mapa.length - 1; i >= 0; i--) {
+			for (int j = mapa[i].length - 1; j >= 0; j--) {
+				String string = mapa[i][j];
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
+				rectangle.setTranslateX(i * SIZE);
+				rectangle.setTranslateZ(j * SIZE);
+				if ("_".equals(string)) {
+					rectangle.getRy().setAngle(90);
+				}
+				cubes.add(rectangle);
+
+				root.getChildren().add(rectangle);
+			}
+		}
 	}
 
 	public static void main(String[] args) {

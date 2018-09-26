@@ -11,11 +11,6 @@ public class SimplePerspectiveTransformBuilder implements SimpleBuilder<Perspect
 		return perspectiveTransform;
 	}
 
-	public SimplePerspectiveTransformBuilder ulx(double d) {
-		perspectiveTransform.setUlx(d);
-		return this;
-	}
-
 	public SimplePerspectiveTransformBuilder llx(double d) {
 		perspectiveTransform.setLlx(d);
 		return this;
@@ -33,6 +28,11 @@ public class SimplePerspectiveTransformBuilder implements SimpleBuilder<Perspect
 
 	public SimplePerspectiveTransformBuilder lry(double d) {
 		perspectiveTransform.setLry(d);
+		return this;
+	}
+
+	public SimplePerspectiveTransformBuilder ulx(double d) {
+		perspectiveTransform.setUlx(d);
 		return this;
 	}
 

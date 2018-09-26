@@ -57,10 +57,10 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     public String getReading(String currentWord, char currentLetter) {
-        return getReading(currentWord, currentLetter, true);
+        return getReading(currentWord, currentLetter, 0);
     }
 
-    public String getReading(String currentWord, char currentLetter, boolean recursive) {
+    public String getReading(String currentWord, char currentLetter, int recursive) {
         String key = currentWord + currentLetter;
         if (mapReading.containsKey(key)) {
             return mapReading.get(key);
@@ -131,8 +131,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
         } catch (Exception e) {
             getLogger().error("ERRO " + currentWord, e);
-            if (recursive) {
-                return getReading(currentWord, currentLetter, false);
+            if (recursive < 2) {
+                return getReading(currentWord, currentLetter, recursive + 1);
             }
         }
         return currentWord;
@@ -203,10 +203,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return lines;
     }
 
-    private static boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {
-        return link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter);
-    }
-
     private StringBuilder placeFurigana(String line) {
         String[] split = line.split("");
         String currentWord = "";
@@ -237,6 +233,10 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     public static void main(String[] args) {
         new CrawlerFuriganaTask().addFuriganaReading();
+    }
+
+    private static boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {
+        return link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter);
     }
 
 

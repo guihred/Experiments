@@ -30,10 +30,6 @@ import utils.ResourceFXUtils;
 public class ContestApplication extends Application implements HasLogging {
 
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setTitle("Contest Questions");
@@ -83,13 +79,6 @@ public class ContestApplication extends Application implements HasLogging {
         // selection listening
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    private VBox createVbox(String text, final Node medicamentosEstoqueTable) {
-        Label estoqueRosario = new Label(text);
-        GridPane.setHalignment(estoqueRosario, HPos.CENTER);
-
-        return new VBox(estoqueRosario, medicamentosEstoqueTable);
     }
 
     private TableView<ContestQuestion> createContestQuestionsTable(BorderPane root) {
@@ -160,6 +149,17 @@ public class ContestApplication extends Application implements HasLogging {
         medicamentosTable.getColumns().add(nomeContestQuestion);
 
         return medicamentosTable;
+    }
+
+    private VBox createVbox(String text, final Node medicamentosEstoqueTable) {
+        Label estoqueRosario = new Label(text);
+        GridPane.setHalignment(estoqueRosario, HPos.CENTER);
+
+        return new VBox(estoqueRosario, medicamentosEstoqueTable);
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
     private final class ImageTableCell extends TableCell<HasImage, String> {

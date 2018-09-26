@@ -20,6 +20,18 @@ public class ConvergeLayout implements Layout {
         eventHandler = t1 -> convergeLayoutLoop(this.graph);
 	}
 
+    @Override
+    public void execute() {
+        graph.clean();
+		for (int j = 0; j < 500; j++) {
+			getEventHandler().handle(null);
+		}
+	}
+
+    public EventHandler<ActionEvent> getEventHandler() {
+		return eventHandler;
+	}
+
     private void convergeLayoutLoop(Graph graph1) {
         List<Cell> allCells = graph1.getModel().getAllCells();
 		if (allCells.size() > 100) {
@@ -46,27 +58,15 @@ public class ConvergeLayout implements Layout {
 		}
 	}
 
-    private static double calculateYSum(double bound, double media, Edge e2) {
-		double angulo2 = e2.getAngulo();
-		Integer valor = 1;e2.getValor();
-		return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
-	}
-
-    private static double calculateXSum(double bound, double media, Edge e1) {
+	private static double calculateXSum(double bound, double media, Edge e1) {
 		double angulo1 = e1.getAngulo();
 		Integer valor = 1;e1.getValor();
 		return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
 	}
 
-	@Override
-    public void execute() {
-        graph.clean();
-		for (int j = 0; j < 500; j++) {
-			getEventHandler().handle(null);
-		}
-	}
-
-	public EventHandler<ActionEvent> getEventHandler() {
-		return eventHandler;
+	private static double calculateYSum(double bound, double media, Edge e2) {
+		double angulo2 = e2.getAngulo();
+		Integer valor = 1;e2.getValor();
+		return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
 	}
 }

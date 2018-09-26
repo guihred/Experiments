@@ -27,6 +27,18 @@ public class LabyrinthWall extends Group {
 		create(size, value);
 	}
 
+	public Rotate getRx() {
+		return rx;
+	}
+
+	public Rotate getRy() {
+		return ry;
+	}
+
+	public Rotate getRz() {
+		return rz;
+	}
+
 	private void create(double size, PhongMaterial value) {
 		getTransforms().addAll(getRz(), getRy(), getRx());
 		Box cube = new Box(size, size / 2, 5);
@@ -38,17 +50,5 @@ public class LabyrinthWall extends Group {
 		cube.setTranslateY(0);
 		cube.setTranslateZ(-0.5 * size);
 		getChildren().addAll(cube);
-	}
-
-	public Rotate getRx() {
-		return rx;
-	}
-
-	public Rotate getRy() {
-		return ry;
-	}
-
-	public Rotate getRz() {
-		return rz;
 	}
 }

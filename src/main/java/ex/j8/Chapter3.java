@@ -28,6 +28,11 @@ public final class Chapter3 {
 		return i;
 	}
 
+	public static void main(String[] args) {
+		Integer rich = getRich(Arrays.asList(20, 66, 12, 48, 38, 38, 20, 65, 54), 0, 8);
+        LOGGER.trace("{}", rich);
+	}
+
 	private static int highest(List<Integer> l, int i, int high) {
 		return l.get(i) > l.get(high) ? l.get(i) : l.get(high);
 
@@ -35,11 +40,6 @@ public final class Chapter3 {
 
 	private static int lowest(List<Integer> l, int i, int high) {
 		return l.get(i) < l.get(high) ? l.get(i) : l.get(high);
-	}
-
-	public static void main(String[] args) {
-		Integer rich = getRich(Arrays.asList(20, 66, 12, 48, 38, 38, 20, 65, 54), 0, 8);
-        LOGGER.trace("{}", rich);
 	}
 
 }

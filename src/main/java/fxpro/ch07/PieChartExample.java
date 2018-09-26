@@ -11,10 +11,6 @@ import javafx.stage.Stage;
 
 public class PieChartExample extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         PieChart pieChart = new PieChart();
@@ -29,6 +25,10 @@ public class PieChartExample extends Application {
         root.getChildren().add(pieChart);
         primaryStage.setScene(new Scene(root, 400, 250));
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }

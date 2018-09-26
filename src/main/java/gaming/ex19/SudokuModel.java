@@ -42,24 +42,66 @@ public class SudokuModel {
 
     }
 
-    private void initialize() {
+    public SudokuSquare getMapAt(int i, int j) {
+		return sudokuSquares.get(i * MAP_N_SQUARED + j);
+	}
+
+
+    public Region getNumberBoard() {
+        return numberBoard;
+    }
+
+
+	public void handleMouseMoved(MouseEvent s) {
+        numberOptions.forEach(e -> e.setOver(e.getBoundsInParent().contains(s.getX(), s.getY())));
+    }
+
+
+	public void handleMousePressed(MouseEvent ev) {
+        Optional<SudokuSquare> pressed = sudokuSquares.stream()
+                .filter(e -> !e.isPermanent())
+                .filter(s -> s.getBoundsInParent().contains(ev.getX(), ev.getY())).findFirst();
+        if (!pressed.isPresent()) {
+            pressedSquare = null;
+            return;
+        }
+        pressedSquare = pressed.get();
+        Bounds boundsInParent = pressedSquare.getBoundsInParent();
+        int halfTheSize = MAP_N_SQUARED / 2;
+        double maxY = pressedSquare.getCol() > halfTheSize ? boundsInParent.getMinY() - 90
+                : boundsInParent.getMaxY();
+        double maxX = pressedSquare.getRow() > halfTheSize ? boundsInParent.getMinX() - 90
+                : boundsInParent.getMaxX();
+        numberBoard.setPadding(new Insets(maxY, 0, 0, maxX));
+        numberBoard.setVisible(true);
+        handleMouseMoved(ev);
+    }
+
+
+    public void handleMouseReleased(MouseEvent s) {
+        Optional<NumberButton> findFirst = numberOptions.stream()
+                .filter(e -> e.getBoundsInParent().contains(s.getX(), s.getY())).findFirst();
+        if (pressedSquare != null && findFirst.isPresent()) {
+            NumberButton node = findFirst.get();
+            pressedSquare.setNumber(node.getNumber());
+            updatePossibilities();
+            pressedSquare = null;
+        }
         numberBoard.setVisible(false);
-		for (int i = 0; i < MAP_N_SQUARED; i++) {
-			for (int j = 0; j < MAP_N_SQUARED; j++) {
-				sudokuSquares.add(new SudokuSquare(i, j));
-			}
+        if (sudokuSquares.stream().allMatch(e -> !e.isEmpty() && !e.isWrong())) {
+            final Stage stage1 = new Stage();
+            final Button button = CommonsFX.newButton("Reset", a -> {
+                reset();
+                stage1.close();
+            });
+
+            final Text text = new Text("You Won");
+            final Group group = new Group(text, button);
+            group.setLayoutY(50);
+            group.setLayoutX(50);
+            stage1.setScene(new Scene(group));
+            stage1.show();
         }
-        for (int i = 0; i < MAP_NUMBER; i++) {
-            for (int j = 0; j < MAP_NUMBER; j++) {
-                NumberButton child = new NumberButton(i * MAP_NUMBER + j + 1);
-                numberOptions.add(child);
-                numberBoard.add(child, j, i);
-            }
-        }
-        NumberButton child = new NumberButton(0);
-        numberOptions.add(child);
-        numberBoard.add(child, 3, 0);
-        reset();
     }
 
 
@@ -90,8 +132,27 @@ public class SudokuModel {
 		}
     }
 
+    private void initialize() {
+        numberBoard.setVisible(false);
+		for (int i = 0; i < MAP_N_SQUARED; i++) {
+			for (int j = 0; j < MAP_N_SQUARED; j++) {
+				sudokuSquares.add(new SudokuSquare(i, j));
+			}
+        }
+        for (int i = 0; i < MAP_NUMBER; i++) {
+            for (int j = 0; j < MAP_NUMBER; j++) {
+                NumberButton child = new NumberButton(i * MAP_NUMBER + j + 1);
+                numberOptions.add(child);
+                numberBoard.add(child, j, i);
+            }
+        }
+        NumberButton child = new NumberButton(0);
+        numberOptions.add(child);
+        numberBoard.add(child, 3, 0);
+        reset();
+    }
 
-	private boolean isNumberFit(int n, int row, int col) {
+    private boolean isNumberFit(int n, int row, int col) {
         return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInRow(row))
                 .noneMatch(s -> s.getNumber() == n)
                 && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInArea(row, col))
@@ -100,16 +161,9 @@ public class SudokuModel {
                         .noneMatch(s -> s.getNumber() == n);
 	}
 
-
-	public SudokuSquare getMapAt(int i, int j) {
-		return sudokuSquares.get(i * MAP_N_SQUARED + j);
+    private boolean isNumberFit(SudokuSquare sudokuSquare, int n) {
+		return isNumberFit(n, sudokuSquare.getRow(), sudokuSquare.getCol());
 	}
-
-
-    public Region getNumberBoard() {
-        return numberBoard;
-    }
-
 
     private void removeRandomNumbers() {
         List<SudokuSquare> sudokuSquares2 = sudokuSquares.stream().filter(SudokuSquare::isNotEmpty)
@@ -126,63 +180,6 @@ public class SudokuModel {
         sudokuSquare.setNumber(previousN);
     }
 
-    private void updatePossibilities() {
-        sudokuSquares.stream().forEach(sq -> sq.setPossibilities(IntStream
-                .rangeClosed(1, MAP_N_SQUARED).filter(n -> isNumberFit(sq, n)).boxed().collect(Collectors.toList())));
-        sudokuSquares.stream()
-                .forEach(sq -> sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber())));
-    }
-
-    public void handleMousePressed(MouseEvent ev) {
-        Optional<SudokuSquare> pressed = sudokuSquares.stream()
-                .filter(e -> !e.isPermanent())
-                .filter(s -> s.getBoundsInParent().contains(ev.getX(), ev.getY())).findFirst();
-        if (!pressed.isPresent()) {
-            pressedSquare = null;
-            return;
-        }
-        pressedSquare = pressed.get();
-        Bounds boundsInParent = pressedSquare.getBoundsInParent();
-        int halfTheSize = MAP_N_SQUARED / 2;
-        double maxY = pressedSquare.getCol() > halfTheSize ? boundsInParent.getMinY() - 90
-                : boundsInParent.getMaxY();
-        double maxX = pressedSquare.getRow() > halfTheSize ? boundsInParent.getMinX() - 90
-                : boundsInParent.getMaxX();
-        numberBoard.setPadding(new Insets(maxY, 0, 0, maxX));
-        numberBoard.setVisible(true);
-        handleMouseMoved(ev);
-    }
-
-    public void handleMouseMoved(MouseEvent s) {
-        numberOptions.forEach(e -> e.setOver(e.getBoundsInParent().contains(s.getX(), s.getY())));
-    }
-
-    public void handleMouseReleased(MouseEvent s) {
-        Optional<NumberButton> findFirst = numberOptions.stream()
-                .filter(e -> e.getBoundsInParent().contains(s.getX(), s.getY())).findFirst();
-        if (pressedSquare != null && findFirst.isPresent()) {
-            NumberButton node = findFirst.get();
-            pressedSquare.setNumber(node.getNumber());
-            updatePossibilities();
-            pressedSquare = null;
-        }
-        numberBoard.setVisible(false);
-        if (sudokuSquares.stream().allMatch(e -> !e.isEmpty() && !e.isWrong())) {
-            final Stage stage1 = new Stage();
-            final Button button = CommonsFX.newButton("Reset", a -> {
-                reset();
-                stage1.close();
-            });
-
-            final Text text = new Text("You Won");
-            final Group group = new Group(text, button);
-            group.setLayoutY(50);
-            group.setLayoutX(50);
-            stage1.setScene(new Scene(group));
-            stage1.show();
-        }
-    }
-
     private void reset() {
 		createRandomNumbers();
         for (int i = 0; i < MAP_N_SQUARED * MAP_N_SQUARED; i++) {
@@ -191,7 +188,10 @@ public class SudokuModel {
     }
 
 
-	private boolean isNumberFit(SudokuSquare sudokuSquare, int n) {
-		return isNumberFit(n, sudokuSquare.getRow(), sudokuSquare.getCol());
-	}
+	private void updatePossibilities() {
+        sudokuSquares.stream().forEach(sq -> sq.setPossibilities(IntStream
+                .rangeClosed(1, MAP_N_SQUARED).filter(n -> isNumberFit(sq, n)).boxed().collect(Collectors.toList())));
+        sudokuSquares.stream()
+                .forEach(sq -> sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber())));
+    }
 }

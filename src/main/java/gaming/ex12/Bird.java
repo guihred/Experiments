@@ -20,13 +20,19 @@ public class Bird extends Player implements Enemy {
 		colisionHeight = 65;
 	}
 
-	public void flyLeft() {
-		velocityX = -2;
-		direction = Direction.RIGHT;
-	}
+	@Override
+	public void attack(Player player) {
+		if (status == BirdStatus.FLYING) {
+			if (player.getPositionX() > getPositionX()) {
+				flyRight();
+			} else {
+				flyLeft();
+			}
+			velocityY = 10;
+			accelerationY = -1;
+			status = BirdStatus.FALLING;
+		}
 
-	public void stop() {
-		velocityX = 0;
 	}
 
 	public void fall() {
@@ -36,15 +42,29 @@ public class Bird extends Player implements Enemy {
 		}
 	}
 
+	public void flyLeft() {
+		velocityX = -2;
+		direction = Direction.RIGHT;
+	}
+
 	public void flyRight() {
 		direction = Direction.LEFT;
 		velocityX = 2;
 	}
 
-	enum BirdStatus {
-		FALLEN,
-		FLYING,
-		FALLING;
+	@Override
+	public void render(GraphicsContext gc) {
+		if (status == BirdStatus.FLYING) {
+			flyingAnimation.render(gc, this);
+		} else if (status == BirdStatus.FALLING) {
+			fallingAnimation.render(gc, this);
+		} else {
+			fallenAnimation.render(gc, this);
+		}
+	}
+
+	public void stop() {
+		velocityX = 0;
 	}
 
 	@Override
@@ -81,30 +101,10 @@ public class Bird extends Player implements Enemy {
 		}
 	}
 
-	@Override
-	public void render(GraphicsContext gc) {
-		if (status == BirdStatus.FLYING) {
-			flyingAnimation.render(gc, this);
-		} else if (status == BirdStatus.FALLING) {
-			fallingAnimation.render(gc, this);
-		} else {
-			fallenAnimation.render(gc, this);
-		}
-	}
-
-	@Override
-	public void attack(Player player) {
-		if (status == BirdStatus.FLYING) {
-			if (player.getPositionX() > getPositionX()) {
-				flyRight();
-			} else {
-				flyLeft();
-			}
-			velocityY = 10;
-			accelerationY = -1;
-			status = BirdStatus.FALLING;
-		}
-
+	enum BirdStatus {
+		FALLEN,
+		FLYING,
+		FALLING;
 	}
 
 }

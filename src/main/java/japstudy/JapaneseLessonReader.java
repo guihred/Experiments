@@ -22,34 +22,11 @@ public final class JapaneseLessonReader implements HasLogging {
 	private JapaneseLessonReader() {
 	}
 
-	public static void main(String[] args) {
-		try {
-			ObservableList<JapaneseLesson> lessons = getLessons("jaftranscript.docx");
-            lessons.forEach(JapaneseLessonReader::update);
-            HibernateUtil.shutdown();
-		} catch (IOException e) {
-			LOGGER.error("", e);
-		}
-	}
-
-    public static ObservableList<JapaneseLesson> getLessonsWait() {
-        ObservableList<JapaneseLesson> lessons = FXCollections.observableArrayList();
-        lessons.addAll(lessonDAO.list());
-        return lessons;
-    }
-
 	public static Long getCountExerciseByLesson(Integer lesson) {
 		return lessonDAO.getCountExerciseByLesson(lesson);
 	}
 
-	public static LocalTime getMaxTimeLesson(Integer lesson, Integer exercise) {
-		return lessonDAO.getMaxTimeLesson(lesson, exercise);
-	}
-
-	public static void update(JapaneseLesson japaneseLesson) {
-		lessonDAO.saveOrUpdate(japaneseLesson);
-	}
-	public static ObservableList<JapaneseLesson> getLessons(String arquivo) throws IOException {
+    public static ObservableList<JapaneseLesson> getLessons(String arquivo) throws IOException {
 		InputStream resourceAsStream = new FileInputStream(new File(arquivo));
 		ObservableList<JapaneseLesson> listaExercises = FXCollections.observableArrayList();
         try (XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
@@ -59,6 +36,35 @@ public final class JapaneseLessonReader implements HasLogging {
 		}
 		return listaExercises;
 	}
+
+	public static ObservableList<JapaneseLesson> getLessonsWait() {
+        ObservableList<JapaneseLesson> lessons = FXCollections.observableArrayList();
+        lessons.addAll(lessonDAO.list());
+        return lessons;
+    }
+
+	public static LocalTime getMaxTimeLesson(Integer lesson, Integer exercise) {
+		return lessonDAO.getMaxTimeLesson(lesson, exercise);
+	}
+
+	public static void main(String[] args) {
+		try {
+			ObservableList<JapaneseLesson> lessons = getLessons("jaftranscript.docx");
+            lessons.forEach(JapaneseLessonReader::update);
+            HibernateUtil.shutdown();
+		} catch (IOException e) {
+			LOGGER.error("", e);
+		}
+	}
+	public static void update(JapaneseLesson japaneseLesson) {
+		lessonDAO.saveOrUpdate(japaneseLesson);
+	}
+
+    private static void addJapanese(JapaneseLesson japaneseLesson, String text) {
+        if (japaneseLesson != null) {
+        	japaneseLesson.addJapanese(text.trim());
+        }
+    }
 
     private static void addJapaneseLessons(ObservableList<JapaneseLesson> listaExercises, XWPFDocument document1) {
         JapaneseLesson japaneseLesson = null;
@@ -93,12 +99,6 @@ public final class JapaneseLessonReader implements HasLogging {
         			japaneseLesson.addRomaji(text.trim());
         		}
         	}
-        }
-    }
-
-    private static void addJapanese(JapaneseLesson japaneseLesson, String text) {
-        if (japaneseLesson != null) {
-        	japaneseLesson.addJapanese(text.trim());
         }
     }
 

@@ -47,14 +47,7 @@ public class SnakeSquare extends Region {
 
     }
 
-    @Override
-    public int hashCode() {
-        return i * MAP_SIZE + getJ();
-    }
-
-
-
-	public int getI() {
+    public int getI() {
 		return i;
 	}
 
@@ -64,9 +57,16 @@ public class SnakeSquare extends Region {
 		return j;
 	}
 
+
+
 	public SnakeState getState() {
 		return state.get();
 	}
+
+	@Override
+    public int hashCode() {
+        return i * MAP_SIZE + getJ();
+    }
 
 	public void setState(SnakeState state) {
 		this.state.set(state);

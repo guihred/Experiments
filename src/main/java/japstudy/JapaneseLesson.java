@@ -55,10 +55,13 @@ public class JapaneseLesson extends BaseEntity {
 		return Objects.equals(other.pk, pk);
 	}
 
-    @Override
-    public LessonPK getKey() {
-        return pk;
+    public String getAudio() {
+        return audio;
     }
+	public LocalTime getEnd() {
+		return end;
+	}
+
 	public String getEnglish() {
 		return english;
 	}
@@ -71,6 +74,11 @@ public class JapaneseLesson extends BaseEntity {
 		return japanese;
 	}
 
+	@Override
+    public LessonPK getKey() {
+        return pk;
+    }
+
 	public Integer getLesson() {
 		return pk.getLesson();
 	}
@@ -79,9 +87,21 @@ public class JapaneseLesson extends BaseEntity {
 		return romaji;
 	}
 
+	public LocalTime getStart() {
+		return start;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(pk);
+	}
+
+	public void setAudio(String audio) {
+        this.audio = audio;
+    }
+
+	public void setEnd(LocalTime end) {
+		this.end = end;
 	}
 
 	public void setEnglish(String english) {
@@ -108,34 +128,14 @@ public class JapaneseLesson extends BaseEntity {
 		this.romaji = romaji;
 	}
 
-	@Override
+    public void setStart(LocalTime start) {
+		this.start = start;
+	}
+
+    @Override
 	public String toString() {
 		return String.format("JapaneseLesson [english=%s, exercise=%d, japanese=%s, romaji=%s]", english,
 				pk.getExercise(), japanese, romaji);
 	}
-
-	public LocalTime getStart() {
-		return start;
-	}
-
-	public void setStart(LocalTime start) {
-		this.start = start;
-	}
-
-	public LocalTime getEnd() {
-		return end;
-	}
-
-	public void setEnd(LocalTime end) {
-		this.end = end;
-	}
-
-    public String getAudio() {
-        return audio;
-    }
-
-    public void setAudio(String audio) {
-        this.audio = audio;
-    }
 	
 }

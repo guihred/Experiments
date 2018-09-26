@@ -50,6 +50,26 @@ public class MultiLineGraph extends Canvas implements HasLogging {
         ybins.addListener(listener);
     }
 
+    public final IntegerProperty binsProperty() {
+        return bins;
+    }
+
+    public ObservableMap<String, Color> colorsProperty() {
+        return colors;
+    }
+
+    public final DoubleProperty layoutProperty() {
+        return layout;
+    }
+
+    public final DoubleProperty lineSizeProperty() {
+        return lineSize;
+    }
+
+    public final IntegerProperty radiusProperty() {
+        return radius;
+    }
+
     public void setHistogram(DataframeML dataframe) {
         this.dataframe = dataframe;
 
@@ -62,6 +82,49 @@ public class MultiLineGraph extends Canvas implements HasLogging {
             stats.put(col, items.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).summaryStatistics());
         });
 
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
+        return stats;
+    }
+
+    public final IntegerProperty ybinsProperty() {
+        return ybins;
+    }
+
+    private void drawAxis() {
+
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setLineWidth(1);
+        gc.setStroke(Color.BLACK);
+        gc.setFill(Color.BLACK);
+        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
+        double e = layout.get();
+        gc.strokeLine(e, e, e, maxLayout);
+        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
+        double j = (maxLayout - e) / bins.get();
+        double d = lineSize.get();
+
+        double min = stats.values().stream().mapToDouble(DoubleSummaryStatistics::getMin).min().orElse(0);
+
+        for (int i = 1; i <= bins.get(); i++) {
+            double x1 = i * j + e;
+            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
+            String xLabel = String.format("%.0f", i * xProportion + min);
+            gc.strokeText(xLabel, x1, maxLayout + 5 * (4 + 3 * (i % 2)));
+
+        }
+        j = (maxLayout - e) / ybins.get();
+        for (int i = 0; i <= ybins.get(); i++) {
+            double y1 = maxLayout - i * j;
+            gc.strokeLine(e, y1, e - 5, y1);
+            String yLabel = String.format("%.1f", i * yProportion + min);
+            gc.strokeText(yLabel, e - d * 2, y1);
+        }
     }
 
     private final void drawGraph() {
@@ -128,68 +191,5 @@ public class MultiLineGraph extends Canvas implements HasLogging {
 
             }
         }
-    }
-
-    private void drawAxis() {
-
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setLineWidth(1);
-        gc.setStroke(Color.BLACK);
-        gc.setFill(Color.BLACK);
-        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
-        double e = layout.get();
-        gc.strokeLine(e, e, e, maxLayout);
-        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
-        double j = (maxLayout - e) / bins.get();
-        double d = lineSize.get();
-
-        double min = stats.values().stream().mapToDouble(DoubleSummaryStatistics::getMin).min().orElse(0);
-
-        for (int i = 1; i <= bins.get(); i++) {
-            double x1 = i * j + e;
-            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
-            String xLabel = String.format("%.0f", i * xProportion + min);
-            gc.strokeText(xLabel, x1, maxLayout + 5 * (4 + 3 * (i % 2)));
-
-        }
-        j = (maxLayout - e) / ybins.get();
-        for (int i = 0; i <= ybins.get(); i++) {
-            double y1 = maxLayout - i * j;
-            gc.strokeLine(e, y1, e - 5, y1);
-            String yLabel = String.format("%.1f", i * yProportion + min);
-            gc.strokeText(yLabel, e - d * 2, y1);
-        }
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public final DoubleProperty layoutProperty() {
-        return layout;
-    }
-
-    public final DoubleProperty lineSizeProperty() {
-        return lineSize;
-    }
-
-    public final IntegerProperty binsProperty() {
-        return bins;
-    }
-
-    public final IntegerProperty ybinsProperty() {
-        return ybins;
-    }
-
-    public final IntegerProperty radiusProperty() {
-        return radius;
-    }
-
-    public ObservableMap<String, DoubleSummaryStatistics> statsProperty() {
-        return stats;
-    }
-
-    public ObservableMap<String, Color> colorsProperty() {
-        return colors;
     }
 }

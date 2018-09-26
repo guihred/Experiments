@@ -9,6 +9,10 @@ import utils.CrawlerTask;
 public abstract class CommonCrawlerTask<T> extends CrawlerTask {
     private static final int MAX_THREAD_COUNT = 5;
 
+    protected abstract List<T> getList();
+
+    protected abstract void performTask(T cidade);
+
     @Override
     protected String task() {
         updateTitle("Example Task " + getClass().getSimpleName());
@@ -41,8 +45,4 @@ public abstract class CommonCrawlerTask<T> extends CrawlerTask {
         HibernateUtil.shutdown();
         return "Completed at " + LocalTime.now();
     }
-
-    protected abstract List<T> getList();
-
-    protected abstract void performTask(T cidade);
 }

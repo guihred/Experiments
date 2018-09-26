@@ -27,24 +27,9 @@ public class Cell extends Pane {
 		text = new Text(cellId);
 	}
 
-	public CellType getType() {
-		return null;
-	}
-	public void setColor(Color color) {
-		this.color.set(color);
-	}
-
-	public Color getColor() {
-		return color.get();
-	}
-
-    public ObjectProperty<Color> colorProperty() {
-        return color;
-    }
 	public void addCellChild(Cell cell) {
 		children.add(cell);
 	}
-
 	public void addCellParent(Cell cell) {
 		parents.add(cell);
 	}
@@ -53,6 +38,9 @@ public class Cell extends Pane {
 		text.setText(cellId + "\n" + s);
 	}
 
+    public ObjectProperty<Color> colorProperty() {
+        return color;
+    }
 	public List<Cell> getCellChildren() {
 		return children;
 	}
@@ -65,6 +53,14 @@ public class Cell extends Pane {
 		return parents;
 	}
 
+	public Color getColor() {
+		return color.get();
+	}
+
+	public CellType getType() {
+		return null;
+	}
+
 	public Node getView() {
 		return view;
 	}
@@ -75,6 +71,10 @@ public class Cell extends Pane {
 
 	public void removeCellChild(Cell cell) {
 		children.remove(cell);
+	}
+
+	public void setColor(Color color) {
+		this.color.set(color);
 	}
 
 	public void setSelected(boolean articulation) {

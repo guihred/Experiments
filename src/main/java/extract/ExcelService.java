@@ -59,31 +59,6 @@ public class ExcelService {
 		}
 	}
 
-    public static void setValorPorClasse(CellStyle dateFormat, CellStyle formatoBigDecimal, Row row, int k,
-			Object campo) {
-		if (campo instanceof Date) {
-			Cell createCell = row.createCell(k, CellType.NUMERIC);
-			createCell.setCellValue((Date) campo);
-			createCell.setCellStyle(dateFormat);
-		} else if (campo instanceof BigDecimal) {
-			Cell createCell = row.createCell(k, CellType.NUMERIC);
-			createCell.setCellValue(((BigDecimal) campo).doubleValue());
-			createCell.setCellStyle(formatoBigDecimal);
-		} else if (campo instanceof Number) {
-			Cell createCell = row.createCell(k, CellType.NUMERIC);
-			createCell.setCellValue(((Number) campo).doubleValue());
-		} else if (campo instanceof String) {
-			Cell createCell = row.createCell(k, CellType.STRING);
-            createCell.setCellValue(Objects.toString(campo, ""));
-		} else if (campo instanceof Boolean) {
-			Cell createCell = row.createCell(k, CellType.STRING);
-			Boolean campo2 = (Boolean) campo;
-			createCell.setCellValue(campo2 ? "Sim" : "Não");
-		} else {
-			row.createCell(k, CellType.BLANK);
-		}
-	}
-
     public static <T> void getExcel(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, File file) {
 
         try (FileOutputStream response = new FileOutputStream(file); XSSFWorkbook workbook = new XSSFWorkbook()) {
@@ -164,7 +139,6 @@ public class ExcelService {
 		}
 	}
 
-
     public static void getExcel(String arquivo, Map<Object, Object> map, OutputStream outStream) {
         try (InputStream file = ResourceFXUtils.toStream(arquivo);
 		// Get the workbook instance for XLS file
@@ -190,6 +164,36 @@ public class ExcelService {
 
 	}
 
+
+    public static void printDebug(Object value) {
+        LOG.trace("{}", value);
+	}
+
+    public static void setValorPorClasse(CellStyle dateFormat, CellStyle formatoBigDecimal, Row row, int k,
+			Object campo) {
+		if (campo instanceof Date) {
+			Cell createCell = row.createCell(k, CellType.NUMERIC);
+			createCell.setCellValue((Date) campo);
+			createCell.setCellStyle(dateFormat);
+		} else if (campo instanceof BigDecimal) {
+			Cell createCell = row.createCell(k, CellType.NUMERIC);
+			createCell.setCellValue(((BigDecimal) campo).doubleValue());
+			createCell.setCellStyle(formatoBigDecimal);
+		} else if (campo instanceof Number) {
+			Cell createCell = row.createCell(k, CellType.NUMERIC);
+			createCell.setCellValue(((Number) campo).doubleValue());
+		} else if (campo instanceof String) {
+			Cell createCell = row.createCell(k, CellType.STRING);
+            createCell.setCellValue(Objects.toString(campo, ""));
+		} else if (campo instanceof Boolean) {
+			Cell createCell = row.createCell(k, CellType.STRING);
+			Boolean campo2 = (Boolean) campo;
+			createCell.setCellValue(campo2 ? "Sim" : "Não");
+		} else {
+			row.createCell(k, CellType.BLANK);
+		}
+	}
+
     private static void alterarValorCell(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell c) {
 		Cell cell = c;
 		if (cell.getCellTypeEnum() == CellType.NUMERIC) {
@@ -197,6 +201,25 @@ public class ExcelService {
 		}
 		if (cell.getCellTypeEnum() == CellType.STRING) {
             alterString(map, sheet, row, cell);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static void alterNumeric(Map<Object, Object> map, XSSFSheet sheet, Cell cell) {
+        double numericCellValue = cell.getNumericCellValue();
+        printDebug(numericCellValue);
+        if (map.containsKey(numericCellValue)) {
+        	Object object = map.get(numericCellValue);
+        	if (object instanceof Map) {
+        		object = ((Map) object).get(sheet.getSheetName());
+        	}
+        	if (object instanceof Number) {
+        		cell.setCellValue(((Number) object).doubleValue());
+        	}
+        	if (object instanceof String) {
+        		cell.setCellValue((String) object);
+        		cell.setCellType(CellType.STRING);
+        	}
         }
     }
 
@@ -233,28 +256,5 @@ public class ExcelService {
 
         }
     }
-
-    @SuppressWarnings("rawtypes")
-    private static void alterNumeric(Map<Object, Object> map, XSSFSheet sheet, Cell cell) {
-        double numericCellValue = cell.getNumericCellValue();
-        printDebug(numericCellValue);
-        if (map.containsKey(numericCellValue)) {
-        	Object object = map.get(numericCellValue);
-        	if (object instanceof Map) {
-        		object = ((Map) object).get(sheet.getSheetName());
-        	}
-        	if (object instanceof Number) {
-        		cell.setCellValue(((Number) object).doubleValue());
-        	}
-        	if (object instanceof String) {
-        		cell.setCellValue((String) object);
-        		cell.setCellType(CellType.STRING);
-        	}
-        }
-    }
-
-    public static void printDebug(Object value) {
-        LOG.trace("{}", value);
-	}
 
 }

@@ -9,10 +9,6 @@ import javafx.stage.Stage;
 import simplebuilder.SimpleCubicCurveBuilder;
 
 public class DrawingShape extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Shapes");
@@ -92,5 +88,9 @@ public class DrawingShape extends Application {
 		root.getChildren().add(donut);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

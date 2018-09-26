@@ -28,10 +28,6 @@ public class PendulumAnimationLauncher extends Application {
 					new KeyFrame(new Duration(1000.0), new KeyValue(startXVal, 300.0, Interpolator.LINEAR)))
 			.build();
 
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
-
 	@Override
 	public void start(Stage stage) {
         Line line = new SimpleLineBuilder()
@@ -62,5 +58,9 @@ public class PendulumAnimationLauncher extends Application {
 		stage.setScene(scene);
 		stage.setTitle("Metronome 1");
 		stage.show();
+	}
+
+	public static void main(String[] args) {
+		Application.launch(args);
 	}
 }

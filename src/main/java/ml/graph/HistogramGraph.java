@@ -43,79 +43,13 @@ public class HistogramGraph extends Canvas {
         layout.addListener(listener);
     }
 
-    public void setHistogram(DataframeML dataframe) {
-        this.dataframe = dataframe;
+    public IntegerProperty binsProperty() {
+		return bins;
+	}
 
-		dataframe.forEach((col, items) -> {
-            List<Color> generateColors = CommonsFX.generateRandomColors(stats.size());
-            Iterator<Color> iterator = generateColors.iterator();
-            colors.put(col, iterator.next());
-            Map<Double, Long> histogram = dataframe.histogram(col, bins.get());
-
-            stats.put(col, histogram.values().stream().mapToLong(e -> e).summaryStatistics());
-            xstats.put(col, histogram.keySet().stream().mapToDouble(Number::doubleValue).summaryStatistics());
-            stats.forEach((col2, itens) -> {
-                if (iterator.hasNext()) {
-                    colors.put(col2, iterator.next());
-                }
-            });
-        });
-
-    }
-
-    public final void drawGraph() {
-        if (dataframe == null) {
-            drawAxis();
-            return;
-
-        }
-        gc.clearRect(0, 0, 550, 550);
-        List<Entry<String, LongSummaryStatistics>> collect = stats.entrySet().stream()
-                .filter(e -> colors.containsKey(e.getKey())).collect(Collectors.toList());
-        List<Entry<String, DoubleSummaryStatistics>> collect2 = xstats.entrySet().stream()
-                .filter(e -> colors.containsKey(e.getKey())).collect(Collectors.toList());
-
-        long max = collect.stream().map(Entry<String, LongSummaryStatistics>::getValue)
-                .mapToLong(LongSummaryStatistics::getMax).max().orElse(0);
-        double min = collect.stream().map(Entry<String, LongSummaryStatistics>::getValue)
-                .mapToLong(LongSummaryStatistics::getMin).min().orElse(0);
-        yProportion = (max - min) / ybins.get();
-        double xmax = collect2.stream().map(Entry<String, DoubleSummaryStatistics>::getValue)
-                .mapToDouble(DoubleSummaryStatistics::getMax).max().orElse(0);
-        double xmin = collect2.stream().map(Entry<String, DoubleSummaryStatistics>::getValue)
-                .mapToDouble(DoubleSummaryStatistics::getMin).min().orElse(0);
-        double xbins = bins.get();
-        xProportion = (xmax - xmin) / xbins;
-
-        collect.forEach(entryS -> {
-
-            String key = entryS.getKey();
-            Map<Double, Long> histogram = dataframe.histogram(key, bins.get());
-
-            List<Entry<Double, Long>> entrySet = histogram.entrySet().stream()
-                    .sorted(Comparator.comparing(Entry<Double, Long>::getKey)).collect(Collectors.toList());
-            double maxLayout1 = maxLayout.get();
-            double layout1 = layout.get();
-
-            double j = (maxLayout1 - layout1) / bins.get();
-            double j2 = (maxLayout1 - layout1) / ybins.get();
-            gc.setLineWidth(5);
-            gc.setFill(colors.get(key));
-            for (Entry<Double, Long> entry : entrySet) {
-                Double x = entry.getKey();
-                int i = (int) (x / xProportion);
-                double x1 = i * j + layout1;
-                Long y = entry.getValue();
-                double y1 = maxLayout1 - y / yProportion * j2;
-                // gc.strokeLine(x1, maxLayout, x1, y1)
-                gc.fillRect(x1, y1, 20, maxLayout1 - y1);
-                // System.out.printf(Locale.ENGLISH, "x,y=(%.1f,%d)%n", x, y)
-            }
-            // System.out.println(histogram)
-        });
-        drawAxis();
-
-    }
+    public ObservableMap<String, Color> colorsProperty() {
+		return colors;
+	}
     public void drawAxis() {
 
         gc.setFill(Color.BLACK);
@@ -147,28 +81,91 @@ public class HistogramGraph extends Canvas {
         }
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public final void drawGraph() {
+        if (dataframe == null) {
+            drawAxis();
+            return;
+
+        }
+        gc.clearRect(0, 0, 550, 550);
+        List<Entry<String, LongSummaryStatistics>> yHistogram = stats.entrySet().stream()
+                .filter(e -> colors.containsKey(e.getKey())).collect(Collectors.toList());
+        List<Entry<String, DoubleSummaryStatistics>> xHistogram = xstats.entrySet().stream()
+                .filter(e -> colors.containsKey(e.getKey())).collect(Collectors.toList());
+
+        long max = yHistogram.stream().map(Entry<String, LongSummaryStatistics>::getValue)
+                .mapToLong(LongSummaryStatistics::getMax).max().orElse(0);
+        double min = yHistogram.stream().map(Entry<String, LongSummaryStatistics>::getValue)
+                .mapToLong(LongSummaryStatistics::getMin).min().orElse(0);
+        yProportion = (max - min) / ybins.get();
+        double xmax = xHistogram.stream().map(Entry<String, DoubleSummaryStatistics>::getValue)
+                .mapToDouble(DoubleSummaryStatistics::getMax).max().orElse(0);
+        double xmin = xHistogram.stream().map(Entry<String, DoubleSummaryStatistics>::getValue)
+                .mapToDouble(DoubleSummaryStatistics::getMin).min().orElse(0);
+        double xbins = bins.get();
+        xProportion = (xmax - xmin) / xbins;
+
+        yHistogram.forEach(entryS -> {
+
+            String key = entryS.getKey();
+            Map<Double, Long> histogram = dataframe.histogram(key, bins.get());
+
+            List<Entry<Double, Long>> entrySet = histogram.entrySet().stream()
+                    .sorted(Comparator.comparing(Entry<Double, Long>::getKey)).collect(Collectors.toList());
+            double maxLayout1 = maxLayout.get();
+            double layout1 = layout.get();
+
+            double j = (maxLayout1 - layout1) / bins.get();
+            double j2 = (maxLayout1 - layout1) / ybins.get();
+            gc.setLineWidth(5);
+            gc.setFill(colors.get(key));
+            for (Entry<Double, Long> entry : entrySet) {
+                Double x = entry.getKey();
+                int i = (int) (x / xProportion);
+                double x1 = i * j + layout1;
+                Long y = entry.getValue();
+                double y1 = maxLayout1 - y / yProportion * j2;
+                gc.fillRect(x1, y1, 20, maxLayout1 - y1);
+            }
+        });
+        drawAxis();
+
     }
 
-	public ObservableMap<String, Color> colorsProperty() {
-		return colors;
-	}
-
-	public ObservableMap<String, LongSummaryStatistics> statsProperty() {
-		return stats;
+	public DoubleProperty layoutProperty() {
+		return layout;
 	}
 
 	public DoubleProperty lineSizeProperty() {
 		return lineSize;
 	}
 
-	public DoubleProperty layoutProperty() {
-		return layout;
-	}
+	public void setHistogram(DataframeML dataframe) {
+        this.dataframe = dataframe;
 
-	public IntegerProperty binsProperty() {
-		return bins;
+		dataframe.forEach((col, items) -> {
+            List<Color> generateColors = CommonsFX.generateRandomColors(stats.size());
+            Iterator<Color> iterator = generateColors.iterator();
+            colors.put(col, iterator.next());
+            Map<Double, Long> histogram = dataframe.histogram(col, bins.get());
+
+            stats.put(col, histogram.values().stream().mapToLong(e -> e).summaryStatistics());
+            xstats.put(col, histogram.keySet().stream().mapToDouble(Number::doubleValue).summaryStatistics());
+            stats.forEach((col2, itens) -> {
+                if (iterator.hasNext()) {
+                    colors.put(col2, iterator.next());
+                }
+            });
+        });
+
+    }
+
+	public void setTitle(String title) {
+        this.title = title;
+    }
+
+	public ObservableMap<String, LongSummaryStatistics> statsProperty() {
+		return stats;
 	}
 
 	public LongProperty ybinsProperty() {

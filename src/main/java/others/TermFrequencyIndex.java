@@ -15,43 +15,9 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class TermFrequencyIndex {
-	public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
-
-		// Note: this comparator imposes orderings that are inconsistent with
-		// equals.
-		@Override
-		public int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
-            double da = 0D;
-			for (Entry<File, Double> entry : a.getValue().entrySet()) {
-                double value = entry.getValue().doubleValue();
-                da = da < value ? value : da;
-			}
-            double db = 0D;
-			for (Entry<File, Double> entry : b.getValue().entrySet()) {
-                double value = entry.getValue().doubleValue();
-                db = db < value ? value : db;
-			}
-
-            return Double.compare(db, da);
-		}
-	}
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(TermFrequencyIndex.class);
 
 	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
-
-	/**
-	 * Modos de calcular tf(t,d)=
-	 * 
-	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
-	 * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
-	 * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
-	 * documents, e.g. raw frequency divided by the maximum raw frequency of any
-	 * term in the document:
-	 * 
-	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
-	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
-	 */
 
 	/**
      * 
@@ -95,6 +61,19 @@ public final class TermFrequencyIndex {
      */
 	private static final Map<File, Map<String, Long>> MAPA_DOCUMENTO = new HashMap<>();
 
+	/**
+	 * Modos de calcular tf(t,d)=
+	 * 
+	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
+	 * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
+	 * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
+	 * documents, e.g. raw frequency divided by the maximum raw frequency of any
+	 * term in the document:
+	 * 
+	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
+	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
+	 */
+
 	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
 
 	private TermFrequencyIndex() {
@@ -136,14 +115,14 @@ public final class TermFrequencyIndex {
         try (BufferedReader bufferedReader = Files.newBufferedReader(d.toPath())) {
 
 			String readLine;
-			Map<String, Long> collect = new ConcurrentHashMap<>();
+            Map<String, Long> frequencyMap = new ConcurrentHashMap<>();
 			do {
 				readLine = bufferedReader.readLine();
 				if (readLine != null) {
 
 					String[] split = readLine.split(REGEX_CAMEL_CASE);
 					List<String> asList = Arrays.asList(split);
-					asList.parallelStream().filter(a -> !a.isEmpty()).reduce(collect, (mapa, a) -> {
+                    asList.parallelStream().filter(a -> !a.isEmpty()).reduce(frequencyMap, (mapa, a) -> {
 						if (mapa.containsKey(a.toLowerCase())) {
                             Long long1 = mapa.get(a.toLowerCase());
                             mapa.put(a.toLowerCase(), long1 + 1L);
@@ -155,30 +134,14 @@ public final class TermFrequencyIndex {
 				}
 			} while (readLine != null);
 
-			return collect;
+            return frequencyMap;
 		} catch (IOException e) {
 			LOGGER.error("", e);
 			throw e;
 		}
 	}
 
-	private static double getInverseDocumentFrequency(String p) {
-		Set<Entry<File, Map<String, Long>>> entrySet = MAPA_DOCUMENTO.entrySet();
-		double idf = 1D;
-		for (Entry<File, Map<String, Long>> entry : entrySet) {
-			if (entry.getValue().containsKey(p)) {
-				idf += 1;
-			}
-		}
-
-		return Math.log(MAPA_DOCUMENTO.size() / idf);
-	}
-
-    private static double getTermFrequency(long fre) {
-		return fre == 0 ? 0D : 1 + Math.log(fre);
-	}
-
-    public static void identifyKeyWordsInSourceFiles() {
+	public static void identifyKeyWordsInSourceFiles() {
 		try {
 
 			File arquivo = new File("src");
@@ -206,6 +169,22 @@ public final class TermFrequencyIndex {
 		}
 	}
 
+	private static double getInverseDocumentFrequency(String p) {
+		Set<Entry<File, Map<String, Long>>> entrySet = MAPA_DOCUMENTO.entrySet();
+		double idf = 1D;
+		for (Entry<File, Map<String, Long>> entry : entrySet) {
+			if (entry.getValue().containsKey(p)) {
+				idf += 1;
+			}
+		}
+
+		return Math.log(MAPA_DOCUMENTO.size() / idf);
+	}
+
+    private static double getTermFrequency(long fre) {
+		return fre == 0 ? 0D : 1 + Math.log(fre);
+	}
+
     private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
         try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
 			List<String> javaKeywords = Arrays.asList("abstract", "continue", "for", "new", "switch", "assert",
@@ -224,6 +203,27 @@ public final class TermFrequencyIndex {
 			});
 		} catch (Exception e2) {
             HasLogging.log().error("", e2);
+		}
+	}
+
+    public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
+
+		// Note: this comparator imposes orderings that are inconsistent with
+		// equals.
+		@Override
+		public int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
+            double da = 0D;
+			for (Entry<File, Double> entry : a.getValue().entrySet()) {
+                double value = entry.getValue().doubleValue();
+                da = da < value ? value : da;
+			}
+            double db = 0D;
+			for (Entry<File, Double> entry : b.getValue().entrySet()) {
+                double value = entry.getValue().doubleValue();
+                db = db < value ? value : db;
+			}
+
+            return Double.compare(db, da);
 		}
 	}
 }

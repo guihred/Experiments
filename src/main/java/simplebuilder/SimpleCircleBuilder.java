@@ -12,11 +12,6 @@ public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle, SimpleCircle
 	}
 
 
-	public SimpleCircleBuilder radius(double d) {
-		circle.setRadius(d);
-		return this;
-	}
-
 	public SimpleCircleBuilder centerX(double d) {
 		circle.setCenterX(d);
 		return this;
@@ -24,6 +19,11 @@ public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle, SimpleCircle
 
 	public SimpleCircleBuilder centerY(double d) {
 		circle.setCenterY(d);
+		return this;
+	}
+
+	public SimpleCircleBuilder radius(double d) {
+		circle.setRadius(d);
 		return this;
 	}
 

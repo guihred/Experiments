@@ -14,10 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class TheMenuGrid extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Menus Example");
@@ -61,5 +57,9 @@ public class TheMenuGrid extends Application {
 		menuBar.getMenus().addAll(fileMenu, cameraMenu, alarmMenu);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

@@ -8,15 +8,6 @@ import utils.HasLogging;
 
 public class BaseDAO implements HasLogging {
 
-    public void executeRun(Consumer<Session> run) {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = getTransaction(session);
-        run.accept(session);
-		session.flush();
-        transaction.commit();
-        session.close();
-	}
-
     public <T> T execute(Function<Session, T> run) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = getTransaction(session);
@@ -26,6 +17,15 @@ public class BaseDAO implements HasLogging {
         session.close();
         return apply;
     }
+
+    public void executeRun(Consumer<Session> run) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = getTransaction(session);
+        run.accept(session);
+		session.flush();
+        transaction.commit();
+        session.close();
+	}
 
 
     private static Transaction getTransaction(Session session) {

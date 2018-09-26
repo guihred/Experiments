@@ -36,10 +36,6 @@ public class Square2048Model {
 
     }
 
-    private int newNumber() {
-        return (random.nextInt(2) + 1) * 2;
-    }
-
     public final Square2048[][] getMap() {
         return map;
     }
@@ -94,6 +90,10 @@ public class Square2048Model {
             emptySquares.get(random.nextInt(emptySquares.size())).setNumber(newNumber());
         }
 
+    }
+
+    private int newNumber() {
+        return (random.nextInt(2) + 1) * 2;
     }
 
     private static boolean withinRange(int x, int y, int i, int j, int mapWidth, int mapHeight) {

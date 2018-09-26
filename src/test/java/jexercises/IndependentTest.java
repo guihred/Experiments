@@ -54,10 +54,10 @@ public class IndependentTest implements HasLogging {
     @Test
     public void testCh3() {
         Random random = new Random();
-        List<Employee> collect = random.ints(1, 11).map(e -> ++e * 500).limit(5).mapToObj(Employee::new)
+        List<Employee> randomEmployees = random.ints(1, 11).map(e -> ++e * 500).limit(5).mapToObj(Employee::new)
                 .collect(toList());
-        measureTime("Ch3.average", () -> Ch3.average(collect));
-        measureTime("Ch3.largest", () -> Ch3.largest(collect));
+        measureTime("Ch3.average", () -> Ch3.average(randomEmployees));
+        measureTime("Ch3.largest", () -> Ch3.largest(randomEmployees));
         measureTime("Ch3.IntSequence.of", () -> Ch3.IntSequence.of(1, 2, 3).foreach(e -> LOGGER.trace("{}", e)));
         measureTime("new Ch3.SquareSequence",
                 () -> new Ch3.SquareSequence().limit(10).foreach(e -> LOGGER.trace("{}", e)));

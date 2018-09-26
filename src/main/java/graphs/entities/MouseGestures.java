@@ -6,12 +6,6 @@ import javafx.scene.input.MouseEvent;
 
 public class MouseGestures {
 
-	private static class DragContext {
-		protected boolean dragged;
-		protected double x;
-		protected double y;
-	}
-
 	private final DragContext dragContext = new DragContext();
 
 	private Graph graph;
@@ -66,5 +60,11 @@ public class MouseGestures {
 		node.setOnMouseDragged(onMouseDraggedEventHandler);
 		node.setOnMouseReleased(onMouseReleasedEventHandler);
 
+	}
+
+	private static class DragContext {
+		protected boolean dragged;
+		protected double x;
+		protected double y;
 	}
 }

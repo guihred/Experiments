@@ -29,10 +29,6 @@ public class AudioConfigLauncher extends Application {
     private static final String COLOR_AUDIO = "#131021";
     private AudioConfigModel acModel = new AudioConfigModel();
 
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
-
 	@Override
 	public void start(Stage stage) {
         Text textDb = new SimpleTextBuilder().x(18).y(69).textOrigin(VPos.TOP).fill(Color.web(COLOR_AUDIO))
@@ -79,6 +75,10 @@ public class AudioConfigLauncher extends Application {
 		stage.setScene(scene);
 		stage.setTitle("Audio Configuration");
 		stage.show();
+	}
+
+	public static void main(String[] args) {
+		Application.launch(args);
 	}
 
 }

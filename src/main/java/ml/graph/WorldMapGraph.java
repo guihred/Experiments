@@ -106,10 +106,10 @@ public class WorldMapGraph extends Canvas implements HasLogging {
 
         gc.setFill(Color.GRAY);
         gc.setStroke(Color.BLACK);
-        List<Entry<String, Color>> collect = categoryMap.entrySet().stream()
+        List<Entry<String, Color>> colorsByCategory = categoryMap.entrySet().stream()
                 .sorted(Comparator.comparing(Entry<String, Color>::getKey)).collect(Collectors.toList());
-        for (int i = 0; i < collect.size(); i++) {
-            Entry<String, Color> entry = collect.get(i);
+        for (int i = 0; i < colorsByCategory.size(); i++) {
+            Entry<String, Color> entry = colorsByCategory.get(i);
             gc.setFill(entry.getValue());
             gc.fillRect(x, y + step * i, 10, 10);
             gc.strokeRect(x, y + step * i, 10, 10);
@@ -222,6 +222,13 @@ public class WorldMapGraph extends Canvas implements HasLogging {
         return null;
     }
 
+    private boolean isSuitableForCategory() {
+        return dataframeML != null && dataframeML.getFormat(valueHeader.get()) == String.class;
+    }
+    private boolean isSuitableForSummary() {
+        return summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class;
+    }
+
     public static Color getColorForValue(double value, double min, double max) {
         if (value < min || value > max) {
             return Color.BLACK;
@@ -232,12 +239,5 @@ public class WorldMapGraph extends Canvas implements HasLogging {
         //        return Color.hsb(RED_HUE, 1.0, brightness);
         double saturation = (value - min) / (max - min);
         return Color.hsb(RED_HUE, saturation, 1.0);
-    }
-    private boolean isSuitableForCategory() {
-        return dataframeML != null && dataframeML.getFormat(valueHeader.get()) == String.class;
-    }
-
-    private boolean isSuitableForSummary() {
-        return summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class;
     }
 }

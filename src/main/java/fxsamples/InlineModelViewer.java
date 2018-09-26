@@ -35,30 +35,6 @@ public class InlineModelViewer extends Application {
 
 	private MeshView meshView = loadMeshView();
 
-	private MeshView loadMeshView() {
-		float[] points = { -5, 5, 0, -5, -5, 0, 5, 5, 0, 5, -5, 0 };
-		float[] texCoords = { 1, 1, 1, 0, 0, 1, 0, 0 };
-		int[] faces = { 2, 2, 1, 1, 0, 0, 2, 2, 3, 3, 1, 1 };
-
-		TriangleMesh mesh = new TriangleMesh();
-		mesh.getPoints().setAll(points);
-		mesh.getTexCoords().setAll(texCoords);
-		mesh.getFaces().setAll(faces);
-
-		return new MeshView(mesh);
-	}
-
-	private Group buildScene() {
-		meshView.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-		meshView.setTranslateY(VIEWPORT_SIZE / 2 * 9.0 / 16 + MODEL_Y_OFFSET);
-		meshView.setTranslateZ(VIEWPORT_SIZE / 2 + MODEL_Z_OFFSET);
-		meshView.setScaleX(MODEL_SCALE_FACTOR);
-		meshView.setScaleY(MODEL_SCALE_FACTOR);
-		meshView.setScaleZ(MODEL_SCALE_FACTOR);
-
-		return new Group(meshView);
-	}
-
 	@Override
 	public void start(Stage stage) {
         Image texture = new Image(ResourceFXUtils.toExternalForm("wall.jpg"));
@@ -77,12 +53,15 @@ public class InlineModelViewer extends Application {
 		stage.show();
 	}
 
-	private SubScene createScene3D(Group group) {
-		SubScene scene3d = new SubScene(group, VIEWPORT_SIZE, VIEWPORT_SIZE * 9.0 / 16, true,
-				SceneAntialiasing.BALANCED);
-		scene3d.setFill(Color.rgb(10, 10, 40));
-		scene3d.setCamera(new PerspectiveCamera());
-		return scene3d;
+	private Group buildScene() {
+		meshView.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
+		meshView.setTranslateY(VIEWPORT_SIZE / 2 * 9.0 / 16 + MODEL_Y_OFFSET);
+		meshView.setTranslateZ(VIEWPORT_SIZE / 2 + MODEL_Z_OFFSET);
+		meshView.setScaleX(MODEL_SCALE_FACTOR);
+		meshView.setScaleY(MODEL_SCALE_FACTOR);
+		meshView.setScaleZ(MODEL_SCALE_FACTOR);
+
+		return new Group(meshView);
 	}
 
 	private VBox createControls(RotateTransition rotateTransition) {
@@ -110,6 +89,27 @@ public class InlineModelViewer extends Application {
 		VBox controls = new VBox(10, rotate, textureCheck, cull, wireframe);
 		controls.setPadding(new Insets(10));
 		return controls;
+	}
+
+	private SubScene createScene3D(Group group) {
+		SubScene scene3d = new SubScene(group, VIEWPORT_SIZE, VIEWPORT_SIZE * 9.0 / 16, true,
+				SceneAntialiasing.BALANCED);
+		scene3d.setFill(Color.rgb(10, 10, 40));
+		scene3d.setCamera(new PerspectiveCamera());
+		return scene3d;
+	}
+
+	private MeshView loadMeshView() {
+		float[] points = { -5, 5, 0, -5, -5, 0, 5, 5, 0, 5, -5, 0 };
+		float[] texCoords = { 1, 1, 1, 0, 0, 1, 0, 0 };
+		int[] faces = { 2, 2, 1, 1, 0, 0, 2, 2, 3, 3, 1, 1 };
+
+		TriangleMesh mesh = new TriangleMesh();
+		mesh.getPoints().setAll(points);
+		mesh.getTexCoords().setAll(texCoords);
+		mesh.getFaces().setAll(faces);
+
+		return new MeshView(mesh);
 	}
 
 	private RotateTransition rotate3dGroup(Group group) {

@@ -25,15 +25,6 @@ public final class UnRar {
     private UnRar() {
     }
 
-    public static void main(String[] args) {
-        File file = new File(SRC_DIRECTORY);
-        extractRarFiles(file);
-    }
-
-    public static void extractRarFiles(String file) {
-        extractRarFiles(new File(file));
-    }
-
     public static void extractRarFiles(File file) {
         File output = new File(file, "out");
         if (!output.exists()) {
@@ -47,6 +38,15 @@ public final class UnRar {
             }
         }
         printSummary();
+    }
+
+    public static void extractRarFiles(String file) {
+        extractRarFiles(new File(file));
+    }
+
+    public static void main(String[] args) {
+        File file = new File(SRC_DIRECTORY);
+        extractRarFiles(file);
     }
 
     private static void printSummary() {
@@ -70,6 +70,23 @@ public final class UnRar {
         LOGGER.trace("successful:\t{}", successfulFiles.size());
         LOGGER.trace("unsupported:\t{}", unsupportedFiles.size());
         LOGGER.trace("failed:\t\t{}", errorFiles.size());
+    }
+
+    private static void recurseDirectory(File file, File output) {
+        if (file == null || !file.exists()) {
+            return;
+        }
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files == null) {
+                return;
+            }
+            for (File f : files) {
+                recurseDirectory(f, output);
+            }
+        } else {
+            testFile(file, output);
+        }
     }
 
     private static void testFile(File file, File output) {
@@ -136,22 +153,5 @@ public final class UnRar {
         }
         return true;
 
-    }
-
-    private static void recurseDirectory(File file, File output) {
-        if (file == null || !file.exists()) {
-            return;
-        }
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files == null) {
-                return;
-            }
-            for (File f : files) {
-                recurseDirectory(f, output);
-            }
-        } else {
-            testFile(file, output);
-        }
     }
 }

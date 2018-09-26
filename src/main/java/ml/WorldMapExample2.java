@@ -46,15 +46,7 @@ public class WorldMapExample2 extends Application {
 		theStage.show();
 	}
 
-	private static double convertToDegrees(Object[] d) {
-		String string = d[1].toString();
-		int i = string.contains("W") || string.contains("S") ? -1 : 1;
-		double angdeg = ((Number) d[0]).doubleValue() + Double.parseDouble(string.replaceAll("\\s\\w", "")) / 60;
-		return i * angdeg;
-	}
-
-
-    private VBox newSlider(String string, double min, int max, Property<Number> radius) {
+	private VBox newSlider(String string, double min, int max, Property<Number> radius) {
         Slider build = new SimpleSliderBuilder().min(min).max(max).build();
         build.valueProperty().bindBidirectional(radius);
 		build.setBlockIncrement((max - min) / 100);
@@ -62,8 +54,16 @@ public class WorldMapExample2 extends Application {
         return new VBox(new Text(string), build);
     }
 
+
     public static void main(String[] args) {
         launch(args);
     }
+
+    private static double convertToDegrees(Object[] d) {
+		String string = d[1].toString();
+		int i = string.contains("W") || string.contains("S") ? -1 : 1;
+		double angdeg = ((Number) d[0]).doubleValue() + Double.parseDouble(string.replaceAll("\\s\\w", "")) / 60;
+		return i * angdeg;
+	}
 }
 

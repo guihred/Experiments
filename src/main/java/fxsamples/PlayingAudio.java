@@ -34,17 +34,17 @@ import utils.ResourceFXUtils;
  */
 public class PlayingAudio extends Application {
     private static final Logger LOGGER = HasLogging.log(PlayingAudio.class);
-	private MediaPlayer mediaPlayer;
-	private Point2D anchorPt;
-	private Point2D previousLocation;
-	private ChangeListener<Duration> progressListener;
-	private Stage mainStage;
 	private static final String STOP_BUTTON_ID = "stop-button";
 	private static final String PLAY_BUTTON_ID = "play-button";
 	private static final String PAUSE_BUTTON_ID = "pause-button";
 	private static final String CLOSE_BUTTON_ID = "close-button";
 	private static final String VIS_CONTAINER_ID = "viz-container";
 	private static final String SEEK_POS_SLIDER_ID = "seek-position-slider";
+	private MediaPlayer mediaPlayer;
+	private Point2D anchorPt;
+	private Point2D previousLocation;
+	private ChangeListener<Duration> progressListener;
+	private Stage mainStage;
 
 	/**
 	 * @param args
@@ -84,30 +84,6 @@ public class PlayingAudio extends Application {
 	}
 
 	/**
-	 * Initialize the stage to allow the mouse cursor to move the application
-	 * using dragging.
-	 *
-	 */
-	private void initMovablePlayer() {
-		Scene scene = mainStage.getScene();
-		// starting initial anchor point
-		scene.setOnMousePressed(mouseEvent -> anchorPt = new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY()));
-		// dragging the entire stage
-		scene.setOnMouseDragged(mouseEvent -> {
-			if (anchorPt != null && previousLocation != null) {
-				mainStage.setX(previousLocation.getX() + mouseEvent.getScreenX() - anchorPt.getX());
-				mainStage.setY(previousLocation.getY() + mouseEvent.getScreenY() - anchorPt.getY());
-			}
-		});
-		// set the current location
-		scene.setOnMouseReleased(mouseEvent -> previousLocation = new Point2D(mainStage.getX(), mainStage
-				.getY()));
-		// Initialize previousLocation after Stage is shown
-		mainStage.addEventHandler(WindowEvent.WINDOW_SHOWN,
-				t -> previousLocation = new Point2D(mainStage.getX(), mainStage.getY()));
-	}
-
-	/**
 	 * A simple rectangular area as the surface of the app.
 	 * 
 	 * @return Node a Rectangle node.
@@ -122,48 +98,6 @@ public class PlayingAudio extends Application {
 		applicationArea.widthProperty().bind(scene.widthProperty());
 		applicationArea.heightProperty().bind(scene.heightProperty());
 		return applicationArea;
-	}
-
-	/**
-	 * Initialize the Drag and Drop ability for media files.
-	 *
-	 */
-	private void initFileDragNDrop() {
-		Scene scene = mainStage.getScene();
-		scene.setOnDragOver(dragEvent -> {
-			Dragboard db = dragEvent.getDragboard();
-			if (db.hasFiles() || db.hasUrl()) {
-				dragEvent.acceptTransferModes(TransferMode.LINK);
-			} else {
-				dragEvent.consume();
-			}
-		});
-		// Dropping over surface
-		scene.setOnDragDropped(dragEvent -> {
-			Dragboard db = dragEvent.getDragboard();
-			boolean success = false;
-			if (db.hasFiles()) {
-				success = true;
-                if (!db.getFiles().isEmpty()) {
-					tryPlayMedia(db);
-				}
-			} else {
-				// audio file from some host or jar
-				playMedia(db.getUrl());
-				success = true;
-			}
-			dragEvent.setDropCompleted(success);
-			dragEvent.consume();
-		});
-	}
-
-	private void tryPlayMedia(Dragboard db) {
-		try {
-			String filePath = db.getFiles().get(0).toURI().toURL().toString();
-			playMedia(filePath);
-		} catch (MalformedURLException ex) {
-			LOGGER.error("", ex);
-		}
 	}
 
 	/**
@@ -251,6 +185,86 @@ public class PlayingAudio extends Application {
 	}
 
 	/**
+	 * A position slider to seek backward and forward that is bound to a media
+	 * player control.
+	 *
+	 * @return Slider control bound to media player.
+	 */
+	private Slider createSlider() {
+		Slider slider = new Slider(0, 100, 1);
+		slider.setId(SEEK_POS_SLIDER_ID);
+		slider.valueProperty().addListener(observable -> {
+			if (slider.isValueChanging() && mediaPlayer != null
+					&& mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
+				// convert seconds to millis
+				double dur = slider.getValue() * 1000;
+				mediaPlayer.seek(Duration.millis(dur));
+			}
+		});
+		Scene scene = mainStage.getScene();
+		slider.setTranslateX(10);
+		slider.translateYProperty().bind(scene.heightProperty().subtract(50));
+		return slider;
+	}
+
+	/**
+	 * Initialize the Drag and Drop ability for media files.
+	 *
+	 */
+	private void initFileDragNDrop() {
+		Scene scene = mainStage.getScene();
+		scene.setOnDragOver(dragEvent -> {
+			Dragboard db = dragEvent.getDragboard();
+			if (db.hasFiles() || db.hasUrl()) {
+				dragEvent.acceptTransferModes(TransferMode.LINK);
+			} else {
+				dragEvent.consume();
+			}
+		});
+		// Dropping over surface
+		scene.setOnDragDropped(dragEvent -> {
+			Dragboard db = dragEvent.getDragboard();
+			boolean success = false;
+			if (db.hasFiles()) {
+				success = true;
+                if (!db.getFiles().isEmpty()) {
+					tryPlayMedia(db);
+				}
+			} else {
+				// audio file from some host or jar
+				playMedia(db.getUrl());
+				success = true;
+			}
+			dragEvent.setDropCompleted(success);
+			dragEvent.consume();
+		});
+	}
+
+	/**
+	 * Initialize the stage to allow the mouse cursor to move the application
+	 * using dragging.
+	 *
+	 */
+	private void initMovablePlayer() {
+		Scene scene = mainStage.getScene();
+		// starting initial anchor point
+		scene.setOnMousePressed(mouseEvent -> anchorPt = new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY()));
+		// dragging the entire stage
+		scene.setOnMouseDragged(mouseEvent -> {
+			if (anchorPt != null && previousLocation != null) {
+				mainStage.setX(previousLocation.getX() + mouseEvent.getScreenX() - anchorPt.getX());
+				mainStage.setY(previousLocation.getY() + mouseEvent.getScreenY() - anchorPt.getY());
+			}
+		});
+		// set the current location
+		scene.setOnMouseReleased(mouseEvent -> previousLocation = new Point2D(mainStage.getX(), mainStage
+				.getY()));
+		// Initialize previousLocation after Stage is shown
+		mainStage.addEventHandler(WindowEvent.WINDOW_SHOWN,
+				t -> previousLocation = new Point2D(mainStage.getX(), mainStage.getY()));
+	}
+
+	/**
 	 * After a file is dragged onto the application a new MediaPlayer instance
 	 * is created with a media file.
 	 *
@@ -315,6 +329,15 @@ public class PlayingAudio extends Application {
 				});
 	}
 
+	private void tryPlayMedia(Dragboard db) {
+		try {
+			String filePath = db.getFiles().get(0).toURI().toURL().toString();
+			playMedia(filePath);
+		} catch (MalformedURLException ex) {
+			LOGGER.error("", ex);
+		}
+	}
+
 	/**
 	 * Sets play button visible and pause button not visible when playVisible is
 	 * true otherwise the opposite.
@@ -341,29 +364,6 @@ public class PlayingAudio extends Application {
 			pauseButton.toFront();
 			playButton.toBack();
 		}
-	}
-
-	/**
-	 * A position slider to seek backward and forward that is bound to a media
-	 * player control.
-	 *
-	 * @return Slider control bound to media player.
-	 */
-	private Slider createSlider() {
-		Slider slider = new Slider(0, 100, 1);
-		slider.setId(SEEK_POS_SLIDER_ID);
-		slider.valueProperty().addListener(observable -> {
-			if (slider.isValueChanging() && mediaPlayer != null
-					&& mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
-				// convert seconds to millis
-				double dur = slider.getValue() * 1000;
-				mediaPlayer.seek(Duration.millis(dur));
-			}
-		});
-		Scene scene = mainStage.getScene();
-		slider.setTranslateX(10);
-		slider.translateYProperty().bind(scene.heightProperty().subtract(50));
-		return slider;
 	}
 
 	public static void main(String[] args) {

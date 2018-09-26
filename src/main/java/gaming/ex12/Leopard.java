@@ -18,30 +18,6 @@ public class Leopard extends Player {
 		colisionWidth = 35;
 	}
 
-	public void walkLeft() {
-		if (velocityX == 0) {
-			velocityX = -5;
-		}
-		direction = Direction.LEFT;
-		accelerationX = -1;
-	}
-
-	public void stop() {
-		velocityX = 0;
-		accelerationX = 0;
-		if (status == LeopardStatus.RUNNING) {
-			status = LeopardStatus.STOPPED;
-		}
-	}
-
-	public void walkRight() {
-		direction = Direction.RIGHT;
-		if (velocityX == 0) {
-			velocityX = 5;
-		}
-		accelerationX = 1;
-	}
-
 	public void jump() {
 		if (status == LeopardStatus.RUNNING || status == LeopardStatus.STOPPED) {
 			velocityY = -15;
@@ -50,10 +26,24 @@ public class Leopard extends Player {
 		}
 	}
 
-	enum LeopardStatus {
-		STOPPED,
-		RUNNING,
-		JUMPING;
+	@Override
+	public void render(GraphicsContext gc) {
+		if (status == LeopardStatus.RUNNING) {
+			runAnimation.render(gc, this);
+		} else if (status == LeopardStatus.JUMPING) {
+			jumpAnimation.render(gc, this);
+		} else {
+			stoppedAnimation.render(gc, this);
+		}
+
+	}
+
+	public void stop() {
+		velocityX = 0;
+		accelerationX = 0;
+		if (status == LeopardStatus.RUNNING) {
+			status = LeopardStatus.STOPPED;
+		}
 	}
 
 	@Override
@@ -75,16 +65,26 @@ public class Leopard extends Player {
 
 	}
 
-	@Override
-	public void render(GraphicsContext gc) {
-		if (status == LeopardStatus.RUNNING) {
-			runAnimation.render(gc, this);
-		} else if (status == LeopardStatus.JUMPING) {
-			jumpAnimation.render(gc, this);
-		} else {
-			stoppedAnimation.render(gc, this);
+	public void walkLeft() {
+		if (velocityX == 0) {
+			velocityX = -5;
 		}
+		direction = Direction.LEFT;
+		accelerationX = -1;
+	}
 
+	public void walkRight() {
+		direction = Direction.RIGHT;
+		if (velocityX == 0) {
+			velocityX = 5;
+		}
+		accelerationX = 1;
+	}
+
+	enum LeopardStatus {
+		STOPPED,
+		RUNNING,
+		JUMPING;
 	}
 
 }

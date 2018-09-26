@@ -17,34 +17,7 @@ import org.apache.poi.util.IOUtils;
 public class BackgroundProcesses extends Application {
 	private Task<Boolean> copyWorker;
 
-    private static void copyFile(String src, String dest) throws InterruptedException, IOException {
-		// simulate a long time
-        IOUtils.copy(new FileInputStream(src), new FileOutputStream(dest));
-
-        Random rnd = new Random(System.currentTimeMillis());
-		long millis = rnd.nextInt(1000);
-		Thread.sleep(millis);
-	}
-
-	private Task<Boolean> createWorker(final int numFiles) {
-		return new Task<Boolean>() {
-			@Override
-			public Boolean call() throws Exception {
-                for (long i = 0; i < numFiles; i++) {
-					long elapsedTime = System.currentTimeMillis();
-					copyFile("some file", "some dest file");
-					elapsedTime = System.currentTimeMillis() - elapsedTime;
-					String status = elapsedTime + " milliseconds";
-					// queue up status
-					updateMessage(status);
-					updateProgress(i + 1, numFiles);
-				}
-				return true;
-			}
-		};
-	}
-
-	@Override
+    @Override
 	public void start(Stage primaryStage) {
 		primaryStage
                 .setTitle("Background Processes");
@@ -98,7 +71,34 @@ public class BackgroundProcesses extends Application {
 		primaryStage.show();
 	}
 
+	private Task<Boolean> createWorker(final int numFiles) {
+		return new Task<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+                for (long i = 0; i < numFiles; i++) {
+					long elapsedTime = System.currentTimeMillis();
+					copyFile("some file", "some dest file");
+					elapsedTime = System.currentTimeMillis() - elapsedTime;
+					String status = elapsedTime + " milliseconds";
+					// queue up status
+					updateMessage(status);
+					updateProgress(i + 1, numFiles);
+				}
+				return true;
+			}
+		};
+	}
+
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	private static void copyFile(String src, String dest) throws InterruptedException, IOException {
+		// simulate a long time
+        IOUtils.copy(new FileInputStream(src), new FileOutputStream(dest));
+
+        Random rnd = new Random(System.currentTimeMillis());
+		long millis = rnd.nextInt(1000);
+		Thread.sleep(millis);
 	}
 }

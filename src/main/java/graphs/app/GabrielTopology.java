@@ -13,6 +13,12 @@ public class GabrielTopology extends BaseTopology {
 		super(graph, "Gabriel", size);
 	}
 
+	public double distance(double x1, double x2, double y1, double y2) {
+		double a = x1 - x2;
+		double b = y1 - y2;
+		return Math.sqrt(a * a + b * b);
+	}
+
 	@Override
 	public void execute() {
 		graph.clean();
@@ -46,12 +52,6 @@ public class GabrielTopology extends BaseTopology {
 		}
 		graph.endUpdate();
 
-	}
-
-	public double distance(double x1, double x2, double y1, double y2) {
-		double a = x1 - x2;
-		double b = y1 - y2;
-		return Math.sqrt(a * a + b * b);
 	}
 
 	public static double determinant(Cell a, Cell b, Cell c, Cell d) {

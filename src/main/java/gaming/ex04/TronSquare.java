@@ -47,14 +47,7 @@ public class TronSquare extends Region {
 
     }
 
-    @Override
-    public int hashCode() {
-        return getI() * MAP_SIZE + getJ();
-    }
-
-
-
-	public int getI() {
+    public int getI() {
 		return i;
 	}
 
@@ -66,12 +59,19 @@ public class TronSquare extends Region {
 
 
 
-	public void setState(TronState value) {
-		state.set(value);
-	}
-
 	public TronState getState() {
 		return state.get();
+	}
+
+
+
+	@Override
+    public int hashCode() {
+        return getI() * MAP_SIZE + getJ();
+    }
+
+	public void setState(TronState value) {
+		state.set(value);
 	}
 
 }

@@ -23,12 +23,12 @@ public class TetrisSquare extends Region {
                 .otherwise("-fx-background-color:green; "));
     }
 
-	public void setState(TetrisPieceState value) {
-		state.set(value);
-	}
-
 	public TetrisPieceState getState() {
 		return state.get();
+	}
+
+	public void setState(TetrisPieceState value) {
+		state.set(value);
 	}
 
 }

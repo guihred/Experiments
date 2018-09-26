@@ -11,20 +11,17 @@ public class MadEdge implements Comparable<MadEdge> {
         this.target = target;
     }
 
+    @Override
+    public int compareTo(MadEdge o) {
+        return 0;
+    }
+
     public MadCell getSource() {
         return source;
     }
 
-    public void setSource(MadCell source) {
-        this.source = source;
-    }
-
     public MadCell getTarget() {
         return target;
-    }
-
-    public void setTarget(MadCell target) {
-        this.target = target;
     }
 
     public boolean isMain() {
@@ -35,9 +32,12 @@ public class MadEdge implements Comparable<MadEdge> {
         this.main = main;
     }
 
-    @Override
-    public int compareTo(MadEdge o) {
-        return 0;
+    public void setSource(MadCell source) {
+        this.source = source;
+    }
+
+    public void setTarget(MadCell target) {
+        this.target = target;
     }
 
 }

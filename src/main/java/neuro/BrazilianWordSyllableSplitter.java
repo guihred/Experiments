@@ -58,13 +58,6 @@ public final class BrazilianWordSyllableSplitter {
 
 	}
 
-	private static Stream<String> getWords(URI txtFile) throws IOException {
-        return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential()
-				.map(String::trim)
-				.filter(s -> !s.isEmpty())
-				.distinct();
-	}
-
 	public static String splitSyllables(String word) {
 
 		int length = word.length();
@@ -97,11 +90,38 @@ public final class BrazilianWordSyllableSplitter {
 			}
 		}
 
-		String collect = syllable.stream().flatMap((String sy) -> Stream.of(sy.split(REGEX_HIATUS)))
+        String finalSplitWord = syllable.stream().flatMap((String sy) -> Stream.of(sy.split(REGEX_HIATUS)))
 				.collect(Collectors.joining("-"));
-        LOGGER.trace("{} {}", word, collect);
-		return collect;
+        LOGGER.trace("{} {}", word, finalSplitWord);
+        return finalSplitWord;
 
+	}
+
+	private static Stream<String> getWords(URI txtFile) throws IOException {
+        return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential()
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.distinct();
+	}
+
+	private static boolean hasAccent(String a) {
+		return a.matches(REGEX_HAS_ACCENT);
+	}
+
+    private static boolean isAscending(String b) {
+		return b.matches(REGEX_ASCENDING_DIPHTHONG);
+	}
+
+    private static boolean isConsonant(String... b) {
+        return Stream.of(b).allMatch(s -> s.matches(REGEX_CONSONANTS));
+	}
+
+	private static boolean isConsonantCluster(String a) {
+		return a.matches(REGEX_CONSONANT_CLUSTER);
+	}
+
+    private static boolean isVowel(String a) {
+		return a.matches(REGEX_VOWEL);
 	}
 
 	private static boolean splitSyllableCondition(int i, String a, String b, String c, String d) {
@@ -111,34 +131,14 @@ public final class BrazilianWordSyllableSplitter {
 				|| (a + b + c + d).matches(REGEX_VOWEL_CLUSTER_VOWEL);
 	}
 
-    private static boolean threeNonClusterConsonantsAndAVowel(int i, String a, String b, String c, String d) {
+	private static boolean threeNonClusterConsonantsAndAVowel(int i, String a, String b, String c, String d) {
         return isConsonant(a, b, c) && !isConsonantCluster(a + b) && isConsonantCluster(b + c) && isVowel(d)
         && i != 0;
     }
 
-    private static boolean twoNonClusterConsonantsAndAVowel(int i, String a, String b, String c) {
+	private static boolean twoNonClusterConsonantsAndAVowel(int i, String a, String b, String c) {
         return isConsonant(a, b) && !isConsonantCluster(a + b) && isVowel(c) && i != 0;
     }
-
-	private static boolean isConsonantCluster(String a) {
-		return a.matches(REGEX_CONSONANT_CLUSTER);
-	}
-
-    private static boolean isConsonant(String... b) {
-        return Stream.of(b).allMatch(s -> s.matches(REGEX_CONSONANTS));
-	}
-
-	private static boolean isAscending(String b) {
-		return b.matches(REGEX_ASCENDING_DIPHTHONG);
-	}
-
-	private static boolean isVowel(String a) {
-		return a.matches(REGEX_VOWEL);
-	}
-
-	private static boolean hasAccent(String a) {
-		return a.matches(REGEX_HAS_ACCENT);
-	}
 
 
 }

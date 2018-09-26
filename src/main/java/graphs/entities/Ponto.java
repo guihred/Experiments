@@ -35,6 +35,13 @@ public class Ponto {
 		return c;
 	}
 
+	public double getX() {
+        return x;
+    }
+
+	public double getY() {
+        return y;
+    }
 	@Override
 	public int hashCode() {
 		return Objects.hash(x, y);
@@ -43,33 +50,26 @@ public class Ponto {
 	public double mag() {
 		return Math.sqrt(x * x + y * y);
 	}
+
 	public Ponto mult(double scalar) {
 		return new Ponto(x * scalar, y * scalar, c);
 	}
-
-	public Ponto sub(Ponto vector) {
-		return new Ponto(x - vector.x, y - vector.y, c);
-	}
-
-	@Override
-	public String toString() {
-		return "(" + x + "," + y + ")";
-	}
-
-    public double getX() {
-        return x;
-    }
 
     public void setX(double x) {
         this.x = x;
     }
 
-    public double getY() {
-        return y;
-    }
-
     public void setY(double y) {
         this.y = y;
     }
+
+    public Ponto sub(Ponto vector) {
+		return new Ponto(x - vector.x, y - vector.y, c);
+	}
+
+    @Override
+	public String toString() {
+		return "(" + x + "," + y + ")";
+	}
 
 }

@@ -19,38 +19,6 @@ public class TronLauncher extends Application {
     private final TronModel newGameModel = new TronModel();
     private Timeline timeline;
 
-    private void handleKeyPressed(KeyEvent e) {
-        final KeyCode code = e.getCode();
-        switch (code) {
-            case UP:
-            case W:
-                if (newGameModel.getDirection() != TronDirection.DOWN) {
-                    newGameModel.setDirection(TronDirection.UP);
-                }
-                break;
-            case LEFT:
-            case A:
-                if (newGameModel.getDirection() != TronDirection.RIGHT) {
-                    newGameModel.setDirection(TronDirection.LEFT);
-                }
-                break;
-            case RIGHT:
-            case S:
-                if (newGameModel.getDirection() != TronDirection.LEFT) {
-                    newGameModel.setDirection(TronDirection.RIGHT);
-                }
-                break;
-            case DOWN:
-            case D:
-                if (newGameModel.getDirection() != TronDirection.UP) {
-                    newGameModel.setDirection(TronDirection.DOWN);
-                }
-                break;
-            default:
-        }
-        newGameModel.updateMap();
-    }
-
     @Override
     public void start(Stage stage) throws Exception {
         final GridPane gridPane = new GridPane();
@@ -84,6 +52,38 @@ public class TronLauncher extends Application {
         stage.setWidth(400);
         stage.setHeight(400);
         stage.show();
+    }
+
+    private void handleKeyPressed(KeyEvent e) {
+        final KeyCode code = e.getCode();
+        switch (code) {
+            case UP:
+            case W:
+                if (newGameModel.getDirection() != TronDirection.DOWN) {
+                    newGameModel.setDirection(TronDirection.UP);
+                }
+                break;
+            case LEFT:
+            case A:
+                if (newGameModel.getDirection() != TronDirection.RIGHT) {
+                    newGameModel.setDirection(TronDirection.LEFT);
+                }
+                break;
+            case RIGHT:
+            case S:
+                if (newGameModel.getDirection() != TronDirection.LEFT) {
+                    newGameModel.setDirection(TronDirection.RIGHT);
+                }
+                break;
+            case DOWN:
+            case D:
+                if (newGameModel.getDirection() != TronDirection.UP) {
+                    newGameModel.setDirection(TronDirection.DOWN);
+                }
+                break;
+            default:
+        }
+        newGameModel.updateMap();
     }
 
     public static void main(String[] args) {

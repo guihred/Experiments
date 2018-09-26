@@ -29,21 +29,8 @@ public class PuzzlePiece extends Group {
 
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-    public void move(Point3D subtract) {
-        setLayoutX(getLayoutX() + subtract.getX());
-        setLayoutY(getLayoutY() + subtract.getY());
-    }
-
-	public void move(double x1, double y1) {
-		setLayoutX(getLayoutX() + x1);
-		setLayoutY(getLayoutY() + y1);
+    public PuzzlePath getDown() {
+        return down;
     }
 
     public ImagePattern getImagePattern() {
@@ -52,16 +39,11 @@ public class PuzzlePiece extends Group {
         }
         return imagePattern;
     }
-
-    public PuzzlePath getDown() {
-        return down;
-    }
-
     public PuzzlePath getLeft() {
         return left;
     }
 
-    public Path getPath() {
+	public Path getPath() {
         if (path == null) {
             path = new Path();
 
@@ -85,6 +67,24 @@ public class PuzzlePiece extends Group {
 
     public PuzzlePath getUp() {
         return up;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void move(double x1, double y1) {
+		setLayoutX(getLayoutX() + x1);
+		setLayoutY(getLayoutY() + y1);
+    }
+
+    public void move(Point3D subtract) {
+        setLayoutX(getLayoutX() + subtract.getX());
+        setLayoutY(getLayoutY() + subtract.getY());
     }
 
     public void setDown(PuzzlePath down) {

@@ -22,21 +22,7 @@ public final class LeitorMusicas {
 	private LeitorMusicas() {
 	}
 
-	public static void main(String[] args) {
-
-		try {
-			String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
-			File file = new File(new File(path).getParentFile(), "Music");
-            ObservableList<Musica>
-			musicas = getMusicas(file);
-            musicas.forEach(s -> LOGGER.trace("{}", s));
-        } catch (Exception e) {
-            LOGGER.trace("", e);
-		}
-	}
-
-
-    public static ObservableList<Musica> getMusicas(File file) {
+	public static ObservableList<Musica> getMusicas(File file) {
 
 		ObservableList<Musica> musicas = FXCollections.observableArrayList();
 		Path start = file.toPath();
@@ -49,17 +35,21 @@ public final class LeitorMusicas {
 		return musicas;
 	}
 
-    @SuppressWarnings("unchecked")
-    private static <T> T notNull(T... objects) {
-        for (int i = 0; i < objects.length; i++) {
-            if (objects[i] != null) {
-                return objects[i];
-            }
-        }
-        return null;
-    }
 
-	public static Musica readTags(File sourceFile) {
+    public static void main(String[] args) {
+
+		try {
+			String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
+			File file = new File(new File(path).getParentFile(), "Music");
+            ObservableList<Musica>
+			musicas = getMusicas(file);
+            musicas.forEach(s -> LOGGER.trace("{}", s));
+        } catch (Exception e) {
+            LOGGER.trace("", e);
+		}
+	}
+
+    public static Musica readTags(File sourceFile) {
 		Musica musica = new Musica();
         String title = "";
         String artist = "";
@@ -117,6 +107,16 @@ public final class LeitorMusicas {
 
 		return musica;
 	}
+
+	@SuppressWarnings("unchecked")
+    private static <T> T notNull(T... objects) {
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] != null) {
+                return objects[i];
+            }
+        }
+        return null;
+    }
 
 
 	private static String trySetTrack(String track, ID3V2_3_0Tag leTag) {

@@ -36,18 +36,6 @@ public enum ImageResource {
 		this.columns = columns;
 	}
 
-	public String getFilename() {
-		return filename;
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public int getColumns() {
-		return columns;
-	}
-
 	public Image asImage() {
 		if (image == null) {
             image = new Image(ResourceFXUtils.toExternalForm("plat/" + filename));
@@ -64,18 +52,30 @@ public enum ImageResource {
 		return imageView;
 	}
 
-	public int getWidth() {
-		return width;
+	public int getColumns() {
+		return columns;
 	}
 
-	public double getScaledWidth() {
-		return width * scale;
+	public int getCount() {
+		return count;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public int getHeight() {
+		return height;
 	}
 
 	public double getScaledHeight() {
 		return height * scale;
 	}
-	public int getHeight() {
-		return height;
+
+	public double getScaledWidth() {
+		return width * scale;
+	}
+	public int getWidth() {
+		return width;
 	}
 }

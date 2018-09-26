@@ -65,27 +65,6 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
         Labyrinth3DKillerGhostsAndBalls.end(camera, root, balls, ghostCount, movimentacao);
 	}
 
-	private MeshView generateGhost(URL arquivo, Color enemyColor) {
-        MeshView enemy = new MeshView(ResourceFXUtils.importStlMesh(arquivo));
-		PhongMaterial sample = new PhongMaterial(enemyColor);
-		sample.setSpecularColor(LIGHT_COLOR);
-		enemy.setDrawMode(DrawMode.FILL);
-		enemy.setTranslateY(14);
-		enemy.setMaterial(sample);
-        int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
-		enemy.setTranslateZ(posicaoInicialZ);
-        int posicaoInicialX = random.nextInt(MAPA.length * SIZE);
-		enemy.setTranslateX(posicaoInicialX);
-		while (checkColision(enemy.getBoundsInParent())) {
-			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
-			enemy.setTranslateX(enemy.getTranslateX() + 1);
-		}
-		enemy.setScaleX(0.4);
-		enemy.setScaleY(1);
-		enemy.setScaleZ(0.4);
-		return enemy;
-	}
-
 	@Override
 	public PerspectiveCamera getCamera() {
 		return camera;
@@ -152,6 +131,27 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
         primaryStage.setTitle("Labyrinth 3D With Mouse Control");
 		primaryStage.setScene(sc);
 		primaryStage.show();
+	}
+
+	private MeshView generateGhost(URL arquivo, Color enemyColor) {
+        MeshView enemy = new MeshView(ResourceFXUtils.importStlMesh(arquivo));
+		PhongMaterial sample = new PhongMaterial(enemyColor);
+		sample.setSpecularColor(LIGHT_COLOR);
+		enemy.setDrawMode(DrawMode.FILL);
+		enemy.setTranslateY(14);
+		enemy.setMaterial(sample);
+        int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
+		enemy.setTranslateZ(posicaoInicialZ);
+        int posicaoInicialX = random.nextInt(MAPA.length * SIZE);
+		enemy.setTranslateX(posicaoInicialX);
+		while (checkColision(enemy.getBoundsInParent())) {
+			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
+			enemy.setTranslateX(enemy.getTranslateX() + 1);
+		}
+		enemy.setScaleX(0.4);
+		enemy.setScaleY(1);
+		enemy.setScaleZ(0.4);
+		return enemy;
 	}
 
 	public static void main(String[] args) {

@@ -70,12 +70,17 @@ public class PacmanGhost extends Group implements HasLogging {
 		getChildren().add(rightEye);
 		getChildren().add(leftEye);
 	}
-    public GhostDirection getDirection() {
+    public final Circle getCircle() {
+        return circle;
+    }
+	public GhostDirection getDirection() {
 		return direction;
 	}
 	public final GhostStatus getStatus() {
 		return status.get();
 	}
+
+
 	public void move(long now, Pacman pacman, ObservableList<Node> observableList, MazeSquare[][] maze) {
 		if (status.get() == GhostStatus.ALIVE) {
 			shortestMovement(now, observableList, pacman, maze);
@@ -99,7 +104,6 @@ public class PacmanGhost extends Group implements HasLogging {
 		}
 	}
 
-
 	public void setDirection(GhostDirection direction) {
 		if (color == GhostColor.RED) {
             getLogger().trace("{} -> {}", color, direction);
@@ -121,12 +125,13 @@ public class PacmanGhost extends Group implements HasLogging {
 		this.status.set(status);
 	}
 
+
 	public final ObjectProperty<GhostStatus> statusProperty() {
 		return status;
 	}
 
 
-	private void addTranslate(final int step) {
+    private void addTranslate(final int step) {
 		if (direction != null) {
 			setLayoutY(getLayoutY() + step * direction.y);
 			setLayoutX(getLayoutX() + step * direction.x);
@@ -134,52 +139,11 @@ public class PacmanGhost extends Group implements HasLogging {
 	}
 
 
-    private static int adjustedX(double layoutX) {
-		double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
-		return (int) (paci > PacmanModel.MAZE_SIZE ? -paci + 2 * PacmanModel.MAZE_SIZE - 1
-				: paci) % PacmanModel.MAZE_SIZE;
-	}
-
-
-    private static int adjustedY(double layoutX) {
-		double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
-		return (int) (paci > PacmanModel.MAZE_SIZE ? -paci - 1 + 2 * PacmanModel.MAZE_SIZE : paci)
-				% PacmanModel.MAZE_SIZE;
-	}
-
-	private void adjustEyes(int mul) {
+    private void adjustEyes(int mul) {
 		rightEye.setLayoutX(rightEye.getLayoutX() + mul * direction.x);
 		rightEye.setLayoutY(rightEye.getLayoutY() + mul * direction.y);
 		leftEye.setLayoutY(leftEye.getLayoutY() + mul * direction.y);
 		leftEye.setLayoutX(leftEye.getLayoutX() + mul * direction.x);
-	}
-
-    private static GhostDirection changeDirection(final double hx, final double hy) {
-		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
-			if (hx < 0) {
-				return hy < 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
-			}
-			return hy > 0 ? GhostDirection.SOUTHEAST : GhostDirection.NORTHEAST;
-		}
-
-		if (Math.abs(hx) > Math.abs(hy)) {
-
-			return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
-		}
-		return hy > 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
-	}
-
-    private static GhostDirection changeDirection2(double hx, double hy) {
-		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
-			if (hx > 0) {
-				return hy < 0 ? GhostDirection.NORTHEAST : GhostDirection.SOUTHEAST;
-			}
-			return hy < 0 ? GhostDirection.SOUTHWEST : GhostDirection.NORTHWEST;
-		}
-		if (Math.abs(hx) < Math.abs(hy)) {
-			return hy < 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
-		}
-		return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
 	}
 
 	private void extracted(Pacman pacman, MazeSquare[][] maze) {
@@ -207,7 +171,119 @@ public class PacmanGhost extends Group implements HasLogging {
 
 	}
 
-    private static MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
+    private void randomMovement(long now, ObservableList<Node> observableList) {
+		final int step = 1;
+		GhostDirection[] values = GhostDirection.values();
+		addTranslate(step);
+		if (checkColision(getBoundsInParent(), observableList)) {
+			addTranslate(-step);
+			setDirection(values[new Random().nextInt(values.length)]);
+		}
+
+		if (now % 500 == 0) {
+			setDirection(values[new Random().nextInt(values.length)]);
+		}
+	}
+
+    private double readjustedX(int i) {
+
+		return PacmanModel.SQUARE_SIZE / 2 + (getLayoutX() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
+				? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
+				: i * PacmanModel.SQUARE_SIZE);
+	}
+
+	private double readjustedY(int i) {
+
+		return PacmanModel.SQUARE_SIZE / 2 + (getLayoutY() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
+				? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
+				: i * PacmanModel.SQUARE_SIZE);
+	}
+
+    boolean checkColision(Bounds boundsInParent, ObservableList<Node> observableList) {
+		Stream<Bounds> walls = observableList.stream().filter(Rectangle.class::isInstance).map(Node::getBoundsInParent);
+		return walls.anyMatch(b -> b.intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
+				boundsInParent.getWidth(), boundsInParent.getHeight()));
+	}
+
+    void shortestMovement(long now, ObservableList<Node> otherNodes, Pacman pacman, MazeSquare[][] maze) {
+
+		if (pacman == null) {
+			randomMovement(now, otherNodes);
+			return;
+		}
+		int hx = 0;
+		int hy = 0;
+
+		if ((getLayoutY() + PacmanModel.SQUARE_SIZE / 2) % PacmanModel.SQUARE_SIZE / 2 == 0
+				|| (getLayoutX() + PacmanModel.SQUARE_SIZE / 2) % PacmanModel.SQUARE_SIZE / 2 == 0) {
+			extracted(pacman, maze);
+			if (mazeSquare != null) {
+				hx = (int) (-getLayoutX() + readjustedX(mazeSquare.i));
+				hy = (int) (-getLayoutY() + readjustedY(mazeSquare.j));
+				GhostDirection changeDirection = changeDirection(hx, hy);
+
+				setDirection(changeDirection);
+			}
+		}
+
+
+		final int step = 1;
+		addTranslate(step);
+		if (checkColision(getBoundsInParent(), otherNodes)) {
+			addTranslate(-step);
+			setDirection(changeDirection2(hx, hy));
+			addTranslate(step);
+			if (checkColision(getBoundsInParent(), otherNodes)) {
+
+				extracted(pacman, maze);
+				addTranslate(-step);
+				randomMovement(now, otherNodes);
+			}
+
+		}
+	}
+
+	private static int adjustedX(double layoutX) {
+		double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
+		return (int) (paci > PacmanModel.MAZE_SIZE ? -paci + 2 * PacmanModel.MAZE_SIZE - 1
+				: paci) % PacmanModel.MAZE_SIZE;
+	}
+
+	private static int adjustedY(double layoutX) {
+		double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
+		return (int) (paci > PacmanModel.MAZE_SIZE ? -paci - 1 + 2 * PacmanModel.MAZE_SIZE : paci)
+				% PacmanModel.MAZE_SIZE;
+	}
+
+	private static GhostDirection changeDirection(final double hx, final double hy) {
+		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
+			if (hx < 0) {
+				return hy < 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
+			}
+			return hy > 0 ? GhostDirection.SOUTHEAST : GhostDirection.NORTHEAST;
+		}
+
+		if (Math.abs(hx) > Math.abs(hy)) {
+
+			return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
+		}
+		return hy > 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
+	}
+
+	private static GhostDirection changeDirection2(double hx, double hy) {
+		if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
+			if (hx > 0) {
+				return hy < 0 ? GhostDirection.NORTHEAST : GhostDirection.SOUTHEAST;
+			}
+			return hy < 0 ? GhostDirection.SOUTHWEST : GhostDirection.NORTHWEST;
+		}
+		if (Math.abs(hx) < Math.abs(hy)) {
+			return hy < 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
+		}
+		return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
+	}
+
+	private static MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
         if (MazeSquare.getPaths() == null) {
 			return null;
 		}
@@ -246,82 +322,6 @@ public class PacmanGhost extends Group implements HasLogging {
 		}
 		return null;
 	}
-
-	private void randomMovement(long now, ObservableList<Node> observableList) {
-		final int step = 1;
-		GhostDirection[] values = GhostDirection.values();
-		addTranslate(step);
-		if (checkColision(getBoundsInParent(), observableList)) {
-			addTranslate(-step);
-			setDirection(values[new Random().nextInt(values.length)]);
-		}
-
-		if (now % 500 == 0) {
-			setDirection(values[new Random().nextInt(values.length)]);
-		}
-	}
-
-	private double readjustedX(int i) {
-
-		return PacmanModel.SQUARE_SIZE / 2 + (getLayoutX() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
-				? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
-				: i * PacmanModel.SQUARE_SIZE);
-	}
-
-	private double readjustedY(int i) {
-
-		return PacmanModel.SQUARE_SIZE / 2 + (getLayoutY() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
-				? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
-				: i * PacmanModel.SQUARE_SIZE);
-	}
-
-	boolean checkColision(Bounds boundsInParent, ObservableList<Node> observableList) {
-		Stream<Bounds> walls = observableList.stream().filter(Rectangle.class::isInstance).map(Node::getBoundsInParent);
-		return walls.anyMatch(b -> b.intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
-				boundsInParent.getWidth(), boundsInParent.getHeight()));
-	}
-
-	void shortestMovement(long now, ObservableList<Node> otherNodes, Pacman pacman, MazeSquare[][] maze) {
-
-		if (pacman == null) {
-			randomMovement(now, otherNodes);
-			return;
-		}
-		int hx = 0;
-		int hy = 0;
-
-		if ((getLayoutY() + PacmanModel.SQUARE_SIZE / 2) % PacmanModel.SQUARE_SIZE / 2 == 0
-				|| (getLayoutX() + PacmanModel.SQUARE_SIZE / 2) % PacmanModel.SQUARE_SIZE / 2 == 0) {
-			extracted(pacman, maze);
-			if (mazeSquare != null) {
-				hx = (int) (-getLayoutX() + readjustedX(mazeSquare.i));
-				hy = (int) (-getLayoutY() + readjustedY(mazeSquare.j));
-				GhostDirection changeDirection = changeDirection(hx, hy);
-
-				setDirection(changeDirection);
-			}
-		}
-
-
-		final int step = 1;
-		addTranslate(step);
-		if (checkColision(getBoundsInParent(), otherNodes)) {
-			addTranslate(-step);
-			setDirection(changeDirection2(hx, hy));
-			addTranslate(step);
-			if (checkColision(getBoundsInParent(), otherNodes)) {
-
-				extracted(pacman, maze);
-				addTranslate(-step);
-				randomMovement(now, otherNodes);
-			}
-
-		}
-	}
-
-    public final Circle getCircle() {
-        return circle;
-    }
 
     public enum GhostColor {
 		RED(Color.RED), BLUE(Color.BLUE), ORANGE(Color.ORANGE), GREEN(Color.GREEN);

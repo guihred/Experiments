@@ -14,14 +14,14 @@ public class SimplePaneBuilder<T extends Pane, Z extends SimpleBuilder<T>> exten
 		this.pane = shape;
 	}
 
-	public Z padding(Insets insets) {
-		pane.setPadding(insets);
+	public Z children(Node... label4) {
+		pane.getChildren().setAll(label4);
 		return (Z) this;
 	}
 
 
-	public Z children(Node... label4) {
-		pane.getChildren().setAll(label4);
+	public Z padding(Insets insets) {
+		pane.setPadding(insets);
 		return (Z) this;
 	}
 

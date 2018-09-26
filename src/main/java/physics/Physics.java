@@ -24,10 +24,6 @@ public class Physics extends Application {
 	public static final int PHYSICAL_HEIGHT = 100;
 	public static final int MAX_BALLS = 200;
 
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("JavaFX + Box2D");
@@ -97,6 +93,18 @@ public class Physics extends Application {
 
 	}
 
+	public static void main(String[] args) {
+		Application.launch(args);
+	}
+
+	public static float toPixelHeight(float worldHeight) {
+		return HEIGHT * worldHeight / 100.0F;
+	}
+
+	public static float toPixelWidth(float worldWidth) {
+		return WIDTH * worldWidth / 100.0F;
+	}
+
 	/*
 	 * JavaFX Coordinates: (0,0) --> (WIDTH,HEIGHT) in pixels World Coordinates:
 	 * (0,100) --> (100, 0) in meters
@@ -109,13 +117,5 @@ public class Physics extends Application {
 	public static int toPixelY(float worldY) {
 		float y = HEIGHT - 1.0F * HEIGHT * worldY / 100.0F;
 		return (int) y;
-	}
-
-	public static float toPixelWidth(float worldWidth) {
-		return WIDTH * worldWidth / 100.0F;
-	}
-
-	public static float toPixelHeight(float worldHeight) {
-		return HEIGHT * worldHeight / 100.0F;
 	}
 }

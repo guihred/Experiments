@@ -56,6 +56,24 @@ public class FastFourierTransform {
         }
     }
 
+    public static Complex[] fft(double[] input) {
+        Complex[] cinput = new Complex[input.length];
+        for (int i = 0; i < input.length; i++) {
+            cinput[i] = new Complex(input[i], 0.0);
+        }
+
+        fft(cinput);
+        return cinput;
+    }
+
+    public static Complex[] fft(List<Double> input) {
+        return fft(input.stream().limit(highestExponentOf2(input.size())).mapToDouble(e -> e).toArray());
+    }
+
+    public static long log2(double x) {
+        return (long) floor(log(x) / log(2));
+    }
+
     public static void main(String[] args) {
         double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
 
@@ -69,23 +87,5 @@ public class FastFourierTransform {
 
     private static int highestExponentOf2(double x) {
         return 1 << (int) (log(x) / log(2));
-    }
-
-    public static long log2(double x) {
-        return (long) floor(log(x) / log(2));
-    }
-
-    public static Complex[] fft(List<Double> input) {
-        return fft(input.stream().limit(highestExponentOf2(input.size())).mapToDouble(e -> e).toArray());
-    }
-
-    public static Complex[] fft(double[] input) {
-        Complex[] cinput = new Complex[input.length];
-        for (int i = 0; i < input.length; i++) {
-            cinput[i] = new Complex(input[i], 0.0);
-        }
-
-        fft(cinput);
-        return cinput;
     }
 }

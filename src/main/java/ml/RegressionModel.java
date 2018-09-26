@@ -31,9 +31,9 @@ class RegressionModel {
 		target = sorted.boxed().collect(Collectors.toList());
 		target.sort(Comparator.comparing(e -> Math.signum(slope) * e));
 		c = 0;
-		List<Data<Number, Number>> collect = target.stream().map(this::mapToData)
+        List<Data<Number, Number>> dataPoints = target.stream().map(this::mapToData)
                 .collect(Collectors.toList());
-        series.setData(FXCollections.observableArrayList(collect));
+        series.setData(FXCollections.observableArrayList(dataPoints));
         return FXCollections.observableArrayList(series);
     }
 
@@ -119,9 +119,9 @@ class RegressionModel {
         Series<Number, Number> series = new Series<>();
         c = 0;
         series.setName("Prediction");
-        List<Data<Number, Number>> collect = IntStream.range(0, MAX_SIZE)
+        List<Data<Number, Number>> expectedPoints = IntStream.range(0, MAX_SIZE)
                 .mapToObj(i -> toData(i, bestInitial + bestSlope * i)).collect(Collectors.toList());
-        series.setData(FXCollections.observableArrayList(collect));
+        series.setData(FXCollections.observableArrayList(expectedPoints));
         return FXCollections.observableArrayList(series);
     }
 

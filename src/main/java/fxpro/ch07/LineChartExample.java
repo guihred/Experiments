@@ -16,10 +16,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 public class LineChartExample extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         CategoryAxis xAxis = new CategoryAxis();
@@ -32,5 +28,9 @@ public class LineChartExample extends Application {
         root.getChildren().add(lineChart);
         primaryStage.setScene(new Scene(root, 400, 250));
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

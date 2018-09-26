@@ -7,9 +7,15 @@ import utils.HasLogging;
 
 public class QuickSortML {
 
-	@FunctionalInterface
-	public interface BiIntConsumer {
-		void consume(int i, int j);
+	public static void main(String[] a) {
+
+		List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
+
+		Comparator<Integer> c = Integer::compareTo;
+		QuickSortML.sort(input, c.reversed());
+		for (Integer i : input) {
+            HasLogging.log().info("{}", i);
+		}
 	}
 
 	public static <T extends Comparable<T>> void sort(List<T> inputArr) {
@@ -21,17 +27,24 @@ public class QuickSortML {
 		sort(inputArr, onSwap, T::compareTo);
 	}
 
-	public static <T> void sort(List<T> inputArr, Comparator<T> compa) {
-		sort(inputArr, (i, j) -> {
-			// DOES NOTHING
-		}, compa);
-	}
 	public static <T> void sort(List<T> inputArr, BiIntConsumer onSwap, Comparator<T> compa) {
 
 		if (inputArr == null || inputArr.isEmpty()) {
 			return;
 		}
 		quickSort(0, inputArr.size() - 1, inputArr, onSwap, compa);
+	}
+	public static <T> void sort(List<T> inputArr, Comparator<T> compa) {
+		sort(inputArr, (i, j) -> {
+			// DOES NOTHING
+		}, compa);
+	}
+
+	private static <T> void exchangeNumbers(int i, int j, List<T> array, BiIntConsumer onSwap) {
+		T temp = array.get(i);
+		array.set(i, array.get(j));
+		array.set(j, temp);
+		onSwap.consume(i, j);
 	}
 
 	private static <T> void quickSort(int lowerIndex, int higherIndex, List<T> array,
@@ -71,22 +84,9 @@ public class QuickSortML {
 		}
 	}
 
-	private static <T> void exchangeNumbers(int i, int j, List<T> array, BiIntConsumer onSwap) {
-		T temp = array.get(i);
-		array.set(i, array.get(j));
-		array.set(j, temp);
-		onSwap.consume(i, j);
-	}
-
-    public static void main(String[] a) {
-
-		List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
-
-		Comparator<Integer> c = Integer::compareTo;
-		QuickSortML.sort(input, c.reversed());
-		for (Integer i : input) {
-            HasLogging.log().info("{}", i);
-		}
+    @FunctionalInterface
+	public interface BiIntConsumer {
+		void consume(int i, int j);
 	}
 
 }

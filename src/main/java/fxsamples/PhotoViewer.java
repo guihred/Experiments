@@ -34,18 +34,13 @@ public class PhotoViewer extends Application {
 	// The current index into the imageFile
 	private int currentIndex = -1;
 
-	// Enumeration of next and previous button directions
-	public enum ButtonMove {
-		NEXT, PREV
-	}
-
 	// Current image view display
 	private ImageView currentImageView;
+
 	// Loading progress indicator
 	private ProgressIndicator progressIndicator;
 	// mutex */
 	private AtomicBoolean loading = new AtomicBoolean();
-
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Photo Viewer");
@@ -68,66 +63,17 @@ public class PhotoViewer extends Application {
 		primaryStage.show();
 	}
 
-	/*
-	 * A factory function returning an ImageView instance to preserve the aspect
-	 * ratio and bind the instance to the width of the scene for resizing the
-	 * image.
+	/**
+	 * Adds the URL string representation of the path to the image file. Based
+	 * on a URL the method will check if it matches supported image format.
 	 * 
-	 * @param widthProperty is the Scene's read only width property.
-	 * 
-	 * @return ImageView newly created image view for current display.
+	 * @param url
+	 *            string representation of the path to the image file.
 	 */
-	private ImageView createImageView(ReadOnlyDoubleProperty widthProperty) {
-		// maintain aspect ratio
-		ImageView imageView = new ImageView();
-		// set aspect ratio
-		imageView.setPreserveRatio(true);
-		// resize based on the scene
-		imageView.fitWidthProperty().bind(widthProperty);
-		return imageView;
-	}
-
-	/*
-	 * Sets up the drag and drop capability for files and URLs to be dragged and
-	 * dropped onto the scene. This will load the image into the current image
-	 * view area.
-	 * 
-	 * @param scene The primary application scene.
-	 */
-	private void setupDragNDrop(Scene scene) {
-		// Dragging over surface
-		scene.setOnDragOver((DragEvent event) -> {
-			Dragboard db = event.getDragboard();
-			if (db.hasFiles() || db.hasUrl() && isValidImageFile(db.getUrl())) {
-				event.acceptTransferModes(TransferMode.LINK);
-			} else {
-				event.consume();
-			}
-		});
-		// Dropping over surface
-		scene.setOnDragDropped((DragEvent event) -> {
-			Dragboard db = event.getDragboard();
-			// image from the local file system.
-			if (db.hasFiles()) {
-				db.getFiles().stream().forEach(this::tryAddImage);
-			} else {
-				// image from some host
-				addImage(db.getUrl());
-			}
-			if (currentIndex > -1) {
-				loadImage(imageFiles.get(currentIndex));
-			}
-			event.setDropCompleted(true);
-			event.consume();
-		});
-	}
-
-	private void tryAddImage(File file) {
-		try {
-			addImage(file.toURI().toURL().toString());
-            LOGGER.info("{}", imageFiles);
-		} catch (MalformedURLException ex) {
-			LOGGER.error("", ex);
+	private void addImage(String url) {
+		if (isValidImageFile(url)) {
+			currentIndex += 1;
+			imageFiles.add(currentIndex, url);
 		}
 	}
 
@@ -190,6 +136,25 @@ public class PhotoViewer extends Application {
 	}
 
 	/*
+	 * A factory function returning an ImageView instance to preserve the aspect
+	 * ratio and bind the instance to the width of the scene for resizing the
+	 * image.
+	 * 
+	 * @param widthProperty is the Scene's read only width property.
+	 * 
+	 * @return ImageView newly created image view for current display.
+	 */
+	private ImageView createImageView(ReadOnlyDoubleProperty widthProperty) {
+		// maintain aspect ratio
+		ImageView imageView = new ImageView();
+		// set aspect ratio
+		imageView.setPreserveRatio(true);
+		// resize based on the scene
+		imageView.fitWidthProperty().bind(widthProperty);
+		return imageView;
+	}
+
+	/*
 	 * Create a progress indicator control to be centered.
 	 * 
 	 * @param scene The primary application scene.
@@ -207,56 +172,6 @@ public class PhotoViewer extends Application {
 				scene.heightProperty().subtract(progress.heightProperty())
 						.divide(2));
 		return progress;
-	}
-
-	/*
-	 * Returns true if URL's file extensions match jpg, jpeg, png and gif.
-	 * 
-	 * @param url standard URL path to image file.
-	 * 
-	 * @return boolean returns true if URL's extension matches jpg, jpeg, png
-	 * and gif.
-	 */
-    private static boolean isValidImageFile(String url) {
-		List<String> imgTypes = Arrays.asList(".jpg", ".jpeg", ".png", ".gif",
-				".bmp");
-		return imgTypes.stream().anyMatch(url::endsWith);
-	}
-
-	/**
-	 * Adds the URL string representation of the path to the image file. Based
-	 * on a URL the method will check if it matches supported image format.
-	 * 
-	 * @param url
-	 *            string representation of the path to the image file.
-	 */
-	private void addImage(String url) {
-		if (isValidImageFile(url)) {
-			currentIndex += 1;
-			imageFiles.add(currentIndex, url);
-		}
-	}
-
-	/**
-	 * Returns the next index in the list of files to go to next.
-	 *
-	 * @param direction
-	 *            PREV and NEXT to move backward or forward in the list of
-	 *            pictures.
-	 * @return int the index to the previous or next picture to be shown.
-	 */
-	private int gotoImageIndex(ButtonMove direction) {
-		int size = imageFiles.size();
-		if (size == 0) {
-			currentIndex = -1;
-		} else if (direction == ButtonMove.NEXT && size > 1
-				&& currentIndex < size - 1) {
-			currentIndex += 1;
-
-		} else if (direction == ButtonMove.PREV && size > 1 && currentIndex > 0) {
-			currentIndex -= 1;
-		}
-		return currentIndex;
 	}
 
 	/*
@@ -286,6 +201,28 @@ public class PhotoViewer extends Application {
 		};
 	}
 
+	/**
+	 * Returns the next index in the list of files to go to next.
+	 *
+	 * @param direction
+	 *            PREV and NEXT to move backward or forward in the list of
+	 *            pictures.
+	 * @return int the index to the previous or next picture to be shown.
+	 */
+	private int gotoImageIndex(ButtonMove direction) {
+		int size = imageFiles.size();
+		if (size == 0) {
+			currentIndex = -1;
+		} else if (direction == ButtonMove.NEXT && size > 1
+				&& currentIndex < size - 1) {
+			currentIndex += 1;
+
+		} else if (direction == ButtonMove.PREV && size > 1 && currentIndex > 0) {
+			currentIndex -= 1;
+		}
+		return currentIndex;
+	}
+
 	/*
 	 * This method does the following loads an image, updates a progress bar and
 	 * spawns a new thread. If another process is already loading the method
@@ -304,7 +241,70 @@ public class PhotoViewer extends Application {
 		}
 	}
 
+	/*
+	 * Sets up the drag and drop capability for files and URLs to be dragged and
+	 * dropped onto the scene. This will load the image into the current image
+	 * view area.
+	 * 
+	 * @param scene The primary application scene.
+	 */
+	private void setupDragNDrop(Scene scene) {
+		// Dragging over surface
+		scene.setOnDragOver((DragEvent event) -> {
+			Dragboard db = event.getDragboard();
+			if (db.hasFiles() || db.hasUrl() && isValidImageFile(db.getUrl())) {
+				event.acceptTransferModes(TransferMode.LINK);
+			} else {
+				event.consume();
+			}
+		});
+		// Dropping over surface
+		scene.setOnDragDropped((DragEvent event) -> {
+			Dragboard db = event.getDragboard();
+			// image from the local file system.
+			if (db.hasFiles()) {
+				db.getFiles().stream().forEach(this::tryAddImage);
+			} else {
+				// image from some host
+				addImage(db.getUrl());
+			}
+			if (currentIndex > -1) {
+				loadImage(imageFiles.get(currentIndex));
+			}
+			event.setDropCompleted(true);
+			event.consume();
+		});
+	}
+
+	private void tryAddImage(File file) {
+		try {
+			addImage(file.toURI().toURL().toString());
+            LOGGER.info("{}", imageFiles);
+		} catch (MalformedURLException ex) {
+			LOGGER.error("", ex);
+		}
+	}
+
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	/*
+	 * Returns true if URL's file extensions match jpg, jpeg, png and gif.
+	 * 
+	 * @param url standard URL path to image file.
+	 * 
+	 * @return boolean returns true if URL's extension matches jpg, jpeg, png
+	 * and gif.
+	 */
+    private static boolean isValidImageFile(String url) {
+		List<String> imgTypes = Arrays.asList(".jpg", ".jpeg", ".png", ".gif",
+				".bmp");
+		return imgTypes.stream().anyMatch(url::endsWith);
+	}
+
+	// Enumeration of next and previous button directions
+	public enum ButtonMove {
+		NEXT, PREV
 	}
 }

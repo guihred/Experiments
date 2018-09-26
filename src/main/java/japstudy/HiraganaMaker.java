@@ -99,11 +99,6 @@ public class HiraganaMaker {
         return result.toString();
     }
 
-    public static void main(String[] args) {
-        displayInHiragana();
-
-    }
-
     public static void displayInHiragana() {
         try (Stream<String> lines = Files.lines(new File(TXT_FILE).toPath(), StandardCharsets.UTF_8)) {
             lines.forEach(t -> {
@@ -120,6 +115,11 @@ public class HiraganaMaker {
         } catch (Exception e) {
             HasLogging.log(HiraganaMaker.class).error("ERROR", e);
         }
+    }
+
+    public static void main(String[] args) {
+        displayInHiragana();
+
     }
 
 }

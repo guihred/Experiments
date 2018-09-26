@@ -34,6 +34,18 @@ public class MadPonto {
         return super.equals(obj);
     }
 
+    public MadCell getCell() {
+        return cell;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
@@ -43,33 +55,20 @@ public class MadPonto {
         return (float) Math.sqrt(x * x + y * y);
     }
 
+
+
     public MadPonto mult(float scalar) {
         return new MadPonto(x * scalar, y * scalar, cell);
     }
 
-    public MadPonto sub(MadPonto vector) {
-        return new MadPonto(x - vector.x, y - vector.y, cell);
+
+
+    public void setCell(MadCell cell) {
+        this.cell = cell;
     }
-
-    @Override
-    public String toString() {
-        return "(" + x + "," + y + ")";
-    }
-
-
-
-    public float getX() {
-        return x;
-    }
-
-
 
     public void setX(float x) {
         this.x = x;
-    }
-
-    public float getY() {
-        return y;
     }
 
     public void setY(float y) {
@@ -79,14 +78,15 @@ public class MadPonto {
 
 
 
-    public MadCell getCell() {
-        return cell;
+    public MadPonto sub(MadPonto vector) {
+        return new MadPonto(x - vector.x, y - vector.y, cell);
     }
 
 
 
 
-    public void setCell(MadCell cell) {
-        this.cell = cell;
+    @Override
+    public String toString() {
+        return "(" + x + "," + y + ")";
     }
 }

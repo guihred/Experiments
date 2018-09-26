@@ -67,6 +67,96 @@ public final class Chapter8 {
     }
 
     /*
+     * Unzip the src.zip file from the JDK. Using Files.walk, find all Java
+     * files that contain the keywords transient and volatile.
+     */
+    public static void ex10() {
+        File original = new File("src");
+        try (Stream<Path> walk = Files.walk(original.toPath(), 20)) {
+            walk.map(Path::toFile).filter(file -> {
+                try {
+                    if (file.canRead() && file.isFile()) {
+                        List<String> wordsAsList = getWordsAsList(file.toPath());
+                        return wordsAsList.contains("transient") && wordsAsList.contains("volatile");
+                    }
+
+                } catch (Exception e) {
+                    LOGGER.error("", e);
+                }
+                return true;
+            }).filter(File::isFile).map(Objects::toString).forEach(LOGGER::trace);
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
+        }
+
+    }
+
+    /*
+     * Write a program that gets the contents of a password-protected web page.
+     * Call URLConnection connection = url.openConnection();. Form the string
+     * username: password and encode it in Base64. Then call
+     * connection.setRequestProperty( "Authorization", "Basic " + encoded
+     * string), followed by connection.connect() and
+     * connection.getInputStream().
+     */
+    public static void ex11() {
+        try {
+            CrawlerTask.insertProxyConfig();
+            URL url = new URL("https://www.google.com/");
+            URLConnection connection = url.openConnection();
+            String str = "username:password";
+            String encode = Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
+            LOGGER.trace("Basic {}", encode);
+            connection.setRequestProperty("Authorization", "Basic " + encode);
+            connection.connect();
+            printLines(connection);
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
+
+    }
+
+    /*
+     * Demonstrate the use of the Objects.requireNonNull method and show how it
+     * leads to more useful error messages.
+     */
+    public static void ex14() {
+        Objects.requireNonNull(null, () -> "What are you doing man??");
+
+    }
+
+    /*
+     * Using Files.lines and Pattern.asPredicate, write a program that acts like
+     * the grep utility, printing all lines that contain a match for a regular
+     * expression.
+     */
+    public static void ex15() {
+        // Lines that contain some number
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT))) {
+            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
+        } catch (Exception e) {
+            LOGGER.error("", e);
+
+        }
+
+    }
+
+    /*
+     * Use a regular expression with named capturing groups to parse a line
+     * containing a city, state, and zip code. Accept both 5- and 9-digit zip
+     * codes.
+     */
+    public static void ex16() {
+        // Lines that contain some number
+        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT))) {
+            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
+
+    }
+
+    /*
      * For which integer n does Math.negateExact(n) throw an exception? (Hint:
      * There is only one.)
      * 
@@ -246,29 +336,37 @@ public final class Chapter8 {
         return gcd1(b, Integer.remainderUnsigned(a, b));
     }
 
+    public static void main(String[] args) {
+        ex11();
+    }
+
     private static List<String> getWordsAsList(Path path) throws IOException {
 
         String contents = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
         return new ArrayList<>(Arrays.asList(contents.split("[\\P{L}]+")));
     }
 
-    public static void main(String[] args) {
-        ex11();
+    private static void printLines(URLConnection connection) {
+        try (InputStream inputStream = connection.getInputStream();
+                BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            a.lines().forEach(LOGGER::trace);
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
     }
 
-    private static Stream<String> streamOfLines(Scanner scanner) {
+    private static Stream<Double> streamOfDouble(Scanner scanner) {
 
-        Iterator<String> iter = new Iterator<String>() {
-
+        Iterator<Double> iter = new Iterator<Double>() {
             @Override
             public boolean hasNext() {
-                return scanner.hasNextLine();
+                return scanner.hasNextDouble();
             }
 
             @Override
-            public String next() {
+            public Double next() {
                 if (hasNext()) {
-                    return scanner.nextLine();
+                    return scanner.nextDouble();
                 }
                 throw new NoSuchElementException();
             }
@@ -297,18 +395,19 @@ public final class Chapter8 {
                 .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
     }
 
-    private static Stream<Double> streamOfDouble(Scanner scanner) {
+    private static Stream<String> streamOfLines(Scanner scanner) {
 
-        Iterator<Double> iter = new Iterator<Double>() {
+        Iterator<String> iter = new Iterator<String>() {
+
             @Override
             public boolean hasNext() {
-                return scanner.hasNextDouble();
+                return scanner.hasNextLine();
             }
 
             @Override
-            public Double next() {
+            public String next() {
                 if (hasNext()) {
-                    return scanner.nextDouble();
+                    return scanner.nextLine();
                 }
                 throw new NoSuchElementException();
             }
@@ -336,104 +435,5 @@ public final class Chapter8 {
         return StreamSupport
                 .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false)
                 .flatMap(s -> Stream.of(s.split("[\\P{L}]+")));
-    }
-
-    /*
-     * Unzip the src.zip file from the JDK. Using Files.walk, find all Java
-     * files that contain the keywords transient and volatile.
-     */
-    public static void ex10() {
-        File original = new File("src");
-        try (Stream<Path> walk = Files.walk(original.toPath(), 20)) {
-            walk.map(Path::toFile).filter(file -> {
-                try {
-                    if (file.canRead() && file.isFile()) {
-                        List<String> wordsAsList = getWordsAsList(file.toPath());
-                        return wordsAsList.contains("transient") && wordsAsList.contains("volatile");
-                    }
-
-                } catch (Exception e) {
-                    LOGGER.error("", e);
-                }
-                return true;
-            }).filter(File::isFile).map(Objects::toString).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            HasLogging.log().error("", e);
-        }
-
-    }
-
-    /*
-     * Write a program that gets the contents of a password-protected web page.
-     * Call URLConnection connection = url.openConnection();. Form the string
-     * username: password and encode it in Base64. Then call
-     * connection.setRequestProperty( "Authorization", "Basic " + encoded
-     * string), followed by connection.connect() and
-     * connection.getInputStream().
-     */
-    public static void ex11() {
-        try {
-            CrawlerTask.insertProxyConfig();
-            URL url = new URL("https://www.google.com/");
-            URLConnection connection = url.openConnection();
-            String str = "username:password";
-            String encode = Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
-            LOGGER.trace("Basic {}", encode);
-            connection.setRequestProperty("Authorization", "Basic " + encode);
-            connection.connect();
-            printLines(connection);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-
-    }
-
-    private static void printLines(URLConnection connection) {
-        try (InputStream inputStream = connection.getInputStream();
-                BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-            a.lines().forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-    }
-
-    /*
-     * Demonstrate the use of the Objects.requireNonNull method and show how it
-     * leads to more useful error messages.
-     */
-    public static void ex14() {
-        Objects.requireNonNull(null, () -> "What are you doing man??");
-
-    }
-
-    /*
-     * Using Files.lines and Pattern.asPredicate, write a program that acts like
-     * the grep utility, printing all lines that contain a match for a regular
-     * expression.
-     */
-    public static void ex15() {
-        // Lines that contain some number
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT))) {
-            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-
-        }
-
-    }
-
-    /*
-     * Use a regular expression with named capturing groups to parse a line
-     * containing a city, state, and zip code. Accept both 5- and 9-digit zip
-     * codes.
-     */
-    public static void ex16() {
-        // Lines that contain some number
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT))) {
-            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-
     }
 }

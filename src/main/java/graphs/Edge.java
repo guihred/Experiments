@@ -33,38 +33,38 @@ public class Edge implements Comparable<Edge> {
         return Objects.equals(v, other.u) && Objects.equals(u, other.v);
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(u, v);
-	}
-
-	@Override
-	public String toString() {
-		return u.getName() + "-" + v.getName() + "(" + weight + ")";
-	}
-
 	public Vertex getU() {
 		return u;
-	}
-
-	public void setU(Vertex u) {
-		this.u = u;
 	}
 
 	public Vertex getV() {
 		return v;
 	}
 
-	public void setV(Vertex v) {
-		this.v = v;
-	}
-
 	public Integer getWeight() {
 		return weight;
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(u, v);
+	}
+
+	public void setU(Vertex u) {
+		this.u = u;
+	}
+
+	public void setV(Vertex v) {
+		this.v = v;
+	}
+
 	public void setWeight(Integer weight) {
 		this.weight = weight;
+	}
+
+	@Override
+	public String toString() {
+		return u.getName() + "-" + v.getName() + "(" + weight + ")";
 	}
 
 }

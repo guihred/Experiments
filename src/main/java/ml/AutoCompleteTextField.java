@@ -32,6 +32,66 @@ public class AutoCompleteTextField extends TextField {
         focusedProperty().addListener((obs, a, a2) -> entriesPopup.hide());
     }
 
+    public SortedSet<String> getEntries() {
+        return entries;
+    }
+
+    public ObservableList<String> getFilteredEntries() {
+        return filteredEntries;
+    }
+
+    public int getMaxEntries() {
+        return maxEntries;
+    }
+
+    public String getTextOccurenceStyle() {
+        return textOccurenceStyle;
+    }
+
+    public boolean isCaseSensitive() {
+        return caseSensitive;
+    }
+
+    public boolean isPopupHidden() {
+        return popupHidden;
+    }
+
+    public void setCaseSensitive(boolean caseSensitive) {
+        this.caseSensitive = caseSensitive;
+    }
+
+    public void setMaxEntries(int maxEntries) {
+        this.maxEntries = maxEntries;
+    }
+
+    public void setPopupHidden(boolean popupHidden) {
+        this.popupHidden = popupHidden;
+    }
+
+    public void setTextOccurenceStyle(String textOccurenceStyle) {
+        this.textOccurenceStyle = textOccurenceStyle;
+    }
+
+    private void addSearches(LinkedList<String> searchResult, String text) {
+        Pattern pattern = getPattern(text);
+        for (String entry : entries) {
+            Matcher matcher = pattern.matcher(entry);
+            if (matcher.matches()) {
+                searchResult.add(entry);
+            }
+        }
+    }
+
+    private Pattern getPattern(String text) {
+        Pattern pattern;
+        if (isCaseSensitive()) {
+            pattern = Pattern.compile(".*" + text + ".*");
+        } else {
+            pattern = Pattern.compile(".*" + text + ".*", Pattern.CASE_INSENSITIVE);
+        }
+        return pattern;
+    }
+
     private void onTextChange(Word2Vec word2Vec) {
         if (getText().isEmpty()) {
             filteredEntries.clear();
@@ -77,30 +137,6 @@ public class AutoCompleteTextField extends TextField {
         }
     }
 
-    private void addSearches(LinkedList<String> searchResult, String text) {
-        Pattern pattern = getPattern(text);
-        for (String entry : entries) {
-            Matcher matcher = pattern.matcher(entry);
-            if (matcher.matches()) {
-                searchResult.add(entry);
-            }
-        }
-    }
-
-    private Pattern getPattern(String text) {
-        Pattern pattern;
-        if (isCaseSensitive()) {
-            pattern = Pattern.compile(".*" + text + ".*");
-        } else {
-            pattern = Pattern.compile(".*" + text + ".*", Pattern.CASE_INSENSITIVE);
-        }
-        return pattern;
-    }
-
-    public SortedSet<String> getEntries() {
-        return entries;
-    }
-
     private void populatePopup(List<String> searchResult, String text) {
         List<CustomMenuItem> menuItems = new LinkedList<>();
         int count = Math.min(searchResult.size(), getMaxEntries());
@@ -137,42 +173,6 @@ public class AutoCompleteTextField extends TextField {
         }
         entriesPopup.getItems().clear();
         entriesPopup.getItems().addAll(menuItems);
-    }
-
-    public boolean isCaseSensitive() {
-        return caseSensitive;
-    }
-
-    public String getTextOccurenceStyle() {
-        return textOccurenceStyle;
-    }
-
-    public void setCaseSensitive(boolean caseSensitive) {
-        this.caseSensitive = caseSensitive;
-    }
-
-    public void setTextOccurenceStyle(String textOccurenceStyle) {
-        this.textOccurenceStyle = textOccurenceStyle;
-    }
-
-    public boolean isPopupHidden() {
-        return popupHidden;
-    }
-
-    public void setPopupHidden(boolean popupHidden) {
-        this.popupHidden = popupHidden;
-    }
-
-    public ObservableList<String> getFilteredEntries() {
-        return filteredEntries;
-    }
-
-    public int getMaxEntries() {
-        return maxEntries;
-    }
-
-    public void setMaxEntries(int maxEntries) {
-        this.maxEntries = maxEntries;
     }
 
 }

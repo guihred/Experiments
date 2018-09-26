@@ -42,10 +42,6 @@ public class StageControlExample extends Application implements HasLogging {
 	private double dragAnchorX;
 	private double dragAnchorY;
 
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
-
 	@Override
 	public void start(Stage stage) {
 		StageStyle stageStyle = StageStyle.UTILITY;
@@ -110,6 +106,10 @@ public class StageControlExample extends Application implements HasLogging {
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
 		stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
 		stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4);
+	}
+
+	public static void main(String[] args) {
+		Application.launch(args);
 	}
 
 }

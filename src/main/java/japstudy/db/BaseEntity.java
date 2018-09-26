@@ -11,8 +11,6 @@ import utils.HasLogging;
 
 public abstract class BaseEntity implements Serializable, HasLogging {
 
-    protected abstract Serializable getKey();
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -51,9 +49,7 @@ public abstract class BaseEntity implements Serializable, HasLogging {
         return String.format("INSERT INTO %s(%s) VALUES (%s);", getClass().getSimpleName(), fields, fieldsValues);
     }
 
-    private static boolean isFieldOk(Field e) {
-        return e.getType() != List.class && !Modifier.isStatic(e.getModifiers());
-    }
+    protected abstract Serializable getKey();
 
     private Object getFieldValue(Field e) {
         try {
@@ -63,6 +59,10 @@ public abstract class BaseEntity implements Serializable, HasLogging {
             getLogger().error("", e1);
         }
         return null;
+    }
+
+    private static boolean isFieldOk(Field e) {
+        return e.getType() != List.class && !Modifier.isStatic(e.getModifiers());
     }
 
     private static String type(Object e) {

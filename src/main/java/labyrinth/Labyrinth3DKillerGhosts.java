@@ -34,48 +34,6 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 	private PerspectiveCamera camera;
 
 	private final List<LabyrinthWall> cubes = new ArrayList<>();
-	private void criarLabirinto(Group root) {
-		for (int i = mapa.length - 1; i >= 0; i--) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
-                rectangle.setTranslateZ(j * (double) SIZE);
-                rectangle.setTranslateX(i * (double) SIZE);
-				if ("_".equals(string)) {
-					rectangle.getRy().setAngle(90);
-				}
-				cubes.add(rectangle);
-				root.getChildren().add(rectangle);
-			}
-		}
-	}
-
-	private MeshView gerarFantasma(String arquivo, Color animalColor) {
-        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
-		MeshView animal = new MeshView(mesh);
-		PhongMaterial sample = new PhongMaterial(animalColor);
-		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
-		animal.setMaterial(sample);
-		animal.setTranslateY(14);
-
-		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
-		animal.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
-		animal.setTranslateX(posicaoInicialX);
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
-		}
-
-
-		animal.setScaleX(0.4);
-        animal.setScaleZ(0.4);
-		animal.setScaleY(1);
-
-		return animal;
-	}
-
 	@Override
 	public PerspectiveCamera getCamera() {
 		return camera;
@@ -125,7 +83,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		primaryStage.show();
 	}
 
-    private MeshView[] createGhosts() {
+	private MeshView[] createGhosts() {
         return new MeshView[] { 
 				gerarFantasma(MESH_GHOST, Color.AQUAMARINE),
 				gerarFantasma(MESH_GHOST, Color.BROWN),
@@ -149,6 +107,48 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
                 gerarFantasma(MESH_GHOST, Color.YELLOWGREEN)
 		};
     }
+
+	private void criarLabirinto(Group root) {
+		for (int i = mapa.length - 1; i >= 0; i--) {
+			for (int j = mapa[i].length - 1; j >= 0; j--) {
+				String string = mapa[i][j];
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
+                rectangle.setTranslateZ(j * (double) SIZE);
+                rectangle.setTranslateX(i * (double) SIZE);
+				if ("_".equals(string)) {
+					rectangle.getRy().setAngle(90);
+				}
+				cubes.add(rectangle);
+				root.getChildren().add(rectangle);
+			}
+		}
+	}
+
+    private MeshView gerarFantasma(String arquivo, Color animalColor) {
+        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
+		MeshView animal = new MeshView(mesh);
+		PhongMaterial sample = new PhongMaterial(animalColor);
+		sample.setSpecularColor(lightColor);
+		sample.setSpecularPower(16);
+		animal.setMaterial(sample);
+		animal.setTranslateY(14);
+
+		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
+		animal.setTranslateZ(posicaoInicialZ);
+		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
+		animal.setTranslateX(posicaoInicialX);
+		while (checkColision(animal.getBoundsInParent())) {
+			animal.setTranslateZ(animal.getTranslateZ() + 1);
+			animal.setTranslateX(animal.getTranslateX() + 1);
+		}
+
+
+		animal.setScaleX(0.4);
+        animal.setScaleZ(0.4);
+		animal.setScaleY(1);
+
+		return animal;
+	}
 
 	public static void main(String[] args) {
 		launch(args);

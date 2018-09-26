@@ -29,21 +29,44 @@ public class Medicamento implements Serializable {
 		return medicamento2;
 	}
 
-	@Override
-	public String toString() {
-		return registro + "," + nome + "," + codigo + "," + lote + "," + quantidade;
+	public BooleanBinding codigoValidoProperty(ObservableList<Medicamento> medicamentos) {
+		if (codigoValido == null) {
+			codigoValido = Bindings.createBooleanBinding(
+					() -> medicamentos.stream()
+                            .anyMatch(m -> Objects.equals(Integer.valueOf(m.getCodigo()), codigo)),
+					medicamentos);
+		}
+
+		return codigoValido;
+	}
+
+	public Integer getCodigo() {
+		return codigo;
+	}
+
+	public String getLote() {
+		return lote;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public Integer getQuantidade() {
+		return quantidade;
 	}
 
 	public String getRegistro() {
 		return registro;
 	}
 
-	public boolean isRegistroValido() {
-		if (registroValido == null) {
+	public boolean isCodigoValido() {
+		if (codigoValido == null) {
 			return false;
 		}
 
-		return registroValido.get();
+		return codigoValido.get();
+
 	}
 
 	public boolean isLoteValido() {
@@ -62,13 +85,12 @@ public class Medicamento implements Serializable {
 		return quantidadeValido.get();
 	}
 
-	public BooleanBinding registroValidoProperty(ObservableList<Medicamento> medicamentos) {
+	public boolean isRegistroValido() {
 		if (registroValido == null) {
-			registroValido = Bindings.createBooleanBinding(
-					() -> medicamentos.stream().anyMatch(m -> Objects.equals(m.getRegistro(), registro)), medicamentos);
+			return false;
 		}
 
-		return registroValido;
+		return registroValido.get();
 	}
 
 	public BooleanBinding loteValidoProperty(ObservableList<Medicamento> medicamentos) {
@@ -82,10 +104,14 @@ public class Medicamento implements Serializable {
 		return loteValido;
 	}
 
-	private boolean loteIgual(Medicamento m) {
-		return Objects.equals(m.getLote(), lote)
-				|| StringUtils.isNumeric(lote) && StringUtils.isNumeric(m.getLote())
-						&& Objects.equals(Integer.valueOf(m.getLote()), Integer.valueOf(lote));
+	public BooleanBinding quantidadeCodigoValidoProperty(ObservableList<Medicamento> medicamentos) {
+		if (quantidadeValido == null) {
+			quantidadeValido = Bindings.createBooleanBinding(() -> medicamentos.stream()
+                    .filter(m -> Objects.equals(Integer.valueOf(m.getCodigo()), codigo))
+                    .mapToInt(Medicamento::getQuantidade).sum() == quantidade, medicamentos);
+		}
+
+		return quantidadeValido;
 	}
 
 	public BooleanBinding quantidadeValidoProperty(ObservableList<Medicamento> medicamentos) {
@@ -99,70 +125,44 @@ public class Medicamento implements Serializable {
 		return quantidadeValido;
 	}
 
-	public BooleanBinding quantidadeCodigoValidoProperty(ObservableList<Medicamento> medicamentos) {
-		if (quantidadeValido == null) {
-			quantidadeValido = Bindings.createBooleanBinding(() -> medicamentos.stream()
-                    .filter(m -> Objects.equals(Integer.valueOf(m.getCodigo()), codigo))
-                    .mapToInt(Medicamento::getQuantidade).sum() == quantidade, medicamentos);
+	public BooleanBinding registroValidoProperty(ObservableList<Medicamento> medicamentos) {
+		if (registroValido == null) {
+			registroValido = Bindings.createBooleanBinding(
+					() -> medicamentos.stream().anyMatch(m -> Objects.equals(m.getRegistro(), registro)), medicamentos);
 		}
 
-		return quantidadeValido;
+		return registroValido;
 	}
 
-	public BooleanBinding codigoValidoProperty(ObservableList<Medicamento> medicamentos) {
-		if (codigoValido == null) {
-			codigoValido = Bindings.createBooleanBinding(
-					() -> medicamentos.stream()
-                            .anyMatch(m -> Objects.equals(Integer.valueOf(m.getCodigo()), codigo)),
-					medicamentos);
-		}
-
-		return codigoValido;
+	public void setCodigo(Integer codigo) {
+		this.codigo = codigo;
 	}
 
-	public boolean isCodigoValido() {
-		if (codigoValido == null) {
-			return false;
-		}
 
-		return codigoValido.get();
-
-	}
-
-	public void setRegistro(String registro) {
-		this.registro = registro;
-	}
-
-	public String getNome() {
-		return nome;
+	public void setLote(String lote) {
+		this.lote = lote;
 	}
 
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
 
-
-	public String getLote() {
-		return lote;
-	}
-
-	public void setLote(String lote) {
-		this.lote = lote;
-	}
-
-	public Integer getQuantidade() {
-		return quantidade;
-	}
-
 	public void setQuantidade(Integer quantidade) {
 		this.quantidade = quantidade;
 	}
 
-	public Integer getCodigo() {
-		return codigo;
+	public void setRegistro(String registro) {
+		this.registro = registro;
 	}
 
-	public void setCodigo(Integer codigo) {
-		this.codigo = codigo;
+	@Override
+	public String toString() {
+		return registro + "," + nome + "," + codigo + "," + lote + "," + quantidade;
+	}
+
+	private boolean loteIgual(Medicamento m) {
+		return Objects.equals(m.getLote(), lote)
+				|| StringUtils.isNumeric(lote) && StringUtils.isNumeric(m.getLote())
+						&& Objects.equals(Integer.valueOf(m.getLote()), Integer.valueOf(lote));
 	}
 }

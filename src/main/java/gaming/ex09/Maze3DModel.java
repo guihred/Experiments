@@ -48,6 +48,21 @@ public class Maze3DModel {
         
     }
 
+    private void addSides(List<String> check) {
+        if (column > 0 && !maze[row][column - 1].isVisited()) {
+        	check.add("L");
+        }
+        if (row > 0 && !maze[row - 1][column].isVisited()) {
+        	check.add("U");
+        }
+        if (column < MAZE_SIZE - 1 && !maze[row][column + 1].isVisited()) {
+        	check.add("R");
+        }
+        if (row < MAZE_SIZE - 1 && !maze[row + 1][column].isVisited()) {
+        	check.add("D");
+        }
+    }
+
     private void createMazeLoop(List<String> check) {
 		while (!history.isEmpty()) {
 			maze[row][column].setVisited(true);
@@ -82,21 +97,6 @@ public class Maze3DModel {
 		}
 		timeline.stop();
 	}
-
-    private void addSides(List<String> check) {
-        if (column > 0 && !maze[row][column - 1].isVisited()) {
-        	check.add("L");
-        }
-        if (row > 0 && !maze[row - 1][column].isVisited()) {
-        	check.add("U");
-        }
-        if (column < MAZE_SIZE - 1 && !maze[row][column + 1].isVisited()) {
-        	check.add("R");
-        }
-        if (row < MAZE_SIZE - 1 && !maze[row + 1][column].isVisited()) {
-        	check.add("D");
-        }
-    }
 
 	private boolean getBackIn(List<Maze3DSquare> history1) {
 		final Maze3DSquare remove = history1.remove(history1.size() - 1);

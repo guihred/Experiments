@@ -22,10 +22,6 @@ import org.slf4j.LoggerFactory;
  */
 public class BasicAudioClipExample extends Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BasicAudioClipExample.class);
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -44,5 +40,9 @@ public class BasicAudioClipExample extends Application {
         } catch (Exception e) {
 			LOGGER.error("ERROR FxProCH8a", e);
         }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

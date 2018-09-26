@@ -40,11 +40,6 @@ public enum PuzzlePath {
         this.path = path;
     }
     
-    private static double nonZero(double a, double b) {
-        return a == 0 ? b : a;
-    }
-    
-
     public List<PathElement> getPath(double x, double y) {
 		List<PathElement> arrayList = new ArrayList<>();
         arrayList.addAll(STRAIGHT.path.apply(x / 4, y / 4));
@@ -52,6 +47,11 @@ public enum PuzzlePath {
         arrayList.addAll(STRAIGHT.path.apply(x / 4, y / 4));
         arrayList.forEach(e -> e.setAbsolute(false));
         return arrayList;
+    }
+    
+
+    private static double nonZero(double a, double b) {
+        return a == 0 ? b : a;
     }
 
 }

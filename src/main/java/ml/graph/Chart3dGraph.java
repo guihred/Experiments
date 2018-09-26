@@ -109,42 +109,6 @@ public class Chart3dGraph extends Application {
         primaryStage.show();
     }
 
-    private void createFaces(TriangleMesh mesh, int length) {
-        for (int x = 0; x < length - 1; x++) {
-            for (int z = 0; z < length - 1; z++) {
-                int tl = x * length + z; // top-left
-                int bl = x * length + z + 1; // bottom-left
-                int tr = (x + 1) * length + z; // top-right
-                int br = (x + 1) * length + z + 1; // bottom-right
-                int offset = (x * (length - 1) + z) * 8 / 2; // div 2 because we have u AND v in the list
-                // working
-                mesh.getFaces().addAll(bl, offset + 1, tl, offset + 0, tr, offset + 2);
-                mesh.getFaces().addAll(tr, offset + 2, br, offset + 3, bl, offset + 1);
-            }
-        }
-    }
-
-    private int createTexture(TriangleMesh mesh, int size1) {
-        int length = size1;
-        float total = length;
-        for (float x = 0; x < length - 1; x++) {
-            for (float y = 0; y < length - 1; y++) {
-                float x0 = x / total;
-                float y0 = y / total;
-                float x1 = (x + 1) / total;
-                float y1 = (y + 1) / total;
-                mesh.getTexCoords().addAll( //
-                        x0, y0, // 0, top-left
-                        x0, y1, // 1, bottom-left
-                        x1, y1, // 2, top-right
-                        x1, y1 // 3, bottom-right
-                );
-
-            }
-        }
-        return length;
-    }
-
     /**
      * Create axis walls
      * 
@@ -207,6 +171,46 @@ public class Chart3dGraph extends Application {
         return cube;
     }
 
+    private void createFaces(TriangleMesh mesh, int length) {
+        for (int x = 0; x < length - 1; x++) {
+            for (int z = 0; z < length - 1; z++) {
+                int tl = x * length + z; // top-left
+                int bl = x * length + z + 1; // bottom-left
+                int tr = (x + 1) * length + z; // top-right
+                int br = (x + 1) * length + z + 1; // bottom-right
+                int offset = (x * (length - 1) + z) * 8 / 2; // div 2 because we have u AND v in the list
+                // working
+                mesh.getFaces().addAll(bl, offset + 1, tl, offset + 0, tr, offset + 2);
+                mesh.getFaces().addAll(tr, offset + 2, br, offset + 3, bl, offset + 1);
+            }
+        }
+    }
+
+    private int createTexture(TriangleMesh mesh, int size1) {
+        int length = size1;
+        float total = length;
+        for (float x = 0; x < length - 1; x++) {
+            for (float y = 0; y < length - 1; y++) {
+                float x0 = x / total;
+                float y0 = y / total;
+                float x1 = (x + 1) / total;
+                float y1 = (y + 1) / total;
+                mesh.getTexCoords().addAll( //
+                        x0, y0, // 0, top-left
+                        x0, y1, // 1, bottom-left
+                        x1, y1, // 2, top-right
+                        x1, y1 // 3, bottom-right
+                );
+
+            }
+        }
+        return length;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     /**
 	 * Create an array of the given size with values of perlin noise
 	 * 
@@ -220,6 +224,7 @@ public class Chart3dGraph extends Application {
     private static double convert(double f, double size1, double maxF, double minF) {
 		return (f - minF) * size1 / (maxF - minF);
     }
+
 
     private static float[][] createPlane(int size1) {
         DataframeML dataframeML = new DataframeML("california_housing_train.csv");
@@ -248,11 +253,6 @@ public class Chart3dGraph extends Application {
         }
         return noiseArray;
 
-    }
-
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
 }

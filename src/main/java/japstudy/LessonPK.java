@@ -13,11 +13,6 @@ public class LessonPK implements Serializable {
 	private Integer lesson;
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(lesson, exercise);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -31,14 +26,19 @@ public class LessonPK implements Serializable {
 		LessonPK other = (LessonPK) obj;
 		return Objects.equals(exercise, other.exercise) && Objects.equals(lesson, other.lesson);
 	}
+
 	public Integer getExercise() {
 		return exercise;
 	}
-	public void setExercise(Integer exercise) {
-		this.exercise = exercise;
-	}
 	public Integer getLesson() {
 		return lesson;
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(lesson, exercise);
+	}
+	public void setExercise(Integer exercise) {
+		this.exercise = exercise;
 	}
 	public void setLesson(Integer lesson) {
 		this.lesson = lesson;

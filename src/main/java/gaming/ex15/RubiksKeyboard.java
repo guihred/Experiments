@@ -9,23 +9,18 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class RubiksKeyboard implements EventHandler<KeyEvent> , HasLogging{
+	private static final double CAMERA_MODIFIER = 50.0;
+	private static final double CAMERA_QUANTITY = 5.0;
 	/**
 	 * 
 	 */
 	private PerspectiveCamera camera;
-	private static final double CAMERA_MODIFIER = 50.0;
-	private static final double CAMERA_QUANTITY = 5.0;
 	private final EnumSet<KeyCode> enumSet = EnumSet.noneOf(KeyCode.class);
 	private RubiksCubeLauncher rubiksCubeLauncher;
 
 	public RubiksKeyboard(PerspectiveCamera camera, RubiksCubeLauncher rubiksCubeLauncher) {
 		this.camera = camera;
 		this.rubiksCubeLauncher = rubiksCubeLauncher;
-	}
-
-	public void keyReleased(KeyEvent event) {
-		KeyCode keycode = event.getCode();
-		enumSet.remove(keycode);
 	}
 
 	@Override
@@ -94,6 +89,11 @@ public class RubiksKeyboard implements EventHandler<KeyEvent> , HasLogging{
 			rubiksCubeLauncher.rotateCube(RubiksCubeFaces.FRONT, !event.isShiftDown());
 		}
 
+	}
+
+	public void keyReleased(KeyEvent event) {
+		KeyCode keycode = event.getCode();
+		enumSet.remove(keycode);
 	}
 
 	public static void main(String[] args) {

@@ -39,25 +39,6 @@ public class SimpleScene3D extends Application {
 		}
 	};
 
-	private void handleKeyPressed(KeyEvent event) {
-		double change = event.isShiftDown() ? CAMERA_MODIFIER : CAMERA_QUANTITY;
-		// What key did the user press?
-		KeyCode keycode = event.getCode();
-		// Step 2c: Add Zoom controls
-		if (keycode == KeyCode.W) {
-			camera.setTranslateZ(camera.getTranslateZ() + change);
-		}
-		if (keycode == KeyCode.S) {
-			camera.setTranslateZ(camera.getTranslateZ() - change);
-		}
-		// Step 2d: Add Strafe controls
-		if (keycode == KeyCode.A) {
-			camera.setTranslateX(camera.getTranslateX() - change);
-		}
-		if (keycode == KeyCode.D) {
-			camera.setTranslateX(camera.getTranslateX() + change);
-		}
-	}
 	@Override
 	public void start(Stage primaryStage) {
 		// Step 1a: Build your Scene and Camera
@@ -153,6 +134,25 @@ public class SimpleScene3D extends Application {
         primaryStage.setTitle("Simple Scene 3D");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+	private void handleKeyPressed(KeyEvent event) {
+		double change = event.isShiftDown() ? CAMERA_MODIFIER : CAMERA_QUANTITY;
+		// What key did the user press?
+		KeyCode keycode = event.getCode();
+		// Step 2c: Add Zoom controls
+		if (keycode == KeyCode.W) {
+			camera.setTranslateZ(camera.getTranslateZ() + change);
+		}
+		if (keycode == KeyCode.S) {
+			camera.setTranslateZ(camera.getTranslateZ() - change);
+		}
+		// Step 2d: Add Strafe controls
+		if (keycode == KeyCode.A) {
+			camera.setTranslateX(camera.getTranslateX() - change);
+		}
+		if (keycode == KeyCode.D) {
+			camera.setTranslateX(camera.getTranslateX() + change);
+		}
 	}
 	public static void main(String[] args) {
 		launch(args);

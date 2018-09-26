@@ -43,6 +43,12 @@ class MovimentacaoAleatoria extends AnimationTimer {
 		}
 	}
 
+    private boolean checkCollision(MeshView enemy) {
+        return labyrinth3dWallTexture.checkColision(enemy.getBoundsInParent())
+                || notWithinRange(enemy.getTranslateZ(), Labyrinth3DWallTexture.mapa[0].length * LabyrinthWall.SIZE)
+                || notWithinRange(enemy.getTranslateX(), Labyrinth3DWallTexture.mapa.length * LabyrinthWall.SIZE);
+    }
+
     private void goToDirection(int dir, MeshView enemy, final int step) {
         // NORTH
         if (dir == 3) {
@@ -60,12 +66,6 @@ class MovimentacaoAleatoria extends AnimationTimer {
         if (dir == 0) {
         	enemy.setTranslateX(enemy.getTranslateX() + step);
         }
-    }
-
-    private boolean checkCollision(MeshView enemy) {
-        return labyrinth3dWallTexture.checkColision(enemy.getBoundsInParent())
-                || notWithinRange(enemy.getTranslateZ(), Labyrinth3DWallTexture.mapa[0].length * LabyrinthWall.SIZE)
-                || notWithinRange(enemy.getTranslateX(), Labyrinth3DWallTexture.mapa.length * LabyrinthWall.SIZE);
     }
 
     private static boolean notWithinRange(double coord, double maxSize) {

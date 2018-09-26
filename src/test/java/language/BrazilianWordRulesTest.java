@@ -64,11 +64,11 @@ public class BrazilianWordRulesTest {
     public static void main(String[] args) {
         try {
             Stream<String> words = getWords(ResourceFXUtils.toURI("pt_PT.dic"));
-            Map<String, Set<String>> collect = words.filter(e -> e.contains("\t"))
+            Map<String, Set<String>> wordAttributes = words.filter(e -> e.contains("\t"))
                     .map(e -> e.replaceAll(".+\t\\[(\\$\\.+\\$)*(.+)\\]", "$2")).flatMap(e -> Stream.of(e.split(",")))
                     .collect(Collectors.groupingBy(e -> e.split("=")[0].replaceAll("\\$.+\\$", ""),
                             Collectors.mapping(e -> e.split("=")[1].replaceAll("\\$[A-Z]+", ""), Collectors.toSet())));
-            collect.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue().size())).forEach(e -> {
+            wordAttributes.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue().size())).forEach(e -> {
                 //            System.out.println(e.getKey());
                 //            System.out.println("\t" + e.getValue());
                 //            e.getValue().forEach(v -> System.out.println("\t" + v));

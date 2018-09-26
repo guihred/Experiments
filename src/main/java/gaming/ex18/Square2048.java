@@ -43,16 +43,16 @@ public class Square2048 extends Region {
         setPrefSize(50, 50);
     }
 
-    public void setNumber(int value) {
-        number.set(value);
+    public int getNumber() {
+        return number.get();
     }
 
     public boolean isEmpty() {
         return number.get() == 0;
     }
 
-    public int getNumber() {
-        return number.get();
+    public void setNumber(int value) {
+        number.set(value);
     }
 
 }

@@ -29,22 +29,6 @@ public class Labyrinth3DAntiAliasing extends Application implements CommomLabyri
 		return labyrinthWalls;
 	}
 
-	private void initializeLabyrinth(Group root) {
-		for (int k = mapa.length - 1; k >= 0; k--) {
-			for (int l = mapa[k].length - 1; l >= 0; l--) {
-				String string = mapa[k][l];
-				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
-				rectangle.setTranslateX(k * SIZE);
-				rectangle.setTranslateZ(l * SIZE);
-				if ("_".equals(string)) {
-					rectangle.getRy().setAngle(90);
-				}
-				labyrinthWalls.add(rectangle);
-				root.getChildren().add(rectangle);
-			}
-		}
-	}
-
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
@@ -76,6 +60,22 @@ public class Labyrinth3DAntiAliasing extends Application implements CommomLabyri
         primaryStage.setTitle("Labyrinth 3D With Anti-Aliasing");
 		primaryStage.setScene(sc);
 		primaryStage.show();
+	}
+
+	private void initializeLabyrinth(Group root) {
+		for (int k = mapa.length - 1; k >= 0; k--) {
+			for (int l = mapa[k].length - 1; l >= 0; l--) {
+				String string = mapa[k][l];
+				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
+				rectangle.setTranslateX(k * SIZE);
+				rectangle.setTranslateZ(l * SIZE);
+				if ("_".equals(string)) {
+					rectangle.getRy().setAngle(90);
+				}
+				labyrinthWalls.add(rectangle);
+				root.getChildren().add(rectangle);
+			}
+		}
 	}
 
 	public static void main(String[] args) {

@@ -31,10 +31,6 @@ public class PathTransitionExample extends Application {
 	private PathTransition anim = newPathTransistion(new Duration(1000.0), path, ellipse,
 			PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT, Interpolator.LINEAR, true, Animation.INDEFINITE);
 
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-
     @Override
     public void start(Stage stage) {
         Button stopButton = newButton("Stop", e -> anim.stop());
@@ -52,5 +48,9 @@ public class PathTransitionExample extends Application {
         stage.setScene(scene);
         stage.setTitle("Metronome using PathTransition");
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
     }
 }

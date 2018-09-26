@@ -15,24 +15,6 @@ public final class GraphAlgorithms {
 	private GraphAlgorithms() {
 	}
 
-	public static void main(String[] args) {
-        List<Vertex> vertices = createGraph8();
-
-        vertices.forEach(v -> LOGGER.info("{}", v));
-
-		Map<Vertex, Integer> num = new HashMap<>();
-		Map<Vertex, Integer> low = new HashMap<>();
-
-		vertices.get(0).assignNum(num, 0);
-		vertices.get(0).assignLow(num, low);
-        LOGGER.info("{}", num);
-        LOGGER.info("{}", low);
-        LOGGER.info("{}", Vertex.kruskal(vertices));
-        LOGGER.info("{}", Vertex.prim(vertices));
-		Vertex.sortTopology(vertices);
-
-	}
-
 	public static List<Vertex> createGraph1() {
 		List<Vertex> vertices = IntStream.range(1, 8).mapToObj(Vertex::new).collect(Collectors.toList());
 		int[][] adj = { { 2, 3, 4 }, { 4, 5 }, { 6 }, { 3, 6, 7 }, { 4, 7 }, {}, { 6 } };
@@ -182,6 +164,24 @@ public final class GraphAlgorithms {
 		j.biput(k);
 
 		return graph;
+	}
+
+	public static void main(String[] args) {
+        List<Vertex> vertices = createGraph8();
+
+        vertices.forEach(v -> LOGGER.info("{}", v));
+
+		Map<Vertex, Integer> num = new HashMap<>();
+		Map<Vertex, Integer> low = new HashMap<>();
+
+		vertices.get(0).assignNum(num, 0);
+		vertices.get(0).assignLow(num, low);
+        LOGGER.info("{}", num);
+        LOGGER.info("{}", low);
+        LOGGER.info("{}", Vertex.kruskal(vertices));
+        LOGGER.info("{}", Vertex.prim(vertices));
+		Vertex.sortTopology(vertices);
+
 	}
 
 	// Returns true if word1 and word2 are the same length

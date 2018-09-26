@@ -24,7 +24,11 @@ public class GridLayout implements Layout {
         layoutInGrid(cells, graph);
 	}
 
-    private static void layoutInGrid(Cell[] cells, Graph graph) {
+    public static int radius(int size2) {
+		return 100 * (size2 / 50 + 1);
+	}
+
+	private static void layoutInGrid(Cell[] cells, Graph graph) {
         Random rnd = new Random();
         Cell cell2 = cells[0];
 		Map<Cell, Integer> w = graph.getModel().unweightedUndirected(cell2.getCellId());
@@ -50,9 +54,5 @@ public class GridLayout implements Layout {
 			cell.relocate(x, y);
 		}
     }
-
-	public static int radius(int size2) {
-		return 100 * (size2 / 50 + 1);
-	}
 
 }

@@ -49,6 +49,10 @@ public class Candidato extends BaseEntity {
 		return cidade;
 	}
 
+	public Boolean getEleito() {
+		return eleito;
+	}
+
 	public String getFotoUrl() {
 		return fotoUrl;
 	}
@@ -60,6 +64,11 @@ public class Candidato extends BaseEntity {
 	public String getHref() {
 		return href;
 	}
+
+	@Override
+    public String getKey() {
+        return getHref();
+    }
 
 	public LocalDate getNascimento() {
 		return nascimento;
@@ -100,20 +109,23 @@ public class Candidato extends BaseEntity {
 	public void setCidade(Cidade cidade) {
 		this.cidade = cidade;
 	}
-
+	public void setEleito(Boolean eleito) {
+		this.eleito = eleito;
+	}
 	public void setFotoUrl(String fotoUrl) {
 		this.fotoUrl = fotoUrl;
 	}
-
 	public void setGrauInstrucao(String grauInstrucao) {
 		this.grauInstrucao = grauInstrucao;
 	}
+
 	public void setHref(String href) {
 		this.href = href;
 	}
 	public void setNascimento(LocalDate nascimento) {
 		this.nascimento = nascimento;
 	}
+
 	public void setNaturalidade(String naturalidade) {
 		this.naturalidade = naturalidade;
 	}
@@ -121,6 +133,7 @@ public class Candidato extends BaseEntity {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+
 	public void setNomeCompleto(String nomeCompleto) {
 		this.nomeCompleto = nomeCompleto;
 	}
@@ -141,7 +154,7 @@ public class Candidato extends BaseEntity {
 		this.votos = votos;
 	}
 
-	@Override
+    @Override
 	public String toString() {
 		return MessageFormat.format(
 				"Candidato [cargo={0}, cidade={1}, grauInstrucao={2}, href={3}, fotoUrl={4}, nascimento={5}, naturalidade={6}, nome={7}, nomeCompleto={8}, numero={9}, ocupacao={10}, partido={11}, votos={12}]",
@@ -149,17 +162,4 @@ public class Candidato extends BaseEntity {
 				grauInstrucao, href, fotoUrl, nascimento, naturalidade, nome, nomeCompleto, numero,
 				ocupacao, partido, votos);
 	}
-
-	public Boolean getEleito() {
-		return eleito;
-	}
-
-	public void setEleito(Boolean eleito) {
-		this.eleito = eleito;
-	}
-
-    @Override
-    public String getKey() {
-        return getHref();
-    }
 }

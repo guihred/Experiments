@@ -13,11 +13,6 @@ public class SimpleFadeTransitionBuilder extends SimpleAnimationBuilder<FadeTran
 		fadeTransition = animation;
 	}
 
-	public SimpleFadeTransitionBuilder node(Node highlight) {
-		fadeTransition.setNode(highlight);
-		return this;
-	}
-
 	public SimpleFadeTransitionBuilder duration(Duration value) {
 		fadeTransition.setDuration(value);
 		return this;
@@ -25,6 +20,11 @@ public class SimpleFadeTransitionBuilder extends SimpleAnimationBuilder<FadeTran
 
 	public SimpleFadeTransitionBuilder fromValue(double value) {
 		fadeTransition.setFromValue(value);
+		return this;
+	}
+
+	public SimpleFadeTransitionBuilder node(Node highlight) {
+		fadeTransition.setNode(highlight);
 		return this;
 	}
 

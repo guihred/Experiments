@@ -5,14 +5,6 @@ import java.util.List;
 
 public class CandidatoDAO extends BaseDAO {
 
-    public Candidato retrieve(String href) {
-        return execute(session -> session.get(Candidato.class, href));
-    }
-
-    public void saveOrUpdate(Candidato candidato) {
-        executeRun(session -> session.merge(candidato));
-    }
-
     public List<Candidato> list(int startPosition, int maxResult) {
         return execute(session -> {
             StringBuilder hql = new StringBuilder();
@@ -24,6 +16,14 @@ public class CandidatoDAO extends BaseDAO {
                     .setMaxResults(maxResult).list();
         });
 	}
+
+    public Candidato retrieve(String href) {
+        return execute(session -> session.get(Candidato.class, href));
+    }
+
+    public void saveOrUpdate(Candidato candidato) {
+        executeRun(session -> session.merge(candidato));
+    }
 
     public Long size() {
         return execute(session -> {

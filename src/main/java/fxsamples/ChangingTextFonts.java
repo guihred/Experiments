@@ -16,11 +16,7 @@ import utils.HasLogging;
 public class ChangingTextFonts extends Application {
     private static final String INTRO_TEXT = "JavaFX 8: Intro. by Example";
 
-    public static void main(String[] args) {
-		launch(args);
-	}
-
-	@Override
+    @Override
 	public void start(Stage primaryStage) {
         Logger log = HasLogging.log(ChangingTextFonts.class);
         primaryStage.setTitle("Changing Text Fonts");
@@ -66,5 +62,9 @@ public class ChangingTextFonts extends Application {
 		text5.setEffect(refl);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

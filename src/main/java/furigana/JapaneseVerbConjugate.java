@@ -21,14 +21,14 @@ public class JapaneseVerbConjugate {
             .put(".+[いちりきぎにびみしじえてでれけげねべめせ.]+る", arr("ます", "ない", "て", "た", "られる", "れば", "よう"))
             .build();
 
-    public static boolean isVerb(String oi) {
-        return oi.contains(".") && CONJUGATION_MAP.keySet().stream().anyMatch(oi::matches);
-    }
-
     public static List<String> conjugateVerb(String verb) {
         return CONJUGATION_MAP.keySet().stream().filter(verb::matches)
                 .flatMap(e -> Stream.of(CONJUGATION_MAP.get(e)).map(f -> verb.substring(0, verb.length() - 1) + f))
                 .collect(Collectors.toList());
+    }
+
+    public static boolean isVerb(String oi) {
+        return oi.contains(".") && CONJUGATION_MAP.keySet().stream().anyMatch(oi::matches);
     }
 
     private static String[] arr(String... s) {

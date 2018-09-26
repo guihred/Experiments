@@ -34,38 +34,20 @@ class CardStack extends Pane {
 
 	}
 
-	public SolitaireCard getLastCards() {
-		if (cards.isEmpty()) {
-			return null;
-		}
-		return cards.get(cards.size() - 1);
-	}
-
-	public List<SolitaireCard> removeLastCards(int n) {
-		if (cards.isEmpty()) {
-            return Collections.emptyList();
-		}
-		List<SolitaireCard> lastCards = new ArrayList<>();
-		for (int i = 0; i < n; i++) {
-			SolitaireCard solitaireCard = cards.remove(cards.size() - 1);
-			getChildren().remove(solitaireCard);
-			lastCards.add(solitaireCard);
-		}
-		return lastCards;
-	}
-	public SolitaireCard removeLastCards() {
-		if (cards.isEmpty()) {
-			return null;
-		}
-		SolitaireCard solitaireCard = cards.remove(cards.size() - 1);
-		getChildren().remove(solitaireCard);
-		return solitaireCard;
-	}
-
 	public void addCards(List<SolitaireCard> cards1) {
 		addCards(cards1.toArray(new SolitaireCard[0]));
 	}
 
+	public void addCards(SolitaireCard... cards1) {
+		for (SolitaireCard solitaireCard : cards1) {
+			if (!cards.contains(solitaireCard)) {
+				cards.add(solitaireCard);
+				solitaireCard.setLayoutX(0);
+				solitaireCard.setLayoutY(0);
+				getChildren().add(solitaireCard);
+			}
+		}
+	}
 	public void addCardsVertically(List<SolitaireCard> cards1) {
 		addCardsVertically(cards1.toArray(new SolitaireCard[0]));
 	}
@@ -87,15 +69,22 @@ class CardStack extends Pane {
 
 	}
 
-	public void addCards(SolitaireCard... cards1) {
-		for (SolitaireCard solitaireCard : cards1) {
-			if (!cards.contains(solitaireCard)) {
-				cards.add(solitaireCard);
-				solitaireCard.setLayoutX(0);
-				solitaireCard.setLayoutY(0);
-				getChildren().add(solitaireCard);
-			}
+	public ObservableList<SolitaireCard> getCards() {
+		return cards;
+	}
+
+	public SolitaireCard getLastCards() {
+		if (cards.isEmpty()) {
+			return null;
 		}
+		return cards.get(cards.size() - 1);
+	}
+
+	public List<SolitaireCard> removeAllCards() {
+		getChildren().clear();
+        List<SolitaireCard> cardsCopy = cards.stream().collect(Collectors.toList());
+		cards.clear();
+        return cardsCopy;
 	}
 
 	public void removeCards(List<SolitaireCard> cards1) {
@@ -111,14 +100,25 @@ class CardStack extends Pane {
 		}
 	}
 
-	public ObservableList<SolitaireCard> getCards() {
-		return cards;
+	public SolitaireCard removeLastCards() {
+		if (cards.isEmpty()) {
+			return null;
+		}
+		SolitaireCard solitaireCard = cards.remove(cards.size() - 1);
+		getChildren().remove(solitaireCard);
+		return solitaireCard;
 	}
 
-	public List<SolitaireCard> removeAllCards() {
-		getChildren().clear();
-        List<SolitaireCard> cardsCopy = cards.stream().collect(Collectors.toList());
-		cards.clear();
-        return cardsCopy;
+	public List<SolitaireCard> removeLastCards(int n) {
+		if (cards.isEmpty()) {
+            return Collections.emptyList();
+		}
+		List<SolitaireCard> lastCards = new ArrayList<>();
+		for (int i = 0; i < n; i++) {
+			SolitaireCard solitaireCard = cards.remove(cards.size() - 1);
+			getChildren().remove(solitaireCard);
+			lastCards.add(solitaireCard);
+		}
+		return lastCards;
 	}
 }

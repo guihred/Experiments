@@ -21,7 +21,22 @@ public class TetrisLauncher extends Application {
 	private final TetrisModel tetrisModel = new TetrisModel(gridPane);
     private Timeline timeline;
 
-	private void handleKeyPressed(KeyEvent e) {
+	@Override
+    public void start(Stage stage) throws Exception {
+        gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+        final Scene scene = new Scene(gridPane);
+        timeline = new SimpleTimelineBuilder()
+                .addKeyFrame(new Duration(500), t -> tetrisModel.movePiecesTimeline(timeline))
+                .cycleCount(Animation.INDEFINITE).build();
+        timeline.play();
+		scene.setOnKeyPressed(this::handleKeyPressed);
+        stage.setScene(scene);
+        stage.setWidth(300);
+        stage.setHeight(600);
+        stage.show();
+    }
+
+    private void handleKeyPressed(KeyEvent e) {
 		final KeyCode code = e.getCode();
 		switch (code) {
             case UP:
@@ -51,27 +66,12 @@ public class TetrisLauncher extends Application {
             tetrisModel.drawPiece();
         }
     }
-
     private void moveSideways(int i) {
         if (!tetrisModel.checkCollision(tetrisModel.getCurrentI() + i, tetrisModel.getCurrentJ())) {
             tetrisModel.setCurrentI(tetrisModel.getCurrentI() + i);
             tetrisModel.clearMovingPiece();
             tetrisModel.drawPiece();
         }
-    }
-    @Override
-    public void start(Stage stage) throws Exception {
-        gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        final Scene scene = new Scene(gridPane);
-        timeline = new SimpleTimelineBuilder()
-                .addKeyFrame(new Duration(500), t -> tetrisModel.movePiecesTimeline(timeline))
-                .cycleCount(Animation.INDEFINITE).build();
-        timeline.play();
-		scene.setOnKeyPressed(this::handleKeyPressed);
-        stage.setScene(scene);
-        stage.setWidth(300);
-        stage.setHeight(600);
-        stage.show();
     }
 
     public static void main(String[] args) {

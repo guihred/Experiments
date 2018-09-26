@@ -44,28 +44,34 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
         timeline.stop();
     }
 
-    private void setSidesByDirection(final String direction) {
-        if ("L".equals(direction)) {
-        	createdMaze[r][c].setWest(true);
-        	c = c - 1;
-        	createdMaze[r][c].setEast(true);
+    private void addPossibleSides() {
+        if (c > 0 && !createdMaze[r][c - 1].isVisited()) {
+        	check.add("L");
         }
-        if ("U".equals(direction)) {
-        	createdMaze[r][c].setNorth(true);
-        	r = r - 1;
-        	createdMaze[r][c].setSouth(true);
+        if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
+        	check.add("U");
         }
-        if ("R".equals(direction)) {
-        	createdMaze[r][c].setEast(true);
-        	c = c + 1;
-        	createdMaze[r][c].setWest(true);
+        if (c < createdMaze.length - 1 && !createdMaze[r][c + 1].isVisited()) {
+        	check.add("R");
         }
-        if ("D".equals(direction)) {
-        	createdMaze[r][c].setSouth(true);
-        	r = r + 1;
-        	createdMaze[r][c].setNorth(true);
+        if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
+        	check.add("D");
         }
     }
+
+    private boolean getBackIn(List<MazeSquare> history1) {
+		final MazeSquare remove = history1.remove(history1.size() - 1);
+		for (int i = 0; i < createdMaze.length; i++) {
+			for (int j = 0; j < createdMaze.length; j++) {
+				if (createdMaze[i][j] == remove) {
+					r = i;
+					c = j;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
     private void setSides() {
         for (int i = 0; i < createdMaze.length; i++) {
@@ -93,32 +99,26 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 		}
     }
 
-    private void addPossibleSides() {
-        if (c > 0 && !createdMaze[r][c - 1].isVisited()) {
-        	check.add("L");
+	private void setSidesByDirection(final String direction) {
+        if ("L".equals(direction)) {
+        	createdMaze[r][c].setWest(true);
+        	c = c - 1;
+        	createdMaze[r][c].setEast(true);
         }
-        if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
-        	check.add("U");
+        if ("U".equals(direction)) {
+        	createdMaze[r][c].setNorth(true);
+        	r = r - 1;
+        	createdMaze[r][c].setSouth(true);
         }
-        if (c < createdMaze.length - 1 && !createdMaze[r][c + 1].isVisited()) {
-        	check.add("R");
+        if ("R".equals(direction)) {
+        	createdMaze[r][c].setEast(true);
+        	c = c + 1;
+        	createdMaze[r][c].setWest(true);
         }
-        if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
-        	check.add("D");
+        if ("D".equals(direction)) {
+        	createdMaze[r][c].setSouth(true);
+        	r = r + 1;
+        	createdMaze[r][c].setNorth(true);
         }
     }
-
-	private boolean getBackIn(List<MazeSquare> history1) {
-		final MazeSquare remove = history1.remove(history1.size() - 1);
-		for (int i = 0; i < createdMaze.length; i++) {
-			for (int j = 0; j < createdMaze.length; j++) {
-				if (createdMaze[i][j] == remove) {
-					r = i;
-					c = j;
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 }

@@ -65,6 +65,91 @@ public final class SudokuSquare extends Region {
 
     }
 
+    @Override
+	public boolean equals(Object obj) {
+		if (super.equals(obj)) {
+			return true;
+		}
+		return obj instanceof SudokuSquare && ((SudokuSquare) obj).getRow() == getRow() && ((SudokuSquare) obj).getCol() == getCol();
+	}
+
+    public int getCol() {
+		return col;
+	}
+
+    public int getNumber() {
+        return number.get();
+    }
+
+    public List<Integer> getPossibilities() {
+        return possibilities;
+    }
+
+    public int getRow() {
+		return row;
+	}
+    @Override
+	public int hashCode() {
+		return Objects.hash(getRow(), getCol());
+	}
+
+
+	public boolean isEmpty() {
+		return number.get() == 0;
+    }
+
+	public boolean isInArea(int row1, int col1) {
+		return row / SudokuModel.MAP_NUMBER == row1 / SudokuModel.MAP_NUMBER
+				&& col / SudokuModel.MAP_NUMBER == col1 / SudokuModel.MAP_NUMBER;
+	}
+
+	public boolean isInCol(int col1) {
+		return col == col1;
+	}
+
+	public boolean isInPosition(int row1, int col1) {
+        return row == row1 && col1 == col;
+    }
+
+    public boolean isInRow(int row1) {
+		return row == row1;
+	}
+
+    public boolean isNotEmpty() {
+        return !isEmpty();
+    }
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    public boolean isWrong() {
+        return wrong.get();
+    }
+
+	public int setEmpty() {
+		int k = number.get();
+		number.set(0);
+		return k;
+	}
+
+	public void setNumber(int value) {
+        number.set(value);
+    }
+
+	public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
+        updateStyle();
+    }
+
+	public void setPossibilities(List<Integer> possibilities) {
+		this.possibilities.setAll(possibilities);
+	}
+
+    public void setWrong(boolean wrong) {
+        this.wrong.set(wrong);
+    }
+
     private void updateStyle() {
         StringBuilder style = new StringBuilder();
 
@@ -84,90 +169,5 @@ public final class SudokuSquare extends Region {
 
         style.append(";");
         setStyle(style.toString());
-    }
-
-    public boolean isPermanent() {
-        return permanent;
-    }
-
-    public void setPermanent(boolean permanent) {
-        this.permanent = permanent;
-        updateStyle();
-    }
-
-    public void setPossibilities(List<Integer> possibilities) {
-		this.possibilities.setAll(possibilities);
-	}
-
-    public List<Integer> getPossibilities() {
-        return possibilities;
-    }
-    public void setNumber(int value) {
-        number.set(value);
-    }
-
-
-	public int setEmpty() {
-		int k = number.get();
-		number.set(0);
-		return k;
-	}
-
-	public boolean isInCol(int col1) {
-		return col == col1;
-	}
-
-	public boolean isInArea(int row1, int col1) {
-		return row / SudokuModel.MAP_NUMBER == row1 / SudokuModel.MAP_NUMBER
-				&& col / SudokuModel.MAP_NUMBER == col1 / SudokuModel.MAP_NUMBER;
-	}
-
-	public boolean isInRow(int row1) {
-		return row == row1;
-	}
-
-    public boolean isInPosition(int row1, int col1) {
-        return row == row1 && col1 == col;
-    }
-
-    public boolean isEmpty() {
-		return number.get() == 0;
-    }
-
-    public boolean isNotEmpty() {
-        return !isEmpty();
-    }
-
-    public int getNumber() {
-        return number.get();
-    }
-
-	@Override
-	public boolean equals(Object obj) {
-		if (super.equals(obj)) {
-			return true;
-		}
-		return obj instanceof SudokuSquare && ((SudokuSquare) obj).getRow() == getRow() && ((SudokuSquare) obj).getCol() == getCol();
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(getRow(), getCol());
-	}
-
-	public int getRow() {
-		return row;
-	}
-
-	public int getCol() {
-		return col;
-	}
-
-    public boolean isWrong() {
-        return wrong.get();
-    }
-
-    public void setWrong(boolean wrong) {
-        this.wrong.set(wrong);
     }
 }

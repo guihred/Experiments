@@ -17,6 +17,15 @@ import utils.HasLogging;
 public class Ch1 {
 
 	/**
+	 * 16. Improve the average method so that it is called with at least one
+	 * parameter.
+	 */
+
+	public static double average(double... i) {
+		return DoubleStream.of(i).average().orElse(0);
+	}
+
+	/**
 	 * 4. Write a program that prints the smallest and largest positive double
 	 * values. Hint: Look up Math.nextUp in the Java API.
 	 */
@@ -40,17 +49,6 @@ public class Ch1 {
 				BigInteger::multiply);
 	}
 
-	/**
-	 * 10. Write a program that produces a random string of letters and digits by
-	 * generating a random long value and printing it in base 36.
-	 */
-	public static String randomLetters() {
-
-		Random random = new Random();
-		long nextLong = random.nextLong();
-        return Long.toString(abs(nextLong), 36);
-	}
-
 
 	/**
 	 * 13. Write a program that prints a lottery combination, picking six distinct
@@ -63,6 +61,14 @@ public class Ch1 {
 		return IntStream.generate(() -> random.nextInt(49) + 1).distinct().limit(6).sorted().boxed().collect(toList());
 	}
 
+	public static void main(String[] args) {
+		extremeDoubles();
+        // System.out.println(factorial(1000))
+        // System.out.println(lotteryCombination())
+        // System.out.println(pascalTriangle(10))
+        // System.out.println(average(1,2,3,4,5,6,7,8))
+	}
+
 	/**
 	 * 15. Write a program that stores Pascal's triangle up to a given n in an
 	 * List<List<Integer>> .
@@ -71,29 +77,23 @@ public class Ch1 {
 		return Stream.iterate(Arrays.asList(1), Ch1::mapPascal).limit(n).collect(Collectors.toList());
 	}
 
+	/**
+	 * 10. Write a program that produces a random string of letters and digits by
+	 * generating a random long value and printing it in base 36.
+	 */
+	public static String randomLetters() {
+
+		Random random = new Random();
+		long nextLong = random.nextLong();
+        return Long.toString(abs(nextLong), 36);
+	}
+
 	private static List<Integer> mapPascal(List<Integer> previousPascal) {
 		List<Integer> pascal = Stream.concat(Stream.of(1), previousPascal.stream()).collect(Collectors.toList());
 		for (int i = 1; i < pascal.size() - 1; i++) {
 			pascal.set(i, previousPascal.get(i) + previousPascal.get(i - 1));
 		}
 		return pascal;
-	}
-
-	/**
-	 * 16. Improve the average method so that it is called with at least one
-	 * parameter.
-	 */
-
-	public static double average(double... i) {
-		return DoubleStream.of(i).average().orElse(0);
-	}
-
-	public static void main(String[] args) {
-		extremeDoubles();
-        // System.out.println(factorial(1000))
-        // System.out.println(lotteryCombination())
-        // System.out.println(pascalTriangle(10))
-        // System.out.println(average(1,2,3,4,5,6,7,8))
 	}
 
 }

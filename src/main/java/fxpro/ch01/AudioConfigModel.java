@@ -21,14 +21,6 @@ public class AudioConfigModel {
      */
 	public static final double MAX_DECIBELS = 160.0;
     /**
-     * The selected audio volume in decibels
-     */
-	public final IntegerProperty selectedDBs = new SimpleIntegerProperty(0);
-    /**
-     * Indicates whether audio is muted
-     */
-	public final BooleanProperty muting = new SimpleBooleanProperty(false);
-    /**
      * List of some musical genres
      */
 	public static final ObservableList<String> GENRES = FXCollections.observableArrayList(
@@ -38,6 +30,14 @@ public class AudioConfigModel {
             "Polka",
             "Rock"
     );
+    /**
+     * The selected audio volume in decibels
+     */
+	public final IntegerProperty selectedDBs = new SimpleIntegerProperty(0);
+    /**
+     * Indicates whether audio is muted
+     */
+	public final BooleanProperty muting = new SimpleBooleanProperty(false);
     /**
      * A reference to the selection model used by the Slider
      */

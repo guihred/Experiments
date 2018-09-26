@@ -34,15 +34,16 @@ public final class DataframeUtils extends DataframeML {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static List<Double> crossFeatureObject(DataframeML dataframe, String header,
             ToDoubleFunction<Object[]> mapper, String... dependent) {
-        List<Double> collect = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
+        List<Double> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
                 .mapToDouble(mapper).boxed().collect(Collectors.toList());
-        dataframe.dataframe.put(header, (List) collect);
+        dataframe.dataframe.put(header, (List) mappedColumn);
         dataframe.formatMap.put(header, Double.class);
-        return collect;
+        return mappedColumn;
     }
 
     public static void displayCorrelation(DataframeML dataframe) {
-        Map<String, DataframeStatisticAccumulator> collect = dataframe.dataframe.entrySet().stream().collect(Collectors.toMap(
+        Map<String, DataframeStatisticAccumulator> stats = dataframe.dataframe.entrySet().stream()
+                .collect(Collectors.toMap(
                 Entry<String, List<Object>>::getKey,
                 e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(dataframe, e.getKey()),
                         DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
@@ -57,10 +58,10 @@ public final class DataframeUtils extends DataframeML {
         for (String variable : keySet) {
             String format = "%" + pad + "s";
             s.append(String.format(format, variable));
-            double self = collect.get(variable).getCorrelation(variable);
+            double self = stats.get(variable).getCorrelation(variable);
             for (String variable2 : keySet) {
                 s.append(String.format(floatFormating(variable2.length()),
-                        collect.get(variable).getCorrelation(variable2) / self));
+                        stats.get(variable).getCorrelation(variable2) / self));
             }
             s.append("\n");
 
@@ -99,6 +100,34 @@ public final class DataframeUtils extends DataframeML {
 
 
 
+    public static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
+        while (scanner.hasNext()) {
+            dataframe.size++;
+            List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
+            if (header.size() != line2.size()) {
+                LOG.error("ERROR FIELDS COUNT");
+                createNullRow(header, line2);
+            }
+
+            for (int i = 0; i < header.size(); i++) {
+                String key = header.get(i);
+                String field = getFromList(i, line2);
+                Object tryNumber = tryNumber(dataframe, key, field);
+                if (dataframe.filters.containsKey(key) && !dataframe.filters.get(key).test(tryNumber)) {
+                    removeRow(dataframe, header, i);
+                    break;
+                }
+                categorizeIfCategorizable(dataframe, key, tryNumber);
+                tryNumber = mapIfMappable(dataframe, key, tryNumber);
+
+                dataframe.list(key).add(tryNumber);
+            }
+            if (dataframe.size > dataframe.maxSize) {
+                break;
+            }
+        }
+    }
+
     public static String toString(DataframeML dataframe) {
         StringBuilder str = new StringBuilder();
         str.append("\n");
@@ -128,13 +157,15 @@ public final class DataframeUtils extends DataframeML {
 
     public static void trim(String header, int trimmingSize, DataframeML dataframe) {
         List<Object> list = dataframe.list(header);
-        List<List<Object>> collect = dataframe.dataframe.entrySet().stream().filter(e -> !e.getKey().equals(header))
-                .map(Entry<String, List<Object>>::getValue).collect(Collectors.toList());
+        List<List<Object>> trimmedColumns = dataframe.dataframe.entrySet().stream()
+                .filter(e -> !e.getKey().equals(header))
+                .map(Entry<String, List<Object>>::getValue)
+                .collect(Collectors.toList());
 
         Class<?> class1 = dataframe.getFormat(header);
         if (class1 == String.class) {
             QuickSortML.sort(dataframe.typedList(list, String.class), (i, j) -> {
-                for (List<Object> list2 : collect) {
+                for (List<Object> list2 : trimmedColumns) {
                     Object object = list2.get(i);
                     list2.set(i, list2.get(j));
                     list2.set(j, object);
@@ -186,34 +217,6 @@ public final class DataframeUtils extends DataframeML {
             tryNumber = dataframe.mapping.get(key).apply(tryNumber);
         }
         return tryNumber;
-    }
-
-    public static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
-        while (scanner.hasNext()) {
-            dataframe.size++;
-            List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
-            if (header.size() != line2.size()) {
-                LOG.error("ERROR FIELDS COUNT");
-                createNullRow(header, line2);
-            }
-
-            for (int i = 0; i < header.size(); i++) {
-                String key = header.get(i);
-                String field = getFromList(i, line2);
-                Object tryNumber = tryNumber(dataframe, key, field);
-                if (dataframe.filters.containsKey(key) && !dataframe.filters.get(key).test(tryNumber)) {
-                    removeRow(dataframe, header, i);
-                    break;
-                }
-                categorizeIfCategorizable(dataframe, key, tryNumber);
-                tryNumber = mapIfMappable(dataframe, key, tryNumber);
-
-                dataframe.list(key).add(tryNumber);
-            }
-            if (dataframe.size > dataframe.maxSize) {
-                break;
-            }
-        }
     }
 
     private static void removeRow(DataframeML dataframe, List<String> header, int i) {

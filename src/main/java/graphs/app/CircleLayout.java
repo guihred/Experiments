@@ -21,16 +21,7 @@ public class CircleLayout implements Layout {
         generateCircle(cells, model.getAllEdges());
 	}
 
-	public static int radius(int size2) {
-        return radius(size2, 1, 20);
-    }
-
-    public static int radius(int size2, int mul, double cellBound) {
-        int i = size2 / 30 + 1;
-        return (int) (cellBound * i * mul);
-    }
-
-    public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges) {
+	public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges) {
         generateCircle(cells, allEdges, 0, 0, 0, 1);
     }
 
@@ -69,5 +60,14 @@ public class CircleLayout implements Layout {
             }
 		}
 	}
+
+    public static int radius(int size2) {
+        return radius(size2, 1, 20);
+    }
+
+    public static int radius(int size2, int mul, double cellBound) {
+        int i = size2 / 30 + 1;
+        return (int) (cellBound * i * mul);
+    }
 
 }

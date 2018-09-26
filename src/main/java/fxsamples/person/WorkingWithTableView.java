@@ -17,10 +17,6 @@ import javafx.stage.Stage;
 
 public class WorkingWithTableView extends Application {
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage
@@ -119,5 +115,9 @@ public class WorkingWithTableView extends Application {
 		// ...code to add employees
 		people.addAll(docX, magneto, biker);
 		return people;
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

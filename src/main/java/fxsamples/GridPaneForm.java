@@ -14,10 +14,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class GridPaneForm extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Grid Pane Form");
@@ -70,5 +66,9 @@ public class GridPaneForm extends Application {
 		root.setCenter(gridpane);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

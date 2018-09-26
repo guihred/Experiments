@@ -17,20 +17,42 @@ import utils.HasLogging;
 public class ImageLoading {
     private static final Logger LOG = HasLogging.log(ImageLoading.class);
 
-    public static void main(String[] args) {
-        String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
-        String nameFile = dataDir + "eu3.jpg";
-        String svgFile = dataDir + "Video_game.svg";
-        String pngFile = dataDir + "teste1.png";
-        convertSVG(dataDir, svgFile);
-        binarize(dataDir, nameFile);
-        bradleyThreshold(dataDir, pngFile);
-        convertSVG(dataDir, nameFile);
-        cropImage(dataDir, nameFile);
-        exporting(dataDir, nameFile);
-        grayScale(dataDir, nameFile);
-        grayScaling(dataDir, nameFile);
+    public static void binarize(String dataDir, String nameFile) {
+        // For complete examples and data files, please go to
+        // https://github.com/aspose-imaging/Aspose.Imaging-for-Java
 
+        // Load an image in an instance of Image
+        Image image = Image.load(nameFile);
+
+        // Cast the image to RasterCachedImage
+        RasterCachedImage rasterCachedImage = (RasterCachedImage) image;
+        // Check if image is cached
+        if (!rasterCachedImage.isCached()) {
+            // Cache image if not already cached
+            rasterCachedImage.cacheData();
+        }
+        // Binarize image with pre defined fixed threshold
+        rasterCachedImage.binarizeFixed((byte) 100);
+        // Save the resultant image
+        rasterCachedImage.save(dataDir + "BinarizationWithFixedThreshold_out.jpg");
+    }
+
+    public static void bradleyThreshold(String dataDir, String nameFile) {
+        String sourcepath = nameFile;
+        String outputPath = dataDir + "UseBradleythresholding_out.png";
+
+        // Load an existing image.
+        com.aspose.imaging.fileformats.png.PngImage objimage = (com.aspose.imaging.fileformats.png.PngImage) com.aspose.imaging.Image
+                .load(sourcepath);
+
+        // Define threshold value
+        double threshold = 0.15;
+
+        // Call BinarizeBradley method and pass the threshold value as parameter
+        objimage.binarizeBradley(threshold);
+
+        // Save the output image
+        objimage.save(outputPath);
     }
 
     /**
@@ -47,6 +69,47 @@ public class ImageLoading {
 
         // Save the results to disk
         image.save(dataDir + "ConvertingSVGToRasterImages_out.png", pngOptions);
+    }
+
+    public static void createThumnails(String dataDir, String nameFile) {
+        JpegImage image = (JpegImage) Image.load(nameFile);
+
+        // Get the image thumbnail information and save it in an instance of
+        // JpegImage
+        JpegImage thumbnail = (JpegImage) image.getExifData().getThumbnail();
+
+        // Retrieve the thumbnail bitmap information/Pixels in an array of type
+        // Color
+        Color[] pixels = thumbnail.loadPixels(new Rectangle(0, 0, thumbnail.getWidth(), thumbnail.getHeight()));
+
+        // To save the thumbnail as BMP image, create an instance of BmpOptions
+
+        // Create a BmpImage while using the instance of BmpOptions and
+        // providing resultant dimensions
+        try (BmpOptions bmpOptions = options(dataDir);
+                BmpImage bmpImage = (BmpImage) Image.create(bmpOptions, thumbnail.getWidth(), thumbnail.getHeight())) {
+            // Copy the thumbnail pixels onto the newly created canvas
+            bmpImage.savePixels(bmpImage.getBounds(), pixels);
+            // Save the results
+            bmpImage.save();
+        } catch (Exception e) {
+            LOG.error("ERROR SAVING IMAGE", e);
+        }
+    }
+
+    public static void cropImage(String dataDir, String nameFile) {
+
+        RasterImage rasterImage = (RasterImage) Image.load(nameFile);
+        // setting for image data to be cashed
+        rasterImage.cacheData();
+
+        // Create an instance of Rectangle class and define X,Y and Width, height of the
+        // rectangle.
+        Rectangle destRect = new Rectangle(200, 200, 300, 300);
+
+        // Save output image by passing output file name, image options and rectangle
+        // object.
+        rasterImage.save(dataDir + "ExpandandCropImages_out.jpg", new JpegOptions(), destRect);
     }
 
     public static void exporting(String dataDir, String nameFile) {
@@ -78,39 +141,6 @@ public class ImageLoading {
         }
     }
 
-    public static void cropImage(String dataDir, String nameFile) {
-
-        RasterImage rasterImage = (RasterImage) Image.load(nameFile);
-        // setting for image data to be cashed
-        rasterImage.cacheData();
-
-        // Create an instance of Rectangle class and define X,Y and Width, height of the
-        // rectangle.
-        Rectangle destRect = new Rectangle(200, 200, 300, 300);
-
-        // Save output image by passing output file name, image options and rectangle
-        // object.
-        rasterImage.save(dataDir + "ExpandandCropImages_out.jpg", new JpegOptions(), destRect);
-    }
-
-    public static void bradleyThreshold(String dataDir, String nameFile) {
-        String sourcepath = nameFile;
-        String outputPath = dataDir + "UseBradleythresholding_out.png";
-
-        // Load an existing image.
-        com.aspose.imaging.fileformats.png.PngImage objimage = (com.aspose.imaging.fileformats.png.PngImage) com.aspose.imaging.Image
-                .load(sourcepath);
-
-        // Define threshold value
-        double threshold = 0.15;
-
-        // Call BinarizeBradley method and pass the threshold value as parameter
-        objimage.binarizeBradley(threshold);
-
-        // Save the output image
-        objimage.save(outputPath);
-    }
-
     public static void grayScaling(String dataDir, String nameFile) {
 
         Image image = Image.load(nameFile);
@@ -128,50 +158,20 @@ public class ImageLoading {
 
     }
 
-    public static void binarize(String dataDir, String nameFile) {
-        // For complete examples and data files, please go to
-        // https://github.com/aspose-imaging/Aspose.Imaging-for-Java
+    public static void main(String[] args) {
+        String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
+        String nameFile = dataDir + "eu3.jpg";
+        String svgFile = dataDir + "Video_game.svg";
+        String pngFile = dataDir + "teste1.png";
+        convertSVG(dataDir, svgFile);
+        binarize(dataDir, nameFile);
+        bradleyThreshold(dataDir, pngFile);
+        convertSVG(dataDir, nameFile);
+        cropImage(dataDir, nameFile);
+        exporting(dataDir, nameFile);
+        grayScale(dataDir, nameFile);
+        grayScaling(dataDir, nameFile);
 
-        // Load an image in an instance of Image
-        Image image = Image.load(nameFile);
-
-        // Cast the image to RasterCachedImage
-        RasterCachedImage rasterCachedImage = (RasterCachedImage) image;
-        // Check if image is cached
-        if (!rasterCachedImage.isCached()) {
-            // Cache image if not already cached
-            rasterCachedImage.cacheData();
-        }
-        // Binarize image with pre defined fixed threshold
-        rasterCachedImage.binarizeFixed((byte) 100);
-        // Save the resultant image
-        rasterCachedImage.save(dataDir + "BinarizationWithFixedThreshold_out.jpg");
-    }
-
-    public static void createThumnails(String dataDir, String nameFile) {
-        JpegImage image = (JpegImage) Image.load(nameFile);
-
-        // Get the image thumbnail information and save it in an instance of
-        // JpegImage
-        JpegImage thumbnail = (JpegImage) image.getExifData().getThumbnail();
-
-        // Retrieve the thumbnail bitmap information/Pixels in an array of type
-        // Color
-        Color[] pixels = thumbnail.loadPixels(new Rectangle(0, 0, thumbnail.getWidth(), thumbnail.getHeight()));
-
-        // To save the thumbnail as BMP image, create an instance of BmpOptions
-
-        // Create a BmpImage while using the instance of BmpOptions and
-        // providing resultant dimensions
-        try (BmpOptions bmpOptions = options(dataDir);
-                BmpImage bmpImage = (BmpImage) Image.create(bmpOptions, thumbnail.getWidth(), thumbnail.getHeight())) {
-            // Copy the thumbnail pixels onto the newly created canvas
-            bmpImage.savePixels(bmpImage.getBounds(), pixels);
-            // Save the results
-            bmpImage.save();
-        } catch (Exception e) {
-            LOG.error("ERROR SAVING IMAGE", e);
-        }
     }
 
     private static BmpOptions options(String dataDir) {

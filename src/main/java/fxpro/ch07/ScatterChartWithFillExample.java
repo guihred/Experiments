@@ -17,10 +17,6 @@ import javafx.stage.Stage;
 
 public class ScatterChartWithFillExample extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         CategoryAxis xAxis = new CategoryAxis();
@@ -35,6 +31,10 @@ public class ScatterChartWithFillExample extends Application {
         root.getChildren().add(scatterChart);
         primaryStage.setScene(new Scene(root, 400, 250));
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 

@@ -20,21 +20,6 @@ public class Word2VecExample {
     private static final Logger LOG = HasLogging.log(Word2VecExample.class);
 
 
-    public static void fit() throws FileNotFoundException {
-        Word2Vec word2Vec = createWord2Vec();
-
-        SentenceIterator iterator = new BasicLineIterator(ResourceFXUtils.toFile(RAW_SENTENCES_TXT));
-        TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
-        tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
-
-        word2Vec.setTokenizerFactory(tokenizerFactory);
-        word2Vec.setSentenceIterator(iterator);
-
-        LOG.info("Word2vec uptraining...");
-
-        word2Vec.fit();
-
-    }
     public static Word2Vec createWord2Vec() throws FileNotFoundException {
         if (new File(PATH_TO_SAVE_MODEL_TXT).exists()) {
             return WordVectorSerializer.readWord2VecModel(PATH_TO_SAVE_MODEL_TXT);
@@ -74,6 +59,21 @@ public class Word2VecExample {
         // Prints out the closest 10 words to "day". An example on what to do with these Word Vectors.
         LOG.info("Closest Words:");
         return vec;
+    }
+    public static void fit() throws FileNotFoundException {
+        Word2Vec word2Vec = createWord2Vec();
+
+        SentenceIterator iterator = new BasicLineIterator(ResourceFXUtils.toFile(RAW_SENTENCES_TXT));
+        TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
+        tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+
+        word2Vec.setTokenizerFactory(tokenizerFactory);
+        word2Vec.setSentenceIterator(iterator);
+
+        LOG.info("Word2vec uptraining...");
+
+        word2Vec.fit();
+
     }
 
 }

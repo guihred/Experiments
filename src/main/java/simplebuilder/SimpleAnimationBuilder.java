@@ -15,14 +15,14 @@ public class SimpleAnimationBuilder<T extends Animation, Z extends SimpleBuilder
 		this.animation = shape;
 	}
 
-	@Override
-	public T build() {
-		return animation;
-	}
-
 	public Z autoReverse(boolean d) {
 		animation.setAutoReverse(d);
 		return (Z) this;
+	}
+
+	@Override
+	public T build() {
+		return animation;
 	}
 
 	public Z cycleCount(int value) {

@@ -65,12 +65,9 @@ public class MemoryModel {
 
     }
 
-    final EventHandler<MouseEvent> createMouseClickedEvento(MemorySquare mem) {
-        EventHandler<MouseEvent> mouseClicked = event -> displayIfHidden(mem);
-        mem.getFinalShape().setOnMouseClicked(mouseClicked);
-        mem.setOnMouseClicked(mouseClicked);
-        return mouseClicked;
-    }
+    public MemorySquare[][] getMap() {
+		return map;
+	}
 
     private void displayIfHidden(MemorySquare mem) {
         if (mem.getState() == MemorySquare.State.HIDDEN) {
@@ -97,9 +94,12 @@ public class MemoryModel {
         }
     }
 
-	public MemorySquare[][] getMap() {
-		return map;
-	}
+	final EventHandler<MouseEvent> createMouseClickedEvento(MemorySquare mem) {
+        EventHandler<MouseEvent> mouseClicked = event -> displayIfHidden(mem);
+        mem.getFinalShape().setOnMouseClicked(mouseClicked);
+        mem.setOnMouseClicked(mouseClicked);
+        return mouseClicked;
+    }
 
 
 }

@@ -31,31 +31,7 @@ import utils.ResourceFXUtils;
 public final class Chapter6 {
 	private static final String ALICE_TXT = "alice.txt";
 
-    static class Matrix {
-		protected int[][] mat = { { 1, 1 }, { 1, 0 } };
-		public Matrix() {
-		}
-		public Matrix(int[][] mat) {
-			this.mat = mat;
-		}
-		public Matrix multiply(Matrix other) {
-			Matrix matrix = new Matrix(new int[][] { { 0, 0 }, { 0, 0 } });
-			for (int i = 0; i < 2; i++) {
-				for (int j = 0; j < 2; j++) {
-					for (int k = 0; k < 2; k++) {
-						matrix.mat[i][j] += mat[i][k] * other.mat[k][j];
-					}
-				}
-			}
-			return matrix;
-		}
-		@Override
-		public String toString() {
-			return Arrays.toString(mat[0]) + "\n" + Arrays.toString(mat[1]) + "\n";
-		}
-	}
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(Chapter6.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Chapter6.class);
 
 	private Chapter6() {
 	}
@@ -176,7 +152,6 @@ public final class Chapter6 {
                 .forEach(u -> LOGGER.trace("{}", "word=" + u.getKey() + " files=" + u.getValue()));
 	}
 
-
 	/**
 	 * Repeat the preceding exercise, but use computeIfAbsent instead. What is
 	 * the advantage of this approach?
@@ -202,6 +177,7 @@ public final class Chapter6 {
 		concurrentHashMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
                 .forEach(u -> LOGGER.trace("{}", "word=" + u.getKey() + " files=" + u.getValue()));
 	}
+
 
 	/**
 	 * In a ConcurrentHashMap<String, Long>, find the key with maximum value
@@ -276,14 +252,6 @@ public final class Chapter6 {
 		return links;
 	}
 
-	private static Stream<String> getWords(URI txtFile) throws IOException {
-		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).parallel()
-				.flatMap((String m) -> Stream.of(m.split("[\\P{L}]+")))
-				.filter(s -> !s.isEmpty());
-	}
-
-
-
 	public static void main(String[] args) {
 		try {
             ex10();
@@ -300,6 +268,38 @@ public final class Chapter6 {
 		} catch (Exception e) {
             LOGGER.error("", e);
             throw new RuntimeException(e);
+		}
+	}
+
+
+
+	private static Stream<String> getWords(URI txtFile) throws IOException {
+		return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).parallel()
+				.flatMap((String m) -> Stream.of(m.split("[\\P{L}]+")))
+				.filter(s -> !s.isEmpty());
+	}
+
+	static class Matrix {
+		protected int[][] mat = { { 1, 1 }, { 1, 0 } };
+		public Matrix() {
+		}
+		public Matrix(int[][] mat) {
+			this.mat = mat;
+		}
+		public Matrix multiply(Matrix other) {
+			Matrix matrix = new Matrix(new int[][] { { 0, 0 }, { 0, 0 } });
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
+					for (int k = 0; k < 2; k++) {
+						matrix.mat[i][j] += mat[i][k] * other.mat[k][j];
+					}
+				}
+			}
+			return matrix;
+		}
+		@Override
+		public String toString() {
+			return Arrays.toString(mat[0]) + "\n" + Arrays.toString(mat[1]) + "\n";
 		}
 	}
 

@@ -49,6 +49,18 @@ public class SnakeModel {
 		updateMap();
 	}
 
+	public SnakeDirection getDirection() {
+		return direction;
+	}
+
+	public SnakeSquare[][] getMap() {
+		return map;
+	}
+
+	public ObservableList<SnakeSquare> getSnake() {
+		return snake;
+	}
+
 	public final void reset() {
 		snake.clear();
 		for (int i = 0; i < MAP_SIZE; i++) {
@@ -64,6 +76,10 @@ public class SnakeModel {
 		j = random.nextInt(MAP_SIZE);
 		map[i][j].setState(SnakeState.FOOD);
 
+	}
+
+	public void setDirection(SnakeDirection direction) {
+		this.direction = direction;
 	}
 
 	public final boolean updateMap() {
@@ -102,22 +118,6 @@ public class SnakeModel {
 			snake.add(0, map[i][j]);
 		}
 		return false;
-	}
-
-	public SnakeSquare[][] getMap() {
-		return map;
-	}
-
-	public ObservableList<SnakeSquare> getSnake() {
-		return snake;
-	}
-
-	public SnakeDirection getDirection() {
-		return direction;
-	}
-
-	public void setDirection(SnakeDirection direction) {
-		this.direction = direction;
 	}
 
 }

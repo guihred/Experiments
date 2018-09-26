@@ -11,19 +11,6 @@ import javafx.stage.Stage;
 import ml.data.DataframeML;
 
 public class RegressionChartExample extends Application {
-    public static void main(String[] args) {
-		launch(args);
-    }
-
-    private LineChart<Number, Number> lineChart(ObservableList<Series<Number, Number>> data, String value) {
-        NumberAxis xAxis = new NumberAxis();
-        NumberAxis yAxis = new NumberAxis();
-        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setData(data);
-        lineChart.setTitle(value);
-        return lineChart;
-    }
-
     @Override
     public void start(Stage primaryStage) {
         RegressionModel regressionModel = new RegressionModel();
@@ -47,5 +34,18 @@ public class RegressionChartExample extends Application {
         primaryStage.setTitle("Regrssion Chart Example");
         primaryStage.setScene(new Scene(root, 1000, 400));
         primaryStage.show();
+    }
+
+    private LineChart<Number, Number> lineChart(ObservableList<Series<Number, Number>> data, String value) {
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setData(data);
+        lineChart.setTitle(value);
+        return lineChart;
+    }
+
+    public static void main(String[] args) {
+		launch(args);
     }
 }

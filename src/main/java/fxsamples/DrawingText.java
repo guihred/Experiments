@@ -8,10 +8,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class DrawingText extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Text");
@@ -32,5 +28,9 @@ public class DrawingText extends Application {
 		}
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

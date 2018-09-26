@@ -141,22 +141,15 @@ public class CubeNode extends Parent {
 		});
 	}
 
-	final void arrangeFacesZOrder() {
-		rearFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 0)));
-		bottomFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 270)));
-		leftFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 270)));
-		rightFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 90)));
-		topFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 90)));
-		frontFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 180)));
-
-		FXCollections.sort(getChildren(), new CubeFaceComparator());
-	}
-
 	public void goHomePosition() {
 		Timeline homeTimeline = new Timeline(
 				new KeyFrame(new Duration(1000.0), new KeyValue(angleX, HOME_ANGLE_X, Interpolator.EASE_BOTH),
 						new KeyValue(angleY, HOME_ANGLE_Y, Interpolator.EASE_BOTH)));
 		homeTimeline.play();
+	}
+
+	public void playShowMap() {
+		showMapTimeline.playFromStart();
 	}
 
 	private void handleMouseDragged(MouseEvent me) {
@@ -184,8 +177,15 @@ public class CubeNode extends Parent {
 					/ 3 + dragPressedAngleX);
 		}
 	}
-	public void playShowMap() {
-		showMapTimeline.playFromStart();
+	final void arrangeFacesZOrder() {
+		rearFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 0)));
+		bottomFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 270)));
+		leftFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 270)));
+		rightFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 90)));
+		topFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 90)));
+		frontFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 180)));
+
+		FXCollections.sort(getChildren(), new CubeFaceComparator());
 	}
 
 }

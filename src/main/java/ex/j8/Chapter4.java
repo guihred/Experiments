@@ -36,6 +36,10 @@ public final class Chapter4 {
 	private Chapter4() {
 	}
 
+	public static void main(String[] args) {
+        Application.launch(Ex10.class, args);
+	}
+
 	/**
 	 * Write a program with a text field and a label. As with the Hello, JavaFX
 	 * program, the label should have the string Hello, FX in a 100 point font.
@@ -59,6 +63,34 @@ public final class Chapter4 {
 	}
 
 	/**
+	 * Using the web viewer, implement a browser with a URL bar and a back
+	 * button. Hint: WebEngine.getHistory().
+	 */
+
+	public static class Ex10 extends Application {
+
+		@Override
+		public void start(Stage stage) throws Exception {
+			TextField textField = new TextField("file:C:\\Users\\Note\\Documents\\teste.html");
+			WebView browser = new WebView();
+			WebEngine engine = browser.getEngine();
+			Button backButton = new Button("Back");
+			backButton.setOnAction(event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
+			Button loadButton = new Button("Go");
+			loadButton.setOnAction(event -> engine.load(textField.getText()));
+
+			HBox top = new HBox();
+			top.getChildren().addAll(backButton, textField, loadButton);
+			BorderPane pane = new BorderPane();
+			pane.setTop(top);
+			pane.setCenter(browser);
+			stage.setScene(new Scene(pane));
+			stage.setTitle("EX10");
+			stage.show();
+		}
+	}
+
+    /**
 	 * Enhance the program in Section 4.5, Bindings, on page 75 so that the
 	 * circle stays centered and always touches at least two of the sides of the
 	 * scene.s
@@ -99,49 +131,6 @@ public final class Chapter4 {
 	 */
 	public static class Ex5 extends Application {
 
-		public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
-			return new SimpleObjectProperty<R>() {
-				@Override
-				public R getValue() {
-					return f.apply(t.getValue());
-				}
-
-				@Override
-				public void addListener(ChangeListener<? super R> listener) {
-					t.addListener((arg0, arg1, arg2) -> listener.changed(this,
-							f.apply(arg1), f.apply(arg2)));
-				}
-
-				@Override
-				public void addListener(InvalidationListener arg0) {
-					t.addListener(arg0);
-				}
-
-			};
-		}
-
-		public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t, ObservableValue<U> u) {
-			return new SimpleObjectProperty<R>() {
-				@Override
-				public void addListener(ChangeListener<? super R> listener) {
-					t.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(oldValue, u.getValue()),f.apply(newValue, u.getValue())));
-					u.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(t.getValue(), oldValue),f.apply(t.getValue(), newValue)));
-				}
-
-				@Override
-				public R getValue() {
-					return f.apply(t.getValue(), u.getValue());
-				}
-
-				@Override
-				public void addListener(InvalidationListener listener) {
-					t.addListener(listener);
-					u.addListener(listener);
-				}
-
-			};
-		}
-
 		@Override
 		public void start(Stage stage) throws Exception {
 			Pane pane = new VBox();
@@ -157,9 +146,52 @@ public final class Chapter4 {
 			stage.setTitle("EX5");
 			stage.show();
 		}
+
+		public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t, ObservableValue<U> u) {
+			return new SimpleObjectProperty<R>() {
+				@Override
+				public void addListener(ChangeListener<? super R> listener) {
+					t.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(oldValue, u.getValue()),f.apply(newValue, u.getValue())));
+					u.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(t.getValue(), oldValue),f.apply(t.getValue(), newValue)));
+				}
+
+				@Override
+				public void addListener(InvalidationListener listener) {
+					t.addListener(listener);
+					u.addListener(listener);
+				}
+
+				@Override
+				public R getValue() {
+					return f.apply(t.getValue(), u.getValue());
+				}
+
+			};
+		}
+
+		public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
+			return new SimpleObjectProperty<R>() {
+				@Override
+				public void addListener(ChangeListener<? super R> listener) {
+					t.addListener((arg0, arg1, arg2) -> listener.changed(this,
+							f.apply(arg1), f.apply(arg2)));
+				}
+
+				@Override
+				public void addListener(InvalidationListener arg0) {
+					t.addListener(arg0);
+				}
+
+				@Override
+				public R getValue() {
+					return f.apply(t.getValue());
+				}
+
+			};
+		}
 	}
 
-    /** 6. Center the top and bottom buttons in Figure 4.7. */
+	/** 6. Center the top and bottom buttons in Figure 4.7. */
 	public static class Ex6 extends Application {
 
 		@Override
@@ -270,38 +302,6 @@ public final class Chapter4 {
 			stage.setTitle("EX9");
 			stage.show();
 		}
-	}
-
-	/**
-	 * Using the web viewer, implement a browser with a URL bar and a back
-	 * button. Hint: WebEngine.getHistory().
-	 */
-
-	public static class Ex10 extends Application {
-
-		@Override
-		public void start(Stage stage) throws Exception {
-			TextField textField = new TextField("file:C:\\Users\\Note\\Documents\\teste.html");
-			WebView browser = new WebView();
-			WebEngine engine = browser.getEngine();
-			Button backButton = new Button("Back");
-			backButton.setOnAction(event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
-			Button loadButton = new Button("Go");
-			loadButton.setOnAction(event -> engine.load(textField.getText()));
-
-			HBox top = new HBox();
-			top.getChildren().addAll(backButton, textField, loadButton);
-			BorderPane pane = new BorderPane();
-			pane.setTop(top);
-			pane.setCenter(browser);
-			stage.setScene(new Scene(pane));
-			stage.setTitle("EX10");
-			stage.show();
-		}
-	}
-
-	public static void main(String[] args) {
-        Application.launch(Ex10.class, args);
 	}
 
 }

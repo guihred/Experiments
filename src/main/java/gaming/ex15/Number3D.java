@@ -57,28 +57,13 @@ public class Number3D extends Group {
 		getChildren().addAll(rec1, rec2, rec3, rec4, rec5, rec6, rec7);
 	}
 
-	private BooleanBinding visibleIfNot(int o, int... a) {
-		IntegerBinding mod = Bindings.createIntegerBinding(() -> num.get() % 10, num);
-
-		BooleanBinding notEqualTo = mod.isNotEqualTo(o);
-		for (int i = 0; i < a.length; i++) {
-			notEqualTo = notEqualTo.and(mod.isNotEqualTo(a[i]));
-		}
-		return notEqualTo;
-	}
-
-
-	private Box vertical() {
-		Box rec7 = new Box(1, sizeProperty.doubleValue(), 1);
-		rec7.setMaterial(phongMaterial);
-		rec7.heightProperty().bind(sizeProperty);
-		rec7.widthProperty().bind(sizeProperty.divide(5));
-		rec7.depthProperty().bind(sizeProperty.divide(5));
-		return rec7;
-	}
-
 	public IntegerProperty numProperty() {
 		return num;
+	}
+
+
+	public DoubleProperty sizeProperty() {
+		return sizeProperty;
 	}
 
 	private Box horizontal() {
@@ -91,8 +76,23 @@ public class Number3D extends Group {
 		return rec1;
 	}
 
-	public DoubleProperty sizeProperty() {
-		return sizeProperty;
+	private Box vertical() {
+		Box rec7 = new Box(1, sizeProperty.doubleValue(), 1);
+		rec7.setMaterial(phongMaterial);
+		rec7.heightProperty().bind(sizeProperty);
+		rec7.widthProperty().bind(sizeProperty.divide(5));
+		rec7.depthProperty().bind(sizeProperty.divide(5));
+		return rec7;
+	}
+
+	private BooleanBinding visibleIfNot(int o, int... a) {
+		IntegerBinding mod = Bindings.createIntegerBinding(() -> num.get() % 10, num);
+
+		BooleanBinding notEqualTo = mod.isNotEqualTo(o);
+		for (int i = 0; i < a.length; i++) {
+			notEqualTo = notEqualTo.and(mod.isNotEqualTo(a[i]));
+		}
+		return notEqualTo;
 	}
 
 }

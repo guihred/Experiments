@@ -33,6 +33,12 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
     private LocalTime startTime;
 
 	@Override
+    public void setCurrent(JapaneseLesson selectedItem) {
+        current.set(lessons.indexOf(selectedItem));
+    }
+
+
+    @Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Japanese Lesson Audio Split Display");
 
@@ -119,15 +125,18 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
 		mediaPlayer.set(new MediaPlayer(sound));
 		primaryStage.show();
 	}
-
-
+    
+    
     private LocalTime convertDurationToLocalTime(Duration currentDuration) {
         int millis = (int) currentDuration.toMillis();
         LocalTime currentTime = LocalTime.of(millis / 1000 / 60 / 60, millis / 1000 / 60 % 60, millis / 1000 % 60);
         return currentTime.plus(millis % 1000, ChronoUnit.MILLIS);
     }
-    
-    
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+
     private static void splitAudio(String mp3File, String mp4File, LocalTime start, LocalTime end) {
         StringBuilder cmd = new StringBuilder();
         cmd.append(FFMPEG + " -i ");
@@ -140,15 +149,6 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
         cmd.append(mp4File);
         // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
         ResourceFXUtils.executeInConsole(cmd.toString());
-    }
-
-	public static void main(String[] args) {
-		launch(args);
-	}
-
-    @Override
-    public void setCurrent(JapaneseLesson selectedItem) {
-        current.set(lessons.indexOf(selectedItem));
     }
 
 }

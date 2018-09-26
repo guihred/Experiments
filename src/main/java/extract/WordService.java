@@ -44,17 +44,6 @@ public class WordService implements HasLogging {
 		}
 	}
 
-    private static void recordPicture(XSLFPictureData data) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(
-				new File(new File("out"), data.getFileName()))) {
-            InputStream inputStream = data.getInputStream();
-            IOUtils.copy(inputStream, fileOutputStream);
-        } catch (IOException e) {
-            LOG.error("FILE ERROR", e);
-        }
-    }
-
-
     public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
 
         try (InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
@@ -81,7 +70,40 @@ public class WordService implements HasLogging {
 		}
 	}
 
-    private static void substituirParagrafo(Map<String, Object> mapaSubstituicao, XWPFParagraph paragraph) {
+
+    private static Object getObject(Map<String, Object> map, String cellText) {
+		return map.containsKey(cellText) ? map.get(cellText) : map.get(cellText.trim());
+	}
+
+    private static void recordPicture(XSLFPictureData data) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(
+				new File(new File("out"), data.getFileName()))) {
+            InputStream inputStream = data.getInputStream();
+            IOUtils.copy(inputStream, fileOutputStream);
+        } catch (IOException e) {
+            LOG.error("FILE ERROR", e);
+        }
+    }
+
+	private static void removerLinks(XWPFParagraph paragraph) {
+		int size = paragraph.getCTP().getHyperlinkArray().length;
+		for (int i = 0; i < size; i++) {
+			paragraph.getCTP().removeHyperlink(0);
+		}
+	}
+
+	private static void substituirCell(XWPFTableCell cell, String string) {
+		List<XWPFParagraph> paragraphs = cell.getParagraphs();
+
+		int size = paragraphs.size();
+		for (int l = 1; l < size; l++) {
+			cell.removeParagraph(1);
+		}
+		XWPFParagraph xwpfParagraph = size > 0 ? cell.getParagraphs().get(0) : cell.addParagraph();
+		substituirParagrafo(xwpfParagraph, string);
+	}
+
+	private static void substituirParagrafo(Map<String, Object> mapaSubstituicao, XWPFParagraph paragraph) {
 		String text = paragraph.getText();
 
 		if (mapaSubstituicao.containsKey(text) || mapaSubstituicao.containsKey(text.trim())) {
@@ -111,25 +133,7 @@ public class WordService implements HasLogging {
 		}
 	}
 
-	private static void removerLinks(XWPFParagraph paragraph) {
-		int size = paragraph.getCTP().getHyperlinkArray().length;
-		for (int i = 0; i < size; i++) {
-			paragraph.getCTP().removeHyperlink(0);
-		}
-	}
-
-	private static void substituirCell(XWPFTableCell cell, String string) {
-		List<XWPFParagraph> paragraphs = cell.getParagraphs();
-
-		int size = paragraphs.size();
-		for (int l = 1; l < size; l++) {
-			cell.removeParagraph(1);
-		}
-		XWPFParagraph xwpfParagraph = size > 0 ? cell.getParagraphs().get(0) : cell.addParagraph();
-		substituirParagrafo(xwpfParagraph, string);
-	}
-
-	private static void substituirParagrafo(XWPFParagraph paragraph, String string) {
+    private static void substituirParagrafo(XWPFParagraph paragraph, String string) {
 		paragraph.getRuns().get(0).setText(string, 0);
 		int size = paragraph.getRuns().size();
 		for (int j = 1; j < size; j++) {
@@ -137,7 +141,7 @@ public class WordService implements HasLogging {
 		}
 	}
 
-    private static void substituirTabela(IBodyElement element, Map<String, Object> map) {
+	private static void substituirTabela(IBodyElement element, Map<String, Object> map) {
 		XWPFTable tabela = (XWPFTable) element;
 		int numberOfRows = tabela.getNumberOfRows();
 
@@ -158,10 +162,6 @@ public class WordService implements HasLogging {
 			}
 
 		}
-	}
-
-	private static Object getObject(Map<String, Object> map, String cellText) {
-		return map.containsKey(cellText) ? map.get(cellText) : map.get(cellText.trim());
 	}
 
 }

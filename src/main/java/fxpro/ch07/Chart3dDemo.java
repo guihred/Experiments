@@ -202,6 +202,11 @@ public class Chart3dDemo extends Application {
         return cube;
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+
     /**
      * Create an array of the given size with values of perlin noise
      * 
@@ -224,11 +229,6 @@ public class Chart3dDemo extends Application {
 
         return noiseArray;
 
-    }
-
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
 }

@@ -29,11 +29,6 @@ import utils.ResourceFXUtils;
 
 public class OrganizadorMusicas extends Application {
     private static final Logger LOGGER = HasLogging.log(OrganizadorMusicas.class);
-	public static void main(String[] args) {
-		launch(args);
-	}
-
-
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Organizador de Músicas");
@@ -67,6 +62,63 @@ public class OrganizadorMusicas extends Application {
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+
+	private Node[] criarField(String nome, StringProperty propriedade) {
+		TextField textField = new TextField();
+		textField.textProperty().bindBidirectional(propriedade);
+		return new Node[] { new Label(nome), textField };
+	}
+
+	private ObservableList<Musica> getMusicas(File file) {
+		try {
+			return LeitorMusicas.getMusicas(file);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+			return FXCollections.emptyObservableList();
+		}
+	}
+
+
+	private void handleMousePressed(final TableView<Musica> musicaTable, MouseEvent event) {
+		if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+			Musica selectedItem = musicaTable.getSelectionModel().getSelectedItem();
+			Stage stage = new Stage();
+			VBox root = new VBox();
+			root.getChildren().addAll(criarField("Título", selectedItem.tituloProperty()));
+			root.getChildren().addAll(criarField("Artista", selectedItem.artistaProperty()));
+			root.getChildren().addAll(criarField("Álbum", selectedItem.albumProperty()));
+
+            Image imageData = ResourceFXUtils.extractEmbeddedImage(selectedItem.getArquivo());
+            if (imageData != null) {
+                root.getChildren().addAll(new ImageView(imageData));
+			} else {
+				Button button = new Button("Escolha a Foto");
+				root.getChildren().add(button);
+				button.setOnAction(a -> {
+					Stage stage2 = new Stage();
+					FlowPane flow = new FlowPane();
+					flow.setPrefWrapLength(300);
+
+                    List<String> imagens = GoogleImagesUtils.getImagens("\"" + selectedItem.getArtista() + "\" \""
+							+ selectedItem.getTitulo() + "\" \"" + selectedItem.getAlbum() + "\"");
+					for (String url : imagens) {
+						ImageView pages = new ImageView(url);
+                        pages.setOnMouseClicked(e -> LOGGER.info(url));
+
+						flow.getChildren().add(pages);
+					}
+
+					stage.setScene(new Scene(flow));
+					stage2.show();
+				});
+
+			}
+			stage.setScene(new Scene(root));
+			stage.show();
+            LOGGER.info("{}", selectedItem);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -111,60 +163,8 @@ public class OrganizadorMusicas extends Application {
 		return musicaTable;
 	}
 
-
-	private void handleMousePressed(final TableView<Musica> musicaTable, MouseEvent event) {
-		if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-			Musica selectedItem = musicaTable.getSelectionModel().getSelectedItem();
-			Stage stage = new Stage();
-			VBox root = new VBox();
-			root.getChildren().addAll(criarField("Título", selectedItem.tituloProperty()));
-			root.getChildren().addAll(criarField("Artista", selectedItem.artistaProperty()));
-			root.getChildren().addAll(criarField("Álbum", selectedItem.albumProperty()));
-
-            Image imageData = ResourceFXUtils.extractEmbeddedImage(selectedItem.getArquivo());
-            if (imageData != null) {
-                root.getChildren().addAll(new ImageView(imageData));
-			} else {
-				Button button = new Button("Escolha a Foto");
-				root.getChildren().add(button);
-				button.setOnAction(a -> {
-					Stage stage2 = new Stage();
-					FlowPane flow = new FlowPane();
-					flow.setPrefWrapLength(300);
-
-                    List<String> imagens = GoogleImagesUtils.getImagens("\"" + selectedItem.getArtista() + "\" \""
-							+ selectedItem.getTitulo() + "\" \"" + selectedItem.getAlbum() + "\"");
-					for (String url : imagens) {
-						ImageView pages = new ImageView(url);
-                        pages.setOnMouseClicked(e -> LOGGER.info(url));
-
-						flow.getChildren().add(pages);
-					}
-
-					stage.setScene(new Scene(flow));
-					stage2.show();
-				});
-
-			}
-			stage.setScene(new Scene(root));
-			stage.show();
-            LOGGER.info("{}", selectedItem);
-		}
-	}
-
-	private ObservableList<Musica> getMusicas(File file) {
-		try {
-			return LeitorMusicas.getMusicas(file);
-		} catch (Exception e) {
-			LOGGER.error("", e);
-			return FXCollections.emptyObservableList();
-		}
-	}
-
-	private Node[] criarField(String nome, StringProperty propriedade) {
-		TextField textField = new TextField();
-		textField.textProperty().bindBidirectional(propriedade);
-		return new Node[] { new Label(nome), textField };
+	public static void main(String[] args) {
+		launch(args);
 	}
 
 }

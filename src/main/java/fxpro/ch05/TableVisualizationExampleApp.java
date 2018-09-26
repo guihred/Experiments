@@ -34,11 +34,6 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
     private static final String MENU_ITEM_A = "MenuItem A";
     private Stage stage;
 
-	public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
-        launch(args);
-	}
-
 	@Override
 	public void start(final Stage primaryStage) {
 		stage = primaryStage;
@@ -55,37 +50,14 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		stage.show();
 	}
 
-    private MenuBar createMenus() {
-
-        final MenuItem newMenuItem = new MenuItem("New...",
-                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
-		newMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-        newMenuItem.setOnAction(e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()));
-		final Menu fileMenu = new Menu("File");
-		fileMenu.getItems().addAll(newMenuItem, new MenuItem("Save"));
-		MenuBar menuBar = new MenuBar();
-
-		Menu editMenu = new Menu("Edit");
-		editMenu.getItems().addAll(new MenuItem("Cut"), new MenuItem("Copy"), new MenuItem("Paste"));
-		menuBar.getMenus().addAll(fileMenu, editMenu);
-		return menuBar;
-	}
-
-    private Node createHtmlEditorDemoNode() {
-		final HTMLEditor htmlEditor = new HTMLEditor();
-		htmlEditor.setHtmlText("<p>Replace this text</p>");
-
-		Button viewHtmlButton = new Button("View HTML");
-        viewHtmlButton.setOnAction(e -> {
-			Popup alertPopup1 = createAlertPopup(htmlEditor.getHtmlText());
-			alertPopup1.show(stage, (stage.getWidth() - alertPopup1.getWidth()) / 2 + stage.getX(),
-					(stage.getHeight() - alertPopup1.getHeight()) / 2 + stage.getY());
-		});
-
-        final BorderPane htmlEditorDemo = new BorderPane(htmlEditor, null, null, viewHtmlButton, null);
-		BorderPane.setAlignment(viewHtmlButton, Pos.CENTER);
-		BorderPane.setMargin(viewHtmlButton, new Insets(10, 0, 10, 0));
-		return htmlEditorDemo;
+	private Node createAccordionTitledDemoNode() {
+		TitledPane firstPane = new TitledPane("TitledPane A", new TextArea("TitledPane A content"));
+		final TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
+		final TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
+		Accordion accordion = new Accordion();
+		accordion.getPanes().addAll(firstPane, secondPane, thirdPane);
+		accordion.setExpandedPane(firstPane);
+		return accordion;
 	}
 
     private Popup createAlertPopup(String text) {
@@ -108,152 +80,37 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return alertPopup;
 	}
 
-    private ToolBar createToolBar() {
-		final Button newButton = new Button(null,
+    private Node createHtmlEditorDemoNode() {
+		final HTMLEditor htmlEditor = new HTMLEditor();
+		htmlEditor.setHtmlText("<p>Replace this text</p>");
+
+		Button viewHtmlButton = new Button("View HTML");
+        viewHtmlButton.setOnAction(e -> {
+			Popup alertPopup1 = createAlertPopup(htmlEditor.getHtmlText());
+			alertPopup1.show(stage, (stage.getWidth() - alertPopup1.getWidth()) / 2 + stage.getX(),
+					(stage.getHeight() - alertPopup1.getHeight()) / 2 + stage.getY());
+		});
+
+        final BorderPane htmlEditorDemo = new BorderPane(htmlEditor, null, null, viewHtmlButton, null);
+		BorderPane.setAlignment(viewHtmlButton, Pos.CENTER);
+		BorderPane.setMargin(viewHtmlButton, new Insets(10, 0, 10, 0));
+		return htmlEditorDemo;
+	}
+
+    private MenuBar createMenus() {
+
+        final MenuItem newMenuItem = new MenuItem("New...",
                 new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
-		newButton.setId("newButton");
-		newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
-        newButton.setOnAction(e -> getLogger().info("New toolbar button clicked"));
+		newMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
+        newMenuItem.setOnAction(e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()));
+		final Menu fileMenu = new Menu("File");
+		fileMenu.getItems().addAll(newMenuItem, new MenuItem("Save"));
+		MenuBar menuBar = new MenuBar();
 
-		final Button editButton = new Button(null, new Circle(8, Color.GREEN));
-		editButton.setId("editButton");
-
-		final Button deleteButton = new Button(null, new Circle(8, Color.BLUE));
-		deleteButton.setId("deleteButton");
-
-		final ToggleButton boldButton = new ToggleButton(null, new Circle(8, Color.MAROON));
-		boldButton.setId("boldButton");
-        boldButton.setOnAction(e -> {
-			ToggleButton tb = (ToggleButton) e.getTarget();
-            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
-            logSelectedProperty(tb.selectedProperty().getValue());
-		});
-		final ToggleButton italicButton = new ToggleButton(null, new Circle(8, Color.YELLOW));
-		italicButton.setId("italicButton");
-        italicButton.setOnAction(e -> {
-			ToggleButton tb = (ToggleButton) e.getTarget();
-            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
-            logSelectedProperty(tb.selectedProperty().getValue());
-		});
-
-		final ToggleGroup alignToggleGroup = new ToggleGroup();
-		final ToggleButton leftAlignButton = new ToggleButton(null, new Circle(8, Color.PURPLE));
-		leftAlignButton.setId("leftAlignButton");
-		leftAlignButton.setToggleGroup(alignToggleGroup);
-
-		final ToggleButton centerAlignButton = new ToggleButton(null, new Circle(8, Color.ORANGE));
-		centerAlignButton.setId("centerAlignButton");
-		centerAlignButton.setToggleGroup(alignToggleGroup);
-
-		final ToggleButton rightAlignButton = new ToggleButton(null, new Circle(8, Color.CYAN));
-		rightAlignButton.setId("rightAlignButton");
-		rightAlignButton.setToggleGroup(alignToggleGroup);
-		alignToggleGroup.selectToggle(alignToggleGroup.getToggles().get(0));
-		alignToggleGroup.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
-			ToggleButton tb = (ToggleButton) alignToggleGroup.getSelectedToggle();
-			if (tb != null) {
-                getLogger().info("{} selected", tb.getId());
-			}
-		});
-
-        return new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton, leftAlignButton,
-                centerAlignButton,
-				rightAlignButton);
-	}
-
-    private TabPane createTabs() {
-
-		final Tab tableView = new Tab("TableView");
-		tableView.setContent(createTableDemoNode());
-		tableView.setClosable(false);
-
-		final Tab accordionTitledPane = new Tab("Accordion/TitledPane");
-		accordionTitledPane.setContent(createAccordionTitledDemoNode());
-		accordionTitledPane.setClosable(false);
-
-		final Tab splitPaneTreeListView = new Tab("SplitPane/TreeView/ListView");
-		splitPaneTreeListView.setContent(createSplitTreeListDemoNode());
-		splitPaneTreeListView.setClosable(false);
-
-		final Tab scrollMisc = new Tab("ScrollPane/Miscellaneous");
-		scrollMisc.setContent(createScrollMiscDemoNode());
-        scrollMisc.setClosable(false);
-
-		final Tab htmlEditor = new Tab("HTMLEditor");
-		htmlEditor.setContent(createHtmlEditorDemoNode());
-		htmlEditor.setClosable(false);
-
-		final WebView webView = new WebView();
-		Tab webViewTab = new Tab("WebView");
-		webViewTab.setContent(webView);
-		webViewTab.setClosable(false);
-        webViewTab.setOnSelectionChanged(evt -> {
-			String randomWebSite = TableVisualizationModel.getRandomWebSite();
-			if (webViewTab.isSelected()) {
-				webView.getEngine().load(randomWebSite);
-                getLogger().info("WebView tab is selected, loading: {}", randomWebSite);
-			}
-		});
-
-		TabPane tabPane = new TabPane();
-		tabPane.getTabs().addAll(tableView, accordionTitledPane, splitPaneTreeListView, scrollMisc, htmlEditor,
-				webViewTab);
-		return tabPane;
-	}
-
-    private Node createTableDemoNode() {
-        return new SimpleTableViewBuilder<Person>()
-                .items(TableVisualizationModel.getTeamMembers())
-                .addColumn("First Name", "firstName")
-                .addColumn("Last Name", "lastName")
-                .addColumn("Phone Number", "phone")
-                .onSelect((old,newValue)->getLogger().info("{} chosen in TableView", newValue))
-                .build();
-	}
-
-    private Node createAccordionTitledDemoNode() {
-		TitledPane firstPane = new TitledPane("TitledPane A", new TextArea("TitledPane A content"));
-		final TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
-		final TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
-		Accordion accordion = new Accordion();
-		accordion.getPanes().addAll(firstPane, secondPane, thirdPane);
-		accordion.setExpandedPane(firstPane);
-		return accordion;
-	}
-
-    private Node createSplitTreeListDemoNode() {
-		final TreeItem<String> animalItem = new TreeItem<>("Animal");
-		animalItem.getChildren()
-				.addAll(Arrays.asList(new TreeItem<>("Lion"), new TreeItem<>("Tiger"), new TreeItem<>("Bear")));
-		final TreeItem<String> mineralItem = new TreeItem<>("Mineral");
-		mineralItem.getChildren()
-				.addAll(Arrays.asList(new TreeItem<>("Copper"), new TreeItem<>("Diamond"), new TreeItem<>("Quartz")));
-		final TreeItem<String> vegetableItem = new TreeItem<>("Vegetable");
-		vegetableItem.getChildren().addAll(
-				Arrays.asList(new TreeItem<>("Arugula"), new TreeItem<>("Broccoli"), new TreeItem<>("Cabbage")));
-
-		final TreeItem<String> rootItem = new TreeItem<>("Root");
-		rootItem.getChildren().addAll(Arrays.asList(animalItem, mineralItem, vegetableItem));
-
-		TreeView<String> treeView = new TreeView<>(rootItem);
-		treeView.setMinWidth(150);
-		treeView.setShowRoot(false);
-		treeView.setEditable(false);
-
-		ListView<String> listView = new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS);
-		SplitPane splitPane = new SplitPane();
-		splitPane.getItems().addAll(treeView, listView);
-		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			TreeItem<String> treeItem = newValue;
-			if (newValue != null && treeItem.isLeaf()) {
-				TableVisualizationModel.LIST_VIEW_ITEMS.clear();
-				for (int i = 1; i <= 10000; i++) {
-					TableVisualizationModel.LIST_VIEW_ITEMS.add(treeItem.getValue() + " " + i);
-				}
-			}
-		});
-		return splitPane;
+		Menu editMenu = new Menu("Edit");
+		editMenu.getItems().addAll(new MenuItem("Cut"), new MenuItem("Copy"), new MenuItem("Paste"));
+		menuBar.getMenus().addAll(fileMenu, editMenu);
+		return menuBar;
 	}
 
     private Node createScrollMiscDemoNode() {
@@ -344,7 +201,150 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return scrollPane;
 	}
 
+    private Node createSplitTreeListDemoNode() {
+		final TreeItem<String> animalItem = new TreeItem<>("Animal");
+		animalItem.getChildren()
+				.addAll(Arrays.asList(new TreeItem<>("Lion"), new TreeItem<>("Tiger"), new TreeItem<>("Bear")));
+		final TreeItem<String> mineralItem = new TreeItem<>("Mineral");
+		mineralItem.getChildren()
+				.addAll(Arrays.asList(new TreeItem<>("Copper"), new TreeItem<>("Diamond"), new TreeItem<>("Quartz")));
+		final TreeItem<String> vegetableItem = new TreeItem<>("Vegetable");
+		vegetableItem.getChildren().addAll(
+				Arrays.asList(new TreeItem<>("Arugula"), new TreeItem<>("Broccoli"), new TreeItem<>("Cabbage")));
+
+		final TreeItem<String> rootItem = new TreeItem<>("Root");
+		rootItem.getChildren().addAll(Arrays.asList(animalItem, mineralItem, vegetableItem));
+
+		TreeView<String> treeView = new TreeView<>(rootItem);
+		treeView.setMinWidth(150);
+		treeView.setShowRoot(false);
+		treeView.setEditable(false);
+
+		ListView<String> listView = new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS);
+		SplitPane splitPane = new SplitPane();
+		splitPane.getItems().addAll(treeView, listView);
+		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			TreeItem<String> treeItem = newValue;
+			if (newValue != null && treeItem.isLeaf()) {
+				TableVisualizationModel.LIST_VIEW_ITEMS.clear();
+				for (int i = 1; i <= 10000; i++) {
+					TableVisualizationModel.LIST_VIEW_ITEMS.add(treeItem.getValue() + " " + i);
+				}
+			}
+		});
+		return splitPane;
+	}
+
+    private Node createTableDemoNode() {
+        return new SimpleTableViewBuilder<Person>()
+                .items(TableVisualizationModel.getTeamMembers())
+                .addColumn("First Name", "firstName")
+                .addColumn("Last Name", "lastName")
+                .addColumn("Phone Number", "phone")
+                .onSelect((old,newValue)->getLogger().info("{} chosen in TableView", newValue))
+                .build();
+	}
+
+    private TabPane createTabs() {
+
+		final Tab tableView = new Tab("TableView");
+		tableView.setContent(createTableDemoNode());
+		tableView.setClosable(false);
+
+		final Tab accordionTitledPane = new Tab("Accordion/TitledPane");
+		accordionTitledPane.setContent(createAccordionTitledDemoNode());
+		accordionTitledPane.setClosable(false);
+
+		final Tab splitPaneTreeListView = new Tab("SplitPane/TreeView/ListView");
+		splitPaneTreeListView.setContent(createSplitTreeListDemoNode());
+		splitPaneTreeListView.setClosable(false);
+
+		final Tab scrollMisc = new Tab("ScrollPane/Miscellaneous");
+		scrollMisc.setContent(createScrollMiscDemoNode());
+        scrollMisc.setClosable(false);
+
+		final Tab htmlEditor = new Tab("HTMLEditor");
+		htmlEditor.setContent(createHtmlEditorDemoNode());
+		htmlEditor.setClosable(false);
+
+		final WebView webView = new WebView();
+		Tab webViewTab = new Tab("WebView");
+		webViewTab.setContent(webView);
+		webViewTab.setClosable(false);
+        webViewTab.setOnSelectionChanged(evt -> {
+			String randomWebSite = TableVisualizationModel.getRandomWebSite();
+			if (webViewTab.isSelected()) {
+				webView.getEngine().load(randomWebSite);
+                getLogger().info("WebView tab is selected, loading: {}", randomWebSite);
+			}
+		});
+
+		TabPane tabPane = new TabPane();
+		tabPane.getTabs().addAll(tableView, accordionTitledPane, splitPaneTreeListView, scrollMisc, htmlEditor,
+				webViewTab);
+		return tabPane;
+	}
+
+    private ToolBar createToolBar() {
+		final Button newButton = new Button(null,
+                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
+		newButton.setId("newButton");
+		newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
+        newButton.setOnAction(e -> getLogger().info("New toolbar button clicked"));
+
+		final Button editButton = new Button(null, new Circle(8, Color.GREEN));
+		editButton.setId("editButton");
+
+		final Button deleteButton = new Button(null, new Circle(8, Color.BLUE));
+		deleteButton.setId("deleteButton");
+
+		final ToggleButton boldButton = new ToggleButton(null, new Circle(8, Color.MAROON));
+		boldButton.setId("boldButton");
+        boldButton.setOnAction(e -> {
+			ToggleButton tb = (ToggleButton) e.getTarget();
+            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
+            logSelectedProperty(tb.selectedProperty().getValue());
+		});
+		final ToggleButton italicButton = new ToggleButton(null, new Circle(8, Color.YELLOW));
+		italicButton.setId("italicButton");
+        italicButton.setOnAction(e -> {
+			ToggleButton tb = (ToggleButton) e.getTarget();
+            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
+            logSelectedProperty(tb.selectedProperty().getValue());
+		});
+
+		final ToggleGroup alignToggleGroup = new ToggleGroup();
+		final ToggleButton leftAlignButton = new ToggleButton(null, new Circle(8, Color.PURPLE));
+		leftAlignButton.setId("leftAlignButton");
+		leftAlignButton.setToggleGroup(alignToggleGroup);
+
+		final ToggleButton centerAlignButton = new ToggleButton(null, new Circle(8, Color.ORANGE));
+		centerAlignButton.setId("centerAlignButton");
+		centerAlignButton.setToggleGroup(alignToggleGroup);
+
+		final ToggleButton rightAlignButton = new ToggleButton(null, new Circle(8, Color.CYAN));
+		rightAlignButton.setId("rightAlignButton");
+		rightAlignButton.setToggleGroup(alignToggleGroup);
+		alignToggleGroup.selectToggle(alignToggleGroup.getToggles().get(0));
+		alignToggleGroup.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
+			ToggleButton tb = (ToggleButton) alignToggleGroup.getSelectedToggle();
+			if (tb != null) {
+                getLogger().info("{} selected", tb.getId());
+			}
+		});
+
+        return new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton, leftAlignButton,
+                centerAlignButton,
+				rightAlignButton);
+	}
+
     private void logSelectedProperty(Boolean value) {
         getLogger().info(", and selectedProperty is: {}", value);
     }
+
+    public static void main(String[] args) {
+        CrawlerTask.insertProxyConfig();
+        launch(args);
+	}
 }

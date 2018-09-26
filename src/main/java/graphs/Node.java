@@ -29,6 +29,18 @@ public class Node {
 
 	}
 
+	public int sum() {
+		int sum = val;
+		if (left != null) {
+			sum += left.sum();
+		}
+		if (right != null) {
+			sum += right.sum();
+		}
+
+		return sum;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -42,17 +54,5 @@ public class Node {
 			sb.append(right);
 		}
 		return sb.toString();
-	}
-
-	public int sum() {
-		int sum = val;
-		if (left != null) {
-			sum += left.sum();
-		}
-		if (right != null) {
-			sum += right.sum();
-		}
-
-		return sum;
 	}
 }

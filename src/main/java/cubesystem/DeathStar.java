@@ -63,6 +63,25 @@ public class DeathStar extends Application {
 		a.setMesh(createMesh(DIVISION, radius, sphere));
 	}
 
+	public static void main(String[] args) {
+
+		launch(args);
+	}
+
+	private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
+		Rotate rotate = new Rotate(180, centerOtherSphere);
+		final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
+		double distance = centerOtherSphere.distance(point3D);
+		if (distance <= radius) {
+			Point3D subtract = centerOtherSphere.subtract(point3D);
+			Point3D transform = rotate.transform(subtract);
+			points[pPos + 0] = (float) transform.getX();
+			points[pPos + 1] = (float) transform.getY();
+			points[pPos + 2] = (float) transform.getZ();
+
+		}
+	}
+
 	private static TriangleMesh createMesh(final int division, final float radius, final Point3D centerOtherSphere) {
 		final int div2 = division / 2;
 		final int nPoints = division * (div2 - 1) + 2;
@@ -198,25 +217,6 @@ public class DeathStar extends Application {
 		m.getTexCoords().setAll(tPoints);
 		m.getFaces().setAll(faces);
 		return m;
-	}
-
-	private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
-		Rotate rotate = new Rotate(180, centerOtherSphere);
-		final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
-		double distance = centerOtherSphere.distance(point3D);
-		if (distance <= radius) {
-			Point3D subtract = centerOtherSphere.subtract(point3D);
-			Point3D transform = rotate.transform(subtract);
-			points[pPos + 0] = (float) transform.getX();
-			points[pPos + 1] = (float) transform.getY();
-			points[pPos + 2] = (float) transform.getZ();
-
-		}
-	}
-
-	public static void main(String[] args) {
-
-		launch(args);
 	}
 
 }

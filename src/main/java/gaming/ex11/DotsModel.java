@@ -71,6 +71,10 @@ public class DotsModel {
 				.bind(Bindings.createStringBinding(() -> Integer.toString(points.get("TU").size()), points.get("TU")));
         borderPane.setTop(new HBox(text, text2, tuText, tuPoints));
     }
+	public Line getLine() {
+		return line;
+	}
+
 	private void addPolygonOnFinished(final Polygon polygon, final EventHandler<ActionEvent> onFinished,
 			ActionEvent f) {
 		if (onFinished != null) {
@@ -78,8 +82,7 @@ public class DotsModel {
 		}
 		gridPane.getChildren().add(polygon);
 	}
-
-	private int getCountMap(DotsSquare a, DotsSquare b) {
+    private int getCountMap(DotsSquare a, DotsSquare b) {
         a.addAdj(b);
         int sum = 0;
         int i = Integer.min(a.getI(), b.getI());
@@ -113,38 +116,8 @@ public class DotsModel {
 
         return sum;
     }
-    private int getSumBySquare(DotsSquare a, DotsSquare b, int sum, DotsSquare c, DotsSquare d) {
-        if (cNotContainsA(a, b, c, d)) {
-            sum++;
-            sum += getCountMap(a, c);
-        }
-        if (bNotContainsD(a, b, c, d)) {
-            sum++;
-            sum += getCountMap(b, d);
-        }
-        if (dNotContainsC(a, b, c, d)) {
-            sum++;
-            sum += getCountMap(d, c);
-        }
-        return sum;
-    }
 
-    private static boolean cNotContainsA(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
-        return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
-    }
-
-    private static boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
-        return a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a);
-    }
-
-    private static boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
-        return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
-    }
-	public Line getLine() {
-		return line;
-	}
-
-	private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades() {
+    private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades() {
         List<Map.Entry<DotsSquare, DotsSquare>> melhor = new ArrayList<>();
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
@@ -183,8 +156,7 @@ public class DotsModel {
 		final int bestPossibility = collect.keySet().stream().mapToInt(i -> i).min().orElse(0);
 		return collect.getOrDefault(bestPossibility, Collections.emptyList());
     }
-
-    private List<Map.Entry<DotsSquare, DotsSquare>> getPossibilidades() {
+	private List<Map.Entry<DotsSquare, DotsSquare>> getPossibilidades() {
         List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = new ArrayList<>();
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
@@ -199,6 +171,22 @@ public class DotsModel {
         return possibilidades;
     }
 
+	private int getSumBySquare(DotsSquare a, DotsSquare b, int sum, DotsSquare c, DotsSquare d) {
+        if (cNotContainsA(a, b, c, d)) {
+            sum++;
+            sum += getCountMap(a, c);
+        }
+        if (bNotContainsD(a, b, c, d)) {
+            sum++;
+            sum += getCountMap(b, d);
+        }
+        if (dNotContainsC(a, b, c, d)) {
+            sum++;
+            sum += getCountMap(d, c);
+        }
+        return sum;
+    }
+
     private void handleMouseDragged(MouseEvent e) {
         if (e.getTarget() instanceof DotsSquare) {
 			line.setEndX(e.getX());
@@ -206,7 +194,7 @@ public class DotsModel {
 		}
 	}
 
-	private void handleMousePressed(MouseEvent e) {
+    private void handleMousePressed(MouseEvent e) {
         if (e.getTarget() instanceof DotsSquare) {
             DotsSquare a = (DotsSquare) e.getTarget();
 			line.setStartY(a.getLayoutY() + a.getHeight() / 2);
@@ -227,7 +215,7 @@ public class DotsModel {
         }
 	}
 
-	private void handleMouseReleased(MouseEvent e) {
+    private void handleMouseReleased(MouseEvent e) {
 		DotsSquare over = Stream.of(maze).flatMap(Stream::of)
 				.filter(m -> m.getBoundsInParent().contains(e.getX(), e.getY()))
 				.findFirst().orElse(null);
@@ -316,21 +304,7 @@ public class DotsModel {
 		selected = null;
 	}
 
-    private boolean squareOverNotSuitable(DotsSquare over) {
-        return selected == null || over == null || selected == over;
-    }
-
-    private static List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilidades,
-            List<Entry<DotsSquare, DotsSquare>> melhorPossibilidades2) {
-        return possibilidades.isEmpty() ? melhorPossibilidades2 : possibilidades;
-    }
-
-    private boolean isPointNeighborToCurrent(DotsSquare over) {
-        return Math.abs(over.getI() - selected.getI()) + Math.abs(over.getJ() - selected.getJ()) == 1
-				&& !over.contains(selected);
-    }
-
-	private void initializeMaze(Group gridPane1) {
+    private void initializeMaze(Group gridPane1) {
 		for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
                 maze[i][j] = new DotsSquare(i, j);
@@ -338,6 +312,32 @@ public class DotsModel {
             }
         }
 	}
+
+	private boolean isPointNeighborToCurrent(DotsSquare over) {
+        return Math.abs(over.getI() - selected.getI()) + Math.abs(over.getJ() - selected.getJ()) == 1
+				&& !over.contains(selected);
+    }
+
+	private boolean squareOverNotSuitable(DotsSquare over) {
+        return selected == null || over == null || selected == over;
+    }
+
+    private static boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a);
+    }
+
+    private static boolean cNotContainsA(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
+    }
+
+    private static boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
+    }
+
+	private static List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilidades,
+            List<Entry<DotsSquare, DotsSquare>> melhorPossibilidades2) {
+        return possibilidades.isEmpty() ? melhorPossibilidades2 : possibilidades;
+    }
 
 
 }

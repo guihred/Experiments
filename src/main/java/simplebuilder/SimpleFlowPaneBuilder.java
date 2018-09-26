@@ -15,24 +15,8 @@ public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlo
 		flowPane = node;
 	}
 
-	@Override
-	public SimpleFlowPaneBuilder padding(Insets insets) {
-		flowPane.setPadding(insets);
-		return this;
-	}
-
-	public SimpleFlowPaneBuilder orientation(Orientation vertical) {
-		flowPane.setOrientation(vertical);
-		return this;
-	}
-
-	public SimpleFlowPaneBuilder vgap(double i) {
-		flowPane.setVgap(i);
-		return this;
-	}
-
-	public SimpleFlowPaneBuilder hgap(double i) {
-		flowPane.setHgap(i);
+	public SimpleFlowPaneBuilder alignment(Pos left) {
+		flowPane.setAlignment(left);
 		return this;
 	}
 
@@ -41,8 +25,24 @@ public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlo
 		return this;
 	}
 
-	public SimpleFlowPaneBuilder alignment(Pos left) {
-		flowPane.setAlignment(left);
+	public SimpleFlowPaneBuilder hgap(double i) {
+		flowPane.setHgap(i);
+		return this;
+	}
+
+	public SimpleFlowPaneBuilder orientation(Orientation vertical) {
+		flowPane.setOrientation(vertical);
+		return this;
+	}
+
+	@Override
+	public SimpleFlowPaneBuilder padding(Insets insets) {
+		flowPane.setPadding(insets);
+		return this;
+	}
+
+	public SimpleFlowPaneBuilder vgap(double i) {
+		flowPane.setVgap(i);
 		return this;
 	}
 

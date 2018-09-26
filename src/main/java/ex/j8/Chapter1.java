@@ -22,26 +22,10 @@ public final class Chapter1 {
     ;
     private static final Logger LOGGER = HasLogging.log(Chapter1.class);
 
-    static interface Collection2<T> extends Collection<T> {
-
-		default void forEachIf(Consumer<? super T> action, Predicate<? super T> p) {
-			forEach(t -> {
-				if (p.test(t)) {
-					action.accept(t);
-				}
-			});
-		}
-
+    private Chapter1() {
 	}
 
-    static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
-		private static final long serialVersionUID = 1L;
-	}
-
-	private Chapter1() {
-	}
-
-	/***
+    /***
 	 * Write a static method andThen that takes as parameters two Runnable
 	 * instances and returns a Runnable that runs the first, then the second. In
 	 * the main method, pass two lambda expressions into a call to andThen, and
@@ -194,7 +178,7 @@ public final class Chapter1 {
         a.forEachIf(LOGGER::trace, s -> !s.isEmpty());
 
 	}
-	
+
 	public static void main(String[] args) {
 		ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 });
 		ex2(new File("."));
@@ -204,6 +188,22 @@ public final class Chapter1 {
 		ex7();
 		ex8();
 		ex9();
+	}
+
+	static interface Collection2<T> extends Collection<T> {
+
+		default void forEachIf(Consumer<? super T> action, Predicate<? super T> p) {
+			forEach(t -> {
+				if (p.test(t)) {
+					action.accept(t);
+				}
+			});
+		}
+
+	}
+	
+	static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
+		private static final long serialVersionUID = 1L;
 	}
 
 }

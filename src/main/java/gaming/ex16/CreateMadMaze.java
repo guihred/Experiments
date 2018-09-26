@@ -8,6 +8,12 @@ import java.util.Random;
 public class CreateMadMaze {
     private int r;
 
+    private boolean getBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
+        final MadTriangle remove = history.remove(history.size() - 1);
+        r = createdMaze.indexOf(remove);
+        return false;
+    }
+
     private void handle(List<MadTriangle> maze, List<MadEdge> allEdges) {
         final Random random = new Random();
         final List<MadTriangle> history = new ArrayList<>();
@@ -74,20 +80,14 @@ public class CreateMadMaze {
         }
     }
 
+    public static void createLabyrinth(List<MadTriangle> maze, List<MadEdge> allEdges) {
+        new CreateMadMaze().handle(maze, allEdges);
+    }
+
     private static void addIfPresent(final List<Character> check, MadTriangle openA, char a) {
         if (openA != null) {
             check.add(a);
         }
-    }
-
-    private boolean getBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
-        final MadTriangle remove = history.remove(history.size() - 1);
-        r = createdMaze.indexOf(remove);
-        return false;
-    }
-
-    public static void createLabyrinth(List<MadTriangle> maze, List<MadEdge> allEdges) {
-        new CreateMadMaze().handle(maze, allEdges);
     }
 
 }

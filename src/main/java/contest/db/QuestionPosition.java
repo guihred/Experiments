@@ -7,34 +7,34 @@ public class QuestionPosition {
     private String line;
     private HasImage entity;
 
-    public float getX() {
-        return x;
-    }
-    public void setX(float x) {
-        this.x = x;
-    }
-    public float getY() {
-        return y;
-    }
-    public void setY(float y) {
-        this.y = y;
-    }
-    public int getPage() {
-        return page;
-    }
-    public void setPage(int page) {
-        this.page = page;
+    public HasImage getEntity() {
+        return entity;
     }
     public String getLine() {
         return line;
     }
-    public void setLine(String line) {
-        this.line = line;
+    public int getPage() {
+        return page;
     }
-    public HasImage getEntity() {
-        return entity;
+    public float getX() {
+        return x;
+    }
+    public float getY() {
+        return y;
     }
     public void setEntity(HasImage entity) {
         this.entity = entity;
+    }
+    public void setLine(String line) {
+        this.line = line;
+    }
+    public void setPage(int page) {
+        this.page = page;
+    }
+    public void setX(float x) {
+        this.x = x;
+    }
+    public void setY(float y) {
+        this.y = y;
     }
 }

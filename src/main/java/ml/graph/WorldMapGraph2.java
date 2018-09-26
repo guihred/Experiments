@@ -42,15 +42,16 @@ public class WorldMapGraph2 extends WorldMapGraph {
 
     }
 
-	public DoubleProperty radiusProperty() {
-		return radius;
-	}
-
-    @Override
+	@Override
     public List<Country> anyAdjacents(Country c) {
         Country[] values = Country.values();
         return Stream.of(values).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
                 .filter(e -> e != c).distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public IntegerProperty binsProperty() {
+        return bins;
     }
 
     @Override
@@ -83,6 +84,62 @@ public class WorldMapGraph2 extends WorldMapGraph {
     }
 
     @Override
+    public void filter(String h, Predicate<Object> pred) {
+        filters.put(h, pred);
+    }
+
+    public Map<String, Color> getCategoryMap() {
+        if (categoryMap == null) {
+            categoryMap = new HashMap<>();
+        }
+
+        return categoryMap;
+    }
+
+	public GraphicsContext getGc() {
+        if (gc == null) {
+            gc = getGraphicsContext2D();
+        }
+        return gc;
+    }
+
+
+	public DoubleProperty radiusProperty() {
+		return radius;
+	}
+
+	public void setCategoryMap(Map<String, Color> categoryMap) {
+        this.categoryMap = categoryMap;
+    }
+
+	@Override
+    public void setDataframe(DataframeML x, String header) {
+        this.header = header;
+        dataframeML = x;
+        summary = null;
+        createCategoryMap();
+        drawGraph();
+    }
+
+    public void setPoints(String latHeader, String lonHeader) {
+		this.latHeader = latHeader;
+		this.lonHeader = lonHeader;
+		drawGraph();
+	}
+    @Override
+    public StringProperty valueHeaderProperty() {
+        return valueHeader;
+    }
+
+    public DoubleProperty xScaleProperty() {
+		return xScale;
+	}
+
+    public DoubleProperty yScaleProperty() {
+		return yScale;
+	}
+
+    @Override
     protected void drawCountry(Country country) {
         getGc().beginPath();
         Map<Country, Color> colorMap = new EnumMap<>(Country.class);
@@ -95,6 +152,37 @@ public class WorldMapGraph2 extends WorldMapGraph {
         getGc().stroke();
         getGc().closePath();
     }
+
+    private void drawNeighbors(Country[] values) {
+		getGc().setStroke(Color.RED);
+		getGc().setLineWidth(1);
+		for (int i = 0; i < values.length; i++) {
+		    Country countries = values[i];
+		    for (Country country : countries.neighbors()) {
+		        getGc().strokeLine(countries.getCenterX(), countries.getCenterY(), country.getCenterX(),
+		                country.getCenterY());
+		    }
+		}
+	}
+
+    private void drawPoints() {
+        getGc().setFill(Color.RED);
+		MercatorMap mercatorMap = new MercatorMap(getWidth(), getHeight());
+        List<Double> list = dataframeML.list(lonHeader, Double.class);
+        List<Double> lis2t = dataframeML.list(latHeader, Double.class);
+        List<String> citu = dataframeML.list(cityHeader, String.class);
+        for (int i = 0; i < dataframeML.getSize(); i++) {
+            getLogger().trace("X={}", xScale.get());
+            getLogger().trace("Y={}", yScale.get());
+            double latitudeInDegrees = list.get(i).doubleValue();
+            double longitudeInDegrees = lis2t.get(i).doubleValue();
+			double[] screenLocation = mercatorMap.getScreenLocation(latitudeInDegrees, longitudeInDegrees);
+			double x = xScale.get() + screenLocation[0] * radius.get();
+			double y = yScale.get() + screenLocation[1] * radius.get();
+			getGc().fillOval(x, y, radius.get(), radius.get());
+			getGc().fillText(citu.get(i), x, y);
+		}
+	}
 
     private Map<Country, Color> getCountriesColor(Country countries) {
         Map<Country, Color> enumMap = new EnumMap<>(Country.class);
@@ -116,93 +204,5 @@ public class WorldMapGraph2 extends WorldMapGraph {
         });
         return enumMap;
 	}
-
-	private void drawNeighbors(Country[] values) {
-		getGc().setStroke(Color.RED);
-		getGc().setLineWidth(1);
-		for (int i = 0; i < values.length; i++) {
-		    Country countries = values[i];
-		    for (Country country : countries.neighbors()) {
-		        getGc().strokeLine(countries.getCenterX(), countries.getCenterY(), country.getCenterX(),
-		                country.getCenterY());
-		    }
-		}
-	}
-
-
-	private void drawPoints() {
-        getGc().setFill(Color.RED);
-		MercatorMap mercatorMap = new MercatorMap(getWidth(), getHeight());
-        List<Double> list = dataframeML.list(lonHeader, Double.class);
-        List<Double> lis2t = dataframeML.list(latHeader, Double.class);
-        List<String> citu = dataframeML.list(cityHeader, String.class);
-        for (int i = 0; i < dataframeML.getSize(); i++) {
-            getLogger().trace("X={}", xScale.get());
-            getLogger().trace("Y={}", yScale.get());
-            double latitudeInDegrees = list.get(i).doubleValue();
-            double longitudeInDegrees = lis2t.get(i).doubleValue();
-			double[] screenLocation = mercatorMap.getScreenLocation(latitudeInDegrees, longitudeInDegrees);
-			double x = xScale.get() + screenLocation[0] * radius.get();
-			double y = yScale.get() + screenLocation[1] * radius.get();
-			getGc().fillOval(x, y, radius.get(), radius.get());
-			getGc().fillText(citu.get(i), x, y);
-		}
-	}
-
-	public DoubleProperty xScaleProperty() {
-		return xScale;
-	}
-
-	public DoubleProperty yScaleProperty() {
-		return yScale;
-	}
-
-    public void setPoints(String latHeader, String lonHeader) {
-		this.latHeader = latHeader;
-		this.lonHeader = lonHeader;
-		drawGraph();
-	}
-    @Override
-    public void filter(String h, Predicate<Object> pred) {
-        filters.put(h, pred);
-    }
-
-    @Override
-    public void setDataframe(DataframeML x, String header) {
-        this.header = header;
-        dataframeML = x;
-        summary = null;
-        createCategoryMap();
-        drawGraph();
-    }
-
-    @Override
-    public StringProperty valueHeaderProperty() {
-        return valueHeader;
-    }
-
-    @Override
-    public IntegerProperty binsProperty() {
-        return bins;
-    }
-
-    public GraphicsContext getGc() {
-        if (gc == null) {
-            gc = getGraphicsContext2D();
-        }
-        return gc;
-    }
-
-    public Map<String, Color> getCategoryMap() {
-        if (categoryMap == null) {
-            categoryMap = new HashMap<>();
-        }
-
-        return categoryMap;
-    }
-
-    public void setCategoryMap(Map<String, Color> categoryMap) {
-        this.categoryMap = categoryMap;
-    }
 
 }

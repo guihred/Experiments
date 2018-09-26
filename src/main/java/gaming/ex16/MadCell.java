@@ -35,13 +35,13 @@ public class MadCell {
         this.x = x;
     }
 
+    public void setY(float y) {
+        this.y = y;
+    }
+
     @Override
     public String toString() {
         return "[" + id + "," + x + "," + y + "]";
-    }
-
-    public void setY(float y) {
-        this.y = y;
     }
 
 }

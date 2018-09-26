@@ -21,11 +21,6 @@ public class JapanRefactoring {
         refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE));
     }
 
-    public static String renameFile(String txtFile) {
-        return txtFile.substring(0, txtFile.length() - 4) + "3.sql";
-    }
-
-
     public static void refactorJapaneseFile(String inputfile, String outputFile) {
         try (PrintStream print = new PrintStream(outputFile,
                 StandardCharsets.UTF_8.displayName());
@@ -49,6 +44,11 @@ public class JapanRefactoring {
         } catch (Exception e) {
             HasLogging.log(JapanRefactoring.class).error("", e);
         }
+    }
+
+
+    public static String renameFile(String txtFile) {
+        return txtFile.substring(0, txtFile.length() - 4) + "3.sql";
     }
 
 }

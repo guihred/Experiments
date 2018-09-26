@@ -75,11 +75,7 @@ public class JapaneseLessonDisplay extends Application {
 		return romaji;
 	}
 
-    private static ObservableList<JapaneseLesson> getLessons() {
-        return JapaneseLessonReader.getLessonsWait();
-	}
-
-	private void nextLesson(TextField answer) {
+    private void nextLesson(TextField answer) {
 		if (!tested.get()) {
 			tested.set(true);
             String text = answer.getText();
@@ -96,6 +92,10 @@ public class JapaneseLessonDisplay extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	private static ObservableList<JapaneseLesson> getLessons() {
+        return JapaneseLessonReader.getLessonsWait();
 	}
 
 }

@@ -28,18 +28,6 @@ public class Crypto {
 
 	}
 
-	public String getNormalizedPlaintext() {
-		return plainText.toLowerCase().replaceAll("[^a-z0-9]", "");
-	}
-
-	public List<String> getPlaintextSegments() {
-		String normalizedPlaintext = getNormalizedPlaintext();
-		String a = normalizedPlaintext;
-		int squareSize = getSquareSize();
-
-		return Arrays.asList(a.split("(?<=\\G.{" + squareSize + "})"));
-	}
-
 	public String getCipherText() {
 		List<String> plaintextSegments = getPlaintextSegments();
 		StringBuilder a = new StringBuilder();
@@ -53,10 +41,6 @@ public class Crypto {
 		}
 
 		return a.toString();
-	}
-
-	public int getSquareSize() {
-		return (int) Math.ceil(Math.sqrt(getNormalizedPlaintext().length()));
 	}
 
 	public String getNormalizedCipherText() {
@@ -78,6 +62,22 @@ public class Crypto {
 		}
 
 		return Stream.of(split).collect(Collectors.joining(" "));
+	}
+
+	public String getNormalizedPlaintext() {
+		return plainText.toLowerCase().replaceAll("[^a-z0-9]", "");
+	}
+
+	public List<String> getPlaintextSegments() {
+		String normalizedPlaintext = getNormalizedPlaintext();
+		String a = normalizedPlaintext;
+		int squareSize = getSquareSize();
+
+		return Arrays.asList(a.split("(?<=\\G.{" + squareSize + "})"));
+	}
+
+	public int getSquareSize() {
+		return (int) Math.ceil(Math.sqrt(getNormalizedPlaintext().length()));
 	}
 
 }

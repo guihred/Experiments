@@ -29,22 +29,21 @@ public class ZoomableScrollPane extends ScrollPane {
 		return scaleValue;
 	}
 
-	public void zoomToActual() {
-		zoomTo(1.0);
-	}
-
-	public void zoomTo(double scaleValue1) {
-
-		scaleValue = scaleValue1;
-
-		scaleTransform.setX(scaleValue1);
-		scaleTransform.setY(scaleValue1);
-
-	}
-
 	public void zoomActual() {
 
 		scaleValue = 1;
+		zoomTo(scaleValue);
+
+	}
+
+	public void zoomIn() {
+
+		scaleValue += delta;
+
+		if (Double.compare(scaleValue, 10) > 0) {
+			scaleValue = 10;
+		}
+
 		zoomTo(scaleValue);
 
 	}
@@ -59,16 +58,17 @@ public class ZoomableScrollPane extends ScrollPane {
 		zoomTo(scaleValue);
 	}
 
-	public void zoomIn() {
+	public void zoomTo(double scaleValue1) {
 
-		scaleValue += delta;
+		scaleValue = scaleValue1;
 
-		if (Double.compare(scaleValue, 10) > 0) {
-			scaleValue = 10;
-		}
+		scaleTransform.setX(scaleValue1);
+		scaleTransform.setY(scaleValue1);
 
-		zoomTo(scaleValue);
+	}
 
+	public void zoomToActual() {
+		zoomTo(1.0);
 	}
 
 	/**
