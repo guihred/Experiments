@@ -13,6 +13,7 @@ import com.aspose.imaging.imageoptions.TiffOptions;
 import com.aspose.imaging.sources.FileCreateSource;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class ImageLoading {
     private static final Logger LOG = HasLogging.log(ImageLoading.class);
@@ -159,7 +160,7 @@ public class ImageLoading {
     }
 
     public static void main(String[] args) {
-        String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
+        String dataDir = ResourceFXUtils.getUserFolder("Pictures").getAbsolutePath() + "\\";
         String nameFile = dataDir + "eu3.jpg";
         String svgFile = dataDir + "Video_game.svg";
         String pngFile = dataDir + "teste1.png";

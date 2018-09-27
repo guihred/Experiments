@@ -2,7 +2,6 @@ package contest.db;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -13,11 +12,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -25,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import utils.HasLogging;
+import utils.ImageTableCell;
 import utils.ResourceFXUtils;
 
 public class ContestApplication extends Application implements HasLogging {
@@ -38,8 +36,6 @@ public class ContestApplication extends Application implements HasLogging {
         // create a grid pane
         HBox gridpane = new HBox();
         gridpane.setPadding(new Insets(5));
-        // gridpane.setHgap(10);
-        // gridpane.setVgap(10);
 
         root.setCenter(gridpane);
         String arquivo = "102 - Analista de Tecnologia da Informacao - Tipo D.pdf";
@@ -160,23 +156,5 @@ public class ContestApplication extends Application implements HasLogging {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private final class ImageTableCell extends TableCell<HasImage, String> {
-        @Override
-        protected void updateItem(String item, boolean empty) {
-            if (item == getItem()) {
-                return;
-            }
-            super.updateItem(item, empty);
-            if (item == null) {
-                super.setText(null);
-                super.setGraphic(null);
-            } else {
-                super.setGraphic(new VBox(
-                        Stream.of(item.split(";")).map(i -> new ImageView(ResourceFXUtils.toExternalForm("out/" + i)))
-                                .toArray(ImageView[]::new)));
-            }
-        }
     }
 }

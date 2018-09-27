@@ -22,7 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import javax.swing.filechooser.FileSystemView;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -46,8 +45,7 @@ public class OrganizadorMusicas extends Application {
 		chooser.setTitle("Carregar Pasta de Músicas");
 		Button buttonEstoque = new Button("Carregar Musicas");
 		final TableView<Musica> medicamentosEstoqueTable = tabelaMusicas();
-		String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
-		File musicsDirectory = new File(new File(path).getParentFile(), "Music");
+        File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
 
 		medicamentosEstoqueTable.setItems(getMusicas(musicsDirectory));
 		medicamentosEstoqueTable.prefWidthProperty().bind(root.widthProperty().add(-50));

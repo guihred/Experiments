@@ -290,9 +290,6 @@ public final class ContestReader implements HasLogging {
         if (instance == null) {
             instance = new ContestReader();
         }
-        if (instance.getTexts().isEmpty()) {
-            // new Thread(() -> INSTANCE.readFile(file)).start();
-        }
 
         return instance.getTexts();
     }

@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javax.swing.filechooser.FileSystemView;
 import org.apache.commons.lang3.StringUtils;
 import org.blinkenlights.jid3.ID3Tag;
 import org.blinkenlights.jid3.MP3File;
@@ -15,6 +14,7 @@ import org.blinkenlights.jid3.v1.ID3V1_0Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public final class LeitorMusicas {
     private static final Logger LOGGER = HasLogging.log(LeitorMusicas.class);
@@ -39,10 +39,8 @@ public final class LeitorMusicas {
     public static void main(String[] args) {
 
 		try {
-			String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
-			File file = new File(new File(path).getParentFile(), "Music");
-            ObservableList<Musica>
-			musicas = getMusicas(file);
+            File file = ResourceFXUtils.getUserFolder("Music");
+            ObservableList<Musica> musicas = getMusicas(file);
             musicas.forEach(s -> LOGGER.trace("{}", s));
         } catch (Exception e) {
             LOGGER.trace("", e);

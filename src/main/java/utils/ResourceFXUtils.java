@@ -7,8 +7,14 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
@@ -20,6 +26,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Mesh;
 import javax.imageio.ImageIO;
+import javax.swing.filechooser.FileSystemView;
 import org.blinkenlights.jid3.ID3Tag;
 import org.blinkenlights.jid3.MP3File;
 import org.blinkenlights.jid3.v2.APICID3V2Frame;
@@ -90,14 +97,30 @@ public final class ResourceFXUtils {
         StlMeshImporter importer = new StlMeshImporter();
         importer.read(file);
         return importer.getImport();
-//        return null;
     }
 
     public static Mesh importStlMesh(URL file) {
         StlMeshImporter importer = new StlMeshImporter();
         importer.read(file);
         return importer.getImport();
-//        return null;
+    }
+
+    public static File getUserFolder(String dir) {
+        String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
+        return new File(new File(path).getParentFile(), dir);
+    }
+
+    public static List<Path> getPathByExtension(File dir, String other) {
+        try (Stream<Path> walk = Files.walk(dir.toPath(), 20, FileVisitOption.FOLLOW_LINKS);) {
+            return walk.filter(e -> e.toString().endsWith(other)).collect(Collectors.toList());
+        } catch (IOException e) {
+            LOGGER.error("", e);
+        }
+        return Collections.emptyList();
+    }
+
+    public static Path getFirstPathByExtension(File dir, String other) {
+        return getPathByExtension(dir, other).stream().findFirst().orElse(null);
     }
 
     public static String take(final Canvas canvas) {

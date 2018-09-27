@@ -3,6 +3,7 @@ package contest.db;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 /**
  * This is an example on how to get the x/y coordinates of image locations.
@@ -67,7 +69,7 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
         if (xobject instanceof PDImageXObject) {
             PDImageXObject image = (PDImageXObject) xobject;
             BufferedImage image2 = image.getImage();
-            File save = save(num++, image2, image.getSuffix());
+            File save = save(pageNumber, num++, image2, image.getSuffix());
 
             Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
 
@@ -89,22 +91,49 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
 
     }
 
-    public static File save(Object numb, BufferedImage image, String ext) {
+    public static File save(int pageNumber, Object numb, BufferedImage image, String ext) {
 
-        File file = new File("src/main/resources/out/teste" + numb + "." + ext);
+        String string = ext.equals("jpx") ? "jpg" : ext;
+        URL url = ResourceFXUtils.toURL("out");
+        File file = new File(new File(url.getFile()), pageNumber + "-" + numb + "." + string);
         try {
-            ImageIO.write(image, ext, file); // ignore returned boolean
+            ImageIO.write(image, string, file); // ignore returned boolean
         } catch (IOException e) {
             HasLogging.log().error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
         }
         return file;
     }
 
-    static class PDFImage {
+    public static class PDFImage implements HasImage {
         protected File file;
         protected float x;
         protected float y;
         protected int pageN;
+
+        @Override
+        public void appendImage(String image) {
+            // DOES NOTHING
+        }
+
+        @Override
+        public String getImage() {
+            return file.getName();
+        }
+
+        @Override
+        public boolean matches(String s0) {
+            return false;
+        }
+
+        @Override
+        public void setImage(String image) {
+            file = new File(image);
+        }
+
+        @Override
+        public String toString() {
+            return file != null ? file.getName() : "";
+        }
     }
 
 }

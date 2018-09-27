@@ -9,6 +9,7 @@ import com.aspose.imaging.shapes.RectangleShape;
 import com.aspose.imaging.sources.FileCreateSource;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class ImageCreating {
     private static final Logger LOG = HasLogging.log(ImageCreating.class);
@@ -73,8 +74,8 @@ public class ImageCreating {
     }
 
     public static void main(String[] args) {
-        String dataDir = "C:\\Users\\guilherme.hmedeiros\\Pictures\\";
-        String nameFile = dataDir + "eu3.jpg";
+        String dataDir = ResourceFXUtils.getUserFolder("Pictures").getAbsolutePath();
+        String nameFile = dataDir + "\\eu3.jpg";
         creating(nameFile);
 
     }

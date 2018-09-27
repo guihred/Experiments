@@ -31,6 +31,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleArcBuilder;
+import utils.ResourceFXUtils;
 
 public final class Chapter4 {
 	private Chapter4() {
@@ -71,7 +72,7 @@ public final class Chapter4 {
 
 		@Override
 		public void start(Stage stage) throws Exception {
-			TextField textField = new TextField("file:C:\\Users\\Note\\Documents\\teste.html");
+            TextField textField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
 			WebView browser = new WebView();
 			WebEngine engine = browser.getEngine();
 			Button backButton = new Button("Back");
