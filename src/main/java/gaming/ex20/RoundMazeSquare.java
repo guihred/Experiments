@@ -2,17 +2,12 @@ package gaming.ex20;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.BoundingBox;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.shape.ArcType;
 import utils.HasLogging;
 
-public class RoundMazeSquare extends Group implements HasLogging {
+public class RoundMazeSquare implements HasLogging {
     public static final double SQUARE_SIZE = 20;
 
 	private final BooleanProperty visited = new SimpleBooleanProperty(false);
@@ -25,35 +20,15 @@ public class RoundMazeSquare extends Group implements HasLogging {
 	private List<BoundingBox> bounds;
 	private List<RoundMazeSquare> adjacents;
 
+    private boolean center;
+
 	public RoundMazeSquare(int i, int j) {
 		this.i = i;
 		this.j = j;
-		setStyle("-fx-background-color:green;");
-		styleProperty().bind(
-				Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
-		// final Line line = new Line(0, 0, 0, SQUARE_SIZE);
-		// line.visibleProperty().bind(east.not());
-		// setRight(line);
-		// final Line line2 = new Line(0, 0, SQUARE_SIZE, 0);
-		// line2.visibleProperty().bind(north.not());
-		// setTop(line2);
-		// final Line line3 = new Line(0, 0, 0, SQUARE_SIZE);
-		// line3.visibleProperty().bind(west.not());
-		// setLeft(line3);
-		// final Line line4 = new Line(0, 0, SQUARE_SIZE, 0);
-		// line4.visibleProperty().bind(south.not());
-		// setBottom(line4);
 		
 	}
 
-	public void setCenter(Node node) {
-		// node.setTranslateX(getBoundsInLocal().getWidth() / 2);
-		// node.setTranslateY(getBoundsInLocal().getHeight() / 2);
-		//
-		// getChildren().add(node);
-	}
-
-	public List<RoundMazeSquare> adjacents(RoundMazeSquare[][] map) {
+    public List<RoundMazeSquare> adjacents(RoundMazeSquare[][] map) {
 		if (adjacents == null) {
 			adjacents = new ArrayList<>();
 			RoundMazeSquare el = map[i][j];
@@ -91,10 +66,12 @@ public class RoundMazeSquare extends Group implements HasLogging {
 		if (bounds == null) {
 
             double layoutX = i * RoundMazeSquare.SQUARE_SIZE;
-            double layoutX2 = RoundMazeModel.MAZE_SIZE * 2 * RoundMazeSquare.SQUARE_SIZE - i * RoundMazeSquare.SQUARE_SIZE
+            double layoutX2 = RoundMazeModel.MAZE_WIDTH * 2 * RoundMazeSquare.SQUARE_SIZE
+                    - i * RoundMazeSquare.SQUARE_SIZE
                     - RoundMazeSquare.SQUARE_SIZE;
             double layoutY = j * RoundMazeSquare.SQUARE_SIZE;
-            double layoutY2 = RoundMazeModel.MAZE_SIZE * 2 * RoundMazeSquare.SQUARE_SIZE - j * RoundMazeSquare.SQUARE_SIZE
+            double layoutY2 = RoundMazeModel.MAZE_HEIGHT * 2 * RoundMazeSquare.SQUARE_SIZE
+                    - j * RoundMazeSquare.SQUARE_SIZE
                     - RoundMazeSquare.SQUARE_SIZE;
 			List<BoundingBox> arrayList = new ArrayList<>();
             arrayList.add(new BoundingBox(layoutX, layoutY, RoundMazeSquare.SQUARE_SIZE, RoundMazeSquare.SQUARE_SIZE));
@@ -161,20 +138,12 @@ public class RoundMazeSquare extends Group implements HasLogging {
 		return west;
 	}
 
-	public void draw(GraphicsContext gc) {
-		double length = 360.0 / RoundMazeModel.MAZE_SIZE;
-		int center = RoundMazeModel.CANVAS_WIDTH / 2;
-		double angle = length * j;
-		double sin = Math.sin(angle);
-		double cos = Math.cos(angle);
-		int m = i * RoundMazeModel.CANVAS_WIDTH / RoundMazeModel.MAZE_SIZE;
-		if (!south.get()) {
-			gc.strokeArc(center - m / 2, center - m / 2, m, m, length * j, length, ArcType.OPEN);
-		}
-		if (!east.get()) {
-			int b = (i - 1) * RoundMazeModel.CANVAS_WIDTH / RoundMazeModel.MAZE_SIZE;
-			gc.strokeLine(center + cos * m, center + sin * m, center + cos * b, center + sin * b);
-		}
-	}
+    public void setCenter(boolean center) {
+        this.center = center;
+    }
+
+    public boolean isCenter() {
+        return center;
+    }
 
 }

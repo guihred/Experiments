@@ -10,9 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
@@ -154,6 +152,30 @@ public final class ResourceFXUtils {
         } catch (Exception e) {
             LOGGER.error("", e);
         }
+    }
+
+    public static Map<String, String> executeInConsole(String cmd, Map<String, String> responses) {
+        Map<String, String> result = new HashMap<>();
+        try {
+            LOGGER.info("Executing \"{}\"", cmd);
+            Runtime runtime = Runtime.getRuntime();
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(runtime.exec(cmd.split(" ")).getInputStream(), StandardCharsets.UTF_8));
+            String line;
+            while ((line = in.readLine()) != null) {
+                LOGGER.info(line);
+                String line1 = line;
+                result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
+                        .collect(Collectors.toMap(e -> e.getKey(), e -> line1.replaceAll(e.getKey(), e.getValue()))));
+
+            }
+            runtime.exec(cmd.split(" ")).waitFor();
+            in.close();
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
+        return result;
     }
 
     public static Image extractEmbeddedImage(File mp3) {

@@ -18,17 +18,15 @@ public class RoundMazeLauncher extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         final GridPane gridPane = new GridPane();
-		Canvas canvas = new Canvas(500, 500);
+        Canvas canvas = new Canvas(600, 600);
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-		final Scene scene = new Scene(new Group(canvas));
+        canvas.setTranslateX(10);
+        final Scene scene = new Scene(new Group(canvas));
 		RoundMazeModel.create(scene, canvas).draw();
         stage.setScene(scene);
-		stage.setWidth(RoundMazeModel.CANVAS_WIDTH + 30);
-		stage.setHeight(RoundMazeModel.CANVAS_WIDTH + 60);
+        stage.setWidth(canvas.getWidth() + 50);
+        stage.setHeight(canvas.getHeight() + 50);
         stage.show();
-
-        
-
     }
 
     public static void main(String[] args) {
