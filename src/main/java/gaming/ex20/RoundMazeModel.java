@@ -19,9 +19,9 @@ import javafx.scene.shape.ArcType;
  */
 public class RoundMazeModel {
 
-    public static final int MAZE_HEIGHT = 20;
+    public static final int MAZE_HEIGHT = 40;
     public static final int MAZE_WIDTH = 7;
-    public static final int CANVAS_WIDTH = 500;
+    public static final double CANVAS_WIDTH = 500;
     private RoundMazeSquare[][] maze = new RoundMazeSquare[MAZE_WIDTH][MAZE_HEIGHT];
     private int x = MAZE_WIDTH - 1;
     private int y = MAZE_HEIGHT - 1;
@@ -49,17 +49,19 @@ public class RoundMazeModel {
 
     public static void draw(RoundMazeSquare sq, GraphicsContext gc) {
         double length = -360.0 / MAZE_HEIGHT;
-        int center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / MAZE_WIDTH / 2;
+        double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / MAZE_WIDTH / 2;
         double angle = length * (sq.j + 1);
         double m = (sq.i + 2) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
+        double b = (sq.i + 1) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
         if (!sq.isSouth()) {
             gc.strokeArc(center - m, center - m, m * 2, m * 2, -angle, length, ArcType.OPEN);
         }
+        if (!sq.isNorth()) {
+            gc.strokeArc(center - b, center - b, b * 2, b * 2, -angle, length, ArcType.OPEN);
+        }
         if (!sq.isEast()) {
-            angle = length * (sq.j + 1);
             double sin = Math.sin(Math.toRadians(angle));
             double cos = Math.cos(Math.toRadians(angle));
-            int b = (sq.i + 1) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
             gc.strokeLine(center + cos * m, center + sin * m, center + cos * b, center + sin * b);
         }
         if (sq.isCenter()) {
@@ -127,13 +129,13 @@ public class RoundMazeModel {
     }
 
     private void goDown() {
-        if (maze[x][y].isSouth()) {
+        if (x < RoundMazeModel.MAZE_WIDTH - 1 && maze[x][y].isSouth()) {
             x = (x + 1) % RoundMazeModel.MAZE_WIDTH;
         }
     }
 
     private void goUp() {
-        if (maze[x][y].isNorth()) {
+        if (x > 0 && maze[x][y].isNorth()) {
             x = (x - 1 + RoundMazeModel.MAZE_WIDTH) % RoundMazeModel.MAZE_WIDTH;
         }
     }
