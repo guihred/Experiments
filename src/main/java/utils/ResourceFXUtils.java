@@ -11,6 +11,7 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
@@ -140,18 +141,38 @@ public final class ResourceFXUtils {
         try {
             LOGGER.info("Executing \"{}\"", cmd);
             Process p = Runtime.getRuntime().exec(cmd);
+
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8));
             String line;
             while ((line = in.readLine()) != null) {
-                if (line.contains("Success")) {
-                    LOGGER.info("\"{}\"", line);
-                }
+                LOGGER.info("\"{}\"", line);
             }
             p.waitFor();
             in.close();
         } catch (Exception e) {
             LOGGER.error("", e);
         }
+    }
+
+    public static List<String> executeInConsoleInfo(String cmd) {
+        List<String> execution = new ArrayList<>();
+        try {
+            LOGGER.info("Executing \"{}\"", cmd);
+
+            Process p = Runtime.getRuntime().exec(cmd);
+
+            BufferedReader in2 = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
+            String line;
+            while ((line = in2.readLine()) != null) {
+                LOGGER.trace("{}", line);
+                execution.add(line);
+            }
+            p.waitFor();
+            in2.close();
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
+        return execution;
     }
 
     public static Map<String, String> executeInConsole(String cmd, Map<String, String> responses) {
@@ -167,7 +188,8 @@ public final class ResourceFXUtils {
                 LOGGER.trace(line);
                 String line1 = line;
                 result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
-                        .collect(Collectors.toMap(e -> e.getKey(), e -> line1.replaceAll(e.getKey(), e.getValue()))));
+                        .collect(Collectors.toMap(Entry<String, String>::getKey,
+                                e -> line1.replaceAll(e.getKey(), e.getValue()))));
 
             }
             runtime.exec(cmd.split(" ")).waitFor();

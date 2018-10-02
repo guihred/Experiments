@@ -2,13 +2,10 @@ package ethical.hacker;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class PortScanner {
 
@@ -24,6 +21,30 @@ public class PortScanner {
             LOG.trace("", ex);
             return false;
         }
+    }
+
+    public static Map<String, List<String>> scanNetworkOpenPorts(String networkAddress) {
+        Locale.setDefault(Locale.ENGLISH);
+        String hostRegex = "Nmap scan report for ([\\d\\.]+)";
+        String portRegex = "\\d+/.+";
+        List<String> executeInConsole = ResourceFXUtils
+                .executeInConsoleInfo(
+                        "\"C:\\Program Files (x86)\\Nmap\\nmap.exe\" --open -sV --top-ports 10 " + networkAddress);
+        Map<String, List<String>> hostsPorts = new HashMap<>();
+        String host = "";
+        for (String line : executeInConsole) {
+            if (line.matches(hostRegex)) {
+                host = line.replaceAll(hostRegex, "$1");
+                hostsPorts.put(host, new ArrayList<>());
+            }
+            if (line.matches(portRegex) && hostsPorts.containsKey(host)) {
+
+                hostsPorts.get(host).add(line);
+            }
+
+        }
+
+        return hostsPorts;
     }
 
     public static List<Integer> scanPortsHost(String ip) {
@@ -48,15 +69,19 @@ public class PortScanner {
             thread.start();
         }
         while (arrayList.stream().anyMatch(Thread::isAlive)) {
-            ;
+            //NOOP 
         }
         Collections.sort(synchronizedList);
         return synchronizedList;
     }
 
     public static void main(String[] args) {
-        List<Integer> scanHost = scanPortsHost("localhost");
-        String openPorts = scanHost.stream().map(Objects::toString).collect(Collectors.joining(","));
-        LOG.info("Available ports = {}", openPorts);
+        //        List<Integer> scanHost = scanPortsHost("localhost");
+        //        String openPorts = scanHost.stream().map(Objects::toString).collect(Collectors.joining(","));
+        //        LOG.info("Available ports = {}", openPorts);
+        Map<String, List<String>> scanNetwork = scanNetworkOpenPorts("10.122.25.0/24");
+
+        scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
+
     }
 }

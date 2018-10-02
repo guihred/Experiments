@@ -169,15 +169,13 @@ public class PdfReader extends Application implements HasLogging {
 				pages.add(lines1);
 			}
 			numberOfPages -= start;
-            new Thread(() -> {
-                extracted(file, start);
-            }).start();
+            new Thread(() -> extractImages(file, start)).start();
         } catch (Exception e) {
             getLogger().error("", e);
         }
     }
 
-    private void extracted(File file, int start) {
+    private void extractImages(File file, int start) {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
