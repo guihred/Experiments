@@ -16,7 +16,7 @@ public class PingTraceRoute {
     }
 
     private static void collectTraceInformation() {
-                getInformation("www-sisgf");
+                getInformation("10.69.64.31");
 
     }
 
@@ -59,7 +59,7 @@ public class PingTraceRoute {
         Map<String, String> responses = new HashMap<>();
         String route = ".*Resposta de ([\\d\\.]+):[^\\d]+";
         responses.put(route, "$1");// RECEIVED
-        String ipRegex = ".+\\[(.+)\\].+";
+        String ipRegex = "Disparando ([\\d\\.]+) .+";
         responses.put(ipRegex, "$1");// IP
         Map<String, String> executeInConsole = ResourceFXUtils
                 .executeInConsole("ping " + address + " -i " + i + " -n 1 ", responses);

@@ -64,6 +64,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
                         30, graph),
                 new CircleTopology(30, graph), new GabrielTopology(30, graph), new WordTopology(graph),
                 new PackageTopology(graph),
+                new NetworkTopology(graph),
                 new ProjectTopology(graph));
 
         SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(BaseTopology::getName);

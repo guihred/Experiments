@@ -9,11 +9,11 @@ import utils.ResourceFXUtils;
 
 public class PortScanner {
 
+    private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
     private static final int STEP = 100;
     private static final Logger LOG = HasLogging.log(PortScanner.class);
 
     public static boolean isPortOpen(String ip, int porta, int timeout) {
-        HasLogging.log(PortScanner.class);
         try (Socket socket = new Socket();) {
             socket.connect(new InetSocketAddress(ip, porta), timeout);
             return true;
@@ -29,7 +29,7 @@ public class PortScanner {
         String portRegex = "\\d+/.+";
         List<String> executeInConsole = ResourceFXUtils
                 .executeInConsoleInfo(
-                        "\"C:\\Program Files (x86)\\Nmap\\nmap.exe\" --open -sV --top-ports 10 " + networkAddress);
+                        "\"" + NMAP_FILES + "\" --open -sV --top-ports 10 " + networkAddress);
         Map<String, List<String>> hostsPorts = new HashMap<>();
         String host = "";
         for (String line : executeInConsole) {
@@ -79,7 +79,7 @@ public class PortScanner {
         //        List<Integer> scanHost = scanPortsHost("localhost");
         //        String openPorts = scanHost.stream().map(Objects::toString).collect(Collectors.joining(","));
         //        LOG.info("Available ports = {}", openPorts);
-        Map<String, List<String>> scanNetwork = scanNetworkOpenPorts("10.122.25.0/24");
+        Map<String, List<String>> scanNetwork = scanNetworkOpenPorts("10.122.24.0/24");
 
         scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
 

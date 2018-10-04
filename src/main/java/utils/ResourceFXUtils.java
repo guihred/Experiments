@@ -164,7 +164,7 @@ public final class ResourceFXUtils {
             BufferedReader in2 = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
             String line;
             while ((line = in2.readLine()) != null) {
-                LOGGER.trace("{}", line);
+                LOGGER.info("{}", line);
                 execution.add(line);
             }
             p.waitFor();
