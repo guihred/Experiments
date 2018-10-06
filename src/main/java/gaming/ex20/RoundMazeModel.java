@@ -12,6 +12,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import javafx.scene.transform.Rotate;
 
 /**
  *
@@ -27,6 +28,7 @@ public class RoundMazeModel {
     private int y = MAZE_HEIGHT - 1;
 	private GraphicsContext gc;
     private Canvas canvas;
+	private Rotate angle = new Rotate(90);
 
 	public RoundMazeModel(Scene scene, Canvas canvas) {
         this.canvas = canvas;
@@ -35,6 +37,11 @@ public class RoundMazeModel {
         maze[MAZE_WIDTH - 1][MAZE_HEIGHT - 1].setCenter(true);
         RoundMazeHandler.createMaze(maze);
 		scene.setOnKeyPressed(this::handleKey);
+		angle.setAxis(Rotate.Z_AXIS);
+		double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / MAZE_WIDTH / 2;
+		angle.setPivotX(center);
+		angle.setPivotY(center);
+		canvas.getTransforms().add(angle);
 	}
 
 	public void draw() {
@@ -113,18 +120,22 @@ public class RoundMazeModel {
 
 		}
         maze[x][y].setCenter(true);
+
+
 		draw();
 	}
 
     private void goLeft() {
         if (maze[x][y].isWest()) {
             y = (y - 1 + RoundMazeModel.MAZE_HEIGHT) % RoundMazeModel.MAZE_HEIGHT;
+			angle.setAngle(angle.getAngle() - 360 / MAZE_HEIGHT);
         }
     }
 
     private void goRight() {
         if (maze[x][y].isEast()) {
             y = (y + 1) % RoundMazeModel.MAZE_HEIGHT;
+			angle.setAngle(angle.getAngle() + 360 / MAZE_HEIGHT);
         }
     }
 
@@ -135,9 +146,13 @@ public class RoundMazeModel {
     }
 
     private void goUp() {
-        if (x > 0 && maze[x][y].isNorth()) {
-            x = (x - 1 + RoundMazeModel.MAZE_WIDTH) % RoundMazeModel.MAZE_WIDTH;
-        }
+		if (maze[x][y].isNorth()) {
+			if (x > 0) {
+				x = (x - 1 + RoundMazeModel.MAZE_WIDTH) % RoundMazeModel.MAZE_WIDTH;
+			} else {
+
+			}
+		}
     }
 
 	public static RoundMazeModel create(Scene scene, Canvas canvas) {

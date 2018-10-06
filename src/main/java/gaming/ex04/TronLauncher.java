@@ -3,13 +3,10 @@ package gaming.ex04;
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
@@ -33,18 +30,11 @@ public class TronLauncher extends Application {
         timeline = new SimpleTimelineBuilder().addKeyFrame(new Duration(40), t -> {
             if (newGameModel.updateMap()) {
                 timeline.stop();
-                final Text text = new Text("You Got " + newGameModel.getSnake().size() + " points");
-                final Stage stage1 = new Stage();
-                final Button button = CommonsFX.newButton("Reset", a -> {
-                    newGameModel.reset();
-                    timeline.play();
-                    stage1.close();
+                String text2 = "You Got " + newGameModel.getSnake().size() + " points";
+				CommonsFX.displayDialog(text2, "Reset", () -> {
+					newGameModel.reset();
+					timeline.play();
                 });
-                final Group group = new Group(text, button);
-                group.setLayoutX(50);
-                group.setLayoutY(50);
-                stage1.setScene(new Scene(group));
-                stage1.show();
             }
         }).cycleCount(Animation.INDEFINITE).build();
         timeline.play();

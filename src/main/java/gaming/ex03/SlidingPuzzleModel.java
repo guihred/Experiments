@@ -7,13 +7,8 @@ package gaming.ex03;
 
 import java.util.Random;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import utils.CommonsFX;
 
 /**
@@ -58,18 +53,10 @@ public class SlidingPuzzleModel {
 					swapEmptyNeighbor(i, j);
 					moves++;
 					if (verifyEnd()) {
-						final Text text = new Text("You ended in " + moves + " moves");
-						final Stage stage1 = new Stage();
-                        final Button button = CommonsFX.newButton("Reset", a -> {
+						CommonsFX.displayDialog("You ended in " + moves + " moves", "Reset", () -> {
 							reset();
-							stage1.close();
 							moves = 0;
 						});
-						final Group group = new Group(text, button);
-						group.setLayoutX(50);
-						group.setLayoutY(50);
-						stage1.setScene(new Scene(group));
-						stage1.show();
 					}
 					return;
 				}

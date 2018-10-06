@@ -4,16 +4,14 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
+import utils.CommonsFX;
 
 public class SnakeLauncher extends Application {
     public static final int UPDATE_MILLIS = 200;
@@ -60,18 +58,10 @@ public class SnakeLauncher extends Application {
         }
 	    if (newGameModel.updateMap()) {
 		    timeline.stop();
-		    final Button button = new Button("Reset");
-		    final Stage stage1 = new Stage();
-		    button.setOnAction(a -> {
-		        newGameModel.reset();
-		        timeline.play();
-		        stage1.close();
+			CommonsFX.displayDialog("You Got " + newGameModel.getSnake().size() + " points", "Reset", () -> {
+				newGameModel.reset();
+				timeline.play();
 		    });
-			final Group group = new Group(new Text("You Got " + newGameModel.getSnake().size() + " points"), button);
-		    group.setLayoutX(50);
-		    group.setLayoutY(50);
-		    stage1.setScene(new Scene(group));
-		    stage1.show();
 		}
 	}
 	private void handleKeyPressed(KeyEvent e) {

@@ -36,9 +36,10 @@ public class RoundMazeHandler {
 			}
 		}
         int cell = random.nextInt(RoundMazeModel.MAZE_WIDTH);
-        createdMaze[cell][0].setNorth(false);
-        createdMaze[(cell + 1) % RoundMazeModel.MAZE_WIDTH][0].setNorth(false);
-        createdMaze[(cell + 2) % RoundMazeModel.MAZE_WIDTH][0].setNorth(false);
+
+		for (int i = 0; i < RoundMazeModel.MAZE_HEIGHT / 8; i++) {
+			createdMaze[0][(cell + i) % RoundMazeModel.MAZE_HEIGHT].setNorth(true);
+		}
     }
 
     private void setSidesByDirection(final String direction) {

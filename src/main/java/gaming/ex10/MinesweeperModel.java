@@ -86,19 +86,7 @@ public class MinesweeperModel {
                 if (nPlayed.get() == 0) {
 		            reset();
 		        }
-                final Stage stage1 = new Stage();
-
-                final Button button = CommonsFX.newButton("Reset", a -> {
-		            reset();
-		            stage1.close();
-		        });
-
-				final Text text = new Text("You exploded in " + " moves");
-		        final Group group = new Group(text, button);
-				group.setLayoutY(50);
-		        group.setLayoutX(50);
-		        stage1.setScene(new Scene(group));
-		        stage1.show();
+				CommonsFX.displayDialog("You exploded!", "Reset", () -> reset());
 		    }
 			if (mem.getMinesweeperImage().equals(MinesweeperImage.BLANK)) {
 		        showNeighbours(mem.getI(), mem.getJ());
@@ -122,6 +110,7 @@ public class MinesweeperModel {
 
 		}
 	}
+
 
     private void setBombs() {
         final Random random = new Random();
