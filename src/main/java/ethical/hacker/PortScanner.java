@@ -47,6 +47,29 @@ public class PortScanner {
         return hostsPorts;
     }
 
+    public static Map<String, List<String>> scanPossibleOSes(String networkAddress) {
+        Locale.setDefault(Locale.ENGLISH);
+        String hostRegex = "Nmap scan report for ([\\d\\.]+)";
+        String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)";
+        List<String> executeInConsole = ResourceFXUtils
+                .executeInConsoleInfo("\"" + NMAP_FILES + "\" -p 22,80,445,65123,56123 -O " + networkAddress);
+        Map<String, List<String>> hostsPorts = new HashMap<>();
+        String host = "";
+        for (String line : executeInConsole) {
+            if (line.matches(hostRegex)) {
+                host = line.replaceAll(hostRegex, "$1");
+                hostsPorts.put(host, new ArrayList<>());
+            }
+            if (line.matches(osRegex) && hostsPorts.containsKey(host)) {
+
+                hostsPorts.get(host).add(line.replaceAll(osRegex, "$1$2$3"));
+            }
+
+        }
+
+        return hostsPorts;
+    }
+
     public static List<Integer> scanPortsHost(String ip) {
         List<Integer> synchronizedList = Collections.synchronizedList(new ArrayList<>());
         final int timeout = 200;
@@ -79,7 +102,7 @@ public class PortScanner {
         //        List<Integer> scanHost = scanPortsHost("localhost");
         //        String openPorts = scanHost.stream().map(Objects::toString).collect(Collectors.joining(","));
         //        LOG.info("Available ports = {}", openPorts);
-        Map<String, List<String>> scanNetwork = scanNetworkOpenPorts("10.122.24.0/24");
+        Map<String, List<String>> scanNetwork = scanPossibleOSes("10.122.25.0/27");
 
         scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
 
