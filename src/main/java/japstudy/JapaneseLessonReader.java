@@ -1,7 +1,6 @@
 package japstudy;
 
 import japstudy.db.HibernateUtil;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +14,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public final class JapaneseLessonReader implements HasLogging {
     private static final Logger LOGGER = HasLogging.log(JapaneseLessonReader.class);
@@ -27,7 +27,7 @@ public final class JapaneseLessonReader implements HasLogging {
 	}
 
     public static ObservableList<JapaneseLesson> getLessons(String arquivo) throws IOException {
-		InputStream resourceAsStream = new FileInputStream(new File(arquivo));
+        InputStream resourceAsStream = new FileInputStream(ResourceFXUtils.toFile(arquivo));
 		ObservableList<JapaneseLesson> listaExercises = FXCollections.observableArrayList();
         try (XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
             addJapaneseLessons(listaExercises, document1);
