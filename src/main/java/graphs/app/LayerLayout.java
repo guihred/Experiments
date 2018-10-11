@@ -4,8 +4,16 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
-import graphs.entities.*;
-import java.util.*;
+import graphs.entities.Cell;
+import graphs.entities.Edge;
+import graphs.entities.Graph;
+import graphs.entities.GraphModel;
+import graphs.entities.GraphModelAlgorithms;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.scene.paint.Color;
@@ -84,7 +92,7 @@ public class LayerLayout implements Layout {
     }
 
     public static long numberOfEdges(Entry<Color, List<Cell>> e, List<Edge> allEdges) {
-        return e.getValue().stream().mapToLong(c -> GraphModelAlgorithms.edgesNumber(c, allEdges)).sum();
+		return e.getValue().stream().mapToLong(c -> GraphModelAlgorithms.edgesNumber(c, allEdges)).sum();
     }
 
 }

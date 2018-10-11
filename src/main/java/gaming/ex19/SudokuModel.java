@@ -5,19 +5,18 @@
  */
 package gaming.ex19;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import utils.CommonsFX;
 
 /**
@@ -89,18 +88,7 @@ public class SudokuModel {
         }
         numberBoard.setVisible(false);
         if (sudokuSquares.stream().allMatch(e -> !e.isEmpty() && !e.isWrong())) {
-            final Stage stage1 = new Stage();
-            final Button button = CommonsFX.newButton("Reset", a -> {
-                reset();
-                stage1.close();
-            });
-
-            final Text text = new Text("You Won");
-            final Group group = new Group(text, button);
-            group.setLayoutY(50);
-            group.setLayoutX(50);
-            stage1.setScene(new Scene(group));
-            stage1.show();
+			CommonsFX.displayDialog("You Won", "Reset", this::reset);
         }
     }
 

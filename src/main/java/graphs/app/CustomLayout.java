@@ -21,10 +21,10 @@ public class CustomLayout implements Layout {
 		GraphModel model = graph.getModel();
         graph.clean();
         List<Cell> cells = model.getAllCells();
-        layoutInCustom(model.getAllEdges(), cells);
+        layoutInCustom(cells, model.getAllEdges());
 	}
 
-    public static void layoutInCustom(List<Edge> allEdges, List<Cell> cells) {
+    public static void layoutInCustom(List<Cell> cells, List<Edge> allEdges) {
         Random rnd = new Random();
         cells.get(0).relocate(50, 50);
         Set<Cell> cellSet = cells.stream().collect(Collectors.toSet());

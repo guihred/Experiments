@@ -4,16 +4,8 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Sphere;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import utils.CommonsFX;
 
 public interface CommomLabyrinth {
@@ -23,20 +15,12 @@ public interface CommomLabyrinth {
 		return walls.anyMatch(b -> b.intersects(boundsInParent));
 	}
 	default void displayEndOfGame(Runnable run) {
-		Stage dialogStage = new Stage();
-		dialogStage.initModality(Modality.WINDOW_MODAL);
-        Button button = CommonsFX.newButton("Ok.", e -> {
+		CommonsFX.displayDialog("Você Morreu", "Ok.", () -> {
 			getCamera().setTranslateX(0);
 			getCamera().setTranslateY(0);
 			getCamera().setTranslateZ(0);
 			run.run();
-			dialogStage.close();
 		});
-        VBox vbox = new VBox(new Text("Você Morreu"), button);
-		vbox.setAlignment(Pos.CENTER);
-		vbox.setPadding(new Insets(5));
-		dialogStage.setScene(new Scene(vbox));
-		dialogStage.show();
 	}
 	default void endKeyboard() {
 		// DOES NOTHING

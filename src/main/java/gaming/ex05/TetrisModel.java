@@ -10,12 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import javafx.animation.Timeline;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
+import utils.CommonsFX;
 
 public class TetrisModel {
 
@@ -72,20 +68,11 @@ public class TetrisModel {
 		    setCurrentI(MAP_WIDTH / 2);
 		    if (checkCollision(getCurrentI(), getCurrentJ())) {
 		        timeline.stop();
-		        final Text text = new Text("You Got " + 0 + " points");
-		        final Button button = new Button("Reset");
-		        final Stage stage1 = new Stage();
-		        button.setOnAction(a -> {
-		           reset();
+				CommonsFX.displayDialog("You Got " + 0 + " points", "Reset", () -> {
+					reset();
 		            timeline.play();
-		            stage1.close();
 		        });
 
-		        final Group group = new Group(text, button);
-		        group.setLayoutX(50);
-		        group.setLayoutY(50);
-		        stage1.setScene(new Scene(group));
-		        stage1.show();
 		    }
 		    for (int i = 0; i < MAP_HEIGHT; i++) {
 				boolean clearLine = isLineClear(i);

@@ -5,12 +5,14 @@ import graphs.entities.Cell;
 import graphs.entities.CellType;
 import graphs.entities.Graph;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
+import javafx.collections.MapChangeListener.Change;
+import javafx.collections.ObservableMap;
 
 public class NetworkTopology extends BaseTopology {
 
-	private Map<String, List<String>> scanNetworkRoutes;
+	private ObservableMap<String, List<String>> scanNetworkRoutes;
 
     public NetworkTopology(Graph graph) {
         super(graph, "Network");
@@ -23,7 +25,9 @@ public class NetworkTopology extends BaseTopology {
 		graph.getModel().removeAllEdges();
 
         if (scanNetworkRoutes == null) {
-            scanNetworkRoutes = TracerouteScanner.scanNetworkRoutes("10.69.64.31/26");
+			scanNetworkRoutes = TracerouteScanner.scanNetworkRoutes(TracerouteScanner.NETWORK_ADDRESS);
+			scanNetworkRoutes.addListener(
+					(Change<? extends String, ? extends List<String>> change) -> Platform.runLater(this::execute));
         }
 
         List<String> collect = scanNetworkRoutes.values().stream().flatMap(List<String>::stream).distinct()

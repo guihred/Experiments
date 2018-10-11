@@ -11,7 +11,6 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -19,10 +18,10 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape3D;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import simplebuilder.SimpleCircleBuilder;
+import utils.CommonsFX;
 import utils.HasLogging;
 import utils.Xform;
 
@@ -155,19 +154,9 @@ public class QuartoLauncher extends Application implements HasLogging{
 				setQuartoPiece(target, p);
 		        if (model.checkEnd()) {
 		            getLogger().info("ACABOU");
-		            final Text text = new Text("You Got " + 0 + " points");
-		            final Button button = new Button("Reset");
-		            final Stage stage1 = new Stage();
-		            button.setOnAction(a -> {
-		                model.reset();
-		                stage1.close();
+					CommonsFX.displayDialog("You Got " + 0 + " points", "Reset", () -> {
+		             	model.reset();
 		            });
-
-		            final Group group = new Group(text, button);
-		            group.setLayoutX(50);
-		            group.setLayoutY(50);
-		            stage1.setScene(new Scene(group));
-		            stage1.show();
 
 		        }
 			}

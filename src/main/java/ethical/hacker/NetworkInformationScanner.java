@@ -32,7 +32,7 @@ public class NetworkInformationScanner {
             Enumeration<InetAddress> ee = n.getInetAddresses();
             while (ee.hasMoreElements()) {
                 InetAddress i = ee.nextElement();
-                if (!i.isLinkLocalAddress()) {
+				if (i.isLinkLocalAddress()) {
                     continue;
                 }
 

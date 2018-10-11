@@ -6,18 +6,18 @@ import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.*;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public class Labyrinth3DKillerGhostsAndBalls extends Application implements CommomLabyrinth {
@@ -191,21 +191,12 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
         ghostCount.set(ghostCount.get() - 1);
         if (ghostCount.get() == 0) {
             movimentacao.stop();
-            Stage dialogStage = new Stage();
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            Button button = new Button("Ok.");
-            button.setOnAction(e -> {
+			CommonsFX.displayDialog("Você Venceu", "Ok", () -> {
                 movimentacao.start();
                 camera.setTranslateZ(0);
                 camera.setTranslateY(0);
                 camera.setTranslateX(0);
-                dialogStage.close();
             });
-            VBox vbox = new VBox(new Text("Você Venceu"), button);
-            vbox.setAlignment(Pos.CENTER);
-            vbox.setPadding(new Insets(5));
-            dialogStage.setScene(new Scene(vbox));
-            dialogStage.show();
         }
     }
 

@@ -53,7 +53,7 @@ public class GraphModelAlgorithms {
         List<Color> availableColors = CommonsFX.generateRandomColors(allCells2.size());
         int i = 0;
         List<Cell> vertices = allCells2.stream()
-                .sorted(Comparator.comparing((Cell e) -> edgesNumber(e, allEdges)).reversed())
+                .sorted(Comparator.comparing((Cell e) -> biedgesNumber(e, allEdges)).reversed())
                 .peek(p -> p.setColor(null)).collect(Collectors.toList());
         while (vertices.stream().anyMatch(v -> v.getColor() == null)) {
             List<Cell> v = vertices.stream().filter(c -> c.getColor() == null).collect(Collectors.toList());
@@ -68,9 +68,13 @@ public class GraphModelAlgorithms {
     }
 
 
-    public static long edgesNumber(Cell c, List<Edge> allEdges) {
+    public static long biedgesNumber(Cell c, List<Edge> allEdges) {
         return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c)).count();
     }
+
+	public static long edgesNumber(Cell c, List<Edge> allEdges) {
+		return allEdges.stream().filter(e -> e.source.equals(c)).count();
+	}
 
 
     public static long edgesNumber(Cell c, List<Edge> allEdges, Collection<Cell> allCells) {
@@ -375,8 +379,9 @@ public class GraphModelAlgorithms {
         return map.get(to);
     }
 
-    private static void setPath(Cell from, Cell to, Cell by, Map<Cell, Map<Cell, Cell>> paths) {
-        if (paths == null) {
+	private static void setPath(Cell from, Cell to, Cell by, Map<Cell, Map<Cell, Cell>> p) {
+		Map<Cell, Map<Cell, Cell>> paths = p;
+		if (paths == null) {
             paths = new HashMap<>();
         }
         if (!paths.containsKey(from)) {

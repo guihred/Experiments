@@ -11,15 +11,10 @@ import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import utils.CommonsFX;
 
 /**
@@ -92,20 +87,8 @@ public class MinesweeperModel {
 		        showNeighbours(mem.getI(), mem.getJ());
 		    }
 		    if (verifyEnd()) {
-		        final Text text = new Text("You won in " + (System.currentTimeMillis() - startTime) / 1000
-		                + " seconds! ");
-		        final Button button = new Button("Reset");
-		        final Stage stage1 = new Stage();
-		        button.setOnAction(a -> {
-		            reset();
-		            stage1.close();
-		        });
-
-		        final Group group = new Group(text, button);
-		        group.setLayoutX(50);
-		        group.setLayoutY(50);
-		        stage1.setScene(new Scene(group));
-		        stage1.show();
+				String text2 = "You won in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds! ";
+				CommonsFX.displayDialog(text2, "Reset", this::reset);
 		    }
 
 		}
