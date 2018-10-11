@@ -1,10 +1,8 @@
 package japstudy;
 
+import audio.mp3.SongUtils;
 import japstudy.db.HibernateUtil;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
@@ -18,16 +16,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import utils.ResourceFXUtils;
 
 public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDisplay {
     public static final long NANO_IN_A_MILLI_SECOND = 1_000_000;
-    private static final String FFMPEG = "C:\\Users\\guilherme.hmedeiros\\Downloads\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";
-    private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
-            .appendValue(ChronoField.MINUTE_OF_HOUR, 2).optionalStart().appendLiteral(':')
-            .appendValue(ChronoField.SECOND_OF_MINUTE, 2).optionalStart().appendLiteral('.')
-            .appendValue(ChronoField.MILLI_OF_SECOND, 3)
-            .toFormatter();
 
     private int currentState;
     private LocalTime startTime;
@@ -75,7 +66,7 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
 
             String type = currentState == 0 ? "ing" : "jap";
             LocalTime startTime2 = startTime;
-            new Thread(() -> splitAudio(audio.getFile(),
+            new Thread(() -> SongUtils.splitAudio(audio.getFile(),
                     String.format("out\\%s%dx%d.mp3", type, japaneseLesson.getLesson(), japaneseLesson.getExercise()),
                     startTime2, currentTime)).start();
             currentState = (currentState + 1) % 2;
@@ -137,18 +128,5 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
 		launch(args);
 	}
 
-    private static void splitAudio(String mp3File, String mp4File, LocalTime start, LocalTime end) {
-        StringBuilder cmd = new StringBuilder();
-        cmd.append(FFMPEG + " -i ");
-        cmd.append(ResourceFXUtils.toFile(mp3File));
-        cmd.append(" -ss ");
-        cmd.append(TIME_OF_SECONDS_FORMAT.format(start));
-        cmd.append(" -r 1 -to ");
-        cmd.append(TIME_OF_SECONDS_FORMAT.format(end));
-        cmd.append(" ");
-        cmd.append(mp4File);
-        // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
-        ResourceFXUtils.executeInConsole(cmd.toString());
-    }
 
 }

@@ -24,6 +24,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -191,7 +192,7 @@ public class PlayingAudio extends Application {
 	 * @return Slider control bound to media player.
 	 */
 	private Slider createSlider() {
-		Slider slider = new Slider(0, 100, 1);
+        Slider slider = new SimpleSliderBuilder(0, 100, 1).build();
 		slider.setId(SEEK_POS_SLIDER_ID);
 		slider.valueProperty().addListener(observable -> {
 			if (slider.isValueChanging() && mediaPlayer != null

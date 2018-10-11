@@ -5,6 +5,10 @@
  */
 package fxpro.ch08;
 
+import static audio.mp3.SongUtils.seekAndUpdatePosition;
+import static audio.mp3.SongUtils.updatePositionSlider;
+
+import audio.mp3.SongUtils;
 import java.io.File;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -29,6 +33,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import simplebuilder.SimpleSliderBuilder;
 
 public class PlayerControlView extends BaseSongView {
 
@@ -65,7 +70,7 @@ public class PlayerControlView extends BaseSongView {
 						double pos = positionSlider.getValue();
 						final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
 						final Duration seekTo = mediaPlayer.getTotalDuration().multiply(pos);
-						seekAndUpdatePosition(seekTo);
+                        seekAndUpdatePosition(seekTo, positionSlider, mediaPlayer);
 					}
 				});
 		songModel.getMediaPlayer().setOnEndOfMedia(songModel.getMediaPlayer()::stop);
@@ -117,14 +122,15 @@ public class PlayerControlView extends BaseSongView {
 		final Button playPauseButton = createPlayPauseButton();
 		final Button seekStartButton = new Button();
 		seekStartButton.setId("seekStartButton");
-		seekStartButton.setOnAction((ActionEvent event) -> seekAndUpdatePosition(Duration.ZERO));
+        seekStartButton.setOnAction((ActionEvent event) -> seekAndUpdatePosition(Duration.ZERO, positionSlider,
+                songModel.getMediaPlayer()));
 		final Button seekEndButton = new Button();
 		seekEndButton.setId("seekEndButton");
 		seekEndButton.setOnAction((ActionEvent event) -> {
 			final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
 			final Duration totalDuration = mediaPlayer.getTotalDuration();
 			final Duration oneSecond = Duration.seconds(1);
-			seekAndUpdatePosition(totalDuration.subtract(oneSecond));
+            seekAndUpdatePosition(totalDuration.subtract(oneSecond), positionSlider, mediaPlayer);
 		});
 		hbox.getChildren().addAll(seekStartButton, playPauseButton, seekEndButton);
 		return hbox;
@@ -176,42 +182,15 @@ public class PlayerControlView extends BaseSongView {
 	}
 
 	private Slider createSlider(String id) {
-		final Slider slider = new Slider(0.0, 1.0, 0.1);
+        final Slider slider = new SimpleSliderBuilder(0.0, 1.0, 0.1).build();
 		slider.setId(id);
 		slider.setValue(0);
 		return slider;
 	}
 
-	private String formatDuration(Duration duration) {
-		double millis = duration.toMillis();
-		int seconds = (int) (millis / 1000) % 60;
-		int minutes = (int) (millis / (1000 * 60));
-		return String.format("%02d:%02d", minutes, seconds);
-	}
 
-	private void seekAndUpdatePosition(Duration duration) {
-		final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
-		if (mediaPlayer.getStatus() == Status.STOPPED) {
-			mediaPlayer.pause();
-		}
-		mediaPlayer.seek(duration);
-		if (mediaPlayer.getStatus() != Status.PLAYING) {
-			updatePositionSlider(duration);
-		}
-	}
 
-	private void updatePositionSlider(Duration currentTime) {
-		if (positionSlider.isValueChanging()) {
-			return;
-		}
-		final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
-		final Duration total = mediaPlayer.getTotalDuration();
-		if (total == null || currentTime == null) {
-			positionSlider.setValue(0);
-		} else {
-			positionSlider.setValue(currentTime.toMillis() / total.toMillis());
-		}
-	}
+
 
 	private void updateStatus(Status newStatus) {
 
@@ -238,8 +217,8 @@ public class PlayerControlView extends BaseSongView {
 			Platform.runLater(() -> {
 				final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
 				final Duration currentTime = mediaPlayer.getCurrentTime();
-				currentTimeLabel.setText(formatDuration(currentTime));
-				updatePositionSlider(currentTime);
+                currentTimeLabel.setText(SongUtils.formatDuration(currentTime));
+                updatePositionSlider(currentTime, positionSlider, mediaPlayer);
 			});
 		}
 	}

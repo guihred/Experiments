@@ -39,8 +39,8 @@ public enum JapaneseAudio {
 
     }
 
-    public String getFile() {
-        return file;
+    public File getFile() {
+        return ResourceFXUtils.toFile(file);
     }
 
     public int getLesson() {

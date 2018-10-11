@@ -7,11 +7,16 @@ import javafx.scene.control.Slider;
 public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSliderBuilder> {
 
 	protected Slider slider;
-
+    private int blocks = 100;
 	public SimpleSliderBuilder() {
 		super(new Slider());
 		slider = node;
 	}
+
+    public SimpleSliderBuilder(double min, double max, double value) {
+        super(new Slider(min, max, value));
+        slider = node;
+    }
 
 	public SimpleSliderBuilder bindBidirectional(Property<Number> other) {
         slider.valueProperty().bindBidirectional(other);
@@ -32,10 +37,22 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
 		return this;
 	}
 
+    public SimpleSliderBuilder blocks(int i) {
+        blocks = i;
+        node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
+        return this;
+    }
+
     public SimpleSliderBuilder value(double i) {
 		slider.setValue(i);
 		return this;
 	}
+
+    @Override
+    public Slider build() {
+        node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
+        return super.build();
+    }
 
 
 }

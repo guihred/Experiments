@@ -93,7 +93,6 @@ public final class LeitorMusicas {
 		if (genre2.indexOf('(') == 0 || "".equals(genre2)) {
 			genre2 = "Undefined";
 		}
-
 		musica.setTitulo(StringUtils.isBlank(title) ? sourceFile.getName() : title);
 		musica.setGenero(genre2);
 		musica.setArtista(artist);
@@ -105,6 +104,24 @@ public final class LeitorMusicas {
 
 		return musica;
 	}
+    public static void saveMetadata(Musica a) {
+        saveMetadata(a, a.getArquivo());
+    }
+
+    public static void saveMetadata(Musica a, File file) {
+
+        try {
+            MP3File mp3File = new MP3File(file);
+            ID3V1_0Tag tags = new ID3V1_0Tag();
+            tags.setAlbum(a.getAlbum());
+            tags.setArtist(a.getArtista());
+            tags.setTitle(a.getTitulo());
+            mp3File.setID3Tag(tags);
+            mp3File.sync();
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
+        }
+    }
 
 	@SuppressWarnings("unchecked")
     private static <T> T notNull(T... objects) {

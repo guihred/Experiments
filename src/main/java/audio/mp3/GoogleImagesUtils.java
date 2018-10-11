@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
+import utils.CrawlerTask;
 import utils.HasLogging;
 
 public class GoogleImagesUtils {
@@ -20,7 +21,7 @@ public class GoogleImagesUtils {
     private static final Logger LOGGER = HasLogging.log(GoogleImagesUtils.class);
 
     public static List<String> getImagens(String artista) {
-
+        CrawlerTask.insertProxyConfig();
         try {
             HttpTransport transport = new ApacheHttpTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();

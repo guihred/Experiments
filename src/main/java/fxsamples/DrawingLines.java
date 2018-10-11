@@ -8,6 +8,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.SimpleSliderBuilder;
 
 public class DrawingLines extends Application {
 	@Override
@@ -38,7 +39,7 @@ public class DrawingLines extends Application {
 		blueLine.setStrokeWidth(10);
 		root.getChildren().add(blueLine);
 		// slider min, max, and current value
-		Slider slider = new Slider(0, 100, 0);
+        Slider slider = new SimpleSliderBuilder(0, 100, 0).build();
 		slider.setLayoutX(10);
 		slider.setLayoutY(95);
 		// bind the stroke dash offset property
