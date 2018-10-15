@@ -11,7 +11,11 @@ import javax.imageio.ImageIO;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.state.*;
+import org.apache.pdfbox.contentstream.operator.state.Concatenate;
+import org.apache.pdfbox.contentstream.operator.state.Restore;
+import org.apache.pdfbox.contentstream.operator.state.Save;
+import org.apache.pdfbox.contentstream.operator.state.SetGraphicsStateParameters;
+import org.apache.pdfbox.contentstream.operator.state.SetMatrix;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -84,7 +88,7 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
             pdfImage.y = translateY - ctmNew.getScalingFactorY();
             pdfImage.pageN = pageNumber;
             images.add(pdfImage);
-            getLogger().trace("{}", image);
+			getLogger().info("{}", image);
             getLogger().trace("{} at ({},{}) page {}", pdfImage.file, pdfImage.x, pdfImage.y, pageNumber);
 
         }

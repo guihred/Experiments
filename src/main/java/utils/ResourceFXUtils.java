@@ -2,7 +2,12 @@ package utils;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.awt.Desktop;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -10,7 +15,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -177,23 +187,27 @@ public final class ResourceFXUtils {
 
     public static Map<String, String> executeInConsole(String cmd, Map<String, String> responses) {
         Map<String, String> result = new HashMap<>();
-        try {
+		try {
             LOGGER.info("Executing \"{}\"", cmd);
-            Runtime runtime = Runtime.getRuntime();
+			Runtime runtime = Runtime.getRuntime();
 
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(runtime.exec(cmd.split(" ")).getInputStream(), StandardCharsets.UTF_8));
-            String line;
-            while ((line = in.readLine()) != null) {
-                LOGGER.trace(line);
-                String line1 = line;
-                result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
-                        .collect(Collectors.toMap(Entry<String, String>::getKey,
-                                e -> line1.replaceAll(e.getKey(), e.getValue()))));
+			Process exec = runtime.exec(cmd.split(" "));
+			try (BufferedReader in = new BufferedReader(
+					new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8));) {
+				String line;
+				while ((line = in.readLine()) != null) {
+				    LOGGER.trace(line);
+				    String line1 = line;
+				    result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
+				            .collect(Collectors.toMap(Entry<String, String>::getKey,
+				                    e -> line1.replaceAll(e.getKey(), e.getValue()))));
 
-            }
-            runtime.exec(cmd.split(" ")).waitFor();
-            in.close();
+				}
+				exec.waitFor();
+				in.close();
+			} catch (Exception e) {
+		        LOGGER.error("", e);
+			}
         } catch (Exception e) {
             LOGGER.error("", e);
         }

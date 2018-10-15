@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,15 +40,17 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.slf4j.Logger;
 import simplebuilder.SimpleTimelineBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ImageTableCell;
 
 public class PdfReader extends Application implements HasLogging {
-    private static final int WORD_DISPLAY_PERIOD = 200;
+	private static final Logger LOG = HasLogging.log();
+	private static final int WORD_DISPLAY_PERIOD = 200;
     private static final String SPLIT_WORDS_REGEX = "[\\s]+";
-    private static final String PDF_FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\BaseConhecimento\\CEH-V8\\Certified Ethical Hacker (CEH) v.8 Courseware Searchable PROPER\\CEH v8 Labs Module 02 Footprinting and Reconnaissance.pdf";
+	private static final String PDF_FILE = "C:\\Users\\guigu\\Documents\\Carol\\TAG-PROFESSORES-MENINO.pdf";
     private ObservableList<String> lines = FXCollections.observableArrayList();
     private ObservableList<String> skipLines = FXCollections.observableArrayList();
 	private ObservableList<String> words = FXCollections.observableArrayList();
@@ -150,9 +154,9 @@ public class PdfReader extends Application implements HasLogging {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
-            PDFTextStripper pdfStripper = new PDFTextStripper();
             numberOfPages = pdDoc.getNumberOfPages();
 			int start = 0;
+			PDFTextStripper pdfStripper = new PDFTextStripper();
 			for (int i = start; i < numberOfPages; i++) {
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
@@ -169,33 +173,43 @@ public class PdfReader extends Application implements HasLogging {
 				pages.add(lines1);
 			}
 			numberOfPages -= start;
-            new Thread(() -> extractImages(file, start)).start();
+			new Thread(() -> images = extractImages(file, start, numberOfPages)).start();
         } catch (Exception e) {
             getLogger().error("", e);
         }
     }
 
-    private void extractImages(File file, int start) {
-        try (RandomAccessFile source = new RandomAccessFile(file, "r");
+	private static Map<Integer, List<PDFImage>> extractImages(File file, int start, int nPages) {
+		Map<Integer, List<PDFImage>> images = new HashMap<>();
+		try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
-            for (int i = start; i < numberOfPages; i++) {
+			int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
+
+			for (int i = start; i < nPag; i++) {
                 PrintImageLocations printImageLocations = new PrintImageLocations();
                 PDPage page = pdDoc.getPage(i);
-                getPageImages(printImageLocations, i, page);
+				List<PDFImage> pageImages = getPageImages(printImageLocations, i, page);
+				images.put(i, pageImages);
             }
         } catch (Exception e) {
-            getLogger().info("", e);
+			LOG.info("", e);
         }
+		return images;
     }
 
-    private void getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
+	public static void extractImages(File file) {
+		extractImages(file, 0, 0);
+	}
+
+	private static List<PDFImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
         try {
             List<PDFImage> images1 = printImageLocations.processPage(page, i);
-            getLogger().info("images extracted {}", images1);
-            images.put(i, images1);
+			LOG.info("images extracted {}", images1);
+			return images1;
         } catch (Exception e) {
-            getLogger().info("", e);
+			LOG.info("", e);
+			return Collections.emptyList();
         }
     }
 
@@ -209,7 +223,8 @@ public class PdfReader extends Application implements HasLogging {
     }
 
     public static void main(String[] args) {
-        launch(args);
+		// launch(args);
+		extractImages(new File(PDF_FILE));
     }
 
     private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
