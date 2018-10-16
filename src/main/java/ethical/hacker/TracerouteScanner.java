@@ -21,7 +21,7 @@ public class TracerouteScanner {
 	private static final String REUSED_ROUTE_REGEX = "-   Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
 	private static final String HOP_REGEX = "\\d+\\s+[\\d\\.]+ ms\\s+([\\d\\.]+)|\\d+\\s+[\\d\\.]+ ms\\s+[\\w\\.]+ \\(([\\d\\.]+)\\)";
 
-	public static final String NETWORK_ADDRESS = "192.168.2.106/22";
+	public static final String NETWORK_ADDRESS = "192.168.1.103/22";
 
 	public static void main(String[] args) {
 		Map<String, List<String>> scanNetwork = scanNetworkRoutes(NETWORK_ADDRESS);

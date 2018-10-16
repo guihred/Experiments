@@ -55,7 +55,7 @@ public class PortScanner {
     public static Map<String, List<String>> scanPossibleOSes(String networkAddress) {
         Locale.setDefault(Locale.ENGLISH);
         String hostRegex = "Nmap scan report for ([\\d\\.]+)";
-		String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)|MAC Address: [A-F:0-9]+ \\((.+)\\) ";
+		String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*";
         List<String> executeInConsole = ResourceFXUtils
 				.executeInConsoleInfo(
 						"\"" + NMAP_FILES + "\" -p 22,80,445,65123,56123 --traceroute -O " + networkAddress);
@@ -108,7 +108,6 @@ public class PortScanner {
 
 		Map<String, List<String>> scanNetwork = scanPossibleOSes(TracerouteScanner.NETWORK_ADDRESS);
 
-        scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
-
+		scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
     }
 }

@@ -1,10 +1,12 @@
 package graphs.app;
 
+import ethical.hacker.PortScanner;
 import ethical.hacker.TracerouteScanner;
 import graphs.entities.Cell;
 import graphs.entities.CellType;
 import graphs.entities.Graph;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.MapChangeListener.Change;
@@ -27,7 +29,7 @@ public class NetworkTopology extends BaseTopology {
         if (scanNetworkRoutes == null) {
 			scanNetworkRoutes = TracerouteScanner.scanNetworkRoutes(TracerouteScanner.NETWORK_ADDRESS);
 			scanNetworkRoutes.addListener(
-					(Change<? extends String, ? extends List<String>> change) -> Platform.runLater(this::execute));
+					this::scanOSes);
         }
 
         List<String> collect = scanNetworkRoutes.values().stream().flatMap(List<String>::stream).distinct()
@@ -38,10 +40,9 @@ public class NetworkTopology extends BaseTopology {
         for (String packageName : collect) {
             graph.getModel().addCell(packageName, CellType.RECTANGLE);
 		}
-        for (String cellId : scanNetworkRoutes.keySet()) {
+		for (List<String> hops : scanNetworkRoutes.values()) {
             String currentCell = "localhost";
-            List<String> map = scanNetworkRoutes.get(cellId);
-            for (String hop : map) {
+			for (String hop : hops) {
                 graph.getModel().addEdge(currentCell, hop, 1);
                 currentCell = hop;
             }
@@ -52,6 +53,23 @@ public class NetworkTopology extends BaseTopology {
         graph.endUpdate();
 
     }
+
+	private void scanOSes(Change<? extends String, ? extends List<String>> change) {
+		String ip = change.getKey();
+		Platform.runLater(() -> {
+			execute();
+			new Thread(() -> {
+				Map<String, List<String>> scanPossibleOSes = PortScanner.scanPossibleOSes(ip);
+				Platform.runLater(() -> {
+					if (!scanPossibleOSes.isEmpty() && scanPossibleOSes.containsKey(ip)
+							&& !scanPossibleOSes.get(ip).isEmpty()) {
+						graph.getModel().getCell(ip)
+								.addText(scanPossibleOSes.get(ip).stream().collect(Collectors.joining("\n")));
+					}
+				});
+			}).start();
+		});
+	}
 
 
 

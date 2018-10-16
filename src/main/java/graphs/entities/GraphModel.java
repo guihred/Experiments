@@ -28,6 +28,9 @@ public class GraphModel {
         clear();
     }
 
+	public Cell getCell(String key) {
+		return cellMap.get(key);
+	}
     public void addBiEdge(String sourceId, String targetId, Integer valor) {
         if (sourceId.equals(targetId)) {
             return;
