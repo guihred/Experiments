@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 public class Cell extends Pane {
 
@@ -25,6 +26,7 @@ public class Cell extends Pane {
 	public Cell(String cellId) {
 		this.cellId = cellId;
 		text = new Text(cellId);
+		text.setTextAlignment(TextAlignment.CENTER);
 	}
 
 	public void addCellChild(Cell cell) {
@@ -36,6 +38,10 @@ public class Cell extends Pane {
 
 	public void addText(String s) {
 		text.setText(cellId + "\n" + s);
+	}
+
+	public String getText() {
+		return text.getText();
 	}
 
     public ObjectProperty<Color> colorProperty() {

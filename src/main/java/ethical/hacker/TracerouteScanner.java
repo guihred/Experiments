@@ -18,7 +18,8 @@ public class TracerouteScanner {
 
 	private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
 	private static final Logger LOG = HasLogging.log(TracerouteScanner.class);
-	private static final String REUSED_ROUTE_REGEX = "-   Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
+	private static final String REUSED_ROUTE_REGEX = "-\\s*Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
+	private static final String REUSED_ROUTE_REGEX_1 = "-\\s*Hop (\\d+) is the same as for ([\\d\\.]+)";
 	private static final String HOP_REGEX = "\\d+\\s+[\\d\\.]+ ms\\s+([\\d\\.]+)|\\d+\\s+[\\d\\.]+ ms\\s+[\\w\\.]+ \\(([\\d\\.]+)\\)";
 
 	public static final String NETWORK_ADDRESS = "192.168.1.103/22";
@@ -44,7 +45,8 @@ public class TracerouteScanner {
 					host = line.replaceAll(hostRegex, "$1$2");
 					hostsPorts.put(host, new ArrayList<>());
 				}
-				if (line.matches(REUSED_ROUTE_REGEX + "|" + HOP_REGEX) && hostsPorts.containsKey(host)) {
+				if (line.matches(REUSED_ROUTE_REGEX + "|" + REUSED_ROUTE_REGEX_1 + "|" + HOP_REGEX)
+						&& hostsPorts.containsKey(host)) {
 					hostsPorts.get(host).add(line);
 				}
 			}
@@ -64,6 +66,12 @@ public class TracerouteScanner {
 				String host = l.replaceAll(REUSED_ROUTE_REGEX, "$3");
 				List<String> subList = hostsPorts.get(host).subList(array[0] - 1, array[1]);
 				return subList.stream().map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
+			}
+			if (l.matches(REUSED_ROUTE_REGEX_1)) {
+				String hops = l.replaceAll(REUSED_ROUTE_REGEX_1, "$1");
+				String host = l.replaceAll(REUSED_ROUTE_REGEX_1, "$2");
+				String subList = hostsPorts.get(host).get(Integer.parseInt(hops) - 1);
+				return Stream.of(subList).map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
 			}
 			return Stream.of(l.replaceAll(HOP_REGEX, "$1$2"));
 		}).collect(Collectors.toList());

@@ -13,7 +13,11 @@ public class RectangleCell extends Cell {
 		circle.setStroke(Color.BLACK);
 		circle.fillProperty().bind(
 				Bindings.when(selected).then(Color.RED).otherwise(Bindings.when(color.isNull()).then(Color.DODGERBLUE).otherwise(color)));
-        circle.setWidth(Double.max(text.getBoundsInParent().getWidth() + 20, 40));
+		circle.widthProperty().bind(Bindings.createDoubleBinding(
+				() -> Double.max(text.getBoundsInParent().getWidth() + 20, 40), text.boundsInParentProperty()));
+		circle.heightProperty().bind(Bindings.createDoubleBinding(
+				() -> Double.max(40, text.getBoundsInParent().getHeight() + 5),
+				text.boundsInParentProperty()));
 
 		setView(new StackPane(circle, text));
 	}
