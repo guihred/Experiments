@@ -65,8 +65,8 @@ public class OrganizadorMusicas extends Application {
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
 
 		musicasTable.setItems(getMusicas(musicsDirectory));
-		musicasTable.prefWidthProperty().bind(root.widthProperty().add(-50));
-		musicasTable.prefHeightProperty().bind(root.heightProperty().add(-100));
+		musicasTable.prefWidthProperty().bind(root.widthProperty().add(-10));
+		musicasTable.prefHeightProperty().bind(root.heightProperty().add(-70));
 		TextField filterField = new TextField();
         Button buttonEstoque = CommonsFX.newButton("Carregar Musicas", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
