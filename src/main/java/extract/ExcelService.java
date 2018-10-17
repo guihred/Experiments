@@ -1,14 +1,32 @@
 package extract;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import utils.FunctionEx;
 import utils.HasLogging;
@@ -224,8 +242,9 @@ public class ExcelService {
     }
 
     @SuppressWarnings("rawtypes")
-    private static void alterString(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell cell) {
-        String stringCellValue = cell.getStringCellValue();
+	private static void alterString(Map<Object, Object> map, XSSFSheet sheet, Row row, Cell c) {
+		Cell cell = c;
+		String stringCellValue = cell.getStringCellValue();
         printDebug(stringCellValue);
 
         if (map.containsKey(cell.getStringCellValue())) {

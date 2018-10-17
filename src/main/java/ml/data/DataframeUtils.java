@@ -1,7 +1,13 @@
 package ml.data;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
@@ -214,7 +220,7 @@ public final class DataframeUtils extends DataframeML {
 
     private static Object mapIfMappable(DataframeML dataframe, String key, Object tryNumber) {
         if (dataframe.mapping.containsKey(key)) {
-            tryNumber = dataframe.mapping.get(key).apply(tryNumber);
+			return dataframe.mapping.get(key).apply(tryNumber);
         }
         return tryNumber;
     }

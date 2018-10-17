@@ -26,7 +26,12 @@ import org.apache.commons.math3.complex.Complex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
-import others.*;
+import others.OthersTests;
+import others.RandomHelloWorld;
+import others.TermFrequency;
+import others.TermFrequencyIndex;
+import others.UnRar;
+import others.UnZip;
 import utils.HasLogging;
 import utils.MatrixSolver;
 import utils.ResourceFXUtils;
@@ -55,7 +60,7 @@ public class IndependentTest implements HasLogging {
     //@Test
     public void testCh3() {
         Random random = new Random();
-        List<Employee> randomEmployees = random.ints(1, 11).map(e -> ++e * 500).limit(5).mapToObj(Employee::new)
+		List<Employee> randomEmployees = random.ints(1, 11).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
                 .collect(toList());
         measureTime("Ch3.average", () -> Ch3.average(randomEmployees));
         measureTime("Ch3.largest", () -> Ch3.largest(randomEmployees));

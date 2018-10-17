@@ -287,18 +287,10 @@ public class PacmanGhost extends Group implements HasLogging {
         if (MazeSquare.getPaths() == null) {
 			return null;
 		}
-		if (hx < 0) {
-			hx = 0;
-		}
-		if (hxg < 0) {
-			hxg = 0;
-		}
-		if (hy < 0) {
-			hy = 0;
-		}
-		if (hyg < 0) {
-			hyg = 0;
-		}
+		hx = Integer.max(hx, 0);
+		hxg = Integer.max(hxg, 0);
+		hy = Integer.max(hy, 0);
+		hyg = Integer.max(hyg, 0);
 
         Map<MazeSquare, MazeSquare> map = MazeSquare.getPaths().get(maze[hxg][hyg]);
 		if (map == null) {

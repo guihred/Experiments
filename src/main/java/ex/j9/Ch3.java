@@ -4,7 +4,12 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Stream;
@@ -75,7 +80,7 @@ public class Ch3 {
 	 */
 	public static void main(String[] args) {
 		Random random = new Random();
-        List<Employee> randomEmployees = random.ints(1, 11).map(e -> ++e * 500).limit(5).mapToObj(Employee::new)
+		List<Employee> randomEmployees = random.ints(1, 11).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
 				.collect(toList());
 
         LOG.info("{}", average(randomEmployees));

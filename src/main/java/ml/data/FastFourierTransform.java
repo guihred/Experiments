@@ -1,6 +1,10 @@
 package ml.data;
 
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.floor;
+import static java.lang.Math.log;
+import static java.lang.Math.sin;
 
 import java.util.List;
 import java.util.stream.DoubleStream;
@@ -11,18 +15,16 @@ import utils.HasLogging;
 public class FastFourierTransform {
     private static final Logger LOGGER = HasLogging.log(FastFourierTransform.class);
 
-    public static int bitReverse(int n, int bits) {
-
+	public static int bitReverse(int num, int bits) {
+		int n = num;
         int reversedN = n;
         int count = bits - 1;
-
         n >>= 1;
         while (n > 0) {
             reversedN = reversedN << 1 | n & 1;
             count--;
             n >>= 1;
         }
-
         return reversedN << count & (1 << bits) - 1;
     }
 
