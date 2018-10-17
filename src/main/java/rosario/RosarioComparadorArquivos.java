@@ -50,14 +50,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
     private Map<String, FileChooser> fileChoose = new HashMap<>();
     private boolean openAtExport = true;
 
-    public Map<String, FileChooser> getFileChoose() {
-        return fileChoose;
-    }
-
-	public void setOpenAtExport(boolean openAtExport) {
-        this.openAtExport = openAtExport;
-    }
-
 
 
     @Override
@@ -152,6 +144,14 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		// selection listening
         primaryStage.setScene(new Scene(root, 1000, 500, Color.WHITE));
 		primaryStage.show();
+	}
+
+	public Map<String, FileChooser> getFileChoose() {
+		return fileChoose;
+	}
+
+	public void setOpenAtExport(boolean openAtExport) {
+		this.openAtExport = openAtExport;
 	}
 
 	@SuppressWarnings("unchecked")

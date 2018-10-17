@@ -10,17 +10,27 @@ import javafx.application.Application;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -51,18 +61,23 @@ public class OrganizadorMusicas extends Application {
         GridPane.setHalignment(listaMusicas, HPos.CENTER);
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Carregar Pasta de Músicas");
-        final TableView<Musica> medicamentosEstoqueTable = tabelaMusicas();
+		final TableView<Musica> musicasTable = tabelaMusicas();
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
 
-        medicamentosEstoqueTable.setItems(getMusicas(musicsDirectory));
-        medicamentosEstoqueTable.prefWidthProperty().bind(root.widthProperty().add(-50));
-        medicamentosEstoqueTable.prefHeightProperty().bind(root.heightProperty());
+		musicasTable.setItems(getMusicas(musicsDirectory));
+		musicasTable.prefWidthProperty().bind(root.widthProperty().add(-50));
+		musicasTable.prefHeightProperty().bind(root.heightProperty().add(-100));
+		TextField filterField = new TextField();
         Button buttonEstoque = CommonsFX.newButton("Carregar Musicas", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
-                medicamentosEstoqueTable.setItems(getMusicas(selectedFile));
+
+				ObservableList<Musica> musicas = getMusicas(selectedFile);
+				musicasTable.setItems(musicas);
+				configurarFiltroRapido(filterField, musicasTable, musicas);
             }
         });
+        configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList());
         Button buttonVideos = CommonsFX.newButton("Carregar Vídeos", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
@@ -74,15 +89,27 @@ public class OrganizadorMusicas extends Application {
                     musica.setTitulo(file.getName());
                     return musica;
                 }).collect(Collectors.toList());
-                medicamentosEstoqueTable.setItems(FXCollections.observableArrayList(collect));
+				configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(collect));
             }
         });
         gridpane.getChildren()
-                .add(new VBox(listaMusicas, new HBox(buttonEstoque, buttonVideos), medicamentosEstoqueTable));
+				.add(new VBox(listaMusicas, new HBox(buttonEstoque, buttonVideos, filterField), musicasTable));
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
+	private void configurarFiltroRapido(TextField filterField, final TableView<Musica> musicasEstoqueTable,
+			ObservableList<Musica> musicas) {
+		FilteredList<Musica> filteredData = new FilteredList<>(musicas, p -> true);
+		musicasEstoqueTable.setItems(filteredData);
+		filterField.textProperty().addListener((observable, oldValue, newValue) -> filteredData.setPredicate(musica -> {
+			if (newValue == null || newValue.isEmpty()) {
+				return true;
+			}
+			return musica.toString().toLowerCase().contains(newValue.toLowerCase());
+		}));
+	}
 
     private Node[] criarField(String nome, StringProperty propriedade) {
         TextField textField = new TextField();
