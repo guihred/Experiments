@@ -23,7 +23,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 	public static final String CERTIFICATION_FILE = "C:/Users/guilherme.hmedeiros/Downloads/Instaladores/cacerts";
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "13-juuSAN";
-    private static final String PROXY_CONFIG = "10.70." + "124.16";
+    private static final String PROXY_CONFIG = "10.70.124.16";
     private Instant start;
     private boolean cancelled;
     private String encoded = Base64.getEncoder()

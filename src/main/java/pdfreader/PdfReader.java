@@ -5,12 +5,7 @@ import contest.db.PrintImageLocations;
 import contest.db.PrintImageLocations.PDFImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
@@ -26,12 +21,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.apache.pdfbox.cos.COSDocument;
@@ -45,50 +40,74 @@ import simplebuilder.SimpleTimelineBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ImageTableCell;
+import utils.ResourceFXUtils;
 
 public class PdfReader extends Application implements HasLogging {
-	private static final Logger LOG = HasLogging.log();
-	private static final int WORD_DISPLAY_PERIOD = 200;
+    private static final Logger LOG = HasLogging.log();
+    private static final int WORD_DISPLAY_PERIOD = 200;
     private static final String SPLIT_WORDS_REGEX = "[\\s]+";
-	private static final String PDF_FILE = "C:\\Users\\guigu\\Documents\\Carol\\TAG-PROFESSORES-MENINO.pdf";
+    private static final String PDF_FILE = ResourceFXUtils
+            .toFullPath("102 - Analista de Tecnologia da Informacao - Tipo D.pdf");
     private ObservableList<String> lines = FXCollections.observableArrayList();
     private ObservableList<String> skipLines = FXCollections.observableArrayList();
-	private ObservableList<String> words = FXCollections.observableArrayList();
+    private ObservableList<String> words = FXCollections.observableArrayList();
     private ObservableList<List<String>> pages = FXCollections.observableArrayList();
     private Map<Integer, List<PDFImage>> images = new ConcurrentHashMap<>();
     private Timeline timeline;
     private final Text currentWord = new Text();
-	private final Text currentLine = new Text();
+    private final Text currentLine = new Text();
     private final Text currentPage = new Text();
     private int index;
-	private int lineIndex;
+    private int lineIndex;
     private IntegerProperty pageIndex = new SimpleIntegerProperty(0);
     private ObservableList<HasImage> currentImages = FXCollections
             .synchronizedObservableList(FXCollections.observableArrayList());
-	private int numberOfPages;
+    private int numberOfPages;
+    private File file;
+
+    public PdfReader() {
+        file=new File(PDF_FILE);
+    }
+
+    public PdfReader(File file) {
+        this.file = file;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        readFile(new File(PDF_FILE));
+        if (file == null) {
+            file = displayDialog(primaryStage);
+        }
+        readFile(file);
         primaryStage.setTitle("PDF Read Helper");
         final Button startButton = CommonsFX.newButton("_Start/Stop", e -> toggleTimelineStatus());
-        final Button nextButton = CommonsFX.newButton("_Next", e -> displayNextLine());
+        final Button nextButton = CommonsFX.newButton("_Next Line", e -> displayNextLine());
+        final Button pageButton = CommonsFX.newButton("_Next Page", e -> displayNextPage());
+        final Button newPDF = CommonsFX.newButton("New _PDF", e -> readFile(displayDialog(primaryStage)));
         timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), e -> displayNextWord())
                 .cycleCount(Animation.INDEFINITE).build();
         currentWord.setFont(Font.font(60));
-		currentPage.textProperty().bind(pageIndex.asString().concat("/" + numberOfPages));
-		VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton);
+        currentPage.textProperty().bind(pageIndex.asString().concat("/" + numberOfPages));
+        VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton, newPDF, pageButton);
         currentLine.wrappingWidthProperty().bind(root.widthProperty().subtract(30));
         currentLine.setTextAlignment(TextAlignment.CENTER);
         root.setAlignment(Pos.CENTER);
         TableView<HasImage> imagesTable = createImagesTable();
-        HBox root2 = new HBox(root, imagesTable);
+        VBox root2 = new VBox(root, imagesTable);
         root.prefWidthProperty().bind(root2.widthProperty().divide(2));
         imagesTable.prefWidthProperty().bind(root2.widthProperty().divide(2));
-
         root2.setAlignment(Pos.CENTER);
         Scene scene = new Scene(root2, 500, 250, Color.WHITE);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+    }
+
+    private File displayDialog(Stage primaryStage) {
+        FileChooser fileChooser2 = new FileChooser();
+        fileChooser2.setTitle("Selecione Arquivo PDF");
+        fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+        return fileChooser2.showOpenDialog(primaryStage);
 
     }
 
@@ -107,41 +126,48 @@ public class PdfReader extends Application implements HasLogging {
         return table;
     }
 
+    private void displayNextPage() {
+        if (pageIndex.get() < numberOfPages - 1) {
+            pageIndex.set(pageIndex.get() + 1);
+            lines.setAll(pages.get(pageIndex.get()));
+        }
+    }
+
     private void displayNextLine() {
         if (lineIndex < lines.size()) {
             String value = lines.get(lineIndex++);
             skipLines.add(value);
             currentLine.setText(value);
-        	words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
+            words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
             index = 0;
             if (lineIndex >= lines.size()) {
-        		timeline.stop();
+                timeline.stop();
             }
         }
     }
 
     private void displayNextWord() {
         if (index >= words.size()) {
-        	if (lineIndex >= lines.size()) {
-        		lines.setAll(pages.get(pageIndex.get()));
+            if (lineIndex >= lines.size()) {
+                lines.setAll(pages.get(pageIndex.get()));
                 if (images.containsKey(pageIndex.get())) {
                     List<PDFImage> col = images.get(pageIndex.get());
                     currentImages.setAll(col);
                 } else {
                     currentImages.clear();
                 }
-        		pageIndex.set(pageIndex.get() + 1);
-        		lineIndex = 0;
-        		if (pageIndex.get() >= pages.size()) {
-        			timeline.stop();
-        		}
-        	}
+                pageIndex.set(pageIndex.get() + 1);
+                lineIndex = 0;
+                if (pageIndex.get() >= pages.size()) {
+                    timeline.stop();
+                }
+            }
             String value = lines.get(lineIndex++);
-            if (skipLines.contains(value)) {
+            if (skipLines.contains(value) && lineIndex < lines.size() - 1) {
                 value = lines.get(lineIndex++);
             }
             currentLine.setText(value);
-        	words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
+            words.setAll(Arrays.asList(value.split(SPLIT_WORDS_REGEX)));
             index = 0;
         }
         if (!words.isEmpty()) {
@@ -149,67 +175,69 @@ public class PdfReader extends Application implements HasLogging {
         }
     }
 
-    private void readFile(File file) {
-
-        try (RandomAccessFile source = new RandomAccessFile(file, "r");
+    private void readFile(File file1) {
+        file = file1;
+        try (RandomAccessFile source = new RandomAccessFile(file1, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
             numberOfPages = pdDoc.getNumberOfPages();
-			int start = 0;
-			PDFTextStripper pdfStripper = new PDFTextStripper();
-			for (int i = start; i < numberOfPages; i++) {
+            int start = 0;
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            for (int i = start; i < numberOfPages; i++) {
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
                 String parsedText = pdfStripper.getText(pdDoc);
 
                 String[] pageLines = parsedText.split("\r\n");
-				List<String> lines1 = new ArrayList<>();
+                List<String> lines1 = new ArrayList<>();
                 for (String string : pageLines) {
-					if (string.split(SPLIT_WORDS_REGEX).length >= 4 * string.length() / 10) {
-						string = string.replaceAll("(?<=[^\\s]) (?=[^\\s])", "");
+                    if (string.split(SPLIT_WORDS_REGEX).length >= 4 * string.length() / 10) {
+                        string = string.replaceAll("(?<=[^\\s]) (?=[^\\s])", "");
                     }
-					lines1.add(string.replaceAll("\t", " "));
+                    lines1.add(string.replaceAll("\t", " "));
                 }
-				pages.add(lines1);
-			}
-			numberOfPages -= start;
-			new Thread(() -> images = extractImages(file, start, numberOfPages)).start();
+                pages.add(lines1);
+            }
+            numberOfPages -= start;
+            images = extractImages(file1, start, numberOfPages);
         } catch (Exception e) {
             getLogger().error("", e);
         }
     }
 
-	private static Map<Integer, List<PDFImage>> extractImages(File file, int start, int nPages) {
-		Map<Integer, List<PDFImage>> images = new HashMap<>();
-		try (RandomAccessFile source = new RandomAccessFile(file, "r");
-                COSDocument cosDoc = parseAndGet(source);
-                PDDocument pdDoc = new PDDocument(cosDoc)) {
-			int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
+    private static Map<Integer, List<PDFImage>> extractImages(File file, int start, int nPages) {
+        Map<Integer, List<PDFImage>> images = new ConcurrentHashMap<>();
+        new Thread(() -> {
+            try (RandomAccessFile source = new RandomAccessFile(file, "r");
+                    COSDocument cosDoc = parseAndGet(source);
+                    PDDocument pdDoc = new PDDocument(cosDoc)) {
+                int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
 
-			for (int i = start; i < nPag; i++) {
-                PrintImageLocations printImageLocations = new PrintImageLocations();
-                PDPage page = pdDoc.getPage(i);
-				List<PDFImage> pageImages = getPageImages(printImageLocations, i, page);
-				images.put(i, pageImages);
+                for (int i = start; i < nPag; i++) {
+                    PrintImageLocations printImageLocations = new PrintImageLocations();
+                    PDPage page = pdDoc.getPage(i);
+                    List<PDFImage> pageImages = getPageImages(printImageLocations, i, page);
+                    images.put(i, pageImages);
+                }
+            } catch (Exception e) {
+                LOG.info("", e);
             }
-        } catch (Exception e) {
-			LOG.info("", e);
-        }
-		return images;
+        }).start();
+        return images;
     }
 
-	public static void extractImages(File file) {
-		extractImages(file, 0, 0);
-	}
+    public static void extractImages(File file) {
+        extractImages(file, 0, 0);
+    }
 
-	private static List<PDFImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
+    private static List<PDFImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
         try {
             List<PDFImage> images1 = printImageLocations.processPage(page, i);
-			LOG.info("images extracted {}", images1);
-			return images1;
+            LOG.info("images extracted {}", images1);
+            return images1;
         } catch (Exception e) {
-			LOG.info("", e);
-			return Collections.emptyList();
+            LOG.info("", e);
+            return Collections.emptyList();
         }
     }
 
@@ -223,8 +251,7 @@ public class PdfReader extends Application implements HasLogging {
     }
 
     public static void main(String[] args) {
-		// launch(args);
-		extractImages(new File(PDF_FILE));
+        launch(args);
     }
 
     private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {

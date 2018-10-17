@@ -5,6 +5,7 @@ import com.github.junrar.exception.RarException;
 import com.github.junrar.exception.RarException.RarExceptionType;
 import com.github.junrar.rarfile.FileHeader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,7 +101,8 @@ public final class UnRar {
         s = s.substring(s.length() - 3);
         if ("rar".equalsIgnoreCase(s)) {
             LOGGER.trace("{}", file);
-            try (Archive arc = new Archive(file)) {
+            try (FileInputStream fileInputStream = new FileInputStream(file);
+                    Archive arc = new Archive(fileInputStream)) {
                 if (arc.isEncrypted()) {
                     LOGGER.trace("archive is encrypted cannot extreact");
                     unsupportedFiles.add(file.toString());

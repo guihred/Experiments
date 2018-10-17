@@ -141,7 +141,10 @@ public class OrganizadorMusicas extends Application {
             root.setAlignment(Pos.CENTER);
             Image imageData = ResourceFXUtils.extractEmbeddedImage(selectedItem.getArquivo());
             if (imageData != null) {
-                root.getChildren().addAll(new ImageView(imageData));
+                ImageView imageView = new ImageView(imageData);
+                imageView.setFitWidth(300);
+                imageView.setPreserveRatio(true);
+                root.getChildren().addAll(imageView);
             }
             MediaPlayer mediaPlayer = new MediaPlayer(new Media(selectedItem.getArquivo().toURI().toString()));
             Slider currentSlider = addSlider(root, mediaPlayer);
