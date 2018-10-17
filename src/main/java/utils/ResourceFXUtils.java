@@ -2,12 +2,7 @@ package utils;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.awt.Desktop;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -15,12 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,8 +56,12 @@ public final class ResourceFXUtils {
 	}
 
 	public static String toFullPath(String arquivo) {
-
-		return ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile();
+        try {
+            return URLDecoder.decode(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile(), "UTF-8");
+        } catch (Exception e) {
+            LOGGER.error("File Error:" + arquivo, e);
+            return null;
+        }
 	}
 
     public static void initializeFX() {
@@ -76,13 +70,7 @@ public final class ResourceFXUtils {
     }
 
     public static File toFile(String arquivo) {
-        try {
-            String file = ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile();
-            return new File(URLDecoder.decode(file, "UTF-8"));
-        } catch (Exception e) {
-            LOGGER.error("File Error:" + arquivo, e);
-            return null;
-        }
+        return new File(toFullPath(arquivo));
     }
 
     public static InputStream toStream(String arquivo) {
