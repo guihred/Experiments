@@ -116,6 +116,7 @@ public final class LeitorMusicas {
             tags.setAlbum(a.getAlbum());
             tags.setArtist(a.getArtista());
             tags.setTitle(a.getTitulo());
+            tags.setYear(a.getAno());
             mp3File.setID3Tag(tags);
             mp3File.sync();
         } catch (Exception e) {
