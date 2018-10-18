@@ -5,7 +5,11 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,11 +18,14 @@ import java.util.stream.Stream;
 import neuro.BrazilianWordSyllableSplitter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class BrazilianWordRulesTest {
 
+
+	private static final Logger LOG = HasLogging.log();
 
 	@Test
 	public void testEverySyllableMustHaveAtMost3Vowels() throws IOException {
@@ -83,7 +90,7 @@ public class BrazilianWordRulesTest {
                         .map(e -> e.split("\t")[0].replaceAll("/\\w+", "")).forEach(e -> System.out.print(e + " "));
             }
         } catch (IOException e) {
-            HasLogging.log(BrazilianWordRulesTest.class).error("", e);
+			LOG.error("", e);
         }
 
     }

@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -29,6 +30,7 @@ public enum JapaneseAudio {
     AUDIO_15(15, "jaf15lesson122216"),
     AUDIO_16(16, "jaf16lesson122216"),
     AUDIO_17(17, "jaf17lesson122216");
+	private static final Logger LOG = HasLogging.log();
 	private static final String OUTPUT_FILE = "out/create_database.sql";
     private final String file;
     private final int lesson;
@@ -82,7 +84,7 @@ public enum JapaneseAudio {
                 out.println(format);
             }
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.error("", e);
         }
         HibernateUtil.shutdown();
     }

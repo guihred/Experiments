@@ -12,7 +12,7 @@ interface ConsumerEx<T> extends HasLogging {
             try {
                 run.accept(o);
             } catch (Exception e) {
-                HasLogging.log().error("", e);
+				HasLogging.log(1).error("", e);
             }
         };
     }

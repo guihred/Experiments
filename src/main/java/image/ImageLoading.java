@@ -1,6 +1,10 @@
 package image;
 
-import com.aspose.imaging.*;
+import com.aspose.imaging.Color;
+import com.aspose.imaging.Image;
+import com.aspose.imaging.RasterCachedImage;
+import com.aspose.imaging.RasterImage;
+import com.aspose.imaging.Rectangle;
 import com.aspose.imaging.fileformats.bmp.BmpImage;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionColorMode;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionMode;
@@ -16,7 +20,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class ImageLoading {
-    private static final Logger LOG = HasLogging.log(ImageLoading.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static void binarize(String dataDir, String nameFile) {
         // For complete examples and data files, please go to

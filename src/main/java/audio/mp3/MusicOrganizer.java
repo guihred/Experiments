@@ -43,8 +43,8 @@ import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class OrganizadorMusicas extends Application {
-    private static final Logger LOGGER = HasLogging.log(OrganizadorMusicas.class);
+public class MusicOrganizer extends Application {
+	private static final Logger LOGGER = HasLogging.log();
 
     @Override
     public void start(Stage primaryStage) {
@@ -61,7 +61,7 @@ public class OrganizadorMusicas extends Application {
         GridPane.setHalignment(listaMusicas, HPos.CENTER);
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Carregar Pasta de Músicas");
-		final TableView<Musica> musicasTable = tabelaMusicas();
+		final TableView<Music> musicasTable = tabelaMusicas();
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
 
 		musicasTable.setItems(getMusicas(musicsDirectory));
@@ -72,7 +72,7 @@ public class OrganizadorMusicas extends Application {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
 
-				ObservableList<Musica> musicas = getMusicas(selectedFile);
+				ObservableList<Music> musicas = getMusicas(selectedFile);
 				musicasTable.setItems(musicas);
 				configurarFiltroRapido(filterField, musicasTable, musicas);
             }
@@ -82,8 +82,8 @@ public class OrganizadorMusicas extends Application {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
                 List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4");
-                List<Musica> collect = pathByExtension.parallelStream().map(v -> {
-                    Musica musica = new Musica();
+                List<Music> collect = pathByExtension.parallelStream().map(v -> {
+                    Music musica = new Music();
                     File file = v.toFile();
                     musica.setArquivo(file);
                     musica.setTitulo(file.getName());
@@ -99,9 +99,9 @@ public class OrganizadorMusicas extends Application {
         primaryStage.show();
     }
 
-	private void configurarFiltroRapido(TextField filterField, final TableView<Musica> musicasEstoqueTable,
-			ObservableList<Musica> musicas) {
-		FilteredList<Musica> filteredData = new FilteredList<>(musicas, p -> true);
+	private void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
+			ObservableList<Music> musicas) {
+		FilteredList<Music> filteredData = new FilteredList<>(musicas, p -> true);
 		musicasEstoqueTable.setItems(filteredData);
 		filterField.textProperty().addListener((observable, oldValue, newValue) -> filteredData.setPredicate(musica -> {
 			if (newValue == null || newValue.isEmpty()) {
@@ -117,18 +117,13 @@ public class OrganizadorMusicas extends Application {
         return new Node[] { new Label(nome), textField };
     }
 
-    private ObservableList<Musica> getMusicas(File file) {
-        try {
-            return LeitorMusicas.getMusicas(file);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-            return FXCollections.emptyObservableList();
-        }
+    private ObservableList<Music> getMusicas(File file) {
+		return MusicReader.getMusicas(file);
     }
 
-    private void handleMousePressed(final TableView<Musica> musicaTable, MouseEvent event) {
+    private void handleMousePressed(final TableView<Music> songsTable, MouseEvent event) {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-            Musica selectedItem = musicaTable.getSelectionModel().getSelectedItem();
+            Music selectedItem = songsTable.getSelectionModel().getSelectedItem();
             if (selectedItem.getTitulo().endsWith(".mp4")) {
                 handleVideo(selectedItem);
                 return;
@@ -175,11 +170,11 @@ public class OrganizadorMusicas extends Application {
                                 mediaPlayer.getTotalDuration().multiply(finalSlider.getValue()));
                         mediaPlayer.stop();
                         mediaPlayer.dispose();
-                        LeitorMusicas.saveMetadata(selectedItem, outFile);
+                        MusicReader.saveMetadata(selectedItem, outFile);
                         try {
                             Files.copy(outFile, selectedItem.getArquivo());
                         } catch (IOException e1) {
-                            HasLogging.log().error("", e1);
+							LOGGER.error("", e1);
                         }
                         stage.close();
                     });
@@ -214,44 +209,44 @@ public class OrganizadorMusicas extends Application {
         return slider;
     }
 
-    private void handleVideo(Musica selectedItem) {
+    private void handleVideo(Music selectedItem) {
         CommonsFX.displayDialog("Convert to Mp3", "Convert", () -> SongUtils.convertToAudio(selectedItem.getArquivo()));
     }
 
     @SuppressWarnings("unchecked")
-    private TableView<Musica> tabelaMusicas() {
+    private TableView<Music> tabelaMusicas() {
 
-        final TableView<Musica> musicaTable = new TableView<>();
+        final TableView<Music> musicaTable = new TableView<>();
         musicaTable.setPrefWidth(600);
         musicaTable.setScaleShape(false);
 
         musicaTable.setOnMousePressed(event -> handleMousePressed(musicaTable, event));
 
-        TableColumn<Musica, String> tituloMusica = new TableColumn<>("Título");
+        TableColumn<Music, String> tituloMusica = new TableColumn<>("Título");
         tituloMusica.setCellValueFactory(new PropertyValueFactory<>("titulo"));
 
         tituloMusica.setSortable(true);
 
         int other = 6;
         tituloMusica.prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
-        TableColumn<Musica, String> nomeMusica = new TableColumn<>("Artista");
+        TableColumn<Music, String> nomeMusica = new TableColumn<>("Artista");
 
         nomeMusica.setSortable(true);
         nomeMusica.setCellValueFactory(new PropertyValueFactory<>("artista"));
         nomeMusica.prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
 
-        TableColumn<Musica, String> albumMusica = new TableColumn<>("Álbum");
+        TableColumn<Music, String> albumMusica = new TableColumn<>("Álbum");
         albumMusica.setSortable(true);
         albumMusica.setCellValueFactory(new PropertyValueFactory<>("album"));
         albumMusica
 
                 .prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
-        TableColumn<Musica, String> anoMusica = new TableColumn<>("Ano");
+        TableColumn<Music, String> anoMusica = new TableColumn<>("Ano");
         anoMusica.setSortable(true);
         anoMusica.setCellValueFactory(new PropertyValueFactory<>("ano"));
         anoMusica.prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
 
-        TableColumn<Musica, String> generoMusica = new TableColumn<>("Gênero");
+        TableColumn<Music, String> generoMusica = new TableColumn<>("Gênero");
         generoMusica.setSortable(true);
         generoMusica.setCellValueFactory(new PropertyValueFactory<>("genero"));
         generoMusica.prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));

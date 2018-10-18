@@ -5,13 +5,16 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.DisjSets;
 import utils.HasLogging;
 
 public class GraphModelAlgorithms {
 
-    public static Integer addedCost(String v, String w, Collection<Edge> addedEdges, Map<String, Cell> cellMap) {
+    private static final Logger LOG = HasLogging.log();
+
+	public static Integer addedCost(String v, String w, Collection<Edge> addedEdges, Map<String, Cell> cellMap) {
         return addedEdges.stream().filter(e -> e.source.equals(cellMap.get(v)) && e.target.equals(cellMap.get(w)))
                 .map(Edge::getValor).findFirst().orElse(null);
     }
@@ -20,6 +23,13 @@ public class GraphModelAlgorithms {
         return allEdges.stream().filter(e -> e.source.equals(c)).map(Edge::getTarget).collect(Collectors.toList());
     }
 
+	public static boolean anyIntersection(List<Cell> cells, Cell cell2) {
+		return cells.stream().anyMatch(e -> e != cell2 && e.getBoundsInParent().intersects(cell2.getBoundsInParent()));
+	}
+
+	public static List<Edge> edges(Cell c, Collection<Edge> allEdges) {
+		return allEdges.stream().filter(e -> e.source.equals(c)).collect(Collectors.toList());
+	}
 
     public static List<Edge> chainEdges(String s, String t, Map<String, Cell> cellMap, List<Cell> allCells,
             List<Edge> allEdges, Map<Cell, Map<Cell, Cell>> paths) {
@@ -143,7 +153,7 @@ public class GraphModelAlgorithms {
         topNum.forEach((v, tn) -> v.addText(Integer.toString(tn)));
 
         if (counter != allCells.size()) {
-            HasLogging.log().info("CYCLE FOUND");
+            LOG.info("CYCLE FOUND");
         }
     }
 

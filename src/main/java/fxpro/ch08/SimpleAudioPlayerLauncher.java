@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class SimpleAudioPlayerLauncher extends Application {
-    private static final Logger LOGGER = HasLogging.log(SimpleAudioPlayerLauncher.class);
+	private static final Logger LOGGER = HasLogging.log();
     private Label album;
     private ImageView albumCover;
     private Label artist;

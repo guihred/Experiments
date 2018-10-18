@@ -14,13 +14,16 @@ import java.util.stream.Stream;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
 import utils.CrawlerTask;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
 
-    private static final int NUMBER_THREADS = 5;
+    private static final Logger LOG = HasLogging.log();
+
+	private static final int NUMBER_THREADS = 5;
 
     protected static final List<UnicodeBlock> KANJI_BLOCK = Arrays.asList(UnicodeBlock.CJK_COMPATIBILITY,
             UnicodeBlock.CJK_COMPATIBILITY_FORMS, UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
@@ -52,7 +55,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 }
             });
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.error("", e);
         }
     }
 

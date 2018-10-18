@@ -1,6 +1,11 @@
 package language;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,7 +24,7 @@ public final class FXTesting implements HasLogging {
 
     private static final String TIME_FORMAT = "HHH:mm:ss.SSS";
 
-    private static final Logger LOGGER = HasLogging.log(FXTesting.class);
+	private static final Logger LOGGER = HasLogging.log();
 
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 

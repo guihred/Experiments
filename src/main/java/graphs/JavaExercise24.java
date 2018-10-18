@@ -1,6 +1,7 @@
 package graphs;
 
 import java.util.Arrays;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
 /**
@@ -42,6 +43,7 @@ import utils.HasLogging;
  * the above description!
  */
 public final class JavaExercise24 {
+	private static final Logger LOG = HasLogging.log();
 	private static double[] data = { 637.42D, 6300.95D, 7.81D, 6300.95D, 712.72D, 4325.22D, 2.79D, 3125.77D, 813.02D,
 			3125.77D, 6.42D, 1234.56D };
 
@@ -64,7 +66,7 @@ public final class JavaExercise24 {
 				duplicates++;
 			}
 		}
-        HasLogging.log().info("{}", duplicates);
+        LOG.info("{}", duplicates);
 
 	}
 

@@ -19,6 +19,7 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
+import org.slf4j.Logger;
 import utils.Axis;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -26,7 +27,9 @@ import utils.RotateUtils;
 
 public class Chart3dGraph extends Application {
 
-    // size of graph
+    private static final Logger LOG = HasLogging.log();
+
+	// size of graph
     private int size = 400;
 
     // variables for mouse interaction
@@ -245,7 +248,7 @@ public class Chart3dGraph extends Application {
             int x = xLatitude.get(i).intValue();
             int y = yLongitude.get(i).intValue();
 			if (x > size1 || y > size1) {
-                HasLogging.log().info("ERRRRROOOOOOOOOO");
+                LOG.info("ERRRRROOOOOOOOOO");
                 return noiseArray;
             }
             noiseArray[x][y] += z.get(i);

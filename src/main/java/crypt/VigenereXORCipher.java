@@ -4,7 +4,11 @@ package crypt;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,7 +18,7 @@ import utils.ResourceFXUtils;
 
 public class VigenereXORCipher {
 
-    public static final Logger LOGGER = HasLogging.log(VigenereXORCipher.class);
+	public static final Logger LOGGER = HasLogging.log();
 	private static final Map<Integer,Double> MAPA_FREQUENCIA = ImmutableMap.<Integer,Double>builder()
 			.put('e' + 0, 12.702D).put('t' + 0, 9.056D).put('a' + 0, 8.167D).put('o' + 0, 7.507D).put('i' + 0, 6.966D)
 			.put('n' + 0, 6.749D).put('s' + 0, 6.327D).put('h' + 0, 6.094D).put('r' + 0, 5.987D).put('d' + 0, 4.253D)

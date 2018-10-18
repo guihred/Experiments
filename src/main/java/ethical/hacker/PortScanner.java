@@ -16,7 +16,7 @@ public class PortScanner {
 
     private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
     private static final int STEP = 100;
-    private static final Logger LOG = HasLogging.log(PortScanner.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static boolean isPortOpen(String ip, int porta, int timeout) {
         try (Socket socket = new Socket();) {

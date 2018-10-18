@@ -3,7 +3,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -19,7 +24,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class JewelViewer extends Application {
-    private static final Logger LOGGER = HasLogging.log(JewelViewer.class);
+	private static final Logger LOGGER = HasLogging.log();
 	private static final Color JEWEL_COLOR = Color.BURLYWOOD;
 	private static final Color LIGHT_COLOR = Color.rgb(125, 125, 125);
     public static final String ORIGINAL_FILENAME = ResourceFXUtils.toFullPath("original.stl");

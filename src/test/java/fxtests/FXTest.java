@@ -1,6 +1,6 @@
 package fxtests;
 
-import audio.mp3.OrganizadorMusicas;
+import audio.mp3.MusicOrganizer;
 import contest.db.ContestApplication;
 import contest.db.ContestQuestionEditingDisplay;
 import cubesystem.DeathStar;
@@ -84,7 +84,7 @@ public final class FXTest implements HasLogging {
         FXTesting.testApps(MapGraph.class, Maze3DLauncher.class,
                 MazeLauncher.class, MediaPlayerExample.class, MemoryLauncher.class, MinesweeperLauncher.class,
                 MoleculeSampleApp.class, MultilineExample.class, NumberDisplayLauncher.class, NumberPad.class,
-                OrganizadorMusicas.class, PacmanLauncher.class, PathTransitionExample.class,
+                MusicOrganizer.class, PacmanLauncher.class, PathTransitionExample.class,
                 PendulumAnimationLauncher.class, PersonTableController.class, PhotoViewer.class, 
                 PieChartExample.class, PlatformMain.class, PointsExample.class, PongLauncher.class,
                 PopulacionalPyramidExample.class, PuzzleLauncher.class, QuartoLauncher.class, RaspiCycle.class,

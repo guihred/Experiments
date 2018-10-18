@@ -19,7 +19,7 @@ import utils.HasLogging;
 
 public final class DataframeUtils extends DataframeML {
 
-    private static final Logger LOG = HasLogging.log(DataframeUtils.class);
+	private static final Logger LOG = HasLogging.log();
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
             Double.class);
 

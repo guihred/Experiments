@@ -26,7 +26,8 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class Chapter8 {
-    private static final String ALICE_TXT = "alice.txt";
+    private static final Logger LOG = HasLogging.log();
+	private static final String ALICE_TXT = "alice.txt";
     private static final Logger LOGGER = LoggerFactory.getLogger(Chapter8.class);
 
     private Chapter8() {
@@ -86,7 +87,7 @@ public final class Chapter8 {
                 return true;
             }).filter(File::isFile).map(Objects::toString).forEach(LOGGER::trace);
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.error("", e);
         }
 
     }

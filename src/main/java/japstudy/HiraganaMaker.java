@@ -113,7 +113,7 @@ public class HiraganaMaker {
 
             });
         } catch (Exception e) {
-            HasLogging.log(HiraganaMaker.class).error("ERROR", e);
+			LOG.error("ERROR", e);
         }
     }
 

@@ -16,15 +16,15 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public final class LeitorMusicas {
-    private static final Logger LOGGER = HasLogging.log(LeitorMusicas.class);
+public final class MusicReader {
+	private static final Logger LOGGER = HasLogging.log();
 
-	private LeitorMusicas() {
+	private MusicReader() {
 	}
 
-	public static ObservableList<Musica> getMusicas(File file) {
+	public static ObservableList<Music> getMusicas(File file) {
 
-		ObservableList<Musica> musicas = FXCollections.observableArrayList();
+		ObservableList<Music> musicas = FXCollections.observableArrayList();
 		Path start = file.toPath();
         try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
             find.forEach(
@@ -40,15 +40,15 @@ public final class LeitorMusicas {
 
 		try {
             File file = ResourceFXUtils.getUserFolder("Music");
-            ObservableList<Musica> musicas = getMusicas(file);
+            ObservableList<Music> musicas = getMusicas(file);
             musicas.forEach(s -> LOGGER.trace("{}", s));
         } catch (Exception e) {
             LOGGER.trace("", e);
 		}
 	}
 
-    public static Musica readTags(File sourceFile) {
-		Musica musica = new Musica();
+    public static Music readTags(File sourceFile) {
+		Music musica = new Music();
         String title = "";
         String artist = "";
         String album = "";
@@ -104,11 +104,11 @@ public final class LeitorMusicas {
 
 		return musica;
 	}
-    public static void saveMetadata(Musica a) {
+    public static void saveMetadata(Music a) {
         saveMetadata(a, a.getArquivo());
     }
 
-    public static void saveMetadata(Musica a, File file) {
+    public static void saveMetadata(Music a, File file) {
 
         try {
             MP3File mp3File = new MP3File(file);
@@ -120,7 +120,7 @@ public final class LeitorMusicas {
             mp3File.setID3Tag(tags);
             mp3File.sync();
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+			LOGGER.error("", e);
         }
     }
 

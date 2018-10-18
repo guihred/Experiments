@@ -10,7 +10,7 @@ import utils.ResourceFXUtils;
 
 public class ProcessScan {
 
-    private static final Logger LOG = HasLogging.log(ProcessScan.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static void scanProcesses() {
 

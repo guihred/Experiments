@@ -12,7 +12,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class ImageCreating {
-    private static final Logger LOG = HasLogging.log(ImageCreating.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static void creating(String nameFile) {
         // For complete examples and data files, please go to

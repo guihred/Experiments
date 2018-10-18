@@ -6,16 +6,21 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class TermFrequencyIndex {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TermFrequencyIndex.class);
+	private static final Logger LOGGER = HasLogging.log();
 
 	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
 
@@ -202,7 +207,7 @@ public final class TermFrequencyIndex {
 				}
 			});
 		} catch (Exception e2) {
-            HasLogging.log().error("", e2);
+			LOGGER.error("", e2);
 		}
 	}
 

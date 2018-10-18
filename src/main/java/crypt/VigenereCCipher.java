@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class VigenereCCipher implements HasLogging {
-    private static final Logger LOGGER = HasLogging.log(VigenereCCipher.class);
+	private static final Logger LOGGER = HasLogging.log();
 	private static final int NUMBER_OF_LETTERS = 26;
 	private static final String ENCODED = "MOMUD EKAPV TQEFM OEVHP AJMII CDCTI FGYAG JSPXY ALUYM NSMYH"
 			+ "VUXJE LEPXJ FXGCM JHKDZ RYICU HYPUS PGIGM OIYHF WHTCQ KMLRD" + "ITLXZ LJFVQ GHOLW CUHLO MDSOE KTALU VYLNZ RFGBX PHVGA LWQIS"

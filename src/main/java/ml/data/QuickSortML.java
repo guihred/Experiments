@@ -3,9 +3,12 @@ package ml.data;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class QuickSortML {
+
+	private static final Logger LOG = HasLogging.log();
 
 	public static void main(String[] a) {
 
@@ -14,7 +17,7 @@ public class QuickSortML {
 		Comparator<Integer> c = Integer::compareTo;
 		QuickSortML.sort(input, c.reversed());
 		for (Integer i : input) {
-            HasLogging.log().info("{}", i);
+            LOG.info("{}", i);
 		}
 	}
 

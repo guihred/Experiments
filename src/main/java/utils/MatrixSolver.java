@@ -23,7 +23,7 @@ import org.slf4j.Logger;
  */
 public final class MatrixSolver {
 
-    private static final Logger LOGGER = HasLogging.log(MatrixSolver.class);
+	private static final Logger LOGGER = HasLogging.log();
 	private static boolean debug=true;
 
 	private MatrixSolver() {

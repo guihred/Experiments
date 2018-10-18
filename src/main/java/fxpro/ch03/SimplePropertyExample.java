@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class SimplePropertyExample {
-    private static Logger log = HasLogging.log();
+	private static final Logger LOG = HasLogging.log();
 
 
 	private static IntegerProperty intProperty;
@@ -34,63 +34,63 @@ public final class SimplePropertyExample {
     }
 
     private static void addAndRemoveChangeListener() {
-        log.info("\n");
-        final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> log
+		LOG.info("\n");
+		final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> LOG
                 .info("The observableValue has changed: oldValue = {}, newValue = {}", oldValue, newValue);
         intProperty.addListener(changeListener);
-        log.info("Added change listener.");
-        log.info("Calling intProperty.set(5120).");
+		LOG.info("Added change listener.");
+		LOG.info("Calling intProperty.set(5120).");
         intProperty.set(5120);
         intProperty.removeListener(changeListener);
-        log.info("Removed change listener.");
-        log.info("Calling intProperty.set(6144).");
+		LOG.info("Removed change listener.");
+		LOG.info("Calling intProperty.set(6144).");
         intProperty.set(6144);
     }
 
     private static void addAndRemoveInvalidationListener() {
-        log.info("\n");
+		LOG.info("\n");
         final InvalidationListener invalidationListener
-                = (Observable observable) -> log.info("The observable has been invalidated: {}.", observable);
+				= (Observable observable) -> LOG.info("The observable has been invalidated: {}.", observable);
         intProperty.addListener(invalidationListener);
-        log.info("Added invalidation listener.");
-        log.info("Calling intProperty.set(2048).");
+		LOG.info("Added invalidation listener.");
+		LOG.info("Calling intProperty.set(2048).");
         intProperty.set(2048);
-        log.info("Calling intProperty.setValue(3072).");
+		LOG.info("Calling intProperty.setValue(3072).");
         intProperty.setValue(Integer.valueOf(3072));
         intProperty.removeListener(invalidationListener);
-        log.info("Removed invalidation listener.");
-        log.info("Calling intProperty.set(4096).");
+		LOG.info("Removed invalidation listener.");
+		LOG.info("Calling intProperty.set(4096).");
         intProperty.set(4096);
     }
 
     private static void bindAndUnbindOnePropertyToAnother() {
-        log.info("\n");
+		LOG.info("\n");
         IntegerProperty otherProperty = new SimpleIntegerProperty(0);
         logOtherProperty(otherProperty);
-        log.info("Binding otherProperty to intProperty.");
+		LOG.info("Binding otherProperty to intProperty.");
         otherProperty.bind(intProperty);
         logOtherProperty(otherProperty);
-        log.info("Calling intProperty.set(7168).");
+		LOG.info("Calling intProperty.set(7168).");
         intProperty.set(7168);
         logOtherProperty(otherProperty);
-        log.info("Unbinding otherProperty from intProperty.");
+		LOG.info("Unbinding otherProperty from intProperty.");
         otherProperty.unbind();
         logOtherProperty(otherProperty);
-        log.info("Calling intProperty.set(8192).");
+		LOG.info("Calling intProperty.set(8192).");
         intProperty.set(8192);
         logOtherProperty(otherProperty);
     }
 
     private static void createProperty() {
-        log.info("\n");
+		LOG.info("\n");
         intProperty = new SimpleIntegerProperty(1024);
-        log.info("intProperty = {}", intProperty);
-        log.info("intProperty.get() = {}", intProperty.get());
+		LOG.info("intProperty = {}", intProperty);
+		LOG.info("intProperty.get() = {}", intProperty.get());
         int intValue = intProperty.getValue().intValue();
-        log.info("intProperty.getValue() = {}", intValue);
+		LOG.info("intProperty.getValue() = {}", intValue);
     }
 
     private static void logOtherProperty(IntegerProperty otherProperty) {
-        log.info("otherProperty.get() = {}", otherProperty.get());
+		LOG.info("otherProperty.get() = {}", otherProperty.get());
     }
 }

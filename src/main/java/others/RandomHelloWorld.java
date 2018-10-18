@@ -1,9 +1,12 @@
 package others;
 
 import java.util.Random;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class RandomHelloWorld {
+
+	private static final Logger LOG = HasLogging.log();
 
 	private RandomHelloWorld() {
 	}
@@ -13,7 +16,7 @@ public final class RandomHelloWorld {
         String randomString = randomString(-229_985_452);
         // EQUIVALENT TO WORLD
         String randomString2 = randomString(-147_909_649);
-        HasLogging.log().info("{} {}", randomString, randomString2);
+        LOG.info("{} {}", randomString, randomString2);
 	}
 
 	public static String randomString(int i) {

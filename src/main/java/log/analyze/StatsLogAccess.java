@@ -38,12 +38,12 @@ public class StatsLogAccess {
                         "siga-dia.2016-$1-$2.log"));
                 if (!file.exists()) {
                     boolean a = file.createNewFile();
-                    HasLogging.log().trace("file created {}", a);
+					LOGGER.trace("file created {}", a);
                 }
                 printLines(path, file);
             }
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+			LOGGER.error("", e);
         }
 
 

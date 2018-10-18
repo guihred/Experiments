@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class FastFourierTransform {
-    private static final Logger LOGGER = HasLogging.log(FastFourierTransform.class);
+	private static final Logger LOGGER = HasLogging.log();
 
 	public static int bitReverse(int num, int bits) {
 		int n = num;

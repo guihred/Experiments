@@ -14,15 +14,15 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class ChangingTextFonts extends Application {
-    private static final String INTRO_TEXT = "JavaFX 8: Intro. by Example";
+	private static final Logger LOG = HasLogging.log();
+	private static final String INTRO_TEXT = "JavaFX 8: Intro. by Example";
 
     @Override
 	public void start(Stage primaryStage) {
-        Logger log = HasLogging.log(ChangingTextFonts.class);
-        primaryStage.setTitle("Changing Text Fonts");
-        if (log.isTraceEnabled()) {
-            log.trace("Font families: {}", Font.getFamilies().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
-            log.trace("Font names: {}", Font.getFontNames().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
+		primaryStage.setTitle("Changing Text Fonts");
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Font families: {}", Font.getFamilies().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
+			LOG.trace("Font names: {}", Font.getFontNames().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
         }
 		Group root = new Group();
 		Scene scene = new Scene(root, 580, 250, Color.WHITE);

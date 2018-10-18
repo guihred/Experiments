@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class GraphModel {
 
@@ -118,7 +117,7 @@ public class GraphModel {
     }
 
     public List<Edge> edges(Cell c) {
-        return allEdges.stream().filter(e -> e.source.equals(c)).collect(Collectors.toList());
+		return GraphModelAlgorithms.edges(c, allEdges);
     }
 
     public void findArticulations() {

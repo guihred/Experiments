@@ -16,8 +16,8 @@ import utils.ResourceFXUtils;
 
 public class TracerouteScanner {
 
+	private static final Logger LOG = HasLogging.log();
 	private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
-	private static final Logger LOG = HasLogging.log(TracerouteScanner.class);
 	private static final String REUSED_ROUTE_REGEX = "-\\s*Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
 	private static final String REUSED_ROUTE_REGEX_1 = "-\\s*Hop (\\d+) is the same as for ([\\d\\.]+)";
 	private static final String HOP_REGEX = "\\d+\\s+[\\d\\.]+ ms\\s+([\\d\\.]+)|\\d+\\s+[\\d\\.]+ ms\\s+[\\w\\.]+ \\(([\\d\\.]+)\\)";

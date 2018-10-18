@@ -16,6 +16,8 @@ import utils.HasLogging;
 
 public class Ch1 {
 
+	private static final Logger LOG = HasLogging.log();
+
 	/**
 	 * 16. Improve the average method so that it is called with at least one
 	 * parameter.
@@ -30,10 +32,8 @@ public class Ch1 {
 	 * values. Hint: Look up Math.nextUp in the Java API.
 	 */
 	public static void extremeDoubles() {
-        Logger log = HasLogging.log(Ch1.class);
-
-        log.info("{}", Double.MAX_VALUE);
-        log.info("{}", Math.nextUp(0));
+		LOG.info("{}", Double.MAX_VALUE);
+		LOG.info("{}", Math.nextUp(0));
 
 	}
 

@@ -21,36 +21,37 @@ import utils.HasLogging;
  */
 public final class FXCollectionsChangeExamples {
 
+	private static final Logger LOGGER = HasLogging.log();
+
 	private FXCollectionsChangeExamples() {
 	}
 
     public static void main(String[] args) {
-        Logger log = HasLogging.log();
         ObservableList<String> strings = FXCollections.observableArrayList();
-        strings.addListener((Observable observable) -> log.info("\tlist invalidated"));
-        strings.addListener((ListChangeListener<String>) change -> log.info("\tstrings = {}", change.getList()));
-        log.info("Calling add(\"First\"): ");
+		strings.addListener((Observable observable) -> LOGGER.info("\tlist invalidated"));
+		strings.addListener((ListChangeListener<String>) change -> LOGGER.info("\tstrings = {}", change.getList()));
+		LOGGER.info("Calling add(\"First\"): ");
         strings.add("First");
-        log.info("Calling add(0, \"Zeroth\"): ");
+		LOGGER.info("Calling add(0, \"Zeroth\"): ");
         strings.add(0, "Zeroth");
-        log.info("Calling addAll(\"Second\", \"Third\"): ");
+		LOGGER.info("Calling addAll(\"Second\", \"Third\"): ");
         strings.addAll("Second", "Third");
-        log.info("Calling set(1, \"New First\"): ");
+		LOGGER.info("Calling set(1, \"New First\"): ");
         strings.set(1, "New First");
         final List<String> list = Arrays.asList("Second_1", "Second_2");
-        log.info("Calling addAll(3, list): ");
+		LOGGER.info("Calling addAll(3, list): ");
         strings.addAll(3, list);
-        log.info("Calling remove(2, 4): ");
+		LOGGER.info("Calling remove(2, 4): ");
         strings.remove(2, 4);
         final Iterator<String> iterator = strings.iterator();
         while (iterator.hasNext()) {
             final String next = iterator.next();
             if (next.contains("t")) {
-                log.info("Calling remove() on iterator: ");
+				LOGGER.info("Calling remove() on iterator: ");
                 iterator.remove();
             }
         }
-        log.info("Calling removeAll(\"Third\", \"Fourth\"): ");
+		LOGGER.info("Calling removeAll(\"Third\", \"Fourth\"): ");
         strings.removeAll("Third", "Fourth");
     }
 }

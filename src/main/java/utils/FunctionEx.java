@@ -11,7 +11,7 @@ public interface FunctionEx<T, R> {
             try {
                 return run.apply(a);
             } catch (Exception e) {
-                HasLogging.log().error("", e);
+				HasLogging.log(1).error("", e);
                 return null;
             }
         };

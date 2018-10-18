@@ -11,7 +11,11 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -24,7 +28,7 @@ public class RubiksCubeLauncher extends Application {
     public static final boolean DEBUG = true;
 	public static final int CUBE_COMPLEXITY = 3;
 
-    private static final Logger LOGGER = HasLogging.log(RubiksCubeLauncher.class);
+	private static final Logger LOGGER = HasLogging.log();
 
 	public static final int RUBIKS_CUBE_SIZE = 50;
 	private RubiksPiece[][][] pieces = new RubiksPiece[CUBE_COMPLEXITY][CUBE_COMPLEXITY][CUBE_COMPLEXITY];

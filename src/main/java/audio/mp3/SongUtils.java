@@ -11,12 +11,15 @@ import javafx.scene.control.Slider;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class SongUtils {
 
-    private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
+    private static final Logger LOG = HasLogging.log();
+
+	private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
             .appendValue(ChronoField.MINUTE_OF_HOUR, 2).optionalStart().appendLiteral(':')
             .appendValue(ChronoField.SECOND_OF_MINUTE, 2).optionalStart().appendLiteral('.')
             .appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
@@ -68,7 +71,7 @@ public class SongUtils {
             try {
                 Files.delete(mp4File.toPath());
             } catch (IOException e) {
-                HasLogging.log().error("ERRO AO DELETAR", e);
+                LOG.error("ERRO AO DELETAR", e);
             }
         }
 

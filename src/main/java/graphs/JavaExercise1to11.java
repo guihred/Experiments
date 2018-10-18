@@ -2,7 +2,11 @@ package graphs;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -12,7 +16,7 @@ import utils.HasLogging;
 
 public final class JavaExercise1to11 {
 
-    private static final Logger LOG = HasLogging.log(JavaExercise1to11.class);
+	private static final Logger LOG = HasLogging.log();
 
     private JavaExercise1to11() {
 	}

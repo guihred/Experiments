@@ -10,7 +10,7 @@ interface RunnableEx extends HasLogging {
             try {
                 run.run();
             } catch (Exception e) {
-                HasLogging.log().error("", e);
+				HasLogging.log(1).error("", e);
             }
         };
     }

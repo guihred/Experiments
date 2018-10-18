@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class MultipleBindingExample {
-    private static final Logger LOG = HasLogging.log(MultipleBindingExample.class);
+	private static final Logger LOG = HasLogging.log();
 
 	private MultipleBindingExample() {
 	}

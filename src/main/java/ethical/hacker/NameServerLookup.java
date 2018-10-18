@@ -7,7 +7,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class NameServerLookup {
-    private static final Logger LOG = HasLogging.log(NameServerLookup.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static void getNSInformation(String address) {
         Map<String, String> results = new HashMap<>();

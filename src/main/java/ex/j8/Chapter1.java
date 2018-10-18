@@ -3,7 +3,12 @@ package ex.j8;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,9 +23,8 @@ public final class Chapter1 {
 
 
     public static final String DOCUMENTS_FOLDER = new JFileChooser().getFileSystemView().getDefaultDirectory()
-            .getAbsolutePath()
-    ;
-    private static final Logger LOGGER = HasLogging.log(Chapter1.class);
+			.getAbsolutePath();
+	private static final Logger LOGGER = HasLogging.log();
 
     private Chapter1() {
 	}

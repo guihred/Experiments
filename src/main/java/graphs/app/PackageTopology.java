@@ -18,12 +18,14 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.HasLogging;
 
 public class PackageTopology extends BaseTopology {
 
-    private String chosenPackageName;
+    private static final Logger LOG = HasLogging.log();
+	private String chosenPackageName;
 
     public PackageTopology(Graph graph) {
         super(graph, "Package");
@@ -95,7 +97,7 @@ public class PackageTopology extends BaseTopology {
                     .filter(e -> packName == null || e.getPackage().equals(packName))
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.error("", e);
             return new ArrayList<>();
         }
     }
@@ -106,7 +108,7 @@ public class PackageTopology extends BaseTopology {
         Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
                 .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
         filesByPackage.forEach((pack, files) -> {
-            HasLogging.log().info(pack);
+            LOG.info(pack);
             Map<String, Map<String, Long>> packageDependencyMap = createFileDependencyMap(files);
             printDependencyMap(packageDependencyMap);
         });
@@ -133,7 +135,7 @@ public class PackageTopology extends BaseTopology {
             }
             table.append("\n");
         }
-        HasLogging.log().info("{}", table);
+        LOG.info("{}", table);
     }
 
     private static String mapString(Object s, int l) {

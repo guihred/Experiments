@@ -2,6 +2,7 @@ package graphs.app;
 
 import graphs.entities.Cell;
 import graphs.entities.Graph;
+import graphs.entities.GraphModelAlgorithms;
 import java.util.List;
 import java.util.Random;
 
@@ -22,9 +23,12 @@ public class RandomLayout implements Layout {
         graph.clean();
         int bound = 400;
 		for (Cell cell : cells) {
-            double x = rnd.nextDouble() * bound;
-            double y = rnd.nextDouble() * bound;
-			cell.relocate(x, y);
+			int i = 0;
+			do {
+				double x = rnd.nextDouble() * bound;
+				double y = rnd.nextDouble() * bound;
+				cell.relocate(x, y);
+			} while (i++ < 20 && GraphModelAlgorithms.anyIntersection(cells, cell));
 		}
 	}
 

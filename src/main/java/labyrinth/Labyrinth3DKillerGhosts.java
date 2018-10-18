@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -85,26 +90,16 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 
 	private MeshView[] createGhosts() {
         return new MeshView[] { 
-				gerarFantasma(MESH_GHOST, Color.AQUAMARINE),
-				gerarFantasma(MESH_GHOST, Color.BROWN),
-				gerarFantasma(MESH_GHOST, Color.CHARTREUSE),
-				gerarFantasma(MESH_GHOST, Color.DODGERBLUE),
-				gerarFantasma(MESH_GHOST, Color.FUCHSIA),
-				gerarFantasma(MESH_GHOST, Color.GREEN),
-				gerarFantasma(MESH_GHOST, Color.HOTPINK),
-				gerarFantasma(MESH_GHOST, Color.INDIGO),
-				gerarFantasma(MESH_GHOST, Color.KHAKI),
-				gerarFantasma(MESH_GHOST, Color.LIGHTSALMON),
-				gerarFantasma(MESH_GHOST, Color.MIDNIGHTBLUE),
-				gerarFantasma(MESH_GHOST, Color.NAVY),
-				gerarFantasma(MESH_GHOST, Color.ORCHID),
-				gerarFantasma(MESH_GHOST, Color.PURPLE),
-				gerarFantasma(MESH_GHOST, Color.RED),
-				gerarFantasma(MESH_GHOST, Color.SLATEBLUE),
-				gerarFantasma(MESH_GHOST, Color.TRANSPARENT),
-				gerarFantasma(MESH_GHOST, Color.VIOLET),
-				gerarFantasma(MESH_GHOST, Color.WHITESMOKE),
-                gerarFantasma(MESH_GHOST, Color.YELLOWGREEN)
+				generateGhost(MESH_GHOST, Color.AQUAMARINE), generateGhost(MESH_GHOST, Color.BROWN),
+				generateGhost(MESH_GHOST, Color.CHARTREUSE), generateGhost(MESH_GHOST, Color.DODGERBLUE),
+				generateGhost(MESH_GHOST, Color.FUCHSIA), generateGhost(MESH_GHOST, Color.GREEN),
+				generateGhost(MESH_GHOST, Color.HOTPINK), generateGhost(MESH_GHOST, Color.INDIGO),
+				generateGhost(MESH_GHOST, Color.KHAKI), generateGhost(MESH_GHOST, Color.LIGHTSALMON),
+				generateGhost(MESH_GHOST, Color.MIDNIGHTBLUE), generateGhost(MESH_GHOST, Color.NAVY),
+				generateGhost(MESH_GHOST, Color.ORCHID), generateGhost(MESH_GHOST, Color.PURPLE),
+				generateGhost(MESH_GHOST, Color.RED), generateGhost(MESH_GHOST, Color.SLATEBLUE),
+				generateGhost(MESH_GHOST, Color.TRANSPARENT), generateGhost(MESH_GHOST, Color.VIOLET),
+				generateGhost(MESH_GHOST, Color.WHITESMOKE), generateGhost(MESH_GHOST, Color.YELLOWGREEN)
 		};
     }
 
@@ -124,7 +119,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		}
 	}
 
-    private MeshView gerarFantasma(String arquivo, Color animalColor) {
+	private MeshView generateGhost(String arquivo, Color animalColor) {
         Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
 		MeshView animal = new MeshView(mesh);
 		PhongMaterial sample = new PhongMaterial(animalColor);

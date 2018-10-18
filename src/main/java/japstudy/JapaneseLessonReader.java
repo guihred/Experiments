@@ -17,7 +17,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class JapaneseLessonReader implements HasLogging {
-    private static final Logger LOGGER = HasLogging.log(JapaneseLessonReader.class);
+	private static final Logger LOGGER = HasLogging.log();
 	private static LessonDAO lessonDAO = new LessonDAO();
 	private JapaneseLessonReader() {
 	}
@@ -32,7 +32,7 @@ public final class JapaneseLessonReader implements HasLogging {
         try (XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
             addJapaneseLessons(listaExercises, document1);
 		} catch (Exception e) {
-            HasLogging.log().error("", e);
+			LOGGER.error("", e);
 		}
 		return listaExercises;
 	}

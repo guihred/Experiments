@@ -30,7 +30,7 @@ import utils.ResourceFXUtils;
 public class WordService implements HasLogging {
 
 
-    private static final Logger LOG = HasLogging.log(WordService.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static void getPowerPointImages(String arquivo) {
         try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo))) {

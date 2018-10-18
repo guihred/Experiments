@@ -13,9 +13,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class ProjectTopology extends BaseTopology {
+
+	private static final Logger LOG = HasLogging.log();
 
 	public ProjectTopology(Graph graph) {
         super(graph, "Project");
@@ -68,7 +71,7 @@ public class ProjectTopology extends BaseTopology {
                             .collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
             return packageDependencyMap;
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.error("", e);
             return new HashMap<>();
         }
     }

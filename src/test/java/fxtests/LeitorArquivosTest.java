@@ -30,7 +30,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class LeitorArquivosTest {
-    private static final Logger LOG = HasLogging.log(LeitorArquivosTest.class);
+	private static final Logger LOG = HasLogging.log();
 
     @BeforeClass
     public static void init() {
@@ -113,7 +113,7 @@ public class LeitorArquivosTest {
             Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
                     .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
             filesByPackage.forEach((pack, files) -> {
-                HasLogging.log().info(pack);
+				HasLogging.log(1).info(pack);
                 Map<String, Map<String, Long>> packageDependencyMap = PackageTopology.createFileDependencyMap(files);
                 PackageTopology.printDependencyMap(packageDependencyMap);
             });

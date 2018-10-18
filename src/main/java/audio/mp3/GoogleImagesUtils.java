@@ -18,7 +18,7 @@ import utils.HasLogging;
 
 public class GoogleImagesUtils {
 
-    private static final Logger LOGGER = HasLogging.log(GoogleImagesUtils.class);
+	private static final Logger LOGGER = HasLogging.log();
 
     public static List<String> getImagens(String artista) {
         CrawlerTask.insertProxyConfig();

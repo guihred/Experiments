@@ -37,9 +37,9 @@ import utils.MatrixSolver;
 import utils.ResourceFXUtils;
 
 public class IndependentTest implements HasLogging {
-    private static final Logger LOGGER = HasLogging.log(IndependentTest.class);
+	private static final Logger LOGGER = HasLogging.log();
 
-    //@Test
+	@Test
     public void matrixTest() {
         double[][] matr = { { 4, 5, 3 }, { 2, -5, -2 }, { 4, 5, 6 } };
         double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
@@ -48,7 +48,7 @@ public class IndependentTest implements HasLogging {
                 0.01);
     }
 
-    //@Test
+	@Test
     public void testCh1() {
         measureTime("Ch1.extremeDoubles", Ch1::extremeDoubles);
         measureTime("Ch1.factorial", () -> Ch1.factorial(1000));
@@ -57,7 +57,7 @@ public class IndependentTest implements HasLogging {
         measureTime("Ch1.average", () -> Ch1.average(1, 2, 3, 4, 5, 6, 7, 8));
     }
 
-    //@Test
+	@Test
     public void testCh3() {
         Random random = new Random();
 		List<Employee> randomEmployees = random.ints(1, 11).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
@@ -75,18 +75,18 @@ public class IndependentTest implements HasLogging {
 
     }
 
-    //@Test
+	@Test
     public void testHiragana() {
         measureTime("HiraganaMaker.displayInHiragana", HiraganaMaker::displayInHiragana);
     }
 
-    //@Test
+	@Test
     public void testTermFrequencyIndex() {
         measureTime("TermFrequencyIndex.identifyKeyWordsInSourceFiles",
                 TermFrequencyIndex::identifyKeyWordsInSourceFiles);
     }
 
-    //@Test
+	@Test
     public void testQuickSort() {
         List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
         Comparator<Integer> c = Integer::compareTo;
@@ -95,7 +95,7 @@ public class IndependentTest implements HasLogging {
 
     }
 
-    //@Test
+	@Test
     public void testFastFourierTransform() {
         double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
         Complex[] cinput = measureTime("FastFourierTransform.fft", () -> FastFourierTransform.fft(input));
@@ -104,17 +104,17 @@ public class IndependentTest implements HasLogging {
         }
     }
 
-    //@Test
+	@Test
     public void testRandomHelloWorld() {
         measureTime("RandomHelloWorld.displayHelloWorld", RandomHelloWorld::displayHelloWorld);
     }
 
-    //@Test
+	@Test
     public void testTermFrequency() {
         measureTime("TermFrequency.displayTermFrequency", TermFrequency::displayTermFrequency);
     }
 
-    //@Test
+	@Test
     public void testElementWiseOperations() {
         measureTime("ElementWiseOp.scalarOp",
                 () -> ElementWiseOp.printMatrix(ElementWiseOp.scalarOp(ElementWiseOp.Operation.MUL,
@@ -125,19 +125,19 @@ public class IndependentTest implements HasLogging {
                         new Double[][] { { 1.0, 2.0 }, { 3.0, 4.0 } })));
     }
 
-    //@Test
+	@Test
     public void testCh4() {
         measureTime("Ch4.cyclicToString",
                 () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
     }
 
-    //@Test
+	@Test
     public void testRarAndZIP() {
         measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
         measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
     }
 
-    //@Test
+	@Test
     public void testOthersTest() {
         int[] arr = { 3, 5, 6, 8, 7, 2 };
         measureTime("OthersTests.minMax", () -> OthersTests.minMax(arr));
@@ -153,7 +153,7 @@ public class IndependentTest implements HasLogging {
 
     @Test
     public void testImagesTest() {
-        File userFolder = ResourceFXUtils.getUserFolder("Pictures");
+		File userFolder = ResourceFXUtils.toFile("out").getParentFile();
         String dataDir = userFolder + "\\";
         String nameFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".jpg").toString();
         String svgFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".svg").toString();

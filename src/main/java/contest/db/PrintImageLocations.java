@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -32,7 +33,8 @@ import utils.ResourceFXUtils;
  * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
-    private int num;
+	private static final Logger LOG = HasLogging.log();
+	private int num;
     private List<PDFImage> images = new ArrayList<>();
     private int pageNumber;
 
@@ -103,7 +105,7 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
         try {
             ImageIO.write(image, string, file); // ignore returned boolean
         } catch (IOException e) {
-            HasLogging.log().error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
+			LOG.error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
         }
         return file;
     }

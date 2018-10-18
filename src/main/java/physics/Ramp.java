@@ -18,7 +18,7 @@ import utils.HasLogging;
  */
 public class Ramp extends BasePhysicalObject {
 
-    private static final Logger LOGGER = HasLogging.log(Ramp.class);
+	private static final Logger LOGGER = HasLogging.log();
     private float startX;
     private float startY;
     private float endX;

@@ -11,7 +11,7 @@ import utils.HasLogging;
 
 public final class UnZip {
     public static final String ZIPPED_FILE_FOLDER = "C:\\Users\\guilherme.hmedeiros\\git\\FXperiment";
-    private static final Logger LOGGER = HasLogging.log(UnZip.class);
+	private static final Logger LOGGER = HasLogging.log();
 
 	private UnZip() {
 	}

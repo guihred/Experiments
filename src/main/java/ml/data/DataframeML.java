@@ -7,12 +7,14 @@ import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class DataframeML implements HasLogging {
 
-    private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
+    private static final Logger LOG = HasLogging.log();
+	private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
     protected int maxSize = FRAME_MAX_SIZE;
 
     protected Map<String, List<Object>> dataframe = new LinkedHashMap<>();
@@ -199,6 +201,6 @@ public class DataframeML implements HasLogging {
     public static void main(String[] args) {
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.describe();
-        HasLogging.log().info("{}", x);
+        LOG.info("{}", x);
     }
 }

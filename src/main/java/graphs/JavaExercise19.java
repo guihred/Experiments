@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class JavaExercise19 {
-    private static final Logger LOG = HasLogging.log(JavaExercise19.class);
+	private static final Logger LOG = HasLogging.log();
     private JavaExercise19() {
 	}
 

@@ -20,7 +20,9 @@ import utils.ResourceFXUtils;
 
 public final class Chapter2 {
 
-    private static final String REGEX = "[\\P{L}]+";
+    private static final Logger LOG = HasLogging.log();
+
+	private static final String REGEX = "[\\P{L}]+";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Chapter2.class);
 
@@ -43,7 +45,7 @@ public final class Chapter2 {
             LOGGER.trace("{}", lines.parallel().flatMap(compile::splitAsStream).filter(s -> s.length() > 12).count());
             LOGGER.trace("{}", countConcurrentWithoutStreams());
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.error("", e);
         }
     }
 

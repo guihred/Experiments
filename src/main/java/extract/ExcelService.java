@@ -34,7 +34,7 @@ import utils.ResourceFXUtils;
 
 public class ExcelService {
 
-    private static final Logger LOG = HasLogging.log(ExcelService.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static <T> void getExcel(BiFunction<Integer, Integer, List<T>> lista,
             Map<String, FunctionEx<T, Object>> fields,

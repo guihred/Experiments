@@ -1,6 +1,11 @@
 package graphs.app;
 
-import graphs.entities.*;
+import graphs.entities.Cell;
+import graphs.entities.CellType;
+import graphs.entities.Edge;
+import graphs.entities.Graph;
+import graphs.entities.GraphModel;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.animation.Animation;
@@ -30,7 +35,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
             new LayerLayout(graph),
 			new RandomLayout(graph), 
 			new CustomLayout(graph), 
-			convergeLayout);
+			convergeLayout).sorted(Comparator.comparing(e -> e.getClass().getSimpleName().replace("Layout", "")));
     private ChoiceBox<Layout> selectLayout = CommonsFX.newSelect(layouts,
 			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
 
@@ -60,12 +65,16 @@ public class GraphModelLauncher extends Application implements HasLogging {
         vBox.getChildren().add(CommonsFX.newButton("Color", ev -> graph.getModel().coloring()));
 
 		DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
-		ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology, new RandomTopology(50, graph), new TreeTopology(
-                        30, graph),
-                new CircleTopology(30, graph), new GabrielTopology(30, graph), new WordTopology(graph),
+		ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology,
+				new RandomTopology(50, graph), 
+				new TreeTopology(30, graph),
+                new CircleTopology(30, graph), 
+                new GabrielTopology(30, graph), 
+                new WordTopology(graph),
                 new PackageTopology(graph),
                 new NetworkTopology(graph),
-                new ProjectTopology(graph));
+				new ProjectTopology(graph))
+				.sorted(Comparator.comparing(BaseTopology::getName));
 
         SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(BaseTopology::getName);
         ChoiceBox<BaseTopology> topologySelect = CommonsFX.newSelect(topologies, converterTopology, "Select Topology");

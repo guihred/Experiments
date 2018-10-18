@@ -12,23 +12,23 @@ import utils.HasLogging;
 
 public final class SimplePropertyBindExample {
 
+	private static final Logger LOG = HasLogging.log();
 	private SimplePropertyBindExample() {
 	}
     public static void main(String[] args) {
-        Logger log = HasLogging.log();
-        log.info("Constructing two StringProperty objects.");
+		LOG.info("Constructing two StringProperty objects.");
         StringProperty prop1 = new SimpleStringProperty("");
         StringProperty prop2 = new SimpleStringProperty("");
-        log.info("Calling bindBidirectional.");
+		LOG.info("Calling bindBidirectional.");
         prop2.bindBidirectional(prop1);
-        log.info("prop1.isBound() = {}", prop1.isBound());
-        log.info("prop2.isBound() = {}", prop2.isBound());
-        log.info("Calling prop1.set(\"prop1 says: Hi!\")");
+		LOG.info("prop1.isBound() = {}", prop1.isBound());
+		LOG.info("prop2.isBound() = {}", prop2.isBound());
+		LOG.info("Calling prop1.set(\"prop1 says: Hi!\")");
         prop1.set("prop1 says: Hi!");
-        log.info("prop2.get() returned:");
-        log.info(prop2.get());
-        log.info("Calling prop2.set(prop2.get() + \"\\nprop2 says: Bye!\")");
+		LOG.info("prop2.get() returned:");
+		LOG.info(prop2.get());
+		LOG.info("Calling prop2.set(prop2.get() + \"\\nprop2 says: Bye!\")");
         prop2.set(prop2.get() + "\nprop2 says: Bye!");
-        log.info("prop1.get() returned:{}", prop1.get());
+		LOG.info("prop1.get() returned:{}", prop1.get());
     }
 }

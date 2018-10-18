@@ -9,7 +9,7 @@ import utils.DisjSets;
 import utils.HasLogging;
 
 public class Vertex implements HasLogging {
-    private static final Logger LOG = HasLogging.log(Vertex.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static final boolean NAMED = true;
 

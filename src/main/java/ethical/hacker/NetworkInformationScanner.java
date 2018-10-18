@@ -14,7 +14,7 @@ import utils.HasLogging;
 
 public class NetworkInformationScanner {
 
-    private static final Logger LOG = HasLogging.log(NetworkInformationScanner.class);
+	private static final Logger LOG = HasLogging.log();
     public static void main(String[] args) throws SocketException {
         displayNetworkInformation();
     }

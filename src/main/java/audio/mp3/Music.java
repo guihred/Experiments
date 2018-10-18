@@ -4,7 +4,7 @@ import java.io.File;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Musica {
+public class Music {
 	private StringProperty album = new SimpleStringProperty("");
 
 	private StringProperty ano = new SimpleStringProperty("");

@@ -17,7 +17,8 @@ import utils.HasLogging;
 
 public class JavaFXBeanController {
 
-    private JavaFXBeanModelExample model;
+	private static final Logger LOG = HasLogging.log();
+	private JavaFXBeanModelExample model;
     public JavaFXBeanController(JavaFXBeanModelExample model) {
         this.model = model;
     }
@@ -50,31 +51,29 @@ public class JavaFXBeanController {
         javaFXBeanController.changeStrPropertyOnModel();
         javaFXBeanController.switchColorPropertyOnModel();
 
-        Logger log = HasLogging.log();
-
         ObjectProperty<Lighting> root = new SimpleObjectProperty<>();
         final ObjectBinding<Color> selectBinding = Bindings.select(root, "light", "color");
-        selectBinding.addListener((observableValue, oldValue, newValue) -> log
+		selectBinding.addListener((observableValue, oldValue, newValue) -> LOG
                 .info("The color changed:\n\t\told color = {},\n\t\tnew color = {}", oldValue, newValue));
-        log.info("firstLight is black.");
+		LOG.info("firstLight is black.");
         Light firstLight = new Light.Point();
         firstLight.setColor(Color.BLACK);
-        log.info("secondLight is white.");
+		LOG.info("secondLight is white.");
         Light secondLight = new Light.Point();
         secondLight.setColor(Color.WHITE);
-        log.info("firstLighting has firstLight.");
+		LOG.info("firstLighting has firstLight.");
         Lighting firstLighting = new Lighting();
         firstLighting.setLight(firstLight);
-        log.info("secondLighting has secondLight.");
+		LOG.info("secondLighting has secondLight.");
         Lighting secondLighting = new Lighting();
         secondLighting.setLight(secondLight);
-        log.info("Making root observe firstLighting.");
+		LOG.info("Making root observe firstLighting.");
         root.set(firstLighting);
-        log.info("Making root observe secondLighting.");
+		LOG.info("Making root observe secondLighting.");
         root.set(secondLighting);
-        log.info("Changing secondLighting's light to firstLight");
+		LOG.info("Changing secondLighting's light to firstLight");
         secondLighting.setLight(firstLight);
-        log.info("Changing firstLight's color to red");
+		LOG.info("Changing firstLight's color to red");
         firstLight.setColor(Color.RED);
     }
 }

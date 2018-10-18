@@ -9,7 +9,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class PingTraceRoute {
-    private static final Logger LOG = HasLogging.log(PingTraceRoute.class);
+	private static final Logger LOG = HasLogging.log();
 
     public static void main(String[] args) {
         collectTraceInformation();

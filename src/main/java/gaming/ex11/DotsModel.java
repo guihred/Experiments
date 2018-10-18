@@ -123,7 +123,7 @@ public class DotsModel {
         return sum;
     }
 
-    private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades() {
+    private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities() {
         List<Map.Entry<DotsSquare, DotsSquare>> melhor = new ArrayList<>();
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
@@ -136,10 +136,10 @@ public class DotsModel {
         return melhor;
     }
 
-    private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades2() {
-        final List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = getPossibilidades();
+    private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities2() {
+		final List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getPossibilities();
 
-        return possibilidades.stream().filter((Map.Entry<DotsSquare, DotsSquare> entry) -> {
+		return possibilities.stream().filter((Map.Entry<DotsSquare, DotsSquare> entry) -> {
             final boolean checkMelhor = entry.getKey().checkMelhor(entry.getValue());
             if (!checkMelhor) {
                 return false;
@@ -156,25 +156,27 @@ public class DotsModel {
         }).collect(Collectors.toList());
     }
 
-    private List<Map.Entry<DotsSquare, DotsSquare>> getMelhorPossibilidades3() {
-        final List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = getPossibilidades();
-        final Map<Integer, List<Map.Entry<DotsSquare, DotsSquare>>> collect = possibilidades.stream().collect(Collectors.groupingBy(e -> getCountMap(e.getKey(), e.getValue())));
+	private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities3() {
+		final List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getPossibilities();
+		final Map<Integer, List<Map.Entry<DotsSquare, DotsSquare>>> collect = possibilities.stream()
+				.collect(Collectors.groupingBy(e -> getCountMap(e.getKey(), e.getValue())));
 		final int bestPossibility = collect.keySet().stream().mapToInt(i -> i).min().orElse(0);
 		return collect.getOrDefault(bestPossibility, Collections.emptyList());
     }
-	private List<Map.Entry<DotsSquare, DotsSquare>> getPossibilidades() {
-        List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = new ArrayList<>();
+
+	private List<Map.Entry<DotsSquare, DotsSquare>> getPossibilities() {
+		List<Map.Entry<DotsSquare, DotsSquare>> possibilities = new ArrayList<>();
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
                 if (i < MAZE_SIZE - 1 && !maze[i][j].contains(maze[i + 1][j])) {
-                    possibilidades.add(new AbstractMap.SimpleEntry<>(maze[i][j], maze[i + 1][j]));
+					possibilities.add(new AbstractMap.SimpleEntry<>(maze[i][j], maze[i + 1][j]));
                 }
                 if (j < MAZE_SIZE - 1 && !maze[i][j].contains(maze[i][j + 1])) {
-                    possibilidades.add(new AbstractMap.SimpleEntry<>(maze[i][j], maze[i][j + 1]));
+					possibilities.add(new AbstractMap.SimpleEntry<>(maze[i][j], maze[i][j + 1]));
                 }
             }
         }
-        return possibilidades;
+		return possibilities;
     }
 
 	private int getSumBySquare(DotsSquare a, DotsSquare b, int s, DotsSquare c, DotsSquare d) {
@@ -253,16 +255,16 @@ public class DotsModel {
 				currentPlayer = (currentPlayer + 1) % jogadores.length;
 				int nplayed = 0;
 				while (currentPlayer == 0) {
-					List<Map.Entry<DotsSquare, DotsSquare>> possibilidades = getMelhorPossibilidades();
-					possibilidades = notEmpty(possibilidades, getMelhorPossibilidades2());
-                    possibilidades = notEmpty(possibilidades, getMelhorPossibilidades3());
-                    possibilidades = notEmpty(possibilidades, getPossibilidades());
-					if (possibilidades.isEmpty()) {
+					List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getBestPossibilities();
+					possibilities = notEmpty(possibilities, getBestPossibilities2());
+					possibilities = notEmpty(possibilities, getBestPossibilities3());
+					possibilities = notEmpty(possibilities, getPossibilities());
+					if (possibilities.isEmpty()) {
 						currentPlayer = (currentPlayer + 1) % jogadores.length;
 						break;
 					}
-					final Map.Entry<DotsSquare, DotsSquare> get = possibilidades
-							.get(random.nextInt(possibilidades.size()));
+					final Map.Entry<DotsSquare, DotsSquare> get = possibilities
+							.get(random.nextInt(possibilities.size()));
 					final Double[] center = get.getKey().getCenter();
 					final Double[] center2 = get.getValue().getCenter();
 					final Line line2 = new Line(center[0], center[1], center[0], center[1]);
@@ -341,9 +343,9 @@ public class DotsModel {
         return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
     }
 
-	private static List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilidades,
-            List<Entry<DotsSquare, DotsSquare>> melhorPossibilidades2) {
-        return possibilidades.isEmpty() ? melhorPossibilidades2 : possibilidades;
+	private static List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilities,
+			List<Entry<DotsSquare, DotsSquare>> bestPossibilities2) {
+		return possibilities.isEmpty() ? bestPossibilities2 : possibilities;
     }
 
 

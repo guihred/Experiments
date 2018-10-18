@@ -1,8 +1,17 @@
 package rosario;
 
 import java.awt.Color;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,7 +26,12 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -34,7 +48,7 @@ public final class LeitorArquivos {
     public static final String NOME = "Nome";
     public static final String QUANTIDADE = "Quantidade";
     public static final String REGISTRO = "Registro";
-    private static final Logger LOGGER = HasLogging.log(LeitorArquivos.class);
+	private static final Logger LOGGER = HasLogging.log();
 
     private LeitorArquivos() {
     }
@@ -147,7 +161,7 @@ public final class LeitorArquivos {
             }
             return medicamentos;
         } catch (Exception e) {
-            HasLogging.log().error("ERROR WHEN READING EXCEL", e);
+			LOGGER.error("ERROR WHEN READING EXCEL", e);
             return FXCollections.observableArrayList();
         }
 
@@ -170,7 +184,7 @@ public final class LeitorArquivos {
             return medicamentos;
 
         } catch (IOException e) {
-            HasLogging.log().error("ERROR WHEN READING EXCEL", e);
+			LOGGER.error("ERROR WHEN READING EXCEL", e);
             return FXCollections.observableArrayList();
         }
 

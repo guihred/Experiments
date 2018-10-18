@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class Chapter3 {
-    private static final Logger LOGGER = HasLogging.log(Chapter3.class);
+	private static final Logger LOGGER = HasLogging.log();
 
     private Chapter3() {
 	}

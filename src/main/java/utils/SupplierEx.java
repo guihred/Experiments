@@ -11,7 +11,7 @@ public interface SupplierEx<T> {
             try {
                 return run.get();
             } catch (Exception e) {
-                HasLogging.log().error("", e);
+				HasLogging.log(1).error("", e);
                 return null;
             }
         };

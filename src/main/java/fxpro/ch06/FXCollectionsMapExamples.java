@@ -19,28 +19,28 @@ import utils.HasLogging;
  */
 public final class FXCollectionsMapExamples {
 
+	private static final Logger LOGGER = HasLogging.log();
+
 	private FXCollectionsMapExamples() {
 	}
 
     public static void main(String[] args) {
-        Logger log = HasLogging.log();
-
         ObservableMap<String, Integer> map = FXCollections.observableHashMap();
         map.addListener(new MyListenerMapExamples());
-        log.info("Calling put(\"First\", 1): ");
+		LOGGER.info("Calling put(\"First\", 1): ");
         map.put("First", 1);
-        log.info("Calling put(\"First\", 100): ");
+		LOGGER.info("Calling put(\"First\", 100): ");
         map.put("First", 100);
         Map<String, Integer> anotherMap = new HashMap<>();
         anotherMap.put("Second", 2);
         anotherMap.put("Third", 3);
-        log.info("Calling putAll(anotherMap): ");
+		LOGGER.info("Calling putAll(anotherMap): ");
         map.putAll(anotherMap);
         final Iterator<Map.Entry<String, Integer>> entryIterator = map.entrySet().iterator();
         while (entryIterator.hasNext()) {
             final Map.Entry<String, Integer> next = entryIterator.next();
 			if ("Second".equals(next.getKey())) {
-                log.info("Calling remove on entryIterator: ");
+				LOGGER.info("Calling remove on entryIterator: ");
                 entryIterator.remove();
             }
         }
@@ -48,7 +48,7 @@ public final class FXCollectionsMapExamples {
         while (valueIterator.hasNext()) {
             final Integer next = valueIterator.next();
             if (next == 3) {
-                log.info("Calling remove on valueIterator: ");
+				LOGGER.info("Calling remove on valueIterator: ");
                 valueIterator.remove();
             }
         }

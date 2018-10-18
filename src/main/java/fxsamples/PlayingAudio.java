@@ -16,7 +16,11 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -34,7 +38,7 @@ import utils.ResourceFXUtils;
  * @author cdea
  */
 public class PlayingAudio extends Application {
-    private static final Logger LOGGER = HasLogging.log(PlayingAudio.class);
+	private static final Logger LOGGER = HasLogging.log();
 	private static final String STOP_BUTTON_ID = "stop-button";
 	private static final String PLAY_BUTTON_ID = "play-button";
 	private static final String PAUSE_BUTTON_ID = "pause-button";

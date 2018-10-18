@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.TimelineGraph;
+import org.slf4j.Logger;
 import simplebuilder.*;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -28,7 +29,9 @@ import utils.ResourceFXUtils;
 public class TimelineExample extends Application {
 
 
-    @Override
+    private static final Logger LOG = HasLogging.log();
+
+	@Override
 	public void start(Stage theStage) {
 		theStage.setTitle("Timeline Example");
         FlowPane root = new FlowPane();
@@ -55,7 +58,7 @@ public class TimelineExample extends Application {
         listVies.setCellFactory(
                 list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
 
-        HasLogging.log().info("Available Columns {}", x.cols());
+        LOG.info("Available Columns {}", x.cols());
         String countryNameColumn = x.cols().stream().findFirst().orElse("﻿Country Name");
         canvas.setHistogram(x, countryNameColumn);
         itens.setAll(sortedLabels(canvas.colorsProperty()));

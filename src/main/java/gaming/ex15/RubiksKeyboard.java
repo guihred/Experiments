@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class RubiksKeyboard implements EventHandler<KeyEvent> , HasLogging{
+	private static final Logger LOGGER = HasLogging.log();
 	private static final double CAMERA_MODIFIER = 50.0;
 	private static final double CAMERA_QUANTITY = 5.0;
 	/**
@@ -97,11 +98,10 @@ public class RubiksKeyboard implements EventHandler<KeyEvent> , HasLogging{
 	}
 
 	public static void main(String[] args) {
-        Logger log = HasLogging.log();
 		for (int i = 0; i < 9; i++) {
 			int j = rotateClockWise(i);
 			int k = rotateAntiClockWise(j);
-            log.info("{}={}={}", i, j, k);
+			LOGGER.info("{}={}={}", i, j, k);
 		}
 	}
 
