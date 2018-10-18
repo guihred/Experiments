@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import utils.CommonsFX;
@@ -23,8 +24,19 @@ public class GraphModelAlgorithms {
         return allEdges.stream().filter(e -> e.source.equals(c)).map(Edge::getTarget).collect(Collectors.toList());
     }
 
-	public static boolean anyIntersection(List<Cell> cells, Cell cell2) {
+	public static boolean anyIntersection(List<? extends Node> cells, Node cell2) {
 		return cells.stream().anyMatch(e -> e != cell2 && e.getBoundsInParent().intersects(cell2.getBoundsInParent()));
+	}
+
+	public static boolean anyIntersection(List<? extends Node> cells, List<? extends Node> cell2) {
+
+		return cells.stream()
+				.anyMatch(e -> anyIntersection(cell2, e));
+	}
+
+	public static long intersection(List<? extends Node> cells, Node cell2) {
+		return cells.stream().filter(e -> e != cell2 && e.getBoundsInParent().intersects(cell2.getBoundsInParent()))
+				.count();
 	}
 
 	public static List<Edge> edges(Cell c, Collection<Edge> allEdges) {

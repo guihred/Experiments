@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -68,7 +73,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
         light.translateZProperty().bind(camera.translateZProperty());
 		root.getChildren().add(light);
 
-		MeshView[] fantasmas = { 
+		MeshView[] ghosts = {
 				gerarAnimal(MESH_GHOST, Color.AQUAMARINE),
 				gerarAnimal(MESH_GHOST, Color.BEIGE),
 				gerarAnimal(MESH_GHOST, Color.BLUEVIOLET),
@@ -79,9 +84,9 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 
 		};
 
-		new MovimentacaoAleatoria(this, fantasmas).start();
+		new MovimentacaoAleatoria(this, ghosts).start();
 
-		root.getChildren().addAll(fantasmas);
+		root.getChildren().addAll(ghosts);
 
 		Scene sc = new Scene(new Group(subScene));
 		// End Step 2a

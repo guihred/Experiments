@@ -139,7 +139,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		light.translateZProperty().bind(camera.translateZProperty());
 		root.getChildren().add(light);
 
-		MeshView[] fantasmas = { generateGhost(MESH_GHOST, Color.AQUAMARINE),
+		MeshView[] ghosts = { generateGhost(MESH_GHOST, Color.AQUAMARINE),
 				generateGhost(MESH_GHOST, Color.BROWN),
 				generateGhost(MESH_GHOST, Color.CHARTREUSE),
 				generateGhost(MESH_GHOST, Color.DODGERBLUE),
@@ -160,9 +160,9 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 				generateGhost(MESH_GHOST, Color.WHITESMOKE),
 				generateGhost(MESH_GHOST, Color.YELLOWGREEN), };
 
-		movimentacao = new MovimentacaoAleatoria(this, fantasmas);
+		movimentacao = new MovimentacaoAleatoria(this, ghosts);
 		movimentacao.start();
-		root.getChildren().addAll(fantasmas);
+		root.getChildren().addAll(ghosts);
 
 		Scene sc = new Scene(new Group(subScene));
 		// End Step 2a

@@ -7,7 +7,13 @@ import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.*;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.DrawMode;
@@ -95,7 +101,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		light.translateZProperty().bind(camera.translateZProperty());
 		root.getChildren().add(light);
 
-		MeshView[] fantasmas = { generateGhost(MESH_GHOST, Color.AQUAMARINE),
+		MeshView[] ghosts = { generateGhost(MESH_GHOST, Color.AQUAMARINE),
 				generateGhost(MESH_GHOST, Color.BROWN),
 				generateGhost(MESH_GHOST, Color.CHARTREUSE),
 				generateGhost(MESH_GHOST, Color.DODGERBLUE),
@@ -115,9 +121,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 				generateGhost(MESH_GHOST, Color.VIOLET),
 				generateGhost(MESH_GHOST, Color.YELLOWGREEN), };
 
-		movimentacao = new MovimentacaoAleatoria(this, fantasmas);
+		movimentacao = new MovimentacaoAleatoria(this, ghosts);
 		movimentacao.start();
-		root.getChildren().addAll(fantasmas);
+		root.getChildren().addAll(ghosts);
 
 		Scene sc = new Scene(new Group(subScene));
 		sc.setCursor(Cursor.NONE);
