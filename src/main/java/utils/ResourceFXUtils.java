@@ -2,12 +2,7 @@ package utils;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.awt.Desktop;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -15,16 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -44,6 +36,7 @@ import org.blinkenlights.jid3.v2.ID3V2Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * @author Note
  *
@@ -52,27 +45,27 @@ import org.slf4j.LoggerFactory;
  */
 public final class ResourceFXUtils {
 
-	private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log();
 
     private ResourceFXUtils() {
-	}
+    }
 
-	public static URL toURL(String arquivo) {
-		return ResourceFXUtils.class.getClassLoader().getResource(arquivo);
-	}
+    public static URL toURL(String arquivo) {
+        return ResourceFXUtils.class.getClassLoader().getResource(arquivo);
+    }
 
-	public static String toExternalForm(String arquivo) {
+    public static String toExternalForm(String arquivo) {
         return ResourceFXUtils.class.getClassLoader().getResource(arquivo).toExternalForm();
-	}
+    }
 
-	public static String toFullPath(String arquivo) {
+    public static String toFullPath(String arquivo) {
         try {
             return URLDecoder.decode(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile(), "UTF-8");
         } catch (Exception e) {
             LOGGER.error("File Error:" + arquivo, e);
             return null;
         }
-	}
+    }
 
     public static void initializeFX() {
         Platform.setImplicitExit(false);
@@ -87,13 +80,13 @@ public final class ResourceFXUtils {
         return ResourceFXUtils.class.getClassLoader().getResourceAsStream(arquivo);
     }
 
-	public static URI toURI(String arquivo) {
-		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();
-	}
+    public static URI toURI(String arquivo) {
+        return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();
+    }
 
-	public static Path toPath(String arquivo) {
-		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toPath();
-	}
+    public static Path toPath(String arquivo) {
+        return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toPath();
+    }
 
     public static Mesh importStlMesh(String arquivo) {
         File file = new File(arquivo);
@@ -185,30 +178,58 @@ public final class ResourceFXUtils {
 
     public static Map<String, String> executeInConsole(String cmd, Map<String, String> responses) {
         Map<String, String> result = new HashMap<>();
-		try {
+        try {
             LOGGER.info("Executing \"{}\"", cmd);
-			Runtime runtime = Runtime.getRuntime();
+            Runtime runtime = Runtime.getRuntime();
 
-			Process exec = runtime.exec(cmd.split(" "));
-			try (BufferedReader in = new BufferedReader(
-					new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8));) {
-				String line;
-				while ((line = in.readLine()) != null) {
-				    LOGGER.trace(line);
-				    String line1 = line;
-				    result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
-				            .collect(Collectors.toMap(Entry<String, String>::getKey,
-				                    e -> line1.replaceAll(e.getKey(), e.getValue()))));
+            Process exec = runtime.exec(cmd.split(" "));
+            try (BufferedReader in = new BufferedReader(
+                    new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8));) {
+                String line;
+                while ((line = in.readLine()) != null) {
+                    LOGGER.trace(line);
+                    String line1 = line;
+                    result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
+                            .collect(Collectors.toMap(Entry<String, String>::getKey,
+                                    e -> line1.replaceAll(e.getKey(), e.getValue()))));
 
-				}
-				exec.waitFor();
-				in.close();
-			} catch (Exception e) {
-		        LOGGER.error("", e);
-			}
+                }
+                exec.waitFor();
+                in.close();
+            } catch (Exception e) {
+                LOGGER.error("", e);
+            }
         } catch (Exception e) {
             LOGGER.error("", e);
         }
+        return result;
+    }
+
+    public static Map<String, ObservableList<String>> executeInConsoleAsync(String cmd, Map<String, String> responses) {
+        Map<String, ObservableList<String>> result = new HashMap<>();
+        result.put("active", FXCollections.observableArrayList());
+        responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
+        new Thread(RunnableEx.makeRunnable(() -> {
+            LOGGER.info("Executing \"{}\"", cmd);
+            Runtime runtime = Runtime.getRuntime();
+            Process exec = runtime.exec(cmd);
+            try (BufferedReader in = new BufferedReader(
+                    new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8));) {
+                String line;
+                while ((line = in.readLine()) != null) {
+                    LOGGER.info(line);
+                    String line1 = line;
+                    Map<String, String> regMap = responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
+                            .collect(Collectors.toMap(Entry<String, String>::getKey,
+                                    e -> line1.replaceAll(e.getKey(), e.getValue())));
+                    regMap.forEach((reg, li) -> result.get(reg).add(li));
+                }
+                exec.waitFor();
+                result.get("active").add("");
+            } catch (Exception e) {
+                LOGGER.error("", e);
+            }
+        })).start();
         return result;
     }
 
@@ -270,6 +291,5 @@ public final class ResourceFXUtils {
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
         return (value - min) * (newMax - newMin) / (max - min) + newMin;
     }
-
 
 }

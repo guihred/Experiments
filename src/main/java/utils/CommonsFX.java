@@ -12,11 +12,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcTo;
@@ -31,13 +27,17 @@ public final class CommonsFX {
 	private CommonsFX() {
 	}
 
-	public static void displayDialog(String text, String buttonMsg, Runnable c) {
+    public static void displayDialog(String text, String buttonMsg, Runnable c, Node... node) {
 		final Stage stage1 = new Stage();
 		final Button button = CommonsFX.newButton(buttonMsg, a -> {
 			c.run();
 			stage1.close();
 		});
-		final VBox group = new VBox(new Text(text), button);
+        final VBox group = new VBox(new Text(text));
+        if (node != null && node.length > 0) {
+            group.getChildren().addAll(node);
+        }
+        group.getChildren().addAll(button);
 		group.setAlignment(Pos.CENTER);
 		stage1.setScene(new Scene(group));
 		stage1.show();

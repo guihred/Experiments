@@ -7,6 +7,15 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Slider;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
@@ -20,25 +29,59 @@ public class SongUtils {
     private static final Logger LOG = HasLogging.log();
 
 	private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
-            .appendValue(ChronoField.MINUTE_OF_HOUR, 2).optionalStart().appendLiteral(':')
-            .appendValue(ChronoField.SECOND_OF_MINUTE, 2).optionalStart().appendLiteral('.')
-            .appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
+            .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':')
+            .appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendLiteral(':')
+            .appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
+            .appendValue(ChronoField.MILLI_OF_SECOND, 2).toFormatter();
 
     private static final String FFMPEG = ResourceFXUtils.getUserFolder("Downloads").getAbsolutePath()
             + "\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";
     private SongUtils() {
     }
 
-    public static void convertToAudio(File mp4File) {
+    public static DoubleProperty convertToAudio(File mp4File) {
         StringBuilder cmd = new StringBuilder();
         cmd.append(FFMPEG);
         cmd.append(" -i \"");
         cmd.append(mp4File);
         cmd.append("\" \"");
-        cmd.append(new File(mp4File.getParent(), mp4File.getName().replaceAll("\\..+", ".mp3")));
+        File obj = new File(mp4File.getParent(), mp4File.getName().replaceAll("\\..+", ".mp3"));
+        if (obj.exists()) {
+            obj.delete();
+        }
+        cmd.append(obj);
         cmd.append("\"");
+        Map<String, String> responses = new HashMap<>();
+        String key = "size=\\s.+ time=(.+) bitrate=.+";
+        responses.put(key, "$1");
+        String key2 = "\\s*Duration: ([^,]+), .+";
+        responses.put(key2, "$1");
         // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
-        ResourceFXUtils.executeInConsole(cmd.toString());
+        SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
+        Map<String, ObservableList<String>> executeInConsoleAsync = ResourceFXUtils
+                .executeInConsoleAsync(cmd.toString(), responses);
+        
+        DoubleProperty du = new SimpleDoubleProperty(1);
+        executeInConsoleAsync.get(key2).addListener((ListChangeListener<String>) c -> {
+            while (c.next()) {
+                List<? extends String> addedSubList = c.getAddedSubList();
+                LocalTime parse = TIME_OF_SECONDS_FORMAT.parse(addedSubList.get(0),LocalTime::from);
+                LOG.info("duration {}", parse);
+                du.set(ChronoUnit.MILLIS.between(LocalTime.MIN, parse));
+                
+            }
+        });
+        executeInConsoleAsync.get(key).addListener((ListChangeListener<String>) c -> {
+            while (c.next()) {
+                List<? extends String> addedSubList = c.getAddedSubList();
+                LocalTime parse = TIME_OF_SECONDS_FORMAT.parse(addedSubList.get(0), LocalTime::from);
+                long between = ChronoUnit.MILLIS.between(LocalTime.MIN, parse);
+                progress.set(between / du.doubleValue());
+            }
+        });
+        executeInConsoleAsync.get("active")
+                .addListener((InvalidationListener) observable -> progress.set(1));
+        return progress;
     }
 
 
@@ -118,4 +161,5 @@ public class SongUtils {
             positionSlider.setValue(currentTime.toMillis() / total.toMillis());
         }
     }
+
 }

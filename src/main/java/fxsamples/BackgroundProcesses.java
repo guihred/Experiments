@@ -77,7 +77,7 @@ public class BackgroundProcesses extends Application {
 			public Boolean call() throws Exception {
                 for (long i = 0; i < numFiles; i++) {
 					long elapsedTime = System.currentTimeMillis();
-					copyFile("some file", "some dest file");
+                    copyFile("resultado.txt", "resultado2.txt");
 					elapsedTime = System.currentTimeMillis() - elapsedTime;
 					String status = elapsedTime + " milliseconds";
 					// queue up status
