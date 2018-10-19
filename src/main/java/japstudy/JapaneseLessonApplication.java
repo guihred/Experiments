@@ -55,8 +55,8 @@ public class JapaneseLessonApplication extends Application {
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 	}
 
-	private void editItem(final TableView<JapaneseLesson> medicamentosTable) {
-        TableViewSelectionModel<JapaneseLesson> selectionModel = medicamentosTable.getSelectionModel();
+	private void editItem(final TableView<JapaneseLesson> lessonsTable) {
+        TableViewSelectionModel<JapaneseLesson> selectionModel = lessonsTable.getSelectionModel();
         if (!selectionModel.isEmpty()) {
             JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
             Stage primaryStage = new Stage();

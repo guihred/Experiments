@@ -18,16 +18,25 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -159,15 +168,18 @@ public class MusicOrganizer extends Application {
             finalSlider.setValue(0.999);
             mediaPlayer.totalDurationProperty().addListener(e -> finalSlider.setValue(1));
             File outFile = new File("out", selectedItem.getArquivo().getName());
+			ProgressIndicator progressIndicator = new ProgressIndicator(0);
+			progressIndicator.setVisible(false);
             Button splitButton = CommonsFX.newButton("_Split",
                     e -> {
                         if (initialSlider.getValue() != 0 || finalSlider.getValue() != 1) {
-                            splitAndSave(selectedItem, mediaPlayer, initialSlider, finalSlider, outFile);
-                        } else {
-                            mediaPlayer.stop();
-                            mediaPlayer.dispose();
-                            MusicReader.saveMetadata(selectedItem);
+							splitAndSave(selectedItem, mediaPlayer, initialSlider, finalSlider, outFile,
+									progressIndicator, stage);
+							return;
                         }
+						mediaPlayer.stop();
+						mediaPlayer.dispose();
+						MusicReader.saveMetadata(selectedItem);
                         stage.close();
                     });
 
@@ -180,6 +192,7 @@ public class MusicOrganizer extends Application {
             });
             HBox hbox = new HBox(stopButton, splitButton);
             hbox.setAlignment(Pos.CENTER);
+			root.getChildren().add(progressIndicator);
             root.getChildren().add(hbox);
 
             stage.setScene(new Scene(root));
@@ -191,49 +204,42 @@ public class MusicOrganizer extends Application {
     }
 
     private void splitAndSave(Music selectedItem, MediaPlayer mediaPlayer, Slider initialSlider, Slider finalSlider,
-            File outFile) {
-        SongUtils.splitAudio(selectedItem.getArquivo(), outFile,
+			File outFile, ProgressIndicator progressIndicator, Stage stage) {
+		DoubleProperty progress = SongUtils.splitAudio(selectedItem.getArquivo(), outFile,
                 mediaPlayer.getTotalDuration().multiply(initialSlider.getValue()),
                 mediaPlayer.getTotalDuration().multiply(finalSlider.getValue()));
-        mediaPlayer.stop();
-        mediaPlayer.dispose();
-        MusicReader.saveMetadata(selectedItem, outFile);
-        try {
-            Files.copy(outFile, selectedItem.getArquivo());
-        } catch (IOException e1) {
-            LOGGER.error("", e1);
-        }
+		progressIndicator.progressProperty().bind(progress);
+		progressIndicator.setVisible(true);
+		progress.addListener((v, o, n) -> {
+			if (n.intValue() == 1) {
+				Platform.runLater(() -> {
+					mediaPlayer.stop();
+					mediaPlayer.dispose();
+					MusicReader.saveMetadata(selectedItem, outFile);
+					try {
+						Files.copy(outFile, selectedItem.getArquivo());
+					} catch (IOException e1) {
+						LOGGER.error("", e1);
+					}
+					stage.close();
+				});
+			}
+		});
     }
 
     private Slider addSlider(VBox flow, MediaPlayer mediaPlayer) {
         Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(1000).build();
         Label label = new Label("00:00");
         slider.valueProperty().addListener(
-                (observable, oldValue, newValue) -> label.setText(
-                        SongUtils.formatDurationMillis(mediaPlayer.getTotalDuration().multiply(slider.getValue()))));
+				(o, old, value) -> label.setText(
+						SongUtils.formatDurationMillis(mediaPlayer.getTotalDuration().multiply(value.doubleValue()))));
         flow.getChildren().add(label);
         flow.getChildren().add(slider);
         return slider;
     }
 
     private void handleVideo(Music selectedItem) {
-        ProgressIndicator progressIndicator = new ProgressIndicator(0);
-        final Stage stage1 = new Stage();
-        final Button button = CommonsFX.newButton("Convert", a -> {
-            DoubleProperty progress = SongUtils.convertToAudio(selectedItem.getArquivo());
-            progressIndicator.progressProperty().bind(progress);
-            progress.addListener((v, o, n) -> {
-                if (n.intValue() == 1) {
-                    Platform.runLater(stage1::close);
-                }
-            });
-
-        });
-        final VBox group = new VBox(new Text("Convert to Mp3"), progressIndicator, button);
-        group.setAlignment(Pos.CENTER);
-        stage1.setScene(new Scene(group));
-        stage1.show();
-
+		CommonsFX.displayDialog("Convert", "Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()));
     }
 
     @SuppressWarnings("unchecked")
