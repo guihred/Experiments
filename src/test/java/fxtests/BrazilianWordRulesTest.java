@@ -1,4 +1,4 @@
-package language;
+package fxtests;
 
 import java.io.IOException;
 import java.net.URI;

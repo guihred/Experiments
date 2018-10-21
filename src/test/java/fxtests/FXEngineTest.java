@@ -3,6 +3,7 @@ package fxtests;
 import gaming.ex01.SnakeLauncher;
 import gaming.ex11.DotsLauncher;
 import gaming.ex11.DotsSquare;
+import gaming.ex18.Square2048Launcher;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +31,8 @@ public class FXEngineTest extends ApplicationTest {
     public void verify() throws Exception {
         interactNoWait(RunnableEx.makeRunnable(() -> new SnakeLauncher().start(currentStage)));
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
-
+        interactNoWait(RunnableEx.makeRunnable(() -> new Square2048Launcher().start(currentStage)));
+        type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
         interactNoWait(RunnableEx.makeRunnable(() -> new DotsLauncher().start(currentStage)));
         NodeQuery lookup = lookup(e -> e instanceof DotsSquare);
         Set<Node> queryAll = lookup.queryAll().stream().limit(20).collect(Collectors.toSet());

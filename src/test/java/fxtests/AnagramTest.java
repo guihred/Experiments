@@ -1,4 +1,4 @@
-package jexercises;
+package fxtests;
 
 
 import exercism.Anagram;

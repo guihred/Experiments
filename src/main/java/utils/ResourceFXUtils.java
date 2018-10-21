@@ -2,21 +2,20 @@ package utils;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.awt.Desktop;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -28,12 +27,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Mesh;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
-import org.blinkenlights.jid3.ID3Tag;
-import org.blinkenlights.jid3.MP3File;
-import org.blinkenlights.jid3.v2.APICID3V2Frame;
-import org.blinkenlights.jid3.v2.ID3V2Frame;
-import org.blinkenlights.jid3.v2.ID3V2Tag;
-import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class ResourceFXUtils {
+
 
     private static final Logger LOGGER = HasLogging.log();
 
@@ -135,128 +129,10 @@ public final class ResourceFXUtils {
             LoggerFactory.getLogger(ResourceFXUtils.class).error("ERROR ", e);
             return null;
         }
-
     }
 
-    public static void executeInConsole(String cmd) {
-        try {
-            LOGGER.info("Executing \"{}\"", cmd);
-            Process p = Runtime.getRuntime().exec(cmd);
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8));
-            String line;
-            while ((line = in.readLine()) != null) {
-                LOGGER.info("\"{}\"", line);
-            }
-            p.waitFor();
-            in.close();
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-    }
 
-    public static List<String> executeInConsoleInfo(String cmd) {
-        List<String> execution = new ArrayList<>();
-        try {
-            LOGGER.info("Executing \"{}\"", cmd);
-
-            Process p = Runtime.getRuntime().exec(cmd);
-
-            BufferedReader in2 = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
-            String line;
-            while ((line = in2.readLine()) != null) {
-                LOGGER.info("{}", line);
-                execution.add(line);
-            }
-            p.waitFor();
-            in2.close();
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-        return execution;
-    }
-
-    public static Map<String, String> executeInConsole(String cmd, Map<String, String> responses) {
-        Map<String, String> result = new HashMap<>();
-        try {
-            LOGGER.info("Executing \"{}\"", cmd);
-            Runtime runtime = Runtime.getRuntime();
-
-            Process exec = runtime.exec(cmd.split(" "));
-            try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8));) {
-                String line;
-                while ((line = in.readLine()) != null) {
-                    LOGGER.trace(line);
-                    String line1 = line;
-                    result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
-                            .collect(Collectors.toMap(Entry<String, String>::getKey,
-                                    e -> line1.replaceAll(e.getKey(), e.getValue()))));
-
-                }
-                exec.waitFor();
-                in.close();
-            } catch (Exception e) {
-                LOGGER.error("", e);
-            }
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-        return result;
-    }
-
-    public static Map<String, ObservableList<String>> executeInConsoleAsync(String cmd, Map<String, String> responses) {
-        Map<String, ObservableList<String>> result = new HashMap<>();
-        result.put("active", FXCollections.observableArrayList());
-        responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
-        new Thread(RunnableEx.makeRunnable(() -> {
-            LOGGER.info("Executing \"{}\"", cmd);
-            Runtime runtime = Runtime.getRuntime();
-            Process exec = runtime.exec(cmd);
-            try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8));) {
-                String line;
-                while ((line = in.readLine()) != null) {
-                    LOGGER.info(line);
-                    String line1 = line;
-                    Map<String, String> regMap = responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
-                            .collect(Collectors.toMap(Entry<String, String>::getKey,
-                                    e -> line1.replaceAll(e.getKey(), e.getValue())));
-                    regMap.forEach((reg, li) -> result.get(reg).add(li));
-                }
-                exec.waitFor();
-                result.get("active").add("");
-            } catch (Exception e) {
-                LOGGER.error("", e);
-            }
-        })).start();
-        return result;
-    }
-
-    public static Image extractEmbeddedImage(File mp3) {
-        MP3File mp31 = new MP3File(mp3);
-        try {
-            for (ID3Tag tag : mp31.getTags()) {
-
-                if (tag instanceof ID3V2_3_0Tag) {
-                    ID3V2_3_0Tag tag2 = (ID3V2_3_0Tag) tag;
-
-                    if (tag2.getAPICFrames() != null && tag2.getAPICFrames().length > 0) {
-                        // Simply take the first image that is available.
-                        APICID3V2Frame frame = tag2.getAPICFrames()[0];
-                        return new Image(new ByteArrayInputStream(frame.getPictureData()));
-                    }
-                }
-            }
-            ID3V2Tag id3v2Tag = mp31.getID3V2Tag();
-            ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
-            String singleFramesStr = Arrays.toString(singleFrames);
-            LOGGER.trace("SingleFrames={}", singleFramesStr);
-        } catch (Exception e) {
-            LOGGER.trace("", e);
-        }
-        return null;
-    }
 
     public static Image createImage(double size1, float[][] noise) {
         int width = (int) size1;
@@ -273,9 +149,7 @@ public final class ResourceFXUtils {
                 pw.setColor(x, y, color);
             }
         }
-
         return wr;
-
     }
 
     public static double clamp(double value, double min, double max) {

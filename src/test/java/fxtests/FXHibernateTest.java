@@ -1,6 +1,6 @@
 package fxtests;
 
-import static language.FXTesting.measureTime;
+import static fxtests.FXTesting.measureTime;
 
 import contest.db.ContestQuestionEditingDisplay;
 import election.CrawlerCandidateTask;
@@ -14,7 +14,6 @@ import japstudy.db.HibernateUtil;
 import java.util.Set;
 import javafx.scene.Node;
 import javafx.stage.Stage;
-import language.FXTesting;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;

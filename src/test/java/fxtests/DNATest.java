@@ -1,4 +1,4 @@
-package jexercises;
+package fxtests;
 
 import com.google.common.collect.ImmutableMap;
 import exercism.DNA;

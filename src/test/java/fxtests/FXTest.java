@@ -50,9 +50,9 @@ import gaming.ex16.MadMazeLauncher;
 import gaming.ex17.PuzzleLauncher;
 import gaming.ex18.Square2048Launcher;
 import gaming.ex19.SudokuLauncher;
+import gaming.ex20.RoundMazeLauncher;
 import graphs.app.GraphModelLauncher;
 import labyrinth.*;
-import language.FXTesting;
 import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
@@ -105,6 +105,7 @@ public final class FXTest implements HasLogging {
         FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
                 ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class, PdfReader.class,
                 SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class, SudokuLauncher.class,
+                RoundMazeLauncher.class,
                 SolitaireLauncher.class, SphereSystemApp.class, WorkingWithTableView.class, Square2048Launcher.class,
                 StageControlExample.class, TaskProgressApp.class, TetrisLauncher.class, TheMenuGrid.class,
                 ThreadInformationApp.class, TimelineExample.class, TriangleMeshes.class, TronLauncher.class,

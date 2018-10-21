@@ -1,6 +1,6 @@
 package fxtests;
 
-import static language.FXTesting.measureTime;
+import static fxtests.FXTesting.measureTime;
 
 import ex.j8.Chapter4;
 import extract.ExcelService;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
-import language.FXTesting;
 import ml.Word2VecExample;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -34,6 +33,7 @@ public class LeitorArquivosTest {
 
     @BeforeClass
     public static void init() {
+        Platform.setImplicitExit(false);
         new JFXPanel().toString();
         Platform.setImplicitExit(false);
     }
@@ -113,10 +113,11 @@ public class LeitorArquivosTest {
             Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
                     .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
             filesByPackage.forEach((pack, files) -> {
-				HasLogging.log(1).info(pack);
+                LOG.info(pack);
                 Map<String, Map<String, Long>> packageDependencyMap = PackageTopology.createFileDependencyMap(files);
                 PackageTopology.printDependencyMap(packageDependencyMap);
             });
         });
+
     }
 }

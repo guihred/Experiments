@@ -1,6 +1,6 @@
-package jexercises;
+package fxtests;
 
-import static language.FXTesting.measureTime;
+import static fxtests.FXTesting.measureTime;
 
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;

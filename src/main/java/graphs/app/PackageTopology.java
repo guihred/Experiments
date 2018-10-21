@@ -108,7 +108,6 @@ public class PackageTopology extends BaseTopology {
         Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
                 .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
         filesByPackage.forEach((pack, files) -> {
-            LOG.info(pack);
             Map<String, Map<String, Long>> packageDependencyMap = createFileDependencyMap(files);
             printDependencyMap(packageDependencyMap);
         });
@@ -135,7 +134,7 @@ public class PackageTopology extends BaseTopology {
             }
             table.append("\n");
         }
-        LOG.info("{}", table);
+        LOG.trace("{}", table);
     }
 
     private static String mapString(Object s, int l) {

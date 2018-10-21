@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
+import utils.ConsoleUtils;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class PingTraceRoute {
 	private static final Logger LOG = HasLogging.log();
@@ -32,10 +33,12 @@ public class PingTraceRoute {
         responses.put(ttl, "$1");// RECEIVED
         String lost = ".+Perdidos = (\\d+).+";
         responses.put(lost, "$1");// RECEIVED
-        Map<String, String> executeInConsole = ResourceFXUtils
+        Map<String, String> executeInConsole = ConsoleUtils
                 .executeInConsole("ping " + address + " -f -n 1 ",
                 responses);
         //        Pacotes: Enviados = 4, Recebidos = 0, Perdidos = 4
+        Map<String, String> info = new HashMap<>();
+
         LOG.info("IP = {}", executeInConsole.get(ipRegex));
         LOG.info("SENT = {}", executeInConsole.get(sent));
         String arg = executeInConsole.get(received);
@@ -47,8 +50,18 @@ public class PingTraceRoute {
             LOG.info("ROUTE = {}", traceRoute);
             LOG.info("HOPS = {}", traceRoute.size());
         }
+        info.put("IP", executeInConsole.get(ipRegex));
+        info.put("SENT", executeInConsole.get(sent));
+        info.put("RECEIVED", arg);
+        info.put("LOST", executeInConsole.get(lost));
+        info.put("TTL", executeInConsole.get(ttl));
+        if (arg != null && !"0".equals(arg)) {
+            List<String> traceRoute = traceRoute(address);
+            info.put("ROUTE", traceRoute.stream().collect(Collectors.joining("\n")));
+            info.put("HOPS", Integer.toString(traceRoute.size()));
+        }
 
-        return responses;
+        return info;
     }
 
     public static List<String> traceRoute(String address) {
@@ -61,7 +74,7 @@ public class PingTraceRoute {
         responses.put(route, "$1");// RECEIVED
         String ipRegex = "Disparando ([\\d\\.]+) .+";
         responses.put(ipRegex, "$1");// IP
-        Map<String, String> executeInConsole = ResourceFXUtils
+        Map<String, String> executeInConsole = ConsoleUtils
                 .executeInConsole("ping " + address + " -i " + i + " -n 1 ", responses);
 
         String string = executeInConsole.get(route);

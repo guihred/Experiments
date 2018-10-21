@@ -1,4 +1,4 @@
-package jexercises;
+package fxtests;
 
 import crypt.ShiftCipherExercise;
 import crypt.VigenereCCipher;
