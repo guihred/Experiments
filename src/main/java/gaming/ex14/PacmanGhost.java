@@ -283,14 +283,14 @@ public class PacmanGhost extends Group implements HasLogging {
 		return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
 	}
 
-	private static MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
+	private static MazeSquare getBestMaze(MazeSquare[][] maze, int x, int y, int xg, int yg) {
         if (MazeSquare.getPaths() == null) {
 			return null;
 		}
-		hx = Integer.max(hx, 0);
-		hxg = Integer.max(hxg, 0);
-		hy = Integer.max(hy, 0);
-		hyg = Integer.max(hyg, 0);
+		int hx = Integer.max(x, 0);
+		int hxg = Integer.max(xg, 0);
+		int hy = Integer.max(y, 0);
+		int hyg = Integer.max(yg, 0);
 
         Map<MazeSquare, MazeSquare> map = MazeSquare.getPaths().get(maze[hxg][hyg]);
 		if (map == null) {

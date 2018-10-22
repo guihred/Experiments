@@ -34,8 +34,11 @@ public final class ImprovedNoise {
     private ImprovedNoise() {
     }
 
-    public  static double noise(double x, double y, double z) {
-        int x1 = (int) Math.floor(x) & 255; // FIND UNIT CUBE THAT
+	public static double noise(double rx, double ry, double rz) {
+		double x = rx;
+		double y = ry;
+		double z = rz;
+		int x1 = (int) Math.floor(x) & 255; // FIND UNIT CUBE THAT
         int y1 = (int) Math.floor(y) & 255;
         int z1 = (int) Math.floor(z) & 255;// CONTAINS POINT.
         x -= Math.floor(x); // FIND RELATIVE X,Y,Z
