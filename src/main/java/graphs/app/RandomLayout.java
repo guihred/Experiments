@@ -48,7 +48,7 @@ public class RandomLayout implements Layout {
 					minIntersection = j;
 				}
 			} while (minIntersection == Integer.MAX_VALUE
-					|| i++ < 50 && GraphModelAlgorithms.anyIntersection(edges, allEdges));
+                    || i++ < 10 && GraphModelAlgorithms.anyIntersection(edges, allEdges));
 			cell.relocate(minx, miny);
 		}
 	}
