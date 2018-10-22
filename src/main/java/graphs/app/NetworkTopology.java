@@ -49,12 +49,10 @@ public class NetworkTopology extends BaseTopology {
                 graph.getModel().addEdge(currentCell, hop, 1);
                 currentCell = hop;
             }
-
         }
-
         List<Cell> cells = graph.getModel().getAddedCells();
-        ConcentricLayout.layoutConcentric(cells, graph.getModel().getAddedEdges());
 		scanPossibleOSes.forEach(this::addDescription);
+		RandomLayout.layoutRandom(cells, graph.getModel().getAddedEdges());
 
         graph.endUpdate();
 

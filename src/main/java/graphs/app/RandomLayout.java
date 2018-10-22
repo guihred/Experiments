@@ -11,7 +11,6 @@ public class RandomLayout implements Layout {
 
 	private Graph graph;
 
-	private Random rnd = new Random();
 
 	public RandomLayout(Graph graph) {
 		this.graph = graph;
@@ -23,7 +22,12 @@ public class RandomLayout implements Layout {
 		List<Cell> cells = graph.getModel().getAllCells();
 		 List<Edge> allEdges = graph.getModel().getAllEdges();
         graph.clean();
-        int bound = 400;
+		layoutRandom(cells, allEdges);
+	}
+
+	public static void layoutRandom(List<Cell> cells, List<Edge> allEdges) {
+		Random rnd = new Random();
+		int bound = 400;
 		for (Cell cell : cells) {
 			int i = 0;
 			int minIntersection = Integer.MAX_VALUE;
@@ -45,9 +49,7 @@ public class RandomLayout implements Layout {
 				}
 			} while (minIntersection == Integer.MAX_VALUE
 					|| i++ < 50 && GraphModelAlgorithms.anyIntersection(edges, allEdges));
-
 			cell.relocate(minx, miny);
-
 		}
 	}
 
