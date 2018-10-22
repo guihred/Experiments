@@ -1,10 +1,9 @@
 package ethical.hacker;
 
+import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
@@ -15,8 +14,13 @@ import utils.HasLogging;
 public class NetworkInformationScanner {
 
 	private static final Logger LOG = HasLogging.log();
-    public static void main(String[] args) throws SocketException {
-        displayNetworkInformation();
+
+    public static void main(String[] args) {
+        try {
+            displayNetworkInformation();
+        } catch (SocketException e) {
+            LOG.error("", e);
+        }
     }
 
     public static void displayNetworkInformation() throws SocketException {
@@ -34,6 +38,37 @@ public class NetworkInformationScanner {
                 LOG.info("{}", description);
             }
         }
+    }
+
+    public static List<Map<String, String>> getNetworkInformation() {
+        try {
+            Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+            Map<Class<?>, FunctionEx<Object, String>> toStringMAp = new HashMap<>();
+            toStringMAp.put(byte[].class, o -> convertToString((byte[]) o));
+            List<Map<String, String>> arrayList = new ArrayList<>();
+
+            toStringMAp.put(InetAddress.class, o -> convertToString((InetAddress) o));
+            while (e.hasMoreElements()) {
+                NetworkInterface n = e.nextElement();
+                if (n.getInterfaceAddresses().isEmpty() || !n.isUp() || n.isLoopback()
+                        || !isLocallyAdministered(n.getHardwareAddress())) {
+                    continue;
+                }
+                Map<String, String> description = ClassReflectionUtils.getDescriptionMap(n, toStringMAp);
+                if (!description.isEmpty()) {
+                    LOG.info("{}", description);
+                    arrayList.add(description);
+                }
+            }
+            return arrayList;
+        } catch (SocketException e) {
+            LOG.error("", e);
+            return Collections.emptyList();
+        }
+    }
+
+    private static String convertToString(InetAddress o) {
+        return o.getHostAddress();
     }
 
     private static boolean isLocallyAdministered(byte[] macAddress) {

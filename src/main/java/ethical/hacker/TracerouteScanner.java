@@ -1,18 +1,14 @@
 package ethical.hacker;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
+import utils.ConsoleUtils;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class TracerouteScanner {
 
@@ -22,7 +18,7 @@ public class TracerouteScanner {
 	private static final String REUSED_ROUTE_REGEX_1 = "-\\s*Hop (\\d+) is the same as for ([\\d\\.]+)";
 	private static final String HOP_REGEX = "\\d+\\s+[\\d\\.]+ ms\\s+([\\d\\.]+)|\\d+\\s+[\\d\\.]+ ms\\s+[\\w\\.]+ \\(([\\d\\.]+)\\)";
 
-	public static final String NETWORK_ADDRESS = "192.168.1.103/22";
+    public static final String NETWORK_ADDRESS = "10.69.64.31/28";
 
 	public static void main(String[] args) {
 		Map<String, List<String>> scanNetwork = scanNetworkRoutes(NETWORK_ADDRESS);
@@ -32,11 +28,11 @@ public class TracerouteScanner {
 	public static ObservableMap<String, List<String>> scanNetworkRoutes(String networkAddress) {
 		ObservableMap<String, List<String>> synchronizedObservableMap = FXCollections
 				.synchronizedObservableMap(FXCollections.observableHashMap());
-		new Thread(() -> {
+        new Thread(() -> {
 
 			Locale.setDefault(Locale.ENGLISH);
 			String hostRegex = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [\\w\\.]+ \\(([\\d\\.]+)\\)";
-			List<String> executeInConsole = ResourceFXUtils
+        List<String> executeInConsole = ConsoleUtils
 					.executeInConsoleInfo("\"" + NMAP_FILES + "\" --traceroute -sn " + networkAddress);
 			Map<String, List<String>> hostsPorts = new HashMap<>();
 			String host = "";
@@ -53,7 +49,7 @@ public class TracerouteScanner {
 			Map<String, List<String>> netRoutes = hostsPorts.entrySet().stream()
 					.collect(Collectors.toMap(Entry<String, List<String>>::getKey, e -> extractHops(hostsPorts, e)));
 			synchronizedObservableMap.putAll(netRoutes);
-		}).start();
+        }).start();
 
 		return synchronizedObservableMap;
 	}

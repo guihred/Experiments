@@ -11,6 +11,7 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
+import utils.ConsoleUtils;
 import utils.ResourceFXUtils;
 
 
@@ -40,6 +41,7 @@ public class FXEngineGraphTest extends ApplicationTest {
         for (Node e : queryButtons) {
             clickOn(e);
         }
+
     }
 
     @SuppressWarnings("rawtypes")
@@ -57,6 +59,7 @@ public class FXEngineGraphTest extends ApplicationTest {
             }
 
         }
+        ConsoleUtils.waitAllProcesses();
     }
 
 

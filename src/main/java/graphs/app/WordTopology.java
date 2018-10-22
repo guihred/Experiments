@@ -10,8 +10,8 @@ import utils.ResourceFXUtils;
 public class WordTopology extends BaseTopology {
 
 
-    public WordTopology(Graph graph) {
-        super(graph, "Word");
+    public WordTopology(int size, Graph graph) {
+        super(graph, "Word", size);
 	}
 
 
@@ -40,7 +40,7 @@ public class WordTopology extends BaseTopology {
     private String[] getWords() {
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"))) {
             return lines.flatMap((String e) -> Stream.of(e.split("[^a-zA-Z]"))).filter(s -> s.length() == 4)
-                    .map(String::toLowerCase).distinct().toArray(String[]::new);
+                    .map(String::toLowerCase).distinct().sorted().limit(getSize()).toArray(String[]::new);
         } catch (IOException e) {
             getLogger().error("", e);
         }

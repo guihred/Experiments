@@ -2,15 +2,10 @@ package ethical.hacker;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import org.slf4j.Logger;
+import utils.ConsoleUtils;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class PortScanner {
 
@@ -32,9 +27,9 @@ public class PortScanner {
         Locale.setDefault(Locale.ENGLISH);
         String hostRegex = "Nmap scan report for ([\\d\\.]+)";
         String portRegex = "\\d+/.+";
-        List<String> executeInConsole = ResourceFXUtils
+        List<String> executeInConsole = ConsoleUtils
                 .executeInConsoleInfo(
-                        "\"" + NMAP_FILES + "\" --open -sV --top-ports 10 " + networkAddress);
+                        "\"" + NMAP_FILES + "\" -sV --top-ports 10 " + networkAddress);
         Map<String, List<String>> hostsPorts = new HashMap<>();
         String host = "";
         for (String line : executeInConsole) {
@@ -46,9 +41,7 @@ public class PortScanner {
 
                 hostsPorts.get(host).add(line);
             }
-
         }
-
         return hostsPorts;
     }
 
@@ -56,7 +49,7 @@ public class PortScanner {
         Locale.setDefault(Locale.ENGLISH);
         String hostRegex = "Nmap scan report for ([\\d\\.]+)";
 		String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*|OS details: (.+)";
-        List<String> executeInConsole = ResourceFXUtils
+        List<String> executeInConsole = ConsoleUtils
 				.executeInConsoleInfo(
 						"\"" + NMAP_FILES + "\" -p 22,80,445,65123,56123 --traceroute -O " + networkAddress);
         Map<String, List<String>> hostsPorts = new HashMap<>();
@@ -67,10 +60,8 @@ public class PortScanner {
                 hostsPorts.put(host, new ArrayList<>());
             }
             if (line.matches(osRegex) && hostsPorts.containsKey(host)) {
-
 				hostsPorts.get(host).add(line.replaceAll(osRegex, "$1$2$3$4$5"));
             }
-
         }
 
         return hostsPorts;
@@ -106,7 +97,7 @@ public class PortScanner {
 
     public static void main(String[] args) {
 
-		Map<String, List<String>> scanNetwork = scanPossibleOSes(TracerouteScanner.NETWORK_ADDRESS);
+        Map<String, List<String>> scanNetwork = scanNetworkOpenPorts(TracerouteScanner.NETWORK_ADDRESS);
 
 		scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
     }

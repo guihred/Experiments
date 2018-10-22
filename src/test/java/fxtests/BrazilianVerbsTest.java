@@ -1,4 +1,4 @@
-package language;
+package fxtests;
 
 import static org.junit.Assert.assertEquals;
 

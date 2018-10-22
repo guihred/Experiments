@@ -1,10 +1,10 @@
-package jexercises;
+package fxtests;
 
+import static fxtests.FXTesting.measureTime;
+import static fxtests.FXTesting.measureTimeExpectException;
 import static japstudy.JapanRefactoring.TXT_FILE;
 import static japstudy.JapanRefactoring.refactorJapaneseFile;
 import static japstudy.JapanRefactoring.renameFile;
-import static language.FXTesting.measureTime;
-import static language.FXTesting.measureTimeExpectException;
 
 import ex.j8.Chapter1;
 import ex.j8.Chapter2;

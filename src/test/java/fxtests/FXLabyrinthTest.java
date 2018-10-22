@@ -6,7 +6,6 @@ import gaming.ex15.RubiksCubeLauncher;
 import javafx.stage.Stage;
 import labyrinth.Labyrinth3DMouseControl;
 import labyrinth.Labyrinth3DWallTexture;
-import language.FXTesting;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import utils.ResourceFXUtils;

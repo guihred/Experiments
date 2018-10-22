@@ -1,7 +1,7 @@
-package jexercises;
+package fxtests;
 
+import static fxtests.FXTesting.measureTime;
 import static java.util.stream.Collectors.toList;
-import static language.FXTesting.measureTime;
 
 import cubesystem.ElementWiseOp;
 import ex.j9.Ch1;

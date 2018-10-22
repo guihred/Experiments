@@ -1,6 +1,9 @@
 package simplebuilder;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -18,6 +21,15 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> addColumn(String columnName, String propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
+        column.setPrefWidth(150);
+        table.getColumns().add(column);
+        return this;
+    }
+
+    public SimpleTableViewBuilder<T> addColumn(String columnName, Function<T, ?> propertyName) {
+        final TableColumn<T, String> column = new TableColumn<>(columnName);
+        column.setCellValueFactory(
+                param -> new SimpleStringProperty(Objects.toString(propertyName.apply(param.getValue()))));
         column.setPrefWidth(150);
         table.getColumns().add(column);
         return this;

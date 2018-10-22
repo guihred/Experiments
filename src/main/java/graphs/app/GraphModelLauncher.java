@@ -1,10 +1,6 @@
 package graphs.app;
 
-import graphs.entities.Cell;
-import graphs.entities.CellType;
-import graphs.entities.Edge;
-import graphs.entities.Graph;
-import graphs.entities.GraphModel;
+import graphs.entities.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,7 +66,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
 				new TreeTopology(30, graph),
                 new CircleTopology(30, graph), 
                 new GabrielTopology(30, graph), 
-                new WordTopology(graph),
+                new WordTopology(30, graph),
                 new PackageTopology(graph),
                 new NetworkTopology(graph),
 				new ProjectTopology(graph))
