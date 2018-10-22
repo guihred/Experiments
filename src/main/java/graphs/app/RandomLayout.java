@@ -49,10 +49,6 @@ public class RandomLayout implements Layout {
 				}
 			} while (minIntersection == Integer.MAX_VALUE
                     || i++ < 10 && GraphModelAlgorithms.anyIntersection(edges, allEdges));
-<<<<<<< HEAD
-=======
-
->>>>>>> branch 'master' of https://github.com/guihred/FXperiments.git
 			cell.relocate(minx, miny);
 		}
 	}
