@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -230,9 +231,14 @@ public class MusicOrganizer extends Application {
     private Slider addSlider(VBox flow, MediaPlayer mediaPlayer) {
         Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(1000).build();
         Label label = new Label("00:00");
-        slider.valueProperty().addListener(
-				(o, old, value) -> label.setText(
-						SongUtils.formatDurationMillis(mediaPlayer.getTotalDuration().multiply(value.doubleValue()))));
+        
+        label.textProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> mediaPlayer.getTotalDuration() == null ? "00:00"
+                                : SongUtils.formatDurationMillis(
+                                        mediaPlayer.getTotalDuration().multiply(slider.getValue())),
+                        slider.valueProperty(), mediaPlayer.totalDurationProperty()));
+        
         flow.getChildren().add(label);
         flow.getChildren().add(slider);
         return slider;
