@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
+import utils.ConsoleUtils;
 import utils.ResourceFXUtils;
 
 
@@ -23,7 +24,7 @@ public class FXEngineEthicalHackTest extends ApplicationTest {
         for (Node e : queryButtons) {
             clickOn(e);
         }
-
+        ConsoleUtils.waitAllProcesses();
     }
 
 

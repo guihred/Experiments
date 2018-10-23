@@ -2,7 +2,6 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
-import ex.j8.Chapter4;
 import extract.ExcelService;
 import graphs.app.JavaFileDependecy;
 import graphs.app.PackageTopology;
@@ -13,12 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.JFXPanel;
 import ml.Word2VecExample;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.testfx.util.WaitForAsyncUtils;
@@ -31,13 +27,9 @@ import utils.ResourceFXUtils;
 public class LeitorArquivosTest {
 	private static final Logger LOG = HasLogging.log();
 
-    @BeforeClass
-    public static void init() {
-        Platform.setImplicitExit(false);
-        new JFXPanel().toString();
-        Platform.setImplicitExit(false);
+    public LeitorArquivosTest() {
+        ResourceFXUtils.initializeFX();
     }
-
     @Test
     public void testLeitorArquivos() {
         File file = ResourceFXUtils.toFile("anvisa2208.xlsx");
@@ -98,12 +90,6 @@ public class LeitorArquivosTest {
             LOG.info("File deleted {}", delete);
         }
         measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
-    }
-
-    @Test
-    public void testChapter4() {
-        measureTime("Chapter4.testApps", () -> FXTesting.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class,
-                Chapter4.Ex5.class, Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class, Chapter4.Ex10.class));
     }
 
     @Test

@@ -65,7 +65,7 @@ public class RoundMazeHandler {
         }
     }
 
-    private int w(int c1) {
+    private static int w(int c1) {
         return (c1 + RoundMazeModel.MAZE_HEIGHT) % RoundMazeModel.MAZE_HEIGHT;
     }
 

@@ -48,6 +48,13 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public SimpleTableViewBuilder<T> equalColumns() {
+        ObservableList<TableColumn<T, ?>> columns = table.getColumns();
+
+        columns.forEach(c -> c.prefWidthProperty().bind(table.prefWidthProperty().divide(columns.size())));
+        return this;
+    }
+
     public SimpleTableViewBuilder<T> onSelect(BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));

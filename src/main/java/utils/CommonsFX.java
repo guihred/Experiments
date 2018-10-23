@@ -9,7 +9,6 @@ import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -17,10 +16,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcTo;
@@ -28,7 +25,6 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.StringConverter;
 
 public final class CommonsFX {
 
@@ -139,13 +135,6 @@ public final class CommonsFX {
 		return build;
 	}
 
-    public static <T> ChoiceBox<T> newSelect(ObservableList<T> nome, StringConverter<T> converter, String string) {
-		ChoiceBox<T> choiceBox = new ChoiceBox<>(nome);
-		Tooltip arg0 = new Tooltip(string);
-		choiceBox.setTooltip(arg0);
-		choiceBox.setConverter(converter);
-		return choiceBox;
-	}
 
     public static TextField newTextField(String text, int prefColumnCount) {
 		TextField textField = new TextField(text);

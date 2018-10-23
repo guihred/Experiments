@@ -102,11 +102,11 @@ public class RoundMazeModel {
 		switch (code) {
             case W:
             case UP:
-                goUp();
+                goCenter();
                 break;
             case S:
             case DOWN:
-                goDown();
+                goOutter();
                 break;
             case D:
             case RIGHT:
@@ -140,13 +140,13 @@ public class RoundMazeModel {
         }
     }
 
-    private void goDown() {
+    private void goOutter() {
         if (x < RoundMazeModel.MAZE_WIDTH - 1 && maze[x][y].isSouth()) {
             x = (x + 1) % RoundMazeModel.MAZE_WIDTH;
         }
     }
 
-    private void goUp() {
+    private void goCenter() {
 		if (maze[x][y].isNorth()) {
 			if (x > 0) {
 				x = (x - 1 + RoundMazeModel.MAZE_WIDTH) % RoundMazeModel.MAZE_WIDTH;

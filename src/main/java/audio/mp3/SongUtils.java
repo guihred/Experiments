@@ -30,7 +30,7 @@ import utils.ConsoleUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class SongUtils {
+public final class SongUtils {
 
     private static final Logger LOG = HasLogging.log();
 
@@ -54,8 +54,11 @@ public class SongUtils {
         cmd.append("\" \"");
         File obj = new File(mp4File.getParent(), mp4File.getName().replaceAll("\\..+", ".mp3"));
         if (obj.exists()) {
-            boolean delete = obj.delete();
-            LOG.info("file = {} deleted = {}", mp4File, delete);
+            try {
+                Files.delete(obj.toPath());
+            } catch (IOException e) {
+                LOG.error("", e);
+            }
         }
         cmd.append(obj);
         cmd.append("\"");

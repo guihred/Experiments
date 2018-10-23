@@ -154,9 +154,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 				setQuartoPiece(target, p);
 		        if (model.checkEnd()) {
 		            getLogger().info("ACABOU");
-					CommonsFX.displayDialog("You Got " + 0 + " points", "Reset", () -> {
-		             	model.reset();
-		            });
+                    CommonsFX.displayDialog("You Got " + 0 + " points", "Reset", model::reset);
 
 		        }
 			}

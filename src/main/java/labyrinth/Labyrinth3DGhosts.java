@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -39,12 +34,6 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	private PerspectiveCamera camera;
 
 	private final List<LabyrinthWall> cubes = new ArrayList<>();
-
-
-	@Override
-	public PerspectiveCamera getCamera() {
-		return camera;
-	}
 
 
 
@@ -144,5 +133,10 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	public static void main(String[] args) {
 		launch(args);
 	}
+
+    @Override
+    public PerspectiveCamera getCamera() {
+        return camera;
+    }
 
 }

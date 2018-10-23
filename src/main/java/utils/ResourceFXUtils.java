@@ -105,7 +105,7 @@ public final class ResourceFXUtils {
     }
 
     public static List<Path> getPathByExtension(File dir, String other) {
-        try (Stream<Path> walk = Files.walk(dir.toPath(), 20, FileVisitOption.FOLLOW_LINKS);) {
+        try (Stream<Path> walk = Files.walk(dir.toPath(), 20, FileVisitOption.FOLLOW_LINKS)) {
             return walk.filter(e -> e.toString().endsWith(other)).collect(Collectors.toList());
         } catch (IOException e) {
             LOGGER.error("", e);

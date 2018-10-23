@@ -13,10 +13,6 @@ import utils.MatrixSolver;
 public class VoronoiRegion extends Group {
 
 	public VoronoiRegion(Ponto p, List<Triangle> triangles) {
-		if ("E".equals(p.getC().getCellId())) {
-			System.out.println(p.getC());
-		}
-
         Comparator<double[]> comparator = Comparator
                 .comparing((double[] pon) -> Edge.getAngulo(pon[0], pon[1], x(p.getC()), y(p.getC())));
 		List<double[]> centerPoints = triangles.stream().map(t -> centerCircle(t.getA().getC(), t.getB().getC(), t.getC().getC())).collect(Collectors.toList());

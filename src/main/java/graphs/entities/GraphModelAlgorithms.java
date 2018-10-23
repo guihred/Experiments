@@ -34,7 +34,7 @@ public class GraphModelAlgorithms {
 				.anyMatch(e -> anyIntersection(cell2, e));
 	}
 
-	public static long intersection(List<? extends Node> cells, Node cell2) {
+    public static long intersection(Collection<? extends Node> cells, Node cell2) {
 		return cells.stream().filter(e -> e != cell2 && e.getBoundsInParent().intersects(cell2.getBoundsInParent()))
 				.count();
 	}
@@ -90,7 +90,7 @@ public class GraphModelAlgorithms {
     }
 
 
-    public static long biedgesNumber(Cell c, List<Edge> allEdges) {
+    public static long biedgesNumber(Cell c, Collection<Edge> allEdges) {
         return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c)).count();
     }
 

@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.CrawlerTask;
@@ -267,7 +268,7 @@ public final class Chapter6 {
             return IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
 		} catch (Exception e) {
             LOGGER.error("", e);
-            throw new RuntimeException(e);
+            throw new RuntimeIOException("ERROR Reading Page", e);
 		}
 	}
 

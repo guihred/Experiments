@@ -17,6 +17,10 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
 		return (Z) this;
 	}
 
+    public Z scaleShape(boolean value) {
+        region.setScaleShape(value);
+        return (Z) this;
+    }
 	public Z prefWidth(double value) {
 		region.setPrefWidth(value);
 		return (Z) this;

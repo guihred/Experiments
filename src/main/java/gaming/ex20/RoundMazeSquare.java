@@ -10,17 +10,17 @@ import utils.HasLogging;
 public class RoundMazeSquare implements HasLogging {
     public static final double SQUARE_SIZE = 20;
 
-	private final BooleanProperty visited = new SimpleBooleanProperty(false);
-	private final BooleanProperty west = new SimpleBooleanProperty(false);
-	private final BooleanProperty east = new SimpleBooleanProperty(false);
-	private final BooleanProperty north = new SimpleBooleanProperty(false);
-    private final BooleanProperty south = new SimpleBooleanProperty(false);
-    public final int i;
+	public final int i;
 	public final int j;
-	private List<BoundingBox> bounds;
 	private List<RoundMazeSquare> adjacents;
-
+	private List<BoundingBox> bounds;
     private boolean center;
+    private final BooleanProperty east = new SimpleBooleanProperty(false);
+	private final BooleanProperty north = new SimpleBooleanProperty(false);
+	private final BooleanProperty south = new SimpleBooleanProperty(false);
+	private final BooleanProperty visited = new SimpleBooleanProperty(false);
+
+    private final BooleanProperty west = new SimpleBooleanProperty(false);
 
 	public RoundMazeSquare(int i, int j) {
 		this.i = i;
@@ -57,6 +57,10 @@ public class RoundMazeSquare implements HasLogging {
 	public BooleanProperty eastProperty() {
 		return east;
 	}
+
+	public boolean isCenter() {
+        return center;
+    }
 
 	public final boolean isEast() {
 		return east.get();
@@ -105,11 +109,15 @@ public class RoundMazeSquare implements HasLogging {
 		return north;
 	}
 
+	public void setCenter(boolean center) {
+        this.center = center;
+    }
+
 	public final void setEast(final boolean east) {
 		this.east.set(east);
 	}
 
-	public final void setNorth(final boolean north) {
+    public final void setNorth(final boolean north) {
 		this.north.set(north);
 	}
 
@@ -117,7 +125,7 @@ public class RoundMazeSquare implements HasLogging {
 		south.set(v);
 	}
 
-    public final void setVisited(final boolean visited) {
+	public final void setVisited(final boolean visited) {
 		this.visited.set(visited);
 	}
 
@@ -125,11 +133,11 @@ public class RoundMazeSquare implements HasLogging {
 		this.west.set(west);
 	}
 
-	public BooleanProperty southProperty() {
+    public BooleanProperty southProperty() {
 		return south;
 	}
 
-	@Override
+    @Override
 	public String toString() {
 		return "(" + i + ", " + j + ")";
 	}
@@ -137,13 +145,5 @@ public class RoundMazeSquare implements HasLogging {
     public BooleanProperty westProperty() {
 		return west;
 	}
-
-    public void setCenter(boolean center) {
-        this.center = center;
-    }
-
-    public boolean isCenter() {
-        return center;
-    }
 
 }

@@ -80,7 +80,7 @@ public class PackageTopology extends BaseTopology {
         dialog.show();
     }
 
-    public static Map<String, Map<String, Long>> createFileDependencyMap(List<JavaFileDependecy> javaFiles) {
+    public static Map<String, Map<String, Long>> createFileDependencyMap(Collection<JavaFileDependecy> javaFiles) {
         List<String> classesNames = javaFiles.stream().map(JavaFileDependecy::getName)
                     .collect(Collectors.toList());
             Map<String, Map<String, Long>> packageDependencyMap = new HashMap<>();

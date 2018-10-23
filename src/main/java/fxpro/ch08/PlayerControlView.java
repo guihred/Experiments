@@ -53,9 +53,9 @@ public class PlayerControlView extends BaseSongView {
 	protected Node initView() {
 		final Button openButton = createOpenButton();
 		controlPanel = createControlPanel();
-        Slider volumeSlider = createSlider("volumeSlider");
+        Slider volumeSlider = new SimpleSliderBuilder(0.0, 1.0, 0.1).id("volumeSlider").value(0).build();
 		statusLabel = createLabel("Buffering", "statusDisplay");
-		positionSlider = createSlider("positionSlider");
+        positionSlider = new SimpleSliderBuilder(0.0, 1.0, 0.1).id("positionSlider").value(0).build();
 		volumeSlider.valueChangingProperty()
 				.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
 					if (oldValue && !newValue) {
@@ -180,17 +180,6 @@ public class PlayerControlView extends BaseSongView {
 		});
 		return playPauseButton;
 	}
-
-	private Slider createSlider(String id) {
-        final Slider slider = new SimpleSliderBuilder(0.0, 1.0, 0.1).build();
-		slider.setId(id);
-		slider.setValue(0);
-		return slider;
-	}
-
-
-
-
 
 	private void updateStatus(Status newStatus) {
 

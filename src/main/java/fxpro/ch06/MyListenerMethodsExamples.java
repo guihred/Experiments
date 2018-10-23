@@ -12,12 +12,12 @@ class MyListenerMethodsExamples implements ListChangeListener<String>, HasLoggin
     @Override
 	public void onChanged(Change<? extends String> change) {
         ObservableList<? extends String> list = change.getList();
-        getLogger().info("\tlist = {}", list);
+        getLogger().info("\tList = {}", list);
         String prettyPrint = prettyPrint(change);
         getLogger().info(prettyPrint);
 	}
 
-    private String prettyPrint(Change<? extends String> change) {
+    public static String prettyPrint(Change<? extends String> change) {
         StringBuilder sb = new StringBuilder("\tChange event data:\n");
         int i = 0;
         while (change.next()) {

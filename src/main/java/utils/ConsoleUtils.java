@@ -20,7 +20,8 @@ import javafx.collections.ObservableList;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 
-public class ConsoleUtils {
+public final class ConsoleUtils {
+    private static final String ACTIVE_FLAG = "active";
     private static final Logger LOGGER = HasLogging.log();
     private static final String EXECUTING = "Executing \"{}\"";
     private static final Map<String, Boolean> PROCESSES = new ConcurrentHashMap<>();
@@ -62,7 +63,7 @@ public class ConsoleUtils {
                 List<String> collect = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
                         .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
                 LOGGER.info("Runing processes {}", collect);
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             } catch (Exception e1) {
                 LOGGER.trace("", e1);
             }
@@ -76,7 +77,7 @@ public class ConsoleUtils {
         Process p = newProcess(cmd);
 
         try (BufferedReader in2 = new BufferedReader(
-                new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));) {
+                new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in2.readLine()) != null) {
                 LOGGER.info("{}", line);
@@ -95,7 +96,7 @@ public class ConsoleUtils {
         LOGGER.info(EXECUTING, cmd);
         Process exec = newProcess(cmd);
         try (BufferedReader in = new BufferedReader(
-                new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8));) {
+                new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
                 LOGGER.info(line);
@@ -131,19 +132,19 @@ public class ConsoleUtils {
                 progress.set(applyAsDouble / doubleValue);
             }
         });
-        executeInConsoleAsync.get("active").addListener((Change<? extends String> e) -> progress.set(1));
+        executeInConsoleAsync.get(ACTIVE_FLAG).addListener((Change<? extends String> e) -> progress.set(1));
         return progress;
     }
 
     public static Map<String, ObservableList<String>> executeInConsoleAsync(String cmd, Map<String, String> responses) {
         Map<String, ObservableList<String>> result = new HashMap<>();
-        result.put("active", FXCollections.observableArrayList());
+        result.put(ACTIVE_FLAG, FXCollections.observableArrayList());
         responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
         new Thread(RunnableEx.makeRunnable(() -> {
             LOGGER.info(EXECUTING, cmd);
             Process exec = newProcess(cmd);
             try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8));) {
+                    new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in.readLine()) != null) {
                     LOGGER.info(line);
@@ -154,7 +155,7 @@ public class ConsoleUtils {
                     regMap.forEach((reg, li) -> result.get(reg).add(li));
                 }
                 exec.waitFor();
-                result.get("active").add("");
+                result.get(ACTIVE_FLAG).add("");
                 PROCESSES.put(cmd, true);
             } catch (Exception e) {
                 LOGGER.error("", e);

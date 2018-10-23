@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ClassReflectionUtils {
+public final class ClassReflectionUtils {
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
 
     private ClassReflectionUtils() {
@@ -84,7 +84,6 @@ public class ClassReflectionUtils {
         }
         List<Method> infoMethod = getGetterMethods(getterMethods, class1);
         infoMethod.forEach(ConsumerEx.makeConsumer((Method o) -> {
-            StringBuilder description = new StringBuilder("\n");
             Object invoke = o.invoke(i);
             if (invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0) {
                 Type type = invoke.getClass().getGenericInterfaces()[0];
@@ -93,7 +92,7 @@ public class ClassReflectionUtils {
                 }
             }
             String fieldName = o.getName().replaceAll(METHOD_REGEX, "$1$2");
-
+            StringBuilder description = new StringBuilder("\n");
             if (invoke != null && toStringMap.containsKey(invoke.getClass())) {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
             } else if (invoke instanceof Enumeration) {

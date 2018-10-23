@@ -1,5 +1,7 @@
 package fxtests;
 
+import static fxtests.FXTesting.measureTime;
+
 import audio.mp3.MusicOrganizer;
 import contest.db.ContestApplication;
 import contest.db.ContestQuestionEditingDisplay;
@@ -7,6 +9,7 @@ import cubesystem.DeathStar;
 import cubesystem.GolfBall;
 import cubesystem.SphereSystemApp;
 import election.ElectionCrawlerApp;
+import ex.j8.Chapter4;
 import furigana.FuriganaCrawlerApp;
 import fxpro.ch01.AudioConfigLauncher;
 import fxpro.ch01.EarthriseChristmasApp;
@@ -118,5 +121,11 @@ public final class FXTest implements HasLogging {
         FXTesting.testApps(Labyrinth2D.class, Labyrinth3D.class, Labyrinth3DAntiAliasing.class,
                 Labyrinth3DCollisions.class, Labyrinth3DGhosts.class, Labyrinth3DKillerGhosts.class,
                 Labyrinth3DKillerGhostsAndBalls.class, Labyrinth3DMouseControl.class, Labyrinth3DWallTexture.class);
+    }
+
+    @Test
+    public void testChapter4() {
+        measureTime("Chapter4.testApps", () -> FXTesting.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class,
+                Chapter4.Ex5.class, Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class, Chapter4.Ex10.class));
     }
 }

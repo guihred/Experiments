@@ -119,6 +119,7 @@ public final class MusicReader {
             tags.setYear(a.getAno());
             mp3File.setID3Tag(tags);
             mp3File.sync();
+            LOGGER.info("Saving {} in {}", a, file);
         } catch (Exception e) {
 			LOGGER.error("", e);
         }

@@ -124,16 +124,12 @@ public class MazeSquare extends BorderPane implements HasLogging {
 
 	}
 
-	public final boolean isNorth() {
+    public boolean isSouth() {
+        return south.get();
+    }
+
+    public final boolean isNorth() {
 		return north.get();
-	}
-
-	public boolean isSouth() {
-		return south.get();
-	}
-
-	public final boolean isVisited() {
-		return visited.get();
 	}
 
 	public final boolean isWest() {
@@ -143,6 +139,10 @@ public class MazeSquare extends BorderPane implements HasLogging {
 	public BooleanProperty northProperty() {
 		return north;
 	}
+
+    public final boolean isVisited() {
+        return visited.get();
+    }
 
 	public final void setEast(final boolean east) {
 		this.east.set(east);

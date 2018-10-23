@@ -14,7 +14,7 @@ public class PortScanner {
 	private static final Logger LOG = HasLogging.log();
 
     public static boolean isPortOpen(String ip, int porta, int timeout) {
-        try (Socket socket = new Socket();) {
+        try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(ip, porta), timeout);
             return true;
         } catch (Exception ex) {

@@ -11,19 +11,10 @@ public class MyListenerExamples implements ListChangeListener<String>, HasLoggin
 
         ObservableList<? extends String> list = change.getList();
         getLogger().info("\tlist = {}", list);
-        String prettyPrint = prettyPrint(change);
+        String prettyPrint = MyListenerMethodsExamples.prettyPrint(change);
         getLogger().info(prettyPrint);
     }
 
-    private String prettyPrint(Change<? extends String> change) {
-        StringBuilder sb = new StringBuilder("\tChange event data:\n");
-        int i = 0;
-        while (change.next()) {
-            sb.append("\t\tcursor = ").append(i++).append("\n");
-            final String kind = MyListenerMethodsExamples.getChangeType(change);
-            MyListenerMethodsExamples.appendKindOfChange(change, sb, kind);
-        }
-        return sb.toString();
-    }
+
 
 }

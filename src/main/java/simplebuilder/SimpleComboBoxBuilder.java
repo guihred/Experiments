@@ -4,9 +4,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Tooltip;
 import javafx.util.StringConverter;
 
 public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, SimpleComboBoxBuilder<T>> {
@@ -21,7 +23,16 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
     public SimpleComboBoxBuilder<T> converter(StringConverter<T> value) {
         comboBox.setConverter(value);
+        return this;
+    }
 
+    public SimpleComboBoxBuilder<T> converter(Function<T, String> func) {
+        comboBox.setConverter(new SimpleConverter<>(func));
+        return this;
+    }
+
+    public SimpleComboBoxBuilder<T> tooltip(String text) {
+        comboBox.setTooltip(new Tooltip(text));
         return this;
     }
 

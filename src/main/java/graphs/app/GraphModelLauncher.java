@@ -11,12 +11,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
@@ -32,9 +34,9 @@ public class GraphModelLauncher extends Application implements HasLogging {
 			new RandomLayout(graph), 
 			new CustomLayout(graph), 
 			convergeLayout).sorted(Comparator.comparing(e -> e.getClass().getSimpleName().replace("Layout", "")));
-    private ChoiceBox<Layout> selectLayout = CommonsFX.newSelect(layouts,
-			new SimpleConverter<>(l -> l.getClass().getSimpleName().replace("Layout", "")), "Select Layout");
-
+    private ComboBox<Layout> selectLayout = new SimpleComboBoxBuilder<Layout>().items(layouts)
+            .tooltip("Select Layout")
+            .converter(l -> l.getClass().getSimpleName().replace("Layout", "")).build();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -72,8 +74,11 @@ public class GraphModelLauncher extends Application implements HasLogging {
 				new ProjectTopology(graph))
 				.sorted(Comparator.comparing(BaseTopology::getName));
 
-        SimpleConverter<BaseTopology> converterTopology = new SimpleConverter<>(BaseTopology::getName);
-        ChoiceBox<BaseTopology> topologySelect = CommonsFX.newSelect(topologies, converterTopology, "Select Topology");
+        ComboBox<BaseTopology> topologySelect = new SimpleComboBoxBuilder<BaseTopology>().items(topologies)
+                .tooltip("Select Topology")
+                .converter(BaseTopology::getName)
+                .build();
+
         topologySelect.getSelectionModel().select(0);
 		vBox.getChildren().add(new HBox(topologySelect,
                 CommonsFX.newButton("Go", e -> {

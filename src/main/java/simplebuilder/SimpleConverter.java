@@ -1,4 +1,4 @@
-package graphs.app;
+package simplebuilder;
 
 import java.util.HashMap;
 import java.util.Map;

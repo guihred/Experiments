@@ -2,6 +2,7 @@ package fxpro.ch06;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.concurrent.Task;
+import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
@@ -28,7 +29,7 @@ public class SimpleTask extends Task<String> {
 				return "Cancelled at " + System.currentTimeMillis();
 			}
 			if (shouldThrow.get()) {
-				throw new RuntimeException("Exception thrown at " + System.currentTimeMillis());
+                throw new RuntimeIOException("Exception thrown at " + System.currentTimeMillis());
 			}
 			updateTitle("Example Task (" + i + ")");
 			updateMessage("Processed " + i + " of " + total + " items.");

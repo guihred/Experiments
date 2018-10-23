@@ -19,11 +19,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -32,6 +34,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -42,13 +45,11 @@ public class MusicOrganizer extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Organizador de Músicas");
-        BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, 600, 250, Color.WHITE);
+
         FlowPane gridpane = new FlowPane();
         gridpane.setVgap(10);
         gridpane.setPadding(new Insets(5));
         gridpane.setHgap(10);
-        root.setCenter(gridpane);
 
         Label listaMusicas = new Label("Lista Músicas");
         GridPane.setHalignment(listaMusicas, HPos.CENTER);
@@ -57,21 +58,23 @@ public class MusicOrganizer extends Application {
 		final TableView<Music> musicasTable = tabelaMusicas();
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
 
-		musicasTable.setItems(getMusicas(musicsDirectory));
-		musicasTable.prefWidthProperty().bind(root.widthProperty().add(-10));
-		musicasTable.prefHeightProperty().bind(root.heightProperty().add(-70));
+		musicasTable.setItems(MusicReader.getMusicas(musicsDirectory));
+        musicasTable.prefWidthProperty().bind(gridpane.widthProperty().add(-10));
+        musicasTable.prefHeightProperty().bind(gridpane.heightProperty().add(-50));
 		TextField filterField = new TextField();
-        Button buttonEstoque = CommonsFX.newButton("Carregar Musicas", e -> {
-            File selectedFile = chooser.showDialog(primaryStage);
-            if (selectedFile != null) {
-
-				ObservableList<Music> musicas = getMusicas(selectedFile);
-				musicasTable.setItems(musicas);
-				configurarFiltroRapido(filterField, musicasTable, musicas);
-            }
-        });
+        Button buttonEstoque = carregarMusica(primaryStage, chooser, musicasTable, filterField);
         configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList());
-        Button buttonVideos = CommonsFX.newButton("Carregar Vídeos", e -> {
+        Button buttonVideos = carregarVideos(primaryStage, chooser, musicasTable, filterField);
+        gridpane.getChildren()
+                .add(new VBox(listaMusicas, new HBox(buttonEstoque, buttonVideos, filterField), musicasTable));
+        Scene scene = new Scene(gridpane, 600, 250, Color.WHITE);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private Button carregarVideos(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
+            TextField filterField) {
+        return CommonsFX.newButton("Carregar Vídeos", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
                 List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4");
@@ -85,11 +88,21 @@ public class MusicOrganizer extends Application {
 				configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(collect));
             }
         });
-        gridpane.getChildren()
-				.add(new VBox(listaMusicas, new HBox(buttonEstoque, buttonVideos, filterField), musicasTable));
+    }
 
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    private Button carregarMusica(Stage primaryStage, DirectoryChooser chooser,
+            final TableView<Music> musicasTable,
+            TextField filterField) {
+        Button buttonEstoque = CommonsFX.newButton("Carregar Musicas", e -> {
+            File selectedFile = chooser.showDialog(primaryStage);
+            if (selectedFile != null) {
+
+				ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
+				musicasTable.setItems(musicas);
+				configurarFiltroRapido(filterField, musicasTable, musicas);
+            }
+        });
+        return buttonEstoque;
     }
 
 	private void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
@@ -110,15 +123,12 @@ public class MusicOrganizer extends Application {
         return new Node[] { new Label(nome), textField };
     }
 
-    private ObservableList<Music> getMusicas(File file) {
-		return MusicReader.getMusicas(file);
-    }
-
     private void handleMousePressed(final TableView<Music> songsTable, MouseEvent event) {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
             Music selectedItem = songsTable.getSelectionModel().getSelectedItem();
             if (selectedItem.getTitulo().endsWith(".mp4")) {
-                handleVideo(selectedItem);
+                CommonsFX.displayDialog("Convert", "_Convert to Mp3",
+                        () -> SongUtils.convertToAudio(selectedItem.getArquivo()));
                 return;
             }
             Stage stage = new Stage();
@@ -228,49 +238,18 @@ public class MusicOrganizer extends Application {
         return slider;
     }
 
-    private void handleVideo(Music selectedItem) {
-		CommonsFX.displayDialog("Convert", "Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()));
-    }
-
-    @SuppressWarnings("unchecked")
     private TableView<Music> tabelaMusicas() {
-
-        final TableView<Music> musicaTable = new TableView<>();
-        musicaTable.setPrefWidth(600);
-        musicaTable.setScaleShape(false);
-
+        TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>()
+                .prefWidth(600)
+                .scaleShape(false)
+                .addColumn("Título", "titulo")
+                .addColumn("Artista", "artista")
+                .addColumn("Álbum", "album")
+                .addColumn("Ano", "ano")
+                .addColumn("Gênero", "genero")
+                .equalColumns()
+                .build();
         musicaTable.setOnMousePressed(event -> handleMousePressed(musicaTable, event));
-
-        TableColumn<Music, String> tituloMusica = new TableColumn<>("Título");
-        tituloMusica.setCellValueFactory(new PropertyValueFactory<>("titulo"));
-
-        tituloMusica.setSortable(true);
-
-        int other = 6;
-        tituloMusica.prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
-        TableColumn<Music, String> nomeMusica = new TableColumn<>("Artista");
-
-        nomeMusica.setSortable(true);
-        nomeMusica.setCellValueFactory(new PropertyValueFactory<>("artista"));
-        nomeMusica.prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
-
-        TableColumn<Music, String> albumMusica = new TableColumn<>("Álbum");
-        albumMusica.setSortable(true);
-        albumMusica.setCellValueFactory(new PropertyValueFactory<>("album"));
-        albumMusica
-
-                .prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
-        TableColumn<Music, String> anoMusica = new TableColumn<>("Ano");
-        anoMusica.setSortable(true);
-        anoMusica.setCellValueFactory(new PropertyValueFactory<>("ano"));
-        anoMusica.prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
-
-        TableColumn<Music, String> generoMusica = new TableColumn<>("Gênero");
-        generoMusica.setSortable(true);
-        generoMusica.setCellValueFactory(new PropertyValueFactory<>("genero"));
-        generoMusica.prefWidthProperty().bind(musicaTable.prefWidthProperty().divide(other));
-
-        musicaTable.getColumns().setAll(tituloMusica, nomeMusica, albumMusica, anoMusica, generoMusica);
         return musicaTable;
     }
 

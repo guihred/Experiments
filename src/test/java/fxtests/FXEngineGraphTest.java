@@ -6,7 +6,7 @@ import java.util.Set;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.junit.Test;
@@ -47,9 +47,9 @@ public class FXEngineGraphTest extends ApplicationTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void verifyAllTopologies() throws Exception {
-        Set<ChoiceBox> queryButtons = lookup(".choice-box").queryAllAs(ChoiceBox.class);
+        Set<ComboBox> queryButtons = lookup(".combo-box").queryAllAs(ComboBox.class);
         Set<Node> queryAll = lookup("Go").queryAll();
-        for (ChoiceBox e : queryButtons) {
+        for (ComboBox e : queryButtons) {
 
             ObservableList<?> items = e.getItems();
             for (int i = 0; i < items.size(); i++) {
@@ -62,7 +62,9 @@ public class FXEngineGraphTest extends ApplicationTest {
         ConsoleUtils.waitAllProcesses();
     }
 
-
-
+    @Test
+    public void closeAll() {
+        closeCurrentWindow();
+    }
 
 }

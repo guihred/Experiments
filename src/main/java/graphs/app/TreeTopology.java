@@ -1,9 +1,6 @@
 package graphs.app;
 
-import graphs.entities.Cell;
-import graphs.entities.CellType;
-import graphs.entities.Edge;
-import graphs.entities.Graph;
+import graphs.entities.*;
 import java.util.List;
 import java.util.Random;
 
@@ -13,11 +10,7 @@ public class TreeTopology extends BaseTopology {
 		super(graph, "Tree", size);
 	}
 
-	public double distance(double x1, double x2, double y1, double y2) {
-		double a = x1 - x2;
-		double b = y1 - y2;
-		return Math.sqrt(a * a + b * b);
-	}
+
 
 	@Override
 	public void execute() {
@@ -43,8 +36,9 @@ public class TreeTopology extends BaseTopology {
 			for (Cell cell2 : cells) {
 				double m = (x1 + cell2.getLayoutX()) / 2;
 				double n = (y1 + cell2.getLayoutY()) / 2;
-				double r = distance(x1, cell2.getLayoutX(), y1, cell2.getLayoutY());
-				if (cells.stream().filter(c -> c != cell && c != cell2).noneMatch(c -> distance(m, c.getLayoutX(), n, c.getLayoutY()) <= r / 2)) {
+                double r = EdgeDistancePack.distance(x1, cell2.getLayoutX(), y1, cell2.getLayoutY());
+                if (cells.stream().filter(c -> c != cell && c != cell2)
+                        .noneMatch(c -> EdgeDistancePack.distance(m, c.getLayoutX(), n, c.getLayoutY()) <= r / 2)) {
 					graph.getModel().addBiEdge(cell.getCellId(), cell2.getCellId(), 1);
 				}
 
@@ -58,7 +52,6 @@ public class TreeTopology extends BaseTopology {
 		}
 		graph.endUpdate();
 		graph.sortChildren();
-
 	}
 
 
