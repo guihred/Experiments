@@ -2,6 +2,7 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import ethical.hacker.PortServices;
 import extract.ExcelService;
 import graphs.app.JavaFileDependecy;
 import graphs.app.PackageTopology;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import ml.Word2VecExample;
+import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -86,10 +88,14 @@ public class LeitorArquivosTest {
     public void testWord2Vec() {
         File file = new File(Word2VecExample.PATH_TO_SAVE_MODEL_TXT);
         if (file.exists()) {
-            boolean delete = file.delete();
-            LOG.info("File deleted {}", delete);
+            Files.delete(file);
         }
         measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
+    }
+
+    @Test
+    public void testPortServices() {
+        measureTime("PortServices.loadServiceNames", () -> PortServices.loadServiceNames());
     }
 
     @Test
@@ -104,6 +110,6 @@ public class LeitorArquivosTest {
                 PackageTopology.printDependencyMap(packageDependencyMap);
             });
         });
-
     }
+
 }
