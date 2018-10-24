@@ -60,9 +60,9 @@ public final class ConsoleUtils {
     public static void waitAllProcesses() {
         while (PROCESSES.values().stream().anyMatch(e -> !e)) {
             try {
-                List<String> collect = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
-                        .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
-                LOGGER.info("Runing processes {}", collect);
+                String collect = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
+                        .map(Entry<String, Boolean>::getKey).collect(Collectors.joining("\n", "\n", ""));
+                LOGGER.info("Running processes {}", collect);
                 Thread.sleep(5000);
             } catch (Exception e1) {
                 LOGGER.trace("", e1);

@@ -25,7 +25,7 @@ public class SimpleTask extends Task<String> {
 			try {
 				Thread.sleep(20);
             } catch (Exception e) {
-                LOGGER.error("", e);
+                LOGGER.trace("", e);
 				return "Cancelled at " + System.currentTimeMillis();
 			}
 			if (shouldThrow.get()) {

@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
+import javafx.stage.Stage;
 import ml.Word2VecExample;
 import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
+import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
@@ -26,11 +28,13 @@ import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class LeitorArquivosTest {
+public class FXFileReadersTest extends ApplicationTest {
 	private static final Logger LOG = HasLogging.log();
 
-    public LeitorArquivosTest() {
+    @Override
+    public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
+        stage.show();
     }
     @Test
     public void testLeitorArquivos() {

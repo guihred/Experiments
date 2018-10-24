@@ -18,11 +18,9 @@ public class FXEngineMusicOrganizerTest extends ApplicationTest implements HasLo
     @Override
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
-        getLogger().info("STARTING FXEngineMusicOrganizerTest");
         stage.setMaximized(true);
         musicOrganizer = new MusicOrganizer();
         musicOrganizer.start(stage);
-        getLogger().info("FXEngineMusicOrganizerTest STARTED");
     }
 
     @Test

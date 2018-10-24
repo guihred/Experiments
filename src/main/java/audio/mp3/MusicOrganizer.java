@@ -58,6 +58,7 @@ public class MusicOrganizer extends Application {
         chooser.setTitle("Carregar Pasta de Músicas");
 		final TableView<Music> musicasTable = tabelaMusicas();
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
+        chooser.setInitialDirectory(musicsDirectory.getParentFile());
 
 		musicasTable.setItems(MusicReader.getMusicas(musicsDirectory));
         musicasTable.prefWidthProperty().bind(gridpane.widthProperty().add(-10));
