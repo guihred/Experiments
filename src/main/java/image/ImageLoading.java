@@ -1,10 +1,6 @@
 package image;
 
-import com.aspose.imaging.Color;
-import com.aspose.imaging.Image;
-import com.aspose.imaging.RasterCachedImage;
-import com.aspose.imaging.RasterImage;
-import com.aspose.imaging.Rectangle;
+import com.aspose.imaging.*;
 import com.aspose.imaging.fileformats.bmp.BmpImage;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionColorMode;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionMode;
@@ -47,7 +43,7 @@ public class ImageLoading {
         String outputPath = dataDir + "UseBradleythresholding_out.png";
 
         // Load an existing image.
-        com.aspose.imaging.fileformats.png.PngImage objimage = (com.aspose.imaging.fileformats.png.PngImage) com.aspose.imaging.Image
+        com.aspose.imaging.fileformats.png.PngImage objimage = (com.aspose.imaging.fileformats.png.PngImage) Image
                 .load(sourcepath);
 
         // Define threshold value

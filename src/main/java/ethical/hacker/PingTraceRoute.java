@@ -17,7 +17,7 @@ public class PingTraceRoute {
     }
 
     private static void collectTraceInformation() {
-                getInformation("10.69.64.31");
+        getInformation(TracerouteScanner.IP_TO_SCAN);
 
     }
 

@@ -81,7 +81,7 @@ public class MinesweeperModel {
                 if (nPlayed.get() == 0) {
 		            reset();
 		        }
-				CommonsFX.displayDialog("You exploded!", "Reset", () -> reset());
+                CommonsFX.displayDialog("You exploded!", "Reset", this::reset);
 		    }
 			if (mem.getMinesweeperImage().equals(MinesweeperImage.BLANK)) {
 		        showNeighbours(mem.getI(), mem.getJ());

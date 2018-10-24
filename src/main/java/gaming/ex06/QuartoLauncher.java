@@ -41,6 +41,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 
 	@Override
     public void start(Stage primaryStage) {
+        cameraXform.toString();
         root.getChildren().add(world);
         buildCamera();
         buildAxes();

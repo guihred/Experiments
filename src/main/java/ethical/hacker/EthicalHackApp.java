@@ -56,7 +56,7 @@ public class EthicalHackApp extends Application {
         });
         vBox.getChildren().addAll(new Text("DNS"), dns, nameServerButton);
 
-        TextField address = new TextField("10.69.64.31");
+        TextField address = new TextField(TracerouteScanner.IP_TO_SCAN);
         Button pingTrace = CommonsFX.newButton("Ping _Trace", e -> {
             items.clear();
             Map<String, String> nsInformation = PingTraceRoute.getInformation(address.getText());
@@ -66,7 +66,7 @@ public class EthicalHackApp extends Application {
         });
         vBox.getChildren().addAll(new Text("Ping Adress"), address, pingTrace);
 
-        TextField networkAddress = new TextField("10.69.64.31/28");
+        TextField networkAddress = new TextField(TracerouteScanner.NETWORK_ADDRESS);
         Button portScanner = CommonsFX.newButton("_Port Scan", e -> {
             items.clear();
             new Thread(() -> {

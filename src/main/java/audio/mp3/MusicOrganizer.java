@@ -2,8 +2,6 @@ package audio.mp3;
 
 import com.google.common.io.Files;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -14,17 +12,12 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -47,13 +40,9 @@ public class MusicOrganizer extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Organizador de Músicas");
 
-        FlowPane gridpane = new FlowPane();
-        gridpane.setVgap(10);
-        gridpane.setPadding(new Insets(5));
-        gridpane.setHgap(10);
+        VBox root = new VBox();
 
         Label listaMusicas = new Label("Lista Músicas");
-        GridPane.setHalignment(listaMusicas, HPos.CENTER);
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Carregar Pasta de Músicas");
 		final TableView<Music> musicasTable = tabelaMusicas();
@@ -61,41 +50,43 @@ public class MusicOrganizer extends Application {
         chooser.setInitialDirectory(musicsDirectory.getParentFile());
 
 		musicasTable.setItems(MusicReader.getMusicas(musicsDirectory));
-        musicasTable.prefWidthProperty().bind(gridpane.widthProperty().add(-10));
-        musicasTable.prefHeightProperty().bind(gridpane.heightProperty().add(-50));
+        musicasTable.prefWidthProperty().bind(root.widthProperty().add(-10));
+        musicasTable.prefHeightProperty().bind(root.heightProperty().add(-50));
 		TextField filterField = new TextField();
-        Button buttonEstoque = carregarMusica(primaryStage, chooser, musicasTable, filterField);
+        Button buttonMusic = loadMusic(primaryStage, chooser, musicasTable, filterField);
         configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList());
-        Button buttonVideos = carregarVideos(primaryStage, chooser, musicasTable, filterField);
-        gridpane.getChildren()
-                .add(new VBox(listaMusicas, new HBox(buttonEstoque, buttonVideos, filterField), musicasTable));
-        Scene scene = new Scene(gridpane, 600, 250, Color.WHITE);
+        Button buttonVideos = loadVideos(primaryStage, chooser, musicasTable, filterField);
+        root.getChildren()
+                .add(new VBox(listaMusicas, new HBox(buttonMusic, buttonVideos, filterField), musicasTable));
+        Scene scene = new Scene(root, 600, 250, Color.WHITE);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private Button carregarVideos(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
+    private Button loadVideos(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
             TextField filterField) {
         return CommonsFX.newButton("Carregar Vídeos", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
-                List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4");
-                List<Music> collect = pathByExtension.parallelStream().map(v -> {
+                List<Music> videos = ResourceFXUtils
+                        .getPathByExtension(selectedFile, ".mp4")
+                        .parallelStream()
+                        .map(v -> {
                     Music musica = new Music();
                     File file = v.toFile();
                     musica.setArquivo(file);
                     musica.setTitulo(file.getName());
                     return musica;
                 }).collect(Collectors.toList());
-				configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(collect));
+                configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(videos));
             }
         });
     }
 
-    private Button carregarMusica(Stage primaryStage, DirectoryChooser chooser,
+    private Button loadMusic(Stage primaryStage, DirectoryChooser chooser,
             final TableView<Music> musicasTable,
             TextField filterField) {
-        Button buttonEstoque = CommonsFX.newButton("Carregar Musicas", e -> {
+        return CommonsFX.newButton("Carregar Musicas", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
 
@@ -104,7 +95,6 @@ public class MusicOrganizer extends Application {
 				configurarFiltroRapido(filterField, musicasTable, musicas);
             }
         });
-        return buttonEstoque;
     }
 
 	private void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
@@ -125,8 +115,7 @@ public class MusicOrganizer extends Application {
         return new Node[] { new Label(nome), textField };
     }
 
-    private void handleMousePressed(final TableView<Music> songsTable, MouseEvent event) {
-        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+    private void handleMousePressed(final TableView<Music> songsTable) {
             Music selectedItem = songsTable.getSelectionModel().getSelectedItem();
             if (selectedItem.getTitulo().endsWith(".mp4")) {
                 CommonsFX.displayDialog("Convert", "_Convert to Mp3",
@@ -202,7 +191,6 @@ public class MusicOrganizer extends Application {
             stage.setOnCloseRequest(e -> mediaPlayer.dispose());
             mediaPlayer.play();
             LOGGER.info("{}", selectedItem);
-        }
     }
 
     private void splitAndSave(Music selectedItem, MediaPlayer mediaPlayer, Slider initialSlider, Slider finalSlider,
@@ -220,7 +208,7 @@ public class MusicOrganizer extends Application {
 					MusicReader.saveMetadata(selectedItem, outFile);
 					try {
 						Files.copy(outFile, selectedItem.getArquivo());
-					} catch (IOException e1) {
+                    } catch (Exception e1) {
 						LOGGER.error("", e1);
 					}
 					stage.close();
@@ -256,7 +244,11 @@ public class MusicOrganizer extends Application {
                 .addColumn("Gênero", "genero")
                 .equalColumns()
                 .build();
-        musicaTable.setOnMousePressed(event -> handleMousePressed(musicaTable, event));
+        musicaTable.setOnMousePressed(e -> {
+            if (e.isPrimaryButtonDown() && e.getClickCount() == 2) {
+                handleMousePressed(musicaTable);
+            }
+        });
         return musicaTable;
     }
 

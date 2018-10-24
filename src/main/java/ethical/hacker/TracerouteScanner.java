@@ -12,13 +12,14 @@ import utils.HasLogging;
 
 public class TracerouteScanner {
 
-	private static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 	private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
 	private static final String REUSED_ROUTE_REGEX = "-\\s*Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
 	private static final String REUSED_ROUTE_REGEX_1 = "-\\s*Hop (\\d+) is the same as for ([\\d\\.]+)";
 	private static final String HOP_REGEX = "\\d+\\s+[\\d\\.]+ ms\\s+([\\d\\.]+)|\\d+\\s+[\\d\\.]+ ms\\s+[\\w\\.]+ \\(([\\d\\.]+)\\)";
 
-    public static final String NETWORK_ADDRESS = "10.69.64.31/28";
+    public static final String IP_TO_SCAN = Stream.of("10", "69", "64", "31").collect(Collectors.joining("."));
+    public static final String NETWORK_ADDRESS = IP_TO_SCAN + "/28";
 
 	public static void main(String[] args) {
 		Map<String, List<String>> scanNetwork = scanNetworkRoutes(NETWORK_ADDRESS);

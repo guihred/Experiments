@@ -20,6 +20,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import simplebuilder.SimpleRectangleBuilder;
+import simplebuilder.SimpleTabPaneBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CrawlerTask;
 import utils.HasLogging;
@@ -72,7 +73,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		htmlLabel.setMaxHeight(140);
 		final BorderPane borderPane = new BorderPane(htmlLabel, null, null, okButton, null);
 
-		alertPopup.getContent().add(new StackPane(new SimpleRectangleBuilder().width(300).height(200).fill(Color.LIGHTBLUE)
+        alertPopup.getContent()
+                .add(new StackPane(new SimpleRectangleBuilder().width(300).height(200).fill(Color.LIGHTBLUE)
 				.arcWidth(20).arcHeight(20).stroke(Color.GRAY).strokeWidth(2).build(), borderPane));
 
 		BorderPane.setAlignment(okButton, Pos.CENTER);
@@ -103,7 +105,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
 		newMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
         newMenuItem.setOnAction(e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()));
-		final Menu fileMenu = new Menu("File");
+
+        final Menu fileMenu = new Menu("File");
 		fileMenu.getItems().addAll(newMenuItem, new MenuItem("Save"));
 		MenuBar menuBar = new MenuBar();
 
@@ -247,43 +250,21 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 	}
 
     private TabPane createTabs() {
-
-		final Tab tableView = new Tab("TableView");
-		tableView.setContent(createTableDemoNode());
-		tableView.setClosable(false);
-
-		final Tab accordionTitledPane = new Tab("Accordion/TitledPane");
-		accordionTitledPane.setContent(createAccordionTitledDemoNode());
-		accordionTitledPane.setClosable(false);
-
-		final Tab splitPaneTreeListView = new Tab("SplitPane/TreeView/ListView");
-		splitPaneTreeListView.setContent(createSplitTreeListDemoNode());
-		splitPaneTreeListView.setClosable(false);
-
-		final Tab scrollMisc = new Tab("ScrollPane/Miscellaneous");
-		scrollMisc.setContent(createScrollMiscDemoNode());
-        scrollMisc.setClosable(false);
-
-		final Tab htmlEditor = new Tab("HTMLEditor");
-		htmlEditor.setContent(createHtmlEditorDemoNode());
-		htmlEditor.setClosable(false);
-
-		final WebView webView = new WebView();
-		Tab webViewTab = new Tab("WebView");
-		webViewTab.setContent(webView);
-		webViewTab.setClosable(false);
-        webViewTab.setOnSelectionChanged(evt -> {
-			String randomWebSite = TableVisualizationModel.getRandomWebSite();
-			if (webViewTab.isSelected()) {
-				webView.getEngine().load(randomWebSite);
-                getLogger().info("WebView tab is selected, loading: {}", randomWebSite);
-			}
-		});
-
-		TabPane tabPane = new TabPane();
-		tabPane.getTabs().addAll(tableView, accordionTitledPane, splitPaneTreeListView, scrollMisc, htmlEditor,
-				webViewTab);
-		return tabPane;
+        final WebView webView = new WebView();
+        return new SimpleTabPaneBuilder().addTab("TableView", createTableDemoNode())
+                .addTab("Accordion/TitledPane", createAccordionTitledDemoNode())
+                .addTab("SplitPane/TreeView/ListView", createSplitTreeListDemoNode())
+                .addTab("ScrollPane/Miscellaneous", createScrollMiscDemoNode())
+                .addTab("HTMLEditor", createHtmlEditorDemoNode())
+                .addTab("WebView", webView, (tab, evt) -> {
+                    String randomWebSite = TableVisualizationModel.getRandomWebSite();
+                    if (tab.isSelected()) {
+                        webView.getEngine().load(randomWebSite);
+                        getLogger().info("WebView tab is selected, loading: {}", randomWebSite);
+                    }
+                })
+                .allClosable(false)
+                .build();
 	}
 
     private ToolBar createToolBar() {

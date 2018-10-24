@@ -4,8 +4,10 @@ import com.aspose.imaging.internal.bouncycastle.util.Arrays;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import utils.HasLogging;
@@ -58,7 +60,7 @@ public enum PortServices {
 
     public static void loadServiceNames() {
         try (InputStream inStr = ResourceFXUtils.toStream("nmap-services");
-                InputStreamReader inStrReader = new InputStreamReader(inStr);
+                InputStreamReader inStrReader = new InputStreamReader(inStr, Charset.defaultCharset());
                 BufferedReader bRead = new BufferedReader(inStrReader)) {
             String line;
 
@@ -80,9 +82,9 @@ public enum PortServices {
                 }
                 port = Integer.valueOf(portAndProtocol[0]);
                 protocol = portAndProtocol[1].trim();
-                if (protocol.equalsIgnoreCase("tcp")) {
+                if ("tcp".equalsIgnoreCase(protocol)) {
                     TCP_SERVICES.put(port, serviceName);
-                } else if (protocol.equalsIgnoreCase("udp")) {
+                } else if ("udp".equalsIgnoreCase(protocol)) {
                     UDP_SERVICES.put(port, serviceName);
                 } else {
                     LOG.error("Unrecognized protocol in line: \"{}\"", line);
@@ -107,10 +109,10 @@ public enum PortServices {
 
     public static void main(String[] args) {
         loadServiceNames();
-        String udpServices = UDP_SERVICES.entrySet().stream().map(e -> e.toString())
+        String udpServices = UDP_SERVICES.entrySet().stream().map(Entry<Integer, String>::toString)
                 .collect(Collectors.joining("\n\t", "\n", ""));
         LOG.info("UDP = {}", udpServices);
-        String tcpServices = TCP_SERVICES.entrySet().stream().map(e -> e.toString())
+        String tcpServices = TCP_SERVICES.entrySet().stream().map(Entry<Integer, String>::toString)
                 .collect(Collectors.joining("\n\t", "\n\t", ""));
         LOG.info("TCP = {}", tcpServices);
     }
