@@ -29,66 +29,27 @@ public final class ConsoleUtils {
     private ConsoleUtils() {
     }
 
-    public static void executeInConsole(String cmd) {
-
-        LOGGER.info(EXECUTING, cmd);
-        Process p = newProcess(cmd);
-        try (BufferedReader in = new BufferedReader(
-                new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = in.readLine()) != null) {
-                LOGGER.info("\"{}\"", line);
+    public static DoubleProperty defineProgress(String totalRegex, String progressRegex,
+            Map<String, ObservableList<String>> executeInConsoleAsync, ToDoubleFunction<String> function) {
+        SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
+        SimpleDoubleProperty total = new SimpleDoubleProperty(100);
+        executeInConsoleAsync.get(totalRegex).addListener((ListChangeListener<String>) c -> {
+            while (c.next()) {
+                String text = c.getAddedSubList().get(0);
+                double applyAsDouble = function.applyAsDouble(text);
+                total.set(applyAsDouble);
             }
-            p.waitFor();
-            PROCESSES.put(cmd, true);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-    }
-
-    private static Process newProcess(String cmd) {
-        try {
-            Process p = Runtime.getRuntime().exec(cmd);
-            PROCESSES.put(cmd, false);
-            return p;
-        } catch (Exception e) {
-            LOGGER.error("ERROR CREATING PROCESS", e);
-            throw new RuntimeIOException("", e);
-        }
-    }
-
-    public static void waitAllProcesses() {
-        while (PROCESSES.values().stream().anyMatch(e -> !e)) {
-            try {
-                String collect = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
-                        .map(Entry<String, Boolean>::getKey).collect(Collectors.joining("\n", "\n", ""));
-                LOGGER.info("Running processes {}", collect);
-                Thread.sleep(5000);
-            } catch (Exception e1) {
-                LOGGER.trace("", e1);
+        });
+        executeInConsoleAsync.get(progressRegex).addListener((ListChangeListener<String>) c -> {
+            while (c.next()) {
+                String text = c.getAddedSubList().get(0);
+                double applyAsDouble = function.applyAsDouble(text);
+                double doubleValue = total.doubleValue();
+                progress.set(applyAsDouble / doubleValue);
             }
-        }
-    }
-
-    public static List<String> executeInConsoleInfo(String cmd) {
-        List<String> execution = new ArrayList<>();
-        LOGGER.info(EXECUTING, cmd);
-
-        Process p = newProcess(cmd);
-
-        try (BufferedReader in2 = new BufferedReader(
-                new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = in2.readLine()) != null) {
-                LOGGER.info("{}", line);
-                execution.add(line);
-            }
-            p.waitFor();
-            PROCESSES.put(cmd, true);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-        return execution;
+        });
+        executeInConsoleAsync.get(ACTIVE_FLAG).addListener((Change<? extends String> e) -> progress.set(1));
+        return progress;
     }
 
     public static Map<String, String> executeInConsole(String cmd, Map<String, String> responses) {
@@ -111,29 +72,6 @@ public final class ConsoleUtils {
             LOGGER.error("", e);
         }
         return result;
-    }
-
-    public static DoubleProperty defineProgress(String totalRegex, String progressRegex,
-            Map<String, ObservableList<String>> executeInConsoleAsync, ToDoubleFunction<String> function) {
-        SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
-        SimpleDoubleProperty total = new SimpleDoubleProperty(100);
-        executeInConsoleAsync.get(totalRegex).addListener((ListChangeListener<String>) c -> {
-            while (c.next()) {
-                String text = c.getAddedSubList().get(0);
-                double applyAsDouble = function.applyAsDouble(text);
-                total.set(applyAsDouble);
-            }
-        });
-        executeInConsoleAsync.get(progressRegex).addListener((ListChangeListener<String>) c -> {
-            while (c.next()) {
-                String text = c.getAddedSubList().get(0);
-                double applyAsDouble = function.applyAsDouble(text);
-                double doubleValue = total.doubleValue();
-                progress.set(applyAsDouble / doubleValue);
-            }
-        });
-        executeInConsoleAsync.get(ACTIVE_FLAG).addListener((Change<? extends String> e) -> progress.set(1));
-        return progress;
     }
 
     public static Map<String, ObservableList<String>> executeInConsoleAsync(String cmd, Map<String, String> responses) {
@@ -162,6 +100,76 @@ public final class ConsoleUtils {
             }
         })).start();
         return result;
+    }
+
+    public static List<String> executeInConsoleInfo(String cmd) {
+        List<String> execution = new ArrayList<>();
+        LOGGER.info(EXECUTING, cmd);
+
+        Process p = newProcess(cmd);
+
+        try (BufferedReader in2 = new BufferedReader(
+                new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = in2.readLine()) != null) {
+                LOGGER.info("{}", line);
+                execution.add(line);
+            }
+            p.waitFor();
+            PROCESSES.put(cmd, true);
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
+        return execution;
+    }
+
+    public static ObservableList<String> executeInConsoleInfoAsync(String cmd, Runnable... onFinish) {
+        ObservableList<String> execution = FXCollections.observableArrayList();
+        LOGGER.info(EXECUTING, cmd);
+        new Thread(() -> {
+            Process p = newProcess(cmd);
+            try (BufferedReader in2 = new BufferedReader(
+                    new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = in2.readLine()) != null) {
+                    LOGGER.info("{}", line);
+                    execution.add(line);
+                }
+                p.waitFor();
+                for (int i = 0; i < onFinish.length; i++) {
+                    onFinish[i].run();
+                }
+                PROCESSES.put(cmd, true);
+            } catch (Exception e) {
+                LOGGER.error("", e);
+            }
+        }).start();
+        return execution;
+    }
+
+    public static void waitAllProcesses() {
+        while (PROCESSES.values().stream().anyMatch(e -> !e)) {
+            try {
+                List<String> processes = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
+                        .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
+                String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
+                LOGGER.info("Running {} processes {}", processes.size(), formated);
+                Thread.sleep(5000);
+            } catch (Exception e1) {
+                LOGGER.trace("", e1);
+            }
+        }
+    }
+
+    private static Process newProcess(String cmd) {
+        try {
+            Process p = Runtime.getRuntime().exec(cmd);
+            PROCESSES.put(cmd, false);
+            return p;
+        } catch (Exception e) {
+            LOGGER.error("ERROR CREATING PROCESS", e);
+            throw new RuntimeIOException("", e);
+        }
     }
 
 }

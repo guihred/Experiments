@@ -31,8 +31,6 @@ public class DrawingShape extends Application {
 				.build();
 		root.getChildren().add(cubicCurve);
 
-		Path path = new Path();
-		path.setStrokeWidth(3);
 
 		MoveTo moveTo = new MoveTo();
 		moveTo.setX(50);
@@ -55,6 +53,9 @@ public class DrawingShape extends Application {
 		LineTo lineTo3 = new LineTo();
 		lineTo3.setX(150);
 		lineTo3.setY(150);
+
+        Path path = new Path();
+        path.setStrokeWidth(3);
 		path.getElements().addAll(moveTo, quadCurveTo, lineTo1, lineTo2,
 				lineTo3);
 		path.setTranslateY(30);

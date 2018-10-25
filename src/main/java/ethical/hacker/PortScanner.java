@@ -3,6 +3,14 @@ package ethical.hacker;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
 import utils.HasLogging;
@@ -23,47 +31,37 @@ public class PortScanner {
         }
     }
 
-    public static Map<String, List<String>> scanNetworkOpenPorts(String networkAddress) {
+    public static void main(String[] args) {
+        Map<String, List<String>> scanNetwork = scanPossibleOSes(TracerouteScanner.NETWORK_ADDRESS);
+
+		scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
+    }
+
+    public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress) {
         Locale.setDefault(Locale.ENGLISH);
         String hostRegex = "Nmap scan report for ([\\d\\.]+)";
         String portRegex = "\\d+/.+";
-        List<String> executeInConsole = ConsoleUtils
-                .executeInConsoleInfo(
+        ObservableList<String> executeInConsole = ConsoleUtils
+                .executeInConsoleInfoAsync(
                         "\"" + NMAP_FILES + "\" -sV --top-ports 10 " + networkAddress);
-        Map<String, List<String>> hostsPorts = new HashMap<>();
-        String host = "";
-        for (String line : executeInConsole) {
-            if (line.matches(hostRegex)) {
-                host = line.replaceAll(hostRegex, "$1");
-                hostsPorts.put(host, new ArrayList<>());
+        ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();
+        StringProperty host = new SimpleStringProperty("");
+        executeInConsole.addListener((Change<? extends String> c) -> {
+            while (c.next()) {
+                for (String line : c.getAddedSubList()) {
+                    if (line.matches(hostRegex)) {
+                        host.set(line.replaceAll(hostRegex, "$1"));
+                        hostsPorts.put(host.get(), new ArrayList<>());
+                    }
+                    if (line.matches(portRegex) && hostsPorts.containsKey(host.get())) {
+                        List<String> list = hostsPorts.get(host.get());
+                        list.add(line);
+                        hostsPorts.remove(host.get());
+                        hostsPorts.put(host.get(), new ArrayList<>(list));
+                    }
+                }
             }
-            if (line.matches(portRegex) && hostsPorts.containsKey(host)) {
-
-                hostsPorts.get(host).add(line);
-            }
-        }
-        return hostsPorts;
-    }
-
-    public static Map<String, List<String>> scanPossibleOSes(String networkAddress) {
-        Locale.setDefault(Locale.ENGLISH);
-        String hostRegex = "Nmap scan report for ([\\d\\.]+)";
-		String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*|OS details: (.+)";
-        List<String> executeInConsole = ConsoleUtils
-				.executeInConsoleInfo(
-						"\"" + NMAP_FILES + "\" -p 22,80,445,65123,56123 --traceroute -O " + networkAddress);
-        Map<String, List<String>> hostsPorts = new HashMap<>();
-        String host = "";
-        for (String line : executeInConsole) {
-            if (line.matches(hostRegex)) {
-                host = line.replaceAll(hostRegex, "$1");
-                hostsPorts.put(host, new ArrayList<>());
-            }
-            if (line.matches(osRegex) && hostsPorts.containsKey(host)) {
-				hostsPorts.get(host).add(line.replaceAll(osRegex, "$1$2$3$4$5"));
-            }
-        }
-
+        });
         return hostsPorts;
     }
 
@@ -95,10 +93,32 @@ public class PortScanner {
         return synchronizedList;
     }
 
-    public static void main(String[] args) {
+    public static ObservableMap<String, List<String>> scanPossibleOSes(String networkAddress) {
+        String hostRegex = "Nmap scan report for ([\\d\\.]+)";
+		String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*|OS details: (.+)";
+        ObservableList<String> executeInConsole = ConsoleUtils.executeInConsoleInfoAsync(
+						"\"" + NMAP_FILES + "\" -p 22,80,445,65123,56123 --traceroute -O " + networkAddress);
+        ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();
+        StringProperty host = new SimpleStringProperty("");
+        executeInConsole.addListener((Change<? extends String> c) -> {
+            while (c.next()) {
+                for (String line : c.getAddedSubList()) {
+                    if (line.matches(hostRegex)) {
+                        host.set(line.replaceAll(hostRegex, "$1"));
+                        hostsPorts.put(host.get(), new ArrayList<>());
+                    }
+                    if (line.matches(osRegex) && hostsPorts.containsKey(host.get())) {
+                        List<String> list = hostsPorts.get(host.get());
+                        String replaceAll = line.replaceAll(osRegex, "$1$2$3$4$5");
+                        list.addAll(Stream.of(replaceAll.split(", ")).collect(Collectors.toList()));
+                        hostsPorts.remove(host.get());
+                        LOG.info("OS of {} = {}", host.get(), list);
+                        hostsPorts.put(host.get(), list);
 
-        Map<String, List<String>> scanNetwork = scanNetworkOpenPorts(TracerouteScanner.NETWORK_ADDRESS);
-
-		scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
+                    }
+                }
+            }
+        });
+        return hostsPorts;
     }
 }

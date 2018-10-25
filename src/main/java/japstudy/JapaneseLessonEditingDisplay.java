@@ -26,11 +26,13 @@ import utils.CommonsFX;
 import utils.HasLogging;
 
 public class JapaneseLessonEditingDisplay extends Application implements HasLogging {
+    public static final long NANO_IN_A_MILLI_SECOND = 1_000_000;
     protected static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder()
-            .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('h').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-            .optionalStart().appendLiteral('m').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('s')
+            .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':')
+            .appendValue(ChronoField.MINUTE_OF_HOUR, 2).optionalStart().appendLiteral(':')
+            .appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
             .optionalStart().appendValue(ChronoField.MILLI_OF_SECOND, 3)
-			.appendLiteral("ms").toFormatter();
+            .toFormatter();
     protected SimpleIntegerProperty current = new SimpleIntegerProperty(1);
     protected ObservableList<JapaneseLesson> lessons = getLessons();
     protected Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
@@ -187,9 +189,10 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
     }
 
     protected void setStartEnd(JapaneseLesson japaneseLesson) {
-		if (japaneseLesson.getStart() == null || japaneseLesson.getEnd() == null
-				|| japaneseLesson.getEnd().equals(LocalTime.MIDNIGHT)
-				|| japaneseLesson.getStart().equals(LocalTime.MIDNIGHT)) {
+		if (japaneseLesson.getStart() == null 
+		        || japaneseLesson.getEnd() == null
+                || LocalTime.MIDNIGHT.equals(japaneseLesson.getEnd())
+                || LocalTime.MIDNIGHT.equals(japaneseLesson.getStart())) {
 			double millis = sound.getDuration().toMillis();
 			if (!Double.isNaN(millis)) {
 				Long countExercises = JapaneseLessonReader.getCountExerciseByLesson(japaneseLesson.getLesson());

@@ -28,7 +28,6 @@ import javafx.scene.shape.Mesh;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Note
@@ -44,95 +43,15 @@ public final class ResourceFXUtils {
     private ResourceFXUtils() {
     }
 
-    public static URL toURL(String arquivo) {
-        return ResourceFXUtils.class.getClassLoader().getResource(arquivo);
-    }
-
-    public static String toExternalForm(String arquivo) {
-        return ResourceFXUtils.class.getClassLoader().getResource(arquivo).toExternalForm();
-    }
-
-    public static String toFullPath(String arquivo) {
-        try {
-            return URLDecoder.decode(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile(), "UTF-8");
-        } catch (Exception e) {
-            LOGGER.error("File Error:" + arquivo, e);
-            return null;
+    public static double clamp(double value, double min, double max) {
+        if (Double.compare(value, min) < 0) {
+            return min;
         }
-    }
-
-    public static void initializeFX() {
-        Platform.setImplicitExit(false);
-        new JFXPanel().toString();
-    }
-
-    public static File toFile(String arquivo) {
-        return new File(toFullPath(arquivo));
-    }
-
-    public static InputStream toStream(String arquivo) {
-        return ResourceFXUtils.class.getClassLoader().getResourceAsStream(arquivo);
-    }
-
-    public static URI toURI(String arquivo) {
-        return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();
-    }
-
-    public static Path toPath(String arquivo) {
-        return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toPath();
-    }
-
-    public static Mesh importStlMesh(String arquivo) {
-        File file = new File(arquivo);
-        return importStlMesh(file);
-    }
-
-    public static Mesh importStlMesh(File file) {
-        StlMeshImporter importer = new StlMeshImporter();
-        importer.read(file);
-        return importer.getImport();
-    }
-
-    public static Mesh importStlMesh(URL file) {
-        StlMeshImporter importer = new StlMeshImporter();
-        importer.read(file);
-        return importer.getImport();
-    }
-
-    public static File getUserFolder(String dir) {
-        String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
-        return new File(new File(path).getParentFile(), dir);
-    }
-
-    public static List<Path> getPathByExtension(File dir, String other) {
-        try (Stream<Path> walk = Files.walk(dir.toPath(), 20, FileVisitOption.FOLLOW_LINKS)) {
-            return walk.filter(e -> e.toString().endsWith(other)).collect(Collectors.toList());
-        } catch (IOException e) {
-            LOGGER.error("", e);
+        if (Double.compare(value, max) > 0) {
+            return max;
         }
-        return Collections.emptyList();
+        return value;
     }
-
-    public static Path getFirstPathByExtension(File dir, String other) {
-        return getPathByExtension(dir, other).stream().findFirst().orElse(null);
-    }
-
-    public static String take(final Canvas canvas) {
-        try {
-            final WritableImage writableImage = new WritableImage((int) canvas.getWidth(), (int) canvas.getHeight());
-            final WritableImage snapshot = canvas.snapshot(new SnapshotParameters(), writableImage);
-            File destination = File.createTempFile("snapshot", ".png");
-            ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "PNG", destination);
-            Desktop.getDesktop().open(destination);
-            return destination.getAbsolutePath();
-        } catch (final IOException e) {
-            LoggerFactory.getLogger(ResourceFXUtils.class).error("ERROR ", e);
-            return null;
-        }
-    }
-
-
-
 
     public static Image createImage(double size1, float[][] noise) {
         int width = (int) size1;
@@ -152,14 +71,92 @@ public final class ResourceFXUtils {
         return wr;
     }
 
-    public static double clamp(double value, double min, double max) {
-        if (Double.compare(value, min) < 0) {
-            return min;
+    public static Path getFirstPathByExtension(File dir, String other) {
+        return getPathByExtension(dir, other).stream().findFirst().orElse(null);
+    }
+
+    public static List<Path> getPathByExtension(File dir, String other) {
+        try (Stream<Path> walk = Files.walk(dir.toPath(), 20, FileVisitOption.FOLLOW_LINKS)) {
+            return walk.filter(e -> e.toString().endsWith(other)).collect(Collectors.toList());
+        } catch (IOException e) {
+            LOGGER.error("", e);
         }
-        if (Double.compare(value, max) > 0) {
-            return max;
+        return Collections.emptyList();
+    }
+
+    public static File getUserFolder(String dir) {
+        String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
+        return new File(new File(path).getParentFile(), dir);
+    }
+
+    public static Mesh importStlMesh(File file) {
+        StlMeshImporter importer = new StlMeshImporter();
+        importer.read(file);
+        return importer.getImport();
+    }
+
+    public static Mesh importStlMesh(String arquivo) {
+        File file = new File(arquivo);
+        return importStlMesh(file);
+    }
+
+    public static Mesh importStlMesh(URL file) {
+        StlMeshImporter importer = new StlMeshImporter();
+        importer.read(file);
+        return importer.getImport();
+    }
+
+    public static void initializeFX() {
+        Platform.setImplicitExit(false);
+        new JFXPanel().toString();
+    }
+
+    public static String take(final Canvas canvas) {
+        try {
+            final WritableImage writableImage = new WritableImage((int) canvas.getWidth(), (int) canvas.getHeight());
+            final WritableImage snapshot = canvas.snapshot(new SnapshotParameters(), writableImage);
+            File destination = File.createTempFile("snapshot", ".png");
+            ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "PNG", destination);
+            Desktop.getDesktop().open(destination);
+            return destination.getAbsolutePath();
+        } catch (final IOException e) {
+            HasLogging.log(1).error("ERROR ", e);
+            return null;
         }
-        return value;
+    }
+
+    public static String toExternalForm(String arquivo) {
+        return ResourceFXUtils.class.getClassLoader().getResource(arquivo).toExternalForm();
+    }
+
+    public static File toFile(String arquivo) {
+        return new File(toFullPath(arquivo));
+    }
+
+    public static String toFullPath(String arquivo) {
+        try {
+            return URLDecoder.decode(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile(), "UTF-8");
+        } catch (Exception e) {
+            LOGGER.error("File Error:" + arquivo, e);
+            return null;
+        }
+    }
+
+    public static Path toPath(String arquivo) {
+        return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toPath();
+    }
+
+    public static InputStream toStream(String arquivo) {
+        return ResourceFXUtils.class.getClassLoader().getResourceAsStream(arquivo);
+    }
+
+
+    public static URI toURI(String arquivo) {
+        return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();
+    }
+
+    public static URL toURL(String arquivo) {
+        return ResourceFXUtils.class.getClassLoader().getResource(arquivo);
     }
 
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {

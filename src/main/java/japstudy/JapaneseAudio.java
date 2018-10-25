@@ -42,7 +42,7 @@ public enum JapaneseAudio {
     }
 
     public File getFile() {
-        return ResourceFXUtils.toFile(file);
+        return ResourceFXUtils.toFile("jap/" + file);
     }
 
     public int getLesson() {

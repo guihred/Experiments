@@ -32,6 +32,8 @@ import utils.ResourceFXUtils;
 
 public final class SongUtils {
 
+    private static final int SECONDS_IN_A_MINUTE = 60;
+
     private static final Logger LOG = HasLogging.log();
 
 	private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
@@ -75,21 +77,54 @@ public final class SongUtils {
     }
 
 
+    public static Image extractEmbeddedImage(File mp3) {
+        MP3File mp31 = new MP3File(mp3);
+        try {
+            for (ID3Tag tag : mp31.getTags()) {
+
+                if (tag instanceof ID3V2_3_0Tag) {
+                    ID3V2_3_0Tag tag2 = (ID3V2_3_0Tag) tag;
+
+                    if (tag2.getAPICFrames() != null && tag2.getAPICFrames().length > 0) {
+                        // Simply take the first image that is available.
+                        APICID3V2Frame frame = tag2.getAPICFrames()[0];
+                        return new Image(new ByteArrayInputStream(frame.getPictureData()));
+                    }
+                }
+            }
+            ID3V2Tag id3v2Tag = mp31.getID3V2Tag();
+            ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
+            String singleFramesStr = Arrays.toString(singleFrames);
+            LOG.trace("SingleFrames={}", singleFramesStr);
+        } catch (Exception e) {
+            LOG.trace("", e);
+        }
+        return null;
+    }
+
     public static String formatDuration(Duration duration) {
         double millis = duration.toMillis();
-        int seconds = (int) (millis / 1000) % 60;
-        int minutes = (int) (millis / (1000 * 60));
+        int seconds = (int) (millis / 1000) % SECONDS_IN_A_MINUTE;
+        int minutes = (int) (millis / (1000 * SECONDS_IN_A_MINUTE));
         return String.format("%02d:%02d", minutes, seconds);
     }
 
     public static String formatDurationMillis(Duration duration) {
         long millis = (long) duration.toMillis();
-        long seconds = millis / 1000 % 60;
-        long minutes = millis / (1000 * 60);
+        long seconds = millis / 1000 % SECONDS_IN_A_MINUTE;
+        long minutes = millis / (1000 * SECONDS_IN_A_MINUTE);
         return String.format("%02d:%02d.%03d", minutes, seconds, millis % 1000);
     }
 
-    public static void seekAndUpdatePosition(Duration duration, Slider slider, MediaPlayer mediaPlayer) {
+    public static String formatFullDuration(Duration duration) {
+        long millis = (long) duration.toMillis();
+        long seconds = millis / 1000 % SECONDS_IN_A_MINUTE;
+        long minutes = millis / (1000 * SECONDS_IN_A_MINUTE) % SECONDS_IN_A_MINUTE;
+        long hours = millis / (1000 * SECONDS_IN_A_MINUTE) / SECONDS_IN_A_MINUTE;
+        return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis % 1000);
+    }
+
+	public static void seekAndUpdatePosition(Duration duration, Slider slider, MediaPlayer mediaPlayer) {
         if (mediaPlayer.getStatus() == Status.STOPPED) {
             mediaPlayer.pause();
         }
@@ -99,7 +134,7 @@ public final class SongUtils {
         }
     }
 
-	public static DoubleProperty splitAudio(File mp3File, File mp4File, Duration start, Duration end) {
+    public static DoubleProperty splitAudio(File mp3File, File mp4File, Duration start, Duration end) {
         if (mp4File.exists()) {
             try {
                 Files.delete(mp4File.toPath());
@@ -131,50 +166,6 @@ public final class SongUtils {
         return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync, SongUtils::convertTimeToMillis);
     }
 
-    public static Image extractEmbeddedImage(File mp3) {
-        MP3File mp31 = new MP3File(mp3);
-        try {
-            for (ID3Tag tag : mp31.getTags()) {
-
-                if (tag instanceof ID3V2_3_0Tag) {
-                    ID3V2_3_0Tag tag2 = (ID3V2_3_0Tag) tag;
-
-                    if (tag2.getAPICFrames() != null && tag2.getAPICFrames().length > 0) {
-                        // Simply take the first image that is available.
-                        APICID3V2Frame frame = tag2.getAPICFrames()[0];
-                        return new Image(new ByteArrayInputStream(frame.getPictureData()));
-                    }
-                }
-            }
-            ID3V2Tag id3v2Tag = mp31.getID3V2Tag();
-            ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
-            String singleFramesStr = Arrays.toString(singleFrames);
-            LOG.trace("SingleFrames={}", singleFramesStr);
-        } catch (Exception e) {
-            LOG.trace("", e);
-        }
-        return null;
-    }
-
-
-	private static long convertTimeToMillis(String text) {
-		return ChronoUnit.MILLIS.between(LocalTime.MIN, TIME_OF_SECONDS_FORMAT.parse(text, LocalTime::from));
-	}
-
-    public static void splitAudio(File mp3File, String mp4File, LocalTime start, LocalTime end) {
-        StringBuilder cmd = new StringBuilder();
-        cmd.append(FFMPEG);
-        cmd.append(" -i ");
-        cmd.append(mp3File);
-        cmd.append(" -ss ");
-        cmd.append(TIME_OF_SECONDS_FORMAT.format(start));
-        cmd.append(" -r 1 -to ");
-        cmd.append(TIME_OF_SECONDS_FORMAT.format(end));
-        cmd.append(" ");
-        cmd.append(mp4File);
-        // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
-        ConsoleUtils.executeInConsole(cmd.toString());
-    }
 
     public static void updatePositionSlider(Duration currentTime, Slider positionSlider,
             final MediaPlayer mediaPlayer) {
@@ -188,5 +179,9 @@ public final class SongUtils {
             positionSlider.setValue(currentTime.toMillis() / total.toMillis());
         }
     }
+
+    private static long convertTimeToMillis(String text) {
+		return ChronoUnit.MILLIS.between(LocalTime.MIN, TIME_OF_SECONDS_FORMAT.parse(text, LocalTime::from));
+	}
 
 }

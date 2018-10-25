@@ -1,6 +1,7 @@
 package ethical.hacker;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,10 +18,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
+import utils.ConsoleUtils;
+import utils.HasLogging;
 
 public class EthicalHackApp extends Application {
+
+    private static final Logger LOG = HasLogging.log();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -69,36 +75,23 @@ public class EthicalHackApp extends Application {
         TextField networkAddress = new TextField(TracerouteScanner.NETWORK_ADDRESS);
         Button portScanner = CommonsFX.newButton("_Port Scan", e -> {
             items.clear();
+            addColumns(commonTable, Arrays.asList("Host", "Route", "OS", "Ports"));
             new Thread(() -> {
-                Map<String, List<String>> scanNetworkOpenPorts = PortScanner
+                ObservableMap<String, List<String>> scanNetworkOpenPorts = PortScanner
                         .scanNetworkOpenPorts(networkAddress.getText());
-                Map<String, List<String>> oses = PortScanner.scanPossibleOSes(networkAddress.getText());
-                scanNetworkOpenPorts.forEach((key, valude) -> {
-                    Map<String, String> hashMap = new LinkedHashMap<>();
-                    hashMap.put("Host", key);
-                    hashMap.put("Ports", valude.stream().collect(Collectors.joining("\n")));
-                    hashMap.put("OS", oses.get(key).stream().collect(Collectors.joining("\n")));
-                    items.add(hashMap);
-                });
+                scanNetworkOpenPorts
+                        .addListener(updateItemOnChange(items, "Host", "Ports"));
+                ObservableMap<String, List<String>> oses = PortScanner.scanPossibleOSes(networkAddress.getText());
+                oses.addListener(updateItemOnChange(items, "Host", "OS"));
+                ObservableMap<String, List<String>> networkRoutes = TracerouteScanner
+                        .scanNetworkRoutes(networkAddress.getText());
+                networkRoutes.addListener(updateItemOnChange(items, "Host", "Route"));
+                ConsoleUtils.waitAllProcesses();
+
             }).start();
 
-            addColumns(commonTable, Arrays.asList("Host", "Ports", "OS"));
         });
-        Button traceScanner = CommonsFX.newButton("Tracer_oute", e -> {
-            items.clear();
-            ObservableMap<String, List<String>> scanNetworkOpenPorts = TracerouteScanner
-                    .scanNetworkRoutes(networkAddress.getText());
-            scanNetworkOpenPorts.addListener((MapChangeListener<String, List<String>>) change -> {
-                String key = change.getKey();
-                List<String> valueAdded = change.getValueAdded();
-                HashMap<String, String> e2 = new HashMap<>();
-                e2.put("Host", key);
-                e2.put("Route", valueAdded.stream().collect(Collectors.joining("\n")));
-                items.add(e2);
-            });
-            addColumns(commonTable, Arrays.asList("Host", "Route"));
-        });
-        vBox.getChildren().addAll(new Text("Network Adress"), networkAddress, portScanner, traceScanner);
+        vBox.getChildren().addAll(new Text("Network Adress"), networkAddress, portScanner);
 
         HBox hBox = new HBox(vBox, commonTable);
         commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-120));
@@ -112,10 +105,32 @@ public class EthicalHackApp extends Application {
         simpleTableViewBuilder.getColumns().clear();
         keySet.forEach(key -> {
             final TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
-            column.setCellValueFactory(param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key))));
+            column.setCellValueFactory(
+                    param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
             column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));
             simpleTableViewBuilder.getColumns().add(column);
         });
+    }
+
+    private MapChangeListener<String, List<String>> updateItemOnChange(ObservableList<Map<String, String>> items,
+            String primaryKey, String targetKey) {
+        return change -> {
+            if (!change.wasAdded()) {
+                return;
+            }
+            String key = change.getKey();
+            List<String> valueAdded = change.getValueAdded();
+            Map<String, String> e2 = items.stream().filter(c -> key.equals(c.get(primaryKey))).findAny()
+                    .orElseGet(ConcurrentHashMap<String, String>::new);
+            e2.put(primaryKey, key);
+            e2.put(targetKey, valueAdded.stream().collect(Collectors.joining("\n")));
+            if (!items.contains(e2)) {
+                items.add(e2);
+            }
+            Map<String, String> map = items.remove(0);
+            items.add(0, map);
+            LOG.info("{} of {} = {}", targetKey, key, valueAdded);
+        };
     }
 
     public static void main(String[] args) {

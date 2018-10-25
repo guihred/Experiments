@@ -1,10 +1,17 @@
 package ethical.hacker;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
@@ -29,28 +36,28 @@ public class TracerouteScanner {
 	public static ObservableMap<String, List<String>> scanNetworkRoutes(String networkAddress) {
 		ObservableMap<String, List<String>> synchronizedObservableMap = FXCollections
 				.synchronizedObservableMap(FXCollections.observableHashMap());
-        new Thread(() -> {
-
-			Locale.setDefault(Locale.ENGLISH);
-			String hostRegex = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [\\w\\.]+ \\(([\\d\\.]+)\\)";
-        List<String> executeInConsole = ConsoleUtils
-					.executeInConsoleInfo("\"" + NMAP_FILES + "\" --traceroute -sn " + networkAddress);
-			Map<String, List<String>> hostsPorts = new HashMap<>();
-			String host = "";
-			for (String line : executeInConsole) {
-				if (line.matches(hostRegex)) {
-					host = line.replaceAll(hostRegex, "$1$2");
-					hostsPorts.put(host, new ArrayList<>());
-				}
-				if (line.matches(REUSED_ROUTE_REGEX + "|" + REUSED_ROUTE_REGEX_1 + "|" + HOP_REGEX)
-						&& hostsPorts.containsKey(host)) {
-					hostsPorts.get(host).add(line);
-				}
-			}
-			Map<String, List<String>> netRoutes = hostsPorts.entrySet().stream()
-					.collect(Collectors.toMap(Entry<String, List<String>>::getKey, e -> extractHops(hostsPorts, e)));
-			synchronizedObservableMap.putAll(netRoutes);
-        }).start();
+        String hostRegex = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [\\w\\.]+ \\(([\\d\\.]+)\\)";
+        ObservableList<String> executeInConsole = ConsoleUtils
+                .executeInConsoleInfoAsync("\"" + NMAP_FILES + "\" --traceroute -sn " + networkAddress);
+        Map<String, List<String>> hostsPorts = new HashMap<>();
+        StringProperty host = new SimpleStringProperty("");
+        executeInConsole.addListener((ListChangeListener<String>) c -> {
+            while (c.next()) {
+                for (String line : c.getAddedSubList()) {
+                    if (line.matches(hostRegex)) {
+                        host.set(line.replaceAll(hostRegex, "$1$2"));
+                        hostsPorts.put(host.get(), new ArrayList<>());
+                    }
+                    if (line.matches(REUSED_ROUTE_REGEX + "|" + REUSED_ROUTE_REGEX_1 + "|" + HOP_REGEX)
+                            && hostsPorts.containsKey(host.get())) {
+                        hostsPorts.get(host.get()).add(line);
+                    }
+                }
+            }
+            Map<String, List<String>> netRoutes = hostsPorts.entrySet().stream()
+                    .collect(Collectors.toMap(Entry<String, List<String>>::getKey, e -> extractHops(hostsPorts, e)));
+            synchronizedObservableMap.putAll(netRoutes);
+        });
 
 		return synchronizedObservableMap;
 	}
@@ -61,13 +68,19 @@ public class TracerouteScanner {
 				String hops = l.replaceAll(REUSED_ROUTE_REGEX, "$1,$2");
 				int[] array = Stream.of(hops.split(",")).mapToInt(Integer::parseInt).toArray();
 				String host = l.replaceAll(REUSED_ROUTE_REGEX, "$3");
-				List<String> subList = hostsPorts.get(host).subList(array[0] - 1, array[1]);
-				return subList.stream().map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
+                if (!hostsPorts.containsKey(host)) {
+                    return Stream.empty();
+                }
+                return hostsPorts.get(host).subList(array[0] - 1, array[1]).stream()
+                        .map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
 			}
 			if (l.matches(REUSED_ROUTE_REGEX_1)) {
 				String hops = l.replaceAll(REUSED_ROUTE_REGEX_1, "$1");
 				String host = l.replaceAll(REUSED_ROUTE_REGEX_1, "$2");
-				String subList = hostsPorts.get(host).get(Integer.parseInt(hops) - 1);
+                if (!hostsPorts.containsKey(host)) {
+                    return Stream.empty();
+                }
+                String subList = hostsPorts.get(host).get(Integer.parseInt(hops) - 1);
 				return Stream.of(subList).map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
 			}
 			return Stream.of(l.replaceAll(HOP_REGEX, "$1$2"));
