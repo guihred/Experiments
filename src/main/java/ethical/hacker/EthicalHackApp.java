@@ -95,7 +95,7 @@ public class EthicalHackApp extends Application {
 
         HBox hBox = new HBox(vBox, commonTable);
         commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-120));
-
+        primaryStage.setTitle("Ethical Hack App");
         primaryStage.setScene(new Scene(hBox, 500, 500));
         primaryStage.show();
 

@@ -41,7 +41,7 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
                 }
                 i++;
             } catch (Exception e) {
-                getLogger().error("ERRO cidade " + cidade, e);
+                getLogger().trace("ERRO cidade " + cidade, e);
             }
         }
 

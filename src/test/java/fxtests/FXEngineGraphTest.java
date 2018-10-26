@@ -23,19 +23,6 @@ public class FXEngineGraphTest extends ApplicationTest {
         new GraphModelLauncher().start(stage);
     }
     @Test
-    public void verifyZoomable() throws Exception {
-        Set<Node> queryButtons = lookup(Cell.class::isInstance).queryAll();
-        queryButtons.forEach(e -> {
-            clickOn(e);
-            drag(e, MouseButton.PRIMARY);
-            moveBy(100, 100);
-            drop();
-        });
-        scroll(2, VerticalDirection.UP);
-        scroll(2, VerticalDirection.DOWN);
-    }
-
-    @Test
     public void verify() throws Exception {
         Set<Node> queryButtons = lookup(".button").queryAll();
         for (Node e : queryButtons) {
@@ -63,8 +50,16 @@ public class FXEngineGraphTest extends ApplicationTest {
     }
 
     @Test
-    public void closeAll() {
-        closeCurrentWindow();
+    public void verifyZoomable() throws Exception {
+        Set<Node> queryButtons = lookup(Cell.class::isInstance).queryAll();
+        queryButtons.forEach(e -> {
+            clickOn(e);
+            drag(e, MouseButton.PRIMARY);
+            moveBy(100, 100);
+            drop();
+        });
+        scroll(2, VerticalDirection.UP);
+        scroll(2, VerticalDirection.DOWN);
     }
 
 }

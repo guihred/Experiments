@@ -21,6 +21,7 @@ import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 
 public final class ConsoleUtils {
+    private static final int WAIT_INTERVAL_MILLIS = 5000;
     private static final String ACTIVE_FLAG = "active";
     private static final Logger LOGGER = HasLogging.log();
     private static final String EXECUTING = "Executing \"{}\"";
@@ -78,27 +79,7 @@ public final class ConsoleUtils {
         Map<String, ObservableList<String>> result = new HashMap<>();
         result.put(ACTIVE_FLAG, FXCollections.observableArrayList());
         responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
-        new Thread(RunnableEx.makeRunnable(() -> {
-            LOGGER.info(EXECUTING, cmd);
-            Process exec = newProcess(cmd);
-            try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = in.readLine()) != null) {
-                    LOGGER.info(line);
-                    String line1 = line;
-                    Map<String, String> regMap = responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
-                            .collect(Collectors.toMap(Entry<String, String>::getKey,
-                                    e -> line1.replaceAll(e.getKey(), e.getValue())));
-                    regMap.forEach((reg, li) -> result.get(reg).add(li));
-                }
-                exec.waitFor();
-                result.get(ACTIVE_FLAG).add("");
-                PROCESSES.put(cmd, true);
-            } catch (Exception e) {
-                LOGGER.error("", e);
-            }
-        })).start();
+        new Thread(RunnableEx.makeRunnable(() -> updateRegexMapValues(cmd, responses, result))).start();
         return result;
     }
 
@@ -154,7 +135,7 @@ public final class ConsoleUtils {
                         .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
                 String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
                 LOGGER.info("Running {} processes {}", processes.size(), formated);
-                Thread.sleep(5000);
+                Thread.sleep(WAIT_INTERVAL_MILLIS);
             } catch (Exception e1) {
                 LOGGER.trace("", e1);
             }
@@ -169,6 +150,29 @@ public final class ConsoleUtils {
         } catch (Exception e) {
             LOGGER.error("ERROR CREATING PROCESS", e);
             throw new RuntimeIOException("", e);
+        }
+    }
+
+    private static void updateRegexMapValues(String cmd, Map<String, String> responses,
+            Map<String, ObservableList<String>> result) {
+        LOGGER.info(EXECUTING, cmd);
+        Process exec = newProcess(cmd);
+        try (BufferedReader in = new BufferedReader(
+                new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = in.readLine()) != null) {
+                LOGGER.info(line);
+                String line1 = line;
+                Map<String, String> regMap = responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
+                        .collect(Collectors.toMap(Entry<String, String>::getKey,
+                                e -> line1.replaceAll(e.getKey(), e.getValue())));
+                regMap.forEach((reg, li) -> result.get(reg).add(li));
+            }
+            exec.waitFor();
+            result.get(ACTIVE_FLAG).add("");
+            PROCESSES.put(cmd, true);
+        } catch (Exception e) {
+            LOGGER.error("", e);
         }
     }
 

@@ -62,26 +62,10 @@ public class GolfBall extends Application {
 		return spheres;
 	}
 
-	public static void main(String[] args) {
-
-		launch(args);
-	}
-
-    private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
-		Rotate rotate = new Rotate(180, centerOtherSphere);
-		final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
-		double distance = centerOtherSphere.distance(point3D);
-		if (distance <= radius) {
-			Point3D subtract = centerOtherSphere.subtract(point3D);
-			Point3D transform = rotate.transform(subtract);
-			points[pPos + 0] = (float) transform.getX();
-			points[pPos + 1] = (float) transform.getY();
-			points[pPos + 2] = (float) transform.getZ();
-
-		}
-	}
-
-    private static int[] createFaces(final int division, final int div2, final int nFaces, int pS) {
+	public static int[] createFaces(final int division) {
+        int div2 = division / 2;
+        int pS = (div2 - 1) * division;
+        final int nFaces = division * (div2 - 2) * 2 + division * 2;
         int[] faces = new int[nFaces * 6];
 		int fIndex = 0;
 		for (int y = 0; y < div2 - 2; ++y) {
@@ -154,6 +138,25 @@ public class GolfBall extends Application {
         return faces;
     }
 
+    public static void main(String[] args) {
+
+		launch(args);
+	}
+
+    private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
+		Rotate rotate = new Rotate(180, centerOtherSphere);
+		final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
+		double distance = centerOtherSphere.distance(point3D);
+		if (distance <= radius) {
+			Point3D subtract = centerOtherSphere.subtract(point3D);
+			Point3D transform = rotate.transform(subtract);
+			points[pPos + 0] = (float) transform.getX();
+			points[pPos + 1] = (float) transform.getY();
+			points[pPos + 2] = (float) transform.getZ();
+
+		}
+	}
+
 	private static int index(final int division, int p3) {
         return p3 % division == 0 ? p3 - division : p3;
     }
@@ -164,7 +167,7 @@ public class GolfBall extends Application {
 
 		final int nPoints = division * (div2 - 1) + 2;
 		final int nTPoints = (division + 1) * (div2 - 1) + division * 2;
-		final int nFaces = division * (div2 - 2) * 2 + division * 2;
+
 
 		final float rDiv = 1.F / division;
 
@@ -181,7 +184,7 @@ public class GolfBall extends Application {
 			float sinVal = (float) Math.sin(va);
 			float cosVal = (float) Math.cos(va);
 
-			float ty = 0.5F + sinVal * 0.5F;
+            float ty = 1 / 2F + sinVal / 2F;
 			for (int i = 0; i < division; ++i) {
 				double a = rDiv * i * 2 * (float) Math.PI;
 				float hSin = (float) Math.sin(a);
@@ -215,21 +218,21 @@ public class GolfBall extends Application {
 			checkDistance(radius, centerOtherSphere, points, pPos + 3);
 		}
 
-		int pS = (div2 - 1) * division;
+
 
 		float textureDelta = 1.F / 256;
 		for (int i = 0; i < division; ++i) {
-			tPoints[tPos + 0] = rDiv * (0.5F + i);
+            tPoints[tPos + 0] = rDiv * (1 / 2F + i);
 			tPoints[tPos + 1] = textureDelta;
 			tPos += 2;
 		}
 
 		for (int i = 0; i < division; ++i) {
-			tPoints[tPos + 0] = rDiv * (0.5F + i);
+            tPoints[tPos + 0] = rDiv * (1 / 2F + i);
 			tPoints[tPos + 1] = 1 - textureDelta;
 			tPos += 2;
 		}
-        int[] faces = createFaces(division, div2, nFaces, pS);
+        int[] faces = createFaces(division);
 
         TriangleMesh m = new TriangleMesh();
         m.getPoints().setAll(points);

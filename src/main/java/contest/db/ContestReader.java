@@ -11,19 +11,18 @@ import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import pdfreader.PdfUtils;
 import utils.HasLogging;
 
 public final class ContestReader implements HasLogging {
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
     public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     public static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
-    private static ContestReader instance;
-
+    private static final ContestReader INSTANCE = new ContestReader();
     private static final String LINE_PATTERN = "^\\d+\\s+$";
 
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
@@ -51,6 +50,7 @@ public final class ContestReader implements HasLogging {
     public Contest getContest() {
         return contest;
     }
+
     public ObservableList<ContestText> getTexts() {
         return texts;
     }
@@ -101,7 +101,6 @@ public final class ContestReader implements HasLogging {
 
             case STATE_TEXT:
                 if (StringUtils.isNotBlank(s)) {
-
                     text.appendText(s + "\n");
                 }
                 break;
@@ -130,12 +129,10 @@ public final class ContestReader implements HasLogging {
 
     private void processQuestion(String[] linhas, int i) {
         String s = linhas[i];
-
         if (s.matches(SUBJECT_PATTERN) && i > 0) {
             subject = linhas[i - 1];
             return;
         }
-
         if (s.matches(TEXTS_PATTERN)) {
             state = ReaderState.STATE_TEXT;
             String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
@@ -147,7 +144,6 @@ public final class ContestReader implements HasLogging {
         if (s.matches(LINE_PATTERN)) {
             return;
         }
-
         if (s.matches(QUESTION_PATTERN)) {
             if (option == 5 && state == ReaderState.STATE_OPTION) {
                 addQuestion();
@@ -193,10 +189,9 @@ public final class ContestReader implements HasLogging {
         }
     }
 
-
     private void readFile(File file) {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
-                COSDocument cosDoc = parseAndGet(source);
+                COSDocument cosDoc = PdfUtils.parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
             PDFTextStripper pdfStripper = new PDFTextStripper() {
                 @Override
@@ -213,7 +208,6 @@ public final class ContestReader implements HasLogging {
                         qp.setPage(pageNumber);
                         getLogger().trace("{} at ({},{}) page {}", qp.getLine(), qp.getX(), qp.getY(), pageNumber);
                         questionPosition.add(qp);
-
                     }
                 }
 
@@ -235,11 +229,8 @@ public final class ContestReader implements HasLogging {
                 final int j = i;
                 for (PDFImage pdfImage : images) {
                     questionPosition.stream().filter(e -> e.getPage() == j)
-                            .min(Comparator.comparing((QuestionPosition e) -> {
-                                float a = pdfImage.x - e.getX();
-                                float b = pdfImage.y - e.getY();
-                                return a * a + b * b;
-                            })).ifPresent(orElse -> {
+                            .min(Comparator.comparing(position -> position.distance(pdfImage.x, pdfImage.y)))
+                            .ifPresent(orElse -> {
                                 for (HasImage pdfImage2 : imageElements) {
                                     if (pdfImage2.matches(orElse.getLine())) {
                                         pdfImage2.appendImage(pdfImage.file.getName());
@@ -276,40 +267,27 @@ public final class ContestReader implements HasLogging {
     }
 
     public static ObservableList<ContestQuestion> getContestQuestions(File file, Runnable... r) {
-        if (instance == null) {
-            instance = new ContestReader();
-        }
         new Thread(() -> {
-            instance.readFile(file);
+            INSTANCE.readFile(file);
             Stream.of(r).forEach(Runnable::run);
         }).start();
-        return instance.listQuestions;
+        return INSTANCE.listQuestions;
     }
 
     public static ObservableList<ContestText> getContestTexts() {
-        if (instance == null) {
-            instance = new ContestReader();
-        }
-
-        return instance.getTexts();
+        return INSTANCE.getTexts();
     }
 
     public static ContestReader getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public static void saveAll() {
-        instance.saveAllEntities();
+        INSTANCE.saveAllEntities();
     }
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
         return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
-    }
-
-    private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
-        PDFParser parser = new PDFParser(source);
-        parser.parse();
-        return parser.getDocument();
     }
 
     enum ReaderState {

@@ -14,50 +14,31 @@ public final class ClassReflectionUtils {
     }
 
     public static String getDescription(Object i) {
-        Set<Object> invoked = new HashSet<>();
-        Map<Class<?>, List<Method>> getterMethods = new HashMap<>();
-        Map<Class<?>, FunctionEx<Object, String>> toStringMap = new HashMap<>();
-        return getDescription(invoked, getterMethods, i.getClass(), i, toStringMap);
+        return getDescription(i, i.getClass(), new HashMap<>(), new HashSet<>(), new HashMap<>());
 
     }
 
-    public static String getDescription(Object i, Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
-        Set<Object> invoked = new HashSet<>();
-        Map<Class<?>, List<Method>> getterMethods = new HashMap<>();
-        return getDescription(invoked, getterMethods, i.getClass(), i, toStringMap);
+    public static String getDescription(Object obj, Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
+        return getDescription(obj, obj.getClass(), toStringMap, new HashSet<>(), new HashMap<>());
 
     }
 
-    public static Map<String, String> getDescriptionMap(Object i,
-            Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
-        Set<Object> invoked = new HashSet<>();
-        Map<Class<?>, List<Method>> getterMethods = new HashMap<>();
-
-        Map<String, String> map = new HashMap<>();
-        return getDescriptionMap(invoked, getterMethods, i.getClass(), i, toStringMap, map);
-
-    }
-
-    public static <T> String getDescription(Set<Object> invoked, Map<Class<?>, List<Method>> getterMethods,
-
-            Class<?> class1, T i, Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
-        if (!invoked.contains(i)) {
-            invoked.add(i);
+    public static <T> String getDescription(T obj, Class<?> class1, Map<Class<?>, FunctionEx<Object, String>> toStringMap,
+            Set<Object> invokedObjects, Map<Class<?>, List<Method>> getterMethods) {
+        if (!invokedObjects.contains(obj)) {
+            invokedObjects.add(obj);
         } else {
             return "";
         }
-        List<Method> infoMethod = getGetterMethods(getterMethods, class1);
+        List<Method> infoMethod = getGetterMethods(class1, getterMethods);
         StringBuilder description = new StringBuilder("\n");
-        infoMethod.forEach(ConsumerEx.makeConsumer((Method o) -> {
-            Object invoke = o.invoke(i);
-            if (invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0) {
-                Type type = invoke.getClass().getGenericInterfaces()[0];
-                if (type.getTypeName().contains(class1.getName())) {
-                    return;
-                }
+        infoMethod.forEach(ConsumerEx.makeConsumer((Method method) -> {
+            Object invoke = method.invoke(obj);
+            // To Avoid infinite loop
+            if (isRecursiveCall(class1, invoke)) {
+                return;
             }
-            String fieldName = o.getName().replaceAll(METHOD_REGEX, "$1$2");
-
+            String fieldName = method.getName().replaceAll(METHOD_REGEX, "$1$2");
             description.append("\t");
             description.append(fieldName);
             description.append(" = ");
@@ -65,7 +46,7 @@ public final class ClassReflectionUtils {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
             } else if (invoke instanceof Enumeration) {
                 Enumeration<?> invoke2 = (Enumeration<?>) invoke;
-                description.append(getEnumerationDescription(invoked, getterMethods, fieldName, invoke2, toStringMap));
+                description.append(getEnumerationDescription(fieldName, invoke2, toStringMap, invokedObjects, getterMethods));
             } else {
                 description.append(invoke);
             }
@@ -74,20 +55,25 @@ public final class ClassReflectionUtils {
         return description.toString();
     }
 
-    public static <T> Map<String, String> getDescriptionMap(Set<Object> invoked,
-            Map<Class<?>, List<Method>> getterMethods,
-            Class<?> class1, T i, Map<Class<?>, FunctionEx<Object, String>> toStringMap, Map<String, String> map) {
-        if (!invoked.contains(i)) {
-            invoked.add(i);
-        } else {
-            return map;
+    public static Map<String, String> getDescriptionMap(Object obj,
+            Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
+        return getDescriptionMap(obj, obj.getClass(), toStringMap, new HashSet<>(), new HashMap<>(), new HashMap<>());
+
+    }
+
+    public static <T> Map<String, String> getDescriptionMap(T obj, Class<?> objClass,
+            Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
+            Map<Class<?>, List<Method>> getterMethods, Map<String, String> descriptionMap) {
+        if (invokedObjects.contains(obj)) {
+            return descriptionMap;
         }
-        List<Method> infoMethod = getGetterMethods(getterMethods, class1);
+        invokedObjects.add(obj);
+        List<Method> infoMethod = getGetterMethods(objClass, getterMethods);
         infoMethod.forEach(ConsumerEx.makeConsumer((Method o) -> {
-            Object invoke = o.invoke(i);
+            Object invoke = o.invoke(obj);
             if (invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0) {
                 Type type = invoke.getClass().getGenericInterfaces()[0];
-                if (type.getTypeName().contains(class1.getName())) {
+                if (type.getTypeName().contains(objClass.getName())) {
                     return;
                 }
             }
@@ -96,28 +82,25 @@ public final class ClassReflectionUtils {
             if (invoke != null && toStringMap.containsKey(invoke.getClass())) {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
             } else if (invoke instanceof Enumeration) {
-                description.append(getEnumerationDescription(invoked, getterMethods, fieldName, (Enumeration<?>) invoke, toStringMap));
+                description.append(getEnumerationDescription(fieldName, (Enumeration<?>) invoke, toStringMap, invokedObjects, getterMethods));
             } else {
                 description.append(invoke);
             }
-            map.put(fieldName, description.toString());
+            descriptionMap.put(fieldName, description.toString());
         }));
-        return map;
+        return descriptionMap;
     }
 
-    public static List<Method> getGetterMethods(Class<?> class1) {
-        Map<Class<?>, List<Method>> getterMethods = new HashMap<>();
-        return getGetterMethods(getterMethods, class1);
+    public static List<Method> getGetterMethods(Class<?> targetClass) {
+        return getGetterMethods(targetClass, new HashMap<>());
     }
 
-
-
-    private static <T> String getEnumerationDescription(Set<Object> invoked, Map<Class<?>, List<Method>> getterMethods,
-            String fieldName, Enumeration<T> ee, Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
+    private static <T> String getEnumerationDescription(String fieldName, Enumeration<T> enumeration,
+            Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invoked, Map<Class<?>, List<Method>> getterMethods) {
         StringBuilder descriptionBuilder = new StringBuilder("{\n");
         int i = 0;
-        while (ee.hasMoreElements()) {
-            T element = ee.nextElement();
+        while (enumeration.hasMoreElements()) {
+            T element = enumeration.nextElement();
             if (toStringMap.containsKey(element.getClass())
                     || toStringMap.keySet().stream().anyMatch(e -> e.isAssignableFrom(element.getClass()))) {
                 Class<?> orElse = toStringMap.keySet().stream().filter(e -> e.isAssignableFrom(element.getClass()))
@@ -134,7 +117,7 @@ public final class ClassReflectionUtils {
             descriptionBuilder.append(" ");
             descriptionBuilder.append(i++);
             descriptionBuilder.append(" = {");
-            String description = getDescription(invoked, getterMethods, element.getClass(), element, toStringMap);
+            String description = getDescription(element, element.getClass(), toStringMap, invoked, getterMethods);
             if (!description.isEmpty()) {
                 descriptionBuilder.append("\t\t\t");
                 descriptionBuilder.append(description.replaceAll("\t", "\t\t\t"));
@@ -145,7 +128,9 @@ public final class ClassReflectionUtils {
         return descriptionBuilder.toString();
     }
 
-    private static List<Method> getGetterMethods(Map<Class<?>, List<Method>> getterMethods, Class<?> class1) {
+
+
+    private static List<Method> getGetterMethods(Class<?> class1, Map<Class<?>, List<Method>> getterMethods) {
         if (!getterMethods.containsKey(class1)) {
             getterMethods.put(class1,
                     Stream.of(class1.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
@@ -155,5 +140,9 @@ public final class ClassReflectionUtils {
         }
         return getterMethods.get(class1);
 
+    }
+
+    private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
+        return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0 && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(class1.getName());
     }
 }

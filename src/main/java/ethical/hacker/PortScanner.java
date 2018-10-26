@@ -32,9 +32,13 @@ public class PortScanner {
     }
 
     public static void main(String[] args) {
-        Map<String, List<String>> scanNetwork = scanPossibleOSes(TracerouteScanner.NETWORK_ADDRESS);
-
-		scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
+        //        Map<String, List<String>> scanNetwork = scanPossibleOSes(TracerouteScanner.NETWORK_ADDRESS);
+        //
+        //		scanNetwork.forEach((h, p) -> LOG.info("Host {} ports = {}", h, p));
+        String ip = "localhost";
+        List<PortServices> services = scanPortsHost(ip);
+        services.forEach(p -> LOG.info("Host {} service = {} ports = {}", ip, p.getDescription(),
+                Arrays.toString(p.getPorts())));
     }
 
     public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress) {
@@ -65,8 +69,8 @@ public class PortScanner {
         return hostsPorts;
     }
 
-    public static List<Integer> scanPortsHost(String ip) {
-        List<Integer> synchronizedList = Collections.synchronizedList(new ArrayList<>());
+    public static List<PortServices> scanPortsHost(String ip) {
+        List<PortServices> synchronizedList = Collections.synchronizedList(new ArrayList<>());
         final int timeout = 200;
         List<Thread> arrayList = new ArrayList<>();
         for (int i = 1; i < 65535; i += STEP) {
@@ -74,12 +78,7 @@ public class PortScanner {
             Thread thread = new Thread(() -> {
                 for (int porta = j; porta <= j + STEP; porta++) {
                     if (isPortOpen(ip, porta, timeout)) {
-                        LOG.info("porta {} aberta em {} ", porta, ip);
-                        PortServices service = PortServices.getServiceByPort(porta);
-                        if (service != null) {
-                            LOG.info("service = {} ", service.getDescription());
-                        }
-                        synchronizedList.add(porta);
+                        synchronizedList.add(PortServices.getServiceByPort(porta));
                     }
                 }
             });
@@ -89,7 +88,7 @@ public class PortScanner {
         while (arrayList.stream().anyMatch(Thread::isAlive)) {
             //NOOP 
         }
-        Collections.sort(synchronizedList);
+        Collections.sort(synchronizedList, Comparator.comparing(PortServices::getType));
         return synchronizedList;
     }
 

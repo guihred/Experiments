@@ -1,6 +1,5 @@
 package ml.graph;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,8 @@ import ml.data.DataframeML;
 import utils.CommonsFX;
 
 public class PieGraph extends Canvas {
-	private GraphicsContext gc;
+    private static final int WIDTH = 550;
+    private GraphicsContext gc;
 	private ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
 	private IntegerProperty radius = new SimpleIntegerProperty(275);
     private IntegerProperty bins = new SimpleIntegerProperty(10);
@@ -27,7 +27,7 @@ public class PieGraph extends Canvas {
     private DataframeML dataframe;
 
     public PieGraph() {
-        super(550, 550);
+        super(WIDTH, WIDTH);
         gc = getGraphicsContext2D();
         drawGraph();
         radius.set((int) (gc.getCanvas().getWidth() / 2));
@@ -47,7 +47,7 @@ public class PieGraph extends Canvas {
 
     public final void drawGraph() {
         long sum = histogram.values().stream().mapToLong(e -> e).sorted().sum();
-        gc.clearRect(0, 0, 550, 550);
+        gc.clearRect(0, 0, WIDTH, WIDTH);
 
         double centerX = gc.getCanvas().getWidth() / 4;
         double centerY = gc.getCanvas().getHeight() / 4;
@@ -127,17 +127,5 @@ public class PieGraph extends Canvas {
         return dataframe.histogram(column);
     }
 
-    public static List<Color> generateColors(int size) {
-        List<Color> availableColors = new ArrayList<>();
-		int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
-        for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
-            Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
-                    Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
-                    Math.abs(255 - i % cubicRoot * 256 / cubicRoot) % 256);
-
-            availableColors.add(rgb);
-        }
-        return availableColors;
-    }
 
 }

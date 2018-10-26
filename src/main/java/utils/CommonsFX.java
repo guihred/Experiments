@@ -64,12 +64,14 @@ public final class CommonsFX {
 
 
     public static List<Color> generateRandomColors(int size) {
+        int maxByte = 255;
+        int max = 256;
         List<Color> availableColors = new ArrayList<>();
         int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
         for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
-            Color rgb = Color.rgb(Math.abs(255 - i / cubicRoot / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
-                    Math.abs(255 - i / cubicRoot % cubicRoot * 256 / cubicRoot) % 256,
-                    Math.abs(255 - i % cubicRoot * 256 / cubicRoot) % 256);
+            Color rgb = Color.rgb(Math.abs(maxByte - i / cubicRoot / cubicRoot % cubicRoot * max / cubicRoot) % max,
+                    Math.abs(maxByte - i / cubicRoot % cubicRoot * max / cubicRoot) % max,
+                    Math.abs(maxByte - i % cubicRoot * max / cubicRoot) % max);
 
             availableColors.add(rgb);
         }

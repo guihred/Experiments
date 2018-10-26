@@ -1,6 +1,5 @@
 package ethical.hacker;
 
-import com.aspose.imaging.internal.bouncycastle.util.Arrays;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,29 +12,12 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public enum PortServices {
-    FTP("File Transfer Protocol", "TCP", 20, 21),
-    SSH("Secure Shell", "TCP", 22),
-    TELNET("Telnet", "TCP", 23),
-    SMTP("Simple Mail Transfer Protocol", "TCP", 25),
-    DNS("Domain Name System", "TCP/UDP", 53),
-    DHCP("Dynamic Host Configuration Protocol", "UDP", 67, 68),
-    TFTP("Trivial File Transfer Protocol", "UDP", 69),
-    HTTP("Hypertext Transfer Protocol", "TCP", 80),
-    POP("Post Office Protocol", "TCP", 110),
-    NTP("Network Time Protocol", "UDP", 123),
-    NETBIOS("NetBIOS", "TCP/UDP", 137, 138, 139),
-    IMAP("Internet Message Access Protocol", "TCP", 143),
-    SNMP("Simple Network Management Protocol", "TCP/UDP", 161, 162),
-    BGP("Border Gateway Protocol", "TCP", 179),
-    LDAP("Lightweight Directory Access Protocol", "TCP/UDP", 389),
-    HTTPS("Hypertext Transfer Protocol over SSL/TLS", "TCP", 443),
-    LDAPS("Lightweight Directory Access Protocol over TLS/SSL", "TCP/UDP", 636),
-    FTP_TLS_SSL("FTP over TLS/SSL", "TCP", 989, 990),;
+public class PortServices {
 
     private static final Map<Integer, String> TCP_SERVICES = new LinkedHashMap<>();
     private static final Map<Integer, String> UDP_SERVICES = new LinkedHashMap<>();
     private static final Logger LOG = HasLogging.log();
+
     private final String description;
     private final String type;
     private final int[] ports;
@@ -50,12 +32,30 @@ public enum PortServices {
         return description;
     }
 
+    public int[] getPorts() {
+        return ports;
+    }
+
     public String getType() {
         return type;
     }
 
-    public int[] getPorts() {
-        return ports;
+    public static PortServices getServiceByPort(Integer port) {
+        if (TCP_SERVICES.isEmpty() || UDP_SERVICES.isEmpty()) {
+            loadServiceNames();
+        }
+        String tcpService = TCP_SERVICES.get(port);
+        String udpService = UDP_SERVICES.get(port);
+        if (tcpService != null && udpService != null) {
+            return new PortServices(tcpService + ",\t" + udpService, "TCP/UDP", port);
+        }
+        if (tcpService != null) {
+            return new PortServices(tcpService, "TCP", port);
+        }
+        if (udpService != null) {
+            return new PortServices(tcpService, "UDP", port);
+        }
+        return new PortServices("Unknown", "", port);
     }
 
     public static void loadServiceNames() {
@@ -66,22 +66,15 @@ public enum PortServices {
 
             while ((line = bRead.readLine()) != null) {
                 line = line.trim();
-                if (line.length() == 0 || line.charAt(0) == '#') {
-                    continue;
-                }
-                String[] toks = line.split("\\s+");
-                if (toks.length < 2) {
+                String[] toks;
+                String[] portAndProtocol;
+                if (line.length() == 0 || line.charAt(0) == '#' || (toks = line.split("\\s+")).length < 2
+                        || (portAndProtocol = toks[1].split("/")).length != 2) {
                     continue;
                 }
                 String serviceName = toks[0];
-                Integer port = 0;
-                String protocol = "";
-                String[] portAndProtocol = toks[1].split("/");
-                if (portAndProtocol.length != 2) {
-                    continue;
-                }
-                port = Integer.valueOf(portAndProtocol[0]);
-                protocol = portAndProtocol[1].trim();
+                Integer port = Integer.valueOf(portAndProtocol[0]);
+                String protocol = portAndProtocol[1].trim();
                 if ("tcp".equalsIgnoreCase(protocol)) {
                     TCP_SERVICES.put(port, serviceName);
                 } else if ("udp".equalsIgnoreCase(protocol)) {
@@ -96,17 +89,6 @@ public enum PortServices {
         }
     }
 
-    public static PortServices getServiceByPort(int port) {
-        PortServices[] values = values();
-        for (PortServices portServices : values) {
-            if (Arrays.contains(portServices.ports, port)) {
-                return portServices;
-            }
-
-        }
-        return null;
-    }
-
     public static void main(String[] args) {
         loadServiceNames();
         String udpServices = UDP_SERVICES.entrySet().stream().map(Entry<Integer, String>::toString)
@@ -116,4 +98,5 @@ public enum PortServices {
                 .collect(Collectors.joining("\n\t", "\n\t", ""));
         LOG.info("TCP = {}", tcpServices);
     }
+
 }

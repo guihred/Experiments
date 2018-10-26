@@ -45,7 +45,7 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
         } catch (HttpStatusException e) {
             getLogger().trace("ERRO cidade " + estado + " " + letter, e);
         } catch (Exception e) {
-            getLogger().error("ERRO cidade " + estado + " " + letter, e);
+            getLogger().trace("ERRO cidade " + estado + " " + letter, e);
         }
     }
 

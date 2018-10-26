@@ -16,14 +16,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -59,7 +54,6 @@ public class PlayingAudio extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		mainStage = primaryStage;
-		mainStage.initStyle(StageStyle.TRANSPARENT);
 		mainStage.centerOnScreen();
 		Group root = new Group();
 		Scene scene = new Scene(root, 551, 270, Color.rgb(0, 0, 0, 0));

@@ -7,6 +7,11 @@ public class QuestionPosition {
     private String line;
     private HasImage entity;
 
+    public float distance(float x1, float y1) {
+        float a = x1 - getX();
+        float b = y1 - getY();
+        return a * a + b * b;
+    }
     public HasImage getEntity() {
         return entity;
     }
@@ -34,6 +39,7 @@ public class QuestionPosition {
     public void setX(float x) {
         this.x = x;
     }
+
     public void setY(float y) {
         this.y = y;
     }
