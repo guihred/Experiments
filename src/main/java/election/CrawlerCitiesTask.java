@@ -2,7 +2,6 @@ package election;
 
 import java.util.Arrays;
 import java.util.List;
-import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -42,8 +41,6 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
                 cidade.setEstado(estado.toUpperCase());
                 cidadeDAO.saveOrUpdate(cidade);
             }
-        } catch (HttpStatusException e) {
-            getLogger().trace("ERRO cidade " + estado + " " + letter, e);
         } catch (Exception e) {
             getLogger().trace("ERRO cidade " + estado + " " + letter, e);
         }

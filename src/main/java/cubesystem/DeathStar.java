@@ -13,8 +13,6 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class DeathStar extends Application {
-
-    private static final int HALF_SPHERE_ANGLE = 180;
     // the bigger the higher resolution
 	private static final int DIVISION = 200;
 	// radius of the sphere
@@ -70,18 +68,7 @@ public class DeathStar extends Application {
 		launch(args);
 	}
 
-	private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
-        Rotate rotate = new Rotate(HALF_SPHERE_ANGLE, centerOtherSphere);
-		final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
-		double distance = centerOtherSphere.distance(point3D);
-		if (distance <= radius) {
-			Point3D subtract = centerOtherSphere.subtract(point3D);
-			Point3D transform = rotate.transform(subtract);
-			points[pPos + 0] = (float) transform.getX();
-			points[pPos + 1] = (float) transform.getY();
-			points[pPos + 2] = (float) transform.getZ();
-		}
-	}
+
 
 	private static TriangleMesh createMesh(final int division, final float radius, final Point3D centerOtherSphere) {
 		final int div2 = division / 2;
@@ -107,7 +94,7 @@ public class DeathStar extends Application {
 				points[pPos + 2] = hCos * cosVal * radius;
 				points[pPos + 1] = sinVal * radius;
 
-				checkDistance(radius, centerOtherSphere, points, pPos);
+                GolfBall.checkDistance(radius, centerOtherSphere, points, pPos);
 				tPoints[tPos + 0] = 1 - rDiv * i;
 				tPoints[tPos + 1] = ty;
 				pPos += 3;
@@ -121,11 +108,11 @@ public class DeathStar extends Application {
 		points[pPos + 0] = 0;
 		points[pPos + 1] = -radius;
 		points[pPos + 2] = 0;
-		checkDistance(radius, centerOtherSphere, points, pPos);
+        GolfBall.checkDistance(radius, centerOtherSphere, points, pPos);
 		points[pPos + 3] = 0;
 		points[pPos + 4] = radius;
 		points[pPos + 5] = 0;
-		checkDistance(radius, centerOtherSphere, points, pPos + 3);
+        GolfBall.checkDistance(radius, centerOtherSphere, points, pPos + 3);
 
 		float textureDelta = 1.F / 256;
 		for (int i = 0; i < division; ++i) {

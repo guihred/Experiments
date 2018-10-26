@@ -1,6 +1,5 @@
 package japstudy;
 
-import audio.mp3.SongUtils;
 import japstudy.db.HibernateUtil;
 import java.io.File;
 import javafx.beans.binding.Bindings;
@@ -15,6 +14,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.CommonsFX;
+import utils.SongUtils;
 
 public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDisplay {
 

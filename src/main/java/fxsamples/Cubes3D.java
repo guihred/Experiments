@@ -32,16 +32,16 @@ public class Cubes3D extends Application {
 		c3.setTranslateX(-100);
 		c3.rx.setAngle(45);
 		c3.ry.setAngle(45);
-
 		Timeline animation = new Timeline();
 		animation.getKeyFrames().addAll(
-				new KeyFrame(Duration.ZERO, new KeyValue(c.ry.angleProperty(),
-						0D), new KeyValue(c2.rx.angleProperty(), 0D),
-						new KeyValue(c3.rz.angleProperty(), 0D)),
-				new KeyFrame(Duration.millis(1000), new KeyValue(c.ry
-						.angleProperty(), 360D), new KeyValue(c2.rx
-						.angleProperty(), 360D), new KeyValue(c3.rz
-						.angleProperty(), 360D)));
+				new KeyFrame(Duration.ZERO, 
+    			        new KeyValue(c.ry.angleProperty(),0D), 
+    			        new KeyValue(c2.rx.angleProperty(), 0D),
+    					new KeyValue(c3.rz.angleProperty(), 0D)),
+				new KeyFrame(Duration.millis(1000), 
+				        new KeyValue(c.ry.angleProperty(), 360D), 
+				        new KeyValue(c2.rx.angleProperty(), 360D), 
+				        new KeyValue(c3.rz.angleProperty(), 360D)));
 		animation.setCycleCount(Animation.INDEFINITE);
 		// create root group
 		Group root = new Group(c, c2, c3);

@@ -33,7 +33,7 @@ public class HibernateUtil {
 					.configure()
 					.buildSessionFactory();
 
-		} catch (Throwable ex) {
+        } catch (Exception ex) {
 			throw new ExceptionInInitializerError(ex);
 		}
 	}

@@ -25,7 +25,6 @@ import fxpro.ch08.BasicAudioClipExample;
 import fxpro.ch08.BasicAudioPlayerWithControlLauncher;
 import fxpro.ch08.MediaPlayerExample;
 import fxpro.ch08.SimpleAudioPlayerLauncher;
-import fxpro.ch10.VanishingCirclesApp;
 import fxpro.earth.EarthCubeMain;
 import fxsamples.*;
 import fxsamples.bounds.BoundsPlayground;

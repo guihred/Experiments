@@ -40,7 +40,8 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
 	@Override
 	public void start(Stage primaryStage) {
-		BorderPane root = new BorderPane();
+        primaryStage.setTitle("Graph Application");
+        BorderPane root = new BorderPane();
 
 		VBox vBox = new VBox();
         vBox.getChildren().add(CommonsFX.newButton("Shortest Path", ev -> displayDialogForShortestPath()));

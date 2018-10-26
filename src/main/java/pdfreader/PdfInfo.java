@@ -1,11 +1,11 @@
 package pdfreader;
 
-import contest.db.PrintImageLocations.PDFImage;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import pdfreader.PrintImageLocations.PDFImage;
 
 class PdfInfo{
     private File file;

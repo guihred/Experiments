@@ -1,6 +1,5 @@
 package contest.db;
 
-import contest.db.PrintImageLocations.PDFImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -16,6 +15,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import pdfreader.PdfUtils;
+import pdfreader.PrintImageLocations;
+import pdfreader.PrintImageLocations.PDFImage;
 import utils.HasLogging;
 
 public final class ContestReader implements HasLogging {

@@ -1,7 +1,5 @@
 package pdfreader;
 
-import contest.db.PrintImageLocations;
-import contest.db.PrintImageLocations.PDFImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +14,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
+import pdfreader.PrintImageLocations.PDFImage;
 import utils.HasLogging;
 
 public final class PdfUtils {
@@ -48,7 +47,6 @@ public final class PdfUtils {
                 LOG.info("", e);
             }
         }).start();
-        HasLogging.log();
         return images;
     }
 

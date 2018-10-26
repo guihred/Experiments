@@ -1,4 +1,4 @@
-package audio.mp3;
+package utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -26,9 +26,6 @@ import org.blinkenlights.jid3.v2.ID3V2Frame;
 import org.blinkenlights.jid3.v2.ID3V2Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
-import utils.ConsoleUtils;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public final class SongUtils {
 

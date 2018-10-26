@@ -5,8 +5,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -16,14 +14,12 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import utils.RotateUtils;
 public class SimpleScene3D extends Application {
-	private static final double CAMERA_MODIFIER = 50.0;
-	private static final double CAMERA_QUANTITY = 10.0;
 	private static final double SCENE_WIDTH = 600;
 	private static final double SCENE_HEIGHT = 600;
 	private static final double CAMERA_Y_LIMIT = 15;
 	private static final double ROTATE_MODIFIER = 25;
-	private PerspectiveCamera camera;
 	private double mouseXold;
 	private double mouseYold;
 	private EventHandler<? super MouseEvent> mouseHandler = event -> {
@@ -41,16 +37,7 @@ public class SimpleScene3D extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		// Step 1a: Build your Scene and Camera
 
-		Group sceneRoot = new Group();
-		Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
-		scene.setFill(Color.BLACK);
-		camera = new PerspectiveCamera(true);
-		camera.setNearClip(0.1);
-		camera.setFarClip(10000.0);
-		camera.setTranslateZ(-1000);
-		scene.setCamera(camera);
 		final Cylinder cylinder = new Cylinder(50, 100);
 		final PhongMaterial blueMaterial = new PhongMaterial();
 		blueMaterial.setDiffuseColor(Color.DARKBLUE);
@@ -83,8 +70,8 @@ public class SimpleScene3D extends Application {
 		cube.setTranslateZ(150);
 		sphere.setTranslateX(150);
 		sphere.setTranslateY(150);
-		sphere.setTranslateZ(-150);
-		sceneRoot.getChildren().addAll(cylinder, cube, sphere);
+        sphere.setTranslateZ(-150);
+
 		// End Step 1d
 
 		// Step 1e: All Together Now: Grouped Primitives
@@ -93,20 +80,18 @@ public class SimpleScene3D extends Application {
 		primitiveGroup.setRotationAxis(Rotate.Z_AXIS);
 		// Rotate the Group as a whole
 		primitiveGroup.setRotate(180);
-		sceneRoot.getChildren().addAll(primitiveGroup);
-		// End Step 1e
-
-		// Step 2a: Primitive Picking for Primitives
-
+        Group sceneRoot = new Group();
+        Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
+        scene.setFill(Color.BLACK);
+        PerspectiveCamera camera = new PerspectiveCamera(true);
+        camera.setNearClip(0.1);
+        camera.setFarClip(10000.0);
+        camera.setTranslateZ(-1000);
+        scene.setCamera(camera);
+        sceneRoot.getChildren().addAll(cylinder, cube, sphere);
+        sceneRoot.getChildren().addAll(primitiveGroup);
 		scene.setOnMouseClicked(mouseHandler);
-		// End Step 2a
-
-		// Step 2b: Add a Movement Keyboard Handler
-		scene.setOnKeyPressed(this::handleKeyPressed);
-		// End Step 2b-d
-
-		// Step 3: Add a Camera Control Mouse Event handler
-
+        RotateUtils.setMovable(camera, scene);
 		Rotate xRotate = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
 		Rotate yRotate = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
 		camera.getTransforms().addAll(xRotate, yRotate);
@@ -134,25 +119,6 @@ public class SimpleScene3D extends Application {
         primaryStage.setTitle("Simple Scene 3D");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-	private void handleKeyPressed(KeyEvent event) {
-		double change = event.isShiftDown() ? CAMERA_MODIFIER : CAMERA_QUANTITY;
-		// What key did the user press?
-		KeyCode keycode = event.getCode();
-		// Step 2c: Add Zoom controls
-		if (keycode == KeyCode.W) {
-			camera.setTranslateZ(camera.getTranslateZ() + change);
-		}
-		if (keycode == KeyCode.S) {
-			camera.setTranslateZ(camera.getTranslateZ() - change);
-		}
-		// Step 2d: Add Strafe controls
-		if (keycode == KeyCode.A) {
-			camera.setTranslateX(camera.getTranslateX() - change);
-		}
-		if (keycode == KeyCode.D) {
-			camera.setTranslateX(camera.getTranslateX() + change);
-		}
 	}
 	public static void main(String[] args) {
 		launch(args);

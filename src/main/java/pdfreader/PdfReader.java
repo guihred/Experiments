@@ -1,7 +1,6 @@
 package pdfreader;
 
 import contest.db.HasImage;
-import contest.db.PrintImageLocations.PDFImage;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +26,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import pdfreader.PrintImageLocations.PDFImage;
 import simplebuilder.SimpleTimelineBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;

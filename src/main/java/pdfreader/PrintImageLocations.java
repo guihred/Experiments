@@ -1,5 +1,6 @@
-package contest.db;
+package pdfreader;
 
+import contest.db.HasImage;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -107,9 +108,9 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
     }
 
     public static class PDFImage implements HasImage {
-        protected File file;
-        protected float x;
-        protected float y;
+        public File file;
+        public float x;
+        public float y;
         protected int pageN;
 
         @Override

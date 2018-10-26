@@ -4,12 +4,17 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
 public class RotateUtils {
+    private static final double CAMERA_MODIFIER = 50.0;
+
+    private static final double CAMERA_QUANTITY = 10.0;
+
     public static void makeZoomable(Node control) {
 
         final double MAX_SCALE = 20.0;
@@ -29,6 +34,32 @@ public class RotateUtils {
             event.consume();
         });
 
+    }
+
+    public static void setMovable(Node node) {
+        setMovable(node, node.getScene());
+    }
+
+    public static void setMovable(Node node, Scene scene) {
+        scene.setOnKeyPressed(event -> {
+            double change = event.isShiftDown() ? CAMERA_MODIFIER : CAMERA_QUANTITY;
+            // What key did the user press?
+            KeyCode keycode = event.getCode();
+            // Step 2c: Add Zoom controls
+            if (keycode == KeyCode.W) {
+                node.setTranslateZ(node.getTranslateZ() + change);
+            }
+            if (keycode == KeyCode.S) {
+                node.setTranslateZ(node.getTranslateZ() - change);
+            }
+            // Step 2d: Add Strafe controls
+            if (keycode == KeyCode.A) {
+                node.setTranslateX(node.getTranslateX() - change);
+            }
+            if (keycode == KeyCode.D) {
+                node.setTranslateX(node.getTranslateX() + change);
+            }
+        });
     }
 
     public static void setSpinnable(Node cube, Scene scene) {
@@ -55,10 +86,8 @@ public class RotateUtils {
     }
 
     public static void setZoomable(Node node) {
-
         setZoomable(node, false);
     }
-
     public static void setZoomable(Node node, boolean onlyClose) {
         Scale scale = new Scale(1, 1);
         Translate translate = new Translate(0, 0);

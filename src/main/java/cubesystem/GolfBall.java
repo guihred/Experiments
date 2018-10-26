@@ -16,10 +16,12 @@ public class GolfBall extends Application {
 
 	// the bigger the higher resolution
 	private static final int DIVISION = 200;
+	private static final int HALF_SPHERE_ANGLE = 180;
+
 	// radius of the sphere
 	private float radius = 300;
 
-	@Override
+    @Override
 	public void start(Stage primaryStage) throws Exception {
 
 		List<Point3D> createSpheres = createSpheres(18, radius * 1.98F);
@@ -34,35 +36,20 @@ public class GolfBall extends Application {
 		primaryStage.show();
 	}
 
-	List<Point3D> createSpheres(final int division, final float radius1) {
-		List<Point3D> spheres = new ArrayList<>();
-		final int div2 = division / 2;
+	public static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
+        Rotate rotate = new Rotate(HALF_SPHERE_ANGLE, centerOtherSphere);
+        final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
+        double distance = centerOtherSphere.distance(point3D);
+        if (distance <= radius) {
+            Point3D subtract = centerOtherSphere.subtract(point3D);
+            Point3D transform = rotate.transform(subtract);
+            points[pPos + 0] = (float) transform.getX();
+            points[pPos + 1] = (float) transform.getY();
+            points[pPos + 2] = (float) transform.getZ();
+        }
+    }
 
-		final float rDiv = 1.F / division;
-		for (int j = 0; j < div2 - 1; ++j) {
-            int m = div2 / 2;
-            float va = rDiv * (j + 1 - m) * 2 * (float) Math.PI;
-			float sinVal = (float) Math.sin(va);
-			float cosVal = (float) Math.cos(va);
-
-			for (int i = 0; i < division; ++i) {
-				double a = rDiv * i * 2 * (float) Math.PI;
-				float hSin = (float) Math.sin(a);
-				float hCos = (float) Math.cos(a);
-				double x = hSin * cosVal * radius1;
-				double z = hCos * cosVal * radius1;
-				double y = sinVal * radius1;
-
-				spheres.add(new Point3D(x, y, z));
-			}
-
-		}
-		spheres.add(new Point3D(0, -radius1, 0));
-		spheres.add(new Point3D(0, radius1, 0));
-		return spheres;
-	}
-
-	public static int[] createFaces(final int division) {
+    public static int[] createFaces(final int division) {
         int div2 = division / 2;
         int pS = (div2 - 1) * division;
         final int nFaces = division * (div2 - 2) * 2 + division * 2;
@@ -139,22 +126,35 @@ public class GolfBall extends Application {
     }
 
     public static void main(String[] args) {
-
 		launch(args);
 	}
 
-    private static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
-		Rotate rotate = new Rotate(180, centerOtherSphere);
-		final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
-		double distance = centerOtherSphere.distance(point3D);
-		if (distance <= radius) {
-			Point3D subtract = centerOtherSphere.subtract(point3D);
-			Point3D transform = rotate.transform(subtract);
-			points[pPos + 0] = (float) transform.getX();
-			points[pPos + 1] = (float) transform.getY();
-			points[pPos + 2] = (float) transform.getZ();
+    private static List<Point3D> createSpheres(final int division, final float radius1) {
+		List<Point3D> spheres = new ArrayList<>();
+		final int div2 = division / 2;
+
+		final float rDiv = 1.F / division;
+		for (int j = 0; j < div2 - 1; ++j) {
+            int m = div2 / 2;
+            float va = rDiv * (j + 1 - m) * 2 * (float) Math.PI;
+			float sinVal = (float) Math.sin(va);
+			float cosVal = (float) Math.cos(va);
+
+			for (int i = 0; i < division; ++i) {
+				double a = rDiv * i * 2 * (float) Math.PI;
+				float hSin = (float) Math.sin(a);
+				float hCos = (float) Math.cos(a);
+				double x = hSin * cosVal * radius1;
+				double z = hCos * cosVal * radius1;
+				double y = sinVal * radius1;
+
+				spheres.add(new Point3D(x, y, z));
+			}
 
 		}
+		spheres.add(new Point3D(0, -radius1, 0));
+		spheres.add(new Point3D(0, radius1, 0));
+		return spheres;
 	}
 
 	private static int index(final int division, int p3) {
@@ -197,8 +197,8 @@ public class GolfBall extends Application {
 				}
 				tPoints[tPos + 0] = 1 - rDiv * i;
 				tPoints[tPos + 1] = ty;
+                tPos += 2;
 				pPos += 3;
-				tPos += 2;
 			}
 			tPoints[tPos + 0] = 0;
 			tPoints[tPos + 1] = ty;

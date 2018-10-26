@@ -32,6 +32,7 @@ import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.SongUtils;
 
 public class MusicOrganizer extends Application {
 	private static final Logger LOGGER = HasLogging.log();

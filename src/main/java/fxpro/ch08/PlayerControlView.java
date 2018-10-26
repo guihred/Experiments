@@ -5,10 +5,9 @@
  */
 package fxpro.ch08;
 
-import static audio.mp3.SongUtils.seekAndUpdatePosition;
-import static audio.mp3.SongUtils.updatePositionSlider;
+import static utils.SongUtils.seekAndUpdatePosition;
+import static utils.SongUtils.updatePositionSlider;
 
-import audio.mp3.SongUtils;
 import java.io.File;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -34,6 +33,7 @@ import javafx.scene.media.MediaPlayer.Status;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import simplebuilder.SimpleSliderBuilder;
+import utils.SongUtils;
 
 public class PlayerControlView extends BaseSongView {
 

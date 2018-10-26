@@ -134,7 +134,7 @@ public class PackageTopology extends BaseTopology {
             }
             table.append("\n");
         }
-        LOG.trace("{}", table);
+        LOG.info("{}", table);
     }
 
     private static String mapString(Object s, int l) {

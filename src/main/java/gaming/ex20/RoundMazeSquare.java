@@ -1,18 +1,16 @@
 package gaming.ex20;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import utils.HasLogging;
 
 public class RoundMazeSquare implements HasLogging {
     public final int i;
     public final int j;
     private boolean center;
-    private final BooleanProperty east = new SimpleBooleanProperty(false);
-    private final BooleanProperty north = new SimpleBooleanProperty(false);
-    private final BooleanProperty south = new SimpleBooleanProperty(false);
-    private final BooleanProperty visited = new SimpleBooleanProperty(false);
-    private final BooleanProperty west = new SimpleBooleanProperty(false);
+    private boolean east;
+    private boolean north;
+    private boolean south;
+    private boolean visited;
+    private boolean west;
 
     public RoundMazeSquare(int i, int j) {
         this.i = i;
@@ -24,23 +22,23 @@ public class RoundMazeSquare implements HasLogging {
     }
 
     public final boolean isEast() {
-        return east.get();
+        return east;
     }
 
     public final boolean isNorth() {
-        return north.get();
+        return north;
     }
 
     public boolean isSouth() {
-        return south.get();
+        return south;
     }
 
     public final boolean isVisited() {
-        return visited.get();
+        return visited;
     }
 
     public final boolean isWest() {
-        return west.get();
+        return west;
     }
 
     public void setCenter(boolean center) {
@@ -48,23 +46,23 @@ public class RoundMazeSquare implements HasLogging {
     }
 
     public final void setEast(final boolean east) {
-        this.east.set(east);
+        this.east=east;
     }
 
     public final void setNorth(final boolean north) {
-        this.north.set(north);
+        this.north=north;
     }
 
     public void setSouth(boolean v) {
-        south.set(v);
+        south=v;
     }
 
     public final void setVisited(final boolean visited) {
-        this.visited.set(visited);
+        this.visited=visited;
     }
 
     public final void setWest(final boolean west) {
-        this.west.set(west);
+        this.west=west;
     }
 
     @Override

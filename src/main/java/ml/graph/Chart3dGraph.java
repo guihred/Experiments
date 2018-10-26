@@ -75,8 +75,8 @@ public class Chart3dGraph extends Application {
 
         // mesh view
         MeshView meshView = new MeshView(mesh);
-        meshView.setTranslateZ(-0.5 * size);
-        meshView.setTranslateX(-0.5 * size);
+        meshView.setTranslateZ(-size / 2D);
+        meshView.setTranslateX(-size / 2D);
         meshView.setMaterial(material);
         meshView.setDrawMode(DrawMode.FILL);
         meshView.setCullFace(CullFace.NONE);
@@ -85,8 +85,8 @@ public class Chart3dGraph extends Application {
         // testing / debugging stuff: show diffuse map on chart
         ImageView iv = new ImageView(diffuseMap);
         iv.setRotate(90);
-        iv.setTranslateY(-0.10 * size);
-        iv.setTranslateX(-0.5 * size);
+        iv.setTranslateY(-size / 10D);
+        iv.setTranslateX(-size / 2D);
         iv.setRotationAxis(new Point3D(1, 0, 0));
         cube.getChildren().add(iv);
         // scene
@@ -105,8 +105,7 @@ public class Chart3dGraph extends Application {
             mouseOldY = mousePosY;
         });
         RotateUtils.makeZoomable(root);
-        //        RotateUtils.setSpinnable(cube, scene);
-        //        RotateUtils.setZoomable(root);
+        RotateUtils.setMovable(root);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -126,50 +125,29 @@ public class Chart3dGraph extends Application {
         Axis r;
         // back face
         r = new Axis(length);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.5 * 1, 1.0));
-        r.setTranslateX(-0.5 * length);
-        r.setTranslateY(-0.5 * length);
-        r.setTranslateZ(0.5 * length);
+        r.setFill(color.deriveColor(0.0, 1.0, 5 / 10D, 1.0));
+        r.setTranslateX(-length / 2);
+        r.setTranslateY(-length / 2);
+        r.setTranslateZ(length / 2);
         cubeFaces.add(r);
         // bottom face
         r = new Axis(length);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.4 * 1, 1.0));
-        r.setTranslateX(-0.5 * length);
+        r.setFill(color.deriveColor(0.0, 1.0, 6 / 10D, 1.0));
+        r.setTranslateX(-length / 2);
         r.setTranslateY(0);
         r.setRotationAxis(Rotate.X_AXIS);
         r.setRotate(90);
         cubeFaces.add(r);
-        // right face
-        r = new Axis(length);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.3 * 1, 1.0));
-        r.setTranslateX(-1 * length);
-        r.setTranslateY(-0.5 * length);
-        r.setRotationAxis(Rotate.Y_AXIS);
-        r.setRotate(90);
-        // cubeFaces.add( r);
         // left face
         r = new Axis(length);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.2 * 1, 1.0));
+        r.setFill(color.deriveColor(0.0, 1.0, 8 / 10D, 1.0));
         r.setTranslateX(0);
-        r.setTranslateY(-0.5 * length);
+        r.setTranslateY(-length / 2);
         r.setRotationAxis(Rotate.Y_AXIS);
         r.setRotate(90);
         cubeFaces.add(r);
         // top face
-        r = new Axis(length);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.1 * 1, 1.0));
-        r.setTranslateX(-0.5 * length);
-        r.setTranslateY(-1 * length);
-        r.setRotationAxis(Rotate.X_AXIS);
-        r.setRotate(90);
-        // cubeFaces.add( r);
         // front face
-        r = new Axis(length);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.1 * 1, 1.0));
-        r.setTranslateX(-0.5 * length);
-        r.setTranslateY(-0.5 * length);
-        r.setTranslateZ(-0.5 * length);
-        // cubeFaces.add( r);
         cube.getChildren().addAll(cubeFaces);
         return cube;
     }

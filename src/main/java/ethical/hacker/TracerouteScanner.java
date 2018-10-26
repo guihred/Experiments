@@ -68,11 +68,11 @@ public class TracerouteScanner {
 
     private static Stream<? extends String> turnReferencesIntoHops(Map<String, List<String>> hostsPorts, String line) {
         if (line.matches(REUSED_ROUTE_REGEX)) {
-            String hops = line.replaceAll(REUSED_ROUTE_REGEX, "$1,$2");
             String host = line.replaceAll(REUSED_ROUTE_REGEX, "$3");
             if (!hostsPorts.containsKey(host)) {
                 return Stream.empty();
             }
+            String hops = line.replaceAll(REUSED_ROUTE_REGEX, "$1,$2");
             int[] array = Stream.of(hops.split(",")).mapToInt(Integer::parseInt).toArray();
             return hostsPorts.get(host).subList(array[0] - 1, array[1]).stream()
                     .map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
