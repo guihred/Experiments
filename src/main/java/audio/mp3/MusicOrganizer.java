@@ -12,7 +12,6 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -22,11 +21,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.slf4j.Logger;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
@@ -34,8 +31,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.SongUtils;
 
-public class MusicOrganizer extends Application {
-	private static final Logger LOGGER = HasLogging.log();
+public class MusicOrganizer extends Application implements HasLogging {
 
     @Override
     public void start(Stage primaryStage) {
@@ -59,46 +55,28 @@ public class MusicOrganizer extends Application {
         Button buttonVideos = loadVideos(primaryStage, chooser, musicasTable, filterField);
         root.getChildren()
                 .add(new VBox(listaMusicas, new HBox(buttonMusic, buttonVideos, filterField), musicasTable));
-        Scene scene = new Scene(root, 600, 250, Color.WHITE);
+        Scene scene = new Scene(root, 600, 250);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private Button loadVideos(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
-            TextField filterField) {
-        return CommonsFX.newButton("Carregar Vídeos", e -> {
-            File selectedFile = chooser.showDialog(primaryStage);
-            if (selectedFile != null) {
-                List<Music> videos = ResourceFXUtils
-                        .getPathByExtension(selectedFile, ".mp4")
-                        .parallelStream()
-                        .map(v -> {
-                    Music musica = new Music();
-                    File file = v.toFile();
-                    musica.setArquivo(file);
-                    musica.setTitulo(file.getName());
-                    return musica;
-                }).collect(Collectors.toList());
-                configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(videos));
-            }
-        });
+    private Slider addSlider(VBox flow, MediaPlayer mediaPlayer) {
+        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(1000).build();
+        Label label = new Label("00:00");
+        
+        label.textProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> mediaPlayer.getTotalDuration() == null ? "00:00"
+                                : SongUtils.formatDurationMillis(
+                                        mediaPlayer.getTotalDuration().multiply(slider.getValue())),
+                        slider.valueProperty(), mediaPlayer.totalDurationProperty()));
+        
+        flow.getChildren().add(label);
+        flow.getChildren().add(slider);
+        return slider;
     }
 
-    private Button loadMusic(Stage primaryStage, DirectoryChooser chooser,
-            final TableView<Music> musicasTable,
-            TextField filterField) {
-        return CommonsFX.newButton("Carregar Musicas", e -> {
-            File selectedFile = chooser.showDialog(primaryStage);
-            if (selectedFile != null) {
-
-				ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
-				musicasTable.setItems(musicas);
-				configurarFiltroRapido(filterField, musicasTable, musicas);
-            }
-        });
-    }
-
-	private void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
+    private void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
 			ObservableList<Music> musicas) {
 		FilteredList<Music> filteredData = new FilteredList<>(musicas, p -> true);
 		musicasEstoqueTable.setItems(filteredData);
@@ -110,7 +88,7 @@ public class MusicOrganizer extends Application {
 		}));
 	}
 
-    private Node[] criarField(String nome, StringProperty propriedade) {
+	private Node[] criarField(String nome, StringProperty propriedade) {
         TextField textField = new TextField();
         textField.textProperty().bindBidirectional(propriedade);
         return new Node[] { new Label(nome), textField };
@@ -128,7 +106,7 @@ public class MusicOrganizer extends Application {
             root.getChildren().addAll(criarField("Título", selectedItem.tituloProperty()));
             root.getChildren().addAll(criarField("Artista", selectedItem.artistaProperty()));
             root.getChildren().addAll(criarField("Álbum", selectedItem.albumProperty()));
-            root.setAlignment(Pos.CENTER);
+        //            root.setAlignment(Pos.CENTER);
             Image imageData = SongUtils.extractEmbeddedImage(selectedItem.getArquivo());
             if (imageData != null) {
                 ImageView imageView = new ImageView(imageData);
@@ -183,7 +161,6 @@ public class MusicOrganizer extends Application {
                 }
             });
             HBox hbox = new HBox(stopButton, splitButton);
-            hbox.setAlignment(Pos.CENTER);
 			root.getChildren().add(progressIndicator);
             root.getChildren().add(hbox);
 
@@ -191,7 +168,35 @@ public class MusicOrganizer extends Application {
             stage.show();
             stage.setOnCloseRequest(e -> mediaPlayer.dispose());
             mediaPlayer.play();
-            LOGGER.info("{}", selectedItem);
+    }
+
+    private Button loadMusic(Stage primaryStage, DirectoryChooser chooser,
+            final TableView<Music> musicasTable,
+            TextField filterField) {
+        return CommonsFX.newButton("Carregar Musicas", e -> {
+            File selectedFile = chooser.showDialog(primaryStage);
+            if (selectedFile != null) {
+
+				ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
+				musicasTable.setItems(musicas);
+				configurarFiltroRapido(filterField, musicasTable, musicas);
+            }
+        });
+    }
+
+    private Button loadVideos(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
+            TextField filterField) {
+        return CommonsFX.newButton("Carregar Vídeos", e -> {
+            File selectedFile = chooser.showDialog(primaryStage);
+            if (selectedFile != null) {
+                List<Music> videos = ResourceFXUtils
+                        .getPathByExtension(selectedFile, ".mp4")
+                        .parallelStream()
+                        .map(v -> new Music(v.toFile()))
+                        .collect(Collectors.toList());
+                configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(videos));
+            }
+        });
     }
 
     private void splitAndSave(Music selectedItem, MediaPlayer mediaPlayer, Slider initialSlider, Slider finalSlider,
@@ -210,28 +215,12 @@ public class MusicOrganizer extends Application {
 					try {
 						Files.copy(outFile, selectedItem.getArquivo());
                     } catch (Exception e1) {
-						LOGGER.error("", e1);
+                        getLogger().error("", e1);
 					}
 					stage.close();
 				});
 			}
 		});
-    }
-
-    private Slider addSlider(VBox flow, MediaPlayer mediaPlayer) {
-        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(1000).build();
-        Label label = new Label("00:00");
-        
-        label.textProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> mediaPlayer.getTotalDuration() == null ? "00:00"
-                                : SongUtils.formatDurationMillis(
-                                        mediaPlayer.getTotalDuration().multiply(slider.getValue())),
-                        slider.valueProperty(), mediaPlayer.totalDurationProperty()));
-        
-        flow.getChildren().add(label);
-        flow.getChildren().add(slider);
-        return slider;
     }
 
     private TableView<Music> tabelaMusicas() {

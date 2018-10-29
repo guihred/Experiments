@@ -19,6 +19,14 @@ public class Music {
 
 	private StringProperty trilha = new SimpleStringProperty("");
 
+    public Music() {
+    }
+
+    public Music(File file) {
+        setArquivo(file);
+        setTitulo(file.getName());
+    }
+
 	public StringProperty albumProperty() {
 		return album;
 	}

@@ -14,17 +14,17 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class Chapter2 {
 
-    private static final Logger LOG = HasLogging.log();
+    private static final int LONG_WORD_LENGTH = 12;
+
+    private static final Logger LOGGER = HasLogging.log();
 
 	private static final String REGEX = "[\\P{L}]+";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Chapter2.class);
 
     private static final String TXT_FILE = "warAndPeace.txt";
 
@@ -42,10 +42,11 @@ public final class Chapter2 {
         Pattern compile = Pattern.compile(REGEX);
 
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8)) {
-            LOGGER.trace("{}", lines.parallel().flatMap(compile::splitAsStream).filter(s -> s.length() > 12).count());
+            LOGGER.trace("{}", lines.parallel().flatMap(compile::splitAsStream)
+                    .filter(s -> s.length() > LONG_WORD_LENGTH).count());
             LOGGER.trace("{}", countConcurrentWithoutStreams());
         } catch (Exception e) {
-            LOG.error("", e);
+            LOGGER.error("", e);
         }
     }
 
@@ -88,10 +89,11 @@ public final class Chapter2 {
      */
     public static void ex12() throws IOException {
 
-        AtomicInteger[] array = Stream.generate(() -> new AtomicInteger(0)).limit(12).toArray(AtomicInteger[]::new);
+        AtomicInteger[] array = Stream.generate(() -> new AtomicInteger(0)).limit(LONG_WORD_LENGTH)
+                .toArray(AtomicInteger[]::new);
         Stream<String> wordsAsList = getWordsAsList().stream();
         wordsAsList.forEach(s -> {
-            if (s.length() <= 12) {
+            if (s.length() <= LONG_WORD_LENGTH) {
                 array[s.length() - 1].getAndIncrement();
             }
         });
@@ -101,7 +103,7 @@ public final class Chapter2 {
     public static void ex13() {
         try {
             Stream<String> wordsAsList = getWordsAsList().stream();
-            Map<Integer, Long> wordByLength = wordsAsList.filter(s -> s.length() > 12)
+            Map<Integer, Long> wordByLength = wordsAsList.filter(s -> s.length() > LONG_WORD_LENGTH)
                     .collect(Collectors.groupingBy(String::length, Collectors.counting()));
             LOGGER.trace("{}", wordByLength);
         } catch (Exception e) {
@@ -118,10 +120,10 @@ public final class Chapter2 {
         Pattern compile = Pattern.compile(REGEX);
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(TXT_FILE), StandardCharsets.UTF_8)) {
             lines.parallel().flatMap(compile::splitAsStream).filter(s -> {
-                if (s.length() > 12) {
+                if (s.length() > LONG_WORD_LENGTH) {
                     LOGGER.trace("Long word {}", s);
                 }
-                return s.length() > 12;
+                return s.length() > LONG_WORD_LENGTH;
             }).limit(5).forEach(LOGGER::trace);
         } catch (Exception e) {
             LOGGER.error("", e);
@@ -137,10 +139,10 @@ public final class Chapter2 {
     public static void ex3() throws IOException {
 
         long tic = System.currentTimeMillis();
-        getWordsAsList().parallelStream().filter(s -> s.length() > 12).count();
+        getWordsAsList().parallelStream().filter(s -> s.length() > LONG_WORD_LENGTH).count();
         LOGGER.trace("Paralel:{}ms", System.currentTimeMillis() - tic);
         tic = System.currentTimeMillis();
-        getWordsAsList().stream().filter(s -> s.length() > 12).count();
+        getWordsAsList().stream().filter(s -> s.length() > LONG_WORD_LENGTH).count();
         LOGGER.trace("Sequential:{}ms", System.currentTimeMillis() - tic);
 
     }
@@ -253,7 +255,7 @@ public final class Chapter2 {
             set.add(pool.submit(() -> {
                 long chunkCount = 0;
                 for (String string : strings) {
-                    if (string.length() > 12) {
+                    if (string.length() > LONG_WORD_LENGTH) {
                         chunkCount++;
                     }
                 }
