@@ -1,6 +1,7 @@
 package fxpro.ch05;
 
 import java.util.Arrays;
+import java.util.List;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +23,8 @@ import javafx.stage.Stage;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleTabPaneBuilder;
 import simplebuilder.SimpleTableViewBuilder;
+import simplebuilder.SimpleToggleGroupBuilder;
+import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
 
@@ -116,6 +119,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		return menuBar;
 	}
 
+    @SuppressWarnings("unchecked")
     private Node createScrollMiscDemoNode() {
 		ChoiceBox<String> choiceBox = new ChoiceBox<>(TableVisualizationModel.CHOICE_BOX_ITEMS);
 		choiceBox.getSelectionModel().selectFirst();
@@ -171,24 +175,26 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
         menItemA.setOnAction(e -> getLogger().info("{} occurred on Menu Item A ", e.getEventType()));
 		final MenuButton menuButton = new MenuButton("MenuButton");
 		menuButton.getItems().addAll(menItemA, new MenuItem(MENU_ITEM_B));
-		final ToggleGroup radioToggleGroup = new ToggleGroup();
-		final RadioButton radioButton1 = new RadioButton("RadioButton1");
-		radioButton1.setToggleGroup(radioToggleGroup);
-		final RadioButton radioButton2 = new RadioButton("RadioButton2");
-		radioButton2.setToggleGroup(radioToggleGroup);
-		radioToggleGroup.selectToggle(radioToggleGroup.getToggles().get(0));
-		radioToggleGroup.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
-			RadioButton rb = (RadioButton) radioToggleGroup.getSelectedToggle();
-			if (rb != null) {
-                getLogger().info("{} selected", rb.getText());
-			}
-		});
+        final ToggleGroup radioToggleGroup = new SimpleToggleGroupBuilder()
+                .addRadioToggle("RadioButton1")
+                .addRadioToggle("RadioButton2")
+                .select(0)
+                .onChange((ov, oldValue, newValue) -> {
+                    Labeled rb = (Labeled) newValue;
+                    if (rb != null) {
+                        getLogger().info("{} selected", rb.getText());
+                    }
+                }).build();
 		final MenuItem menuItem = new MenuItem(MENU_ITEM_A);
         menuItem.setOnAction(e -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
 		final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem(MENU_ITEM_B));
 		splitMenu.setText("SplitMenuButton");
         splitMenu.setOnAction(e -> getLogger().info("{} occurred on SplitMenuButton", e.getEventType()));
-		VBox variousControls = new VBox(20, button, checkBox, new HBox(10, radioButton1, radioButton2), hyperlink,choiceBox, menuButton, splitMenu, textField, passwordField,new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
+        HBox hBox = new HBox(10, ((List<? extends Node>) radioToggleGroup.getToggles()).toArray(new Node[0]));
+        VBox variousControls = new VBox(20, button, checkBox,
+                hBox, hyperlink,
+                choiceBox, menuButton, splitMenu, textField, passwordField,
+                new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
 		variousControls.setPadding(new Insets(10, 10, 10, 10));
 		final MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
         menuItemA.setOnAction(e -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
@@ -267,61 +273,48 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .build();
 	}
 
+    @SuppressWarnings("unchecked")
     private ToolBar createToolBar() {
-		final Button newButton = new Button(null,
-                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
-		newButton.setId("newButton");
-		newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
-        newButton.setOnAction(e -> getLogger().info("New toolbar button clicked"));
+        final Button newButton = CommonsFX.newButton(
+                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "newButton",
+                e -> getLogger().info("New toolbar button clicked"));
+        newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
 
-		final Button editButton = new Button(null, new Circle(8, Color.GREEN));
-		editButton.setId("editButton");
+        final Button editButton = CommonsFX.newButton(new Circle(8, Color.GREEN), "editButton", null);
 
-		final Button deleteButton = new Button(null, new Circle(8, Color.BLUE));
-		deleteButton.setId("deleteButton");
+        final Button deleteButton = CommonsFX.newButton(new Circle(8, Color.BLUE), "deleteButton", null);
 
-		final ToggleButton boldButton = new ToggleButton(null, new Circle(8, Color.MAROON));
-		boldButton.setId("boldButton");
-        boldButton.setOnAction(e -> {
-			ToggleButton tb = (ToggleButton) e.getTarget();
-            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
-            logSelectedProperty(tb.selectedProperty().getValue());
-		});
-		final ToggleButton italicButton = new ToggleButton(null, new Circle(8, Color.YELLOW));
-		italicButton.setId("italicButton");
-        italicButton.setOnAction(e -> {
-			ToggleButton tb = (ToggleButton) e.getTarget();
-            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
-            logSelectedProperty(tb.selectedProperty().getValue());
-		});
+        final ToggleButton boldButton = newToggleButton("boldButton", Color.MAROON);
+        final ToggleButton italicButton = newToggleButton("italicButton", Color.YELLOW);
 
-		final ToggleGroup alignToggleGroup = new ToggleGroup();
-		final ToggleButton leftAlignButton = new ToggleButton(null, new Circle(8, Color.PURPLE));
-		leftAlignButton.setId("leftAlignButton");
-		leftAlignButton.setToggleGroup(alignToggleGroup);
+        final ToggleGroup alignToggleGroup = new SimpleToggleGroupBuilder()
+                .addToggle(new Circle(8, Color.PURPLE), "leftAlignButton")
+                .addToggle(new Circle(8, Color.ORANGE), "centerAlignButton")
+                .addToggle(new Circle(8, Color.CYAN), "rightAlignButton")
+                .select(0)
+                .onChange((ov, oldValue, newValue) -> {
+                    Node tb = (Node) newValue;
+                    if (tb != null) {
+                        getLogger().info("{} selected", tb.getId());
+                    }
+                }).build();
 
-		final ToggleButton centerAlignButton = new ToggleButton(null, new Circle(8, Color.ORANGE));
-		centerAlignButton.setId("centerAlignButton");
-		centerAlignButton.setToggleGroup(alignToggleGroup);
+        ToolBar toolBar = new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton);
+        toolBar.getItems().addAll((List<? extends Node>) alignToggleGroup.getToggles());
 
-		final ToggleButton rightAlignButton = new ToggleButton(null, new Circle(8, Color.CYAN));
-		rightAlignButton.setId("rightAlignButton");
-		rightAlignButton.setToggleGroup(alignToggleGroup);
-		alignToggleGroup.selectToggle(alignToggleGroup.getToggles().get(0));
-		alignToggleGroup.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
-			ToggleButton tb = (ToggleButton) alignToggleGroup.getSelectedToggle();
-			if (tb != null) {
-                getLogger().info("{} selected", tb.getId());
-			}
-		});
-
-        return new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton, leftAlignButton,
-                centerAlignButton,
-				rightAlignButton);
+        return toolBar;
 	}
 
     private void logSelectedProperty(Boolean value) {
         getLogger().info(", and selectedProperty is: {}", value);
+    }
+
+    private ToggleButton newToggleButton(String id, Color yellow) {
+        return CommonsFX.newToggleButton(id, new Circle(8, yellow), e -> {
+            Toggle tb = (Toggle) e.getTarget();
+            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb);
+            logSelectedProperty(tb.selectedProperty().getValue());
+		});
     }
 
     public static void main(String[] args) {

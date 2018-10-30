@@ -14,10 +14,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcTo;
@@ -99,6 +96,13 @@ public final class CommonsFX {
 		return button;
 	}
 
+    public static Button newButton(Node graphic, String id,EventHandler<ActionEvent> onAction) {
+        Button button = new Button(null,graphic);
+        button.setId(id);
+        button.setOnAction(onAction);
+        return button;
+    }
+
     public static Button newButton(String nome, EventHandler<ActionEvent> onAction) {
 		Button button = new Button(nome);
         button.setId(nome);
@@ -137,12 +141,20 @@ public final class CommonsFX {
 		return build;
 	}
 
-
     public static TextField newTextField(String text, int prefColumnCount) {
 		TextField textField = new TextField(text);
 		textField.setPrefColumnCount(prefColumnCount);
 		return textField;
 	}
+
+
+    public static ToggleButton newToggleButton(String id, Node graphic, EventHandler<ActionEvent> onAction) {
+        ToggleButton button = new ToggleButton();
+        button.setId(id);
+        button.setGraphic(graphic);
+        button.setOnAction(onAction);
+        return button;
+    }
 
 
 
