@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -20,10 +19,7 @@ import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
-import simplebuilder.SimpleRectangleBuilder;
-import simplebuilder.SimpleTabPaneBuilder;
-import simplebuilder.SimpleTableViewBuilder;
-import simplebuilder.SimpleToggleGroupBuilder;
+import simplebuilder.*;
 import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
@@ -89,8 +85,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		final HTMLEditor htmlEditor = new HTMLEditor();
 		htmlEditor.setHtmlText("<p>Replace this text</p>");
 
-		Button viewHtmlButton = new Button("View HTML");
-        viewHtmlButton.setOnAction(e -> {
+        Button viewHtmlButton = CommonsFX.newButton("View HTML", e -> {
 			Popup alertPopup1 = createAlertPopup(htmlEditor.getHtmlText());
 			alertPopup1.show(stage, (stage.getWidth() - alertPopup1.getWidth()) / 2 + stage.getX(),
 					(stage.getHeight() - alertPopup1.getHeight()) / 2 + stage.getY());
@@ -104,19 +99,17 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
     private MenuBar createMenus() {
 
-        final MenuItem newMenuItem = new MenuItem("New...",
-                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
-		newMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-        newMenuItem.setOnAction(e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()));
-
-        final Menu fileMenu = new Menu("File");
-		fileMenu.getItems().addAll(newMenuItem, new MenuItem("Save"));
-		MenuBar menuBar = new MenuBar();
-
-		Menu editMenu = new Menu("Edit");
-		editMenu.getItems().addAll(new MenuItem("Cut"), new MenuItem("Copy"), new MenuItem("Paste"));
-		menuBar.getMenus().addAll(fileMenu, editMenu);
-		return menuBar;
+        return new SimpleMenuBarBuilder()
+                .addMenu("File")
+                .addMenuItem("New...",new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png")
+                        ,"Ctrl+N"
+                        , e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()))
+                .addMenuItem("Save")
+                .addMenu("Edit")
+                .addMenuItem("Cut")
+                .addMenuItem("Copy")
+                .addMenuItem("Paste")
+                .build();
 	}
 
     @SuppressWarnings("unchecked")
