@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import pdfreader.PrintImageLocations.PDFImage;
 
 class PdfInfo{
     private File file;
     private int numberOfPages;
     private ObservableList<List<String>> pages = FXCollections.observableArrayList();
-    private Map<Integer, List<PDFImage>> images;
+    private Map<Integer, List<PdfImage>> images;
     public File getFile() {
         return file;
     }
@@ -30,10 +29,10 @@ class PdfInfo{
     public void setPages(ObservableList<List<String>> pages) {
         this.pages = pages;
     }
-    public Map<Integer, List<PDFImage>> getImages() {
+    public Map<Integer, List<PdfImage>> getImages() {
         return images;
     }
-    public void setImages(Map<Integer, List<PDFImage>> images) {
+    public void setImages(Map<Integer, List<PdfImage>> images) {
         this.images = images;
     }
 }

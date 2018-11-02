@@ -26,7 +26,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import pdfreader.PrintImageLocations.PDFImage;
 import simplebuilder.SimpleTimelineBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
@@ -137,7 +136,7 @@ public class PdfReader extends Application implements HasLogging {
             if (lineIndex >= lines.size()) {
                 lines.setAll(pdfInfo.getPages().get(pageIndex.get()));
                 if (pdfInfo.getImages().containsKey(pageIndex.get())) {
-                    List<PDFImage> col = pdfInfo.getImages().get(pageIndex.get());
+                    List<PdfImage> col = pdfInfo.getImages().get(pageIndex.get());
                     currentImages.setAll(col);
                 } else {
                     currentImages.clear();

@@ -63,29 +63,37 @@ public class TracerouteScanner {
 	}
 
 	private static List<String> extractHops(Map<String, List<String>> hostsPorts, Entry<String, List<String>> e) {
-        return e.getValue().stream().flatMap(l -> turnReferencesIntoHops(hostsPorts, l)).collect(Collectors.toList());
+        return e.getValue().stream().flatMap(l -> turnReferencesIntoHops(hostsPorts, l))
+                .collect(Collectors.toList());
 	}
 
     private static Stream<? extends String> turnReferencesIntoHops(Map<String, List<String>> hostsPorts, String line) {
-        if (line.matches(REUSED_ROUTE_REGEX)) {
-            String host = line.replaceAll(REUSED_ROUTE_REGEX, "$3");
-            if (!hostsPorts.containsKey(host)) {
-                return Stream.empty();
+        try {
+            if (line.matches(REUSED_ROUTE_REGEX)) {
+                String host = line.replaceAll(REUSED_ROUTE_REGEX, "$3");
+                if (!hostsPorts.containsKey(host)) {
+                    return Stream.empty();
+                }
+                String hops = line.replaceAll(REUSED_ROUTE_REGEX, "$1,$2");
+                int[] array = Stream.of(hops.split(",")).mapToInt(Integer::parseInt).toArray();
+                List<String> list = hostsPorts.get(host);
+                return list.subList(array[0] - 1, Integer.min(list.size(), array[1])).stream()
+                        .map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
             }
-            String hops = line.replaceAll(REUSED_ROUTE_REGEX, "$1,$2");
-            int[] array = Stream.of(hops.split(",")).mapToInt(Integer::parseInt).toArray();
-            return hostsPorts.get(host).subList(array[0] - 1, array[1]).stream()
-                    .map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
-        }
-        if (line.matches(REUSED_ROUTE_REGEX_1)) {
-            String host = line.replaceAll(REUSED_ROUTE_REGEX_1, "$2");
-            if (!hostsPorts.containsKey(host)) {
-                return Stream.empty();
+            if (line.matches(REUSED_ROUTE_REGEX_1)) {
+                String host = line.replaceAll(REUSED_ROUTE_REGEX_1, "$2");
+                if (!hostsPorts.containsKey(host)) {
+                    return Stream.empty();
+                }
+                String hops = line.replaceAll(REUSED_ROUTE_REGEX_1, "$1");
+                String subList = hostsPorts.get(host).get(Integer.parseInt(hops) - 1);
+            	return Stream.of(subList).map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
             }
-            String hops = line.replaceAll(REUSED_ROUTE_REGEX_1, "$1");
-            String subList = hostsPorts.get(host).get(Integer.parseInt(hops) - 1);
-        	return Stream.of(subList).map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
+            return Stream.of(line.replaceAll(HOP_REGEX, "$1$2"));
+        } catch (Exception e) {
+            LOG.error("ERROR LINE={}", line);
+            LOG.error("", e);
+            return Stream.empty();
         }
-        return Stream.of(line.replaceAll(HOP_REGEX, "$1$2"));
     }
 }

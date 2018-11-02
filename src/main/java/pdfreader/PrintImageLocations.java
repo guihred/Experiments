@@ -1,6 +1,5 @@
 package pdfreader;
 
-import contest.db.HasImage;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,7 @@ import utils.ResourceFXUtils;
 public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
 	private static final Logger LOG = HasLogging.log();
 	private int num;
-    private List<PDFImage> images = new ArrayList<>();
+    private List<PdfImage> images = new ArrayList<>();
     private int pageNumber;
 
     public PrintImageLocations() {
@@ -45,7 +44,7 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
         addOperator(new SetMatrix());
     }
 
-	public List<PDFImage> processPage(PDPage page, int pageNumber1) throws IOException {
+	public List<PdfImage> processPage(PDPage page, int pageNumber1) throws IOException {
 		pageNumber = pageNumber1;
         int size = images.size();
         super.processPage(page);
@@ -82,13 +81,13 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
             float translateY = ctmNew.getTranslateY();
             // raw size in pixels
 
-            PDFImage pdfImage = new PDFImage();
-            pdfImage.file = save;
-            pdfImage.x = translateX;
-            pdfImage.y = translateY - ctmNew.getScalingFactorY();
-            pdfImage.pageN = pageNumber;
+            PdfImage pdfImage = new PdfImage();
+            pdfImage.setFile(save);
+            pdfImage.setX(translateX);
+            pdfImage.setY(translateY - ctmNew.getScalingFactorY());
+            pdfImage.setPageN(pageNumber);
             images.add(pdfImage);
-            getLogger().trace("{} at ({},{}) page {}", pdfImage.file, pdfImage.x, pdfImage.y, pageNumber);
+            getLogger().trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(), pageNumber);
 
         }
 
@@ -105,38 +104,6 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
 			LOG.error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
         }
         return file;
-    }
-
-    public static class PDFImage implements HasImage {
-        public File file;
-        public float x;
-        public float y;
-        protected int pageN;
-
-        @Override
-        public void appendImage(String image) {
-            // DOES NOTHING
-        }
-
-        @Override
-        public String getImage() {
-            return file.getName();
-        }
-
-        @Override
-        public boolean matches(String s0) {
-            return false;
-        }
-
-        @Override
-        public void setImage(String image) {
-            file = new File(image);
-        }
-
-        @Override
-        public String toString() {
-            return file != null ? file.getName() : "";
-        }
     }
 
 }

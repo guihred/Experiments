@@ -1,8 +1,7 @@
 package fxpro.ch05;
 
-import java.util.Arrays;
-import java.util.List;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -52,8 +51,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
 	private Node createAccordionTitledDemoNode() {
 		TitledPane firstPane = new TitledPane("TitledPane A", new TextArea("TitledPane A content"));
-		final TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
-		final TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
+        TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
+        TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
 		Accordion accordion = new Accordion();
 		accordion.getPanes().addAll(firstPane, secondPane, thirdPane);
 		accordion.setExpandedPane(firstPane);
@@ -64,8 +63,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
 		Popup alertPopup = new Popup();
 
-		Button okButton = new Button("OK");
-		okButton.setOnAction(e -> alertPopup.hide());
+        Button okButton = CommonsFX.newButton("OK", e -> alertPopup.hide());
 		final Label htmlLabel = new Label(text);
 		htmlLabel.setWrapText(true);
 		htmlLabel.setMaxWidth(280);
@@ -112,7 +110,6 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .build();
 	}
 
-    @SuppressWarnings("unchecked")
     private Node createScrollMiscDemoNode() {
 		ChoiceBox<String> choiceBox = new ChoiceBox<>(TableVisualizationModel.CHOICE_BOX_ITEMS);
 		choiceBox.getSelectionModel().selectFirst();
@@ -183,7 +180,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem(MENU_ITEM_B));
 		splitMenu.setText("SplitMenuButton");
         splitMenu.setOnAction(e -> getLogger().info("{} occurred on SplitMenuButton", e.getEventType()));
-        HBox hBox = new HBox(10, ((List<? extends Node>) radioToggleGroup.getToggles()).toArray(new Node[0]));
+        Node[] array = radioToggleGroup.getToggles().stream().map(Node.class::cast).toArray(Node[]::new);
+        HBox hBox = new HBox(10, array);
         VBox variousControls = new VBox(20, button, checkBox,
                 hBox, hyperlink,
                 choiceBox, menuButton, splitMenu, textField, passwordField,
@@ -204,38 +202,23 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 	}
 
     private Node createSplitTreeListDemoNode() {
-		final TreeItem<String> animalItem = new TreeItem<>("Animal");
-		animalItem.getChildren()
-				.addAll(Arrays.asList(new TreeItem<>("Lion"), new TreeItem<>("Tiger"), new TreeItem<>("Bear")));
-		final TreeItem<String> mineralItem = new TreeItem<>("Mineral");
-		mineralItem.getChildren()
-				.addAll(Arrays.asList(new TreeItem<>("Copper"), new TreeItem<>("Diamond"), new TreeItem<>("Quartz")));
-		final TreeItem<String> vegetableItem = new TreeItem<>("Vegetable");
-		vegetableItem.getChildren().addAll(
-				Arrays.asList(new TreeItem<>("Arugula"), new TreeItem<>("Broccoli"), new TreeItem<>("Cabbage")));
-
-		final TreeItem<String> rootItem = new TreeItem<>("Root");
-		rootItem.getChildren().addAll(Arrays.asList(animalItem, mineralItem, vegetableItem));
-
-		TreeView<String> treeView = new TreeView<>(rootItem);
-		treeView.setMinWidth(150);
-		treeView.setShowRoot(false);
-		treeView.setEditable(false);
-
-		ListView<String> listView = new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS);
-		SplitPane splitPane = new SplitPane();
-		splitPane.getItems().addAll(treeView, listView);
-		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			TreeItem<String> treeItem = newValue;
-			if (newValue != null && treeItem.isLeaf()) {
-				TableVisualizationModel.LIST_VIEW_ITEMS.clear();
-				for (int i = 1; i <= 10000; i++) {
-					TableVisualizationModel.LIST_VIEW_ITEMS.add(treeItem.getValue() + " " + i);
-				}
-			}
-		});
-		return splitPane;
+        return new SplitPane(new SimpleTreeViewBuilder<String>()
+		        .root("Root")
+		        .addItem("Animal","Lion","Tiger","Bear")
+		        .addItem("Vegetable","Arugula","Broccoli","Cabbage")
+		        .addItem("Mineral","Copper","Diamond","Quartz")
+                .minWidth(150)
+                .editable(false)
+                .showRoot(false)
+                .onSelect(newValue->{
+                    if (newValue != null && newValue.isLeaf()) {
+                        TableVisualizationModel.LIST_VIEW_ITEMS.clear();
+                        for (int i = 1; i <= 10000; i++) {
+                            TableVisualizationModel.LIST_VIEW_ITEMS.add(newValue.getValue() + " " + i);
+                        }
+                    }    
+                })
+		        .build(), new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS));
 	}
 
     private Node createTableDemoNode() {
@@ -266,7 +249,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .build();
 	}
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private ToolBar createToolBar() {
         final Button newButton = CommonsFX.newButton(
                 new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "newButton",
@@ -293,7 +276,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 }).build();
 
         ToolBar toolBar = new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton);
-        toolBar.getItems().addAll((List<? extends Node>) alignToggleGroup.getToggles());
+        ObservableList<Node> toggles = (ObservableList) alignToggleGroup.getToggles();
+        toolBar.getItems().addAll(toggles);
 
         return toolBar;
 	}

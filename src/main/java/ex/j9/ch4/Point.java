@@ -22,7 +22,7 @@ public class Point {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Point) || getClass() != obj.getClass()) {
+        if (obj == null || !this.getClass().isInstance(obj)) {
             return false;
         }
         Point other = (Point) obj;

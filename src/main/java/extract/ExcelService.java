@@ -14,7 +14,7 @@ import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class ExcelService implements HasLogging {
+public final class ExcelService implements HasLogging {
 
 	private static final Logger LOG = HasLogging.log();
 

@@ -14,9 +14,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import pdfreader.PdfImage;
 import pdfreader.PdfUtils;
 import pdfreader.PrintImageLocations;
-import pdfreader.PrintImageLocations.PDFImage;
 import utils.HasLogging;
 
 public final class ContestReader implements HasLogging {
@@ -221,20 +221,20 @@ public final class ContestReader implements HasLogging {
                 pageNumber = i;
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
-                List<PDFImage> images = printImageLocations.processPage(page, i);
+                List<PdfImage> images = printImageLocations.processPage(page, i);
                 String parsedText = pdfStripper.getText(pdDoc);
                 String[] lines = parsedText.split("\r\n");
                 tryReadQuestionFromLines(lines);
                 List<HasImage> imageElements = Stream.concat(getTexts().stream(), listQuestions.stream())
                         .collect(Collectors.toList());
                 final int j = i;
-                for (PDFImage pdfImage : images) {
+                for (PdfImage pdfImage : images) {
                     questionPosition.stream().filter(e -> e.getPage() == j)
-                            .min(Comparator.comparing(position -> position.distance(pdfImage.x, pdfImage.y)))
+                            .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())))
                             .ifPresent(orElse -> {
                                 for (HasImage pdfImage2 : imageElements) {
                                     if (pdfImage2.matches(orElse.getLine())) {
-                                        pdfImage2.appendImage(pdfImage.file.getName());
+                                        pdfImage2.appendImage(pdfImage.getFile().getName());
                                     }
                                 }
                             });
