@@ -1,6 +1,10 @@
 package graphs.app;
 
-import graphs.entities.*;
+import graphs.entities.Cell;
+import graphs.entities.CellType;
+import graphs.entities.Edge;
+import graphs.entities.Graph;
+import graphs.entities.GraphModel;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,10 +37,12 @@ public class GraphModelLauncher extends Application implements HasLogging {
             new LayerLayout(graph),
 			new RandomLayout(graph), 
 			new CustomLayout(graph), 
-			convergeLayout).sorted(Comparator.comparing(e -> e.getClass().getSimpleName().replace("Layout", "")));
+			convergeLayout).sorted(Comparator.comparing(Layout::getName));
+
+
     private ComboBox<Layout> selectLayout = new SimpleComboBoxBuilder<Layout>().items(layouts)
             .tooltip("Select Layout")
-            .converter(l -> l.getClass().getSimpleName().replace("Layout", "")).build();
+			.converter(Layout::getName).build();
 
 	@Override
 	public void start(Stage primaryStage) {
