@@ -5,7 +5,6 @@
  */
 package fxpro.ch08;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import javafx.application.Application;
 import javafx.scene.media.Media;
@@ -15,16 +14,17 @@ import utils.ResourceFXUtils;
 
 public class MediaPlayerExample extends Application {
 
+    private static final int WIDTH = 200;
+
     @Override
     public void start(Stage primaryStage) throws MalformedURLException {
-        File resource = ResourceFXUtils.toFile("TeenTitans.mp3");
-        Media media = new Media(resource.toURI().toString());
+        Media media = new Media(ResourceFXUtils.toURI("TeenTitans.mp3").toString());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setVolume(0);
         mediaPlayer.play();
         primaryStage.setTitle("Media Player");
-        primaryStage.setWidth(200);
-        primaryStage.setHeight(200);
+        primaryStage.setWidth(WIDTH);
+        primaryStage.setHeight(WIDTH);
         primaryStage.show();
     }
 

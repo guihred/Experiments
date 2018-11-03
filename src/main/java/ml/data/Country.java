@@ -373,7 +373,7 @@ public enum Country {
         centroid[0] += (x0 + x1) * a;
         centroid[1] += (y0 + y1) * a;
 
-        signedArea *= 0.5;
+        signedArea /= 2;
         centroid[0] /= 6.0 * signedArea;
         centroid[1] /= 6.0 * signedArea;
 

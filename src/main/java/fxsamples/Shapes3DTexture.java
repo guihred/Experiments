@@ -57,8 +57,8 @@ public class Shapes3DTexture extends Application {
 		// show noise image
 
 		ImageView iv = new ImageView(diffuseMap);
-		iv.setTranslateX(-0.5 * size);
-		iv.setTranslateY(-0.20 * size);
+        iv.setTranslateX(-size / 2);
+        iv.setTranslateY(-size / 5);
 		iv.setRotate(90);
 		iv.setRotationAxis(new Point3D(1, 0, 0));
 		group.getChildren().add(iv);
