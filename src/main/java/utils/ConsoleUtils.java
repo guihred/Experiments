@@ -113,7 +113,7 @@ public final class ConsoleUtils {
                     new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in2.readLine()) != null) {
-                    LOGGER.info("{}", line);
+                    LOGGER.trace("{}", line);
                     execution.add(line);
                 }
                 p.waitFor();

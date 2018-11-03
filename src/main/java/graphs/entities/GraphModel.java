@@ -27,10 +27,7 @@ public class GraphModel {
         clear();
     }
 
-	public Cell getCell(String key) {
-		return cellMap.get(key);
-	}
-    public void addBiEdge(String sourceId, String targetId, Integer valor) {
+	public void addBiEdge(String sourceId, String targetId, Integer valor) {
         if (sourceId.equals(targetId)) {
             return;
         }
@@ -47,7 +44,6 @@ public class GraphModel {
         addedEdges.add(edge);
         addedEdges.add(edge2);
     }
-
     public Cell addCell(String id, CellType type) {
         switch (type) {
             case CIRCLE:
@@ -75,8 +71,10 @@ public class GraphModel {
         }
         Cell sourceCell = cellMap.get(sourceId);
         Cell targetCell = cellMap.get(targetId);
-        Edge edge = new Edge(sourceCell, targetCell, valor);
-        addedEdges.add(edge);
+        if(sourceCell!=null&&targetCell!=null) {
+            Edge edge = new Edge(sourceCell, targetCell, valor);
+            addedEdges.add(edge);
+        }
     }
 
     public List<Cell> adjacents(Cell c) {
@@ -109,12 +107,12 @@ public class GraphModel {
         GraphModelAlgorithms.coloring(allCells, allEdges);
     }
 
-
     public void disconnectFromGraphParent(Iterable<Cell> cellList) {
         for (Cell cell : cellList) {
             graphParent.removeCellChild(cell);
         }
     }
+
 
     public List<Edge> edges(Cell c) {
 		return GraphModelAlgorithms.edges(c, allEdges);
@@ -139,6 +137,10 @@ public class GraphModel {
     public List<Edge> getAllEdges() {
         return allEdges;
     }
+
+    public Cell getCell(String key) {
+		return cellMap.get(key);
+	}
 
     public List<Cell> getRemovedCells() {
         return removedCells;

@@ -23,10 +23,11 @@ public class ConcentricLayout implements Layout {
         graph.clean();
         List<Cell> cells = model.getAllCells();
         List<Edge> allEdges = model.getAllEdges();
-        layoutConcentric(cells, allEdges);
+        double w = graph.getScrollPane().getWidth() / 2;
+        layoutConcentric(cells, allEdges, w);
     }
 
-    public static void layoutConcentric(List<Cell> cells, List<Edge> allEdges) {
+    public static void layoutConcentric(List<Cell> cells, List<Edge> allEdges, double center) {
         GraphModelAlgorithms.coloring(cells, allEdges);
         Map<Color, List<Cell>> cellByColor = cells.stream().collect(Collectors.groupingBy(Cell::getColor));
         List<List<Cell>> cellsGroups = cellByColor.entrySet().stream()
@@ -35,7 +36,7 @@ public class ConcentricLayout implements Layout {
         for (int i = 0; i < cellsGroups.size(); i++) {
             List<Cell> list = cellsGroups.get(i);
             list.forEach(e -> e.setColor(null));
-            CircleLayout.generateCircle(list, allEdges, 200, 200, 180.0 / list.size() * i, i + 1);
+            CircleLayout.generateCircle(list, allEdges, center, center, 180.0 / list.size() * i, i + 1);
         }
     }
 

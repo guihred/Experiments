@@ -1,6 +1,5 @@
 package pdfreader;
 
-import contest.db.HasImage;
 import java.io.File;
 
 public class PdfImage implements HasImage {

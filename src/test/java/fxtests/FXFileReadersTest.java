@@ -3,15 +3,19 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 
 import ethical.hacker.PortServices;
+import ex.j9.ch4.LabeledPoint;
+import ex.j9.ch4.Point;
+import ex.j9.ch4.PrimaryColor;
+import ex.j9.ch4.Rectangle;
 import extract.ExcelService;
 import graphs.app.JavaFileDependecy;
 import graphs.app.PackageTopology;
+import graphs.entities.EdgeDistancePack;
+import graphs.entities.Linha;
+import graphs.entities.Ponto;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
@@ -36,29 +40,6 @@ public class FXFileReadersTest extends ApplicationTest {
         ResourceFXUtils.initializeFX();
         stage.show();
     }
-    @Test
-    public void testLeitorArquivos() {
-        File file = ResourceFXUtils.toFile("anvisa2208.xlsx");
-        ObservableList<String> sheetsExcel = LeitorArquivos.getSheetsExcel(file);
-        WaitForAsyncUtils.waitForFxEvents();
-        ObservableList<List<String>> listExcel = LeitorArquivos.getListExcel(file,
-                sheetsExcel.get(0));
-        WaitForAsyncUtils.waitForFxEvents();
-        ObservableList<Medicamento> converterMedicamentos = LeitorArquivos.converterMedicamentos(listExcel,
-                Arrays.asList(LeitorArquivos.REGISTRO, LeitorArquivos.NOME,
-                LeitorArquivos.LOTE, LeitorArquivos.QUANTIDADE));
-        WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("Size must be equal", 679, converterMedicamentos.size());
-    }
-
-    @Test
-    public void testLeitorArquivosPDF() throws IOException {
-        File file = ResourceFXUtils.toFile("sngpc2808.pdf");
-        ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosSNGPCPDF(file);
-        WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("Size must be equal", 656, medicamentos.size());
-    }
-
     @Test
     public void testExcelService() throws IOException {
         ObservableList<Medicamento> medicamentosSNGPCPDF = LeitorArquivos
@@ -88,20 +69,29 @@ public class FXFileReadersTest extends ApplicationTest {
                 new File(new File("out"), "sngpcMeds.xlsx"));
 
     }
+
     @Test
-    public void testWord2Vec() {
-        File file = new File(Word2VecExample.PATH_TO_SAVE_MODEL_TXT);
-        if (file.exists()) {
-            Files.delete(file);
-        }
-        measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
+    public void testLeitorArquivos() {
+        File file = ResourceFXUtils.toFile("anvisa2208.xlsx");
+        ObservableList<String> sheetsExcel = LeitorArquivos.getSheetsExcel(file);
+        WaitForAsyncUtils.waitForFxEvents();
+        ObservableList<List<String>> listExcel = LeitorArquivos.getListExcel(file,
+                sheetsExcel.get(0));
+        WaitForAsyncUtils.waitForFxEvents();
+        ObservableList<Medicamento> converterMedicamentos = LeitorArquivos.converterMedicamentos(listExcel,
+                Arrays.asList(LeitorArquivos.REGISTRO, LeitorArquivos.NOME,
+                LeitorArquivos.LOTE, LeitorArquivos.QUANTIDADE));
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("Size must be equal", 679, converterMedicamentos.size());
     }
 
     @Test
-    public void testPortServices() {
-        measureTime("PortServices.loadServiceNames", () -> PortServices.loadServiceNames());
+    public void testLeitorArquivosPDF() throws IOException {
+        File file = ResourceFXUtils.toFile("sngpc2808.pdf");
+        ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosSNGPCPDF(file);
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("Size must be equal", 656, medicamentos.size());
     }
-
     @Test
     public void testPackageTopology() {
         measureTime("PackageTopology.main", () -> {
@@ -114,6 +104,26 @@ public class FXFileReadersTest extends ApplicationTest {
                 PackageTopology.printDependencyMap(packageDependencyMap);
             });
         });
+    }
+
+    @Test
+    public void testPoints() {
+        measureTime("Chapter4.points", () -> new HashSet<>(Arrays.asList(new Point(2, 4), new LabeledPoint("Oi", 3, 5),
+                PrimaryColor.RED, new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5), new Rectangle(new Point(2, 4), 3, 5))));
+    }
+
+    @Test
+    public void testPortServices() {
+        measureTime("PortServices.loadServiceNames", () -> PortServices.loadServiceNames());
+    }
+
+    @Test
+    public void testWord2Vec() {
+        File file = new File(Word2VecExample.PATH_TO_SAVE_MODEL_TXT);
+        if (file.exists()) {
+            Files.delete(file);
+        }
+        measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
     }
 
 }

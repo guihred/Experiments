@@ -33,10 +33,9 @@ public class PackageTopology extends BaseTopology {
 
 	@Override
 	public void execute() {
-        chosenPackageName = null;
-        List<JavaFileDependecy> javaFiles = createGraph();
-        displayDialogForShortestPath(
-                javaFiles.stream().map(JavaFileDependecy::getPackage).distinct().collect(Collectors.toList()));
+        //        chosenPackageName = null;
+        createGraph();
+        displayDialogForShortestPath();
 
     }
 
@@ -61,17 +60,21 @@ public class PackageTopology extends BaseTopology {
         return javaFiles;
     }
 
-    private void displayDialogForShortestPath(List<String> javaFiles) {
+    private void displayDialogForShortestPath() {
         Stage dialog = new Stage();
         dialog.setTitle("Chose Package to Display");
         dialog.setWidth(70);
-        ChoiceBox<String> c1 = new ChoiceBox<>(FXCollections.observableArrayList(javaFiles));
+        ChoiceBox<String> c1 = new ChoiceBox<>(FXCollections.observableArrayList(getJavaFileDependencies(null).stream()
+                .map(JavaFileDependecy::getPackage).distinct().collect(Collectors.toList())));
+        if (chosenPackageName != null) {
+            c1.getSelectionModel().select(chosenPackageName);
+        }
         Button okButton = CommonsFX.newButton("OK", event -> {
             if (c1.getValue() != null) {
                 chosenPackageName = c1.getValue();
                 createGraph();
-                dialog.close();
             }
+            dialog.close();
         });
         VBox root = new VBox(new Text("Source"), c1, okButton);
         root.setAlignment(Pos.CENTER);

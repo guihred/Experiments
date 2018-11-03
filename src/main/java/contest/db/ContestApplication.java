@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import pdfreader.HasImage;
 import utils.HasLogging;
 import utils.ImageTableCell;
 import utils.ResourceFXUtils;

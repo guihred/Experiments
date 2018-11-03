@@ -1,4 +1,4 @@
-package contest.db;
+package pdfreader;
 
 public interface HasImage {
     void appendImage(String image);

@@ -33,7 +33,8 @@ public class WordTopology extends BaseTopology {
             }
         }
         graph.endUpdate();
-        ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges());
+        ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
+                graph.getScrollPane().getWidth() / 2);
 
 	}
 

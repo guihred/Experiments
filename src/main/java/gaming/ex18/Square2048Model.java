@@ -11,28 +11,26 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
+import utils.CommonsFX;
 
 /**
  *
  * @author Note
  */
 public class Square2048Model {
+    private static final int MAIN_GOAL = 2048;
     public static final int MAP_HEIGHT = 4;
     public static final int MAP_WIDTH = 4;
 
     private final Square2048[][] map = new Square2048[MAP_WIDTH][MAP_HEIGHT];
     private List<Square2048> mapAsList = new ArrayList<>();
     private final Random random = new Random();
+    private GridPane gridPane;
 
-	public Square2048Model() {
-        for (int i = 0; i < getMap().length; i++) {
-            for (int j = 0; j < getMap()[i].length; j++) {
-                getMap()[i][j] = new Square2048();
-                mapAsList.add(getMap()[i][j]);
-            }
-        }
-        getMap()[random.nextInt(MAP_WIDTH)][random.nextInt(MAP_HEIGHT)].setNumber(newNumber());
-        getMap()[random.nextInt(MAP_WIDTH)][random.nextInt(MAP_HEIGHT)].setNumber(newNumber());
+    public Square2048Model(GridPane gridPane) {
+        this.gridPane = gridPane;
+        initialize();
 
     }
 
@@ -88,12 +86,60 @@ public class Square2048Model {
         List<Square2048> emptySquares = mapAsList.stream().filter(Square2048::isEmpty).collect(Collectors.toList());
         if (!emptySquares.isEmpty()) {
             emptySquares.get(random.nextInt(emptySquares.size())).setNumber(newNumber());
+        } else if (noPossibleMove()) {
+            CommonsFX.displayDialog("You Lose", "_Reset", () -> {
+                gridPane.getChildren().clear();
+                initialize();
+            });
+        }
+        if (mapAsList.stream().anyMatch(s -> s.getNumber() == MAIN_GOAL)) {
+            CommonsFX.displayDialog("You Won", "_Reset", () -> {
+                gridPane.getChildren().clear();
+                initialize();
+            });
         }
 
     }
 
+    private void initialize() {
+        for (int i = 0; i < getMap().length; i++) {
+            for (int j = 0; j < getMap()[i].length; j++) {
+                getMap()[i][j] = new Square2048();
+                mapAsList.add(getMap()[i][j]);
+            }
+        }
+        getMap()[random.nextInt(MAP_WIDTH)][random.nextInt(MAP_HEIGHT)].setNumber(newNumber());
+        getMap()[random.nextInt(MAP_WIDTH)][random.nextInt(MAP_HEIGHT)].setNumber(newNumber());
+        for (int i = 0; i < getMap().length; i++) {
+            for (int j = 0; j < getMap()[i].length; j++) {
+                Square2048 map1 = getMap()[i][j];
+                gridPane.add(map1, i, j);
+            }
+        }
+    }
+
     private int newNumber() {
         return (random.nextInt(2) + 1) * 2;
+    }
+
+    private boolean noPossibleMove() {
+        int[][] directions= {{1,0},{0,1},{-1,0},{0,-1}};
+        for (int[]dir : directions) {
+            int x = dir[0];
+            int y = dir[1];
+
+            for (int i = 0; i < getMap().length; i++) {
+                for (int j = 0; j < getMap()[i].length; j++) {
+                    if (!getMap()[i][j].isEmpty() && i + x >= 0 && i + x < MAP_WIDTH && j + y >= 0
+                            && j + y < MAP_HEIGHT) {
+                        if (getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private static boolean withinRange(int x, int y, int i, int j, int mapWidth, int mapHeight) {

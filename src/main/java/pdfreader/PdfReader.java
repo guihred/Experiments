@@ -1,6 +1,5 @@
 package pdfreader;
 
-import contest.db.HasImage;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;

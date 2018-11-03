@@ -101,4 +101,9 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 		node.setTranslateZ(value);
 		return (Z) this;
 	}
+
+    public Z visible(boolean value) {
+        node.setVisible(value);
+        return (Z) this;
+    }
 }
