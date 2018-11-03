@@ -70,12 +70,13 @@ public class GraphModelLauncher extends Application implements HasLogging {
         vBox.getChildren().add(CommonsFX.newButton("Color", ev -> graph.getModel().coloring()));
 
 		DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
-		ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology,
-				new RandomTopology(50, graph), 
-				new TreeTopology(30, graph),
-                new CircleTopology(30, graph), 
-                new GabrielTopology(30, graph), 
-                new WordTopology(30, graph),
+		int netSize = 30;
+        ObservableList<BaseTopology> topologies = FXCollections.observableArrayList(delaunayTopology,
+				new RandomTopology(netSize, graph), 
+				new TreeTopology(netSize, graph),
+                new CircleTopology(netSize, graph), 
+                new GabrielTopology(netSize, graph), 
+                new WordTopology(netSize, graph),
                 new PackageTopology(graph),
                 new NetworkTopology(graph),
 				new ProjectTopology(graph))
@@ -187,15 +188,15 @@ public class GraphModelLauncher extends Application implements HasLogging {
 		ChoiceBox<String> c2 = new ChoiceBox<>(cells);
         Scene scene = new Scene(
                 new VBox(new Text("Source"), c1, new Text("Target"), c2, CommonsFX.newButton("OK", event -> {
-			if (c1.getValue() != null && c2.getValue() != null) {
-				List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
-				chain.forEach(e -> {
-					e.setSelected(true);
-					e.getTarget().setSelected(true);
-					e.getSource().setSelected(true);
-				});
-			}
-			dialog.close();
+                    if (c1.getValue() != null && c2.getValue() != null) {
+                        List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
+                        chain.forEach(e -> {
+                            e.setSelected(true);
+                            e.getTarget().setSelected(true);
+                            e.getSource().setSelected(true);
+                        });
+                    }
+                    dialog.close();
 		})));
 		dialog.setScene(scene);
 		dialog.show();

@@ -4,16 +4,8 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
-import graphs.entities.Cell;
-import graphs.entities.Edge;
-import graphs.entities.Graph;
-import graphs.entities.GraphModel;
-import graphs.entities.GraphModelAlgorithms;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import graphs.entities.*;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.scene.paint.Color;

@@ -5,14 +5,8 @@
  */
 package gaming.ex11;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.Timeline;
@@ -34,6 +28,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
+import utils.CommonsFX;
 
 /**
  *
@@ -45,49 +40,72 @@ public class DotsModel {
 
     private Color[] colors = { Color.RED, Color.BLUE };
 	private int currentPlayer = 1;
-	private Group gridPane;
+    private Group gridPane = new Group();
 	private String[] jogadores = { "EU", "TU" };
 	private final Line line = new Line(0, 0, 0, 0);
 	private DotsSquare[][] maze = new DotsSquare[MAZE_SIZE][MAZE_SIZE];
-
-
-
 	private final ObservableMap<String, ObservableSet<Set<DotsSquare>>> points = FXCollections.observableHashMap();
-
 	private Random random = new Random();
 	private DotsSquare selected;
 
-	@SuppressWarnings("unchecked")
-	public DotsModel(Group gridPane, BorderPane borderPane) {
-        this.gridPane = gridPane;
-        points.put("EU", FXCollections.observableSet());
-        points.put("TU", FXCollections.observableSet());
-		initializeMaze(gridPane);
-		gridPane.setOnMousePressed(this::handleMousePressed);
-		gridPane.setOnMouseDragged(this::handleMouseDragged);
-		gridPane.setOnMouseReleased(this::handleMouseReleased);
-        final Text text = new Text("EU:");
-        final Text text2 = new Text("0");
-		text2.textProperty()
-				.bind(Bindings.createStringBinding(() -> Integer.toString(points.get("EU").size()), points.get("EU")));
-        gridPane.getChildren().addAll(text, text2);
-        final Text tuText = new Text("TU:");
-        final Text tuPoints = new Text("0");
-		tuPoints.textProperty()
-				.bind(Bindings.createStringBinding(() -> Integer.toString(points.get("TU").size()), points.get("TU")));
-        borderPane.setTop(new HBox(text, text2, tuText, tuPoints));
+    public DotsModel(BorderPane borderPane) {
+        borderPane.setCenter(gridPane);
+        initialize(borderPane);
     }
-	public Line getLine() {
+
+    public Line getLine() {
 		return line;
 	}
-
 	private void addPolygonOnFinished(final Polygon polygon, final EventHandler<ActionEvent> onFinished,
 			ActionEvent f) {
 		if (onFinished != null) {
 			onFinished.handle(f);
 		}
 		gridPane.getChildren().add(polygon);
+        verifyEnd();
+
 	}
+
+    private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities() {
+        List<Map.Entry<DotsSquare, DotsSquare>> melhor = new ArrayList<>();
+        for (int i = 0; i < MAZE_SIZE; i++) {
+            for (int j = 0; j < MAZE_SIZE; j++) {
+                final List<DotsSquare> checkMelhor = maze[i][j].checkMelhor();
+                final DotsSquare maze1 = maze[i][j];
+                final List<Map.Entry<DotsSquare, DotsSquare>> collect = checkMelhor.stream().map(e -> new AbstractMap.SimpleEntry<>(maze1, e)).collect(Collectors.toList());
+                melhor.addAll(collect);
+            }
+        }
+        return melhor;
+    }
+
+	private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities2() {
+		final List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getPossibilities();
+
+		return possibilities.stream().filter((Map.Entry<DotsSquare, DotsSquare> entry) -> {
+            final boolean checkMelhor = entry.getKey().checkMelhor(entry.getValue());
+            if (!checkMelhor) {
+                return false;
+            }
+
+            final boolean checkMelhor1 = entry.getValue().checkMelhor(entry.getKey());
+            if (!checkMelhor1) {
+                return false;
+            }
+            entry.getKey().addAdj(entry.getValue());
+            final boolean criou = Stream.of(maze).flatMap(Stream::of).flatMap(DotsSquare::almostSquare).count() > 0;
+            entry.getKey().removeAdj(entry.getValue());
+			return !criou;
+        }).collect(Collectors.toList());
+    }
+    private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities3() {
+		final List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getPossibilities();
+		final Map<Integer, List<Map.Entry<DotsSquare, DotsSquare>>> collect = possibilities.stream()
+				.collect(Collectors.groupingBy(e -> getCountMap(e.getKey(), e.getValue())));
+		final int bestPossibility = collect.keySet().stream().mapToInt(i -> i).min().orElse(0);
+		return collect.getOrDefault(bestPossibility, Collections.emptyList());
+    }
+
     private int getCountMap(DotsSquare a, DotsSquare b) {
         a.addAdj(b);
         int sum = 0;
@@ -123,48 +141,7 @@ public class DotsModel {
         return sum;
     }
 
-    private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities() {
-        List<Map.Entry<DotsSquare, DotsSquare>> melhor = new ArrayList<>();
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
-                final List<DotsSquare> checkMelhor = maze[i][j].checkMelhor();
-                final DotsSquare maze1 = maze[i][j];
-                final List<Map.Entry<DotsSquare, DotsSquare>> collect = checkMelhor.stream().map(e -> new AbstractMap.SimpleEntry<>(maze1, e)).collect(Collectors.toList());
-                melhor.addAll(collect);
-            }
-        }
-        return melhor;
-    }
-
-    private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities2() {
-		final List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getPossibilities();
-
-		return possibilities.stream().filter((Map.Entry<DotsSquare, DotsSquare> entry) -> {
-            final boolean checkMelhor = entry.getKey().checkMelhor(entry.getValue());
-            if (!checkMelhor) {
-                return false;
-            }
-
-            final boolean checkMelhor1 = entry.getValue().checkMelhor(entry.getKey());
-            if (!checkMelhor1) {
-                return false;
-            }
-            entry.getKey().addAdj(entry.getValue());
-            final boolean criou = Stream.of(maze).flatMap(Stream::of).flatMap(DotsSquare::almostSquare).count() > 0;
-            entry.getKey().removeAdj(entry.getValue());
-			return !criou;
-        }).collect(Collectors.toList());
-    }
-
-	private List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities3() {
-		final List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getPossibilities();
-		final Map<Integer, List<Map.Entry<DotsSquare, DotsSquare>>> collect = possibilities.stream()
-				.collect(Collectors.groupingBy(e -> getCountMap(e.getKey(), e.getValue())));
-		final int bestPossibility = collect.keySet().stream().mapToInt(i -> i).min().orElse(0);
-		return collect.getOrDefault(bestPossibility, Collections.emptyList());
-    }
-
-	private List<Map.Entry<DotsSquare, DotsSquare>> getPossibilities() {
+    private List<Map.Entry<DotsSquare, DotsSquare>> getPossibilities() {
 		List<Map.Entry<DotsSquare, DotsSquare>> possibilities = new ArrayList<>();
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
@@ -196,14 +173,14 @@ public class DotsModel {
         return sum;
     }
 
-    private void handleMouseDragged(MouseEvent e) {
+	private void handleMouseDragged(MouseEvent e) {
         if (e.getTarget() instanceof DotsSquare) {
 			line.setEndX(e.getX());
 			line.setEndY(e.getY());
 		}
 	}
 
-    private void handleMousePressed(MouseEvent e) {
+	private void handleMousePressed(MouseEvent e) {
         if (e.getTarget() instanceof DotsSquare) {
             DotsSquare a = (DotsSquare) e.getTarget();
 			line.setStartY(a.getLayoutY() + a.getHeight() / 2);
@@ -310,8 +287,30 @@ public class DotsModel {
 		line.setStartX(0);
 		line.setEndY(0);
 		line.setStartY(0);
-		selected = null;
+        selected = null;
+        verifyEnd();
 	}
+
+    @SuppressWarnings("unchecked")
+    private void initialize(BorderPane borderPane) {
+        points.put("EU", FXCollections.observableSet());
+        points.put("TU", FXCollections.observableSet());
+        gridPane.getChildren().add(getLine());
+		initializeMaze(gridPane);
+		gridPane.setOnMousePressed(this::handleMousePressed);
+		gridPane.setOnMouseDragged(this::handleMouseDragged);
+		gridPane.setOnMouseReleased(this::handleMouseReleased);
+        final Text text = new Text("EU:");
+        final Text text2 = new Text("0");
+		text2.textProperty()
+				.bind(Bindings.createStringBinding(() -> Integer.toString(points.get("EU").size()), points.get("EU")));
+        gridPane.getChildren().addAll(text, text2);
+        final Text tuText = new Text("TU:");
+        final Text tuPoints = new Text("0");
+		tuPoints.textProperty()
+				.bind(Bindings.createStringBinding(() -> Integer.toString(points.get("TU").size()), points.get("TU")));
+        borderPane.setTop(new HBox(text, text2, tuText, tuPoints));
+    }
 
     private void initializeMaze(Group gridPane1) {
 		for (int i = 0; i < MAZE_SIZE; i++) {
@@ -322,13 +321,32 @@ public class DotsModel {
         }
 	}
 
-	private boolean isPointNeighborToCurrent(DotsSquare over) {
+    private boolean isPointNeighborToCurrent(DotsSquare over) {
         return Math.abs(over.getI() - selected.getI()) + Math.abs(over.getJ() - selected.getJ()) == 1
 				&& !over.contains(selected);
     }
 
-	private boolean squareOverNotSuitable(DotsSquare over) {
+    private boolean squareOverNotSuitable(DotsSquare over) {
         return selected == null || over == null || selected == over;
+    }
+
+	private void verifyEnd() {
+        int size = MAZE_SIZE - 1;
+        if (gridPane.getChildren().stream().filter(e -> e instanceof Polygon).count() == size * size) {
+
+            int size2 = points.get("EU").size();
+            int size3 = points.get("TU").size();
+
+            CommonsFX.displayDialog(size3 > size2 ? "You Won" : "You Lose", "Reset", () -> {
+                gridPane.getChildren().clear();
+                initialize((BorderPane) gridPane.getParent());
+            });
+
+        }
+    }
+
+	public static DotsModel createModel(final BorderPane borderPane) {
+        return new DotsModel(borderPane);
     }
 
     private static boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {

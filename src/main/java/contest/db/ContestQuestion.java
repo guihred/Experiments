@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.*;
+import pdfreader.HasImage;
 
 @Entity
 @Table

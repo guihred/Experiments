@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import utils.CommonsFX;
 
 /**
  *
@@ -28,58 +29,22 @@ public class SolitaireModel {
 	private DragContext dragContext = new DragContext();
 	private Pane gridPane;
 	private CardStack[] simpleStacks = new CardStack[7];
+
 	public SolitaireModel(Pane gridPane, Scene scene) {
-		this.gridPane = gridPane;
-		List<SolitaireCard> allCards = getAllCards();
-		CardStack dropCardStack = new CardStack();
-		dropCardStack.layoutXProperty().bind(scene.widthProperty().divide(7).multiply(1));
-		dropCardStack.setLayoutY(0);
-		makeDraggable(dropCardStack);
-		CardStack cardStack = new CardStack();
-		cardStack.setLayoutX(0);
-		cardStack.setLayoutY(0);
-		cardStack.addCards(allCards);
-		cardStack.setOnMouseClicked(e -> {
-			if (!cardStack.getCards().isEmpty()) {
-				SolitaireCard lastCards = cardStack.removeLastCards();
-				lastCards.setShown(true);
-				dropCardStack.addCards(lastCards);
-			} else {
-				List<SolitaireCard> removeAllCards = dropCardStack.removeAllCards();
-				Collections.reverse(removeAllCards);
-				removeAllCards.forEach(c -> c.setShown(false));
-				cardStack.addCards(removeAllCards);
-			}
-		});
+        this.gridPane = gridPane;
+        initialize(scene);
+    }
 
-		gridPane.getChildren().add(cardStack);
-		gridPane.getChildren().add(dropCardStack);
-		for (int i = 0; i < 4; i++) {
-			ascendingStacks[i] = new CardStack();
-			ascendingStacks[i].layoutXProperty().bind(scene.widthProperty().divide(7).multiply(3 + i));
-			makeDraggable(ascendingStacks[i]);
-			gridPane.getChildren().add(ascendingStacks[i]);
-		}
-		for (int i = 0; i < 7; i++) {
-			simpleStacks[i] = new CardStack();
-			simpleStacks[i].layoutXProperty().bind(scene.widthProperty().divide(7).multiply(i));
-            simpleStacks[i].setLayoutY(100);
-			List<SolitaireCard> removeLastCards = cardStack.removeLastCards(i + 1);
-			removeLastCards.forEach(c -> c.setShown(false));
-			removeLastCards.get(i).setShown(true);
-			simpleStacks[i].addCardsVertically(removeLastCards);
-
-			makeDraggable(simpleStacks[i]);
-			gridPane.getChildren().add(simpleStacks[i]);
-		}
-	}
-
-	public void makeDraggable(final Node node) {
+    public void makeDraggable(final Node node) {
 		node.setOnMousePressed(this::handleMousePressed);
 		node.setOnMouseDragged(this::handleMouseDragged);
 		node.setOnMouseReleased(this::handleMouseReleased);
 	}
 
+    public void reset() {
+        gridPane.getChildren().clear();
+        initialize(gridPane.getScene());
+    }
 	private List<SolitaireCard> getAllCards() {
 		SolitaireNumber[] solitaireNumbers = SolitaireNumber.values();
 		SolitaireSuit[] solitaireSuits = SolitaireSuit.values();
@@ -158,7 +123,7 @@ public class SolitaireModel {
 		}
 	}
 
-    private void handleMouseReleased(MouseEvent event) {
+	private void handleMouseReleased(MouseEvent event) {
 		if (isNullOrEmpty(dragContext.cards)) {
 			return;
 		}
@@ -187,6 +152,9 @@ public class SolitaireModel {
 					dragContext.stack.getLastCards().setShown(true);
 				}
 				dragContext.cards = null;
+				if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
+                    CommonsFX.displayDialog("You Win", "Reset",this::reset );
+                }
 				return;
 			}
 		}
@@ -207,7 +175,57 @@ public class SolitaireModel {
 			return;
 		}
 		dragContext.stack.addCards(dragContext.cards);
+        if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
+            CommonsFX.displayDialog("You Win", "Reset", this::reset);
+            return;
+        }
 	}
+
+    private void initialize(Scene scene) {
+
+		List<SolitaireCard> allCards = getAllCards();
+		CardStack dropCardStack = new CardStack();
+		dropCardStack.layoutXProperty().bind(scene.widthProperty().divide(7).multiply(1));
+		dropCardStack.setLayoutY(0);
+		makeDraggable(dropCardStack);
+        CardStack mainCardStack = new CardStack();
+        mainCardStack.setLayoutX(0);
+        mainCardStack.setLayoutY(0);
+        mainCardStack.addCards(allCards);
+        mainCardStack.setOnMouseClicked(e -> {
+            if (!mainCardStack.getCards().isEmpty()) {
+                SolitaireCard lastCards = mainCardStack.removeLastCards();
+				lastCards.setShown(true);
+				dropCardStack.addCards(lastCards);
+			} else {
+				List<SolitaireCard> removeAllCards = dropCardStack.removeAllCards();
+				Collections.reverse(removeAllCards);
+				removeAllCards.forEach(c -> c.setShown(false));
+                mainCardStack.addCards(removeAllCards);
+			}
+		});
+
+        gridPane.getChildren().add(mainCardStack);
+		gridPane.getChildren().add(dropCardStack);
+		for (int i = 0; i < 4; i++) {
+			ascendingStacks[i] = new CardStack();
+			ascendingStacks[i].layoutXProperty().bind(scene.widthProperty().divide(7).multiply(3 + i));
+			makeDraggable(ascendingStacks[i]);
+			gridPane.getChildren().add(ascendingStacks[i]);
+		}
+		for (int i = 0; i < 7; i++) {
+			simpleStacks[i] = new CardStack();
+			simpleStacks[i].layoutXProperty().bind(scene.widthProperty().divide(7).multiply(i));
+            simpleStacks[i].setLayoutY(100);
+            List<SolitaireCard> removeLastCards = mainCardStack.removeLastCards(i + 1);
+			removeLastCards.forEach(c -> c.setShown(false));
+			removeLastCards.get(i).setShown(true);
+			simpleStacks[i].addCardsVertically(removeLastCards);
+
+			makeDraggable(simpleStacks[i]);
+			gridPane.getChildren().add(simpleStacks[i]);
+		}
+    }
 
 	private boolean isDoubleClicked(MouseEvent event) {
 		return event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2;

@@ -69,12 +69,12 @@ public class Maze3DLauncher extends Application {
 		double changeX = 0;
 		double changeZ = 0;
 		if (keycode == KeyCode.W) {
-		    changeX = 5 * Math.sin(rotate.getAngle() * Math.PI / 180);
-		    changeZ = 5 * Math.cos(rotate.getAngle() * Math.PI / 180);
+            changeX = 5 * Math.sin(Math.toRadians(rotate.getAngle()));
+            changeZ = 5 * Math.cos(Math.toRadians(rotate.getAngle()));
 		}
 		if (keycode == KeyCode.S) {
-			changeX = -5 * Math.sin(rotate.getAngle() * Math.PI / 180);
-			changeZ = -5 * Math.cos(rotate.getAngle() * Math.PI / 180);
+            changeX = -5 * Math.sin(Math.toRadians(rotate.getAngle()));
+            changeZ = -5 * Math.cos(Math.toRadians(rotate.getAngle()));
 		}
 		if (keycode == KeyCode.UP) {
 			translate.setY(translate.getY() + 5);

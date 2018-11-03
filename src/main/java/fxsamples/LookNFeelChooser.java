@@ -7,16 +7,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import simplebuilder.SimpleMenuBarBuilder;
 import utils.ResourceFXUtils;
 
 public class LookNFeelChooser extends Application {
@@ -34,33 +30,22 @@ public class LookNFeelChooser extends Application {
 		Scene scene = new Scene(root, 650, 550, Color.WHITE);
 		root.setCenter(content);
 		// Menu bar
-		MenuBar menuBar = new MenuBar();
-		// File menu
-		Menu fileMenu = new Menu("_File");
-		MenuItem exitItem = new MenuItem("Exit");
-		exitItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.SHORTCUT_DOWN));
-		exitItem.setOnAction(ae -> Platform.exit());
-		fileMenu.getItems().add(exitItem);
-		menuBar.getMenus().add(fileMenu);
+        MenuBar menuBar = new SimpleMenuBarBuilder()
+                .addMenu("_File")
+                .addMenuItem("Exit", "Ctrl+F4", ae -> Platform.exit())
+                .addMenu("_Look 'N' Feel")
+                .addMenuItem("Caspian", ae -> {
+                            scene.getStylesheets().clear();
+                            setUserAgentStylesheet(STYLESHEET_CASPIAN);
+                        })
+                .addMenuItem("Modena", ae -> {
+                            scene.getStylesheets().clear();
+                            setUserAgentStylesheet(STYLESHEET_MODENA);
+                        })
+                .build();
+
 		// Look and feel menu
-		Menu lookNFeelMenu = new Menu("_Look 'N' Feel");
-		lookNFeelMenu.setMnemonicParsing(true);
-		menuBar.getMenus().add(lookNFeelMenu);
-		root.setTop(menuBar);
-		// Look and feel selection
-		MenuItem caspianMenuItem = new MenuItem("Caspian");
-		caspianMenuItem.setOnAction(ae -> {
-			scene.getStylesheets().clear();
-			setUserAgentStylesheet(null);
-			setUserAgentStylesheet(STYLESHEET_CASPIAN);
-		});
-		MenuItem modenaMenuItem = new MenuItem("Modena");
-		modenaMenuItem.setOnAction(ae -> {
-			scene.getStylesheets().clear();
-			setUserAgentStylesheet(null);
-			setUserAgentStylesheet(STYLESHEET_MODENA);
-		});
-		lookNFeelMenu.getItems().addAll(caspianMenuItem, modenaMenuItem);
+        root.setTop(menuBar);
 		primaryStage.setTitle("Look N Feel Chooser");
 		primaryStage.setScene(scene);
 		primaryStage.show();

@@ -1,10 +1,6 @@
 package gaming.ex15;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
@@ -29,13 +25,13 @@ public class RubiksPiece extends Group {
 		// back face
 		Box rec1 = new Box(size, size, 1);
 		rec1.setMaterial(new PhongMaterial(Color.GREEN));
-		rec1.setTranslateX(-0.5 * size);
-		rec1.setTranslateY(-0.5 * size);
-		rec1.setTranslateZ(0.5 * size);
+        rec1.setTranslateX(-size / 2);
+        rec1.setTranslateY(-size / 2);
+        rec1.setTranslateZ(size / 2);
 		// bottom face
 		Box rec2 = new Box(size, size, 1);
 		rec2.setMaterial(new PhongMaterial(Color.ORANGERED));
-		rec2.setTranslateX(-0.5 * size);
+        rec2.setTranslateX(-size / 2);
 		rec2.setTranslateY(0);
 		rec2.setRotationAxis(Rotate.X_AXIS);
 		rec2.setRotate(90);
@@ -43,29 +39,29 @@ public class RubiksPiece extends Group {
 		Box rec3 = new Box(size, size, 1);
 		rec3.setMaterial(new PhongMaterial(Color.WHITE));
 		rec3.setTranslateX(-1 * size);
-		rec3.setTranslateY(-0.5 * size);
+        rec3.setTranslateY(-size / 2);
 		rec3.setRotationAxis(Rotate.Y_AXIS);
 		rec3.setRotate(90);
 		// left face
 		Box rec4 = new Box(size, size, 1);
 		rec4.setMaterial(new PhongMaterial(Color.BLUE));
 		rec4.setTranslateX(0);
-		rec4.setTranslateY(-0.5 * size);
+        rec4.setTranslateY(-size / 2);
 		rec4.setRotationAxis(Rotate.Y_AXIS);
 		rec4.setRotate(90);
 		// top face
 		Box rec5 = new Box(size, size, 1);
 		rec5.setMaterial(new PhongMaterial(Color.YELLOW));
-		rec5.setTranslateX(-0.5 * size);
+        rec5.setTranslateX(-size / 2);
 		rec5.setTranslateY(-1 * size);
 		rec5.setRotationAxis(Rotate.X_AXIS);
 		rec5.setRotate(90);
 		// front face
 		Box rec6 = new Box(size, size, 1);
 		rec6.setMaterial(new PhongMaterial(Color.RED));
-		rec6.setTranslateX(-0.5 * size);
-		rec6.setTranslateY(-0.5 * size);
-		rec6.setTranslateZ(-0.5 * size);
+        rec6.setTranslateX(-size / 2);
+        rec6.setTranslateY(-size / 2);
+        rec6.setTranslateZ(-size / 2);
 
 		getChildren().addAll(rec1, rec2, rec3, rec4, rec5, rec6);
 		if (RubiksCubeLauncher.DEBUG) {
@@ -108,8 +104,8 @@ public class RubiksPiece extends Group {
 			RubiksCubeFaces[] values = RubiksCubeFaces.values();
 			for (RubiksCubeFaces face : values) {
 				Rotate rotate = new Rotate(0, face.getAxis());
-				rotate.setPivotX(pivot.getTranslateX() - getTranslateX() - RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2);
-				rotate.setPivotY(pivot.getTranslateY() - getTranslateY() - RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2);
+                rotate.setPivotX(pivot.getTranslateX() - getTranslateX() - RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2.0);
+                rotate.setPivotY(pivot.getTranslateY() - getTranslateY() - RubiksCubeLauncher.RUBIKS_CUBE_SIZE / 2.0);
 				rotate.setPivotZ(pivot.getTranslateZ() - getTranslateZ());
 				getTransforms().add(rotate);
                 rotations.put(face.getAxis(), rotate);

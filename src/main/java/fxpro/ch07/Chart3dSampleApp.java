@@ -67,10 +67,10 @@ public class Chart3dSampleApp extends Application {
         final Box xAxis = new Box(DEPTH, 1, DEPTH);
         final Box yAxis = new Box(1, DEPTH, DEPTH);
         final Box zAxis = new Box(DEPTH, DEPTH, 1);
-        yAxis.setTranslateY(-150);
-        yAxis.setTranslateX(150);
-        zAxis.setTranslateY(-150);
-        zAxis.setTranslateZ(150);
+        yAxis.setTranslateY(-DEPTH / 2.0);
+        yAxis.setTranslateX(DEPTH / 2.0);
+        zAxis.setTranslateY(-DEPTH / 2.0);
+        zAxis.setTranslateZ(DEPTH / 2.0);
         xAxis.setMaterial(redMaterial);
         yAxis.setMaterial(greenMaterial);
         zAxis.setMaterial(blueMaterial);

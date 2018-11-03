@@ -14,7 +14,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
-import pdfreader.PrintImageLocations.PDFImage;
 import utils.HasLogging;
 
 public final class PdfUtils {
@@ -29,8 +28,8 @@ public final class PdfUtils {
         PdfUtils.extractImages(file, 0, 0);
     }
 
-    public static Map<Integer, List<PDFImage>> extractImages(File file, int start, int nPages) {
-        Map<Integer, List<PDFImage>> images = new ConcurrentHashMap<>();
+    public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages) {
+        Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
         new Thread(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                     COSDocument cosDoc = parseAndGet(source);
@@ -40,7 +39,7 @@ public final class PdfUtils {
                 for (int i = start; i < nPag; i++) {
                     PrintImageLocations printImageLocations = new PrintImageLocations();
                     PDPage page = pdDoc.getPage(i);
-                    List<PDFImage> pageImages = getPageImages(printImageLocations, i, page);
+                    List<PdfImage> pageImages = getPageImages(printImageLocations, i, page);
                     images.put(i, pageImages);
                 }
             } catch (Exception e) {
@@ -88,9 +87,9 @@ public final class PdfUtils {
         return pdfInfo;
     }
 
-    private static List<PDFImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
+    private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
         try {
-            List<PDFImage> images1 = printImageLocations.processPage(page, i);
+            List<PdfImage> images1 = printImageLocations.processPage(page, i);
             LOG.info("images extracted {}", images1);
             return images1;
         } catch (Exception e) {

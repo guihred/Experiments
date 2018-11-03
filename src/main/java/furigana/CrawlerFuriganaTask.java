@@ -208,23 +208,23 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private StringBuilder placeFurigana(String line) {
         String[] split = line.split("");
-        String currentWord = "";
+        StringBuilder currentWord = new StringBuilder();
         StringBuilder currentLine = new StringBuilder();
         UnicodeBlock currentBlock = null;
         for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
             char currentLetter = split[i].charAt(0);
             UnicodeBlock of = UnicodeBlock.of(currentLetter);
             if (KANJI_BLOCK.contains(of)) {
-                currentWord += currentLetter;
+                currentWord.append(currentLetter);
             }
-            if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && !currentWord.isEmpty()) {
-                String reading = getReading(currentWord, currentLetter);
-                if (currentWord.equals(reading)) {
+            if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() == 0) {
+                String reading = getReading(currentWord.toString(), currentLetter);
+                if (reading.equals(currentWord.toString())) {
                     currentLine.append(currentWord);
                 } else {
                     currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
                 }
-                currentWord = "";
+                currentWord.delete(0, currentWord.length());
             }
             if (!KANJI_BLOCK.contains(of)) {
                 currentLine.append(currentLetter);

@@ -35,19 +35,8 @@ public final class MouseInScreenHandler implements EventHandler<MouseEvent> {
 		}
 
 		double mouseDeltaX = mousePosX - mouseOldX;
-		camera.setRotate(camera.getRotate() + mouseDeltaX * .5);
+        camera.setRotate(camera.getRotate() + mouseDeltaX / 2);
 	}
-
-    private void moveMouseRight(MouseEvent me, double width) {
-        try {
-            Robot robot = new Robot();
-            robot.mouseMove((int) width, (int) me.getY());
-            mouseOldX = width;
-            mousePosX = width;
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
-    }
 
     private void moveMouseLeft(MouseEvent me) {
         try {
@@ -55,6 +44,17 @@ public final class MouseInScreenHandler implements EventHandler<MouseEvent> {
         	robot.mouseMove(1, (int) me.getY());
             mousePosX = 0;
         	mouseOldX = 0;
+        } catch (Exception e) {
+            LOG.error("", e);
+        }
+    }
+
+    private void moveMouseRight(MouseEvent me, double width) {
+        try {
+            Robot robot = new Robot();
+            robot.mouseMove((int) width, (int) me.getY());
+            mouseOldX = width;
+            mousePosX = width;
         } catch (Exception e) {
             LOG.error("", e);
         }

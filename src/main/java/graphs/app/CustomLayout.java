@@ -1,10 +1,6 @@
 package graphs.app;
 
-import graphs.entities.Cell;
-import graphs.entities.Edge;
-import graphs.entities.Graph;
-import graphs.entities.GraphModel;
-import graphs.entities.GraphModelAlgorithms;
+import graphs.entities.*;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -41,8 +37,8 @@ public class CustomLayout implements Layout {
 					int i = 0;
 					do {
 						int nextInt = rnd.nextInt(300) - 180;
-						double x = bound * Math.cos(Math.toRadians(nextInt));
-						double y = bound * Math.sin(Math.toRadians(nextInt));
+                        double x = bound * (0.5 + Math.random()) * Math.cos(Math.toRadians(nextInt));
+                        double y = bound * (0.5 + Math.random()) * Math.sin(Math.toRadians(nextInt));
 						cell2.relocate(x + cell.getLayoutX(), y + cell.getLayoutY());
 						cellSet.remove(cell2);
 					} while (i++ < 20 && GraphModelAlgorithms.anyIntersection(cells, cell2));

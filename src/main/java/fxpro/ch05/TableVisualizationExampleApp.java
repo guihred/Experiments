@@ -1,14 +1,13 @@
 package fxpro.ch05;
 
-import java.util.Arrays;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -19,9 +18,8 @@ import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
-import simplebuilder.SimpleRectangleBuilder;
-import simplebuilder.SimpleTabPaneBuilder;
-import simplebuilder.SimpleTableViewBuilder;
+import simplebuilder.*;
+import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
 
@@ -53,8 +51,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
 	private Node createAccordionTitledDemoNode() {
 		TitledPane firstPane = new TitledPane("TitledPane A", new TextArea("TitledPane A content"));
-		final TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
-		final TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
+        TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
+        TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
 		Accordion accordion = new Accordion();
 		accordion.getPanes().addAll(firstPane, secondPane, thirdPane);
 		accordion.setExpandedPane(firstPane);
@@ -65,8 +63,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
 		Popup alertPopup = new Popup();
 
-		Button okButton = new Button("OK");
-		okButton.setOnAction(e -> alertPopup.hide());
+        Button okButton = CommonsFX.newButton("OK", e -> alertPopup.hide());
 		final Label htmlLabel = new Label(text);
 		htmlLabel.setWrapText(true);
 		htmlLabel.setMaxWidth(280);
@@ -86,8 +83,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		final HTMLEditor htmlEditor = new HTMLEditor();
 		htmlEditor.setHtmlText("<p>Replace this text</p>");
 
-		Button viewHtmlButton = new Button("View HTML");
-        viewHtmlButton.setOnAction(e -> {
+        Button viewHtmlButton = CommonsFX.newButton("View HTML", e -> {
 			Popup alertPopup1 = createAlertPopup(htmlEditor.getHtmlText());
 			alertPopup1.show(stage, (stage.getWidth() - alertPopup1.getWidth()) / 2 + stage.getX(),
 					(stage.getHeight() - alertPopup1.getHeight()) / 2 + stage.getY());
@@ -101,19 +97,17 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
     private MenuBar createMenus() {
 
-        final MenuItem newMenuItem = new MenuItem("New...",
-                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
-		newMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-        newMenuItem.setOnAction(e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()));
-
-        final Menu fileMenu = new Menu("File");
-		fileMenu.getItems().addAll(newMenuItem, new MenuItem("Save"));
-		MenuBar menuBar = new MenuBar();
-
-		Menu editMenu = new Menu("Edit");
-		editMenu.getItems().addAll(new MenuItem("Cut"), new MenuItem("Copy"), new MenuItem("Paste"));
-		menuBar.getMenus().addAll(fileMenu, editMenu);
-		return menuBar;
+        return new SimpleMenuBarBuilder()
+                .addMenu("File")
+                .addMenuItem("New...",new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png")
+                        ,"Ctrl+N"
+                        , e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()))
+                .addMenuItem("Save")
+                .addMenu("Edit")
+                .addMenuItem("Cut")
+                .addMenuItem("Copy")
+                .addMenuItem("Paste")
+                .build();
 	}
 
     private Node createScrollMiscDemoNode() {
@@ -171,24 +165,27 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
         menItemA.setOnAction(e -> getLogger().info("{} occurred on Menu Item A ", e.getEventType()));
 		final MenuButton menuButton = new MenuButton("MenuButton");
 		menuButton.getItems().addAll(menItemA, new MenuItem(MENU_ITEM_B));
-		final ToggleGroup radioToggleGroup = new ToggleGroup();
-		final RadioButton radioButton1 = new RadioButton("RadioButton1");
-		radioButton1.setToggleGroup(radioToggleGroup);
-		final RadioButton radioButton2 = new RadioButton("RadioButton2");
-		radioButton2.setToggleGroup(radioToggleGroup);
-		radioToggleGroup.selectToggle(radioToggleGroup.getToggles().get(0));
-		radioToggleGroup.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
-			RadioButton rb = (RadioButton) radioToggleGroup.getSelectedToggle();
-			if (rb != null) {
-                getLogger().info("{} selected", rb.getText());
-			}
-		});
+        final ToggleGroup radioToggleGroup = new SimpleToggleGroupBuilder()
+                .addRadioToggle("RadioButton1")
+                .addRadioToggle("RadioButton2")
+                .select(0)
+                .onChange((ov, oldValue, newValue) -> {
+                    Labeled rb = (Labeled) newValue;
+                    if (rb != null) {
+                        getLogger().info("{} selected", rb.getText());
+                    }
+                }).build();
 		final MenuItem menuItem = new MenuItem(MENU_ITEM_A);
         menuItem.setOnAction(e -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
 		final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem(MENU_ITEM_B));
 		splitMenu.setText("SplitMenuButton");
         splitMenu.setOnAction(e -> getLogger().info("{} occurred on SplitMenuButton", e.getEventType()));
-		VBox variousControls = new VBox(20, button, checkBox, new HBox(10, radioButton1, radioButton2), hyperlink,choiceBox, menuButton, splitMenu, textField, passwordField,new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
+        Node[] array = radioToggleGroup.getToggles().stream().map(Node.class::cast).toArray(Node[]::new);
+        HBox hBox = new HBox(10, array);
+        VBox variousControls = new VBox(20, button, checkBox,
+                hBox, hyperlink,
+                choiceBox, menuButton, splitMenu, textField, passwordField,
+                new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
 		variousControls.setPadding(new Insets(10, 10, 10, 10));
 		final MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
         menuItemA.setOnAction(e -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
@@ -205,38 +202,23 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 	}
 
     private Node createSplitTreeListDemoNode() {
-		final TreeItem<String> animalItem = new TreeItem<>("Animal");
-		animalItem.getChildren()
-				.addAll(Arrays.asList(new TreeItem<>("Lion"), new TreeItem<>("Tiger"), new TreeItem<>("Bear")));
-		final TreeItem<String> mineralItem = new TreeItem<>("Mineral");
-		mineralItem.getChildren()
-				.addAll(Arrays.asList(new TreeItem<>("Copper"), new TreeItem<>("Diamond"), new TreeItem<>("Quartz")));
-		final TreeItem<String> vegetableItem = new TreeItem<>("Vegetable");
-		vegetableItem.getChildren().addAll(
-				Arrays.asList(new TreeItem<>("Arugula"), new TreeItem<>("Broccoli"), new TreeItem<>("Cabbage")));
-
-		final TreeItem<String> rootItem = new TreeItem<>("Root");
-		rootItem.getChildren().addAll(Arrays.asList(animalItem, mineralItem, vegetableItem));
-
-		TreeView<String> treeView = new TreeView<>(rootItem);
-		treeView.setMinWidth(150);
-		treeView.setShowRoot(false);
-		treeView.setEditable(false);
-
-		ListView<String> listView = new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS);
-		SplitPane splitPane = new SplitPane();
-		splitPane.getItems().addAll(treeView, listView);
-		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			TreeItem<String> treeItem = newValue;
-			if (newValue != null && treeItem.isLeaf()) {
-				TableVisualizationModel.LIST_VIEW_ITEMS.clear();
-				for (int i = 1; i <= 10000; i++) {
-					TableVisualizationModel.LIST_VIEW_ITEMS.add(treeItem.getValue() + " " + i);
-				}
-			}
-		});
-		return splitPane;
+        return new SplitPane(new SimpleTreeViewBuilder<String>()
+		        .root("Root")
+		        .addItem("Animal","Lion","Tiger","Bear")
+		        .addItem("Vegetable","Arugula","Broccoli","Cabbage")
+		        .addItem("Mineral","Copper","Diamond","Quartz")
+                .minWidth(150)
+                .editable(false)
+                .showRoot(false)
+                .onSelect(newValue->{
+                    if (newValue != null && newValue.isLeaf()) {
+                        TableVisualizationModel.LIST_VIEW_ITEMS.clear();
+                        for (int i = 1; i <= 10000; i++) {
+                            TableVisualizationModel.LIST_VIEW_ITEMS.add(newValue.getValue() + " " + i);
+                        }
+                    }    
+                })
+		        .build(), new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS));
 	}
 
     private Node createTableDemoNode() {
@@ -267,61 +249,49 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .build();
 	}
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private ToolBar createToolBar() {
-		final Button newButton = new Button(null,
-                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"));
-		newButton.setId("newButton");
-		newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
-        newButton.setOnAction(e -> getLogger().info("New toolbar button clicked"));
+        final Button newButton = CommonsFX.newButton(
+                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "newButton",
+                e -> getLogger().info("New toolbar button clicked"));
+        newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
 
-		final Button editButton = new Button(null, new Circle(8, Color.GREEN));
-		editButton.setId("editButton");
+        final Button editButton = CommonsFX.newButton(new Circle(8, Color.GREEN), "editButton", null);
 
-		final Button deleteButton = new Button(null, new Circle(8, Color.BLUE));
-		deleteButton.setId("deleteButton");
+        final Button deleteButton = CommonsFX.newButton(new Circle(8, Color.BLUE), "deleteButton", null);
 
-		final ToggleButton boldButton = new ToggleButton(null, new Circle(8, Color.MAROON));
-		boldButton.setId("boldButton");
-        boldButton.setOnAction(e -> {
-			ToggleButton tb = (ToggleButton) e.getTarget();
-            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
-            logSelectedProperty(tb.selectedProperty().getValue());
-		});
-		final ToggleButton italicButton = new ToggleButton(null, new Circle(8, Color.YELLOW));
-		italicButton.setId("italicButton");
-        italicButton.setOnAction(e -> {
-			ToggleButton tb = (ToggleButton) e.getTarget();
-            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb.getId());
-            logSelectedProperty(tb.selectedProperty().getValue());
-		});
+        final ToggleButton boldButton = newToggleButton("boldButton", Color.MAROON);
+        final ToggleButton italicButton = newToggleButton("italicButton", Color.YELLOW);
 
-		final ToggleGroup alignToggleGroup = new ToggleGroup();
-		final ToggleButton leftAlignButton = new ToggleButton(null, new Circle(8, Color.PURPLE));
-		leftAlignButton.setId("leftAlignButton");
-		leftAlignButton.setToggleGroup(alignToggleGroup);
+        final ToggleGroup alignToggleGroup = new SimpleToggleGroupBuilder()
+                .addToggle(new Circle(8, Color.PURPLE), "leftAlignButton")
+                .addToggle(new Circle(8, Color.ORANGE), "centerAlignButton")
+                .addToggle(new Circle(8, Color.CYAN), "rightAlignButton")
+                .select(0)
+                .onChange((ov, oldValue, newValue) -> {
+                    Node tb = (Node) newValue;
+                    if (tb != null) {
+                        getLogger().info("{} selected", tb.getId());
+                    }
+                }).build();
 
-		final ToggleButton centerAlignButton = new ToggleButton(null, new Circle(8, Color.ORANGE));
-		centerAlignButton.setId("centerAlignButton");
-		centerAlignButton.setToggleGroup(alignToggleGroup);
+        ToolBar toolBar = new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton);
+        ObservableList<Node> toggles = (ObservableList) alignToggleGroup.getToggles();
+        toolBar.getItems().addAll(toggles);
 
-		final ToggleButton rightAlignButton = new ToggleButton(null, new Circle(8, Color.CYAN));
-		rightAlignButton.setId("rightAlignButton");
-		rightAlignButton.setToggleGroup(alignToggleGroup);
-		alignToggleGroup.selectToggle(alignToggleGroup.getToggles().get(0));
-		alignToggleGroup.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
-			ToggleButton tb = (ToggleButton) alignToggleGroup.getSelectedToggle();
-			if (tb != null) {
-                getLogger().info("{} selected", tb.getId());
-			}
-		});
-
-        return new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton, leftAlignButton,
-                centerAlignButton,
-				rightAlignButton);
+        return toolBar;
 	}
 
     private void logSelectedProperty(Boolean value) {
         getLogger().info(", and selectedProperty is: {}", value);
+    }
+
+    private ToggleButton newToggleButton(String id, Color yellow) {
+        return CommonsFX.newToggleButton(id, new Circle(8, yellow), e -> {
+            Toggle tb = (Toggle) e.getTarget();
+            getLogger().info("{} occurred on ToggleButton {}", e.getEventType(), tb);
+            logSelectedProperty(tb.selectedProperty().getValue());
+		});
     }
 
     public static void main(String[] args) {

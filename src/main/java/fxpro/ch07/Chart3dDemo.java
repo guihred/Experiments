@@ -74,7 +74,7 @@ public class Chart3dDemo extends Application {
                 int tr = (x + 1) * length + z; // top-right
                 int br = (x + 1) * length + z + 1; // bottom-right
 
-                int offset = (x * (length - 1) + z) * 8 / 2; // div 2 because we have u AND v in the list
+                int offset = (x * (length - 1) + z) * 4; // div 2 because we have u AND v in the list
 
                 // working
                 mesh.getFaces().addAll(bl, offset + 1, tl, offset + 0, tr, offset + 2);
@@ -92,8 +92,8 @@ public class Chart3dDemo extends Application {
 
         // mesh view
         MeshView meshView = new MeshView(mesh);
-        meshView.setTranslateX(-0.5 * size);
-        meshView.setTranslateZ(-0.5 * size);
+        meshView.setTranslateX(-size / 2.0);
+        meshView.setTranslateZ(-size / 2.0);
         meshView.setMaterial(material);
         meshView.setCullFace(CullFace.NONE);
         meshView.setDrawMode(DrawMode.FILL);
@@ -103,8 +103,8 @@ public class Chart3dDemo extends Application {
 
         // testing / debugging stuff: show diffuse map on chart
         ImageView iv = new ImageView(diffuseMap);
-        iv.setTranslateX(-0.5 * size);
-        iv.setTranslateY(-0.10 * size);
+        iv.setTranslateX(-size / 2.0);
+        iv.setTranslateY(-size / 10.0);
         iv.setRotate(90);
         iv.setRotationAxis(new Point3D(1, 0, 0));
         cube.getChildren().add(iv);
@@ -141,61 +141,33 @@ public class Chart3dDemo extends Application {
 
         // back face
         r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.5 * 1, 1.0));
-        r.setTranslateX(-0.5 * size1);
-        r.setTranslateY(-0.5 * size1);
-        r.setTranslateZ(0.5 * size1);
+        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.5, 1.0));
+        r.setTranslateX(-size1 / 2.0);
+        r.setTranslateY(-size1 / 2.0);
+        r.setTranslateZ(size1 / 2.0);
 
         cubeFaces.add(r);
 
         // bottom face
         r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.4 * 1, 1.0));
-        r.setTranslateX(-0.5 * size1);
+        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.4, 1.0));
+        r.setTranslateX(-size1 / 2.0);
         r.setTranslateY(0);
         r.setRotationAxis(Rotate.X_AXIS);
         r.setRotate(90);
 
         cubeFaces.add(r);
 
-        // right face
-        r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.3 * 1, 1.0));
-        r.setTranslateX(-1 * size1);
-        r.setTranslateY(-0.5 * size1);
-        r.setRotationAxis(Rotate.Y_AXIS);
-        r.setRotate(90);
-
-        // cubeFaces.add( r);
-
         // left face
         r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.2 * 1, 1.0));
+        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.2, 1.0));
         r.setTranslateX(0);
-        r.setTranslateY(-0.5 * size1);
+        r.setTranslateY(-size1 / 2.0);
         r.setRotationAxis(Rotate.Y_AXIS);
         r.setRotate(90);
 
         cubeFaces.add(r);
 
-        // top face
-        r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.1 * 1, 1.0));
-        r.setTranslateX(-0.5 * size1);
-        r.setTranslateY(-1 * size1);
-        r.setRotationAxis(Rotate.X_AXIS);
-        r.setRotate(90);
-
-        // cubeFaces.add( r);
-
-        // front face
-        r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.1 * 1, 1.0));
-        r.setTranslateX(-0.5 * size1);
-        r.setTranslateY(-0.5 * size1);
-        r.setTranslateZ(-0.5 * size1);
-
-        // cubeFaces.add( r);
 
         cube.getChildren().addAll(cubeFaces);
 

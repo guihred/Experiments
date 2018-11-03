@@ -26,7 +26,7 @@ public class LabeledPoint extends Point {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof LabeledPoint) || getClass() != obj.getClass()) {
+        if (!super.equals(obj)) {
             return false;
         }
         LabeledPoint other = (LabeledPoint) obj;

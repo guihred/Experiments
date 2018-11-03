@@ -8,17 +8,13 @@ package gaming.ex19;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class SudokuLauncher extends Application {
 
+    private static final int WIDTH = 400;
     @Override
     public void start(Stage stage) throws Exception {
         final GridPane gridPane = new GridPane();
@@ -38,8 +34,8 @@ public class SudokuLauncher extends Application {
 		gridPane.minWidthProperty().bind(borderPane.widthProperty());
         final Scene scene = new Scene(borderPane);
         stage.setScene(scene);
-        stage.setWidth(400);
-        stage.setHeight(400);
+        stage.setWidth(WIDTH);
+        stage.setHeight(WIDTH);
 
         gridPane.setOnMousePressed(sudokuModel::handleMousePressed);
         gridPane.setOnMouseDragged(sudokuModel::handleMouseMoved);

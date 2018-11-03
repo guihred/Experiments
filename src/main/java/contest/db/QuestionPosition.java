@@ -1,5 +1,7 @@
 package contest.db;
 
+import pdfreader.HasImage;
+
 public class QuestionPosition {
     private float x;
     private float y;

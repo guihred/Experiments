@@ -35,11 +35,12 @@ import utils.Delta;
 
 public class PongLauncher extends Application {
 
-    /**
+    private static final int WIDTH = 500;
+	/**
      * The center points of the moving ball
      */
 	private DoubleProperty centerX = new SimpleDoubleProperty();
-	private DoubleProperty centerY = new SimpleDoubleProperty();
+    private DoubleProperty centerY = new SimpleDoubleProperty();
     /**
      * The Y coordinate of the left paddle
      */
@@ -52,11 +53,11 @@ public class PongLauncher extends Application {
      * The drag anchor for left and right paddles
      */
     private Delta leftPaddleDelta = new Delta();
-    /**
+	/**
      * The initial translateY property for the left and right paddles
      */
 	private double initLeftPaddleTranslateY;
-	private double initRightPaddleTranslateY;
+    private double initRightPaddleTranslateY;
     /**
      * The moving ball
      */
@@ -66,11 +67,11 @@ public class PongLauncher extends Application {
      * allows us to requestFocus for KeyEvents on the Group
      */
 	private Group pongComponents;
-    /**
+	/**
      * The left and right paddles
      */
 	private Rectangle leftPaddle;
-	private Rectangle rightPaddle;
+    private Rectangle rightPaddle;
     /**
      * The walls
      */
@@ -78,10 +79,10 @@ public class PongLauncher extends Application {
 	 * Controls whether the startButton is visible
 	 */
 	private BooleanProperty startVisible = new SimpleBooleanProperty(true);
-	private Rectangle topWall = new SimpleRectangleBuilder().x(0).y(0).width(500).height(1).build();
-	private Rectangle rightWall = new SimpleRectangleBuilder().x(500).y(0).width(1).height(500).build();
-	private Rectangle leftWall = new SimpleRectangleBuilder().x(0).y(0).width(1).height(500).build();
-	private Rectangle bottomWall = new SimpleRectangleBuilder().x(0).y(500).width(500).height(1).build();
+    private Rectangle topWall = new SimpleRectangleBuilder().x(0).y(0).width(500).height(1).visible(false).build();
+    private Rectangle rightWall = new SimpleRectangleBuilder().x(500).y(0).width(1).height(500).visible(false).build();
+    private Rectangle leftWall = new SimpleRectangleBuilder().x(0).y(0).width(1).height(500).visible(false).build();
+	private Rectangle bottomWall = new SimpleRectangleBuilder().x(0).y(500).width(500).height(1).visible(false).build();
 	/**
 	 * Controls whether the ball is moving right
 	 */
@@ -90,7 +91,7 @@ public class PongLauncher extends Application {
 	 * Controls whether the ball is moving down
 	 */
 	private boolean movingDown = true;
-	/**
+    /**
 	 * The animation of the ball
 	 */
 	private Timeline pongAnimation = new SimpleTimelineBuilder()
@@ -176,7 +177,8 @@ public class PongLauncher extends Application {
 				leftPaddleY.setValue(leftPaddleY.getValue() + 6);
 			}
 		});
-		Scene scene = new Scene(pongComponents, 500, 500);
+
+        Scene scene = new Scene(pongComponents, WIDTH, WIDTH);
 		scene.setFill(new SimpleLinearGradientBuilder().startX(0.0).startY(0.0).endX(0.0).endY(1.0)
 				.stops(new Stop(0.0, Color.BLACK), new Stop(0.0, Color.GRAY)).build());
         ball.centerXProperty().bind(centerX);
@@ -186,6 +188,8 @@ public class PongLauncher extends Application {
         startButton.visibleProperty().bind(startVisible);
         stage.setScene(scene);
         initialize();
+        stage.setWidth(WIDTH);
+        stage.setHeight(WIDTH);
         stage.setTitle("ZenPong Example");
         stage.show();
     }

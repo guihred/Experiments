@@ -46,9 +46,9 @@ public class LabyrinthWall extends Group {
 		cube.setBlendMode(BlendMode.DARKEN);
 		cube.setDrawMode(DrawMode.FILL);
 		cube.setRotationAxis(Rotate.Y_AXIS);
-		cube.setTranslateX(-0.5 * size);
+        cube.setTranslateX(-size / 2);
 		cube.setTranslateY(0);
-		cube.setTranslateZ(-0.5 * size);
+        cube.setTranslateZ(-size / 2);
 		getChildren().addAll(cube);
 	}
 }

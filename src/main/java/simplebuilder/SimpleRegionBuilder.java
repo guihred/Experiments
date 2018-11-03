@@ -12,8 +12,17 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
 		this.region = region;
 	}
 
-	public Z prefHeight(double value) {
+    public Z minWidth(double minWidth) {
+        region.setMinWidth(minWidth);
+	    return (Z) this;
+    }
+
+    public Z prefHeight(double value) {
 		region.setPrefHeight(value);
+		return (Z) this;
+	}
+	public Z prefWidth(double value) {
+		region.setPrefWidth(value);
 		return (Z) this;
 	}
 
@@ -21,10 +30,6 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
         region.setScaleShape(value);
         return (Z) this;
     }
-	public Z prefWidth(double value) {
-		region.setPrefWidth(value);
-		return (Z) this;
-	}
 
 	public static SimpleRegionBuilder<Region, SimpleRegionBuilder<Region, SimpleBuilder<Region>>> create() {
 		return new SimpleRegionBuilder<>(new Region());
