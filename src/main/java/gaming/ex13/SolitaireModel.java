@@ -152,9 +152,7 @@ public class SolitaireModel {
 					dragContext.stack.getLastCards().setShown(true);
 				}
 				dragContext.cards = null;
-				if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
-                    CommonsFX.displayDialog("You Win", "Reset",this::reset );
-                }
+                verifyEnd();
 				return;
 			}
 		}
@@ -175,11 +173,8 @@ public class SolitaireModel {
 			return;
 		}
 		dragContext.stack.addCards(dragContext.cards);
-        if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
-            CommonsFX.displayDialog("You Win", "Reset", this::reset);
-            return;
-        }
-	}
+        verifyEnd();
+    }
 
     private void initialize(Scene scene) {
 
@@ -227,13 +222,19 @@ public class SolitaireModel {
 		}
     }
 
-	private boolean isDoubleClicked(MouseEvent event) {
+    private boolean isDoubleClicked(MouseEvent event) {
 		return event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2;
 	}
 
 	private boolean isStackAllHidden(CardStack stack) {
 		return !stack.getCards().isEmpty() && stack.getCards().stream().noneMatch(SolitaireCard::isShown);
 	}
+
+	private void verifyEnd() {
+        if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
+            CommonsFX.displayDialog("You Win", "Reset",this::reset );
+        }
+    }
 
 	public static SolitaireModel create(Pane gridPane, Scene scene) {
 		return new SolitaireModel(gridPane, scene);

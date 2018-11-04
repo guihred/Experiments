@@ -124,22 +124,24 @@ public class Square2048Model {
 
     private boolean noPossibleMove() {
         int[][] directions= {{1,0},{0,1},{-1,0},{0,-1}};
-        for (int[]dir : directions) {
+        for (int[] dir : directions) {
             int x = dir[0];
             int y = dir[1];
 
             for (int i = 0; i < getMap().length; i++) {
                 for (int j = 0; j < getMap()[i].length; j++) {
-                    if (!getMap()[i][j].isEmpty() && i + x >= 0 && i + x < MAP_WIDTH && j + y >= 0
-                            && j + y < MAP_HEIGHT) {
-                        if (getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber()) {
-                            return false;
-                        }
+                    if (!getMap()[i][j].isEmpty() && within(i, x) && within(j, y)
+                            && getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber()) {
+                        return false;
                     }
                 }
             }
         }
         return true;
+    }
+
+    private static boolean within(int i, int x) {
+        return i + x >= 0 && i + x < MAP_WIDTH;
     }
 
     private static boolean withinRange(int x, int y, int i, int j, int mapWidth, int mapHeight) {

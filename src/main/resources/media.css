@@ -1,21 +1,65 @@
 .root {
--fx-base: #606060;
--fx-background-color: radial-gradient(center 50% 50%, radius 60%,
-#666a6b, #2b2f32);
--fx-background-image: url("cross.png");
--fx-background-position: left top;
+	-fx-base: #606060;
+	-fx-background-color: radial-gradient(center 50.0% 50.0%, radius 60.0%, #666a6b, #FFFFFF);
+	-fx-background-image: url("cross.png");
+	-fx-background-position: left top;
+	-white-ish: rgba(255.0, 255.0, 255.0, 0.9);
+	-black-ish: rgba(0.0, 0.0, 0.0, 0.8);
 }
 .button {
--fx-text-fill: #E0E0E0;
--fx-font-size: 20pt;
--fx-pref-width: 300px;
+	-fx-text-fill: #E0E0E0;
+	-fx-font-size: 20.0pt;
+	-fx-pref-width: 300.0px;
 }
 .label {
--fx-text-fill: #E0E0E0;
+	-fx-text-fill: #E0E0E0;
 }
 #clipLabel {
--fx-font-size: 24pt;
+	-fx-font-size: 24.0pt;
 }
 .hyperlink {
--fx-text-fill: #808080;
+	-fx-text-fill: #808080;
+}
+
+#app-area {
+	-fx-arc-width: 20.0;
+	-fx-arc-height: 20.0;
+	-fx-fill: -black-ish;
+	-fx-stroke: green;
+	-fx-stroke-width: 2.0;
+	-fx-stroke: -white-ish;
+}
+#button-area {
+	-fx-arc-width: 15.0;
+	-fx-arc-height: 20.0;
+	-fx-fill: -black-ish;
+	-fx-stroke: -white-ish;
+}
+#stop-button {
+	-fx-arc-width: 5.0;
+	-fx-arc-height: 5.0;
+	-fx-fill: -white-ish;
+	-fx-translate-x: 15.0;
+	-fx-translate-y: 10.0;
+	-fx-stroke: -white-ish;
+}
+#play-button {
+	-fx-fill: -white-ish;
+	-fx-translate-x: 40.0;
+}
+.pause-circle {
+	-fx-stroke: -white-ish;
+	-fx-translate-x: 30.0;
+}
+.pause-line {
+	-fx-stroke-width: 3.0;
+	-fx-stroke: -white-ish;
+	-fx-translate-y: 6.0;
+}
+#close-circle {
+	-fx-fill: -white-ish;
+}
+.slider {
+	-fx-show-tick-labels: false;
+	-fx-show-tick-marks: true;
 }

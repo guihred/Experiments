@@ -58,7 +58,6 @@ public class PlayingAudio extends Application {
 		Group root = new Group();
 		Scene scene = new Scene(root, 551, 270, Color.rgb(0, 0, 0, 0));
 		// load JavaFX CSS style
-        scene.getStylesheets().add(ResourceFXUtils.toURL("media.css").toString());
 		mainStage.setScene(scene);
 		// Initialize stage to be movable via mouse
 		initMovablePlayer();
@@ -78,7 +77,8 @@ public class PlayingAudio extends Application {
 		initFileDragNDrop();
 		// Create the close button
 		Node closeButton = createCloseButton();
-		root.getChildren().addAll(applicationArea, vizContainer, buttonPanel, progressSlider, closeButton);
+        root.getChildren().addAll(applicationArea, vizContainer, buttonPanel, progressSlider, closeButton);
+        scene.getStylesheets().add(ResourceFXUtils.toURL("media.css").toString());
 		primaryStage.show();
 	}
 
@@ -90,8 +90,8 @@ public class PlayingAudio extends Application {
 	private Node createApplicationArea() {
 		Scene scene = mainStage.getScene();
 		Rectangle applicationArea = new Rectangle();
-		// add selector to style app-area
-		applicationArea.setId("app-area");
+        // add selector to style app-area
+        applicationArea.setId("app-area");
 
 		// make the app area rectangle the size of the scene.
 		applicationArea.widthProperty().bind(scene.widthProperty());
@@ -172,7 +172,7 @@ public class PlayingAudio extends Application {
 		Scene scene = mainStage.getScene();
 		Group closeButton = new Group();
 		closeButton.setId(CLOSE_BUTTON_ID);
-		Node closeBackground = new Circle(5, 0, 7);
+        Node closeBackground = new Circle(5, 0, 7, Color.RED);
 		closeBackground.setId("close-circle");
 		Node closeXmark = new Text(2, 4, "X");
 		closeButton.translateXProperty().bind(scene.widthProperty().subtract(15));
