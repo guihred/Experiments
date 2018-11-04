@@ -12,9 +12,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -22,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pdfreader.HasImage;
+import simplebuilder.SimpleTableViewBuilder;
 import utils.HasLogging;
 import utils.ImageTableCell;
 import utils.ResourceFXUtils;
@@ -79,79 +78,42 @@ public class ContestApplication extends Application implements HasLogging {
     }
 
     private TableView<ContestQuestion> createContestQuestionsTable(BorderPane root) {
-
-        final TableView<ContestQuestion> medicamentosTable = new TableView<>();
-        medicamentosTable.setPrefWidth(300);
-        medicamentosTable.setScaleShape(false);
-        medicamentosTable.prefWidthProperty().bind(root.widthProperty().add(-10).divide(3));
-        medicamentosTable.prefHeightProperty().bind(root.heightProperty().add(-30));
-
-        TableColumn<ContestQuestion, String> loteContestQuestion = new TableColumn<>("Number");
-        loteContestQuestion.setSortable(true);
-        loteContestQuestion.setCellValueFactory(new PropertyValueFactory<>("number"));
-        loteContestQuestion.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-        medicamentosTable.getColumns().add(loteContestQuestion);
-
-        TableColumn<ContestQuestion, String> registroContestQuestion = new TableColumn<>("Question");
-        registroContestQuestion.setCellValueFactory(new PropertyValueFactory<>("exercise"));
-        registroContestQuestion.setSortable(true);
-        registroContestQuestion.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-        medicamentosTable.getColumns().add(registroContestQuestion);
-
-        TableColumn<ContestQuestion, String> quantidadeContestQuestion = new TableColumn<>("Options");
-        quantidadeContestQuestion.setSortable(true);
-        quantidadeContestQuestion.setCellValueFactory(new PropertyValueFactory<>("formattedOptions"));
-        quantidadeContestQuestion.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-        medicamentosTable.getColumns().add(quantidadeContestQuestion);
-
-        TableColumn<ContestQuestion, String> nomeContestQuestion = new TableColumn<>("Subject");
-        nomeContestQuestion.setSortable(true);
-        nomeContestQuestion.setCellValueFactory(new PropertyValueFactory<>("subject"));
-        nomeContestQuestion.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-        medicamentosTable.getColumns().add(nomeContestQuestion);
-
-        return medicamentosTable;
+        return new SimpleTableViewBuilder<ContestQuestion>()
+                .prefWidth(root.widthProperty().add(-10).divide(3))
+                .prefHeight(root.heightProperty().add(-30))
+                .scaleShape(false)
+                .addColumn("Number", "number")
+                .addColumn("Question", "exercise")
+                .addColumn("Options", "formattedOptions")
+                .addColumn("Subject", "subject")
+                .equalColumns()
+                .build();
     }
 
     private TableView<HasImage> createImagesTable(BorderPane root) {
 
-        final TableView<HasImage> medicamentosTable = new TableView<>();
-        medicamentosTable.setPrefWidth(300);
-        medicamentosTable.setScaleShape(false);
-        medicamentosTable.prefWidthProperty().bind(root.widthProperty().add(-10).divide(3));
-        medicamentosTable.prefHeightProperty().bind(root.heightProperty().add(-30));
-
-        TableColumn<HasImage, String> imageQuestion = new TableColumn<>("Image");
-        imageQuestion.setSortable(true);
-        imageQuestion.setCellValueFactory(new PropertyValueFactory<>("image"));
-        imageQuestion.setCellFactory(s -> new ImageTableCell());
-        imageQuestion.prefWidthProperty().bind(medicamentosTable.prefWidthProperty());
-        medicamentosTable.getColumns().add(imageQuestion);
-
-        return medicamentosTable;
+        return new SimpleTableViewBuilder<HasImage>()
+                .prefWidth(root.widthProperty().add(-10).divide(3))
+                .prefHeight(root.heightProperty().add(-30))
+                .scaleShape(false)
+                .addColumn("Image", "image",s -> new ImageTableCell())
+                .equalColumns()
+                .build();
     }
 
     private TableView<ContestText> createTextsTable(BorderPane root) {
-
-        final TableView<ContestText> medicamentosTable = new TableView<>();
-        medicamentosTable.setPrefWidth(300);
-        medicamentosTable.setScaleShape(false);
-        medicamentosTable.prefWidthProperty().bind(root.widthProperty().add(-10).divide(3));
-        medicamentosTable.prefHeightProperty().bind(root.heightProperty().add(-30));
-
-        TableColumn<ContestText, String> nomeContestQuestion = new TableColumn<>("Text");
-        nomeContestQuestion.setSortable(true);
-        nomeContestQuestion.setCellValueFactory(new PropertyValueFactory<>("text"));
-        nomeContestQuestion.setPrefWidth(medicamentosTable.getPrefWidth());
-        medicamentosTable.getColumns().add(nomeContestQuestion);
-
-        return medicamentosTable;
+        return new SimpleTableViewBuilder<ContestText>()
+                .prefWidth(root.widthProperty().add(-10).divide(3))
+                .prefHeight(root.heightProperty().add(-30))
+                .scaleShape(false)
+                .addColumn("Text", "text")
+                .equalColumns()
+                .build();
     }
 
     private VBox createVbox(String text, final Node medicamentosEstoqueTable) {
         Label estoqueRosario = new Label(text);
         GridPane.setHalignment(estoqueRosario, HPos.CENTER);
-
         return new VBox(estoqueRosario, medicamentosEstoqueTable);
     }
 

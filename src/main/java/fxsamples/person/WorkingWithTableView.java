@@ -1,19 +1,17 @@
 package fxsamples.person;
 
-import java.util.Arrays;
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import simplebuilder.SimpleTableViewBuilder;
 
 public class WorkingWithTableView extends Application {
 
@@ -62,40 +60,26 @@ public class WorkingWithTableView extends Application {
 		Label emplLbl = new Label("Employees");
 		gridpane.add(emplLbl, 2, 0);
 		GridPane.setHalignment(emplLbl, HPos.CENTER);
-		final TableView<Person> employeeTableView = new TableView<>();
-		employeeTableView.setPrefWidth(300);
-		final ObservableList<Person> teamMembers = FXCollections
-				.observableArrayList();
-		employeeTableView.setItems(teamMembers);
-		TableColumn<Person, String> aliasNameCol = new TableColumn<>("Alias");
-		aliasNameCol.setEditable(true);
-		aliasNameCol
-				.setCellValueFactory(new PropertyValueFactory<>("aliasName"));
-		aliasNameCol.setPrefWidth(employeeTableView.getPrefWidth() / 3);
-		TableColumn<Person, String> firstNameCol = new TableColumn<>(
-				"First Name");
-		firstNameCol
-				.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-		firstNameCol.setPrefWidth(employeeTableView.getPrefWidth() / 3);
-		TableColumn<Person, String> lastNameCol = new TableColumn<>("Last Name");
-		lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-		lastNameCol.setPrefWidth(employeeTableView.getPrefWidth() / 3);
-		employeeTableView.getColumns().setAll(Arrays.asList(aliasNameCol, firstNameCol, lastNameCol));
+		final ObservableList<Person> teamMembers = FXCollections.observableArrayList();
+		final TableView<Person> employeeTableView = new SimpleTableViewBuilder<Person>()
+		        .prefWidth(300)
+		        .items(teamMembers)
+                .addColumn("Alias", "aliasName", true)
+		        .addColumn("First Name", "firstName")
+		        .addColumn("Last Name", "lastName")
+		        .equalColumns()
+		        .build();
 		gridpane.add(employeeTableView, 2, 1);
 		// selection listening
 		leaderListView
 				.getSelectionModel()
 				.selectedItemProperty()
-				.addListener(
-						(ObservableValue<? extends Person> observable,
-								Person oldValue, Person newValue) -> {
-							if (observable != null
-									&& observable.getValue() != null) {
-								teamMembers.clear();
-								teamMembers.addAll(observable.getValue()
-										.employeesProperty());
-							}
-						});
+                .addListener((observable, oldValue, newValue) -> {
+                    if (observable != null && observable.getValue() != null) {
+                        teamMembers.clear();
+                        teamMembers.addAll(observable.getValue().employeesProperty());
+                    }
+                });
 		Scene scene = new Scene(root, 500, 250, Color.WHITE);
 		primaryStage.setScene(scene);
 		primaryStage.show();

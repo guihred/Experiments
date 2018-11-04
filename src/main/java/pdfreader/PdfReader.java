@@ -14,9 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -25,6 +23,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
@@ -87,34 +86,21 @@ public class PdfReader extends Application implements HasLogging {
 
     }
 
+    private TableView<HasImage> createImagesTable() {
+        return new SimpleTableViewBuilder<HasImage>()
+                .scaleShape(false)
+                .addColumn("Image", "image",s -> new ImageTableCell())
+                .items(currentImages)
+                .equalColumns()
+                .build();
+    }
+
     private File displayDialog(Stage primaryStage) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Selecione Arquivo PDF");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
         return fileChooser2.showOpenDialog(primaryStage);
 
-    }
-
-    private TableView<HasImage> createImagesTable() {
-
-        final TableView<HasImage> table = new TableView<>();
-        table.setPrefWidth(300);
-        table.setScaleShape(false);
-        table.setItems(currentImages);
-        TableColumn<HasImage, String> imageQuestion = new TableColumn<>("Image");
-        imageQuestion.setSortable(true);
-        imageQuestion.setCellValueFactory(new PropertyValueFactory<>("image"));
-        imageQuestion.setCellFactory(s -> new ImageTableCell());
-        imageQuestion.prefWidthProperty().bind(table.prefWidthProperty());
-        table.getColumns().add(imageQuestion);
-        return table;
-    }
-
-    private void displayNextPage() {
-        if (pageIndex.get() < pdfInfo.getNumberOfPages() - 1) {
-            pageIndex.set(pageIndex.get() + 1);
-            lines.setAll(pdfInfo.getPages().get(pageIndex.get()));
-        }
     }
 
     private void displayNextLine() {
@@ -127,6 +113,13 @@ public class PdfReader extends Application implements HasLogging {
             if (lineIndex >= lines.size()) {
                 timeline.stop();
             }
+        }
+    }
+
+    private void displayNextPage() {
+        if (pageIndex.get() < pdfInfo.getNumberOfPages() - 1) {
+            pageIndex.set(pageIndex.get() + 1);
+            lines.setAll(pdfInfo.getPages().get(pageIndex.get()));
         }
     }
 

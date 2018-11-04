@@ -45,12 +45,17 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 		return (Z) this;
 	}
 
+	public Z onMouseClicked(EventHandler<? super MouseEvent> object) {
+	    node.setOnMouseClicked(object);
+	    return (Z) this;
+	}
+
 	public Z onMouseDragged(EventHandler<? super MouseEvent> value) {
 		node.setOnMouseDragged(value);
 		return (Z) this;
 	}
 
-	public Z onMousePressed(EventHandler<? super MouseEvent> object) {
+    public Z onMousePressed(EventHandler<? super MouseEvent> object) {
 		node.setOnMousePressed(object);
 		return (Z) this;
 	}

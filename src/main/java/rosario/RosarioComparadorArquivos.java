@@ -1,18 +1,10 @@
 package rosario;
 
-import static rosario.LeitorArquivos.CODIGO;
-import static rosario.LeitorArquivos.LOTE;
-import static rosario.LeitorArquivos.NOME;
-import static rosario.LeitorArquivos.QUANTIDADE;
-import static rosario.LeitorArquivos.REGISTRO;
+import static rosario.LeitorArquivos.*;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -24,24 +16,14 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import simplebuilder.SimpleTableViewBuilder;
 import utils.HasLogging;
 
 public class RosarioComparadorArquivos extends Application implements HasLogging {
@@ -52,7 +34,15 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
 
 
-    @Override
+    public Map<String, FileChooser> getFileChoose() {
+		return fileChoose;
+	}
+
+	public void setOpenAtExport(boolean openAtExport) {
+		this.openAtExport = openAtExport;
+	}
+
+	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Comparação Estoque e ANVISA");
 		BorderPane root = new BorderPane();
@@ -144,14 +134,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		// selection listening
         primaryStage.setScene(new Scene(root, 1000, 500, Color.WHITE));
 		primaryStage.show();
-	}
-
-	public Map<String, FileChooser> getFileChoose() {
-		return fileChoose;
-	}
-
-	public void setOpenAtExport(boolean openAtExport) {
-		this.openAtExport = openAtExport;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -349,44 +331,19 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
     private TableView<Medicamento> tabelaMedicamentos(boolean completa) {
 
-		final TableView<Medicamento> medicamentosTable = new TableView<>();
-		medicamentosTable.setPrefWidth(300);
-		medicamentosTable.setScaleShape(false);
+		final SimpleTableViewBuilder<Medicamento> medicamentosTable = new SimpleTableViewBuilder<Medicamento>()
+                .prefWidth(250)
+                .scaleShape(false);
 		if (completa) {
-			TableColumn<Medicamento, String> registroMedicamento = new TableColumn<>(REGISTRO);
-			registroMedicamento.setCellValueFactory(new PropertyValueFactory<>("registro"));
-			registroMedicamento.setSortable(true);
-			registroMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-			medicamentosTable.getColumns().add(registroMedicamento);
+			medicamentosTable.addColumn(REGISTRO, "registro");
 		}
-
-		TableColumn<Medicamento, String> nomeMedicamento = new TableColumn<>(NOME);
-		nomeMedicamento.setSortable(true);
-		nomeMedicamento.setCellValueFactory(new PropertyValueFactory<>("nome"));
-		nomeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-		medicamentosTable.getColumns().add(nomeMedicamento);
-
+		medicamentosTable.addColumn(NOME, "nome");
 		if (completa) {
-			TableColumn<Medicamento, String> loteMedicamento = new TableColumn<>(LOTE);
-			loteMedicamento.setSortable(true);
-			loteMedicamento.setCellValueFactory(new PropertyValueFactory<>("lote"));
-			loteMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-			medicamentosTable.getColumns().add(loteMedicamento);
+		    medicamentosTable.addColumn(LOTE, "lote");
 		}
-
-		TableColumn<Medicamento, String> quantidadeMedicamento = new TableColumn<>(QUANTIDADE);
-		quantidadeMedicamento.setSortable(true);
-		quantidadeMedicamento.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-		quantidadeMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-		medicamentosTable.getColumns().add(quantidadeMedicamento);
-
-        TableColumn<Medicamento, String> codigoMedicamento = new TableColumn<>(CODIGO);
-		codigoMedicamento.setSortable(true);
-		codigoMedicamento.setCellValueFactory(new PropertyValueFactory<>("codigo"));
-		codigoMedicamento.setPrefWidth(medicamentosTable.getPrefWidth() / 4);
-		medicamentosTable.getColumns().add(codigoMedicamento);
-
-		return medicamentosTable;
+		medicamentosTable.addColumn(QUANTIDADE, "quantidade");
+		medicamentosTable.addColumn(CODIGO, "codigo");
+		return medicamentosTable.equalColumns().build();
 	}
 
     public static void main(String[] args) {

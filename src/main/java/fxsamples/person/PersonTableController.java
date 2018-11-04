@@ -14,6 +14,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -45,7 +46,7 @@ public class PersonTableController extends Application {
 	public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Person Table");
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 600, 250, Color.WHITE);
+        Scene scene = new Scene(root, 260, 470, Color.WHITE);
 		// create a grid pane
 		FlowPane gridpane = new FlowPane();
 		gridpane.setPadding(new Insets(5));
@@ -53,7 +54,7 @@ public class PersonTableController extends Application {
 		gridpane.setVgap(10);
 		root.setCenter(gridpane);
 
-		gridpane.getChildren().addAll(new Label("Filter Field"), filterField, personTable);
+        gridpane.getChildren().addAll(new VBox(new Label("Filter Field"), filterField), personTable);
 		personTable.getColumns().setAll(Arrays.asList(firstNameColumn, lastNameColumn));
 		initialize();
 		primaryStage.setScene(scene);

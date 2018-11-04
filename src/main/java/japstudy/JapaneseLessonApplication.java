@@ -8,10 +8,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -19,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import simplebuilder.SimpleTableViewBuilder;
 
 public class JapaneseLessonApplication extends Application {
 
@@ -68,48 +67,20 @@ public class JapaneseLessonApplication extends Application {
 
     private TableView<JapaneseLesson> tabelaJapaneseLessons() {
 
-		final TableView<JapaneseLesson> medicamentosTable = new TableView<>();
-
-		medicamentosTable.setScaleShape(false);
-		TableColumn<JapaneseLesson, String> registroJapaneseLesson = new TableColumn<>(LESSON);
-		registroJapaneseLesson.setCellValueFactory(new PropertyValueFactory<>("lesson"));
-		registroJapaneseLesson.setSortable(true);
-		registroJapaneseLesson.prefWidthProperty().bind(medicamentosTable.prefWidthProperty().multiply(1.5 / 12));
-		medicamentosTable.getColumns().add(registroJapaneseLesson);
-		TableColumn<JapaneseLesson, String> codigoJapaneseLesson = new TableColumn<>("Number");
-		codigoJapaneseLesson.setSortable(true);
-		codigoJapaneseLesson.setCellValueFactory(new PropertyValueFactory<>("exercise"));
-		codigoJapaneseLesson.prefWidthProperty().bind(medicamentosTable.prefWidthProperty().multiply(1.5 / 12));
-		medicamentosTable.getColumns().add(codigoJapaneseLesson);
-
-		TableColumn<JapaneseLesson, String> nomeJapaneseLesson = new TableColumn<>("English");
-		nomeJapaneseLesson.setSortable(true);
-		nomeJapaneseLesson.setCellValueFactory(new PropertyValueFactory<>("english"));
-		nomeJapaneseLesson.prefWidthProperty().bind(medicamentosTable.prefWidthProperty().multiply(3.0 / 12));
-		medicamentosTable.getColumns().add(nomeJapaneseLesson);
-
-		TableColumn<JapaneseLesson, String> loteJapaneseLesson = new TableColumn<>("Japanese");
-		loteJapaneseLesson.setSortable(true);
-		loteJapaneseLesson.setCellValueFactory(new PropertyValueFactory<>("japanese"));
-		loteJapaneseLesson.prefWidthProperty().bind(medicamentosTable.prefWidthProperty().multiply(3.0 / 12));
-		medicamentosTable.getColumns().add(loteJapaneseLesson);
-
-		TableColumn<JapaneseLesson, String> quantidadeJapaneseLesson = new TableColumn<>("Romaji");
-		quantidadeJapaneseLesson.setSortable(true);
-		quantidadeJapaneseLesson.setCellValueFactory(new PropertyValueFactory<>("romaji"));
-		quantidadeJapaneseLesson.prefWidthProperty().bind(medicamentosTable.prefWidthProperty().multiply(3.0 / 12));
-
-		medicamentosTable.getColumns().add(quantidadeJapaneseLesson);
-
-
-        medicamentosTable.setOnMouseClicked(e -> {
-            if (e.getClickCount() > 1) {
-
-                editItem(medicamentosTable);
-            }
-        });
-
-		return medicamentosTable;
+		return new SimpleTableViewBuilder<JapaneseLesson>()
+		        .scaleShape(false)
+		        .addColumn(LESSON, "lesson")
+		        .addColumn("Number", "exercise")
+		        .addColumn("English", "english")
+		        .addColumn("Japanese", "japanese")
+		        .addColumn("Romaji", "romaji")
+		        .equalColumns()
+                .onDoubleClick((JapaneseLesson selectedItem) -> {
+		            JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
+		            japaneseLessonEditingDisplay.start(new Stage());
+		            japaneseLessonEditingDisplay.setCurrent(selectedItem);
+		        })
+		        .build();
 	}
 
 	public static void main(String[] args) {
