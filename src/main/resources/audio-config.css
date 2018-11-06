@@ -1,0 +1,54 @@
+.root {
+	-fx-base: #606060;
+
+}
+.slider {
+	-fx-show-tick-labels: false;
+	-fx-show-tick-marks: true;
+
+}
+.audio-text{
+	-fx-font: 18px SansSerif;
+	-fx-translate-x: 20;
+	-fx-translate-y: 5;
+	-fx-text-fill: #131021;
+	-fx-font-weight: bold;
+	-fx-text-origin: top;
+}
+.gradient-rectangle{
+	-fx-fill: linear-gradient(to bottom,#AEBBCC, #6D84A3);
+}
+.round-square{
+	-fx-arc-height:	20px;
+	-fx-arc-width: 20px;
+	-fx-fill: white;
+	-fx-stroke: gray;
+}
+.whitish-rectangle{
+	-fx-fill: rgb(199, 206, 213);
+}
+Line{
+	-fx-stroke: gray;
+}
+HBox{
+	-fx-spacing: 30px;
+	-fx-hpos: center;
+	-fx-border-insets:15px;
+}
+VBox{
+	-fx-spacing:10px;
+	-fx-background-color: white;
+	-fx-background-radius: 20px;
+	-fx-border-insets:15px;
+	-fx-border-width:5px;
+	-fx-vpos: center;
+	-fx-arc-height:	20px;
+	-fx-arc-width: 20px;
+	-fx-fill: white;
+	-fx-stroke: gray;
+}
+StackPane{
+	-fx-padding: 10px;
+}
+
+

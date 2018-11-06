@@ -6,11 +6,19 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 
 public final class ClassReflectionUtils {
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
 
     private ClassReflectionUtils() {
+    }
+
+    public static void displayStyleClass(Node node) {
+        displayStyleClass("", node);
+
     }
 
     public static String getDescription(Object i) {
@@ -93,6 +101,15 @@ public final class ClassReflectionUtils {
 
     public static List<Method> getGetterMethods(Class<?> targetClass) {
         return getGetterMethods(targetClass, new HashMap<>());
+    }
+
+    private static void displayStyleClass(String n,Node node) {
+        String arg1 = n + node.getClass().getSimpleName();
+        HasLogging.log(1).info("{} = {}", arg1, node.getStyleClass());
+        if(node instanceof Parent) {
+            ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
+            childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(n+"-",t));
+        }
     }
 
     private static <T> String getEnumerationDescription(String fieldName, Enumeration<T> enumeration,
