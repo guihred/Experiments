@@ -1,24 +1,63 @@
 package utils;
 
+import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import org.slf4j.Logger;
 
 public final class ClassReflectionUtils {
+    private static final Logger LOG = HasLogging.log();
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
 
     private ClassReflectionUtils() {
+        LOG.error("");
+    }
+
+    public static void displayCSSStyler(Scene scene, String pathname) {
+        ClassReflectionUtils.displayStyleClass(scene.getRoot());
+        Stage stage2 = new Stage();
+        File file = new File("src/main/resources/" + pathname);
+        TextArea textArea = new TextArea(getText(file));
+        if (file.exists()) {
+            try {
+                scene.getStylesheets().add(file.toURI().toURL().toString());
+            } catch (MalformedURLException e2) {
+                LOG.error("", e2);
+            }
+        }
+        stage2.setScene(new Scene(new VBox(textArea, CommonsFX.newButton("_Save", e -> {
+            try (PrintStream fileOutputStream = new PrintStream(file);) {
+                fileOutputStream.print(textArea.getText());
+                fileOutputStream.flush();
+                scene.getStylesheets().clear();
+                scene.getStylesheets().add(file.toURI().toURL().toString());
+                textArea.requestFocus();
+            } catch (Exception e1) {
+                LOG.error("", e1);
+            }
+
+        }))));
+        stage2.show();
     }
 
     public static void displayStyleClass(Node node) {
         displayStyleClass("", node);
-
     }
 
     public static String getDescription(Object i) {
@@ -145,8 +184,6 @@ public final class ClassReflectionUtils {
         return descriptionBuilder.toString();
     }
 
-
-
     private static List<Method> getGetterMethods(Class<?> class1, Map<Class<?>, List<Method>> getterMethods) {
         if (!getterMethods.containsKey(class1)) {
             getterMethods.put(class1,
@@ -157,6 +194,17 @@ public final class ClassReflectionUtils {
         }
         return getterMethods.get(class1);
 
+    }
+
+
+
+    private static String getText(File file) {
+        try {
+            return Files.toString(file, StandardCharsets.UTF_8);
+        } catch (IOException e2) {
+            LOG.error("", e2);
+        }
+        return "";
     }
 
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
