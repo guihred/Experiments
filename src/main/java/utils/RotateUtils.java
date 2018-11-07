@@ -10,23 +10,26 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
-public class RotateUtils {
+public final class RotateUtils {
     private static final double CAMERA_MODIFIER = 50.0;
 
     private static final double CAMERA_QUANTITY = 10.0;
 
+    private RotateUtils() {
+
+    }
     public static void makeZoomable(Node control) {
 
         final double MAX_SCALE = 20.0;
         final double MIN_SCALE = 0.1;
+        final double DELTA = 1.2;
 
         control.addEventFilter(ScrollEvent.ANY, event -> {
-            double delta = 1.2;
             double scale = control.getScaleX();
             if (event.getDeltaY() < 0) {
-                scale /= delta;
+                scale /= DELTA;
             } else {
-                scale *= delta;
+                scale *= DELTA;
             }
             scale = ResourceFXUtils.clamp(scale, MIN_SCALE, MAX_SCALE);
             control.setScaleX(scale);

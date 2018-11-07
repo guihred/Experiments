@@ -19,6 +19,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import simplebuilder.*;
+import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
@@ -42,6 +43,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		Scene scene = new Scene(borderPane);
 		// .stylesheets(StarterAppMain.class.getResource("starterApp.css")
 		// .toExternalForm())
+        ClassReflectionUtils.displayStyleClass(borderPane);
 		stage.setScene(scene);
 		stage.setWidth(800);
 		stage.setHeight(600);

@@ -53,6 +53,8 @@ public final class ClassReflectionUtils {
             }
 
         }))));
+        textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));
+        stage2.setHeight(500);
         stage2.show();
     }
 

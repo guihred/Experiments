@@ -6,12 +6,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javafx.animation.FadeTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.concurrent.Task;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,12 +23,13 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ClassReflectionUtils;
+import utils.ResourceFXUtils;
 
 public class PhotoViewer extends Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PhotoViewer.class);
@@ -46,8 +50,7 @@ public class PhotoViewer extends Application {
         primaryStage.setTitle("Photo Viewer");
 		Group root = new Group();
 		Scene scene = new Scene(root, 551, 400, Color.BLACK);
-		// scene.getStylesheets().add(
-		// getClass().getResource("photo-viewer.css").toExternalForm());
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("photo-viewer.css"));
 		primaryStage.setScene(scene);
 		// set up the current image view area
 		currentImageView = createImageView(scene.widthProperty());
@@ -61,9 +64,9 @@ public class PhotoViewer extends Application {
 		root.getChildren().addAll(currentImageView, buttonGroup,
 				progressIndicator);
 		primaryStage.show();
-	}
+        ClassReflectionUtils.displayCSSStyler(scene, "photo-viewer.css");
 
-	/**
+    }/**
 	 * Adds the URL string representation of the path to the image file. Based
 	 * on a URL the method will check if it matches supported image format.
 	 * 
@@ -93,14 +96,13 @@ public class PhotoViewer extends Application {
 		// buttonArea.setP
 		buttonGroup.getChildren().add(buttonArea);
 		// left arrow button
-		Arc leftButton = new Arc(12, 16, 15, 15, -30, 60);
-		leftButton.setType(ArcType.ROUND);
+        Button leftButton = new Button();
 		leftButton.getStyleClass().add("left-arrow");
 		// return to previous image
 		leftButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
             LOGGER.info("busy loading? {}", loading.get());
 			// if no previous image or currently loading.
-				if (currentIndex == 0 || loading.get()) {
+            if (loading.get()) {
 					return;
 				}
 				int indx = gotoImageIndex(ButtonMove.PREV);
@@ -110,14 +112,13 @@ public class PhotoViewer extends Application {
 				}
 			});
 		// right arrow button
-		Arc rightButton = new Arc(12, 16, 15, 15, 180 - 30, 60);
-		rightButton.setType(ArcType.ROUND);
+        Button rightButton = new Button();
 		rightButton.getStyleClass().add("right-arrow");
 		// advance to next image
 		rightButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
             LOGGER.info("busy loading? {}", loading.get());
 			// if no next image or currently loading.
-				if (currentIndex == imageFiles.size() - 1 || loading.get()) {
+            if (loading.get()) {
 					return;
 				}
 				int indx = gotoImageIndex(ButtonMove.NEXT);
@@ -132,6 +133,21 @@ public class PhotoViewer extends Application {
 				scene.widthProperty().subtract(buttonArea.getWidth() + 6));
 		buttonGroup.translateYProperty().bind(
 				scene.heightProperty().subtract(buttonArea.getHeight() + 6));
+
+        scene.setOnMouseEntered((MouseEvent me) -> {
+            FadeTransition fadeButtons = new FadeTransition(Duration.millis(500), buttonGroup);
+            fadeButtons.setFromValue(0.0);
+            fadeButtons.setToValue(1.0);
+            fadeButtons.play();
+        });
+        // Fade out button controls
+        scene.setOnMouseExited((MouseEvent me) -> {
+            FadeTransition fadeButtons = new FadeTransition(Duration.millis(500), buttonGroup);
+            fadeButtons.setFromValue(1);
+            fadeButtons.setToValue(0);
+            fadeButtons.play();
+        });
+
 		return buttonGroup;
 	}
 
@@ -187,16 +203,16 @@ public class PhotoViewer extends Application {
 		return new Task<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
-				// on the worker thread...
-				Image image = new Image(url, false);
-				Platform.runLater(() -> {
-					// on the JavaFX Application Thread....
-                    LOGGER.info("done loading image {}", url);
-					currentImageView.setImage(image);
-					progressIndicator.setVisible(false);
-					loading.set(false);
-				});
-				return true;
+                Image image = new Image(url, false);
+                Platform.runLater(() -> {
+                    // New code:
+                    SequentialTransition seqTransition = transitionByFading(image, currentImageView);
+                    seqTransition.play();
+                    // Old code: currentImageView.setImage(image);
+                    progressIndicator.setVisible(false);
+                    loading.set(false); // free lock
+                });
+                return true;
 			}
 		};
 	}
@@ -213,12 +229,11 @@ public class PhotoViewer extends Application {
 		int size = imageFiles.size();
 		if (size == 0) {
 			currentIndex = -1;
-		} else if (direction == ButtonMove.NEXT && size > 1
-				&& currentIndex < size - 1) {
-			currentIndex += 1;
+        } else if (direction == ButtonMove.NEXT) {
+            currentIndex = (currentIndex + 1) % size;
 
-		} else if (direction == ButtonMove.PREV && size > 1 && currentIndex > 0) {
-			currentIndex -= 1;
+        } else if (direction == ButtonMove.PREV) {
+            currentIndex = (currentIndex - 1 + size) % size;
 		}
 		return currentIndex;
 	}
@@ -275,6 +290,21 @@ public class PhotoViewer extends Application {
 			event.consume();
 		});
 	}
+
+	private SequentialTransition transitionByFading(Image nextImage,
+	        ImageView imageView) {
+        // fade out image view node
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(500), imageView);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(actionEvent -> imageView.setImage(nextImage));
+        // fade in image view node
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), imageView);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        // fade out image view, swap image and fade in image view
+        return new SequentialTransition(fadeOut, fadeIn);
+	 }
 
 	private void tryAddImage(File file) {
 		try {

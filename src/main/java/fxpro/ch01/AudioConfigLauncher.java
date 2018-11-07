@@ -14,7 +14,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTextBuilder;
-import utils.ClassReflectionUtils;
+import utils.ResourceFXUtils;
 
 public class AudioConfigLauncher extends Application {
 
@@ -53,8 +53,8 @@ public class AudioConfigLauncher extends Application {
         stage.setHeight(343);
         stage.setScene(scene);
         stage.setTitle("Audio Configuration");
+        scene.getStylesheets().add(ResourceFXUtils.toURL("audio-config.css").toString());
         stage.show();
-        ClassReflectionUtils.displayCSSStyler(scene, "audio-config.css");
 
     }
 

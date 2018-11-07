@@ -15,17 +15,20 @@ import javafx.stage.Stage;
 public class RoundMazeLauncher extends Application {
 
 
+    private static final int PAD = 50;
+    private static final int HEIGHT = 620;
+
     @Override
     public void start(Stage stage) throws Exception {
         final GridPane gridPane = new GridPane();
-        Canvas canvas = new Canvas(600, 600);
+        Canvas canvas = new Canvas(HEIGHT, HEIGHT);
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         canvas.setTranslateX(10);
         final Scene scene = new Scene(new Group(canvas));
 		RoundMazeModel.create(scene, canvas).draw();
         stage.setScene(scene);
-        stage.setWidth(canvas.getWidth() + 50);
-        stage.setHeight(canvas.getHeight() + 50);
+        stage.setWidth(canvas.getWidth() + PAD);
+        stage.setHeight(canvas.getHeight() + PAD);
         stage.show();
     }
 

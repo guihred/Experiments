@@ -24,6 +24,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -56,7 +57,7 @@ public class PlayingAudio extends Application {
 		mainStage = primaryStage;
 		mainStage.centerOnScreen();
 		Group root = new Group();
-		Scene scene = new Scene(root, 551, 270, Color.rgb(0, 0, 0, 0));
+        Scene scene = new Scene(root, 551, 270, Color.BLACK);
 		// load JavaFX CSS style
 		mainStage.setScene(scene);
 		// Initialize stage to be movable via mouse
@@ -79,6 +80,8 @@ public class PlayingAudio extends Application {
 		Node closeButton = createCloseButton();
         root.getChildren().addAll(applicationArea, vizContainer, buttonPanel, progressSlider, closeButton);
         scene.getStylesheets().add(ResourceFXUtils.toURL("media.css").toString());
+        ClassReflectionUtils.displayCSSStyler(scene, "media.css");
+
 		primaryStage.show();
 	}
 
@@ -128,7 +131,6 @@ public class PlayingAudio extends Application {
 		Arc playButton = new Arc(12, 16, 15, 15, 150, 60);
 		playButton.setId(PLAY_BUTTON_ID);
 		playButton.setType(ArcType.ROUND);
-		playButton.setOnMousePressed(mouseEvent -> mediaPlayer.play());
 		// pause control
 		Group pauseButton = new Group();
 		pauseButton.setId(PAUSE_BUTTON_ID);

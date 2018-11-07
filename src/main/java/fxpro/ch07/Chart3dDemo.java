@@ -23,28 +23,28 @@ import utils.RotateUtils;
 public class Chart3dDemo extends Application {
 
     // size of graph
-    private int size = 400;
+    private static final int SIZE = 400;
     // variables for mouse interaction
 
     @Override
     public void start(Stage primaryStage) {
-        Group cube = createCube(size);
+        Group cube = createCube(SIZE);
         StackPane root = new StackPane();
         root.getChildren().add(cube);
         // perlin noise
-        float[][] noiseArray = createNoise(size);
+        float[][] noiseArray = createNoise(SIZE);
         // mesh
         TriangleMesh mesh = new TriangleMesh();
         // create points for x/z
         float amplification = 100; // amplification of noise
-        for (int x = 0; x < size; x++) {
-            for (int z = 0; z < size; z++) {
+        for (int x = 0; x < SIZE; x++) {
+            for (int z = 0; z < SIZE; z++) {
                 mesh.getPoints().addAll(x, noiseArray[x][z] * amplification, z);
             }
         }
 
         // texture
-        int length = size;
+        int length = SIZE;
         float total = length;
 
         for (float x = 0; x < length - 1; x++) {
@@ -84,7 +84,7 @@ public class Chart3dDemo extends Application {
         }
 
         // material
-        Image diffuseMap = ResourceFXUtils.createImage(size, noiseArray);
+        Image diffuseMap = ResourceFXUtils.createImage(SIZE, noiseArray);
 
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(diffuseMap);
@@ -92,8 +92,8 @@ public class Chart3dDemo extends Application {
 
         // mesh view
         MeshView meshView = new MeshView(mesh);
-        meshView.setTranslateX(-size / 2.0);
-        meshView.setTranslateZ(-size / 2.0);
+        meshView.setTranslateX(-SIZE / 2.0);
+        meshView.setTranslateZ(-SIZE / 2.0);
         meshView.setMaterial(material);
         meshView.setCullFace(CullFace.NONE);
         meshView.setDrawMode(DrawMode.FILL);
@@ -103,14 +103,14 @@ public class Chart3dDemo extends Application {
 
         // testing / debugging stuff: show diffuse map on chart
         ImageView iv = new ImageView(diffuseMap);
-        iv.setTranslateX(-size / 2.0);
-        iv.setTranslateY(-size / 10.0);
+        iv.setTranslateX(-SIZE / 2.0);
+        iv.setTranslateY(-SIZE / 10.0);
         iv.setRotate(90);
         iv.setRotationAxis(new Point3D(1, 0, 0));
         cube.getChildren().add(iv);
 
         // scene
-        Scene scene = new Scene(root, 1600, 900, true, SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(root, 4 * SIZE, 2 * SIZE, true, SceneAntialiasing.BALANCED);
         scene.setCamera(new PerspectiveCamera());
 
         RotateUtils.setSpinnable(cube, scene);
@@ -141,7 +141,7 @@ public class Chart3dDemo extends Application {
 
         // back face
         r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.5, 1.0));
+        r.setFill(color.deriveColor(0.0, 1.0, 1 / 2., 1.0));
         r.setTranslateX(-size1 / 2.0);
         r.setTranslateY(-size1 / 2.0);
         r.setTranslateZ(size1 / 2.0);
@@ -150,7 +150,7 @@ public class Chart3dDemo extends Application {
 
         // bottom face
         r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.4, 1.0));
+        r.setFill(color.deriveColor(0.0, 1.0, 3.0 / 5, 1.0));
         r.setTranslateX(-size1 / 2.0);
         r.setTranslateY(0);
         r.setRotationAxis(Rotate.X_AXIS);
@@ -160,7 +160,7 @@ public class Chart3dDemo extends Application {
 
         // left face
         r = new Axis(size1);
-        r.setFill(color.deriveColor(0.0, 1.0, 1 - 0.2, 1.0));
+        r.setFill(color.deriveColor(0.0, 1.0, 4.0 / 5, 1.0));
         r.setTranslateX(0);
         r.setTranslateY(-size1 / 2.0);
         r.setRotationAxis(Rotate.Y_AXIS);
