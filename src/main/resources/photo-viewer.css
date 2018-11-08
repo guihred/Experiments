@@ -1,6 +1,8 @@
 .button-panel {
 	-fx-fill:blue;
 	-fx-stroke:white;
+	-fx-arc-height:10px;
+	-fx-arc-width: 10px;
 }
 .right-arrow{
 	-fx-base: black;	
@@ -16,4 +18,10 @@
 	-fx-translate-y:3px;
 	-fx-scale-shape:false;
 	-fx-shape:"M0,0 l 0 20 l -16 -10 z"
+}
+.ticker-border{
+	-fx-fill:transparent;
+	-fx-stroke:white;
+	-fx-arc-height:10px;
+	-fx-arc-width: 10px;
 }
