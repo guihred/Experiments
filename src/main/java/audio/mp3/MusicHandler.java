@@ -92,7 +92,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
 
         Slider currentSlider = addSlider(root);
         currentSlider.valueChangingProperty().addListener(
-                (observable, oldValue, newValue) -> updateMediaPlayer(currentSlider, oldValue, newValue));
+                (observable, oldValue, newValue) -> updateMediaPlayer(currentSlider, newValue));
         mediaPlayer.currentTimeProperty().addListener(e -> updateCurrentSlider(currentSlider));
         Slider initialSlider = addSlider(root);
         initialSlider.setValue(0);
@@ -186,7 +186,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
                         mediaPlayer.totalDurationProperty().addListener(b -> {
                             SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer);
                             currentSlider.valueChangingProperty().addListener(
-                                    (o, oldValue, newValue) -> updateMediaPlayer(currentSlider, oldValue, newValue));
+                                    (o, oldValue, newValue) -> updateMediaPlayer(currentSlider, newValue));
                             mediaPlayer.currentTimeProperty().addListener(c -> updateCurrentSlider(currentSlider));
                             mediaPlayer.play();
                         });
@@ -209,8 +209,8 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         }
     }
 
-    private void updateMediaPlayer(Slider currentSlider, Boolean oldValue, Boolean newValue) {
-        if (!newValue) {
+    private void updateMediaPlayer(Slider currentSlider, boolean valueChanging) {
+        if (!valueChanging) {
             double pos = currentSlider.getValue();
             final Duration seekTo = mediaPlayer.getTotalDuration().multiply(pos);
             SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer);
