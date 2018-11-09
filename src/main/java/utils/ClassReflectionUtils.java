@@ -42,7 +42,7 @@ public final class ClassReflectionUtils {
             }
         }
         stage2.setScene(new Scene(new VBox(textArea, CommonsFX.newButton("_Save", e -> {
-            try (PrintStream fileOutputStream = new PrintStream(file);) {
+            try (PrintStream fileOutputStream = new PrintStream(file, StandardCharsets.UTF_8.name())) {
                 fileOutputStream.print(textArea.getText());
                 fileOutputStream.flush();
                 scene.getStylesheets().clear();
@@ -202,7 +202,9 @@ public final class ClassReflectionUtils {
 
     private static String getText(File file) {
         try {
-            return Files.toString(file, StandardCharsets.UTF_8);
+            if (file.exists()) {
+                return Files.toString(file, StandardCharsets.UTF_8);
+            }
         } catch (IOException e2) {
             LOG.error("", e2);
         }

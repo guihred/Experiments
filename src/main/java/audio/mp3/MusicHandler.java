@@ -30,6 +30,8 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
      * 
      */
     private final TableView<Music> musicaTable;
+    private Duration startTime = Duration.ZERO;
+    private MediaPlayer mediaPlayer;
 
     public MusicHandler(TableView<Music> musicaTable) {
         this.musicaTable = musicaTable;
@@ -42,14 +44,15 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         }
     }
 
-    private Slider addSlider(VBox flow, MediaPlayer mediaPlayer) {
-        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(1000).build();
+    private Slider addSlider(VBox flow) {
+        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(100000).build();
         Label label = new Label("00:00");
 
         label.textProperty()
                 .bind(Bindings.createStringBinding(
                         () -> mediaPlayer.getTotalDuration() == null ? "00:00"
-                                : SongUtils.formatDurationMillis(
+                                : SongUtils
+                                        .formatFullDuration(
                                         mediaPlayer.getTotalDuration().multiply(slider.getValue())),
                         slider.valueProperty(), mediaPlayer.totalDurationProperty()));
 
@@ -85,26 +88,15 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
             root.getChildren().addAll(imageView);
         }
         Media media = new Media(selectedItem.getArquivo().toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer = new MediaPlayer(media);
 
-        Slider currentSlider = addSlider(root, mediaPlayer);
-        currentSlider.valueChangingProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                double pos = currentSlider.getValue();
-                final Duration seekTo = mediaPlayer.getTotalDuration().multiply(pos);
-                SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer);
-            }
-        });
-        mediaPlayer.currentTimeProperty().addListener(e -> {
-            mediaPlayer.getCurrentTime();
-            if (!currentSlider.isValueChanging()) {
-                currentSlider
-                        .setValue(mediaPlayer.getCurrentTime().toMillis() / mediaPlayer.getTotalDuration().toMillis());
-            }
-        });
-        Slider initialSlider = addSlider(root, mediaPlayer);
+        Slider currentSlider = addSlider(root);
+        currentSlider.valueChangingProperty().addListener(
+                (observable, oldValue, newValue) -> updateMediaPlayer(currentSlider, oldValue, newValue));
+        mediaPlayer.currentTimeProperty().addListener(e -> updateCurrentSlider(currentSlider));
+        Slider initialSlider = addSlider(root);
         initialSlider.setValue(0);
-        Slider finalSlider = addSlider(root, mediaPlayer);
+        Slider finalSlider = addSlider(root);
         finalSlider.setValue(0.999);
         mediaPlayer.totalDurationProperty().addListener(e -> finalSlider.setValue(1));
         File outFile = new File("out", selectedItem.getArquivo().getName());
@@ -112,7 +104,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         progressIndicator.setVisible(false);
         Button splitButton = CommonsFX.newButton("_Split", e -> {
             if (initialSlider.getValue() != 0 || finalSlider.getValue() != 1) {
-                splitAndSave(selectedItem, mediaPlayer, initialSlider, finalSlider, outFile, progressIndicator, stage);
+                splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator, stage);
                 return;
             }
             mediaPlayer.stop();
@@ -120,6 +112,8 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
             MusicReader.saveMetadata(selectedItem);
             stage.close();
         });
+        Button splitMultipleButton = CommonsFX.newButton("Split _Multiple",
+                e -> splitAudio(selectedItem.getArquivo(), currentSlider));
 
         Button stopButton = CommonsFX.newButton("_Play/Pause", e -> {
             if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
@@ -128,7 +122,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
                 mediaPlayer.play();
             }
         });
-        HBox hbox = new HBox(stopButton, splitButton);
+        HBox hbox = new HBox(stopButton, splitButton, splitMultipleButton);
         root.getChildren().add(progressIndicator);
         root.getChildren().add(hbox);
 
@@ -138,7 +132,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         mediaPlayer.play();
     }
 
-    private void splitAndSave(Music selectedItem, MediaPlayer mediaPlayer, Slider initialSlider, Slider finalSlider,
+    private void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider,
             File outFile, ProgressIndicator progressIndicator, Stage stage) {
         DoubleProperty progress = SongUtils.splitAudio(selectedItem.getArquivo(), outFile,
                 mediaPlayer.getTotalDuration().multiply(initialSlider.getValue()),
@@ -160,6 +154,67 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
                 });
             }
         });
+    }
+
+    private void splitAudio(File file, Slider currentSlider) {
+        Duration currentTime = mediaPlayer.getTotalDuration().multiply(currentSlider.getValue());
+        Music music = new Music(file);
+        VBox root = new VBox();
+        root.getChildren().addAll(criarField("Título", music.tituloProperty()));
+        root.getChildren().addAll(criarField("Artista", music.artistaProperty()));
+        root.getChildren().addAll(criarField("Álbum", music.albumProperty()));
+        root.setAlignment(Pos.CENTER);
+        ProgressIndicator progressIndicator = new ProgressIndicator(-1);
+        progressIndicator.setVisible(false);
+        root.getChildren().addAll(progressIndicator);
+
+        Stage stage = new Stage();
+        Button splitButton = CommonsFX.newButton("_Split", a -> {
+            mediaPlayer.dispose();
+            String format = music.getArtista().isEmpty()
+                    ? String.format("out\\%s.mp3", music.getTitulo().replaceAll("\\..+", ""))
+                    : String.format("out\\%s-%s.mp3", music.getTitulo().replaceAll("\\..+", ""), music.getArtista());
+            File newFile = new File(format);
+            DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime, currentTime);
+            progressIndicator.progressProperty().bind(splitAudio);
+            progressIndicator.setVisible(true);
+            splitAudio.addListener((ob, old, n) -> {
+                progressIndicator.setVisible(true);
+                if (n.intValue() == 1) {
+                    Platform.runLater(() -> {
+                        mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
+                        mediaPlayer.totalDurationProperty().addListener(b -> {
+                            SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer);
+                            currentSlider.valueChangingProperty().addListener(
+                                    (o, oldValue, newValue) -> updateMediaPlayer(currentSlider, oldValue, newValue));
+                            mediaPlayer.currentTimeProperty().addListener(c -> updateCurrentSlider(currentSlider));
+                            mediaPlayer.play();
+                        });
+                        stage.close();
+                    });
+                }
+            });
+            startTime = currentTime;
+        });
+        root.getChildren().addAll(splitButton);
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    private void updateCurrentSlider(Slider currentSlider) {
+        mediaPlayer.getCurrentTime();
+        if (!currentSlider.isValueChanging()) {
+            currentSlider
+                    .setValue(mediaPlayer.getCurrentTime().toMillis() / mediaPlayer.getTotalDuration().toMillis());
+        }
+    }
+
+    private void updateMediaPlayer(Slider currentSlider, Boolean oldValue, Boolean newValue) {
+        if (!newValue) {
+            double pos = currentSlider.getValue();
+            final Duration seekTo = mediaPlayer.getTotalDuration().multiply(pos);
+            SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer);
+        }
     }
 
 }

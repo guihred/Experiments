@@ -145,9 +145,9 @@ public final class SongUtils {
         cmd.append(" -i \"");
         cmd.append(mp3File);
         cmd.append("\" -ss ");
-        cmd.append(formatDurationMillis(start));
+        cmd.append(formatFullDuration(start));
         cmd.append(" -r 1 -to ");
-        cmd.append(formatDurationMillis(end));
+        cmd.append(formatFullDuration(end));
         cmd.append(" \"");
 
         cmd.append(mp4File);
@@ -160,7 +160,8 @@ public final class SongUtils {
 		// ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
         Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils
 				.executeInConsoleAsync(cmd.toString(), responses);
-        return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync, SongUtils::convertTimeToMillis);
+        return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync,
+                s -> Math.abs(end.subtract(start).toMillis()), SongUtils::convertTimeToMillis);
     }
 
 

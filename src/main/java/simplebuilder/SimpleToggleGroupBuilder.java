@@ -1,5 +1,7 @@
 package simplebuilder;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
@@ -42,6 +44,10 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
     @Override
     public ToggleGroup build() {
         return toggleGroup;
+    }
+
+    public <T>List<T> getTogglesAs(Class<T> cl) {
+        return toggleGroup.getToggles().stream().map(cl::cast).collect(Collectors.toList());
     }
 
     public SimpleToggleGroupBuilder onChange(ChangeListener<? super Toggle> listener) {

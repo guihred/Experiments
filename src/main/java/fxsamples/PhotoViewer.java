@@ -1,46 +1,37 @@
 package fxsamples;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
-import javafx.animation.FadeTransition;
+import javafx.animation.Animation;
 import javafx.animation.SequentialTransition;
-import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import simplebuilder.SimpleSequentialTransitionBuilder;
+import utils.ClassReflectionUtils;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class PhotoViewer extends Application {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PhotoViewer.class);
+    private static final int DURATION_MILLIS = 500;
+    private static final Logger LOGGER = HasLogging.log();
     // List of URL strings
     private final List<String> imageFiles = new ArrayList<>();
     // The current index into the imageFile
@@ -58,7 +49,7 @@ public class PhotoViewer extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Photo Viewer");
         Group root = new Group();
-        Scene scene = new Scene(root, 551, 400, Color.BLACK);
+        Scene scene = new Scene(root, 551, 400);
         scene.getStylesheets().add(ResourceFXUtils.toExternalForm("photo-viewer.css"));
         primaryStage.setScene(scene);
         // set up the current image view area
@@ -73,7 +64,7 @@ public class PhotoViewer extends Application {
         root.getChildren().addAll(currentImageView, buttonGroup, progressIndicator);
         root.getChildren().add(createTickerControl(primaryStage, 80));
         primaryStage.show();
-
+        ClassReflectionUtils.displayCSSStyler(scene, "photo-viewer.css");
         addPicturesFromImagesFolder();
     }
 
@@ -92,13 +83,9 @@ public class PhotoViewer extends Application {
     }
 
     private void addPicturesFromImagesFolder() {
-        try (Stream<Path> s = Files.list(ResourceFXUtils.getUserFolder("Pictures").toPath())) {
-            s.forEach(e -> tryAddImage(e.toFile()));
-            if (currentIndex > -1) {
-                loadImage(imageFiles.get(currentIndex));
-            }
-        } catch (Exception e) {
-            LOGGER.error("", e);
+        ResourceFXUtils.runOnFiles(ResourceFXUtils.getUserFolder("Pictures"), this::tryAddImage);
+        if (currentIndex > -1) {
+            loadImage(imageFiles.get(currentIndex));
         }
     }
 
@@ -121,7 +108,7 @@ public class PhotoViewer extends Application {
         Button leftButton = new Button();
         leftButton.getStyleClass().add("left-arrow");
         // return to previous image
-        leftButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+        leftButton.setOnMousePressed(e -> {
             LOGGER.info("busy loading? {}", loading.get());
             // if no previous image or currently loading.
             if (loading.get()) {
@@ -137,7 +124,7 @@ public class PhotoViewer extends Application {
         Button rightButton = new Button();
         rightButton.getStyleClass().add("right-arrow");
         // advance to next image
-        rightButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+        rightButton.setOnMousePressed(mouseEvent -> {
             LOGGER.info("busy loading? {}", loading.get());
             // if no next image or currently loading.
             if (loading.get()) {
@@ -154,19 +141,11 @@ public class PhotoViewer extends Application {
         buttonGroup.translateXProperty().bind(scene.widthProperty().subtract(buttonArea.getWidth() + 6));
         buttonGroup.translateYProperty().bind(scene.heightProperty().subtract(buttonArea.getHeight() + 6));
 
-        scene.setOnMouseEntered((MouseEvent me) -> {
-            FadeTransition fadeButtons = new FadeTransition(Duration.millis(500), buttonGroup);
-            fadeButtons.setFromValue(0.0);
-            fadeButtons.setToValue(1.0);
-            fadeButtons.play();
-        });
+        scene.setOnMouseEntered(me -> new SimpleSequentialTransitionBuilder()
+                .addFadeTransition(DURATION_MILLIS, buttonGroup, 0, 1).build().play());
         // Fade out button controls
-        scene.setOnMouseExited((MouseEvent me) -> {
-            FadeTransition fadeButtons = new FadeTransition(Duration.millis(500), buttonGroup);
-            fadeButtons.setFromValue(1);
-            fadeButtons.setToValue(0);
-            fadeButtons.play();
-        });
+        scene.setOnMouseExited(me -> new SimpleSequentialTransitionBuilder()
+                .addFadeTransition(DURATION_MILLIS, buttonGroup, 1, 0).build().play());
 
         return buttonGroup;
     }
@@ -224,25 +203,19 @@ public class PhotoViewer extends Application {
         FlowPane tickerContent = new FlowPane();
         // add some news
         news.setText("Drag in some Images");
-        news.setFill(Color.WHITE);
         tickerContent.getChildren().add(news);
-        DoubleProperty centerContentY = new SimpleDoubleProperty();
-        centerContentY.bind(clipRegion.heightProperty().divide(2).subtract(tickerContent.heightProperty().divide(2)));
-        tickerContent.translateYProperty().bind(centerContentY);
+        tickerContent.translateYProperty()
+                .bind(clipRegion.heightProperty().divide(2).subtract(tickerContent.heightProperty().divide(2)));
         tickerArea.getChildren().add(tickerContent);// scroll news feed
-        TranslateTransition tickerScroller = new TranslateTransition();
-        tickerScroller.setNode(tickerContent);
-        tickerScroller.setDuration(Duration.millis(scene.getWidth() * 40));
-        tickerScroller.fromXProperty().bind(scene.widthProperty());
-        tickerScroller.toXProperty().bind(tickerContent.widthProperty().negate());
-        // when ticker has finished, reset and replay ticker animation
-        tickerScroller.setOnFinished((ActionEvent ae) -> {
-            tickerScroller.stop();
-            tickerScroller.setDuration(Duration.millis(scene.getWidth() * 40));
-            tickerScroller.playFromStart();
-        });
+
+        SequentialTransition build = new SimpleSequentialTransitionBuilder()
+                .addTranslateTransition(tickerContent, scene.getWidth() * 40, scene.widthProperty(),
+                        tickerContent.widthProperty().negate())
+                .cycleCount(Animation.INDEFINITE)
+                .build();
+
         // start ticker after nodes are shown
-        stage.setOnShown(windowEvent -> tickerScroller.play());
+        stage.setOnShown(windowEvent -> build.play());
         return tickerArea;
     }
 
@@ -262,8 +235,7 @@ public class PhotoViewer extends Application {
                 Image image = new Image(url, false);
                 Platform.runLater(() -> {
                     // New code:
-                    SequentialTransition seqTransition = transitionByFading(image, currentImageView);
-                    seqTransition.play();
+                    transitionByFading(image, currentImageView);
                     progressIndicator.setVisible(false);
                     loading.set(false); // free lock
                     news.setText(url.replaceAll("^.+\\/", ""));
@@ -320,7 +292,7 @@ public class PhotoViewer extends Application {
      */
     private void setupDragNDrop(Scene scene) {
         // Dragging over surface
-        scene.setOnDragOver((DragEvent event) -> {
+        scene.setOnDragOver(event -> {
             Dragboard db = event.getDragboard();
             if (db.hasFiles() || db.hasUrl() && isValidImageFile(db.getUrl())) {
                 event.acceptTransferModes(TransferMode.LINK);
@@ -329,7 +301,7 @@ public class PhotoViewer extends Application {
             }
         });
         // Dropping over surface
-        scene.setOnDragDropped((DragEvent event) -> {
+        scene.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             // image from the local file system.
             if (db.hasFiles()) {
@@ -346,25 +318,20 @@ public class PhotoViewer extends Application {
         });
     }
 
-    private SequentialTransition transitionByFading(Image nextImage, ImageView imageView) {
-        // fade out image view node
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(500), imageView);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0.0);
-        fadeOut.setOnFinished(actionEvent -> imageView.setImage(nextImage));
-        // fade in image view node
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), imageView);
-        fadeIn.setFromValue(0.0);
-        fadeIn.setToValue(1.0);
-        // fade out image view, swap image and fade in image view
-        return new SequentialTransition(fadeOut, fadeIn);
+    private void transitionByFading(Image nextImage, ImageView imageView) {
+
+        new SimpleSequentialTransitionBuilder()
+                // fade out image view node
+                .addFadeTransition(DURATION_MILLIS, imageView, 1, 0, e -> imageView.setImage(nextImage))
+                // fade out image view, swap image and fade in image view
+                .addFadeTransition(DURATION_MILLIS, imageView, 0, 1).build().play();
     }
 
     private void tryAddImage(File file) {
         try {
             addImage(file.toURI().toURL().toString());
             LOGGER.trace("{}", imageFiles);
-        } catch (MalformedURLException ex) {
+        } catch (Exception ex) {
             LOGGER.error("", ex);
         }
     }

@@ -111,6 +111,15 @@ public final class ResourceFXUtils {
         new JFXPanel().toString();
     }
 
+    public static void runOnFiles(File userFolder,ConsumerEx<File> run) {
+         
+        try (Stream<Path> s = Files.list(userFolder.toPath())) {
+            s.forEach(ConsumerEx.makeConsumer(e -> run.accept(e.toFile())));
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
+    }
+
     public static String take(final Canvas canvas) {
         try {
             final WritableImage writableImage = new WritableImage((int) canvas.getWidth(), (int) canvas.getHeight());

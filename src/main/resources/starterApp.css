@@ -1,0 +1,9 @@
+.cool-popup{
+	-fx-background-color: lightblue;
+	-fx-background-radius: 1px;
+	-fx-padding: 10px 20px;
+	-fx-background-radius: 10px;
+	-fx-border-color: gray;
+	-fx-border-width: 1px;
+	-fx-border-radius: 10px;
+}

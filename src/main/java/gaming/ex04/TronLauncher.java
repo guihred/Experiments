@@ -13,6 +13,8 @@ import simplebuilder.SimpleTimelineBuilder;
 import utils.CommonsFX;
 
 public class TronLauncher extends Application {
+    private static final int UPDATE_MILLIS = 40;
+    private static final int WIDTH = 400;
     private final TronModel newGameModel = new TronModel();
     private Timeline timeline;
 
@@ -27,7 +29,7 @@ public class TronLauncher extends Application {
 
         final Scene scene = new Scene(gridPane);
         scene.setOnKeyPressed(this::handleKeyPressed);
-        timeline = new SimpleTimelineBuilder().addKeyFrame(new Duration(40), t -> {
+        timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(UPDATE_MILLIS), t -> {
             if (newGameModel.updateMap()) {
                 timeline.stop();
                 String text2 = "You Got " + newGameModel.getSnake().size() + " points";
@@ -39,8 +41,8 @@ public class TronLauncher extends Application {
         }).cycleCount(Animation.INDEFINITE).build();
         timeline.play();
         stage.setScene(scene);
-        stage.setWidth(400);
-        stage.setHeight(400);
+        stage.setWidth(WIDTH);
+        stage.setHeight(WIDTH);
         stage.show();
     }
 

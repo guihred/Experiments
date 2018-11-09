@@ -1,7 +1,7 @@
 package fxpro.ch05;
 
+import java.util.List;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -19,10 +19,10 @@ import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import simplebuilder.*;
-import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 /**
  *
@@ -41,12 +41,11 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		BorderPane borderPane = new BorderPane(createTabs());
 		borderPane.setTop(top);
 		Scene scene = new Scene(borderPane);
-		// .stylesheets(StarterAppMain.class.getResource("starterApp.css")
-		// .toExternalForm())
-        ClassReflectionUtils.displayStyleClass(borderPane);
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("starterApp.css"));
 		stage.setScene(scene);
-		stage.setWidth(800);
-		stage.setHeight(600);
+        final int WIDTH = 800;
+        stage.setWidth(WIDTH);
+        stage.setHeight(WIDTH);
         stage.setTitle("Table Visualization Example");
 		stage.show();
 	}
@@ -68,14 +67,16 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
         Button okButton = CommonsFX.newButton("OK", e -> alertPopup.hide());
 		final Label htmlLabel = new Label(text);
 		htmlLabel.setWrapText(true);
-		htmlLabel.setMaxWidth(280);
-		htmlLabel.setMaxHeight(140);
+        final int MAX_WIDTH = 280;
+        htmlLabel.setMaxWidth(MAX_WIDTH);
+        final int MAX_HEIGHT = 140;
+        htmlLabel.setMaxHeight(MAX_HEIGHT);
 		final BorderPane borderPane = new BorderPane(htmlLabel, null, null, okButton, null);
 
+        StackPane pane = new StackPane( borderPane);
         alertPopup.getContent()
-                .add(new StackPane(new SimpleRectangleBuilder().width(300).height(200).fill(Color.LIGHTBLUE)
-				.arcWidth(20).arcHeight(20).stroke(Color.GRAY).strokeWidth(2).build(), borderPane));
-
+                .add(pane);
+        pane.getStyleClass().add("cool-popup");
 		BorderPane.setAlignment(okButton, Pos.CENTER);
 		BorderPane.setMargin(okButton, new Insets(10, 0, 10, 0));
 		return alertPopup;
@@ -85,14 +86,11 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		final HTMLEditor htmlEditor = new HTMLEditor();
 		htmlEditor.setHtmlText("<p>Replace this text</p>");
 
-        Button viewHtmlButton = CommonsFX.newButton("View HTML", e -> {
-			Popup alertPopup1 = createAlertPopup(htmlEditor.getHtmlText());
-			alertPopup1.show(stage, (stage.getWidth() - alertPopup1.getWidth()) / 2 + stage.getX(),
-					(stage.getHeight() - alertPopup1.getHeight()) / 2 + stage.getY());
-		});
+        Button viewHtmlButton = CommonsFX.newButton("View HTML",
+                e -> createAlertPopup(htmlEditor.getHtmlText()).show(stage));
 
         final BorderPane htmlEditorDemo = new BorderPane(htmlEditor, null, null, viewHtmlButton, null);
-		BorderPane.setAlignment(viewHtmlButton, Pos.CENTER);
+        BorderPane.setAlignment(viewHtmlButton, Pos.CENTER);
 		BorderPane.setMargin(viewHtmlButton, new Insets(10, 0, 10, 0));
 		return htmlEditorDemo;
 	}
@@ -139,18 +137,19 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 			}
 		});
 		Slider slider = new Slider();
-		slider.setPrefWidth(200);
+        final int standardSize = 200;
+        slider.setPrefWidth(standardSize);
 		slider.setMin(-1);
 		slider.setMax(TableVisualizationModel.MAX_RPM);
 		slider.valueProperty().bindBidirectional(TableVisualizationModel.RPM);
 		ProgressIndicator progressIndicator = new ProgressIndicator();
-		progressIndicator.setPrefWidth(200);
+        progressIndicator.setPrefWidth(standardSize);
 		progressIndicator.progressProperty().bind(TableVisualizationModel.RPM.divide(TableVisualizationModel.MAX_RPM));
 		ProgressBar progressBar = new ProgressBar();
-		progressBar.setPrefWidth(200);
+        progressBar.setPrefWidth(standardSize);
 		progressBar.progressProperty().bind(TableVisualizationModel.KPH.divide(TableVisualizationModel.MAX_KPH));
 		ScrollBar scrollBar = new ScrollBar();
-		scrollBar.setPrefWidth(200);
+        scrollBar.setPrefWidth(standardSize);
 		scrollBar.setMin(-1);
 		scrollBar.setMax(TableVisualizationModel.MAX_KPH);
 		scrollBar.valueProperty().bindBidirectional(TableVisualizationModel.KPH);
@@ -184,7 +183,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
         splitMenu.setOnAction(e -> getLogger().info("{} occurred on SplitMenuButton", e.getEventType()));
         Node[] array = radioToggleGroup.getToggles().stream().map(Node.class::cast).toArray(Node[]::new);
         HBox hBox = new HBox(10, array);
-        VBox variousControls = new VBox(20, button, checkBox,
+        VBox variousControls = new VBox(10, button, checkBox,
                 hBox, hyperlink,
                 choiceBox, menuButton, splitMenu, textField, passwordField,
                 new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
@@ -209,19 +208,17 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 		        .addItem("Animal","Lion","Tiger","Bear")
 		        .addItem("Vegetable","Arugula","Broccoli","Cabbage")
 		        .addItem("Mineral","Copper","Diamond","Quartz")
-                .minWidth(150)
                 .editable(false)
                 .showRoot(false)
                 .onSelect(newValue->{
                     if (newValue != null && newValue.isLeaf()) {
-                        TableVisualizationModel.LIST_VIEW_ITEMS.clear();
-                        for (int i = 1; i <= 10000; i++) {
-                            TableVisualizationModel.LIST_VIEW_ITEMS.add(newValue.getValue() + " " + i);
-                        }
+                        TableVisualizationModel.updateList(newValue.getValue());
                     }    
                 })
 		        .build(), new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS));
 	}
+
+
 
     private Node createTableDemoNode() {
         return new SimpleTableViewBuilder<Person>()
@@ -229,7 +226,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .addColumn("First Name", "firstName")
                 .addColumn("Last Name", "lastName")
                 .addColumn("Phone Number", "phone")
-                .onSelect((old,newValue)->getLogger().info("{} chosen in TableView", newValue))
+                .onSelect((old, newValue) -> getLogger().info("{} chosen in TableView", newValue))
                 .build();
 	}
 
@@ -241,8 +238,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .addTab("ScrollPane/Miscellaneous", createScrollMiscDemoNode())
                 .addTab("HTMLEditor", createHtmlEditorDemoNode())
                 .addTab("WebView", webView, (tab, evt) -> {
-                    String randomWebSite = TableVisualizationModel.getRandomWebSite();
                     if (tab.isSelected()) {
+                        String randomWebSite = TableVisualizationModel.getRandomWebSite();
                         webView.getEngine().load(randomWebSite);
                         getLogger().info("WebView tab is selected, loading: {}", randomWebSite);
                     }
@@ -251,7 +248,6 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .build();
 	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     private ToolBar createToolBar() {
         final Button newButton = CommonsFX.newButton(
                 new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "newButton",
@@ -265,7 +261,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
         final ToggleButton boldButton = newToggleButton("boldButton", Color.MAROON);
         final ToggleButton italicButton = newToggleButton("italicButton", Color.YELLOW);
 
-        final ToggleGroup alignToggleGroup = new SimpleToggleGroupBuilder()
+        List<Node> toggles = new SimpleToggleGroupBuilder()
                 .addToggle(new Circle(8, Color.PURPLE), "leftAlignButton")
                 .addToggle(new Circle(8, Color.ORANGE), "centerAlignButton")
                 .addToggle(new Circle(8, Color.CYAN), "rightAlignButton")
@@ -275,10 +271,9 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                     if (tb != null) {
                         getLogger().info("{} selected", tb.getId());
                     }
-                }).build();
+                }).getTogglesAs(Node.class);
 
         ToolBar toolBar = new ToolBar(newButton, editButton, deleteButton, boldButton, italicButton);
-        ObservableList<Node> toggles = (ObservableList) alignToggleGroup.getToggles();
         toolBar.getItems().addAll(toggles);
 
         return toolBar;

@@ -37,7 +37,7 @@ public class Maze3DModel {
         history.add(maze[0][0]);
         List<String> check = new ArrayList<>();
         timeline = new SimpleTimelineBuilder()
-                .addKeyFrame(Duration.seconds(0.01), event -> createMazeLoop(check))
+                .addKeyFrame(Duration.millis(10), event -> createMazeLoop(check))
                 .cycleCount(Animation.INDEFINITE)
                 .build();
         timeline.play();

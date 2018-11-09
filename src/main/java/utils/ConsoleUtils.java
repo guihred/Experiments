@@ -32,6 +32,12 @@ public final class ConsoleUtils {
 
     public static DoubleProperty defineProgress(String totalRegex, String progressRegex,
             Map<String, ObservableList<String>> executeInConsoleAsync, ToDoubleFunction<String> function) {
+        return defineProgress(totalRegex, progressRegex, executeInConsoleAsync, function, function);
+    }
+
+    public static DoubleProperty defineProgress(String totalRegex, String progressRegex,
+            Map<String, ObservableList<String>> executeInConsoleAsync, ToDoubleFunction<String> function,
+            ToDoubleFunction<String> function2) {
         SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
         SimpleDoubleProperty total = new SimpleDoubleProperty(100);
         executeInConsoleAsync.get(totalRegex).addListener((ListChangeListener<String>) c -> {
@@ -44,7 +50,7 @@ public final class ConsoleUtils {
         executeInConsoleAsync.get(progressRegex).addListener((ListChangeListener<String>) c -> {
             while (c.next()) {
                 String text = c.getAddedSubList().get(0);
-                double applyAsDouble = function.applyAsDouble(text);
+                double applyAsDouble = function2.applyAsDouble(text);
                 double doubleValue = total.doubleValue();
                 progress.set(applyAsDouble / doubleValue);
             }
@@ -161,7 +167,7 @@ public final class ConsoleUtils {
                 new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
-                LOGGER.info(line);
+                LOGGER.trace(line);
                 String line1 = line;
                 Map<String, String> regMap = responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
                         .collect(Collectors.toMap(Entry<String, String>::getKey,

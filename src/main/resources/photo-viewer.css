@@ -1,6 +1,10 @@
+.root{
+	-fx-lightgray:rgba(128,128,128,0.5);
+}
+
 .button-panel {
-	-fx-fill:blue;
-	-fx-stroke:white;
+	-fx-fill: -fx-lightgray;
+	-fx-stroke:black;
 	-fx-arc-height:10px;
 	-fx-arc-width: 10px;
 }
@@ -20,8 +24,8 @@
 	-fx-shape:"M0,0 l 0 20 l -16 -10 z"
 }
 .ticker-border{
-	-fx-fill:transparent;
-	-fx-stroke:white;
+	-fx-fill:rgba(128,128,128,0.5);
+	-fx-stroke:black;
 	-fx-arc-height:10px;
 	-fx-arc-width: 10px;
 }
