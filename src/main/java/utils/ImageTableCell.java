@@ -4,7 +4,6 @@ import java.util.stream.Stream;
 import javafx.scene.control.TableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import pdfreader.HasImage;
 
 public final class ImageTableCell extends TableCell<HasImage, String> {
     @Override

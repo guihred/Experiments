@@ -1,4 +1,4 @@
-package pdfreader;
+package utils;
 
 public interface HasImage {
     void appendImage(String image);

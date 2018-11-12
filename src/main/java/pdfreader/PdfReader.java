@@ -25,10 +25,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.CommonsFX;
-import utils.HasLogging;
-import utils.ImageTableCell;
-import utils.ResourceFXUtils;
+import utils.*;
 
 public class PdfReader extends Application implements HasLogging {
     private static final int WORD_DISPLAY_PERIOD = 200;

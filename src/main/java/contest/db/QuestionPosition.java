@@ -1,6 +1,6 @@
 package contest.db;
 
-import pdfreader.HasImage;
+import utils.HasImage;
 
 public class QuestionPosition {
     private float x;

@@ -14,10 +14,10 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
-import pdfreader.HasImage;
 import pdfreader.PdfImage;
 import pdfreader.PdfUtils;
 import pdfreader.PrintImageLocations;
+import utils.HasImage;
 import utils.HasLogging;
 
 public final class ContestReader implements HasLogging {
