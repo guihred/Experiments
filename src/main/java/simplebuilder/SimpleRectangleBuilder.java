@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import java.util.stream.IntStream;
 import javafx.scene.shape.Rectangle;
 
 public class SimpleRectangleBuilder extends SimpleShapeBuilder<Rectangle, SimpleRectangleBuilder> {
@@ -18,14 +19,29 @@ public class SimpleRectangleBuilder extends SimpleShapeBuilder<Rectangle, Simple
 
 	public SimpleRectangleBuilder arcWidth(double x) {
 		rectangle.setArcWidth(x);
+
 		return this;
 	}
 
-
-	public SimpleRectangleBuilder height(double x) {
+    public SimpleRectangleBuilder height(double x) {
 		rectangle.setHeight(x);
 		return this;
 	}
+
+	public SimpleRectangleBuilder strokeDashArray(Double... elements) {
+        rectangle.getStrokeDashArray().clear();
+	    rectangle.getStrokeDashArray().addAll(elements);
+	    return this;
+
+    }
+
+    public SimpleRectangleBuilder strokeDashArray(int... elements) {
+        rectangle.getStrokeDashArray().clear();
+        rectangle.getStrokeDashArray()
+                .addAll(IntStream.of(elements).mapToDouble(e -> e).boxed().toArray(Double[]::new));
+        return this;
+
+    }
 
 	public SimpleRectangleBuilder width(double x) {
 		rectangle.setWidth(x);
