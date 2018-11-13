@@ -7,7 +7,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public final class TableVisualizationModel {
-	public static final ObservableList<String> CHOICE_BOX_ITEMS = FXCollections.observableArrayList(
+    private static final int LIST_SIZE = 10000;
+
+    public static final ObservableList<String> CHOICE_BOX_ITEMS = FXCollections.observableArrayList(
             "Choice A",
             "Choice B",
             "Choice C",
@@ -24,7 +26,7 @@ public final class TableVisualizationModel {
 	private TableVisualizationModel() {
 	}
 
-	public static String getRandomWebSite() {
+    public static String getRandomWebSite() {
         String[] webSites = {
             "http://javafx.com",
             "http://fxexperience.com",
@@ -37,7 +39,6 @@ public final class TableVisualizationModel {
         int randomIdx = new Random().nextInt(webSites.length);
         return webSites[randomIdx];
     }
-
 	public static ObservableList<Person> getTeamMembers() {
         ObservableList<Person> teamMembers = FXCollections.observableArrayList();
 		for (int i = 1; i <= 100; i++) {
@@ -46,5 +47,12 @@ public final class TableVisualizationModel {
                     "Phone" + i));
         }
         return teamMembers;
+    }
+
+	public static void updateList(String newValue) {
+        TableVisualizationModel.LIST_VIEW_ITEMS.clear();
+        for (int i = 1; i <= LIST_SIZE; i++) {
+            TableVisualizationModel.LIST_VIEW_ITEMS.add(newValue + " " + i);
+        }
     }
 }

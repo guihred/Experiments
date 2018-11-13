@@ -4,7 +4,7 @@ import japstudy.db.BaseEntity;
 import java.text.MessageFormat;
 import java.util.Objects;
 import javax.persistence.*;
-import pdfreader.HasImage;
+import utils.HasImage;
 
 @Entity
 @Table

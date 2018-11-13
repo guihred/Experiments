@@ -16,7 +16,8 @@ import utils.ResourceFXUtils;
 
 public final class ExcelService implements HasLogging {
 
-	private static final Logger LOG = HasLogging.log();
+    private static final int DEFAULT_ROW_SIZE = 500;
+    private static final Logger LOG = HasLogging.log();
 
     private ExcelService() {
     }
@@ -25,7 +26,7 @@ public final class ExcelService implements HasLogging {
             Map<String, FunctionEx<T, Object>> fields,
             File file) {
         try (FileOutputStream response = new FileOutputStream(file);
-                SXSSFWorkbook xssfWorkbook = new SXSSFWorkbook(500)) {
+                SXSSFWorkbook xssfWorkbook = new SXSSFWorkbook(DEFAULT_ROW_SIZE)) {
             SXSSFSheet sheetAt = xssfWorkbook.createSheet();
             sheetAt.trackAllColumnsForAutoSizing();
 			Row row2 = sheetAt.createRow(0);

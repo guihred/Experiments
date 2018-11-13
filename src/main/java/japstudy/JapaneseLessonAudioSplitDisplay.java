@@ -82,8 +82,7 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
 
 
     private void splitAudio() {
-        Duration currentDuration = mediaPlayer.get().getCurrentTime();
-        Duration currentTime = currentDuration;
+        Duration currentTime = mediaPlayer.get().getCurrentTime();
 
         if (startTime == null) {
             startTime = currentTime;

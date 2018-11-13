@@ -86,7 +86,7 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 	}
 
 	public Z styleClass(String string) {
-		node.setStyle(string);
+        node.getStyleClass().add(string);
 		return (Z) this;
 	}
 

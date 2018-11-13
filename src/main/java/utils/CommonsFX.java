@@ -117,13 +117,6 @@ public final class CommonsFX {
         return checkBox;
     }
 
-    public static CheckBox newCheckBox(int x, int y) {
-		CheckBox build = new CheckBox();
-		build.setLayoutX(x);
-		build.setLayoutY(y);
-		return build;
-	}
-
     public static CheckBox newCheckBox(String text, boolean disabled) {
 		CheckBox build = new CheckBox(text);
 		build.setDisable(disabled);

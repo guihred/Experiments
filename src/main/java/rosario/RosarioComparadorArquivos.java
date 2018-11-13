@@ -329,7 +329,11 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		stage.show();
 	}
 
-    private TableView<Medicamento> tabelaMedicamentos(boolean completa) {
+    public static void main(String[] args) {
+		launch(args);
+	}
+
+    private static TableView<Medicamento> tabelaMedicamentos(boolean completa) {
 
 		final SimpleTableViewBuilder<Medicamento> medicamentosTable = new SimpleTableViewBuilder<Medicamento>()
                 .prefWidth(250)
@@ -344,10 +348,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		medicamentosTable.addColumn(QUANTIDADE, "quantidade");
 		medicamentosTable.addColumn(CODIGO, "codigo");
 		return medicamentosTable.equalColumns().build();
-	}
-
-    public static void main(String[] args) {
-		launch(args);
 	}
     private abstract class CustomableTableCell<T> extends TableCell<Medicamento, T> {
 

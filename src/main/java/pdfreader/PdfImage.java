@@ -1,6 +1,7 @@
 package pdfreader;
 
 import java.io.File;
+import utils.HasImage;
 
 public class PdfImage implements HasImage {
     private File file;

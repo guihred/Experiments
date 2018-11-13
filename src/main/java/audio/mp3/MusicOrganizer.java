@@ -23,13 +23,13 @@ import utils.ResourceFXUtils;
 
 public class MusicOrganizer extends Application implements HasLogging {
 
+    private static final int HEIGHT = 250;
+    private static final int WIDTH = 600;
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Organizador de Músicas");
-
         VBox root = new VBox();
-
-        Label listaMusicas = new Label("Lista Músicas");
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Carregar Pasta de Músicas");
 		final TableView<Music> musicasTable = tabelaMusicas();
@@ -37,15 +37,14 @@ public class MusicOrganizer extends Application implements HasLogging {
         chooser.setInitialDirectory(musicsDirectory.getParentFile());
 
 		musicasTable.setItems(MusicReader.getMusicas(musicsDirectory));
-        musicasTable.prefWidthProperty().bind(root.widthProperty().add(-10));
-        musicasTable.prefHeightProperty().bind(root.heightProperty().add(-50));
+        musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
 		TextField filterField = new TextField();
         Button buttonMusic = loadMusic(primaryStage, chooser, musicasTable, filterField);
         configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList());
         Button buttonVideos = loadVideos(primaryStage, chooser, musicasTable, filterField);
         root.getChildren()
-                .add(new VBox(listaMusicas, new HBox(buttonMusic, buttonVideos, filterField), musicasTable));
-        Scene scene = new Scene(root, 600, 250);
+                .add(new VBox(new Label("Lista Músicas"), new HBox(buttonMusic, buttonVideos, filterField), musicasTable));
+        Scene scene = new Scene(root, WIDTH, HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -95,7 +94,7 @@ public class MusicOrganizer extends Application implements HasLogging {
 
     private TableView<Music> tabelaMusicas() {
         TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>()
-                .prefWidth(600)
+                .prefWidth(WIDTH)
                 .scaleShape(false)
                 .addColumn("Título", "titulo")
                 .addColumn("Artista", "artista")
