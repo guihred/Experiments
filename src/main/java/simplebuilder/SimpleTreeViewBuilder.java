@@ -8,7 +8,7 @@ import javafx.scene.control.TreeView;
 
 public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, SimpleTreeViewBuilder<T>> {
     private TreeView<T> treeView;
-
+	private TreeItem<T> last;
     public SimpleTreeViewBuilder() {
         super(new TreeView<>());
         treeView = region;
@@ -19,13 +19,20 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         return this;
     }
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
     public SimpleTreeViewBuilder<T> addItem(T value, T... children) {
         TreeItem<T> e = new TreeItem<>(value);
-        e.getChildren().addAll(Stream.of(children).map(TreeItem::new).collect(Collectors.toList()));
+		e.getChildren().addAll(Stream.of(children).map(TreeItem<T>::new).collect(Collectors.toList()));
         treeView.getRoot().getChildren().add(e);
         return this;
     }
+
+	public TreeItem<T> addItemToLast(T value) {
+		TreeItem<T> e = new TreeItem<>(value);
+		last.getChildren().add(e);
+		return e;
+	}
+
 
     @Override
     public TreeView<T> build() {
@@ -43,8 +50,15 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
     }
     public SimpleTreeViewBuilder<T> root(T value) {
         treeView.setRoot(new TreeItem<>(value));
+		last = treeView.getRoot();
         return this;
     }
+
+	public SimpleTreeViewBuilder<T> root(TreeItem<T> value) {
+		treeView.setRoot(value);
+		last = treeView.getRoot();
+		return this;
+	}
 
     public SimpleTreeViewBuilder<T> showRoot(boolean value) {
         treeView.setShowRoot(value);

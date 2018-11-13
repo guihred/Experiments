@@ -2,6 +2,10 @@
 package schema.sngpc;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 import org.apache.xmlbeans.XmlObject;
 import org.assertj.core.api.exception.RuntimeIOException;
@@ -41,25 +46,32 @@ public class SngpcViewer extends Application {
 				}
 			}
 		});
+		Map<Node , TreeItem<String>> hashMap = new HashMap<>();
+		
 		try {
 			File file = ResourceFXUtils.toFile("FL94_REL758_20181031061530.xml");
 			XmlObject parse = XmlObject.Factory.parse(file);
 			Node domNode = parse.getDomNode();
-			NodeList childNodes = domNode.getChildNodes();
-			for (int i = 0; i < childNodes.getLength(); i++) {
-				Node item = childNodes.item(i);
-
-				LOG.error("node Name={}", item.getNodeName());
-				LOG.error("node Value={}", item.getNodeValue());
-				LOG.error("node type={}", item.getNodeType());
-				NodeList childNodes2 = item.getChildNodes();
-				for (int j = 0; j < childNodes2.getLength(); j++) {
-					Node item2 = childNodes2.item(j);
-					LOG.error("node Name={}", item2.getNodeName());
-					LOG.error("node Value={}", item2.getNodeValue());
-					LOG.error("node type={}", item2.getNodeType());
+			List<Node> currentNodes = new ArrayList<>();
+			currentNodes.add(domNode);
+			TreeItem<String> value = new TreeItem<>(domNode.getNodeName());
+			build.root(value);
+			hashMap.put(domNode, value);
+			while (!currentNodes.isEmpty()) {
+				domNode = currentNodes.remove(0);
+				LOG.error("node Name={}", domNode.getNodeName());
+				LOG.error("node Value={}", domNode.getNodeValue());
+				LOG.error("node type={}", domNode.getNodeType());
+				NodeList childNodes = domNode.getChildNodes();
+				for (int i = 0; i < childNodes.getLength(); i++) {
+					Node item = childNodes.item(i);
+					if (item.getNodeType() != Node.TEXT_NODE) {
+						currentNodes.add(0, item);
+						TreeItem<String> e = new TreeItem<>(item.getNodeName());
+						hashMap.get(domNode).getChildren().add(e);
+						hashMap.put(item, e);
+					}
 				}
-
 			}
 
 		} catch (Exception e) {
