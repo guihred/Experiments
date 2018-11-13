@@ -27,12 +27,13 @@ public class FXEngineMusicOrganizerTest extends ApplicationTest implements HasLo
     public void convertToMp3() throws Exception {
 
         clickOn("Carregar Vídeos");
+
         type(KeyCode.M);
         type(KeyCode.DOWN);
         type(KeyCode.TAB);
         type(KeyCode.ENTER);
         lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
-        clickOn("_Convert to Mp3");
+		lookup("_Convert to Mp3").queryAll().forEach(this::clickOn);
         ConsoleUtils.waitAllProcesses();
     }
 
@@ -44,7 +45,7 @@ public class FXEngineMusicOrganizerTest extends ApplicationTest implements HasLo
         type(KeyCode.TAB);
         type(KeyCode.ENTER);
         lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
-        clickOn("_Split");
+		lookup("_Split").queryAll().forEach(this::clickOn);
     }
 
     @Test
