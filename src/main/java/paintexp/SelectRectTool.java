@@ -1,27 +1,79 @@
 package paintexp;
 
+import javafx.collections.ObservableList;
+import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import simplebuilder.SimpleRectangleBuilder;
 
 class SelectRectTool extends PaintTool {
 
-    private Rectangle icon;
+	private Rectangle icon;
+	private Rectangle area;
+	private double initialX;
+	private double initialY;
 
-    @Override
-    public Node getIcon() {
-        if (icon == null) {
-            icon = new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT)
-            .stroke(Color.BLACK).strokeDashArray(1, 2, 1, 2).build();
-        }
-        return icon;
-    }
+	@Override
+	public Node getIcon() {
+		if (icon == null) {
+			icon = new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLACK)
+					.strokeDashArray(1, 2, 1, 2).build();
+		}
+		return icon;
+	}
 
-    @Override
-    public Cursor getMouseCursor() {
-        return Cursor.CROSSHAIR;
-    }
+	@Override
+	public Cursor getMouseCursor() {
+		return Cursor.CROSSHAIR;
+	}
 
+	public Rectangle getArea() {
+		if (area == null) {
+			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
+					.strokeDashArray(1, 2, 1, 2).build();
+		}
+		return area;
+	}
+
+	@Override
+	public synchronized void handleEvent(MouseEvent e, WritableImage image, StackPane imageStack) {
+		EventType<? extends MouseEvent> eventType = e.getEventType();
+		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+			ObservableList<Node> children = imageStack.getChildren();
+			if (getArea().getWidth() < 2 && children.contains(getArea())) {
+				children.remove(getArea());
+			}
+		}
+		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+			ObservableList<Node> children = imageStack.getChildren();
+			if (!children.contains(getArea())) {
+				children.add(getArea());
+			}
+			getArea().setManaged(false);
+			initialX = e.getX();
+			getArea().setLayoutX(initialX);
+			initialY = e.getY();
+			getArea().setLayoutY(initialY);
+			getArea().setWidth(1);
+			getArea().setHeight(1);
+		}
+		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+			double layoutX = initialX;
+			double layoutY = initialY;
+			double x = e.getX();
+			double min = Double.min(x, layoutX);
+			getArea().setLayoutX(min);
+			double y = e.getY();
+			double min2 = Double.min(y, layoutY);
+			getArea().setLayoutY(min2);
+			getArea().setWidth(Math.abs(e.getX() - layoutX));
+			getArea().setHeight(Math.abs(e.getY() - layoutY));
+		}
+
+	}
 }

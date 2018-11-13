@@ -1,5 +1,9 @@
 package paintexp;
 
+import graphs.entities.ZoomableScrollPane;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -9,6 +13,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
@@ -19,16 +24,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import org.slf4j.Logger;
 import simplebuilder.SimpleMenuBarBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.HasLogging;
 
 public class PaintMain extends  Application{
 
-    private Color backColor = Color.WHITE;
+	private static final Logger LOG = HasLogging.log();
+	private Color backColor = Color.WHITE;
     private WritableImage image = new WritableImage(500, 500);
-    private ImageView canvas = new ImageView(image);
+	private StackPane imageStack = new StackPane(new ImageView(image));
     private ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
     private Text imageSize = new SimpleTextBuilder()
             .build();
@@ -40,8 +50,8 @@ public class PaintMain extends  Application{
         BorderPane root = new BorderPane();
         root.setTop(new SimpleMenuBarBuilder()
                 .addMenu("_File")
-                .addMenuItem("New", e -> {
-                })
+				.addMenuItem("_New", e -> newFile())
+				.addMenuItem("_Open", e -> openFile(primaryStage))
                 .addMenu("_Edit")
                 .addMenu("_View")
                 .addMenu("_Image")
@@ -50,17 +60,21 @@ public class PaintMain extends  Application{
                 .build());
         PixelReader reader = new SimplePixelReader(backColor);
         image.getPixelWriter().setPixels(0, 0, (int) image.getWidth(), (int) image.getHeight(), reader, 0, 0);
-        StackPane value = new StackPane(canvas);
-        value.addEventHandler(MouseEvent.ANY, e -> {
+		imageStack.addEventHandler(MouseEvent.ANY, e -> {
             double x = e.getX();
             double y = e.getY();
             mousePosition.setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
             imageSize.setText(String.format("%.0fx%.0f", image.getWidth(), image.getHeight()));
+
+			PaintTool paintTool = tool.get();
+			if (paintTool != null) {
+				paintTool.handleEvent(e,image,imageStack);
+			}
         });
-        value.setAlignment(Pos.TOP_LEFT);
-        value.setMinWidth(200);
-        value.setMinHeight(200);
-        root.setCenter(value);
+		imageStack.setAlignment(Pos.TOP_LEFT);
+		imageStack.setMinWidth(200);
+		imageStack.setMinHeight(200);
+		root.setCenter(new ZoomableScrollPane(imageStack));
 
         HBox hBox = new HBox(50, toolSize, mousePosition, imageSize);
         hBox.getChildren().forEach(e -> e.prefHeight(hBox.getPrefWidth() / hBox.getChildren().size()));
@@ -88,6 +102,38 @@ public class PaintMain extends  Application{
         primaryStage.show();
 
     }
+
+	private void openFile(Window ownerWindow) {
+		FileChooser fileChooser2 = new FileChooser();
+		fileChooser2.setTitle("Open File");
+		fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
+		File showOpenDialog = fileChooser2.showOpenDialog(ownerWindow);
+		if (showOpenDialog != null) {
+			try {
+				Image image2 = new Image(new FileInputStream(showOpenDialog));
+				int w = (int) image2.getWidth();
+				int h = (int) image2.getHeight();
+				image = new WritableImage(w, h);
+				image.getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
+				imageStack.getChildren().clear();
+				imageStack.getChildren().add(new ImageView(image));
+			} catch (FileNotFoundException e) {
+
+				LOG.error("", e);
+			}
+		}
+
+	}
+
+	private void newFile() {
+		image = new WritableImage(500, 500);
+		int w = (int) image.getWidth();
+		int h = (int) image.getHeight();
+		image.getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(backColor), 0, 0);
+		imageStack.getChildren().clear();
+		imageStack.getChildren().add(new ImageView(image));
+
+	}
 
     public static void main(String[] args) {
         launch(args);
