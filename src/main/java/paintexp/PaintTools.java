@@ -1,9 +1,6 @@
 package paintexp;
 
 import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.shape.Circle;
-import utils.CommonsFX;
 
 public enum PaintTools {
     SELECT_FREE,
@@ -24,8 +21,7 @@ public enum PaintTools {
     ROUND;
 
 
-    private Node icon = new Circle(10, CommonsFX.generateRandomColors(50).get(0));
-    private PaintTool tool;
+    private PaintTool tool = new DummyTool();
 
     PaintTools() {
     }
@@ -34,11 +30,7 @@ public enum PaintTools {
         tool = paintTool;
     }
     public Cursor getCursor() {
-        return tool != null ? tool.getCursor():Cursor.DEFAULT;
-    }
-
-    public Node getIcon() {
-        return tool != null ? tool.getIcon() : icon;
+        return tool.getCursor();
     }
 
     public PaintTool getTool() {
