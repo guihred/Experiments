@@ -22,6 +22,7 @@ public class BucketTool extends PaintTool {
 	private int initialX;
 	private int initialY;
 	private int width;
+	private int height;
 
 	public Rectangle getArea() {
 		if (area == null) {
@@ -54,12 +55,12 @@ public class BucketTool extends PaintTool {
 			initialX = (int) e.getX();
 			initialY = (int) e.getY();
 			width = (int) model.getImage().getWidth();
+			height = (int) model.getImage().getHeight();
 			PixelReader pixelReader = model.getImage().getPixelReader();
 			int originalColor = pixelReader.getArgb(initialX, initialY);
 			int frontColor = SimplePixelReader.toArgb(model.getFrontColor());
 			if (originalColor != frontColor) {
-				new Thread(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model))
-						.start();
+				Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
 			}
 
 		}
@@ -69,17 +70,20 @@ public class BucketTool extends PaintTool {
 			PaintModel model) {
 		List<Integer> toGo = new ArrayList<>();
 		toGo.add(index(initX, initY));
-		for (int i = 0; i < toGo.size(); i++) {
-			Integer next = toGo.get(i);
-			if (withinRange(x(next), y(next), model)) {
-				int color = pixelReader.getArgb(x(next), y(next));
-				if (color == originalColor) {
-					addIfNotIn(toGo, next + 1);
-					addIfNotIn(toGo, next - 1);
-					addIfNotIn(toGo, next + width);
-					addIfNotIn(toGo, next - width);
-					Platform.runLater(() -> model.getImage().getPixelWriter().setArgb(x(next), y(next), frontColor));
-
+		while (!toGo.isEmpty()) {
+			Integer next = toGo.remove(0);
+			int y = y(next);
+			int x = x(next);
+			if (y == 0 && next != 0) {
+				if (withinRange(x, y, model)) {
+					int color = pixelReader.getArgb(x, y);
+					if (color == originalColor) {
+						addIfNotIn(toGo, next + 1);
+						addIfNotIn(toGo, next - 1);
+						addIfNotIn(toGo, next + width);
+						addIfNotIn(toGo, next - width);
+						model.getImage().getPixelWriter().setArgb(x, y, frontColor);
+					}
 				}
 			}
 		}
@@ -94,11 +98,12 @@ public class BucketTool extends PaintTool {
 	}
 
 	private int y(int m) {
+
 		return m % width;
 	}
 
 	private void addIfNotIn(List<Integer> toGo, Integer e) {
-		if (!toGo.contains(e)) {
+		if (!toGo.contains(e) && e < (width - 1) * (height - 1)) {
 			toGo.add(e);
 		}
 	}
