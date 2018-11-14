@@ -46,11 +46,12 @@ public class LineTool extends PaintTool {
 			}
 		}
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+			getLine().setStroke(model.getFrontColor());
             ObservableList<Node> children = model.getImageStack().getChildren();
             if (!children.contains(getLine())) {
                 children.add(getLine());
             }
-            getLine().setManaged(false);
+
             getLine().setStartX(e.getX());
             getLine().setStartY(e.getY());
             getLine().setEndX(e.getX());

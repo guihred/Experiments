@@ -17,8 +17,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
@@ -28,6 +33,7 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleMenuBarBuilder;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
 
@@ -73,10 +79,16 @@ public class PaintMain extends  Application{
 
         hBox.setStyle("-fx-effect: innershadow(gaussian,gray,10,0.5,10,10);");
         GridPane gridPane = new GridPane();
-        gridPane.add(new StackPane(pickedColor(paintModel.backColorProperty(), 20),
-                pickedColor(paintModel.frontColorProperty(), 10)), 0, 0, 2, 2);
+		StackPane st = new StackPane(pickedColor(paintModel.backColorProperty(), 20),
+				pickedColor(paintModel.frontColorProperty(), 10));
+		List<Color> generateRandomColors = CommonsFX.generateRandomColors(28);
+		gridPane.addRow(0,
+				generateRandomColors.stream().limit(14).map(e -> newRectangle(e)).toArray(Rectangle[]::new));
+		gridPane.addRow(1,
+				generateRandomColors.stream().skip(14).limit(14).map(e -> newRectangle(e))
+						.toArray(Rectangle[]::new));
 
-        root.setBottom(new VBox(30, gridPane, hBox));
+		root.setBottom(new VBox(30, new HBox(50, st, gridPane), hBox));
         BorderPane.setAlignment(hBox, Pos.CENTER);
         SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
         Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggle(e.getTool()));
@@ -98,6 +110,21 @@ public class PaintMain extends  Application{
         primaryStage.show();
 
     }
+
+	private Rectangle newRectangle(Color color) {
+		Rectangle rectangle = new Rectangle(20, 20, color);
+		rectangle.setStroke(Color.BLACK);
+		rectangle.setOnMouseClicked(e -> {
+			if (MouseButton.PRIMARY == e.getButton()) {
+				paintModel.setFrontColor(color);
+			} else {
+				paintModel.setBackColor(color);
+			}
+
+		});
+
+		return rectangle;
+	}
 
     private void changeTool(Toggle newValue) {
         paintModel.getImageStack().getChildren().clear();

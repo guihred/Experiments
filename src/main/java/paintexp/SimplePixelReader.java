@@ -18,13 +18,18 @@ public final class SimplePixelReader implements PixelReader {
 
     @Override
     public int getArgb(int x, int y) {
-        int b = (int) (onlyColor.getBlue() * 255);
-        int r = (int) (onlyColor.getRed() * 255);
-        int g = (int) (onlyColor.getGreen() * 255);
-        int a = (int) (onlyColor.getOpacity() * 255);
-		return a << 24 | r << 16 | g << 8 | b;
+		return toArgb(onlyColor);
 
     }
+
+	public static int toArgb(Color c) {
+		int b = (int) (c.getBlue() * 255);
+		int r = (int) (c.getRed() * 255);
+		int g = (int) (c.getGreen() * 255);
+		int a = (int) (c.getOpacity() * 255);
+		return a << 24 | r << 16 | g << 8 | b;
+
+	}
 
     @Override
     public Color getColor(int x, int y) {

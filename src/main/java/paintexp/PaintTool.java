@@ -55,11 +55,21 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected boolean within(int y, double height) {
-        return 0 < y && y < height;
+	protected boolean within(int y, double min) {
+		return 0 <= y && y < min;
+	}
+
+	protected boolean within(int y, double min, double max) {
+		return min <= y && y < max;
     }
 
     protected boolean withinRange(int x, int y, PaintModel model) {
         return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
     }
+
+	protected boolean withinRange(int x, int y, int initialX, int initialY, double bound, PaintModel model) {
+		return within(y, Double.max(initialY - bound, 0), Double.min(initialY + bound, model.getImage().getHeight()))
+				&& within(x, Double.max(initialX - bound, 0),
+						Double.min(initialX + bound, model.getImage().getWidth()));
+	}
 }
