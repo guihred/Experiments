@@ -1,7 +1,6 @@
 package fxsamples;
 
 import java.io.IOException;
-import java.net.URL;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -26,7 +25,7 @@ public class LookNFeelChooser extends Application {
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		BorderPane root = new BorderPane();
-		Parent content = FXMLLoader.load(new URL(ResourceFXUtils.toExternalForm("lnf_demo.fxml")));
+        Parent content = FXMLLoader.load(ResourceFXUtils.toURL("lnf_demo.fxml"));
 		Scene scene = new Scene(root, 650, 550, Color.WHITE);
 		root.setCenter(content);
 		// Menu bar

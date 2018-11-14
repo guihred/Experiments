@@ -3,12 +3,9 @@ package paintexp;
 import graphs.entities.ZoomableScrollPane;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Stream;
 import javafx.application.Application;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -21,32 +18,20 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.slf4j.Logger;
 import simplebuilder.SimpleMenuBarBuilder;
-import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.HasLogging;
 
 public class PaintMain extends  Application{
 
 	private static final Logger LOG = HasLogging.log();
-	private Color backColor = Color.WHITE;
-    private WritableImage image = new WritableImage(500, 500);
-	private StackPane imageStack = new StackPane(new ImageView(image));
-    private ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
-    private Text imageSize = new SimpleTextBuilder()
-            .build();
-    private Text toolSize = new SimpleTextBuilder().build();
-    private Text mousePosition = new SimpleTextBuilder().build();
+    private PaintModel paintModel = new PaintModel();
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
         BorderPane root = new BorderPane();
         root.setTop(new SimpleMenuBarBuilder()
                 .addMenu("_File")
@@ -58,25 +43,24 @@ public class PaintMain extends  Application{
                 .addMenu("_Colors")
                 .addMenu("_Help")
                 .build());
-        PixelReader reader = new SimplePixelReader(backColor);
-        image.getPixelWriter().setPixels(0, 0, (int) image.getWidth(), (int) image.getHeight(), reader, 0, 0);
-		imageStack.addEventHandler(MouseEvent.ANY, e -> {
+        PixelReader reader = new SimplePixelReader(paintModel.getBackColor());
+        paintModel.getImage().getPixelWriter().setPixels(0, 0, (int) paintModel.getImage().getWidth(),
+                (int) paintModel.getImage().getHeight(), reader, 0, 0);
+        paintModel.getImageStack().addEventHandler(MouseEvent.ANY, e -> {
             double x = e.getX();
             double y = e.getY();
-            mousePosition.setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
-            imageSize.setText(String.format("%.0fx%.0f", image.getWidth(), image.getHeight()));
+            paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
+            paintModel.getImageSize()
+                    .setText(String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
 
-			PaintTool paintTool = tool.get();
+            PaintTool paintTool = paintModel.getTool().get();
 			if (paintTool != null) {
-				paintTool.handleEvent(e,image,imageStack);
+                paintTool.handleEvent(e, paintModel);
 			}
         });
-		imageStack.setAlignment(Pos.TOP_LEFT);
-		imageStack.setMinWidth(200);
-		imageStack.setMinHeight(200);
-		root.setCenter(new ZoomableScrollPane(imageStack));
+        root.setCenter(new ZoomableScrollPane(paintModel.getImageStack()));
 
-        HBox hBox = new HBox(50, toolSize, mousePosition, imageSize);
+        HBox hBox = new HBox(50, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());
         hBox.getChildren().forEach(e -> e.prefHeight(hBox.getPrefWidth() / hBox.getChildren().size()));
 
         hBox.setStyle("-fx-effect: innershadow(gaussian,gray,10,0.5,10,10);");
@@ -86,7 +70,7 @@ public class PaintMain extends  Application{
         Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggle(e.getTool()));
                 
         List<Node> paintTools = toolGroup
-                .onChange((ov, oldValue, newValue) -> tool.set((PaintTool) newValue.getUserData()))
+                .onChange((ov, oldValue, newValue) -> paintModel.getTool().set((PaintTool) newValue.getUserData()))
                 .getTogglesAs(Node.class);
                 
         GridPane toolbar = new GridPane();
@@ -103,6 +87,16 @@ public class PaintMain extends  Application{
 
     }
 
+	private void newFile() {
+        paintModel.setImage(new WritableImage(500, 500));
+        int w = (int) paintModel.getImage().getWidth();
+        int h = (int) paintModel.getImage().getHeight();
+        paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(paintModel.getBackColor()), 0, 0);
+        paintModel.getImageStack().getChildren().clear();
+        paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
+
+	}
+
 	private void openFile(Window ownerWindow) {
 		FileChooser fileChooser2 = new FileChooser();
 		fileChooser2.setTitle("Open File");
@@ -113,25 +107,14 @@ public class PaintMain extends  Application{
 				Image image2 = new Image(new FileInputStream(showOpenDialog));
 				int w = (int) image2.getWidth();
 				int h = (int) image2.getHeight();
-				image = new WritableImage(w, h);
-				image.getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
-				imageStack.getChildren().clear();
-				imageStack.getChildren().add(new ImageView(image));
-			} catch (FileNotFoundException e) {
-
+                paintModel.setImage(new WritableImage(w, h));
+                paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
+                paintModel.getImageStack().getChildren().clear();
+                paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
+            } catch (Exception e) {
 				LOG.error("", e);
 			}
 		}
-
-	}
-
-	private void newFile() {
-		image = new WritableImage(500, 500);
-		int w = (int) image.getWidth();
-		int h = (int) image.getHeight();
-		image.getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(backColor), 0, 0);
-		imageStack.getChildren().clear();
-		imageStack.getChildren().add(new ImageView(image));
 
 	}
 

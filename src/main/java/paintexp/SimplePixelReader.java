@@ -50,7 +50,7 @@ public final class SimplePixelReader implements PixelReader {
 				byteBgraInstance.setArgb(buf, x + i, y + j, scanlineStride, getArgb(x, y));
 			}
 		}
-		buf.get(buffer, offset, scanlineStride);
+        buf.get(buffer, offset, scanlineStride);
     }
 
     @Override

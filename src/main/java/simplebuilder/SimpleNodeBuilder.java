@@ -12,7 +12,7 @@ import javafx.scene.input.MouseEvent;
 public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> implements SimpleBuilder<T> {
 	protected T node;
 
-	protected SimpleNodeBuilder(T shape) {
+    public SimpleNodeBuilder(T shape) {
 		this.node = shape;
 	}
 
@@ -40,10 +40,15 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 		return (Z) this;
 	}
 
-	public Z layoutY(double value) {
-		node.setLayoutY(value);
-		return (Z) this;
-	}
+    public Z layoutY(double value) {
+        node.setLayoutY(value);
+        return (Z) this;
+    }
+
+    public Z managed(boolean value) {
+        node.setManaged(value);
+        return (Z) this;
+    }
 
 	public Z onMouseClicked(EventHandler<? super MouseEvent> object) {
 	    node.setOnMouseClicked(object);

@@ -9,20 +9,30 @@ import com.google.api.services.customsearch.Customsearch.Cse;
 import com.google.api.services.customsearch.CustomsearchRequestInitializer;
 import com.google.api.services.customsearch.model.Result;
 import com.google.api.services.customsearch.model.Search;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import utils.CrawlerTask;
 import utils.HasLogging;
 
-public class GoogleImagesUtils {
+public final class GoogleImagesUtils {
 
 	private static final Logger LOGGER = HasLogging.log();
 
+    private GoogleImagesUtils() {
+
+    }
     public static List<String> getImagens(String artista) {
         CrawlerTask.insertProxyConfig();
         try {
+
             HttpTransport transport = new ApacheHttpTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             Customsearch build = new Customsearch.Builder(transport, jsonFactory, null)
@@ -45,4 +55,14 @@ public class GoogleImagesUtils {
         return Collections.emptyList();
     }
 
+    public static void main(String[] args) throws IOException {
+        Map<String, Long> collect = Files.find(new File("").toPath(), 20, (a, b) -> !a.toFile().isDirectory())
+                .collect(Collectors
+                .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
+        collect.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                .forEach((ex) -> {
+            LOGGER.error("{}={}", ex.getKey(), ex.getValue());
+        });
+
+}
 }
