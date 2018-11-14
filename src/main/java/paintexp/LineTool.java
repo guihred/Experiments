@@ -39,8 +39,14 @@ public class LineTool extends PaintTool {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             ObservableList<Node> children = model.getImageStack().getChildren();
-            if (extracted() < 2 && children.contains(getLine())) {
+            if (size() < 2 && children.contains(getLine())) {
                 children.remove(getLine());
+            } else {
+                double startX2 = line.getStartX();
+                double endX2 = line.getEndX();
+                double endY2 = line.getEndY();
+                double startY2 = line.getStartY();
+                drawLine(model, startX2, startY2, endX2, endY2);
 			}
 		}
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
@@ -61,7 +67,10 @@ public class LineTool extends PaintTool {
 
 	}
 
-    private double extracted() {
-        return getLine().getLayoutBounds().getWidth();
+
+    private double size() {
+        double w = getLine().getLayoutBounds().getWidth();
+        double h = getLine().getLayoutBounds().getHeight();
+        return Math.sqrt(w * w + h * h);
     }
 }

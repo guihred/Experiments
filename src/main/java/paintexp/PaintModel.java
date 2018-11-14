@@ -11,12 +11,14 @@ import javafx.scene.text.Text;
 
 public class PaintModel {
     private Color backColor = Color.WHITE;
+    private Color frontColor = Color.BLACK;
     private WritableImage image = new WritableImage(500, 500);
     private StackPane imageStack;
     private ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
     private Text imageSize = new Text();
     private Text toolSize = new Text();
     private Text mousePosition = new Text();
+
     public Color getBackColor() {
         return backColor;
     }
@@ -73,6 +75,14 @@ public class PaintModel {
     }
     public void setToolSize(Text toolSize) {
         this.toolSize = toolSize;
+    }
+
+    public Color getFrontColor() {
+        return frontColor;
+    }
+
+    public void setFrontColor(Color frontColor) {
+        this.frontColor = frontColor;
     }
 
 }

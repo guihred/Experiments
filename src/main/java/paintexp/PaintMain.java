@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -24,6 +25,7 @@ import javafx.stage.Window;
 import org.slf4j.Logger;
 import simplebuilder.SimpleMenuBarBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.CrawlerTask;
 import utils.HasLogging;
 
 public class PaintMain extends  Application{
@@ -55,8 +57,11 @@ public class PaintMain extends  Application{
 
             PaintTool paintTool = paintModel.getTool().get();
 			if (paintTool != null) {
+                paintModel.getImageStack().setCursor(paintTool.getMouseCursor());
                 paintTool.handleEvent(e, paintModel);
-			}
+            } else {
+                paintModel.getImageStack().setCursor(Cursor.DEFAULT);
+            }
         });
         root.setCenter(new ZoomableScrollPane(paintModel.getImageStack()));
 
@@ -119,6 +124,7 @@ public class PaintMain extends  Application{
 	}
 
     public static void main(String[] args) {
+        CrawlerTask.insertProxyConfig();
         launch(args);
     }
 
