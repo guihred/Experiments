@@ -1,8 +1,8 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.shape.*?>
 <Group xmlns:fx="http://javafx.com/fxml">
-    <children>
-        <Rectangle fx:id="rectangle" x="10" y="10" width="320" height="240"
-            fill="#ff0000"/>
-            </children>
+	<children>
+		<Rectangle fx:id="rectangle" x="10" y="10" width="320"
+			height="240" fill="#ff0000" />
+	</children>
 </Group>

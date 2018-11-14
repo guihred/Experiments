@@ -4,19 +4,25 @@ import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import simplebuilder.SimpleRectangleBuilder;
 
-class SelectRectTool extends PaintTool {
+public class SelectRectTool extends PaintTool {
 
 	private Rectangle icon;
 	private Rectangle area;
 	private double initialX;
 	private double initialY;
+
+	public Rectangle getArea() {
+		if (area == null) {
+			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
+					.strokeDashArray(1, 2, 1, 2).build();
+		}
+		return area;
+	}
 
 	@Override
 	public Node getIcon() {
@@ -32,28 +38,22 @@ class SelectRectTool extends PaintTool {
 		return Cursor.CROSSHAIR;
 	}
 
-	public Rectangle getArea() {
-		if (area == null) {
-			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
-					.strokeDashArray(1, 2, 1, 2).build();
-		}
-		return area;
-	}
-
 	@Override
-	public synchronized void handleEvent(MouseEvent e, WritableImage image, StackPane imageStack) {
+    public void handleEvent(MouseEvent e, PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			ObservableList<Node> children = imageStack.getChildren();
+            ObservableList<Node> children = model.getImageStack().getChildren();
 			if (getArea().getWidth() < 2 && children.contains(getArea())) {
 				children.remove(getArea());
 			}
+            area.setStroke(Color.BLUE);
 		}
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			ObservableList<Node> children = imageStack.getChildren();
+            ObservableList<Node> children = model.getImageStack().getChildren();
 			if (!children.contains(getArea())) {
 				children.add(getArea());
-			}
+            }
+            area.setStroke(Color.BLACK);
 			getArea().setManaged(false);
 			initialX = e.getX();
 			getArea().setLayoutX(initialX);

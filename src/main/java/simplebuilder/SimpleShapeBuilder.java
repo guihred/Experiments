@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineCap;
@@ -18,7 +19,12 @@ public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> ext
 	}
 
 
-	public Z fill(Paint lightblue) {
+    public Z fill(ObservableValue<? extends Paint> fill) {
+        shape.fillProperty().bind(fill);
+	    return (Z) this;
+	}
+
+    public Z fill(Paint lightblue) {
 		shape.setFill(lightblue);
 		return (Z) this;
 	}
