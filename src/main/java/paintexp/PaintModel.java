@@ -23,16 +23,23 @@ public class PaintModel {
         return backColor;
     }
 
+    public Color getFrontColor() {
+        return frontColor;
+    }
     public WritableImage getImage() {
         return image;
     }
+
     public Text getImageSize() {
         return imageSize;
     }
-
     public StackPane getImageStack() {
         if (imageStack == null) {
-            imageStack = new StackPane(new ImageView(getImage()));
+            ImageView imageView = new ImageView(getImage());
+            imageView.setLayoutX(0);
+            imageView.setLayoutY(0);
+            imageView.setManaged(false);
+            imageStack = new StackPane(imageView);
             imageStack.setAlignment(Pos.TOP_LEFT);
             imageStack.setMinWidth(200);
             imageStack.setMinHeight(200);
@@ -40,13 +47,14 @@ public class PaintModel {
 
         return imageStack;
     }
+
     public Text getMousePosition() {
         return mousePosition;
     }
-
     public ObjectProperty<PaintTool> getTool() {
         return tool;
     }
+
     public Text getToolSize() {
         return toolSize;
     }
@@ -54,10 +62,14 @@ public class PaintModel {
     public void setBackColor(Color backColor) {
         this.backColor = backColor;
     }
+    public void setFrontColor(Color frontColor) {
+        this.frontColor = frontColor;
+    }
 
     public void setImage(WritableImage image) {
         this.image = image;
     }
+
     public void setImageSize(Text imageSize) {
         this.imageSize = imageSize;
     }
@@ -65,7 +77,6 @@ public class PaintModel {
     public void setImageStack(StackPane imageStack) {
         this.imageStack = imageStack;
     }
-
     public void setMousePosition(Text mousePosition) {
         this.mousePosition = mousePosition;
     }
@@ -73,16 +84,9 @@ public class PaintModel {
     public void setTool(ObjectProperty<PaintTool> tool) {
         this.tool = tool;
     }
+
     public void setToolSize(Text toolSize) {
         this.toolSize = toolSize;
-    }
-
-    public Color getFrontColor() {
-        return frontColor;
-    }
-
-    public void setFrontColor(Color frontColor) {
-        this.frontColor = frontColor;
     }
 
 }

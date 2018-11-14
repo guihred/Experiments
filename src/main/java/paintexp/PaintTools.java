@@ -4,7 +4,7 @@ import javafx.scene.Cursor;
 
 public enum PaintTools {
     SELECT_FREE,
-    ERASER,
+    ERASER(new EraserTool()),
     BUCKET,
     EYEDROP,
     LUPE,

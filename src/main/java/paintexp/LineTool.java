@@ -42,11 +42,7 @@ public class LineTool extends PaintTool {
             if (size() < 2 && children.contains(getLine())) {
                 children.remove(getLine());
             } else {
-                double startX2 = line.getStartX();
-                double endX2 = line.getEndX();
-                double endY2 = line.getEndY();
-                double startY2 = line.getStartY();
-                drawLine(model, startX2, startY2, endX2, endY2);
+                drawLine(model, line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
 			}
 		}
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {

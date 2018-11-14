@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Toggle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -75,7 +76,7 @@ public class PaintMain extends  Application{
         Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggle(e.getTool()));
                 
         List<Node> paintTools = toolGroup
-                .onChange((ov, oldValue, newValue) -> paintModel.getTool().set((PaintTool) newValue.getUserData()))
+                .onChange((ov, oldValue, newValue) -> changeTool(newValue))
                 .getTogglesAs(Node.class);
                 
         GridPane toolbar = new GridPane();
@@ -90,6 +91,12 @@ public class PaintMain extends  Application{
         primaryStage.setScene(new Scene(root, 600, 600));
         primaryStage.show();
 
+    }
+
+    private void changeTool(Toggle newValue) {
+        paintModel.getImageStack().getChildren().clear();
+        paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
+        paintModel.getTool().set((PaintTool) newValue.getUserData());
     }
 
 	private void newFile() {
