@@ -13,7 +13,6 @@ import utils.ResourceFXUtils;
 public class EraserTool extends PaintTool {
 
     private ImageView icon;
-    boolean pressed;
 
     private Rectangle area;
 
@@ -40,7 +39,7 @@ public class EraserTool extends PaintTool {
 
     @Override
     public Cursor getMouseCursor() {
-        return Cursor.DISAPPEAR;
+        return Cursor.NONE;
     }
 
     @Override
@@ -62,31 +61,23 @@ public class EraserTool extends PaintTool {
             drawSquare(model, x, y, w);
             getArea().setLayoutX(e.getX());
             getArea().setLayoutY(e.getY());
-            pressed = true;
         }
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
             int x = (int) e.getX();
             int y = (int) e.getY();
             int w = (int) getArea().getWidth();
-            if (pressed) {
                 drawSquare(model, x, y, w);
-            }
             getArea().setLayoutX(e.getX());
             getArea().setLayoutY(e.getY());
 		}
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            pressed = false;
+        if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
+            getArea().setVisible(false);
+        }
+        if (MouseEvent.MOUSE_ENTERED.equals(eventType)) {
+            getArea().setVisible(true);
         }
 	}
 
-    private void drawSquare(PaintModel model, int x, int y, int w) {
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < w; j++) {
-                if (withinRange(x + i, y + j, model)) {
-                    model.getImage().getPixelWriter().setColor(x + i, y + j, model.getBackColor());
-                }
-            }
-        }
-    }
+
 
 }

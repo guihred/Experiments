@@ -10,8 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 public class PaintModel {
-    private Color backColor = Color.WHITE;
-    private Color frontColor = Color.BLACK;
+    private ObjectProperty<Color> backColor = new SimpleObjectProperty<>(Color.WHITE);
+    private ObjectProperty<Color> frontColor = new SimpleObjectProperty<>(Color.BLACK);
     private WritableImage image = new WritableImage(500, 500);
     private StackPane imageStack;
     private ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
@@ -19,20 +19,28 @@ public class PaintModel {
     private Text toolSize = new Text();
     private Text mousePosition = new Text();
 
-    public Color getBackColor() {
+    public ObjectProperty<Color> backColorProperty() {
         return backColor;
     }
 
-    public Color getFrontColor() {
+    public ObjectProperty<Color> frontColorProperty() {
         return frontColor;
     }
+
+    public Color getBackColor() {
+        return backColor.get();
+    }
+    public Color getFrontColor() {
+        return frontColor.get();
+    }
+
     public WritableImage getImage() {
         return image;
     }
-
     public Text getImageSize() {
         return imageSize;
     }
+
     public StackPane getImageStack() {
         if (imageStack == null) {
             ImageView imageView = new ImageView(getImage());
@@ -47,10 +55,10 @@ public class PaintModel {
 
         return imageStack;
     }
-
     public Text getMousePosition() {
         return mousePosition;
     }
+
     public ObjectProperty<PaintTool> getTool() {
         return tool;
     }
@@ -58,14 +66,13 @@ public class PaintModel {
     public Text getToolSize() {
         return toolSize;
     }
-
     public void setBackColor(Color backColor) {
-        this.backColor = backColor;
-    }
-    public void setFrontColor(Color frontColor) {
-        this.frontColor = frontColor;
+        this.backColor.set(backColor);
     }
 
+    public void setFrontColor(Color frontColor) {
+        this.frontColor.set(frontColor);
+    }
     public void setImage(WritableImage image) {
         this.image = image;
     }

@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.stream.Stream;
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -17,14 +18,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.slf4j.Logger;
 import simplebuilder.SimpleMenuBarBuilder;
+import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CrawlerTask;
 import utils.HasLogging;
@@ -70,7 +72,11 @@ public class PaintMain extends  Application{
         hBox.getChildren().forEach(e -> e.prefHeight(hBox.getPrefWidth() / hBox.getChildren().size()));
 
         hBox.setStyle("-fx-effect: innershadow(gaussian,gray,10,0.5,10,10);");
-        root.setBottom(hBox);
+        GridPane gridPane = new GridPane();
+        gridPane.add(new StackPane(pickedColor(paintModel.backColorProperty(), 20),
+                pickedColor(paintModel.frontColorProperty(), 10)), 0, 0, 2, 2);
+
+        root.setBottom(new VBox(30, gridPane, hBox));
         BorderPane.setAlignment(hBox, Pos.CENTER);
         SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
         Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggle(e.getTool()));
@@ -99,7 +105,7 @@ public class PaintMain extends  Application{
         paintModel.getTool().set((PaintTool) newValue.getUserData());
     }
 
-	private void newFile() {
+    private void newFile() {
         paintModel.setImage(new WritableImage(500, 500));
         int w = (int) paintModel.getImage().getWidth();
         int h = (int) paintModel.getImage().getHeight();
@@ -129,6 +135,16 @@ public class PaintMain extends  Application{
 		}
 
 	}
+
+    private Rectangle pickedColor(ObjectProperty<Color> objectProperty, int value) {
+
+        return new SimpleRectangleBuilder()
+                .layoutX(value).layoutY(value)
+                .managed(false)
+                .width(20).height(20)
+                .stroke(Color.GRAY)
+                .fill(objectProperty).build();
+    }
 
     public static void main(String[] args) {
         CrawlerTask.insertProxyConfig();

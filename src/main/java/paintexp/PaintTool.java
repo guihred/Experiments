@@ -45,6 +45,16 @@ public abstract class PaintTool extends Group {
         }
     }
 
+    protected void drawSquare(PaintModel model, int x, int y, int w) {
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < w; j++) {
+                if (withinRange(x + i, y + j, model)) {
+                    model.getImage().getPixelWriter().setColor(x + i, y + j, model.getBackColor());
+                }
+            }
+        }
+    }
+
     protected boolean within(int y, double height) {
         return 0 < y && y < height;
     }
