@@ -90,7 +90,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 				Duration currentTimeProperty = newO.getCurrentTime();
                 long millis = (long) currentTimeProperty.toMillis();
                 LocalTime ofNanoOfDay = LocalTime
-                        .ofNanoOfDay(millis * JapaneseLessonAudioSplitDisplay.NANO_IN_A_MILLI_SECOND);
+						.ofNanoOfDay(millis * JapaneseLessonEditingDisplay.NANO_IN_A_MILLI_SECOND);
 				return TIME_FORMAT.format(ofNanoOfDay);
 			}, newO.currentTimeProperty()));
 		});
@@ -245,7 +245,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 	}
 
 	protected static LocalTime milliToLocalTime(long offset) {
-        return LocalTime.ofNanoOfDay(offset * JapaneseLessonAudioSplitDisplay.NANO_IN_A_MILLI_SECOND);
+		return LocalTime.ofNanoOfDay(offset * JapaneseLessonEditingDisplay.NANO_IN_A_MILLI_SECOND);
 	}
 
     protected static long toMilli(LocalTime maxTime) {

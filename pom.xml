@@ -12,15 +12,17 @@
 		<downloadJavadocs>true</downloadJavadocs>
 		<jacoco.version>0.6.4.201312101107</jacoco.version>
 		<skip.jacoco>false</skip.jacoco>
-	</properties>
-	<!-- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false -->
+   	</properties>	
+   	<!-- 
+   	mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false 
+   	-->
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-			</resource>
+			</resource> 
 		</resources>
 		<plugins>
 			<plugin>
@@ -54,20 +56,7 @@
 					<additionalAppResources>src/main/resources</additionalAppResources>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.googlecode.mavennatives</groupId>
-				<artifactId>maven-nativedependencies-plugin</artifactId>
-				<version>0.0.6</version>
-				<executions>
-					<execution>
-						<id>unpacknatives</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<!--suppress MavenModelInspection (this line is for IDEA) -->
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+	
 		</plugins>
 	</build>
 	<dependencies>
@@ -97,16 +86,7 @@
 			<artifactId>JID3</artifactId>
 			<version>0.46</version>
 		</dependency>
-		<dependency>
-			<groupId>org.lwjgl</groupId>
-			<artifactId>lwjgl</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-        <dependency>
-            <groupId>java3d</groupId>
-            <artifactId>vecmath</artifactId>
-            <version>1.3.1</version>
-        </dependency>
+
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-customsearch</artifactId>
@@ -138,7 +118,7 @@
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-junit</artifactId>
 			<version>2.0.0.0</version>
-
+			
 		</dependency>
 		<dependency>
 			<groupId>org.loadui</groupId>
@@ -300,10 +280,6 @@
 			<id>AsposeJavaAPI</id>
 			<name>Aspose Java API</name>
 			<url>https://artifact.aspose.com/repo/</url>
-		</repository> <repository>
-            <id>slick</id>
-            <name>slick</name>
-            <url>http://slick.cokeandcode.com/mavenrepo</url>
         </repository>
 		<repository>
 			<id>gluonhq</id>

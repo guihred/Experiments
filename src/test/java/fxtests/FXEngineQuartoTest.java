@@ -4,6 +4,7 @@ import gaming.ex06.QuartoLauncher;
 import java.util.Random;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
@@ -30,8 +31,8 @@ public class FXEngineQuartoTest extends ApplicationTest {
         }));
 
         KeyCode[] keycodes = new KeyCode[] { KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.Z };
-        Modifier[] modifiers = new Modifier[] { KeyCodeCombination.ALT_DOWN, KeyCodeCombination.SHIFT_DOWN,
-                KeyCodeCombination.CONTROL_DOWN };
+		Modifier[] modifiers = new Modifier[] { KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN,
+				KeyCombination.CONTROL_DOWN };
         for (int i = 0; i < modifiers.length; i++) {
             for (int j = 0; j < keycodes.length; j++) {
                 push(new KeyCodeCombination(keycodes[j], modifiers[i]));

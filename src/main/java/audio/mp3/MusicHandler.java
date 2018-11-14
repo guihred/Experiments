@@ -1,7 +1,8 @@
 package audio.mp3;
 
-import com.google.common.io.Files;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
@@ -10,7 +11,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -146,7 +152,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
                     mediaPlayer.dispose();
                     MusicReader.saveMetadata(selectedItem, outFile);
                     try {
-                        Files.copy(outFile, selectedItem.getArquivo());
+						Files.copy(outFile.toPath(), new FileOutputStream(selectedItem.getArquivo()));
                     } catch (Exception e1) {
                         getLogger().error("", e1);
                     }
