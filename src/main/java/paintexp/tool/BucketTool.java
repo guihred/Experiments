@@ -1,4 +1,4 @@
-package paintexp;
+package paintexp.tool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,12 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.slf4j.Logger;
-import utils.HasLogging;
+import paintexp.PaintModel;
+import paintexp.SimplePixelReader;
 import utils.ResourceFXUtils;
 
 public class BucketTool extends PaintTool {
 
-	private static final Logger LOG = HasLogging.log();
 	private ImageView icon;
 	boolean pressed;
 
@@ -107,12 +106,8 @@ public class BucketTool extends PaintTool {
 	}
 
 	private void addIfNotIn(final List<Integer> toGo, final Integer e) {
-		if (!toGo.contains(e)) {
-			if (e < width * height && e >= 0) {
-				toGo.add(e);
-			} else {
-				LOG.info("x={}&y={}&next={}", x(e), y(e), e);
-			}
+		if (!toGo.contains(e) && e < width * height && e >= 0) {
+			toGo.add(e);
 		}
 	}
 

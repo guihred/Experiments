@@ -1,9 +1,10 @@
-package paintexp;
+package paintexp.tool;
 
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import paintexp.PaintModel;
 
 public abstract class PaintTool extends Group {
     public PaintTool() {
@@ -15,11 +16,16 @@ public abstract class PaintTool extends Group {
     public abstract Cursor getMouseCursor();
 
 	@SuppressWarnings("unused")
-    public void handleEvent(MouseEvent e, PaintModel model) {
+    public void handleEvent(final MouseEvent e, final PaintModel model) {
 		// DOES NOTHING
 	}
 
-    protected void drawLine(PaintModel model, double startX, double startY, double endX, double endY) {
+	@SuppressWarnings("unused")
+	public void onSelected(final PaintModel model) {
+		// DOES NOTHING
+	}
+
+    protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX, final double endY) {
         double d = endX - startX;
         double a = d == 0 ? Double.NaN : (endY - startY) / d;
         double b = Double.isNaN(a) ? Double.NaN : endY - a * endX;
@@ -45,7 +51,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void drawSquare(PaintModel model, int x, int y, int w) {
+    protected void drawSquare(final PaintModel model, final int x, final int y, final int w) {
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < w; j++) {
                 if (withinRange(x + i, y + j, model)) {
@@ -55,19 +61,19 @@ public abstract class PaintTool extends Group {
         }
     }
 
-	protected boolean within(int y, double min) {
+	protected boolean within(final int y, final double min) {
 		return 0 <= y && y < min;
 	}
 
-	protected boolean within(int y, double min, double max) {
+	protected boolean within(final int y, final double min, final double max) {
 		return min <= y && y < max;
     }
 
-    protected boolean withinRange(int x, int y, PaintModel model) {
+    protected boolean withinRange(final int x, final int y, final PaintModel model) {
         return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
     }
 
-	protected boolean withinRange(int x, int y, int initialX, int initialY, double bound, PaintModel model) {
+	protected boolean withinRange(final int x, final int y, final int initialX, final int initialY, final double bound, final PaintModel model) {
 		return within(y, Double.max(initialY - bound, 0), Double.min(initialY + bound, model.getImage().getHeight()))
 				&& within(x, Double.max(initialX - bound, 0),
 						Double.min(initialX + bound, model.getImage().getWidth()));

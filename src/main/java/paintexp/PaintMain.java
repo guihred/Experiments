@@ -1,8 +1,6 @@
 package paintexp;
 
 import graphs.entities.ZoomableScrollPane;
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.List;
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -12,12 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Toggle;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -26,14 +19,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.slf4j.Logger;
+import paintexp.tool.PaintTool;
 import simplebuilder.SimpleMenuBarBuilder;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
 
@@ -41,13 +32,14 @@ public class PaintMain extends  Application{
 
 	private static final Logger LOG = HasLogging.log();
     private PaintModel paintModel = new PaintModel();
+	private PaintController controller = new PaintController();
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(final Stage primaryStage) throws Exception {
         BorderPane root = new BorderPane();
         root.setTop(new SimpleMenuBarBuilder()
                 .addMenu("_File")
-				.addMenuItem("_New", e -> newFile())
-				.addMenuItem("_Open", e -> openFile(primaryStage))
+				.addMenuItem("_New", e -> controller.newFile())
+				.addMenuItem("_Open", e -> controller.openFile(primaryStage))
                 .addMenu("_Edit")
                 .addMenu("_View")
                 .addMenu("_Image")
@@ -81,11 +73,9 @@ public class PaintMain extends  Application{
         GridPane gridPane = new GridPane();
 		StackPane st = new StackPane(pickedColor(paintModel.backColorProperty(), 20),
 				pickedColor(paintModel.frontColorProperty(), 10));
-		List<Color> generateRandomColors = CommonsFX.generateRandomColors(28);
-		gridPane.addRow(0,
-				generateRandomColors.stream().limit(14).map(e -> newRectangle(e)).toArray(Rectangle[]::new));
-		gridPane.addRow(1,
-				generateRandomColors.stream().skip(14).limit(14).map(e -> newRectangle(e))
+		List<Color> colors = controller.getColors();
+		gridPane.addRow(0, colors.stream().limit(14).map(controller::newRectangle).toArray(Rectangle[]::new));
+		gridPane.addRow(1, colors.stream().skip(14).limit(14).map(controller::newRectangle)
 						.toArray(Rectangle[]::new));
 
 		root.setBottom(new VBox(30, new HBox(50, st, gridPane), hBox));
@@ -94,7 +84,7 @@ public class PaintMain extends  Application{
         Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggle(e.getTool()));
                 
         List<Node> paintTools = toolGroup
-                .onChange((ov, oldValue, newValue) -> changeTool(newValue))
+				.onChange((ov, oldValue, newValue) -> controller.changeTool(newValue))
                 .getTogglesAs(Node.class);
                 
         GridPane toolbar = new GridPane();
@@ -111,59 +101,8 @@ public class PaintMain extends  Application{
 
     }
 
-	private Rectangle newRectangle(Color color) {
-		Rectangle rectangle = new Rectangle(20, 20, color);
-		rectangle.setStroke(Color.BLACK);
-		rectangle.setOnMouseClicked(e -> {
-			if (MouseButton.PRIMARY == e.getButton()) {
-				paintModel.setFrontColor(color);
-			} else {
-				paintModel.setBackColor(color);
-			}
 
-		});
-
-		return rectangle;
-	}
-
-    private void changeTool(Toggle newValue) {
-        paintModel.getImageStack().getChildren().clear();
-        paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
-        paintModel.getTool().set((PaintTool) newValue.getUserData());
-    }
-
-    private void newFile() {
-        paintModel.setImage(new WritableImage(500, 500));
-        int w = (int) paintModel.getImage().getWidth();
-        int h = (int) paintModel.getImage().getHeight();
-        paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(paintModel.getBackColor()), 0, 0);
-        paintModel.getImageStack().getChildren().clear();
-        paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
-
-	}
-
-	private void openFile(Window ownerWindow) {
-		FileChooser fileChooser2 = new FileChooser();
-		fileChooser2.setTitle("Open File");
-		fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
-		File showOpenDialog = fileChooser2.showOpenDialog(ownerWindow);
-		if (showOpenDialog != null) {
-			try {
-				Image image2 = new Image(new FileInputStream(showOpenDialog));
-				int w = (int) image2.getWidth();
-				int h = (int) image2.getHeight();
-                paintModel.setImage(new WritableImage(w, h));
-                paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
-                paintModel.getImageStack().getChildren().clear();
-                paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
-            } catch (Exception e) {
-				LOG.error("", e);
-			}
-		}
-
-	}
-
-    private Rectangle pickedColor(ObjectProperty<Color> objectProperty, int value) {
+    private Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
 
         return new SimpleRectangleBuilder()
                 .layoutX(value).layoutY(value)
@@ -173,7 +112,7 @@ public class PaintMain extends  Application{
                 .fill(objectProperty).build();
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 		CrawlerTask.insertProxyConfig();
 		System.setProperty("prism.lcdtext", "false");
         launch(args);

@@ -1,4 +1,4 @@
-package paintexp;
+package paintexp.tool;
 
 import javafx.scene.Cursor;
 import javafx.scene.Node;

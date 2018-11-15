@@ -1,4 +1,4 @@
-package paintexp;
+package paintexp.tool;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import paintexp.PaintModel;
 import utils.ResourceFXUtils;
 
 public class EraserTool extends PaintTool {

@@ -1,10 +1,11 @@
-package paintexp;
+package paintexp.tool;
 
 import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import paintexp.PaintModel;
 import utils.ResourceFXUtils;
 
 public class PencilTool extends PaintTool {

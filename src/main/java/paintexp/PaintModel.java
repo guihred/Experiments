@@ -8,6 +8,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import paintexp.tool.PaintTool;
 
 public class PaintModel {
     private ObjectProperty<Color> backColor = new SimpleObjectProperty<>(Color.WHITE);

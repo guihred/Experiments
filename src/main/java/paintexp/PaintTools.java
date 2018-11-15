@@ -1,6 +1,13 @@
 package paintexp;
 
 import javafx.scene.Cursor;
+import paintexp.tool.BucketTool;
+import paintexp.tool.DummyTool;
+import paintexp.tool.EraserTool;
+import paintexp.tool.LineTool;
+import paintexp.tool.PaintTool;
+import paintexp.tool.PencilTool;
+import paintexp.tool.SelectRectTool;
 
 public enum PaintTools {
     SELECT_FREE,
