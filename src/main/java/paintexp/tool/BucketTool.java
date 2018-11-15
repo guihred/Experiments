@@ -8,6 +8,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -58,7 +59,8 @@ public class BucketTool extends PaintTool {
 			height = (int) model.getImage().getHeight();
 			PixelReader pixelReader = model.getImage().getPixelReader();
 			int originalColor = pixelReader.getArgb(initialX, initialY);
-			int frontColor = SimplePixelReader.toArgb(model.getFrontColor());
+			int frontColor = SimplePixelReader
+					.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
 			if (originalColor != frontColor) {
 				Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
 			}
