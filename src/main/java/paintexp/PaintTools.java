@@ -3,6 +3,7 @@ package paintexp;
 import javafx.scene.Cursor;
 import paintexp.tool.BucketTool;
 import paintexp.tool.DummyTool;
+import paintexp.tool.EllipseTool;
 import paintexp.tool.EraserTool;
 import paintexp.tool.LineTool;
 import paintexp.tool.PaintTool;
@@ -25,7 +26,7 @@ public enum PaintTools {
     CURVE,
 	RECTANGLE(new RectangleTool()),
     POLYGON,
-    CIRCLE,
+	CIRCLE(new EllipseTool()),
     ROUND;
 
 

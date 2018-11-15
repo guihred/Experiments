@@ -61,6 +61,25 @@ public abstract class PaintTool extends Group {
         }
     }
 
+	protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < w; j++) {
+				if (withinRange(x + i, y + j, model)) {
+					int argb = model.getImage().getPixelReader().getArgb(x + i, y + j);
+					if (argb == color) {
+						model.getImage().getPixelWriter().setColor(x + i, y + j, model.getBackColor());
+					}
+				}
+			}
+		}
+	}
+
+	protected void drawPoint(final PaintModel model, final int x2, final int y2) {
+		if (withinRange(x2, y2, model)) {
+			model.getImage().getPixelWriter().setColor(x2, y2, model.getFrontColor());
+		}
+	}
+
 	protected boolean within(final int y, final double min) {
 		return 0 <= y && y < min;
 	}

@@ -5,10 +5,12 @@ import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
+import paintexp.SimplePixelReader;
 import utils.ResourceFXUtils;
 
 public class EraserTool extends PaintTool {
@@ -44,7 +46,7 @@ public class EraserTool extends PaintTool {
     }
 
     @Override
-    public synchronized void handleEvent(MouseEvent e, PaintModel model) {
+    public synchronized void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_MOVED.equals(eventType)) {
             ObservableList<Node> children = model.getImageStack().getChildren();
@@ -55,22 +57,18 @@ public class EraserTool extends PaintTool {
             getArea().setLayoutX(e.getX());
             getArea().setLayoutY(e.getY());
         }
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+		if (MouseEvent.MOUSE_PRESSED.equals(eventType) || MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
             int y = (int) e.getY();
             int x = (int) e.getX();
             int w = (int) getArea().getWidth();
-            drawSquare(model, x, y, w);
+			if (e.getButton() == MouseButton.PRIMARY) {
+				drawSquare(model, x, y, w);
+			} else {
+				drawSquare(model, x, y, w,SimplePixelReader.toArgb(model.getFrontColor()));
+			}
             getArea().setLayoutX(e.getX());
             getArea().setLayoutY(e.getY());
         }
-		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            int x = (int) e.getX();
-            int y = (int) e.getY();
-            int w = (int) getArea().getWidth();
-                drawSquare(model, x, y, w);
-            getArea().setLayoutX(e.getX());
-            getArea().setLayoutY(e.getY());
-		}
         if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
             getArea().setVisible(false);
         }

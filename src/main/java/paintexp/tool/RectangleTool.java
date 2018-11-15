@@ -55,6 +55,7 @@ public class RectangleTool extends PaintTool {
 			getArea().setLayoutY(initialY);
 			getArea().setWidth(1);
 			getArea().setHeight(1);
+			getArea().setStroke(model.getFrontColor());
 		}
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
 			double layoutX = initialX;

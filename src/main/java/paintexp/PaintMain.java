@@ -37,6 +37,7 @@ public class PaintMain extends  Application{
                 .addMenu("_File")
 				.addMenuItem("_New", e -> controller.newFile())
 				.addMenuItem("_Open", e -> controller.openFile(primaryStage))
+				.addMenuItem("_Save", e -> controller.saveFile(primaryStage))
                 .addMenu("_Edit")
                 .addMenu("_View")
                 .addMenu("_Image")
