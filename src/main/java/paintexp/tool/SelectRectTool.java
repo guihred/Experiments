@@ -1,6 +1,7 @@
 package paintexp.tool;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
@@ -13,6 +14,7 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -77,14 +79,14 @@ public class SelectRectTool extends PaintTool {
 				break;
 			case V:
 				if (e.isControlDown()) {
-					Clipboard systemClipboard = Clipboard.getSystemClipboard();
-					Image image = systemClipboard.getImage();
-					if (image != null) {
-						copyImage(model, image, model.getImage());
-					} else if (systemClipboard.getFiles() != null) {
-						copyFromFile(model, systemClipboard.getFiles());
-					}
+					copyFromClipboard(model);
 				}
+				break;
+			case C:
+				if (e.isControlDown()) {
+					copyToClipboard(model);
+				}
+				break;
 			case A:
 				if (e.isControlDown()) {
 					selectArea(0, 0, model.getImage().getWidth(), model.getImage().getHeight(), model);
@@ -101,7 +103,6 @@ public class SelectRectTool extends PaintTool {
 		addRect(model);
 		dragTo(w, h);
 		onMouseReleased(model);
-
 	}
 
 	private void addRect(final PaintModel model) {
@@ -117,6 +118,16 @@ public class SelectRectTool extends PaintTool {
 		getArea().setHeight(1);
 	}
 
+	private void copyFromClipboard(final PaintModel model) {
+		Clipboard systemClipboard = Clipboard.getSystemClipboard();
+		Image image = systemClipboard.getImage();
+		if (image != null) {
+			copyImage(model, image, model.getImage());
+		} else if (systemClipboard.getFiles() != null) {
+			copyFromFile(model, systemClipboard.getFiles());
+		}
+	}
+
 	private void copyFromFile(final PaintModel model, final List<File> files) {
 		if (!files.isEmpty()) {
 			File file = files.get(0);
@@ -130,12 +141,22 @@ public class SelectRectTool extends PaintTool {
 	}
 
 	private void copyImage(final PaintModel model, final Image srcImage, final WritableImage destImage) {
+		double width = srcImage.getWidth();
+		double height = srcImage.getHeight();
+		copyImagePart(srcImage, destImage, width, height);
+		selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
+	}
+
+	private void copyImagePart(final Image srcImage, final WritableImage destImage, final double width,
+			final double height) {
 		PixelReader pixelReader = srcImage.getPixelReader();
 		PixelWriter pixelWriter = destImage.getPixelWriter();
 		Type type = pixelReader.getPixelFormat().getType();
-		for (int i = 0; i < srcImage.getWidth(); i++) {
-			for (int j = 0; j < srcImage.getHeight(); j++) {
-				if (withinRange(i, j, model)) {
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				final int x = i;
+				final int y = j;
+				if (within(y, height) && within(x, width)) {
 					Color color = pixelReader.getColor(i, j);
 					if (Type.BYTE_BGRA_PRE == type) {
 						color = Color.hsb(color.getHue(), color.getSaturation(), color.getBrightness());
@@ -144,7 +165,18 @@ public class SelectRectTool extends PaintTool {
 				}
 			}
 		}
-		selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
+	}
+
+	private void copyToClipboard(final PaintModel model) {
+		Clipboard systemClipboard = Clipboard.getSystemClipboard();
+		double width = area.getWidth();
+		double height = area.getHeight();
+		WritableImage writableImage = new WritableImage((int) width, (int) height);
+		copyImagePart(model.getImage(), writableImage, width, height);
+		HashMap<DataFormat, Object> content = new HashMap<>();
+		content.put(DataFormat.IMAGE, writableImage);
+		systemClipboard.setContent(content);
+	
 	}
 
 	private void dragTo(final double x, final double y) {
