@@ -43,9 +43,9 @@ public class PaintController {
 		rectangle.setStroke(Color.BLACK);
 		rectangle.setOnMouseClicked(e -> {
 			if (MouseButton.PRIMARY == e.getButton()) {
-				paintModel.setFrontColor(color);
+				getPaintModel().setFrontColor(color);
 			} else {
-				paintModel.setBackColor(color);
+				getPaintModel().setBackColor(color);
 			}
 
 		});
@@ -54,22 +54,22 @@ public class PaintController {
 	}
 
 	public void changeTool(final Toggle newValue) {
-		paintModel.getImageStack().getChildren().clear();
-		paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
-		paintModel.getTool().set((PaintTool) newValue.getUserData());
-		PaintTool paintTool = paintModel.getTool().get();
-		paintTool.onSelected(paintModel);
+		getPaintModel().getImageStack().getChildren().clear();
+		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
+		getPaintModel().getTool().set((PaintTool) newValue.getUserData());
+		PaintTool paintTool = getPaintModel().getTool().get();
+		paintTool.onSelected(getPaintModel());
 
 	}
 
 	public void newFile() {
-		paintModel.setImage(new WritableImage(500, 500));
-		int w = (int) paintModel.getImage().getWidth();
-		int h = (int) paintModel.getImage().getHeight();
-		paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(paintModel.getBackColor()),
+		getPaintModel().setImage(new WritableImage(500, 500));
+		int w = (int) getPaintModel().getImage().getWidth();
+		int h = (int) getPaintModel().getImage().getHeight();
+		getPaintModel().getImage().getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(getPaintModel().getBackColor()),
 				0, 0);
-		paintModel.getImageStack().getChildren().clear();
-		paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
+		getPaintModel().getImageStack().getChildren().clear();
+		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
 
 	}
 
@@ -83,13 +83,17 @@ public class PaintController {
 				Image image2 = new Image(new FileInputStream(showOpenDialog));
 				int w = (int) image2.getWidth();
 				int h = (int) image2.getHeight();
-				paintModel.setImage(new WritableImage(w, h));
-				paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
-				paintModel.getImageStack().getChildren().clear();
-				paintModel.getImageStack().getChildren().add(new ImageView(paintModel.getImage()));
+				getPaintModel().setImage(new WritableImage(w, h));
+				getPaintModel().getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
+				getPaintModel().getImageStack().getChildren().clear();
+				getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
 			} catch (Exception e) {
 				LOG.error("", e);
 			}
 		}
+	}
+
+	public PaintModel getPaintModel() {
+		return paintModel;
 	}
 }

@@ -7,6 +7,7 @@ import paintexp.tool.EraserTool;
 import paintexp.tool.LineTool;
 import paintexp.tool.PaintTool;
 import paintexp.tool.PencilTool;
+import paintexp.tool.RectangleTool;
 import paintexp.tool.SelectRectTool;
 
 public enum PaintTools {
@@ -22,7 +23,7 @@ public enum PaintTools {
     TEXT,
     LINE(new LineTool()),
     CURVE,
-    RECTANGLE,
+	RECTANGLE(new RectangleTool()),
     POLYGON,
     CIRCLE,
     ROUND;
@@ -33,7 +34,7 @@ public enum PaintTools {
     PaintTools() {
     }
 
-    PaintTools(PaintTool paintTool) {
+    PaintTools(final PaintTool paintTool) {
         tool = paintTool;
     }
     public Cursor getCursor() {

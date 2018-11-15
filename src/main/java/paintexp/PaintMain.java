@@ -20,21 +20,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
 import paintexp.tool.PaintTool;
 import simplebuilder.SimpleMenuBarBuilder;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CrawlerTask;
-import utils.HasLogging;
 
 public class PaintMain extends  Application{
 
-	private static final Logger LOG = HasLogging.log();
-    private PaintModel paintModel = new PaintModel();
 	private PaintController controller = new PaintController();
     @Override
     public void start(final Stage primaryStage) throws Exception {
+		PaintModel paintModel = controller.getPaintModel();
         BorderPane root = new BorderPane();
         root.setTop(new SimpleMenuBarBuilder()
                 .addMenu("_File")

@@ -21,8 +21,6 @@ public class BucketTool extends PaintTool {
 	boolean pressed;
 
 	private Rectangle area;
-	private int initialX;
-	private int initialY;
 	private int width;
 	private int height;
 
@@ -54,8 +52,8 @@ public class BucketTool extends PaintTool {
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
-			initialX = (int) e.getX();
-			initialY = (int) e.getY();
+			int initialX = (int) e.getX();
+			int initialY = (int) e.getY();
 			width = (int) model.getImage().getWidth();
 			height = (int) model.getImage().getHeight();
 			PixelReader pixelReader = model.getImage().getPixelReader();
