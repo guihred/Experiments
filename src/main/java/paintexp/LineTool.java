@@ -39,11 +39,10 @@ public class LineTool extends PaintTool {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             ObservableList<Node> children = model.getImageStack().getChildren();
-            if (size() < 2 && children.contains(getLine())) {
-                children.remove(getLine());
-            } else {
+			if (size() >= 2 || !children.contains(getLine())) {
                 drawLine(model, line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
 			}
+			children.remove(getLine());
 		}
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
 			getLine().setStroke(model.getFrontColor());

@@ -106,7 +106,7 @@ public class PaintMain extends  Application{
 
         primaryStage.setTitle("Paint");
 
-        primaryStage.setScene(new Scene(root, 600, 600));
+		primaryStage.setScene(new Scene(root, 600, 600));
         primaryStage.show();
 
     }
@@ -174,7 +174,8 @@ public class PaintMain extends  Application{
     }
 
     public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
+		CrawlerTask.insertProxyConfig();
+		System.setProperty("prism.lcdtext", "false");
         launch(args);
     }
 

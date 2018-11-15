@@ -47,6 +47,7 @@ public class PaintModel {
             imageView.setLayoutX(0);
             imageView.setLayoutY(0);
             imageView.setManaged(false);
+			imageView.setSmooth(false);
             imageStack = new StackPane(imageView);
             imageStack.setAlignment(Pos.TOP_LEFT);
             imageStack.setMinWidth(200);

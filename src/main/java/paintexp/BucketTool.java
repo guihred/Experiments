@@ -11,10 +11,13 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.slf4j.Logger;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class BucketTool extends PaintTool {
 
+	private static final Logger LOG = HasLogging.log();
 	private ImageView icon;
 	boolean pressed;
 
@@ -49,7 +52,7 @@ public class BucketTool extends PaintTool {
 	}
 
 	@Override
-	public synchronized void handleEvent(MouseEvent e, PaintModel model) {
+	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
 			initialX = (int) e.getX();
@@ -66,45 +69,50 @@ public class BucketTool extends PaintTool {
 		}
 	}
 
-	public void setColor(int initX, int initY, int originalColor, int frontColor, PixelReader pixelReader,
-			PaintModel model) {
+	public void setColor(final int initX, final int initY, final int originalColor, final int frontColor, final PixelReader pixelReader,
+			final PaintModel model) {
 		List<Integer> toGo = new ArrayList<>();
 		toGo.add(index(initX, initY));
 		while (!toGo.isEmpty()) {
 			Integer next = toGo.remove(0);
-			int y = y(next);
 			int x = x(next);
-			if (y == 0 && next != 0) {
-				if (withinRange(x, y, model)) {
-					int color = pixelReader.getArgb(x, y);
-					if (color == originalColor) {
+			int y = y(next);
+			if (withinRange(x, y, model)) {
+				int color = pixelReader.getArgb(x, y);
+				if (color == originalColor) {
+					if (y != 0 && y != height - 1) {
 						addIfNotIn(toGo, next + 1);
 						addIfNotIn(toGo, next - 1);
 						addIfNotIn(toGo, next + width);
 						addIfNotIn(toGo, next - width);
-						model.getImage().getPixelWriter().setArgb(x, y, frontColor);
 					}
+					model.getImage().getPixelWriter().setArgb(x, y, frontColor);
 				}
 			}
+
 		}
 	}
 
-	private Integer index(int initialX2, int initialY2) {
+	private Integer index(final int initialX2, final int initialY2) {
 		return initialX2 * width + initialY2;
 	}
 
-	private int x(int m) {
+	private int x(final int m) {
 		return m / width;
 	}
 
-	private int y(int m) {
+	private int y(final int m) {
 
 		return m % width;
 	}
 
-	private void addIfNotIn(List<Integer> toGo, Integer e) {
-		if (!toGo.contains(e) && e < (width - 1) * (height - 1)) {
-			toGo.add(e);
+	private void addIfNotIn(final List<Integer> toGo, final Integer e) {
+		if (!toGo.contains(e)) {
+			if (e < width * height && e >= 0) {
+				toGo.add(e);
+			} else {
+				LOG.info("x={}&y={}&next={}", x(e), y(e), e);
+			}
 		}
 	}
 
