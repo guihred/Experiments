@@ -11,6 +11,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.PixelReader;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -48,19 +49,7 @@ public class PaintMain extends  Application{
         paintModel.getImage().getPixelWriter().setPixels(0, 0, (int) paintModel.getImage().getWidth(),
                 (int) paintModel.getImage().getHeight(), reader, 0, 0);
         paintModel.getImageStack().addEventHandler(MouseEvent.ANY, e -> {
-            double x = e.getX();
-            double y = e.getY();
-            paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
-            paintModel.getImageSize()
-                    .setText(String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
-
-            PaintTool paintTool = paintModel.getTool().get();
-			if (paintTool != null) {
-                paintModel.getImageStack().setCursor(paintTool.getMouseCursor());
-                paintTool.handleEvent(e, paintModel);
-            } else {
-                paintModel.getImageStack().setCursor(Cursor.DEFAULT);
-            }
+			handleMouse(paintModel, e);
         });
         root.setCenter(new ZoomableScrollPane(paintModel.getImageStack()));
 
@@ -93,12 +82,34 @@ public class PaintMain extends  Application{
         root.setLeft(toolbar);
 
         primaryStage.setTitle("Paint");
-
-		primaryStage.setScene(new Scene(root, 600, 600));
+		Scene scene = new Scene(root, 600, 600);
+		scene.addEventHandler(KeyEvent.ANY, e -> {
+			PaintTool paintTool = paintModel.getTool().get();
+			if (paintTool != null) {
+				paintTool.handleKeyEvent(e, paintModel);
+			}
+		});
+		primaryStage.setScene(scene);
         primaryStage.show();
 
     }
 
+
+	private void handleMouse(final PaintModel paintModel, final MouseEvent e) {
+		double x = e.getX();
+		double y = e.getY();
+		paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
+		paintModel.getImageSize().setText(
+				String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
+
+		PaintTool paintTool = paintModel.getTool().get();
+		if (paintTool != null) {
+			paintModel.getImageStack().setCursor(paintTool.getMouseCursor());
+			paintTool.handleEvent(e, paintModel);
+		} else {
+			paintModel.getImageStack().setCursor(Cursor.DEFAULT);
+		}
+	}
 
     private Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
 

@@ -3,6 +3,7 @@ package paintexp.tool;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import paintexp.PaintModel;
 
@@ -25,6 +26,10 @@ public abstract class PaintTool extends Group {
 		// DOES NOTHING
 	}
 
+	@SuppressWarnings("unused")
+	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
+		// DOES NOTHING
+	}
     protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX, final double endY) {
         double d = endX - startX;
         double a = d == 0 ? Double.NaN : (endY - startY) / d;
@@ -60,6 +65,16 @@ public abstract class PaintTool extends Group {
             }
         }
     }
+
+	protected void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				if (withinRange((int) x + i, (int) y + j, model)) {
+					model.getImage().getPixelWriter().setColor((int) x + i, (int) y + j, model.getBackColor());
+				}
+			}
+		}
+	}
 
 	protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
 		for (int i = 0; i < w; i++) {
@@ -97,4 +112,6 @@ public abstract class PaintTool extends Group {
 				&& within(x, Double.max(initialX - bound, 0),
 						Double.min(initialX + bound, model.getImage().getWidth()));
 	}
+
+
 }

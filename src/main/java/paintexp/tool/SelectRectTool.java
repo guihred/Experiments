@@ -2,8 +2,11 @@ package paintexp.tool;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
+import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -40,7 +43,7 @@ public class SelectRectTool extends PaintTool {
 	}
 
 	@Override
-    public void handleEvent(MouseEvent e, PaintModel model) {
+    public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             ObservableList<Node> children = model.getImageStack().getChildren();
@@ -75,6 +78,18 @@ public class SelectRectTool extends PaintTool {
 			getArea().setWidth(Math.abs(e.getX() - layoutX));
 			getArea().setHeight(Math.abs(e.getY() - layoutY));
 		}
+	}
 
+	@Override
+	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
+		KeyCode code = e.getCode();
+		switch (code) {
+			case DELETE:
+				Bounds bounds = getArea().getBoundsInParent();
+				drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+				break;
+			default:
+				break;
+		}
 	}
 }
