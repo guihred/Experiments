@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Cursor;
 import javafx.scene.control.Toggle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
@@ -24,7 +27,15 @@ import utils.HasLogging;
 public class PaintController {
 	private static final Logger LOG = HasLogging.log();
 	private PaintModel paintModel = new PaintModel();
-	private File currentFile;
+
+	public void changeTool(final Toggle newValue) {
+		getPaintModel().getImageStack().getChildren().clear();
+		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
+		getPaintModel().setTool((PaintTool) newValue.getUserData());
+		PaintTool paintTool = getPaintModel().getTool();
+		paintTool.onSelected(getPaintModel());
+
+	}
 
 	public List<Color> getColors() {
 		List<Color> availableColors = new ArrayList<>();
@@ -47,6 +58,54 @@ public class PaintController {
 		return availableColors;
 	}
 
+	public PaintModel getPaintModel() {
+		return paintModel;
+	}
+
+	public void handleKeyBoard(final KeyEvent e) {
+		switch (e.getCode()) {
+			case V:
+			case A:
+				if (e.isControlDown()) {
+					paintModel.setTool(PaintTools.SELECT_RECT.getTool());
+				}
+				break;
+			default:
+				break;
+		}
+		PaintTool paintTool = paintModel.getTool();
+		if (paintTool != null) {
+			paintTool.handleKeyEvent(e, paintModel);
+		}
+	}
+
+	public void handleMouse(final MouseEvent e) {
+		double x = e.getX();
+		double y = e.getY();
+		paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
+		paintModel.getImageSize().setText(
+				String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
+
+		PaintTool paintTool = paintModel.getTool();
+		if (paintTool != null) {
+			paintModel.getImageStack().setCursor(paintTool.getMouseCursor());
+			paintTool.handleEvent(e, paintModel);
+		} else {
+			paintModel.getImageStack().setCursor(Cursor.DEFAULT);
+		}
+	}
+
+	public void newFile() {
+		getPaintModel().setImage(new WritableImage(500, 500));
+		int w = (int) getPaintModel().getImage().getWidth();
+		int h = (int) getPaintModel().getImage().getHeight();
+		getPaintModel().getImage().getPixelWriter().setPixels(0, 0, w, h,
+				new SimplePixelReader(getPaintModel().getBackColor()), 0, 0);
+		getPaintModel().getImageStack().getChildren().clear();
+		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
+
+	}
+
 	public Rectangle newRectangle(final Color color) {
 		Rectangle rectangle = new Rectangle(20, 20, color);
 		rectangle.setStroke(Color.BLACK);
@@ -56,58 +115,19 @@ public class PaintController {
 			} else {
 				getPaintModel().setBackColor(color);
 			}
-
 		});
 
 		return rectangle;
-	}
-
-	public void changeTool(final Toggle newValue) {
-		getPaintModel().getImageStack().getChildren().clear();
-		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
-		getPaintModel().getTool().set((PaintTool) newValue.getUserData());
-		PaintTool paintTool = getPaintModel().getTool().get();
-		paintTool.onSelected(getPaintModel());
-
-	}
-
-	public void newFile() {
-		getPaintModel().setImage(new WritableImage(500, 500));
-		int w = (int) getPaintModel().getImage().getWidth();
-		int h = (int) getPaintModel().getImage().getHeight();
-		getPaintModel().getImage().getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(getPaintModel().getBackColor()),
-				0, 0);
-		getPaintModel().getImageStack().getChildren().clear();
-		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
-
-	}
-
-	public void saveFile(final Stage primaryStage) {
-		try {
-			if (currentFile == null) {
-				FileChooser fileChooser2 = new FileChooser();
-				fileChooser2.setTitle("Save File");
-				fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
-				currentFile = fileChooser2.showOpenDialog(primaryStage);
-			}
-			if (currentFile != null) {
-				File destination = currentFile;
-				WritableImage image = getPaintModel().getImage();
-				ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", destination);
-			}
-		} catch (IOException e) {
-			LOG.error("", e);
-		}
 	}
 
 	public void openFile(final Window ownerWindow) {
 		FileChooser fileChooser2 = new FileChooser();
 		fileChooser2.setTitle("Open File");
 		fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
-		currentFile = fileChooser2.showOpenDialog(ownerWindow);
-		if (currentFile != null) {
+		paintModel.setCurrentFile(fileChooser2.showOpenDialog(ownerWindow));
+		if (paintModel.getCurrentFile() != null) {
 			try {
-				Image image2 = new Image(new FileInputStream(currentFile));
+				Image image2 = new Image(new FileInputStream(paintModel.getCurrentFile()));
 				int w = (int) image2.getWidth();
 				int h = (int) image2.getHeight();
 				getPaintModel().setImage(new WritableImage(w, h));
@@ -120,7 +140,21 @@ public class PaintController {
 		}
 	}
 
-	public PaintModel getPaintModel() {
-		return paintModel;
+	public void saveFile(final Stage primaryStage) {
+		try {
+			if (paintModel.getCurrentFile() == null) {
+				FileChooser fileChooser2 = new FileChooser();
+				fileChooser2.setTitle("Save File");
+				fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
+				paintModel.setCurrentFile(fileChooser2.showOpenDialog(primaryStage));
+			}
+			if (paintModel.getCurrentFile() != null) {
+				File destination = paintModel.getCurrentFile();
+				WritableImage image = getPaintModel().getImage();
+				ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", destination);
+			}
+		} catch (IOException e) {
+			LOG.error("", e);
+		}
 	}
 }

@@ -66,52 +66,64 @@ public class PolygonTool extends PaintTool {
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			ObservableList<Node> children = model.getImageStack().getChildren();
-			if (!children.contains(getArea())) {
-				children.add(getArea());
-
-			}
-			if (!children.contains(getLine())) {
-				children.add(getLine());
-			}
-			double x = e.getX();
-			double y = e.getY();
-			getLine().setStartX(x);
-			getLine().setStartY(y);
-			getLine().setEndX(x);
-			getLine().setEndY(y);
-			getArea().getPoints().addAll(x, y);
-			getArea().setStroke(model.getFrontColor());
+			onMousePressed(e, model);
 		}
 		if (MouseEvent.MOUSE_MOVED.equals(eventType)) {
-			ObservableList<Double> points = getArea().getPoints();
-			if (points.size() > 1) {
-				Double x = points.get(points.size() - 2);
-				Double y = points.get(points.size() - 1);
-				getLine().setStartX(x);
-				getLine().setStartY(y);
-				getLine().setEndX(e.getX());
-				getLine().setEndY(e.getY());
-			}
+			onMouseMoved(e);
 		}
 		if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
-			ObservableList<Node> children = model.getImageStack().getChildren();
-			if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
-				ObservableList<Double> points = getArea().getPoints();
-				for (int i = 0; i < points.size() + 2; i += 2) {
-					Double startX = points.get(i % points.size());
-					Double startY = points.get((i + 1) % points.size());
-					Double endX = points.get((i + 2) % points.size());
-					Double endY = points.get((i + 3) % points.size());
-					drawLine(model, startX, startY, endX, endY);
-				}
-
-			}
-			children.remove(getArea());
-			children.remove(getLine());
-			getArea().getPoints().clear();
+			onMouseExited(model);
 		}
 
+	}
+
+	private void onMouseExited(final PaintModel model) {
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
+			ObservableList<Double> points = getArea().getPoints();
+			for (int i = 0; i < points.size() + 2; i += 2) {
+				Double startX = points.get(i % points.size());
+				Double startY = points.get((i + 1) % points.size());
+				Double endX = points.get((i + 2) % points.size());
+				Double endY = points.get((i + 3) % points.size());
+				drawLine(model, startX, startY, endX, endY);
+			}
+
+		}
+		children.remove(getArea());
+		children.remove(getLine());
+		getArea().getPoints().clear();
+	}
+
+	private void onMouseMoved(final MouseEvent e) {
+		ObservableList<Double> points = getArea().getPoints();
+		if (points.size() > 1) {
+			Double x = points.get(points.size() - 2);
+			Double y = points.get(points.size() - 1);
+			getLine().setStartX(x);
+			getLine().setStartY(y);
+			getLine().setEndX(e.getX());
+			getLine().setEndY(e.getY());
+		}
+	}
+
+	private void onMousePressed(final MouseEvent e, final PaintModel model) {
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (!children.contains(getArea())) {
+			children.add(getArea());
+
+		}
+		if (!children.contains(getLine())) {
+			children.add(getLine());
+		}
+		double x = e.getX();
+		double y = e.getY();
+		getLine().setStartX(x);
+		getLine().setStartY(y);
+		getLine().setEndX(x);
+		getLine().setEndY(y);
+		getArea().getPoints().addAll(x, y);
+		getArea().setStroke(model.getFrontColor());
 	}
 
 

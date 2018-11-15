@@ -48,43 +48,63 @@ public class EllipseTool extends PaintTool {
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			ObservableList<Node> children = model.getImageStack().getChildren();
-			if (!children.contains(getArea())) {
-
-				children.add(getArea());
-			}
-			initialX = (int) e.getX();
-			getArea().setLayoutX(initialX);
-			initialY = (int) e.getY();
-			getArea().setLayoutY(initialY);
-			getArea().setRadiusX(1);
-			getArea().setRadiusY(1);
-			getArea().setStroke(model.getFrontColor());
+			onMousePressed(e, model);
 		}
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-			getArea().setRadiusX(Math.abs(e.getX() - initialX));
-			getArea().setRadiusY(Math.abs(e.getY() - initialY));
+			onMouseDragged(e);
 		}
 		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			ObservableList<Node> children = model.getImageStack().getChildren();
-			if (getArea().getRadiusX() > 2 && children.contains(getArea())) {
-				double a = getArea().getRadiusX();
-				double b = getArea().getRadiusY();
-				Bounds bounds = getArea().getBoundsInParent();
-				double width = bounds.getWidth();
-				double height = bounds.getHeight();
-				double nPoints = Double.max(width, height) * 4;
-				for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
-					int x = (int) Math.round(a * Math.cos(t));
-					int y = (int) Math.round(b * Math.sin(t));
-					drawPoint(model, x + initialX, y + initialY);
-					drawPoint(model, x + initialX, y + initialY);
-				}
-
-			}
-			children.remove(getArea());
+			onMouseReleased(model);
 		}
 
+	}
+
+	private void onMouseReleased(final PaintModel model) {
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (getArea().getRadiusX() > 2 && children.contains(getArea())) {
+			double a = getArea().getRadiusX();
+			double b = getArea().getRadiusY();
+			Bounds bounds = getArea().getBoundsInParent();
+			double width = bounds.getWidth();
+			double height = bounds.getHeight();
+			double nPoints = Double.max(width, height) * 4;
+			for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
+				int x = (int) Math.round(a * Math.cos(t));
+				int y = (int) Math.round(b * Math.sin(t));
+				drawPoint(model, x + initialX, y + initialY);
+				drawPoint(model, x + initialX, y + initialY);
+			}
+
+		}
+		children.remove(getArea());
+	}
+
+	private void onMouseDragged(final MouseEvent e) {
+		double radiusX = Math.abs(e.getX() - initialX);
+		getArea().setRadiusX(radiusX);
+		double radiusY = Math.abs(e.getY() - initialY);
+		getArea().setRadiusY(radiusY);
+		if (e.isShiftDown()) {
+			double max = Double.max(radiusX, radiusY);
+			getArea().setRadiusX(max);
+			getArea().setRadiusY(max);
+
+		}
+	}
+
+	private void onMousePressed(final MouseEvent e, final PaintModel model) {
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (!children.contains(getArea())) {
+
+			children.add(getArea());
+		}
+		initialX = (int) e.getX();
+		getArea().setLayoutX(initialX);
+		initialY = (int) e.getY();
+		getArea().setLayoutY(initialY);
+		getArea().setRadiusX(1);
+		getArea().setRadiusY(1);
+		getArea().setStroke(model.getFrontColor());
 	}
 
 

@@ -36,32 +36,43 @@ public class LineTool extends PaintTool {
 	}
 
 	@Override
-    public void handleEvent(MouseEvent e, PaintModel model) {
+    public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            ObservableList<Node> children = model.getImageStack().getChildren();
-			if (size() >= 2 || !children.contains(getLine())) {
-                drawLine(model, line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
-			}
-			children.remove(getLine());
+			onMouseReleased(model);
 		}
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			getLine().setStroke(model.getFrontColor());
-            ObservableList<Node> children = model.getImageStack().getChildren();
-            if (!children.contains(getLine())) {
-                children.add(getLine());
-            }
-
-            getLine().setStartX(e.getX());
-            getLine().setStartY(e.getY());
-            getLine().setEndX(e.getX());
-            getLine().setEndY(e.getY());
+			onMousePressed(e, model);
 		}
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            getLine().setEndX(e.getX());
-            getLine().setEndY(e.getY());
+			onMouseDragged(e);
 		}
 
+	}
+
+	private void onMouseDragged(final MouseEvent e) {
+		getLine().setEndX(e.getX());
+		getLine().setEndY(e.getY());
+	}
+
+	private void onMousePressed(final MouseEvent e, final PaintModel model) {
+		getLine().setStroke(model.getFrontColor());
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (!children.contains(getLine())) {
+			children.add(getLine());
+		}
+
+		getLine().setStartX(e.getX());
+		getLine().setStartY(e.getY());
+		onMouseDragged(e);
+	}
+
+	private void onMouseReleased(final PaintModel model) {
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (size() >= 2 || !children.contains(getLine())) {
+		    drawLine(model, line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+		}
+		children.remove(getLine());
 	}
 
 

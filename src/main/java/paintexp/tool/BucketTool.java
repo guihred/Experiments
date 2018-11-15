@@ -53,18 +53,22 @@ public class BucketTool extends PaintTool {
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
-			int initialX = (int) e.getX();
-			int initialY = (int) e.getY();
-			width = (int) model.getImage().getWidth();
-			height = (int) model.getImage().getHeight();
-			PixelReader pixelReader = model.getImage().getPixelReader();
-			int originalColor = pixelReader.getArgb(initialX, initialY);
-			int frontColor = SimplePixelReader
-					.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
-			if (originalColor != frontColor) {
-				Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
-			}
+			onMouseClicked(e, model);
 
+		}
+	}
+
+	private void onMouseClicked(final MouseEvent e, final PaintModel model) {
+		int initialX = (int) e.getX();
+		int initialY = (int) e.getY();
+		width = (int) model.getImage().getWidth();
+		height = (int) model.getImage().getHeight();
+		PixelReader pixelReader = model.getImage().getPixelReader();
+		int originalColor = pixelReader.getArgb(initialX, initialY);
+		int frontColor = SimplePixelReader
+				.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
+		if (originalColor != frontColor) {
+			Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
 		}
 	}
 

@@ -36,30 +36,38 @@ public class PencilTool extends PaintTool {
         return Cursor.HAND;
 	}
 	@Override
-    public void handleEvent(MouseEvent e, PaintModel model) {
+    public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-            y = (int) e.getY();
-            x = (int) e.getX();
-            if (withinRange(x, y, model)) {
-                model.getImage().getPixelWriter().setColor(x, y, model.getFrontColor());
-            }
-            pressed = true;
+			onMousePressed(e, model);
 		}
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            int y2 = (int) e.getY();
-            int x2 = (int) e.getX();
-            if (pressed && withinRange(x2, y2, model)) {
-                model.getImage().getPixelWriter().setColor(x2, y2, model.getFrontColor());
-                drawLine(model, x, y, x2, y2);
-                y = (int) e.getY();
-                x = (int) e.getX();
-            }
+			onMouseDragged(e, model);
 		}
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             pressed = false;
         }
 
+	}
+
+	private void onMouseDragged(final MouseEvent e, final PaintModel model) {
+		int y2 = (int) e.getY();
+		int x2 = (int) e.getX();
+		if (pressed && withinRange(x2, y2, model)) {
+			model.getImage().getPixelWriter().setColor(x2, y2, model.getFrontColor());
+			drawLine(model, x, y, x2, y2);
+			y = (int) e.getY();
+			x = (int) e.getX();
+		}
+	}
+
+	private void onMousePressed(final MouseEvent e, final PaintModel model) {
+		y = (int) e.getY();
+		x = (int) e.getX();
+		if (withinRange(x, y, model)) {
+		    model.getImage().getPixelWriter().setColor(x, y, model.getFrontColor());
+		}
+		pressed = true;
 	}
 
 

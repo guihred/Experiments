@@ -6,10 +6,11 @@ import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -21,7 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import paintexp.tool.PaintTool;
 import simplebuilder.SimpleMenuBarBuilder;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
@@ -48,9 +48,7 @@ public class PaintMain extends  Application{
         PixelReader reader = new SimplePixelReader(paintModel.getBackColor());
         paintModel.getImage().getPixelWriter().setPixels(0, 0, (int) paintModel.getImage().getWidth(),
                 (int) paintModel.getImage().getHeight(), reader, 0, 0);
-        paintModel.getImageStack().addEventHandler(MouseEvent.ANY, e -> {
-			handleMouse(paintModel, e);
-        });
+		paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);
         root.setCenter(new ZoomableScrollPane(paintModel.getImageStack()));
 
         HBox hBox = new HBox(50, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());
@@ -69,47 +67,31 @@ public class PaintMain extends  Application{
         BorderPane.setAlignment(hBox, Pos.CENTER);
         SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
         Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggle(e.getTool()));
-                
         List<Node> paintTools = toolGroup
 				.onChange((ov, oldValue, newValue) -> controller.changeTool(newValue))
                 .getTogglesAs(Node.class);
+		ToggleGroup toggleGroup = toolGroup.build();
+		paintModel.toolProperty().addListener((ob, old, newV) -> toggleGroup.selectToggle(
+				toggleGroup.getToggles().stream().filter(e -> e.getUserData().equals(newV)).findFirst().orElse(null)));
                 
         GridPane toolbar = new GridPane();
         toolbar.addColumn(0, paintTools.stream().limit(paintTools.size() / 2).toArray(Node[]::new));
         toolbar.addColumn(1, paintTools.stream().skip(paintTools.size() / 2).toArray(Node[]::new));
-        paintTools.forEach(e -> GridPane.setHalignment(e, HPos.CENTER));
-
+		StackPane child = new StackPane(paintModel.getToolOptions());
+		child.setPadding(new Insets(10));
+		toolbar.add(child, 0, paintTools.size(), 2, 2);
+		toolbar.getChildren().forEach(e -> GridPane.setHalignment(e, HPos.CENTER));
         root.setLeft(toolbar);
 
         primaryStage.setTitle("Paint");
 		Scene scene = new Scene(root, 600, 600);
-		scene.addEventHandler(KeyEvent.ANY, e -> {
-			PaintTool paintTool = paintModel.getTool().get();
-			if (paintTool != null) {
-				paintTool.handleKeyEvent(e, paintModel);
-			}
-		});
+		scene.addEventHandler(KeyEvent.ANY, controller::handleKeyBoard);
 		primaryStage.setScene(scene);
         primaryStage.show();
 
     }
 
 
-	private void handleMouse(final PaintModel paintModel, final MouseEvent e) {
-		double x = e.getX();
-		double y = e.getY();
-		paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
-		paintModel.getImageSize().setText(
-				String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
-
-		PaintTool paintTool = paintModel.getTool().get();
-		if (paintTool != null) {
-			paintModel.getImageStack().setCursor(paintTool.getMouseCursor());
-			paintTool.handleEvent(e, paintModel);
-		} else {
-			paintModel.getImageStack().setCursor(Cursor.DEFAULT);
-		}
-	}
 
     private Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
 
