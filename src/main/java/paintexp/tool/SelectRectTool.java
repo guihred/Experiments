@@ -65,7 +65,7 @@ public class SelectRectTool extends PaintTool {
 			onMousePressed(e, model);
 		}
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-			onMouseDragged(e);
+			onMouseDragged(e, model);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class SelectRectTool extends PaintTool {
 		initialX = x;
 		initialY = y;
 		addRect(model);
-		dragTo(w, h);
+		dragTo(w, h, model);
 		onMouseReleased(model);
 	}
 
@@ -143,21 +143,22 @@ public class SelectRectTool extends PaintTool {
 	private void copyImage(final PaintModel model, final Image srcImage, final WritableImage destImage) {
 		double width = srcImage.getWidth();
 		double height = srcImage.getHeight();
-		copyImagePart(srcImage, destImage, width, height);
+		copyImagePart(srcImage, destImage, 0, 0, width, height);
 		selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
 	}
 
-	private void copyImagePart(final Image srcImage, final WritableImage destImage, final double width,
+	private void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
+			final double width,
 			final double height) {
 		PixelReader pixelReader = srcImage.getPixelReader();
 		PixelWriter pixelWriter = destImage.getPixelWriter();
 		Type type = pixelReader.getPixelFormat().getType();
+		double destWidth = destImage.getWidth();
+		double destHeight = destImage.getHeight();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				final int x = i;
-				final int y = j;
-				if (within(y, height) && within(x, width)) {
-					Color color = pixelReader.getColor(i, j);
+				if (within(i, destWidth) && within(j, destHeight)) {
+					Color color = pixelReader.getColor(i + x, j + y);
 					if (Type.BYTE_BGRA_PRE == type) {
 						color = Color.hsb(color.getHue(), color.getSaturation(), color.getBrightness());
 					}
@@ -172,28 +173,35 @@ public class SelectRectTool extends PaintTool {
 		double width = area.getWidth();
 		double height = area.getHeight();
 		WritableImage writableImage = new WritableImage((int) width, (int) height);
-		copyImagePart(model.getImage(), writableImage, width, height);
+		int layoutX = (int) area.getLayoutX();
+		int layoutY = (int) area.getLayoutY();
+		int maxWidth = (int) model.getImage().getWidth();
+		int maxHeight = (int) model.getImage().getHeight();
+		copyImagePart(model.getImage(), writableImage, Integer.min(Integer.max(layoutX, 0), maxWidth),
+				Integer.min(Integer.max(layoutY, 0), maxHeight), width, height);
 		HashMap<DataFormat, Object> content = new HashMap<>();
 		content.put(DataFormat.IMAGE, writableImage);
 		systemClipboard.setContent(content);
 	
 	}
 
-	private void dragTo(final double x, final double y) {
+	private void dragTo(final double x, final double y, final PaintModel model) {
 		double layoutX = initialX;
 		double layoutY = initialY;
-		double min = Double.min(x, layoutX);
+		double min = Double.max(Double.min(x, layoutX), 0);
 		getArea().setLayoutX(min);
-		double min2 = Double.min(y, layoutY);
+		double min2 = Double.max(Double.min(y, layoutY), 0);
 		getArea().setLayoutY(min2);
-		getArea().setWidth(Math.abs(x - layoutX));
-		getArea().setHeight(Math.abs(y - layoutY));
+		double width = model.getImage().getWidth();
+		getArea().setWidth(Double.min(Math.abs(x - layoutX), Math.abs(width - layoutX)));
+		double height = model.getImage().getHeight();
+		getArea().setHeight(Double.min(Math.abs(y - layoutY), Math.abs(height - layoutY)));
 	}
 
-	private void onMouseDragged(final MouseEvent e) {
+	private void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double x = e.getX();
 		double y = e.getY();
-		dragTo(x, y);
+		dragTo(Double.max(x, 0), Double.max(y, 0), model);
 	}
 
 	private void onMousePressed(final MouseEvent e, final PaintModel model) {
