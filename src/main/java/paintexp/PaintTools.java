@@ -1,15 +1,7 @@
 package paintexp;
 
 import javafx.scene.Cursor;
-import paintexp.tool.BucketTool;
-import paintexp.tool.DummyTool;
-import paintexp.tool.EllipseTool;
-import paintexp.tool.EraserTool;
-import paintexp.tool.LineTool;
-import paintexp.tool.PaintTool;
-import paintexp.tool.PencilTool;
-import paintexp.tool.RectangleTool;
-import paintexp.tool.SelectRectTool;
+import paintexp.tool.*;
 
 public enum PaintTools {
     SELECT_FREE,
@@ -25,7 +17,7 @@ public enum PaintTools {
     LINE(new LineTool()),
     CURVE,
 	RECTANGLE(new RectangleTool()),
-    POLYGON,
+	POLYGON(new PolygonTool()),
 	CIRCLE(new EllipseTool()),
     ROUND;
 
