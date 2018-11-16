@@ -58,14 +58,14 @@ public class SelectRectTool extends PaintTool {
 	@Override
     public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
-		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			onMouseReleased(model);
-		}
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
 			onMousePressed(e, model);
 		}
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
 			onMouseDragged(e, model);
+		}
+		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+			onMouseReleased(model);
 		}
 	}
 
@@ -186,22 +186,18 @@ public class SelectRectTool extends PaintTool {
 	}
 
 	private void dragTo(final double x, final double y, final PaintModel model) {
-		double layoutX = initialX;
-		double layoutY = initialY;
-		double min = Double.max(Double.min(x, layoutX), 0);
-		getArea().setLayoutX(min);
-		double min2 = Double.max(Double.min(y, layoutY), 0);
-		getArea().setLayoutY(min2);
-		double width = model.getImage().getWidth();
-		getArea().setWidth(Double.min(Math.abs(x - layoutX), Math.abs(width - layoutX)));
-		double height = model.getImage().getHeight();
-		getArea().setHeight(Double.min(Math.abs(y - layoutY), Math.abs(height - layoutY)));
+		getArea().setLayoutX(Double.min(x, initialX));
+		getArea().setLayoutY(Double.min(y, initialY));
+		getArea().setWidth(Math.abs(x - initialX));
+		getArea().setHeight(Math.abs(y - initialY));
 	}
 
 	private void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double x = e.getX();
 		double y = e.getY();
-		dragTo(Double.max(x, 0), Double.max(y, 0), model);
+		double width = model.getImage().getWidth();
+		double height = model.getImage().getHeight();
+		dragTo(Double.min(Double.max(x, 0), width), Double.min(Double.max(y, 0), height), model);
 	}
 
 	private void onMousePressed(final MouseEvent e, final PaintModel model) {
