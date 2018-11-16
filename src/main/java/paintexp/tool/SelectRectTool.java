@@ -101,7 +101,7 @@ public class SelectRectTool extends PaintTool {
 		initialX = x;
 		initialY = y;
 		addRect(model);
-		dragTo(w, h, model);
+		dragTo(w, h);
 		onMouseReleased(model);
 	}
 
@@ -185,7 +185,7 @@ public class SelectRectTool extends PaintTool {
 	
 	}
 
-	private void dragTo(final double x, final double y, final PaintModel model) {
+	private void dragTo(final double x, final double y) {
 		getArea().setLayoutX(Double.min(x, initialX));
 		getArea().setLayoutY(Double.min(y, initialY));
 		getArea().setWidth(Math.abs(x - initialX));
@@ -197,7 +197,7 @@ public class SelectRectTool extends PaintTool {
 		double y = e.getY();
 		double width = model.getImage().getWidth();
 		double height = model.getImage().getHeight();
-		dragTo(Double.min(Double.max(x, 0), width), Double.min(Double.max(y, 0), height), model);
+		dragTo(Double.min(Double.max(0, x), width), Double.min(Double.max(0, y), height));
 	}
 
 	private void onMousePressed(final MouseEvent e, final PaintModel model) {
