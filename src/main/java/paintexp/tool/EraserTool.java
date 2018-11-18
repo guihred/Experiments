@@ -62,25 +62,25 @@ public class EraserTool extends PaintTool {
         }
 	}
 
-	private void onMousePressedOrDragged(final MouseEvent e, final PaintModel model) {
-		int y = (int) e.getY();
-		int x = (int) e.getX();
-		int w = (int) getArea().getWidth();
-		if (e.getButton() == MouseButton.PRIMARY) {
-			drawSquare(model, x, y, w);
-		} else {
-			drawSquare(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
-		}
-		getArea().setLayoutX(e.getX());
-		getArea().setLayoutY(e.getY());
-	}
-
 	private void onMouseMoved(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
 		    children.add(getArea());
 		}
 		getArea().setFill(model.getBackColor());
+		getArea().setLayoutX(e.getX());
+		getArea().setLayoutY(e.getY());
+	}
+
+	private void onMousePressedOrDragged(final MouseEvent e, final PaintModel model) {
+		int y = (int) e.getY();
+		int x = (int) e.getX();
+		int w = (int) getArea().getWidth();
+		if (e.getButton() == MouseButton.PRIMARY) {
+			drawSquare(model, x, y, w,model.getBackColor());
+		} else {
+			drawSquare(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
+		}
 		getArea().setLayoutX(e.getX());
 		getArea().setLayoutY(e.getY());
 	}

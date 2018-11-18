@@ -59,26 +59,6 @@ public class EllipseTool extends PaintTool {
 
 	}
 
-	private void onMouseReleased(final PaintModel model) {
-		ObservableList<Node> children = model.getImageStack().getChildren();
-		if (getArea().getRadiusX() > 2 && children.contains(getArea())) {
-			double a = getArea().getRadiusX();
-			double b = getArea().getRadiusY();
-			Bounds bounds = getArea().getBoundsInParent();
-			double width = bounds.getWidth();
-			double height = bounds.getHeight();
-			double nPoints = Double.max(width, height) * 4;
-			for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
-				int x = (int) Math.round(a * Math.cos(t));
-				int y = (int) Math.round(b * Math.sin(t));
-				drawPoint(model, x + initialX, y + initialY);
-				drawPoint(model, x + initialX, y + initialY);
-			}
-
-		}
-		children.remove(getArea());
-	}
-
 	private void onMouseDragged(final MouseEvent e) {
 		double radiusX = Math.abs(e.getX() - initialX);
 		getArea().setRadiusX(radiusX);
@@ -88,7 +68,6 @@ public class EllipseTool extends PaintTool {
 			double max = Double.max(radiusX, radiusY);
 			getArea().setRadiusX(max);
 			getArea().setRadiusY(max);
-
 		}
 	}
 
@@ -105,6 +84,21 @@ public class EllipseTool extends PaintTool {
 		getArea().setRadiusX(1);
 		getArea().setRadiusY(1);
 		getArea().setStroke(model.getFrontColor());
+	}
+
+    private void onMouseReleased(final PaintModel model) {
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (getArea().getRadiusX() > 2 && children.contains(getArea())) {
+			double a = getArea().getRadiusX();
+			double b = getArea().getRadiusY();
+			Bounds bounds = getArea().getBoundsInParent();
+			double width = bounds.getWidth();
+			double height = bounds.getHeight();
+			double nPoints = Double.max(width, height) * 4;
+            drawCircle(model, initialX, initialY, a, b, nPoints);
+
+		}
+		children.remove(getArea());
 	}
 
 

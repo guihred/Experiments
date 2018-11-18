@@ -90,6 +90,7 @@ public class PaintModel {
     public Rectangle resetToolOptions() {
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.grayRgb(128));
+        toolOptions.setSpacing(10);
         toolOptions.getChildren().clear();
         toolOptions.getChildren().add(rectangle);
         return rectangle;

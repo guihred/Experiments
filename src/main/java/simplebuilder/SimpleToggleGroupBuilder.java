@@ -24,6 +24,13 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return this;
     }
 
+    public SimpleToggleGroupBuilder addToggle(Node node, Object ob) {
+        Toggle e = new ToggleButton(null, node);
+        e.setUserData(ob);
+        e.setToggleGroup(toggleGroup);
+        return this;
+    }
+
     public SimpleToggleGroupBuilder addToggle(Node node, String id) {
         ToggleButton e = new ToggleButton(null, node);
         e.setId(id);

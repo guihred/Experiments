@@ -10,7 +10,7 @@ public enum PaintTools {
     EYEDROP(new EyedropTool()),
     LUPE,
     PENCIL(new PencilTool()),
-    BRUSH,
+    BRUSH(new BrushTool()),
     SPRAY,
     SELECT_RECT(new SelectRectTool()),
     TEXT,
