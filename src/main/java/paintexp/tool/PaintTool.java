@@ -34,6 +34,7 @@ public abstract class PaintTool extends Group {
 
 	protected void drawCircle(final PaintModel model, int centerX, int centerY, double radiusX, double radiusY,
             double nPoints) {
+        drawPoint(model, centerX, centerY);
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(radiusX * Math.cos(t));
             int y = (int) Math.round(radiusY * Math.sin(t));

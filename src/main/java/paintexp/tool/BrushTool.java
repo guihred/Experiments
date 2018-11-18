@@ -44,7 +44,7 @@ public class BrushTool extends PaintTool {
 
     @Override
 	public Cursor getMouseCursor() {
-        return Cursor.HAND;
+        return Cursor.NONE;
 	}
 	@Override
     public void handleEvent(final MouseEvent e, final PaintModel model) {
@@ -85,7 +85,9 @@ public class BrushTool extends PaintTool {
             double r = length.getValue().doubleValue();
             switch (option) {
                 case CIRCLE:
-                    drawCircle(model, x2, y2, r, r, r * r);
+                    for (int i = 1; i <= r; i++) {
+                        drawCircle(model, x2, y2, i, i, i <= 5 ? 110 : 1.5 * i * i);
+                    }
                     break;
                 case SQUARE:
                     drawSquare(model, x2, y2, (int) r, model.getFrontColor());
