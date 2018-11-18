@@ -11,7 +11,7 @@ public enum PaintTools {
     LUPE,
     PENCIL(new PencilTool()),
     BRUSH(new BrushTool()),
-    SPRAY,
+    SPRAY(new SprayTool()),
     SELECT_RECT(new SelectRectTool()),
     TEXT,
     LINE(new LineTool()),
