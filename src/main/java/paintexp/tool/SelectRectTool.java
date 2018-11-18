@@ -31,11 +31,10 @@ public class SelectRectTool extends PaintTool {
 	private double initialX;
 	private double initialY;
 
-	public boolean containsPoint(final double localX, final double localY) {
-		return getArea().getLayoutX()<localX&&localX<getArea().getLayoutX()+getArea().getWidth()
-				&&getArea().getLayoutY()<localY&&localY<getArea().getLayoutY()+getArea().getHeight()
-				;
-	}
+    public boolean containsPoint(final double localX, final double localY) {
+        return getArea().getLayoutX() < localX && localX < getArea().getLayoutX() + getArea().getWidth()
+                && getArea().getLayoutY() < localY && localY < getArea().getLayoutY() + getArea().getHeight();
+    }
 
 	public Rectangle getArea() {
 		if (area == null) {
@@ -234,26 +233,27 @@ public class SelectRectTool extends PaintTool {
 	private void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 
-		if (children.contains(getArea())) {
-			if (imageSelected == null) {
-				if (containsPoint(e.getX(), e.getY())) {
-					int width = (int) area.getWidth();
-					int height = (int) area.getHeight();
-					imageSelected = new WritableImage(width, height);
-					int layoutX = (int) area.getLayoutX();
-					int layoutY = (int) area.getLayoutY();
-					copyImagePart(model.getImage(), imageSelected, layoutX, layoutY, width, height);
-					getArea().setFill(new ImagePattern(imageSelected));
-					drawRect(model, layoutX, layoutY, width, height);
-				}
-				return;
-			}
-			setIntoImage(model);
-			return;
-		}
-		initialX = e.getX();
-		initialY = e.getY();
-		addRect(model);
+        if (children.contains(getArea())) {
+            if (containsPoint(e.getX(), e.getY())) {
+                if (imageSelected == null) {
+                    int width = (int) area.getWidth();
+                    int height = (int) area.getHeight();
+                    imageSelected = new WritableImage(width, height);
+                    int layoutX = (int) area.getLayoutX();
+                    int layoutY = (int) area.getLayoutY();
+                    copyImagePart(model.getImage(), imageSelected, layoutX, layoutY, width, height);
+                    getArea().setFill(new ImagePattern(imageSelected));
+                    drawRect(model, layoutX, layoutY, width, height);
+                }
+                return;
+            }
+            if (imageSelected != null) {
+                setIntoImage(model);
+            }
+        }
+        initialX = e.getX();
+        initialY = e.getY();
+        addRect(model);
 
 	}
 
