@@ -14,11 +14,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -90,8 +86,6 @@ public class PaintMain extends  Application{
         primaryStage.show();
 
     }
-
-
 
     private Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
 

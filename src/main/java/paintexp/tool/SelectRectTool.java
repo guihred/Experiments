@@ -13,11 +13,7 @@ import javafx.scene.image.PixelFormat.Type;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -119,6 +115,7 @@ public class SelectRectTool extends PaintTool {
 		onMouseReleased(model);
 	}
 
+
 	private void addRect(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
@@ -171,6 +168,7 @@ public class SelectRectTool extends PaintTool {
 		copyImagePart(srcImage, destImage, x, y, width, height, 0, 0);
 	}
 
+
 	private void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
 			final double width, final double height, final int xOffset, final int yOffset) {
 		PixelReader pixelReader = srcImage.getPixelReader();
@@ -193,7 +191,6 @@ public class SelectRectTool extends PaintTool {
 			}
 		}
 	}
-
 
 	private void copyToClipboard(final PaintModel model) {
 		Clipboard systemClipboard = Clipboard.getSystemClipboard();
@@ -220,18 +217,18 @@ public class SelectRectTool extends PaintTool {
 		getArea().setHeight(Math.abs(y - initialY));
 	}
 
-	private void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    private void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double x = e.getX();
 		double y = e.getY();
 		double width = model.getImage().getWidth();
 		double height = model.getImage().getHeight();
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (children.contains(getArea()) && imageSelected != null) {
-			getArea().setLayoutX(Double.max(x - initialX, -width / 2));
-			getArea().setLayoutY(Double.max(y - initialY, -height / 2));
+            getArea().setLayoutX(Double.max(x - initialX, -width / 4));
+            getArea().setLayoutY(Double.max(y - initialY, -height / 4));
 			return;
 		}
-		dragTo(Double.min(Double.max(0, x), width), Double.min(Double.max(0, y), height));
+        dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
 	}
 
 	private void onMousePressed(final MouseEvent e, final PaintModel model) {
@@ -269,7 +266,7 @@ public class SelectRectTool extends PaintTool {
 		area.setStroke(Color.BLUE);
 	}
 
-	private void setIntoImage(final PaintModel model) {
+    private void setIntoImage(final PaintModel model) {
 		int x = (int) getArea().getLayoutX();
 		int y = (int) getArea().getLayoutY();
 		double width = getArea().getWidth();

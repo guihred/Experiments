@@ -22,15 +22,16 @@ public abstract class PaintTool extends Group {
 	}
 
 	@SuppressWarnings("unused")
+	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
+		// DOES NOTHING
+	}
+
+    @SuppressWarnings("unused")
 	public void onSelected(final PaintModel model) {
 		// DOES NOTHING
 	}
 
-	@SuppressWarnings("unused")
-	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-		// DOES NOTHING
-	}
-    protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX, final double endY) {
+	protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX, final double endY) {
         double d = endX - startX;
         double a = d == 0 ? Double.NaN : (endY - startY) / d;
         double b = Double.isNaN(a) ? Double.NaN : endY - a * endX;
@@ -55,18 +56,13 @@ public abstract class PaintTool extends Group {
             }
         }
     }
+    protected void drawPoint(final PaintModel model, final int x2, final int y2) {
+		if (withinRange(x2, y2, model)) {
+			model.getImage().getPixelWriter().setColor(x2, y2, model.getFrontColor());
+		}
+	}
 
-    protected void drawSquare(final PaintModel model, final int x, final int y, final int w) {
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < w; j++) {
-                if (withinRange(x + i, y + j, model)) {
-                    model.getImage().getPixelWriter().setColor(x + i, y + j, model.getBackColor());
-                }
-            }
-        }
-    }
-
-	protected void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
+    protected void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
 				if (withinRange((int) x + i, (int) y + j, model)) {
@@ -75,6 +71,16 @@ public abstract class PaintTool extends Group {
 			}
 		}
 	}
+
+	protected void drawSquare(final PaintModel model, final int x, final int y, final int w) {
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < w; j++) {
+                if (withinRange(x + i, y + j, model)) {
+                    model.getImage().getPixelWriter().setColor(x + i, y + j, model.getBackColor());
+                }
+            }
+        }
+    }
 
 	protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
 		for (int i = 0; i < w; i++) {
@@ -89,11 +95,9 @@ public abstract class PaintTool extends Group {
 		}
 	}
 
-	protected void drawPoint(final PaintModel model, final int x2, final int y2) {
-		if (withinRange(x2, y2, model)) {
-			model.getImage().getPixelWriter().setColor(x2, y2, model.getFrontColor());
-		}
-	}
+	protected double setWithinRange(double num, double min, double max) {
+        return Double.min(Double.max(min, num), max);
+    }
 
 	protected boolean within(final int y, final double min) {
 		return 0 <= y && y < min;
@@ -103,15 +107,15 @@ public abstract class PaintTool extends Group {
 		return min <= y && y < max;
     }
 
-    protected boolean withinRange(final int x, final int y, final PaintModel model) {
-        return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
-    }
-
-	protected boolean withinRange(final int x, final int y, final int initialX, final int initialY, final double bound, final PaintModel model) {
+    protected boolean withinRange(final int x, final int y, final int initialX, final int initialY, final double bound, final PaintModel model) {
 		return within(y, Double.max(initialY - bound, 0), Double.min(initialY + bound, model.getImage().getHeight()))
 				&& within(x, Double.max(initialX - bound, 0),
 						Double.min(initialX + bound, model.getImage().getWidth()));
 	}
+
+	protected boolean withinRange(final int x, final int y, final PaintModel model) {
+        return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
+    }
 
 
 }

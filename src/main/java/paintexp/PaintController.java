@@ -29,6 +29,7 @@ public class PaintController {
 	private PaintModel paintModel = new PaintModel();
 
 	public void changeTool(final Toggle newValue) {
+        getPaintModel().resetToolOptions();
 		getPaintModel().getImageStack().getChildren().clear();
 		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
 		if (newValue != null) {

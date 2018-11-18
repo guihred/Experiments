@@ -7,7 +7,7 @@ public enum PaintTools {
     SELECT_FREE,
     ERASER(new EraserTool()),
     BUCKET(new BucketTool()),
-    EYEDROP,
+    EYEDROP(new EyedropTool()),
     LUPE,
     PENCIL(new PencilTool()),
     BRUSH,

@@ -4,7 +4,6 @@ import java.io.File;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
@@ -74,18 +73,26 @@ public class PaintModel {
     public PaintTool getTool() {
 		return tool.get();
     }
-    public Node getToolOptions() {
+
+    public VBox getToolOptions() {
 		if (toolOptions == null) {
-			Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
-			rectangle.setStroke(Color.grayRgb(128));
-			toolOptions = new VBox(10, rectangle);
-			toolOptions.setAlignment(Pos.CENTER);
+            toolOptions = new VBox(10);
+            toolOptions.setAlignment(Pos.CENTER);
+            resetToolOptions();
 		}
 		return toolOptions;
 	}
 
     public Text getToolSize() {
         return toolSize;
+    }
+
+    public Rectangle resetToolOptions() {
+        Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
+        rectangle.setStroke(Color.grayRgb(128));
+        toolOptions.getChildren().clear();
+        toolOptions.getChildren().add(rectangle);
+        return rectangle;
     }
     public void setBackColor(final Color backColor) {
         this.backColor.set(backColor);
