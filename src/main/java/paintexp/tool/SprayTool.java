@@ -26,7 +26,9 @@ public class SprayTool extends PaintTool {
 
     private boolean pressed;
 
-	@Override
+	private    Random random = new Random();
+
+    @Override
 	public Node getIcon() {
 		if (icon == null) {
             icon = new ImageView(ResourceFXUtils.toExternalForm("spray.png"));
@@ -39,12 +41,12 @@ public class SprayTool extends PaintTool {
 		return icon;
 	}
 
-    @Override
+	@Override
 	public Cursor getMouseCursor() {
         return Cursor.DEFAULT;
 	}
 
-	@Override
+    @Override
     public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
@@ -71,14 +73,12 @@ public class SprayTool extends PaintTool {
     private void onMouseDragged(final MouseEvent e) {
         centerX = (int) e.getX();
         centerY = (int) e.getY();
-	}
-
+    }
 
     private void onMousePressed(final MouseEvent e, final PaintModel model) {
         centerX = (int) e.getX();
         centerY = (int) e.getY();
         pressed = true;
-        Random random = new Random();
         new Thread(()->{
             while (pressed) {
                 int radius = random.nextInt(length.get());
@@ -95,7 +95,7 @@ public class SprayTool extends PaintTool {
         try {
             Thread.sleep(10);
         } catch (Exception e1) {
-            LOG.error("", e1);
+            LOG.trace("Whatever", e1);
         }
     }
 

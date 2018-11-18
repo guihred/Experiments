@@ -3,15 +3,13 @@ package paintexp.tool;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat.Type;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
@@ -31,10 +29,6 @@ public class SelectRectTool extends PaintTool {
 	private double initialX;
 	private double initialY;
 
-    public boolean containsPoint(final double localX, final double localY) {
-        return getArea().getLayoutX() < localX && localX < getArea().getLayoutX() + getArea().getWidth()
-                && getArea().getLayoutY() < localY && localY < getArea().getLayoutY() + getArea().getHeight();
-    }
 
 	public Rectangle getArea() {
 		if (area == null) {
@@ -76,9 +70,9 @@ public class SelectRectTool extends PaintTool {
 	@Override
 	public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
 		KeyCode code = e.getCode();
+        Bounds bounds = getArea().getBoundsInParent();
 		switch (code) {
 			case DELETE:
-				Bounds bounds = getArea().getBoundsInParent();
 				drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
 				break;
 			case V:
@@ -91,6 +85,12 @@ public class SelectRectTool extends PaintTool {
 					copyToClipboard(model);
 				}
 				break;
+            case X:
+                if (e.isControlDown()) {
+                    copyToClipboard(model);
+                    drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+                }
+                break;
 			case A:
 				if (e.isControlDown()) {
 					selectArea(0, 0, model.getImage().getWidth(), model.getImage().getHeight(), model);
@@ -114,6 +114,16 @@ public class SelectRectTool extends PaintTool {
 		onMouseReleased(model);
 	}
 
+
+	protected void copyImage(final PaintModel model, final Image srcImage, final WritableImage destImage) {
+        double width = srcImage.getWidth();
+        double height = srcImage.getHeight();
+        if (destImage == null) {
+            imageSelected = new WritableImage((int) width, (int) height);
+        }
+        copyImagePart(srcImage, destImage != null ? destImage : imageSelected, 0, 0, width, height);
+        selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
+    }
 
 	private void addRect(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
@@ -139,7 +149,7 @@ public class SelectRectTool extends PaintTool {
 		}
 	}
 
-	private void copyFromFile(final PaintModel model, final List<File> files) {
+    private void copyFromFile(final PaintModel model, final List<File> files) {
 		if (!files.isEmpty()) {
 			File file = files.get(0);
 			try {
@@ -147,46 +157,6 @@ public class SelectRectTool extends PaintTool {
 				copyImage(model, image2, imageSelected);
 			} catch (Exception e1) {
 				LOG.error("", e1);
-			}
-		}
-	}
-
-	private void copyImage(final PaintModel model, final Image srcImage, final WritableImage destImage) {
-		double width = srcImage.getWidth();
-		double height = srcImage.getHeight();
-		if (destImage == null) {
-			imageSelected = new WritableImage((int) width, (int) height);
-		}
-		copyImagePart(srcImage, destImage != null ? destImage : imageSelected, 0, 0, width, height);
-		selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
-	}
-
-	private void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
-			final double width,
-			final double height) {
-		copyImagePart(srcImage, destImage, x, y, width, height, 0, 0);
-	}
-
-
-	private void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
-			final double width, final double height, final int xOffset, final int yOffset) {
-		PixelReader pixelReader = srcImage.getPixelReader();
-		double srcWidth = srcImage.getWidth();
-		double srcHeight = srcImage.getHeight();
-		PixelWriter pixelWriter = destImage.getPixelWriter();
-		Type type = pixelReader.getPixelFormat().getType();
-		double destWidth = destImage.getWidth();
-		double destHeight = destImage.getHeight();
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				if (within(i + xOffset, destWidth) && within(j + yOffset, destHeight) && within(i + x, srcWidth)
-						&& within(j + y, srcHeight)) {
-					Color color = pixelReader.getColor(i + x, j + y);
-					if (Type.BYTE_BGRA_PRE == type) {
-						color = Color.hsb(color.getHue(), color.getSaturation(), color.getBrightness());
-					}
-					pixelWriter.setColor(i + xOffset, j + yOffset, color);
-				}
 			}
 		}
 	}
@@ -202,14 +172,12 @@ public class SelectRectTool extends PaintTool {
 		int maxHeight = (int) model.getImage().getHeight();
 		copyImagePart(model.getImage(), imageSelected, Integer.min(Integer.max(layoutX, 0), maxWidth),
 				Integer.min(Integer.max(layoutY, 0), maxHeight), width, height);
-		HashMap<DataFormat, Object> content = new HashMap<>();
+        Map<DataFormat, Object> content = new HashMap<>();
 		content.put(DataFormat.IMAGE, imageSelected);
 		systemClipboard.setContent(content);
-	
 	}
 
 	private void dragTo(final double x, final double y) {
-
 		getArea().setLayoutX(Double.min(x, initialX));
 		getArea().setLayoutY(Double.min(y, initialY));
 		getArea().setWidth(Math.abs(x - initialX));
@@ -234,7 +202,7 @@ public class SelectRectTool extends PaintTool {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 
         if (children.contains(getArea())) {
-            if (containsPoint(e.getX(), e.getY())) {
+            if (containsPoint(getArea(), e.getX(), e.getY())) {
                 if (imageSelected == null) {
                     int width = (int) area.getWidth();
                     int height = (int) area.getHeight();

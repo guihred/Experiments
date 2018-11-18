@@ -13,7 +13,7 @@ public enum PaintTools {
     BRUSH(new BrushTool()),
     SPRAY(new SprayTool()),
     SELECT_RECT(new SelectRectTool()),
-    TEXT,
+    TEXT(new TextTool()),
     LINE(new LineTool()),
     CURVE,
 	RECTANGLE(new RectangleTool()),

@@ -3,9 +3,15 @@ package paintexp.tool;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat.Type;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 
 public abstract class PaintTool extends Group {
@@ -22,17 +28,51 @@ public abstract class PaintTool extends Group {
 		// DOES NOTHING
 	}
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
 	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
 		// DOES NOTHING
 	}
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	public void onSelected(final PaintModel model) {
 		// DOES NOTHING
 	}
 
-	protected void drawCircle(final PaintModel model, int centerX, int centerY, double radiusX, double radiusY,
+    protected boolean containsPoint(Rectangle area2,final double localX, final double localY) {
+        return area2.getLayoutX() < localX && localX < area2.getLayoutX() + area2.getWidth()
+                && area2.getLayoutY() < localY && localY < area2.getLayoutY() + area2.getHeight();
+    }
+
+	protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
+            final double width,
+            final double height) {
+        copyImagePart(srcImage, destImage, x, y, width, height, 0, 0);
+    }
+
+    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
+            final double width, final double height, final int xOffset, final int yOffset) {
+        PixelReader pixelReader = srcImage.getPixelReader();
+        double srcWidth = srcImage.getWidth();
+        double srcHeight = srcImage.getHeight();
+        PixelWriter pixelWriter = destImage.getPixelWriter();
+        Type type = pixelReader.getPixelFormat().getType();
+        double destWidth = destImage.getWidth();
+        double destHeight = destImage.getHeight();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (within(i + xOffset, destWidth) && within(j + yOffset, destHeight) && within(i + x, srcWidth)
+                        && within(j + y, srcHeight)) {
+                    Color color = pixelReader.getColor(i + x, j + y);
+                    if (Type.BYTE_BGRA_PRE == type) {
+                        color = Color.hsb(color.getHue(), color.getSaturation(), color.getBrightness());
+                    }
+                    pixelWriter.setColor(i + xOffset, j + yOffset, color);
+                }
+            }
+        }
+    }
+
+    protected void drawCircle(final PaintModel model, int centerX, int centerY, double radiusX, double radiusY,
             double nPoints) {
 
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
@@ -41,6 +81,7 @@ public abstract class PaintTool extends Group {
             drawPoint(model, x + centerX, y + centerY);
         }
     }
+
     protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX, final double endY) {
         drawLine(model, startX, startY, endX, endY,
                 (x, y) -> model.getImage().getPixelWriter().setColor(x, y, model.getFrontColor()));
@@ -73,11 +114,13 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void drawPoint(final PaintModel model, final int x2, final int y2) {
+	protected void drawPoint(final PaintModel model, final int x2, final int y2) {
 		if (withinRange(x2, y2, model)) {
 			model.getImage().getPixelWriter().setColor(x2, y2, model.getFrontColor());
 		}
 	}
+
+
     protected void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
@@ -98,8 +141,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-
-    protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
+	protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < w; j++) {
 				if (withinRange(x + i, y + j, model)) {
@@ -116,7 +158,7 @@ public abstract class PaintTool extends Group {
         return Double.min(Double.max(min, num), max);
     }
 
-	protected boolean within(final int y, final double min) {
+    protected boolean within(final int y, final double min) {
 		return 0 <= y && y < min;
 	}
 
@@ -124,19 +166,20 @@ public abstract class PaintTool extends Group {
 		return min <= y && y < max;
     }
 
-    protected boolean withinRange(final int x, final int y, final int initialX, final int initialY, final double bound, final PaintModel model) {
-		return within(y, Double.max(initialY - bound, 0), Double.min(initialY + bound, model.getImage().getHeight()))
-				&& within(x, Double.max(initialX - bound, 0),
-						Double.min(initialX + bound, model.getImage().getWidth()));
-	}
+    protected boolean withinRange(final int x, final int y, final int initialX, final int initialY, final double bound,
+            final PaintModel model) {
+        return within(y, Double.max(initialY - bound, 0), Double.min(initialY + bound, model.getImage().getHeight()))
+                && within(x, Double.max(initialX - bound, 0),
+                        Double.min(initialX + bound, model.getImage().getWidth()));
+    }
 
-	protected boolean withinRange(final int x, final int y, final PaintModel model) {
+    protected boolean withinRange(final int x, final int y, final PaintModel model) {
         return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
     }
 
     @FunctionalInterface
-interface DrawOnPoint{
+    interface DrawOnPoint {
         void draw(int x, int y);
-}
+    }
 
 }
