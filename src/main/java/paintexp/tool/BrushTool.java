@@ -54,7 +54,7 @@ public class BrushTool extends PaintTool {
 
     @Override
 	public Cursor getMouseCursor() {
-        return Cursor.DEFAULT;
+        return Cursor.NONE;
 	}
 
     public Map<BrushOption,Node> getMouseCursorMap() {
