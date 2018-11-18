@@ -16,6 +16,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import paintexp.PaintModel;
 import simplebuilder.SimpleRectangleBuilder;
+import utils.HasLogging;
 
 public class TextTool extends PaintTool {
 
@@ -73,18 +74,26 @@ public class TextTool extends PaintTool {
     public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
         KeyCode code = e.getCode();
         EventType<KeyEvent> eventType = e.getEventType();
-        if (KeyEvent.KEY_PRESSED.equals(eventType)) {
+		HasLogging.log().info("{}={}", eventType, code);
+		if (KeyEvent.KEY_RELEASED.equals(eventType)) {
             switch (code) {
                 case BACK_SPACE:
-                    text.setText(text.getText().replaceAll(".$", ""));
+					text.setText(text.getText().length() > 0 ? text.getText().substring(0, text.getText().length() - 1)
+							: "");
                     break;
                 case SPACE:
                     text.setText(text.getText() + " ");
                     break;
+				case ENTER:
+					text.setText(text.getText() + "\n");
+					break;
                 default:
                     text.setText(text.getText() + e.getText());
                     break;
             }
+			getArea().setWidth(text.getBoundsInParent().getWidth() + 10);
+			getArea().setHeight(
+					(text.getText().chars().filter(c -> c == '\n').count() + 1) * (text.getFont().getSize() + 1));
         }
     }
 
@@ -103,7 +112,7 @@ public class TextTool extends PaintTool {
         getArea().setLayoutY(initialY);
         getText().setLayoutX(initialX);
         getText().setLayoutY(initialY + text.getFont().getSize());
-        getArea().setWidth(text.getFont().getSize() * text.getText().length());
+		getArea().setWidth((text.getFont().getSize() + 1) * text.getText().length());
         getArea().setHeight(text.getFont().getSize());
     }
 
