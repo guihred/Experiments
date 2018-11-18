@@ -85,6 +85,7 @@ public class BrushTool extends PaintTool {
             double r = length.getValue().doubleValue();
             switch (option) {
                 case CIRCLE:
+                    drawPoint(model, x2, y2);
                     for (int i = 1; i <= r; i++) {
                         drawCircle(model, x2, y2, i, i, i <= 5 ? 110 : 1.5 * i * i);
                     }
