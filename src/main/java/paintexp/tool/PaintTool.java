@@ -1,5 +1,10 @@
 package paintexp.tool;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
+import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -10,9 +15,11 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
+import simplebuilder.SimpleRectangleBuilder;
 
 public abstract class PaintTool extends Group {
     public PaintTool() {
@@ -38,7 +45,7 @@ public abstract class PaintTool extends Group {
 		// DOES NOTHING
 	}
 
-    protected boolean containsPoint(Rectangle area2,final double localX, final double localY) {
+    protected boolean containsPoint(final Rectangle area2,final double localX, final double localY) {
         return area2.getLayoutX() < localX && localX < area2.getLayoutX() + area2.getWidth()
                 && area2.getLayoutY() < localY && localY < area2.getLayoutY() + area2.getHeight();
     }
@@ -72,8 +79,8 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void drawCircle(final PaintModel model, int centerX, int centerY, double radiusX, double radiusY,
-            double nPoints) {
+    protected void drawCircle(final PaintModel model, final int centerX, final int centerY, final double radiusX, final double radiusY,
+            final double nPoints) {
 
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(radiusX * Math.cos(t));
@@ -88,7 +95,7 @@ public abstract class PaintTool extends Group {
     }
 
     protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
-            final double endY, DrawOnPoint onPoint) {
+            final double endY, final DrawOnPoint onPoint) {
         double d = endX - startX;
         double a = d == 0 ? Double.NaN : (endY - startY) / d;
         double b = Double.isNaN(a) ? Double.NaN : endY - a * endX;
@@ -131,7 +138,7 @@ public abstract class PaintTool extends Group {
 		}
 	}
 
-	protected void drawSquare(final PaintModel model, final int x, final int y, final int w, Color backColor) {
+	protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final Color backColor) {
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < w; j++) {
                 if (withinRange(x + i, y + j, model)) {
@@ -154,15 +161,64 @@ public abstract class PaintTool extends Group {
 		}
 	}
 
-	protected double setWithinRange(double num, double min, double max) {
+	protected void makeResizable(final Node node) {
+    	Pane p = (Pane)node.getParent();
+		p.getChildren().addAll(IntStream.range(0, 9)
+				.filter(i->i!=4)
+				.mapToObj(i -> makeSquare(node, i))
+				.collect(Collectors.toList()));
+
+    }
+
+	protected Rectangle makeSquare(final Node node, final int i) {
+		Rectangle rectangle = new SimpleRectangleBuilder().width(5).height(5).fill(Color.WHITE).stroke(Color.BLACK)
+				.build();
+		final Cursor vResize = Cursor.V_RESIZE;
+		Bounds boundsInParent = node.getBoundsInParent();
+		double a = boundsInParent.getWidth() / 2;
+		double b = boundsInParent.getHeight() / 2;
+		rectangle.setLayoutX(i / 3 * a);
+		rectangle.setLayoutY(i % 3 * b);
+		rectangle.setCursor(vResize);
+		rectangle.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+			private double initialX;
+			private double initialY;
+
+			@Override
+			public void handle(final MouseEvent event) {
+			EventType<? extends MouseEvent> eventType = event.getEventType();
+				if(MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+					initialX = event.getX();
+					initialY = event.getY();
+				}
+				if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+					if (vResize == Cursor.V_RESIZE || vResize == Cursor.SE_RESIZE) {
+						double height = node.getBoundsInParent().getHeight();
+						node.setScaleY((height + initialY - event.getY()) / height);
+					}
+					if (vResize == Cursor.H_RESIZE || vResize == Cursor.SE_RESIZE) {
+						double width = node.getBoundsInParent().getWidth();
+						node.setScaleX((width + initialX - event.getX()) / width);
+					}
+				}
+				if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+					initialX = event.getX();
+					initialY = event.getX();
+				}
+			}
+		});
+		return rectangle;
+	}
+
+    protected double setWithinRange(final double num, final double min, final double max) {
         return Double.min(Double.max(min, num), max);
     }
 
-    protected boolean within(final int y, final double min) {
+	protected boolean within(final int y, final double min) {
 		return 0 <= y && y < min;
 	}
 
-	protected boolean within(final int y, final double min, final double max) {
+    protected boolean within(final int y, final double min, final double max) {
 		return min <= y && y < max;
     }
 
@@ -173,9 +229,9 @@ public abstract class PaintTool extends Group {
                         Double.min(initialX + bound, model.getImage().getWidth()));
     }
 
-    protected boolean withinRange(final int x, final int y, final PaintModel model) {
-        return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
-    }
+	protected boolean withinRange(final int x, final int y, final PaintModel model) {
+		return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
+	}
 
     @FunctionalInterface
     interface DrawOnPoint {

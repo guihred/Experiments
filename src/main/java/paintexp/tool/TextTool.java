@@ -29,8 +29,13 @@ public class TextTool extends PaintTool {
 
     public Rectangle getArea() {
         if (area == null) {
-            area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).cursor(Cursor.MOVE)
-                    .strokeDashArray(1, 2, 1, 2).build();
+            area = new SimpleRectangleBuilder()
+            		.fill(Color.TRANSPARENT)
+            		.stroke(Color.BLACK)
+            		.cursor(Cursor.MOVE)
+            		.width(10)
+                    .strokeDashArray(1, 2, 1, 2)
+                    .build();
         }
         return area;
     }
@@ -76,24 +81,25 @@ public class TextTool extends PaintTool {
         EventType<KeyEvent> eventType = e.getEventType();
 		HasLogging.log().info("{}={}", eventType, code);
 		if (KeyEvent.KEY_RELEASED.equals(eventType)) {
-            switch (code) {
+            String text2 = text.getText();
+			switch (code) {
                 case BACK_SPACE:
-					text.setText(text.getText().length() > 0 ? text.getText().substring(0, text.getText().length() - 1)
+					text.setText(text2.length() > 0 ? text2.substring(0, text2.length() - 1)
 							: "");
                     break;
                 case SPACE:
-                    text.setText(text.getText() + " ");
+                    text.setText(text2 + " ");
                     break;
 				case ENTER:
-					text.setText(text.getText() + "\n");
+					text.setText(text2 + "\n");
 					break;
                 default:
-                    text.setText(text.getText() + e.getText());
+                    text.setText(text2 + e.getText());
                     break;
             }
 			getArea().setWidth(text.getBoundsInParent().getWidth() + 10);
 			getArea().setHeight(
-					(text.getText().chars().filter(c -> c == '\n').count() + 1) * (text.getFont().getSize() + 1));
+					(text2.chars().filter(c -> c == '\n').count() + 1) * (text.getFont().getSize() + 1));
         }
     }
 
