@@ -1,5 +1,6 @@
 package paintexp.tool;
 
+import fxsamples.DraggingRectangle;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
@@ -13,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
@@ -24,12 +24,14 @@ import simplebuilder.SimpleToggleGroupBuilder;
 
 public class TextTool extends PaintTool {
 
+    private static final String TIMES_NEW_ROMAN = "Times New Roman";
     private Text icon;
     private Text text;
     private Rectangle area;
     private WritableImage textImage;
     private double initialX;
     private double initialY;
+    private boolean pressed;
 
     public Rectangle getArea() {
         if (area == null) {
@@ -38,6 +40,7 @@ public class TextTool extends PaintTool {
             		.stroke(Color.BLACK)
             		.cursor(Cursor.MOVE)
             		.width(10)
+                    .height(10)
                     .strokeDashArray(1, 2, 1, 2)
                     .build();
         }
@@ -48,13 +51,13 @@ public class TextTool extends PaintTool {
     public Text getIcon() {
         if (icon == null) {
             icon = new Text("A");
-            icon.setFont(Font.font("Times New Roman", FontWeight.BOLD, 18));
+            icon.setFont(Font.font(TIMES_NEW_ROMAN, FontWeight.BOLD, 18));
         }
         return icon;
     }
     @Override
     public Cursor getMouseCursor() {
-        return Cursor.TEXT;
+        return Cursor.DEFAULT;
     }
 
     public Text getText() {
@@ -76,6 +79,7 @@ public class TextTool extends PaintTool {
         }
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             onMouseReleased(model);
+
         }
     }
 
@@ -88,7 +92,12 @@ public class TextTool extends PaintTool {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getArea())) {
             children.add(getArea());
-            makeResizable(area);
+            DraggingRectangle.createDraggableRectangle(area);
+            area.setStroke(Color.BLACK);
+            getArea().setManaged(false);
+            getArea().setFill(Color.TRANSPARENT);
+            getArea().setLayoutX(initialX);
+            getArea().setLayoutY(initialY);
         }
         if (!children.contains(getText())) {
             children.add(getText());
@@ -98,11 +107,6 @@ public class TextTool extends PaintTool {
                             area.layoutYProperty(), text.fontProperty()));
             getText().wrappingWidthProperty().bind(area.widthProperty());
         }
-        area.setStroke(Color.BLACK);
-        getArea().setManaged(false);
-        getArea().setFill(Color.TRANSPARENT);
-        getArea().setLayoutX(initialX);
-        getArea().setLayoutY(initialY);
     }
     private SimpleToggleGroupBuilder createAlignments() {
         SimpleToggleGroupBuilder alignments = new SimpleToggleGroupBuilder();
@@ -139,7 +143,6 @@ public class TextTool extends PaintTool {
         model.getToolOptions().getChildren().clear();
         TextArea textArea = new TextArea();
         getText().textProperty().bind(textArea.textProperty());
-        getText().fontProperty().bind(textArea.fontProperty());
         SimpleToggleGroupBuilder alignments = createAlignments();
         alignments.onChange((ob, old, newV) -> getText().setTextAlignment((TextAlignment) newV.getUserData()));
         Text graphic = new Text("B");
@@ -148,29 +151,38 @@ public class TextTool extends PaintTool {
 
         Text graphic2 = new Text("I");
         graphic2.setStyle("-fx-font-style: italic;");
+        graphic2.setFont(Font.font(TIMES_NEW_ROMAN, FontWeight.NORMAL, FontPosture.ITALIC, 12));
         ToggleButton italic = new ToggleButton(null, graphic2);
         Text graphic3 = new Text("U");
-        graphic2.setStyle("-fx-undeline: true;");
+        graphic3.setUnderline(true);
         ToggleButton undeline = new ToggleButton(null, graphic3);
+        Text graphic4 = new Text("S");
+        graphic4.setStrikethrough(true);
+        ToggleButton strikeThrough = new ToggleButton(null, graphic4);
 
         SimpleComboBoxBuilder<Integer> fontSize = new SimpleComboBoxBuilder<Integer>()
-                .items(8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72).select(0);
+                .items(8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72);
 
         SimpleComboBoxBuilder<String> fontFamily = new SimpleComboBoxBuilder<String>().items(Font.getFamilies())
                 .styleFunction(t -> "-fx-font-family:" + t + ";")
-                .select(Font.getDefault().getFamily())
-                .onChange((old, newV) -> onOptionsChanged(textArea, newV, fontSize, bold, italic, undeline));
+                .select(TIMES_NEW_ROMAN);
 
-        fontSize.onChange(
-                (old, newV) -> onOptionsChanged(textArea, fontFamily.selectedItem(), fontSize, bold, italic, undeline));
-        bold.setOnAction(e -> onOptionsChanged(textArea, fontFamily.selectedItem(), fontSize, bold, italic, undeline));
+        fontFamily.onChange((old, newV) -> onOptionsChanged(fontFamily, fontSize, bold, italic, undeline,
+                strikeThrough));
+
+        fontSize.onChange((old, newV) -> onOptionsChanged(fontFamily, fontSize, bold, italic, undeline, strikeThrough))
+                .select(5);
+        bold.setOnAction(
+                e -> onOptionsChanged(fontFamily, fontSize, bold, italic, undeline, strikeThrough));
         italic.setOnAction(
-                e -> onOptionsChanged(textArea, fontFamily.selectedItem(), fontSize, bold, italic, undeline));
+                e -> onOptionsChanged(fontFamily, fontSize, bold, italic, undeline, strikeThrough));
         undeline.setOnAction(
-                e -> onOptionsChanged(textArea, fontFamily.selectedItem(), fontSize, bold, italic, undeline));
+                e -> onOptionsChanged(fontFamily, fontSize, bold, italic, undeline, strikeThrough));
+        strikeThrough.setOnAction(
+                e -> onOptionsChanged(fontFamily, fontSize, bold, italic, undeline, strikeThrough));
         model.getToolOptions().getChildren().addAll(
-                field("Font", fontFamily.build()), 
-                new HBox(field("Size", fontSize.build()),field("", bold), field("", italic), field("", undeline)),
+                field("Font", fontFamily.build()), field("Size", fontSize.build()),
+                new HBox(bold, italic, undeline, strikeThrough),
                 new HBox(alignments.getTogglesAs(Node.class).toArray(new Node[0])),
                 field("Text", textArea));
     }
@@ -191,13 +203,9 @@ public class TextTool extends PaintTool {
         double y = e.getY();
         double width = model.getImage().getWidth();
         double height = model.getImage().getHeight();
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (children.contains(getArea()) && textImage != null) {
-            getArea().setLayoutX(Double.max(x - initialX, -width / 4));
-            getArea().setLayoutY(Double.max(y - initialY, -height / 4));
-            return;
+        if (pressed) {
+            dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
         }
-        dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
     }
 
     private void onMousePressed(final MouseEvent e, final PaintModel model) {
@@ -205,14 +213,14 @@ public class TextTool extends PaintTool {
         if (children.contains(getArea())) {
             if (containsPoint(getArea(), e.getX(), e.getY())) {
                 if (textImage == null) {
-                    int width = (int) area.getWidth();
-                    int height = (int) area.getHeight();
-                    textImage = new WritableImage(width, height);
-                    int layoutX = (int) area.getLayoutX();
-                    int layoutY = (int) area.getLayoutY();
-                    copyImagePart(model.getImage(), textImage, layoutX, layoutY, width, height);
-                    getArea().setFill(new ImagePattern(textImage));
-                    drawRect(model, layoutX, layoutY, width, height);
+                    //                    int width = (int) area.getWidth();
+                    //                    int height = (int) area.getHeight();
+                    //                    //                    textImage = new WritableImage(width, height);
+                    //                    int layoutX = (int) area.getLayoutX();
+                    //                    int layoutY = (int) area.getLayoutY();
+                    //                    copyImagePart(model.getImage(), textImage, layoutX, layoutY, width, height);
+                    //                    getArea().setFill(new ImagePattern(textImage));
+                    //                    drawRect(model, layoutX, layoutY, width, height);
                 }
                 return;
             }
@@ -222,6 +230,7 @@ public class TextTool extends PaintTool {
         }
         initialX = e.getX();
         initialY = e.getY();
+        pressed = true;
         addRect(model);
 
     }
@@ -232,16 +241,19 @@ public class TextTool extends PaintTool {
 
             children.remove(getArea());
         }
+        pressed = false;
         area.setStroke(Color.BLUE);
     }
 
-    private void onOptionsChanged(TextArea textArea, String font, SimpleComboBoxBuilder<Integer> fontSize,
-            ToggleButton bold, ToggleButton italic, ToggleButton undeline) {
+    private void onOptionsChanged(SimpleComboBoxBuilder<String> font, SimpleComboBoxBuilder<Integer> fontSize,
+            ToggleButton bold,
+            ToggleButton italic, ToggleButton undeline, ToggleButton strikeThrough) {
         FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
         FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
         double size = fontSize.selectedItem();
-        textArea.setFont(Font.font(font, weight, posture, size));
+        text.setFont(Font.font(font.selectedItem(), weight, posture, size));
         getText().setUnderline(undeline.isSelected());
+        getText().setStrikethrough(strikeThrough.isSelected());
     }
 
     private void setIntoImage(final PaintModel model) {

@@ -4,9 +4,9 @@ import java.io.File;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -17,7 +17,7 @@ public class PaintModel {
     private ObjectProperty<Color> backColor = new SimpleObjectProperty<>(Color.WHITE);
     private ObjectProperty<Color> frontColor = new SimpleObjectProperty<>(Color.BLACK);
     private WritableImage image = new WritableImage(500, 500);
-    private StackPane imageStack;
+    private Group imageStack;
 	private final ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
     private Text imageSize = new Text();
     private Text toolSize = new Text();
@@ -48,19 +48,18 @@ public class PaintModel {
     public Text getImageSize() {
         return imageSize;
     }
-    public StackPane getImageStack() {
+
+    public Group getImageStack() {
         if (imageStack == null) {
             ImageView imageView = new ImageView(getImage());
             imageView.setLayoutX(0);
             imageView.setLayoutY(0);
             imageView.setManaged(false);
 			imageView.setSmooth(false);
-            imageStack = new StackPane(imageView);
-            imageStack.setAlignment(Pos.TOP_LEFT);
+            imageStack = new Group(imageView);
 			imageStack.setManaged(false);
 			imageStack.setLayoutX(0);
 			imageStack.setLayoutY(0);
-            imageStack.setMinHeight(200);
         }
 
         return imageStack;
@@ -114,10 +113,6 @@ public class PaintModel {
 
     public void setImageSize(final Text imageSize) {
         this.imageSize = imageSize;
-    }
-
-	public void setImageStack(final StackPane imageStack) {
-        this.imageStack = imageStack;
     }
 
 	public void setMousePosition(final Text mousePosition) {
