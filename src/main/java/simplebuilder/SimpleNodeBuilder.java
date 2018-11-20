@@ -20,7 +20,6 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 	public T build() {
 		return node;
 	}
-
 	public Z cursor(Cursor hand) {
 		node.setCursor(hand);
 		return (Z) this;

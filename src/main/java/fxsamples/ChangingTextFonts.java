@@ -20,10 +20,8 @@ public class ChangingTextFonts extends Application {
     @Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Changing Text Fonts");
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("Font families: {}", Font.getFamilies().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
-			LOG.trace("Font names: {}", Font.getFontNames().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
-        }
+            LOG.info("Font families: {}", Font.getFamilies().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
+            LOG.info("Font names: {}", Font.getFontNames().stream().collect(Collectors.joining("\n\t", "\n\t", "")));
 		Group root = new Group();
 		Scene scene = new Scene(root, 580, 250, Color.WHITE);
 		// Serif with drop shadow

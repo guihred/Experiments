@@ -1,22 +1,26 @@
 package paintexp.tool;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import paintexp.PaintModel;
+import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleRectangleBuilder;
-import utils.HasLogging;
+import simplebuilder.SimpleToggleGroupBuilder;
 
 public class TextTool extends PaintTool {
 
@@ -76,50 +80,99 @@ public class TextTool extends PaintTool {
     }
 
     @Override
-    public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
-        KeyCode code = e.getCode();
-        EventType<KeyEvent> eventType = e.getEventType();
-		HasLogging.log().info("{}={}", eventType, code);
-		if (KeyEvent.KEY_RELEASED.equals(eventType)) {
-            String text2 = text.getText();
-			switch (code) {
-                case BACK_SPACE:
-					text.setText(text2.length() > 0 ? text2.substring(0, text2.length() - 1)
-							: "");
-                    break;
-                case SPACE:
-                    text.setText(text2 + " ");
-                    break;
-				case ENTER:
-					text.setText(text2 + "\n");
-					break;
-                default:
-                    text.setText(text2 + e.getText());
-                    break;
-            }
-			getArea().setWidth(text.getBoundsInParent().getWidth() + 10);
-			getArea().setHeight(
-					(text2.chars().filter(c -> c == '\n').count() + 1) * (text.getFont().getSize() + 1));
-        }
+    public void onSelected(PaintModel model) {
+        displayTextOptions(model);   
     }
 
     private void addRect(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getArea())) {
             children.add(getArea());
+            makeResizable(area);
         }
         if (!children.contains(getText())) {
             children.add(getText());
+            getText().layoutXProperty().bind(area.layoutXProperty());
+            getText().layoutYProperty()
+                    .bind(Bindings.createDoubleBinding(() -> area.layoutYProperty().get() + text.getFont().getSize(),
+                            area.layoutYProperty(), text.fontProperty()));
+            getText().wrappingWidthProperty().bind(area.widthProperty());
         }
         area.setStroke(Color.BLACK);
         getArea().setManaged(false);
         getArea().setFill(Color.TRANSPARENT);
         getArea().setLayoutX(initialX);
         getArea().setLayoutY(initialY);
-        getText().setLayoutX(initialX);
-        getText().setLayoutY(initialY + text.getFont().getSize());
-		getArea().setWidth((text.getFont().getSize() + 1) * text.getText().length());
-        getArea().setHeight(text.getFont().getSize());
+    }
+    private SimpleToggleGroupBuilder createAlignments() {
+        SimpleToggleGroupBuilder alignments = new SimpleToggleGroupBuilder();
+        Group node = new Group();
+        int maxWidth = 8;
+        for (int i = 0; i < 4; i++) {
+            Line line = new Line(0, i * 3, maxWidth - i % 3, i * 3);
+            node.getChildren().add(line);
+        }
+        alignments.addToggle(node, TextAlignment.LEFT);
+        Group node2 = new Group();
+        for (int i = 0; i < 4; i++) {
+            Line line = new Line(0 + i % 3, i * 3, maxWidth, i * 3);
+            node2.getChildren().add(line);
+        }
+        alignments.addToggle(node2, TextAlignment.RIGHT);
+        Group node3 = new Group();
+        for (int i = 0; i < 4; i++) {
+            Line line = new Line(0, i * 3, maxWidth, i * 3);
+            node3.getChildren().add(line);
+        }
+        alignments.addToggle(node3, TextAlignment.JUSTIFY);
+        Group node4 = new Group();
+        for (int i = 0; i < 4; i++) {
+            Line line = new Line(0 + i % 3, i * 3, maxWidth - i % 3, i * 3);
+            node4.getChildren().add(line);
+        }
+        alignments.addToggle(node4, TextAlignment.CENTER);
+
+        return alignments;
+    }
+
+    private void displayTextOptions(PaintModel model) {
+        model.getToolOptions().getChildren().clear();
+        TextArea textArea = new TextArea();
+        getText().textProperty().bind(textArea.textProperty());
+        getText().fontProperty().bind(textArea.fontProperty());
+        SimpleToggleGroupBuilder alignments = createAlignments();
+        alignments.onChange((ob, old, newV) -> getText().setTextAlignment((TextAlignment) newV.getUserData()));
+        Text graphic = new Text("B");
+        graphic.setStyle("-fx-font-weight: bold;");
+        ToggleButton bold = new ToggleButton(null, graphic);
+
+        Text graphic2 = new Text("I");
+        graphic2.setStyle("-fx-font-style: italic;");
+        ToggleButton italic = new ToggleButton(null, graphic2);
+        Text graphic3 = new Text("U");
+        graphic2.setStyle("-fx-undeline: true;");
+        ToggleButton undeline = new ToggleButton(null, graphic3);
+
+        SimpleComboBoxBuilder<Integer> fontSize = new SimpleComboBoxBuilder<Integer>()
+                .items(8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72).select(0);
+
+        SimpleComboBoxBuilder<String> fontFamily = new SimpleComboBoxBuilder<String>().items(Font.getFamilies())
+                .styleFunction(t -> "-fx-font-family:" + t + ";")
+                .select(Font.getDefault().getFamily())
+                .onChange((old, newV) -> onOptionsChanged(textArea, newV, fontSize, bold, italic, undeline));
+
+        fontSize.onChange(
+                (old, newV) -> onOptionsChanged(textArea, fontFamily.selectedItem(), fontSize, bold, italic, undeline));
+        bold.setOnAction(e -> onOptionsChanged(textArea, fontFamily.selectedItem(), fontSize, bold, italic, undeline));
+        italic.setOnAction(
+                e -> onOptionsChanged(textArea, fontFamily.selectedItem(), fontSize, bold, italic, undeline));
+        undeline.setOnAction(
+                e -> onOptionsChanged(textArea, fontFamily.selectedItem(), fontSize, bold, italic, undeline));
+        model.getToolOptions().getChildren().addAll(
+                field("Font", fontFamily.build()), 
+                new HBox(field("Size", fontSize.build()),field("", bold), field("", italic), field("", undeline)),
+                new HBox(alignments.getTogglesAs(Node.class).toArray(new Node[0])),
+                field("Text", textArea));
     }
 
     private void dragTo(final double x, final double y) {
@@ -127,6 +180,10 @@ public class TextTool extends PaintTool {
         getArea().setLayoutY(Double.min(y, initialY));
         getArea().setWidth(Math.abs(x - initialX));
         getArea().setHeight(Math.abs(y - initialY));
+    }
+
+    private VBox field(String text2, Node fontFamily) {
+        return new VBox(new Text(text2), fontFamily);
     }
 
     private void onMouseDragged(final MouseEvent e, final PaintModel model) {
@@ -176,6 +233,15 @@ public class TextTool extends PaintTool {
             children.remove(getArea());
         }
         area.setStroke(Color.BLUE);
+    }
+
+    private void onOptionsChanged(TextArea textArea, String font, SimpleComboBoxBuilder<Integer> fontSize,
+            ToggleButton bold, ToggleButton italic, ToggleButton undeline) {
+        FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
+        FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
+        double size = fontSize.selectedItem();
+        textArea.setFont(Font.font(font, weight, posture, size));
+        getText().setUnderline(undeline.isSelected());
     }
 
     private void setIntoImage(final PaintModel model) {

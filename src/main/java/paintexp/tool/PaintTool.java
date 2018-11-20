@@ -45,9 +45,10 @@ public abstract class PaintTool extends Group {
 		// DOES NOTHING
 	}
 
-    protected boolean containsPoint(final Rectangle area2,final double localX, final double localY) {
-        return area2.getLayoutX() < localX && localX < area2.getLayoutX() + area2.getWidth()
-                && area2.getLayoutY() < localY && localY < area2.getLayoutY() + area2.getHeight();
+    protected boolean containsPoint(final Node area2, final double localX, final double localY) {
+        Bounds bounds = area2.getBoundsInParent();
+        return area2.getLayoutX() < localX && localX < area2.getLayoutX() + bounds.getWidth()
+                && area2.getLayoutY() < localY && localY < area2.getLayoutY() + bounds.getHeight();
     }
 
 	protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
@@ -171,14 +172,16 @@ public abstract class PaintTool extends Group {
     }
 
 	protected Rectangle makeSquare(final Node node, final int i) {
-		Rectangle rectangle = new SimpleRectangleBuilder().width(5).height(5).fill(Color.WHITE).stroke(Color.BLACK)
+        Rectangle rectangle = new SimpleRectangleBuilder().width(5).height(5).fill(Color.WHITE).stroke(Color.BLACK)
+                .managed(false)
 				.build();
-		final Cursor vResize = Cursor.V_RESIZE;
-		Bounds boundsInParent = node.getBoundsInParent();
-		double a = boundsInParent.getWidth() / 2;
-		double b = boundsInParent.getHeight() / 2;
-		rectangle.setLayoutX(i / 3 * a);
-		rectangle.setLayoutY(i % 3 * b);
+        node.boundsInParentProperty().addListener((a, b, c) -> {
+            rectangle.setLayoutX(i / 3 * (c.getWidth() / 2) + c.getMinX() - rectangle.getWidth() / 2);
+            rectangle.setLayoutY(i % 3 * (c.getHeight() / 2) + c.getMinY() - rectangle.getHeight() / 2);
+        });
+
+        final Cursor vResize = i % 3 == 1 ? Cursor.H_RESIZE
+                : i / 3 == 1 ? Cursor.V_RESIZE : i / 3 == i % 3 ? Cursor.SE_RESIZE : Cursor.NE_RESIZE;
 		rectangle.setCursor(vResize);
 		rectangle.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
 			private double initialX;
@@ -194,12 +197,12 @@ public abstract class PaintTool extends Group {
 				if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
 					if (vResize == Cursor.V_RESIZE || vResize == Cursor.SE_RESIZE) {
 						double height = node.getBoundsInParent().getHeight();
-						node.setScaleY((height + initialY - event.getY()) / height);
+                        node.setScaleY((height + initialY - event.getY()) / height);
 					}
-					if (vResize == Cursor.H_RESIZE || vResize == Cursor.SE_RESIZE) {
-						double width = node.getBoundsInParent().getWidth();
-						node.setScaleX((width + initialX - event.getX()) / width);
-					}
+                    if (vResize == Cursor.H_RESIZE || vResize == Cursor.SE_RESIZE) {
+                        double width = node.getBoundsInParent().getWidth();
+                        node.setScaleX((width + initialX - event.getX()) / width);
+                    }
 				}
 				if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
 					initialX = event.getX();

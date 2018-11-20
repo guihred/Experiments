@@ -8,6 +8,7 @@ import java.util.function.Function;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
 import javafx.util.StringConverter;
 
@@ -19,11 +20,6 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         super(new ComboBox<>());
         comboBox = region;
 
-	}
-
-    public SimpleComboBoxBuilder<T> converter(StringConverter<T> value) {
-        comboBox.setConverter(value);
-        return this;
     }
 
     public SimpleComboBoxBuilder<T> converter(Function<T, String> func) {
@@ -31,8 +27,8 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
-    public SimpleComboBoxBuilder<T> tooltip(String text) {
-        comboBox.setTooltip(new Tooltip(text));
+    public SimpleComboBoxBuilder<T> converter(StringConverter<T> value) {
+        comboBox.setConverter(value);
         return this;
     }
 
@@ -97,6 +93,32 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         comboBox.getSelectionModel().select(obj);
         return this;
     }
+
+    public T selectedItem() {
+        return comboBox.getSelectionModel().getSelectedItem();
+    }
+
+    public SimpleComboBoxBuilder<T> styleFunction(Function<T, String> func) {
+
+        comboBox.setCellFactory(param -> new ListCell<T>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    T t = param.getItems().get(getIndex());
+                    setText(comboBox.getConverter().toString(t));
+                    setStyle(func.apply(t));
+                }
+            }
+        });
+        return this;
+    }
+
+    public SimpleComboBoxBuilder<T> tooltip(String text) {
+        comboBox.setTooltip(new Tooltip(text));
+        return this;
+    }
+
 
 
 
