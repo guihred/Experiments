@@ -85,7 +85,7 @@ public class PaintMain extends  Application{
         root.setLeft(toolbar);
 
         primaryStage.setTitle("Paint");
-		Scene scene = new Scene(root, 600, 600);
+		Scene scene = new Scene(root, 800, 800);
 		scene.addEventHandler(KeyEvent.ANY, controller::handleKeyBoard);
 		primaryStage.setScene(scene);
         primaryStage.show();

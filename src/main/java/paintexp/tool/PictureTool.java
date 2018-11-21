@@ -34,6 +34,7 @@ public class PictureTool extends PaintTool {
 	public SVGPath getArea() {
 		if (area == null) {
 			area = new SVGPath();
+			area.setStrokeWidth(.1);
 			area.setFill(Color.TRANSPARENT);
 			area.setStroke(Color.BLACK);
 			area.setManaged(false);
@@ -107,7 +108,8 @@ public class PictureTool extends PaintTool {
 
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(value);
-		scrollPane.setMaxSize(150, 200);
+		scrollPane.setPrefWidth(65);
+		scrollPane.setMaxSize(200, 200);
 		model.getToolOptions().getChildren().addAll(scrollPane);
     }
 

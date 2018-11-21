@@ -9,8 +9,12 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.image.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat.Type;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -49,6 +53,7 @@ public abstract class PaintTool extends Group {
                 && area2.getLayoutY() < localY && localY < area2.getLayoutY() + bounds.getHeight();
     }
 
+
     protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height) {
         copyImagePart(srcImage, destImage, x, y, width, height, 0, 0);
@@ -77,7 +82,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
+	protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height, final int xOffset, final int yOffset, final Color ignoreColor) {
         PixelReader pixelReader = srcImage.getPixelReader();
         double srcWidth = srcImage.getWidth();
@@ -110,7 +115,7 @@ public abstract class PaintTool extends Group {
     }
 
     protected void drawCircle(final PaintModel model, final double centerX, final double centerY, final double radiusX,
-            final double radiusY, final double nPoints, final double startAngle, final double angle, Color frontColor) {
+            final double radiusY, final double nPoints, final double startAngle, final double angle, final Color frontColor) {
         for (double t = 0; t < angle; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(radiusX * Math.cos(t + startAngle));
             int y = (int) Math.round(radiusY * Math.sin(t + startAngle));
@@ -119,7 +124,7 @@ public abstract class PaintTool extends Group {
     }
 
     protected void drawCircle(final PaintModel model, final int centerX, final int centerY, final double radiusX,
-            final double radiusY, final double nPoints, Color color) {
+            final double radiusY, final double nPoints, final Color color) {
 
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(radiusX * Math.cos(t));
@@ -245,7 +250,7 @@ public abstract class PaintTool extends Group {
         return Double.min(Double.max(min, num), max);
     }
 
-    protected void takeSnapshot(PaintModel model, Node line2) {
+    protected void takeSnapshot(final PaintModel model, final Node line2) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;
@@ -260,7 +265,7 @@ public abstract class PaintTool extends Group {
         model.getImageStack().getChildren().add(new ImageView(model.getImage()));
     }
 
-    protected void takeSnapshotFill(PaintModel model, Node line2) {
+    protected void takeSnapshotFill(final PaintModel model, final Node line2) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;
@@ -269,7 +274,7 @@ public abstract class PaintTool extends Group {
         WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
         int x = (int) bounds.getMinX();
         int y = (int) bounds.getMinY();
-        copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
+		copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
         model.getImageStack().getChildren().remove(line2);
         model.getImageStack().getChildren().clear();
         model.getImageStack().getChildren().add(new ImageView(model.getImage()));
@@ -294,14 +299,14 @@ public abstract class PaintTool extends Group {
         return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
     }
 
-    private void drawPoint(final PaintModel model, final int x2, final int y2, Color frontColor) {
+    private void drawPoint(final PaintModel model, final int x2, final int y2, final Color frontColor) {
         if (withinRange(x2, y2, model)) {
             model.getImage().getPixelWriter().setColor(x2, y2, frontColor);
         }
     }
 
     private void drawRect(final PaintModel model, final double x, final double y, final double w, final double h,
-            Color backColor) {
+            final Color backColor) {
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
                 if (withinRange((int) x + i, (int) y + j, model)) {
