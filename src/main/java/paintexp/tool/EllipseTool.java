@@ -21,7 +21,7 @@ public class EllipseTool extends PaintTool {
 
 	public Ellipse getArea() {
 		if (area == null) {
-			area = new Ellipse(5, 10);
+            area = new Ellipse(3, 5);
 			area.setFill(Color.TRANSPARENT);
 			area.setStroke(Color.BLACK);
 			area.setManaged(false);
@@ -32,7 +32,7 @@ public class EllipseTool extends PaintTool {
 	@Override
 	public Node getIcon() {
 		if (icon == null) {
-			icon = new Ellipse(10, 5);
+            icon = new Ellipse(6, 4);
 			icon.setFill(Color.TRANSPARENT);
 			icon.setStroke(Color.BLACK);
 		}

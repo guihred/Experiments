@@ -8,6 +8,7 @@ import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
@@ -236,6 +237,7 @@ public class TextTool extends PaintTool {
             children.remove(getArea());
         }
         pressed = false;
+        textArea.requestFocus();
         area.setStroke(Color.BLUE);
     }
 
@@ -252,10 +254,12 @@ public class TextTool extends PaintTool {
     private void takeSnapshot(PaintModel model) {
         int width = (int) getArea().getWidth();
         int height = (int) getArea().getHeight();
-        WritableImage textImage = text.snapshot(null, new WritableImage(width, height));
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(model.getBackColor());
+        WritableImage textImage = text.snapshot(params, new WritableImage(width, height));
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
-        copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y);
+        copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, model.getBackColor());
         model.getImageStack().getChildren().remove(getArea());
         model.getImageStack().getChildren().clear();
         model.getImageStack().getChildren().add(new ImageView(model.getImage()));

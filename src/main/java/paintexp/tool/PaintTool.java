@@ -80,6 +80,31 @@ public abstract class PaintTool extends Group {
         }
     }
 
+    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
+            final double width, final double height, final int xOffset, final int yOffset, final Color ignoreColor) {
+        PixelReader pixelReader = srcImage.getPixelReader();
+        double srcWidth = srcImage.getWidth();
+        double srcHeight = srcImage.getHeight();
+        PixelWriter pixelWriter = destImage.getPixelWriter();
+        Type type = pixelReader.getPixelFormat().getType();
+        double destWidth = destImage.getWidth();
+        double destHeight = destImage.getHeight();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (within(i + xOffset, destWidth) && within(j + yOffset, destHeight) && within(i + x, srcWidth)
+                        && within(j + y, srcHeight)) {
+                    Color color = pixelReader.getColor(i + x, j + y);
+                    if (Type.BYTE_BGRA_PRE == type) {
+                        color = Color.hsb(color.getHue(), color.getSaturation(), color.getBrightness());
+                    }
+                    if (!color.equals(ignoreColor)) {
+                        pixelWriter.setColor(i + xOffset, j + yOffset, color);
+                    }
+                }
+            }
+        }
+    }
+
     protected void drawCircle(final PaintModel model, final double centerX, final double centerY, final double radiusX,
             final double radiusY, final double nPoints, final double startAngle, final double angle) {
 

@@ -143,7 +143,12 @@ public class PaintController {
 		}
 	}
 
-	public void saveFile(final Stage primaryStage) {
+	public void saveAsFile(final Stage primaryStage) {
+	    paintModel.setCurrentFile(null);
+	    saveFile(primaryStage);
+	}
+
+    public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();

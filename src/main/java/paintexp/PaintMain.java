@@ -35,6 +35,7 @@ public class PaintMain extends  Application{
 				.addMenuItem("_New", e -> controller.newFile())
 				.addMenuItem("_Open", e -> controller.openFile(primaryStage))
 				.addMenuItem("_Save", e -> controller.saveFile(primaryStage))
+                .addMenuItem("Save _As", e -> controller.saveAsFile(primaryStage))
                 .addMenu("_Edit")
                 .addMenu("_View")
                 .addMenu("_Image")
@@ -44,7 +45,7 @@ public class PaintMain extends  Application{
         PixelReader reader = new SimplePixelReader(paintModel.getBackColor());
         paintModel.getImage().getPixelWriter().setPixels(0, 0, (int) paintModel.getImage().getWidth(),
                 (int) paintModel.getImage().getHeight(), reader, 0, 0);
-		paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);
+        paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);
         root.setCenter(new ZoomableScrollPane(paintModel.getImageStack()));
 
         HBox hBox = new HBox(50, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());

@@ -4,7 +4,7 @@ import javafx.scene.Cursor;
 import paintexp.tool.*;
 
 public enum PaintTools {
-    SELECT_FREE,
+    //    SELECT_FREE,
     ERASER(new EraserTool()),
     BUCKET(new BucketTool()),
     EYEDROP(new EyedropTool()),

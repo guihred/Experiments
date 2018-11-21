@@ -34,6 +34,21 @@ public class PolygonTool extends PaintTool {
 		return area;
 	}
 
+	@Override
+	public Node getIcon() {
+		if (icon == null) {
+			int pontas = 5;
+			int radius = 5;
+			double[] points = iterate(0, i -> i + 1).limit(pontas)
+					.flatMap(i -> of(radius * cos(i * 2 % 5 * 2 * PI / pontas), radius * sin(i * 2 % 5 * 2 * PI / pontas)))
+					.toArray();
+			icon = new Polygon(points);
+			icon.setFill(Color.GRAY);
+			icon.setStroke(Color.GRAY);
+		}
+		return icon;
+	}
+
 	public Line getLine() {
 		if (line == null) {
 			line = new Line();
@@ -41,20 +56,6 @@ public class PolygonTool extends PaintTool {
 			line.setManaged(false);
 		}
 		return line;
-	}
-
-	@Override
-	public Node getIcon() {
-		if (icon == null) {
-			int pontas = 5;
-			double[] points = iterate(0, i -> i + 1).limit(pontas)
-					.flatMap(i -> of(10 * cos(i * 2 % 5 * 2 * PI / pontas), 10 * sin(i * 2 % 5 * 2 * PI / pontas)))
-					.toArray();
-			icon = new Polygon(points);
-			icon.setFill(Color.GRAY);
-			icon.setStroke(Color.GRAY);
-		}
-		return icon;
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import paintexp.SimplePixelReader;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class BucketTool extends PaintTool {
@@ -52,23 +53,10 @@ public class BucketTool extends PaintTool {
 	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
-		if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
+        HasLogging.log().info("{}", eventType);
+        if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
+
 			onMouseClicked(e, model);
-
-		}
-	}
-
-	private void onMouseClicked(final MouseEvent e, final PaintModel model) {
-		int initialX = (int) e.getX();
-		int initialY = (int) e.getY();
-		width = (int) model.getImage().getWidth();
-		height = (int) model.getImage().getHeight();
-		PixelReader pixelReader = model.getImage().getPixelReader();
-		int originalColor = pixelReader.getArgb(initialX, initialY);
-		int frontColor = SimplePixelReader
-				.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
-		if (originalColor != frontColor) {
-			Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
 		}
 	}
 
@@ -96,8 +84,28 @@ public class BucketTool extends PaintTool {
 		}
 	}
 
+	private void addIfNotIn(final List<Integer> toGo, final Integer e) {
+		if (!toGo.contains(e) && e < width * height && e >= 0) {
+			toGo.add(e);
+		}
+	}
+
 	private Integer index(final int initialX2, final int initialY2) {
 		return initialX2 * width + initialY2;
+	}
+
+	private void onMouseClicked(final MouseEvent e, final PaintModel model) {
+		int initialX = (int) e.getX();
+		int initialY = (int) e.getY();
+		width = (int) model.getImage().getWidth();
+		height = (int) model.getImage().getHeight();
+		PixelReader pixelReader = model.getImage().getPixelReader();
+		int originalColor = pixelReader.getArgb(initialX, initialY);
+		int frontColor = SimplePixelReader
+				.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
+		if (originalColor != frontColor) {
+			Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
+		}
 	}
 
 	private int x(final int m) {
@@ -107,12 +115,6 @@ public class BucketTool extends PaintTool {
 	private int y(final int m) {
 
 		return m % width;
-	}
-
-	private void addIfNotIn(final List<Integer> toGo, final Integer e) {
-		if (!toGo.contains(e) && e < width * height && e >= 0) {
-			toGo.add(e);
-		}
 	}
 
 
