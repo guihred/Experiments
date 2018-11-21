@@ -15,7 +15,7 @@ public enum PaintTools {
     SELECT_RECT(new SelectRectTool()),
     TEXT(new TextTool()),
     LINE(new LineTool()),
-    //    CURVE,
+    CURVE(new CurveTool()),
 	RECTANGLE(new RectangleTool()),
 	POLYGON(new PolygonTool()),
 	CIRCLE(new EllipseTool()),

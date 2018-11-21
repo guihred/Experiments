@@ -8,11 +8,9 @@ import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.image.Image;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.*;
 import javafx.scene.image.PixelFormat.Type;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -252,7 +250,22 @@ public abstract class PaintTool extends Group {
         return Double.min(Double.max(min, num), max);
     }
 
-	protected boolean within(final int y, final double min) {
+	protected void takeSnapshot(PaintModel model, Node line2) {
+        Bounds bounds = line2.getBoundsInParent();
+        int width = (int) bounds.getWidth() + 2;
+        int height = (int) bounds.getHeight() + 2;
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(model.getBackColor());
+        WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
+        int x = (int) bounds.getMinX();
+        int y = (int) bounds.getMinY();
+        copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, model.getBackColor());
+        model.getImageStack().getChildren().remove(line2);
+        model.getImageStack().getChildren().clear();
+        model.getImageStack().getChildren().add(new ImageView(model.getImage()));
+    }
+
+    protected boolean within(final int y, final double min) {
 		return 0 <= y && y < min;
 	}
 
@@ -260,17 +273,16 @@ public abstract class PaintTool extends Group {
 		return min <= y && y < max;
     }
 
-    protected boolean withinRange(final int x, final int y, final int initialX, final int initialY, final double bound,
+	protected boolean withinRange(final int x, final int y, final int initialX, final int initialY, final double bound,
             final PaintModel model) {
         return within(y, Double.max(initialY - bound, 0), Double.min(initialY + bound, model.getImage().getHeight()))
                 && within(x, Double.max(initialX - bound, 0),
                         Double.min(initialX + bound, model.getImage().getWidth()));
     }
 
-	protected boolean withinRange(final int x, final int y, final PaintModel model) {
+    protected boolean withinRange(final int x, final int y, final PaintModel model) {
 		return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
 	}
-
     @FunctionalInterface
     interface DrawOnPoint {
         void draw(int x, int y);
