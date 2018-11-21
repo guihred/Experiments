@@ -1,5 +1,6 @@
 package paintexp;
 
+import com.sun.javafx.scene.control.skin.CustomColorDialog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import paintexp.tool.PaintTool;
 import utils.HasLogging;
 
+@SuppressWarnings("restriction")
 public class PaintController {
 	private static final Logger LOG = HasLogging.log();
 	private PaintModel paintModel = new PaintModel();
@@ -112,11 +114,29 @@ public class PaintController {
 	public Rectangle newRectangle(final Color color) {
 		Rectangle rectangle = new Rectangle(20, 20, color);
 		rectangle.setStroke(Color.BLACK);
+
 		rectangle.setOnMouseClicked(e -> {
+			if (e.getClickCount() > 1) {
+
+				CustomColorDialog dialog = new CustomColorDialog(rectangle.getScene().getWindow());
+				dialog.setCurrentColor(color);
+				dialog.setOnUse(() -> {
+					Color customColor = dialog.getCustomColor();
+					if (MouseButton.PRIMARY == e.getButton()) {
+						getPaintModel().setFrontColor(customColor);
+					} else {
+						getPaintModel().setBackColor(customColor);
+					}
+				});
+				dialog.setOnSave(() -> rectangle.setFill(dialog.getCustomColor()));
+				dialog.show();
+			} else
+			
 			if (MouseButton.PRIMARY == e.getButton()) {
-				getPaintModel().setFrontColor(color);
+				
+				getPaintModel().setFrontColor((Color) rectangle.getFill());
 			} else {
-				getPaintModel().setBackColor(color);
+				getPaintModel().setBackColor((Color) rectangle.getFill());
 			}
 		});
 
