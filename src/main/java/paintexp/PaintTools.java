@@ -19,6 +19,7 @@ public enum PaintTools {
 	RECTANGLE(new RectangleTool()),
 	POLYGON(new PolygonTool()),
 	CIRCLE(new EllipseTool()),
+	PICTURE(new PictureTool()),
     //    ROUND;
     ;
 
