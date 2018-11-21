@@ -1,5 +1,6 @@
 package paintexp.tool;
 
+import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
@@ -13,6 +14,7 @@ import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.SimpleToggleGroupBuilder;
 
 public class RectangleTool extends PaintTool {
 
@@ -20,6 +22,7 @@ public class RectangleTool extends PaintTool {
 	private Rectangle area;
 	private double initialX;
 	private double initialY;
+    private FillOption option = FillOption.STROKE;
 
 	public Rectangle getArea() {
 		if (area == null) {
@@ -30,7 +33,7 @@ public class RectangleTool extends PaintTool {
 	}
 
 	@Override
-	public Node getIcon() {
+    public Rectangle getIcon() {
 		if (icon == null) {
 			icon = new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.build();
@@ -86,11 +89,55 @@ public class RectangleTool extends PaintTool {
         rectangle.strokeProperty().bind(model.frontColorProperty());
         rectangle.arcWidthProperty().bind(getArea().arcWidthProperty());
         rectangle.arcHeightProperty().bind(getArea().arcWidthProperty());
-
         model.getToolOptions().getChildren().add(rectangle);
+        icon = null;
+        Rectangle icon2 = getIcon();
+        icon2.strokeProperty().bind(model.frontColorProperty());
+        icon2.setFill(Color.TRANSPARENT);
+        icon = null;
+        Rectangle icon3 = getIcon();
+        icon3.setStroke(Color.TRANSPARENT);
+        icon3.fillProperty().bind(model.backColorProperty());
+        icon = null;
+        Rectangle icon4 = getIcon();
+        icon4.strokeProperty().bind(model.frontColorProperty());
+        icon4.fillProperty().bind(model.backColorProperty());
+        icon = null;
+        List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
+                .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
+                .onChange((o, old, newV) -> option = (FillOption) newV.getUserData()).getTogglesAs(Node.class);
+        model.getToolOptions().getChildren().addAll(togglesAs);
+
 	}
 
-	private void onMouseDragged(final MouseEvent e) {
+	private void drawFill(final PaintModel model, double startX, double endX, double startY, double endY,
+	        double radiusX, double radiusY, double centerY1, double centerY2, double centerX1, double centerX2,
+	        double nPoints) {
+        drawRect(model, centerX1, startY, centerX2 - centerX1, endY - startY);
+        drawRect(model, startX, centerY1, endX - startX, centerY2 - centerY1);
+        for (int i = 0; i < radiusX; i++) {
+            drawCircle(model, centerX1, centerY1, i, radiusY, nPoints, Math.PI, Math.PI / 2, model.getBackColor());
+            drawCircle(model, centerX2, centerY1, i, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2,
+                    model.getBackColor());
+            drawCircle(model, centerX1, centerY2, i, radiusY, nPoints, Math.PI / 2, Math.PI / 2, model.getBackColor());
+            drawCircle(model, centerX2, centerY2, i, radiusY, nPoints, 0, Math.PI / 2, model.getBackColor());
+        }
+	}
+
+    private void drawStroke(final PaintModel model, double startX, double endX, double startY, double endY,
+            double radiusX, double radiusY, double centerY1, double centerY2, double centerX1, double centerX2,
+            double nPoints) {
+        drawLine(model, startX, centerY1, startX, centerY2);//LEFT
+        drawLine(model, endX, centerY1, endX, centerY2);//RIGHT
+        drawLine(model, centerX1, startY - 1, centerX2, startY - 1);//TOP
+        drawLine(model, centerX1, endY, centerX2, endY);// BOTTOM
+        drawCircle(model, centerX1, centerY1, radiusX, radiusY, nPoints, Math.PI, Math.PI / 2);//TOP-LEFT
+        drawCircle(model, centerX2, centerY1, radiusX, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2);//
+        drawCircle(model, centerX1, centerY2, radiusX, radiusY, nPoints, Math.PI / 2, Math.PI / 2);
+        drawCircle(model, centerX2, centerY2, radiusX, radiusY, nPoints, 0, Math.PI / 2);
+    }
+
+    private void onMouseDragged(final MouseEvent e) {
 		double layoutX = initialX;
 		double layoutY = initialY;
 		double x = e.getX();
@@ -122,7 +169,15 @@ public class RectangleTool extends PaintTool {
 		getArea().setLayoutY(initialY);
 		getArea().setWidth(1);
 		getArea().setHeight(1);
-		getArea().setStroke(model.getFrontColor());
+        getArea().setStroke(Color.TRANSPARENT);
+        getArea().setFill(Color.TRANSPARENT);
+        if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
+            getArea().setFill(model.getBackColor());
+        }
+        if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
+            getArea().setStroke(model.getFrontColor());
+        }
+
 	}
 
     private void onMouseReleased(final PaintModel model) {
@@ -141,18 +196,17 @@ public class RectangleTool extends PaintTool {
             double radiusY = Double.min(arc, height / 2);
             double centerY1 = Double.min(startY + radiusY, startY + height / 2);
             double centerY2 = Double.max(endY - radiusY, startY - height / 2);
-            drawLine(model, startX, centerY1, startX, centerY2);//LEFT
-            drawLine(model, endX, centerY1, endX, centerY2);//RIGHT
             double centerX1 = Double.min(startX + radiusX, startX + width / 2);
             double centerX2 = Double.max(endX - radiusX, endX - width / 2);
-            drawLine(model, centerX1, startY - 1, centerX2, startY - 1);//TOP
-            drawLine(model, centerX1, endY, centerX2, endY);// BOTTOM
-
             double nPoints = max * 4;
-            drawCircle(model, centerX1, centerY1, radiusX, radiusY, nPoints, Math.PI, Math.PI / 2);//TOP-LEFT
-            drawCircle(model, centerX2, centerY1, radiusX, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2);//
-            drawCircle(model, centerX1, centerY2, radiusX, radiusY, nPoints, Math.PI / 2, Math.PI / 2);
-            drawCircle(model, centerX2, centerY2, radiusX, radiusY, nPoints, 0, Math.PI / 2);
+            if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
+                drawFill(model, startX, endX, startY, endY, radiusX, radiusY, centerY1, centerY2, centerX1, centerX2,
+                        nPoints);
+            }
+            if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
+                drawStroke(model, startX, endX, startY, endY, radiusX, radiusY, centerY1, centerY2, centerX1, centerX2,
+                        nPoints);
+            }
 
         }
         children.remove(getArea());

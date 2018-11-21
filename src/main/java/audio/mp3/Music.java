@@ -18,6 +18,7 @@ public class Music {
 	private StringProperty titulo = new SimpleStringProperty("");
 
 	private StringProperty trilha = new SimpleStringProperty("");
+    private StringProperty pasta = new SimpleStringProperty("");
 
     public Music() {
     }
@@ -25,6 +26,7 @@ public class Music {
     public Music(File file) {
         setArquivo(file);
         setTitulo(file.getName());
+        setPasta(file.getParentFile().getName());
     }
 
 	public StringProperty albumProperty() {
@@ -63,12 +65,20 @@ public class Music {
 		return genero.get();
 	}
 
+	public String getPasta() {
+        return pasta.get();
+    }
+
 	public String getTitulo() {
 		return titulo.get();
 	}
 
 	public String getTrilha() {
 		return trilha.get();
+	}
+
+	public StringProperty pastaProperty() {
+	    return pasta;
 	}
 
 	public void setAlbum(String album) {
@@ -91,6 +101,10 @@ public class Music {
 		this.genero.set(genero);
 	}
 
+	public void setPasta(String pasta) {
+        this.pasta.set(pasta);
+    }
+
 	public void setTitulo(String titulo) {
 		this.titulo.set(titulo);
 	}
@@ -99,17 +113,17 @@ public class Music {
 		this.trilha.set(trilha);
 	}
 
-	public StringProperty tituloProperty() {
-		return titulo;
-	}
+    public StringProperty tituloProperty() {
+        return titulo;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("[%s, %s, %s, %s, %s, %s, %s]",
-				titulo.get(), artista.get(), album.get(), ano.get(), trilha.get(), genero.get(), arquivo.getPath());
-	}
+    @Override
+    public String toString() {
+        return String.format("[%s, %s, %s, %s, %s, %s, %s]", titulo.get(), artista.get(), album.get(), ano.get(),
+                trilha.get(), genero.get(), arquivo.getPath());
+    }
 
-	public StringProperty trilhaProperty() {
+    public StringProperty trilhaProperty() {
 		return trilha;
 	}
 }

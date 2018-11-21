@@ -48,7 +48,7 @@ public final class MusicReader {
 	}
 
     public static Music readTags(File sourceFile) {
-		Music musica = new Music();
+        Music musica = new Music(sourceFile);
         String title = "";
         String artist = "";
         String album = "";

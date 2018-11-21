@@ -137,7 +137,7 @@ public class BrushTool extends PaintTool {
                 case CIRCLE:
                     drawPoint(model, x2, y2);
                     for (double i = 1; i <= r; i++) {
-                        drawCircle(model, x2, y2, i, i, 12 * i);
+                        drawCircle(model, x2, y2, i, i, 12 * i, model.getFrontColor());
                     }
                     break;
                 case SQUARE:

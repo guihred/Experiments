@@ -101,6 +101,7 @@ public class MusicOrganizer extends Application implements HasLogging {
                 .addColumn("Álbum", "album")
                 .addColumn("Ano", "ano")
                 .addColumn("Gênero", "genero")
+                .addColumn("Pasta", "pasta")
                 .equalColumns()
                 .build();
         musicaTable.setOnMousePressed(new MusicHandler(musicaTable));

@@ -6,6 +6,7 @@ import static java.lang.Math.sin;
 import static java.util.stream.DoubleStream.iterate;
 import static java.util.stream.DoubleStream.of;
 
+import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
@@ -15,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import paintexp.PaintModel;
+import simplebuilder.SimpleToggleGroupBuilder;
 
 public class PolygonTool extends PaintTool {
 
@@ -23,6 +25,7 @@ public class PolygonTool extends PaintTool {
 
 	private Polygon area;
 	private Line line;
+    private FillOption option = FillOption.STROKE;
 
 	public Polygon getArea() {
 		if (area == null) {
@@ -35,7 +38,7 @@ public class PolygonTool extends PaintTool {
 	}
 
 	@Override
-	public Node getIcon() {
+    public Polygon getIcon() {
 		if (icon == null) {
 			int pontas = 5;
 			int radius = 5;
@@ -78,18 +81,34 @@ public class PolygonTool extends PaintTool {
 
 	}
 
+	@Override
+	public void onSelected(PaintModel model) {
+        icon = null;
+        Polygon icon2 = getIcon();
+        icon2.strokeProperty().bind(model.frontColorProperty());
+        ;
+        icon2.setFill(Color.TRANSPARENT);
+        icon = null;
+        Polygon icon3 = getIcon();
+        icon3.setStroke(Color.TRANSPARENT);
+        icon3.fillProperty().bind(model.backColorProperty());
+        icon = null;
+        Polygon icon4 = getIcon();
+        icon4.strokeProperty().bind(model.frontColorProperty());
+        icon4.fillProperty().bind(model.backColorProperty());
+        List<Node> togglesAs = new SimpleToggleGroupBuilder()
+                .addToggle(icon2, FillOption.STROKE).addToggle(icon3, FillOption.FILL)
+                .addToggle(icon4, FillOption.STROKE_FILL)
+                .onChange((o, old, newV) -> option = (FillOption) newV.getUserData())
+                .getTogglesAs(Node.class);
+        model.getToolOptions().getChildren().clear();
+        model.getToolOptions().getChildren().addAll(togglesAs);
+	}
+
 	private void onMouseExited(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
-			ObservableList<Double> points = getArea().getPoints();
-			for (int i = 0; i < points.size() + 2; i += 2) {
-				Double startX = points.get(i % points.size());
-				Double startY = points.get((i + 1) % points.size());
-				Double endX = points.get((i + 2) % points.size());
-				Double endY = points.get((i + 3) % points.size());
-				drawLine(model, startX, startY, endX, endY);
-			}
-
+            takeSnapshotFill(model, area);
 		}
 		children.remove(getArea());
 		children.remove(getLine());
@@ -108,7 +127,7 @@ public class PolygonTool extends PaintTool {
 		}
 	}
 
-	private void onMousePressed(final MouseEvent e, final PaintModel model) {
+    private void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
 			children.add(getArea());
@@ -124,9 +143,15 @@ public class PolygonTool extends PaintTool {
 		getLine().setEndX(x);
 		getLine().setEndY(y);
 		getArea().getPoints().addAll(x, y);
-		getArea().setStroke(model.getFrontColor());
+        getArea().setStroke(Color.TRANSPARENT);
+        getArea().setFill(Color.TRANSPARENT);
+        if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
+            getArea().setStroke(model.getFrontColor());
+        }
+        if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
+            getArea().setFill(model.getBackColor());
+        }
 	}
-
 
 
 
