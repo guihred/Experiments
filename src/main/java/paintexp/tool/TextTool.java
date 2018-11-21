@@ -16,7 +16,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
@@ -31,7 +30,6 @@ public class TextTool extends PaintTool {
     private Text icon;
     private Text text;
     private Rectangle area;
-    private WritableImage textImage;
     private double initialX;
     private double initialY;
     private boolean pressed;
@@ -221,10 +219,8 @@ public class TextTool extends PaintTool {
                     || helpers.stream().anyMatch(n -> n.contains(e.getX(), e.getY()))) {
                 return;
             }
-            if (textImage == null) {
-                takeSnapshot(model);
-                return;
-            }
+            takeSnapshot(model);
+            return;
         }
         initialX = e.getX();
         initialY = e.getY();
@@ -235,7 +231,7 @@ public class TextTool extends PaintTool {
 
     private void onMouseReleased(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
-        if (getArea().getWidth() < 2 && children.contains(getArea()) && textImage != null) {
+        if (getArea().getWidth() < 2 && children.contains(getArea())) {
 
             children.remove(getArea());
         }
@@ -244,8 +240,7 @@ public class TextTool extends PaintTool {
     }
 
     private void onOptionsChanged(SimpleComboBoxBuilder<String> font, SimpleComboBoxBuilder<Integer> fontSize,
-            ToggleButton bold,
-            ToggleButton italic, ToggleButton undeline, ToggleButton strikeThrough) {
+            ToggleButton bold, ToggleButton italic, ToggleButton undeline, ToggleButton strikeThrough) {
         FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
         FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
         double size = fontSize.selectedItem();
@@ -254,22 +249,14 @@ public class TextTool extends PaintTool {
         getText().setStrikethrough(strikeThrough.isSelected());
     }
 
-    private void setIntoImage(final PaintModel model) {
+    private void takeSnapshot(PaintModel model) {
+        int width = (int) getArea().getWidth();
+        int height = (int) getArea().getHeight();
+        WritableImage textImage = text.snapshot(null, new WritableImage(width, height));
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
-        double width = getArea().getWidth();
-        double height = getArea().getHeight();
         copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y);
-        textImage = null;
         model.getImageStack().getChildren().remove(getArea());
-    }
-
-    private void takeSnapshot(PaintModel model) {
-        int width = (int) area.getWidth();
-        int height = (int) area.getHeight();
-        textImage = text.snapshot(null, new WritableImage(width, height));
-        getArea().setFill(new ImagePattern(textImage));
-        setIntoImage(model);
         model.getImageStack().getChildren().clear();
         model.getImageStack().getChildren().add(new ImageView(model.getImage()));
         textArea.setText("");
