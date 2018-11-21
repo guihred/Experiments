@@ -117,7 +117,8 @@ public class BrushTool extends PaintTool {
                 .addToggle(new Rectangle(10, 10), BrushOption.SQUARE)
                 .addToggle(new Line(0, 0, 10, 10), BrushOption.LINE_NW_SE)
                 .addToggle(new Line(0, 10, 10, 0), BrushOption.LINE_SW_NE)
-				.onChange((v, old, newV) -> option = (BrushOption) newV.getUserData())
+				.onChange(
+						(v, old, newV) -> option = newV == null ? BrushOption.CIRCLE : (BrushOption) newV.getUserData())
                 .select(0)
                 .getTogglesAs(Node.class);
 

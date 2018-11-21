@@ -63,7 +63,7 @@ public class PaintMain extends  Application{
 		gridPane.addRow(0, colors.stream().limit(14).map(controller::newRectangle).toArray(Rectangle[]::new));
 		gridPane.addRow(1, colors.stream().skip(14).limit(14).map(controller::newRectangle)
 						.toArray(Rectangle[]::new));
-
+		gridPane.setId("colorGrid");
 		root.setBottom(new VBox(30, new HBox(50, st, gridPane), hBox));
         BorderPane.setAlignment(hBox, Pos.CENTER);
         SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
@@ -106,6 +106,7 @@ public class PaintMain extends  Application{
 		CrawlerTask.insertProxyConfig();
 		System.setProperty("prism.lcdtext", "false");
         launch(args);
+
     }
 
 

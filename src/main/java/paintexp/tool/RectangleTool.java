@@ -63,7 +63,7 @@ public class RectangleTool extends PaintTool {
 	}
 
 	@Override
-    public void handleKeyEvent(KeyEvent e, PaintModel paintModel) {
+    public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
         if (!e.getEventType().equals(KeyEvent.KEY_TYPED)) {
             return;
         }
@@ -79,10 +79,11 @@ public class RectangleTool extends PaintTool {
     }
 
 	@Override
-	public void onSelected(PaintModel model) {
+	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren()
-                .add(new SimpleSliderBuilder(0, 100, 0).bindBidirectional(getArea().arcWidthProperty()).build());
+				.add(new SimpleSliderBuilder(0, 100, 0).bindBidirectional(getArea().arcWidthProperty()).maxWidth(100)
+						.build());
         getArea().arcHeightProperty().bind(getArea().arcWidthProperty());
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.grayRgb(128));
@@ -110,9 +111,9 @@ public class RectangleTool extends PaintTool {
 
 	}
 
-	private void drawFill(final PaintModel model, double startX, double endX, double startY, double endY,
-	        double radiusX, double radiusY, double centerY1, double centerY2, double centerX1, double centerX2,
-	        double nPoints) {
+	private void drawFill(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
+	        final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2,
+	        final double nPoints) {
         drawRect(model, centerX1, startY, centerX2 - centerX1, endY - startY);
         drawRect(model, startX, centerY1, endX - startX, centerY2 - centerY1);
         for (int i = 0; i < radiusX; i++) {
@@ -124,9 +125,9 @@ public class RectangleTool extends PaintTool {
         }
 	}
 
-    private void drawStroke(final PaintModel model, double startX, double endX, double startY, double endY,
-            double radiusX, double radiusY, double centerY1, double centerY2, double centerX1, double centerX2,
-            double nPoints) {
+    private void drawStroke(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
+            final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2,
+            final double nPoints) {
         drawLine(model, startX, centerY1, startX, centerY2);//LEFT
         drawLine(model, endX, centerY1, endX, centerY2);//RIGHT
         drawLine(model, centerX1, startY - 1, centerX2, startY - 1);//TOP

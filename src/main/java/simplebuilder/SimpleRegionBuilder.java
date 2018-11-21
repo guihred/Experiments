@@ -8,36 +8,41 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
 
 	protected T region;
 
-	public SimpleRegionBuilder(T region) {
+	public SimpleRegionBuilder(final T region) {
 		super(region);
 		this.region = region;
 	}
 
-    public Z minWidth(double minWidth) {
+    public Z maxWidth(final double minWidth) {
+    	region.setMaxWidth(minWidth);
+    	return (Z) this;
+    }
+
+	public Z minWidth(final double minWidth) {
         region.setMinWidth(minWidth);
 	    return (Z) this;
     }
 
-    public Z prefHeight(double value) {
+    public Z prefHeight(final double value) {
 		region.setPrefHeight(value);
 		return (Z) this;
 	}
-	public Z prefHeight(ObservableValue<? extends Number> value) {
+	public Z prefHeight(final ObservableValue<? extends Number> value) {
         region.prefHeightProperty().bind(value);
         return (Z) this;
     }
 
-    public Z prefWidth(double value) {
+    public Z prefWidth(final double value) {
 		region.setPrefWidth(value);
 		return (Z) this;
 	}
 
-    public Z prefWidth(ObservableValue<? extends Number> value) {
+    public Z prefWidth(final ObservableValue<? extends Number> value) {
         region.prefWidthProperty().bind(value);
         return (Z) this;
     }
 
-    public Z scaleShape(boolean value) {
+    public Z scaleShape(final boolean value) {
         region.setScaleShape(value);
         return (Z) this;
     }

@@ -4,7 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
-import javafx.scene.*;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -15,7 +19,7 @@ import javafx.stage.Stage;
 public class DraggingRectangle extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
 
         StackPane root = new StackPane();
         Rectangle rect = new Rectangle(00, 00, 400, 300);
@@ -32,7 +36,11 @@ public class DraggingRectangle extends Application {
         primaryStage.show();
     }
 
-    public static List<? extends Node> createDraggableRectangle(Rectangle rect) {
+    static class Wrapper<T> {
+        T value;
+    }
+
+    public static List<? extends Node> createDraggableRectangle(final Rectangle rect) {
         final double handleRadius = 5;
         // top left resize handle:
         Circle resizeHandleNW = new Circle(handleRadius, Color.TRANSPARENT);
@@ -133,25 +141,27 @@ public class DraggingRectangle extends Application {
         return nodes;
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         Application.launch(args);
     }
 
-    private static void setUpDragging(Circle circle, Wrapper<Point2D> mouseLocation) {
+    private static void setUpDragging(final Circle circle, final Wrapper<Point2D> mouseLocation) {
 
         circle.setOnDragDetected(event -> {
-            circle.getParent().setCursor(Cursor.CLOSED_HAND);
+            Parent parent = circle.getParent();
+            if(parent!=null) {
+				parent.setCursor(Cursor.CLOSED_HAND);
+			}
             mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
         });
 
         circle.setOnMouseReleased(event -> {
-            circle.getParent().setCursor(Cursor.DEFAULT);
+        	Parent parent = circle.getParent();
+        	if(parent!=null) {
+				parent.setCursor(Cursor.DEFAULT);
+			}
             mouseLocation.value = null;
         });
-    }
-
-    static class Wrapper<T> {
-        T value;
     }
 
 }

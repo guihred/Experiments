@@ -77,6 +77,7 @@ public class PaintModel {
 		if (toolOptions == null) {
             toolOptions = new VBox(10);
             toolOptions.setAlignment(Pos.CENTER);
+			toolOptions.setId("tools");
             resetToolOptions();
 		}
 		return toolOptions;

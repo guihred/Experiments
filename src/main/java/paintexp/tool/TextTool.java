@@ -19,7 +19,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import paintexp.PaintModel;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleRectangleBuilder;
@@ -88,7 +92,7 @@ public class TextTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(PaintModel model) {
+    public void onSelected(final PaintModel model) {
         displayTextOptions(model);   
     }
 
@@ -144,7 +148,7 @@ public class TextTool extends PaintTool {
         return alignments;
     }
 
-    private void displayTextOptions(PaintModel model) {
+    private void displayTextOptions(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
         textArea = new TextArea();
         getText().textProperty().bind(textArea.textProperty());
@@ -199,7 +203,7 @@ public class TextTool extends PaintTool {
         getArea().setHeight(Math.abs(y - initialY));
     }
 
-    private VBox field(String text2, Node fontFamily) {
+    private VBox field(final String text2, final Node fontFamily) {
         return new VBox(new Text(text2), fontFamily);
     }
 
@@ -241,8 +245,8 @@ public class TextTool extends PaintTool {
         area.setStroke(Color.BLUE);
     }
 
-    private void onOptionsChanged(SimpleComboBoxBuilder<String> font, SimpleComboBoxBuilder<Integer> fontSize,
-            ToggleButton bold, ToggleButton italic, ToggleButton undeline, ToggleButton strikeThrough) {
+    private void onOptionsChanged(final SimpleComboBoxBuilder<String> font, final SimpleComboBoxBuilder<Integer> fontSize,
+            final ToggleButton bold, final ToggleButton italic, final ToggleButton undeline, final ToggleButton strikeThrough) {
         FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
         FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
         double size = fontSize.selectedItem();
@@ -251,15 +255,15 @@ public class TextTool extends PaintTool {
         getText().setStrikethrough(strikeThrough.isSelected());
     }
 
-    private void takeSnapshot(PaintModel model) {
+    private void takeSnapshot(final PaintModel model) {
         int width = (int) getArea().getWidth();
         int height = (int) getArea().getHeight();
         SnapshotParameters params = new SnapshotParameters();
-        params.setFill(model.getBackColor());
+		params.setFill(Color.TRANSPARENT);
         WritableImage textImage = text.snapshot(params, new WritableImage(width, height));
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
-        copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, model.getBackColor());
+		copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
         model.getImageStack().getChildren().remove(getArea());
         model.getImageStack().getChildren().clear();
         model.getImageStack().getChildren().add(new ImageView(model.getImage()));
