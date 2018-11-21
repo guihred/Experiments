@@ -8,19 +8,19 @@ public enum PaintTools {
     ERASER(new EraserTool()),
     BUCKET(new BucketTool()),
     EYEDROP(new EyedropTool()),
-    LUPE,
+    //    LUPE,
     PENCIL(new PencilTool()),
     BRUSH(new BrushTool()),
     SPRAY(new SprayTool()),
     SELECT_RECT(new SelectRectTool()),
     TEXT(new TextTool()),
     LINE(new LineTool()),
-    CURVE,
+    //    CURVE,
 	RECTANGLE(new RectangleTool()),
 	POLYGON(new PolygonTool()),
 	CIRCLE(new EllipseTool()),
-    ROUND;
-
+    //    ROUND;
+    ;
 
     private PaintTool tool = new DummyTool();
 

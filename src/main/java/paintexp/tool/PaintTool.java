@@ -80,6 +80,16 @@ public abstract class PaintTool extends Group {
         }
     }
 
+    protected void drawCircle(final PaintModel model, final double centerX, final double centerY, final double radiusX,
+            final double radiusY, final double nPoints, final double startAngle, final double angle) {
+
+        for (double t = 0; t < angle; t += 2 * Math.PI / nPoints) {
+            int x = (int) Math.round(radiusX * Math.cos(t + startAngle));
+            int y = (int) Math.round(radiusY * Math.sin(t + startAngle));
+            drawPoint(model, x + (int) centerX, y + (int) centerY);
+        }
+    }
+
     protected void drawCircle(final PaintModel model, final int centerX, final int centerY, final double radiusX, final double radiusY,
             final double nPoints) {
 
