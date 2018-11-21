@@ -36,6 +36,7 @@ public class TextTool extends PaintTool {
     private double initialY;
     private boolean pressed;
     private List<? extends Node> helpers;
+    private TextArea textArea;
 
     public Rectangle getArea() {
         if (area == null) {
@@ -105,6 +106,7 @@ public class TextTool extends PaintTool {
         }
         if (!children.contains(getText())) {
             children.add(getText());
+            getText().fillProperty().bind(model.frontColorProperty());
             getText().layoutXProperty().bind(area.layoutXProperty());
             getText().layoutYProperty()
                     .bind(Bindings.createDoubleBinding(() -> area.layoutYProperty().get() + text.getFont().getSize(),
@@ -145,7 +147,7 @@ public class TextTool extends PaintTool {
 
     private void displayTextOptions(PaintModel model) {
         model.getToolOptions().getChildren().clear();
-        TextArea textArea = new TextArea();
+        textArea = new TextArea();
         getText().textProperty().bind(textArea.textProperty());
         SimpleToggleGroupBuilder alignments = createAlignments();
         alignments.onChange((ob, old, newV) -> getText().setTextAlignment((TextAlignment) newV.getUserData()));
@@ -220,10 +222,7 @@ public class TextTool extends PaintTool {
                 return;
             }
             if (textImage == null) {
-                takeSnapshot();
-                setIntoImage(model);
-                model.getImageStack().getChildren().clear();
-                model.getImageStack().getChildren().add(new ImageView(model.getImage()));
+                takeSnapshot(model);
                 return;
             }
         }
@@ -265,11 +264,15 @@ public class TextTool extends PaintTool {
         model.getImageStack().getChildren().remove(getArea());
     }
 
-    private void takeSnapshot() {
+    private void takeSnapshot(PaintModel model) {
         int width = (int) area.getWidth();
         int height = (int) area.getHeight();
         textImage = text.snapshot(null, new WritableImage(width, height));
         getArea().setFill(new ImagePattern(textImage));
+        setIntoImage(model);
+        model.getImageStack().getChildren().clear();
+        model.getImageStack().getChildren().add(new ImageView(model.getImage()));
+        textArea.setText("");
     }
 
 }
