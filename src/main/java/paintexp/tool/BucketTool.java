@@ -14,7 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import paintexp.SimplePixelReader;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class BucketTool extends PaintTool {
@@ -53,7 +52,6 @@ public class BucketTool extends PaintTool {
 	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
-        HasLogging.log().info("{}", eventType);
         if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
 
 			onMouseClicked(e, model);

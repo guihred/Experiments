@@ -14,16 +14,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import org.slf4j.Logger;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class BrushTool extends PaintTool {
-
-    private static final Logger LOG = HasLogging.log();
 
     private ImageView icon;
 
@@ -111,7 +107,7 @@ public class BrushTool extends PaintTool {
 	}
 
     @Override
-	public void onSelected(PaintModel model) {
+	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
         model.getToolOptions().getChildren()
@@ -121,7 +117,7 @@ public class BrushTool extends PaintTool {
                 .addToggle(new Rectangle(10, 10), BrushOption.SQUARE)
                 .addToggle(new Line(0, 0, 10, 10), BrushOption.LINE_NW_SE)
                 .addToggle(new Line(0, 10, 10, 0), BrushOption.LINE_SW_NE)
-                .onChange((v, old, newV) -> LOG.info("{}", option = (BrushOption) newV.getUserData()))
+				.onChange((v, old, newV) -> option = (BrushOption) newV.getUserData())
                 .select(0)
                 .getTogglesAs(Node.class);
 
@@ -129,7 +125,7 @@ public class BrushTool extends PaintTool {
 	
 	}
 
-	private void drawUponOption(final PaintModel model, int x2, int y2) {
+	private void drawUponOption(final PaintModel model, final int x2, final int y2) {
 
         if (withinRange(x2, y2, model)) {
             double r = length.getValue().doubleValue();

@@ -82,11 +82,10 @@ public class PolygonTool extends PaintTool {
 	}
 
 	@Override
-	public void onSelected(PaintModel model) {
+	public void onSelected(final PaintModel model) {
         icon = null;
         Polygon icon2 = getIcon();
         icon2.strokeProperty().bind(model.frontColorProperty());
-        ;
         icon2.setFill(Color.TRANSPARENT);
         icon = null;
         Polygon icon3 = getIcon();
@@ -96,6 +95,7 @@ public class PolygonTool extends PaintTool {
         Polygon icon4 = getIcon();
         icon4.strokeProperty().bind(model.frontColorProperty());
         icon4.fillProperty().bind(model.backColorProperty());
+		icon = null;
         List<Node> togglesAs = new SimpleToggleGroupBuilder()
                 .addToggle(icon2, FillOption.STROKE).addToggle(icon3, FillOption.FILL)
                 .addToggle(icon4, FillOption.STROKE_FILL)
