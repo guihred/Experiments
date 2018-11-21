@@ -1,6 +1,7 @@
 package paintexp.tool;
 
 import fxsamples.DraggingRectangle;
+import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
@@ -9,11 +10,13 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
@@ -32,6 +35,7 @@ public class TextTool extends PaintTool {
     private double initialX;
     private double initialY;
     private boolean pressed;
+    private List<? extends Node> helpers;
 
     public Rectangle getArea() {
         if (area == null) {
@@ -92,7 +96,7 @@ public class TextTool extends PaintTool {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getArea())) {
             children.add(getArea());
-            DraggingRectangle.createDraggableRectangle(area);
+            helpers = DraggingRectangle.createDraggableRectangle(area);
             area.setStroke(Color.BLACK);
             getArea().setManaged(false);
             getArea().setFill(Color.TRANSPARENT);
@@ -211,21 +215,16 @@ public class TextTool extends PaintTool {
     private void onMousePressed(final MouseEvent e, final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (children.contains(getArea())) {
-            if (containsPoint(getArea(), e.getX(), e.getY())) {
-                if (textImage == null) {
-                    //                    int width = (int) area.getWidth();
-                    //                    int height = (int) area.getHeight();
-                    //                    //                    textImage = new WritableImage(width, height);
-                    //                    int layoutX = (int) area.getLayoutX();
-                    //                    int layoutY = (int) area.getLayoutY();
-                    //                    copyImagePart(model.getImage(), textImage, layoutX, layoutY, width, height);
-                    //                    getArea().setFill(new ImagePattern(textImage));
-                    //                    drawRect(model, layoutX, layoutY, width, height);
-                }
+            if (containsPoint(getArea(), e.getX(), e.getY())
+                    || helpers.stream().anyMatch(n -> n.contains(e.getX(), e.getY()))) {
                 return;
             }
-            if (textImage != null) {
+            if (textImage == null) {
+                takeSnapshot();
                 setIntoImage(model);
+                model.getImageStack().getChildren().clear();
+                model.getImageStack().getChildren().add(new ImageView(model.getImage()));
+                return;
             }
         }
         initialX = e.getX();
@@ -264,6 +263,13 @@ public class TextTool extends PaintTool {
         copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y);
         textImage = null;
         model.getImageStack().getChildren().remove(getArea());
+    }
+
+    private void takeSnapshot() {
+        int width = (int) area.getWidth();
+        int height = (int) area.getHeight();
+        textImage = text.snapshot(null, new WritableImage(width, height));
+        getArea().setFill(new ImagePattern(textImage));
     }
 
 }

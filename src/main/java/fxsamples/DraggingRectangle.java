@@ -1,12 +1,10 @@
 package fxsamples;
 
 import java.util.Arrays;
+import java.util.List;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
-import javafx.scene.Cursor;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -34,7 +32,7 @@ public class DraggingRectangle extends Application {
         primaryStage.show();
     }
 
-    public static void createDraggableRectangle(Rectangle rect) {
+    public static List<? extends Node> createDraggableRectangle(Rectangle rect) {
         final double handleRadius = 5;
         // top left resize handle:
         Circle resizeHandleNW = new Circle(handleRadius, Color.TRANSPARENT);
@@ -63,7 +61,8 @@ public class DraggingRectangle extends Application {
         moveHandle.setManaged(false);
         // force circles to live in same parent as rectangle:
         Parent newParent = rect.getParent();
-        for (Circle c : Arrays.asList(resizeHandleNW, resizeHandleSE, moveHandle)) {
+        List<Circle> nodes = Arrays.asList(resizeHandleNW, resizeHandleSE, moveHandle);
+        for (Circle c : nodes) {
                 if (newParent instanceof Pane && !((Pane) newParent).getChildren().contains(c)) {
                     ((Pane) newParent).getChildren().add(c);
                 }
@@ -131,6 +130,7 @@ public class DraggingRectangle extends Application {
                 mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
             }
         });
+        return nodes;
     }
 
     public static void main(String[] args) {
