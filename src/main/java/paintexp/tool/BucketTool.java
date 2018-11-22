@@ -83,7 +83,7 @@ public class BucketTool extends PaintTool {
 	}
 
 	private void addIfNotIn(final List<Integer> toGo, final Integer e) {
-		if (!toGo.contains(e) && e < width * height && e >= 0) {
+		if (!toGo.contains(e) && e < width * width + height && e >= 0) {
 			toGo.add(e);
 		}
 	}

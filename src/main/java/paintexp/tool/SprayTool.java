@@ -62,7 +62,7 @@ public class SprayTool extends PaintTool {
 	}
 
     @Override
-	public void onSelected(PaintModel model) {
+	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
         model.getToolOptions().getChildren()

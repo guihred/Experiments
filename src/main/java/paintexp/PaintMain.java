@@ -36,9 +36,9 @@ public class PaintMain extends  Application{
         BorderPane root = new BorderPane();
         root.setTop(new SimpleMenuBarBuilder()
                 .addMenu("_File")
-				.addMenuItem("_New", e -> controller.newFile())
-				.addMenuItem("_Open", e -> controller.openFile(primaryStage))
-				.addMenuItem("_Save", e -> controller.saveFile(primaryStage))
+				.addMenuItem("_New", "Ctrl+N", e -> controller.newFile())
+				.addMenuItem("_Open", "Ctrl+O", e -> controller.openFile(primaryStage))
+				.addMenuItem("_Save", "Ctrl+S", e -> controller.saveFile(primaryStage))
                 .addMenuItem("Save _As", e -> controller.saveAsFile(primaryStage))
                 .addMenu("_Edit")
 				.addMenuItem("C_opy", e -> controller.copy(), controller.containsSelectedArea().not())

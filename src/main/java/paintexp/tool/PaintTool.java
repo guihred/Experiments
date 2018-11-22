@@ -280,8 +280,8 @@ public abstract class PaintTool extends Group {
         model.getImageStack().getChildren().add(new ImageView(model.getImage()));
     }
 
-    protected boolean within(final int y, final double min) {
-        return 0 <= y && y < min;
+	protected boolean within(final int y, final double max) {
+		return 0 <= y && y < max;
     }
 
     protected boolean within(final int y, final double min, final double max) {

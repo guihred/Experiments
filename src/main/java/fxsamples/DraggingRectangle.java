@@ -109,12 +109,12 @@ public class DraggingRectangle extends Application {
                 double deltaY = event.getSceneY() - mouseLocation.value.getY();
                 double newMaxX = rect.getLayoutX() + rect.getWidth() + deltaX;
                 if (newMaxX >= rect.getLayoutX()
-                        && newMaxX <= rect.getParent().getBoundsInLocal().getWidth() - handleRadius) {
+						&& newMaxX <= rect.getWidth() - handleRadius) {
                     rect.setWidth(rect.getWidth() + deltaX);
                 }
                 double newMaxY = rect.getLayoutY() + rect.getHeight() + deltaY;
                 if (newMaxY >= rect.getLayoutY()
-                        && newMaxY <= rect.getParent().getBoundsInLocal().getHeight() - handleRadius) {
+						&& newMaxY <= rect.getHeight() - handleRadius) {
                     rect.setHeight(rect.getHeight() + deltaY);
                 }
                 mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
@@ -127,12 +127,12 @@ public class DraggingRectangle extends Application {
                 double deltaY = event.getSceneY() - mouseLocation.value.getY();
                 double newX = rect.getLayoutX() + deltaX;
                 double newMaxX = newX + rect.getWidth();
-                if (newX >= handleRadius && newMaxX <= rect.getParent().getBoundsInLocal().getWidth() - handleRadius) {
+				if (newX >= handleRadius && newMaxX <= rect.getWidth() - handleRadius) {
                     rect.setLayoutX(newX);
                 }
                 double newY = rect.getLayoutY() + deltaY;
                 double newMaxY = newY + rect.getHeight();
-                if (newY >= handleRadius && newMaxY <= rect.getParent().getBoundsInLocal().getHeight() - handleRadius) {
+				if (newY >= handleRadius && newMaxY <= rect.getHeight() - handleRadius) {
                     rect.setLayoutY(newY);
                 }
                 mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
