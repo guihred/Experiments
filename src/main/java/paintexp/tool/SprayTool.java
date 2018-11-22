@@ -7,9 +7,11 @@ import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
 import paintexp.PaintModel;
+import paintexp.SimplePixelReader;
 import simplebuilder.SimpleSliderBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -70,25 +72,36 @@ public class SprayTool extends PaintTool {
 
 	}
 
+	private synchronized void drawPointWhilePressed(final PaintModel model) {
+		int frontColor = SimplePixelReader.toArgb(model.getFrontColor());
+		PixelReader pixelReader = model.getImage().getPixelReader();
+		while (pressed) {
+			int argb = frontColor;
+			int i = 0;
+			do {
+				int radius = random.nextInt(length.get());
+				double t = Math.random() * 2 * Math.PI;
+				int x = (int) Math.round(radius * Math.cos(t));
+				int y = (int) Math.round(radius * Math.sin(t));
+				if (withinRange(x + centerX, y + centerY, model)) {
+					argb = pixelReader.getArgb(x + centerX, y + centerY);
+				}
+				drawPoint(model, x + centerX, y + centerY);
+			} while (argb != frontColor && i++ < 10);
+		    tryToSleep();
+		}
+	}
+
     private void onMouseDragged(final MouseEvent e) {
         centerX = (int) e.getX();
         centerY = (int) e.getY();
     }
 
-    private void onMousePressed(final MouseEvent e, final PaintModel model) {
+	private void onMousePressed(final MouseEvent e, final PaintModel model) {
         centerX = (int) e.getX();
         centerY = (int) e.getY();
         pressed = true;
-        new Thread(()->{
-            while (pressed) {
-                int radius = random.nextInt(length.get());
-                double t = Math.random() * 2 * Math.PI;
-                int x = (int) Math.round(radius * Math.cos(t));
-                int y = (int) Math.round(radius * Math.sin(t));
-                drawPoint(model, x + centerX, y + centerY);
-                tryToSleep();
-            }
-        }).start();
+		new Thread(() -> drawPointWhilePressed(model)).start();
     }
 
     private void tryToSleep() {
