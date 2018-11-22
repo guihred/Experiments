@@ -1,9 +1,16 @@
 package simplebuilder;
 
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 
 public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
@@ -12,7 +19,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
     private Menu subMenu;
     private ToggleGroup toggleGroup;
 
-    public SimpleMenuBarBuilder addCheckMenuItem(String text) {
+    public SimpleMenuBarBuilder addCheckMenuItem(final String text) {
         CheckMenuItem item = new CheckMenuItem(text);
         if (subMenu != null) {
             subMenu.getItems().add(item);
@@ -22,7 +29,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addCheckMenuItem(String text, EventHandler<ActionEvent> action) {
+    public SimpleMenuBarBuilder addCheckMenuItem(final String text, final EventHandler<ActionEvent> action) {
         CheckMenuItem item = new CheckMenuItem(text);
         item.setOnAction(action);
         if (subMenu != null) {
@@ -33,13 +40,13 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addMenu(String text) {
+    public SimpleMenuBarBuilder addMenu(final String text) {
         menu = new Menu(text);
         menuBar.getMenus().add(menu);
         return this;
     }
 
-    public SimpleMenuBarBuilder addMenuItem(String text) {
+    public SimpleMenuBarBuilder addMenuItem(final String text) {
         MenuItem item = new MenuItem(text);
         if (subMenu != null) {
             subMenu.getItems().add(item);
@@ -49,7 +56,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addMenuItem(String text, EventHandler<ActionEvent> action) {
+    public SimpleMenuBarBuilder addMenuItem(final String text, final EventHandler<ActionEvent> action) {
         MenuItem item = new MenuItem(text);
         item.setOnAction(action);
         if (subMenu != null) {
@@ -60,7 +67,20 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addMenuItem(String text, Node graphic,String combination, EventHandler<ActionEvent> action) {
+	public SimpleMenuBarBuilder addMenuItem(final String text, final EventHandler<ActionEvent> action,
+			final ObservableValue<? extends Boolean> disabled) {
+		MenuItem item = new MenuItem(text);
+		item.setOnAction(action);
+		if (subMenu != null) {
+			subMenu.getItems().add(item);
+		} else {
+			menu.getItems().add(item);
+		}
+		item.disableProperty().bind(disabled);
+		return this;
+	}
+
+    public SimpleMenuBarBuilder addMenuItem(final String text, final Node graphic,final String combination, final EventHandler<ActionEvent> action) {
         MenuItem item = new MenuItem(text);
         item.setOnAction(action);
         item.setGraphic(graphic);
@@ -73,7 +93,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addMenuItem(String text, String combination, EventHandler<ActionEvent> action) {
+    public SimpleMenuBarBuilder addMenuItem(final String text, final String combination, final EventHandler<ActionEvent> action) {
         MenuItem item = new MenuItem(text);
         item.setOnAction(action);
         item.setAccelerator(KeyCombination.keyCombination(combination));
@@ -85,7 +105,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addRadioMenuItem(String text) {
+    public SimpleMenuBarBuilder addRadioMenuItem(final String text) {
 
         if (toggleGroup == null) {
             toggleGroup = new ToggleGroup();
@@ -105,7 +125,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addSubMenu(String text) {
+    public SimpleMenuBarBuilder addSubMenu(final String text) {
         subMenu = new Menu(text);
         menu.getItems().add(subMenu);
         return this;

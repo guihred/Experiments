@@ -11,7 +11,11 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -29,6 +33,33 @@ public class SelectRectTool extends PaintTool {
 	private double initialX;
 	private double initialY;
 
+
+	public void copyFromClipboard(final PaintModel model) {
+		Clipboard systemClipboard = Clipboard.getSystemClipboard();
+		Image image = systemClipboard.getImage();
+		if (image != null) {
+			copyImage(model, image, imageSelected);
+		} else if (systemClipboard.getFiles() != null) {
+			copyFromFile(model, systemClipboard.getFiles());
+		}
+		getArea().setFill(new ImagePattern(imageSelected));
+	}
+
+	public void copyToClipboard(final PaintModel model) {
+		Clipboard systemClipboard = Clipboard.getSystemClipboard();
+		double width = area.getWidth();
+		double height = area.getHeight();
+		imageSelected = new WritableImage((int) width, (int) height);
+		int layoutX = (int) area.getLayoutX();
+		int layoutY = (int) area.getLayoutY();
+		int maxWidth = (int) model.getImage().getWidth();
+		int maxHeight = (int) model.getImage().getHeight();
+		copyImagePart(model.getImage(), imageSelected, Integer.min(Integer.max(layoutX, 0), maxWidth),
+				Integer.min(Integer.max(layoutY, 0), maxHeight), width, height);
+        Map<DataFormat, Object> content = new HashMap<>();
+		content.put(DataFormat.IMAGE, imageSelected);
+		systemClipboard.setContent(content);
+	}
 
 	public Rectangle getArea() {
 		if (area == null) {
@@ -66,6 +97,7 @@ public class SelectRectTool extends PaintTool {
 			onMouseReleased(model);
 		}
 	}
+
 
 	@Override
 	public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
@@ -114,7 +146,6 @@ public class SelectRectTool extends PaintTool {
 		onMouseReleased(model);
 	}
 
-
 	protected void copyImage(final PaintModel model, final Image srcImage, final WritableImage destImage) {
         double width = srcImage.getWidth();
         double height = srcImage.getHeight();
@@ -122,10 +153,11 @@ public class SelectRectTool extends PaintTool {
             imageSelected = new WritableImage((int) width, (int) height);
         }
         copyImagePart(srcImage, destImage != null ? destImage : imageSelected, 0, 0, width, height);
+
         selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
     }
 
-	private void addRect(final PaintModel model) {
+    private void addRect(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
 			children.add(getArea());
@@ -139,17 +171,7 @@ public class SelectRectTool extends PaintTool {
 		getArea().setHeight(1);
 	}
 
-	private void copyFromClipboard(final PaintModel model) {
-		Clipboard systemClipboard = Clipboard.getSystemClipboard();
-		Image image = systemClipboard.getImage();
-		if (image != null) {
-			copyImage(model, image, imageSelected);
-		} else if (systemClipboard.getFiles() != null) {
-			copyFromFile(model, systemClipboard.getFiles());
-		}
-	}
-
-    private void copyFromFile(final PaintModel model, final List<File> files) {
+	private void copyFromFile(final PaintModel model, final List<File> files) {
 		if (!files.isEmpty()) {
 			File file = files.get(0);
 			try {
@@ -159,22 +181,6 @@ public class SelectRectTool extends PaintTool {
 				LOG.error("", e1);
 			}
 		}
-	}
-
-	private void copyToClipboard(final PaintModel model) {
-		Clipboard systemClipboard = Clipboard.getSystemClipboard();
-		double width = area.getWidth();
-		double height = area.getHeight();
-		imageSelected = new WritableImage((int) width, (int) height);
-		int layoutX = (int) area.getLayoutX();
-		int layoutY = (int) area.getLayoutY();
-		int maxWidth = (int) model.getImage().getWidth();
-		int maxHeight = (int) model.getImage().getHeight();
-		copyImagePart(model.getImage(), imageSelected, Integer.min(Integer.max(layoutX, 0), maxWidth),
-				Integer.min(Integer.max(layoutY, 0), maxHeight), width, height);
-        Map<DataFormat, Object> content = new HashMap<>();
-		content.put(DataFormat.IMAGE, imageSelected);
-		systemClipboard.setContent(content);
 	}
 
 	private void dragTo(final double x, final double y) {

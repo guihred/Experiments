@@ -31,7 +31,8 @@ import simplebuilder.SimpleToggleGroupBuilder;
 
 public class TextTool extends PaintTool {
 
-    private static final String TIMES_NEW_ROMAN = "Times New Roman";
+	private static final String TIMES_NEW_ROMAN = "Times New Roman";
+    private List<String> families = Font.getFamilies();
     private Text icon;
     private Text text;
     private Rectangle area;
@@ -172,8 +173,8 @@ public class TextTool extends PaintTool {
         SimpleComboBoxBuilder<Integer> fontSize = new SimpleComboBoxBuilder<Integer>()
                 .items(8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72);
 
-        SimpleComboBoxBuilder<String> fontFamily = new SimpleComboBoxBuilder<String>().items(Font.getFamilies())
-                .styleFunction(t -> "-fx-font-family:" + t + ";")
+		SimpleComboBoxBuilder<String> fontFamily = new SimpleComboBoxBuilder<String>().items(families)
+				.styleFunction(t -> "-fx-font-family:\"" + t + "\";")
                 .select(TIMES_NEW_ROMAN);
 
         fontFamily.onChange((old, newV) -> onOptionsChanged(fontFamily, fontSize, bold, italic, undeline,

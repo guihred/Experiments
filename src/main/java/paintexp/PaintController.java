@@ -6,7 +6,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.control.Toggle;
 import javafx.scene.image.Image;
@@ -23,6 +26,7 @@ import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import paintexp.tool.PaintTool;
+import paintexp.tool.SelectRectTool;
 import utils.HasLogging;
 
 @SuppressWarnings("restriction")
@@ -40,6 +44,26 @@ public class PaintController {
 			paintTool.onSelected(getPaintModel());
 		}
 
+	}
+
+	public BooleanBinding containsSelectedArea() {
+		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+		return Bindings.createBooleanBinding(()->paintModel.getImageStack().getChildren().contains(a.getArea()), paintModel.getImageStack().getChildren());
+	}
+
+	public void copy() {
+		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
+		changeTool(null);
+		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+		a.copyToClipboard(paintModel);
+	}
+	public void cut() {
+		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
+		changeTool(null);
+		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+		a.copyToClipboard(paintModel);
+        Bounds bounds = a.getArea().getBoundsInParent();
+        a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
 	}
 
 	public List<Color> getColors() {
@@ -163,12 +187,19 @@ public class PaintController {
 		}
 	}
 
-	public void saveAsFile(final Stage primaryStage) {
+	public void paste() {
+		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
+		changeTool(null);
+		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+		a.copyFromClipboard(paintModel);
+	}
+
+    public void saveAsFile(final Stage primaryStage) {
 	    paintModel.setCurrentFile(null);
 	    saveFile(primaryStage);
 	}
 
-    public void saveFile(final Stage primaryStage) {
+	public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -184,5 +215,12 @@ public class PaintController {
 		} catch (IOException e) {
 			LOG.error("", e);
 		}
+	}
+
+	public void selectAll() {
+		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
+		changeTool(null);
+		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
 	}
 }

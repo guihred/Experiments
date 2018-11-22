@@ -28,6 +28,10 @@ public abstract class PaintTool extends Group {
         getChildren().add(getIcon());
     }
 
+    public void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
+        drawRect(model, x, y, w, h, model.getBackColor());
+    }
+
     public abstract Node getIcon();
 
     public abstract Cursor getMouseCursor();
@@ -47,19 +51,19 @@ public abstract class PaintTool extends Group {
         // DOES NOTHING
     }
 
+
     protected boolean containsPoint(final Node area2, final double localX, final double localY) {
         Bounds bounds = area2.getBoundsInParent();
         return area2.getLayoutX() < localX && localX < area2.getLayoutX() + bounds.getWidth()
                 && area2.getLayoutY() < localY && localY < area2.getLayoutY() + bounds.getHeight();
     }
 
-
     protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height) {
         copyImagePart(srcImage, destImage, x, y, width, height, 0, 0);
     }
 
-    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
+	protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height, final int xOffset, final int yOffset) {
         PixelReader pixelReader = srcImage.getPixelReader();
         double srcWidth = srcImage.getWidth();
@@ -82,7 +86,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-	protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
+    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height, final int xOffset, final int yOffset, final Color ignoreColor) {
         PixelReader pixelReader = srcImage.getPixelReader();
         double srcWidth = srcImage.getWidth();
@@ -166,13 +170,9 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void drawPoint(final PaintModel model, final int x2, final int y2) {
+	protected void drawPoint(final PaintModel model, final int x2, final int y2) {
         Color frontColor = model.getFrontColor();
         drawPoint(model, x2, y2, frontColor);
-    }
-
-    protected void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
-        drawRect(model, x, y, w, h, model.getBackColor());
     }
 
     protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final Color backColor) {
