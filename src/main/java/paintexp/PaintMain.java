@@ -14,11 +14,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -50,6 +46,7 @@ public class PaintMain extends  Application{
                 .addMenu("_Colors")
                 .addMenu("_Help")
                 .build());
+
         PixelReader reader = new SimplePixelReader(paintModel.getBackColor());
         paintModel.getImage().getPixelWriter().setPixels(0, 0, (int) paintModel.getImage().getWidth(),
                 (int) paintModel.getImage().getHeight(), reader, 0, 0);

@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
@@ -54,12 +55,9 @@ public class MusicOrganizer extends Application implements HasLogging {
 			ObservableList<Music> musicas) {
 		FilteredList<Music> filteredData = new FilteredList<>(musicas, p -> true);
 		musicasEstoqueTable.setItems(filteredData);
-		filterField.textProperty().addListener((observable, oldValue, newValue) -> filteredData.setPredicate(musica -> {
-			if (newValue == null || newValue.isEmpty()) {
-				return true;
-			}
-			return musica.toString().toLowerCase().contains(newValue.toLowerCase());
-		}));
+        filterField.textProperty()
+                .addListener((o, old, newV) -> filteredData.setPredicate(musica -> StringUtils.isEmpty(newV)
+                        || StringUtils.containsIgnoreCase(musica.toString(), newV)));
 	}
 
 
@@ -69,7 +67,6 @@ public class MusicOrganizer extends Application implements HasLogging {
         return CommonsFX.newButton("Carregar Musicas", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
-
 				ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
 				musicasTable.setItems(musicas);
 				configurarFiltroRapido(filterField, musicasTable, musicas);

@@ -219,7 +219,9 @@ public abstract class PaintTool extends Group {
         copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, model.getBackColor());
         model.getImageStack().getChildren().remove(line2);
         model.getImageStack().getChildren().clear();
-        model.getImageStack().getChildren().add(new ImageView(model.getImage()));
+        ImageView imageView = new ImageView(model.getImage());
+        model.getImageStack().getChildren().add(model.getRectangleBorder(imageView));
+        model.getImageStack().getChildren().add(imageView);
     }
 
     protected void takeSnapshotFill(final PaintModel model, final Node line2) {

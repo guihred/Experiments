@@ -22,14 +22,13 @@ enum PictureOption {
     STAR_4("M 10 4 L 11.9385 9.8393 L 18 12 L 11.9385 14.1607 L 10 20 L 7.6171 14.1607 L 2 12 L 7.6171 9.8393 Z"),
     STAR_5("m20,0 2,6h6l-5,4 2,6-5-4-5,4 2-6-5-4h6z "),
     STAR_6("M10,0 L12.875,5.020 18.660,5 15.750,10 18.660,15 12.875,14.980 10,20 7.125,14.980 1.340,15 4.250,10 1.340,5 7.125,5.020 z"),
-    HEART("M15.53 1A5.52 5.52 0 0 0 11 4 5.52 5.52 0 0 0 0 6.58C0 12.37 11 20 11 20s11-7.63 11-13.42A5.53 5.53 0 0 0 15.53 1z");
+    HEART("M15.53 1A5.52 5.52 0 0 0 11 4 5.52 5.52 0 0 0 0 6.58C0 12.37 11 20 11 20s11-7.63 11-13.42A5.53 5.53 0 0 0 15.53 1z"),;
+
+    private static final int PREF_WIDTH = 20;
+
     private String path;
     private double width;
     private double height;
-
-    PictureOption() {
-
-    }
 
     PictureOption(final String path) {
         this.path = path;
@@ -51,19 +50,18 @@ enum PictureOption {
     public double getWidth() {
         return width;
     }
-
     public SVGPath toSVG() {
         SVGPath svgPath = new SVGPath();
         svgPath.setContent(getCorrectedPath());
-        svgPath.maxWidth(20);
+        svgPath.maxWidth(PREF_WIDTH);
         width = svgPath.getBoundsInLocal().getWidth();
         height = svgPath.getBoundsInLocal().getWidth();
         svgPath.setFill(Color.TRANSPARENT);
         svgPath.setStroke(Color.BLACK);
         svgPath.setLayoutX(0);
         svgPath.setLayoutY(0);
-        svgPath.setScaleX(20 / getWidth());
-        svgPath.setScaleY(20 / getHeight());
+        svgPath.setScaleX(PREF_WIDTH / width);
+        svgPath.setScaleY(PREF_WIDTH / height);
         return svgPath;
     }
 
@@ -88,7 +86,7 @@ enum PictureOption {
 
             }
             String format = "%." + indexOf + "f";
-            a.appendReplacement(sb, String.format(Locale.ENGLISH, format, parseDouble * 20 / max));
+            a.appendReplacement(sb, String.format(Locale.ENGLISH, format, parseDouble * PREF_WIDTH / max));
         }
         a.appendTail(sb);
         return sb.toString();

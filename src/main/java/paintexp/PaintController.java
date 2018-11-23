@@ -37,7 +37,9 @@ public class PaintController {
 	public void changeTool(final Toggle newValue) {
         getPaintModel().resetToolOptions();
 		getPaintModel().getImageStack().getChildren().clear();
-		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
+        ImageView imageView = new ImageView(getPaintModel().getImage());
+        getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+        getPaintModel().getImageStack().getChildren().add(imageView);
 		if (newValue != null) {
 			getPaintModel().setTool((PaintTool) newValue.getUserData());
 			PaintTool paintTool = getPaintModel().getTool();
@@ -46,7 +48,7 @@ public class PaintController {
 
 	}
 
-	public BooleanBinding containsSelectedArea() {
+    public BooleanBinding containsSelectedArea() {
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		return Bindings.createBooleanBinding(()->paintModel.getImageStack().getChildren().contains(a.getArea()), paintModel.getImageStack().getChildren());
 	}
@@ -57,6 +59,7 @@ public class PaintController {
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.copyToClipboard(paintModel);
 	}
+
 	public void cut() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
@@ -65,7 +68,6 @@ public class PaintController {
         Bounds bounds = a.getArea().getBoundsInParent();
         a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
 	}
-
 	public List<Color> getColors() {
 		List<Color> availableColors = new ArrayList<>();
 		int a = 360 / 12;
@@ -144,7 +146,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-    public void openFile(final Window ownerWindow) {
+	public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -164,7 +166,7 @@ public class PaintController {
         }
     }
 
-	public void paste() {
+    public void paste() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
@@ -176,7 +178,7 @@ public class PaintController {
 	    saveFile(primaryStage);
 	}
 
-    public void saveFile(final Stage primaryStage) {
+	public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -194,7 +196,7 @@ public class PaintController {
 		}
 	}
 
-	public void selectAll() {
+    public void selectAll() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
@@ -221,4 +223,6 @@ public class PaintController {
         	getPaintModel().setBackColor((Color) rectangle.getFill());
         }
     }
+
+
 }

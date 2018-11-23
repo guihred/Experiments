@@ -24,6 +24,7 @@ public class PaintModel {
     private Text mousePosition = new Text();
 	private VBox toolOptions;
 	private File currentFile;
+    private Rectangle rectangleBorder;
     public ObjectProperty<Color> backColorProperty() {
         return backColor;
 	}public ObjectProperty<Color> frontColorProperty() {
@@ -56,6 +57,7 @@ public class PaintModel {
             imageView.setLayoutY(0);
             imageView.setManaged(false);
 			imageView.setSmooth(false);
+
             imageStack = new Group(imageView);
 			imageStack.setManaged(false);
 			imageStack.setLayoutX(0);
@@ -65,8 +67,21 @@ public class PaintModel {
         return imageStack;
     }
 
-	public Text getMousePosition() {
+    public Text getMousePosition() {
         return mousePosition;
+    }
+
+    public Rectangle getRectangleBorder(ImageView imageView) {
+        if (rectangleBorder == null) {
+            rectangleBorder = new Rectangle(10, 10, Color.TRANSPARENT);
+            rectangleBorder.setStroke(Color.BLACK);
+        }
+        rectangleBorder.setManaged(false);
+        rectangleBorder.layoutXProperty().bind(imageView.layoutXProperty());
+        rectangleBorder.layoutYProperty().bind(imageView.layoutYProperty());
+        rectangleBorder.widthProperty().bind(image.widthProperty().add(1));
+        rectangleBorder.heightProperty().bind(image.heightProperty().add(1));
+        return rectangleBorder;
     }
 
     public PaintTool getTool() {
