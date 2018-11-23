@@ -6,8 +6,12 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.image.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat.Type;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -183,7 +187,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-	protected ImageView getIconByURL(String src) {
+	protected ImageView getIconByURL(final String src) {
         ImageView icon = new ImageView(ResourceFXUtils.toExternalForm(src));
         icon.setPreserveRatio(true);
         icon.setFitWidth(10);
@@ -194,23 +198,29 @@ public abstract class PaintTool extends Group {
     }
 
     @SuppressWarnings("unused")
-    protected void onMouseDragged(MouseEvent e, PaintModel model) {
+    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+		// DOES NOTHING
         
     }
 
     @SuppressWarnings("unused")
-    protected void onMousePressed(MouseEvent e, PaintModel model) {
-        
+    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+		// DOES NOTHING
     }
 
 
     @SuppressWarnings("unused")
-    protected void onMouseReleased(PaintModel model) {
+    protected void onMouseReleased(final PaintModel model) {
         
+		// DOES NOTHING
     }
 
     protected double setWithinRange(final double num, final double min, final double max) {
-        return Double.min(Double.max(min, num), max);
+		return Math.min(Math.max(min, num), max);
+	}
+
+	protected int setWithinRange(final int num, final int min, final int max) {
+		return Math.min(Math.max(min, num), max);
     }
 
     protected void takeSnapshot(final PaintModel model, final Node line2) {

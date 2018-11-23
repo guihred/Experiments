@@ -20,7 +20,7 @@ public enum PaintTools {
 	POLYGON(new PolygonTool()),
 	CIRCLE(new EllipseTool()),
 	PICTURE(new PictureTool()),
-    //    ROUND;
+	BLUR(new BlurTool()),
     ;
 
     private PaintTool tool = new DummyTool();
