@@ -133,7 +133,9 @@ public class PaintController {
 		getPaintModel().getImage().getPixelWriter().setPixels(0, 0, w, h,
 				new SimplePixelReader(getPaintModel().getBackColor()), 0, 0);
 		getPaintModel().getImageStack().getChildren().clear();
-		getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
+        ImageView imageView = new ImageView(getPaintModel().getImage());
+        getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+        getPaintModel().getImageStack().getChildren().add(imageView);
 
 	}
 
@@ -159,7 +161,10 @@ public class PaintController {
                 getPaintModel().setImage(new WritableImage(w, h));
                 getPaintModel().getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
                 getPaintModel().getImageStack().getChildren().clear();
-                getPaintModel().getImageStack().getChildren().add(new ImageView(getPaintModel().getImage()));
+                ImageView imageView = new ImageView(getPaintModel().getImage());
+                getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+                getPaintModel().getImageStack().getChildren().add(imageView);
+
             } catch (Exception e) {
                 LOG.error("", e);
             }

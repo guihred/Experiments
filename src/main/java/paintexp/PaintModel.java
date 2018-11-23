@@ -57,8 +57,7 @@ public class PaintModel {
             imageView.setLayoutY(0);
             imageView.setManaged(false);
 			imageView.setSmooth(false);
-
-            imageStack = new Group(imageView);
+            imageStack = new Group(getRectangleBorder(imageView), imageView);
 			imageStack.setManaged(false);
 			imageStack.setLayoutX(0);
 			imageStack.setLayoutY(0);
