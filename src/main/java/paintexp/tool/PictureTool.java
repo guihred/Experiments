@@ -17,7 +17,6 @@ import simplebuilder.SimpleToggleGroupBuilder;
 public class PictureTool extends PaintTool {
 
 	private SVGPath icon;
-	boolean pressed;
 
 	private SVGPath area;
 	private int initialX;
@@ -77,7 +76,7 @@ public class PictureTool extends PaintTool {
                 .getTogglesAs(Node.class);
         model.getToolOptions().getChildren().addAll(togglesAs);
 		SimpleToggleGroupBuilder picOptions = new SimpleToggleGroupBuilder();
-		List<PictureOption> validOptions = Stream.of(PictureOption.values()).filter(e -> e.path != null)
+		List<PictureOption> validOptions = Stream.of(PictureOption.values()).filter(e -> e.getPath() != null)
 				.collect(Collectors.toList());
 		validOptions.forEach(e -> picOptions.addToggle(e.toSVG(), e));
 
@@ -97,8 +96,8 @@ public class PictureTool extends PaintTool {
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double x = setWithinRange(e.getX(), 0, model.getImage().getWidth());
 		double y = setWithinRange(e.getY(), 0, model.getImage().getHeight());
-		area.setScaleX(Math.abs(initialX - x) / pic.width);
-		area.setScaleY(Math.abs(initialY - y) / pic.height);
+		area.setScaleX(Math.abs(initialX - x) / pic.getWidth());
+		area.setScaleY(Math.abs(initialY - y) / pic.getHeight());
 		area.setLayoutX(Math.min(x, initialX));
 		area.setLayoutY(Math.min(y, initialY));
 	}

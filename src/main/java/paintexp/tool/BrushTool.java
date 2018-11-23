@@ -22,7 +22,7 @@ public class BrushTool extends PaintTool {
 
     private ImageView icon;
 
-    boolean pressed;
+    private boolean pressed;
 
     private int y;
 
@@ -120,7 +120,8 @@ public class BrushTool extends PaintTool {
 	
 	}
 
-	protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
+	@Override
+    protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		int y2 = (int) e.getY();
 		int x2 = (int) e.getX();
 		if (pressed && withinRange(x2, y2, model)) {

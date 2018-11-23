@@ -21,9 +21,7 @@ import simplebuilder.SimpleToggleGroupBuilder;
 public class PolygonTool extends PaintTool {
 
 	private Polygon icon;
-	boolean pressed;
-
-	private Polygon area;
+    private Polygon area;
 	private Line line;
     private FillOption option = FillOption.STROKE;
 

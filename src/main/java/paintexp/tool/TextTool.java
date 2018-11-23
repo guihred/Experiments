@@ -244,7 +244,8 @@ public class TextTool extends PaintTool {
         int height = (int) getArea().getHeight();
         SnapshotParameters params = new SnapshotParameters();
 		params.setFill(Color.TRANSPARENT);
-        WritableImage textImage = text.snapshot(params, new WritableImage(width, height));
+        WritableImage textImage = text.snapshot(params,
+                new WritableImage(Math.max(Math.abs(width), 1), Math.max(Math.abs(height), 1)));
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
 		copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);

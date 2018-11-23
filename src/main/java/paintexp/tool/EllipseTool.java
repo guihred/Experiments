@@ -14,7 +14,6 @@ import simplebuilder.SimpleToggleGroupBuilder;
 public class EllipseTool extends PaintTool {
 
 	private Ellipse icon;
-	boolean pressed;
 
 	private Ellipse area;
 	private int initialX;

@@ -229,7 +229,7 @@ public class SelectRectTool extends PaintTool {
 		int y = (int) getArea().getLayoutY();
 		double width = getArea().getWidth();
 		double height = getArea().getHeight();
-		copyImagePart(imageSelected, model.getImage(), 0, 0, width, height, x, y);
+        copyImagePart(imageSelected, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
 		imageSelected = null;
 		model.getImageStack().getChildren().remove(getArea());
 	}

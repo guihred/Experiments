@@ -10,7 +10,7 @@ public class PencilTool extends PaintTool {
 
     private ImageView icon;
 
-    boolean pressed;
+    private boolean pressed;
 
     private int y;
 

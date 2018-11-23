@@ -18,9 +18,7 @@ import paintexp.SimplePixelReader;
 public class BucketTool extends PaintTool {
 
 	private ImageView icon;
-	boolean pressed;
-
-	private Rectangle area;
+    private Rectangle area;
 	private int width;
 	private int height;
 

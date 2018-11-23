@@ -170,7 +170,7 @@ public class DraggingRectangle extends Application {
     }
 
     static class Wrapper<T> {
-        T value;
+        private T value;
     }
 
 }

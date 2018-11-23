@@ -61,31 +61,9 @@ public abstract class PaintTool extends Group {
 
     protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height) {
-        copyImagePart(srcImage, destImage, x, y, width, height, 0, 0);
+        copyImagePart(srcImage, destImage, x, y, width, height, 0, 0, Color.TRANSPARENT);
     }
 
-    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
-            final double width, final double height, final int xOffset, final int yOffset) {
-        PixelReader pixelReader = srcImage.getPixelReader();
-        double srcWidth = srcImage.getWidth();
-        double srcHeight = srcImage.getHeight();
-        PixelWriter pixelWriter = destImage.getPixelWriter();
-        Type type = pixelReader.getPixelFormat().getType();
-        double destWidth = destImage.getWidth();
-        double destHeight = destImage.getHeight();
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (within(i + xOffset, destWidth) && within(j + yOffset, destHeight) && within(i + x, srcWidth)
-                        && within(j + y, srcHeight)) {
-                    Color color = pixelReader.getColor(i + x, j + y);
-                    if (Type.BYTE_BGRA_PRE == type) {
-                        color = Color.hsb(color.getHue(), color.getSaturation(), color.getBrightness());
-                    }
-                    pixelWriter.setColor(i + xOffset, j + yOffset, color);
-                }
-            }
-        }
-    }
 
 
     protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
