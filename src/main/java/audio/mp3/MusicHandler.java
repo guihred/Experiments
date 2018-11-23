@@ -11,12 +11,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -51,7 +46,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
     }
 
     private Slider addSlider(VBox flow) {
-        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(100000).build();
+        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(100_000).build();
         Label label = new Label("00:00");
 
         label.textProperty()
@@ -175,36 +170,40 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         root.getChildren().addAll(progressIndicator);
 
         Stage stage = new Stage();
-        Button splitButton = CommonsFX.newButton("_Split", a -> {
-            mediaPlayer.dispose();
-            String format = music.getArtista().isEmpty()
-                    ? String.format("out\\%s.mp3", music.getTitulo().replaceAll("\\..+", ""))
-                    : String.format("out\\%s-%s.mp3", music.getTitulo().replaceAll("\\..+", ""), music.getArtista());
-            File newFile = new File(format);
-            DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime, currentTime);
-            progressIndicator.progressProperty().bind(splitAudio);
-            progressIndicator.setVisible(true);
-            splitAudio.addListener((ob, old, n) -> {
-                progressIndicator.setVisible(true);
-                if (n.intValue() == 1) {
-                    Platform.runLater(() -> {
-                        mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
-                        mediaPlayer.totalDurationProperty().addListener(b -> {
-                            SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer);
-                            currentSlider.valueChangingProperty().addListener(
-                                    (o, oldValue, newValue) -> updateMediaPlayer(currentSlider, newValue));
-                            mediaPlayer.currentTimeProperty().addListener(c -> updateCurrentSlider(currentSlider));
-                            mediaPlayer.play();
-                        });
-                        stage.close();
-                    });
-                }
-            });
-            startTime = currentTime;
-        });
+        Button splitButton = CommonsFX.newButton("_Split",
+                a -> splitInFiles(file, currentSlider, currentTime, music, progressIndicator, stage));
         root.getChildren().addAll(splitButton);
         stage.setScene(new Scene(root));
         stage.show();
+    }
+
+    private void splitInFiles(File file, Slider currentSlider, Duration currentTime, Music music,
+            ProgressIndicator progressIndicator, Stage stage) {
+        mediaPlayer.dispose();
+        String format = music.getArtista().isEmpty()
+                ? String.format("out\\%s.mp3", music.getTitulo().replaceAll("\\..+", ""))
+                : String.format("out\\%s-%s.mp3", music.getTitulo().replaceAll("\\..+", ""), music.getArtista());
+        File newFile = new File(format);
+        DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime, currentTime);
+        progressIndicator.progressProperty().bind(splitAudio);
+        progressIndicator.setVisible(true);
+        splitAudio.addListener((ob, old, n) -> {
+            progressIndicator.setVisible(true);
+            if (n.intValue() == 1) {
+                Platform.runLater(() -> {
+                    mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
+                    mediaPlayer.totalDurationProperty().addListener(b -> {
+                        SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer);
+                        currentSlider.valueChangingProperty().addListener(
+                                (o, oldValue, newValue) -> updateMediaPlayer(currentSlider, newValue));
+                        mediaPlayer.currentTimeProperty().addListener(c -> updateCurrentSlider(currentSlider));
+                        mediaPlayer.play();
+                    });
+                    stage.close();
+                });
+            }
+        });
+        startTime = currentTime;
     }
 
     private void updateCurrentSlider(Slider currentSlider) {

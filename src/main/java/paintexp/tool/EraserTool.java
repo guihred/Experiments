@@ -16,7 +16,6 @@ import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import paintexp.SimplePixelReader;
 import simplebuilder.SimpleSliderBuilder;
-import utils.ResourceFXUtils;
 
 public class EraserTool extends PaintTool {
 
@@ -41,11 +40,7 @@ public class EraserTool extends PaintTool {
     @Override
     public Node getIcon() {
         if (icon == null) {
-            icon = new ImageView(ResourceFXUtils.toExternalForm("eraser.png"));
-            icon.setPreserveRatio(true);
-            icon.setFitWidth(10);
-            icon.maxWidth(10);
-            icon.maxHeight(10);
+            icon = getIconByURL("eraser.png");
         }
         return icon;
     }

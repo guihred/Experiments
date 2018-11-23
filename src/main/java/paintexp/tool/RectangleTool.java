@@ -2,7 +2,6 @@ package paintexp.tool;
 
 import java.util.List;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -46,21 +45,6 @@ public class RectangleTool extends PaintTool {
 		return Cursor.DEFAULT;
 	}
 
-	@Override
-    public void handleEvent(final MouseEvent e, final PaintModel model) {
-		EventType<? extends MouseEvent> eventType = e.getEventType();
-		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			onMousePressed(e, model);
-		}
-		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-			onMouseDragged(e);
-
-		}
-		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			onMouseReleased(model);
-		}
-
-	}
 
 	@Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
@@ -111,34 +95,8 @@ public class RectangleTool extends PaintTool {
 
 	}
 
-	private void drawFill(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
-	        final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2,
-	        final double nPoints) {
-        drawRect(model, centerX1, startY, centerX2 - centerX1, endY - startY);
-        drawRect(model, startX, centerY1, endX - startX, centerY2 - centerY1);
-        for (int i = 0; i < radiusX; i++) {
-            drawCircle(model, centerX1, centerY1, i, radiusY, nPoints, Math.PI, Math.PI / 2, model.getBackColor());
-            drawCircle(model, centerX2, centerY1, i, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2,
-                    model.getBackColor());
-            drawCircle(model, centerX1, centerY2, i, radiusY, nPoints, Math.PI / 2, Math.PI / 2, model.getBackColor());
-            drawCircle(model, centerX2, centerY2, i, radiusY, nPoints, 0, Math.PI / 2, model.getBackColor());
-        }
-	}
-
-    private void drawStroke(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
-            final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2,
-            final double nPoints) {
-        drawLine(model, startX, centerY1, startX, centerY2);//LEFT
-        drawLine(model, endX, centerY1, endX, centerY2);//RIGHT
-        drawLine(model, centerX1, startY - 1, centerX2, startY - 1);//TOP
-        drawLine(model, centerX1, endY, centerX2, endY);// BOTTOM
-        drawCircle(model, centerX1, centerY1, radiusX, radiusY, nPoints, Math.PI, Math.PI / 2);//TOP-LEFT
-        drawCircle(model, centerX2, centerY1, radiusX, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2);//
-        drawCircle(model, centerX1, centerY2, radiusX, radiusY, nPoints, Math.PI / 2, Math.PI / 2);
-        drawCircle(model, centerX2, centerY2, radiusX, radiusY, nPoints, 0, Math.PI / 2);
-    }
-
-    private void onMouseDragged(final MouseEvent e) {
+	@Override
+    protected  void onMouseDragged(final MouseEvent e, PaintModel model) {
 		double layoutX = initialX;
 		double layoutY = initialY;
 		double x = e.getX();
@@ -158,7 +116,8 @@ public class RectangleTool extends PaintTool {
 		}
 	}
 
-    private void onMousePressed(final MouseEvent e, final PaintModel model) {
+    @Override
+    protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
 			children.add(getArea());
@@ -181,7 +140,8 @@ public class RectangleTool extends PaintTool {
 
 	}
 
-    private void onMouseReleased(final PaintModel model) {
+    @Override
+    protected  void onMouseReleased(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getWidth() > 2 && children.contains(getArea())) {
             Bounds boundsInLocal = getArea().getBoundsInParent();
@@ -211,6 +171,33 @@ public class RectangleTool extends PaintTool {
 
         }
         children.remove(getArea());
+    }
+
+    private void drawFill(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
+	        final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2,
+	        final double nPoints) {
+        drawRect(model, centerX1, startY, centerX2 - centerX1, endY - startY);
+        drawRect(model, startX, centerY1, endX - startX, centerY2 - centerY1);
+        for (int i = 0; i < radiusX; i++) {
+            drawCircle(model, centerX1, centerY1, i, radiusY, nPoints, Math.PI, Math.PI / 2, model.getBackColor());
+            drawCircle(model, centerX2, centerY1, i, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2,
+                    model.getBackColor());
+            drawCircle(model, centerX1, centerY2, i, radiusY, nPoints, Math.PI / 2, Math.PI / 2, model.getBackColor());
+            drawCircle(model, centerX2, centerY2, i, radiusY, nPoints, 0, Math.PI / 2, model.getBackColor());
+        }
+	}
+
+    private void drawStroke(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
+            final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2,
+            final double nPoints) {
+        drawLine(model, startX, centerY1, startX, centerY2);//LEFT
+        drawLine(model, endX, centerY1, endX, centerY2);//RIGHT
+        drawLine(model, centerX1, startY - 1, centerX2, startY - 1);//TOP
+        drawLine(model, centerX1, endY, centerX2, endY);// BOTTOM
+        drawCircle(model, centerX1, centerY1, radiusX, radiusY, nPoints, Math.PI, Math.PI / 2);//TOP-LEFT
+        drawCircle(model, centerX2, centerY1, radiusX, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2);//
+        drawCircle(model, centerX1, centerY2, radiusX, radiusY, nPoints, Math.PI / 2, Math.PI / 2);
+        drawCircle(model, centerX2, centerY2, radiusX, radiusY, nPoints, 0, Math.PI / 2);
     }
 
 }

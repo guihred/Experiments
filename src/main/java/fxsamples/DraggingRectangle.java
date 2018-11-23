@@ -6,9 +6,9 @@ import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -22,7 +22,7 @@ public class DraggingRectangle extends Application {
     public void start(final Stage primaryStage) {
 
         StackPane root = new StackPane();
-        Rectangle rect = new Rectangle(00, 00, 400, 300);
+        Rectangle rect = new Rectangle(0, 0, 400, 300);
         rect.setManaged(false);
         rect.setLayoutX(200);
         rect.setLayoutY(200);
@@ -36,11 +36,7 @@ public class DraggingRectangle extends Application {
         primaryStage.show();
     }
 
-    static class Wrapper<T> {
-        T value;
-    }
-
-    public static List<? extends Node> createDraggableRectangle(final Rectangle rect) {
+    public static List<Circle> createDraggableRectangle(final Rectangle rect) {
         final double handleRadius = 5;
         // top left resize handle:
         Circle resizeHandleNW = new Circle(handleRadius, Color.TRANSPARENT);
@@ -85,64 +81,73 @@ public class DraggingRectangle extends Application {
         setUpDragging(resizeHandleSE, mouseLocation);
         setUpDragging(moveHandle, mouseLocation);
 
-        resizeHandleNW.setOnMouseDragged(event -> {
-            if (mouseLocation.value != null) {
-                double deltaX = event.getSceneX() - mouseLocation.value.getX();
-                double deltaY = event.getSceneY() - mouseLocation.value.getY();
-                double newX = rect.getLayoutX() + deltaX;
-                if (newX >= handleRadius && newX <= rect.getLayoutX() + rect.getWidth() - handleRadius) {
-                    rect.setLayoutX(newX);
-                    rect.setWidth(rect.getWidth() - deltaX);
-                }
-                double newY = rect.getLayoutY() + deltaY;
-                if (newY >= handleRadius && newY <= rect.getLayoutY() + rect.getHeight() - handleRadius) {
-                    rect.setLayoutY(newY);
-                    rect.setHeight(rect.getHeight() - deltaY);
-                }
-                mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
-            }
-        });
+        resizeHandleNW.setOnMouseDragged(event -> onNWDrag(rect, handleRadius, mouseLocation, event));
 
-        resizeHandleSE.setOnMouseDragged(event -> {
-            if (mouseLocation.value != null) {
-                double deltaX = event.getSceneX() - mouseLocation.value.getX();
-                double deltaY = event.getSceneY() - mouseLocation.value.getY();
-                double newMaxX = rect.getLayoutX() + rect.getWidth() + deltaX;
-                if (newMaxX >= rect.getLayoutX()
-						&& newMaxX <= rect.getWidth() - handleRadius) {
-                    rect.setWidth(rect.getWidth() + deltaX);
-                }
-                double newMaxY = rect.getLayoutY() + rect.getHeight() + deltaY;
-                if (newMaxY >= rect.getLayoutY()
-						&& newMaxY <= rect.getHeight() - handleRadius) {
-                    rect.setHeight(rect.getHeight() + deltaY);
-                }
-                mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
-            }
-        });
+        resizeHandleSE.setOnMouseDragged(event -> onSEDrag(rect, handleRadius, mouseLocation, event));
 
-        moveHandle.setOnMouseDragged(event -> {
-            if (mouseLocation.value != null) {
-                double deltaX = event.getSceneX() - mouseLocation.value.getX();
-                double deltaY = event.getSceneY() - mouseLocation.value.getY();
-                double newX = rect.getLayoutX() + deltaX;
-                double newMaxX = newX + rect.getWidth();
-				if (newX >= handleRadius && newMaxX <= rect.getWidth() - handleRadius) {
-                    rect.setLayoutX(newX);
-                }
-                double newY = rect.getLayoutY() + deltaY;
-                double newMaxY = newY + rect.getHeight();
-				if (newY >= handleRadius && newMaxY <= rect.getHeight() - handleRadius) {
-                    rect.setLayoutY(newY);
-                }
-                mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
-            }
-        });
+        moveHandle.setOnMouseDragged(event -> onMoveHandleDrag(rect, handleRadius, mouseLocation, event));
         return nodes;
     }
 
     public static void main(final String[] args) {
         Application.launch(args);
+    }
+
+    private static void onMoveHandleDrag(final Rectangle rect, final double handleRadius,
+            Wrapper<Point2D> mouseLocation, MouseEvent event) {
+        if (mouseLocation.value != null) {
+            double deltaX = event.getSceneX() - mouseLocation.value.getX();
+            double deltaY = event.getSceneY() - mouseLocation.value.getY();
+            double newX = rect.getLayoutX() + deltaX;
+            double newMaxX = newX + rect.getWidth();
+            if (newX >= handleRadius && newMaxX <= rect.getWidth() - handleRadius) {
+                rect.setLayoutX(newX);
+            }
+            double newY = rect.getLayoutY() + deltaY;
+            double newMaxY = newY + rect.getHeight();
+            if (newY >= handleRadius && newMaxY <= rect.getHeight() - handleRadius) {
+                rect.setLayoutY(newY);
+            }
+            mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
+        }
+    }
+
+    private static void onNWDrag(final Rectangle rect, final double handleRadius, Wrapper<Point2D> mouseLocation,
+            MouseEvent event) {
+        if (mouseLocation.value != null) {
+            double deltaX = event.getSceneX() - mouseLocation.value.getX();
+            double deltaY = event.getSceneY() - mouseLocation.value.getY();
+            double newX = rect.getLayoutX() + deltaX;
+            if (newX >= handleRadius && newX <= rect.getLayoutX() + rect.getWidth() - handleRadius) {
+                rect.setLayoutX(newX);
+                rect.setWidth(rect.getWidth() - deltaX);
+            }
+            double newY = rect.getLayoutY() + deltaY;
+            if (newY >= handleRadius && newY <= rect.getLayoutY() + rect.getHeight() - handleRadius) {
+                rect.setLayoutY(newY);
+                rect.setHeight(rect.getHeight() - deltaY);
+            }
+            mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
+        }
+    }
+
+    private static void onSEDrag(final Rectangle rect, final double handleRadius, Wrapper<Point2D> mouseLocation,
+            MouseEvent event) {
+        if (mouseLocation.value != null) {
+            double deltaX = event.getSceneX() - mouseLocation.value.getX();
+            double deltaY = event.getSceneY() - mouseLocation.value.getY();
+            double newMaxX = rect.getLayoutX() + rect.getWidth() + deltaX;
+            if (newMaxX >= rect.getLayoutX()
+        			&& newMaxX <= rect.getWidth() - handleRadius) {
+                rect.setWidth(rect.getWidth() + deltaX);
+            }
+            double newMaxY = rect.getLayoutY() + rect.getHeight() + deltaY;
+            if (newMaxY >= rect.getLayoutY()
+        			&& newMaxY <= rect.getHeight() - handleRadius) {
+                rect.setHeight(rect.getHeight() + deltaY);
+            }
+            mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
+        }
     }
 
     private static void setUpDragging(final Circle circle, final Wrapper<Point2D> mouseLocation) {
@@ -162,6 +167,10 @@ public class DraggingRectangle extends Application {
 			}
             mouseLocation.value = null;
         });
+    }
+
+    static class Wrapper<T> {
+        T value;
     }
 
 }

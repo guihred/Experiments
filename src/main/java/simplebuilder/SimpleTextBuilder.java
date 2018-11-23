@@ -17,11 +17,6 @@ public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilde
 		return this;
 	}
 
-	public SimpleTextBuilder managed(boolean x) {
-		shape.setManaged(x);
-		return this;
-	}
-
 	public SimpleTextBuilder strikethrough(boolean x) {
 		shape.setStrikethrough(x);
 		return this;

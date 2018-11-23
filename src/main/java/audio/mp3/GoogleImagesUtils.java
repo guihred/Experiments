@@ -10,14 +10,15 @@ import com.google.api.services.customsearch.CustomsearchRequestInitializer;
 import com.google.api.services.customsearch.model.Result;
 import com.google.api.services.customsearch.model.Search;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import utils.CrawlerTask;
 import utils.HasLogging;
@@ -29,6 +30,18 @@ public final class GoogleImagesUtils {
     private GoogleImagesUtils() {
 
     }
+    public static void displayCountByExtension() {
+        try (Stream<Path> find = Files.find(new File("").toPath(), 20, (a, b) -> !a.toFile().isDirectory())) {
+            Map<String, Long> collect = find
+                    .collect(Collectors
+                    .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
+            collect.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                    .forEach(ex -> LOGGER.error("{}={}", ex.getKey(), ex.getValue()));
+        } catch (Exception e) {
+            LOGGER.error("", e);
+        }
+    }
+
     public static List<String> getImagens(String artista) {
         CrawlerTask.insertProxyConfig();
         try {
@@ -55,14 +68,7 @@ public final class GoogleImagesUtils {
         return Collections.emptyList();
     }
 
-    public static void main(String[] args) throws IOException {
-        Map<String, Long> collect = Files.find(new File("").toPath(), 20, (a, b) -> !a.toFile().isDirectory())
-                .collect(Collectors
-                .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
-        collect.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-                .forEach((ex) -> {
-            LOGGER.error("{}={}", ex.getKey(), ex.getValue());
-        });
-
-}
+    public static void main(String[] args) {
+        displayCountByExtension();
+    }
 }

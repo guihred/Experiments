@@ -1,27 +1,18 @@
 package paintexp.tool;
 
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.*;
 import javafx.scene.image.PixelFormat.Type;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
-import simplebuilder.SimpleRectangleBuilder;
+import utils.ResourceFXUtils;
 
 public abstract class PaintTool extends Group {
     public PaintTool() {
@@ -36,9 +27,20 @@ public abstract class PaintTool extends Group {
 
     public abstract Cursor getMouseCursor();
 
-    @SuppressWarnings("unused")
     public void handleEvent(final MouseEvent e, final PaintModel model) {
-        // DOES NOTHING
+        EventType<? extends MouseEvent> eventType = e.getEventType();
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+            onMousePressed(e, model);
+        }
+
+        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+            onMouseDragged(e, model);
+        }
+
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            onMouseReleased(model);
+        }
+
     }
 
     @SuppressWarnings("unused")
@@ -51,7 +53,6 @@ public abstract class PaintTool extends Group {
         // DOES NOTHING
     }
 
-
     protected boolean containsPoint(final Node area2, final double localX, final double localY) {
         Bounds bounds = area2.getBoundsInParent();
         return area2.getLayoutX() < localX && localX < area2.getLayoutX() + bounds.getWidth()
@@ -63,7 +64,7 @@ public abstract class PaintTool extends Group {
         copyImagePart(srcImage, destImage, x, y, width, height, 0, 0);
     }
 
-	protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
+    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height, final int xOffset, final int yOffset) {
         PixelReader pixelReader = srcImage.getPixelReader();
         double srcWidth = srcImage.getWidth();
@@ -85,6 +86,7 @@ public abstract class PaintTool extends Group {
             }
         }
     }
+
 
     protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height, final int xOffset, final int yOffset, final Color ignoreColor) {
@@ -118,7 +120,7 @@ public abstract class PaintTool extends Group {
         drawCircle(model, centerX, centerY, radiusX, radiusY, nPoints, startAngle, angle, frontColor);
     }
 
-    protected void drawCircle(final PaintModel model, final double centerX, final double centerY, final double radiusX,
+	protected void drawCircle(final PaintModel model, final double centerX, final double centerY, final double radiusX,
             final double radiusY, final double nPoints, final double startAngle, final double angle, final Color frontColor) {
         for (double t = 0; t < angle; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(radiusX * Math.cos(t + startAngle));
@@ -170,7 +172,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-	protected void drawPoint(final PaintModel model, final int x2, final int y2) {
+    protected void drawPoint(final PaintModel model, final int x2, final int y2) {
         Color frontColor = model.getFrontColor();
         drawPoint(model, x2, y2, frontColor);
     }
@@ -197,54 +199,31 @@ public abstract class PaintTool extends Group {
             }
         }
     }
-
-    protected void makeResizable(final Node node) {
-        Pane p = (Pane) node.getParent();
-        p.getChildren().addAll(IntStream.range(0, 9).filter(i -> i != 4).mapToObj(i -> makeSquare(node, i))
-                .collect(Collectors.toList()));
+    protected ImageView getIconByURL(String src) {
+        ImageView icon = new ImageView(ResourceFXUtils.toExternalForm(src));
+        icon.setPreserveRatio(true);
+        icon.setFitWidth(10);
+        icon.maxWidth(10);
+        icon.maxHeight(10);
+        return icon;
 
     }
 
-    protected Rectangle makeSquare(final Node node, final int i) {
-        Rectangle rectangle = new SimpleRectangleBuilder().width(5).height(5).fill(Color.WHITE).stroke(Color.BLACK)
-                .managed(false).build();
-        node.boundsInParentProperty().addListener((a, b, c) -> {
-            rectangle.setLayoutX(i / 3 * (c.getWidth() / 2) + c.getMinX() - rectangle.getWidth() / 2);
-            rectangle.setLayoutY(i % 3 * (c.getHeight() / 2) + c.getMinY() - rectangle.getHeight() / 2);
-        });
-
-        final Cursor vResize = i % 3 == 1 ? Cursor.H_RESIZE
-                : i / 3 == 1 ? Cursor.V_RESIZE : i / 3 == i % 3 ? Cursor.SE_RESIZE : Cursor.NE_RESIZE;
-        rectangle.setCursor(vResize);
-        rectangle.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-            private double initialX;
-            private double initialY;
-
-            @Override
-            public void handle(final MouseEvent event) {
-                EventType<? extends MouseEvent> eventType = event.getEventType();
-                if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-                    initialX = event.getX();
-                    initialY = event.getY();
-                }
-                if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-                    if (vResize == Cursor.V_RESIZE || vResize == Cursor.SE_RESIZE) {
-                        double height = node.getBoundsInParent().getHeight();
-                        node.setScaleY((height + initialY - event.getY()) / height);
-                    }
-                    if (vResize == Cursor.H_RESIZE || vResize == Cursor.SE_RESIZE) {
-                        double width = node.getBoundsInParent().getWidth();
-                        node.setScaleX((width + initialX - event.getX()) / width);
-                    }
-                }
-                if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-                    initialX = event.getX();
-                    initialY = event.getX();
-                }
-            }
-        });
-        return rectangle;
+	@SuppressWarnings("unused")
+    protected void onMouseDragged(MouseEvent e, PaintModel model) {
+        
     }
+
+    @SuppressWarnings("unused")
+    protected void onMousePressed(MouseEvent e, PaintModel model) {
+        
+    }
+
+    @SuppressWarnings("unused")
+    protected void onMouseReleased(PaintModel model) {
+        
+    }
+
 
     protected double setWithinRange(final double num, final double min, final double max) {
         return Double.min(Double.max(min, num), max);

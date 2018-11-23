@@ -2,7 +2,6 @@ package paintexp.tool;
 
 import java.util.List;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -48,20 +47,6 @@ public class EllipseTool extends PaintTool {
 		return Cursor.DISAPPEAR;
 	}
 
-	@Override
-	public void handleEvent(final MouseEvent e, final PaintModel model) {
-		EventType<? extends MouseEvent> eventType = e.getEventType();
-		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			onMousePressed(e, model);
-		}
-		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-			onMouseDragged(e);
-		}
-		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			onMouseReleased(model);
-		}
-
-	}
 
 	@Override
     public void onSelected(PaintModel model) {
@@ -87,7 +72,8 @@ public class EllipseTool extends PaintTool {
         model.getToolOptions().getChildren().addAll(togglesAs);
     }
 
-    private void onMouseDragged(final MouseEvent e) {
+    @Override
+    protected void onMouseDragged(final MouseEvent e, PaintModel model) {
 		double radiusX = Math.abs(e.getX() - initialX);
 		getArea().setRadiusX(radiusX);
 		double radiusY = Math.abs(e.getY() - initialY);
@@ -99,7 +85,8 @@ public class EllipseTool extends PaintTool {
 		}
 	}
 
-    private void onMousePressed(final MouseEvent e, final PaintModel model) {
+    @Override
+    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getArea())) {
 
@@ -121,7 +108,8 @@ public class EllipseTool extends PaintTool {
         }
     }
 
-    private void onMouseReleased(final PaintModel model) {
+    @Override
+    protected void onMouseReleased(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getRadiusX() > 2 && children.contains(getArea())) {
             double a = getArea().getRadiusX();

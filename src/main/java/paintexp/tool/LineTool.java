@@ -1,7 +1,6 @@
 package paintexp.tool;
 
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -35,27 +34,14 @@ public class LineTool extends PaintTool {
 		return Cursor.CROSSHAIR;
 	}
 
-	@Override
-    public void handleEvent(final MouseEvent e, final PaintModel model) {
-		EventType<? extends MouseEvent> eventType = e.getEventType();
-		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			onMouseReleased(model);
-		}
-		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			onMousePressed(e, model);
-		}
-		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-			onMouseDragged(e);
-		}
-
-	}
-
-	private void onMouseDragged(final MouseEvent e) {
+    @Override
+    protected void onMouseDragged(final MouseEvent e, PaintModel model) {
 		getLine().setEndX(e.getX());
 		getLine().setEndY(e.getY());
 	}
 
-	private void onMousePressed(final MouseEvent e, final PaintModel model) {
+    @Override
+    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
 		getLine().setStroke(model.getFrontColor());
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getLine())) {
@@ -64,10 +50,11 @@ public class LineTool extends PaintTool {
 
 		getLine().setStartX(e.getX());
 		getLine().setStartY(e.getY());
-		onMouseDragged(e);
+		onMouseDragged(e, model);
 	}
 
-	private void onMouseReleased(final PaintModel model) {
+    @Override
+    protected void onMouseReleased(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (size() >= 2 || !children.contains(getLine())) {
 		    drawLine(model, line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());

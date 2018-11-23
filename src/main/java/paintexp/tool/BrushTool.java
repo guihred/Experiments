@@ -17,7 +17,6 @@ import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.ResourceFXUtils;
 
 public class BrushTool extends PaintTool {
 
@@ -38,12 +37,7 @@ public class BrushTool extends PaintTool {
 	@Override
 	public Node getIcon() {
 		if (icon == null) {
-            icon = new ImageView(ResourceFXUtils.toExternalForm("brush.png"));
-            icon.setPreserveRatio(true);
-            icon.setFitWidth(10);
-            icon.maxWidth(10);
-            icon.maxHeight(10);
-
+            icon = getIconByURL("brush.png");
 		}
 		return icon;
 	}
@@ -126,7 +120,35 @@ public class BrushTool extends PaintTool {
 	
 	}
 
-	private void drawUponOption(final PaintModel model, final int x2, final int y2) {
+	protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
+		int y2 = (int) e.getY();
+		int x2 = (int) e.getX();
+		if (pressed && withinRange(x2, y2, model)) {
+            drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(model, x3, y3));
+
+			y = (int) e.getY();
+			x = (int) e.getX();
+        }
+        onMouseMoved(e);
+	}
+
+    protected  void onMouseMoved(final MouseEvent e) {
+        getMouseCursorMap().get(option).setLayoutX(e.getX());
+        getMouseCursorMap().get(option).setLayoutY(e.getY());
+        if (option == BrushOption.LINE_SW_NE) {
+            getMouseCursorMap().get(option).setLayoutY(e.getY() - length.get());
+        }
+    }
+
+    @Override
+    protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
+        y = (int) e.getY();
+        x = (int) e.getX();
+        drawUponOption(model, x, y);
+        pressed = true;
+    }
+
+    private void drawUponOption(final PaintModel model, final int x2, final int y2) {
 
         if (withinRange(x2, y2, model)) {
             double r = length.getValue().doubleValue();
@@ -150,33 +172,6 @@ public class BrushTool extends PaintTool {
                     break;
             }
         }
-    }
-
-    private void onMouseDragged(final MouseEvent e, final PaintModel model) {
-		int y2 = (int) e.getY();
-		int x2 = (int) e.getX();
-		if (pressed && withinRange(x2, y2, model)) {
-            drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(model, x3, y3));
-
-			y = (int) e.getY();
-			x = (int) e.getX();
-        }
-        onMouseMoved(e);
-	}
-
-    private void onMouseMoved(final MouseEvent e) {
-        getMouseCursorMap().get(option).setLayoutX(e.getX());
-        getMouseCursorMap().get(option).setLayoutY(e.getY());
-        if (option == BrushOption.LINE_SW_NE) {
-            getMouseCursorMap().get(option).setLayoutY(e.getY() - length.get());
-        }
-    }
-
-    private void onMousePressed(final MouseEvent e, final PaintModel model) {
-        y = (int) e.getY();
-        x = (int) e.getX();
-        drawUponOption(model, x, y);
-        pressed = true;
     }
 
     enum BrushOption {

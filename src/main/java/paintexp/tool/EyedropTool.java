@@ -30,11 +30,7 @@ public class EyedropTool extends PaintTool {
     @Override
     public Node getIcon() {
         if (icon == null) {
-            icon = new ImageView(ResourceFXUtils.toExternalForm("eyedrop.png"));
-            icon.setPreserveRatio(true);
-            icon.setFitWidth(10);
-            icon.maxWidth(10);
-            icon.maxHeight(10);
+            icon = getIconByURL("eyedrop.png");
         }
         return icon;
     }
@@ -48,28 +44,10 @@ public class EyedropTool extends PaintTool {
     public synchronized void handleEvent(final MouseEvent e, final PaintModel model) {
         EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_MOVED.equals(eventType)) {
-
-            int y = (int) e.getY();
-            int x = (int) e.getX();
-            if (withinRange(x, y, model)) {
-                WritableImage image = model.getImage();
-                Color color = image.getPixelReader().getColor(x, y);
-                getArea().setFill(color);
-            }
+            onMouseMoved(e, model);
         }
         if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-
-            int y = (int) e.getY();
-            int x = (int) e.getX();
-            if (withinRange(x, y, model)) {
-                WritableImage image = model.getImage();
-                Color color = image.getPixelReader().getColor(x, y);
-                if (e.getButton() == MouseButton.SECONDARY) {
-                    model.setBackColor(color);
-                } else {
-                    model.setFrontColor(color);
-                }
-            }
+            onMousePressed(e, model);
         }
     }
 
@@ -77,6 +55,31 @@ public class EyedropTool extends PaintTool {
     public void onSelected(PaintModel model) {
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren().add(getArea());
+    }
+
+    @Override
+    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+        int y = (int) e.getY();
+        int x = (int) e.getX();
+        if (withinRange(x, y, model)) {
+            WritableImage image = model.getImage();
+            Color color = image.getPixelReader().getColor(x, y);
+            if (e.getButton() == MouseButton.SECONDARY) {
+                model.setBackColor(color);
+            } else {
+                model.setFrontColor(color);
+            }
+        }
+    }
+
+    private void onMouseMoved(final MouseEvent e, final PaintModel model) {
+        int y = (int) e.getY();
+        int x = (int) e.getX();
+        if (withinRange(x, y, model)) {
+            WritableImage image = model.getImage();
+            Color color = image.getPixelReader().getColor(x, y);
+            getArea().setFill(color);
+        }
     }
 
 

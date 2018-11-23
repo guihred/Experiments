@@ -62,6 +62,7 @@ import org.junit.Test;
 import pdfreader.PdfReader;
 import physics.Physics;
 import rosario.RosarioComparadorArquivos;
+import schema.sngpc.SngpcViewer;
 import utils.HasLogging;
 import xylophone.XylophoneApp;
 
@@ -96,13 +97,6 @@ public final class FXTest implements HasLogging {
     }
 
     @Test
-    public void test5() throws Throwable {
-        FXTesting.testApps(BasicAudioPlayerWithControlLauncher.class, BasicAudioClipExample.class,
-                AudioConfigLauncher.class, SimpleAudioPlayerLauncher.class, PlayingAudio.class, Physics.class,
-                JewelViewer.class);
-    }
-
-    @Test
     public void test3() throws Throwable {
         FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
                 ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class, PdfReader.class,
@@ -120,6 +114,13 @@ public final class FXTest implements HasLogging {
         FXTesting.testApps(Labyrinth2D.class, Labyrinth3D.class, Labyrinth3DAntiAliasing.class,
                 Labyrinth3DCollisions.class, Labyrinth3DGhosts.class, Labyrinth3DKillerGhosts.class,
                 Labyrinth3DKillerGhostsAndBalls.class, Labyrinth3DMouseControl.class, Labyrinth3DWallTexture.class);
+    }
+
+    @Test
+    public void test5() throws Throwable {
+        FXTesting.testApps(BasicAudioPlayerWithControlLauncher.class, BasicAudioClipExample.class,
+                AudioConfigLauncher.class, SimpleAudioPlayerLauncher.class, PlayingAudio.class, Physics.class,
+                SngpcViewer.class,JewelViewer.class);
     }
 
     @Test

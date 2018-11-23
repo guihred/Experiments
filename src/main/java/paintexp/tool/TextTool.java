@@ -4,7 +4,6 @@ import fxsamples.DraggingRectangle;
 import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -19,11 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.text.*;
 import paintexp.PaintModel;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleRectangleBuilder;
@@ -78,23 +73,48 @@ public class TextTool extends PaintTool {
     }
 
     @Override
-    public void handleEvent(final MouseEvent e, final PaintModel model) {
-        EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-            onMousePressed(e, model);
-        }
-        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            onMouseDragged(e, model);
-        }
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            onMouseReleased(model);
-
-        }
+    public void onSelected(final PaintModel model) {
+        displayTextOptions(model);   
     }
 
     @Override
-    public void onSelected(final PaintModel model) {
-        displayTextOptions(model);   
+    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+            double x = e.getX();
+            double y = e.getY();
+            double width = model.getImage().getWidth();
+            double height = model.getImage().getHeight();
+            if (pressed) {
+                dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
+            }
+        }
+    @Override
+    protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (children.contains(getArea())) {
+            if (containsPoint(getArea(), e.getX(), e.getY())
+                    || helpers.stream().anyMatch(n -> n.contains(e.getX(), e.getY()))) {
+                return;
+            }
+            takeSnapshot(model);
+            return;
+        }
+        initialX = e.getX();
+        initialY = e.getY();
+        pressed = true;
+        addRect(model);
+
+    }
+
+    @Override
+    protected  void onMouseReleased(final PaintModel model) {
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (getArea().getWidth() < 2 && children.contains(getArea())) {
+
+            children.remove(getArea());
+        }
+        pressed = false;
+        textArea.requestFocus();
+        area.setStroke(Color.BLUE);
     }
 
     private void addRect(final PaintModel model) {
@@ -118,6 +138,7 @@ public class TextTool extends PaintTool {
             getText().wrappingWidthProperty().bind(area.widthProperty());
         }
     }
+
     private SimpleToggleGroupBuilder createAlignments() {
         SimpleToggleGroupBuilder alignments = new SimpleToggleGroupBuilder();
         Group node = new Group();
@@ -205,46 +226,8 @@ public class TextTool extends PaintTool {
     }
 
     private VBox field(final String text2, final Node fontFamily) {
-        return new VBox(new Text(text2), fontFamily);
-    }
-
-    private void onMouseDragged(final MouseEvent e, final PaintModel model) {
-        double x = e.getX();
-        double y = e.getY();
-        double width = model.getImage().getWidth();
-        double height = model.getImage().getHeight();
-        if (pressed) {
-            dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
-        }
-    }
-
-    private void onMousePressed(final MouseEvent e, final PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (children.contains(getArea())) {
-            if (containsPoint(getArea(), e.getX(), e.getY())
-                    || helpers.stream().anyMatch(n -> n.contains(e.getX(), e.getY()))) {
-                return;
-            }
-            takeSnapshot(model);
-            return;
-        }
-        initialX = e.getX();
-        initialY = e.getY();
-        pressed = true;
-        addRect(model);
-
-    }
-
-    private void onMouseReleased(final PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (getArea().getWidth() < 2 && children.contains(getArea())) {
-
-            children.remove(getArea());
-        }
-        pressed = false;
-        textArea.requestFocus();
-        area.setStroke(Color.BLUE);
-    }
+    return new VBox(new Text(text2), fontFamily);
+}
 
     private void onOptionsChanged(final SimpleComboBoxBuilder<String> font, final SimpleComboBoxBuilder<Integer> fontSize,
             final ToggleButton bold, final ToggleButton italic, final ToggleButton undeline, final ToggleButton strikeThrough) {

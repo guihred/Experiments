@@ -3,6 +3,7 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 import static java.util.stream.Collectors.toList;
 
+import audio.mp3.GoogleImagesUtils;
 import cubesystem.ElementWiseOp;
 import ex.j9.Ch1;
 import ex.j9.Ch3;
@@ -26,12 +27,7 @@ import org.apache.commons.math3.complex.Complex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
-import others.OthersTests;
-import others.RandomHelloWorld;
-import others.TermFrequency;
-import others.TermFrequencyIndex;
-import others.UnRar;
-import others.UnZip;
+import others.*;
 import utils.HasLogging;
 import utils.MatrixSolver;
 import utils.ResourceFXUtils;
@@ -76,42 +72,9 @@ public class IndependentTest implements HasLogging {
     }
 
 	@Test
-    public void testHiragana() {
-        measureTime("HiraganaMaker.displayInHiragana", HiraganaMaker::displayInHiragana);
-    }
-
-	@Test
-    public void testTermFrequencyIndex() {
-        measureTime("TermFrequencyIndex.identifyKeyWordsInSourceFiles",
-                TermFrequencyIndex::identifyKeyWordsInSourceFiles);
-    }
-
-	@Test
-    public void testQuickSort() {
-        List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
-        Comparator<Integer> c = Integer::compareTo;
-        measureTime("QuickSortML.sort", () -> QuickSortML.sort(input, c.reversed()));
-        Assert.assertTrue("List should be sorted", Ch3.isSorted(input, c.reversed()));
-
-    }
-
-	@Test
-    public void testFastFourierTransform() {
-        double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
-        Complex[] cinput = measureTime("FastFourierTransform.fft", () -> FastFourierTransform.fft(input));
-        for (Complex c : cinput) {
-            LOGGER.trace("{}", c);
-        }
-    }
-
-	@Test
-    public void testRandomHelloWorld() {
-        measureTime("RandomHelloWorld.displayHelloWorld", RandomHelloWorld::displayHelloWorld);
-    }
-
-	@Test
-    public void testTermFrequency() {
-        measureTime("TermFrequency.displayTermFrequency", TermFrequency::displayTermFrequency);
+    public void testCh4() {
+        measureTime("Ch4.cyclicToString",
+                () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
     }
 
 	@Test
@@ -126,15 +89,35 @@ public class IndependentTest implements HasLogging {
     }
 
 	@Test
-    public void testCh4() {
-        measureTime("Ch4.cyclicToString",
-                () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
+    public void testFastFourierTransform() {
+        double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
+        Complex[] cinput = measureTime("FastFourierTransform.fft", () -> FastFourierTransform.fft(input));
+        for (Complex c : cinput) {
+            LOGGER.trace("{}", c);
+        }
     }
 
 	@Test
-    public void testRarAndZIP() {
-        measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
-        measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
+    public void testHiragana() {
+        measureTime("HiraganaMaker.displayInHiragana", HiraganaMaker::displayInHiragana);
+    }
+
+	@Test
+    public void testImagesTest() {
+		File userFolder = ResourceFXUtils.toFile("out").getParentFile();
+        String dataDir = userFolder + "\\";
+        String nameFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".jpg").toString();
+        String svgFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".svg").toString();
+        String pngFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".png").toString();
+        measureTime("ImageCreating.creating", () -> ImageCreating.creating(nameFile));
+        measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, svgFile));
+        measureTime("ImageLoading.binarize", () -> ImageLoading.binarize(dataDir, nameFile));
+        measureTime("ImageLoading.bradleyThreshold", () -> ImageLoading.bradleyThreshold(dataDir, pngFile));
+        measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, nameFile));
+        measureTime("ImageLoading.cropImage", () -> ImageLoading.cropImage(dataDir, nameFile));
+        measureTime("ImageLoading.exporting", () -> ImageLoading.exporting(dataDir, nameFile));
+        measureTime("ImageLoading.grayScale", () -> ImageLoading.grayScale(dataDir, nameFile));
+        measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
     }
 
 	@Test
@@ -151,21 +134,35 @@ public class IndependentTest implements HasLogging {
                 Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
     }
 
+	@Test
+    public void testQuickSort() {
+        List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
+        Comparator<Integer> c = Integer::compareTo;
+        measureTime("QuickSortML.sort", () -> QuickSortML.sort(input, c.reversed()));
+        Assert.assertTrue("List should be sorted", Ch3.isSorted(input, c.reversed()));
+
+    }
+
+	@Test
+    public void testRandomHelloWorld() {
+        measureTime("RandomHelloWorld.displayHelloWorld", RandomHelloWorld::displayHelloWorld);
+    }
+
+	@Test
+    public void testRarAndZIP() {
+        measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
+        measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
+        measureTime("GoogleImagesUtils.displayCountByExtension", () -> GoogleImagesUtils.displayCountByExtension());
+    }
+
+	@Test
+    public void testTermFrequency() {
+        measureTime("TermFrequency.displayTermFrequency", TermFrequency::displayTermFrequency);
+    }
+
     @Test
-    public void testImagesTest() {
-		File userFolder = ResourceFXUtils.toFile("out").getParentFile();
-        String dataDir = userFolder + "\\";
-        String nameFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".jpg").toString();
-        String svgFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".svg").toString();
-        String pngFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".png").toString();
-        measureTime("ImageCreating.creating", () -> ImageCreating.creating(nameFile));
-        measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, svgFile));
-        measureTime("ImageLoading.binarize", () -> ImageLoading.binarize(dataDir, nameFile));
-        measureTime("ImageLoading.bradleyThreshold", () -> ImageLoading.bradleyThreshold(dataDir, pngFile));
-        measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, nameFile));
-        measureTime("ImageLoading.cropImage", () -> ImageLoading.cropImage(dataDir, nameFile));
-        measureTime("ImageLoading.exporting", () -> ImageLoading.exporting(dataDir, nameFile));
-        measureTime("ImageLoading.grayScale", () -> ImageLoading.grayScale(dataDir, nameFile));
-        measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
+    public void testTermFrequencyIndex() {
+        measureTime("TermFrequencyIndex.identifyKeyWordsInSourceFiles",
+                TermFrequencyIndex::identifyKeyWordsInSourceFiles);
     }
 }

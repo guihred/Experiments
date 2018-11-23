@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
@@ -58,9 +59,11 @@ public class FXEnginePaintTest extends ApplicationTest {
 			Set<Node> queryAll2 = lookup("#tools .toggle-button").queryAll();
 			queryAll2.forEach(e -> {
 				clickOn(e);
+                scroll(5, VerticalDirection.DOWN);
 				stack.forEach(this::moveTo);
 				drag(MouseButton.PRIMARY);
 				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
+
 				drop();
 				lookup(".text-area").queryAll().forEach(f -> write("lsadjdnkasjd"));
 			});

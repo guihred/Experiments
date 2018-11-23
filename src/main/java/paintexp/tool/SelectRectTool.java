@@ -5,17 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -84,22 +79,8 @@ public class SelectRectTool extends PaintTool {
 		return Cursor.CROSSHAIR;
 	}
 
-	@Override
-    public void handleEvent(final MouseEvent e, final PaintModel model) {
-		EventType<? extends MouseEvent> eventType = e.getEventType();
-		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			onMousePressed(e, model);
-		}
-		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-			onMouseDragged(e, model);
-		}
-		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			onMouseReleased(model);
-		}
-	}
 
-
-	@Override
+    @Override
 	public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
 		KeyCode code = e.getCode();
         Bounds bounds = getArea().getBoundsInParent();
@@ -157,40 +138,8 @@ public class SelectRectTool extends PaintTool {
         selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
     }
 
-    private void addRect(final PaintModel model) {
-		ObservableList<Node> children = model.getImageStack().getChildren();
-		if (!children.contains(getArea())) {
-			children.add(getArea());
-		}
-		area.setStroke(Color.BLACK);
-		getArea().setManaged(false);
-		getArea().setFill(Color.TRANSPARENT);
-		getArea().setLayoutX(initialX);
-		getArea().setLayoutY(initialY);
-		getArea().setWidth(1);
-		getArea().setHeight(1);
-	}
-
-	private void copyFromFile(final PaintModel model, final List<File> files) {
-		if (!files.isEmpty()) {
-			File file = files.get(0);
-			try {
-				Image image2 = new Image(file.toURI().toURL().toExternalForm());
-				copyImage(model, image2, imageSelected);
-			} catch (Exception e1) {
-				LOG.error("", e1);
-			}
-		}
-	}
-
-	private void dragTo(final double x, final double y) {
-		getArea().setLayoutX(Double.min(x, initialX));
-		getArea().setLayoutY(Double.min(y, initialY));
-		getArea().setWidth(Math.abs(x - initialX));
-		getArea().setHeight(Math.abs(y - initialY));
-	}
-
-    private void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    @Override
+    protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double x = e.getX();
 		double y = e.getY();
 		double width = model.getImage().getWidth();
@@ -204,7 +153,8 @@ public class SelectRectTool extends PaintTool {
         dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
 	}
 
-	private void onMousePressed(final MouseEvent e, final PaintModel model) {
+	@Override
+    protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 
         if (children.contains(getArea())) {
@@ -231,13 +181,47 @@ public class SelectRectTool extends PaintTool {
 
 	}
 
-	private void onMouseReleased(final PaintModel model) {
+	@Override
+    protected  void onMouseReleased(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (getArea().getWidth() < 2 && children.contains(getArea()) && imageSelected != null) {
 
 			children.remove(getArea());
 		}
 		area.setStroke(Color.BLUE);
+	}
+
+    private void addRect(final PaintModel model) {
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (!children.contains(getArea())) {
+			children.add(getArea());
+		}
+		area.setStroke(Color.BLACK);
+		getArea().setManaged(false);
+		getArea().setFill(Color.TRANSPARENT);
+		getArea().setLayoutX(initialX);
+		getArea().setLayoutY(initialY);
+		getArea().setWidth(1);
+		getArea().setHeight(1);
+	}
+
+	private void copyFromFile(final PaintModel model, final List<File> files) {
+		if (!files.isEmpty()) {
+			File file = files.get(0);
+			try {
+				Image image2 = new Image(file.toURI().toURL().toExternalForm());
+				copyImage(model, image2, imageSelected);
+			} catch (Exception e1) {
+				LOG.error("", e1);
+			}
+		}
+	}
+
+    private void dragTo(final double x, final double y) {
+		getArea().setLayoutX(Double.min(x, initialX));
+		getArea().setLayoutY(Double.min(y, initialY));
+		getArea().setWidth(Math.abs(x - initialX));
+		getArea().setHeight(Math.abs(y - initialY));
 	}
 
     private void setIntoImage(final PaintModel model) {

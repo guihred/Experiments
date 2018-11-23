@@ -78,7 +78,6 @@ public class PolygonTool extends PaintTool {
 		if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
 			onMouseExited(model);
 		}
-
 	}
 
 	@Override
@@ -105,29 +104,8 @@ public class PolygonTool extends PaintTool {
         model.getToolOptions().getChildren().addAll(togglesAs);
 	}
 
-	private void onMouseExited(final PaintModel model) {
-		ObservableList<Node> children = model.getImageStack().getChildren();
-		if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
-            takeSnapshotFill(model, area);
-		}
-		children.remove(getArea());
-		children.remove(getLine());
-		getArea().getPoints().clear();
-	}
-
-	private void onMouseMoved(final MouseEvent e) {
-		ObservableList<Double> points = getArea().getPoints();
-		if (points.size() > 1) {
-			Double x = points.get(points.size() - 2);
-			Double y = points.get(points.size() - 1);
-			getLine().setStartX(x);
-			getLine().setStartY(y);
-			getLine().setEndX(e.getX());
-			getLine().setEndY(e.getY());
-		}
-	}
-
-    private void onMousePressed(final MouseEvent e, final PaintModel model) {
+	@Override
+    protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
 			children.add(getArea());
@@ -151,6 +129,28 @@ public class PolygonTool extends PaintTool {
         if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
             getArea().setFill(model.getBackColor());
         }
+	}
+
+	private void onMouseExited(final PaintModel model) {
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
+            takeSnapshotFill(model, area);
+		}
+		children.remove(getArea());
+		children.remove(getLine());
+		getArea().getPoints().clear();
+	}
+
+    private void onMouseMoved(final MouseEvent e) {
+		ObservableList<Double> points = getArea().getPoints();
+		if (points.size() > 1) {
+			Double x = points.get(points.size() - 2);
+			Double y = points.get(points.size() - 1);
+			getLine().setStartX(x);
+			getLine().setStartY(y);
+			getLine().setEndX(e.getX());
+			getLine().setEndY(e.getY());
+		}
 	}
 
 

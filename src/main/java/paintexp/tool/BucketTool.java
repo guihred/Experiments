@@ -14,7 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import paintexp.SimplePixelReader;
-import utils.ResourceFXUtils;
 
 public class BucketTool extends PaintTool {
 
@@ -35,11 +34,7 @@ public class BucketTool extends PaintTool {
 	@Override
 	public Node getIcon() {
 		if (icon == null) {
-			icon = new ImageView(ResourceFXUtils.toExternalForm("Bucket.png"));
-			icon.setPreserveRatio(true);
-			icon.setFitWidth(10);
-			icon.maxWidth(10);
-			icon.maxHeight(10);
+            icon = getIconByURL("Bucket.png");
 		}
 		return icon;
 	}
