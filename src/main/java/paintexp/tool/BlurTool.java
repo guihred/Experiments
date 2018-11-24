@@ -5,21 +5,15 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import org.slf4j.Logger;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
-import utils.HasLogging;
+import simplebuilder.SimpleSvgPathBuilder;
 
 public class BlurTool extends PaintTool {
 
-    private static final Logger LOG = HasLogging.log();
-
-
-	private ImageView icon;
-
+	private Node icon;
 
     private int y;
 
@@ -33,7 +27,8 @@ public class BlurTool extends PaintTool {
     @Override
 	public Node getIcon() {
 		if (icon == null) {
-            icon = getIconByURL("blur.png");
+			icon = new SimpleSvgPathBuilder().fill(Color.BLACK).stroke(Color.BLACK)
+					.content("M6,0 l -4,6 a5,5 0 1,0 8,0 l -4,-6 z").build();
 		}
 		return icon;
 	}
