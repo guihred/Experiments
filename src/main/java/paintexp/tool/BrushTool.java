@@ -10,7 +10,9 @@ import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -125,7 +127,7 @@ public class BrushTool extends PaintTool {
 		int y2 = (int) e.getY();
 		int x2 = (int) e.getX();
 		if (pressed && withinRange(x2, y2, model)) {
-            drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(model, x3, y3));
+			drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(e, model, x3, y3));
 
 			y = (int) e.getY();
 			x = (int) e.getX();
@@ -145,29 +147,32 @@ public class BrushTool extends PaintTool {
     protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
         y = (int) e.getY();
         x = (int) e.getX();
-        drawUponOption(model, x, y);
+		drawUponOption(e, model, x, y);
         pressed = true;
     }
 
-    private void drawUponOption(final PaintModel model, final int x2, final int y2) {
+	private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2) {
 
         if (withinRange(x2, y2, model)) {
             double r = length.getValue().doubleValue();
-            switch (option) {
+			Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
+			switch (option) {
                 case CIRCLE:
-                    drawPoint(model, x2, y2);
+					drawPoint(model, x2, y2, color);
                     for (double i = 1; i <= r; i++) {
-                        drawCircle(model, x2, y2, i, i, 12 * i, model.getFrontColor());
+						drawCircle(model, x2, y2, i, i, 12 * i, color);
                     }
                     break;
                 case SQUARE:
-                    drawSquare(model, x2, y2, (int) r, model.getFrontColor());
+					drawSquare(model, x2, y2, (int) r, color);
                     break;
                 case LINE_NW_SE:
-                    drawLine(model, x2, y2, x2 + r, y2 + r);
+					drawLine(model, x2, y2, x2 + r, y2 + r,
+							(x1, y1) -> model.getImage().getPixelWriter().setColor(x1, y1, color));
                     break;
                 case LINE_SW_NE:
-                    drawLine(model, x2, y2, x2 + r, y2 - r);
+					drawLine(model, x2, y2, x2 + r, y2 - r,
+							(x1, y1) -> model.getImage().getPixelWriter().setColor(x1, y1, color));
                     break;
                 default:
                     break;

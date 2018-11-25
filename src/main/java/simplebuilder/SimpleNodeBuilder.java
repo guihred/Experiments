@@ -12,7 +12,7 @@ import javafx.scene.input.MouseEvent;
 public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> implements SimpleBuilder<T> {
 	protected T node;
 
-    public SimpleNodeBuilder(T shape) {
+    public SimpleNodeBuilder(final T shape) {
 		this.node = shape;
 	}
 
@@ -20,98 +20,103 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 	public T build() {
 		return node;
 	}
-	public Z cursor(Cursor hand) {
+	public Z cursor(final Cursor hand) {
 		node.setCursor(hand);
 		return (Z) this;
 	}
 
-	public Z effect(Effect value) {
+	public Z effect(final Effect value) {
 		node.setEffect(value);
 		return (Z) this;
 	}
 
-	public Z id(String id) {
+	public Z id(final String id) {
 		node.setId(id);
 		return (Z) this;
 	}
-	public Z layoutX(double value) {
+	public Z layoutX(final double value) {
 		node.setLayoutX(value);
 		return (Z) this;
 	}
 
-    public Z layoutY(double value) {
+    public Z layoutY(final double value) {
         node.setLayoutY(value);
         return (Z) this;
     }
 
-    public Z managed(boolean value) {
+    public Z managed(final boolean value) {
         node.setManaged(value);
         return (Z) this;
     }
 
-	public Z onMouseClicked(EventHandler<? super MouseEvent> object) {
+	public Z onMouseClicked(final EventHandler<? super MouseEvent> object) {
 	    node.setOnMouseClicked(object);
 	    return (Z) this;
 	}
 
-	public Z onMouseDragged(EventHandler<? super MouseEvent> value) {
+	public Z onMouseDragged(final EventHandler<? super MouseEvent> value) {
 		node.setOnMouseDragged(value);
 		return (Z) this;
 	}
 
-    public Z onMousePressed(EventHandler<? super MouseEvent> object) {
+	public Z onMousePressed(final EventHandler<? super MouseEvent> object) {
 		node.setOnMousePressed(object);
 		return (Z) this;
 	}
 
-	public Z opacity(double i) {
+    public Z onMouseReleased(final EventHandler<? super MouseEvent> value) {
+		node.setOnMouseReleased(value);
+		return (Z) this;
+	}
+
+	public Z opacity(final double i) {
 		node.setOpacity(i);
 		return (Z) this;
 	}
 
-	public Z rotate(double value) {
+	public Z rotate(final double value) {
 		node.setRotate(value);
 		return (Z) this;
 	}
 
-	public Z rotate(ObservableValue<? extends Number> observable) {
+	public Z rotate(final ObservableValue<? extends Number> observable) {
 		node.rotateProperty().bind(observable);
 		return (Z) this;
 	}
 
-	public Z rotationAxis(Point3D value) {
+	public Z rotationAxis(final Point3D value) {
 		node.setRotationAxis(value);
 		return (Z) this;
 	}
 
-	public Z style(String i) {
+	public Z style(final String i) {
 		node.setStyle(i);
 		return (Z) this;
 	}
 
-	public Z styleClass(String string) {
+	public Z styleClass(final String string) {
         node.getStyleClass().add(string);
 		return (Z) this;
 	}
 
-	public Z translateX(double value) {
+	public Z translateX(final double value) {
 		node.setTranslateX(value);
 		return (Z) this;
 	}
 
 
 
-	public Z translateY(double value) {
+	public Z translateY(final double value) {
 		node.setTranslateY(value);
 		return (Z) this;
 	}
 
-	public Z translateZ(double value) {
+	public Z translateZ(final double value) {
 		node.setTranslateZ(value);
 		return (Z) this;
 	}
 
-    public Z visible(boolean value) {
+    public Z visible(final boolean value) {
         node.setVisible(value);
         return (Z) this;
     }
