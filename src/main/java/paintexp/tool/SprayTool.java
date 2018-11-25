@@ -51,7 +51,7 @@ public class SprayTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseDragged(final MouseEvent e, PaintModel model) {
+    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         centerX = (int) e.getX();
         centerY = (int) e.getY();
     }
@@ -83,7 +83,11 @@ public class SprayTool extends PaintTool {
                 if (withinRange(x + centerX, y + centerY, model)) {
                     argb = pixelReader.getArgb(x + centerX, y + centerY);
                 }
-                drawPoint(model, x + centerX, y + centerY);
+				try {
+					drawPoint(model, x + centerX, y + centerY);
+				} catch (Throwable e) {
+					LOG.trace("", e);
+				}
             } while (argb != frontColor && i++ < 10);
             tryToSleep();
         }

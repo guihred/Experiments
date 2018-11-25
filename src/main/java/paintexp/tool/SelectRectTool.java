@@ -31,6 +31,8 @@ public class SelectRectTool extends PaintTool {
 	protected WritableImage imageSelected;
 	private double initialX;
 	private double initialY;
+	private double dragX;
+	private double dragY;
 
 
 	public void copyFromClipboard(final PaintModel model) {
@@ -177,8 +179,8 @@ public class SelectRectTool extends PaintTool {
 		double height = model.getImage().getHeight();
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (children.contains(getArea()) && imageSelected != null) {
-            getArea().setLayoutX(Double.max(x - initialX, -width / 4));
-            getArea().setLayoutY(Double.max(y - initialY, -height / 4));
+			getArea().setLayoutX(Double.max(x - dragX, -width / 4));
+			getArea().setLayoutY(Double.max(y - dragY, -height / 4));
 			return;
 		}
         dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
@@ -191,6 +193,8 @@ public class SelectRectTool extends PaintTool {
         if (children.contains(getArea())) {
             if (containsPoint(getArea(), e.getX(), e.getY())) {
 				createSelectedImage(model);
+				dragX = e.getX() - getArea().getLayoutX();
+				dragY = e.getY() - getArea().getLayoutY();
                 return;
             }
             if (imageSelected != null) {
