@@ -3,7 +3,9 @@ package paintexp.tool;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import paintexp.PaintModel;
 
 public class PencilTool extends PaintTool {
@@ -36,8 +38,9 @@ public class PencilTool extends PaintTool {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
         if (pressed && withinRange(x2, y2, model)) {
-            model.getImage().getPixelWriter().setColor(x2, y2, model.getFrontColor());
-            drawLine(model, x, y, x2, y2);
+			Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
+			model.getImage().getPixelWriter().setColor(x2, y2, color);
+			drawLine(model, x, y, x2, y2, color);
             y = (int) e.getY();
             x = (int) e.getX();
         }
@@ -54,7 +57,7 @@ public class PencilTool extends PaintTool {
 	}
 
     @Override
-    protected void onMouseReleased(PaintModel model) {
+    protected void onMouseReleased(final PaintModel model) {
         pressed = false;
     }
 

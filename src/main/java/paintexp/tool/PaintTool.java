@@ -127,6 +127,11 @@ public abstract class PaintTool extends Group {
                 (x, y) -> model.getImage().getPixelWriter().setColor(x, y, model.getFrontColor()));
     }
 
+	protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
+			final double endY, final Color color) {
+		drawLine(model, startX, startY, endX, endY, (x, y) -> model.getImage().getPixelWriter().setColor(x, y, color));
+	}
+
     protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
             final double endY, final DrawOnPoint onPoint) {
         double d = endX - startX;

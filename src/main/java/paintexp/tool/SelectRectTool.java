@@ -119,6 +119,9 @@ public class SelectRectTool extends PaintTool {
 				if (imageSelected != null) {
 					setIntoImage(model);
 				}
+				if (model.getImageStack().getChildren().contains(getArea())) {
+					model.getImageStack().getChildren().remove(getArea());
+				}
 				break;
 			default:
 				break;

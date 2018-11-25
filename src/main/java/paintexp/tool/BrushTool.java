@@ -167,12 +167,10 @@ public class BrushTool extends PaintTool {
 					drawSquare(model, x2, y2, (int) r, color);
                     break;
                 case LINE_NW_SE:
-					drawLine(model, x2, y2, x2 + r, y2 + r,
-							(x1, y1) -> model.getImage().getPixelWriter().setColor(x1, y1, color));
+					drawLine(model, x2, y2, x2 + r, y2 + r, color);
                     break;
                 case LINE_SW_NE:
-					drawLine(model, x2, y2, x2 + r, y2 - r,
-							(x1, y1) -> model.getImage().getPixelWriter().setColor(x1, y1, color));
+					drawLine(model, x2, y2, x2 + r, y2 - r, color);
                     break;
                 default:
                     break;
