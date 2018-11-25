@@ -32,14 +32,15 @@ public class PictureTool extends PaintTool {
 			area.setStroke(Color.BLACK);
 			area.setManaged(false);
 		}
-        area.setContent(pic.getCorrectedPath());
+		area.setContent(pic.getCorrectedPath(10));
 		return area;
 	}
 
 	@Override
 	public SVGPath getIcon() {
 		if (icon == null) {
-			icon = PictureOption.HEART.toSVG();
+			icon = PictureOption.TRIANGLE.toSVG();
+			icon.setContent(PictureOption.TRIANGLE.getCorrectedPath(10));
 			icon.setFill(Color.TRANSPARENT);
 			icon.setStroke(Color.BLACK);
 		}

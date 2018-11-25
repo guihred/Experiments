@@ -26,6 +26,9 @@ public class EraserTool extends PaintTool {
     private Rectangle area;
     private IntegerProperty length = new SimpleIntegerProperty(10);
 
+	private int lastX;
+	private int lastY;
+
     public Rectangle getArea() {
         if (area == null) {
             area = new Rectangle(10, 10, Color.WHITE);
@@ -56,8 +59,11 @@ public class EraserTool extends PaintTool {
         if (MouseEvent.MOUSE_MOVED.equals(eventType)) {
             onMouseMoved(e, model);
         }
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType) || MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            onMousePressedOrDragged(e, model);
+		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+			onMousePressed(e, model);
+		}
+		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+			onMouseDragged(e, model);
         }
         if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
             getArea().setVisible(false);
@@ -67,8 +73,8 @@ public class EraserTool extends PaintTool {
         }
     }
 
-    @Override
-    public void handleKeyEvent(KeyEvent e, PaintModel paintModel) {
+	@Override
+    public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
         if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
             length.setValue(Integer.min(MAX_ERASER_SIZE,length.getValue()+1));
         }
@@ -79,12 +85,44 @@ public class EraserTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(PaintModel model) {
+    public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
         model.getToolOptions().getChildren()
                 .add(new SimpleSliderBuilder(1, MAX_ERASER_SIZE, 10).bindBidirectional(length).prefWidth(50).build());
     }
+
+    @Override
+    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    	int w = (int) getArea().getWidth();
+    	drawLine(model, lastX, lastY, e.getX(), e.getY(), (x,y)->{
+    		if (e.getButton() == MouseButton.PRIMARY) {
+    			drawSquare(model, x, y, w, model.getBackColor());
+    		} else {
+    			drawSquare(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
+    		}	
+		});
+		getArea().setLayoutX(e.getX());
+		getArea().setLayoutY(e.getY());
+		lastX = (int) e.getX();
+		lastY = (int) e.getY();
+    }
+
+	@Override
+	protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+		int y = (int) e.getY();
+		int x = (int) e.getX();
+		int w = (int) getArea().getWidth();
+		if (e.getButton() == MouseButton.PRIMARY) {
+			drawSquare(model, x, y, w, model.getBackColor());
+		} else {
+			drawSquare(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
+		}
+		getArea().setLayoutX(e.getX());
+		getArea().setLayoutY(e.getY());
+		lastX = x;
+		lastY = y;
+	}
 
     private void onMouseMoved(final MouseEvent e, final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
@@ -93,19 +131,6 @@ public class EraserTool extends PaintTool {
         }
         getArea().setFill(model.getBackColor());
         getArea().setStroke(model.getBackColor().invert());
-        getArea().setLayoutX(e.getX());
-        getArea().setLayoutY(e.getY());
-    }
-
-    private void onMousePressedOrDragged(final MouseEvent e, final PaintModel model) {
-        int y = (int) e.getY();
-        int x = (int) e.getX();
-        int w = (int) getArea().getWidth();
-        if (e.getButton() == MouseButton.PRIMARY) {
-            drawSquare(model, x, y, w, model.getBackColor());
-        } else {
-            drawSquare(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
-        }
         getArea().setLayoutX(e.getX());
         getArea().setLayoutY(e.getY());
     }

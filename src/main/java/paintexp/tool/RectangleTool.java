@@ -66,7 +66,7 @@ public class RectangleTool extends PaintTool {
 	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren()
-				.add(new SimpleSliderBuilder(0, 100, 0).bindBidirectional(getArea().arcWidthProperty()).maxWidth(100)
+				.add(new SimpleSliderBuilder(0, 100, 0).bindBidirectional(getArea().arcWidthProperty()).maxWidth(60)
 						.build());
         getArea().arcHeightProperty().bind(getArea().arcWidthProperty());
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
@@ -96,7 +96,7 @@ public class RectangleTool extends PaintTool {
 	}
 
 	@Override
-    protected  void onMouseDragged(final MouseEvent e, PaintModel model) {
+    protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double layoutX = initialX;
 		double layoutY = initialY;
 		double x = e.getX();

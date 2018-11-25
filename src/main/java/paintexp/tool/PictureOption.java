@@ -24,7 +24,7 @@ enum PictureOption {
     STAR_6("M10,0 L12.875,5.020 18.660,5 15.750,10 18.660,15 12.875,14.980 10,20 7.125,14.980 1.340,15 4.250,10 1.340,5 7.125,5.020 z"),
     HEART("M15.53 1A5.52 5.52 0 0 0 11 4 5.52 5.52 0 0 0 0 6.58C0 12.37 11 20 11 20s11-7.63 11-13.42A5.53 5.53 0 0 0 15.53 1z"),;
 
-    private static final int PREF_WIDTH = 20;
+	private static final int PREF_WIDTH = 20;
 
     private String path;
     private double width;
@@ -36,7 +36,11 @@ enum PictureOption {
     }
 
     public String getCorrectedPath() {
-        return correctPath(path);
+		return correctPath(path, PREF_WIDTH);
+	}
+
+	public String getCorrectedPath(final int prefWidth) {
+		return correctPath(path, prefWidth);
     }
 
     public double getHeight() {
@@ -65,7 +69,7 @@ enum PictureOption {
         return svgPath;
     }
 
-    public static String correctPath(final String path) {
+	public static String correctPath(final String path, final int prefWidth) {
         Pattern compile = Pattern.compile("([\\d\\.]+)");
         Matcher a = compile.matcher(path);
         double max = 1;
@@ -86,7 +90,7 @@ enum PictureOption {
 
             }
             String format = "%." + indexOf + "f";
-            a.appendReplacement(sb, String.format(Locale.ENGLISH, format, parseDouble * PREF_WIDTH / max));
+			a.appendReplacement(sb, String.format(Locale.ENGLISH, format, parseDouble * prefWidth / max));
         }
         a.appendTail(sb);
         return sb.toString();
@@ -96,7 +100,7 @@ enum PictureOption {
         Stream.of(PictureOption.values()).filter(e -> e.path != null).forEach(ConsumerEx.makeConsumer(e -> {
             HasLogging.log().info("{}", e);
             HasLogging.log().info("{}", e.path);
-            HasLogging.log().info("{}", correctPath(e.path));
+			HasLogging.log().info("{}", correctPath(e.path, PREF_WIDTH));
         }));
     }
 
