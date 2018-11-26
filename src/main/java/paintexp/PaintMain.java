@@ -16,11 +16,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -49,6 +45,13 @@ public class PaintMain extends  Application{
 				.addMenuItem("Select _All", e -> controller.selectAll())
 				.addMenu("_View")
                 .addMenu("_Image")
+                    .addMenuItem("Flip/Rotate", "Ctrl+R", e -> controller.flipRotate())
+                    .addMenuItem("Resize/Skew", "Ctrl+W", e -> {})
+                    .addMenuItem("Crop", e -> {})
+                    .addMenuItem("Invert Colors", "Ctrl+I", e -> {})
+                    .addMenuItem("Attributes", "Ctrl+E", e -> {})
+                    .addMenuItem("Clear Image", e -> {})
+                    .addMenuItem("Draw Opaque", e -> {})
                 .addMenu("_Colors")
                 .addMenu("_Help")
                 .build());

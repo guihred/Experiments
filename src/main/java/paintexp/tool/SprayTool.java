@@ -85,7 +85,7 @@ public class SprayTool extends PaintTool {
                 }
 				try {
 					drawPoint(model, x + centerX, y + centerY);
-				} catch (Throwable e) {
+                } catch (Exception e) {
 					LOG.trace("", e);
 				}
             } while (argb != frontColor && i++ < 10);

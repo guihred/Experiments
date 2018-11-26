@@ -12,13 +12,12 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.control.Toggle;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -68,6 +67,38 @@ public class PaintController {
         Bounds bounds = a.getArea().getBoundsInParent();
         a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
 	}
+	public void flipRotate() {
+        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+        WritableImage image;
+        if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
+            image = tool.createSelectedImage(paintModel);
+        } else {
+            image = paintModel.getImage();
+        }
+        int height = (int) image.getHeight();
+        int width = (int) image.getWidth();
+        WritableImage writableImage = new WritableImage(height, width);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        PixelReader pixelReader = image.getPixelReader();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
+            }
+        }
+        if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
+            tool.getArea().setWidth(height);
+            tool.getArea().setHeight(width);
+            tool.getArea().setFill(new ImagePattern(writableImage));
+            tool.setImageSelected(writableImage);
+        } else {
+            getPaintModel().getImageStack().getChildren().clear();
+            ImageView imageView = new ImageView(writableImage);
+            getPaintModel().setImage(writableImage);
+            getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+            getPaintModel().getImageStack().getChildren().add(imageView);
+        }
+    }
+
 	public List<Color> getColors() {
 		List<Color> availableColors = new ArrayList<>();
 		int a = 360 / 12;
@@ -148,7 +179,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-	public void openFile(final Window ownerWindow) {
+    public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -171,7 +202,7 @@ public class PaintController {
         }
     }
 
-    public void paste() {
+	public void paste() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
@@ -183,7 +214,7 @@ public class PaintController {
 	    saveFile(primaryStage);
 	}
 
-	public void saveFile(final Stage primaryStage) {
+    public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -201,33 +232,32 @@ public class PaintController {
 		}
 	}
 
-    public void selectAll() {
+	public void selectAll() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
 	}
 
-	private void onColorClicked(final Color color, Rectangle rectangle, MouseEvent e) {
+    private void onColorClicked(final Color color, Rectangle rectangle, MouseEvent e) {
         if (e.getClickCount() > 1) {
-        	CustomColorDialog dialog = new CustomColorDialog(rectangle.getScene().getWindow());
-        	dialog.setCurrentColor(color);
-        	dialog.setOnUse(() -> {
-        		Color customColor = dialog.getCustomColor();
-        		if (MouseButton.PRIMARY == e.getButton()) {
-        			getPaintModel().setFrontColor(customColor);
-        		} else {
-        			getPaintModel().setBackColor(customColor);
-        		}
-        	});
-        	dialog.setOnSave(() -> rectangle.setFill(dialog.getCustomColor()));
-        	dialog.show();
+            CustomColorDialog dialog = new CustomColorDialog(rectangle.getScene().getWindow());
+            dialog.setCurrentColor(color);
+            dialog.setOnUse(() -> {
+                Color customColor = dialog.getCustomColor();
+                if (MouseButton.PRIMARY == e.getButton()) {
+                    getPaintModel().setFrontColor(customColor);
+                } else {
+                    getPaintModel().setBackColor(customColor);
+                }
+            });
+            dialog.setOnSave(() -> rectangle.setFill(dialog.getCustomColor()));
+            dialog.show();
         } else if (MouseButton.PRIMARY == e.getButton()) {
-        	getPaintModel().setFrontColor((Color) rectangle.getFill());
+            getPaintModel().setFrontColor((Color) rectangle.getFill());
         } else {
-        	getPaintModel().setBackColor((Color) rectangle.getFill());
+            getPaintModel().setBackColor((Color) rectangle.getFill());
         }
     }
-
 
 }

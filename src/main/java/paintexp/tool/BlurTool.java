@@ -14,14 +14,9 @@ import simplebuilder.SimpleSvgPathBuilder;
 public class BlurTool extends PaintTool {
 
 	private Node icon;
-
     private int y;
-
     private int x;
-
-
     private IntegerProperty length = new SimpleIntegerProperty(10);
-
 	private Color[] colors = new Color[length.get() * length.get() * 4];
 
     @Override
@@ -54,7 +49,7 @@ public class BlurTool extends PaintTool {
 		int y2 = (int) e.getY();
 		int x2 = (int) e.getX();
         if (withinRange(x2, y2, model)) {
-            drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(model, x3, y3));
+            drawLine(model, x, y, x2, y2, (x3, y3) -> drawBlur(x3, y3, model));
 			y = (int) e.getY();
 			x = (int) e.getX();
         }
@@ -64,7 +59,7 @@ public class BlurTool extends PaintTool {
     protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
         y = (int) e.getY();
         x = (int) e.getX();
-        drawUponOption(model, x, y);
+        drawBlur(x, y, model);
     }
     private void drawBlur(final int centerX, final int centerY, final PaintModel model) {
 		final int radius = length.get();
@@ -113,10 +108,6 @@ public class BlurTool extends PaintTool {
 				drawPoint(model, i / diameter - radius + centerX, i % diameter - radius + centerY, colors[i]);
 			}
 		}
-    }
-
-    private void drawUponOption(final PaintModel model, final int x2, final int y2) {
-		drawBlur(x2, y2, model);
     }
 
 }

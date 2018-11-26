@@ -22,16 +22,17 @@ public class Cubes3D extends Application {
 		stage.setTitle("Cube 3D");
 
 		Cube c = new Cube(50, Color.RED, 1);
-		c.rx.setAngle(45);
-		c.ry.setAngle(45);
+        int initialAngle = 45;
+        c.rx.setAngle(initialAngle);
+        c.ry.setAngle(initialAngle);
 		Cube c2 = new Cube(50, Color.GREEN, 1);
 		c2.setTranslateX(100);
-		c2.rx.setAngle(45);
-		c2.ry.setAngle(45);
+        c2.rx.setAngle(initialAngle);
+        c2.ry.setAngle(initialAngle);
 		Cube c3 = new Cube(50, Color.ORANGE, 1);
 		c3.setTranslateX(-100);
-		c3.rx.setAngle(45);
-		c3.ry.setAngle(45);
+        c3.rx.setAngle(initialAngle);
+        c3.ry.setAngle(initialAngle);
 		Timeline animation = new Timeline();
 		animation.getKeyFrames().addAll(
 				new KeyFrame(Duration.ZERO, 

@@ -20,7 +20,8 @@ import simplebuilder.SimpleTimelineBuilder;
 
 public class ArkanoidModel {
 
-	private Circle circle = new Circle(190, 250, 5, Color.RED);
+    private static final int RIGHT_BORDER = 350;
+    private Circle circle = new Circle(190, 250, 5, Color.RED);
 	private Group group;
     private int x = 1;
     private int y = 2;
@@ -37,7 +38,7 @@ public class ArkanoidModel {
 			final KeyCode code = event.getCode();
             switch (code) {
                 case RIGHT:
-                    if (rectangle.getX() < 350) {
+                    if (rectangle.getX() < RIGHT_BORDER) {
                         rectangle.setX(rectangle.getX() + 10);
                     }
                     break;
@@ -51,7 +52,7 @@ public class ArkanoidModel {
 			}
 		});
 		scene.setOnMouseMoved((MouseEvent event) -> {
-			if (event.getX() > 0 && event.getX() < 350) {
+            if (event.getX() > 0 && event.getX() < RIGHT_BORDER) {
 				rectangle.setX(event.getX());
 			}
 		});

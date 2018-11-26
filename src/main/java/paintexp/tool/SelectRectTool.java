@@ -10,11 +10,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -62,7 +58,21 @@ public class SelectRectTool extends PaintTool {
 		systemClipboard.setContent(content);
 	}
 
-	public Rectangle getArea() {
+	public WritableImage createSelectedImage(final PaintModel model) {
+		if (imageSelected == null) {
+            int width = (int) area.getWidth();
+            int height = (int) area.getHeight();
+            imageSelected = new WritableImage(width, height);
+            int layoutX = (int) area.getLayoutX();
+            int layoutY = (int) area.getLayoutY();
+            copyImagePart(model.getImage(), imageSelected, layoutX, layoutY, width, height);
+            getArea().setFill(new ImagePattern(imageSelected));
+            drawRect(model, layoutX, layoutY, width, height);
+		}
+		return imageSelected;
+	}
+
+    public Rectangle getArea() {
 		if (area == null) {
 			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.cursor(Cursor.MOVE)
@@ -136,7 +146,11 @@ public class SelectRectTool extends PaintTool {
 		onMouseReleased(model);
 	}
 
-	protected void addRect(final PaintModel model) {
+	public void setImageSelected(WritableImage imageSelected) {
+        this.imageSelected = imageSelected;
+    }
+
+    protected void addRect(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
 			children.add(getArea());
@@ -160,19 +174,6 @@ public class SelectRectTool extends PaintTool {
 
         selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
     }
-
-	protected void createSelectedImage(final PaintModel model) {
-		if (imageSelected == null) {
-		int width = (int) area.getWidth();
-		int height = (int) area.getHeight();
-		imageSelected = new WritableImage(width, height);
-		int layoutX = (int) area.getLayoutX();
-		int layoutY = (int) area.getLayoutY();
-		copyImagePart(model.getImage(), imageSelected, layoutX, layoutY, width, height);
-		getArea().setFill(new ImagePattern(imageSelected));
-		drawRect(model, layoutX, layoutY, width, height);
-		}
-	}
 
 	@Override
     protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
