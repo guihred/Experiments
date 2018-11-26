@@ -80,5 +80,8 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         toggleGroup.selectToggle(toggleGroup.getToggles().get(index));
         return this;
     }
+    public Toggle selectedItem() {
+        return toggleGroup.getSelectedToggle();
+    }
 
 }

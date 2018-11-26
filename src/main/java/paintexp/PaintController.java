@@ -11,21 +11,30 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.image.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javax.imageio.ImageIO;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import paintexp.tool.PaintTool;
 import paintexp.tool.SelectRectTool;
+import simplebuilder.SimpleToggleGroupBuilder;
 import utils.HasLogging;
 
 @SuppressWarnings("restriction")
@@ -59,6 +68,16 @@ public class PaintController {
 		a.copyToClipboard(paintModel);
 	}
 
+	public void crop() {
+        WritableImage image = getImage();
+        getPaintModel().getImageStack().getChildren().clear();
+        ImageView imageView = new ImageView(image);
+        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+        tool.setImageSelected(null);
+        getPaintModel().setImage(image);
+        getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+        getPaintModel().getImageStack().getChildren().add(imageView);
+    }
 	public void cut() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
@@ -67,7 +86,8 @@ public class PaintController {
         Bounds bounds = a.getArea().getBoundsInParent();
         a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
 	}
-	public void flipRotate() {
+
+    public void flipRotate() {
         WritableImage image = getImage();
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
@@ -103,7 +123,7 @@ public class PaintController {
         return availableColors;
     }
 
-    public PaintModel getPaintModel() {
+	public PaintModel getPaintModel() {
 		return paintModel;
 	}
 
@@ -179,7 +199,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-	public void openFile(final Window ownerWindow) {
+    public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -202,19 +222,57 @@ public class PaintController {
         }
     }
 
-    public void paste() {
+	public void paste() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.copyFromClipboard(paintModel);
 	}
 
-	public void saveAsFile(final Stage primaryStage) {
-	    paintModel.setCurrentFile(null);
-	    saveFile(primaryStage);
-	}
+	public void resize() {
+        WritableImage image = getImage();
+        Stage stage = new Stage();
+        VBox root = new VBox();
+        root.getChildren().add(new Text("Redimension"));
+        SimpleToggleGroupBuilder groupBuilder = new SimpleToggleGroupBuilder();
+        List<RadioButton> togglesAs = groupBuilder.addRadioToggle("Percentage")
+                .addRadioToggle("Pixels")
+                .select(0)
+                .getTogglesAs(RadioButton.class);
+        HBox row1 = new HBox(new Text("By:"));
+        row1.getChildren().addAll(togglesAs);
+        root.getChildren().add(row1);
+        TextField widthField = new TextField("100");
+        root.getChildren().add(new HBox(new Text("Width:"), widthField));
+        TextField heightField = new TextField("100");
+        root.getChildren().add(new HBox(new Text("Height:"), heightField));
+        CheckBox keepProportion = new CheckBox("Keep Proportion");
+        keepProportion.setSelected(true);
+        root.getChildren().add(keepProportion);
+        groupBuilder.onChange(
+                (o, old, newV) -> {
+                    boolean pencentage = "Percentage".equals(((RadioButton) newV).getText());
+                    widthField.setText(pencentage ? "100" : "" + (int) image.getWidth());
+                    heightField.setText(pencentage ? "100" : "" + (int) image.getHeight());
+                });
+        double ratio = image.getWidth() / image.getHeight();
+        keepProportion
+                .setOnAction(e -> onResizeOptionsChange(groupBuilder, keepProportion, widthField, heightField, ratio));
+        widthField.textProperty()
+                .addListener(e -> onResizeOptionsChange(groupBuilder, keepProportion, widthField, heightField, ratio));
+        heightField.textProperty()
+                .addListener(
+                        e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, 1 / ratio));
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
 
-	public void saveFile(final Stage primaryStage) {
+    public void saveAsFile(final Stage primaryStage) {
+        paintModel.setCurrentFile(null);
+        saveFile(primaryStage);
+    }
+
+    public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -232,14 +290,20 @@ public class PaintController {
 		}
 	}
 
-    public void selectAll() {
+	public void selectAll() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
 	}
 
-	private WritableImage getImage() {
+    private void changeIfDifferent(TextField heightField, String replaceAll) {
+        if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - tryParse(replaceAll)) > 1) {
+            heightField.setText(replaceAll);
+        }
+    }
+
+    private WritableImage getImage() {
         SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
         WritableImage image;
         if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
@@ -271,6 +335,23 @@ public class PaintController {
         }
     }
 
+    private void onResizeOptionsChange(SimpleToggleGroupBuilder groupBuilder, CheckBox keepProportion,
+            TextField changedField, TextField otherField, double ratio) {
+        RadioButton selectedItem = (RadioButton) groupBuilder.selectedItem();
+        if (keepProportion.isSelected()) {
+            if ("Percentage".equals(selectedItem.getText())) {
+                changeIfDifferent(otherField, changedField.getText());
+                return;
+            }
+            if (StringUtils.isNumeric(changedField.getText())) {
+                int width2 = tryParse(changedField);
+                String newHeight = "" + (int) (ratio * width2);
+                changeIfDifferent(otherField, newHeight);
+            }
+        }
+
+    }
+
     private void setImage(WritableImage writableImage) {
         SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
         if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
@@ -285,6 +366,19 @@ public class PaintController {
             getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
             getPaintModel().getImageStack().getChildren().add(imageView);
         }
+    }
+
+    private int tryParse(String widthField) {
+        try {
+            return Integer.parseInt(widthField);
+        } catch (NumberFormatException e) {
+            LOG.trace("whatever",e);
+            return 0;
+        }
+    }
+
+    private int tryParse(TextField widthField) {
+       return tryParse(widthField.getText().replaceAll("\\D", ""));
     }
 
 }
