@@ -48,7 +48,7 @@ public class PaintMain extends  Application{
                     .addMenuItem("Flip/Rotate", "Ctrl+R", e -> controller.flipRotate())
                     .addMenuItem("Resize/Skew", "Ctrl+W", e -> {})
                     .addMenuItem("Crop", e -> {})
-                    .addMenuItem("Invert Colors", "Ctrl+I", e -> {})
+                    .addMenuItem("Invert Colors", "Ctrl+I", e -> controller.invertColors())
                     .addMenuItem("Attributes", "Ctrl+E", e -> {})
                     .addMenuItem("Clear Image", e -> {})
                     .addMenuItem("Draw Opaque", e -> {})

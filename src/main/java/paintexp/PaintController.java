@@ -68,13 +68,7 @@ public class PaintController {
         a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
 	}
 	public void flipRotate() {
-        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
-        WritableImage image;
-        if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
-            image = tool.createSelectedImage(paintModel);
-        } else {
-            image = paintModel.getImage();
-        }
+        WritableImage image = getImage();
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
         WritableImage writableImage = new WritableImage(height, width);
@@ -85,42 +79,31 @@ public class PaintController {
                 pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
             }
         }
-        if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
-            tool.getArea().setWidth(height);
-            tool.getArea().setHeight(width);
-            tool.getArea().setFill(new ImagePattern(writableImage));
-            tool.setImageSelected(writableImage);
-        } else {
-            getPaintModel().getImageStack().getChildren().clear();
-            ImageView imageView = new ImageView(writableImage);
-            getPaintModel().setImage(writableImage);
-            getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-            getPaintModel().getImageStack().getChildren().add(imageView);
-        }
+        setImage(writableImage);
     }
 
-	public List<Color> getColors() {
-		List<Color> availableColors = new ArrayList<>();
-		int a = 360 / 12;
-		for (int i = 0; i < 128; i += 64) {
-			availableColors.add(Color.grayRgb(i));
-		}
-		for (int i = 0; i < 360; i += a) {
-			availableColors.add(Color.hsb(i, 1, 1));
-		}
-		availableColors.add(Color.WHITE);
-		availableColors.add(Color.grayRgb(128));
-		for (int i = 0; i < 360 / 2; i += a) {
-			availableColors.add(Color.hsb(i, 1, 0.5));
-		}
-		for (int i = 360 / 2; i < 330; i += a) {
-			availableColors.add(Color.hsb(i, .5, 1));
-		}
-		availableColors.add(Color.TRANSPARENT);
-		return availableColors;
-	}
+    public List<Color> getColors() {
+        List<Color> availableColors = new ArrayList<>();
+        int a = 360 / 12;
+        for (int i = 0; i < 128; i += 64) {
+            availableColors.add(Color.grayRgb(i));
+        }
+        for (int i = 0; i < 360; i += a) {
+            availableColors.add(Color.hsb(i, 1, 1));
+        }
+        availableColors.add(Color.WHITE);
+        availableColors.add(Color.grayRgb(128));
+        for (int i = 0; i < 360 / 2; i += a) {
+            availableColors.add(Color.hsb(i, 1, 0.5));
+        }
+        for (int i = 360 / 2; i < 330; i += a) {
+            availableColors.add(Color.hsb(i, .5, 1));
+        }
+        availableColors.add(Color.TRANSPARENT);
+        return availableColors;
+    }
 
-	public PaintModel getPaintModel() {
+    public PaintModel getPaintModel() {
 		return paintModel;
 	}
 
@@ -157,6 +140,23 @@ public class PaintController {
 		}
 	}
 
+	public void invertColors() {
+        WritableImage image = getImage();
+        int height = (int) image.getHeight();
+        int width = (int) image.getWidth();
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        PixelReader pixelReader = image.getPixelReader();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                pixelWriter.setColor(i, j, pixelReader.getColor(i, j).invert());
+            }
+        }
+        setImage(writableImage);
+	    
+	    
+    }
+
 	public void newFile() {
 		getPaintModel().setImage(new WritableImage(500, 500));
 		int w = (int) getPaintModel().getImage().getWidth();
@@ -179,7 +179,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-    public void openFile(final Window ownerWindow) {
+	public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -202,7 +202,7 @@ public class PaintController {
         }
     }
 
-	public void paste() {
+    public void paste() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
@@ -214,7 +214,7 @@ public class PaintController {
 	    saveFile(primaryStage);
 	}
 
-    public void saveFile(final Stage primaryStage) {
+	public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -232,12 +232,23 @@ public class PaintController {
 		}
 	}
 
-	public void selectAll() {
+    public void selectAll() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
 	}
+
+	private WritableImage getImage() {
+        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+        WritableImage image;
+        if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
+            image = tool.createSelectedImage(paintModel);
+        } else {
+            image = paintModel.getImage();
+        }
+        return image;
+    }
 
     private void onColorClicked(final Color color, Rectangle rectangle, MouseEvent e) {
         if (e.getClickCount() > 1) {
@@ -257,6 +268,22 @@ public class PaintController {
             getPaintModel().setFrontColor((Color) rectangle.getFill());
         } else {
             getPaintModel().setBackColor((Color) rectangle.getFill());
+        }
+    }
+
+    private void setImage(WritableImage writableImage) {
+        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+        if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
+            tool.getArea().setWidth(writableImage.getWidth());
+            tool.getArea().setHeight(writableImage.getHeight());
+            tool.getArea().setFill(new ImagePattern(writableImage));
+            tool.setImageSelected(writableImage);
+        } else {
+            getPaintModel().getImageStack().getChildren().clear();
+            ImageView imageView = new ImageView(writableImage);
+            getPaintModel().setImage(writableImage);
+            getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+            getPaintModel().getImageStack().getChildren().add(imageView);
         }
     }
 
