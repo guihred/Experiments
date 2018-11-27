@@ -45,19 +45,20 @@ public class SelectRectTool extends PaintTool {
 	}
 
 	public void copyToClipboard(final PaintModel model) {
-		Clipboard systemClipboard = Clipboard.getSystemClipboard();
-		double width = area.getWidth();
-		double height = area.getHeight();
-		imageSelected = new WritableImage((int) width, (int) height);
-		int layoutX = (int) area.getLayoutX();
-		int layoutY = (int) area.getLayoutY();
-		int maxWidth = (int) model.getImage().getWidth();
-		int maxHeight = (int) model.getImage().getHeight();
-		copyImagePart(model.getImage(), imageSelected, Integer.min(Integer.max(layoutX, 0), maxWidth),
-				Integer.min(Integer.max(layoutY, 0), maxHeight), width, height);
+        if (imageSelected == null) {
+            double width = area.getWidth();
+            double height = area.getHeight();
+            imageSelected = new WritableImage((int) width, (int) height);
+            int layoutX = (int) area.getLayoutX();
+            int layoutY = (int) area.getLayoutY();
+            int maxWidth = (int) model.getImage().getWidth();
+            int maxHeight = (int) model.getImage().getHeight();
+            copyImagePart(model.getImage(), imageSelected, Integer.min(Integer.max(layoutX, 0), maxWidth),
+                    Integer.min(Integer.max(layoutY, 0), maxHeight), width, height);
+        }
         Map<DataFormat, Object> content = new HashMap<>();
 		content.put(DataFormat.IMAGE, imageSelected);
-		systemClipboard.setContent(content);
+		Clipboard.getSystemClipboard().setContent(content);
 	}
 
 	public WritableImage createSelectedImage(final PaintModel model) {
