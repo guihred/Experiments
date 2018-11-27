@@ -177,6 +177,36 @@ public class PaintController {
 	    
     }
 
+	public void mirrorHorizontally() {
+        WritableImage image = getImage();
+        int height = (int) image.getHeight();
+        int width = (int) image.getWidth();
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        PixelReader pixelReader = image.getPixelReader();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                pixelWriter.setColor(width - i - 1, j, pixelReader.getColor(i, j));
+            }
+        }
+        setImage(writableImage);
+    }
+
+    public void mirrorVertically() {
+        WritableImage image = getImage();
+        int height = (int) image.getHeight();
+        int width = (int) image.getWidth();
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        PixelReader pixelReader = image.getPixelReader();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                pixelWriter.setColor(i, height - j - 1, pixelReader.getColor(i, j));
+            }
+        }
+        setImage(writableImage);
+    }
+
 	public void newFile() {
 		getPaintModel().setImage(new WritableImage(500, 500));
 		int w = (int) getPaintModel().getImage().getWidth();
@@ -190,7 +220,7 @@ public class PaintController {
 
 	}
 
-	public Rectangle newRectangle(final Color color) {
+    public Rectangle newRectangle(final Color color) {
 		Rectangle rectangle = new Rectangle(20, 20, color);
 		rectangle.setStroke(Color.BLACK);
 
@@ -199,7 +229,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-    public void openFile(final Window ownerWindow) {
+	public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -229,7 +259,7 @@ public class PaintController {
 		a.copyFromClipboard(paintModel);
 	}
 
-	public void resize() {
+    public void resize() {
         WritableImage image = getImage();
         Stage stage = new Stage();
         VBox root = new VBox();
@@ -272,7 +302,7 @@ public class PaintController {
         saveFile(primaryStage);
     }
 
-    public void saveFile(final Stage primaryStage) {
+	public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -290,7 +320,7 @@ public class PaintController {
 		}
 	}
 
-	public void selectAll() {
+    public void selectAll() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
@@ -378,7 +408,7 @@ public class PaintController {
     }
 
     private int tryParse(TextField widthField) {
-       return tryParse(widthField.getText().replaceAll("\\D", ""));
+        return tryParse(widthField.getText().replaceAll("\\D", ""));
     }
 
 }
