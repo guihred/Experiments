@@ -75,6 +75,7 @@ public class PolygonTool extends PaintTool {
 		}
 		if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
 			onMouseExited(model);
+
 		}
 	}
 
@@ -133,6 +134,7 @@ public class PolygonTool extends PaintTool {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
             takeSnapshotFill(model, area);
+            model.createImageVersion();
 		}
 		children.remove(getArea());
 		children.remove(getLine());

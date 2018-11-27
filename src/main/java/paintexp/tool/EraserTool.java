@@ -65,6 +65,9 @@ public class EraserTool extends PaintTool {
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
 			onMouseDragged(e, model);
         }
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            model.createImageVersion();
+        }
         if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
             getArea().setVisible(false);
         }

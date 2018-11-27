@@ -77,6 +77,7 @@ public class PaintController {
         getPaintModel().setImage(image);
         getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
         getPaintModel().getImageStack().getChildren().add(imageView);
+        paintModel.createImageVersion();
     }
 	public void cut() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
@@ -100,6 +101,7 @@ public class PaintController {
             }
         }
         setImage(writableImage);
+        paintModel.createImageVersion();
     }
 
     public List<Color> getColors() {
@@ -173,8 +175,7 @@ public class PaintController {
             }
         }
         setImage(writableImage);
-	    
-	    
+        paintModel.createImageVersion();
     }
 
 	public void mirrorHorizontally() {
@@ -190,6 +191,7 @@ public class PaintController {
             }
         }
         setImage(writableImage);
+        paintModel.createImageVersion();
     }
 
     public void mirrorVertically() {
@@ -205,6 +207,7 @@ public class PaintController {
             }
         }
         setImage(writableImage);
+        paintModel.createImageVersion();
     }
 
 	public void newFile() {
@@ -265,7 +268,8 @@ public class PaintController {
         VBox root = new VBox();
         root.getChildren().add(new Text("Redimension"));
         SimpleToggleGroupBuilder groupBuilder = new SimpleToggleGroupBuilder();
-        List<RadioButton> togglesAs = groupBuilder.addRadioToggle("Percentage")
+        String percentage = "Percentage";
+        List<RadioButton> togglesAs = groupBuilder.addRadioToggle(percentage)
                 .addRadioToggle("Pixels")
                 .select(0)
                 .getTogglesAs(RadioButton.class);
@@ -281,7 +285,7 @@ public class PaintController {
         root.getChildren().add(keepProportion);
         groupBuilder.onChange(
                 (o, old, newV) -> {
-                    boolean pencentage = "Percentage".equals(((RadioButton) newV).getText());
+                    boolean pencentage = percentage.equals(((RadioButton) newV).getText());
                     widthField.setText(pencentage ? "100" : "" + (int) image.getWidth());
                     heightField.setText(pencentage ? "100" : "" + (int) image.getHeight());
                 });
@@ -326,6 +330,18 @@ public class PaintController {
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
 	}
+
+    public void undo() {
+        List<WritableImage> imageVersions = paintModel.getImageVersions();
+        if (!imageVersions.isEmpty()) {
+            WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
+            getPaintModel().getImageStack().getChildren().clear();
+            ImageView imageView = new ImageView(writableImage);
+            getPaintModel().setImage(writableImage);
+            getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+            getPaintModel().getImageStack().getChildren().add(imageView);
+        }
+    }
 
     private void changeIfDifferent(TextField heightField, String replaceAll) {
         if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - tryParse(replaceAll)) > 1) {

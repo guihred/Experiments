@@ -6,12 +6,8 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.*;
 import javafx.scene.image.PixelFormat.Type;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -31,18 +27,17 @@ public abstract class PaintTool extends Group {
 
     public abstract Cursor getMouseCursor();
 
-    public void handleEvent(final MouseEvent e, final PaintModel model) {
+    public void handleEvent(MouseEvent e, PaintModel model) {
         EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
             onMousePressed(e, model);
         }
-
         if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
             onMouseDragged(e, model);
         }
-
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             onMouseReleased(model);
+            model.createImageVersion();
         }
 
     }

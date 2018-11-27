@@ -1,6 +1,7 @@
 package paintexp.tool;
 
 import javafx.collections.ObservableList;
+import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -47,6 +48,21 @@ public class CurveTool extends PaintTool {
 		return Cursor.CROSSHAIR;
 	}
 
+    @Override
+    public void handleEvent(MouseEvent e, PaintModel model) {
+        EventType<? extends MouseEvent> eventType = e.getEventType();
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+            onMousePressed(e, model);
+        }
+
+        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+            onMouseDragged(e, model);
+        }
+
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            onMouseReleased(model);
+        }
+    }
 
     @Override
     protected void onMouseDragged(final MouseEvent e, PaintModel model) {
@@ -88,6 +104,7 @@ public class CurveTool extends PaintTool {
 		ObservableList<Node> children = model.getImageStack().getChildren();
         if ((size() >= 2 || !children.contains(getLine())) && stage == 2) {
             takeSnapshot(model, line);
+            model.createImageVersion();
         }
         stage = ++stage % 3;
 	}

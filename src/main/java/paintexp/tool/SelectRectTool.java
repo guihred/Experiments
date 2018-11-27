@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.ObservableList;
+import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -100,42 +101,58 @@ public class SelectRectTool extends PaintTool {
 
 
     @Override
-	public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
-		KeyCode code = e.getCode();
+    public void handleEvent(MouseEvent e, PaintModel model) {
+        EventType<? extends MouseEvent> eventType = e.getEventType();
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+            onMousePressed(e, model);
+        }
+        
+        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+            onMouseDragged(e, model);
+        }
+        
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            onMouseReleased(model);
+        }
+    }
+
+    @Override
+    public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
+        KeyCode code = e.getCode();
         Bounds bounds = getArea().getBoundsInParent();
-		switch (code) {
-			case DELETE:
-				drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-				break;
-			case V:
-				if (e.isControlDown()) {
-					copyFromClipboard(model);
-				}
-				break;
-			case C:
-				if (e.isControlDown()) {
-					copyToClipboard(model);
-				}
-				break;
+        switch (code) {
+            case DELETE:
+                drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+                break;
+            case V:
+                if (e.isControlDown()) {
+                    copyFromClipboard(model);
+                }
+                break;
+            case C:
+                if (e.isControlDown()) {
+                    copyToClipboard(model);
+                }
+                break;
             case X:
                 if (e.isControlDown()) {
                     copyToClipboard(model);
                     drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+                    model.createImageVersion();
                 }
                 break;
-			case A:
-				if (e.isControlDown()) {
-					selectArea(0, 0, model.getImage().getWidth(), model.getImage().getHeight(), model);
-				}
-				break;
-			case ESCAPE:
+            case A:
+                if (e.isControlDown()) {
+                    selectArea(0, 0, model.getImage().getWidth(), model.getImage().getHeight(), model);
+                }
+                break;
+            case ESCAPE:
                 escapeArea(model);
-				break;
-			default:
-				break;
-		}
-	}
-
+                break;
+            default:
+                break;
+        }
+    }
     public void selectArea(final int x, final int y, final double w, final double h, final PaintModel model) {
 		initialX = x;
 		initialY = y;
@@ -226,6 +243,7 @@ public class SelectRectTool extends PaintTool {
         copyImagePart(imageSelected, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
 		imageSelected = null;
 		model.getImageStack().getChildren().remove(getArea());
+        model.createImageVersion();
 	}
 
 	private void copyFromFile(final PaintModel model, final List<File> files) {
