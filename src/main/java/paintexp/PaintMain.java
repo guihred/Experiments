@@ -39,19 +39,22 @@ public class PaintMain extends  Application{
 				.addMenuItem("_Save", "Ctrl+S", e -> controller.saveFile(primaryStage))
                 .addMenuItem("Save _As", e -> controller.saveAsFile(primaryStage))
                 .addMenu("_Edit")
+                .addMenuItem("Select _All", e -> controller.selectAll())
 				.addMenuItem("C_opy", e -> controller.copy(), controller.containsSelectedArea().not())
 				.addMenuItem("_Paste", e -> controller.paste())
 				.addMenuItem("_Cut", e -> controller.cut(), controller.containsSelectedArea().not())
-				.addMenuItem("Select _All", e -> controller.selectAll())
+                .addMenuItem("Undo", "Ctrl+Z", e -> controller.undo())
 				.addMenu("_View")
                 .addMenu("_Image")
-                    .addMenuItem("_Flip/Rotate", "Ctrl+R", e -> controller.flipRotate())
-                    .addMenuItem("_Crop", e -> controller.crop(), controller.containsSelectedArea().not())
-                    .addMenuItem("_Invert Colors", "Ctrl+I", e -> controller.invertColors())
+                .addMenuItem("_Flip/Rotate", "Ctrl+R", e -> controller.flipRotate())
+                .addMenuItem("_Crop", e -> controller.crop(), controller.containsSelectedArea().not())
+                .addMenuItem("_Invert Colors", "Ctrl+I", e -> controller.invertColors())
                 .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> controller.resize())
-                    .addMenuItem("Attribut_es", "Ctrl+E", e -> {})
-                    .addMenuItem("Clear Image", e -> {})
-                    .addMenuItem("_Draw Opaque", e -> {})
+                .addMenuItem("Mirror _Horizontally", "Ctrl+H", e -> controller.mirrorHorizontally())
+                .addMenuItem("Mirror _Vertically", "Ctrl+M", e -> controller.mirrorVertically())
+                .addMenuItem("Attribut_es", "Ctrl+E", e -> {})
+                .addMenuItem("Clear Image", e -> {})
+                .addMenuItem("_Draw Opaque", e -> {})
                 .addMenu("_Colors")
                 .addMenu("_Help")
                 .build());
@@ -111,13 +114,9 @@ public class PaintMain extends  Application{
                 .stroke(Color.GRAY)
                 .fill(objectProperty).build();
     }
-
     public static void main(final String[] args) {
 		CrawlerTask.insertProxyConfig();
 		System.setProperty("prism.lcdtext", "false");
         launch(args);
-
     }
-
-
 }

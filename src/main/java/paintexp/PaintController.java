@@ -84,6 +84,7 @@ public class PaintController {
         getPaintModel().setImage(image);
         getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
         getPaintModel().getImageStack().getChildren().add(imageView);
+        paintModel.createImageVersion();
     }
 
     public void cut() {
@@ -108,6 +109,7 @@ public class PaintController {
             }
         }
         setImage(writableImage);
+        paintModel.createImageVersion();
     }
 
 	public List<Color> getColors() {
@@ -181,8 +183,39 @@ public class PaintController {
             }
         }
         setImage(writableImage);
-	    
-	    
+        paintModel.createImageVersion();
+    }
+
+	public void mirrorHorizontally() {
+        WritableImage image = getImage();
+        int height = (int) image.getHeight();
+        int width = (int) image.getWidth();
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        PixelReader pixelReader = image.getPixelReader();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                pixelWriter.setColor(width - i - 1, j, pixelReader.getColor(i, j));
+            }
+        }
+        setImage(writableImage);
+        paintModel.createImageVersion();
+    }
+
+    public void mirrorVertically() {
+        WritableImage image = getImage();
+        int height = (int) image.getHeight();
+        int width = (int) image.getWidth();
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        PixelReader pixelReader = image.getPixelReader();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                pixelWriter.setColor(i, height - j - 1, pixelReader.getColor(i, j));
+            }
+        }
+        setImage(writableImage);
+        paintModel.createImageVersion();
     }
 
 	public void newFile() {
@@ -237,7 +270,7 @@ public class PaintController {
 		a.copyFromClipboard(paintModel);
 	}
 
-	public void resize() {
+    public void resize() {
         WritableImage image = getImage();
         Stage stage = new Stage();
         VBox root = new VBox();
@@ -282,7 +315,7 @@ public class PaintController {
         saveFile(primaryStage);
     }
 
-    public void saveFile(final Stage primaryStage) {
+	public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -306,6 +339,18 @@ public class PaintController {
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
 	}
+
+    public void undo() {
+        List<WritableImage> imageVersions = paintModel.getImageVersions();
+        if (!imageVersions.isEmpty()) {
+            WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
+            getPaintModel().getImageStack().getChildren().clear();
+            ImageView imageView = new ImageView(writableImage);
+            getPaintModel().setImage(writableImage);
+            getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+            getPaintModel().getImageStack().getChildren().add(imageView);
+        }
+    }
 
 	private void changeIfDifferent(final TextField heightField, final String replaceAll) {
         if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - tryParse(replaceAll)) > 1) {

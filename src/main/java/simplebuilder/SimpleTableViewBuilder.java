@@ -21,6 +21,15 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table = node;
 	}
 
+    public <V> SimpleTableViewBuilder<T> addColumn(String columnName,
+            Callback<TableColumn<T, V>, TableCell<T, V>> value) {
+        final TableColumn<T, V> column = new TableColumn<>(columnName);
+        column.setCellFactory(value);
+        column.setPrefWidth(150);
+        table.getColumns().add(column);
+        return this;
+    }
+
     public SimpleTableViewBuilder<T> addColumn(String columnName, Function<T, String> propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(

@@ -65,6 +65,9 @@ public class EraserTool extends PaintTool {
 		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
 			onMouseDragged(e, model);
         }
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            model.createImageVersion();
+        }
         if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
             getArea().setVisible(false);
         }
@@ -130,7 +133,9 @@ public class EraserTool extends PaintTool {
             children.add(getArea());
         }
         getArea().setFill(model.getBackColor());
-        getArea().setStroke(model.getBackColor().invert());
+        Color invert = model.getBackColor().invert();
+        Color color = new Color(invert.getRed(), invert.getGreen(), invert.getBlue(), 1);
+        getArea().setStroke(color);
         getArea().setLayoutX(e.getX());
         getArea().setLayoutY(e.getY());
     }

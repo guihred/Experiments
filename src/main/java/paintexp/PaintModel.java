@@ -3,6 +3,8 @@ package paintexp;
 import java.io.File;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
@@ -24,10 +26,17 @@ public class PaintModel {
     private Text mousePosition = new Text();
 	private VBox toolOptions;
 	private File currentFile;
+    private final ObservableList<WritableImage> imageVersions = FXCollections.observableArrayList();
     private Rectangle rectangleBorder;
+
     public ObjectProperty<Color> backColorProperty() {
         return backColor;
-	}public ObjectProperty<Color> frontColorProperty() {
+	}public void createImageVersion() {
+        imageVersions
+                .add(new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight()));
+    }
+
+    public ObjectProperty<Color> frontColorProperty() {
         return frontColor;
     }
 
@@ -38,10 +47,10 @@ public class PaintModel {
     public File getCurrentFile() {
 		return currentFile;
 	}
-
     public Color getFrontColor() {
         return frontColor.get();
     }
+
     public WritableImage getImage() {
         return image;
     }
@@ -49,7 +58,6 @@ public class PaintModel {
     public Text getImageSize() {
         return imageSize;
     }
-
     public Group getImageStack() {
         if (imageStack == null) {
             ImageView imageView = new ImageView(getImage());
@@ -64,6 +72,10 @@ public class PaintModel {
         }
 
         return imageStack;
+    }
+
+    public ObservableList<WritableImage> getImageVersions() {
+        return imageVersions;
     }
 
     public Text getMousePosition() {
@@ -100,7 +112,6 @@ public class PaintModel {
     public Text getToolSize() {
         return toolSize;
     }
-
     public Rectangle resetToolOptions() {
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.grayRgb(128));
@@ -110,23 +121,24 @@ public class PaintModel {
         toolOptions.getChildren().add(rectangle);
         return rectangle;
     }
+
+
     public void setBackColor(final Color backColor) {
         this.backColor.set(backColor);
     }
-
-
     public void setCurrentFile(final File currentFile) {
 		this.currentFile = currentFile;
 	}
-    public void setFrontColor(final Color frontColor) {
+
+	public void setFrontColor(final Color frontColor) {
         this.frontColor.set(frontColor);
     }
 
-	public void setImage(final WritableImage image) {
+    public void setImage(final WritableImage image) {
         this.image = image;
     }
 
-    public void setImageSize(final Text imageSize) {
+	public void setImageSize(final Text imageSize) {
         this.imageSize = imageSize;
     }
 
@@ -142,7 +154,7 @@ public class PaintModel {
 		this.toolSize = toolSize;
 	}
 
-	public ObjectProperty<PaintTool> toolProperty() {
+    public ObjectProperty<PaintTool> toolProperty() {
     	return tool;
 	}
 

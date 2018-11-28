@@ -90,6 +90,7 @@ public class RotateTool extends SelectRectTool {
 		takeSnapshotFill(model, getArea());
 		imageSelected = null;
 		dragged = false;
+        model.createImageVersion();
 	}
 
 	private List<Circle> getCircles(final PaintModel model) {

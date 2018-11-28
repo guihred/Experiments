@@ -21,7 +21,7 @@ public class PictureTool extends PaintTool {
 	private SVGPath area;
 	private int initialX;
 	private int initialY;
-	private PictureOption pic = PictureOption.HEART;
+    private PictureOption pic = PictureOption.TRIANGLE;
     private FillOption option = FillOption.STROKE;
 
 	public SVGPath getArea() {
@@ -82,8 +82,10 @@ public class PictureTool extends PaintTool {
 		validOptions.forEach(e -> picOptions.addToggle(e.toSVG(), e));
 
 		VBox value = new VBox();
-		value.getChildren().addAll(picOptions.onChange((o, old, newV) -> pic = (PictureOption) newV.getUserData())
-				.select(validOptions.size() - 1)
+        value.getChildren()
+                .addAll(picOptions.onChange((o, old,
+                        newV) -> pic = newV == null ? PictureOption.TRIANGLE : (PictureOption) newV.getUserData())
+                .select(0)
 				.getTogglesAs(Node.class));
 
 		ScrollPane scrollPane = new ScrollPane();

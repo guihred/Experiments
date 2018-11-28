@@ -46,8 +46,8 @@ public class BucketTool extends PaintTool {
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
-
 			onMouseClicked(e, model);
+
 		}
 	}
 
@@ -73,6 +73,7 @@ public class BucketTool extends PaintTool {
 			}
 
 		}
+        model.createImageVersion();
 	}
 
 	private void addIfNotIn(final List<Integer> toGo, final Integer e) {

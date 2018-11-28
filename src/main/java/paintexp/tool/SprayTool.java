@@ -3,7 +3,6 @@ package paintexp.tool;
 import java.util.Random;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -34,11 +33,6 @@ public class SprayTool extends PaintTool {
             icon = getIconByURL("spray.png");
         }
         return icon;
-    }
-
-    @Override
-    public Cursor getMouseCursor() {
-        return Cursor.DEFAULT;
     }
 
     @Override
