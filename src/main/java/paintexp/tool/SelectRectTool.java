@@ -13,7 +13,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -79,7 +83,12 @@ public class SelectRectTool extends PaintTool {
 		return imageSelected;
 	}
 
-    public Rectangle getArea() {
+    @Override
+	public void onDeselected(final PaintModel model) {
+		escapeArea(model);
+	}
+
+	public Rectangle getArea() {
 		if (area == null) {
 			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.cursor(Cursor.MOVE)
@@ -97,14 +106,14 @@ public class SelectRectTool extends PaintTool {
 		return icon;
 	}
 
-	@Override
+
+    @Override
 	public Cursor getMouseCursor() {
 		return Cursor.CROSSHAIR;
 	}
 
-
     @Override
-    public void handleEvent(MouseEvent e, PaintModel model) {
+    public void handleEvent(final MouseEvent e, final PaintModel model) {
         EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
             onMousePressed(e, model);
@@ -118,7 +127,6 @@ public class SelectRectTool extends PaintTool {
             onMouseReleased(model);
         }
     }
-
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
         KeyCode code = e.getCode();
@@ -156,7 +164,8 @@ public class SelectRectTool extends PaintTool {
                 break;
         }
     }
-    public void selectArea(final int x, final int y, final double w, final double h, final PaintModel model) {
+
+	public void selectArea(final int x, final int y, final double w, final double h, final PaintModel model) {
 		initialX = x;
 		initialY = y;
 		addRect(model);
@@ -164,11 +173,11 @@ public class SelectRectTool extends PaintTool {
 		onMouseReleased(model);
 	}
 
-	public void setImageSelected(WritableImage imageSelected) {
+	public void setImageSelected(final WritableImage imageSelected) {
         this.imageSelected = imageSelected;
     }
 
-	protected void addRect(final PaintModel model) {
+    protected void addRect(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
 			children.add(getArea());
@@ -210,7 +219,7 @@ public class SelectRectTool extends PaintTool {
         dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
 	}
 
-    @Override
+	@Override
     protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 
@@ -240,7 +249,7 @@ public class SelectRectTool extends PaintTool {
 		area.setStroke(Color.BLUE);
 	}
 
-	protected void setIntoImage(final PaintModel model) {
+    protected void setIntoImage(final PaintModel model) {
 		int x = (int) getArea().getLayoutX();
 		int y = (int) getArea().getLayoutY();
 		double width = getArea().getWidth();
@@ -251,7 +260,7 @@ public class SelectRectTool extends PaintTool {
         model.createImageVersion();
 	}
 
-    private void copyFromFile(final PaintModel model, final List<File> files) {
+	private void copyFromFile(final PaintModel model, final List<File> files) {
 		if (!files.isEmpty()) {
 			File file = files.get(0);
 			try {
@@ -279,7 +288,7 @@ public class SelectRectTool extends PaintTool {
         }
     }
 
-	private void replaceColor(WritableImage writableImage, Color backColor, Color transparent) {
+	private void replaceColor(final WritableImage writableImage, final Color backColor, final Color transparent) {
         PixelReader pixelReader = writableImage.getPixelReader();
         PixelWriter pixelWriter = writableImage.getPixelWriter();
         for (int i = 0; i < writableImage.getWidth(); i++) {
@@ -289,8 +298,6 @@ public class SelectRectTool extends PaintTool {
                 }
             }
         }
-        
-        
     }
 
 }

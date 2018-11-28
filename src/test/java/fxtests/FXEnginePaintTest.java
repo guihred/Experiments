@@ -66,6 +66,10 @@ public class FXEnginePaintTest extends ApplicationTest {
 				clickOn(e);
                 scroll(1, VerticalDirection.DOWN);
 				stack.forEach(this::moveTo);
+				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
+				drag(MouseButton.PRIMARY);
+				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
+				drop();
 				drag(MouseButton.PRIMARY);
 				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
 				drop();
@@ -78,7 +82,7 @@ public class FXEnginePaintTest extends ApplicationTest {
     @Test
     public void testMenus() {
         interactNoWait(RunnableEx.makeRunnable(() -> new PaintMain().start(currentStage)));
-        List<MenuButton> node = lookup((Node i) -> i instanceof MenuButton).queryAllAs(MenuButton.class).stream()
+		List<MenuButton> node = lookup((final Node i) -> i instanceof MenuButton).queryAllAs(MenuButton.class).stream()
                 .collect(Collectors.toList());
         ClassReflectionUtils.displayStyleClass(currentStage.getScene().getRoot());
         for (int i = 1; i < node.size(); i++) {

@@ -1,5 +1,6 @@
 
 
+
 package paintexp;
 
 import graphs.entities.ZoomableScrollPane;
@@ -16,7 +17,11 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -52,9 +57,12 @@ public class PaintMain extends  Application{
                 .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> controller.resize())
                 .addMenuItem("Mirror _Horizontally", "Ctrl+H", e -> controller.mirrorHorizontally())
                 .addMenuItem("Mirror _Vertically", "Ctrl+M", e -> controller.mirrorVertically())
-                .addMenuItem("Attribut_es", "Ctrl+E", e -> {})
-                .addMenuItem("Clear Image", e -> {})
-                .addMenuItem("_Draw Opaque", e -> {})
+				.addMenuItem("Attribut_es", "Ctrl+E", e -> {
+					/* NOTHING YET */})
+				.addMenuItem("Clear Image", e -> {
+					/* NOTHING YET */})
+				.addMenuItem("_Draw Opaque", e -> {
+					/* NOTHING YET */})
                 .addMenu("_Colors")
                 .addMenu("_Help")
                 .build());

@@ -57,6 +57,10 @@ public class PaintController {
         getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
         getPaintModel().getImageStack().getChildren().add(imageView);
 		if (newValue != null) {
+			PaintTool tool = getPaintModel().getTool();
+			if (tool != null) {
+				tool.onDeselected(getPaintModel());
+			}
 			getPaintModel().setTool((PaintTool) newValue.getUserData());
 			PaintTool paintTool = getPaintModel().getTool();
 			paintTool.onSelected(getPaintModel());
