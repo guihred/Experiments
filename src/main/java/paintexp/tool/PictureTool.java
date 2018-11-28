@@ -82,7 +82,9 @@ public class PictureTool extends PaintTool {
 		validOptions.forEach(e -> picOptions.addToggle(e.toSVG(), e));
 
 		VBox value = new VBox();
-		value.getChildren().addAll(picOptions.onChange((o, old, newV) -> pic = (PictureOption) newV.getUserData())
+        value.getChildren()
+                .addAll(picOptions.onChange((o, old,
+                        newV) -> pic = newV == null ? PictureOption.TRIANGLE : (PictureOption) newV.getUserData())
                 .select(0)
 				.getTogglesAs(Node.class));
 

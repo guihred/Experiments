@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
@@ -15,6 +18,7 @@ import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import paintexp.PaintMain;
+import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
@@ -28,8 +32,9 @@ public class FXEnginePaintTest extends ApplicationTest {
         currentStage = stage;
     }
 
+
     @Test
-    public void verify() throws Exception {
+    public void testaToolsVerify() throws Exception {
 		interactNoWait(RunnableEx.makeRunnable(() -> new PaintMain().start(currentStage)));
 		List<Node> queryAll = lookup(e -> e instanceof ToggleButton).queryAll().stream().collect(Collectors.toList());
 		Set<Node> stack = lookup(e -> e instanceof ZoomableScrollPane).queryAllAs(ZoomableScrollPane.class)
@@ -59,16 +64,31 @@ public class FXEnginePaintTest extends ApplicationTest {
 			Set<Node> queryAll2 = lookup("#tools .toggle-button").queryAll();
 			queryAll2.forEach(e -> {
 				clickOn(e);
-                scroll(5, VerticalDirection.DOWN);
+                scroll(1, VerticalDirection.DOWN);
 				stack.forEach(this::moveTo);
 				drag(MouseButton.PRIMARY);
 				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
-
 				drop();
-				lookup(".text-area").queryAll().forEach(f -> write("lsadjdnkasjd"));
+                lookup(".text-area").queryAll().forEach(f -> write("lsad"));
 			});
 
+        }
+    }
 
+    @Test
+    public void testMenus() {
+        interactNoWait(RunnableEx.makeRunnable(() -> new PaintMain().start(currentStage)));
+        List<MenuButton> node = lookup((Node i) -> i instanceof MenuButton).queryAllAs(MenuButton.class).stream()
+                .collect(Collectors.toList());
+        ClassReflectionUtils.displayStyleClass(currentStage.getScene().getRoot());
+        for (int i = 1; i < node.size(); i++) {
+            MenuButton e = node.get(i);
+            clickOn(e);
+            ObservableList<MenuItem> items = e.getItems();
+            items.forEach(f -> {
+                interactNoWait(() -> f.fire());
+                sleep(1000);
+            });
         }
     }
 }

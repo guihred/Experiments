@@ -16,6 +16,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -146,6 +147,10 @@ public final class ClassReflectionUtils {
 
     private static void displayStyleClass(String n,Node node) {
         String arg1 = n + node.getClass().getSimpleName();
+        if (node instanceof Labeled) {
+            HasLogging.log(1).info("{} = {} = \"{}\"", arg1, node.getStyleClass(), ((Labeled) node).getText());
+        }
+
         HasLogging.log(1).info("{} = {}", arg1, node.getStyleClass());
         if(node instanceof Parent) {
             ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
