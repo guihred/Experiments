@@ -305,7 +305,11 @@ public class PaintController {
                 .addListener(
                         e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, 1 / ratio));
 		root.getChildren()
-				.add(CommonsFX.newButton("Resize", e -> finishResize(image, groupBuilder, widthField, heightField)));
+				.add(CommonsFX.newButton("Resize", e -> {
+					finishResize(image, groupBuilder, widthField, heightField);
+					stage.close();
+					paintModel.createImageVersion();
+				}));
         stage.setScene(new Scene(root));
         stage.show();
     }
