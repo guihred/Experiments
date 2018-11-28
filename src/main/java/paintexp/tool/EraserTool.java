@@ -133,7 +133,9 @@ public class EraserTool extends PaintTool {
             children.add(getArea());
         }
         getArea().setFill(model.getBackColor());
-        getArea().setStroke(model.getBackColor().invert());
+        Color invert = model.getBackColor().invert();
+        Color color = new Color(invert.getRed(), invert.getGreen(), invert.getBlue(), 1);
+        getArea().setStroke(color);
         getArea().setLayoutX(e.getX());
         getArea().setLayoutY(e.getY());
     }

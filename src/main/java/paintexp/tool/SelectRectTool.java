@@ -10,6 +10,8 @@ import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
@@ -70,6 +72,7 @@ public class SelectRectTool extends PaintTool {
             int layoutX = (int) area.getLayoutX();
             int layoutY = (int) area.getLayoutY();
             copyImagePart(model.getImage(), imageSelected, layoutX, layoutY, width, height);
+            replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
             getArea().setFill(new ImagePattern(imageSelected));
             drawRect(model, layoutX, layoutY, width, height);
 		}
@@ -185,7 +188,9 @@ public class SelectRectTool extends PaintTool {
         if (destImage == null) {
             imageSelected = new WritableImage((int) width, (int) height);
         }
-        copyImagePart(srcImage, destImage != null ? destImage : imageSelected, 0, 0, width, height);
+        WritableImage writableImage = destImage != null ? destImage : imageSelected;
+        copyImagePart(srcImage, writableImage, 0, 0, width, height, 0, 0, model.getBackColor());
+        replaceColor(writableImage, model.getBackColor(), Color.TRANSPARENT);
 
         selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
     }
@@ -205,7 +210,7 @@ public class SelectRectTool extends PaintTool {
         dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
 	}
 
-	@Override
+    @Override
     protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 
@@ -235,7 +240,7 @@ public class SelectRectTool extends PaintTool {
 		area.setStroke(Color.BLUE);
 	}
 
-    protected void setIntoImage(final PaintModel model) {
+	protected void setIntoImage(final PaintModel model) {
 		int x = (int) getArea().getLayoutX();
 		int y = (int) getArea().getLayoutY();
 		double width = getArea().getWidth();
@@ -246,7 +251,7 @@ public class SelectRectTool extends PaintTool {
         model.createImageVersion();
 	}
 
-	private void copyFromFile(final PaintModel model, final List<File> files) {
+    private void copyFromFile(final PaintModel model, final List<File> files) {
 		if (!files.isEmpty()) {
 			File file = files.get(0);
 			try {
@@ -272,6 +277,20 @@ public class SelectRectTool extends PaintTool {
         if (model.getImageStack().getChildren().contains(getArea())) {
         	model.getImageStack().getChildren().remove(getArea());
         }
+    }
+
+	private void replaceColor(WritableImage writableImage, Color backColor, Color transparent) {
+        PixelReader pixelReader = writableImage.getPixelReader();
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        for (int i = 0; i < writableImage.getWidth(); i++) {
+            for (int j = 0; j < writableImage.getHeight(); j++) {
+                if(pixelReader.getColor(i, j).equals(backColor)) {
+                    pixelWriter.setColor(i, j, transparent);
+                }
+            }
+        }
+        
+        
     }
 
 }

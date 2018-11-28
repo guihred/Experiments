@@ -103,7 +103,7 @@ public class CurveTool extends PaintTool {
     protected void onMouseReleased(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
         if ((size() >= 2 || !children.contains(getLine())) && stage == 2) {
-            takeSnapshot(model, line);
+            takeSnapshotFill(model, line);
             model.createImageVersion();
         }
         stage = ++stage % 3;

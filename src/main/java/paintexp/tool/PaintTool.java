@@ -12,6 +12,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import paintexp.PaintModel;
+import paintexp.SimplePixelReader;
 import utils.ResourceFXUtils;
 
 public abstract class PaintTool extends Group {
@@ -25,7 +26,9 @@ public abstract class PaintTool extends Group {
 
     public abstract Node getIcon();
 
-    public abstract Cursor getMouseCursor();
+    public Cursor getMouseCursor() {
+        return Cursor.DEFAULT;
+    }
 
     public void handleEvent(MouseEvent e, PaintModel model) {
         EventType<? extends MouseEvent> eventType = e.getEventType();
@@ -67,6 +70,8 @@ public abstract class PaintTool extends Group {
 
     protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height, final int xOffset, final int yOffset, final Color ignoreColor) {
+        int argb = SimplePixelReader.toArgb(ignoreColor);
+        boolean isTransparent = ignoreColor.equals(Color.TRANSPARENT);
         PixelReader pixelReader = srcImage.getPixelReader();
         double srcWidth = srcImage.getWidth();
         double srcHeight = srcImage.getHeight();
@@ -78,12 +83,15 @@ public abstract class PaintTool extends Group {
             for (int j = 0; j < height; j++) {
                 if (within(i + xOffset, destWidth) && within(j + yOffset, destHeight) && within(i + x, srcWidth)
                         && within(j + y, srcHeight)) {
-                    Color color = pixelReader.getColor(i + x, j + y);
+                    int color = pixelReader.getArgb(i + x, j + y);
                     if (Type.BYTE_BGRA_PRE == type) {
-                        color = Color.hsb(color.getHue(), color.getSaturation(), color.getBrightness());
+                        Color color2 = pixelReader.getColor(i + x, j + y);
+                        color = SimplePixelReader
+                                .toArgb(Color.hsb(color2.getHue(), color2.getSaturation(), color2.getBrightness(),
+                                        color2.getOpacity()));
                     }
-                    if (!color.equals(ignoreColor)) {
-                        pixelWriter.setColor(i + xOffset, j + yOffset, color);
+                    if (color != argb) {
+                        pixelWriter.setArgb(i + xOffset, j + yOffset, isTransparent ? color | 0xFF000000 : color);
                     }
                 }
             }
@@ -135,19 +143,20 @@ public abstract class PaintTool extends Group {
 
         double minX = Double.min(startX, endX);
         double maxX = Double.max(startX, endX);
+        double minY = Double.min(startY, endY);
+        double maxY = Double.max(startY, endY);
+
         for (int x = (int) minX; x < maxX; x++) {
             int y = (int) (!Double.isNaN(a) ? Math.round(a * x + b) : endY);
-            if (withinRange(x, y, model)) {
+            if (withinRange(x, y, model) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
                 onPoint.draw(x, y);
             }
         }
 
-        double minY = Double.min(startY, endY);
-        double maxY = Double.max(startY, endY);
         for (int y = (int) minY; y < maxY; y++) {
             if (a != 0) {
                 int x = (int) (Double.isNaN(a) ? startX : Math.round((y - b) / a));
-                if (withinRange(x, y, model)) {
+                if (withinRange(x, y, model) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
                     onPoint.draw(x, y);
                 }
             }
@@ -221,23 +230,6 @@ public abstract class PaintTool extends Group {
 
 	protected int setWithinRange(final int num, final int min, final int max) {
 		return Math.min(Math.max(min, num), max);
-    }
-
-    protected void takeSnapshot(final PaintModel model, final Node line2) {
-        Bounds bounds = line2.getBoundsInParent();
-        int width = (int) bounds.getWidth() + 2;
-        int height = (int) bounds.getHeight() + 2;
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(model.getBackColor());
-        WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
-        int x = (int) bounds.getMinX();
-        int y = (int) bounds.getMinY();
-        copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, model.getBackColor());
-        model.getImageStack().getChildren().remove(line2);
-        model.getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(model.getImage());
-        model.getImageStack().getChildren().add(model.getRectangleBorder(imageView));
-        model.getImageStack().getChildren().add(imageView);
     }
 
 	protected void takeSnapshotFill(final PaintModel model, final Node line2) {

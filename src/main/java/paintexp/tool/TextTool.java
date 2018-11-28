@@ -55,11 +55,6 @@ public class TextTool extends PaintTool {
         return icon;
     }
 
-    @Override
-    public Cursor getMouseCursor() {
-        return Cursor.DEFAULT;
-    }
-
     public Text getText() {
         if (text == null) {
             text = new Text();
