@@ -16,7 +16,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
-import javafx.scene.image.*;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -35,14 +40,17 @@ import org.slf4j.Logger;
 import paintexp.tool.PaintTool;
 import paintexp.tool.SelectRectTool;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.CommonsFX;
 import utils.HasLogging;
 
 @SuppressWarnings("restriction")
 public class PaintController {
 	private static final Logger LOG = HasLogging.log();
+	private static final String PERCENTAGE_FIELD = "Percentage";
+
 	private PaintModel paintModel = new PaintModel();
 
-	public void changeTool(final Toggle newValue) {
+    public void changeTool(final Toggle newValue) {
         getPaintModel().resetToolOptions();
 		getPaintModel().getImageStack().getChildren().clear();
         ImageView imageView = new ImageView(getPaintModel().getImage());
@@ -56,7 +64,7 @@ public class PaintController {
 
 	}
 
-    public BooleanBinding containsSelectedArea() {
+	public BooleanBinding containsSelectedArea() {
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		return Bindings.createBooleanBinding(()->paintModel.getImageStack().getChildren().contains(a.getArea()), paintModel.getImageStack().getChildren());
 	}
@@ -67,7 +75,6 @@ public class PaintController {
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.copyToClipboard(paintModel);
 	}
-
 	public void crop() {
         WritableImage image = getImage();
         getPaintModel().getImageStack().getChildren().clear();
@@ -78,7 +85,8 @@ public class PaintController {
         getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
         getPaintModel().getImageStack().getChildren().add(imageView);
     }
-	public void cut() {
+
+    public void cut() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
@@ -102,7 +110,7 @@ public class PaintController {
         setImage(writableImage);
     }
 
-    public List<Color> getColors() {
+	public List<Color> getColors() {
         List<Color> availableColors = new ArrayList<>();
         int a = 360 / 12;
         for (int i = 0; i < 128; i += 64) {
@@ -190,7 +198,7 @@ public class PaintController {
 
 	}
 
-	public Rectangle newRectangle(final Color color) {
+    public Rectangle newRectangle(final Color color) {
 		Rectangle rectangle = new Rectangle(20, 20, color);
 		rectangle.setStroke(Color.BLACK);
 
@@ -199,7 +207,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-    public void openFile(final Window ownerWindow) {
+	public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -235,7 +243,7 @@ public class PaintController {
         VBox root = new VBox();
         root.getChildren().add(new Text("Redimension"));
         SimpleToggleGroupBuilder groupBuilder = new SimpleToggleGroupBuilder();
-        List<RadioButton> togglesAs = groupBuilder.addRadioToggle("Percentage")
+		List<RadioButton> togglesAs = groupBuilder.addRadioToggle(PERCENTAGE_FIELD)
                 .addRadioToggle("Pixels")
                 .select(0)
                 .getTogglesAs(RadioButton.class);
@@ -251,7 +259,7 @@ public class PaintController {
         root.getChildren().add(keepProportion);
         groupBuilder.onChange(
                 (o, old, newV) -> {
-                    boolean pencentage = "Percentage".equals(((RadioButton) newV).getText());
+					boolean pencentage = PERCENTAGE_FIELD.equals(((RadioButton) newV).getText());
                     widthField.setText(pencentage ? "100" : "" + (int) image.getWidth());
                     heightField.setText(pencentage ? "100" : "" + (int) image.getHeight());
                 });
@@ -263,11 +271,13 @@ public class PaintController {
         heightField.textProperty()
                 .addListener(
                         e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, 1 / ratio));
+		root.getChildren()
+				.add(CommonsFX.newButton("Resize", e -> finishResize(image, groupBuilder, widthField, heightField)));
         stage.setScene(new Scene(root));
         stage.show();
     }
 
-    public void saveAsFile(final Stage primaryStage) {
+	public void saveAsFile(final Stage primaryStage) {
         paintModel.setCurrentFile(null);
         saveFile(primaryStage);
     }
@@ -290,18 +300,48 @@ public class PaintController {
 		}
 	}
 
-	public void selectAll() {
+    public void selectAll() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
 		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
 	}
 
-    private void changeIfDifferent(TextField heightField, String replaceAll) {
+	private void changeIfDifferent(final TextField heightField, final String replaceAll) {
         if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - tryParse(replaceAll)) > 1) {
             heightField.setText(replaceAll);
         }
     }
+
+    private void finishResize(final WritableImage image, final SimpleToggleGroupBuilder groupBuilder, final TextField widthField,
+			final TextField heightField) {
+		ToggleButton selectedItem = (ToggleButton) groupBuilder.selectedItem();
+		double newWidth = PERCENTAGE_FIELD.equals(selectedItem.getText())
+				? tryParse(widthField) * image.getWidth() / 100
+				: tryParse(widthField);
+		double newHeight = PERCENTAGE_FIELD.equals(selectedItem.getText())
+				? tryParse(heightField) * image.getHeight() / 100
+				: tryParse(heightField);
+		WritableImage newImage = new WritableImage((int) newWidth, (int) newHeight);
+		double width = image.getWidth();
+		double height = image.getHeight();
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				Color color = image.getPixelReader().getColor(i, j);
+				double yRatio = newHeight / height;
+				int y = (int) (j * yRatio);
+				double xRatio = newWidth / width;
+				int x = (int) (i * xRatio);
+				newImage.getPixelWriter().setColor(x, y, color);
+				for (int l = 0; l < xRatio; l++) {
+					for (int k = 0; k < yRatio; k++) {
+						newImage.getPixelWriter().setColor(x + l, y + k, color);
+					}
+				}
+			}
+		}
+		setImage(newImage);
+	}
 
     private WritableImage getImage() {
         SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
@@ -314,7 +354,7 @@ public class PaintController {
         return image;
     }
 
-    private void onColorClicked(final Color color, Rectangle rectangle, MouseEvent e) {
+    private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
         if (e.getClickCount() > 1) {
             CustomColorDialog dialog = new CustomColorDialog(rectangle.getScene().getWindow());
             dialog.setCurrentColor(color);
@@ -335,11 +375,11 @@ public class PaintController {
         }
     }
 
-    private void onResizeOptionsChange(SimpleToggleGroupBuilder groupBuilder, CheckBox keepProportion,
-            TextField changedField, TextField otherField, double ratio) {
+    private void onResizeOptionsChange(final SimpleToggleGroupBuilder groupBuilder, final CheckBox keepProportion,
+            final TextField changedField, final TextField otherField, final double ratio) {
         RadioButton selectedItem = (RadioButton) groupBuilder.selectedItem();
         if (keepProportion.isSelected()) {
-            if ("Percentage".equals(selectedItem.getText())) {
+			if (PERCENTAGE_FIELD.equals(selectedItem.getText())) {
                 changeIfDifferent(otherField, changedField.getText());
                 return;
             }
@@ -352,7 +392,7 @@ public class PaintController {
 
     }
 
-    private void setImage(WritableImage writableImage) {
+    private void setImage(final WritableImage writableImage) {
         SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
         if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
             tool.getArea().setWidth(writableImage.getWidth());
@@ -368,7 +408,7 @@ public class PaintController {
         }
     }
 
-    private int tryParse(String widthField) {
+    private int tryParse(final String widthField) {
         try {
             return Integer.parseInt(widthField);
         } catch (NumberFormatException e) {
@@ -377,8 +417,8 @@ public class PaintController {
         }
     }
 
-    private int tryParse(TextField widthField) {
-       return tryParse(widthField.getText().replaceAll("\\D", ""));
+    private int tryParse(final TextField widthField) {
+        return tryParse(widthField.getText().replaceAll("\\D", ""));
     }
 
 }
