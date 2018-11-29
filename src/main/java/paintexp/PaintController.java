@@ -51,19 +51,19 @@ public class PaintController {
 	private PaintModel paintModel = new PaintModel();
 
     public void changeTool(final Toggle newValue) {
-        getPaintModel().resetToolOptions();
-		getPaintModel().getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(getPaintModel().getImage());
-        getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-        getPaintModel().getImageStack().getChildren().add(imageView);
+        paintModel.resetToolOptions();
+		paintModel.getImageStack().getChildren().clear();
+        ImageView imageView = new ImageView(paintModel.getImage());
+        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+        paintModel.getImageStack().getChildren().add(imageView);
 		if (newValue != null) {
-			PaintTool tool = getPaintModel().getTool();
+			PaintTool tool = paintModel.getTool();
 			if (tool != null) {
-				tool.onDeselected(getPaintModel());
+				tool.onDeselected(paintModel);
 			}
-			getPaintModel().setTool((PaintTool) newValue.getUserData());
-			PaintTool paintTool = getPaintModel().getTool();
-			paintTool.onSelected(getPaintModel());
+			paintModel.setTool((PaintTool) newValue.getUserData());
+			PaintTool paintTool = paintModel.getTool();
+			paintTool.onSelected(paintModel);
 		}
 
 	}
@@ -81,13 +81,13 @@ public class PaintController {
 	}
 	public void crop() {
         WritableImage image = getImage();
-        getPaintModel().getImageStack().getChildren().clear();
+        paintModel.getImageStack().getChildren().clear();
         ImageView imageView = new ImageView(image);
         SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
         tool.setImageSelected(null);
-        getPaintModel().setImage(image);
-        getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-        getPaintModel().getImageStack().getChildren().add(imageView);
+        paintModel.setImage(image);
+        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+        paintModel.getImageStack().getChildren().add(imageView);
         paintModel.createImageVersion();
     }
 
@@ -223,15 +223,15 @@ public class PaintController {
     }
 
 	public void newFile() {
-		getPaintModel().setImage(new WritableImage(500, 500));
-		int w = (int) getPaintModel().getImage().getWidth();
-		int h = (int) getPaintModel().getImage().getHeight();
-		getPaintModel().getImage().getPixelWriter().setPixels(0, 0, w, h,
-				new SimplePixelReader(getPaintModel().getBackColor()), 0, 0);
-		getPaintModel().getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(getPaintModel().getImage());
-        getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-        getPaintModel().getImageStack().getChildren().add(imageView);
+		paintModel.setImage(new WritableImage(500, 500));
+		int w = (int) paintModel.getImage().getWidth();
+		int h = (int) paintModel.getImage().getHeight();
+		paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h,
+				new SimplePixelReader(paintModel.getBackColor()), 0, 0);
+		paintModel.getImageStack().getChildren().clear();
+        ImageView imageView = new ImageView(paintModel.getImage());
+        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+        paintModel.getImageStack().getChildren().add(imageView);
 
 	}
 
@@ -254,13 +254,13 @@ public class PaintController {
                 Image image2 = new Image(new FileInputStream(paintModel.getCurrentFile()));
                 int w = (int) image2.getWidth();
                 int h = (int) image2.getHeight();
-                getPaintModel().setImage(new WritableImage(w, h));
-                getPaintModel().getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
-                getPaintModel().getImageStack().getChildren().clear();
-                ImageView imageView = new ImageView(getPaintModel().getImage());
-                getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-                getPaintModel().getImageStack().getChildren().add(imageView);
-
+                paintModel.setImage(new WritableImage(w, h));
+                paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
+                paintModel.getImageStack().getChildren().clear();
+                ImageView imageView = new ImageView(paintModel.getImage());
+                paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+                paintModel.getImageStack().getChildren().add(imageView);
+				paintModel.createImageVersion();
             } catch (Exception e) {
                 LOG.error("", e);
             }
@@ -333,7 +333,7 @@ public class PaintController {
 			}
 			if (paintModel.getCurrentFile() != null) {
 				File destination = paintModel.getCurrentFile();
-				WritableImage image = getPaintModel().getImage();
+				WritableImage image = paintModel.getImage();
 				ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", destination);
 			}
 		} catch (IOException e) {
@@ -352,11 +352,11 @@ public class PaintController {
         List<WritableImage> imageVersions = paintModel.getImageVersions();
         if (!imageVersions.isEmpty()) {
             WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
-            getPaintModel().getImageStack().getChildren().clear();
+            paintModel.getImageStack().getChildren().clear();
             ImageView imageView = new ImageView(writableImage);
-            getPaintModel().setImage(writableImage);
-            getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-            getPaintModel().getImageStack().getChildren().add(imageView);
+            paintModel.setImage(writableImage);
+            paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+            paintModel.getImageStack().getChildren().add(imageView);
         }
     }
 
@@ -418,17 +418,17 @@ public class PaintController {
             dialog.setOnUse(() -> {
                 Color customColor = dialog.getCustomColor();
                 if (MouseButton.PRIMARY == e.getButton()) {
-                    getPaintModel().setFrontColor(customColor);
+                    paintModel.setFrontColor(customColor);
                 } else {
-                    getPaintModel().setBackColor(customColor);
+                    paintModel.setBackColor(customColor);
                 }
             });
             dialog.setOnSave(() -> rectangle.setFill(dialog.getCustomColor()));
             dialog.show();
         } else if (MouseButton.PRIMARY == e.getButton()) {
-            getPaintModel().setFrontColor((Color) rectangle.getFill());
+            paintModel.setFrontColor((Color) rectangle.getFill());
         } else {
-            getPaintModel().setBackColor((Color) rectangle.getFill());
+            paintModel.setBackColor((Color) rectangle.getFill());
         }
     }
 
@@ -457,11 +457,11 @@ public class PaintController {
             tool.getArea().setFill(new ImagePattern(writableImage));
             tool.setImageSelected(writableImage);
         } else {
-            getPaintModel().getImageStack().getChildren().clear();
+            paintModel.getImageStack().getChildren().clear();
             ImageView imageView = new ImageView(writableImage);
-            getPaintModel().setImage(writableImage);
-            getPaintModel().getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-            getPaintModel().getImageStack().getChildren().add(imageView);
+            paintModel.setImage(writableImage);
+            paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+            paintModel.getImageStack().getChildren().add(imageView);
         }
     }
 
