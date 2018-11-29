@@ -63,43 +63,27 @@ public class BlurTool extends PaintTool {
         final int height = (int) model.getImage().getHeight();
         final int width = (int) model.getImage().getWidth();
         Arrays.fill(colors, null);
+		PixelHelper pixel = new PixelHelper();
         for (double i = 0; i <= radius; i++) {
             double nPoints = 4 * i + 1;
             for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
                 int x2 = (int) Math.round(i * Math.cos(t));
                 int y2 = (int) Math.round(i * Math.sin(t));
-                int a = 0;
-                int r = 0;
-                int g = 0;
-                int b = 0;
+				pixel.reset();
                 if (withinRange(x2 + centerX, y2 + centerY, model)) {
                     int pix = model.getImage().getPixelReader().getArgb(x2 + centerX, y2 + centerY);
-                    a += (pix >> 24 & 0xFF) * 5;
-                    r += (pix >> 16 & 0xFF) * 5;
-                    g += (pix >> 8 & 0xFF) * 5;
-                    b += (pix & 0xFF) * 5;
-
+					pixel.add(pix, 5);
                     for (int j = -1; j < 2; j += 2) {
                         int argb = model.getImage().getPixelReader().getArgb(x2 + centerX,
                                 setWithinRange(y2 + j + centerY, 0, height - 1));
-                        a += argb >> 24 & 0xFF;
-                        r += argb >> 16 & 0xFF;
-                        g += argb >> 8 & 0xFF;
-                        b += argb & 0xFF;
+						pixel.add(argb);
                         int argb2 = model.getImage().getPixelReader()
                                 .getArgb(setWithinRange(x2 + j + centerX, 0, width - 1), y2 + centerY);
-                        a += argb2 >> 24 & 0xFF;
-                        r += argb2 >> 16 & 0xFF;
-                        g += argb2 >> 8 & 0xFF;
-                        b += argb2 & 0xFF;
+						pixel.add(argb2);
                     }
-                    int red = setWithinRange(r / 9, 0, 255);
-                    int green = setWithinRange(g / 9, 0, 255);
-                    int blue = setWithinRange(b / 9, 0, 255);
-                    double transp = setWithinRange(a / 9.0, 0, 255);
                     int j = setWithinRange(x2 + radius, 0, diameter - 1);
                     int c = setWithinRange(y2 + radius, 0, diameter - 1);
-                    colors[j * diameter + c] = Color.rgb(red, green, blue, transp / 255);
+					colors[j * diameter + c] = pixel.toColor();
                 }
             }
         }
@@ -109,5 +93,4 @@ public class BlurTool extends PaintTool {
             }
         }
     }
-
 }

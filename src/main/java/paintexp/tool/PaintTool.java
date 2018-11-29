@@ -234,15 +234,7 @@ public abstract class PaintTool extends Group {
 		// DOES NOTHING
     }
 
-	protected double setWithinRange(final double num, final double min, final double max) {
-		return Math.min(Math.max(min, num), max);
-	}
-
-	protected int setWithinRange(final int num, final int min, final int max) {
-		return Math.min(Math.max(min, num), max);
-    }
-
-    protected void takeSnapshotFill(final PaintModel model, final Node line2) {
+	protected void takeSnapshotFill(final PaintModel model, final Node line2) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;
@@ -270,7 +262,7 @@ public abstract class PaintTool extends Group {
                         Double.min(initialX + bound, model.getImage().getWidth()));
     }
 
-    protected boolean withinRange(final int x, final int y, final PaintModel model) {
+	protected boolean withinRange(final int x, final int y, final PaintModel model) {
         WritableImage image = model.getImage();
 		return withinImage(x, y, image);
     }
@@ -286,10 +278,18 @@ public abstract class PaintTool extends Group {
         }
     }
 
-	@FunctionalInterface
+    @FunctionalInterface
 	interface DrawOnPoint {
 		void draw(int x, int y);
 	}
+
+    public static double setWithinRange(final double num, final double min, final double max) {
+		return Math.min(Math.max(min, num), max);
+	}
+
+	public static int setWithinRange(final int num, final int min, final int max) {
+		return Math.min(Math.max(min, num), max);
+    }
 
     public static boolean withinImage(final int x, final int y, final WritableImage image) {
 		return within(y, image.getHeight()) && within(x, image.getWidth());

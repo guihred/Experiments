@@ -57,12 +57,6 @@ public class PaintMain extends  Application{
                 .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> controller.resize())
                 .addMenuItem("Mirror _Horizontally", "Ctrl+H", e -> controller.mirrorHorizontally())
                 .addMenuItem("Mirror _Vertically", "Ctrl+M", e -> controller.mirrorVertically())
-				.addMenuItem("Attribut_es", "Ctrl+E", e -> {
-					/* NOTHING YET */})
-				.addMenuItem("Clear Image", e -> {
-					/* NOTHING YET */})
-				.addMenuItem("_Draw Opaque", e -> {
-					/* NOTHING YET */})
                 .addMenu("_Colors")
                 .addMenu("_Help")
                 .build());

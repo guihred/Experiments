@@ -10,6 +10,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import paintexp.PaintModel;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleSliderBuilder;
@@ -32,7 +33,7 @@ public class RectangleTool extends PaintTool {
 	}
 
 	@Override
-    public Rectangle getIcon() {
+	public Shape getIcon() {
 		if (icon == null) {
 			icon = new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.build();
@@ -76,15 +77,15 @@ public class RectangleTool extends PaintTool {
         rectangle.arcHeightProperty().bind(getArea().arcWidthProperty());
         model.getToolOptions().getChildren().add(rectangle);
         icon = null;
-        Rectangle icon2 = getIcon();
+		Shape icon2 = getIcon();
         icon2.strokeProperty().bind(model.frontColorProperty());
         icon2.setFill(Color.TRANSPARENT);
         icon = null;
-        Rectangle icon3 = getIcon();
+		Shape icon3 = getIcon();
         icon3.setStroke(Color.TRANSPARENT);
         icon3.fillProperty().bind(model.backColorProperty());
         icon = null;
-        Rectangle icon4 = getIcon();
+		Shape icon4 = getIcon();
         icon4.strokeProperty().bind(model.frontColorProperty());
         icon4.fillProperty().bind(model.backColorProperty());
         icon = null;
