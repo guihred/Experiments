@@ -83,12 +83,7 @@ public class SelectRectTool extends PaintTool {
 		return imageSelected;
 	}
 
-    @Override
-	public void onDeselected(final PaintModel model) {
-		escapeArea(model);
-	}
-
-	public Rectangle getArea() {
+    public Rectangle getArea() {
 		if (area == null) {
 			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.cursor(Cursor.MOVE)
@@ -106,11 +101,11 @@ public class SelectRectTool extends PaintTool {
 		return icon;
 	}
 
-
-    @Override
+	@Override
 	public Cursor getMouseCursor() {
 		return Cursor.CROSSHAIR;
 	}
+
 
     @Override
     public void handleEvent(final MouseEvent e, final PaintModel model) {
@@ -127,6 +122,7 @@ public class SelectRectTool extends PaintTool {
             onMouseReleased(model);
         }
     }
+
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
         KeyCode code = e.getCode();
@@ -164,6 +160,10 @@ public class SelectRectTool extends PaintTool {
                 break;
         }
     }
+    @Override
+	public void onDeselected(final PaintModel model) {
+		escapeArea(model);
+	}
 
 	public void selectArea(final int x, final int y, final double w, final double h, final PaintModel model) {
 		initialX = x;
