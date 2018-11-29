@@ -31,6 +31,14 @@ class PixelHelper {
 		a = b = r = g = 0;
 	}
 
+	public int toArgb(final int round) {
+		int red = PaintTool.setWithinRange(i == 0 ? r : r / i, 0, 255) / round * round;
+		int green = PaintTool.setWithinRange(i == 0 ? g : g / i, 0, 255) / round * round;
+		int blue = PaintTool.setWithinRange(i == 0 ? b : b / i, 0, 255) / round * round;
+		int transp = PaintTool.setWithinRange(i == 0 ? 255 : a / i, 0, 255);
+		return transp << 24 | red << 16 | green << 8 | blue;
+	}
+
 	public Color toColor() {
 		int red = PaintTool.setWithinRange(i == 0 ? r : r / i, 0, 255);
 		int green = PaintTool.setWithinRange(i == 0 ? g : g / i, 0, 255);
@@ -47,4 +55,11 @@ class PixelHelper {
 		return Color.rgb(red, green, blue, transp);
 	}
 
+	public static Color asColor(final int argb) {
+		int a = argb >> 24 & 0xFF;
+		int r = argb >> 16 & 0xFF;
+		int g = argb >> 8 & 0xFF;
+		int b = argb & 0xFF;
+		return Color.rgb(r, g, b, a / (double) 255);
+	}
 }
