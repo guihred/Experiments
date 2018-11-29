@@ -31,9 +31,15 @@ public class PaintModel {
 
     public ObjectProperty<Color> backColorProperty() {
         return backColor;
-	}public void createImageVersion() {
+	}
+
+	public void createImageVersion() {
         imageVersions
                 .add(new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight()));
+		if (imageVersions.size() > 50) {
+			imageVersions.remove(0);
+		}
+
     }
 
     public ObjectProperty<Color> frontColorProperty() {
@@ -82,7 +88,7 @@ public class PaintModel {
         return mousePosition;
     }
 
-    public Rectangle getRectangleBorder(ImageView imageView) {
+    public Rectangle getRectangleBorder(final ImageView imageView) {
         if (rectangleBorder == null) {
             rectangleBorder = new Rectangle(10, 10, Color.TRANSPARENT);
             rectangleBorder.setStroke(Color.BLACK);

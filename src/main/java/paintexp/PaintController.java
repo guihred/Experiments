@@ -385,10 +385,14 @@ public class PaintController {
 				int y = (int) (j * yRatio);
 				double xRatio = newWidth / width;
 				int x = (int) (i * xRatio);
-				newImage.getPixelWriter().setColor(x, y, color);
+				if (PaintTool.withinImage(x, y, newImage)) {
+					newImage.getPixelWriter().setColor(x, y, color);
+				}
 				for (int l = 0; l < xRatio; l++) {
 					for (int k = 0; k < yRatio; k++) {
-						newImage.getPixelWriter().setColor(x + l, y + k, color);
+						if (PaintTool.withinImage(x + l, y + k, newImage)) {
+							newImage.getPixelWriter().setColor(x + l, y + k, color);
+						}
 					}
 				}
 			}

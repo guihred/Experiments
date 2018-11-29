@@ -4,6 +4,8 @@ import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
@@ -49,7 +51,7 @@ public class CurveTool extends PaintTool {
 	}
 
     @Override
-    public void handleEvent(MouseEvent e, PaintModel model) {
+    public void handleEvent(final MouseEvent e, final PaintModel model) {
         EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
             onMousePressed(e, model);
@@ -65,7 +67,20 @@ public class CurveTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseDragged(final MouseEvent e, PaintModel model) {
+	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
+		KeyCode code = e.getCode();
+		if(code==KeyCode.ESCAPE) {
+			takeSnapshotFill(paintModel, getLine());
+		}
+	}
+
+	@Override
+	public void onDeselected(final PaintModel model) {
+		takeSnapshotFill(model, getLine());
+	}
+
+	@Override
+    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         if (stage == 0) {
             getLine().setEndX(e.getX());
             getLine().setEndY(e.getY());
@@ -109,12 +124,11 @@ public class CurveTool extends PaintTool {
         stage = ++stage % 3;
 	}
 
-    private double size() {
+	private double size() {
         double w = getLine().getLayoutBounds().getWidth();
         double h = getLine().getLayoutBounds().getHeight();
         return Math.sqrt(w * w + h * h);
     }
-
 
 
 }

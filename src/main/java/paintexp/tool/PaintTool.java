@@ -21,15 +21,11 @@ import utils.ResourceFXUtils;
 
 public abstract class PaintTool extends Group {
     public PaintTool() {
+		setId(getClass().getSimpleName());
         getChildren().add(getIcon());
     }
 
-	@SuppressWarnings("unused")
-	public void onDeselected(final PaintModel model) {
-		// DOES NOTHING
-	}
-
-    public void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
+	public void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
         drawRect(model, x, y, w, h, model.getBackColor());
     }
 
@@ -58,6 +54,11 @@ public abstract class PaintTool extends Group {
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
         // DOES NOTHING
     }
+
+    @SuppressWarnings("unused")
+	public void onDeselected(final PaintModel model) {
+		// DOES NOTHING
+	}
 
     @SuppressWarnings("unused")
     public void onSelected(final PaintModel model) {
@@ -258,11 +259,7 @@ public abstract class PaintTool extends Group {
         model.getImageStack().getChildren().add(imageView);
     }
 
-    protected boolean within(final int y, final double max) {
-		return 0 <= y && y < max;
-    }
-
-    protected boolean within(final int y, final double min, final double max) {
+	protected boolean within(final int y, final double min, final double max) {
         return min <= y && y < max;
     }
 
@@ -274,7 +271,8 @@ public abstract class PaintTool extends Group {
     }
 
     protected boolean withinRange(final int x, final int y, final PaintModel model) {
-        return within(y, model.getImage().getHeight()) && within(x, model.getImage().getWidth());
+        WritableImage image = model.getImage();
+		return withinImage(x, y, image);
     }
 
     private void drawRect(final PaintModel model, final double x, final double y, final double w, final double h,
@@ -292,5 +290,13 @@ public abstract class PaintTool extends Group {
 	interface DrawOnPoint {
 		void draw(int x, int y);
 	}
+
+    public static boolean withinImage(final int x, final int y, final WritableImage image) {
+		return within(y, image.getHeight()) && within(x, image.getWidth());
+	}
+
+	protected static boolean within(final int y, final double max) {
+		return 0 <= y && y < max;
+    }
 
 }
