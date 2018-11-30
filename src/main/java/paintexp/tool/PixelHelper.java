@@ -28,7 +28,7 @@ class PixelHelper {
 	}
 
 	public void reset() {
-		a = b = r = g = 0;
+        a = b = r = g = i = 0;
 	}
 
 	public int toArgb(final int round) {
