@@ -217,8 +217,8 @@ public class TextTool extends PaintTool {
     }
 
     private void dragTo(final double x, final double y) {
-        getArea().setLayoutX(Double.min(x, initialX));
-        getArea().setLayoutY(Double.min(y, initialY));
+        getArea().setLayoutX(Math.min(x, initialX));
+        getArea().setLayoutY(Math.min(y, initialY));
         getArea().setWidth(Math.abs(x - initialX));
         getArea().setHeight(Math.abs(y - initialY));
     }
@@ -248,7 +248,6 @@ public class TextTool extends PaintTool {
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
         copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
-        model.getImageStack().getChildren().remove(getArea());
         model.getImageStack().getChildren().clear();
         ImageView imageView = new ImageView(model.getImage());
         model.getImageStack().getChildren().add(model.getRectangleBorder(imageView));

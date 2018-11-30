@@ -75,7 +75,7 @@ enum PictureOption {
         double max = 1;
         while (a.find()) {
             String group = a.group(1);
-            max = Double.max(Double.parseDouble(group), max);
+            max = Math.max(Double.parseDouble(group), max);
         }
         a.reset();
         StringBuffer sb = new StringBuffer();

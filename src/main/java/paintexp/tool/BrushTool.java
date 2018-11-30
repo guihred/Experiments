@@ -120,7 +120,7 @@ public class BrushTool extends PaintTool {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
         if (pressed && withinRange(x2, y2, model)) {
-            drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(e, model, x3, y3));
+            drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(e, model, x3, y3, false));
 
             y = (int) e.getY();
             x = (int) e.getX();
@@ -140,7 +140,7 @@ public class BrushTool extends PaintTool {
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
         y = (int) e.getY();
         x = (int) e.getX();
-        drawUponOption(e, model, x, y);
+        drawUponOption(e, model, x, y, true);
         pressed = true;
     }
 
@@ -150,7 +150,7 @@ public class BrushTool extends PaintTool {
         model.createImageVersion();
     }
 
-    private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2) {
+    private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2, boolean fill) {
 
         if (withinRange(x2, y2, model)) {
             double r = length.getValue().doubleValue();
@@ -158,12 +158,18 @@ public class BrushTool extends PaintTool {
             switch (option) {
                 case CIRCLE:
                     drawPoint(model, x2, y2, color);
-                    for (double i = 1; i <= r; i++) {
-                        drawCircle(model, x2, y2, i, i, 12 * i, color);
+                    drawCircle(model, x2, y2, r, r, color);
+                    if (fill) {
+                        for (double i = 1; i < r; i++) {
+                            drawCircle(model, x2, y2, i, i, color);
+                        }
                     }
                     break;
                 case SQUARE:
-                    drawSquare(model, x2, y2, (int) r, color);
+                    drawSquareLine(model, x2, y2, (int) r, color);
+                    if (fill) {
+                        drawSquare(model, x2, y2, (int) r, color);
+                    }
                     break;
                 case LINE_NW_SE:
                     drawLine(model, x2, y2, x2 + r, y2 + r, color);

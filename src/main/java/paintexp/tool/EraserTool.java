@@ -102,14 +102,11 @@ public class EraserTool extends PaintTool {
     @Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
     	int w = (int) getArea().getWidth();
-		int lastX2 = lastX;
-		int lastY2 = lastY;
-
-		drawLine(model, lastX2, lastY2, e.getX(), e.getY(), (x, y) -> {
+		drawLine(model, lastX, lastY, e.getX(), e.getY(), (x, y) -> {
 			if (e.getButton() == MouseButton.PRIMARY) {
-				drawSquare(model, x, y, w, model.getBackColor());
+                drawSquareLine(model, x, y, w, model.getBackColor());
 			} else {
-    			drawSquare(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
+                drawSquareLine(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
 			}
 		});
 

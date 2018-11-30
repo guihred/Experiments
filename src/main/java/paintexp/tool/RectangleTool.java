@@ -54,11 +54,11 @@ public class RectangleTool extends PaintTool {
         }
         KeyCode code = e.getCode();
         if(code==KeyCode.UP) {
-            getArea().arcWidthProperty().set(Double.min(getArea().getArcWidth() + 1, 100));
+            getArea().arcWidthProperty().set(Math.min(getArea().getArcWidth() + 1, 100));
         }
     
         if (code == KeyCode.DOWN) {
-            getArea().arcWidthProperty().set(Double.max(getArea().getArcWidth() - 1, 0));
+            getArea().arcWidthProperty().set(Math.max(getArea().getArcWidth() - 1, 0));
         }
 
     }
@@ -101,17 +101,17 @@ public class RectangleTool extends PaintTool {
 		double layoutX = initialX;
 		double layoutY = initialY;
 		double x = e.getX();
-		double min = Double.min(x, layoutX);
+        double min = Math.min(x, layoutX);
 		getArea().setLayoutX(min);
 		double y = e.getY();
-		double min2 = Double.min(y, layoutY);
+        double min2 = Math.min(y, layoutY);
 		getArea().setLayoutY(min2);
 		double width = Math.abs(e.getX() - layoutX);
 		getArea().setWidth(width);
 		double height = Math.abs(e.getY() - layoutY);
 		getArea().setHeight(height);
 		if (e.isShiftDown()) {
-			double max = Double.max(width, height);
+            double max = Math.max(width, height);
 			getArea().setWidth(max);
 			getArea().setHeight(max);
 		}
@@ -152,22 +152,18 @@ public class RectangleTool extends PaintTool {
             double endY = boundsInLocal.getMaxY();
             double height = boundsInLocal.getHeight();
             double width = boundsInLocal.getWidth();
-            double max = Double.max(width, height);
             double arc = getArea().getArcWidth() / 2;
-            double radiusX = Double.min(arc, width / 2);
-            double radiusY = Double.min(arc, height / 2);
-            double centerY1 = Double.min(startY + radiusY, startY + height / 2);
-            double centerY2 = Double.max(endY - radiusY, startY - height / 2);
-            double centerX1 = Double.min(startX + radiusX, startX + width / 2);
-            double centerX2 = Double.max(endX - radiusX, endX - width / 2);
-            double nPoints = max * 4;
+            double radiusX = Math.min(arc, width / 2);
+            double radiusY = Math.min(arc, height / 2);
+            double centerY1 = Math.min(startY + radiusY, startY + height / 2);
+            double centerY2 = Math.max(endY - radiusY, startY - height / 2);
+            double centerX1 = Math.min(startX + radiusX, startX + width / 2);
+            double centerX2 = Math.max(endX - radiusX, endX - width / 2);
             if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
-                drawFill(model, startX, endX, startY, endY, radiusX, radiusY, centerY1, centerY2, centerX1, centerX2,
-                        nPoints);
+                drawFill(model, startX, endX, startY, endY, radiusX, radiusY, centerY1, centerY2, centerX1, centerX2);
             }
             if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
-                drawStroke(model, startX, endX, startY, endY, radiusX, radiusY, centerY1, centerY2, centerX1, centerX2,
-                        nPoints);
+                drawStroke(model, startX, endX, startY, endY, radiusX, radiusY, centerY1, centerY2, centerX1, centerX2);
             }
 
         }
@@ -175,30 +171,28 @@ public class RectangleTool extends PaintTool {
     }
 
     private void drawFill(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
-	        final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2,
-	        final double nPoints) {
+	        final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2) {
         drawRect(model, centerX1, startY, centerX2 - centerX1, endY - startY);
         drawRect(model, startX, centerY1, endX - startX, centerY2 - centerY1);
         for (int i = 0; i < radiusX; i++) {
-            drawCircle(model, centerX1, centerY1, i, radiusY, nPoints, Math.PI, Math.PI / 2, model.getBackColor());
-            drawCircle(model, centerX2, centerY1, i, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2,
-                    model.getBackColor());
-            drawCircle(model, centerX1, centerY2, i, radiusY, nPoints, Math.PI / 2, Math.PI / 2, model.getBackColor());
-            drawCircle(model, centerX2, centerY2, i, radiusY, nPoints, 0, Math.PI / 2, model.getBackColor());
+            drawCirclePart(model, centerX1, centerY1, i, radiusY, Math.PI, model.getBackColor());
+            drawCirclePart(model, centerX2, centerY1, i, radiusY, Math.PI * 3 / 2, model.getBackColor());
+            drawCirclePart(model, centerX1, centerY2, i, radiusY, Math.PI / 2, model.getBackColor());
+            drawCirclePart(model, centerX2, centerY2, i, radiusY, 0, model.getBackColor());
         }
 	}
 
     private void drawStroke(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
-            final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2,
-            final double nPoints) {
+            final double radiusX, final double radiusY, final double centerY1, final double centerY2,
+            final double centerX1, final double centerX2) {
         drawLine(model, startX, centerY1, startX, centerY2);//LEFT
         drawLine(model, endX, centerY1, endX, centerY2);//RIGHT
         drawLine(model, centerX1, startY - 1, centerX2, startY - 1);//TOP
         drawLine(model, centerX1, endY, centerX2, endY);// BOTTOM
-        drawCircle(model, centerX1, centerY1, radiusX, radiusY, nPoints, Math.PI, Math.PI / 2);//TOP-LEFT
-        drawCircle(model, centerX2, centerY1, radiusX, radiusY, nPoints, Math.PI * 3 / 2, Math.PI / 2);//
-        drawCircle(model, centerX1, centerY2, radiusX, radiusY, nPoints, Math.PI / 2, Math.PI / 2);
-        drawCircle(model, centerX2, centerY2, radiusX, radiusY, nPoints, 0, Math.PI / 2);
+        drawCircle(model, centerX1, centerY1, radiusX, radiusY, Math.PI);//TOP-LEFT
+        drawCircle(model, centerX2, centerY1, radiusX, radiusY, Math.PI * 3 / 2);//
+        drawCircle(model, centerX1, centerY2, radiusX, radiusY, Math.PI / 2);
+        drawCircle(model, centerX2, centerY2, radiusX, radiusY, 0);
     }
 
 }

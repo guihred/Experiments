@@ -16,10 +16,10 @@ public class RectangleCell extends Cell {
 		circle.fillProperty().bind(
 				Bindings.when(selected).then(Color.RED).otherwise(Bindings.when(color.isNull()).then(Color.DODGERBLUE).otherwise(color)));
 		circle.widthProperty().bind(Bindings.createDoubleBinding(
-                () -> Double.max(text.getBoundsInParent().getWidth() + WIDTH / 2, WIDTH),
+                () -> Math.max(text.getBoundsInParent().getWidth() + WIDTH / 2, WIDTH),
                 text.boundsInParentProperty()));
 		circle.heightProperty().bind(Bindings.createDoubleBinding(
-                () -> Double.max(WIDTH, text.getBoundsInParent().getHeight() + WIDTH / 8),
+                () -> Math.max(WIDTH, text.getBoundsInParent().getHeight() + WIDTH / 8),
 				text.boundsInParentProperty()));
 
 		setView(new StackPane(circle, text));

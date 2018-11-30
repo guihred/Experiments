@@ -12,16 +12,8 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -465,7 +457,7 @@ public class PaintController {
         }
     }
 
-    private int tryParse(final String widthField) {
+    private static int tryParse(final String widthField) {
         try {
             return Integer.parseInt(widthField);
         } catch (NumberFormatException e) {
@@ -474,7 +466,7 @@ public class PaintController {
         }
     }
 
-    private int tryParse(final TextField widthField) {
+    private static int tryParse(final TextField widthField) {
         return tryParse(widthField.getText().replaceAll("\\D", ""));
     }
 

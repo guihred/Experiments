@@ -4,12 +4,11 @@ import javafx.scene.paint.Color;
 
 class PixelHelper {
 
-	int a;
-
-	int r;
-	int i;
-	int g;
-	int b;
+    private int a;
+    private int r;
+    private int i;
+    private int g;
+    private int b;
 
 	public void add(final int argb) {
         a += argb >> 24 & 0xFF;

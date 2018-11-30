@@ -29,29 +29,9 @@ public class SprayTool extends PaintTool {
 	private AnimationTimer animationTimer = new AnimationTimer() {
 		@Override
 		public void handle(final long currentNanoTime) {
-			if (!pressed) {
-				return;
-			}
-			int argb = frontColor;
-			int nTries = 0;
-			do {
-				int radius = random.nextInt(length.get());
-				double t = Math.random() * 2 * Math.PI;
-				int x = (int) Math.round(radius * Math.cos(t));
-				int y = (int) Math.round(radius * Math.sin(t));
-				if (withinRange(x + centerX, y + centerY, paintModel)) {
-					argb = pixelReader.getArgb(x + centerX, y + centerY);
-				}
-				try {
-					drawPoint(paintModel, x + centerX, y + centerY);
-				} catch (Exception e) {
-					LOG.trace("", e);
-				}
-			} while (argb != frontColor && nTries++ < 10);
-
+            drawPoints();
 		}
 	};
-
 
     @Override
     public Node getIcon() {
@@ -61,6 +41,7 @@ public class SprayTool extends PaintTool {
         return icon;
     }
 
+
     @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
@@ -69,6 +50,28 @@ public class SprayTool extends PaintTool {
                 .add(new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build());
 
     }
+
+    protected void drawPoints() {
+	    if (!pressed) {
+	        return;
+	    }
+	    int argb = frontColor;
+	    int nTries = 0;
+	    do {
+	        int radius = random.nextInt(length.get());
+	        double t = Math.random() * 2 * Math.PI;
+	        int x = (int) Math.round(radius * Math.cos(t));
+	        int y = (int) Math.round(radius * Math.sin(t));
+	        if (withinRange(x + centerX, y + centerY, paintModel)) {
+	            argb = pixelReader.getArgb(x + centerX, y + centerY);
+	        }
+	        try {
+	            drawPoint(paintModel, x + centerX, y + centerY);
+	        } catch (Exception e) {
+	            LOG.trace("", e);
+	        }
+	    } while (argb != frontColor && nTries++ < 10);
+	}
 
     @Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
