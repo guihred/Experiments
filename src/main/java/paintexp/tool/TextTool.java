@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -184,7 +185,7 @@ public class TextTool extends PaintTool {
         Text graphic = new Text("B");
         graphic.setStyle("-fx-font-weight: bold;");
         ToggleButton bold = new ToggleButton(null, graphic);
-
+        bold.setTooltip(new Tooltip("Bold"));
         Text graphic2 = new Text("I");
         graphic2.setStyle("-fx-font-style: italic;");
         graphic2.setFont(Font.font(TIMES_NEW_ROMAN, FontWeight.NORMAL, FontPosture.ITALIC, 12));

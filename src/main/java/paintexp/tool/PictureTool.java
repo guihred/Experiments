@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -32,16 +33,18 @@ public class PictureTool extends PaintTool {
 			area.setStroke(Color.BLACK);
 			area.setManaged(false);
 		}
-		area.setContent(pic.getCorrectedPath(10));
+        area.setContent(pic.getCorrectedPath());
 		return area;
 	}
 
-	@Override
+    @Override
 	public SVGPath getIcon() {
 		if (icon == null) {
-			icon = PictureOption.TRIANGLE.toSVG();
-			icon.setContent(PictureOption.TRIANGLE.getCorrectedPath(10));
+            icon = PictureOption.STAR_5.toSVG();
+            icon.setContent(PictureOption.STAR_5.getCorrectedPath());
 			icon.setFill(Color.TRANSPARENT);
+            icon.setScaleX(0.75);
+            icon.setScaleY(0.75);
 			icon.setStroke(Color.BLACK);
 		}
 		return icon;
@@ -51,6 +54,8 @@ public class PictureTool extends PaintTool {
 	public Cursor getMouseCursor() {
 		return Cursor.DISAPPEAR;
 	}
+
+
 
 	@Override
     public void onSelected(final PaintModel model) {
@@ -73,7 +78,7 @@ public class PictureTool extends PaintTool {
                 .addToggle(icon3, FillOption.FILL)
                 .addToggle(icon4, FillOption.STROKE_FILL)
                 .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
-                .select(0)
+                .select(option)
                 .getTogglesAs(Node.class);
         model.getToolOptions().getChildren().addAll(togglesAs);
 		SimpleToggleGroupBuilder picOptions = new SimpleToggleGroupBuilder();
@@ -82,14 +87,16 @@ public class PictureTool extends PaintTool {
 		validOptions.forEach(e -> picOptions.addToggle(e.toSVG(), e));
 
 		VBox value = new VBox();
-        value.getChildren()
-                .addAll(picOptions.onChange((o, old,
-                        newV) -> pic = newV == null ? PictureOption.TRIANGLE : (PictureOption) newV.getUserData())
-                .select(0)
-				.getTogglesAs(Node.class));
+        List<Node> allOptions = picOptions.onChange((o, old,
+                newV) -> pic = newV == null ? PictureOption.TRIANGLE : (PictureOption) newV.getUserData())
+                .select(pic)
+                .getTogglesAs(Node.class);
+
+        value.getChildren().addAll(allOptions);
 
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(value);
+        scrollPane.setFitToWidth(true);
 		scrollPane.setPrefWidth(65);
 		scrollPane.setMaxSize(200, 200);
 		model.getToolOptions().getChildren().addAll(scrollPane);
@@ -99,10 +106,28 @@ public class PictureTool extends PaintTool {
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double x = setWithinRange(e.getX(), 0, model.getImage().getWidth());
 		double y = setWithinRange(e.getY(), 0, model.getImage().getHeight());
-		area.setScaleX(Math.abs(initialX - x) / pic.getWidth());
-		area.setScaleY(Math.abs(initialY - y) / pic.getHeight());
-		area.setLayoutX(Math.min(x, initialX));
-		area.setLayoutY(Math.min(y, initialY));
+        double intendedW = Math.abs(initialX - x);
+        double intendedH = Math.abs(initialY - y);
+		double min = Math.min(x, initialX);
+		double min2 = Math.min(y, initialY);
+        Bounds bounds = area.getBoundsInParent();
+        double width = bounds.getWidth();
+        double height = bounds.getHeight();
+        area.setScaleX(area.getScaleX() * intendedW / width);
+        area.setScaleY(area.getScaleY() * intendedH / height);
+        if (e.isShiftDown()) {
+            double max = Math.max(area.getScaleX(), area.getScaleY());
+            area.setScaleX(max);
+            area.setScaleY(max);
+        }
+        bounds = area.getBoundsInParent();
+        double minX = bounds.getMinX();
+        double minY = bounds.getMinY();
+        double a = min - minX;
+        double b = min2 - minY;
+        area.setLayoutX(area.getLayoutX() + a);
+        area.setLayoutY(area.getLayoutY() + b);
+
 	}
 
     @Override
@@ -116,6 +141,8 @@ public class PictureTool extends PaintTool {
         }
         initialX = (int) e.getX();
         getArea().setLayoutX(initialX);
+        getArea().setScaleX(1);
+        getArea().setScaleY(1);
         initialY = (int) e.getY();
         getArea().setLayoutY(initialY);
         getArea().setStroke(Color.TRANSPARENT);

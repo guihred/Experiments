@@ -321,7 +321,7 @@ public class PaintController {
 				FileChooser fileChooser2 = new FileChooser();
 				fileChooser2.setTitle("Save File");
 				fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
-				paintModel.setCurrentFile(fileChooser2.showOpenDialog(primaryStage));
+                paintModel.setCurrentFile(fileChooser2.showSaveDialog(primaryStage));
 			}
 			if (paintModel.getCurrentFile() != null) {
 				File destination = paintModel.getCurrentFile();

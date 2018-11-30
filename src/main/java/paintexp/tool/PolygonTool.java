@@ -15,12 +15,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Shape;
 import paintexp.PaintModel;
 import simplebuilder.SimpleToggleGroupBuilder;
 
 public class PolygonTool extends PaintTool {
 
-	private Polygon icon;
+    private Polyline icon;
     private Polygon area;
 	private Line line;
     private FillOption option = FillOption.STROKE;
@@ -36,16 +38,15 @@ public class PolygonTool extends PaintTool {
 	}
 
 	@Override
-    public Polygon getIcon() {
+    public Polyline getIcon() {
 		if (icon == null) {
 			int pontas = 5;
 			int radius = 5;
 			double[] points = iterate(0, i -> i + 1).limit(pontas)
 					.flatMap(i -> of(radius * cos(i * 2 % 5 * 2 * PI / pontas), radius * sin(i * 2 % 5 * 2 * PI / pontas)))
 					.toArray();
-			icon = new Polygon(points);
-			icon.setFill(Color.GRAY);
-			icon.setStroke(Color.GRAY);
+            icon = new Polyline(points);
+            icon.setStroke(Color.BLACK);
 		}
 		return icon;
 	}
@@ -82,22 +83,23 @@ public class PolygonTool extends PaintTool {
 	@Override
 	public void onSelected(final PaintModel model) {
         icon = null;
-        Polygon icon2 = getIcon();
+        Shape icon2 = getIcon();
         icon2.strokeProperty().bind(model.frontColorProperty());
         icon2.setFill(Color.TRANSPARENT);
         icon = null;
-        Polygon icon3 = getIcon();
+        Shape icon3 = getIcon();
         icon3.setStroke(Color.TRANSPARENT);
         icon3.fillProperty().bind(model.backColorProperty());
         icon = null;
-        Polygon icon4 = getIcon();
+        Shape icon4 = getIcon();
         icon4.strokeProperty().bind(model.frontColorProperty());
         icon4.fillProperty().bind(model.backColorProperty());
 		icon = null;
         List<Node> togglesAs = new SimpleToggleGroupBuilder()
                 .addToggle(icon2, FillOption.STROKE).addToggle(icon3, FillOption.FILL)
                 .addToggle(icon4, FillOption.STROKE_FILL)
-                .onChange((o, old, newV) -> option = (FillOption) newV.getUserData())
+                .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
+                .select(option)
                 .getTogglesAs(Node.class);
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren().addAll(togglesAs);

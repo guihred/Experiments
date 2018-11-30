@@ -41,4 +41,9 @@ public enum PaintTools {
         return tool;
     }
 
+    public String getTooltip() {
+        return tool.getClass().getSimpleName().replaceAll("Tool", "")
+                .replaceAll("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+", " ");
+    }
+
 }

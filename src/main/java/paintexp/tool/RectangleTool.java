@@ -33,7 +33,7 @@ public class RectangleTool extends PaintTool {
 	}
 
 	@Override
-	public Shape getIcon() {
+    public Node getIcon() {
 		if (icon == null) {
 			icon = new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.build();
@@ -77,21 +77,22 @@ public class RectangleTool extends PaintTool {
         rectangle.arcHeightProperty().bind(getArea().arcWidthProperty());
         model.getToolOptions().getChildren().add(rectangle);
         icon = null;
-		Shape icon2 = getIcon();
+        Shape icon2 = (Shape) getIcon();
         icon2.strokeProperty().bind(model.frontColorProperty());
         icon2.setFill(Color.TRANSPARENT);
         icon = null;
-		Shape icon3 = getIcon();
+        Shape icon3 = (Shape) getIcon();
         icon3.setStroke(Color.TRANSPARENT);
         icon3.fillProperty().bind(model.backColorProperty());
         icon = null;
-		Shape icon4 = getIcon();
+        Shape icon4 = (Shape) getIcon();
         icon4.strokeProperty().bind(model.frontColorProperty());
         icon4.fillProperty().bind(model.backColorProperty());
         icon = null;
         List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
                 .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
-                .onChange((o, old, newV) -> option = (FillOption) newV.getUserData()).getTogglesAs(Node.class);
+                .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
+                .select(option).getTogglesAs(Node.class);
         model.getToolOptions().getChildren().addAll(togglesAs);
 
 	}

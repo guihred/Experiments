@@ -65,7 +65,8 @@ public class EllipseTool extends PaintTool {
         List<Node> togglesAs = new SimpleToggleGroupBuilder()
                 .addToggle(icon2, FillOption.STROKE).addToggle(icon3, FillOption.FILL)
                 .addToggle(icon4, FillOption.STROKE_FILL)
-                .onChange((o, old, newV) -> option = (FillOption) newV.getUserData())
+                .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
+                .select(option)
                 .getTogglesAs(Node.class);
         model.getToolOptions().getChildren().addAll(togglesAs);
     }

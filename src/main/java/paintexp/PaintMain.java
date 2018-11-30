@@ -1,6 +1,3 @@
-
-
-
 package paintexp;
 
 import graphs.entities.ZoomableScrollPane;
@@ -17,11 +14,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -82,7 +75,7 @@ public class PaintMain extends  Application{
 		root.setBottom(new VBox(30, new HBox(50, st, gridPane), hBox));
         BorderPane.setAlignment(hBox, Pos.CENTER);
         SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
-        Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggle(e.getTool()));
+        Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggleTooltip(e.getTool(), e.getTooltip()));
         List<Node> paintTools = toolGroup
 				.onChange((ov, oldValue, newValue) -> controller.changeTool(newValue))
                 .getTogglesAs(Node.class);

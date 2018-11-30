@@ -5,22 +5,21 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
-import simplebuilder.SimpleSvgPathBuilder;
 
 public class BorderTool extends RectangleTool {
 
-	private SVGPath icon;
-    private IntegerProperty length = new SimpleIntegerProperty(10);
+    private ImageView icon;
+    private IntegerProperty length = new SimpleIntegerProperty(2);
 	@Override
-	public SVGPath getIcon() {
+    public ImageView getIcon() {
 		if (icon == null) {
-			icon = new SimpleSvgPathBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
-					.content("M6,0 l -4,6 l -4,-6 z").build();
+            icon = getIconByURL("Border.png");
+
 		}
 		return icon;
 	}
