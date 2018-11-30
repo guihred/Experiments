@@ -31,8 +31,8 @@ public class BorderTool extends RectangleTool {
 	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
-        model.getToolOptions().getChildren()
-				.add(new SimpleSliderBuilder(1, 7, 2).bindBidirectional(length).prefWidth(50).build());
+		model.getToolOptions().getChildren()
+				.add(new SimpleSliderBuilder(0, 6, 1).bindBidirectional(length).prefWidth(50).build());
 	
 	}
 

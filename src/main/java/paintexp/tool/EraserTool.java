@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -19,7 +20,6 @@ import simplebuilder.SimpleSliderBuilder;
 
 public class EraserTool extends PaintTool {
 
-    private static final int MAX_ERASER_SIZE = 100;
 
     private ImageView icon;
 
@@ -28,6 +28,8 @@ public class EraserTool extends PaintTool {
 
 	private int lastX;
 	private int lastY;
+
+	private Slider lengthSlider;
 
     public Rectangle getArea() {
         if (area == null) {
@@ -79,10 +81,10 @@ public class EraserTool extends PaintTool {
 	@Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
         if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
-            length.setValue(Integer.min(MAX_ERASER_SIZE,length.getValue()+1));
+			length.setValue(Math.min(lengthSlider.getMax(), 1.0 + length.getValue()));
         }
         if (e.getCode() == KeyCode.SUBTRACT || e.getCode() == KeyCode.MINUS) {
-            length.setValue(Integer.max(1, length.getValue() - 1));
+			length.setValue(Math.max(1, length.getValue() - 1));
         }
     
     }
@@ -91,20 +93,26 @@ public class EraserTool extends PaintTool {
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
-        model.getToolOptions().getChildren()
-                .add(new SimpleSliderBuilder(1, MAX_ERASER_SIZE, 10).bindBidirectional(length).prefWidth(50).build());
+		lengthSlider = new SimpleSliderBuilder(1, model.getImage().getHeight() / 2, 10).bindBidirectional(length)
+				.prefWidth(50).build();
+		model.getToolOptions().getChildren()
+				.add(lengthSlider);
     }
 
     @Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
     	int w = (int) getArea().getWidth();
-    	drawLine(model, lastX, lastY, e.getX(), e.getY(), (x,y)->{
-    		if (e.getButton() == MouseButton.PRIMARY) {
-    			drawSquare(model, x, y, w, model.getBackColor());
-    		} else {
+		int lastX2 = lastX;
+		int lastY2 = lastY;
+
+		drawLine(model, lastX2, lastY2, e.getX(), e.getY(), (x, y) -> {
+			if (e.getButton() == MouseButton.PRIMARY) {
+				drawSquare(model, x, y, w, model.getBackColor());
+			} else {
     			drawSquare(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
-    		}	
+			}
 		});
+
 		getArea().setLayoutX(e.getX());
 		getArea().setLayoutY(e.getY());
 		lastX = (int) e.getX();
