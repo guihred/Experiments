@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import java.util.stream.IntStream;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
@@ -29,10 +30,24 @@ public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> ext
 		return (Z) this;
 	}
 
-	public Z stroke(Paint value) {
-		shape.setStroke(value);
-		return (Z) this;
-	}
+    public Z stroke(Paint value) {
+        shape.setStroke(value);
+        return (Z) this;
+    }
+
+    public Z strokeDashArray(Double... elements) {
+        shape.getStrokeDashArray().clear();
+        shape.getStrokeDashArray().addAll(elements);
+        return (Z) this;
+    }
+
+	public Z strokeDashArray(int... elements) {
+        shape.getStrokeDashArray().clear();
+        shape.getStrokeDashArray()
+                .addAll(IntStream.of(elements).mapToDouble(e -> e).boxed().toArray(Double[]::new));
+        return (Z) this;
+
+    }
 	public Z strokeLineCap(StrokeLineCap value) {
 		shape.setStrokeLineCap(value);
 		return (Z) this;

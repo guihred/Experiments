@@ -33,7 +33,25 @@ public class PaintModel {
         return backColor;
 	}
 
-	public void createImageVersion() {
+	public void changeTool(final PaintTool newValue) {
+        resetToolOptions();
+        getImageStack().getChildren().clear();
+        ImageView imageView = new ImageView(getImage());
+        getImageStack().getChildren().add(getRectangleBorder(imageView));
+        getImageStack().getChildren().add(imageView);
+        if (newValue != null) {
+            PaintTool oldTool = getTool();
+            if (oldTool != null) {
+                oldTool.onDeselected(this);
+            }
+            setTool(newValue);
+            PaintTool paintTool = getTool();
+            paintTool.onSelected(this);
+        }
+
+    }
+
+    public void createImageVersion() {
         imageVersions
                 .add(new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight()));
 		if (imageVersions.size() > 50) {
@@ -49,10 +67,10 @@ public class PaintModel {
     public Color getBackColor() {
         return backColor.get();
     }
-
     public File getCurrentFile() {
 		return currentFile;
 	}
+
     public Color getFrontColor() {
         return frontColor.get();
     }
@@ -60,10 +78,10 @@ public class PaintModel {
     public WritableImage getImage() {
         return image;
     }
-
     public Text getImageSize() {
         return imageSize;
     }
+
     public Group getImageStack() {
         if (imageStack == null) {
             ImageView imageView = new ImageView(getImage());
@@ -114,10 +132,10 @@ public class PaintModel {
 		}
 		return toolOptions;
 	}
-
     public Text getToolSize() {
         return toolSize;
     }
+
     public Rectangle resetToolOptions() {
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.grayRgb(128));
@@ -127,7 +145,6 @@ public class PaintModel {
         toolOptions.getChildren().add(rectangle);
         return rectangle;
     }
-
 
     public void setBackColor(final Color backColor) {
         this.backColor.set(backColor);

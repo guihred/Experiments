@@ -54,18 +54,22 @@ enum PictureOption {
     public double getWidth() {
         return width;
     }
-    //    @Override
-    //	public String toString() {
-    //	    String string = super.toString();
-    //	    Pattern compile = Pattern.compile("($\\w|_\\w)");
-    //	    Matcher a = compile.matcher(path);
-    //        while (a.find()) {
-    //            String group = a.group(1);
-    //            
-    //        }
-    //	    
-    //        return string;
-    //	}
+
+    @Override
+    public String toString() {
+        String string = super.toString().toLowerCase();
+        Pattern compile = Pattern.compile("(^\\w|_\\w)");
+        Matcher a = compile.matcher(string);
+        StringBuffer sb = new StringBuffer();
+        while (a.find()) {
+            String group = a.group(1);
+            if (group != null) {
+                a.appendReplacement(sb, group.toUpperCase().replace('_', ' '));
+            }
+        }
+        a.appendTail(sb);
+        return sb.toString();
+    }
 
 	public SVGPath toSVG() {
         SVGPath svgPath = new SVGPath();

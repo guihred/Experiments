@@ -94,7 +94,11 @@ public class SelectRectTool extends PaintTool {
 	@Override
 	public Node getIcon() {
 		if (icon == null) {
-			icon = new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLACK)
+            icon = new SimpleRectangleBuilder()
+                    .width(10)
+                    .height(10)
+                    .fill(Color.TRANSPARENT)
+                    .stroke(Color.BLUE)
 					.strokeDashArray(1, 2, 1, 2).build();
 		}
 		return icon;

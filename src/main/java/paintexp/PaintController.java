@@ -43,21 +43,7 @@ public class PaintController {
 	private PaintModel paintModel = new PaintModel();
 
     public void changeTool(final Toggle newValue) {
-        paintModel.resetToolOptions();
-		paintModel.getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(paintModel.getImage());
-        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-        paintModel.getImageStack().getChildren().add(imageView);
-		if (newValue != null) {
-			PaintTool tool = paintModel.getTool();
-			if (tool != null) {
-				tool.onDeselected(paintModel);
-			}
-			paintModel.setTool((PaintTool) newValue.getUserData());
-			PaintTool paintTool = paintModel.getTool();
-			paintTool.onSelected(paintModel);
-		}
-
+        paintModel.changeTool(newValue == null ? null : (PaintTool) newValue.getUserData());
 	}
 
 	public BooleanBinding containsSelectedArea() {
