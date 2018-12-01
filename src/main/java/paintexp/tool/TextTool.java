@@ -1,4 +1,5 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.getWithinRange;
 
 import fxsamples.DraggingRectangle;
 import java.util.List;
@@ -89,7 +90,7 @@ public class TextTool extends PaintTool {
         double width = model.getImage().getWidth();
         double height = model.getImage().getHeight();
         if (pressed) {
-            dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
+            dragTo(getWithinRange(x, 0, width), getWithinRange(y, 0, height));
         }
     }
 

@@ -1,4 +1,5 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.withinRange;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -44,7 +44,6 @@ public class FXEngineGraphTest extends ApplicationTest {
                 interact(() -> e.getSelectionModel().select(j));
                 queryAll.forEach(this::clickOn);
             }
-
         }
         ConsoleUtils.waitAllProcesses();
     }

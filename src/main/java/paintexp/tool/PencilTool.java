@@ -1,4 +1,5 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.withinRange;
 
 import javafx.scene.Cursor;
 import javafx.scene.Node;

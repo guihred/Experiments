@@ -1,24 +1,30 @@
 package graphs.entities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 public class GraphModel {
 
     private List<Cell> addedCells;
 
     private List<Edge> addedEdges;
-    private List<Cell> allCells;
+    private final ObservableList<Cell> allCells = FXCollections.observableArrayList();
     private List<Edge> allEdges;
 
-    private Map<String, Cell> cellMap; // <id,cell>
+    private ObservableMap<String, Cell> cellMap; // <id,cell>
     private Cell graphParent;
     private Map<Cell, Map<Cell, Cell>> paths; // <id,cell>
 
     private List<Cell> removedCells;
     private List<Edge> removedEdges;
+
+    private final ObservableList<String> cellIds = FXCollections.observableArrayList();
 
     public GraphModel() {
 
@@ -130,7 +136,7 @@ public class GraphModel {
         return addedEdges;
     }
 
-    public List<Cell> getAllCells() {
+    public ObservableList<Cell> getAllCells() {
         return allCells;
     }
 
@@ -142,10 +148,19 @@ public class GraphModel {
 		return cellMap.get(key);
 	}
 
+
+
+    public ObservableList<String> getCellIds() {
+        return cellIds;
+    }
+
+    public ObservableMap<String, Cell> getCellMap() {
+        return cellMap;
+    }
+
     public List<Cell> getRemovedCells() {
         return removedCells;
     }
-
 
     public List<Edge> getRemovedEdges() {
         return removedEdges;
@@ -198,20 +213,26 @@ public class GraphModel {
 
     }
 
-    private final void clear() {
-
-        allCells = new ArrayList<>();
-        addedCells = new ArrayList<>();
-        removedCells = new ArrayList<>();
-
-        allEdges = new ArrayList<>();
-        addedEdges = new ArrayList<>();
-        removedEdges = new ArrayList<>();
-
-        cellMap = new HashMap<>(); // <id,cell>
-
+    private void bindCellsId() {
+        allCells.addListener((Change<? extends Cell> c) -> {
+            while (c.next()) {
+                cellIds.addAll(c.getAddedSubList().stream().map(Cell::getCellId).collect(Collectors.toList()));
+                cellIds.removeAll(c.getRemoved().stream().map(Cell::getCellId).collect(Collectors.toList()));
+            }
+        });
     }
 
+    private final void clear() {
+        allCells.clear();
+        addedCells = FXCollections.observableArrayList();
+        removedCells = FXCollections.observableArrayList();
 
+        allEdges = FXCollections.observableArrayList();
+        addedEdges = FXCollections.observableArrayList();
+        removedEdges = FXCollections.observableArrayList();
+
+        cellMap = FXCollections.observableHashMap();
+        bindCellsId();
+    }
 
 }

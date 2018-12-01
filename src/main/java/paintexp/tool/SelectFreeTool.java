@@ -1,4 +1,6 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.getWithinRange;
+import static paintexp.tool.DrawOnPoint.withinRange;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
@@ -56,20 +58,20 @@ public class SelectFreeTool extends PaintTool {
 	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            onMouseReleased(model);
+        }
 		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
 			onMousePressed(e, model);
 		}
         if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
             onMouseDragged(e, model);
-		}
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            onMouseReleased(model);
-		}
+        }
 	}
 	@Override
     protected void onMouseDragged(MouseEvent e, PaintModel model) {
-        double x = setWithinRange(e.getX(), 0, model.getImage().getWidth());
-        double y = setWithinRange(e.getY(), 0, model.getImage().getHeight());
+        double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
+        double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
         getArea().getPoints().addAll(x, y);
     }
 
@@ -79,8 +81,8 @@ public class SelectFreeTool extends PaintTool {
 		if (!children.contains(getArea())) {
 			children.add(getArea());
 		}
-        double x = setWithinRange(e.getX(), 0, model.getImage().getWidth());
-        double y = setWithinRange(e.getY(), 0, model.getImage().getHeight());
+        double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
+        double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
         getArea().getPoints().clear();
 		getArea().getPoints().addAll(x, y);
 	}
@@ -93,11 +95,13 @@ public class SelectFreeTool extends PaintTool {
         int height = (int) bounds.getHeight();
         int minX = (int) bounds.getMinX();
         int minY = (int) bounds.getMinY();
+        int endX = width + minX;
+        int endY = height + minY;
         WritableImage selectedImage = createSelectedImage(model, minX, minY, width, height);
         SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
         model.changeTool(tool);
         tool.setImageSelected(selectedImage);
-        tool.selectArea(minX, minY, width + minX, height + minY, model);
+        tool.selectArea(minX, minY, endX, endY, model);
         tool.getArea().setFill(new ImagePattern(selectedImage));
         if (children.contains(getArea())) {
             children.remove(getArea());
@@ -111,10 +115,12 @@ public class SelectFreeTool extends PaintTool {
         PixelWriter finalImage = selectedImage.getPixelWriter();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (withinRange(i + minX, j + minY, model)) {
-                    if (getArea().contains(i + minX, j + minY)) {
-                        finalImage.setColor(i, j, currentImageReader.getColor(i + minX, j + minY));
-                        currentImageWriter.setColor(i + minX, j + minY, model.getBackColor());
+                int localX = i + minX;
+                int localY = j + minY;
+                if (withinRange(localX, localY, model)) {
+                    if (getArea().contains(localX, localY)) {
+                        finalImage.setColor(i, j, currentImageReader.getColor(localX, localY));
+                        currentImageWriter.setColor(localX, localY, model.getBackColor());
                     } else {
                         finalImage.setColor(i, j, Color.TRANSPARENT);
                     }

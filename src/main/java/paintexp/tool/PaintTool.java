@@ -1,4 +1,6 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.within;
+import static paintexp.tool.DrawOnPoint.withinRange;
 
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
@@ -149,22 +151,21 @@ public abstract class PaintTool extends Group {
 
     protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
             final double endY, final DrawOnPoint onPoint) {
-        double d = endX - startX;
-        double a = d == 0 ? Double.NaN : (endY - startY) / d;
+        double deltaX = endX - startX;
+        double a = deltaX == 0 ? Double.NaN : (endY - startY) / deltaX;
         double b = Double.isNaN(a) ? Double.NaN : endY - a * endX;
+        // y = x * a + b
 
         double minX = Math.min(startX, endX);
         double maxX = Math.max(startX, endX);
         double minY = Math.min(startY, endY);
         double maxY = Math.max(startY, endY);
-
         for (int x = (int) minX; x < maxX; x++) {
             int y = (int) (!Double.isNaN(a) ? Math.round(a * x + b) : endY);
             if (withinRange(x, y, model) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
                 onPoint.draw(x, y);
             }
         }
-
         for (int y = (int) minY; y < maxY; y++) {
             if (a != 0) {
                 int x = (int) (Double.isNaN(a) ? startX : Math.round((y - b) / a));
@@ -186,6 +187,25 @@ public abstract class PaintTool extends Group {
         }
     }
 
+    protected void drawPointIf(final PaintModel model, int x2, int y2, final int color, Color backColor) {
+        if (withinRange(x2, y2 , model)) {
+            int argb = model.getImage().getPixelReader().getArgb(x2, y2 );
+            if (argb == color) {
+                model.getImage().getPixelWriter().setColor(x2, y2, backColor);
+            }
+        }
+    }
+    protected void drawRect(final PaintModel model, final double x, final double y, final double w, final double h,
+            final Color backColor) {
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                if (withinRange((int) x + i, (int) y + j, model)) {
+                    model.getImage().getPixelWriter().setColor((int) x + i, (int) y + j, backColor);
+                }
+            }
+        }
+    }
+
     protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final Color backColor) {
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < w; j++) {
@@ -195,7 +215,8 @@ public abstract class PaintTool extends Group {
             }
         }
     }
-    protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
+
+	protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < w; j++) {
                 if (withinRange(x + i, y + j, model)) {
@@ -217,7 +238,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-	protected void drawSquareLine(final PaintModel model, final int x, final int y, final int w, final int color) {
+    protected void drawSquareLine(final PaintModel model, final int x, final int y, final int w, final int color) {
         Color backColor = model.getBackColor();
         for (int i = 0; i < w; i++) {
             drawPointIf(model, x + i, y, color, backColor);
@@ -237,6 +258,7 @@ public abstract class PaintTool extends Group {
 
     }
 
+
     @SuppressWarnings("unused")
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		// DOES NOTHING
@@ -247,6 +269,7 @@ public abstract class PaintTool extends Group {
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
 		// DOES NOTHING
     }
+
 
 
     @SuppressWarnings("unused")
@@ -271,61 +294,5 @@ public abstract class PaintTool extends Group {
         model.getImageStack().getChildren().add(imageView);
     }
 
-	protected boolean within(final int y, final double min, final double max) {
-        return min <= y && y < max;
-    }
-
-	protected boolean withinRange(final int x, final int y, final int initialX, final int initialY, final double bound,
-            final PaintModel model) {
-        return within(y, Math.max(initialY - bound, 0), Math.min(initialY + bound, model.getImage().getHeight()))
-                && within(x, Math.max(initialX - bound, 0),
-                        Math.min(initialX + bound, model.getImage().getWidth()));
-    }
-
-    protected boolean withinRange(final int x, final int y, final PaintModel model) {
-        WritableImage image = model.getImage();
-		return withinImage(x, y, image);
-    }
-
-	private void drawPointIf(final PaintModel model, int x2, int y2, final int color, Color backColor) {
-        if (withinRange(x2, y2 , model)) {
-            int argb = model.getImage().getPixelReader().getArgb(x2, y2 );
-            if (argb == color) {
-                model.getImage().getPixelWriter().setColor(x2, y2, backColor);
-            }
-        }
-    }
-
-    private void drawRect(final PaintModel model, final double x, final double y, final double w, final double h,
-            final Color backColor) {
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < h; j++) {
-                if (withinRange((int) x + i, (int) y + j, model)) {
-                    model.getImage().getPixelWriter().setColor((int) x + i, (int) y + j, backColor);
-                }
-            }
-        }
-    }
-
-    public static double setWithinRange(final double num, final double min, final double max) {
-		return Math.min(Math.max(min, num), max);
-	}
-
-    public static int setWithinRange(final int num, final int min, final int max) {
-		return Math.min(Math.max(min, num), max);
-    }
-
-	public static boolean withinImage(final int x, final int y, final WritableImage image) {
-		return within(y, image.getHeight()) && within(x, image.getWidth());
-	}
-
-    protected static boolean within(final int y, final double max) {
-		return 0 <= y && y < max;
-    }
-
-	@FunctionalInterface
-	interface DrawOnPoint {
-		void draw(int x, int y);
-	}
 
 }

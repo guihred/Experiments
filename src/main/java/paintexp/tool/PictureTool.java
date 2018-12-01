@@ -1,4 +1,5 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.getWithinRange;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,8 +105,8 @@ public class PictureTool extends PaintTool {
 
 	@Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
-		double x = setWithinRange(e.getX(), 0, model.getImage().getWidth());
-		double y = setWithinRange(e.getY(), 0, model.getImage().getHeight());
+		double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
+		double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
         double intendedW = Math.abs(initialX - x);
         double intendedH = Math.abs(initialY - y);
 		double min = Math.min(x, initialX);

@@ -1,4 +1,5 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.getWithinRange;
 
 import javafx.scene.paint.Color;
 
@@ -31,26 +32,26 @@ class PixelHelper {
 	}
 
 	public int toArgb(final int round) {
-		int red = PaintTool.setWithinRange(i == 0 ? r : r / i, 0, 255) / round * round;
-		int green = PaintTool.setWithinRange(i == 0 ? g : g / i, 0, 255) / round * round;
-		int blue = PaintTool.setWithinRange(i == 0 ? b : b / i, 0, 255) / round * round;
-		int transp = PaintTool.setWithinRange(i == 0 ? 255 : a / i, 0, 255);
+        int red = getWithinRange(i == 0 ? r : r / i, 0, 255) / round * round;
+        int green = getWithinRange(i == 0 ? g : g / i, 0, 255) / round * round;
+        int blue = getWithinRange(i == 0 ? b : b / i, 0, 255) / round * round;
+        int transp = getWithinRange(i == 0 ? 255 : a / i, 0, 255);
 		return transp << 24 | red << 16 | green << 8 | blue;
 	}
 
 	public Color toColor() {
-		int red = PaintTool.setWithinRange(i == 0 ? r : r / i, 0, 255);
-		int green = PaintTool.setWithinRange(i == 0 ? g : g / i, 0, 255);
-		int blue = PaintTool.setWithinRange(i == 0 ? b : b / i, 0, 255);
-		double transp = PaintTool.setWithinRange(i == 0 ? 255 : a / (double) i, 0.0, 255) / 255;
+        int red = getWithinRange(i == 0 ? r : r / i, 0, 255);
+        int green = getWithinRange(i == 0 ? g : g / i, 0, 255);
+        int blue = getWithinRange(i == 0 ? b : b / i, 0, 255);
+        double transp = getWithinRange(i == 0 ? 255 : a / (double) i, 0.0, 255) / 255;
 		return Color.rgb(red, green, blue, transp);
 	}
 
 	public Color toColor(final int round) {
-		int red = PaintTool.setWithinRange(i == 0 ? r : r / i, 0, 255) / round * round;
-		int green = PaintTool.setWithinRange(i == 0 ? g : g / i, 0, 255) / round * round;
-		int blue = PaintTool.setWithinRange(i == 0 ? b : b / i, 0, 255) / round * round;
-		double transp = PaintTool.setWithinRange(i == 0 ? 255 : a / (double) i, 0.0, 255) / 255;
+        int red = getWithinRange(i == 0 ? r : r / i, 0, 255) / round * round;
+        int green = getWithinRange(i == 0 ? g : g / i, 0, 255) / round * round;
+        int blue = getWithinRange(i == 0 ? b : b / i, 0, 255) / round * round;
+        double transp = getWithinRange(i == 0 ? 255 : a / (double) i, 0.0, 255) / 255;
 		return Color.rgb(red, green, blue, transp);
 	}
 

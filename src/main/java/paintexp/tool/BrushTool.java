@@ -1,5 +1,7 @@
 package paintexp.tool;
 
+import static paintexp.tool.DrawOnPoint.withinRange;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -158,7 +160,6 @@ public class BrushTool extends PaintTool {
             switch (option) {
                 case CIRCLE:
                     drawCircle(model, x2, y2, r, r, color);
-                    drawCircle(model, x2, y2, r, r - 1, color);
                     if (fill) {
                         fillCircle(model, x2, y2, r, color);
                     }
@@ -183,6 +184,7 @@ public class BrushTool extends PaintTool {
 
     private void fillCircle(final PaintModel model, final int x2, final int y2, double r, Color color) {
         drawPoint(model, x2, y2, color);
+        drawCircle(model, x2, y2, r, r - 1, color);
         for (double i = 1; i < r; i++) {
             drawCircle(model, x2, y2, i, i, color);
         }

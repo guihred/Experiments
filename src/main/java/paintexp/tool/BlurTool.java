@@ -1,4 +1,6 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.getWithinRange;
+import static paintexp.tool.DrawOnPoint.withinRange;
 
 import java.util.Arrays;
 import javafx.beans.property.IntegerProperty;
@@ -75,14 +77,14 @@ public class BlurTool extends PaintTool {
 					pixel.add(pix, 5);
                     for (int j = -1; j < 2; j += 2) {
                         int argb = model.getImage().getPixelReader().getArgb(x2 + centerX,
-                                setWithinRange(y2 + j + centerY, 0, height - 1));
+                                getWithinRange(y2 + j + centerY, 0, height - 1));
 						pixel.add(argb);
                         int argb2 = model.getImage().getPixelReader()
-                                .getArgb(setWithinRange(x2 + j + centerX, 0, width - 1), y2 + centerY);
+                                .getArgb(getWithinRange(x2 + j + centerX, 0, width - 1), y2 + centerY);
 						pixel.add(argb2);
                     }
-                    int j = setWithinRange(x2 + radius, 0, diameter - 1);
-                    int c = setWithinRange(y2 + radius, 0, diameter - 1);
+                    int j = getWithinRange(x2 + radius, 0, diameter - 1);
+                    int c = getWithinRange(y2 + radius, 0, diameter - 1);
 					colors[j * diameter + c] = pixel.toColor();
                 }
             }

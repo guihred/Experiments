@@ -1,4 +1,5 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.withinRange;
 
 import java.util.Random;
 import javafx.animation.AnimationTimer;

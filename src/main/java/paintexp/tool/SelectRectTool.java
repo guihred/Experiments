@@ -1,4 +1,5 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.getWithinRange;
 
 import java.io.File;
 import java.util.HashMap;
@@ -216,7 +217,7 @@ public class SelectRectTool extends PaintTool {
 			getArea().setLayoutY(Math.max(y - dragY, -height / 4));
 			return;
 		}
-        dragTo(setWithinRange(x, 0, width), setWithinRange(y, 0, height));
+        dragTo(getWithinRange(x, 0, width), getWithinRange(y, 0, height));
 	}
 
     @Override

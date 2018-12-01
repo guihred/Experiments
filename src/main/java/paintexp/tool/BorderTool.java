@@ -1,4 +1,6 @@
 package paintexp.tool;
+import static paintexp.tool.DrawOnPoint.getWithinRange;
+import static paintexp.tool.DrawOnPoint.withinRange;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -53,8 +55,8 @@ public class BorderTool extends RectangleTool {
 				if (withinRange(i + layoutX, j + layoutY, model)) {
 					for (int k = -1; k < 2; k++) {
 						for (int l = -1; l < 2; l++) {
-							int x = setWithinRange(i + k + layoutX, 0, width - 1 + layoutX);
-							int y = setWithinRange(j + l + layoutY, 0, height - 1 + layoutY);
+							int x = getWithinRange(i + k + layoutX, 0, width - 1 + layoutX);
+							int y = getWithinRange(j + l + layoutY, 0, height - 1 + layoutY);
 							int argb2 = reader.getArgb(x, y);
 							pixel.add(argb2, k + l);
 							pixel2.add(argb2, k - l);
