@@ -157,13 +157,10 @@ public class BrushTool extends PaintTool {
             Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
             switch (option) {
                 case CIRCLE:
-                    drawPoint(model, x2, y2, color);
                     drawCircle(model, x2, y2, r, r, color);
                     drawCircle(model, x2, y2, r, r - 1, color);
                     if (fill) {
-                        for (double i = 1; i < r; i++) {
-                            drawCircle(model, x2, y2, i, i, color);
-                        }
+                        fillCircle(model, x2, y2, r, color);
                     }
                     break;
                 case SQUARE:
@@ -181,6 +178,13 @@ public class BrushTool extends PaintTool {
                 default:
                     break;
             }
+        }
+    }
+
+    private void fillCircle(final PaintModel model, final int x2, final int y2, double r, Color color) {
+        drawPoint(model, x2, y2, color);
+        for (double i = 1; i < r; i++) {
+            drawCircle(model, x2, y2, i, i, color);
         }
     }
 

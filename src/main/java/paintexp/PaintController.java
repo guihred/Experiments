@@ -342,6 +342,9 @@ public class PaintController {
 
     public void undo() {
         List<WritableImage> imageVersions = paintModel.getImageVersions();
+        if (imageVersions.size() > 1) {
+            imageVersions.remove(imageVersions.size() - 1);
+        }
         if (!imageVersions.isEmpty()) {
             WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
             paintModel.getImageStack().getChildren().clear();

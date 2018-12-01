@@ -14,7 +14,7 @@
 		<skip.jacoco>false</skip.jacoco>
    	</properties>	
    	<!-- 
-   	mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false 
+   	mvn org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false 
    	-->
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>

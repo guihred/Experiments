@@ -58,6 +58,7 @@ public class PaintMain extends  Application{
         paintModel.getImage().getPixelWriter().setPixels(0, 0, (int) paintModel.getImage().getWidth(),
                 (int) paintModel.getImage().getHeight(), reader, 0, 0);
         paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);
+        paintModel.createImageVersion();
         root.setCenter(new ZoomableScrollPane(paintModel.getImageStack()));
 
         HBox hBox = new HBox(50, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());
