@@ -5,6 +5,8 @@ import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -103,19 +105,20 @@ public class SelectFreeTool extends PaintTool {
     }
 
     private WritableImage createSelectedImage(PaintModel model, int minX, int minY, int width, int height) {
+        PixelWriter currentImageWriter = model.getImage().getPixelWriter();
+        PixelReader currentImageReader = model.getImage().getPixelReader();
         WritableImage selectedImage = new WritableImage(width, height);
+        PixelWriter finalImage = selectedImage.getPixelWriter();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (withinRange(i + minX, j + minY, model)) {
-                    Color c;
                     if (getArea().contains(i + minX, j + minY)) {
-                        c = model.getImage().getPixelReader().getColor(i + minX, j + minY);
-                        model.getImage().getPixelWriter().setColor(i + minX, j + minY, model.getBackColor());
+                        finalImage.setColor(i, j, currentImageReader.getColor(i + minX, j + minY));
+                        currentImageWriter.setColor(i + minX, j + minY, model.getBackColor());
                     } else {
-                        c = Color.TRANSPARENT;
+                        finalImage.setColor(i, j, Color.TRANSPARENT);
                     }
 
-                    selectedImage.getPixelWriter().setColor(i, j, c);
                 }
             }
         }
