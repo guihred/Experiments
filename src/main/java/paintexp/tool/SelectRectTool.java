@@ -164,11 +164,12 @@ public class SelectRectTool extends PaintTool {
 	public void onDeselected(final PaintModel model) {
 		escapeArea(model);
 	}
-    public void selectArea(final int x, final int y, final double w, final double h, final PaintModel model) {
+
+    public void selectArea(final int x, final int y, final double endX, final double endY, final PaintModel model) {
 		initialX = x;
 		initialY = y;
 		addRect(model);
-		dragTo(w, h);
+        dragTo(endX, endY);
 		onMouseReleased(model);
 	}
 
