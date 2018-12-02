@@ -290,6 +290,7 @@ public class SelectRectTool extends PaintTool {
         if (children.contains(getArea())) {
             children.remove(getArea());
         }
+        model.createImageVersion();
     }
 
 	private void dragTo(final double x, final double y) {
