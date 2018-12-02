@@ -31,55 +31,13 @@ public class WandTool extends SelectRectTool {
 
 
 	@Override
-	public Node getIcon() {
-		if (icon == null) {
-            icon = getIconByURL("wand.png");
-		}
-		return icon;
-	}
-
-	@Override
-	public Cursor getMouseCursor() {
-		return Cursor.DISAPPEAR;
-	}
-
-	@Override
-	public void handleEvent(final MouseEvent e, final PaintModel model) {
-		EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            onMouseDragged(e, model);
-        }
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-            if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-                onMousePressed(e, model);
-            } else {
-                onMouseClicked(e, model);
-            }
-        }
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-                onMouseReleased(model);
-            }
-        }
-
-	}
-
-    @Override
-    public void onSelected(PaintModel model) {
-        model.getToolOptions().getChildren().clear();
-        Slider sliders = new SimpleSliderBuilder(0, 255 * 3, 0).bindBidirectional(threshold).maxWidth(60).build();
-        model.getToolOptions().getChildren().add(sliders);
-        Text text = new Text();
-        text.textProperty().bind(threshold.divide(sliders.getMax()).multiply(100).asString("%.0f%%"));
-        model.getToolOptions().getChildren().add(text);
-
-    }
-	public void setColor(final int initX, final int initY, final int originalColor, final PixelReader pixelReader,
-            final PaintModel model) {
+    public WritableImage createSelectedImage(final PaintModel model) {
+        PixelReader pixelReader = model.getImage().getPixelReader();
+        int originalColor = pixelReader.getArgb((int)initialX, (int)initialY);
         WritableImage selectedImage = new WritableImage(width, height);
         int backColor = PixelHelper.toArgb(model.getBackColor());
 		List<Integer> toGo = new ArrayList<>();
-		toGo.add(index(initX, initY));
+		toGo.add(index((int)initialX, (int)initialY));
         PixelHelper pixel = new PixelHelper();
         while (!toGo.isEmpty()) {
 			Integer next = toGo.remove(0);
@@ -113,7 +71,61 @@ public class WandTool extends SelectRectTool {
         int y = (int) getArea().getLayoutY();
         copyImagePart(selectedImage, writableImage, x, y, width2, height2, 0, 0,
                 Color.TRANSPARENT);
-        selectArea(x, y, width2 + x, height2 + y, model);
+        return writableImage;
+    }
+
+	@Override
+	public Node getIcon() {
+		if (icon == null) {
+            icon = getIconByURL("wand.png");
+		}
+		return icon;
+	}
+
+	@Override
+	public Cursor getMouseCursor() {
+		return Cursor.DISAPPEAR;
+	}
+
+    @Override
+	public void handleEvent(final MouseEvent e, final PaintModel model) {
+		EventType<? extends MouseEvent> eventType = e.getEventType();
+        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+            onMouseDragged(e, model);
+        }
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+            if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
+                onMousePressed(e, model);
+            } else {
+                onMouseClicked(e, model);
+            }
+        }
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
+                onMouseReleased(model);
+            }
+        }
+
+	}
+
+    @Override
+    public void onSelected(PaintModel model) {
+        model.getToolOptions().getChildren().clear();
+        Slider sliders = new SimpleSliderBuilder(0, 255 * 3, 0).bindBidirectional(threshold).maxWidth(60).build();
+        model.getToolOptions().getChildren().add(sliders);
+        Text text = new Text();
+        text.textProperty().bind(threshold.divide(sliders.getMax()).multiply(100).asString("%.0f%%"));
+        model.getToolOptions().getChildren().add(text);
+
+    }
+
+    public void setImage(final PaintModel model) {
+        WritableImage writableImage = createSelectedImage(model);
+        int width3 = Math.max(1, (int) getArea().getWidth());
+        int height3 = Math.max(1, (int) getArea().getHeight());
+        int x2 = (int) getArea().getLayoutX();
+        int y2 = (int) getArea().getLayoutY();
+        selectArea(x2, y2, width3 + x2, height3 + y2, model);
         setImageSelected(writableImage);
         getArea().setFill(new ImagePattern(writableImage));
     }
@@ -155,9 +167,8 @@ public class WandTool extends SelectRectTool {
         getArea().setManaged(false);
         getArea().setWidth(1);
         getArea().setHeight(1);
-		PixelReader pixelReader = model.getImage().getPixelReader();
-        int originalColor = pixelReader.getArgb(clickedX, clickedY);
-        Platform.runLater(() -> setColor(clickedX, clickedY, originalColor, pixelReader, model));
+
+        Platform.runLater(() -> setImage(model));
 	}
 
 	private int x(final int m) {

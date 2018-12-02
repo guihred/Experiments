@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.embed.swing.SwingFXUtils;
@@ -48,21 +49,24 @@ public class PaintController {
 	}
 
 	public BooleanBinding containsSelectedArea() {
-		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
-		return Bindings.createBooleanBinding(()->paintModel.getImageStack().getChildren().contains(a.getArea()), paintModel.getImageStack().getChildren());
+        return Bindings.createBooleanBinding(
+                () -> Stream.of(PaintTools.values())
+                        .map(PaintTools::getTool)
+                        .filter(SelectRectTool.class::isInstance)
+                        .map(SelectRectTool.class::cast)
+                        .anyMatch(e -> paintModel.getImageStack().getChildren().contains(e.getArea())),
+                paintModel.getImageStack().getChildren());
 	}
 
 	public void copy() {
-		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-		changeTool(null);
-		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+        SelectRectTool a = getCurrentSelectTool();
 		a.copyToClipboard(paintModel);
 	}
 	public void crop() {
         WritableImage image = getImage();
         paintModel.getImageStack().getChildren().clear();
         ImageView imageView = new ImageView(image);
-        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+        SelectRectTool tool = getCurrentSelectTool();
         tool.setImageSelected(null);
         paintModel.setImage(image);
         paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
@@ -71,9 +75,7 @@ public class PaintController {
     }
 
     public void cut() {
-		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-		changeTool(null);
-		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+        SelectRectTool a = getCurrentSelectTool();
 		a.copyToClipboard(paintModel);
         Bounds bounds = a.getArea().getBoundsInParent();
         a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
@@ -95,7 +97,7 @@ public class PaintController {
         paintModel.createImageVersion();
     }
 
-	public List<Color> getColors() {
+    public List<Color> getColors() {
         List<Color> availableColors = new ArrayList<>();
         int a = 360 / 12;
         for (int i = 0; i < 128; i += 64) {
@@ -185,7 +187,7 @@ public class PaintController {
         paintModel.createImageVersion();
     }
 
-    public void mirrorVertically() {
+	public void mirrorVertically() {
         WritableImage image = getImage();
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
@@ -201,7 +203,7 @@ public class PaintController {
         paintModel.createImageVersion();
     }
 
-	public void newFile() {
+    public void newFile() {
 		paintModel.setImage(new WritableImage(500, 500));
 		int w = (int) paintModel.getImage().getWidth();
 		int h = (int) paintModel.getImage().getHeight();
@@ -214,7 +216,7 @@ public class PaintController {
 
 	}
 
-    public Rectangle newRectangle(final Color color) {
+	public Rectangle newRectangle(final Color color) {
 		Rectangle rectangle = new Rectangle(20, 20, color);
 		rectangle.setStroke(Color.BLACK);
 
@@ -223,7 +225,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-	public void openFile(final Window ownerWindow) {
+    public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -253,7 +255,7 @@ public class PaintController {
 		a.copyFromClipboard(paintModel);
 	}
 
-    public void resize() {
+	public void resize() {
         WritableImage image = getImage();
         Stage stage = new Stage();
         VBox root = new VBox();
@@ -297,7 +299,7 @@ public class PaintController {
         stage.show();
     }
 
-	public void saveAsFile(final Stage primaryStage) {
+    public void saveAsFile(final Stage primaryStage) {
         paintModel.setCurrentFile(null);
         saveFile(primaryStage);
     }
@@ -320,7 +322,7 @@ public class PaintController {
 		}
 	}
 
-    public void selectAll() {
+	public void selectAll() {
 		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 		changeTool(null);
 		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
@@ -342,13 +344,13 @@ public class PaintController {
         }
     }
 
-	private void changeIfDifferent(final TextField heightField, final String replaceAll) {
+    private void changeIfDifferent(final TextField heightField, final String replaceAll) {
         if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - tryParse(replaceAll)) > 1) {
             heightField.setText(replaceAll);
         }
     }
 
-    private void finishResize(final WritableImage image, final SimpleToggleGroupBuilder groupBuilder, final TextField widthField,
+	private void finishResize(final WritableImage image, final SimpleToggleGroupBuilder groupBuilder, final TextField widthField,
 			final TextField heightField) {
 		ToggleButton selectedItem = (ToggleButton) groupBuilder.selectedItem();
 		double newWidth = PERCENTAGE_FIELD.equals(selectedItem.getText())
@@ -382,15 +384,20 @@ public class PaintController {
 		setImage(newImage);
 	}
 
+    private SelectRectTool getCurrentSelectTool() {
+        return Stream.of(PaintTools.values()).map(PaintTools::getTool)
+                .filter(SelectRectTool.class::isInstance).map(SelectRectTool.class::cast)
+                .filter(e -> paintModel.getImageStack().getChildren().contains(e.getArea()))
+                .findFirst()
+                .orElseGet(() -> (SelectRectTool) PaintTools.SELECT_RECT.getTool());
+    }
+
     private WritableImage getImage() {
-        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
-        WritableImage image;
+        SelectRectTool tool = getCurrentSelectTool();
         if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
-            image = tool.createSelectedImage(paintModel);
-        } else {
-            image = paintModel.getImage();
+            return tool.createSelectedImage(paintModel);
         }
-        return image;
+        return paintModel.getImage();
     }
 
     private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
@@ -432,7 +439,7 @@ public class PaintController {
     }
 
     private void setImage(final WritableImage writableImage) {
-        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+        SelectRectTool tool = getCurrentSelectTool();
         if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
             tool.getArea().setWidth(writableImage.getWidth());
             tool.getArea().setHeight(writableImage.getHeight());
