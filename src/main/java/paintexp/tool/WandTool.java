@@ -7,6 +7,7 @@ import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -17,27 +18,17 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import paintexp.PaintModel;
-import paintexp.PaintTools;
 import simplebuilder.SimpleSliderBuilder;
 
-public class WandTool extends PaintTool {
+public class WandTool extends SelectRectTool {
 
 	private ImageView icon;
-    private Rectangle area;
 	private int width;
 	private int height;
     private IntegerProperty threshold = new SimpleIntegerProperty(255 * 3 / 20);
 
-	public Rectangle getArea() {
-		if (area == null) {
-            area = new Rectangle(10, 10, Color.TRANSPARENT);
-            area.setStroke(Color.BLUE);
-		}
-		return area;
-	}
 
 	@Override
 	public Node getIcon() {
@@ -55,25 +46,35 @@ public class WandTool extends PaintTool {
 	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
+        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+            onMouseDragged(e, model);
+        }
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+            if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
+                onMousePressed(e, model);
+            } else {
+                onMouseClicked(e, model);
+            }
+        }
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			onMouseClicked(e, model);
+            if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
+                onMouseReleased(model);
+            }
+        }
 
-		}
 	}
 
-	@Override
-	public void onSelected(PaintModel model) {
-	    model.getToolOptions().getChildren().clear();
+    @Override
+    public void onSelected(PaintModel model) {
+        model.getToolOptions().getChildren().clear();
         Slider sliders = new SimpleSliderBuilder(0, 255 * 3, 0).bindBidirectional(threshold).maxWidth(60).build();
-        model.getToolOptions().getChildren()
-                .add(sliders);
+        model.getToolOptions().getChildren().add(sliders);
         Text text = new Text();
         text.textProperty().bind(threshold.divide(sliders.getMax()).multiply(100).asString("%.0f%%"));
         model.getToolOptions().getChildren().add(text);
-	
-	}
 
-    public void setColor(final int initX, final int initY, final int originalColor, final PixelReader pixelReader,
+    }
+	public void setColor(final int initX, final int initY, final int originalColor, final PixelReader pixelReader,
             final PaintModel model) {
         WritableImage selectedImage = new WritableImage(width, height);
         int backColor = PixelHelper.toArgb(model.getBackColor());
@@ -96,27 +97,30 @@ public class WandTool extends PaintTool {
 					}
                     selectedImage.getPixelWriter().setArgb(x, y, color);
                     model.getImage().getPixelWriter().setArgb(x, y, backColor);
-                    double x2 = area.getX();
-                    double y2 = area.getY();
-                    area.setX(Math.min(x, x2));
-                    area.setY(Math.min(y, y2));
-                    area.setWidth(Math.abs(Math.max(x, x2 + area.getWidth()) - area.getX()));
-                    area.setHeight(Math.abs(Math.max(y, y2 + area.getHeight()) - area.getY()));
+                    double x2 = getArea().getLayoutX();
+                    double y2 = getArea().getLayoutY();
+                    getArea().setLayoutX(Math.min(x, x2));
+                    getArea().setLayoutY(Math.min(y, y2));
+                    getArea().setWidth(Math.abs(Math.max(x, x2 + getArea().getWidth()) - getArea().getLayoutX()));
+                    getArea().setHeight(Math.abs(Math.max(y, y2 + getArea().getHeight()) - getArea().getLayoutY()));
 				}
 			}
 		}
-        int width2 = Math.max(1, (int) area.getWidth());
-        int height2 = Math.max(1, (int) area.getHeight());
+        int width2 = Math.max(1, (int) getArea().getWidth());
+        int height2 = Math.max(1, (int) getArea().getHeight());
         WritableImage writableImage = new WritableImage(width2, height2);
-        int x = (int) area.getX();
-        int y = (int) area.getY();
+        int x = (int) getArea().getLayoutX();
+        int y = (int) getArea().getLayoutY();
         copyImagePart(selectedImage, writableImage, x, y, width2, height2, 0, 0,
                 Color.TRANSPARENT);
-        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
-        model.changeTool(tool);
-        tool.setImageSelected(writableImage);
-        tool.selectArea(x, y, width2 + x, height2 + y, model);
-        tool.getArea().setFill(new ImagePattern(writableImage));
+        selectArea(x, y, width2 + x, height2 + y, model);
+        setImageSelected(writableImage);
+        getArea().setFill(new ImagePattern(writableImage));
+    }
+
+    @Override
+    protected void addRect(PaintModel model) {
+        getArea().setManaged(false);
     }
 
     private void addIfNotIn(final List<Integer> toGo, final int e) {
@@ -135,17 +139,25 @@ public class WandTool extends PaintTool {
 	}
 
     private void onMouseClicked(final MouseEvent e, final PaintModel model) {
-		int initialX = (int) e.getX();
-		int initialY = (int) e.getY();
+        int clickedX = (int) e.getX();
+        initialX = clickedX;
+        int clickedY = (int) e.getY();
+        initialY = clickedY;
 		width = (int) model.getImage().getWidth();
 		height = (int) model.getImage().getHeight();
-        getArea().setX(initialX);
-        getArea().setY(initialY);
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (!children.contains(getArea())) {
+            children.add(getArea());
+        }
+
+        getArea().setLayoutX(clickedX);
+        getArea().setLayoutY(clickedY);
+        getArea().setManaged(false);
         getArea().setWidth(1);
         getArea().setHeight(1);
 		PixelReader pixelReader = model.getImage().getPixelReader();
-		int originalColor = pixelReader.getArgb(initialX, initialY);
-        Platform.runLater(() -> setColor(initialX, initialY, originalColor, pixelReader, model));
+        int originalColor = pixelReader.getArgb(clickedX, clickedY);
+        Platform.runLater(() -> setColor(clickedX, clickedY, originalColor, pixelReader, model));
 	}
 
 	private int x(final int m) {

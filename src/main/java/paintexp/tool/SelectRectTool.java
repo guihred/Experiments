@@ -30,8 +30,8 @@ public class SelectRectTool extends PaintTool {
 	private Rectangle icon;
 	private Rectangle area;
 	protected WritableImage imageSelected;
-	private double initialX;
-	private double initialY;
+    protected double initialX;
+    protected double initialY;
 	private double dragX;
 	private double dragY;
 
@@ -87,6 +87,7 @@ public class SelectRectTool extends PaintTool {
 		if (area == null) {
 			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.cursor(Cursor.MOVE)
+                    .managed(false)
 					.strokeDashArray(1, 2, 1, 2).build();
 		}
 		return area;
