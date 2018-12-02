@@ -7,6 +7,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
+import paintexp.tool.PixelHelper;
 import utils.HasLogging;
 
 public final class SimplePixelReader implements PixelReader {
@@ -18,20 +19,11 @@ public final class SimplePixelReader implements PixelReader {
 
     @Override
     public int getArgb(int x, int y) {
-		return toArgb(onlyColor);
+		return PixelHelper.toArgb(onlyColor);
 
     }
 
-	public static int toArgb(Color c) {
-		int b = (int) (c.getBlue() * 255);
-		int r = (int) (c.getRed() * 255);
-		int g = (int) (c.getGreen() * 255);
-		int a = (int) (c.getOpacity() * 255);
-		return a << 24 | r << 16 | g << 8 | b;
-
-	}
-
-    @Override
+	@Override
     public Color getColor(int x, int y) {
         return onlyColor;
     }

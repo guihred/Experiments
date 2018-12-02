@@ -86,7 +86,7 @@ public class SprayTool extends PaintTool {
         centerY = (int) e.getY();
         pressed = true;
 		paintModel = model;
-		frontColor = SimplePixelReader.toArgb(model.getFrontColor());
+		frontColor = PixelHelper.toArgb(model.getFrontColor());
 		pixelReader = model.getImage().getPixelReader();
 		animationTimer.start();
     }

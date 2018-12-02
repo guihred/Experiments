@@ -14,7 +14,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import paintexp.PaintModel;
-import paintexp.SimplePixelReader;
 import utils.ResourceFXUtils;
 
 public abstract class PaintTool extends Group {
@@ -83,7 +82,7 @@ public abstract class PaintTool extends Group {
 
     protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height, final int xOffset, final int yOffset, final Color ignoreColor) {
-        int argb = SimplePixelReader.toArgb(ignoreColor);
+        int argb = PixelHelper.toArgb(ignoreColor);
         boolean isTransparent = Color.TRANSPARENT.equals(ignoreColor);
         PixelReader pixelReader = srcImage.getPixelReader();
         double srcWidth = srcImage.getWidth();
@@ -99,9 +98,8 @@ public abstract class PaintTool extends Group {
                     int color = pixelReader.getArgb(i + x, j + y);
                     if (Type.BYTE_BGRA_PRE == type) {
                         Color color2 = pixelReader.getColor(i + x, j + y);
-                        color = SimplePixelReader
-                                .toArgb(Color.hsb(color2.getHue(), color2.getSaturation(), color2.getBrightness(),
-                                        color2.getOpacity()));
+                        color = PixelHelper.toArgb(Color.hsb(color2.getHue(), color2.getSaturation(), color2.getBrightness(),
+                        color2.getOpacity()));
                     }
                     if (color != argb) {
                         pixelWriter.setArgb(i + xOffset, j + yOffset, isTransparent ? color | 0xFF000000 : color);

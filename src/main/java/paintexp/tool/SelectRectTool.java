@@ -131,7 +131,9 @@ public class SelectRectTool extends PaintTool {
         Bounds bounds = getArea().getBoundsInParent();
         switch (code) {
             case DELETE:
-                deleteImage(model, bounds);
+                if (e.getEventType() == KeyEvent.KEY_RELEASED) {
+                    deleteImage(model, bounds);
+                }
                 break;
             case ESCAPE:
                 escapeArea(model);
@@ -280,7 +282,10 @@ public class SelectRectTool extends PaintTool {
     }
 
 	private void deleteImage(final PaintModel model, Bounds bounds) {
-        drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+        if (imageSelected == null) {
+            drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+        }
+        imageSelected = null;
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (children.contains(getArea())) {
             children.remove(getArea());

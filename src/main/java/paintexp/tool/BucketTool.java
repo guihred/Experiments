@@ -11,24 +11,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import paintexp.SimplePixelReader;
 
 public class BucketTool extends PaintTool {
 
 	private ImageView icon;
-    private Rectangle area;
 	private int width;
 	private int height;
 
-	public Rectangle getArea() {
-		if (area == null) {
-			area = new Rectangle(10, 10, Color.WHITE);
-		}
-		return area;
-	}
 
 	@Override
 	public Node getIcon() {
@@ -94,8 +85,7 @@ public class BucketTool extends PaintTool {
 		height = (int) model.getImage().getHeight();
 		PixelReader pixelReader = model.getImage().getPixelReader();
 		int originalColor = pixelReader.getArgb(initialX, initialY);
-		int frontColor = SimplePixelReader
-				.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
+		int frontColor = PixelHelper.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
 		if (originalColor != frontColor) {
 			Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
 		}

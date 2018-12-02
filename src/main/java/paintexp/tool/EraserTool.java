@@ -106,7 +106,7 @@ public class EraserTool extends PaintTool {
 			if (e.getButton() == MouseButton.PRIMARY) {
                 drawSquareLine(model, x, y, w, model.getBackColor());
 			} else {
-                drawSquareLine(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
+                drawSquareLine(model, x, y, w, PixelHelper.toArgb(model.getFrontColor()));
 			}
 		});
 
@@ -124,7 +124,7 @@ public class EraserTool extends PaintTool {
 		if (e.getButton() == MouseButton.PRIMARY) {
 			drawSquare(model, x, y, w, model.getBackColor());
 		} else {
-			drawSquare(model, x, y, w, SimplePixelReader.toArgb(model.getFrontColor()));
+			drawSquare(model, x, y, w, PixelHelper.toArgb(model.getFrontColor()));
 		}
 		getArea().setLayoutX(e.getX());
 		getArea().setLayoutY(e.getY());

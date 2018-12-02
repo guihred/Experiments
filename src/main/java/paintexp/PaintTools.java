@@ -8,7 +8,7 @@ public enum PaintTools {
     ERASER(new EraserTool()),
     BUCKET(new BucketTool()),
     EYEDROP(new EyedropTool()),
-    //    LUPE,
+    LUPE(new WandTool()),
     PENCIL(new PencilTool()),
     BRUSH(new BrushTool()),
     SPRAY(new SprayTool()),
