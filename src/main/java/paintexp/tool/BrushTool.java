@@ -152,6 +152,17 @@ public class BrushTool extends PaintTool {
         model.createImageVersion();
     }
 
+    private void drawCircleOption(final PaintModel model, final int x2, final int y2, double r, Color color, boolean fill) {
+        drawCircle(model, x2, y2, r, r, color);
+        drawCircle(model, x2, y2, r, r - 1, color);
+        if (fill) {
+            drawPoint(model, x2, y2, color);
+            for (double i = 1; i < r; i++) {
+                drawCircle(model, x2, y2, i, i, color);
+            }
+        }
+    }
+
     private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2, boolean fill) {
 
         if (withinRange(x2, y2, model)) {
@@ -159,9 +170,7 @@ public class BrushTool extends PaintTool {
             Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
             switch (option) {
                 case CIRCLE:
-                    drawCircle(model, x2, y2, r, r, color);
-                    drawCircle(model, x2, y2, r, r - 1, color);
-                    fillCircle(model, x2, y2, r, color, fill);
+                    drawCircleOption(model, x2, y2, r, color, fill);
                     break;
                 case SQUARE:
                     drawSquareLine(model, x2, y2, (int) r, color);
@@ -177,15 +186,6 @@ public class BrushTool extends PaintTool {
                     break;
                 default:
                     break;
-            }
-        }
-    }
-
-    private void fillCircle(final PaintModel model, final int x2, final int y2, double r, Color color, boolean fill) {
-        if (fill) {
-            drawPoint(model, x2, y2, color);
-            for (double i = 1; i < r; i++) {
-                drawCircle(model, x2, y2, i, i, color);
             }
         }
     }
