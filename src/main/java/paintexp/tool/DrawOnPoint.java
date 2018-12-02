@@ -6,27 +6,28 @@ import paintexp.PaintModel;
 @FunctionalInterface
 public interface DrawOnPoint {
 	void draw(int x, int y);
-	public static double getWithinRange(final double num, final double min, final double max) {
+
+    static double getWithinRange(final double num, final double min, final double max) {
 	    return Math.min(Math.max(min, num), max);
 	}
 	
-	public static int getWithinRange(final int num, final int min, final int max) {
+    static int getWithinRange(final int num, final int min, final int max) {
 	    return Math.min(Math.max(min, num), max);
 	}
 	
-	public static boolean within(final int y, final double max) {
+    static boolean within(final int y, final double max) {
 	    return 0 <= y && y < max;
 	}
 	
-	public static boolean within(final int y, final double min, final double max) {
+    static boolean within(final int y, final double min, final double max) {
         return min <= y && y < max;
     }
 
-    public static boolean withinImage(final int x, final int y, final WritableImage image) {
+    static boolean withinImage(final int x, final int y, final WritableImage image) {
         return within(y, image.getHeight()) && within(x, image.getWidth());
     }
 
-    public static boolean withinRange(final int x, final int y, final PaintModel model) {
+    static boolean withinRange(final int x, final int y, final PaintModel model) {
         WritableImage image = model.getImage();
         return withinImage(x, y, image);
     }
