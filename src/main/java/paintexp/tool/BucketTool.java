@@ -12,7 +12,6 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import paintexp.PaintModel;
-import paintexp.SimplePixelReader;
 
 public class BucketTool extends PaintTool {
 
@@ -69,13 +68,13 @@ public class BucketTool extends PaintTool {
 	}
 
 	private void addIfNotIn(final List<Integer> toGo, final Integer e) {
-		if (!toGo.contains(e) && e < width * width + height && e >= 0) {
+        if (!toGo.contains(e) && e < width * height && e >= 0) {
 			toGo.add(e);
 		}
 	}
 
 	private Integer index(final int initialX2, final int initialY2) {
-		return initialX2 * width + initialY2;
+        return initialX2 + initialY2 * width;
 	}
 
 	private void onMouseClicked(final MouseEvent e, final PaintModel model) {
@@ -92,12 +91,12 @@ public class BucketTool extends PaintTool {
 	}
 
 	private int x(final int m) {
-		return m / width;
+        return m % width;
 	}
 
 	private int y(final int m) {
 
-		return m % width;
+        return m / width;
 	}
 
 

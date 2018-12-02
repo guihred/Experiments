@@ -160,9 +160,8 @@ public class BrushTool extends PaintTool {
             switch (option) {
                 case CIRCLE:
                     drawCircle(model, x2, y2, r, r, color);
-                    if (fill) {
-                        fillCircle(model, x2, y2, r, color);
-                    }
+                    drawCircle(model, x2, y2, r, r - 1, color);
+                    fillCircle(model, x2, y2, r, color, fill);
                     break;
                 case SQUARE:
                     drawSquareLine(model, x2, y2, (int) r, color);
@@ -182,11 +181,12 @@ public class BrushTool extends PaintTool {
         }
     }
 
-    private void fillCircle(final PaintModel model, final int x2, final int y2, double r, Color color) {
-        drawPoint(model, x2, y2, color);
-        drawCircle(model, x2, y2, r, r - 1, color);
-        for (double i = 1; i < r; i++) {
-            drawCircle(model, x2, y2, i, i, color);
+    private void fillCircle(final PaintModel model, final int x2, final int y2, double r, Color color, boolean fill) {
+        if (fill) {
+            drawPoint(model, x2, y2, color);
+            for (double i = 1; i < r; i++) {
+                drawCircle(model, x2, y2, i, i, color);
+            }
         }
     }
 
