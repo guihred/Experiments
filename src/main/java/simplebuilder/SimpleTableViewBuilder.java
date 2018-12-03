@@ -21,8 +21,24 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table = node;
 	}
 
-    public <V> SimpleTableViewBuilder<T> addColumn(String columnName,
-            Callback<TableColumn<T, V>, TableCell<T, V>> value) {
+	@SuppressWarnings("unchecked")
+	public <V extends TableCell<T, Object>> SimpleTableViewBuilder<T> addColumn(final String columnName,
+    		final BiConsumer<T, V> value) {
+		final TableColumn<T, Object> column = new TableColumn<>(columnName);
+		column.setCellFactory(p -> new CustomableTableCell<T, Object>() {
+			@Override
+			void setStyleable(final T auxMed) {
+				value.accept(auxMed, (V) this);
+			}
+
+		});
+    	column.setPrefWidth(150);
+    	table.getColumns().add(column);
+    	return this;
+    }
+
+	public <V> SimpleTableViewBuilder<T> addColumn(final String columnName,
+            final Callback<TableColumn<T, V>, TableCell<T, V>> value) {
         final TableColumn<T, V> column = new TableColumn<>(columnName);
         column.setCellFactory(value);
         column.setPrefWidth(150);
@@ -30,7 +46,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumn(String columnName, Function<T, String> propertyName) {
+    public SimpleTableViewBuilder<T> addColumn(final String columnName, final Function<T, String> propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(
                 param -> new SimpleStringProperty(Objects.toString(propertyName.apply(param.getValue()))));
@@ -39,7 +55,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumn(String columnName, String propertyName) {
+    public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setPrefWidth(150);
@@ -47,7 +63,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumn(String columnName, String propertyName, boolean editable) {
+    public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName, final boolean editable) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setPrefWidth(150);
@@ -56,8 +72,8 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumn(String columnName, String propertyName,
-            Callback<TableColumn<T, String>, TableCell<T, String>> value) {
+    public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName,
+            final Callback<TableColumn<T, String>, TableCell<T, String>> value) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setCellFactory(value);
@@ -66,7 +82,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumn(String columnName, String propertyName, double prefWidth) {
+    public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName, final double prefWidth) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setPrefWidth(prefWidth);
@@ -81,12 +97,12 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> items(ObservableList<T> value) {
+    public SimpleTableViewBuilder<T> items(final ObservableList<T> value) {
         table.setItems(value);
         return this;
     }
 
-    public SimpleTableViewBuilder<T> onDoubleClick(Consumer<T> object) {
+    public SimpleTableViewBuilder<T> onDoubleClick(final Consumer<T> object) {
         node.setOnMouseClicked(e->{
             if (e.getClickCount() > 1) {
                 T selectedItem = table.getSelectionModel().getSelectedItem();
@@ -96,10 +112,26 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> onSelect(BiConsumer<T, T> value) {
+    public SimpleTableViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
         return this;
     }
+
+	private abstract class CustomableTableCell<M, X> extends TableCell<M, X> {
+
+		@Override
+		protected void updateItem(final X item, final boolean empty) {
+			super.updateItem(item, empty);
+			int index = getIndex();
+			int size = getTableView().getItems().size();
+			if (index >= 0 && index < size) {
+				M auxMed = getTableView().getItems().get(index);
+				setStyleable(auxMed);
+			}
+		}
+
+		abstract void setStyleable(M auxMed);
+	}
 
 }

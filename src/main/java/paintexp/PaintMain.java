@@ -10,16 +10,24 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import simplebuilder.SimpleMenuBarBuilder;
 import simplebuilder.SimpleRectangleBuilder;
+import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CrawlerTask;
 
@@ -98,8 +106,25 @@ public class PaintMain extends  Application{
 		scene.addEventHandler(KeyEvent.ANY, controller::handleKeyBoard);
 		primaryStage.setScene(scene);
         primaryStage.show();
+        
+		displayImageVersions(paintModel);
 
     }
+
+	private void displayImageVersions(final PaintModel paintModel) {
+		TableView<WritableImage> root2 = new SimpleTableViewBuilder<WritableImage>()
+				.addColumn("Image", (p, cell) -> cell.setGraphic(new ImageView(p)))
+				.items(paintModel.getImageVersions())
+				.prefWidth(400)
+				.equalColumns().build();
+        Stage stage = new Stage();
+		Scene value = new Scene(root2);
+
+		stage.setScene(value);
+		stage.setX(0);
+		root2.scrollTo(600);
+		stage.show();
+	}
 
     private Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
 

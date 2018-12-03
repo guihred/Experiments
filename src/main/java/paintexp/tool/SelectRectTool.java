@@ -12,6 +12,7 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Toggle;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -164,7 +165,7 @@ public class SelectRectTool extends PaintTool {
 				.addToggle(getIconByURL("opaqueSelection.png", 30), SelectOption.OPAQUE)
 				.addToggle(getIconByURL("transparentSelection.png", 30), SelectOption.TRANSPARENT)
 				.onChange((ob, old,
-						newV) -> option = newV == null ? SelectOption.OPAQUE : (SelectOption) newV.getUserData())
+						newV) -> onChangeOption(newV, model))
 				.select(option)
 				.getTogglesAs(Node.class);
 
@@ -334,13 +335,29 @@ public class SelectRectTool extends PaintTool {
 		}
 	}
 
+	private void onChangeOption(final Toggle newV, final PaintModel model) {
+		SelectOption oldOption = option;
+		option = newV == null ? SelectOption.OPAQUE : (SelectOption) newV.getUserData();
+		if (oldOption != option) {
+			if (imageSelected != null) {
+				if (option == SelectOption.OPAQUE) {
+					replaceColor(imageSelected, Color.TRANSPARENT, model.getBackColor());
+				} else {
+					replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
+				}
+			}
+		}
+	}
+
 	private void replaceColor(final WritableImage writableImage, final Color backColor, final Color transparent) {
 		PixelReader pixelReader = writableImage.getPixelReader();
 		PixelWriter pixelWriter = writableImage.getPixelWriter();
+		int colorToBe = PixelHelper.toArgb(transparent);
+		int colorReplace = PixelHelper.toArgb(backColor);
 		for (int i = 0; i < writableImage.getWidth(); i++) {
 			for (int j = 0; j < writableImage.getHeight(); j++) {
-				if (pixelReader.getColor(i, j).equals(backColor)) {
-					pixelWriter.setColor(i, j, transparent);
+				if (pixelReader.getArgb(i, j) == colorReplace) {
+					pixelWriter.setArgb(i, j, colorToBe);
 				}
 			}
 		}
