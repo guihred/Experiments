@@ -11,7 +11,6 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
 import paintexp.PaintModel;
-import paintexp.SimplePixelReader;
 import simplebuilder.SimpleSliderBuilder;
 import utils.HasLogging;
 

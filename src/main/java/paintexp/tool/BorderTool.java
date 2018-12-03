@@ -9,6 +9,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
@@ -26,8 +27,6 @@ public class BorderTool extends RectangleTool {
 		return icon;
 	}
 
-
-
 	@Override
 	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
@@ -37,8 +36,7 @@ public class BorderTool extends RectangleTool {
 	
 	}
 
-
-    protected void drawBorders(final int layoutX, final int layoutY,final int width, final int height, final PaintModel model) {
+	protected void drawBorders(final int layoutX, final int layoutY,final int width, final int height, final PaintModel model) {
 		Color[][] color2 = new Color[width][height];
 		PixelHelper pixel = new PixelHelper();
 		PixelHelper pixel2 = new PixelHelper();
@@ -57,6 +55,7 @@ public class BorderTool extends RectangleTool {
 						for (int l = -1; l < 2; l++) {
 							int x = getWithinRange(i + k + layoutX, 0, width - 1 + layoutX);
 							int y = getWithinRange(j + l + layoutY, 0, height - 1 + layoutY);
+
 							int argb2 = reader.getArgb(x, y);
 							pixel.add(argb2, k + l);
 							pixel2.add(argb2, k - l);
@@ -77,6 +76,14 @@ public class BorderTool extends RectangleTool {
 				drawPoint(model, i + layoutX, j + layoutY, color2[i][j]);
 			}
 		}
+	}
+
+
+    @Override
+    protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
+		double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
+		double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
+		dragTo(e,x, y);
 	}
 
 

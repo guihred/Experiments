@@ -52,7 +52,8 @@ public class PencilTool extends PaintTool {
 		y = (int) e.getY();
 		x = (int) e.getX();
 		if (withinRange(x, y, model)) {
-		    model.getImage().getPixelWriter().setColor(x, y, model.getFrontColor());
+			Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
+			model.getImage().getPixelWriter().setColor(x, y, color);
 		}
 		pressed = true;
 	}

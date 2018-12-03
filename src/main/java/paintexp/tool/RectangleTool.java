@@ -97,25 +97,29 @@ public class RectangleTool extends PaintTool {
 
 	}
 
-	@Override
-    protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
+	protected void dragTo(final MouseEvent e, final double x, final double y) {
 		double layoutX = initialX;
 		double layoutY = initialY;
-		double x = e.getX();
         double min = Math.min(x, layoutX);
 		getArea().setLayoutX(min);
-		double y = e.getY();
         double min2 = Math.min(y, layoutY);
 		getArea().setLayoutY(min2);
-		double width = Math.abs(e.getX() - layoutX);
+		double width = Math.abs(x - layoutX);
 		getArea().setWidth(width);
-		double height = Math.abs(e.getY() - layoutY);
+		double height = Math.abs(y - layoutY);
 		getArea().setHeight(height);
 		if (e.isShiftDown()) {
             double max = Math.max(width, height);
 			getArea().setWidth(max);
 			getArea().setHeight(max);
 		}
+	}
+
+	@Override
+    protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
+		double x = e.getX();
+		double y = e.getY();
+		dragTo(e, x, y);
 	}
 
     @Override
@@ -142,7 +146,7 @@ public class RectangleTool extends PaintTool {
 
 	}
 
-    @Override
+	@Override
     protected  void onMouseReleased(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getWidth() > 2 && children.contains(getArea())) {

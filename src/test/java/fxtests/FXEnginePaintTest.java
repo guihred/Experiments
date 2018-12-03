@@ -50,7 +50,7 @@ public class FXEnginePaintTest extends ApplicationTest {
 		for (Node next : queryAll) {
 			if (!colors.isEmpty()) {
 				clickOn(colors.get(random.nextInt(colors.size())),
-						random.nextBoolean() ? MouseButton.PRIMARY : MouseButton.SECONDARY);
+						random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY);
 			}
 			clickOn(next);
 			moveTo(stack);
@@ -74,7 +74,10 @@ public class FXEnginePaintTest extends ApplicationTest {
 				drag(MouseButton.PRIMARY);
 				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
 				drop();
-				lookup(".text-area").queryAll().forEach(f -> write("lsad"));
+				lookup(".text-area").queryAll().forEach(f -> {
+					interactNoWait(() -> f.requestFocus());
+					write("lsad");
+				});
 				type(KeyCode.ESCAPE);
 			});
 		}

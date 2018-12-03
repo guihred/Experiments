@@ -14,8 +14,16 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -123,16 +131,6 @@ public class PaintController {
 	}
 
 	public void handleKeyBoard(final KeyEvent e) {
-		switch (e.getCode()) {
-			case V:
-			case A:
-				if (e.isControlDown()) {
-					paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-				}
-				break;
-			default:
-				break;
-		}
 		PaintTool paintTool = paintModel.getTool();
 		if (paintTool != null) {
 			paintTool.handleKeyEvent(e, paintModel);
@@ -249,9 +247,11 @@ public class PaintController {
     }
 
 	public void paste() {
-		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-		changeTool(null);
-		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+		if (!(paintModel.getTool() instanceof SelectRectTool)) {
+			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
+			changeTool(null);
+		}
+		SelectRectTool a = getCurrentSelectTool();
 		a.copyFromClipboard(paintModel);
 	}
 
@@ -323,9 +323,11 @@ public class PaintController {
 	}
 
 	public void selectAll() {
-		paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-		changeTool(null);
-		SelectRectTool a = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+		if (!(paintModel.getTool() instanceof SelectRectTool)) {
+			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
+			changeTool(null);
+		}
+		SelectRectTool a = getCurrentSelectTool();
 		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
 	}
 
@@ -385,7 +387,7 @@ public class PaintController {
 	}
 
     private SelectRectTool getCurrentSelectTool() {
-        return Stream.of(PaintTools.values()).map(PaintTools::getTool)
+		return Stream.of(PaintTools.values()).map(PaintTools::getTool)
                 .filter(SelectRectTool.class::isInstance).map(SelectRectTool.class::cast)
                 .filter(e -> paintModel.getImageStack().getChildren().contains(e.getArea()))
                 .findFirst()
