@@ -16,25 +16,12 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.SVGPath;
 import paintexp.PaintModel;
-import paintexp.PaintTools;
 import simplebuilder.SimpleSvgPathBuilder;
 
-public class SelectFreeTool extends PaintTool {
+public class SelectFreeTool extends SelectRectTool {
 
     private SVGPath icon;
     private Polygon area;
-
-	public Polygon getArea() {
-		if (area == null) {
-			area = new Polygon();
-			area.setFill(Color.TRANSPARENT);
-            area.setStroke(Color.BLUE);
-            area.setCursor(Cursor.MOVE);
-            area.getStrokeDashArray().addAll(1D, 2D, 1D, 2D);
-			area.setManaged(false);
-		}
-		return area;
-	}
 
 	@Override
     public SVGPath getIcon() {
@@ -49,48 +36,67 @@ public class SelectFreeTool extends PaintTool {
 		return icon;
 	}
 
-
 	@Override
 	public Cursor getMouseCursor() {
 		return Cursor.DISAPPEAR;
 	}
 
+
+	public Polygon getPolygon() {
+		if (area == null) {
+			area = new Polygon();
+			area.setFill(Color.TRANSPARENT);
+            area.setStroke(Color.BLUE);
+            area.setCursor(Cursor.MOVE);
+            area.getStrokeDashArray().addAll(1D, 2D, 1D, 2D);
+			area.setManaged(false);
+		}
+		return area;
+	}
+
 	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            onMouseReleased(model);
-        }
-		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			onMousePressed(e, model);
+		if (imageSelected != null) {
+			super.handleEvent(e, model);
+
+		} else {
+			if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+				onMouseReleased2(model);
+			}
+			if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+				onMousePressed2(e, model);
+			}
+			if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+				onMouseDragged2(e, model);
+			}
 		}
-        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            onMouseDragged(e, model);
-        }
 	}
-	@Override
-    protected void onMouseDragged(MouseEvent e, PaintModel model) {
+
+	protected void onMouseDragged2(final MouseEvent e, final PaintModel model) {
         double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
         double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
-        getArea().getPoints().addAll(x, y);
+		getPolygon().getPoints().addAll(x, y);
     }
 
-    @Override
-    protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
+	protected void onMousePressed2(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
-		if (!children.contains(getArea())) {
-			children.add(getArea());
+		if (!children.contains(getPolygon())) {
+			children.add(getPolygon());
 		}
         double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
         double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
-        getArea().getPoints().clear();
-		getArea().getPoints().addAll(x, y);
+		getPolygon().getPoints().clear();
+		getPolygon().getPoints().addAll(x, y);
 	}
 
-	@Override
-	protected void onMouseReleased(PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        Bounds bounds = getArea().getBoundsInParent();
+	protected void onMouseReleased2(final PaintModel model) {
+		if (!model.getImageStack().getChildren().contains(getPolygon()) || getPolygon().getPoints().size() <= 2) {
+			model.getImageStack().getChildren().remove(getPolygon());
+			return;
+		}
+
+		Bounds bounds = getPolygon().getBoundsInParent();
         int width = (int) bounds.getWidth();
         int height = (int) bounds.getHeight();
         int minX = (int) bounds.getMinX();
@@ -98,19 +104,32 @@ public class SelectFreeTool extends PaintTool {
         int endX = width + minX;
         int endY = height + minY;
         WritableImage selectedImage = createSelectedImage(model, minX, minY, width, height);
-        SelectRectTool tool = (SelectRectTool) PaintTools.SELECT_RECT.getTool();
+		SelectRectTool tool = this;
         model.changeTool(tool);
         tool.setImageSelected(selectedImage);
         tool.selectArea(minX, minY, endX, endY, model);
         tool.getArea().setFill(new ImagePattern(selectedImage));
-        if (children.contains(getArea())) {
-            children.remove(getArea());
+		ObservableList<Node> children = model.getImageStack().getChildren();
+		if (children.contains(getPolygon())) {
+			children.remove(getPolygon());
         }
     }
 
-    private WritableImage createSelectedImage(PaintModel model, int minX, int minY, int width, int height) {
-        PixelWriter currentImageWriter = model.getImage().getPixelWriter();
-        PixelReader currentImageReader = model.getImage().getPixelReader();
+    @Override
+    protected void setIntoImage(final PaintModel model) {
+    	super.setIntoImage(model);
+    	getPolygon().getPoints().clear();
+		if (model.getImageStack().getChildren().contains(getArea())) {
+			getArea().setWidth(0);
+			getArea().setHeight(0);
+			model.getImageStack().getChildren().remove(getArea());
+		}
+    }
+
+	private WritableImage createSelectedImage(final PaintModel model, final int minX, final int minY, final int width, final int height) {
+        WritableImage image = model.getImage();
+		PixelWriter currentImageWriter = image.getPixelWriter();
+        PixelReader currentImageReader = image.getPixelReader();
         WritableImage selectedImage = new WritableImage(width, height);
         PixelWriter finalImage = selectedImage.getPixelWriter();
         for (int i = 0; i < width; i++) {
@@ -118,7 +137,8 @@ public class SelectFreeTool extends PaintTool {
                 int localX = i + minX;
                 int localY = j + minY;
                 if (withinRange(localX, localY, model)) {
-                    if (getArea().contains(localX, localY)) {
+					if (getPolygon().contains(localX, localY) && (option == SelectOption.OPAQUE
+							|| !currentImageReader.getColor(localX, localY).equals(model.getBackColor()))) {
                         finalImage.setColor(i, j, currentImageReader.getColor(localX, localY));
                         currentImageWriter.setColor(localX, localY, model.getBackColor());
                     } else {
@@ -130,8 +150,6 @@ public class SelectFreeTool extends PaintTool {
         }
         return selectedImage;
     }
-
-
 
 
 

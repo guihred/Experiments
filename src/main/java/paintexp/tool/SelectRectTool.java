@@ -41,7 +41,7 @@ public class SelectRectTool extends PaintTool {
 	private double dragX;
 	private double dragY;
 
-	private SelectOption option = SelectOption.OPAQUE;
+	protected SelectOption option = SelectOption.OPAQUE;
 
 	public void copyFromClipboard(final PaintModel model) {
 		Clipboard systemClipboard = Clipboard.getSystemClipboard();

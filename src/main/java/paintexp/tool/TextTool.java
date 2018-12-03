@@ -190,7 +190,8 @@ public class TextTool extends PaintTool {
 				node4.getChildren().add(line);
 			}
 			alignments.addToggle(node4, TextAlignment.CENTER);
-			alignments.onChange((ob, old, newV) -> getText().setTextAlignment((TextAlignment) newV.getUserData()));
+			alignments.onChange((ob, old, newV) -> getText()
+					.setTextAlignment(newV == null ? TextAlignment.LEFT : (TextAlignment) newV.getUserData()));
 		}
         return alignments;
     }
