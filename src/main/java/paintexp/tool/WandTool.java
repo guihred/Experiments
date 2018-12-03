@@ -27,7 +27,8 @@ public class WandTool extends SelectRectTool {
 	private ImageView icon;
 	private int width;
 	private int height;
-    private IntegerProperty threshold = new SimpleIntegerProperty(255 * 3 / 20);
+	private IntegerProperty threshold = new SimpleIntegerProperty(255 / 20);
+	private Slider thresholdSlider;
 
 
 	@Override
@@ -36,8 +37,12 @@ public class WandTool extends SelectRectTool {
         int originalColor = pixelReader.getArgb((int)initialX, (int)initialY);
         WritableImage selectedImage = new WritableImage(width, height);
         int backColor = PixelHelper.toArgb(model.getBackColor());
+		backColor = backColor == 0 ? PixelHelper.toArgb(Color.TRANSPARENT.invert())
+				: PixelHelper.toArgb(model.getBackColor());
 		List<Integer> toGo = new ArrayList<>();
 		toGo.add(index((int)initialX, (int)initialY));
+		int maxTries = width * height * 4;
+		int tries = 0;
         PixelHelper pixel = new PixelHelper();
         while (!toGo.isEmpty()) {
 			Integer next = toGo.remove(0);
@@ -46,7 +51,8 @@ public class WandTool extends SelectRectTool {
 			if (withinRange(x, y, model)) {
 				int color = pixelReader.getArgb(x, y);
                 pixel.reset(originalColor);
-                if (closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0) {
+				if (closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0
+						&& tries++ < maxTries) {
 					if (y != 0 && y != height - 1) {
                         addIfNotIn(toGo, next + 1);
                         addIfNotIn(toGo, next - 1);
@@ -109,29 +115,29 @@ public class WandTool extends SelectRectTool {
 	}
 
     @Override
-    public void onSelected(PaintModel model) {
+    public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
-        Slider sliders = new SimpleSliderBuilder(0, 255 * 3, 0).bindBidirectional(threshold).maxWidth(60).build();
-        model.getToolOptions().getChildren().add(sliders);
+		Slider slider = getThresholdSlider();
+		model.getToolOptions().getChildren().add(slider);
         Text text = new Text();
-        text.textProperty().bind(threshold.divide(sliders.getMax()).multiply(100).asString("%.0f%%"));
+		text.textProperty().bind(threshold.divide(slider.getMax()).multiply(100).asString("%.0f%%"));
         model.getToolOptions().getChildren().add(text);
 
     }
 
-    public void setImage(final PaintModel model) {
-        WritableImage writableImage = createSelectedImage(model);
-        int width3 = Math.max(1, (int) getArea().getWidth());
-        int height3 = Math.max(1, (int) getArea().getHeight());
-        int x2 = (int) getArea().getLayoutX();
-        int y2 = (int) getArea().getLayoutY();
-        selectArea(x2, y2, width3 + x2, height3 + y2, model);
-        setImageSelected(writableImage);
-        getArea().setFill(new ImagePattern(writableImage));
-    }
+	public void setImage(final PaintModel model) {
+		WritableImage writableImage = createSelectedImage(model);
+		int width3 = Math.max(1, (int) getArea().getWidth());
+		int height3 = Math.max(1, (int) getArea().getHeight());
+		int x2 = (int) getArea().getLayoutX();
+		int y2 = (int) getArea().getLayoutY();
+		selectArea(x2, y2, width3 + x2, height3 + y2, model);
+		setImageSelected(writableImage);
+		getArea().setFill(new ImagePattern(writableImage));
+	}
 
     @Override
-    protected void addRect(PaintModel model) {
+    protected void addRect(final PaintModel model) {
         getArea().setManaged(false);
     }
 
@@ -141,10 +147,17 @@ public class WandTool extends SelectRectTool {
 		}
 	}
 
-	private boolean closeColor(PixelHelper pixel, int color) {
+    private boolean closeColor(final PixelHelper pixel, final int color) {
         pixel.add(color, -1);
         return pixel.modulus() < threshold.get();
     }
+
+	private Slider getThresholdSlider() {
+		if(thresholdSlider==null) {
+			thresholdSlider = new SimpleSliderBuilder(0, 255, 0).bindBidirectional(threshold).maxWidth(60).build();
+		}
+		return thresholdSlider;
+	}
 
     private int index(final int initialX2, final int initialY2) {
         return initialX2 * height + initialY2;

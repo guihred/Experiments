@@ -40,7 +40,6 @@ public class SelectRectTool extends PaintTool {
 	protected double initialY;
 	private double dragX;
 	private double dragY;
-
 	protected SelectOption option = SelectOption.OPAQUE;
 
 	public void copyFromClipboard(final PaintModel model) {
@@ -207,7 +206,9 @@ public class SelectRectTool extends PaintTool {
 		}
 		WritableImage writableImage = destImage != null ? destImage : imageSelected;
 		copyImagePart(srcImage, writableImage, 0, 0, width, height, 0, 0, model.getBackColor());
-		replaceColor(writableImage, model.getBackColor(), Color.TRANSPARENT);
+		if (option == SelectOption.TRANSPARENT) {
+			replaceColor(writableImage, model.getBackColor(), Color.TRANSPARENT);
+		}
 
 		selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
 	}

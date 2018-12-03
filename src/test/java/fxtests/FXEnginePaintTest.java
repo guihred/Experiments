@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import paintexp.PaintMain;
+import utils.ConsumerEx;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
@@ -63,12 +64,13 @@ public class FXEnginePaintTest extends ApplicationTest {
 			moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
 			drop();
 			Set<Node> queryAll2 = lookup("#tools .toggle-button").queryAll();
-			queryAll2.forEach(e -> {
-				clickOn(e);
+			queryAll2.forEach(ConsumerEx.makeConsumer(e -> {
+				clickOn(e, MouseButton.PRIMARY);
 				scroll(1, VerticalDirection.DOWN);
 				moveTo(stack);
 				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
 				drag(MouseButton.PRIMARY);
+				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
 				moveBy(random.nextInt(bound) - bound / 2, random.nextInt(bound) - bound / 2);
 				drop();
 				drag(MouseButton.PRIMARY);
@@ -79,7 +81,7 @@ public class FXEnginePaintTest extends ApplicationTest {
 					write("lsad");
 				});
 				type(KeyCode.ESCAPE);
-			});
+			}));
 		}
 	}
 

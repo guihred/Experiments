@@ -17,7 +17,7 @@ import simplebuilder.SimpleSliderBuilder;
 public class BorderTool extends RectangleTool {
 
     private ImageView icon;
-    private IntegerProperty length = new SimpleIntegerProperty(2);
+	private IntegerProperty length = new SimpleIntegerProperty(1);
 	@Override
     public ImageView getIcon() {
 		if (icon == null) {
@@ -32,7 +32,7 @@ public class BorderTool extends RectangleTool {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
 		model.getToolOptions().getChildren()
-				.add(new SimpleSliderBuilder(0, 6, 1).bindBidirectional(length).prefWidth(50).build());
+				.add(new SimpleSliderBuilder(0, 4, 1).bindBidirectional(length).prefWidth(50).build());
 	
 	}
 
