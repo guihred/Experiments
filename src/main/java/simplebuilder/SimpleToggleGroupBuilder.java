@@ -5,17 +5,21 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 
 public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
     private ToggleGroup toggleGroup = new ToggleGroup();
 
-    public SimpleToggleGroupBuilder addRadioToggle(String text) {
+    public SimpleToggleGroupBuilder addRadioToggle(final String text) {
         new RadioButton(text).setToggleGroup(toggleGroup);
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(Node node) {
+    public SimpleToggleGroupBuilder addToggle(final Node node) {
         Toggle e = new ToggleButton(null, node);
         e.setUserData(node);
 
@@ -23,48 +27,48 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(Node node, Object ob) {
+	public SimpleToggleGroupBuilder addToggle(final Node node, final Object userData) {
         ToggleButton toggleButton = new ToggleButton(null, node);
-        toggleButton.setTooltip(new Tooltip(Objects.toString(ob, "")));
+		toggleButton.setTooltip(new Tooltip(Objects.toString(userData, "")));
         Toggle e = toggleButton;
-        e.setUserData(ob);
+		e.setUserData(userData);
 
         e.setToggleGroup(toggleGroup);
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(Node node, String id) {
+    public SimpleToggleGroupBuilder addToggle(final Node node, final String id) {
         ToggleButton e = new ToggleButton(null, node);
         e.setId(id);
         e.setToggleGroup(toggleGroup);
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(String text) {
+    public SimpleToggleGroupBuilder addToggle(final String text) {
         ToggleButton node = new ToggleButton(text);
         node.setToggleGroup(toggleGroup);
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(String text, Node node) {
+    public SimpleToggleGroupBuilder addToggle(final String text, final Node node) {
         ToggleButton node2 = new ToggleButton(text, node);
         node2.setToggleGroup(toggleGroup);
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(String text, Node node, String id) {
+    public SimpleToggleGroupBuilder addToggle(final String text, final Node node, final String id) {
         ToggleButton e = new ToggleButton(text, node);
         e.setId(id);
         e.setToggleGroup(toggleGroup);
         return this;
     }
 
-    public  SimpleToggleGroupBuilder addToggle(Toggle toggle) {
+    public  SimpleToggleGroupBuilder addToggle(final Toggle toggle) {
         toggle.setToggleGroup(toggleGroup);
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggleTooltip(Node node, String text) {
+    public SimpleToggleGroupBuilder addToggleTooltip(final Node node, final String text) {
         ToggleButton toggleButton = new ToggleButton(null, node);
         toggleButton.setTooltip(new Tooltip(text));
         Toggle e = toggleButton;
@@ -78,21 +82,21 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return toggleGroup;
     }
 
-    public <T>List<T> getTogglesAs(Class<T> cl) {
+    public <T>List<T> getTogglesAs(final Class<T> cl) {
         return toggleGroup.getToggles().stream().map(cl::cast).collect(Collectors.toList());
     }
 
-    public SimpleToggleGroupBuilder onChange(ChangeListener<? super Toggle> listener) {
+    public SimpleToggleGroupBuilder onChange(final ChangeListener<? super Toggle> listener) {
         toggleGroup.selectedToggleProperty().addListener(listener);
         return this;
     }
 
-    public SimpleToggleGroupBuilder select(int index) {
+    public SimpleToggleGroupBuilder select(final int index) {
         toggleGroup.selectToggle(toggleGroup.getToggles().get(index));
         return this;
     }
 
-    public SimpleToggleGroupBuilder select(Object index) {
+    public SimpleToggleGroupBuilder select(final Object index) {
         toggleGroup.selectToggle(
                 toggleGroup.getToggles().stream().filter(t -> t.getUserData().equals(index)).findFirst().orElse(null));
         return this;

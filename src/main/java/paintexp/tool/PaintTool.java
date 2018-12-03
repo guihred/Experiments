@@ -8,8 +8,12 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.image.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat.Type;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -72,7 +76,7 @@ public abstract class PaintTool extends Group {
 
 
 
-    protected void copyImagePart(final Image srcImage, final WritableImage destImage, Bounds bounds) {
+    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final Bounds bounds) {
         int x = (int) bounds.getMinX();
         int y = (int) bounds.getMinY();
         double width = bounds.getWidth();
@@ -185,7 +189,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void drawPointIf(final PaintModel model, int x2, int y2, final int color, Color backColor) {
+    protected void drawPointIf(final PaintModel model, final int x2, final int y2, final int color, final Color backColor) {
         if (withinRange(x2, y2 , model)) {
             int argb = model.getImage().getPixelReader().getArgb(x2, y2 );
             if (argb == color) {
@@ -227,7 +231,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void drawSquareLine(final PaintModel model, final int startX, final int startY, int w, final Color color) {
+    protected void drawSquareLine(final PaintModel model, final int startX, final int startY, final int w, final Color color) {
         for (int x = 0; x < w; x++) {
             drawPoint(model, startX+x, startY,color);
             drawPoint(model, startX, startY+x,color);
@@ -255,6 +259,16 @@ public abstract class PaintTool extends Group {
         return icon;
 
     }
+
+	protected ImageView getIconByURL(final String src, final double width) {
+		ImageView icon = new ImageView(ResourceFXUtils.toExternalForm(src));
+		icon.setPreserveRatio(true);
+		icon.setFitWidth(width);
+		icon.maxWidth(width);
+		icon.maxHeight(width);
+		return icon;
+
+	}
 
 
     @SuppressWarnings("unused")
