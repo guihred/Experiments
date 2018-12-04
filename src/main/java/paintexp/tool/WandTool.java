@@ -9,7 +9,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
@@ -37,11 +36,12 @@ public class WandTool extends SelectRectTool {
         int originalColor = pixelReader.getArgb((int)initialX, (int)initialY);
         WritableImage selectedImage = new WritableImage(width, height);
         int backColor = PixelHelper.toArgb(model.getBackColor());
-		backColor = backColor == 0 ? PixelHelper.toArgb(Color.TRANSPARENT.invert())
+
+        backColor = backColor == 0 ? PixelHelper.toArgb(model.getBackColor().invert())
 				: PixelHelper.toArgb(model.getBackColor());
 		List<Integer> toGo = new ArrayList<>();
 		toGo.add(index((int)initialX, (int)initialY));
-		int maxTries = width * height * 4;
+        int maxTries = width * height;
 		int tries = 0;
         PixelHelper pixel = new PixelHelper();
         while (!toGo.isEmpty()) {
@@ -88,11 +88,6 @@ public class WandTool extends SelectRectTool {
 		return icon;
 	}
 
-	@Override
-	public Cursor getMouseCursor() {
-		return Cursor.DISAPPEAR;
-	}
-
     @Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
@@ -106,10 +101,9 @@ public class WandTool extends SelectRectTool {
                 onMouseClicked(e, model);
             }
         }
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-                onMouseReleased(model);
-            }
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType) && model.getImageStack().getChildren().contains(getArea())
+                && imageSelected != null) {
+            onMouseReleased(model);
         }
 
 	}
@@ -142,7 +136,7 @@ public class WandTool extends SelectRectTool {
     }
 
     private void addIfNotIn(final List<Integer> toGo, final int e) {
-        if (!toGo.contains(e) && within(e, width * height)) {
+        if (!toGo.contains(e) && within(e, (double) width * height)) {
 			toGo.add(e);
 		}
 	}

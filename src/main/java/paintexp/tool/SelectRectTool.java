@@ -7,21 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Toggle;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -103,16 +96,7 @@ public class SelectRectTool extends PaintTool {
 
 	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
-		EventType<? extends MouseEvent> eventType = e.getEventType();
-		if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-			onMouseDragged(e, model);
-		}
-		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			onMousePressed(e, model);
-		}
-		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-			onMouseReleased(model);
-		}
+        simpleHandleEvent(e, model);
 	}
 
 	@Override
@@ -145,7 +129,7 @@ public class SelectRectTool extends PaintTool {
 				break;
 			case A:
 				if (e.isControlDown()) {
-					selectArea(0, 0, model.getImage().getWidth(), model.getImage().getHeight(), model);
+                    selectArea(0, 0, (int) model.getImage().getWidth(), (int) model.getImage().getHeight(), model);
 				}
 				break;
 			default:
@@ -173,7 +157,7 @@ public class SelectRectTool extends PaintTool {
 
 	}
 
-	public void selectArea(final int x, final int y, final double endX, final double endY, final PaintModel model) {
+    public void selectArea(final int x, final int y, final int endX, final int endY, final PaintModel model) {
 		initialX = x;
 		initialY = y;
 		addRect(model);
@@ -211,7 +195,7 @@ public class SelectRectTool extends PaintTool {
 			replaceColor(writableImage, model.getBackColor(), Color.TRANSPARENT);
 		}
 
-		selectArea(0, 0, srcImage.getWidth(), srcImage.getHeight(), model);
+        selectArea(0, 0, (int) srcImage.getWidth(), (int) srcImage.getHeight(), model);
 	}
 
 	@Override
@@ -338,26 +322,22 @@ public class SelectRectTool extends PaintTool {
 	private void onChangeOption(final Toggle newV, final PaintModel model) {
 		SelectOption oldOption = option;
 		option = newV == null ? SelectOption.OPAQUE : (SelectOption) newV.getUserData();
-		if (oldOption != option) {
-			if (imageSelected != null) {
-				if (option == SelectOption.OPAQUE) {
-					replaceColor(imageSelected, Color.TRANSPARENT, model.getBackColor());
-				} else {
-					replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
-				}
-			}
-		}
+        if (oldOption != option && imageSelected != null) {
+            if (option == SelectOption.OPAQUE) {
+                replaceColor(imageSelected, Color.TRANSPARENT, model.getBackColor());
+            } else {
+                replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
+            }
+        }
 	}
 
 	private void replaceColor(final WritableImage writableImage, final Color backColor, final Color transparent) {
-		PixelReader pixelReader = writableImage.getPixelReader();
-		PixelWriter pixelWriter = writableImage.getPixelWriter();
 		int colorToBe = PixelHelper.toArgb(transparent);
 		int colorReplace = PixelHelper.toArgb(backColor);
 		for (int i = 0; i < writableImage.getWidth(); i++) {
 			for (int j = 0; j < writableImage.getHeight(); j++) {
-				if (pixelReader.getArgb(i, j) == colorReplace) {
-					pixelWriter.setArgb(i, j, colorToBe);
+				if (writableImage.getPixelReader().getArgb(i, j) == colorReplace) {
+					writableImage.getPixelWriter().setArgb(i, j, colorToBe);
 				}
 			}
 		}

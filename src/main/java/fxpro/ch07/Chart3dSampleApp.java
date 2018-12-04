@@ -268,11 +268,7 @@ public class Chart3dSampleApp extends Application {
 
     private void toggleVisible(KeyEvent event) {
         if (event.isControlDown()) {
-            if (axisGroup.isVisible()) {
-                axisGroup.setVisible(false);
-            } else {
-                axisGroup.setVisible(true);
-            }
+            axisGroup.setVisible(!axisGroup.isVisible());
         }
     }
 

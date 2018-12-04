@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.event.EventType;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -29,16 +28,10 @@ public class BucketTool extends PaintTool {
 	}
 
 	@Override
-	public Cursor getMouseCursor() {
-		return Cursor.DISAPPEAR;
-	}
-
-	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
 			onMouseClicked(e, model);
-
 		}
 	}
 

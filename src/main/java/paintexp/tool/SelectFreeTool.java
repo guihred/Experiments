@@ -59,18 +59,17 @@ public class SelectFreeTool extends SelectRectTool {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (imageSelected != null) {
 			super.handleEvent(e, model);
-
-		} else {
-			if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-				onMouseReleased2(model);
-			}
-			if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-				onMousePressed2(e, model);
-			}
-			if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-				onMouseDragged2(e, model);
-			}
+            return;
 		}
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            onMouseReleased2(model);
+        }
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+            onMousePressed2(e, model);
+        }
+        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+            onMouseDragged2(e, model);
+        }
 	}
 
 	protected void onMouseDragged2(final MouseEvent e, final PaintModel model) {
@@ -91,7 +90,7 @@ public class SelectFreeTool extends SelectRectTool {
 	}
 
 	protected void onMouseReleased2(final PaintModel model) {
-		if (!model.getImageStack().getChildren().contains(getPolygon()) || getPolygon().getPoints().size() <= 2) {
+        if (!model.getImageStack().getChildren().contains(getPolygon()) || getPolygon().getPoints().size() <= 4) {
 			model.getImageStack().getChildren().remove(getPolygon());
 			return;
 		}
@@ -104,12 +103,11 @@ public class SelectFreeTool extends SelectRectTool {
         int endX = width + minX;
         int endY = height + minY;
         WritableImage selectedImage = createSelectedImage(model, minX, minY, width, height);
-		SelectRectTool tool = this;
-        model.changeTool(tool);
-        tool.setImageSelected(selectedImage);
-        tool.selectArea(minX, minY, endX, endY, model);
-        tool.getArea().setFill(new ImagePattern(selectedImage));
-		ObservableList<Node> children = model.getImageStack().getChildren();
+		model.changeTool(this);
+        setImageSelected(selectedImage);
+        selectArea(minX, minY, endX, endY, model);
+        getArea().setFill(new ImagePattern(selectedImage));
+        ObservableList<Node> children = model.getImageStack().getChildren();
 		if (children.contains(getPolygon())) {
 			children.remove(getPolygon());
         }
@@ -132,15 +130,16 @@ public class SelectFreeTool extends SelectRectTool {
         PixelReader currentImageReader = image.getPixelReader();
         WritableImage selectedImage = new WritableImage(width, height);
         PixelWriter finalImage = selectedImage.getPixelWriter();
+        int backColor = PixelHelper.toArgb(model.getBackColor());
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 int localX = i + minX;
                 int localY = j + minY;
                 if (withinRange(localX, localY, model)) {
-					if (getPolygon().contains(localX, localY) && (option == SelectOption.OPAQUE
-							|| !currentImageReader.getColor(localX, localY).equals(model.getBackColor()))) {
-                        finalImage.setColor(i, j, currentImageReader.getColor(localX, localY));
-                        currentImageWriter.setColor(localX, localY, model.getBackColor());
+                    if (getPolygon().contains(localX, localY) && (option == SelectOption.OPAQUE
+                            || currentImageReader.getArgb(localX, localY) != backColor)) {
+                        finalImage.setArgb(i, j, currentImageReader.getArgb(localX, localY));
+                        currentImageWriter.setArgb(localX, localY, backColor);
                     } else {
                         finalImage.setColor(i, j, Color.TRANSPARENT);
                     }

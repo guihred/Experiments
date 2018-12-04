@@ -14,16 +14,8 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -328,7 +320,7 @@ public class PaintController {
 			changeTool(null);
 		}
 		SelectRectTool a = getCurrentSelectTool();
-		a.selectArea(0, 0, paintModel.getImage().getWidth(), paintModel.getImage().getHeight(), paintModel);
+        a.selectArea(0, 0, (int) paintModel.getImage().getWidth(), (int) paintModel.getImage().getHeight(), paintModel);
 	}
 
     public void undo() {

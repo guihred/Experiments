@@ -17,11 +17,7 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -100,7 +96,7 @@ public class PaintMain extends  Application{
 		toolbar.add(child, 0, paintTools.size(), 2, 2);
 		toolbar.getChildren().forEach(e -> GridPane.setHalignment(e, HPos.CENTER));
         root.setLeft(toolbar);
-
+        primaryStage.setX(0);
         primaryStage.setTitle("Paint");
 		Scene scene = new Scene(root, 800, 800);
 		scene.addEventHandler(KeyEvent.ANY, controller::handleKeyBoard);
@@ -115,13 +111,13 @@ public class PaintMain extends  Application{
 		TableView<WritableImage> root2 = new SimpleTableViewBuilder<WritableImage>()
 				.addColumn("Image", (p, cell) -> cell.setGraphic(new ImageView(p)))
 				.items(paintModel.getImageVersions())
-				.prefWidth(400)
+                .prefWidth(600)
 				.equalColumns().build();
         Stage stage = new Stage();
 		Scene value = new Scene(root2);
 
 		stage.setScene(value);
-		stage.setX(0);
+        stage.setX(1000);
 		root2.scrollTo(600);
 		stage.show();
 	}

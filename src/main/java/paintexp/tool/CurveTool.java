@@ -1,7 +1,6 @@
 package paintexp.tool;
 
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -52,31 +51,22 @@ public class CurveTool extends PaintTool {
 
     @Override
     public void handleEvent(final MouseEvent e, final PaintModel model) {
-        EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-            onMousePressed(e, model);
-        }
-
-        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            onMouseDragged(e, model);
-        }
-
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            onMouseReleased(model);
-        }
+        simpleHandleEvent(e, model);
     }
 
     @Override
 	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
 		KeyCode code = e.getCode();
 		if(code==KeyCode.ESCAPE) {
-			takeSnapshotFill(paintModel, getLine());
+            takeSnapshotFill(paintModel, getLine());
+            paintModel.createImageVersion();
 		}
 	}
 
 	@Override
 	public void onDeselected(final PaintModel model) {
-		takeSnapshotFill(model, getLine());
+        takeSnapshotFill(model, getLine());
+        model.createImageVersion();
 	}
 
 	@Override
