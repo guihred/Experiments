@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -16,6 +17,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
@@ -41,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import paintexp.tool.PaintTool;
 import paintexp.tool.SelectRectTool;
+import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
@@ -52,7 +55,24 @@ public class PaintController {
 
 	private PaintModel paintModel = new PaintModel();
 
-    public void changeTool(final Toggle newValue) {
+    public void adjustColors() {
+		Stage stage = new Stage();
+		VBox root = new VBox();
+		WritableImage image = getImage();
+		ImageView e = new ImageView(image);
+		e.setFitWidth(300);
+		e.setPreserveRatio(true);
+		root.getChildren().add(e);
+
+		addAdjustOption(root, image, "Saturate", (color, v) -> color.deriveColor(0, v, 1, 1));
+		addAdjustOption(root, image, "Brightness", (color, v) -> color.deriveColor(0, 1, v, 1));
+		addAdjustOption(root, image, "Hue", (color, v) -> color.deriveColor(v, 1, 1, 1));
+		addAdjustOption(root, image, "Opacity", (color, v) -> color.deriveColor(0, 1, 1, v));
+		stage.setScene(new Scene(root));
+		stage.show();
+	}
+
+	public void changeTool(final Toggle newValue) {
         paintModel.changeTool(newValue == null ? null : (PaintTool) newValue.getUserData());
 	}
 
@@ -70,6 +90,7 @@ public class PaintController {
         SelectRectTool a = getCurrentSelectTool();
 		a.copyToClipboard(paintModel);
 	}
+
 	public void crop() {
         WritableImage image = getImage();
         paintModel.getImageStack().getChildren().clear();
@@ -81,8 +102,7 @@ public class PaintController {
         paintModel.getImageStack().getChildren().add(imageView);
         paintModel.createImageVersion();
     }
-
-    public void cut() {
+	public void cut() {
         SelectRectTool a = getCurrentSelectTool();
 		a.copyToClipboard(paintModel);
         Bounds bounds = a.getArea().getBoundsInParent();
@@ -126,7 +146,7 @@ public class PaintController {
         return availableColors;
     }
 
-	public PaintModel getPaintModel() {
+    public PaintModel getPaintModel() {
 		return paintModel;
 	}
 
@@ -201,7 +221,7 @@ public class PaintController {
         paintModel.createImageVersion();
     }
 
-    public void newFile() {
+	public void newFile() {
 		paintModel.setImage(new WritableImage(500, 500));
 		int w = (int) paintModel.getImage().getWidth();
 		int h = (int) paintModel.getImage().getHeight();
@@ -214,7 +234,7 @@ public class PaintController {
 
 	}
 
-	public Rectangle newRectangle(final Color color) {
+    public Rectangle newRectangle(final Color color) {
 		Rectangle rectangle = new Rectangle(20, 20, color);
 		rectangle.setStroke(Color.BLACK);
 
@@ -223,7 +243,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-    public void openFile(final Window ownerWindow) {
+	public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -246,7 +266,7 @@ public class PaintController {
         }
     }
 
-	public void paste() {
+    public void paste() {
 		if (!(paintModel.getTool() instanceof SelectRectTool)) {
 			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 			changeTool(null);
@@ -299,12 +319,12 @@ public class PaintController {
         stage.show();
     }
 
-    public void saveAsFile(final Stage primaryStage) {
+	public void saveAsFile(final Stage primaryStage) {
         paintModel.setCurrentFile(null);
         saveFile(primaryStage);
     }
 
-	public void saveFile(final Stage primaryStage) {
+    public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -331,7 +351,7 @@ public class PaintController {
         a.selectArea(0, 0, (int) paintModel.getImage().getWidth(), (int) paintModel.getImage().getHeight(), paintModel);
 	}
 
-    public void undo() {
+	public void undo() {
         List<WritableImage> imageVersions = paintModel.getImageVersions();
         if (!imageVersions.isEmpty()) {
             WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
@@ -342,6 +362,17 @@ public class PaintController {
             paintModel.getImageStack().getChildren().add(imageView);
         }
     }
+
+    private void addAdjustOption(final VBox root, final WritableImage image, final String text, final BiFunction<Color, Double, Color> func) {
+		root.getChildren().add(new Text(text));
+		Slider saturation = new SimpleSliderBuilder(0, 10, 1).build();
+		saturation.valueProperty().addListener(
+				(ob, old, value) -> {
+					updateImage(saturation, image, value, func);
+				});
+
+		root.getChildren().add(saturation);
+	}
 
     private void changeIfDifferent(final TextField heightField, final String replaceAll) {
         if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - tryParse(replaceAll)) > 1) {
@@ -453,6 +484,20 @@ public class PaintController {
         }
     }
 
+	private void updateImage(final Slider saturation, final WritableImage image, final Number value,
+			final BiFunction<Color, Double, Color> func) {
+		if (!saturation.isValueChanging()) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				for (int y = 0; y < image.getHeight(); y++) {
+					Color color = image.getPixelReader().getColor(x, y);
+					double v = value.doubleValue();
+					Color deriveColor = func.apply(color, v);
+					image.getPixelWriter().setColor(x, y, deriveColor);
+				}
+			}
+		}
+	}
+
     private static int tryParse(final String widthField) {
         try {
             return Integer.parseInt(widthField);
@@ -462,8 +507,8 @@ public class PaintController {
         }
     }
 
-    private static int tryParse(final TextField widthField) {
-        return tryParse(widthField.getText().replaceAll("\\D", ""));
-    }
+	private static int tryParse(final TextField widthField) {
+		return tryParse(widthField.getText().replaceAll("\\D", ""));
+	}
 
 }

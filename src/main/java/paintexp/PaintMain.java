@@ -17,7 +17,11 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -31,27 +35,28 @@ public class PaintMain extends  Application{
 
 	private PaintController controller = new PaintController();
     @Override
-    public void start(final Stage primaryStage) throws Exception {
+	public void start(final Stage stage) throws Exception {
 		PaintModel paintModel = controller.getPaintModel();
         BorderPane root = new BorderPane();
         root.setTop(new SimpleMenuBarBuilder()
                 .addMenu("_File")
 				.addMenuItem("_New", "Ctrl+N", e -> controller.newFile())
-				.addMenuItem("_Open", "Ctrl+O", e -> controller.openFile(primaryStage))
-				.addMenuItem("_Save", "Ctrl+S", e -> controller.saveFile(primaryStage))
-                .addMenuItem("Save _As", e -> controller.saveAsFile(primaryStage))
+				.addMenuItem("_Open", "Ctrl+O", e -> controller.openFile(stage))
+				.addMenuItem("_Save", "Ctrl+S", e -> controller.saveFile(stage))
+				.addMenuItem("Save _As", e -> controller.saveAsFile(stage))
                 .addMenu("_Edit")
-                .addMenuItem("Select _All", e -> controller.selectAll())
-				.addMenuItem("C_opy", e -> controller.copy(), controller.containsSelectedArea().not())
-				.addMenuItem("_Paste", e -> controller.paste())
-				.addMenuItem("_Cut", e -> controller.cut(), controller.containsSelectedArea().not())
+				.addMenuItem("Select _All", "Ctrl+A", e -> controller.selectAll())
+				.addMenuItem("C_opy", "Ctrl+C", e -> controller.copy(), controller.containsSelectedArea().not())
+				.addMenuItem("_Paste", "Ctrl+V", e -> controller.paste())
+				.addMenuItem("_Cut", "Ctrl+X", e -> controller.cut(), controller.containsSelectedArea().not())
                 .addMenuItem("Undo", "Ctrl+Z", e -> controller.undo())
 				.addMenu("_View")
+				.addMenuItem("Resize/Ske_w", "Ctrl+W", e -> controller.resize())
+				.addMenuItem("_Flip/Rotate", "Ctrl+R", e -> controller.flipRotate())
+				.addMenuItem("_Crop", e -> controller.crop(), controller.containsSelectedArea().not())
                 .addMenu("_Image")
-                .addMenuItem("_Flip/Rotate", "Ctrl+R", e -> controller.flipRotate())
-                .addMenuItem("_Crop", e -> controller.crop(), controller.containsSelectedArea().not())
                 .addMenuItem("_Invert Colors", "Ctrl+I", e -> controller.invertColors())
-                .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> controller.resize())
+				.addMenuItem("_Adjust", "Ctrl+J", e -> controller.adjustColors())
                 .addMenuItem("Mirror _Horizontally", "Ctrl+H", e -> controller.mirrorHorizontally())
                 .addMenuItem("Mirror _Vertically", "Ctrl+M", e -> controller.mirrorVertically())
                 .addMenu("_Colors")
@@ -96,18 +101,18 @@ public class PaintMain extends  Application{
 		toolbar.add(child, 0, paintTools.size(), 2, 2);
 		toolbar.getChildren().forEach(e -> GridPane.setHalignment(e, HPos.CENTER));
         root.setLeft(toolbar);
-        primaryStage.setX(0);
-        primaryStage.setTitle("Paint");
+		stage.setX(0);
+		stage.setTitle("Paint");
 		Scene scene = new Scene(root, 800, 800);
 		scene.addEventHandler(KeyEvent.ANY, controller::handleKeyBoard);
-		primaryStage.setScene(scene);
-        primaryStage.show();
+		stage.setScene(scene);
+		stage.show();
         
-		displayImageVersions(paintModel);
+		// displayImageVersions(paintModel);
 
     }
 
-	private void displayImageVersions(final PaintModel paintModel) {
+	protected void displayImageVersions(final PaintModel paintModel) {
 		TableView<WritableImage> root2 = new SimpleTableViewBuilder<WritableImage>()
 				.addColumn("Image", (p, cell) -> cell.setGraphic(new ImageView(p)))
 				.items(paintModel.getImageVersions())

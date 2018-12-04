@@ -105,6 +105,20 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
+	public SimpleMenuBarBuilder addMenuItem(final String text, final String combination,
+			final EventHandler<ActionEvent> action, final ObservableValue<? extends Boolean> disabled) {
+		MenuItem item = new MenuItem(text);
+		item.setOnAction(action);
+		item.setAccelerator(KeyCombination.keyCombination(combination));
+		if (subMenu != null) {
+			subMenu.getItems().add(item);
+		} else {
+			menu.getItems().add(item);
+		}
+		item.disableProperty().bind(disabled);
+		return this;
+	}
+
     public SimpleMenuBarBuilder addRadioMenuItem(final String text) {
 
         if (toggleGroup == null) {
