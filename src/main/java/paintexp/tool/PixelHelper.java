@@ -28,7 +28,7 @@ public class PixelHelper {
 	}
 
 	public int modulus() {
-	    return Math.abs(r) + Math.abs(g) + Math.abs(b) ;
+        return Math.abs(r) + Math.abs(g) + Math.abs(b) + Math.abs(a);
     }
 
 	public void reset() {
