@@ -20,7 +20,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import paintexp.PaintModel;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleRectangleBuilder;
@@ -78,6 +82,7 @@ public class TextTool extends PaintTool {
     @Override
 	public void onDeselected(final PaintModel model) {
 		takeSnapshot(model);
+		model.createImageVersion();
 	}
 
     @Override

@@ -14,8 +14,16 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -325,9 +333,6 @@ public class PaintController {
 
     public void undo() {
         List<WritableImage> imageVersions = paintModel.getImageVersions();
-        if (imageVersions.size() > 1) {
-            imageVersions.remove(imageVersions.size() - 1);
-        }
         if (!imageVersions.isEmpty()) {
             WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
             paintModel.getImageStack().getChildren().clear();
