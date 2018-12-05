@@ -64,14 +64,14 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 			drag(MouseButton.PRIMARY);
             moveBy(randomMove(bound), randomMove(bound));
 			drop();
-			lookup(".text-area").queryAll().forEach(e -> write("lsadjdnkasjd"));
+            lookup(".text-area").queryAll().forEach(e -> write("lsad"));
             moveBy(randomMove(bound), randomMove(bound));
             drag(MouseButton.PRIMARY);
             moveBy(randomMove(bound), randomMove(bound));
             drop();
 			Set<Node> queryAll2 = lookup("#tools .toggle-button").queryAll();
-            queryAll2.forEach(ConsumerEx.makeConsumer(e -> {
-				clickOn(e, MouseButton.PRIMARY);
+            queryAll2.forEach(e -> {
+                ConsumerEx.makeConsumer((Node f) -> clickOn(f)).accept(e);
 				scroll(1, VerticalDirection.DOWN);
 				moveTo(stack);
                 moveBy(randomMove(bound), randomMove(bound));
@@ -87,8 +87,9 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 					write("lsad");
 				});
 
+
 				type(KeyCode.ESCAPE);
-			}));
+			});
 		}
 	}
 
@@ -103,20 +104,29 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 		for (int i = 1; i < node.size(); i++) {
 			MenuButton e1 = node.get(i);
 			ObservableList<MenuItem> items = e1.getItems();
-			items.forEach(f -> {
+            items.forEach(menu -> {
 				moveTo(stack);
 				double bound2 = stack.getBoundsInParent().getWidth();
 				moveBy(-bound2 / 4, -bound2 / 4);
 				drag(MouseButton.PRIMARY);
 				moveBy(bound2 / 2, bound2 / 2);
 				drop();
-				interactNoWait(() -> f.fire());
+                interactNoWait(() -> menu.fire());
 				lookup(".text-field").queryAll().forEach(e -> {
 					clickOn(e);
 					eraseText(3);
                     write("" + (random.nextInt(120) + 20));
 				});
 				lookup("Resize").queryAll().forEach(this::clickOn);
+                lookup(".slider").queryAll().forEach(m -> {
+                    drag(m, MouseButton.PRIMARY);
+                    moveBy(randomMove(50), 0);
+                    drop();
+                });
+                lookup("Adjust").queryAll().forEach(t -> {
+                    clickOn(t);
+                    lookup("#SelectRectTool").queryAll().forEach(this::clickOn);
+                });
 				type(KeyCode.ESCAPE);
 			});
 		}

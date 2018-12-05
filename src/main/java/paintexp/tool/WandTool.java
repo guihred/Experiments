@@ -32,6 +32,9 @@ public class WandTool extends SelectRectTool {
 
 	@Override
     public WritableImage createSelectedImage(final PaintModel model) {
+        if (imageSelected != null) {
+            return imageSelected;
+        }
         PixelReader pixelReader = model.getImage().getPixelReader();
         int originalColor = pixelReader.getArgb((int)initialX, (int)initialY);
         WritableImage selectedImage = new WritableImage(width, height);
@@ -70,8 +73,8 @@ public class WandTool extends SelectRectTool {
 				}
 			}
 		}
-        int width2 = Math.max(1, (int) getArea().getWidth());
-        int height2 = Math.max(1, (int) getArea().getHeight());
+        int width2 = Math.max(1, (int) getArea().getWidth() + 1);
+        int height2 = Math.max(1, (int) getArea().getHeight() + 1);
         WritableImage writableImage = new WritableImage(width2, height2);
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
@@ -91,19 +94,10 @@ public class WandTool extends SelectRectTool {
     @Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            onMouseDragged(e, model);
-        }
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-            if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-                onMousePressed(e, model);
-            } else {
-                onMouseClicked(e, model);
-            }
-        }
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType) && model.getImageStack().getChildren().contains(getArea())
-                && imageSelected != null) {
-            onMouseReleased(model);
+        if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
+            super.handleEvent(e, model);
+        } else if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+            onMouseClicked(e, model);
         }
 
 	}
@@ -119,13 +113,13 @@ public class WandTool extends SelectRectTool {
 
     }
 
-	public void setImage(final PaintModel model) {
+    public void setImage(final PaintModel model) {
 		WritableImage writableImage = createSelectedImage(model);
 		int width3 = Math.max(1, (int) getArea().getWidth());
 		int height3 = Math.max(1, (int) getArea().getHeight());
 		int x2 = (int) getArea().getLayoutX();
 		int y2 = (int) getArea().getLayoutY();
-		selectArea(x2, y2, width3 + x2, height3 + y2, model);
+        selectArea(x2, y2, width3 + x2 + 1, height3 + y2 + 1, model);
 		setImageSelected(writableImage);
 		getArea().setFill(new ImagePattern(writableImage));
 	}
@@ -167,15 +161,15 @@ public class WandTool extends SelectRectTool {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getArea())) {
             children.add(getArea());
+            getArea().setLayoutX(clickedX);
+            getArea().setLayoutY(clickedY);
+            getArea().setManaged(false);
+            getArea().setWidth(0);
+            getArea().setHeight(0);
+            Platform.runLater(() -> setImage(model));
         }
 
-        getArea().setLayoutX(clickedX);
-        getArea().setLayoutY(clickedY);
-        getArea().setManaged(false);
-        getArea().setWidth(1);
-        getArea().setHeight(1);
 
-        Platform.runLater(() -> setImage(model));
 	}
 
 	private int x(final int m) {

@@ -1,4 +1,5 @@
 package paintexp;
+import static paintexp.tool.DrawOnPoint.getWithinRange;
 import static paintexp.tool.DrawOnPoint.withinImage;
 
 import com.sun.javafx.scene.control.skin.CustomColorDialog;
@@ -7,25 +8,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -53,26 +47,41 @@ public class PaintController {
 	private static final Logger LOG = HasLogging.log();
 	private static final String PERCENTAGE_FIELD = "Percentage";
 
-	private PaintModel paintModel = new PaintModel();
+    private final PaintModel paintModel = new PaintModel();
 
     public void adjustColors() {
 		Stage stage = new Stage();
 		VBox root = new VBox();
-		WritableImage image = getImage();
-		ImageView e = new ImageView(image);
-		e.setFitWidth(300);
-		e.setPreserveRatio(true);
-		root.getChildren().add(e);
+        WritableImage original = getImage();
+        PixelReader reader = original.getPixelReader();
+        WritableImage image = new WritableImage(reader, (int) original.getWidth(), (int) original.getHeight());
+        ImageView view = new ImageView(image);
+        view.setFitWidth(300);
+        view.setPreserveRatio(true);
+        root.getChildren().add(view);
+        DoubleProperty saturate = new SimpleDoubleProperty(0);
+        DoubleProperty bright = new SimpleDoubleProperty(0);
+        DoubleProperty hue = new SimpleDoubleProperty(0);
+        DoubleProperty opacity = new SimpleDoubleProperty(0);
+        addAdjustOption(root, image, original, 1, saturate, "Saturate",
+                color -> changeColor(saturate, bright, hue, opacity, color));
+        addAdjustOption(root, image, original, 1, bright, "Brightness",
+                color -> changeColor(saturate, bright, hue, opacity, color));
+        addAdjustOption(root, image, original, 180, hue, "Hue",
+                color -> changeColor(saturate, bright, hue, opacity, color));
+        addAdjustOption(root, image, original, 1, opacity, "Opacity",
+                color -> changeColor(saturate, bright, hue, opacity, color));
+        root.getChildren().add(CommonsFX.newButton("Adjust", e -> {
+            setImage(image);
+            paintModel.createImageVersion();
+            stage.close();
+        }));
 
-		addAdjustOption(root, image, "Saturate", (color, v) -> color.deriveColor(0, v, 1, 1));
-		addAdjustOption(root, image, "Brightness", (color, v) -> color.deriveColor(0, 1, v, 1));
-		addAdjustOption(root, image, "Hue", (color, v) -> color.deriveColor(v, 1, 1, 1));
-		addAdjustOption(root, image, "Opacity", (color, v) -> color.deriveColor(0, 1, 1, v));
-		stage.setScene(new Scene(root));
+        stage.setScene(new Scene(root));
 		stage.show();
 	}
 
-	public void changeTool(final Toggle newValue) {
+    public void changeTool(final Toggle newValue) {
         paintModel.changeTool(newValue == null ? null : (PaintTool) newValue.getUserData());
 	}
 
@@ -102,14 +111,14 @@ public class PaintController {
         paintModel.getImageStack().getChildren().add(imageView);
         paintModel.createImageVersion();
     }
+
 	public void cut() {
         SelectRectTool a = getCurrentSelectTool();
 		a.copyToClipboard(paintModel);
         Bounds bounds = a.getArea().getBoundsInParent();
         a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
 	}
-
-    public void flipRotate() {
+	public void flipRotate() {
         WritableImage image = getImage();
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
@@ -142,7 +151,7 @@ public class PaintController {
         for (int i = 360 / 2; i < 330; i += a) {
             availableColors.add(Color.hsb(i, .5, 1));
         }
-        availableColors.add(Color.TRANSPARENT);
+        availableColors.add(Color.TRANSPARENT.invert());
         return availableColors;
     }
 
@@ -150,7 +159,7 @@ public class PaintController {
 		return paintModel;
 	}
 
-	public void handleKeyBoard(final KeyEvent e) {
+    public void handleKeyBoard(final KeyEvent e) {
 		PaintTool paintTool = paintModel.getTool();
 		if (paintTool != null) {
 			paintTool.handleKeyEvent(e, paintModel);
@@ -178,13 +187,7 @@ public class PaintController {
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
         WritableImage writableImage = new WritableImage(width, height);
-        PixelWriter pixelWriter = writableImage.getPixelWriter();
-        PixelReader pixelReader = image.getPixelReader();
-        for (int i = 0; i < image.getWidth(); i++) {
-            for (int j = 0; j < image.getHeight(); j++) {
-                pixelWriter.setColor(i, j, pixelReader.getColor(i, j).invert());
-            }
-        }
+        updateImage(writableImage, image, Color::invert);
         setImage(writableImage);
         paintModel.createImageVersion();
     }
@@ -234,7 +237,7 @@ public class PaintController {
 
 	}
 
-    public Rectangle newRectangle(final Color color) {
+	public Rectangle newRectangle(final Color color) {
 		Rectangle rectangle = new Rectangle(20, 20, color);
 		rectangle.setStroke(Color.BLACK);
 
@@ -243,7 +246,7 @@ public class PaintController {
 		return rectangle;
 	}
 
-	public void openFile(final Window ownerWindow) {
+    public void openFile(final Window ownerWindow) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
@@ -266,7 +269,7 @@ public class PaintController {
         }
     }
 
-    public void paste() {
+	public void paste() {
 		if (!(paintModel.getTool() instanceof SelectRectTool)) {
 			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 			changeTool(null);
@@ -275,7 +278,7 @@ public class PaintController {
 		a.copyFromClipboard(paintModel);
 	}
 
-	public void resize() {
+    public void resize() {
         WritableImage image = getImage();
         Stage stage = new Stage();
         VBox root = new VBox();
@@ -324,7 +327,7 @@ public class PaintController {
         saveFile(primaryStage);
     }
 
-    public void saveFile(final Stage primaryStage) {
+	public void saveFile(final Stage primaryStage) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -342,7 +345,7 @@ public class PaintController {
 		}
 	}
 
-	public void selectAll() {
+    public void selectAll() {
 		if (!(paintModel.getTool() instanceof SelectRectTool)) {
 			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
 			changeTool(null);
@@ -363,16 +366,29 @@ public class PaintController {
         }
     }
 
-    private void addAdjustOption(final VBox root, final WritableImage image, final String text, final BiFunction<Color, Double, Color> func) {
-		root.getChildren().add(new Text(text));
-		Slider saturation = new SimpleSliderBuilder(0, 10, 1).build();
-		saturation.valueProperty().addListener(
-				(ob, old, value) -> {
-					updateImage(saturation, image, value, func);
-				});
-
+	private void addAdjustOption(final VBox root, final WritableImage image, final WritableImage original,
+            double max, DoubleProperty value, final String text, final Function<Color, Color> func) {
+		Text e = new Text(text);
+        root.getChildren().add(e);
+        Slider saturation = new SimpleSliderBuilder(-max, max, value.get()).build();
+        saturation.valueChangingProperty()
+                .addListener(
+                        (ob, old, v) -> updateImage(saturation, image, original, func));
+        saturation.valueProperty()
+                .addListener(
+                        (ob, old, v) -> updateImage(saturation, image, original, func));
+        value.bind(saturation.valueProperty());
+        e.textProperty().bind(saturation.valueProperty().divide(max).multiply(100).asString(text + " %.1f%%"));
 		root.getChildren().add(saturation);
 	}
+
+    private Color changeColor(DoubleProperty saturate, DoubleProperty bright, DoubleProperty hue, DoubleProperty opacity,
+            Color color) {
+        return Color.hsb(getWithinRange(color.getHue() + hue.get(), 0, 360),
+                getWithinRange(color.getSaturation() + saturate.get(), 0, 1),
+                getWithinRange(color.getBrightness() + bright.get(), 0, 1),
+                getWithinRange(color.getOpacity() + opacity.get(), 0, 1));
+    }
 
     private void changeIfDifferent(final TextField heightField, final String replaceAll) {
         if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - tryParse(replaceAll)) > 1) {
@@ -484,19 +500,24 @@ public class PaintController {
         }
     }
 
-	private void updateImage(final Slider saturation, final WritableImage image, final Number value,
-			final BiFunction<Color, Double, Color> func) {
+    private void updateImage(final Slider saturation, final WritableImage image, WritableImage original,
+            final Function<Color, Color> func) {
 		if (!saturation.isValueChanging()) {
-			for (int x = 0; x < image.getWidth(); x++) {
-				for (int y = 0; y < image.getHeight(); y++) {
-					Color color = image.getPixelReader().getColor(x, y);
-					double v = value.doubleValue();
-					Color deriveColor = func.apply(color, v);
-					image.getPixelWriter().setColor(x, y, deriveColor);
-				}
-			}
+            updateImage(image, original, func);
 		}
 	}
+
+    private void updateImage(final WritableImage image, WritableImage original, final Function<Color, Color> func) {
+        for (int x = 0; x < original.getWidth(); x++) {
+            for (int y = 0; y < original.getHeight(); y++) {
+                if (original.getPixelReader().getArgb(x, y) != 0) {
+                    Color color = original.getPixelReader().getColor(x, y);
+                    Color deriveColor = func.apply(color);
+                    image.getPixelWriter().setColor(x, y, deriveColor);
+                }
+            }
+        }
+    }
 
     private static int tryParse(final String widthField) {
         try {

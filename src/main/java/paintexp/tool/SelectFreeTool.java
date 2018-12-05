@@ -56,11 +56,11 @@ public class SelectFreeTool extends SelectRectTool {
 
 	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
-		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (imageSelected != null) {
 			super.handleEvent(e, model);
             return;
 		}
+        EventType<? extends MouseEvent> eventType = e.getEventType();
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             onMouseReleased2(model);
         }

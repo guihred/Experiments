@@ -94,14 +94,14 @@ public class SelectRectTool extends PaintTool {
 		return Cursor.CROSSHAIR;
 	}
 
-	@Override
+    @Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
         simpleHandleEvent(e, model);
 	}
 
 	@Override
 	public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
-		KeyCode code = e.getCode();
+        KeyCode code = e.getCode();
 		Bounds bounds = getArea().getBoundsInParent();
 		switch (code) {
 			case DELETE:
@@ -132,17 +132,23 @@ public class SelectRectTool extends PaintTool {
                     selectArea(0, 0, (int) model.getImage().getWidth(), (int) model.getImage().getHeight(), model);
 				}
 				break;
+            case RIGHT:
+            case LEFT:
+            case DOWN:
+            case UP:
+                moveArea(code);
+                break;
 			default:
 				break;
 		}
 	}
 
 	@Override
-	public void onDeselected(final PaintModel model) {
-		escapeArea(model);
-	}
+    public void onDeselected(final PaintModel model) {
+        escapeArea(model);
+    }
 
-	@Override
+    @Override
 	public void onSelected(final PaintModel model) {
 		model.getToolOptions().getChildren().clear();
 		List<Node> togglesAs = new SimpleToggleGroupBuilder()
@@ -165,11 +171,11 @@ public class SelectRectTool extends PaintTool {
 		onMouseReleased(model);
 	}
 
-	public void setImageSelected(final WritableImage imageSelected) {
-		this.imageSelected = imageSelected;
-	}
+    public void setImageSelected(final WritableImage imageSelected) {
+        this.imageSelected = imageSelected;
+    }
 
-	protected void addRect(final PaintModel model) {
+    protected void addRect(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
 			children.add(getArea());
@@ -182,7 +188,6 @@ public class SelectRectTool extends PaintTool {
 		getArea().setWidth(1);
 		getArea().setHeight(1);
 	}
-
 	protected void copyImage(final PaintModel model, final Image srcImage, final WritableImage destImage) {
 		double width = srcImage.getWidth();
 		double height = srcImage.getHeight();
@@ -197,6 +202,25 @@ public class SelectRectTool extends PaintTool {
 
         selectArea(0, 0, (int) srcImage.getWidth(), (int) srcImage.getHeight(), model);
 	}
+
+	protected void moveArea(KeyCode code) {
+        switch (code) {
+            case RIGHT:
+                getArea().setLayoutX(getArea().getLayoutX() + 1);
+                break;
+            case LEFT:
+                getArea().setLayoutX(getArea().getLayoutX() - 1);
+                break;
+            case DOWN:
+                getArea().setLayoutY(getArea().getLayoutY() + 1);
+                break;
+            case UP:
+                getArea().setLayoutY(getArea().getLayoutY() - 1);
+                break;
+            default:
+                break;
+        }
+    }
 
 	@Override
 	protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
