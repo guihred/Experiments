@@ -6,6 +6,8 @@ import java.util.Arrays;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import paintexp.PaintModel;
@@ -19,6 +21,7 @@ public class BlurTool extends PaintTool {
     private int x;
     private IntegerProperty length = new SimpleIntegerProperty(10);
 	private Color[] colors = new Color[length.get() * length.get() * 4];
+	private Slider lengthSlider;
 
     @Override
 	public Node getIcon() {
@@ -29,19 +32,23 @@ public class BlurTool extends PaintTool {
 		return icon;
 	}
 
+	@Override
+	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
+		handleSlider(e, length, lengthSlider);
+	}
 
 	@Override
 	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
         model.getToolOptions().getChildren()
-                .add(new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build());
+				.add(getLengthSlider());
 		length.addListener((o, old, value) -> colors = new Color[value.intValue() * value.intValue() * 4]);
 	
 	}
 
 
-    @Override
+	@Override
     protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		int y2 = (int) e.getY();
 		int x2 = (int) e.getX();
@@ -52,14 +59,15 @@ public class BlurTool extends PaintTool {
         }
 	}
 
-	@Override
+
+    @Override
     protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
         y = (int) e.getY();
         x = (int) e.getX();
         drawBlur(x, y, model);
     }
 
-    private void drawBlur(final int centerX, final int centerY, final PaintModel model) {
+	private void drawBlur(final int centerX, final int centerY, final PaintModel model) {
         final int radius = length.get();
         final int diameter = radius * 2;
         final int height = (int) model.getImage().getHeight();
@@ -95,4 +103,8 @@ public class BlurTool extends PaintTool {
             }
         }
     }
+
+    private Slider getLengthSlider() {
+		return lengthSlider=lengthSlider!=null?lengthSlider:new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
+	}
 }

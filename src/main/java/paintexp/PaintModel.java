@@ -16,8 +16,8 @@ import javafx.scene.text.Text;
 import paintexp.tool.PaintTool;
 
 public class PaintModel {
-    private ObjectProperty<Color> backColor = new SimpleObjectProperty<>(Color.WHITE);
-    private ObjectProperty<Color> frontColor = new SimpleObjectProperty<>(Color.BLACK);
+	private final ObjectProperty<Color> backColor = new SimpleObjectProperty<>(Color.WHITE);
+	private final ObjectProperty<Color> frontColor = new SimpleObjectProperty<>(Color.BLACK);
     private WritableImage image = new WritableImage(500, 500);
     private Group imageStack;
 	private final ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();

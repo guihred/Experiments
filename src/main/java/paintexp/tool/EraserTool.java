@@ -8,7 +8,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -79,26 +78,18 @@ public class EraserTool extends PaintTool {
 
 	@Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
-			length.setValue(Math.min(lengthSlider.getMax(), 1.0 + length.getValue()));
-        }
-        if (e.getCode() == KeyCode.SUBTRACT || e.getCode() == KeyCode.MINUS) {
-			length.setValue(Math.max(1, length.getValue() - 1));
-        }
-    
+		handleSlider(e, length, lengthSlider);
     }
 
     @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
-		lengthSlider = new SimpleSliderBuilder(1, model.getImage().getHeight() / 2, 10).bindBidirectional(length)
-				.prefWidth(50).build();
-		model.getToolOptions().getChildren()
-				.add(lengthSlider);
-    }
 
-    @Override
+		model.getToolOptions().getChildren().add(getLengthSlider(model));
+	}
+
+	@Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
     	int w = (int) getArea().getWidth();
 		drawLine(model, lastX, lastY, e.getX(), e.getY(), (x, y) -> {
@@ -115,7 +106,7 @@ public class EraserTool extends PaintTool {
 		lastY = (int) e.getY();
     }
 
-	@Override
+    @Override
 	protected void onMousePressed(final MouseEvent e, final PaintModel model) {
 		int y = (int) e.getY();
 		int x = (int) e.getX();
@@ -129,6 +120,14 @@ public class EraserTool extends PaintTool {
 		getArea().setLayoutY(e.getY());
 		lastX = x;
 		lastY = y;
+	}
+
+	private Slider getLengthSlider(final PaintModel model) {
+		if(lengthSlider ==null) {
+			lengthSlider = new SimpleSliderBuilder(1, model.getImage().getHeight() / 2, 10).bindBidirectional(length)
+					.prefWidth(50).build();
+		}
+		return lengthSlider ;
 	}
 
     private void onMouseMoved(final MouseEvent e, final PaintModel model) {

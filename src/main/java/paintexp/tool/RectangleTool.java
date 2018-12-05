@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.input.KeyCode;
+import javafx.scene.control.Slider;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -23,6 +23,7 @@ public class RectangleTool extends PaintTool {
 	private double initialX;
 	private double initialY;
     private FillOption option = FillOption.STROKE;
+	private Slider arcWidthSlider;
 
 	public Rectangle getArea() {
 		if (area == null) {
@@ -49,26 +50,14 @@ public class RectangleTool extends PaintTool {
 
 	@Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        if (!e.getEventType().equals(KeyEvent.KEY_RELEASED)) {
-            return;
-        }
-        KeyCode code = e.getCode();
-        if(code==KeyCode.UP) {
-            getArea().arcWidthProperty().set(Math.min(getArea().getArcWidth() + 1, 100));
-        }
-    
-        if (code == KeyCode.DOWN) {
-            getArea().arcWidthProperty().set(Math.max(getArea().getArcWidth() - 1, 0));
-        }
-
+		handleSlider(e, getArea().arcWidthProperty(), arcWidthSlider);
     }
 
 	@Override
 	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren()
-				.add(new SimpleSliderBuilder(0, 100, 0).bindBidirectional(getArea().arcWidthProperty()).maxWidth(60)
-						.build());
+				.add(getArcWidthSlider());
         getArea().arcHeightProperty().bind(getArea().arcWidthProperty());
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.grayRgb(128));
@@ -122,7 +111,7 @@ public class RectangleTool extends PaintTool {
 		dragTo(e, x, y);
 	}
 
-    @Override
+	@Override
     protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(getArea())) {
@@ -146,7 +135,7 @@ public class RectangleTool extends PaintTool {
 
 	}
 
-	@Override
+    @Override
     protected  void onMouseReleased(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getWidth() > 2 && children.contains(getArea())) {
@@ -175,7 +164,7 @@ public class RectangleTool extends PaintTool {
         children.remove(getArea());
     }
 
-    private void drawFill(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
+	private void drawFill(final PaintModel model, final double startX, final double endX, final double startY, final double endY,
 	        final double radiusX, final double radiusY, final double centerY1, final double centerY2, final double centerX1, final double centerX2) {
         drawRect(model, centerX1, startY, centerX2 - centerX1, endY - startY);
         drawRect(model, startX, centerY1, endX - startX, centerY2 - centerY1);
@@ -199,5 +188,10 @@ public class RectangleTool extends PaintTool {
         drawCircle(model, centerX1, centerY2, radiusX, radiusY, Math.PI / 2);
         drawCircle(model, centerX2, centerY2, radiusX, radiusY, 0);
     }
+
+    private Slider getArcWidthSlider() {
+		return arcWidthSlider=arcWidthSlider!=null?arcWidthSlider:new SimpleSliderBuilder(0, 100, 0).bindBidirectional(getArea().arcWidthProperty()).maxWidth(60)
+				.build();
+	}
 
 }

@@ -14,6 +14,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -91,18 +92,25 @@ public class WandTool extends SelectRectTool {
 		return icon;
 	}
 
-    @Override
+	@Override
 	public void handleEvent(final MouseEvent e, final PaintModel model) {
 		EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-            super.handleEvent(e, model);
-        } else if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-            onMouseClicked(e, model);
-        }
+		if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
+			super.handleEvent(e, model);
+		} else if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+			onMouseClicked(e, model);
+		}
 
 	}
-
     @Override
+	public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
+		super.handleKeyEvent(e, model);
+		IntegerProperty property = threshold;
+		Slider slider = thresholdSlider;
+		handleSlider(e, property, slider);
+	}
+
+	@Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
 		Slider slider = getThresholdSlider();
@@ -140,12 +148,13 @@ public class WandTool extends SelectRectTool {
         return pixel.modulus() < threshold.get();
     }
 
-	private Slider getThresholdSlider() {
+    private Slider getThresholdSlider() {
 		if(thresholdSlider==null) {
 			thresholdSlider = new SimpleSliderBuilder(0, 255, 0).bindBidirectional(threshold).maxWidth(60).build();
 		}
 		return thresholdSlider;
 	}
+
 
     private int index(final int initialX2, final int initialY2) {
         return initialX2 * height + initialY2;

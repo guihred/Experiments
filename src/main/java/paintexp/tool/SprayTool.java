@@ -6,8 +6,10 @@ import javafx.animation.AnimationTimer;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
 import paintexp.PaintModel;
@@ -32,6 +34,7 @@ public class SprayTool extends PaintTool {
             drawPoints();
 		}
 	};
+	private Slider lengthSlider;
 
     @Override
     public Node getIcon() {
@@ -43,15 +46,19 @@ public class SprayTool extends PaintTool {
 
 
     @Override
-    public void onSelected(final PaintModel model) {
-        model.getToolOptions().getChildren().clear();
-        model.getToolOptions().setSpacing(5);
-        model.getToolOptions().getChildren()
-                .add(new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build());
+	public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
+		handleSlider(e, length, lengthSlider);
+	}
 
-    }
+	@Override
+	public void onSelected(final PaintModel model) {
+		model.getToolOptions().getChildren().clear();
+		model.getToolOptions().setSpacing(5);
+		model.getToolOptions().getChildren().add(getLengthSlider());
 
-    protected void drawPoints() {
+	}
+
+	protected void drawPoints() {
 	    if (!pressed) {
 	        return;
 	    }
@@ -95,5 +102,9 @@ public class SprayTool extends PaintTool {
 		pressed = false;
 		animationTimer.stop();
     }
+
+    private Slider getLengthSlider() {
+		return lengthSlider=lengthSlider!=null?lengthSlider:new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
+	}
 
 }

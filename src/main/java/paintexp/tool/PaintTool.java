@@ -2,14 +2,21 @@ package paintexp.tool;
 import static paintexp.tool.DrawOnPoint.within;
 import static paintexp.tool.DrawOnPoint.withinRange;
 
+import javafx.beans.property.Property;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.image.*;
+import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat.Type;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -30,10 +37,9 @@ public abstract class PaintTool extends Group {
 
     public abstract Node getIcon();
 
-    public Cursor getMouseCursor() {
-        return Cursor.DEFAULT;
-    }
-
+	public Cursor getMouseCursor() {
+		return Cursor.DEFAULT;
+	}
     public void handleEvent(final MouseEvent e, final PaintModel model) {
         simpleHandleEvent(e, model);
         EventType<? extends MouseEvent> eventType = e.getEventType();
@@ -72,8 +78,6 @@ public abstract class PaintTool extends Group {
         copyImagePart(srcImage, destImage, x, y, width, height, 0, 0, Color.TRANSPARENT);
     }
 
-
-
     protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
             final double width, final double height, final int xOffset, final int yOffset, final Color ignoreColor) {
         int argb = PixelHelper.toArgb(ignoreColor);
@@ -102,6 +106,8 @@ public abstract class PaintTool extends Group {
             }
         }
     }
+
+
 
     protected void drawCircle(final PaintModel model, final double centerX, final double centerY, final double radiusX,
             final double radiusY, final double startAngle) {
@@ -136,12 +142,12 @@ public abstract class PaintTool extends Group {
                 (x, y) -> model.getImage().getPixelWriter().setColor(x, y, model.getFrontColor()));
     }
 
-	protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
+    protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
 			final double endY, final Color color) {
 		drawLine(model, startX, startY, endX, endY, (x, y) -> model.getImage().getPixelWriter().setColor(x, y, color));
 	}
 
-    protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
+	protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
             final double endY, final DrawOnPoint onPoint) {
         double deltaX = endX - startX;
         double a = deltaX == 0 ? Double.NaN : (endY - startY) / deltaX;
@@ -198,6 +204,7 @@ public abstract class PaintTool extends Group {
             }
         }
     }
+
     protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final Color backColor) {
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < w; j++) {
@@ -207,7 +214,6 @@ public abstract class PaintTool extends Group {
             }
         }
     }
-
     protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < w; j++) {
@@ -221,7 +227,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-	protected void drawSquareLine(final PaintModel model, final int startX, final int startY, final int w, final Color color) {
+    protected void drawSquareLine(final PaintModel model, final int startX, final int startY, final int w, final Color color) {
         for (int x = 0; x < w; x++) {
             drawPoint(model, startX+x, startY,color);
             drawPoint(model, startX, startY+x,color);
@@ -230,7 +236,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void drawSquareLine(final PaintModel model, final int x, final int y, final int w, final int color) {
+	protected void drawSquareLine(final PaintModel model, final int x, final int y, final int w, final int color) {
         Color backColor = model.getBackColor();
         for (int i = 0; i < w; i++) {
             drawPointIf(model, x + i, y, color, backColor);
@@ -259,6 +265,18 @@ public abstract class PaintTool extends Group {
 		return icon;
 
 	}
+
+	protected void handleSlider(final KeyEvent e, final Property<Number> property, final Slider slider) {
+			
+			if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
+			property.setValue(
+					Math.min(slider.getMax(), slider.getBlockIncrement() + property.getValue().doubleValue()));
+			}
+			if (e.getCode() == KeyCode.SUBTRACT || e.getCode() == KeyCode.MINUS) {
+			property.setValue(
+					Math.max(slider.getMin(), property.getValue().doubleValue() - slider.getBlockIncrement()));
+			}
+		}
 
 	@SuppressWarnings("unused")
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {

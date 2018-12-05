@@ -7,8 +7,10 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import paintexp.PaintModel;
@@ -18,6 +20,7 @@ public class BorderTool extends RectangleTool {
 
     private ImageView icon;
 	private IntegerProperty length = new SimpleIntegerProperty(1);
+	private Slider lengthSlider;
 	@Override
     public ImageView getIcon() {
 		if (icon == null) {
@@ -28,11 +31,16 @@ public class BorderTool extends RectangleTool {
 	}
 
 	@Override
+	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
+		handleSlider(e, length, lengthSlider);
+	}
+
+	@Override
 	public void onSelected(final PaintModel model) {
 	    model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
 		model.getToolOptions().getChildren()
-				.add(new SimpleSliderBuilder(0, 4, 1).bindBidirectional(length).prefWidth(50).build());
+				.add(getLengthSlider());
 	
 	}
 
@@ -78,8 +86,7 @@ public class BorderTool extends RectangleTool {
 		}
 	}
 
-
-    @Override
+	@Override
     protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
 		double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
@@ -87,8 +94,7 @@ public class BorderTool extends RectangleTool {
 	}
 
 
-
-	@Override
+    @Override
 	protected void onMouseReleased(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (getArea().getWidth() > 2 && children.contains(getArea())) {
@@ -101,6 +107,12 @@ public class BorderTool extends RectangleTool {
 			drawBorders(startX, startY, width, height, model);
 		}
 		children.remove(getArea());
+	}
+
+
+
+	private Slider getLengthSlider() {
+		return lengthSlider=lengthSlider!=null?lengthSlider:new SimpleSliderBuilder(0, 4, 1).bindBidirectional(length).prefWidth(50).build();
 	}
 
 }

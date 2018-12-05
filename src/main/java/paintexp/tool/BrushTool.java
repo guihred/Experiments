@@ -11,7 +11,9 @@ import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -37,6 +39,8 @@ public class BrushTool extends PaintTool {
     private IntegerProperty length = new SimpleIntegerProperty(10);
 
     private Map<BrushOption, Node> mouseCursor;
+
+	private Slider lengthSlider;
 
     @Override
     public Node getIcon() {
@@ -100,24 +104,27 @@ public class BrushTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(final PaintModel model) {
-        model.getToolOptions().getChildren().clear();
-        model.getToolOptions().setSpacing(5);
-        model.getToolOptions().getChildren()
-                .add(new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build());
-        List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(new Circle(5), BrushOption.CIRCLE)
-                .addToggle(new Rectangle(10, 10), BrushOption.SQUARE)
-                .addToggle(new Line(0, 0, 10, 10), BrushOption.LINE_NW_SE)
-                .addToggle(new Line(0, 10, 10, 0), BrushOption.LINE_SW_NE)
-                .onChange(
-                        (v, old, newV) -> option = newV == null ? BrushOption.CIRCLE : (BrushOption) newV.getUserData())
-                .select(option).getTogglesAs(Node.class);
+	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
+		handleSlider(e, length, lengthSlider);
+	}
+	@Override
+	public void onSelected(final PaintModel model) {
+		model.getToolOptions().getChildren().clear();
+		model.getToolOptions().setSpacing(5);
+		model.getToolOptions().getChildren().add(getLengthSlider());
+		List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(new Circle(5), BrushOption.CIRCLE)
+				.addToggle(new Rectangle(10, 10), BrushOption.SQUARE)
+				.addToggle(new Line(0, 0, 10, 10), BrushOption.LINE_NW_SE)
+				.addToggle(new Line(0, 10, 10, 0), BrushOption.LINE_SW_NE)
+				.onChange(
+						(v, old, newV) -> option = newV == null ? BrushOption.CIRCLE : (BrushOption) newV.getUserData())
+				.select(option).getTogglesAs(Node.class);
 
-        model.getToolOptions().getChildren().addAll(togglesAs);
+		model.getToolOptions().getChildren().addAll(togglesAs);
 
-    }
+	}
 
-    @Override
+	@Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
@@ -147,12 +154,12 @@ public class BrushTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseReleased(PaintModel model) {
+    protected void onMouseReleased(final PaintModel model) {
         pressed = false;
         model.createImageVersion();
     }
 
-    private void drawCircleOption(final PaintModel model, final int x2, final int y2, double r, Color color, boolean fill) {
+    private void drawCircleOption(final PaintModel model, final int x2, final int y2, final double r, final Color color, final boolean fill) {
         drawCircle(model, x2, y2, r, r, color);
         drawCircle(model, x2, y2, r, r - 1, color);
         if (fill) {
@@ -163,7 +170,7 @@ public class BrushTool extends PaintTool {
         }
     }
 
-    private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2, boolean fill) {
+    private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2, final boolean fill) {
 
         if (withinRange(x2, y2, model)) {
             double r = length.getValue().doubleValue();
@@ -189,6 +196,10 @@ public class BrushTool extends PaintTool {
             }
         }
     }
+
+    private Slider getLengthSlider() {
+		return lengthSlider=lengthSlider!=null?lengthSlider:new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
+	}
 
     private void onMouseEntered(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
