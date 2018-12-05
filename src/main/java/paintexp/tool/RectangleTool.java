@@ -49,7 +49,7 @@ public class RectangleTool extends PaintTool {
 
 	@Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        if (!e.getEventType().equals(KeyEvent.KEY_TYPED)) {
+        if (!e.getEventType().equals(KeyEvent.KEY_RELEASED)) {
             return;
         }
         KeyCode code = e.getCode();

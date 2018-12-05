@@ -59,9 +59,9 @@ public class SngpcViewer extends Application {
 			hashMap.put(domNode, value);
 			while (!currentNodes.isEmpty()) {
 				domNode = currentNodes.remove(0);
-				LOG.error("node Name={}", domNode.getNodeName());
-				LOG.error("node Value={}", domNode.getNodeValue());
-				LOG.error("node type={}", domNode.getNodeType());
+                LOG.trace("node Name={}", domNode.getNodeName());
+                LOG.trace("node Value={}", domNode.getNodeValue());
+                LOG.trace("node type={}", domNode.getNodeType());
 				NodeList childNodes = domNode.getChildNodes();
 				for (int i = 0; i < childNodes.getLength(); i++) {
 					Node item = childNodes.item(i);

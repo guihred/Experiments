@@ -23,7 +23,6 @@ public class EyedropTool extends PaintTool {
         if (area == null) {
             area = new Rectangle(50, 50, Color.TRANSPARENT);
             area.setStroke(Color.grayRgb(128));
-            area.setManaged(false);
         }
         return area;
     }

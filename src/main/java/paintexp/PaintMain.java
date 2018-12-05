@@ -21,6 +21,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import paintexp.tool.PaintTool;
 import simplebuilder.SimpleMenuBarBuilder;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleTableViewBuilder;
@@ -83,7 +84,8 @@ public class PaintMain extends  Application{
         SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
         Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggleTooltip(e.getTool(), e.getTooltip()));
         List<Node> paintTools = toolGroup
-				.onChange((ov, oldValue, newValue) -> controller.changeTool(newValue))
+                .onChange((ov, oldValue, newValue) -> paintModel
+                        .changeTool(newValue == null ? null : (PaintTool) newValue.getUserData()))
                 .getTogglesAs(Node.class);
 		ToggleGroup toggleGroup = toolGroup.build();
 		paintModel.toolProperty().addListener((ob, old, newV) -> toggleGroup.selectToggle(

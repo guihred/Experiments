@@ -34,6 +34,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import paintexp.tool.PaintTool;
 import paintexp.tool.SelectRectTool;
@@ -79,10 +80,6 @@ public class PaintController {
 
         stage.setScene(new Scene(root));
 		stage.show();
-	}
-
-    public void changeTool(final Toggle newValue) {
-        paintModel.changeTool(newValue == null ? null : (PaintTool) newValue.getUserData());
 	}
 
 	public BooleanBinding containsSelectedArea() {
@@ -240,9 +237,7 @@ public class PaintController {
 	public Rectangle newRectangle(final Color color) {
 		Rectangle rectangle = new Rectangle(20, 20, color);
 		rectangle.setStroke(Color.BLACK);
-
         rectangle.setOnMouseClicked(e -> onColorClicked(color, rectangle, e));
-
 		return rectangle;
 	}
 
@@ -272,7 +267,7 @@ public class PaintController {
 	public void paste() {
 		if (!(paintModel.getTool() instanceof SelectRectTool)) {
 			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-			changeTool(null);
+            paintModel.changeTool(null);
 		}
 		SelectRectTool a = getCurrentSelectTool();
 		a.copyFromClipboard(paintModel);
@@ -348,7 +343,7 @@ public class PaintController {
     public void selectAll() {
 		if (!(paintModel.getTool() instanceof SelectRectTool)) {
 			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-			changeTool(null);
+            paintModel.changeTool(null);
 		}
 		SelectRectTool a = getCurrentSelectTool();
         a.selectArea(0, 0, (int) paintModel.getImage().getWidth(), (int) paintModel.getImage().getHeight(), paintModel);
@@ -391,7 +386,7 @@ public class PaintController {
     }
 
     private void changeIfDifferent(final TextField heightField, final String replaceAll) {
-        if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - tryParse(replaceAll)) > 1) {
+        if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - NumberUtils.toInt(replaceAll, 0)) > 1) {
             heightField.setText(replaceAll);
         }
     }
@@ -481,7 +476,6 @@ public class PaintController {
                 changeIfDifferent(otherField, newHeight);
             }
         }
-
     }
 
     private void setImage(final WritableImage writableImage) {
@@ -519,17 +513,8 @@ public class PaintController {
         }
     }
 
-    private static int tryParse(final String widthField) {
-        try {
-            return Integer.parseInt(widthField);
-        } catch (NumberFormatException e) {
-            LOG.trace("whatever",e);
-            return 0;
-        }
-    }
-
-	private static int tryParse(final TextField widthField) {
-		return tryParse(widthField.getText().replaceAll("\\D", ""));
+    private static int tryParse(final TextField widthField) {
+		return NumberUtils.toInt(widthField.getText().replaceAll("\\D", ""), 0);
 	}
 
 }
