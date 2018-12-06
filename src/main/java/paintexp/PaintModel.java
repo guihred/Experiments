@@ -1,6 +1,7 @@
 package paintexp;
 
 import java.io.File;
+import java.util.stream.Stream;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -11,9 +12,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import paintexp.tool.PaintTool;
+import paintexp.tool.SelectRectTool;
 
 public class PaintModel {
 	private final ObjectProperty<Color> backColor = new SimpleObjectProperty<>(Color.WHITE);
@@ -33,7 +36,7 @@ public class PaintModel {
         return backColor;
 	}
 
-	public void changeTool(final PaintTool newValue) {
+    public void changeTool(final PaintTool newValue) {
         resetToolOptions();
         getImageStack().getChildren().clear();
         ImageView imageView = new ImageView(getImage());
@@ -50,7 +53,6 @@ public class PaintModel {
         }
 
     }
-
     public void createImageVersion() {
         imageVersions
                 .add(new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight()));
@@ -60,17 +62,26 @@ public class PaintModel {
 
     }
 
-    public ObjectProperty<Color> frontColorProperty() {
+	public ObjectProperty<Color> frontColorProperty() {
         return frontColor;
     }
 
     public Color getBackColor() {
         return backColor.get();
     }
+
     public File getCurrentFile() {
 		return currentFile;
 	}
 
+    public SelectRectTool getCurrentSelectTool() {
+        return Stream.of(PaintTools.values()).map(PaintTools::getTool)
+                .filter(SelectRectTool.class::isInstance).map(SelectRectTool.class::cast)
+                .filter(e -> getImageStack().getChildren().contains(e.getArea()))
+                .findFirst()
+                .orElseGet(() -> getTool() instanceof SelectRectTool ? (SelectRectTool) getTool()
+                        : (SelectRectTool) PaintTools.SELECT_RECT.getTool());
+    }
     public Color getFrontColor() {
         return frontColor.get();
     }
@@ -78,10 +89,10 @@ public class PaintModel {
     public WritableImage getImage() {
         return image;
     }
+
     public Text getImageSize() {
         return imageSize;
     }
-
     public Group getImageStack() {
         if (imageStack == null) {
             ImageView imageView = new ImageView(getImage());
@@ -97,7 +108,6 @@ public class PaintModel {
 
         return imageStack;
     }
-
     public ObservableList<WritableImage> getImageVersions() {
         return imageVersions;
     }
@@ -119,6 +129,14 @@ public class PaintModel {
         return rectangleBorder;
     }
 
+    public WritableImage getSelectedImage() {
+        SelectRectTool selectTool = getCurrentSelectTool();
+        if (getImageStack().getChildren().contains(selectTool.getArea())) {
+            return selectTool.createSelectedImage(this);
+        }
+        return getImage();
+    }
+
     public PaintTool getTool() {
 		return tool.get();
     }
@@ -132,10 +150,10 @@ public class PaintModel {
 		}
 		return toolOptions;
 	}
+
     public Text getToolSize() {
         return toolSize;
     }
-
     public Rectangle resetToolOptions() {
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.grayRgb(128));
@@ -149,9 +167,25 @@ public class PaintModel {
     public void setBackColor(final Color backColor) {
         this.backColor.set(backColor);
     }
+
     public void setCurrentFile(final File currentFile) {
 		this.currentFile = currentFile;
 	}
+    public void setFinalImage( final WritableImage writableImage) {
+            SelectRectTool selectTool = getCurrentSelectTool();
+            if (getImageStack().getChildren().contains(selectTool.getArea())) {
+                selectTool.getArea().setWidth(writableImage.getWidth());
+                selectTool.getArea().setHeight(writableImage.getHeight());
+                selectTool.getArea().setFill(new ImagePattern(writableImage));
+                selectTool.setImageSelected(writableImage);
+            } else {
+                getImageStack().getChildren().clear();
+                ImageView imageView = new ImageView(writableImage);
+                setImage(writableImage);
+                getImageStack().getChildren().add(getRectangleBorder(imageView));
+                getImageStack().getChildren().add(imageView);
+            }
+        }
 
 	public void setFrontColor(final Color frontColor) {
         this.frontColor.set(frontColor);
@@ -177,8 +211,8 @@ public class PaintModel {
 		this.toolSize = toolSize;
 	}
 
-    public ObjectProperty<PaintTool> toolProperty() {
-    	return tool;
-	}
+public ObjectProperty<PaintTool> toolProperty() {
+	return tool;
+}
 
 }

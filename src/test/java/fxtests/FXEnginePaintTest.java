@@ -1,10 +1,7 @@
 package fxtests;
 
 import graphs.entities.ZoomableScrollPane;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
@@ -18,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
+import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
 import utils.ConsumerEx;
 import utils.HasLogging;
@@ -26,7 +24,9 @@ import utils.RunnableEx;
 
 public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 
-	private Stage currentStage;
+    private static final String TEST_FILE = "test.png";
+
+    private Stage currentStage;
 
 	Random random = new Random();
 
@@ -44,6 +44,8 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 		testMenus(stack);
 	}
 	protected void testTools(final Node stack) {
+
+
 		List<Node> queryAll = lookup(e -> e instanceof ToggleButton).queryAll().stream().collect(Collectors.toList());
 		Collections.shuffle(queryAll);
 		List<Node> colors = lookup("#colorGrid").queryAllAs(GridPane.class).stream()
@@ -64,7 +66,8 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 			drag(MouseButton.PRIMARY);
             moveBy(randomMove(bound), randomMove(bound));
 			drop();
-            lookup(".text-area").queryAll().forEach(e -> write("lsad"));
+
+            lookup(".text-area").queryAll().forEach(e -> write(getRandomString()));
             moveBy(randomMove(bound), randomMove(bound));
             drag(MouseButton.PRIMARY);
             moveBy(randomMove(bound), randomMove(bound));
@@ -84,7 +87,7 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 				drop();
 				lookup(".text-area").queryAll().forEach(f -> {
 					interactNoWait(() -> f.requestFocus());
-					write("lsad");
+                    write(getRandomString());
 				});
 
 
@@ -93,6 +96,10 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 		}
 	}
 
+    private String getRandomString() {
+        return Long.toString(random.nextLong() + 1000, Character.MAX_RADIX).substring(0, 4);
+    }
+
     private int randomMove(int bound) {
         return random.nextInt(bound) - bound / 2;
     }
@@ -100,18 +107,29 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 	private void testMenus(final Node stack) {
 		List<MenuButton> node = lookup(MenuButton.class::isInstance).queryAllAs(MenuButton.class).stream()
 				.collect(Collectors.toList());
+        PaintFileUtils.setDefaultFile(ResourceFXUtils.toFile("out"));
+        if (ResourceFXUtils.toFile("out/" + TEST_FILE).exists()) {
+            ResourceFXUtils.toFile("out/" + TEST_FILE).delete();
+        }
         lookup("#SelectRectTool").queryAll().forEach(this::clickOn);
-		for (int i = 1; i < node.size(); i++) {
+        for (int i = 0; i < node.size(); i++) {
 			MenuButton e1 = node.get(i);
 			ObservableList<MenuItem> items = e1.getItems();
-            items.forEach(menu -> {
-				moveTo(stack);
+            for (int j = items.size() - 1; j >= 0; j--) {
+                if (i == 0 && j > 0 && items.size() != j + 1) {
+                    continue;
+                }
+                MenuItem menu = items.get(j);
+                moveTo(stack);
 				double bound2 = stack.getBoundsInParent().getWidth();
 				moveBy(-bound2 / 4, -bound2 / 4);
 				drag(MouseButton.PRIMARY);
 				moveBy(bound2 / 2, bound2 / 2);
 				drop();
-                interactNoWait(() -> menu.fire());
+                if (i == 0 && items.size() == j + 1) {
+                    new Thread(() -> typeInParallel()).start();
+                }
+                interact(menu::fire);
 				lookup(".text-field").queryAll().forEach(e -> {
 					clickOn(e);
 					eraseText(3);
@@ -128,7 +146,16 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
                     lookup("#SelectRectTool").queryAll().forEach(this::clickOn);
                 });
 				type(KeyCode.ESCAPE);
-			});
+            }
 		}
 	}
+
+    private void typeInParallel() {
+            sleep(500);
+        String name = TEST_FILE;
+            KeyCode[] array = name.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
+                    .map(s -> ".".equals(s) ? "Period" : s).map(KeyCode::getKeyCode).toArray(KeyCode[]::new);
+            type(array);
+            type(KeyCode.ENTER);
+    }
 }

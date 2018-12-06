@@ -1,85 +1,28 @@
 package paintexp;
-import static paintexp.tool.DrawOnPoint.getWithinRange;
-import static paintexp.tool.DrawOnPoint.withinImage;
-
 import com.sun.javafx.scene.control.skin.CustomColorDialog;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import javax.imageio.ImageIO;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.slf4j.Logger;
 import paintexp.tool.PaintTool;
 import paintexp.tool.SelectRectTool;
-import simplebuilder.SimpleSliderBuilder;
-import simplebuilder.SimpleToggleGroupBuilder;
-import utils.CommonsFX;
-import utils.HasLogging;
 
 @SuppressWarnings("restriction")
 public class PaintController {
-	private static final Logger LOG = HasLogging.log();
-	private static final String PERCENTAGE_FIELD = "Percentage";
 
     private final PaintModel paintModel = new PaintModel();
 
     public void adjustColors() {
-		Stage stage = new Stage();
-		VBox root = new VBox();
-        WritableImage original = getImage();
-        PixelReader reader = original.getPixelReader();
-        WritableImage image = new WritableImage(reader, (int) original.getWidth(), (int) original.getHeight());
-        ImageView view = new ImageView(image);
-        view.setFitWidth(300);
-        view.setPreserveRatio(true);
-        root.getChildren().add(view);
-        DoubleProperty saturate = new SimpleDoubleProperty(0);
-        DoubleProperty bright = new SimpleDoubleProperty(0);
-        DoubleProperty hue = new SimpleDoubleProperty(0);
-        DoubleProperty opacity = new SimpleDoubleProperty(0);
-        addAdjustOption(root, image, original, 1, saturate, "Saturate",
-                color -> changeColor(saturate, bright, hue, opacity, color));
-        addAdjustOption(root, image, original, 1, bright, "Brightness",
-                color -> changeColor(saturate, bright, hue, opacity, color));
-        addAdjustOption(root, image, original, 180, hue, "Hue",
-                color -> changeColor(saturate, bright, hue, opacity, color));
-        addAdjustOption(root, image, original, 1, opacity, "Opacity",
-                color -> changeColor(saturate, bright, hue, opacity, color));
-        root.getChildren().add(CommonsFX.newButton("Adjust", e -> {
-            setImage(image);
-            paintModel.createImageVersion();
-            stage.close();
-        }));
-
-        stage.setScene(new Scene(root));
-		stage.show();
+        PaintImageUtils.adjustColors(paintModel);
 	}
 
 	public BooleanBinding containsSelectedArea() {
@@ -93,42 +36,18 @@ public class PaintController {
 	}
 
 	public void copy() {
-        SelectRectTool a = getCurrentSelectTool();
-		a.copyToClipboard(paintModel);
+        PaintEditUtils.copy(paintModel, paintModel.getCurrentSelectTool());
 	}
 
 	public void crop() {
-        WritableImage image = getImage();
-        paintModel.getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(image);
-        SelectRectTool tool = getCurrentSelectTool();
-        tool.setImageSelected(null);
-        paintModel.setImage(image);
-        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-        paintModel.getImageStack().getChildren().add(imageView);
-        paintModel.createImageVersion();
+        PaintViewUtils.crop(paintModel, paintModel.getSelectedImage());
     }
 
 	public void cut() {
-        SelectRectTool a = getCurrentSelectTool();
-		a.copyToClipboard(paintModel);
-        Bounds bounds = a.getArea().getBoundsInParent();
-        a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+        PaintEditUtils.cut(paintModel, paintModel.getCurrentSelectTool());
 	}
 	public void flipRotate() {
-        WritableImage image = getImage();
-        int height = (int) image.getHeight();
-        int width = (int) image.getWidth();
-        WritableImage writableImage = new WritableImage(height, width);
-        PixelWriter pixelWriter = writableImage.getPixelWriter();
-        PixelReader pixelReader = image.getPixelReader();
-        for (int i = 0; i < image.getWidth(); i++) {
-            for (int j = 0; j < image.getHeight(); j++) {
-                pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
-            }
-        }
-        setImage(writableImage);
-        paintModel.createImageVersion();
+        PaintViewUtils.flipRotate(paintModel, paintModel.getSelectedImage());
     }
 
     public List<Color> getColors() {
@@ -180,58 +99,19 @@ public class PaintController {
 	}
 
 	public void invertColors() {
-        WritableImage image = getImage();
-        int height = (int) image.getHeight();
-        int width = (int) image.getWidth();
-        WritableImage writableImage = new WritableImage(width, height);
-        updateImage(writableImage, image, Color::invert);
-        setImage(writableImage);
-        paintModel.createImageVersion();
+        PaintImageUtils.invertColors(paintModel);
     }
 
 	public void mirrorHorizontally() {
-        WritableImage image = getImage();
-        int height = (int) image.getHeight();
-        int width = (int) image.getWidth();
-        WritableImage writableImage = new WritableImage(width, height);
-        PixelWriter pixelWriter = writableImage.getPixelWriter();
-        PixelReader pixelReader = image.getPixelReader();
-        for (int i = 0; i < image.getWidth(); i++) {
-            for (int j = 0; j < image.getHeight(); j++) {
-                pixelWriter.setColor(width - i - 1, j, pixelReader.getColor(i, j));
-            }
-        }
-        setImage(writableImage);
-        paintModel.createImageVersion();
+        PaintImageUtils.mirrorHorizontally(paintModel);
     }
 
 	public void mirrorVertically() {
-        WritableImage image = getImage();
-        int height = (int) image.getHeight();
-        int width = (int) image.getWidth();
-        WritableImage writableImage = new WritableImage(width, height);
-        PixelWriter pixelWriter = writableImage.getPixelWriter();
-        PixelReader pixelReader = image.getPixelReader();
-        for (int i = 0; i < image.getWidth(); i++) {
-            for (int j = 0; j < image.getHeight(); j++) {
-                pixelWriter.setColor(i, height - j - 1, pixelReader.getColor(i, j));
-            }
-        }
-        setImage(writableImage);
-        paintModel.createImageVersion();
+        PaintImageUtils.mirrorVertically(paintModel);
     }
 
 	public void newFile() {
-		paintModel.setImage(new WritableImage(500, 500));
-		int w = (int) paintModel.getImage().getWidth();
-		int h = (int) paintModel.getImage().getHeight();
-		paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h,
-				new SimplePixelReader(paintModel.getBackColor()), 0, 0);
-		paintModel.getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(paintModel.getImage());
-        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-        paintModel.getImageStack().getChildren().add(imageView);
-
+        PaintFileUtils.newFile(paintModel);
 	}
 
 	public Rectangle newRectangle(final Color color) {
@@ -242,204 +122,33 @@ public class PaintController {
 	}
 
     public void openFile(final Window ownerWindow) {
-        FileChooser fileChooser2 = new FileChooser();
-        fileChooser2.setTitle("Open File");
-        fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
-        paintModel.setCurrentFile(fileChooser2.showOpenDialog(ownerWindow));
-        if (paintModel.getCurrentFile() != null) {
-            try {
-                Image image2 = new Image(new FileInputStream(paintModel.getCurrentFile()));
-                int w = (int) image2.getWidth();
-                int h = (int) image2.getHeight();
-                paintModel.setImage(new WritableImage(w, h));
-                paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
-                paintModel.getImageStack().getChildren().clear();
-                ImageView imageView = new ImageView(paintModel.getImage());
-                paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-                paintModel.getImageStack().getChildren().add(imageView);
-				paintModel.createImageVersion();
-            } catch (Exception e) {
-                LOG.error("", e);
-            }
-        }
+        PaintFileUtils.openFile(ownerWindow, paintModel);
     }
 
 	public void paste() {
-		if (!(paintModel.getTool() instanceof SelectRectTool)) {
-			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-            paintModel.changeTool(null);
-		}
-		SelectRectTool a = getCurrentSelectTool();
-		a.copyFromClipboard(paintModel);
+        PaintEditUtils.paste(paintModel, paintModel.getCurrentSelectTool());
 	}
 
     public void resize() {
-        WritableImage image = getImage();
-        Stage stage = new Stage();
-        VBox root = new VBox();
-        root.getChildren().add(new Text("Redimension"));
-        SimpleToggleGroupBuilder groupBuilder = new SimpleToggleGroupBuilder();
-		List<RadioButton> togglesAs = groupBuilder.addRadioToggle(PERCENTAGE_FIELD)
-                .addRadioToggle("Pixels")
-                .select(0)
-                .getTogglesAs(RadioButton.class);
-        HBox row1 = new HBox(new Text("By:"));
-        row1.getChildren().addAll(togglesAs);
-        root.getChildren().add(row1);
-        TextField widthField = new TextField("100");
-        root.getChildren().add(new HBox(new Text("Width:"), widthField));
-        TextField heightField = new TextField("100");
-        root.getChildren().add(new HBox(new Text("Height:"), heightField));
-        CheckBox keepProportion = new CheckBox("Keep Proportion");
-        keepProportion.setSelected(true);
-        root.getChildren().add(keepProportion);
-        groupBuilder.onChange(
-                (o, old, newV) -> {
-					boolean pencentage = PERCENTAGE_FIELD.equals(((RadioButton) newV).getText());
-                    widthField.setText(pencentage ? "100" : "" + (int) image.getWidth());
-                    heightField.setText(pencentage ? "100" : "" + (int) image.getHeight());
-                });
-        double ratio = image.getWidth() / image.getHeight();
-        keepProportion
-                .setOnAction(e -> onResizeOptionsChange(groupBuilder, keepProportion, widthField, heightField, ratio));
-        widthField.textProperty()
-                .addListener(e -> onResizeOptionsChange(groupBuilder, keepProportion, widthField, heightField, ratio));
-        heightField.textProperty()
-                .addListener(
-                        e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, 1 / ratio));
-		root.getChildren()
-				.add(CommonsFX.newButton("Resize", e -> {
-					finishResize(image, groupBuilder, widthField, heightField);
-					stage.close();
-					paintModel.createImageVersion();
-				}));
-        stage.setScene(new Scene(root));
-        stage.show();
+        PaintViewUtils.resize(paintModel, paintModel.getSelectedImage());
     }
 
 	public void saveAsFile(final Stage primaryStage) {
-        paintModel.setCurrentFile(null);
-        saveFile(primaryStage);
+        PaintFileUtils.saveAsFile(primaryStage, paintModel);
     }
 
 	public void saveFile(final Stage primaryStage) {
-		try {
-			if (paintModel.getCurrentFile() == null) {
-				FileChooser fileChooser2 = new FileChooser();
-				fileChooser2.setTitle("Save File");
-				fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
-                paintModel.setCurrentFile(fileChooser2.showSaveDialog(primaryStage));
-			}
-			if (paintModel.getCurrentFile() != null) {
-				File destination = paintModel.getCurrentFile();
-				WritableImage image = paintModel.getImage();
-				ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", destination);
-			}
-		} catch (IOException e) {
-			LOG.error("", e);
-		}
+        PaintFileUtils.saveFile(primaryStage, paintModel);
 	}
 
     public void selectAll() {
-		if (!(paintModel.getTool() instanceof SelectRectTool)) {
-			paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-            paintModel.changeTool(null);
-		}
-		SelectRectTool a = getCurrentSelectTool();
-        a.selectArea(0, 0, (int) paintModel.getImage().getWidth(), (int) paintModel.getImage().getHeight(), paintModel);
+        PaintEditUtils.selectAll(paintModel, paintModel.getCurrentSelectTool());
 	}
 
 	public void undo() {
-        List<WritableImage> imageVersions = paintModel.getImageVersions();
-        if (!imageVersions.isEmpty()) {
-            WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
-            paintModel.getImageStack().getChildren().clear();
-            ImageView imageView = new ImageView(writableImage);
-            paintModel.setImage(writableImage);
-            paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-            paintModel.getImageStack().getChildren().add(imageView);
-        }
+        PaintEditUtils.undo(paintModel);
     }
 
-	private void addAdjustOption(final VBox root, final WritableImage image, final WritableImage original,
-            double max, DoubleProperty value, final String text, final Function<Color, Color> func) {
-		Text e = new Text(text);
-        root.getChildren().add(e);
-        Slider saturation = new SimpleSliderBuilder(-max, max, value.get()).build();
-        saturation.valueChangingProperty()
-                .addListener(
-                        (ob, old, v) -> updateImage(saturation, image, original, func));
-        saturation.valueProperty()
-                .addListener(
-                        (ob, old, v) -> updateImage(saturation, image, original, func));
-        value.bind(saturation.valueProperty());
-        e.textProperty().bind(saturation.valueProperty().divide(max).multiply(100).asString(text + " %.1f%%"));
-		root.getChildren().add(saturation);
-	}
-
-    private Color changeColor(DoubleProperty saturate, DoubleProperty bright, DoubleProperty hue, DoubleProperty opacity,
-            Color color) {
-        return Color.hsb(getWithinRange(color.getHue() + hue.get(), 0, 360),
-                getWithinRange(color.getSaturation() + saturate.get(), 0, 1),
-                getWithinRange(color.getBrightness() + bright.get(), 0, 1),
-                getWithinRange(color.getOpacity() + opacity.get(), 0, 1));
-    }
-
-    private void changeIfDifferent(final TextField heightField, final String replaceAll) {
-        if (!heightField.getText().equals(replaceAll) && Math.abs(tryParse(heightField) - NumberUtils.toInt(replaceAll, 0)) > 1) {
-            heightField.setText(replaceAll);
-        }
-    }
-
-	private void finishResize(final WritableImage image, final SimpleToggleGroupBuilder groupBuilder, final TextField widthField,
-			final TextField heightField) {
-		ToggleButton selectedItem = (ToggleButton) groupBuilder.selectedItem();
-		double newWidth = PERCENTAGE_FIELD.equals(selectedItem.getText())
-				? tryParse(widthField) * image.getWidth() / 100
-				: tryParse(widthField);
-		double newHeight = PERCENTAGE_FIELD.equals(selectedItem.getText())
-				? tryParse(heightField) * image.getHeight() / 100
-				: tryParse(heightField);
-		WritableImage newImage = new WritableImage((int) newWidth, (int) newHeight);
-		double width = image.getWidth();
-		double height = image.getHeight();
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				Color color = image.getPixelReader().getColor(i, j);
-				double yRatio = newHeight / height;
-				int y = (int) (j * yRatio);
-				double xRatio = newWidth / width;
-				int x = (int) (i * xRatio);
-                if (withinImage(x, y, newImage)) {
-					newImage.getPixelWriter().setColor(x, y, color);
-				}
-				for (int l = 0; l < xRatio; l++) {
-					for (int k = 0; k < yRatio; k++) {
-                        if (withinImage(x + l, y + k, newImage)) {
-							newImage.getPixelWriter().setColor(x + l, y + k, color);
-						}
-					}
-				}
-			}
-		}
-		setImage(newImage);
-	}
-
-    private SelectRectTool getCurrentSelectTool() {
-		return Stream.of(PaintTools.values()).map(PaintTools::getTool)
-                .filter(SelectRectTool.class::isInstance).map(SelectRectTool.class::cast)
-                .filter(e -> paintModel.getImageStack().getChildren().contains(e.getArea()))
-                .findFirst()
-                .orElseGet(() -> (SelectRectTool) PaintTools.SELECT_RECT.getTool());
-    }
-
-    private WritableImage getImage() {
-        SelectRectTool tool = getCurrentSelectTool();
-        if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
-            return tool.createSelectedImage(paintModel);
-        }
-        return paintModel.getImage();
-    }
 
     private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
         if (e.getClickCount() > 1) {
@@ -462,59 +171,8 @@ public class PaintController {
         }
     }
 
-    private void onResizeOptionsChange(final SimpleToggleGroupBuilder groupBuilder, final CheckBox keepProportion,
-            final TextField changedField, final TextField otherField, final double ratio) {
-        RadioButton selectedItem = (RadioButton) groupBuilder.selectedItem();
-        if (keepProportion.isSelected()) {
-			if (PERCENTAGE_FIELD.equals(selectedItem.getText())) {
-                changeIfDifferent(otherField, changedField.getText());
-                return;
-            }
-            if (StringUtils.isNumeric(changedField.getText())) {
-                int width2 = tryParse(changedField);
-                String newHeight = "" + (int) (ratio * width2);
-                changeIfDifferent(otherField, newHeight);
-            }
-        }
-    }
 
-    private void setImage(final WritableImage writableImage) {
-        SelectRectTool tool = getCurrentSelectTool();
-        if (paintModel.getImageStack().getChildren().contains(tool.getArea())) {
-            tool.getArea().setWidth(writableImage.getWidth());
-            tool.getArea().setHeight(writableImage.getHeight());
-            tool.getArea().setFill(new ImagePattern(writableImage));
-            tool.setImageSelected(writableImage);
-        } else {
-            paintModel.getImageStack().getChildren().clear();
-            ImageView imageView = new ImageView(writableImage);
-            paintModel.setImage(writableImage);
-            paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-            paintModel.getImageStack().getChildren().add(imageView);
-        }
-    }
 
-    private void updateImage(final Slider saturation, final WritableImage image, WritableImage original,
-            final Function<Color, Color> func) {
-		if (!saturation.isValueChanging()) {
-            updateImage(image, original, func);
-		}
-	}
 
-    private void updateImage(final WritableImage image, WritableImage original, final Function<Color, Color> func) {
-        for (int x = 0; x < original.getWidth(); x++) {
-            for (int y = 0; y < original.getHeight(); y++) {
-                if (original.getPixelReader().getArgb(x, y) != 0) {
-                    Color color = original.getPixelReader().getColor(x, y);
-                    Color deriveColor = func.apply(color);
-                    image.getPixelWriter().setColor(x, y, deriveColor);
-                }
-            }
-        }
-    }
-
-    private static int tryParse(final TextField widthField) {
-		return NumberUtils.toInt(widthField.getText().replaceAll("\\D", ""), 0);
-	}
 
 }
