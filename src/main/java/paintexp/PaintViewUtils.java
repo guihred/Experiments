@@ -80,9 +80,10 @@ public class PaintViewUtils {
         keepProportion
                 .setOnAction(e -> onResizeOptionsChange(groupBuilder, keepProportion, widthField, heightField, ratio));
         widthField.textProperty()
-                .addListener(e -> onResizeOptionsChange(groupBuilder, keepProportion, widthField, heightField, ratio));
+                .addListener(
+                        e -> onResizeOptionsChange(groupBuilder, keepProportion, widthField, heightField, 1 / ratio));
         heightField.textProperty().addListener(
-                e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, 1 / ratio));
+                e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, ratio));
         root.getChildren().add(CommonsFX.newButton("Resize", e -> {
             finishResize(image, groupBuilder, widthField, heightField, paintModel);
             stage.close();
