@@ -20,7 +20,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTabPaneBuilder;
-import utils.ClassReflectionUtils;
+import utils.ResourceFXUtils;
 
 public class ColorChoose extends Application {
     ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
@@ -86,8 +86,8 @@ public class ColorChoose extends Application {
             circle.setCenterY(255 - newV.getBrightness() * 255.0);
         });
 
-        ClassReflectionUtils.displayStyleClass(root);
-        ClassReflectionUtils.displayCSSStyler(value, "colorChooser.css");
+        value.getStylesheets().clear();
+        value.getStylesheets().add(ResourceFXUtils.toExternalForm("colorChooser.css"));
 
     }
 
