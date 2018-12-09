@@ -118,7 +118,7 @@ public class PaintModel {
 
     public Rectangle getRectangleBorder(final ImageView imageView) {
         if (rectangleBorder == null) {
-            rectangleBorder = new Rectangle(10, 10, Color.TRANSPARENT);
+			rectangleBorder = new Rectangle(10, 10, new ImagePattern(ColorChoose.drawTransparentPattern(100)));
             rectangleBorder.setStroke(Color.BLACK);
         }
         rectangleBorder.setManaged(false);

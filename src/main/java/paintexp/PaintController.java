@@ -1,5 +1,4 @@
 package paintexp;
-import com.sun.javafx.scene.control.skin.CustomColorDialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -16,7 +15,6 @@ import javafx.stage.Window;
 import paintexp.tool.PaintTool;
 import paintexp.tool.SelectRectTool;
 
-@SuppressWarnings("restriction")
 public class PaintController {
 
     private final PaintModel paintModel = new PaintModel();
@@ -152,17 +150,17 @@ public class PaintController {
 
     private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
         if (e.getClickCount() > 1) {
-            CustomColorDialog dialog = new CustomColorDialog(rectangle.getScene().getWindow());
+			ColorChoose dialog = new ColorChoose();
             dialog.setCurrentColor(color);
             dialog.setOnUse(() -> {
-                Color customColor = dialog.getCustomColor();
+				Color customColor = dialog.getCurrentColor();
                 if (MouseButton.PRIMARY == e.getButton()) {
                     paintModel.setFrontColor(customColor);
                 } else {
                     paintModel.setBackColor(customColor);
                 }
             });
-            dialog.setOnSave(() -> rectangle.setFill(dialog.getCustomColor()));
+			dialog.setOnSave(() -> rectangle.setFill(dialog.getCurrentColor()));
             dialog.show();
         } else if (MouseButton.PRIMARY == e.getButton()) {
             paintModel.setFrontColor((Color) rectangle.getFill());
@@ -170,9 +168,4 @@ public class PaintController {
             paintModel.setBackColor((Color) rectangle.getFill());
         }
     }
-
-
-
-
-
 }

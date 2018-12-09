@@ -11,7 +11,15 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -20,14 +28,19 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTabPaneBuilder;
+import utils.CommonsFX;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class ColorChoose extends Application {
-    private static final String PERCENT_FORMAT = "%.0f%%";
-    private ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
-    private Rectangle finalColor = new Rectangle(50, 50);
-    //    private Runnable onUse;
-    //    private Runnable onSave;
+	private static final int CURRENT_COLOR_SIZE = 64;
+	private static final String PERCENT_FORMAT = "%.0f%%";
+	private final ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
+	private final ObjectProperty<Color> initialColor = new SimpleObjectProperty<>(Color.WHITE);
+	private Rectangle finalColor = new Rectangle(CURRENT_COLOR_SIZE, CURRENT_COLOR_SIZE);
+	private Rectangle initialColorRect = new Rectangle(CURRENT_COLOR_SIZE, CURRENT_COLOR_SIZE);
+	private Runnable onUse;
+	private Runnable onSave;
     private Circle circle = new Circle(2, Color.BLACK);
 
     private final Slider hueSlider = new SimpleSliderBuilder(0, 359, 0).onChange(
@@ -62,24 +75,67 @@ public class ColorChoose extends Application {
     private Slider mainHueslider;
     private WritableImage colorsImage = new WritableImage(256, 256);
 
+	public Color getCurrentColor() {
+		return currentColor.get();
+	}
+
+	public void setCurrentColor(final Color color) {
+		currentColor.set(color);
+		initialColor.set(color);
+	}
+
+	public void setOnSave(final Runnable object) {
+		onSave=object;	
+	}
+
+	public void setOnUse(final Runnable object) {
+		onUse = object;
+	}
+
+    public void show() {
+		try {
+			start(new Stage());
+		} catch (Exception e) {
+			HasLogging.log().error("",e);
+		}
+	}
+
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(final Stage primaryStage) throws Exception {
         FlowPane root = new FlowPane();
         SimpleSliderBuilder simpleSliderBuilder = new SimpleSliderBuilder(0, 359, 0);
         mainHueslider = simpleSliderBuilder.build();
         mainHueslider.setId("hueSlider");
         BackgroundRepeat repeatX = BackgroundRepeat.NO_REPEAT;
         finalColor.fillProperty().bind(currentColor);
+		initialColorRect.fillProperty().bind(initialColor);
         Rectangle rectangle = new Rectangle(256, 256);
         rectangle.setFill(new ImagePattern(colorsImage));
+		Rectangle rectangle2 = transparentBackground(256);
         circle.setStroke(Color.WHITE);
         circle.setManaged(false);
-        StackPane pane = new StackPane(rectangle, circle);
+		StackPane pane = new StackPane(rectangle2, rectangle, circle);
         pane.setOnMousePressed(e -> updateColor(colorsImage, e));
         pane.setOnMouseDragged(e -> updateColor(colorsImage, e));
         root.getChildren().add(pane);
         root.getChildren().addAll(mainHueslider);
-        root.getChildren().addAll(new VBox(finalColor, buildTabs(), sliderOptions("Opacity", opacitySlider, PERCENT_FORMAT, 100)));
+		root.getChildren()
+				.addAll(new VBox(
+						new HBox(20, new StackPane(transparentBackground(CURRENT_COLOR_SIZE), finalColor),
+								new StackPane(transparentBackground(CURRENT_COLOR_SIZE), initialColorRect)),
+				buildTabs(),
+						sliderOptions("Opacity", opacitySlider, PERCENT_FORMAT, 100),
+						new HBox(CommonsFX.newButton("Save", e -> {
+							if (onSave != null) {
+								onSave.run();
+							}
+							primaryStage.close();
+						}), CommonsFX.newButton("Use", e -> {
+							if (onUse != null) {
+								onUse.run();
+							}
+							primaryStage.close();
+						}))));
         drawImage();
         simpleSliderBuilder.onChange((a, b, c) -> drawImage());
         Scene value = new Scene(root, 600, 300);
@@ -109,18 +165,17 @@ public class ColorChoose extends Application {
 
     }
 
-    private TabPane buildTabs() {
-        return new SimpleTabPaneBuilder().addTab("HSB", hsbSliders()).addTab("RGB", rgbSliders()).allClosable(false)
-                .build();
-    }
+	private TabPane buildTabs() {
+		return new SimpleTabPaneBuilder().addTab("HSB", hsbSliders()).addTab("RGB", rgbSliders()).allClosable(false)
+				.build();
+	}
 
-    private void changeIfDifferent(Slider slider,double saturation) {
+	private void changeIfDifferent(final Slider slider,final double saturation) {
         if (Math.abs(slider.getValue() - saturation) > 0) {
             slider.setValue(saturation);
         }
         slider.setValueChanging(true);
     }
-
     private void drawImage() {
         for (int x = 0; x < 256; x++) {
             for (int y = 0; y < 256; y++) {
@@ -129,6 +184,7 @@ public class ColorChoose extends Application {
             }
         }
     }
+
     private VBox hsbSliders() {
         VBox vBox = new VBox();
         vBox.getChildren().add(sliderOptions("Hue", hueSlider, "%.0f°", 1));
@@ -137,7 +193,8 @@ public class ColorChoose extends Application {
         return vBox;
     }
 
-    private WritableImage newSliderBackground(Slider slider) {
+
+    private WritableImage newSliderBackground(final Slider slider) {
         double height = slider.getPrefHeight();
         WritableImage image = new WritableImage(20, (int) height);
 
@@ -150,7 +207,6 @@ public class ColorChoose extends Application {
         return image;
     }
 
-
     private VBox rgbSliders() {
         VBox vBox = new VBox();
         vBox.getChildren().add(sliderOptions("Red", redSlider, PERCENT_FORMAT, 100));
@@ -159,13 +215,19 @@ public class ColorChoose extends Application {
         return vBox;
     }
 
-    private HBox sliderOptions(String field,Slider slider ,String format,int multiplier) {
+    private HBox sliderOptions(final String field,final Slider slider ,final String format,final int multiplier) {
         Text text = new Text();
         text.textProperty().bind(slider.valueProperty().multiply(multiplier).asString(format));
         return new HBox(new Text(field), slider, text);
     }
 
-    private void updateColor(WritableImage writableImage, MouseEvent e) {
+    private Rectangle transparentBackground(final int height) {
+		Rectangle rectangle2 = new Rectangle(height, height);
+		rectangle2.setFill(new ImagePattern(drawTransparentPattern(height)));
+		return rectangle2;
+	}
+
+	private void updateColor(final WritableImage writableImage, final MouseEvent e) {
         double x = getWithinRange(e.getX(), 0, 255);
         circle.setCenterX(x);
         double y = getWithinRange(e.getY(), 0, 255);
@@ -174,7 +236,19 @@ public class ColorChoose extends Application {
         currentColor.set(color);
     }
 
-    public static void main(String[] args) {
+	public static WritableImage drawTransparentPattern(final int size) {
+		WritableImage transparentPattern = new WritableImage(size, size);
+		int squareSize = size / 16;
+		for (int x = 0; x < transparentPattern.getWidth(); x++) {
+			for (int y = 0; y < transparentPattern.getHeight(); y++) {
+				transparentPattern.getPixelWriter().setColor(x, y,
+						x / squareSize % 2 == y / squareSize % 2 ? Color.WHITE : Color.GRAY);
+			}
+		}
+		return transparentPattern;
+	}
+
+	public static void main(final String[] args) {
         launch(args);
     }
 }
