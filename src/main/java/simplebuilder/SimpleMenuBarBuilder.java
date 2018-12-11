@@ -4,13 +4,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 
 public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
@@ -105,7 +99,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-	public SimpleMenuBarBuilder addMenuItem(final String text, final String combination,
+    public SimpleMenuBarBuilder addMenuItem(final String text, final String combination,
 			final EventHandler<ActionEvent> action, final ObservableValue<? extends Boolean> disabled) {
 		MenuItem item = new MenuItem(text);
 		item.setOnAction(action);
@@ -118,6 +112,18 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 		item.disableProperty().bind(disabled);
 		return this;
 	}
+
+	public SimpleMenuBarBuilder addMenuItem(final String text, final String combination, final Runnable action) {
+        MenuItem item = new MenuItem(text);
+        item.setOnAction(e->action.run());
+        item.setAccelerator(KeyCombination.keyCombination(combination));
+        if (subMenu != null) {
+            subMenu.getItems().add(item);
+        } else {
+            menu.getItems().add(item);
+        }
+        return this;
+    }
 
     public SimpleMenuBarBuilder addRadioMenuItem(final String text) {
 

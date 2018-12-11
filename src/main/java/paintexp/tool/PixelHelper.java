@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 
 public class PixelHelper {
 
+    private static final int MAX_BYTE = 255;
     private int a;
     private int r;
     private int i;
@@ -12,18 +13,18 @@ public class PixelHelper {
     private int b;
 
 	public void add(final int argb) {
-        a += argb >> 24 & 0xFF;
-        r += argb >> 16 & 0xFF;
-        g += argb >> 8 & 0xFF;
-        b += argb & 0xFF;
+        a += getByte(argb, 3);
+        r += getByte(argb, 2);
+        g += getByte(argb, 1);
+        b += getByte(argb, 0);
 		i++;
 	}
 
-	public void add(final int argb, final int mul) {
-		a += (argb >> 24 & 0xFF) * mul;
-		r += (argb >> 16 & 0xFF) * mul;
-		g += (argb >> 8 & 0xFF) * mul;
-		b += (argb & 0xFF) * mul;
+    public void add(final int argb, final int mul) {
+        a += getByte(argb, 3) * mul;
+        r += getByte(argb, 2) * mul;
+        g += getByte(argb, 1) * mul;
+        b += getByte(argb, 0) * mul;
 		i += mul;
 	}
 
@@ -35,51 +36,55 @@ public class PixelHelper {
         a = b = r = g = i = 0;
 	}
 
-    public void reset(int argb) {
-        a = argb >> 24 & 0xFF;
-        r = argb >> 16 & 0xFF;
-        g = argb >> 8 & 0xFF;
-        b = argb & 0xFF;
+	public void reset(int argb) {
+        a = getByte(argb, 3);
+        r = getByte(argb, 2);
+        g = getByte(argb, 1);
+        b = getByte(argb, 0) & 0xFF;
         i = 1;
     }
 
-	public int toArgb(final int round) {
-        int red = getWithinRange(i == 0 ? r : r / i, 0, 255) / round * round;
-        int green = getWithinRange(i == 0 ? g : g / i, 0, 255) / round * round;
-        int blue = getWithinRange(i == 0 ? b : b / i, 0, 255) / round * round;
-        int transp = getWithinRange(i == 0 ? 255 : a / i, 0, 255);
-		return transp << 24 | red << 16 | green << 8 | blue;
+    public int toArgb(final int round) {
+        int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE) / round * round;
+        int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE) / round * round;
+        int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE) / round * round;
+        int transp = getWithinRange(i == 0 ? MAX_BYTE : a / i, 0, MAX_BYTE);
+        return transp << 8 * 3 | red << 8 * 2 | green << 8 | blue;
 	}
 
 	public Color toColor() {
-        int red = getWithinRange(i == 0 ? r : r / i, 0, 255);
-        int green = getWithinRange(i == 0 ? g : g / i, 0, 255);
-        int blue = getWithinRange(i == 0 ? b : b / i, 0, 255);
-        double transp = getWithinRange(i == 0 ? 255 : a / (double) i, 0.0, 255) / 255;
+        int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE);
+        int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE);
+        int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE);
+        double transp = getWithinRange(i == 0 ? MAX_BYTE : a / (double) i, 0.0, MAX_BYTE) / MAX_BYTE;
 		return Color.rgb(red, green, blue, transp);
 	}
 
 	public Color toColor(final int round) {
-        int red = getWithinRange(i == 0 ? r : r / i, 0, 255) / round * round;
-        int green = getWithinRange(i == 0 ? g : g / i, 0, 255) / round * round;
-        int blue = getWithinRange(i == 0 ? b : b / i, 0, 255) / round * round;
-        double transp = getWithinRange(i == 0 ? 255 : a / (double) i, 0.0, 255) / 255;
+        int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE) / round * round;
+        int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE) / round * round;
+        int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE) / round * round;
+        double transp = getWithinRange(i == 0 ? MAX_BYTE : a / (double) i, 0.0, MAX_BYTE) / MAX_BYTE;
 		return Color.rgb(red, green, blue, transp);
 	}
 
-    public static Color asColor(final int argb) {
-        int a = argb >> 24 & 0xFF;
-        int r = argb >> 16 & 0xFF;
-        int g = argb >> 8 & 0xFF;
-        int b = argb & 0xFF;
-        return Color.rgb(r, g, b, a / (double) 255);
+	public static Color asColor(final int argb) {
+        int a = getByte(argb, 3);
+        int r = getByte(argb, 2);
+        int g = getByte(argb, 1);
+        int b = getByte(argb, 0);
+        return Color.rgb(r, g, b, a / (double) MAX_BYTE);
     }
 
     public static int toArgb(Color c) {
-        int b = (int) (c.getBlue() * 255);
-        int r = (int) (c.getRed() * 255);
-        int g = (int) (c.getGreen() * 255);
-        int a = (int) (c.getOpacity() * 255);
-        return a << 24 | r << 16 | g << 8 | b;
+        int b = (int) (c.getBlue() * MAX_BYTE);
+        int r = (int) (c.getRed() * MAX_BYTE);
+        int g = (int) (c.getGreen() * MAX_BYTE);
+        int a = (int) (c.getOpacity() * MAX_BYTE);
+        return a << 8 * 3 | r << 8 * 2 | g << 8 | b;
+    }
+
+    private static int getByte(final int argb,int i) {
+        return argb >> 8*i & 0xFF;
     }
 }

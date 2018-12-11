@@ -1,6 +1,8 @@
 package utils;
 
 import java.util.Arrays;
+import java.util.Locale;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import org.slf4j.Logger;
 
@@ -29,17 +31,6 @@ public final class MatrixSolver {
 	private MatrixSolver() {
 	}
 
-	private static void correctOrder(double[] coef, double[][] temp) {
-		for (int i = 0; i < coef.length; i++) {
-			if (temp[i][0] == 0 && i < coef.length - 1) {
-				swap(temp, i);
-				double d = coef[i];
-				coef[i] = coef[i + 1];
-				coef[i + 1] = d;
-			}
-		}
-	}
-
 	public static double determinant(double[][] matrix) {
 		if (matrix.length == 1) {
 			return matrix[0][0];
@@ -61,6 +52,7 @@ public final class MatrixSolver {
 		}
 		return sum;
 	}
+
 	public static void main(String[] args) {
 		double[][] matr = { 
 		{ 4, 5, 3 },
@@ -68,9 +60,81 @@ public final class MatrixSolver {
 		{ 4, 5, 6 }
 		};
 		double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.trace(Arrays.toString(MatrixSolver.solve(matr, coef2)));
+        String solvedCoef = "\n\t" + Arrays.toString(MatrixSolver.solve(matr, coef2));
+        LOGGER.info(solvedCoef);
+	}
+
+    public static double[] matmul(double[][] matrix, double[] v) {
+        double[] a = new double[matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            a[i] = 0;
+            for (int j = 0; j < matrix[i].length; j++) {
+                a[i] += matrix[i][j] * v[j];
+            }
         }
+        return a;
+    }
+
+    public  static double norm(double [] v) {
+        return vectorNorm(v, 2);
+    }
+    public static void printMatrix(double[][] matr, double[] coef) {
+        if (debug) {
+            StringBuilder desc = new StringBuilder();
+            for (int i = 0; i < matr.length; i++) {
+                desc.append("\n\t");
+                desc.append(DoubleStream.of(matr[i]).mapToObj(e -> String.format(Locale.US, "[%.3f]", e))
+                        .collect(Collectors.joining(", ")));
+                if (coef != null && coef.length > 0) {
+                    desc.append(String.format(Locale.US, "[%.1f]", coef[i % coef.length]));
+                }
+            }
+            LOGGER.info("{}", desc);
+        }
+    }
+    public static double[] solve(double[][] matr, double[] coef2) {
+
+        double[] coef = Arrays.copyOf(coef2, coef2.length);
+
+        double[][] temp = new double[coef.length][coef.length];
+        for (int i = 0; i < coef.length; i++) {
+            temp[i] = Arrays.copyOf(matr[i], coef.length);
+        }
+        correctOrder(coef, temp);
+        printMatrix(temp, coef);
+        for (int i = 0; i < coef.length; i++) {
+            for (int j = (i + 1) % coef.length; j != i; j = (j + 1) % coef.length) {
+                if (DoubleStream.of(temp[j]).filter(d -> d != 0).count() > 1) {
+                    multiplyAndAdd(temp[j], temp[i], coef, i, j);
+                    printMatrix(temp, coef);
+                }
+            }
+        }
+        printMatrix(temp, coef);
+        for (int i = 0; i < coef.length; i++) {
+            coef[i] /= nonZero(temp[i]);
+        }
+
+        return coef;
+    }
+
+	public static double vectorNorm(double[] a, final double p) {
+        double n = 0;
+        for (int i = 0; i < a.length; i++) {
+            n += Math.abs(Math.pow(a[i], p));
+        }
+        return Math.pow(n, 1. / p);
+    }
+
+	private static void correctOrder(double[] coef, double[][] temp) {
+		for (int i = 0; i < coef.length; i++) {
+			if (temp[i][0] == 0 && i < coef.length - 1) {
+				swap(temp, i);
+				double d = coef[i];
+				coef[i] = coef[i + 1];
+				coef[i + 1] = d;
+			}
+		}
 	}
 
 	private static void multiplyAndAdd(double[] ds, double[] ds2, double[] coef, int i, int j) {
@@ -88,7 +152,7 @@ public final class MatrixSolver {
 
 	}
 
-	private static double nonZero(double[] temp) {
+    private static double nonZero(double[] temp) {
 		for (int i = 0; i < temp.length; i++) {
 			if (temp[i] != 0) {
 				return temp[i];
@@ -97,7 +161,7 @@ public final class MatrixSolver {
 		return 1;
 	}
 
-	private static int nonZeroIndex(double[] temp) {
+    private static int nonZeroIndex(double[] temp) {
 		for (int i = 0; i < temp.length; i++) {
 			if (temp[i] != 0) {
 				return i;
@@ -106,44 +170,9 @@ public final class MatrixSolver {
 		return 0;
 	}
 
-	private static void printMatrix(double[][] matr, double[] coef) {
-        if (debug && LOGGER.isInfoEnabled()) {
-			for (int i = 0; i < matr.length; i++) {
-                LOGGER.trace("{}[{}]", Arrays.toString(matr[i]), coef[i]);
-			}
-            LOGGER.trace("\n");
-		}
-	}
-
-	public static double[] solve(double[][] matr, double[] coef2) {
-
-		double[] coef = Arrays.copyOf(coef2, coef2.length);
-
-		double[][] temp = new double[coef.length][coef.length];
-		for (int i = 0; i < coef.length; i++) {
-			temp[i] = Arrays.copyOf(matr[i], coef.length);
-		}
-		correctOrder(coef, temp);
-		printMatrix(temp, coef);
-		for (int i = 0; i < coef.length; i++) {
-			for (int j = (i + 1) % coef.length; j != i; j = (j + 1) % coef.length) {
-				if (DoubleStream.of(temp[j]).filter(d -> d != 0).count() > 1) {
-					multiplyAndAdd(temp[j], temp[i], coef, i, j);
-					printMatrix(temp, coef);
-				}
-			}
-		}
-		printMatrix(temp, coef);
-		for (int i = 0; i < coef.length; i++) {
-			coef[i] /= nonZero(temp[i]);
-		}
-
-		return coef;
-	}
 
 
-
-	private static void swap(double[][] temp, int i) {
+    private static void swap(double[][] temp, int i) {
 		double[] a = temp[i];
 		temp[i] = temp[i + 1];
 		temp[i + 1] = a;

@@ -52,16 +52,17 @@ public class ConvergeLayout implements Layout {
 			if (sumY < bound / 2 || sumX < bound / 2) {
 				double layoutX = cell.getLayoutX();
 				double layoutY = cell.getLayoutY();
-					cell.relocate(layoutX + sumX, layoutY + sumY);
+                cell.relocate(layoutX + sumX, layoutY + sumY);
 			}
 
 		}
 	}
 
 	private static double calculateXSum(double bound, double media, Edge e1) {
-		double angulo1 = e1.getAngulo();
-		Integer valor = 1;e1.getValor();
-		return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
+        double angulo1 = e1.getAngulo();
+        Integer valor = 1;
+        e1.getValor();
+        return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
 	}
 
 	private static double calculateYSum(double bound, double media, Edge e2) {

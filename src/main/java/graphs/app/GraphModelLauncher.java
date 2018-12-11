@@ -63,6 +63,10 @@ public class GraphModelLauncher extends Application implements HasLogging {
             graph.getModel().clearSelected();
             graph.getModel().sortTopology();
         }));
+        buttons.getChildren().add(CommonsFX.newButton("Page Rank", ev -> {
+            graph.getModel().clearSelected();
+            graph.getModel().pageRank();
+        }));
 
         buttons.getChildren().add(getTopologyOptions());
         buttons.getChildren().add(getLayoutOptions());

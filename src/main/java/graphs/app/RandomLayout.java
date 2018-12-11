@@ -19,10 +19,11 @@ public class RandomLayout implements Layout {
 	@Override
 	public void execute() {
 
-		List<Cell> cells = graph.getModel().getAllCells();
-		 List<Edge> allEdges = graph.getModel().getAllEdges();
+        List<Cell> cells = graph.getModel().getAllCells();
+        List<Edge> allEdges = graph.getModel().getAllEdges();
         graph.clean();
         layoutRandom(cells, allEdges, graph.getScrollPane().getWidth());
+
     }
 
     public static void layoutRandom(List<Cell> cells, List<Edge> allEdges, double width) {

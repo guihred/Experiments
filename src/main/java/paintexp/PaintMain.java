@@ -28,7 +28,7 @@ import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CrawlerTask;
 
-public class PaintMain extends  Application{
+public class PaintMain extends Application {
 
 	private PaintController controller = new PaintController();
     @Override
@@ -37,25 +37,25 @@ public class PaintMain extends  Application{
         BorderPane root = new BorderPane();
         root.setTop(new SimpleMenuBarBuilder()
                 .addMenu("_File")
-				.addMenuItem("_New", "Ctrl+N", e -> controller.newFile())
-				.addMenuItem("_Open", "Ctrl+O", e -> controller.openFile(stage))
-				.addMenuItem("_Save", "Ctrl+S", e -> controller.saveFile(stage))
-				.addMenuItem("Save _As", e -> controller.saveAsFile(stage))
+                .addMenuItem("_New", "Ctrl+N", controller::newFile)
+                .addMenuItem("_Open", "Ctrl+O", () -> controller.openFile(stage))
+                .addMenuItem("_Save", "Ctrl+S", () -> controller.saveFile(stage))
+                .addMenuItem("Save _As", "Ctrl+Shift+S", () -> controller.saveAsFile(stage))
                 .addMenu("_Edit")
-				.addMenuItem("Select _All", "Ctrl+A", e -> controller.selectAll())
-				.addMenuItem("C_opy", "Ctrl+C", e -> controller.copy(), controller.containsSelectedArea().not())
-				.addMenuItem("_Paste", "Ctrl+V", e -> controller.paste())
-				.addMenuItem("_Cut", "Ctrl+X", e -> controller.cut(), controller.containsSelectedArea().not())
-                .addMenuItem("Undo", "Ctrl+Z", e -> controller.undo())
+                .addMenuItem("Select _All", "Ctrl+A", controller::selectAll)
+                .addMenuItem("C_opy", "Ctrl+C", e -> controller.copy(), controller.containsSelectedArea().not())
+                .addMenuItem("_Paste", "Ctrl+V", controller::paste)
+                .addMenuItem("_Cut", "Ctrl+X", e -> controller.cut(), controller.containsSelectedArea().not())
+                .addMenuItem("Undo", "Ctrl+Z", controller::undo)
 				.addMenu("_View")
-				.addMenuItem("Resize/Ske_w", "Ctrl+W", e -> controller.resize())
-				.addMenuItem("_Flip/Rotate", "Ctrl+R", e -> controller.flipRotate())
-				.addMenuItem("_Crop", e -> controller.crop(), controller.containsSelectedArea().not())
+                .addMenuItem("Resize/Ske_w", "Ctrl+W", controller::resize)
+                .addMenuItem("_Flip/Rotate", "Ctrl+R", controller::flipRotate)
+                .addMenuItem("_Crop", e -> controller.crop(), controller.containsSelectedArea().not())
                 .addMenu("_Image")
-                .addMenuItem("_Invert Colors", "Ctrl+I", e -> controller.invertColors())
-				.addMenuItem("_Adjust", "Ctrl+J", e -> controller.adjustColors())
-                .addMenuItem("Mirror _Horizontally", "Ctrl+H", e -> controller.mirrorHorizontally())
-                .addMenuItem("Mirror _Vertically", "Ctrl+M", e -> controller.mirrorVertically())
+                .addMenuItem("_Invert Colors", "Ctrl+I", controller::invertColors)
+                .addMenuItem("_Adjust", "Ctrl+J", controller::adjustColors)
+                .addMenuItem("Mirror _Horizontally", "Ctrl+H", controller::mirrorHorizontally)
+                .addMenuItem("Mirror _Vertically", "Ctrl+M", controller::mirrorVertically)
                 .addMenu("_Colors")
                 .addMenu("_Help")
                 .build());
