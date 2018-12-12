@@ -49,8 +49,6 @@ public class AudioConfigLauncher extends Application {
         mutingCheckBox.selectedProperty().bindBidirectional(acModel.muting);
         acModel.setGenreSelectionModel(genreChoiceBox.getSelectionModel());
         acModel.getGenreSelectionModel().selectFirst();
-        stage.setWidth(335);
-        stage.setHeight(343);
         stage.setScene(scene);
         stage.setTitle("Audio Configuration");
         scene.getStylesheets().add(ResourceFXUtils.toURL("audio-config.css").toString());

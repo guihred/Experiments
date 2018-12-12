@@ -27,6 +27,7 @@ import utils.HasLogging;
 import utils.SongUtils;
 
 public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging {
+    private static final int IMAGE_MAX_WIDTH = 300;
     /**
      * 
      */
@@ -84,7 +85,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         Image imageData = SongUtils.extractEmbeddedImage(selectedItem.getArquivo());
         if (imageData != null) {
             ImageView imageView = new ImageView(imageData);
-            imageView.setFitWidth(300);
+            imageView.setFitWidth(IMAGE_MAX_WIDTH);
             imageView.setPreserveRatio(true);
             root.getChildren().addAll(imageView);
         }
@@ -98,7 +99,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         Slider initialSlider = addSlider(root);
         initialSlider.setValue(0);
         Slider finalSlider = addSlider(root);
-        finalSlider.setValue(0.999);
+        finalSlider.setValue(1 - 1. / 1000);
         mediaPlayer.totalDurationProperty().addListener(e -> finalSlider.setValue(1));
         File outFile = new File("out", selectedItem.getArquivo().getName());
         ProgressIndicator progressIndicator = new ProgressIndicator(0);

@@ -95,7 +95,7 @@ public final class RotateUtils {
         Scale scale = new Scale(1, 1);
         Translate translate = new Translate(0, 0);
         node.getTransforms().addAll(scale, translate);
-        double delta = 0.1;
+        final double delta = 0.1;
         DoubleProperty iniX = new SimpleDoubleProperty(0);
         DoubleProperty iniY = new SimpleDoubleProperty(0);
 
@@ -111,7 +111,7 @@ public final class RotateUtils {
                 scaleValue = s;
             }
 
-            if (scaleValue <= 0.1) {
+            if (scaleValue <= delta) {
                 scaleValue = s;
             }
             scale.setX(scaleValue);

@@ -20,7 +20,8 @@ import javafx.stage.Stage;
 
 public class PersonTableController extends Application {
 
-	private TextField filterField = new TextField();
+    private static final double WIDTH = 500;
+    private TextField filterField = new TextField();
 	private TableView<Person> personTable = new TableView<>();
 	private TableColumn<Person, String> firstNameColumn = new TableColumn<>("First Name");
 	private TableColumn<Person, String> lastNameColumn = new TableColumn<>("Last Name");
@@ -46,16 +47,17 @@ public class PersonTableController extends Application {
 	public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Person Table");
 		BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, 260, 470, Color.WHITE);
+        Scene scene = new Scene(root, WIDTH / 2, WIDTH, Color.WHITE);
 		// create a grid pane
 		FlowPane gridpane = new FlowPane();
 		gridpane.setPadding(new Insets(5));
 		gridpane.setHgap(10);
 		gridpane.setVgap(10);
 		root.setCenter(gridpane);
-
+        personTable.setPrefWidth(WIDTH / 2 - 10);
         gridpane.getChildren().addAll(new VBox(new Label("Filter Field"), filterField), personTable);
 		personTable.getColumns().setAll(Arrays.asList(firstNameColumn, lastNameColumn));
+        personTable.getColumns().forEach(e -> e.setPrefWidth(WIDTH / 7));
 		initialize();
 		primaryStage.setScene(scene);
 		primaryStage.show();

@@ -19,7 +19,8 @@ import paintexp.tool.PaintTool;
 import paintexp.tool.SelectRectTool;
 
 public class PaintModel {
-	private final ObjectProperty<Color> backColor = new SimpleObjectProperty<>(Color.WHITE);
+    private static final int MAX_VERSIONS = 50;
+    private final ObjectProperty<Color> backColor = new SimpleObjectProperty<>(Color.WHITE);
 	private final ObjectProperty<Color> frontColor = new SimpleObjectProperty<>(Color.BLACK);
     private WritableImage image = new WritableImage(500, 500);
     private Group imageStack;
@@ -56,7 +57,7 @@ public class PaintModel {
     public void createImageVersion() {
         imageVersions
                 .add(new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight()));
-		if (imageVersions.size() > 50) {
+        if (imageVersions.size() > MAX_VERSIONS) {
 			imageVersions.remove(0);
 		}
 
@@ -119,7 +120,7 @@ public class PaintModel {
 
     public Rectangle getRectangleBorder(final ImageView imageView) {
         if (rectangleBorder == null) {
-			rectangleBorder = new Rectangle(10, 10, new ImagePattern(ColorChoose.drawTransparentPattern(100)));
+			rectangleBorder = new Rectangle(10, 10, new ImagePattern(ColorChooser.drawTransparentPattern(100)));
             rectangleBorder.setStroke(Color.BLACK);
         }
         rectangleBorder.setManaged(false);
@@ -157,7 +158,7 @@ public class PaintModel {
     }
     public Rectangle resetToolOptions() {
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
-        rectangle.setStroke(Color.grayRgb(128));
+        rectangle.setStroke(Color.GRAY);
 		toolOptions.setMaxWidth(150);
         toolOptions.setSpacing(10);
         toolOptions.getChildren().clear();

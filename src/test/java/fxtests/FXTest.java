@@ -59,7 +59,7 @@ import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
-import paintexp.ColorChoose;
+import paintexp.ColorChooser;
 import pdfreader.PdfReader;
 import physics.Physics;
 import rosario.RosarioComparadorArquivos;
@@ -102,7 +102,7 @@ public final class FXTest implements HasLogging {
         FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
                 ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class, PdfReader.class,
                 SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class, SudokuLauncher.class,
-                RoundMazeLauncher.class, ColorChoose.class, SolitaireLauncher.class, SphereSystemApp.class,
+                RoundMazeLauncher.class, ColorChooser.class, SolitaireLauncher.class, SphereSystemApp.class,
                 WorkingWithTableView.class, Square2048Launcher.class, StageControlExample.class, TaskProgressApp.class,
                 TetrisLauncher.class, TheMenuGrid.class, ThreadInformationApp.class, TimelineExample.class,
                 TriangleMeshes.class, TronLauncher.class, VanishingCirclesApp.class, WordSearchApp.class,

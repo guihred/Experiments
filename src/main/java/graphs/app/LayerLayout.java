@@ -43,7 +43,7 @@ public class LayerLayout implements Layout {
         Map<Integer, List<Cell>> layerMap = layers.entrySet().stream()
                 .collect(groupingBy(Entry<Cell, Integer>::getValue, mapping(Entry<Cell, Integer>::getKey, toList())));
         int numOfLayers = layerMap.keySet().stream().mapToInt(e -> e).max().orElse(1);
-        double bound = 800;
+        final double bound = 800;
         layerMap.forEach((lay, cels) -> {
             double layerHeight = bound / numOfLayers / 2;
             double y = layerHeight * lay;

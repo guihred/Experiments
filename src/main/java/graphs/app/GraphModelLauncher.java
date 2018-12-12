@@ -165,11 +165,11 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
     private VBox getTopologyOptions() {
         DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
-        int netSize = 30;
+        final int netSize = 30;
         ObservableList<BaseTopology> topologies = FXCollections
                 .observableArrayList(delaunayTopology, new RandomTopology(netSize, graph),
                         new TreeTopology(netSize, graph), new CircleTopology(netSize, graph),
-                        new GabrielTopology(netSize, graph), new WordTopology(netSize, graph),
+                        new GabrielTopology(netSize, graph), new WordTopology(netSize * 3, graph),
                         new PackageTopology(graph), new NetworkTopology(graph), new ProjectTopology(graph))
                 .sorted(Comparator.comparing(BaseTopology::getName));
 

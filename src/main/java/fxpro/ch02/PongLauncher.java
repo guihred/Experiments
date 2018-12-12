@@ -35,7 +35,7 @@ import utils.Delta;
 
 public class PongLauncher extends Application {
 
-    private static final int WIDTH = 500;
+    private static final double WIDTH = 500;
 	/**
      * The center points of the moving ball
      */
@@ -79,10 +79,10 @@ public class PongLauncher extends Application {
 	 * Controls whether the startButton is visible
 	 */
 	private BooleanProperty startVisible = new SimpleBooleanProperty(true);
-    private Rectangle topWall = new SimpleRectangleBuilder().x(0).y(0).width(500).height(1).visible(false).build();
-    private Rectangle rightWall = new SimpleRectangleBuilder().x(500).y(0).width(1).height(500).visible(false).build();
-    private Rectangle leftWall = new SimpleRectangleBuilder().x(0).y(0).width(1).height(500).visible(false).build();
-	private Rectangle bottomWall = new SimpleRectangleBuilder().x(0).y(500).width(500).height(1).visible(false).build();
+    private Rectangle topWall = new SimpleRectangleBuilder().x(0).y(0).width(WIDTH).height(1).build();
+    private Rectangle rightWall = new SimpleRectangleBuilder().x(WIDTH).y(0).width(1).height(WIDTH).build();
+    private Rectangle leftWall = new SimpleRectangleBuilder().x(0).y(0).width(1).height(WIDTH).build();
+    private Rectangle bottomWall = new SimpleRectangleBuilder().x(0).y(WIDTH).width(WIDTH).height(1).build();
 	/**
 	 * Controls whether the ball is moving right
 	 */
@@ -97,7 +97,7 @@ public class PongLauncher extends Application {
 	private Timeline pongAnimation = new SimpleTimelineBuilder()
 			.cycleCount(Animation.INDEFINITE)
             .addKeyFrame(
-					new Duration(10.0), t -> {
+                    Duration.millis(10), t -> {
 						checkForCollision();
 						int horzPixels = movingRight ? 1 : -1;
 						int vertPixels = movingDown ? 1 : -1;
@@ -105,7 +105,7 @@ public class PongLauncher extends Application {
 						centerY.setValue(centerY.getValue() + vertPixels);
                     })
 			.build();
-    private Button startButton = newButton(225, 470, "Start!", e -> {
+    private Button startButton = newButton(225, WIDTH * 2 / 3, "Start!", e -> {
 		startVisible.set(false);
 		pongAnimation.playFromStart();
 		pongComponents.requestFocus();
@@ -188,8 +188,9 @@ public class PongLauncher extends Application {
         startButton.visibleProperty().bind(startVisible);
         stage.setScene(scene);
         initialize();
-        stage.setWidth(WIDTH);
-        stage.setHeight(WIDTH);
+        stage.setResizable(false);
+        stage.setWidth(WIDTH + 8);
+        stage.setHeight(WIDTH + 30);
         stage.setTitle("ZenPong Example");
         stage.show();
     }

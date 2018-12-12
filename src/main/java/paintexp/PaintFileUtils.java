@@ -17,9 +17,10 @@ import utils.HasLogging;
 public class PaintFileUtils {
     private static final Logger LOG = HasLogging.log();
     private static File defaultFile;
+    private static final int DEFAULT_SIZE = 500;
 
     public static void newFile(PaintModel paintModel) {
-        paintModel.setImage(new WritableImage(500, 500));
+        paintModel.setImage(new WritableImage(DEFAULT_SIZE, DEFAULT_SIZE));
         int w = (int) paintModel.getImage().getWidth();
         int h = (int) paintModel.getImage().getHeight();
         paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(paintModel.getBackColor()),

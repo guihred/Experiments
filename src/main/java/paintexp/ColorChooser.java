@@ -1,6 +1,7 @@
 package paintexp;
 
 import static paintexp.tool.DrawOnPoint.getWithinRange;
+import static paintexp.tool.PixelHelper.MAX_BYTE;
 
 import java.util.Objects;
 import javafx.application.Application;
@@ -11,28 +12,21 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import paintexp.tool.PixelHelper;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTabPaneBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class ColorChoose extends Application {
+public class ColorChooser extends Application {
 	private static final int CURRENT_COLOR_SIZE = 64;
 	private static final String PERCENT_FORMAT = "%.0f%%";
 	private final ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
@@ -119,6 +113,7 @@ public class ColorChoose extends Application {
         pane.setOnMouseDragged(e -> updateColor(colorsImage, e));
         root.getChildren().add(pane);
         root.getChildren().addAll(mainHueslider);
+        PixelHelper.asColor(1);
 		root.getChildren()
 				.addAll(new VBox(
 						new HBox(20, new StackPane(transparentBackground(CURRENT_COLOR_SIZE), finalColor),
@@ -157,8 +152,8 @@ public class ColorChoose extends Application {
             changeIfDifferent(greenSlider, newV.getGreen());
             changeIfDifferent(blueSlider, newV.getBlue());
             changeIfDifferent(opacitySlider, newV.getOpacity());
-            circle.setCenterX(newV.getSaturation() * 255.0);
-            circle.setCenterY(255 * (1 - newV.getBrightness()));
+            circle.setCenterX(newV.getSaturation() * MAX_BYTE);
+            circle.setCenterY(MAX_BYTE * (1 - newV.getBrightness()));
         });
 
         value.getStylesheets().add(ResourceFXUtils.toExternalForm("colorChooser.css"));
@@ -180,7 +175,8 @@ public class ColorChoose extends Application {
         for (int x = 0; x < 256; x++) {
             for (int y = 0; y < 256; y++) {
                 colorsImage.getPixelWriter().setColor(x, y,
-                        Color.hsb(mainHueslider.getValue(), x / 255.0, (255 - y) / 255.0, opacitySlider.getValue()));
+                        Color.hsb(mainHueslider.getValue(), (double) x / MAX_BYTE, (MAX_BYTE - (double) y) / MAX_BYTE,
+                                opacitySlider.getValue()));
             }
         }
     }
@@ -228,9 +224,9 @@ public class ColorChoose extends Application {
 	}
 
 	private void updateColor(final WritableImage writableImage, final MouseEvent e) {
-        double x = getWithinRange(e.getX(), 0, 255);
+        double x = getWithinRange(e.getX(), 0, MAX_BYTE);
         circle.setCenterX(x);
-        double y = getWithinRange(e.getY(), 0, 255);
+        double y = getWithinRange(e.getY(), 0, MAX_BYTE);
         circle.setCenterY(y);
         Color color = writableImage.getPixelReader().getColor((int)x, (int)y);
         currentColor.set(color);

@@ -1,14 +1,8 @@
 package graphs.entities;
 
-import static utils.MatrixSolver.matmul;
-import static utils.MatrixSolver.norm;
-import static utils.MatrixSolver.vectorNorm;
-
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -16,7 +10,6 @@ import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.DisjSets;
 import utils.HasLogging;
-import utils.MatrixSolver;
 
 public class GraphModelAlgorithms {
 
@@ -99,19 +92,23 @@ public class GraphModelAlgorithms {
 		return allEdges.stream().filter(e -> e.source.equals(c)).count();
 	}
 
-
     public static long edgesNumber(Cell c, List<Edge> allEdges, Collection<Cell> allCells) {
         return allEdges.stream().filter(e -> e.source.equals(c) && allCells.contains(e.target)
                 || e.target.equals(c) && allCells.contains(e.source)).count();
     }
 
-	public static void findArticulations(List<Cell> allCells, List<Edge> allEdges) {
+
+    public static void findArticulations(List<Cell> allCells, List<Edge> allEdges) {
         Map<Cell, Integer> num = new HashMap<>();
         Map<Cell, Integer> low = new HashMap<>();
         Map<Cell, Cell> parent = new HashMap<>();
         Cell s2 = allCells.get(0);
         assignNum(num, parent, 0, s2, allEdges);
         assignLow(num, low, parent, s2, allEdges);
+    }
+
+	public static List<Edge> incomingEdges(Cell c, Collection<Edge> allEdges) {
+        return allEdges.stream().filter(e -> e.target.equals(c)).collect(Collectors.toList());
     }
 
 
@@ -144,24 +141,39 @@ public class GraphModelAlgorithms {
         return mst;
     }
 
-    public static void main(String[] args) {
-        double[][] adjacencyMatrix = new double[][] { { 0, 0, 0, 0, 1 }, { 0.5, 0, 0, 0, 0 }, { 0.5, 0, 0, 0, 0 },
-                { 0, 1, 0.5, 0, 0 }, { 0, 0, 0.5, 1, 0 } };
-        String string = Arrays.toString(getPageRank(adjacencyMatrix));
-        LOG.info("{}", string);
-    }
+
 
     public static double[] pageRank(List<Cell> allCells, List<Edge> allEdges) {
-        double[][] adjacencyMatrix = adjacencyMatrix(allCells, allEdges);
-        MatrixSolver.printMatrix(adjacencyMatrix, null);
-        double[] pageRank = getPageRank(adjacencyMatrix);
-        for (int i = 0; i < pageRank.length; i++) {
-            allCells.get(i).addText(String.format(Locale.US, "%.2f", pageRank[i]));
+        double[] pageRank = new double[allCells.size()];
+        double[] pageRank2 = new double[allCells.size()];
+        Arrays.fill(pageRank, 1. / allCells.size());
+        for (int k = 0; k < 2; k++) {
+            for (int i = 0; i < pageRank.length; i++) {
+                Cell cell = allCells.get(i);
+                List<Edge> incomingEdges = incomingEdges(cell, allEdges);
+                pageRank2[i] = 0;
+                if (incomingEdges.isEmpty()) {
+                    pageRank2[i] = pageRank[i];
+                }
+                for (int j = 0; j < incomingEdges.size(); j++) {
+                    Edge edge = incomingEdges.get(j);
+                    int indexOf = allCells.indexOf(edge.source);
+                    double e = pageRank[indexOf];
+                    long edgesNumber = edgesNumber(edge.source, allEdges);
+                    pageRank2[i] += e / edgesNumber;
+                }
+
+            }
+            pageRank = pageRank2;
         }
+        for (int i = 0; i < pageRank.length; i++) {
+            allCells.get(i).addText(String.format(Locale.US, "%.9f", pageRank[i]));
+        }
+
         return pageRank;
     }
 
-    public static void sortTopology(Collection<Cell> allCells, List<Edge> allEdges) {
+    public static Map<Cell, Integer> sortTopology(Collection<Cell> allCells, List<Edge> allEdges) {
         int counter = 0;
         Map<Cell, Integer> indegree = new HashMap<>();
         Map<Cell, Integer> topNum = new HashMap<>();
@@ -191,6 +203,7 @@ public class GraphModelAlgorithms {
         if (counter != allCells.size()) {
             LOG.info("CYCLE FOUND");
         }
+        return topNum;
     }
 
     public static List<Triangle> triangulate(Graph graph, List<Cell> all) {
@@ -304,21 +317,6 @@ public class GraphModelAlgorithms {
 
     }
 
-    private static double[][] adjacencyMatrix(List<Cell> allCells, List<Edge> allEdges) {
-        int n = allCells.size();
-        double[][] adjacencyMatrix = new double[n][n];
-        for (int i = 0; i < n; i++) {
-            Cell cell = allCells.get(i);
-            double sum = edges(cell, allEdges).stream().map(Edge::getValor).filter(Objects::nonNull)
-                    .mapToInt(e -> e)
-                    .sum();
-            for (int j = 0; j < n; j++) {
-                adjacencyMatrix[i][j] = cost(cell, allCells.get(j), allEdges) / sum;
-            }
-        }
-        return adjacencyMatrix;
-    }
-
     private static List<Cell> anyAdjacents(Cell c, List<Edge> allEdges) {
         return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c))
                 .flatMap(e -> Stream.of(e.getTarget(), e.getSource())).filter(e -> e != c).distinct()
@@ -391,36 +389,11 @@ public class GraphModelAlgorithms {
         return distance;
     }
 
-    private static double[] div(double[] v, double norm) {
-        return DoubleStream.of(v).map(e -> e / norm).toArray();
-    }
 
     private static Cell getMinDistanceCell(Map<Cell, Integer> distance, Map<Cell, Boolean> known) {
         return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
                 .min(Comparator.comparing(Entry<Cell, Integer>::getValue))
                 .orElseThrow(() -> new RuntimeException("There should be someone")).getKey();
-    }
-
-    private static double[] getPageRank(double[][] adjacencyMatrix) {
-        int n = adjacencyMatrix.length;
-        double eps = 1.0e-8;
-        Random rnd = new Random();
-        double[] v = rnd.doubles(n).toArray();
-        double norm = vectorNorm(v, 2);
-        double d = .85;
-        v = div(v, norm);
-        double[][] mHat = new double[n][n];
-        double[] lastV = DoubleStream.generate(() -> 100).limit(n).toArray();
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
-            for (int j = 0; j < adjacencyMatrix[i].length; j++) {
-                mHat[i][j] = d * adjacencyMatrix[i][j] + (1 - d) / n;
-            }
-        }
-        while (norm(sub(v, lastV)) > eps) {
-            lastV = v;
-            v = matmul(mHat, v);
-        }
-        return v;
     }
 
     private static List<Ponto> getPointSet(List<Cell> all) {
@@ -478,9 +451,6 @@ public class GraphModelAlgorithms {
         paths.get(from).put(to, by);
     }
 
-    private static double[] sub(double[] v, double[] lastV) {
-        return IntStream.range(0, v.length).mapToDouble(i -> v[i] - lastV[i]).toArray();
-    }
 
 
 }

@@ -29,7 +29,7 @@ public class PictureTool extends PaintTool {
 	public SVGPath getArea() {
 		if (area == null) {
 			area = new SVGPath();
-			area.setStrokeWidth(.1);
+            area.setStrokeWidth(1. / 10);
 			area.setFill(Color.TRANSPARENT);
 			area.setStroke(Color.BLACK);
 			area.setManaged(false);
@@ -44,8 +44,8 @@ public class PictureTool extends PaintTool {
             icon = PictureOption.STAR_5.toSVG();
             icon.setContent(PictureOption.STAR_5.getCorrectedPath());
 			icon.setFill(Color.TRANSPARENT);
-            icon.setScaleX(0.75);
-            icon.setScaleY(0.75);
+            icon.setScaleX(3. / 4);
+            icon.setScaleY(3. / 4);
 			icon.setStroke(Color.BLACK);
 		}
 		return icon;

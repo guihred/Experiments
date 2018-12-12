@@ -49,7 +49,7 @@ public class PhotoViewer extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Photo Viewer");
         Group root = new Group();
-        Scene scene = new Scene(root, 551, 400);
+        Scene scene = new Scene(root, 500, 500);
         scene.getStylesheets().add(ResourceFXUtils.toExternalForm("photo-viewer.css"));
         primaryStage.setScene(scene);
         // set up the current image view area

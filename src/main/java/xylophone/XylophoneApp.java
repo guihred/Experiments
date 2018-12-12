@@ -2,7 +2,6 @@ package xylophone;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.*;
@@ -18,7 +17,10 @@ import utils.Xform;
 
 public class XylophoneApp extends Application {
 
-	private static final double X_START = -110.0;
+    private static final double END_ROTATE = 390D;
+    private static final Duration ONE_SECOND = Duration.seconds(1.0);
+    private static final Duration HALF_SECOND = Duration.seconds(0.5);
+    private static final double X_START = -110.0;
     private static final double X_OFFSET = 30.0;
     private static final double Y_POS = 25.0;
 	private static final double BAR_WIDTH = 22.0;
@@ -26,20 +28,20 @@ public class XylophoneApp extends Application {
     private Xform sceneRoot = new Xform();
     private Timeline animation = new SimpleTimelineBuilder()
             .addKeyFrame(Duration.ZERO,
-                    new KeyValue(sceneRoot.rotateYProperty(), 390D,
-                            Interpolator.TANGENT(Duration.seconds(0.5), 390D, Duration.seconds(0.5), 390D)))
+                    sceneRoot.rotateYProperty(), END_ROTATE,
+                    Interpolator.TANGENT(HALF_SECOND, END_ROTATE, HALF_SECOND, END_ROTATE))
             .addKeyFrame(Duration.seconds(2),
-                    new KeyValue(sceneRoot.rotateYProperty(), 30D,
-                            Interpolator.TANGENT(Duration.seconds(0.5), 30D, Duration.seconds(0.5), 30D)))
+                    sceneRoot.rotateYProperty(), X_OFFSET,
+                    Interpolator.TANGENT(HALF_SECOND, X_OFFSET, HALF_SECOND, X_OFFSET))
 
             .build();
     private Timeline animation2 = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
             .addKeyFrame(Duration.ZERO,
-                    new KeyValue(sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D)))
+                    sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(ONE_SECOND, 60D))
             .addKeyFrame(Duration.seconds(4),
-                    new KeyValue(sceneRoot.rotateXProperty(), 80D, Interpolator.TANGENT(Duration.seconds(1.0), 80D)))
+                    sceneRoot.rotateXProperty(), 80D, Interpolator.TANGENT(ONE_SECOND, 80D))
             .addKeyFrame(Duration.seconds(8),
-                    new KeyValue(sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(Duration.seconds(1.0), 60D)))
+                    sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(ONE_SECOND, 60D))
 			.build();
     // I didn't have any xylophone sounds so I added piano sounds :P
     private final AudioClip bar1Note = new AudioClip(ResourceFXUtils.toURL("waves/C.wav").toString());
@@ -52,23 +54,25 @@ public class XylophoneApp extends Application {
     private final AudioClip bar8Note = new AudioClip(ResourceFXUtils.toURL("waves/mC.wav").toString());
 
 	public Parent createContent() {
-        sceneRoot.setRx(45);
-        sceneRoot.setRy(30);
+        sceneRoot.setRx(9. * 5);
+        sceneRoot.setRy(X_OFFSET);
         sceneRoot.setScale(3);
 		Group rectangleGroup = new Group();
 		// Base1
         Box base1Cube = new Box(BAR_WIDTH * 11.5, BAR_DEPTH * 2, 10);
         base1Cube.setMaterial(new PhongMaterial(Color.DARKSALMON));
-        base1Cube.setTranslateX(X_START + 128);
+        final int leftPadding = 128;
+        base1Cube.setTranslateX(X_START + leftPadding);
         base1Cube.setTranslateZ(Y_POS + 20.0);
-		base1Cube.setTranslateY(11.0);
+        final double topPadding = 11.0;
+        base1Cube.setTranslateY(topPadding);
 
 		// Base2
         Box base2Cube = new Box(BAR_WIDTH * 11.5, BAR_DEPTH * 2, 10);
         base2Cube.setMaterial(new PhongMaterial(Color.DARKSALMON));
-        base2Cube.setTranslateX(X_START + 128);
+        base2Cube.setTranslateX(X_START + leftPadding);
         base2Cube.setTranslateZ(Y_POS - 20.0);
-		base2Cube.setTranslateY(11.0);
+        base2Cube.setTranslateY(topPadding);
 
         rectangleGroup.getChildren().addAll(base1Cube, base2Cube);
 

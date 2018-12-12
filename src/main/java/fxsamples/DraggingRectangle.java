@@ -18,20 +18,21 @@ import javafx.stage.Stage;
 
 public class DraggingRectangle extends Application {
 
+    private static final int SIZE = 800;
     @Override
     public void start(final Stage primaryStage) {
 
         StackPane root = new StackPane();
-        Rectangle rect = new Rectangle(0, 0, 400, 300);
+        Rectangle rect = new Rectangle(0, 0, SIZE / 2, SIZE / 2);
         rect.setManaged(false);
-        rect.setLayoutX(200);
-        rect.setLayoutY(200);
+        rect.setLayoutX(SIZE / 4);
+        rect.setLayoutY(SIZE / 4);
         root.getChildren().add(rect);
         createDraggableRectangle(rect);
         rect.setFill(Color.NAVY);
 
 
-        Scene scene = new Scene(root, 800, 800);
+        Scene scene = new Scene(root, SIZE, SIZE);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

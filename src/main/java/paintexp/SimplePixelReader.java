@@ -1,5 +1,7 @@
 package paintexp;
 
+import static paintexp.tool.PixelHelper.MAX_BYTE;
+
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -41,10 +43,10 @@ public final class SimplePixelReader implements PixelReader {
 
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				byte b = (byte) (onlyColor.getBlue() * 255);
-				byte r = (byte) (onlyColor.getRed() * 255);
-				byte g = (byte) (onlyColor.getGreen() * 255);
-				byte a = (byte) (onlyColor.getOpacity() * 255);
+                byte b = (byte) (onlyColor.getBlue() * MAX_BYTE);
+                byte r = (byte) (onlyColor.getRed() * MAX_BYTE);
+                byte g = (byte) (onlyColor.getGreen() * MAX_BYTE);
+                byte a = (byte) (onlyColor.getOpacity() * MAX_BYTE);
 				int k = i * scanlineStride + j * 4;
 				buffer[k++] = b;
 				buffer[k++] = g;
@@ -71,10 +73,10 @@ public final class SimplePixelReader implements PixelReader {
         ByteBuffer buffer2 = (ByteBuffer) buffer;
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
-                byte b = (byte) (onlyColor.getBlue() * 255);
-                byte r = (byte) (onlyColor.getRed() * 255);
-                byte g = (byte) (onlyColor.getGreen() * 255);
-                byte a = (byte) (onlyColor.getOpacity() * 255);
+                byte b = (byte) (onlyColor.getBlue() * MAX_BYTE);
+                byte r = (byte) (onlyColor.getRed() * MAX_BYTE);
+                byte g = (byte) (onlyColor.getGreen() * MAX_BYTE);
+                byte a = (byte) (onlyColor.getOpacity() * MAX_BYTE);
                 int k = i * scanlineStride + j * 4;
                 buffer2.put(k++, b);
                 buffer2.put(k++, g);

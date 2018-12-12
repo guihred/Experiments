@@ -22,7 +22,7 @@ public class EyedropTool extends PaintTool {
     public Rectangle getArea() {
         if (area == null) {
             area = new Rectangle(50, 50, Color.TRANSPARENT);
-            area.setStroke(Color.grayRgb(128));
+            area.setStroke(Color.GRAY);
         }
         return area;
     }

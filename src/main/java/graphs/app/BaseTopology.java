@@ -6,7 +6,8 @@ import utils.HasLogging;
 
 public abstract class BaseTopology implements HasLogging {
 
-	private static final char[] digits = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+    private static final int N_LETTERS = 26;
+    private static final char[] DIGITS = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 	protected Graph graph;
     private final String name;
@@ -43,18 +44,19 @@ public abstract class BaseTopology implements HasLogging {
     public static String cellIdentifier(int n) {
 		int i = -n;
 		/* Use the faster version */
-		char[] buf = new char[33];
-		int charPos = 32;
-		while (i <= -26) {
-			buf[charPos--] = digits[-(i % 26)];
-			i = i / 26;
+        final int maxBuf = 33;
+        char[] buf = new char[maxBuf];
+        int charPos = maxBuf - 1;
+        while (i <= -N_LETTERS) {
+            buf[charPos--] = DIGITS[-(i % N_LETTERS)];
+            i = i / N_LETTERS;
 		}
-		buf[charPos] = digits[-i];
-		return new String(buf, charPos, 33 - charPos);
+        buf[charPos] = DIGITS[-i];
+        return new String(buf, charPos, maxBuf - charPos);
 	}
 
     public static String identifier(int i) {
-		if (i > 25) {
+        if (i >= N_LETTERS) {
 			return cellIdentifier(i + 1);
 		}
 		return Objects.toString((char) ('A' + i));

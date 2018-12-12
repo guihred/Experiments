@@ -14,6 +14,7 @@ import javafx.util.Callback;
 
 public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>, SimpleTableViewBuilder<T>> {
 
+    private static final int COLUMN_DEFAULT_WIDTH = 150;
     private TableView<T> table;
 
     public SimpleTableViewBuilder() {
@@ -32,7 +33,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 			}
 
 		});
-    	column.setPrefWidth(150);
+        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
     	table.getColumns().add(column);
     	return this;
     }
@@ -41,7 +42,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             final Callback<TableColumn<T, V>, TableCell<T, V>> value) {
         final TableColumn<T, V> column = new TableColumn<>(columnName);
         column.setCellFactory(value);
-        column.setPrefWidth(150);
+        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         table.getColumns().add(column);
         return this;
     }
@@ -50,7 +51,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(
                 param -> new SimpleStringProperty(Objects.toString(propertyName.apply(param.getValue()))));
-        column.setPrefWidth(150);
+        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         table.getColumns().add(column);
         return this;
     }
@@ -58,7 +59,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
-        column.setPrefWidth(150);
+        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         table.getColumns().add(column);
         return this;
     }
@@ -66,7 +67,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName, final boolean editable) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
-        column.setPrefWidth(150);
+        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         column.setEditable(editable);
         table.getColumns().add(column);
         return this;
@@ -77,7 +78,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setCellFactory(value);
-        column.setPrefWidth(150);
+        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         table.getColumns().add(column);
         return this;
     }

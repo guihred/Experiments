@@ -190,7 +190,6 @@ public class GraphModel {
 
     public void pageRank() {
         GraphModelAlgorithms.pageRank(allCells, allEdges);
-        
     }
 
     public void removeAllCells() {

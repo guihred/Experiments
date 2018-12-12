@@ -68,7 +68,4 @@ public final class GoogleImagesUtils {
         return Collections.emptyList();
     }
 
-    public static void main(String[] args) {
-        displayCountByExtension();
-    }
 }

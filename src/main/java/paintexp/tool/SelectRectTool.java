@@ -151,9 +151,10 @@ public class SelectRectTool extends PaintTool {
     @Override
 	public void onSelected(final PaintModel model) {
 		model.getToolOptions().getChildren().clear();
-		List<Node> togglesAs = new SimpleToggleGroupBuilder()
-				.addToggle(getIconByURL("opaqueSelection.png", 30), SelectOption.OPAQUE)
-				.addToggle(getIconByURL("transparentSelection.png", 30), SelectOption.TRANSPARENT)
+        final int size = 30;
+        List<Node> togglesAs = new SimpleToggleGroupBuilder()
+                .addToggle(getIconByURL("opaqueSelection.png", size), SelectOption.OPAQUE)
+                .addToggle(getIconByURL("transparentSelection.png", size), SelectOption.TRANSPARENT)
 				.onChange((ob, old,
 						newV) -> onChangeOption(newV, model))
 				.select(option)

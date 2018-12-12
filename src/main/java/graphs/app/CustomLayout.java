@@ -28,20 +28,21 @@ public class CustomLayout implements Layout {
         Random rnd = new Random();
         cells.get(0).relocate(50, 50);
         Set<Cell> cellSet = cells.stream().collect(Collectors.toSet());
-		int bound = 150;
+        final int bound = 150;
 
 		for (Cell cell : cells) {
             List<Cell> edges = GraphModelAlgorithms.adjacents(cell, allEdges);
 			for (Cell cell2 : edges) {
                 if (cellSet.contains(cell2)) {
 					int i = 0;
-					do {
-						int nextInt = rnd.nextInt(300) - 180;
+                    final int maxAtempts = 20;
+                    do {
+                        int nextInt = rnd.nextInt(bound * 2) - 180;
                         double x = bound * (0.5 + Math.random()) * Math.cos(Math.toRadians(nextInt));
                         double y = bound * (0.5 + Math.random()) * Math.sin(Math.toRadians(nextInt));
 						cell2.relocate(x + cell.getLayoutX(), y + cell.getLayoutY());
 						cellSet.remove(cell2);
-					} while (i++ < 20 && GraphModelAlgorithms.anyIntersection(cells, cell2));
+                    } while (i++ < maxAtempts && GraphModelAlgorithms.anyIntersection(cells, cell2));
 				}
 			}
 

@@ -27,7 +27,7 @@ public class WandTool extends SelectRectTool {
 	private ImageView icon;
 	private int width;
 	private int height;
-	private IntegerProperty threshold = new SimpleIntegerProperty(255 / 20);
+    private IntegerProperty threshold = new SimpleIntegerProperty(PixelHelper.MAX_BYTE / 20);
 	private Slider thresholdSlider;
 
 
@@ -150,7 +150,8 @@ public class WandTool extends SelectRectTool {
 
     private Slider getThresholdSlider() {
 		if(thresholdSlider==null) {
-			thresholdSlider = new SimpleSliderBuilder(0, 255, 0).bindBidirectional(threshold).maxWidth(60).build();
+            thresholdSlider = new SimpleSliderBuilder(0, PixelHelper.MAX_BYTE, 0).bindBidirectional(threshold)
+                    .maxWidth(60).build();
 		}
 		return thresholdSlider;
 	}

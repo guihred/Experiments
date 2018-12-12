@@ -21,7 +21,7 @@ class BoundsDisplay extends Rectangle {
 
 	BoundsDisplay(BoundsPlayground boundsPlayground, final Shape shape) {
 		this.boundsPlayground = boundsPlayground;
-		setFill(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.35));
+        setFill(Color.LIGHTGRAY.deriveColor(1, 1, 1, 7. / 20));
 		setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
 		setStrokeType(StrokeType.INSIDE);
 		setStrokeWidth(3);

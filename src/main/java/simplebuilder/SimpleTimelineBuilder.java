@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -29,6 +30,12 @@ public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, Simp
 
     public <T> SimpleTimelineBuilder addKeyFrame(Duration time, WritableValue<T> target, T endValue) {
         timeline.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, endValue)));
+        return this;
+    }
+
+    public <T> SimpleTimelineBuilder addKeyFrame(Duration time, WritableValue<T> target, T endValue,
+            Interpolator interpolator) {
+        timeline.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, endValue, interpolator)));
         return this;
     }
 

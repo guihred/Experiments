@@ -67,7 +67,8 @@ public class PaintMain extends Application {
         paintModel.createImageVersion();
         root.setCenter(new ZoomableScrollPane(paintModel.getImageStack()));
 
-        HBox hBox = new HBox(50, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());
+        final int gap = 50;
+        HBox hBox = new HBox(gap, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());
         hBox.getChildren().forEach(e -> e.prefHeight(hBox.getPrefWidth() / hBox.getChildren().size()));
 
         hBox.setStyle("-fx-effect: innershadow(gaussian,gray,10,0.5,10,10);");
@@ -75,11 +76,13 @@ public class PaintMain extends Application {
 		StackPane st = new StackPane(pickedColor(paintModel.backColorProperty(), 20),
 				pickedColor(paintModel.frontColorProperty(), 10));
 		List<Color> colors = controller.getColors();
-		gridPane.addRow(0, colors.stream().limit(14).map(controller::newRectangle).toArray(Rectangle[]::new));
-		gridPane.addRow(1, colors.stream().skip(14).limit(14).map(controller::newRectangle)
+        int maxSize = colors.size() / 2;
+        gridPane.addRow(0, colors.stream().limit(maxSize).map(controller::newRectangle).toArray(Rectangle[]::new));
+        gridPane.addRow(1,
+                colors.stream().skip(maxSize).limit(maxSize).map(controller::newRectangle)
 						.toArray(Rectangle[]::new));
 		gridPane.setId("colorGrid");
-		root.setBottom(new VBox(30, new HBox(50, st, gridPane), hBox));
+        root.setBottom(new VBox(30, new HBox(gap, st, gridPane), hBox));
         BorderPane.setAlignment(hBox, Pos.CENTER);
         SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
         Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggleTooltip(e.getTool(), e.getTooltip()));
@@ -101,7 +104,8 @@ public class PaintMain extends Application {
         root.setLeft(toolbar);
 		stage.setX(0);
 		stage.setTitle("Paint");
-		Scene scene = new Scene(root, 800, 800);
+        final int width = 800;
+        Scene scene = new Scene(root, width, width);
 		scene.addEventHandler(KeyEvent.ANY, controller::handleKeyBoard);
 		stage.setScene(scene);
 		stage.show();
@@ -111,17 +115,18 @@ public class PaintMain extends Application {
     }
 
 	protected void displayImageVersions(final PaintModel paintModel) {
-		TableView<WritableImage> root2 = new SimpleTableViewBuilder<WritableImage>()
+        int tablePrefWidth = 600;
+        TableView<WritableImage> root2 = new SimpleTableViewBuilder<WritableImage>()
 				.addColumn("Image", (p, cell) -> cell.setGraphic(new ImageView(p)))
 				.items(paintModel.getImageVersions())
-                .prefWidth(600)
+                .prefWidth(tablePrefWidth)
 				.equalColumns().build();
         Stage stage = new Stage();
 		Scene value = new Scene(root2);
 
 		stage.setScene(value);
         stage.setX(1000);
-		root2.scrollTo(600);
+        root2.scrollTo(tablePrefWidth);
 		stage.show();
 	}
 

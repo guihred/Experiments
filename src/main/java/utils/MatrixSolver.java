@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import org.slf4j.Logger;
 
 /**
@@ -31,27 +32,31 @@ public final class MatrixSolver {
 	private MatrixSolver() {
 	}
 
-	public static double determinant(double[][] matrix) {
-		if (matrix.length == 1) {
-			return matrix[0][0];
-		}
-		double sum = 0;
-		for (int i = 0; i < matrix.length; i++) {
-			double[][] smaller = new double[matrix.length - 1][matrix.length - 1];
-			for (int a = 1; a < matrix.length; a++) {
-				for (int b = 0; b < matrix.length; b++) {
-					if (b < i) {
-						smaller[a - 1][b] = matrix[a][b];
-					} else if (b > i) {
-						smaller[a - 1][b - 1] = matrix[a][b];
-					}
-				}
-			}
-			int s = i % 2 == 0 ? 1 : -1;
-			sum += s * matrix[0][i] * determinant(smaller);
-		}
-		return sum;
-	}
+    public static double determinant(double[][] matrix) {
+        if (matrix.length == 1) {
+            return matrix[0][0];
+        }
+        double sum = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            double[][] smaller = new double[matrix.length - 1][matrix.length - 1];
+            for (int a = 1; a < matrix.length; a++) {
+                for (int b = 0; b < matrix.length; b++) {
+                    if (b < i) {
+                        smaller[a - 1][b] = matrix[a][b];
+                    } else if (b > i) {
+                        smaller[a - 1][b - 1] = matrix[a][b];
+                    }
+                }
+            }
+            int s = i % 2 == 0 ? 1 : -1;
+            sum += s * matrix[0][i] * determinant(smaller);
+        }
+        return sum;
+    }
+
+    public static double[] div(double[] v, double norm) {
+        return DoubleStream.of(v).map(e -> e / norm).toArray();
+    }
 
 	public static void main(String[] args) {
 		double[][] matr = { 
@@ -64,7 +69,7 @@ public final class MatrixSolver {
         LOGGER.info(solvedCoef);
 	}
 
-    public static double[] matmul(double[][] matrix, double[] v) {
+	public static double[] matmul(double[][] matrix, double[] v) {
         double[] a = new double[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             a[i] = 0;
@@ -78,6 +83,7 @@ public final class MatrixSolver {
     public  static double norm(double [] v) {
         return vectorNorm(v, 2);
     }
+
     public static void printMatrix(double[][] matr, double[] coef) {
         if (debug) {
             StringBuilder desc = new StringBuilder();
@@ -117,6 +123,9 @@ public final class MatrixSolver {
 
         return coef;
     }
+    public static double[] sub(double[] v, double[] lastV) {
+            return IntStream.range(0, v.length).mapToDouble(i -> v[i] - lastV[i]).toArray();
+        }
 
 	public static double vectorNorm(double[] a, final double p) {
         double n = 0;

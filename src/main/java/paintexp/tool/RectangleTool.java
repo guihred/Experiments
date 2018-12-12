@@ -60,7 +60,7 @@ public class RectangleTool extends PaintTool {
 				.add(getArcWidthSlider());
         getArea().arcHeightProperty().bind(getArea().arcWidthProperty());
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
-        rectangle.setStroke(Color.grayRgb(128));
+        rectangle.setStroke(Color.GRAY);
         rectangle.strokeProperty().bind(model.frontColorProperty());
         rectangle.arcWidthProperty().bind(getArea().arcWidthProperty());
         rectangle.arcHeightProperty().bind(getArea().arcWidthProperty());

@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 
 public class PixelHelper {
 
-    private static final int MAX_BYTE = 255;
+    public static final int MAX_BYTE = 255;
     private int a;
     private int r;
     private int i;

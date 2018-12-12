@@ -1,6 +1,7 @@
 package fxtests;
 
 import graphs.entities.ZoomableScrollPane;
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
@@ -107,14 +108,15 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 	private void testMenus(final Node stack) {
 		List<MenuButton> node = lookup(MenuButton.class::isInstance).queryAllAs(MenuButton.class).stream()
 				.collect(Collectors.toList());
-        PaintFileUtils.setDefaultFile(ResourceFXUtils.toFile("out"));
-        if (ResourceFXUtils.toFile("out/" + TEST_FILE).exists()) {
-            ResourceFXUtils.toFile("out/" + TEST_FILE).delete();
+        File defaultFile = ResourceFXUtils.toFile("out");
+        PaintFileUtils.setDefaultFile(defaultFile);
+        File file = new File(defaultFile, TEST_FILE);
+        if (file.exists()) {
+            file.delete();
         }
         lookup("#SelectRectTool").queryAll().forEach(this::clickOn);
         for (int i = 0; i < node.size(); i++) {
-			MenuButton e1 = node.get(i);
-			ObservableList<MenuItem> items = e1.getItems();
+			ObservableList<MenuItem> items = node.get(i).getItems();
             for (int j = items.size() - 1; j >= 0; j--) {
                 if (i == 0 && j > 0 && items.size() != j + 1) {
                     continue;

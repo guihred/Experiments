@@ -20,11 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.text.*;
 import paintexp.PaintModel;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleRectangleBuilder;
@@ -32,6 +28,8 @@ import simplebuilder.SimpleToggleGroupBuilder;
 
 public class TextTool extends PaintTool {
 
+    private static final Integer[] FONT_SIZES = new Integer[] { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36,
+            48, 72 };
     private static final String TIMES_NEW_ROMAN = "Times New Roman";
     private List<String> families = Font.getFamilies();
     private Text icon;
@@ -62,7 +60,7 @@ public class TextTool extends PaintTool {
     public Text getIcon() {
         if (icon == null) {
             icon = new Text("A");
-            icon.setFont(Font.font(TIMES_NEW_ROMAN, FontWeight.BOLD, 18));
+            icon.setStyle("-fx-font: bold 18 \"" + TIMES_NEW_ROMAN + "\";");
         }
         return icon;
     }
@@ -237,8 +235,7 @@ public class TextTool extends PaintTool {
 
 	private SimpleComboBoxBuilder<Integer> getFontSizeOption() {
 		if(fontSize==null) {
-			fontSize = new SimpleComboBoxBuilder<Integer>().items(8, 9, 10, 11, 12, 14, 16,
-			        18, 20, 22, 24, 26, 28, 36, 48, 72);
+            fontSize = new SimpleComboBoxBuilder<Integer>().items(FONT_SIZES);
 			fontSize.onChange((old, newV) -> onOptionsChanged()).select(5);
 
 		}

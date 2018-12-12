@@ -150,7 +150,7 @@ public class PaintController {
 
     private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
         if (e.getClickCount() > 1) {
-			ColorChoose dialog = new ColorChoose();
+			ColorChooser dialog = new ColorChooser();
             dialog.setCurrentColor(color);
             dialog.setOnUse(() -> {
 				Color customColor = dialog.getCurrentColor();
