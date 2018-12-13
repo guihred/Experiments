@@ -101,17 +101,6 @@ public class SngpcViewer extends Application {
         }), new SplitPane(build.build(), sideTable));
     }
 
-    private Map<String, String> newMap(String key, String value) {
-        Map<String, String> hashMap = new HashMap<String, String>() {
-            @Override
-            public String toString() {
-                return value;
-            }
-        };
-        hashMap.put(key, value);
-        return hashMap;
-    }
-
     private Text newText(Node item) {
         Text text = new Text(item.getNodeName());
         Font font = Font.getDefault();
@@ -139,10 +128,10 @@ public class SngpcViewer extends Application {
             list.add(newItem);
             if (keySet.size() - 1 == newValue.getChildren().size()) {
                 newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
-                        .forEach(e -> newItem.putAll(e));
+                        .forEach(newItem::putAll);
             } else {
                 newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
-                        .forEach(e -> list.add(e));
+                        .forEach(list::add);
             }
         }
     }
@@ -182,7 +171,18 @@ public class SngpcViewer extends Application {
 		}
     }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		launch(args);
 	}
+
+	private static Map<String, String> newMap(String key, String value) {
+        Map<String, String> hashMap = new HashMap<String, String>() {
+            @Override
+            public String toString() {
+                return value;
+            }
+        };
+        hashMap.put(key, value);
+        return hashMap;
+    }
 }

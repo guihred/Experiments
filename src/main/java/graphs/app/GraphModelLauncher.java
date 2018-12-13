@@ -3,10 +3,8 @@ package graphs.app;
 import graphs.entities.CellType;
 import graphs.entities.Edge;
 import graphs.entities.Graph;
-import graphs.entities.GraphModel;
 import java.util.Comparator;
 import java.util.List;
-import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.Observable;
@@ -22,13 +20,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 import utils.CommonsFX;
-import utils.HasLogging;
 
-public class GraphModelLauncher extends Application implements HasLogging {
+public class GraphModelLauncher extends Application {
     private final Graph graph = new Graph();
     private ConvergeLayout convergeLayout = new ConvergeLayout(graph);
     private ObservableList<Layout> layouts = FXCollections
@@ -39,7 +35,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
     private ComboBox<Layout> selectLayout = new SimpleComboBoxBuilder<Layout>().items(layouts).tooltip("Select Layout")
             .converter(Layout::getName).select(0).build();
     private Timeline timeline = new SimpleTimelineBuilder()
-            .addKeyFrame(new Duration(50.0), convergeLayout.getEventHandler()).cycleCount(Animation.INDEFINITE).build();
+            .addKeyFrame(50.0, convergeLayout.getEventHandler()).cycleCount(Timeline.INDEFINITE).build();
 
     @Override
     public void start(Stage primaryStage) {
@@ -88,27 +84,25 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
     private void addGraphComponents() {
 
-        GraphModel model = graph.getModel();
-
-        model.addCell("A", CellType.CIRCLE);
-        model.addCell("B", CellType.CIRCLE);
-        model.addCell("C", CellType.CIRCLE);
-        model.addCell("D", CellType.CIRCLE);
-        model.addCell("E", CellType.CIRCLE);
-        model.addCell("F", CellType.CIRCLE);
-        model.addCell("G", CellType.CIRCLE);
-        model.addBiEdge("A", "B", 1);
-        model.addBiEdge("A", "D", 1);
-        model.addBiEdge("A", "C", 1);
-        model.addBiEdge("B", "D", 1);
-        model.addBiEdge("B", "E", 1);
-        model.addBiEdge("C", "D", 1);
-        model.addBiEdge("C", "F", 1);
-        model.addBiEdge("D", "E", 1);
-        model.addBiEdge("D", "F", 1);
-        model.addBiEdge("D", "G", 1);
-        model.addBiEdge("E", "G", 1);
-        model.addBiEdge("F", "G", 1);
+        graph.getModel().addCell("A", CellType.CIRCLE);
+        graph.getModel().addCell("B", CellType.CIRCLE);
+        graph.getModel().addCell("C", CellType.CIRCLE);
+        graph.getModel().addCell("D", CellType.CIRCLE);
+        graph.getModel().addCell("E", CellType.CIRCLE);
+        graph.getModel().addCell("F", CellType.CIRCLE);
+        graph.getModel().addCell("G", CellType.CIRCLE);
+        graph.getModel().addBiEdge("A", "B", 1);
+        graph.getModel().addBiEdge("A", "D", 1);
+        graph.getModel().addBiEdge("A", "C", 1);
+        graph.getModel().addBiEdge("B", "D", 1);
+        graph.getModel().addBiEdge("B", "E", 1);
+        graph.getModel().addBiEdge("C", "D", 1);
+        graph.getModel().addBiEdge("C", "F", 1);
+        graph.getModel().addBiEdge("D", "E", 1);
+        graph.getModel().addBiEdge("D", "F", 1);
+        graph.getModel().addBiEdge("D", "G", 1);
+        graph.getModel().addBiEdge("E", "G", 1);
+        graph.getModel().addBiEdge("F", "G", 1);
         graph.endUpdate();
 
     }
@@ -124,8 +118,8 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
     private Button getPausePlayOption() {
         return CommonsFX.newButton("Pause/Play", ev -> {
-            Animation.Status status = timeline.getStatus();
-            if (status == Animation.Status.RUNNING) {
+            Timeline.Status status = timeline.getStatus();
+            if (status == Timeline.Status.RUNNING) {
                 timeline.stop();
             } else {
                 timeline.play();
@@ -196,12 +190,12 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
     private Button getTriangulateOption() {
         return CommonsFX.newButton("Triangulate", ev -> {
-            Animation.Status status = timeline.getStatus();
-            if (status == Animation.Status.RUNNING) {
+            Timeline.Status status = timeline.getStatus();
+            if (status == Timeline.Status.RUNNING) {
                 timeline.stop();
             }
             graph.triangulate();
-            if (status == Animation.Status.RUNNING) {
+            if (status == Timeline.Status.RUNNING) {
                 timeline.play();
             }
         });
@@ -209,8 +203,8 @@ public class GraphModelLauncher extends Application implements HasLogging {
 
     private Button getVoronoiOptions() {
         return CommonsFX.newButton("Voronoi", ev -> {
-            Animation.Status status = timeline.getStatus();
-            if (status == Animation.Status.RUNNING) {
+            Timeline.Status status = timeline.getStatus();
+            if (status == Timeline.Status.RUNNING) {
                 timeline.stop();
             }
             graph.voronoi();

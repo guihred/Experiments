@@ -3,6 +3,7 @@ package fxtests;
 import graphs.app.GraphModelLauncher;
 import graphs.entities.Cell;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -34,7 +35,9 @@ public class FXEngineGraphTest extends ApplicationTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void verifyAllTopologies() throws Exception {
-        Set<ComboBox> queryButtons = lookup(".combo-box").queryAllAs(ComboBox.class);
+        Set<ComboBox> queryButtons = lookup(".combo-box").queryAllAs(ComboBox.class).stream()
+                .filter(ComboBox::isVisible)
+                .collect(Collectors.toSet());
         Set<Node> queryAll = lookup("Go").queryAll();
         for (ComboBox e : queryButtons) {
 

@@ -18,7 +18,12 @@ public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, Simp
 		timeline = animation;
 	}
 
-	public SimpleTimelineBuilder addKeyFrame(Duration time, EventHandler<ActionEvent> eventHandler) {
+	public SimpleTimelineBuilder addKeyFrame(double time, EventHandler<ActionEvent> eventHandler) {
+	    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(time), eventHandler));
+	    return this;
+	}
+
+    public SimpleTimelineBuilder addKeyFrame(Duration time, EventHandler<ActionEvent> eventHandler) {
         timeline.getKeyFrames().add(new KeyFrame(time, eventHandler));
         return this;
     }

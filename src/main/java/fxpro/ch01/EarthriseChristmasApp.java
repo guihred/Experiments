@@ -4,23 +4,23 @@ import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
-import javafx.geometry.VPos;
+import javafx.beans.binding.Bindings;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTextBuilder;
 import utils.CrawlerTask;
+import utils.ResourceFXUtils;
 
 public class EarthriseChristmasApp extends Application {
+    private static final double WRAPPING = 400;
+
     @Override
     public void start(Stage stage) {
         String message
@@ -41,11 +41,7 @@ public class EarthriseChristmasApp extends Application {
         Text textRef = new SimpleTextBuilder()
         		.text(message)
         		.layoutY(100)
-        		.textOrigin(VPos.TOP)
-        		.textAlignment(TextAlignment.JUSTIFY)
-        		.wrappingWidth(400)
-        		.fill(Color.rgb(187, 195, 107))
-        		.font(Font.font("SansSerif", FontWeight.BOLD, 24))
+                .wrappingWidth(WRAPPING)
         		.build();
  
         
@@ -55,19 +51,23 @@ public class EarthriseChristmasApp extends Application {
 		transTransition.setCycleCount(Animation.INDEFINITE);
 
         final ImageView image = new ImageView(new Image("http://projavafx.com/images/earthrise.jpg"));
-
+        image.setPreserveRatio(true);
         final Group group = new Group(textRef);
-        group.setLayoutX(50);
+        group.setManaged(false);
         group.setLayoutY(180);
-        group.setClip(new Rectangle(430, 85));
-
-        Scene scene = new Scene(new Group(image, group));
-        stage.setWidth(516);
-        stage.setHeight(387);
+        Rectangle value = new Rectangle(WRAPPING + 10, 100);
+        group.setClip(value);
+        Scene scene = new Scene(new StackPane(image, group));
+        image.fitWidthProperty().bind(scene.widthProperty());
+        group.setLayoutX(image.getBoundsInParent().getMinX() + image.getBoundsInParent().getWidth() / 2 - WRAPPING / 2);
+        group.layoutXProperty().bind(Bindings.createDoubleBinding(
+                () -> image.getBoundsInParent().getMinX() + image.getBoundsInParent().getWidth() / 2 - WRAPPING / 2,
+                image.boundsInParentProperty()));
         stage.setScene(scene);
         stage.setTitle("Earthrise Christmas");
         stage.show();
         transTransition.play();
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("earthRiseChristmas.css"));
     }
 
     public static void main(String[] args) {

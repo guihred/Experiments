@@ -16,15 +16,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class FormValidation extends Application implements HasLogging {
-	private static final String MY_PASS = "senha";
+    private static final int WIDTH = 320;
+    private static final int HEIGHT = 112;
+    private static final String MY_PASS = "senha";
 	private static final BooleanProperty GRANTED_ACCESS = new SimpleBooleanProperty(false);
 	private static final int MAX_ATTEMPTS = 3;
 	private final IntegerProperty attempts = new SimpleIntegerProperty(0);
@@ -36,52 +37,42 @@ public class FormValidation extends Application implements HasLogging {
 		// create a transparent stage
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		Group root = new Group();
-		Scene scene = new Scene(root, 320, 112, Color.rgb(0, 0, 0, 0));
+        Scene scene = new Scene(root, WIDTH, HEIGHT, Color.TRANSPARENT);
 		primaryStage.setScene(scene);
 		// all text, borders, svg paths will use white
-		Color foregroundColor = Color.rgb(255, 255, 255, .9);
 		// rounded rectangular background
-		Rectangle background = new Rectangle(320, 112);
+        Rectangle background = new Rectangle(WIDTH, HEIGHT);
 		background.setX(0);
 		background.setY(0);
-		background.setArcHeight(15);
-		background.setArcWidth(15);
-		background.setFill(Color.rgb(0, 0, 0, .55));
-		background.setStrokeWidth(1.5);
-		background.setStroke(foregroundColor);
+        String styleClass = "whitish";
+        background.getStyleClass().add(styleClass);
 		// a read only field holding the user name.
 		Text userName = new Text();
-		userName.setFont(Font.font("SanSerif", FontWeight.BOLD, 30));
-		userName.setFill(foregroundColor);
+        userName.getStyleClass().add(styleClass);
 		userName.setSmooth(true);
 		userName.textProperty().bind(user.userNameProperty());
 		// wrap text node
 		HBox userNameCell = new HBox();
-		userNameCell.prefWidthProperty().bind(primaryStage.widthProperty().subtract(45));
 		userNameCell.getChildren().add(userName);
 		// pad lock
 		SVGPath padLock = new SVGPath();
-		padLock.setFill(foregroundColor);
+        padLock.getStyleClass().add(styleClass);
 		padLock.setContent("M24.875,15.334v-4.876c0-4.894-3.981-8.875-8.875-8.875s-8.875,3.981-8.875,8.875v4.876H5.042v15.083h21.916V15.334H24.875zM10.625,10.458c0-2.964,2.411-5.375,5.375-5.375s5.375,2.411,5.375,5.375v4.876h-10.75V10.458zM18.272,26.956h-4.545l1.222-3.667c-0.782-0.389-1.324-1.188-1.324-2.119c0-1.312,1.063-2.375,2.375-2.375s2.375,1.062,2.375,2.375c0,0.932-0.542,1.73-1.324,2.119L18.272,26.956z");
 		// first row
 		HBox row1 = new HBox();
 		row1.getChildren().addAll(userNameCell, padLock);
+
 		// password text field
 		PasswordField passwordField = new PasswordField();
-		passwordField.setFont(Font.font("SanSerif", 20));
 		passwordField.setPromptText("Password");
-		passwordField.setStyle("-fx-text-fill:black; -fx-prompt-text-fill:gray; -fx-highlight-text-fill:black; -fx-highlight-fill: gray; -fx-background-color: rgba(255, 255, 255, .80); ");
-		passwordField.prefWidthProperty().bind(primaryStage.widthProperty().subtract(55));
 		user.passwordProperty().bind(passwordField.textProperty());
 		// error icon
 		SVGPath deniedIcon = new SVGPath();
-		deniedIcon.setFill(Color.rgb(255, 0, 0, .9));
-		deniedIcon.setStroke(Color.WHITE);
+        deniedIcon.setId("denied");
 		deniedIcon.setContent("M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z");
 		deniedIcon.setVisible(false);
 		SVGPath grantedIcon = new SVGPath();
-		grantedIcon.setFill(Color.rgb(0, 255, 0, .9));
-		grantedIcon.setStroke(Color.WHITE);
+        grantedIcon.setId("granted");
 		grantedIcon.setContent("M2.379,14.729 5.208,11.899 12.958,19.648 25.877,6.733 28.707,9.561 12.958,25.308z");
 		grantedIcon.setVisible(false);
 		StackPane accessIndicator = new StackPane();
@@ -122,10 +113,9 @@ public class FormValidation extends Application implements HasLogging {
 		});
 		VBox formLayout = new VBox(4);
 		formLayout.getChildren().addAll(row1, row2);
-		formLayout.setLayoutX(12);
-		formLayout.setLayoutY(12);
 		root.getChildren().addAll(background, formLayout);
 		primaryStage.show();
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("formValidation.css"));
 	}
 
 	public static void main(String[] args) {

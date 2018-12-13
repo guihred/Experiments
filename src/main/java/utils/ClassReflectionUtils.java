@@ -151,7 +151,12 @@ public final class ClassReflectionUtils {
             HasLogging.log(1).info("{} = {} = \"{}\"", arg1, node.getStyleClass(), ((Labeled) node).getText());
         }
 
-        HasLogging.log(1).info("{} = {}", arg1, node.getStyleClass());
+        String id = node.getId();
+        if (id != null) {
+            HasLogging.log(1).info("{} = #{}.{}", arg1, id, node.getStyleClass());
+        } else {
+            HasLogging.log(1).info("{} = .{}", arg1, node.getStyleClass());
+        }
         if(node instanceof Parent) {
             ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
             childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(n+"-",t));
