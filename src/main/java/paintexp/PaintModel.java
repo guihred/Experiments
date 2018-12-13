@@ -159,7 +159,8 @@ public class PaintModel {
     public Rectangle resetToolOptions() {
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.GRAY);
-		toolOptions.setMaxWidth(150);
+        final int maxWidth = 150;
+        toolOptions.setMaxWidth(maxWidth);
         toolOptions.setSpacing(10);
         toolOptions.getChildren().clear();
         toolOptions.getChildren().add(rectangle);

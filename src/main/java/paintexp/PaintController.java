@@ -50,20 +50,20 @@ public class PaintController {
 
     public List<Color> getColors() {
         List<Color> availableColors = new ArrayList<>();
-        int a = 360 / 12;
-        for (int i = 0; i < 128; i += 64) {
-            availableColors.add(Color.grayRgb(i));
+        final double step = 30;
+        for (int i = 0; i < 2; i++) {
+            availableColors.add(Color.grayRgb(i * 64));
         }
-        for (int i = 0; i < 360; i += a) {
-            availableColors.add(Color.hsb(i, 1, 1));
+        for (int i = 0; i < 12; i++) {
+            availableColors.add(Color.hsb(i * step, 1, 1));
         }
         availableColors.add(Color.WHITE);
         availableColors.add(Color.grayRgb(128));
-        for (int i = 0; i < 360 / 2; i += a) {
-            availableColors.add(Color.hsb(i, 1, 0.5));
+        for (int i = 0; i < 6; i++) {
+            availableColors.add(Color.hsb(i * step, 1, 0.5));
         }
-        for (int i = 360 / 2; i < 330; i += a) {
-            availableColors.add(Color.hsb(i, .5, 1));
+        for (int i = 6; i < 11; i++) {
+            availableColors.add(Color.hsb(i * step, .5, 1));
         }
         availableColors.add(Color.TRANSPARENT.invert());
         return availableColors;

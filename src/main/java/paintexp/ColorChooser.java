@@ -27,7 +27,8 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class ColorChooser extends Application {
-	private static final int CURRENT_COLOR_SIZE = 64;
+    private static final int MAX_ANGLE = 359;
+    private static final int CURRENT_COLOR_SIZE = 64;
 	private static final String PERCENT_FORMAT = "%.0f%%";
 	private final ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
 	private final ObjectProperty<Color> initialColor = new SimpleObjectProperty<>(Color.WHITE);
@@ -37,7 +38,7 @@ public class ColorChooser extends Application {
 	private Runnable onSave;
     private Circle circle = new Circle(2, Color.BLACK);
 
-    private final Slider hueSlider = new SimpleSliderBuilder(0, 359, 0).onChange(
+    private final Slider hueSlider = new SimpleSliderBuilder(0, MAX_ANGLE, 0).onChange(
             (o, old, newV) -> currentColor.set(Color.hsb(newV.doubleValue(), currentColor.get().getSaturation(),
                     currentColor.get().getBrightness(), currentColor.get().getOpacity())))
             .build();
@@ -97,7 +98,7 @@ public class ColorChooser extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception {
         FlowPane root = new FlowPane();
-        SimpleSliderBuilder simpleSliderBuilder = new SimpleSliderBuilder(0, 359, 0);
+        SimpleSliderBuilder simpleSliderBuilder = new SimpleSliderBuilder(0, MAX_ANGLE, 0);
         mainHueslider = simpleSliderBuilder.build();
         mainHueslider.setId("hueSlider");
         BackgroundRepeat repeatX = BackgroundRepeat.NO_REPEAT;
@@ -133,7 +134,8 @@ public class ColorChooser extends Application {
 						}))));
         drawImage();
         simpleSliderBuilder.onChange((a, b, c) -> drawImage());
-        Scene value = new Scene(root, 600, 300);
+        final int width = 600;
+        Scene value = new Scene(root, width, width / 2);
         primaryStage.setScene(value);
         primaryStage.show();
         mainHueslider.prefHeightProperty().bind(rectangle.widthProperty());

@@ -77,7 +77,8 @@ public class PdfReader extends Application implements HasLogging {
         root.prefWidthProperty().bind(root2.widthProperty().divide(2));
         imagesTable.prefWidthProperty().bind(root2.widthProperty().divide(2));
         root2.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(root2, 500, 250, Color.WHITE);
+        final int width = 500;
+        Scene scene = new Scene(root2, width, width / 2, Color.WHITE);
         primaryStage.setScene(scene);
         primaryStage.show();
 

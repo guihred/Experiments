@@ -61,7 +61,7 @@ public final class CommonsFX {
 
 
     public static List<Color> generateRandomColors(int size) {
-        int maxByte = 255;
+        final int maxByte = 255;
         int max = 256;
         List<Color> availableColors = new ArrayList<>();
         int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);

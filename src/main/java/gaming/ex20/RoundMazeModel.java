@@ -55,48 +55,46 @@ public class RoundMazeModel {
 	}
 
 
-    public static void draw(RoundMazeSquare sq, GraphicsContext gc) {
-        double length = -360.0 / MAZE_HEIGHT;
-        double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / MAZE_WIDTH / 2;
-        double angle = length * (sq.j + 1);
-        double m = (sq.i + 2) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
-        double b = (sq.i + 1) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
-        if (!sq.isSouth()) {
-            gc.strokeArc(center - m, center - m, m * 2, m * 2, -angle, length, ArcType.OPEN);
-        }
-        if (!sq.isNorth()) {
-            gc.strokeArc(center - b, center - b, b * 2, b * 2, -angle, length, ArcType.OPEN);
-        }
-        if (!sq.isEast()) {
-            double sin = Math.sin(Math.toRadians(angle));
-            double cos = Math.cos(Math.toRadians(angle));
-            gc.strokeLine(center + cos * m, center + sin * m, center + cos * b, center + sin * b);
-        }
-        if (sq.isCenter()) {
-            angle = length * sq.j;
-            double sin = Math.sin(Math.toRadians(angle + length / 2));
-            double cos = Math.cos(Math.toRadians(angle + length / 2));
-            m = (sq.i + 1.5) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
-            gc.setFill(Color.RED);
-
-            gc.fillOval(center + cos * m, center + sin * m, 5, 5);
-        }
-    }
-	private void initializeMaze() {
-        for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
-				maze[i][j] = new RoundMazeSquare(i, j);
-				if (i == 0) {
-					maze[i][j].setNorth(false);
-				}
-                if (i == MAZE_WIDTH - 1) {
-					maze[i][j].setSouth(false);
-				}
+    private void goCenter() {
+		if (maze[x][y].isNorth()) {
+			if (x > 0) {
+				x = (x - 1 + RoundMazeModel.MAZE_WIDTH) % RoundMazeModel.MAZE_WIDTH;
+			} else {
+				maze[x][y].setCenter(false);
+				draw();
+				CommonsFX.displayDialog("You Won", "_Reset", () -> {
+					initializeMaze();
+					angle.setAngle(90);
+					x = MAZE_WIDTH - 1;
+					y = MAZE_HEIGHT - 1;
+					maze[MAZE_WIDTH - 1][MAZE_HEIGHT - 1].setCenter(true);
+					RoundMazeHandler.createMaze(maze);
+					draw();
+				});
 			}
 		}
-	}
+    }
+	private void goLeft() {
+        if (maze[x][y].isWest()) {
+            y = (y - 1 + RoundMazeModel.MAZE_HEIGHT) % RoundMazeModel.MAZE_HEIGHT;
+            angle.setAngle(angle.getAngle() - 360. / MAZE_HEIGHT);
+        }
+    }
 
-	private void handleKey(KeyEvent event) {
+	private void goOutter() {
+        if (x < RoundMazeModel.MAZE_WIDTH - 1 && maze[x][y].isSouth()) {
+            x = (x + 1) % RoundMazeModel.MAZE_WIDTH;
+        }
+    }
+
+    private void goRight() {
+        if (maze[x][y].isEast()) {
+            y = (y + 1) % RoundMazeModel.MAZE_HEIGHT;
+            angle.setAngle(angle.getAngle() + 360. / MAZE_HEIGHT);
+        }
+    }
+
+    private void handleKey(KeyEvent event) {
         maze[x][y].setCenter(false);
 		final KeyCode code = event.getCode();
 		switch (code) {
@@ -126,48 +124,50 @@ public class RoundMazeModel {
 		draw();
 	}
 
-    private void goLeft() {
-        if (maze[x][y].isWest()) {
-            y = (y - 1 + RoundMazeModel.MAZE_HEIGHT) % RoundMazeModel.MAZE_HEIGHT;
-			angle.setAngle(angle.getAngle() - 360 / MAZE_HEIGHT);
-        }
-    }
-
-    private void goRight() {
-        if (maze[x][y].isEast()) {
-            y = (y + 1) % RoundMazeModel.MAZE_HEIGHT;
-			angle.setAngle(angle.getAngle() + 360 / MAZE_HEIGHT);
-        }
-    }
-
-    private void goOutter() {
-        if (x < RoundMazeModel.MAZE_WIDTH - 1 && maze[x][y].isSouth()) {
-            x = (x + 1) % RoundMazeModel.MAZE_WIDTH;
-        }
-    }
-
-    private void goCenter() {
-		if (maze[x][y].isNorth()) {
-			if (x > 0) {
-				x = (x - 1 + RoundMazeModel.MAZE_WIDTH) % RoundMazeModel.MAZE_WIDTH;
-			} else {
-				maze[x][y].setCenter(false);
-				draw();
-				CommonsFX.displayDialog("You Won", "_Reset", () -> {
-					initializeMaze();
-					angle.setAngle(90);
-					x = MAZE_WIDTH - 1;
-					y = MAZE_HEIGHT - 1;
-					maze[MAZE_WIDTH - 1][MAZE_HEIGHT - 1].setCenter(true);
-					RoundMazeHandler.createMaze(maze);
-					draw();
-				});
+    private void initializeMaze() {
+        for (int i = 0; i < MAZE_WIDTH; i++) {
+            for (int j = 0; j < MAZE_HEIGHT; j++) {
+				maze[i][j] = new RoundMazeSquare(i, j);
+				if (i == 0) {
+					maze[i][j].setNorth(false);
+				}
+                if (i == MAZE_WIDTH - 1) {
+					maze[i][j].setSouth(false);
+				}
 			}
 		}
-    }
+	}
 
-	public static RoundMazeModel create(Scene scene, Canvas canvas) {
+    public static RoundMazeModel create(Scene scene, Canvas canvas) {
 		return new RoundMazeModel(scene, canvas);
 	}
+
+	public static void draw(RoundMazeSquare sq, GraphicsContext gc) {
+        double length = -360.0 / MAZE_HEIGHT;
+        double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / MAZE_WIDTH / 2;
+        double angle = length * (sq.j + 1);
+        double m = (sq.i + 2) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
+        double b = (sq.i + 1) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
+        if (!sq.isSouth()) {
+            gc.strokeArc(center - m, center - m, m * 2, m * 2, -angle, length, ArcType.OPEN);
+        }
+        if (!sq.isNorth()) {
+            gc.strokeArc(center - b, center - b, b * 2, b * 2, -angle, length, ArcType.OPEN);
+        }
+        if (!sq.isEast()) {
+            double sin = Math.sin(Math.toRadians(angle));
+            double cos = Math.cos(Math.toRadians(angle));
+            gc.strokeLine(center + cos * m, center + sin * m, center + cos * b, center + sin * b);
+        }
+        if (sq.isCenter()) {
+            angle = length * sq.j;
+            double sin = Math.sin(Math.toRadians(angle + length / 2));
+            double cos = Math.cos(Math.toRadians(angle + length / 2));
+            m = (sq.i + 3./2) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
+            gc.setFill(Color.RED);
+
+            gc.fillOval(center + cos * m, center + sin * m, 5, 5);
+        }
+    }
 
 }

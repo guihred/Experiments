@@ -19,6 +19,7 @@ import simplebuilder.SimpleSliderBuilder;
 import utils.CommonsFX;
 
 public class PaintImageUtils {
+    private static final int PREF_WIDTH = 300;
     public static void adjustColors(PaintModel paintModel) {
         Stage stage = new Stage();
         VBox root = new VBox();
@@ -26,7 +27,7 @@ public class PaintImageUtils {
         PixelReader reader = original.getPixelReader();
         WritableImage image = new WritableImage(reader, (int) original.getWidth(), (int) original.getHeight());
         ImageView view = new ImageView(image);
-        view.setFitWidth(300);
+        view.setFitWidth(PREF_WIDTH);
         view.setPreserveRatio(true);
         root.getChildren().add(view);
         DoubleProperty saturate = new SimpleDoubleProperty(0);

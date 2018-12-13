@@ -18,7 +18,9 @@ import simplebuilder.SimpleToggleGroupBuilder;
 
 public class PictureTool extends PaintTool {
 
-	private SVGPath icon;
+    private static final int PREF_WIDTH = 65;
+
+    private SVGPath icon;
 
 	private SVGPath area;
 	private int initialX;
@@ -98,8 +100,9 @@ public class PictureTool extends PaintTool {
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(value);
         scrollPane.setFitToWidth(true);
-		scrollPane.setPrefWidth(65);
-		scrollPane.setMaxSize(200, 200);
+        scrollPane.setPrefWidth(PREF_WIDTH);
+        final int maxSize = 200;
+        scrollPane.setMaxSize(maxSize, maxSize);
 		model.getToolOptions().getChildren().addAll(scrollPane);
     }
 

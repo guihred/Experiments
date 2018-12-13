@@ -68,16 +68,17 @@ public class GraphModelLauncher extends Application implements HasLogging {
             graph.getModel().pageRank();
         }));
 
-        buttons.getChildren().add(getTopologyOptions());
         buttons.getChildren().add(getLayoutOptions());
         buttons.getChildren().add(getShortestPathOptions());
+        buttons.getChildren().add(getTopologyOptions());
         buttons.getChildren().add(getPausePlayOption());
         buttons.getChildren().add(CommonsFX.newCheck("Show Weight", Graph.SHOW_WEIGHT));
 
         root.setLeft(buttons);
         root.setCenter(graph.getScrollPane());
 
-        Scene scene = new Scene(root, 800, 600);
+        final int width = 800;
+        Scene scene = new Scene(root, width, width);
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -166,15 +167,22 @@ public class GraphModelLauncher extends Application implements HasLogging {
     private VBox getTopologyOptions() {
         DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
         final int netSize = 30;
+        PackageTopology packageTopology = new PackageTopology(graph);
         ObservableList<BaseTopology> topologies = FXCollections
                 .observableArrayList(delaunayTopology, new RandomTopology(netSize, graph),
                         new TreeTopology(netSize, graph), new CircleTopology(netSize, graph),
                         new GabrielTopology(netSize, graph), new WordTopology(netSize * 3, graph),
-                        new PackageTopology(graph), new NetworkTopology(graph), new ProjectTopology(graph))
+                        packageTopology, new NetworkTopology(graph), new ProjectTopology(graph))
                 .sorted(Comparator.comparing(BaseTopology::getName));
 
+        ComboBox<String> packageSelect = new SimpleComboBoxBuilder<String>().items(packageTopology.getPackages())
+                .tooltip("Package").onChange((old, newV) -> packageTopology.setChosenPackageName(newV)).select(0)
+                .build();
         ComboBox<BaseTopology> topologySelect = new SimpleComboBoxBuilder<BaseTopology>().items(topologies)
                 .tooltip("Select Topology").converter(BaseTopology::getName).build();
+
+        packageSelect.visibleProperty()
+                .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(packageTopology));
 
         topologySelect.getSelectionModel().select(0);
         HBox topologyOptions = new HBox(topologySelect, CommonsFX.newButton("Go", e -> {
@@ -183,7 +191,7 @@ public class GraphModelLauncher extends Application implements HasLogging {
                 selectedItem.execute();
             }
         }));
-        return new VBox(new Text("Topology"), topologyOptions);
+        return new VBox(new Text("Topology"), topologyOptions, packageSelect);
     }
 
     private Button getTriangulateOption() {

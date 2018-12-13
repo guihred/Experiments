@@ -115,7 +115,7 @@ public class PaintMain extends Application {
     }
 
 	protected void displayImageVersions(final PaintModel paintModel) {
-        int tablePrefWidth = 600;
+        final int tablePrefWidth = 600;
         TableView<WritableImage> root2 = new SimpleTableViewBuilder<WritableImage>()
 				.addColumn("Image", (p, cell) -> cell.setGraphic(new ImageView(p)))
 				.items(paintModel.getImageVersions())

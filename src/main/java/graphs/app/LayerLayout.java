@@ -67,7 +67,7 @@ public class LayerLayout implements Layout {
         List<List<Cell>> orderedCellGroups = cellByColor.entrySet().stream()
                 .sorted(Comparator.comparing(e -> numberOfEdges(e, addedEdges)))
                 .map(Entry<Color, List<Cell>>::getValue).collect(Collectors.toList());
-        double bound = 800;
+        final double bound = 800;
         double layerHeight = bound / (orderedCellGroups.size() + 1);
         double y = layerHeight;
         for (List<Cell> list : orderedCellGroups) {
