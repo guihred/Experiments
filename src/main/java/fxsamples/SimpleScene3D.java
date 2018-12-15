@@ -47,8 +47,10 @@ public class SimpleScene3D extends Application {
 		// Step 1c: Translate and Rotate primitive into position
 
 		cylinder.setRotationAxis(Rotate.X_AXIS);
-		cylinder.setRotate(45);
-		cylinder.setTranslateZ(-200);
+        final int defaultRotation = 45;
+        cylinder.setRotate(defaultRotation);
+        final int defaultDepth = 200;
+        cylinder.setTranslateZ(-defaultDepth);
 		// End Step 1c
 
 		// Step 1d: Add and Transform more primitives
@@ -64,13 +66,14 @@ public class SimpleScene3D extends Application {
 		final Sphere sphere = new Sphere(50);
 		sphere.setMaterial(redMaterial);
 		cube.setRotationAxis(Rotate.Y_AXIS);
-		cube.setRotate(45);
-		cube.setTranslateX(-150);
-		cube.setTranslateY(-150);
-		cube.setTranslateZ(150);
-		sphere.setTranslateX(150);
-		sphere.setTranslateY(150);
-        sphere.setTranslateZ(-150);
+        cube.setRotate(defaultRotation);
+        final int distance = 150;
+        cube.setTranslateX(-distance);
+        cube.setTranslateY(-distance);
+        cube.setTranslateZ(distance);
+        sphere.setTranslateX(distance);
+        sphere.setTranslateY(distance);
+        sphere.setTranslateZ(-distance);
 
 		// End Step 1d
 
@@ -84,8 +87,8 @@ public class SimpleScene3D extends Application {
         Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
         scene.setFill(Color.BLACK);
         PerspectiveCamera camera = new PerspectiveCamera(true);
-        camera.setNearClip(0.1);
-        camera.setFarClip(10000.0);
+        camera.setNearClip(1. / 10);
+        camera.setFarClip(1000. * 10);
         camera.setTranslateZ(-1000);
         scene.setCamera(camera);
         sceneRoot.getChildren().addAll(cylinder, cube, sphere);

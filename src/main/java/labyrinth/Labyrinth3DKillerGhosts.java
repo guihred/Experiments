@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -60,11 +55,11 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
 		camera = new PerspectiveCamera(true);
-		camera.setNearClip(0.1);
+        camera.setNearClip(1. / 10);
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
 		subScene.setCamera(camera);
-		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+        PointLight light = new PointLight(lightColor);
 		light.translateXProperty().bind(camera.translateXProperty());
 		light.translateYProperty().bind(camera.translateYProperty());
 		light.translateZProperty().bind(camera.translateZProperty());
@@ -138,8 +133,8 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		}
 
 
-		animal.setScaleX(0.4);
-        animal.setScaleZ(0.4);
+        animal.setScaleX(4. / 10);
+        animal.setScaleZ(4. / 10);
 		animal.setScaleY(1);
 
 		return animal;

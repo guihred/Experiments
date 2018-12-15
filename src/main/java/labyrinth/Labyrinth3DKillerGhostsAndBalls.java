@@ -6,12 +6,7 @@ import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
@@ -37,7 +32,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	};
 	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
 
-	private static final int SIZE = 60;
+    private static final double SIZE = 60;
 
     private Sphere[][] balls = new Sphere[MAPA.length][MAPA[0].length];
 
@@ -84,7 +79,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		subScene.setCamera(camera);
 
 
-		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+        PointLight light = new PointLight(Color.GRAY);
 		light.translateXProperty().bind(camera.translateXProperty());
 		light.translateYProperty().bind(camera.translateYProperty());
 		light.translateZProperty().bind(camera.translateZProperty());
@@ -136,9 +131,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		animal.setMaterial(sample);
 		animal.setTranslateY(14);
 
-        int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
+        int posicaoInicialZ = random.nextInt(MAPA[0].length * (int) SIZE);
 		animal.setTranslateZ(posicaoInicialZ);
-        int posicaoInicialX = random.nextInt(MAPA.length * SIZE);
+        int posicaoInicialX = random.nextInt(MAPA.length * (int) SIZE);
 		animal.setTranslateX(posicaoInicialX);
 		while (checkColision(animal.getBoundsInParent())) {
 			animal.setTranslateZ(animal.getTranslateZ() + 1);

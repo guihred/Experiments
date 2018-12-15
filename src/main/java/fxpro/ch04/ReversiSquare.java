@@ -18,6 +18,7 @@ import simplebuilder.SimpleFadeTransitionBuilder;
 import simplebuilder.SimpleRegionBuilder;
 
 public class ReversiSquare extends Region {
+    private static final int PREFWIDTH = 200;
     private static ReversiModel model = ReversiModel.getInstance();
 	private Region highlight = SimpleRegionBuilder.create()
             .opacity(0)
@@ -25,7 +26,7 @@ public class ReversiSquare extends Region {
             .build();
 	private FadeTransition highlightTransition = new SimpleFadeTransitionBuilder()
             .node(highlight)
-            .duration(Duration.millis(200))
+            .duration(Duration.millis(PREFWIDTH))
             .fromValue(0)
             .toValue(1)
             .build();
@@ -35,7 +36,7 @@ public class ReversiSquare extends Region {
         light.setAzimuth(-135);
         light.setElevation(30);
         setEffect(new Lighting(light));
-        setPrefSize(200, 200);
+        setPrefSize(PREFWIDTH, PREFWIDTH);
     }
 
     public ReversiSquare(final int x, final int y) {
@@ -46,7 +47,7 @@ public class ReversiSquare extends Region {
         light.setAzimuth(-135);
         light.setElevation(30);
         setEffect(new Lighting(light));
-        setPrefSize(200, 200);
+        setPrefSize(PREFWIDTH, PREFWIDTH);
         getChildren().add(highlight);
 
         addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, t -> {

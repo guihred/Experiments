@@ -14,8 +14,9 @@ import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 
 public class PointGraph extends Canvas {
-	private final DoubleProperty layout = new SimpleDoubleProperty(30);
-	private double maxLayout = 480;
+    private static final int CANVAS_SIZE = 550;
+    private static final double MAX_LAYOUT = 480;
+    private final DoubleProperty layout = new SimpleDoubleProperty(30);
 	private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
 	private final IntegerProperty bins = new SimpleIntegerProperty(20);
 	private final IntegerProperty ybins = new SimpleIntegerProperty(20);
@@ -32,7 +33,7 @@ public class PointGraph extends Canvas {
 
 
     public PointGraph() {
-        super(550, 550);
+        super(CANVAS_SIZE, CANVAS_SIZE);
         gc = getGraphicsContext2D();
         drawGraph();
         InvalidationListener listener = observable -> drawGraph();
@@ -57,22 +58,22 @@ public class PointGraph extends Canvas {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
+        gc.fillText(title, layout.get() + (MAX_LAYOUT - layout.get()) / 2, layout.get() - 20);
         double e = layout.get();
-        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
-        gc.strokeLine(e, e, e, maxLayout);
-        double j = (maxLayout - e) / bins.get();
+        gc.strokeLine(e, MAX_LAYOUT, MAX_LAYOUT, MAX_LAYOUT);
+        gc.strokeLine(e, e, e, MAX_LAYOUT);
+        double j = (MAX_LAYOUT - e) / bins.get();
         double d = lineSize.get();
         for (int i = 1; i <= bins.get(); i++) {
             double x1 = i * j + e;
-            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
+            gc.strokeLine(x1, MAX_LAYOUT, x1, MAX_LAYOUT + 5);
             String xLabel = String.format("%.0f", i * xProportion + xStats.getMin());
-            gc.strokeText(xLabel, x1, maxLayout + 5 * (4 + 3 * (i % 2)));
+            gc.strokeText(xLabel, x1, MAX_LAYOUT + 5 * (4 + 3 * (i % 2)));
 
         }
-        j = (maxLayout - e) / ybins.get();
+        j = (MAX_LAYOUT - e) / ybins.get();
         for (int i = 0; i <= ybins.get(); i++) {
-            double y1 = maxLayout - i * j;
+            double y1 = MAX_LAYOUT - i * j;
             gc.strokeLine(e, y1, e - 5, y1);
             String yLabel = String.format("%.1f", i * yProportion + yStats.getMin());
             gc.strokeText(yLabel, e - d * 2, y1);
@@ -86,7 +87,7 @@ public class PointGraph extends Canvas {
         if (xStats == null || yStats == null) {
             return;
         }
-        gc.clearRect(0, 0, 550, 550);
+        gc.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
         double max = xStats.getMax();
         double min = xStats.getMin();
         xProportion = (max - min) / bins.intValue();
@@ -96,8 +97,8 @@ public class PointGraph extends Canvas {
 
         List<Object> entrySetX = data.list(xHeader.get());
         List<Object> entrySetY = data.list(yHeader.get());
-        double j = (maxLayout - layout.doubleValue()) / bins.intValue();
-        double j2 = (maxLayout - layout.doubleValue()) / ybins.intValue();
+        double j = (MAX_LAYOUT - layout.doubleValue()) / bins.intValue();
+        double j2 = (MAX_LAYOUT - layout.doubleValue()) / ybins.intValue();
         gc.setLineWidth(5);
         gc.setFill(Color.GREEN);
         gc.setLineWidth(0.5);
@@ -105,7 +106,7 @@ public class PointGraph extends Canvas {
             double x = ((Number) entrySetX.get(k)).doubleValue();
             double x1 = (x - xStats.getMin()) / xProportion * j + layout.doubleValue();
             double y = ((Number) entrySetY.get(k)).doubleValue();
-            double y1 = maxLayout - (y - yStats.getMin()) / yProportion * j2;
+            double y1 = MAX_LAYOUT - (y - yStats.getMin()) / yProportion * j2;
             // gc.strokeLine(x1, maxLayout, x1, y1)
             gc.fillOval(x1 - radius.doubleValue() / 2, y1 - radius.doubleValue() / 2, radius.doubleValue(),
                     radius.doubleValue());

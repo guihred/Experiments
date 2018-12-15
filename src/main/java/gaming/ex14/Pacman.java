@@ -16,21 +16,24 @@ import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class Pacman extends Arc {
-	private PacmanDirection direction = PacmanDirection.RIGHT;
+    private static final float ANGLE_LENGTH = 270.0F;
+    private static final float RADIUS = 15.0F;
+    private static final float START_ANGLE = 45.0F;
 
+    private PacmanDirection direction = PacmanDirection.RIGHT;
 
 	private Timeline eatingAnimation = new SimpleTimelineBuilder()
-			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0F)),
-					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0F)),
+            .keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), START_ANGLE)),
+                    new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), ANGLE_LENGTH)),
 					new KeyFrame(Duration.seconds(0.25), new KeyValue(startAngleProperty(), 0.0F)),
 					new KeyFrame(Duration.seconds(0.25), new KeyValue(lengthProperty(), 360.0F)))
 			.cycleCount(Animation.INDEFINITE).autoReverse(true).build();
 	public Pacman() {
 		setFill(Color.YELLOW);
-		setRadiusX(15.0F);
-		setRadiusY(15.0F);
-		setStartAngle(45.0F);
-		setLength(270.0F);
+        setRadiusX(RADIUS);
+        setRadiusY(RADIUS);
+        setStartAngle(START_ANGLE);
+        setLength(ANGLE_LENGTH);
 		setType(ArcType.ROUND);
 		eatingAnimation.playFromStart();
 	}
@@ -38,8 +41,9 @@ public class Pacman extends Arc {
 		if (eatingAnimation.getStatus() == Status.RUNNING) {
 			turn(null);
 			eatingAnimation.stop();
-			Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), 45.0F)),
-					new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), 270.0F)),
+            Timeline timeline = new Timeline(
+                    new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), START_ANGLE)),
+                    new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), ANGLE_LENGTH)),
 					new KeyFrame(Duration.seconds(2), new KeyValue(startAngleProperty(), 180.0F)),
 					new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0F)));
 			timeline.play();

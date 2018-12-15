@@ -200,7 +200,7 @@ public class PongLauncher extends Application {
      * topWall, or bottomWall. If the ball hits the wall behind the paddles, the
      * game is over.
      */
-    void checkForCollision() {
+    private void checkForCollision() {
         if (ball.intersects(rightWall.getBoundsInLocal())
                 || ball.intersects(leftWall.getBoundsInLocal())) {
             pongAnimation.stop();
@@ -217,7 +217,7 @@ public class PongLauncher extends Application {
     /**
      * Sets the initial starting positions of the ball and paddles
      */
-    void initialize() {
+    private void initialize() {
         centerX.setValue(250);
         centerY.setValue(250);
         leftPaddleY.setValue(235);

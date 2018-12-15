@@ -11,11 +11,9 @@ public class ArkanoidLauncher extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         final Group group = new Group();
-        final Scene scene = new Scene(group);
+        final Scene scene = new Scene(group, 400, 600);
 		ArkanoidModel.create(group, scene);
         stage.setScene(scene);
-        stage.setWidth(400);
-        stage.setHeight(600);
         stage.setResizable(false);
         stage.show();
     }

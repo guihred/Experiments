@@ -143,6 +143,23 @@ public final class SongModel implements HasLogging {
         setAlbumCover(DEFAULT_ALBUM_COVER);
     }
 
+    private void setAlbumCover(Image value) {
+        albumCover.setValue(value);
+    }
+
+
+    private void setArtist(String value) {
+        artist.setValue(value);
+    }
+
+    private void setTitle(String value) {
+        title.setValue(value);
+    }
+
+    private void setYear(String value) {
+        year.setValue(value);
+    }
+
     private void tryGetAlbumCover(String url) {
 		try {
             Image extractEmbeddedImageData = SongUtils
@@ -152,21 +169,4 @@ public final class SongModel implements HasLogging {
 			LOGGER.error("", e);
 		}
 	}
-
-
-    void setAlbumCover(Image value) {
-        albumCover.setValue(value);
-    }
-
-    void setArtist(String value) {
-        artist.setValue(value);
-    }
-
-    void setTitle(String value) {
-        title.setValue(value);
-    }
-
-    void setYear(String value) {
-        year.setValue(value);
-    }
 }

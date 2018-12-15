@@ -36,7 +36,7 @@ public final class GoogleImagesUtils {
                     .collect(Collectors
                     .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
             collect.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-                    .forEach(ex -> LOGGER.error("{}={}", ex.getKey(), ex.getValue()));
+                    .forEach(ex -> LOGGER.info("{}={}", ex.getKey(), ex.getValue()));
         } catch (Exception e) {
             LOGGER.error("", e);
         }

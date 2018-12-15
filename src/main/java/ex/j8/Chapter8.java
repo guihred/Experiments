@@ -181,18 +181,19 @@ public final class Chapter8 {
      */
     public static void ex3() {
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.trace("gcd1 {} ", gcd1(20, 40));
-            LOGGER.trace("gcd2 {} ", gcd2(20, 40));
-            LOGGER.trace("gcd3 {} ", gcd3(20, 40));
-            LOGGER.trace(" gcd1 {}", gcd1(-20, 40));
-            LOGGER.trace(" gcd2 {}", gcd2(-20, 40));
-            LOGGER.trace(" gcd3 {}", gcd3(-20, 40));
-            LOGGER.trace("gcd1 {}", gcd1(20, -40));
-            LOGGER.trace("gcd2 {}", gcd2(20, -40));
-            LOGGER.trace("gcd3 {}", gcd3(20, -40));
-            LOGGER.trace("gcd1 {}", gcd1(-20, -40));
-            LOGGER.trace("gcd2 {}", gcd2(-20, -40));
-            LOGGER.trace("gcd3 {}", gcd3(-20, -40));
+            final int b = 40;
+            LOGGER.trace("gcd1 {} ", gcd1(20, b));
+            LOGGER.trace("gcd2 {} ", gcd2(20, b));
+            LOGGER.trace("gcd3 {} ", gcd3(20, b));
+            LOGGER.trace(" gcd1 {}", gcd1(-20, b));
+            LOGGER.trace(" gcd2 {}", gcd2(-20, b));
+            LOGGER.trace(" gcd3 {}", gcd3(-20, b));
+            LOGGER.trace("gcd1 {}", gcd1(20, -b));
+            LOGGER.trace("gcd2 {}", gcd2(20, -b));
+            LOGGER.trace("gcd3 {}", gcd3(20, -b));
+            LOGGER.trace("gcd1 {}", gcd1(-20, -b));
+            LOGGER.trace("gcd2 {}", gcd2(-20, -b));
+            LOGGER.trace("gcd3 {}", gcd3(-20, -b));
         }
     }
 
@@ -233,15 +234,16 @@ public final class Chapter8 {
         try {
 
             List<String> wordsAsList = getWordsAsList(ResourceFXUtils.toPath(ALICE_TXT));
+            final int longWordThreshold = 12;
 
             Instant now = Instant.now();
-            long size = wordsAsList.stream().filter(w -> w.length() <= 12).count();
+            long size = wordsAsList.stream().filter(w -> w.length() <= longWordThreshold).count();
             Instant end = Instant.now();
             LOGGER.trace("size={} time {} ms", size, Duration.between(now, end).toMillis());
 
             wordsAsList = getWordsAsList(ResourceFXUtils.toPath(ALICE_TXT));
             now = Instant.now();
-            wordsAsList.removeIf(w -> w.length() > 12);
+            wordsAsList.removeIf(w -> w.length() > longWordThreshold);
             size = wordsAsList.size();
             end = Instant.now();
 
@@ -260,12 +262,14 @@ public final class Chapter8 {
      */
     public static void ex6() {
         Random random = new Random();
-        String points = Stream.generate(() -> new Point2D(random.nextInt(30), random.nextInt(30))).limit(20)
+        final int bound = 30;
+        String points = Stream.generate(() -> new Point2D(random.nextInt(bound), random.nextInt(bound))).limit(20)
                 .sorted(comparing(Point2D::getX).thenComparing(Point2D::getY))
                 .map(Objects::toString).collect(Collectors.joining("\n"));
         LOGGER.trace(points);
         String rectangles = Stream.generate(
-                () -> new Rectangle2D(random.nextInt(30), random.nextInt(30), random.nextInt(30), random.nextInt(30)))
+                () -> new Rectangle2D(random.nextInt(bound), random.nextInt(bound), random.nextInt(bound),
+                        random.nextInt(30)))
                 .limit(20)
                 .sorted(comparing(Rectangle2D::getMinX).thenComparing(Rectangle2D::getMinY)
                         .thenComparing(Rectangle2D::getWidth).thenComparing(Rectangle2D::getHeight))
@@ -280,10 +284,11 @@ public final class Chapter8 {
     public static void ex7() {
         Random random = new Random();
 
-        Stream<Integer> iterate = Stream.iterate(0, (Integer i) -> i == null ? random.nextInt(30) : null).limit(10);
+        final int bound = 30;
+        Stream<Integer> iterate = Stream.iterate(0, i -> i == null ? random.nextInt(bound) : null).limit(10);
         LOGGER.trace("nullsFirst(naturalOrder()).reversed() ={}",
                 iterate.sorted(nullsFirst(Comparator.<Integer>naturalOrder()).reversed()).collect(Collectors.toList()));
-        iterate = Stream.iterate(0, (Integer i) -> i == null ? random.nextInt(30) : null).limit(10);
+        iterate = Stream.iterate(0, (Integer i) -> i == null ? random.nextInt(bound) : null).limit(10);
         LOGGER.trace("nullsLast(reverseOrder()) ={}",
                 iterate.sorted(nullsLast(Comparator.<Integer>reverseOrder())).collect(Collectors.toList()));
     }

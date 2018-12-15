@@ -1,6 +1,5 @@
 package ex.j8;
 
-import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
 import utils.HasLogging;
@@ -28,10 +27,6 @@ public final class Chapter3 {
 		return i;
 	}
 
-	public static void main(String[] args) {
-		Integer rich = getRich(Arrays.asList(20, 66, 12, 48, 38, 38, 20, 65, 54), 0, 8);
-        LOGGER.trace("{}", rich);
-	}
 
 	private static int highest(List<Integer> l, int i, int high) {
 		return l.get(i) > l.get(high) ? l.get(i) : l.get(high);

@@ -143,7 +143,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		TableColumn<Medicamento, String> tableColumn = (TableColumn<Medicamento, String>) columns.get(0);
         tableColumn.setCellFactory(param -> new CustomableTableCell<String>() {
             @Override
-            void setStyleable(Medicamento auxMed) {
+            protected void setStyleable(Medicamento auxMed) {
                 setText(auxMed.getRegistro());
                 styleProperty().bind(Bindings.when(auxMed.registroValidoProperty(medicamentos)).then("")
                         .otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
@@ -154,7 +154,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 				.get(columns.size() - 3);
         colunaLote.setCellFactory(param -> new CustomableTableCell<String>() {
             @Override
-            void setStyleable(Medicamento auxMed) {
+            protected void setStyleable(Medicamento auxMed) {
                 setText(auxMed.getLote());
                 styleProperty().bind(Bindings.when(auxMed.loteValidoProperty(medicamentos)).then("")
                         .otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
@@ -165,7 +165,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
                 .get(columns.size() - 2);
         colunaQntd.setCellFactory(param -> new CustomableTableCell<Integer>() {
             @Override
-            void setStyleable(Medicamento auxMed) {
+            protected void setStyleable(Medicamento auxMed) {
                 setText(Integer.toString(auxMed.getQuantidade()));
                 styleProperty().bind(Bindings.when(auxMed.quantidadeValidoProperty(medicamentos)).then("")
                         .otherwise(FX_BACKGROUND_COLOR_LIGHTCORAL));
@@ -183,7 +183,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 				.get(columns.size() - 2);
         colunaQntd.setCellFactory(param -> new CustomableTableCell<Integer>() {
             @Override
-            void setStyleable(Medicamento auxMed) {
+            protected void setStyleable(Medicamento auxMed) {
 					setText(Integer.toString(auxMed.getQuantidade()));
 					styleProperty().bind(
 							Bindings.when(auxMed.quantidadeCodigoValidoProperty(medicamentos)).then("")
@@ -195,7 +195,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 				.get(columns.size() - 1);
         colunaCodigo.setCellFactory(param -> new CustomableTableCell<Integer>() {
             @Override
-            void setStyleable(Medicamento auxMed) {
+            protected void setStyleable(Medicamento auxMed) {
 					setText(Integer.toString(auxMed.getCodigo()));
 					styleProperty().bind(
 							Bindings.when(auxMed.codigoValidoProperty(medicamentos)).then("")
@@ -349,7 +349,10 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		medicamentosTable.addColumn(CODIGO, "codigo");
 		return medicamentosTable.equalColumns().build();
 	}
-    private abstract class CustomableTableCell<T> extends TableCell<Medicamento, T> {
+
+    protected abstract class CustomableTableCell<T> extends TableCell<Medicamento, T> {
+
+        protected abstract void setStyleable(Medicamento auxMed);
 
         @Override
         protected void updateItem(T item, boolean empty) {
@@ -361,8 +364,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
                 setStyleable(auxMed);
             }
         }
-
-        abstract void setStyleable(Medicamento auxMed);
     }
 
 }

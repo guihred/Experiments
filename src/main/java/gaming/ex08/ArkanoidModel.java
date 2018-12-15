@@ -20,15 +20,23 @@ import simplebuilder.SimpleTimelineBuilder;
 
 public class ArkanoidModel {
 
-    private static final int RIGHT_BORDER = 350;
-    private Circle circle = new Circle(190, 250, 5, Color.RED);
+    private Circle circle = new Circle(5, Color.RED);
 	private Group group;
     private int x = 1;
     private int y = 2;
+    private final Rectangle rectangle = new Rectangle(50, 10);
+    private Scene scene;
 
 	public ArkanoidModel(Group group, Scene scene) {
 		this.group = group;
-		final Rectangle rectangle = new Rectangle(200, 500, 50, 10);
+        this.scene = scene;
+
+
+        rectangle.setX(scene.getWidth() / 2);
+        rectangle.setY(scene.getHeight() * 5 / 6);
+        circle.setCenterX(rectangle.getX() + rectangle.getWidth() / 2);
+        circle.setCenterY(rectangle.getY() - circle.getRadius());
+
 		group.getChildren().add(rectangle);
 		group.getChildren()
 				.addAll(range(0, 105).mapToObj(i -> new Rectangle(i % 15 * 25 + 10, i / 15 * 15 + 50, 20, 10))
@@ -38,7 +46,7 @@ public class ArkanoidModel {
 			final KeyCode code = event.getCode();
             switch (code) {
                 case RIGHT:
-                    if (rectangle.getX() < RIGHT_BORDER) {
+                    if (rectangle.getX() < scene.getWidth() - rectangle.getWidth()) {
                         rectangle.setX(rectangle.getX() + 10);
                     }
                     break;
@@ -52,7 +60,7 @@ public class ArkanoidModel {
 			}
 		});
 		scene.setOnMouseMoved((MouseEvent event) -> {
-            if (event.getX() > 0 && event.getX() < RIGHT_BORDER) {
+            if (event.getX() > 0 && event.getX() < scene.getWidth() - rectangle.getWidth()) {
 				rectangle.setX(event.getX());
 			}
 		});
@@ -68,16 +76,24 @@ public class ArkanoidModel {
         Node touchingNode = group.getChildren().stream()
                 .filter(c -> c != circle && circle.intersects(c.getBoundsInLocal()))
 				.findAny().orElse(null);
-        if (touchingNode != null || circle.getCenterX() <= 5 || circle.getCenterX() > 390) {
-			x = -x;
+        if (touchingNode != null || circle.getCenterX() <= 5
+                || circle.getCenterX() > scene.getWidth() - circle.getRadius() * 2) {
+
+            x = x % 2 == 0 ? -x / 2 : 2 * -x;
+            if (circle.getCenterX() <= 5) {
+                x = Math.abs(x);
+            }
+            if (circle.getCenterX() > scene.getWidth() - circle.getRadius() * 2) {
+                x = -Math.abs(x);
+            }
 		}
         removeIfBlock(touchingNode);
 		circle.setCenterY(circle.getCenterY() + y);
         Node touchingNode2 = group.getChildren().stream()
                 .filter(c -> c != circle && circle.intersects(c.getBoundsInLocal()))
 				.findAny().orElse(null);
-        if (touchingNode2 != null || circle.getCenterY() <= 5 || circle.getCenterY() > 570) {
-			y = -y;
+        if (touchingNode2 != null || circle.getCenterY() <= 5 || circle.getCenterY() > scene.getHeight() - 30) {
+            y = -y;
 		}
         removeIfBlock(touchingNode2);
 		circle.setCenterX(circle.getCenterX() + x);

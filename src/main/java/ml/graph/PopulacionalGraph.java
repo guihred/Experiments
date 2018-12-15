@@ -12,25 +12,28 @@ import javafx.scene.paint.Color;
 import ml.data.DataframeML;
 
 public class PopulacionalGraph extends Canvas {
-	private DoubleProperty layout = new SimpleDoubleProperty(30);
-	private DoubleProperty maxLayout = new SimpleDoubleProperty(480);
-	private DoubleProperty lineSize = new SimpleDoubleProperty(1);
-	private IntegerProperty bins = new SimpleIntegerProperty(5);
+    private static final double BORDER_LEFT = 0.45;
+    private static final double BORDER_RIGHT = 0.55;
+    private static final int CANVAS_SIZE = 550;
+    private final DoubleProperty layout = new SimpleDoubleProperty(30);
+    private final DoubleProperty maxLayout = new SimpleDoubleProperty(480);
+    private final DoubleProperty lineSize = new SimpleDoubleProperty(1);
+    private final IntegerProperty bins = new SimpleIntegerProperty(5);
     private String ageHeader = "Subject";
     private String sexHeader = "SEX";
     private String yearHeader = "TIME";
     private String valueHeader = "Value";
     private String countryHeader = "Country";
-	private StringProperty country = new SimpleStringProperty("Germany");
-	private IntegerProperty year = new SimpleIntegerProperty(2000);
+    private final StringProperty country = new SimpleStringProperty("Germany");
+    private final IntegerProperty year = new SimpleIntegerProperty(2000);
 	private double xProportion;
 	private GraphicsContext gc;
     private DataframeML dataframe;
 	private List<String> agesSteps = Collections.emptyList();
-    private ObservableList<Integer> yearsOptions = FXCollections.observableArrayList();
+    private final ObservableList<Integer> yearsOptions = FXCollections.observableArrayList();
 
     public PopulacionalGraph() {
-        super(550, 550);
+        super(CANVAS_SIZE, CANVAS_SIZE);
         gc = getGraphicsContext2D();
         drawGraph();
 		lineSize.set(getHeight() / getWidth());
@@ -61,8 +64,8 @@ public class PopulacionalGraph extends Canvas {
 		double lineSize1 = 5;
         gc.strokeLine(layout1, maxLayout1, maxLayout1, maxLayout1);
 		double xMid = prop(layout1, maxLayout1, 0.5);
-		double xMA = prop(layout1, maxLayout1, 0.45);
-		double xFE = prop(layout1, maxLayout1, 0.55);
+        double xMA = prop(layout1, maxLayout1, BORDER_LEFT);
+        double xFE = prop(layout1, maxLayout1, BORDER_RIGHT);
 		gc.strokeLine(xMA, layout1, xMA, maxLayout1);
 		gc.strokeLine(xFE, layout1, xFE, maxLayout1);
 		prop(layout1, maxLayout1, 0.5);
@@ -82,7 +85,6 @@ public class PopulacionalGraph extends Canvas {
 			gc.strokeText(xLabel, x1 - lineSize1 * xLabel.length() / 2, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
 
 		}
-		// maxLayout1 = getHeight() - layout1;
 		double h = (maxLayout1 - layout1) / agesSteps.size() - 2;
 		j = (maxLayout1 - layout1) / agesSteps.size();
 		for (int i = 0; i < agesSteps.size(); i++) {
@@ -131,8 +133,8 @@ public class PopulacionalGraph extends Canvas {
 		});
 		double layout1 = layout.get();
 		double maxLayout1 = maxLayout.get();
-		double xMA = prop(layout1, maxLayout1, 0.45);
-		double xFE = prop(layout1, maxLayout1, 0.55);
+        double xMA = prop(layout1, maxLayout1, BORDER_LEFT);
+        double xFE = prop(layout1, maxLayout1, BORDER_RIGHT);
 		agesSteps = possibleAgesFE.keySet().stream().distinct().sorted().collect(Collectors.toList());
 		double j = (maxLayout1 - layout1) / agesSteps.size();
 		double max = peopleStats.getMax();

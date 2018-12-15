@@ -53,8 +53,8 @@ public class Shapes3DApp extends Application {
 		ImageView iv = new ImageView(diffuseMap);
 		iv.setRotationAxis(Rotate.X_AXIS);
 		iv.setRotate(90);
-		iv.setTranslateX(-0.5 * 400);
-		iv.setTranslateY(-0.20 * 400);
+        iv.setTranslateX(-diffuseMap.getWidth() / 2);
+        iv.setTranslateY(-diffuseMap.getHeight() / 5);
 		group.getChildren().add(iv);
 		// create material out of the noise image
 		PhongMaterial material = new PhongMaterial();
@@ -65,9 +65,9 @@ public class Shapes3DApp extends Application {
 		group.getChildren().add(box);
 		// create pyramid with diffuse map
 		// Height
-		float h = 150;
+        final float h = 150;
 		// Side
-		float s = 150;
+        final float s = 150;
 		float hs = s / 2;
 		// coordinates of the mapped image
 		float x0 = 0.0F;

@@ -28,7 +28,6 @@ import utils.Xform;
 public class MoleculeSampleApp extends Application {
 
     private static final double CONTROL_MULTIPLIER = 0.1;
-    private static final double SHIFT_MULTIPLIER = 0.1;
     private static final double CAMERA_DISTANCE = 450;
     private static final double ALT_MULTIPLIER = 0.5;
     private final Group axisGroup = new Group();
@@ -185,7 +184,7 @@ public class MoleculeSampleApp extends Application {
             return 10.0;
         }
         if (me.isControlDown()) {
-            return 0.1;
+            return CONTROL_MULTIPLIER;
         }
         return 1.0;
     }
@@ -239,7 +238,7 @@ public class MoleculeSampleApp extends Application {
         double mouseDeltaX = mousePosX - mouseOldX;
         double mouseDeltaY = mousePosY - mouseOldY;
         double modifier = getModifier(me);
-        double modifierFactor = 0.1;
+        double modifierFactor = CONTROL_MULTIPLIER;
         if (me.isPrimaryButtonDown()) {
             cameraXform.setRy(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
             cameraXform.setRx(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
@@ -315,7 +314,7 @@ public class MoleculeSampleApp extends Application {
         } else if (event.isAltDown()) {
             cameraXform.setRx(cameraXform.getRotateX() + i * 2.0 * ALT_MULTIPLIER);
         } else if (event.isShiftDown()) {
-            camera.setTranslateZ(camera.getTranslateZ() - i * 5.0 * SHIFT_MULTIPLIER);
+            camera.setTranslateZ(camera.getTranslateZ() - i * 5.0 * CONTROL_MULTIPLIER);
         }
     }
 

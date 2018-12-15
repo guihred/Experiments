@@ -38,6 +38,11 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 
 
 	@Override
+    public PerspectiveCamera getCamera() {
+        return camera;
+    }
+
+	@Override
 	public List<LabyrinthWall> getLabyrinthWalls() {
 		return cubes;
 	}
@@ -56,7 +61,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
         camera.setTranslateZ(-100);
 		camera.setFarClip(1000.0);
 		subScene.setCamera(camera);
-		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+		PointLight light = new PointLight(lightColor);
         light.translateXProperty().bind(camera.translateXProperty());
         light.translateYProperty().bind(camera.translateYProperty());
         light.translateZProperty().bind(camera.translateZProperty());
@@ -106,8 +111,8 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		}
 
 
-		animal.setScaleZ(0.25);
-		animal.setScaleX(0.25);
+		animal.setScaleZ(1./4);
+		animal.setScaleX(1./4);
 		animal.setScaleY(1);
 
 		return animal;
@@ -118,8 +123,8 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
 				String string = mapa[i][j];
 				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
-				rectangle.setTranslateX(i * SIZE);
-				rectangle.setTranslateZ(j * SIZE);
+                rectangle.setTranslateX(i * (double) SIZE);
+                rectangle.setTranslateZ(j * (double) SIZE);
 				if ("_".equals(string)) {
 					rectangle.getRy().setAngle(90);
 				}
@@ -130,13 +135,8 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		}
 	}
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		launch(args);
 	}
-
-    @Override
-    public PerspectiveCamera getCamera() {
-        return camera;
-    }
 
 }

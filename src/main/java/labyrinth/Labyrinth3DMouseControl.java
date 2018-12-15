@@ -7,13 +7,7 @@ import java.util.List;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Cursor;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.DrawMode;
@@ -92,10 +86,10 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
 		camera.setRotationAxis(Rotate.Y_AXIS);
-		camera.setNearClip(0.1);
+        camera.setNearClip(1. / 10);
 		camera.setFieldOfView(40);
 		subScene.setCamera(camera);
-		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+        PointLight light = new PointLight(LIGHT_COLOR);
 		light.translateXProperty().bind(camera.translateXProperty());
 		light.translateYProperty().bind(camera.translateYProperty());
 		light.translateZProperty().bind(camera.translateZProperty());
@@ -154,9 +148,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
 			enemy.setTranslateX(enemy.getTranslateX() + 1);
 		}
-		enemy.setScaleX(0.4);
+        enemy.setScaleX(4. / 10);
 		enemy.setScaleY(1);
-		enemy.setScaleZ(0.4);
+        enemy.setScaleZ(4. / 10);
 		return enemy;
 	}
 

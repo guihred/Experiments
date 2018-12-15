@@ -313,14 +313,15 @@ public class PlayingAudio extends Application {
 					double y = mainStage.getScene().getHeight() / 2;
 					Random rand = new Random(System.currentTimeMillis());
 					// Build random colored circles
+                    final int bound = 255;
 					for (float phase : phases) {
-						int red = rand.nextInt(255);
-						int green = rand.nextInt(255);
-						int blue = rand.nextInt(255);
+                        int red = rand.nextInt(bound);
+						int green = rand.nextInt(bound);
+						int blue = rand.nextInt(bound);
 						Circle circle = new SimpleCircleBuilder().radius(10)
 								.centerX((double) 10 + i)
 								.centerY(y + (double) phase * 100)
-								.fill(Color.rgb(red, green, blue, .70))
+                                .fill(Color.rgb(red, green, blue, 7. / 10))
 								.build();
 						vizContainer.getChildren().add(circle);
 						i += 5;

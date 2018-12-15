@@ -42,7 +42,7 @@ public class Chart3dSampleApp extends Application {
         buildAxes();
         buildChart();
 
-        Scene scene = new Scene(root, 1600, 900, true);
+        Scene scene = new Scene(root, 5 * DEPTH, 3 * DEPTH, true);
         scene.setFill(Color.GREY);
         scene.setOnKeyPressed(this::handleKeyPressed);
         handleMouse(scene);
@@ -67,10 +67,10 @@ public class Chart3dSampleApp extends Application {
         final Box xAxis = new Box(DEPTH, 1, DEPTH);
         final Box yAxis = new Box(1, DEPTH, DEPTH);
         final Box zAxis = new Box(DEPTH, DEPTH, 1);
-        yAxis.setTranslateY(-DEPTH / 2.0);
-        yAxis.setTranslateX(DEPTH / 2.0);
-        zAxis.setTranslateY(-DEPTH / 2.0);
-        zAxis.setTranslateZ(DEPTH / 2.0);
+        yAxis.setTranslateY(-DEPTH / 2.);
+        yAxis.setTranslateX(DEPTH / 2.);
+        zAxis.setTranslateY(-DEPTH / 2.);
+        zAxis.setTranslateZ(DEPTH / 2.);
         xAxis.setMaterial(redMaterial);
         yAxis.setMaterial(greenMaterial);
         zAxis.setMaterial(blueMaterial);
@@ -86,7 +86,7 @@ public class Chart3dSampleApp extends Application {
         cameraXform3.getChildren().add(camera);
         cameraXform3.setRotateZ(0);
 
-        camera.setNearClip(0.1);
+        camera.setNearClip(SHIFT_MULTIPLIER);
         camera.setFarClip(10000.0);
         camera.setTranslateZ(-CAMERA_DISTANCE);
         cameraXform.setRotateY(0);
@@ -99,8 +99,8 @@ public class Chart3dSampleApp extends Application {
         whiteMaterial.setDiffuseColor(Color.WHITE);
         whiteMaterial.setSpecularColor(Color.LIGHTBLUE);
 
-        float h = 200; // Height
-        float s = 200; // Side
+        final float h = 200; // Height
+        final float s = 200; // Side
 
         TriangleMesh pyramidMesh = new TriangleMesh();
 
@@ -112,7 +112,8 @@ public class Chart3dSampleApp extends Application {
                 0, h, s / 2 // Point 4 - Right
         );
 
-        pyramidMesh.getFaces().addAll(0, 0, 2, 0, 1, 0, // Front left face
+        pyramidMesh.getFaces().addAll(
+                0, 0, 2, 0, 1, 0, // Front left face
                 0, 0, 1, 0, 3, 0, // Front right face
                 0, 0, 3, 0, 4, 0, // Back right face
                 0, 0, 4, 0, 2, 0, // Back left face
@@ -141,7 +142,6 @@ public class Chart3dSampleApp extends Application {
             case X:
                 toggleVisible(event);
                 break;
-      
             case UP:
                 moveUp(event);
                 break;
@@ -171,13 +171,13 @@ public class Chart3dSampleApp extends Application {
 
     private void moveDown(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.setTy(cameraXform2.getTy() + 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() + 10 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.setRotateX(cameraXform.getRotateX() + 10.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateX(cameraXform.getRotateX() + 10 * ALT_MULTIPLIER);
         } else if (event.isControlDown()) {
-            cameraXform2.setTy(cameraXform2.getTy() + 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() + CONTROL_MULTIPLIER);
         } else if (event.isAltDown()) {
-            cameraXform.setRotateX(cameraXform.getRotateX() + 2.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateX(cameraXform.getRotateX() + 2 * ALT_MULTIPLIER);
         } else if (event.isShiftDown()) {
             double z2 = camera.getTranslateZ();
             double newZ2 = z2 - 5.0 * SHIFT_MULTIPLIER;
@@ -187,37 +187,37 @@ public class Chart3dSampleApp extends Application {
 
     private void moveLeft(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.setTx(cameraXform2.getTx() - 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() - 10 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.setRotateY(cameraXform.getRotateY() + 10.0 * ALT_MULTIPLIER); // -
+            cameraXform.setRotateY(cameraXform.getRotateY() + 10 * ALT_MULTIPLIER); // -
         } else if (event.isControlDown()) {
-            cameraXform2.setTx(cameraXform2.getTx() - 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() - CONTROL_MULTIPLIER);
         } else if (event.isAltDown()) {
-            cameraXform.setRotateY(cameraXform.getRotateY() + 2.0 * ALT_MULTIPLIER); // -
+            cameraXform.setRotateY(cameraXform.getRotateY() + 2 * ALT_MULTIPLIER); // -
         }
     }
 
     private void moveRight(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.setTx(cameraXform2.getTx() + 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() + 10 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.setRotateY(cameraXform.getRotateY() - 10.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateY(cameraXform.getRotateY() - 10 * ALT_MULTIPLIER);
         } else if (event.isControlDown()) {
-            cameraXform2.setTx(cameraXform2.getTx() + 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() + CONTROL_MULTIPLIER);
         } else if (event.isAltDown()) {
-            cameraXform.setRotateY(cameraXform.getRotateY() - 2.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateY(cameraXform.getRotateY() - 2 * ALT_MULTIPLIER);
         }
     }
 
     private void moveUp(KeyEvent event) {
         if (event.isControlDown() && event.isShiftDown()) {
-            cameraXform2.setTy(cameraXform2.getTy() - 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() - 10 * CONTROL_MULTIPLIER);
         } else if (event.isAltDown() && event.isShiftDown()) {
-            cameraXform.setRotateX(cameraXform.getRotateX() - 10.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateX(cameraXform.getRotateX() - 10 * ALT_MULTIPLIER);
         } else if (event.isControlDown()) {
-            cameraXform2.setTy(cameraXform2.getTy() - 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() - CONTROL_MULTIPLIER);
         } else if (event.isAltDown()) {
-            cameraXform.setRotateX(cameraXform.getRotateX() - 2.0 * ALT_MULTIPLIER);
+            cameraXform.setRotateX(cameraXform.getRotateX() - 2 * ALT_MULTIPLIER);
         } else if (event.isShiftDown()) {
             double z1 = camera.getTranslateZ();
             double newZ1 = z1 + 5.0 * SHIFT_MULTIPLIER;
@@ -235,17 +235,17 @@ public class Chart3dSampleApp extends Application {
         double mouseDeltaY = mousePosY - mouseOldY;
 
         double modifier = 1.0;
-        double modifierFactor = 0.1;
+        double modifierFactor = SHIFT_MULTIPLIER;
 
         if (me.isControlDown()) {
-            modifier = 0.1;
+            modifier = SHIFT_MULTIPLIER;
         }
         if (me.isShiftDown()) {
-            modifier = 10.0;
+            modifier = 10;
         }
         if (me.isPrimaryButtonDown()) {
-            cameraXform.setRotateY(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2.0); // +
-            cameraXform.setRotateX(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2.0); // -
+            cameraXform.setRotateY(cameraXform.getRotateY() - mouseDeltaX * modifierFactor * modifier * 2); // +
+            cameraXform.setRotateX(cameraXform.getRotateX() + mouseDeltaY * modifierFactor * modifier * 2); // -
         } else if (me.isSecondaryButtonDown()) {
             double z = camera.getTranslateZ();
             double newZ = z + mouseDeltaX * modifierFactor * modifier;

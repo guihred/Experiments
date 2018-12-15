@@ -19,7 +19,8 @@ public class AnimationExample extends Application {
 		Scene theScene = new Scene(root);
 		theStage.setScene(theScene);
 
-		Canvas canvas = new Canvas(512, 512);
+        final int canvasSize = 512;
+        Canvas canvas = new Canvas(canvasSize, canvasSize);
 		root.getChildren().add(canvas);
 
 		GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -32,15 +33,17 @@ public class AnimationExample extends Application {
 		new AnimationTimer() {
 			@Override
 			public void handle(long currentNanoTime) {
-				double t = (currentNanoTime - startNanoTime) / 1000000000.0;
+                double t = (currentNanoTime - startNanoTime) / 1e9;
 
-				double x = 232 + 128 * Math.cos(t);
-				double y = 232 + 128 * Math.sin(t);
+                final int sunPosition = canvasSize / 2;
+                final int radius = sunPosition / 2;
+                double x = sunPosition + radius * Math.cos(t);
+                double y = sunPosition + radius * Math.sin(t);
 
 				// background image clears canvas
 				gc.drawImage(space, 0, 0);
 				gc.drawImage(earth, x, y);
-				gc.drawImage(sun, 196, 196);
+                gc.drawImage(sun, sunPosition, sunPosition);
 			}
 		}.start();
 

@@ -19,11 +19,11 @@ public class SlidingPuzzleModel {
 
     public static final int MAP_SIZE = 4;
 
-	private GridPane gridPane;
-	private SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[MAP_SIZE][MAP_SIZE];
-	private int moves;
+    private GridPane gridPane;
+    private SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[MAP_SIZE][MAP_SIZE];
+    private int moves;
 
-	public SlidingPuzzleModel(GridPane gridPane) {
+    public SlidingPuzzleModel(GridPane gridPane) {
         this.gridPane = gridPane;
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
@@ -39,42 +39,24 @@ public class SlidingPuzzleModel {
         }
         reset();
     }
-    private boolean neighborEmpty(int i, int j) {
-        return isNeighborEmpty(i, j, 0, -1) 
-        || isNeighborEmpty(i, j, 0, 1)
-        || isNeighborEmpty(i, j, 1, 0) 
-        || isNeighborEmpty(i, j, -1, 0);
+
+    private final EventHandler<MouseEvent> createMouseClickedEvento(SlidingPuzzleSquare mem) {
+        return e -> slideIfPossible(mem);
     }
 
-	private void slideIfPossible(SlidingPuzzleSquare mem) {
-		for (int i = 0; i < MAP_SIZE; i++) {
-		    for (int j = 0; j < MAP_SIZE; j++) {
-                if (map[i][j] == mem && neighborEmpty(i, j)) {
-					swapEmptyNeighbor(i, j);
-					moves++;
-					if (verifyEnd()) {
-						CommonsFX.displayDialog("You ended in " + moves + " moves", "Reset", () -> {
-							reset();
-							moves = 0;
-						});
-					}
-					return;
-				}
-		    }
-		}
-	}
-
-    final EventHandler<MouseEvent> createMouseClickedEvento(SlidingPuzzleSquare mem) {
-		return e -> slideIfPossible(mem);
-    }
-
-	boolean isNeighborEmpty(int i, int j, int h, int v) {
-		if (i + h >= 0 && i + h < MAP_SIZE && j + v >= 0 && j + v < MAP_SIZE) {
-			return map[i + h][j + v].isEmpty();
-		}
+    private boolean isNeighborEmpty(int i, int j, int h, int v) {
+        if (i + h >= 0 && i + h < MAP_SIZE && j + v >= 0 && j + v < MAP_SIZE) {
+            return map[i + h][j + v].isEmpty();
+        }
         return false;
     }
-    final void reset() {
+
+    private boolean neighborEmpty(int i, int j) {
+        return isNeighborEmpty(i, j, 0, -1) || isNeighborEmpty(i, j, 0, 1) || isNeighborEmpty(i, j, 1, 0)
+                || isNeighborEmpty(i, j, -1, 0);
+    }
+
+    private final void reset() {
 
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
@@ -85,26 +67,44 @@ public class SlidingPuzzleModel {
 
     }
 
-    final void swapEmptyNeighbor(int i, int j) {
-        for (int k = -1; k < 2; k++) {
-            for (int l = -1; l < 2; l++) {
-				if ((k == 0 || l == 0) && k != l && isNeighborEmpty(i, j, k, l)) {
-					gridPane.getChildren().remove(map[i][j].getStack());
-					gridPane.getChildren().remove(map[i + k][j + l].getStack());
-					gridPane.add(map[i][j].getStack(), j + l, i + k);
-					gridPane.add(map[i + k][j + l].getStack(), j, i);
-					final SlidingPuzzleSquare empty = map[i + k][j + l];
-					map[i + k][j + l] = map[i][j];
-					map[i][j] = empty;
-				}
+    private void slideIfPossible(SlidingPuzzleSquare mem) {
+        for (int i = 0; i < MAP_SIZE; i++) {
+            for (int j = 0; j < MAP_SIZE; j++) {
+                if (map[i][j] == mem && neighborEmpty(i, j)) {
+                    swapEmptyNeighbor(i, j);
+                    moves++;
+                    if (verifyEnd()) {
+                        CommonsFX.displayDialog("You ended in " + moves + " moves", "Reset", () -> {
+                            reset();
+                            moves = 0;
+                        });
+                    }
+                    return;
+                }
             }
         }
     }
 
-    boolean verifyEnd() {
+    private final void swapEmptyNeighbor(int i, int j) {
+        for (int k = -1; k < 2; k++) {
+            for (int l = -1; l < 2; l++) {
+                if ((k == 0 || l == 0) && k != l && isNeighborEmpty(i, j, k, l)) {
+                    gridPane.getChildren().remove(map[i][j].getStack());
+                    gridPane.getChildren().remove(map[i + k][j + l].getStack());
+                    gridPane.add(map[i][j].getStack(), j + l, i + k);
+                    gridPane.add(map[i + k][j + l].getStack(), j, i);
+                    final SlidingPuzzleSquare empty = map[i + k][j + l];
+                    map[i + k][j + l] = map[i][j];
+                    map[i][j] = empty;
+                }
+            }
+        }
+    }
+
+    private boolean verifyEnd() {
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
-				if (map[i][j].getNumber() != i * MAP_SIZE + j + 1) {
+                if (map[i][j].getNumber() != i * MAP_SIZE + j + 1) {
                     return false;
                 }
             }
@@ -112,8 +112,9 @@ public class SlidingPuzzleModel {
 
         return true;
     }
+
     public static SlidingPuzzleModel create(GridPane gridPane) {
-		return new SlidingPuzzleModel(gridPane);
-	}
+        return new SlidingPuzzleModel(gridPane);
+    }
 
 }

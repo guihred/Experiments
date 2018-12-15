@@ -12,11 +12,12 @@ import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 
 public class HeatGraph extends Canvas {
+    private static final int CANVAS_SIZE = 550;
     private static final double SQR_ROOT_OF_3 = Math.sqrt(3);
     private static final double RED_HUE = Color.RED.getHue();
     public static final double BLUE_HUE = Color.BLUE.getHue();
+    private static final double MAX_LAYOUT = 480;
     private final DoubleProperty layout = new SimpleDoubleProperty(30);
-    private double maxLayout = 480;
     private double xProportion;
     private double yProportion;
     private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
@@ -35,7 +36,7 @@ public class HeatGraph extends Canvas {
     private String title;
 
     public HeatGraph() {
-        super(550, 550);
+        super(CANVAS_SIZE, CANVAS_SIZE);
         gc = getGraphicsContext2D();
         drawGraph();
         InvalidationListener listener = observable -> drawGraph();
@@ -59,26 +60,26 @@ public class HeatGraph extends Canvas {
         gc.setFill(Color.BLACK);
         gc.setLineWidth(1);
         gc.setStroke(Color.BLACK);
-        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
+        gc.fillText(title, layout.get() + (MAX_LAYOUT - layout.get()) / 2, layout.get() - 20);
         double e = layout.get();
-        gc.strokeLine(e, e, e, maxLayout);
-        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
-        double j = (maxLayout - e) / bins.get();
+        gc.strokeLine(e, e, e, MAX_LAYOUT);
+        gc.strokeLine(e, MAX_LAYOUT, MAX_LAYOUT, MAX_LAYOUT);
+        double j = (MAX_LAYOUT - e) / bins.get();
         double d = lineSize.get();
 
         double min = xStats.getMin();
 
         for (int i = 1; i <= bins.get(); i++) {
             double x1 = i * j + e;
-            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
+            gc.strokeLine(x1, MAX_LAYOUT, x1, MAX_LAYOUT + 5);
             String xLabel = String.format("%.0f", i * xProportion + min);
-            gc.strokeText(xLabel, x1, maxLayout + 5 * (4 + 3 * (i % 2)));
+            gc.strokeText(xLabel, x1, MAX_LAYOUT + 5 * (4 + 3 * (i % 2)));
 
         }
         min = yStats.getMin();
-        j = (maxLayout - e) / ybins.get();
+        j = (MAX_LAYOUT - e) / ybins.get();
         for (int i = 0; i <= ybins.get(); i++) {
-            double y1 = maxLayout - i * j;
+            double y1 = MAX_LAYOUT - i * j;
             gc.strokeLine(e, y1, e - 5, y1);
             String yLabel = String.format("%.1f", i * yProportion + min);
             gc.strokeText(yLabel, e - d * 2, y1);
@@ -91,12 +92,12 @@ public class HeatGraph extends Canvas {
         if (xStats == null || yStats == null) {
             return;
         }
-        gc.clearRect(0, 0, 550, 550);
+        gc.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
         double min = xStats.getMin();
         double max = xStats.getMax();
         xProportion = (max - min) / bins.intValue();
-        double min2 = yStats.getMin() - 0.1;
-        double max2 = yStats.getMax() + 0.1;
+        double min2 = yStats.getMin() - 1. / 10;
+        double max2 = yStats.getMax() + 1. / 10;
         yProportion = (max2 - min2) / ybins.intValue();
 
         List<Object> entrySetX = data.list(xHeader.get());
@@ -179,16 +180,16 @@ public class HeatGraph extends Canvas {
     }
 
     private double finalX(DoubleSummaryStatistics xStats, Object object) {
-        double j = (maxLayout - layout.doubleValue()) / bins.intValue();
+        double j = (MAX_LAYOUT - layout.doubleValue()) / bins.intValue();
         double x = ((Number) object).doubleValue();
         double x1 = (x - xStats.getMin()) / xProportion * j + layout.doubleValue();
         return x1 - radius.doubleValue() / 2;
     }
 
     private double finalY(DoubleSummaryStatistics yStats, Object object2) {
-        double j2 = (maxLayout - layout.doubleValue()) / ybins.intValue();
+        double j2 = (MAX_LAYOUT - layout.doubleValue()) / ybins.intValue();
         double y = ((Number) object2).doubleValue();
-        double y1 = maxLayout - (y - yStats.getMin()) / yProportion * j2;
+        double y1 = MAX_LAYOUT - (y - yStats.getMin()) / yProportion * j2;
         return y1 - radius.doubleValue() / 2;
     }
 
@@ -197,7 +198,7 @@ public class HeatGraph extends Canvas {
             return Color.TRANSPARENT;
         }
         double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - min) / (max - min);
-        return Color.hsb(hue, 0.5, 1.0);
+        return Color.hsb(hue, 0.5, 1);
         // double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin())
         // return Color.hsb(RED_HUE, 1.0, brightness)
         // double saturation = (value - min) / (max - min)
@@ -207,7 +208,7 @@ public class HeatGraph extends Canvas {
     private List<double[]> triangles() {
         List<double[]> arrayList = new ArrayList<>();
 
-        double width = maxLayout - layout.doubleValue();
+        double width = MAX_LAYOUT - layout.doubleValue();
         int sqrt = (int) (width / radius.get());
         double triangleSide = width / sqrt;
         int m = (int) (width / triangleSide / SQR_ROOT_OF_3 * 2) + 1;

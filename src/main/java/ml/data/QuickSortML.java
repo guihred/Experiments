@@ -1,25 +1,10 @@
 package ml.data;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import org.slf4j.Logger;
-import utils.HasLogging;
 
 public class QuickSortML {
 
-	private static final Logger LOG = HasLogging.log();
-
-	public static void main(String[] a) {
-
-		List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
-
-		Comparator<Integer> c = Integer::compareTo;
-		QuickSortML.sort(input, c.reversed());
-		for (Integer i : input) {
-            LOG.info("{}", i);
-		}
-	}
 
 	public static <T extends Comparable<T>> void sort(List<T> inputArr) {
 		sort(inputArr, (i, j) -> {

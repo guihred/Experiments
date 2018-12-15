@@ -63,10 +63,11 @@ public final class ImprovedNoise {
                         lerp(u, grad(p[ab + 1], x, y - 1, z - 1), grad(p[bb + 1], x - 1, y - 1, z - 1))));
     }
 
-    static double fade(double t) {
+    private static double fade(double t) {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
-    static double grad(int hash, double x, double y, double z) {
+
+    private static double grad(int hash, double x, double y, double z) {
         int h = hash & 15; // CONVERT LO 4 BITS OF HASH CODE
         double u = h < 8 ? x : y;
         // INTO 12 GRADIENT DIRECTIONS.
@@ -80,7 +81,8 @@ public final class ImprovedNoise {
         }
         return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }
-    static double lerp(double t, double a, double b) {
+
+    private static double lerp(double t, double a, double b) {
         return a + t * (b - a);
     }
 }
