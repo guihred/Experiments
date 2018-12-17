@@ -1,9 +1,17 @@
 package ethical.hacker;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -20,6 +28,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleTableViewBuilder;
+import simplebuilder.SimpleTextBuilder;
 import utils.CommonsFX;
 import utils.ConsoleUtils;
 import utils.HasLogging;
@@ -27,9 +36,9 @@ import utils.HasLogging;
 public class EthicalHackApp extends Application {
 
     private static final Logger LOG = HasLogging.log();
-
+	private ObservableMap<String, Set<String>> count = FXCollections.observableHashMap();
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(final Stage primaryStage) throws Exception {
         VBox vBox = new VBox();
         ObservableList<Map<String, String>> items = FXCollections.observableArrayList();
         TableView<Map<String, String>> commonTable = new SimpleTableViewBuilder<Map<String, String>>().items(items)
@@ -92,7 +101,12 @@ public class EthicalHackApp extends Application {
 
         });
         vBox.getChildren().addAll(new Text("Network Adress"), networkAddress, portScanner);
-
+		vBox.getChildren()
+				.add(new SimpleTextBuilder()
+						.text(Bindings.createStringBinding(() -> count.entrySet().stream()
+								.map(e -> e.getKey() + "=" + e.getValue().size()).collect(Collectors.joining("\n")),
+								count))
+						.build());
         HBox hBox = new HBox(vBox, commonTable);
         commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-120));
         primaryStage.setTitle("Ethical Hack App");
@@ -101,7 +115,7 @@ public class EthicalHackApp extends Application {
 
     }
 
-    private void addColumns(TableView<Map<String, String>> simpleTableViewBuilder, Collection<String> keySet) {
+    private void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder, final Collection<String> keySet) {
         simpleTableViewBuilder.getColumns().clear();
         keySet.forEach(key -> {
             final TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
@@ -112,28 +126,38 @@ public class EthicalHackApp extends Application {
         });
     }
 
-    private MapChangeListener<String, List<String>> updateItemOnChange(ObservableList<Map<String, String>> items,
-            String primaryKey, String targetKey) {
+    private MapChangeListener<String, List<String>> updateItemOnChange(final ObservableList<Map<String, String>> items,
+            final String primaryKey, final String targetKey) {
+		count.clear();
         return change -> {
-            if (!change.wasAdded()) {
-                return;
-            }
-            String key = change.getKey();
-            List<String> valueAdded = change.getValueAdded();
-            Map<String, String> e2 = items.stream().filter(c -> key.equals(c.get(primaryKey))).findAny()
-                    .orElseGet(ConcurrentHashMap<String, String>::new);
-            e2.put(primaryKey, key);
-            e2.put(targetKey, valueAdded.stream().collect(Collectors.joining("\n")));
-            if (!items.contains(e2)) {
-                items.add(e2);
-            }
-            Map<String, String> map = items.remove(0);
-            items.add(0, map);
-            LOG.info("{} of {} = {}", targetKey, key, valueAdded);
+			synchronized (count) {
+				if (!change.wasAdded()) {
+					return;
+				}
+				String key = change.getKey();
+				List<String> valueAdded = change.getValueAdded();
+				Map<String, String> e2 = items.stream().filter(c -> key.equals(c.get(primaryKey))).findAny()
+						.orElseGet(() -> {
+							Set<String> orDefault = count.getOrDefault(primaryKey, new HashSet<>());
+							orDefault.add(key);
+							count.put(primaryKey, orDefault);
+							return new ConcurrentHashMap<>();
+						});
+				e2.put(primaryKey, key);
+				e2.put(targetKey, valueAdded.stream().collect(Collectors.joining("\n")));
+				if (!items.contains(e2)) {
+					items.add(e2);
+				}
+				items.add(0, items.remove(0));
+				Set<String> orDefault = count.getOrDefault(primaryKey, new HashSet<>());
+				orDefault.add(key);
+				count.put(targetKey, orDefault);
+				LOG.info("{} of {} = {}", targetKey, key, valueAdded);
+			}
         };
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 
