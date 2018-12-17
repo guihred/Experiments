@@ -21,7 +21,7 @@ import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 
 public final class ConsoleUtils {
-    private static final int WAIT_INTERVAL_MILLIS = 5000;
+	private static final int WAIT_INTERVAL_MILLIS = 5000;
     private static final String ACTIVE_FLAG = "active";
     private static final Logger LOGGER = HasLogging.log();
     private static final String EXECUTING = "Executing \"{}\"";
@@ -30,14 +30,41 @@ public final class ConsoleUtils {
     private ConsoleUtils() {
     }
 
-    public static DoubleProperty defineProgress(String totalRegex, String progressRegex,
-            Map<String, ObservableList<String>> executeInConsoleAsync, ToDoubleFunction<String> function) {
+	public static DoubleProperty defineProgress(final double n) {
+    	SimpleDoubleProperty simpleDoubleProperty = new SimpleDoubleProperty(0);
+		new Thread(() -> {
+			final int waitingInterval = 500;
+			if (PROCESSES.isEmpty()) {
+				try {
+					Thread.sleep(waitingInterval);
+					Thread.yield();
+				} catch (Exception e1) {
+					LOGGER.trace("", e1);
+				}
+			}
+			while (PROCESSES.values().stream().anyMatch(e -> !e)) {
+				try {
+					long count = PROCESSES.values().stream().filter(e -> !e).count();
+					double newValue = (n - count) / n;
+					simpleDoubleProperty.set(newValue);
+					Thread.sleep(waitingInterval);
+				} catch (Exception e1) {
+					LOGGER.trace("", e1);
+				}
+			}
+			simpleDoubleProperty.set(1);
+		}).start();
+		return simpleDoubleProperty;
+	}
+
+    public static DoubleProperty defineProgress(final String totalRegex, final String progressRegex,
+            final Map<String, ObservableList<String>> executeInConsoleAsync, final ToDoubleFunction<String> function) {
         return defineProgress(totalRegex, progressRegex, executeInConsoleAsync, function, function);
     }
 
-    public static DoubleProperty defineProgress(String totalRegex, String progressRegex,
-            Map<String, ObservableList<String>> executeInConsoleAsync, ToDoubleFunction<String> function,
-            ToDoubleFunction<String> function2) {
+    public static DoubleProperty defineProgress(final String totalRegex, final String progressRegex,
+            final Map<String, ObservableList<String>> executeInConsoleAsync, final ToDoubleFunction<String> function,
+            final ToDoubleFunction<String> function2) {
         SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
         SimpleDoubleProperty total = new SimpleDoubleProperty(100);
         executeInConsoleAsync.get(totalRegex).addListener((ListChangeListener<String>) c -> {
@@ -55,11 +82,11 @@ public final class ConsoleUtils {
                 progress.set(applyAsDouble / doubleValue);
             }
         });
-        executeInConsoleAsync.get(ACTIVE_FLAG).addListener((Change<? extends String> e) -> progress.set(1));
+        executeInConsoleAsync.get(ACTIVE_FLAG).addListener((final Change<? extends String> e) -> progress.set(1));
         return progress;
     }
 
-    public static Map<String, String> executeInConsole(String cmd, Map<String, String> responses) {
+    public static Map<String, String> executeInConsole(final String cmd, final Map<String, String> responses) {
         Map<String, String> result = new HashMap<>();
         LOGGER.info(EXECUTING, cmd);
         Process exec = newProcess(cmd);
@@ -81,7 +108,7 @@ public final class ConsoleUtils {
         return result;
     }
 
-    public static Map<String, ObservableList<String>> executeInConsoleAsync(String cmd, Map<String, String> responses) {
+    public static Map<String, ObservableList<String>> executeInConsoleAsync(final String cmd, final Map<String, String> responses) {
         Map<String, ObservableList<String>> result = new HashMap<>();
         result.put(ACTIVE_FLAG, FXCollections.observableArrayList());
         responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
@@ -89,7 +116,7 @@ public final class ConsoleUtils {
         return result;
     }
 
-    public static List<String> executeInConsoleInfo(String cmd) {
+    public static List<String> executeInConsoleInfo(final String cmd) {
         List<String> execution = new ArrayList<>();
         LOGGER.info(EXECUTING, cmd);
 
@@ -110,7 +137,7 @@ public final class ConsoleUtils {
         return execution;
     }
 
-    public static ObservableList<String> executeInConsoleInfoAsync(String cmd, Runnable... onFinish) {
+    public static ObservableList<String> executeInConsoleInfoAsync(final String cmd, final Runnable... onFinish) {
         ObservableList<String> execution = FXCollections.observableArrayList();
         LOGGER.info(EXECUTING, cmd);
         new Thread(() -> {
@@ -134,21 +161,21 @@ public final class ConsoleUtils {
         return execution;
     }
 
-    public static void waitAllProcesses() {
-        while (PROCESSES.values().stream().anyMatch(e -> !e)) {
-            try {
-                List<String> processes = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
-                        .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
-                String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
-                LOGGER.info("Running {} processes {}", processes.size(), formated);
-                Thread.sleep(WAIT_INTERVAL_MILLIS);
-            } catch (Exception e1) {
-                LOGGER.trace("", e1);
-            }
-        }
+	public static void waitAllProcesses() {
+    	while (PROCESSES.values().stream().anyMatch(e -> !e)) {
+    		try {
+    			List<String> processes = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
+    					.map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
+    			String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
+    			LOGGER.info("Running {} processes {}", processes.size(), formated);
+    			Thread.sleep(WAIT_INTERVAL_MILLIS);
+    		} catch (Exception e1) {
+    			LOGGER.trace("", e1);
+    		}
+    	}
     }
 
-    private static Process newProcess(String cmd) {
+    private static Process newProcess(final String cmd) {
         try {
             Process p = Runtime.getRuntime().exec(cmd);
             PROCESSES.put(cmd, false);
@@ -159,8 +186,8 @@ public final class ConsoleUtils {
         }
     }
 
-    private static void updateRegexMapValues(String cmd, Map<String, String> responses,
-            Map<String, ObservableList<String>> result) {
+    private static void updateRegexMapValues(final String cmd, final Map<String, String> responses,
+            final Map<String, ObservableList<String>> result) {
         LOGGER.info(EXECUTING, cmd);
         Process exec = newProcess(cmd);
         try (BufferedReader in = new BufferedReader(

@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -19,6 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -28,7 +29,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleTableViewBuilder;
-import simplebuilder.SimpleTextBuilder;
 import utils.CommonsFX;
 import utils.ConsoleUtils;
 import utils.HasLogging;
@@ -82,6 +82,7 @@ public class EthicalHackApp extends Application {
         vBox.getChildren().addAll(new Text("Ping Adress"), address, pingTrace);
 
         TextField networkAddress = new TextField(TracerouteScanner.NETWORK_ADDRESS);
+		ProgressIndicator progressIndicator = new ProgressIndicator(0);
         Button portScanner = CommonsFX.newButton("_Port Scan", e -> {
             items.clear();
             addColumns(commonTable, Arrays.asList("Host", "Route", "OS", "Ports"));
@@ -95,18 +96,16 @@ public class EthicalHackApp extends Application {
                 ObservableMap<String, List<String>> networkRoutes = TracerouteScanner
                         .scanNetworkRoutes(networkAddress.getText());
                 networkRoutes.addListener(updateItemOnChange(items, "Host", "Route"));
+				DoubleProperty defineProgress = ConsoleUtils.defineProgress(3);
+				progressIndicator.setVisible(true);
+				progressIndicator.progressProperty().bind(defineProgress);
                 ConsoleUtils.waitAllProcesses();
-
             }).start();
 
         });
+		progressIndicator.setVisible(false);
         vBox.getChildren().addAll(new Text("Network Adress"), networkAddress, portScanner);
-		vBox.getChildren()
-				.add(new SimpleTextBuilder()
-						.text(Bindings.createStringBinding(() -> count.entrySet().stream()
-								.map(e -> e.getKey() + "=" + e.getValue().size()).collect(Collectors.joining("\n")),
-								count))
-						.build());
+		vBox.getChildren().addAll(progressIndicator);
         HBox hBox = new HBox(vBox, commonTable);
         commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-120));
         primaryStage.setTitle("Ethical Hack App");
@@ -137,12 +136,7 @@ public class EthicalHackApp extends Application {
 				String key = change.getKey();
 				List<String> valueAdded = change.getValueAdded();
 				Map<String, String> e2 = items.stream().filter(c -> key.equals(c.get(primaryKey))).findAny()
-						.orElseGet(() -> {
-							Set<String> orDefault = count.getOrDefault(primaryKey, new HashSet<>());
-							orDefault.add(key);
-							count.put(primaryKey, orDefault);
-							return new ConcurrentHashMap<>();
-						});
+						.orElseGet(ConcurrentHashMap::new);
 				e2.put(primaryKey, key);
 				e2.put(targetKey, valueAdded.stream().collect(Collectors.joining("\n")));
 				if (!items.contains(e2)) {
@@ -152,7 +146,7 @@ public class EthicalHackApp extends Application {
 				Set<String> orDefault = count.getOrDefault(primaryKey, new HashSet<>());
 				orDefault.add(key);
 				count.put(targetKey, orDefault);
-				LOG.info("{} of {} = {}", targetKey, key, valueAdded);
+				LOG.debug("{} of {} = {}", targetKey, key, valueAdded);
 			}
         };
     }
