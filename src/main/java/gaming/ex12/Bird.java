@@ -71,11 +71,11 @@ public class Bird extends Player implements Enemy {
 	public void update(double time) {
 		super.update(time);
 		if (status == BirdStatus.FLYING) {
-			flyingAnimation.update(time * 40.0 / 50.0);
+            flyingAnimation.update(time * 4. / 5);
 		} else if (status == BirdStatus.FALLING) {
-			fallingAnimation.update(time * 40.0 / 50.0);
+            fallingAnimation.update(time * 4. / 5);
 		} else {
-			fallenAnimation.update(time * 40.0 / 50.0);
+            fallenAnimation.update(time * 4. / 5);
 		}
 		if (getPositionY() <= INITIAL_Y) {
 			velocityY = 0;

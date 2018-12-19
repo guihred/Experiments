@@ -51,7 +51,7 @@ public class Shapes3DTexture extends Application {
 		Group group = new Group();
 		// size of the cube
 
-		double size = 400;
+        final double size = 400;
 		group.getTransforms().addAll(rotateX, rotateY);
 		Image diffuseMap = createImage(size);
 		// show noise image
@@ -74,9 +74,9 @@ public class Shapes3DTexture extends Application {
 		// create pyramid with diffuse map
 
 		// Height
-		float h = 150;
+        final float h = 150;
 		// Side
-		float s = 150;
+        final float s = 150;
 		TriangleMesh pyramidMesh = new TriangleMesh();
 		pyramidMesh.getTexCoords().addAll(1, 1, 1, 0, 0, 1, 0, 0);
 		// Point 0 - Top
@@ -105,14 +105,14 @@ public class Shapes3DTexture extends Application {
 				);
 		MeshView pyramid = new MeshView(pyramidMesh);
 		pyramid.setDrawMode(DrawMode.FILL);
-		pyramid.setTranslateY(-250);
+        pyramid.setTranslateY(-500 / 2.);
 		// apply material
 		pyramid.setMaterial(material);
 		group.getChildren().add(pyramid);
 		// scene
 		StackPane root = new StackPane();
 		root.getChildren().add(group);
-		Scene scene = new Scene(root, 1600, 900, true,
+        Scene scene = new Scene(root, 1000, 1000, true,
 				SceneAntialiasing.BALANCED);
 		scene.setCamera(new PerspectiveCamera());
 		// interaction listeners

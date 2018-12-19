@@ -131,7 +131,88 @@ public class GolfBall extends Application {
 		launch(args);
 	}
 
-    private static List<Point3D> createSpheres(final int division, final float radius1) {
+    private	static TriangleMesh createMesh(final int division, final List<Point3D> spheres) {
+    
+    		final int div2 = division / 2;
+    
+    		final int nPoints = division * (div2 - 1) + 2;
+    		final int nTPoints = (division + 1) * (div2 - 1) + division * 2;
+    
+    
+    		final float rDiv = 1.F / division;
+    
+    		float[] points = new float[nPoints * 3];
+    		float[] tPoints = new float[nTPoints * 2];
+    
+    
+            int pPos = 0;
+            int tPos = 0;
+    
+    		for (int y = 0; y < div2 - 1; ++y) {
+                int m = div2 / 2;
+                float va = rDiv * (y + 1 - m) * 2 * (float) Math.PI;
+    			float sinVal = (float) Math.sin(va);
+    			float cosVal = (float) Math.cos(va);
+    
+                float ty = 1 / 2F + sinVal / 2F;
+    			for (int i = 0; i < division; ++i) {
+    				double a = rDiv * i * 2 * (float) Math.PI;
+    				float hSin = (float) Math.sin(a);
+    				float hCos = (float) Math.cos(a);
+                    points[pPos + 0] = hSin * cosVal * RADIUS;
+                    points[pPos + 2] = hCos * cosVal * RADIUS;
+                    points[pPos + 1] = sinVal * RADIUS;
+    				for (Point3D centerOtherSphere : spheres) {
+                        checkDistance(centerOtherSphere, points, pPos);
+    				}
+    				tPoints[tPos + 0] = 1 - rDiv * i;
+    				tPoints[tPos + 1] = ty;
+                    tPos += 2;
+    				pPos += 3;
+    			}
+    			tPoints[tPos + 0] = 0;
+    			tPoints[tPos + 1] = ty;
+    			tPos += 2;
+    		}
+    
+    		points[pPos + 0] = 0;
+            points[pPos + 1] = -RADIUS;
+    		points[pPos + 2] = 0;
+    		for (Point3D centerOtherSphere : spheres) {
+                checkDistance(centerOtherSphere, points, pPos);
+    		}
+    		points[pPos + 3] = 0;
+            points[pPos + 4] = RADIUS;
+    		points[pPos + 5] = 0;
+    		for (Point3D centerOtherSphere : spheres) {
+                checkDistance(centerOtherSphere, points, pPos + 3);
+    		}
+    
+    
+    
+    		float textureDelta = 1.F / 256;
+    		for (int i = 0; i < division; ++i) {
+                tPoints[tPos + 0] = rDiv * (1 / 2F + i);
+    			tPoints[tPos + 1] = textureDelta;
+    			tPos += 2;
+    		}
+    
+    		for (int i = 0; i < division; ++i) {
+                tPoints[tPos + 0] = rDiv * (1 / 2F + i);
+    			tPoints[tPos + 1] = 1 - textureDelta;
+    			tPos += 2;
+    		}
+            int[] faces = createFaces(division);
+    
+            TriangleMesh m = new TriangleMesh();
+            m.getPoints().setAll(points);
+            m.getTexCoords().setAll(tPoints);
+            m.getFaces().setAll(faces);
+    
+            return m;
+        }
+
+	private static List<Point3D> createSpheres(final int division, final float radius1) {
 		List<Point3D> spheres = new ArrayList<>();
 		final int div2 = division / 2;
 
@@ -159,89 +240,8 @@ public class GolfBall extends Application {
 		return spheres;
 	}
 
-	private static int index(final int division, int p3) {
+    private static int index(final int division, int p3) {
         return p3 % division == 0 ? p3 - division : p3;
-    }
-
-	static TriangleMesh createMesh(final int division, final List<Point3D> spheres) {
-
-		final int div2 = division / 2;
-
-		final int nPoints = division * (div2 - 1) + 2;
-		final int nTPoints = (division + 1) * (div2 - 1) + division * 2;
-
-
-		final float rDiv = 1.F / division;
-
-		float[] points = new float[nPoints * 3];
-		float[] tPoints = new float[nTPoints * 2];
-
-
-        int pPos = 0;
-        int tPos = 0;
-
-		for (int y = 0; y < div2 - 1; ++y) {
-            int m = div2 / 2;
-            float va = rDiv * (y + 1 - m) * 2 * (float) Math.PI;
-			float sinVal = (float) Math.sin(va);
-			float cosVal = (float) Math.cos(va);
-
-            float ty = 1 / 2F + sinVal / 2F;
-			for (int i = 0; i < division; ++i) {
-				double a = rDiv * i * 2 * (float) Math.PI;
-				float hSin = (float) Math.sin(a);
-				float hCos = (float) Math.cos(a);
-                points[pPos + 0] = hSin * cosVal * RADIUS;
-                points[pPos + 2] = hCos * cosVal * RADIUS;
-                points[pPos + 1] = sinVal * RADIUS;
-				for (Point3D centerOtherSphere : spheres) {
-                    checkDistance(centerOtherSphere, points, pPos);
-				}
-				tPoints[tPos + 0] = 1 - rDiv * i;
-				tPoints[tPos + 1] = ty;
-                tPos += 2;
-				pPos += 3;
-			}
-			tPoints[tPos + 0] = 0;
-			tPoints[tPos + 1] = ty;
-			tPos += 2;
-		}
-
-		points[pPos + 0] = 0;
-        points[pPos + 1] = -RADIUS;
-		points[pPos + 2] = 0;
-		for (Point3D centerOtherSphere : spheres) {
-            checkDistance(centerOtherSphere, points, pPos);
-		}
-		points[pPos + 3] = 0;
-        points[pPos + 4] = RADIUS;
-		points[pPos + 5] = 0;
-		for (Point3D centerOtherSphere : spheres) {
-            checkDistance(centerOtherSphere, points, pPos + 3);
-		}
-
-
-
-		float textureDelta = 1.F / 256;
-		for (int i = 0; i < division; ++i) {
-            tPoints[tPos + 0] = rDiv * (1 / 2F + i);
-			tPoints[tPos + 1] = textureDelta;
-			tPos += 2;
-		}
-
-		for (int i = 0; i < division; ++i) {
-            tPoints[tPos + 0] = rDiv * (1 / 2F + i);
-			tPoints[tPos + 1] = 1 - textureDelta;
-			tPos += 2;
-		}
-        int[] faces = createFaces(division);
-
-        TriangleMesh m = new TriangleMesh();
-        m.getPoints().setAll(points);
-        m.getTexCoords().setAll(tPoints);
-        m.getFaces().setAll(faces);
-
-        return m;
     }
 
 }

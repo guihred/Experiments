@@ -22,7 +22,7 @@ public class Cubes3D extends Application {
 		stage.setTitle("Cube 3D");
 
 		Cube c = new Cube(50, Color.RED, 1);
-        int initialAngle = 45;
+        final int initialAngle = 45;
         c.rx.setAngle(initialAngle);
         c.ry.setAngle(initialAngle);
 		Cube c2 = new Cube(50, Color.GREEN, 1);
@@ -47,11 +47,13 @@ public class Cubes3D extends Application {
 		// create root group
 		Group root = new Group(c, c2, c3);
 		// translate and rotate group so that origin is center and +Y is up
-        root.setTranslateX(200);
-        root.setTranslateY(75);
+        final double height = 150;
+        final double width = 400;
+        root.setTranslateX(width / 2);
+        root.setTranslateY(height / 2);
 		root.getTransforms().add(new Rotate(180, Rotate.X_AXIS));
 		// create scene
-		Scene scene = new Scene(root, 400, 150);
+        Scene scene = new Scene(root, width, height);
 		scene.setCamera(new PerspectiveCamera());
 		stage.setScene(scene);
 		stage.show();

@@ -28,7 +28,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 		final TableColumn<T, Object> column = new TableColumn<>(columnName);
 		column.setCellFactory(p -> new CustomableTableCell<T, Object>() {
 			@Override
-			void setStyleable(final T auxMed) {
+            protected void setStyleable(final T auxMed) {
 				value.accept(auxMed, (V) this);
 			}
 
@@ -121,7 +121,9 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
 	private abstract class CustomableTableCell<M, X> extends TableCell<M, X> {
 
-		@Override
+		protected abstract void setStyleable(M auxMed);
+
+        @Override
 		protected void updateItem(final X item, final boolean empty) {
 			super.updateItem(item, empty);
 			int index = getIndex();
@@ -131,8 +133,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 				setStyleable(auxMed);
 			}
 		}
-
-		abstract void setStyleable(M auxMed);
 	}
 
 }

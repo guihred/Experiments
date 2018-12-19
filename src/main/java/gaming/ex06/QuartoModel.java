@@ -22,23 +22,7 @@ public class QuartoModel {
 	private final QuartoPiece[][] mapQuarto = new QuartoPiece[4][4];
 	private final List<QuartoPiece> pieces = new ArrayList<>();
 
-    public Circle[][] getMap() {
-		return map;
-	}
-
-    public QuartoPiece[][] getMapQuarto() {
-		return mapQuarto;
-	}
-
-    public List<QuartoPiece> getPieces() {
-		return pieces;
-	}
-
-    private boolean neighborsNotNull(int i, int j) {
-        return getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null || getMapQuarto()[i + 1][j + 1] == null;
-    }
-
-	boolean checkEnd() {
+    public boolean checkEnd() {
 		if (Stream.of(getMapQuarto()).filter(d -> Stream.of(d).noneMatch(Objects::isNull))
                 .map(d -> Stream.of(d).map(QuartoPiece::getNumber).collect(Collectors.toList()))
                 .anyMatch(QuartoModel::somethingInCommon)) {
@@ -76,7 +60,19 @@ public class QuartoModel {
         return false;
     }
 
-	final void reset() {
+    public Circle[][] getMap() {
+		return map;
+	}
+
+    public QuartoPiece[][] getMapQuarto() {
+		return mapQuarto;
+	}
+
+    public List<QuartoPiece> getPieces() {
+		return pieces;
+	}
+
+    public final void reset() {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 getMapQuarto()[i][j] = null;
@@ -89,6 +85,10 @@ public class QuartoModel {
             piece.setTranslateZ(QuartoLauncher.getTranslate(k));
         }
 
+    }
+
+    private boolean neighborsNotNull(int i, int j) {
+        return getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null || getMapQuarto()[i + 1][j + 1] == null;
     }
 
 	private static boolean somethingInCommon(List<Integer> a) {

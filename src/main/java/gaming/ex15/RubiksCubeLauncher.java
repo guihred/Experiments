@@ -11,11 +11,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -84,16 +80,17 @@ public class RubiksCubeLauncher extends Application {
 				}
 			}
 		}
-		SubScene subScene = new SubScene(root, 640, 480, true, SceneAntialiasing.BALANCED);
+        SubScene subScene = new SubScene(root, 500, 500, true, SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(stage.heightProperty());
 		subScene.widthProperty().bind(stage.widthProperty());
 		PerspectiveCamera camera = new PerspectiveCamera(true);
 		camera.setFarClip(1000.0);
-		camera.setTranslateX(-200);
-		camera.setTranslateZ(-200);
+		final int distance = 200;
+        camera.setTranslateX(-distance);
+		camera.setTranslateZ(-distance);
 		camera.setRotationAxis(Rotate.Y_AXIS);
-		camera.setNearClip(0.2);
-		camera.setFieldOfView(40);
+        camera.setNearClip(2. / 10);
+        camera.setFieldOfView(40);
 		subScene.setCamera(camera);
 
 

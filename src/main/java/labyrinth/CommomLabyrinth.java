@@ -30,7 +30,7 @@ public interface CommomLabyrinth {
     Collection<LabyrinthWall> getLabyrinthWalls();
 
 
-	static Sphere checkBalls(Bounds boundsInParent, Sphere[][] balls2) {
+    static Sphere checkBalls(Bounds boundsInParent, Sphere[][] balls2) {
         return Stream.of(balls2).flatMap(Stream::of)
                 .filter(Objects::nonNull)
                 .filter(b -> b.getBoundsInParent().intersects(boundsInParent))

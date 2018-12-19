@@ -19,8 +19,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
@@ -105,7 +103,7 @@ public class PongLauncher extends Application {
 						centerY.setValue(centerY.getValue() + vertPixels);
                     })
 			.build();
-    private Button startButton = newButton(225, WIDTH * 2 / 3, "Start!", e -> {
+    private Button startButton = newButton(WIDTH / 2, WIDTH * 2 / 3, "Start!", e -> {
 		startVisible.set(false);
 		pongAnimation.playFromStart();
 		pongComponents.requestFocus();
@@ -130,15 +128,15 @@ public class PongLauncher extends Application {
     @Override
     public void start(Stage stage) {
 		rightPaddle = new SimpleRectangleBuilder()
-                .x(470)
+                .x(WIDTH - 30)
                 .width(10)
                 .height(30)
                 .fill(Color.LIGHTBLUE)
 				.cursor(Cursor.HAND)
-				.onMousePressed((MouseEvent me) -> {
+                .onMousePressed(me -> {
 					initRightPaddleTranslateY = rightPaddle.getTranslateY();
                     setRightPaddleDragAnchorY(me.getSceneY());
-				}).onMouseDragged((MouseEvent me) -> {
+                }).onMouseDragged(me -> {
                     double dragY = me.getSceneY() - getRightPaddleDragAnchorY();
 					rightPaddleY.setValue(initRightPaddleTranslateY + dragY);
 				})
@@ -149,11 +147,11 @@ public class PongLauncher extends Application {
                 .height(30)
                 .fill(Color.LIGHTBLUE)
                 .cursor(Cursor.HAND)
-                .onMousePressed((MouseEvent me) -> {
+                .onMousePressed(me -> {
                     initLeftPaddleTranslateY = leftPaddle.getTranslateY();
                     setLeftPaddleDragAnchorY(me.getSceneY());
                 })
-                .onMouseDragged((MouseEvent me) -> {
+                .onMouseDragged(me -> {
                     double dragY = me.getSceneY() - getLeftPaddleDragAnchorY();
                     leftPaddleY.setValue(initLeftPaddleTranslateY + dragY);
                 })
@@ -162,7 +160,7 @@ public class PongLauncher extends Application {
         pongComponents = new Group(topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton,
                 ball);
 		pongComponents.setFocusTraversable(true);
-		pongComponents.setOnKeyPressed((KeyEvent k) -> {
+        pongComponents.setOnKeyPressed(k -> {
 			if (k.getCode() == KeyCode.L && !rightPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
 				rightPaddleY.setValue(rightPaddleY.getValue() - 6);
 			}
@@ -218,10 +216,10 @@ public class PongLauncher extends Application {
      * Sets the initial starting positions of the ball and paddles
      */
     private void initialize() {
-        centerX.setValue(250);
-        centerY.setValue(250);
-        leftPaddleY.setValue(235);
-        rightPaddleY.setValue(235);
+        centerX.setValue(WIDTH / 2);
+        centerY.setValue(WIDTH / 2);
+        leftPaddleY.setValue(WIDTH / 2);
+        rightPaddleY.setValue(WIDTH / 2);
         startVisible.set(true);
         pongComponents.requestFocus();
     }

@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,14 +19,15 @@ public class WorkingListsViews extends Application {
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Creating and Working with Observable Lists");
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 400, 250, Color.WHITE);
+        Scene scene = new Scene(root, 500, 500, Color.WHITE);
 		GridPane gridpane = new GridPane();
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
 		gridpane.setPadding(new Insets(5));
-		ColumnConstraints column1 = new ColumnConstraints(150, 150, Double.MAX_VALUE);
+        final int minWidth = 150;
+        ColumnConstraints column1 = new ColumnConstraints(minWidth, minWidth, Double.MAX_VALUE);
 		ColumnConstraints column2 = new ColumnConstraints(50);
-		ColumnConstraints column3 = new ColumnConstraints(150, 150, Double.MAX_VALUE);
+		ColumnConstraints column3 = new ColumnConstraints(minWidth, minWidth, Double.MAX_VALUE);
 		column1.setHgrow(Priority.ALWAYS);
 		column3.setHgrow(Priority.ALWAYS);
 		gridpane.getColumnConstraints().addAll(column1, column2, column3);
@@ -73,6 +75,7 @@ public class WorkingListsViews extends Application {
 					}
 				});
 		VBox vbox = new VBox(5);
+        vbox.setAlignment(Pos.CENTER);
 		vbox.getChildren().addAll(sendRightButton, sendLeftButton);
 		gridpane.add(vbox, 1, 1);
 		root.setCenter(gridpane);

@@ -37,6 +37,16 @@ public class MemorySquare extends Region {
 		return color;
 	}
 
+	public Shape getFinalShape() {
+        if (shape == null) {
+            shape = memoryImage.get().getShape();
+            shape.setFill(Color.WHITE);
+            shape.fillProperty().bind(Bindings.when(state.isEqualTo(State.HIDDEN)).then(Color.WHITE).otherwise(color));
+        }
+
+        return shape;
+    }
+
 	public MemoryImage getMemoryImage() {
 		return memoryImage.get();
 	}
@@ -57,19 +67,9 @@ public class MemorySquare extends Region {
 		state.set(s);
 	}
 
-	public ObjectProperty<State> stateProperty() {
+    public ObjectProperty<State> stateProperty() {
 		return state;
 	}
-
-	Shape getFinalShape() {
-        if (shape == null) {
-            shape = memoryImage.get().getShape();
-            shape.setFill(Color.WHITE);
-            shape.fillProperty().bind(Bindings.when(state.isEqualTo(State.HIDDEN)).then(Color.WHITE).otherwise(color));
-        }
-
-        return shape;
-    }
 
 	public enum State {
         HIDDEN,

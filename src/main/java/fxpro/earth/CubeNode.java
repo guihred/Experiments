@@ -152,7 +152,18 @@ public class CubeNode extends Parent {
 		showMapTimeline.playFromStart();
 	}
 
-	private void handleMouseDragged(MouseEvent me) {
+	private final void arrangeFacesZOrder() {
+		rearFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 0)));
+		bottomFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 270)));
+		leftFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 270)));
+		rightFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 90)));
+		topFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 90)));
+		frontFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 180)));
+
+		FXCollections.sort(getChildren(), new CubeFaceComparator());
+	}
+
+    private void handleMouseDragged(MouseEvent me) {
 		if (me.isControlDown()) {
 			getScene().getWindow().setX(me.getScreenX() - dragStartOffsetX);
 			getScene().getWindow().setY(me.getScreenY() - dragStartOffsetY);
@@ -176,16 +187,6 @@ public class CubeNode extends Parent {
 					- getScene().getWindow().getY() - dragStartOffsetY)
 					/ 3 + dragPressedAngleX);
 		}
-	}
-	final void arrangeFacesZOrder() {
-		rearFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 0)));
-		bottomFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 270)));
-		leftFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 270)));
-		rightFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 90)));
-		topFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 90)));
-		frontFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 180)));
-
-		FXCollections.sort(getChildren(), new CubeFaceComparator());
 	}
 
 }

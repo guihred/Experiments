@@ -35,16 +35,16 @@ public class Labyrinth3DAntiAliasing extends Application implements CommomLabyri
 		Group root = new Group();
 
 		initializeLabyrinth(root);
-		SubScene subScene = new SubScene(root, 640, 480, true,
+        SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
-		camera.setNearClip(0.1);
+        camera.setNearClip(1. / 10);
 		camera.setTranslateZ(-1000);
 		camera.setFarClip(1000.0);
 		subScene.setCamera(camera);
 
-		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+        PointLight light = new PointLight(Color.GRAY);
 		light.translateXProperty().bind(camera.translateXProperty());
 		light.translateYProperty().bind(camera.translateYProperty());
 		light.translateZProperty().bind(camera.translateZProperty());

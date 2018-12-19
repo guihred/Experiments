@@ -26,7 +26,6 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleSliderBuilder;
-import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -48,22 +47,8 @@ public class PlayingAudio extends Application {
 	private Point2D previousLocation;
 	private ChangeListener<Duration> progressListener;
 	private Stage mainStage;
-
-	/**
-	 * Sets play button visible and pause button not visible when playVisible is
-	 * true otherwise the opposite.
-	 *
-	 * 
-	 * 
-	 * @param playVisible
-	 *            - value of true the play becomes visible and pause non
-	 *            visible, otherwise the opposite.
-	 * @param pauseButton 
-	 * @param playButton2 
-	 */
-    Group playButton;
-
-	Group pauseButton;
+    private Group playButton;
+    private Group pauseButton;
 
 	/**
 	 * @param args
@@ -98,7 +83,6 @@ public class PlayingAudio extends Application {
 		Node closeButton = createCloseButton();
         root.getChildren().addAll(applicationArea, vizContainer, buttonPanel, progressSlider, closeButton);
         scene.getStylesheets().add(ResourceFXUtils.toExternalForm("media.css"));
-        ClassReflectionUtils.displayCSSStyler(scene, "media.css");
 
 		primaryStage.show();
 	}

@@ -1,13 +1,6 @@
 package ethical.hacker;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -15,14 +8,11 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
+import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -125,30 +115,33 @@ public class EthicalHackApp extends Application {
         });
     }
 
+    private void updateItem(final ObservableList<Map<String, String>> items, final String primaryKey,
+            final String targetKey, Change<? extends String, ? extends List<String>> change) {
+        synchronized (count) {
+        	if (!change.wasAdded()) {
+        		return;
+        	}
+        	String key = change.getKey();
+        	List<String> valueAdded = change.getValueAdded();
+        	Map<String, String> e2 = items.stream().filter(c -> key.equals(c.get(primaryKey))).findAny()
+        			.orElseGet(ConcurrentHashMap::new);
+        	e2.put(primaryKey, key);
+        	e2.put(targetKey, valueAdded.stream().collect(Collectors.joining("\n")));
+        	if (!items.contains(e2)) {
+        		items.add(e2);
+        	}
+        	items.add(0, items.remove(0));
+        	Set<String> orDefault = count.getOrDefault(primaryKey, new HashSet<>());
+        	orDefault.add(key);
+        	count.put(targetKey, orDefault);
+        	LOG.debug("{} of {} = {}", targetKey, key, valueAdded);
+        }
+    }
+
     private MapChangeListener<String, List<String>> updateItemOnChange(final ObservableList<Map<String, String>> items,
             final String primaryKey, final String targetKey) {
 		count.clear();
-        return change -> {
-			synchronized (count) {
-				if (!change.wasAdded()) {
-					return;
-				}
-				String key = change.getKey();
-				List<String> valueAdded = change.getValueAdded();
-				Map<String, String> e2 = items.stream().filter(c -> key.equals(c.get(primaryKey))).findAny()
-						.orElseGet(ConcurrentHashMap::new);
-				e2.put(primaryKey, key);
-				e2.put(targetKey, valueAdded.stream().collect(Collectors.joining("\n")));
-				if (!items.contains(e2)) {
-					items.add(e2);
-				}
-				items.add(0, items.remove(0));
-				Set<String> orDefault = count.getOrDefault(primaryKey, new HashSet<>());
-				orDefault.add(key);
-				count.put(targetKey, orDefault);
-				LOG.debug("{} of {} = {}", targetKey, key, valueAdded);
-			}
-        };
+        return change -> updateItem(items, primaryKey, targetKey, change);
     }
 
     public static void main(final String[] args) {

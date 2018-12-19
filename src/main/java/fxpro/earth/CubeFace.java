@@ -66,26 +66,12 @@ public class CubeFace extends Parent {
 		return zPos;
 	}
 
-	private void loadFace(TilePane tilePane, int xOffset, int y) {
-		for (int x = xOffset; x <= xOffset + 1; x++) {
-			int xm = (x + 1) % 8;
-			ImageView mapTile = new ImageView();
-			mapTile.setImage(new Image(
-					"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
-							+ "&z=3"));
-			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
-			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
-			mapTile.opacityProperty().bind(cubeModel.getMapOpacity());
-			tilePane.getChildren().add(mapTile);
-		}
-	}
-
-	final Paint computeFaceHSB() {
+	private final Paint computeFaceHSB() {
 		return Color.hsb(FACE_HUE, FACE_SAT,
 				Math.abs(-zPos.getValue() / (RADIUS * 2)) + 0.40);
 	}
 
-	Node createBottomMapTiles(int sideNum) {
+    private Node createBottomMapTiles(int sideNum) {
 		TilePane tilePane;
 		int xOffset = (sideNum + 1) * 2;
 		tilePane = new TilePane();
@@ -105,7 +91,7 @@ public class CubeFace extends Parent {
 		return tilePane;
 	}
 
-	final Rectangle createFaceRectangle() {
+    private final Rectangle createFaceRectangle() {
 		faceRect = new Rectangle();
 		faceRect.setWidth(EDGE_LENGTH);
 		faceRect.setHeight(EDGE_LENGTH);
@@ -113,7 +99,7 @@ public class CubeFace extends Parent {
 		return faceRect;
 	}
 
-	final Node createMapTiles(int face) {
+    private 	final Node createMapTiles(int face) {
         CrawlerTask.insertProxyConfig();
 		if (face == FRONT_FACE || face == RIGHT_FACE || face == REAR_FACE
 				|| face == LEFT_FACE) {
@@ -149,7 +135,7 @@ public class CubeFace extends Parent {
 		}
 	}
 
-	Node createSideMapTiles(int sideNum) {
+    private     Node createSideMapTiles(int sideNum) {
 		TilePane tilePane;
 		int xOffset = sideNum * 2;
 		tilePane = new TilePane();
@@ -172,7 +158,7 @@ public class CubeFace extends Parent {
 		return tilePane;
 	}
 
-	Node createTopMapTiles(int sideNum) {
+	private 	Node createTopMapTiles(int sideNum) {
 		TilePane tilePane;
 		int xOffset = sideNum * 2;
 		tilePane = new TilePane();
@@ -189,6 +175,20 @@ public class CubeFace extends Parent {
 			loadFace(tilePane, xOffset, y);
 		}
 		return tilePane;
+	}
+
+    private void loadFace(TilePane tilePane, int xOffset, int y) {
+		for (int x = xOffset; x <= xOffset + 1; x++) {
+			int xm = (x + 1) % 8;
+			ImageView mapTile = new ImageView();
+			mapTile.setImage(new Image(
+					"http://mt3.google.com/vt/v=w2.97&x=" + xm + "&y=" + y
+							+ "&z=3"));
+			mapTile.setFitWidth(CubeFace.EDGE_LENGTH / 2);
+			mapTile.setFitHeight(CubeFace.EDGE_LENGTH / 3);
+			mapTile.opacityProperty().bind(cubeModel.getMapOpacity());
+			tilePane.getChildren().add(mapTile);
+		}
 	}
 
 }

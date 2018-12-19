@@ -35,9 +35,10 @@ public class PacmanGhost extends Group implements HasLogging {
     public PacmanGhost(GhostColor color) {
         this.color = color;
         Polygon polygon = new Polygon();
+        final double radius = 12;
         for (int i = 180; i <= 360; i += 5) {
-            double x = Math.cos(Math.toRadians(i)) * 12;
-            double y = Math.sin(Math.toRadians(i)) * 12;
+            double x = Math.cos(Math.toRadians(i)) * radius;
+            double y = Math.sin(Math.toRadians(i)) * radius;
             polygon.getPoints().addAll(x, y);
         }
         getCircle().setFill(color.color);
@@ -46,8 +47,8 @@ public class PacmanGhost extends Group implements HasLogging {
                 .bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.color)
                         .otherwise(Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.BLUEVIOLET)
                                 .otherwise(Color.TRANSPARENT)));
-        polygon.getPoints().addAll(-12D, 0D, -12D, 20D, -8D, 10D, -4D, 20D, 0D, 10D, 4D, 20D, 8D, 10D, 12D, 20D, 12D,
-                0D);
+        polygon.getPoints().addAll(-radius, 0D, -radius, 20D, -8D, 10D, -4D, 20D, 0D, 10D, 4D, 20D, 8D, 10D, radius,
+                20D, radius, 0D);
         Ellipse ellipse = new Ellipse(4, 6);
         ellipse.setFill(Color.WHITE);
         ellipse.setLayoutX(-5);

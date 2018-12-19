@@ -38,16 +38,16 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		initializeLabyrinth(root);
-		SubScene subScene = new SubScene(root, 640, 480, true,
+        SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
-		camera.setNearClip(0.1);
+        camera.setNearClip(1. / 10);
 		subScene.setCamera(camera);
 
-		PointLight light = new PointLight(Color.rgb(125, 125, 125));
+        PointLight light = new PointLight(Color.GRAY);
 		light.translateXProperty().bind(camera.translateXProperty());
 		light.translateYProperty().bind(camera.translateYProperty());
 		light.translateZProperty().bind(camera.translateZProperty());

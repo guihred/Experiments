@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -22,7 +23,9 @@ import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.TimelineGraph;
 import org.slf4j.Logger;
-import simplebuilder.*;
+import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleComboBoxBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -35,7 +38,7 @@ public class TimelineExample extends Application {
 	public void start(Stage theStage) {
 		theStage.setTitle("Timeline Example");
         FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 1050, 600);
+        Scene theScene = new Scene(root, 1020, 600);
 		theStage.setScene(theScene);
 
         TimelineGraph canvas = new TimelineGraph();
@@ -63,19 +66,18 @@ public class TimelineExample extends Application {
         canvas.setHistogram(x, countryNameColumn);
         itens.setAll(sortedLabels(canvas.colorsProperty()));
         String[] list = ResourceFXUtils.toFile("out").list((dir, name) -> name.endsWith(".csv"));
-        ComboBox<String> build2 = new SimpleComboBoxBuilder<String>().items(list).select(0).onSelect(s -> {
+        ComboBox<String> indicators = new SimpleComboBoxBuilder<String>().items(list).select(0).onSelect(s -> {
             DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(46).build();
             canvas.setTitle(x2.list("Indicator Name").get(0).toString());
             canvas.setHistogram(x2, countryNameColumn);
             itens.setAll(sortedLabels(canvas.colorsProperty()));
         }).build();
 
+        root.getChildren().add(indicators);
         root.getChildren()
                 .add(new SimpleButtonBuilder().text("Export").onAction(d -> ResourceFXUtils.take(canvas)).build());
-        root.getChildren().add(build2);
-        root.getChildren().add(listVies);
+        root.getChildren().add(new HBox(listVies, canvas));
 
-        root.getChildren().add(canvas);
 		theStage.show();
 	}
 

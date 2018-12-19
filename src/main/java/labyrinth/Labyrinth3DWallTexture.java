@@ -174,6 +174,14 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 	}
 
 
+	private Sphere checkBalls(Bounds boundsInParent) {
+		return Stream.of(balls).flatMap(Stream::of)
+                .filter(Objects::nonNull)
+				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
+				.findFirst().orElse(null);
+	}
+
+
 	private void createLabyrinth(Group root1) {
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = mapa[i].length - 1; j >= 0; j--) {
@@ -197,8 +205,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		}
 	}
 
-
-	private MeshView generateGhost(String arquivo, Color enemyColor) {
+    private MeshView generateGhost(String arquivo, Color enemyColor) {
         Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
 		MeshView enemy = new MeshView(mesh);
 
@@ -217,13 +224,6 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
         enemy.setScaleY(1);
         enemy.setScaleX(4. / 10);
 		return enemy;
-	}
-
-    Sphere checkBalls(Bounds boundsInParent) {
-		return Stream.of(balls).flatMap(Stream::of)
-                .filter(Objects::nonNull)
-				.filter(b -> b.getBoundsInParent().intersects(boundsInParent))
-				.findFirst().orElse(null);
 	}
 
 

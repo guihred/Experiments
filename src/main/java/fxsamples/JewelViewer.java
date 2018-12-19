@@ -203,13 +203,13 @@ public class JewelViewer extends Application {
         }
     }
 
+    public  static MeshView loadMeshViews() {
+        Mesh mesh = ResourceFXUtils.importStlMesh(ORIGINAL_FILENAME);
+        return new MeshView(mesh);
+    }
+
     public static void main(String[] args) {
         System.setProperty("prism.dirtyopts", "false");
         launch(args);
-    }
-
-    static MeshView loadMeshViews() {
-        Mesh mesh = ResourceFXUtils.importStlMesh(ORIGINAL_FILENAME);
-        return new MeshView(mesh);
     }
 }

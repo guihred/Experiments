@@ -29,14 +29,15 @@ public class TriangleMeshes extends Application implements HasLogging {
 		Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
 		scene.setFill(Color.BLACK);
 		PerspectiveCamera camera = new PerspectiveCamera(true);
-		camera.setNearClip(0.1);
-		camera.setFarClip(10000.0);
+        camera.setNearClip(1. / 10);
+        camera.setFarClip(1000.0);
 		camera.setTranslateZ(-1000);
 		scene.setCamera(camera);
-		Group pyramid1 = buildPyramid(100, 200, Color.GOLDENROD, true, false);
+        final int hypotenuse = 200;
+        Group pyramid1 = buildPyramid(100, hypotenuse, Color.GOLDENROD, true, false);
 		pyramid1.setTranslateX(-100);
 		// Step 3b: Create and transform a Pyramid using DrawMode FILL
-		Group pyramid2 = buildPyramid(100, 200, Color.GOLDENROD, true, true);
+		Group pyramid2 = buildPyramid(100, hypotenuse, Color.GOLDENROD, true, true);
 		// Since the pyramid is a group it can be translated and rotated like a
 		// primitive
 		pyramid2.setTranslateX(-100);
@@ -44,9 +45,9 @@ public class TriangleMeshes extends Application implements HasLogging {
 		pyramid2.setRotationAxis(Rotate.Z_AXIS);
 		pyramid2.setRotate(180);
 		// Step 3c: Add some more pyramids of a different color
-		Group pyramid3 = buildPyramid(100, 200, Color.LAWNGREEN, true, true);
+		Group pyramid3 = buildPyramid(100, hypotenuse, Color.LAWNGREEN, true, true);
 		pyramid3.setTranslateX(100);
-		Group pyramid4 = buildPyramid(100, 200, Color.LAWNGREEN, true, false);
+		Group pyramid4 = buildPyramid(100, hypotenuse, Color.LAWNGREEN, true, false);
 		pyramid4.setTranslateX(100);
 		pyramid4.setTranslateY(-100);
 		pyramid4.setRotationAxis(Rotate.Z_AXIS);

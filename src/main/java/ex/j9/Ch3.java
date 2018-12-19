@@ -237,11 +237,11 @@ public class Ch3 {
         // By default, sequences are infinite
 		int next();
 
-		static IntSequence constant(int seq) {
+        public static IntSequence constant(int seq) {
 			return () -> seq;
 		}
 
-        static IntSequence of(int... seq) {
+        public static IntSequence of(int... seq) {
 			return new IntSequence() {
                 private int i;
 

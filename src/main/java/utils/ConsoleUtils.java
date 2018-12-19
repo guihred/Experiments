@@ -33,21 +33,12 @@ public final class ConsoleUtils {
 	public static DoubleProperty defineProgress(final double n) {
     	SimpleDoubleProperty simpleDoubleProperty = new SimpleDoubleProperty(0);
 		new Thread(() -> {
-			final int waitingInterval = 500;
-			if (PROCESSES.isEmpty()) {
-				try {
-					Thread.sleep(waitingInterval);
-					Thread.yield();
-				} catch (Exception e1) {
-					LOGGER.trace("", e1);
-				}
-			}
 			while (PROCESSES.values().stream().anyMatch(e -> !e)) {
 				try {
 					long count = PROCESSES.values().stream().filter(e -> !e).count();
 					double newValue = (n - count) / n;
 					simpleDoubleProperty.set(newValue);
-					Thread.sleep(waitingInterval);
+					Thread.sleep(500);
 				} catch (Exception e1) {
 					LOGGER.trace("", e1);
 				}
@@ -140,6 +131,7 @@ public final class ConsoleUtils {
     public static ObservableList<String> executeInConsoleInfoAsync(final String cmd, final Runnable... onFinish) {
         ObservableList<String> execution = FXCollections.observableArrayList();
         LOGGER.info(EXECUTING, cmd);
+        PROCESSES.put(cmd, false);
         new Thread(() -> {
             Process p = newProcess(cmd);
             try (BufferedReader in2 = new BufferedReader(
