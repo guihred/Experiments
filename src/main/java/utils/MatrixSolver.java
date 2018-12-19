@@ -58,16 +58,6 @@ public final class MatrixSolver {
         return DoubleStream.of(v).map(e -> e / norm).toArray();
     }
 
-	public static void main(String[] args) {
-		double[][] matr = { 
-		{ 4, 5, 3 },
-		{ 2, -5, -2 },
-		{ 4, 5, 6 }
-		};
-		double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
-        String solvedCoef = "\n\t" + Arrays.toString(MatrixSolver.solve(matr, coef2));
-        LOGGER.info(solvedCoef);
-	}
 
 	public static double[] matmul(double[][] matrix, double[] v) {
         double[] a = new double[matrix.length];

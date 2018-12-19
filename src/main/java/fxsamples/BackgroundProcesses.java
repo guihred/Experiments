@@ -7,6 +7,7 @@ import java.util.Random;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -22,8 +23,9 @@ public class BackgroundProcesses extends Application {
 		primaryStage
                 .setTitle("Background Processes");
 		// ... Layout and UI controls code here
-		VBox root = new VBox();
-		Scene scene = new Scene(root, 380, 150, Color.WHITE);
+        VBox root = new VBox(10);
+        root.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(root, Color.WHITE);
 		final Label label = new Label("Files Transfer:");
 		final ProgressBar progressBar = new ProgressBar(0);
 		final ProgressIndicator progressIndicator = new ProgressIndicator(0);
@@ -33,6 +35,7 @@ public class BackgroundProcesses extends Application {
 		final TextArea textArea = new TextArea();
 		// ... Layout and UI controls code here
 		// wire up Start button
+        textArea.setPrefHeight(100);
 		startButton.setOnAction(event -> {
 			startButton.setDisable(true);
 			progressBar.setProgress(0);

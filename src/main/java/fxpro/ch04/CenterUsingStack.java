@@ -25,7 +25,7 @@ public class CenterUsingStack extends Application {
         Ellipse ellipse = new Ellipse();
         StackPane stack = new StackPane();
         stack.getChildren().addAll(ellipse, text);
-        Scene scene = new Scene(stack, 400, 100);
+        Scene scene = new Scene(stack, 500, 500);
         ellipse.radiusXProperty().bind(scene.widthProperty().divide(2));
         ellipse.radiusYProperty().bind(scene.heightProperty().divide(2));
         primaryStage.setScene(scene);

@@ -13,9 +13,9 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -31,13 +31,13 @@ public class ContestApplication extends Application implements HasLogging {
     @Override
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setTitle("Contest Questions");
-        BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, 600, 250, Color.WHITE);
+        HBox root = new HBox(20);
+        root.setPrefWidth(1000);
+        root.setPrefHeight(500);
+        Scene scene = new Scene(root, Color.WHITE);
         // create a grid pane
-        HBox gridpane = new HBox();
-        gridpane.setPadding(new Insets(5));
+        root.setPadding(new Insets(5));
 
-        root.setCenter(gridpane);
         String arquivo = "102 - Analista de Tecnologia da Informacao - Tipo D.pdf";
         File file = ResourceFXUtils.toFile(arquivo);
         getLogger().info("File exists={}", file.exists());
@@ -52,7 +52,7 @@ public class ContestApplication extends Application implements HasLogging {
         final TableView<ContestQuestion> questionsTable = createContestQuestionsTable(root);
         questionsTable.setItems(questions);
 
-        gridpane.getChildren().add(createVbox("Questions", questionsTable));
+        root.getChildren().add(createVbox("Questions", questionsTable));
 
         TableView<HasImage> imagesTable = createImagesTable(root);
 
@@ -67,17 +67,17 @@ public class ContestApplication extends Application implements HasLogging {
 
         imagesTable.setItems(li);
 
-        gridpane.getChildren().add(createVbox("Images", imagesTable));
+        root.getChildren().add(createVbox("Images", imagesTable));
 
         TableView<ContestText> textsTable = createTextsTable(root);
         textsTable.setItems(texts);
-        gridpane.getChildren().add(createVbox("Texts", textsTable));
+        root.getChildren().add(createVbox("Texts", textsTable));
         // selection listening
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private TableView<ContestQuestion> createContestQuestionsTable(BorderPane root) {
+    private TableView<ContestQuestion> createContestQuestionsTable(Region root) {
         return new SimpleTableViewBuilder<ContestQuestion>()
                 .prefWidth(root.widthProperty().add(-10).divide(3))
                 .prefHeight(root.heightProperty().add(-30))
@@ -90,7 +90,7 @@ public class ContestApplication extends Application implements HasLogging {
                 .build();
     }
 
-    private TableView<HasImage> createImagesTable(BorderPane root) {
+    private TableView<HasImage> createImagesTable(Region root) {
 
         return new SimpleTableViewBuilder<HasImage>()
                 .prefWidth(root.widthProperty().add(-10).divide(3))
@@ -101,7 +101,7 @@ public class ContestApplication extends Application implements HasLogging {
                 .build();
     }
 
-    private TableView<ContestText> createTextsTable(BorderPane root) {
+    private TableView<ContestText> createTextsTable(Region root) {
         return new SimpleTableViewBuilder<ContestText>()
                 .prefWidth(root.widthProperty().add(-10).divide(3))
                 .prefHeight(root.heightProperty().add(-30))

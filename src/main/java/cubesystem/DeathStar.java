@@ -94,7 +94,7 @@ public class DeathStar extends Application {
 				points[pPos + 2] = hCos * cosVal * radius;
 				points[pPos + 1] = sinVal * radius;
 
-                GolfBall.checkDistance(radius, centerOtherSphere, points, pPos);
+                GolfBall.checkDistance(centerOtherSphere, points, pPos);
 				tPoints[tPos + 0] = 1 - rDiv * i;
 				tPoints[tPos + 1] = ty;
 				pPos += 3;
@@ -108,11 +108,11 @@ public class DeathStar extends Application {
 		points[pPos + 0] = 0;
 		points[pPos + 1] = -radius;
 		points[pPos + 2] = 0;
-        GolfBall.checkDistance(radius, centerOtherSphere, points, pPos);
+        GolfBall.checkDistance(centerOtherSphere, points, pPos);
 		points[pPos + 3] = 0;
 		points[pPos + 4] = radius;
 		points[pPos + 5] = 0;
-        GolfBall.checkDistance(radius, centerOtherSphere, points, pPos + 3);
+        GolfBall.checkDistance(centerOtherSphere, points, pPos + 3);
 
 		float textureDelta = 1.F / 256;
 		for (int i = 0; i < division; ++i) {

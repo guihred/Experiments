@@ -12,29 +12,37 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PieGraph;
-import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 public class PieGraphExample extends Application {
 
+    private static final int SIZE = 650;
 
     @Override
 	public void start(Stage theStage) {
         theStage.setTitle("Points Graph Example");
         FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 600, 600);
+        Scene theScene = new Scene(root, SIZE, SIZE);
 		theStage.setScene(theScene);
         PieGraph canvas = new PieGraph();
-        DataframeML x = new DataframeML("WDICountry.csv");
+        DataframeML x = DataframeML.builder("WDICountry.csv").build();
         canvas.setDataframe(x, "Region");
-        Button exportButton = new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas))
-                .build();
+        Button exportButton = CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas));
         VBox radiusSlider = newSlider("Radius", 1, 375, canvas.radiusProperty());
         VBox binsSlider = newSlider("Bins", 1, 50, canvas.binsProperty());
-        root.getChildren().add(new HBox(radiusSlider, binsSlider, exportButton));
+        VBox xSlider = newSlider("X", 1, SIZE, canvas.xOffsetProperty());
+        VBox propSlider = newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());
+        root.getChildren().add(new HBox(radiusSlider, binsSlider, xSlider, propSlider, exportButton));
         root.getChildren().add(new HBox(canvas));
 		theStage.show();
 	}
+
+    private VBox newSlider(String string, double min, double max, Property<Number> radius) {
+        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
+        build.valueProperty().bindBidirectional(radius);
+        return new VBox(new Text(string), build);
+    }
 
     private VBox newSlider(String string, int min, int max, Property<Number> radius) {
         Slider build = new SimpleSliderBuilder().min(min).max(max).build();

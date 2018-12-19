@@ -27,7 +27,9 @@ import utils.Xform;
 
 public class QuartoLauncher extends Application implements HasLogging{
 
-	private static final double ALT_MULTIPLIER = 0.5;
+    private static final int HEIGHT = 700;
+    private static final int WIDTH = 1000;
+    private static final double ALT_MULTIPLIER = 0.5;
 	private static final double CONTROL_MULTIPLIER = 0.1;
 	private static final double SHIFT_MULTIPLIER = 0.1;
 	private static final double CAMERA_DISTANCE = 550;
@@ -35,7 +37,7 @@ public class QuartoLauncher extends Application implements HasLogging{
     private final Xform cameraXform = new Xform();
     private final Xform cameraXform2 = new Xform();
     private final Xform cameraXform3 = new Xform();
-	private QuartoModel model = new QuartoModel();
+    private final QuartoModel model = new QuartoModel();
 	private final Group root = new Group();
 	private final Xform world = new Xform();
 
@@ -45,7 +47,7 @@ public class QuartoLauncher extends Application implements HasLogging{
         root.getChildren().add(world);
         buildCamera();
         buildAxes();
-        Scene scene = new Scene(root, 1024, 768, true);
+        Scene scene = new Scene(root, WIDTH, HEIGHT, true);
         scene.setFill(Color.GREY);
 		scene.setOnKeyPressed(this::handleKeyPressed);
 		scene.setOnMouseClicked(this::handleMouseClick);
@@ -69,7 +71,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 		final PhongMaterial whiteMaterial = new PhongMaterial();
 		whiteMaterial.setDiffuseColor(Color.WHITE);
 		whiteMaterial.setSpecularColor(Color.WHITE);
-		final Box board = new Box(240.0, 1, 240.0);
+        final Box board = new Box(240, 1, 240);
 		board.setMaterial(blackMaterial);
 		final Circle cs = new SimpleCircleBuilder().radius(110).fill(Color.BLACK).translateY(2)
 				.rotationAxis(Rotate.X_AXIS).rotate(90).build();
@@ -103,13 +105,17 @@ public class QuartoLauncher extends Application implements HasLogging{
         cameraXform.getChildren().add(cameraXform2);
         cameraXform2.getChildren().add(cameraXform3);
         cameraXform3.getChildren().add(camera);
-        cameraXform3.setRz(180.0);
+        cameraXform3.setRz(180);
 
-        camera.setNearClip(0.2);
-        camera.setFarClip(10000.0);
+        final double nearClip = 0.2;
+        camera.setNearClip(nearClip);
+        final int farClip = 10000;
+        camera.setFarClip(farClip);
 		camera.setTranslateZ(-CAMERA_DISTANCE);
-		cameraXform.setRy(315.0);
-		cameraXform.setRx(45);
+        final int yRotation = 315;
+        cameraXform.setRy(yRotation);
+        final int xRotation = 45;
+        cameraXform.setRx(xRotation);
     }
 
 	private void handleKeyPressed(KeyEvent event) {
@@ -154,7 +160,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 				p.setSelected(false);
 				setQuartoPiece(target, p);
 		        if (model.checkEnd()) {
-		            getLogger().info("ACABOU");
+                    getLogger().info("{}", "ACABOU");
                     CommonsFX.displayDialog("You Got " + 0 + " points", "Reset", model::reset);
 
 		        }
@@ -165,28 +171,28 @@ public class QuartoLauncher extends Application implements HasLogging{
 
     private void moveSideways(KeyEvent event, int multiplier) {
 		if (event.isControlDown() && event.isShiftDown()) {
-			cameraXform2.setTx(cameraXform2.getTx() + multiplier * 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() + multiplier * 10 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown() && event.isShiftDown()) {
-			cameraXform.setRy(cameraXform.getRotateY() - multiplier * 10.0 * ALT_MULTIPLIER); // -
+            cameraXform.setRy(cameraXform.getRotateY() - multiplier * 10 * ALT_MULTIPLIER); // -
 		} else if (event.isControlDown()) {
-			cameraXform2.setTx(cameraXform2.getTx() + multiplier * 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTx(cameraXform2.getTx() + multiplier * 1 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown()) {
-			cameraXform.setRy(cameraXform.getRotateY() - multiplier * 2.0 * ALT_MULTIPLIER); // -
+            cameraXform.setRy(cameraXform.getRotateY() - multiplier * 2 * ALT_MULTIPLIER); // -
 		}
 	}
 
 	private void moveUpAndDown(KeyEvent event, int multiplier) {
 		if (event.isControlDown() && event.isShiftDown()) {
-			cameraXform2.setTy(cameraXform2.getTy() - multiplier * 10.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() - multiplier * 10 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown() && event.isShiftDown()) {
-			cameraXform.setRx(cameraXform.getRotateX() - multiplier * 10.0 * ALT_MULTIPLIER);
+            cameraXform.setRx(cameraXform.getRotateX() - multiplier * 10 * ALT_MULTIPLIER);
 		} else if (event.isControlDown()) {
-			cameraXform2.setTy(cameraXform2.getTy() - multiplier * 1.0 * CONTROL_MULTIPLIER);
+            cameraXform2.setTy(cameraXform2.getTy() - multiplier * 1 * CONTROL_MULTIPLIER);
 		} else if (event.isAltDown()) {
-			cameraXform.setRx(cameraXform.getRotateX() - multiplier * 2.0 * ALT_MULTIPLIER);
+            cameraXform.setRx(cameraXform.getRotateX() - multiplier * 2 * ALT_MULTIPLIER);
 		} else if (event.isShiftDown()) {
 		    double z = camera.getTranslateZ();
-			double newZ = z + multiplier * 5.0 * SHIFT_MULTIPLIER;
+            double newZ = z + multiplier * 5 * SHIFT_MULTIPLIER;
 		    camera.setTranslateZ(newZ);
 		}
 	}
@@ -195,12 +201,12 @@ public class QuartoLauncher extends Application implements HasLogging{
 
 	private void reset(KeyEvent event) {
         if (event.isShiftDown()) {
-        	cameraXform.setRy(0.0);
-        	cameraXform.setRx(0.0);
+            cameraXform.setRy(0);
+            cameraXform.setRx(0);
         	camera.setTranslateZ(-CAMERA_DISTANCE);
         }
-        cameraXform2.setTx(0.0);
-        cameraXform2.setTy(0.0);
+        cameraXform2.setTx(0);
+        cameraXform2.setTy(0);
     }
 
 

@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import simplebuilder.SimpleTableViewBuilder;
 
 public class WorkingWithTableView extends Application {
+    private static final int PREF_SIZE = 150;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -33,9 +34,9 @@ public class WorkingWithTableView extends Application {
 		// List of leaders
 		ObservableList<Person> leaders = getPeople();
 		final ListView<Person> leaderListView = new ListView<>(leaders);
-		leaderListView.setPrefWidth(150);
+        leaderListView.setPrefWidth(PREF_SIZE);
 		leaderListView.setMaxWidth(Double.MAX_VALUE);
-		leaderListView.setPrefHeight(150);
+        leaderListView.setPrefHeight(PREF_SIZE);
 		// display first and last name with tooltip using alias
 		leaderListView
 				.setCellFactory(param -> {
@@ -62,7 +63,7 @@ public class WorkingWithTableView extends Application {
 		GridPane.setHalignment(emplLbl, HPos.CENTER);
 		final ObservableList<Person> teamMembers = FXCollections.observableArrayList();
 		final TableView<Person> employeeTableView = new SimpleTableViewBuilder<Person>()
-		        .prefWidth(300)
+                .prefWidth(PREF_SIZE * 2.)
 		        .items(teamMembers)
                 .addColumn("Alias", "aliasName", true)
 		        .addColumn("First Name", "firstName")
@@ -80,7 +81,7 @@ public class WorkingWithTableView extends Application {
                         teamMembers.addAll(observable.getValue().employeesProperty());
                     }
                 });
-		Scene scene = new Scene(root, 500, 250, Color.WHITE);
+        Scene scene = new Scene(root, PREF_SIZE * 3, PREF_SIZE * 2, Color.WHITE);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

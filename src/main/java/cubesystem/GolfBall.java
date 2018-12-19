@@ -14,33 +14,35 @@ import javafx.stage.Stage;
 
 public class GolfBall extends Application {
 
-	// the bigger the higher resolution
+    private static final float RADIUS_PROPORTION = 1.98F;
+    // the bigger the higher resolution
 	private static final int DIVISION = 200;
 	private static final int HALF_SPHERE_ANGLE = 180;
 
 	// radius of the sphere
-	private float radius = 300;
+    private static final float RADIUS = 300;
 
     @Override
 	public void start(Stage primaryStage) throws Exception {
 
-		List<Point3D> createSpheres = createSpheres(18, radius * 1.98F);
-		final TriangleMesh triangleMesh = createMesh(DIVISION, radius, createSpheres);
+        final int divisionNumber = 18;
+        List<Point3D> createSpheres = createSpheres(divisionNumber, RADIUS * RADIUS_PROPORTION);
+		final TriangleMesh triangleMesh = createMesh(DIVISION, createSpheres);
 		MeshView a = new MeshView(triangleMesh);
 		a.setDrawMode(DrawMode.FILL);
-		a.setTranslateY(radius);
-		a.setTranslateX(radius);
+        a.setTranslateY(RADIUS);
+        a.setTranslateX(RADIUS);
 		a.setRotationAxis(Rotate.Y_AXIS);
 		Scene scene = new Scene(new Group(a));
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
 
-	public static void checkDistance(final float radius, final Point3D centerOtherSphere, float[] points, int pPos) {
+    public static void checkDistance(final Point3D centerOtherSphere, float[] points, int pPos) {
         Rotate rotate = new Rotate(HALF_SPHERE_ANGLE, centerOtherSphere);
         final Point3D point3D = new Point3D(points[pPos + 0], points[pPos + 1], points[pPos + 2]);
         double distance = centerOtherSphere.distance(point3D);
-        if (distance <= radius) {
+        if (distance <= RADIUS) {
             Point3D subtract = centerOtherSphere.subtract(point3D);
             Point3D transform = rotate.transform(subtract);
             points[pPos + 0] = (float) transform.getX();
@@ -161,7 +163,7 @@ public class GolfBall extends Application {
         return p3 % division == 0 ? p3 - division : p3;
     }
 
-	static TriangleMesh createMesh(final int division, final float radius, final List<Point3D> spheres) {
+	static TriangleMesh createMesh(final int division, final List<Point3D> spheres) {
 
 		final int div2 = division / 2;
 
@@ -189,11 +191,11 @@ public class GolfBall extends Application {
 				double a = rDiv * i * 2 * (float) Math.PI;
 				float hSin = (float) Math.sin(a);
 				float hCos = (float) Math.cos(a);
-				points[pPos + 0] = hSin * cosVal * radius;
-				points[pPos + 2] = hCos * cosVal * radius;
-				points[pPos + 1] = sinVal * radius;
+                points[pPos + 0] = hSin * cosVal * RADIUS;
+                points[pPos + 2] = hCos * cosVal * RADIUS;
+                points[pPos + 1] = sinVal * RADIUS;
 				for (Point3D centerOtherSphere : spheres) {
-					checkDistance(radius, centerOtherSphere, points, pPos);
+                    checkDistance(centerOtherSphere, points, pPos);
 				}
 				tPoints[tPos + 0] = 1 - rDiv * i;
 				tPoints[tPos + 1] = ty;
@@ -206,16 +208,16 @@ public class GolfBall extends Application {
 		}
 
 		points[pPos + 0] = 0;
-		points[pPos + 1] = -radius;
+        points[pPos + 1] = -RADIUS;
 		points[pPos + 2] = 0;
 		for (Point3D centerOtherSphere : spheres) {
-			checkDistance(radius, centerOtherSphere, points, pPos);
+            checkDistance(centerOtherSphere, points, pPos);
 		}
 		points[pPos + 3] = 0;
-		points[pPos + 4] = radius;
+        points[pPos + 4] = RADIUS;
 		points[pPos + 5] = 0;
 		for (Point3D centerOtherSphere : spheres) {
-			checkDistance(radius, centerOtherSphere, points, pPos + 3);
+            checkDistance(centerOtherSphere, points, pPos + 3);
 		}
 
 

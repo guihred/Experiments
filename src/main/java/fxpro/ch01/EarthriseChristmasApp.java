@@ -45,8 +45,8 @@ public class EarthriseChristmasApp extends Application {
         		.build();
  
         
-        TranslateTransition transTransition = new TranslateTransition(new Duration(75000), textRef);
-        transTransition.setToY(-820);
+        TranslateTransition transTransition = new TranslateTransition(Duration.seconds(60), textRef);
+        transTransition.setToY(-WRAPPING * 2);
         transTransition.setInterpolator(Interpolator.LINEAR);
 		transTransition.setCycleCount(Animation.INDEFINITE);
 

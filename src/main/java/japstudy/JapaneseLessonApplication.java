@@ -27,7 +27,9 @@ public class JapaneseLessonApplication extends Application {
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Japanese Lesson Table Displayer");
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 600, 250, Color.WHITE);
+        final int width = 600;
+        final int height = 250;
+        Scene scene = new Scene(root, width, height, Color.WHITE);
 		// create a grid pane
 		FlowPane gridpane = new FlowPane();
 		gridpane.setPadding(new Insets(5));

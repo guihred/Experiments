@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -13,6 +15,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 import utils.CommonsFX;
 
@@ -22,6 +25,8 @@ public class PieGraph extends Canvas {
 	private ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
 	private IntegerProperty radius = new SimpleIntegerProperty(275);
     private IntegerProperty bins = new SimpleIntegerProperty(10);
+    private IntegerProperty xOffset = new SimpleIntegerProperty(10);
+    private DoubleProperty legendsRadius = new SimpleDoubleProperty(0.75);
     private List<Color> availableColors;
     private String column = "Region";
     private DataframeML dataframe;
@@ -32,6 +37,8 @@ public class PieGraph extends Canvas {
         drawGraph();
         radius.set((int) (gc.getCanvas().getWidth() / 2));
         radius.addListener(e -> drawGraph());
+        legendsRadius.addListener(e -> drawGraph());
+        xOffset.addListener(e -> drawGraph());
         bins.addListener(e -> {
             Map<String, Long> hist = convertToHistogram();
             histogram.clear();
@@ -44,13 +51,13 @@ public class PieGraph extends Canvas {
     public IntegerProperty binsProperty() {
         return bins;
     }
-
     public final void drawGraph() {
         long sum = histogram.values().stream().mapToLong(e -> e).sorted().sum();
         gc.clearRect(0, 0, WIDTH, WIDTH);
+        gc.setTextAlign(TextAlignment.CENTER);
 
-        double centerX = gc.getCanvas().getWidth() / 4;
-        double centerY = gc.getCanvas().getHeight() / 4;
+        double centerX = gc.getCanvas().getWidth() / 4 + xOffset.get();
+        double centerY = gc.getCanvas().getHeight() / 4 + xOffset.get();
         double startAngle = 90;
         gc.setLineWidth(0.5);
         List<Entry<String, Long>> histogramLevels = histogram.entrySet().stream()
@@ -71,9 +78,9 @@ public class PieGraph extends Canvas {
             Entry<String, Long> entry = histogramLevels.get(i);
             double arcExtent = entry.getValue() * 360d / sum;
             int j = radius2 / 2;
-            double x = Math.sin(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 / 1.5 + centerX + j
-                    - 4 * entry.getKey().length();
-            double y = Math.cos(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 / 1.5 + centerY + j;
+            double d = legendsRadius.get();
+            double x = Math.sin(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 * d + centerX + j;
+            double y = Math.cos(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 * d + centerY + j;
 
             gc.setFill(Color.BLACK);
             gc.fillText(entry.getKey(), x, y);
@@ -91,6 +98,8 @@ public class PieGraph extends Canvas {
                 .orElse(0);
         double a = gc.getCanvas().getWidth() / columns / 4 + maxLetter * 4;
         double b = gc.getCanvas().getHeight() / columns / 8;
+
+        gc.setTextAlign(TextAlignment.LEFT);
         for (int i = 0; i < histogramLevels.size(); i++) {
             int index = histogramLevels.size() - i - 1;
             Entry<String, Long> entry = histogramLevels.get(index);
@@ -104,17 +113,24 @@ public class PieGraph extends Canvas {
             gc.strokeRect(x2 - 10, y2 - 8, 8, 8);
         }
     }
+    public DoubleProperty legendsRadiusProperty() {
+        return legendsRadius;
+    }
 
-	public IntegerProperty radiusProperty() {
+    public IntegerProperty radiusProperty() {
         return radius;
     }
 
-    public void setDataframe(DataframeML dataframe, String column) {
+	public void setDataframe(DataframeML dataframe, String column) {
         this.dataframe = dataframe;
         this.column = column;
         histogram.putAll(convertToHistogram());
         availableColors = CommonsFX.generateRandomColors(histogram.size());
         drawGraph();
+    }
+
+    public IntegerProperty xOffsetProperty() {
+        return xOffset;
     }
 
     private Map<String, Long> convertToHistogram() {

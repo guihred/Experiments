@@ -9,7 +9,9 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.media.Media;
@@ -24,6 +26,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -45,6 +48,22 @@ public class PlayingAudio extends Application {
 	private Point2D previousLocation;
 	private ChangeListener<Duration> progressListener;
 	private Stage mainStage;
+
+	/**
+	 * Sets play button visible and pause button not visible when playVisible is
+	 * true otherwise the opposite.
+	 *
+	 * 
+	 * 
+	 * @param playVisible
+	 *            - value of true the play becomes visible and pause non
+	 *            visible, otherwise the opposite.
+	 * @param pauseButton 
+	 * @param playButton2 
+	 */
+    Group playButton;
+
+	Group pauseButton;
 
 	/**
 	 * @param args
@@ -78,7 +97,8 @@ public class PlayingAudio extends Application {
 		// Create the close button
 		Node closeButton = createCloseButton();
         root.getChildren().addAll(applicationArea, vizContainer, buttonPanel, progressSlider, closeButton);
-        scene.getStylesheets().add(ResourceFXUtils.toURL("media.css").toString());
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("media.css"));
+        ClassReflectionUtils.displayCSSStyler(scene, "media.css");
 
 		primaryStage.show();
 	}
@@ -109,54 +129,57 @@ public class PlayingAudio extends Application {
 	private Node createButtonPanel() {
 		Scene scene = mainStage.getScene();
 		// create button control panel
-		Group buttonGroup = new Group();
+        Group buttonGroup = new Group();
 		// Button area
-		Rectangle buttonArea = new Rectangle(60, 30);
+        Rectangle buttonArea = new Rectangle(60, 35);
 		buttonArea.setId("button-area");
 		buttonGroup.getChildren().add(buttonArea);
 		// stop button control
-		Node stopButton = new Rectangle(10, 10);
+        Button stopButton = new Button();
+
 		stopButton.setId(STOP_BUTTON_ID);
+        Node playCircle = new Circle(10, 0, 10);
+        playCircle.getStyleClass().add("play-circle");
+
+        Arc arc = new Arc(8, 0, 15, 15, 150, 60);
+        arc.setType(ArcType.ROUND);
+        arc.setId(PLAY_BUTTON_ID);
+        playButton = new Group(playCircle, arc);
+        pauseButton = new Group();
 		stopButton.setOnMousePressed(mouseEvent -> {
 			if (mediaPlayer != null) {
-				updatePlayAndPauseButtons(true);
+                updatePlayAndPauseButtons(true);
 				if (mediaPlayer.getStatus() == Status.PLAYING) {
 					mediaPlayer.stop();
 				}
 			}
 		});
-			// play button
-		Arc playButton = new Arc(12, 16, 15, 15, 150, 60);
-		playButton.setId(PLAY_BUTTON_ID);
-		playButton.setType(ArcType.ROUND);
+        ToggleButton toggleButton = new ToggleButton(null, pauseButton);
+        toggleButton.setOnAction(e -> {
+            if (mediaPlayer != null) {
+                boolean selected = toggleButton.isSelected();
+                updatePlayAndPauseButtons(selected);
+                if (selected && mediaPlayer.getStatus() == Status.PLAYING) {
+                    mediaPlayer.pause();
+                } else if (!selected) {
+                    mediaPlayer.play();
+                }
+            }
+        });
+
+        // play button
+
 		// pause control
-		Group pauseButton = new Group();
 		pauseButton.setId(PAUSE_BUTTON_ID);
-		Node pauseBackground = new Circle(12, 16, 10);
+        Node pauseBackground = new Circle(42, 16, 10);
 		pauseBackground.getStyleClass().add("pause-circle");
 
-		Node firstLine = new Line(6, 6, 6, 14);
+		Node firstLine = new Line(40, 6, 40, 14);
 		firstLine.getStyleClass().add("pause-line");
-		firstLine.setStyle("-fx-translate-x: 34;");
-		Node secondLine = new Line(6, 6, 6, 14);
+		Node secondLine = new Line(44, 6, 44, 14);
 		secondLine.getStyleClass().add("pause-line");
-		secondLine.setStyle("-fx-translate-x: 38;");
 		pauseButton.getChildren().addAll(pauseBackground, firstLine, secondLine);
-		pauseButton.setOnMousePressed(mouseEvent -> {
-			if (mediaPlayer != null) {
-				updatePlayAndPauseButtons(true);
-				if (mediaPlayer.getStatus() == Status.PLAYING) {
-					mediaPlayer.pause();
-				}
-			}
-		});
-		playButton.setOnMousePressed(mouseEvent -> {
-			if (mediaPlayer != null) {
-				updatePlayAndPauseButtons(false);
-				mediaPlayer.play();
-			}
-		});
-		buttonGroup.getChildren().addAll(stopButton, playButton, pauseButton);
+        buttonGroup.getChildren().addAll(stopButton, toggleButton);
 		// move button group when scene is resized
 		buttonGroup.translateXProperty().bind(scene.widthProperty().subtract(buttonArea.getWidth() + 6));
 		buttonGroup.translateYProperty().bind(scene.heightProperty().subtract(buttonArea.getHeight() + 6));
@@ -329,7 +352,7 @@ public class PlayingAudio extends Application {
 				});
 	}
 
-	private void tryPlayMedia(Dragboard db) {
+    private void tryPlayMedia(Dragboard db) {
 		try {
 			String filePath = db.getFiles().get(0).toURI().toURL().toString();
 			playMedia(filePath);
@@ -337,32 +360,16 @@ public class PlayingAudio extends Application {
 			LOGGER.error("", ex);
 		}
 	}
-
-	/**
-	 * Sets play button visible and pause button not visible when playVisible is
-	 * true otherwise the opposite.
-	 *
-	 * 
-	 * 
-	 * @param playVisible
-	 *            - value of true the play becomes visible and pause non
-	 *            visible, otherwise the opposite.
-	 */
 	private void updatePlayAndPauseButtons(boolean playVisible) {
 		Scene scene = mainStage.getScene();
-		Node playButton = scene.lookup("#" + PLAY_BUTTON_ID);
-		Node pauseButton = scene.lookup("#" + PAUSE_BUTTON_ID);
+        ToggleButton toggle = (ToggleButton) scene.lookup(".toggle-button");
 		// hide or show buttons
-		playButton.setVisible(playVisible);
-		pauseButton.setVisible(!playVisible);
 		if (playVisible) {
 			// show play button
-			playButton.toFront();
-			pauseButton.toBack();
+            toggle.setGraphic(playButton);
 		} else {
+            toggle.setGraphic(pauseButton);
 			// show pause button
-			pauseButton.toFront();
-			playButton.toBack();
 		}
 	}
 

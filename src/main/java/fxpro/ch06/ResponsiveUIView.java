@@ -16,14 +16,16 @@ import utils.RunnableEx;
 
 final class ResponsiveUIView implements HasLogging {
 
+    private static final int WAIT_TIME_MILLIS = 3000;
+    private static final    int SIZE = 200;
 	private HBox buttonHBox;
 	private Button changeFillButton;
 	private Button changeStrokeButton;
-	private Rectangle rectangle;
+    private Rectangle rectangle;
     private Scene scene;
 
     ResponsiveUIView(ResponsiveUIModel model) {
-        rectangle = new Rectangle(200, 200);
+        rectangle = new Rectangle(SIZE, SIZE);
         rectangle.setStrokeWidth(10);
 		rectangle.fillProperty().bind(model.getFillPaint());
         rectangle.strokeProperty().bind(model.getStrokePaint());
@@ -48,7 +50,7 @@ final class ResponsiveUIView implements HasLogging {
 			final Paint fillPaint = model.getFillPaint().get();
 			model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
             new Thread(RunnableEx.makeRunnable(() -> {
-				Thread.sleep(3000);
+                Thread.sleep(WAIT_TIME_MILLIS);
 				Platform.runLater(() -> {
 					final Rectangle rect = rectangle;
 					double newArcSize = rect.getArcHeight() < 20 ? 30 : 0;

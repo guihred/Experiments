@@ -51,14 +51,14 @@ public class Ch1 {
 
 
 	/**
-	 * 13. Write a program that prints a lottery combination, picking six distinct
-	 * numbers between 1 and 49. To pick six distinct numbers, start with an array
-	 * list filled with1 ... 49. Pick a random index and remove the element. Repeat
-	 * six times. Print the result in sorted order.
-	 */
+     * 13. Write a program that prints a lottery combination, picking six distinct
+     * numbers between 1 and 50. To pick six distinct numbers, start with an array
+     * list filled with1 ... 50. Pick a random index and remove the element. Repeat
+     * six times. Print the result in sorted order.
+     */
 	public static List<Integer> lotteryCombination() {
 		Random random = new Random();
-		return IntStream.generate(() -> random.nextInt(49) + 1).distinct().limit(6).sorted().boxed().collect(toList());
+        return IntStream.generate(() -> random.nextInt(50)).distinct().limit(6).sorted().boxed().collect(toList());
 	}
 
 	public static void main(String[] args) {
@@ -85,7 +85,7 @@ public class Ch1 {
 
 		Random random = new Random();
 		long nextLong = random.nextLong();
-        return Long.toString(abs(nextLong), 36);
+        return Long.toString(abs(nextLong), Character.MAX_RADIX);
 	}
 
 	private static List<Integer> mapPascal(List<Integer> previousPascal) {

@@ -17,7 +17,7 @@ public final class JavaExercise19 {
     public static void testingJavaConcepts() {
 
 		Jack ink = new Jack();
-		fred(ink, 3000);
+        fred(ink, 1000);
         LOG.info("Value is {}", K.el);
 	}
 	private static void fred(JJ uk, int n) {
@@ -45,7 +45,7 @@ class Jill implements JJ {
 	public void upk() {
 		Jack ink = new Jack();
 		ink.upk();
-		K.el += 200;
+        K.el += 100;
 	}
 }
 

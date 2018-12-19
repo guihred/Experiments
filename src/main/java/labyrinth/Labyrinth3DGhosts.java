@@ -33,9 +33,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 
 	private PerspectiveCamera camera;
 
-	private final List<LabyrinthWall> cubes = new ArrayList<>();
-
-
+	private final List<LabyrinthWall> walls = new ArrayList<>();
 
 	@Override
     public PerspectiveCamera getCamera() {
@@ -44,7 +42,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 
 	@Override
 	public List<LabyrinthWall> getLabyrinthWalls() {
-		return cubes;
+		return walls;
 	}
 
 	@Override
@@ -128,7 +126,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 				if ("_".equals(string)) {
 					rectangle.getRy().setAngle(90);
 				}
-				cubes.add(rectangle);
+				walls.add(rectangle);
 
 				root.getChildren().add(rectangle);
 			}

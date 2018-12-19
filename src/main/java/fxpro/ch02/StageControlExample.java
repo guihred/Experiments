@@ -10,25 +10,23 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class StageControlExample extends Application implements HasLogging {
 
@@ -44,7 +42,7 @@ public class StageControlExample extends Application implements HasLogging {
 
 	@Override
 	public void start(Stage stage) {
-		StageStyle stageStyle = StageStyle.UTILITY;
+        StageStyle stageStyle = StageStyle.TRANSPARENT;
 		Parameters parameters = getParameters();
         if (parameters != null) {
             List<String> unnamedParams = parameters.getUnnamed();
@@ -60,21 +58,32 @@ public class StageControlExample extends Application implements HasLogging {
             }
         }
 		final Stage stageRef = stage;
-		TextField titleTextField = newTextField("Stage Coach", 15);
-		final Rectangle skyBlueRect = new SimpleRectangleBuilder().x(0).y(0).width(250).height(350).arcHeight(50)
-				.arcWidth(50).fill(Color.SKYBLUE).stroke(null).build();
+        TextField titleTextField = newTextField("Stage Coach", 10);
 		final Button toFrontButton = newButton("toFront()", e -> stageRef.toFront());
 		final Button closeButton = newButton("close()", e -> stageRef.close());
 		final Button toBackButton = newButton("toBack()", e -> stageRef.toBack());
-		final HBox hbox = new HBox(10, new Label("title:"), titleTextField);
+        final VBox hbox = new VBox(new Label("title:"), titleTextField);
         CheckBox checkBoxResizable = newCheckBox("resizable",
-				stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);
-		Node[] children = { textStageX, textStageY, textStageW, textStageH, textStageF, checkBoxResizable,
-				checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton };
-		Group rootGroup = new Group(skyBlueRect,
-				new SimpleVBoxBuilder().layoutX(30).layoutY(20).spacing(10).children(children).build());
-		Scene scene = new Scene(rootGroup, 270, 370);
-		scene.setFill(Color.TRANSPARENT);
+                stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);
+        StackPane rootGroup = new StackPane(
+                new SimpleVBoxBuilder()
+                        .spacing(10).children(
+                                textStageX, 
+                                textStageY, 
+                                textStageW, 
+                                textStageH,
+                                textStageF,
+                                checkBoxResizable, 
+                                checkBoxFullScreen, 
+                                hbox, 
+                                toBackButton, 
+                                toFrontButton, 
+                                closeButton)
+                        .build());
+        Scene scene = new Scene(rootGroup, Color.TRANSPARENT);
+
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("stageControl.css"));
+        scene.setFill(Color.TRANSPARENT);
 		// When mouse button is pressed, save the initial position of screen
 		rootGroup.setOnMousePressed((MouseEvent me) -> {
 			dragAnchorX = me.getScreenX() - stageRef.getX();
@@ -106,6 +115,7 @@ public class StageControlExample extends Application implements HasLogging {
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
 		stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
 		stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4);
+
 	}
 
 	public static void main(String[] args) {

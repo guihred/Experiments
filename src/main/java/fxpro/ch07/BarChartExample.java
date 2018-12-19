@@ -28,7 +28,7 @@ public class BarChartExample extends Application {
         primaryStage.setTitle("BarChart example");
         StackPane root = new StackPane();
         root.getChildren().add(barChart);
-        primaryStage.setScene(new Scene(root, 400, 250));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

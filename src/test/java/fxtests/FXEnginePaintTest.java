@@ -98,7 +98,7 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 	}
 
     private String getRandomString() {
-        return Long.toString(random.nextLong() + 1000, Character.MAX_RADIX).substring(0, 4);
+        return Long.toString(Math.abs(random.nextLong()) + 1000, Character.MAX_RADIX).substring(0, 4);
     }
 
     private int randomMove(int bound) {

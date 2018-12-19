@@ -27,7 +27,7 @@ public class AreaChartExample extends Application {
         primaryStage.setTitle("AreaChart example");
         StackPane root = new StackPane();
         root.getChildren().add(areaChart);
-        primaryStage.setScene(new Scene(root, 400, 250));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

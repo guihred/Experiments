@@ -7,9 +7,11 @@ public class Dog extends Player implements Enemy {
 	public static final int INITIAL_X = 550;
 	public static final int WANDER_WIDTH = 150;
 
+	private static final double SPEED = 4. / 5;
 	private RunAnimation walkingAnimation = new RunAnimation(ImageResource.DOG);
 	private RunAnimation stoppedAnimation = new RunAnimation(ImageResource.DOG, 11, 1);
 	private RunAnimation jumpAnimation = new RunAnimation(ImageResource.DOG, 7, 2);
+
 	private DogStatus status = DogStatus.WALKING;
 
 	public Dog() {
@@ -54,22 +56,21 @@ public class Dog extends Player implements Enemy {
 		}
 	}
 
-	public void stop() {
+    public void stop() {
 		velocityX = 0;
 		if (status == DogStatus.WALKING) {
 			status = DogStatus.STOPPED;
 		}
 	}
-
 	@Override
 	public void update(double time) {
 		super.update(time);
 		if (status == DogStatus.STOPPED) {
-			stoppedAnimation.update(time * 40.0 / 50.0);
+            stoppedAnimation.update(time * SPEED);
 		} else if (status == DogStatus.WALKING) {
-			walkingAnimation.update(time * 40.0 / 50.0);
+            walkingAnimation.update(time * SPEED);
 		} else {
-			jumpAnimation.update(time * 40.0 / 50.0);
+            jumpAnimation.update(time * SPEED);
 		}
 		if (status != DogStatus.ATTACKING) {
 			if (getPositionX() >= INITIAL_X + WANDER_WIDTH) {
