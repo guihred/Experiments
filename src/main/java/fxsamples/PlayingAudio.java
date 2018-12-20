@@ -18,7 +18,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -26,6 +28,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.SimpleSvgPathBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -37,7 +40,6 @@ import utils.ResourceFXUtils;
 public class PlayingAudio extends Application {
 	private static final Logger LOGGER = HasLogging.log();
 	private static final String STOP_BUTTON_ID = "stop-button";
-	private static final String PLAY_BUTTON_ID = "play-button";
 	private static final String PAUSE_BUTTON_ID = "pause-button";
 	private static final String CLOSE_BUTTON_ID = "close-button";
 	private static final String VIS_CONTAINER_ID = "viz-container";
@@ -122,13 +124,9 @@ public class PlayingAudio extends Application {
         Button stopButton = new Button();
 
 		stopButton.setId(STOP_BUTTON_ID);
-        Node playCircle = new Circle(10, 0, 10);
-        playCircle.getStyleClass().add("play-circle");
-
-        Arc arc = new Arc(8, 0, 15, 15, 150, 60);
-        arc.setType(ArcType.ROUND);
-        arc.setId(PLAY_BUTTON_ID);
-        playButton = new Group(playCircle, arc);
+        SVGPath arc = new SimpleSvgPathBuilder().content("M 6,4 v8l8-4z M9 17 a 9 9 0 1 1 0.1 0").fill(Color.WHITE)
+                .build();
+        playButton = new Group(arc);
         pauseButton = new Group();
 		stopButton.setOnMousePressed(mouseEvent -> {
 			if (mediaPlayer != null) {
@@ -155,14 +153,13 @@ public class PlayingAudio extends Application {
 
 		// pause control
 		pauseButton.setId(PAUSE_BUTTON_ID);
-        Node pauseBackground = new Circle(42, 16, 10);
-		pauseBackground.getStyleClass().add("pause-circle");
 
-		Node firstLine = new Line(40, 6, 40, 14);
-		firstLine.getStyleClass().add("pause-line");
-		Node secondLine = new Line(44, 6, 44, 14);
-		secondLine.getStyleClass().add("pause-line");
-		pauseButton.getChildren().addAll(pauseBackground, firstLine, secondLine);
+        SVGPath pauseBackground = new SimpleSvgPathBuilder()
+                .content("M 4,3 v11h4v-11z M 10,3 v11h4v-11z M9 17 a 9 9 0 1 1 0.1 0")
+                .styleClass("pause-circle")
+                .fill(Color.WHITE).build();
+
+        pauseButton.getChildren().addAll(pauseBackground);
         buttonGroup.getChildren().addAll(stopButton, toggleButton);
 		// move button group when scene is resized
 		buttonGroup.translateXProperty().bind(scene.widthProperty().subtract(buttonArea.getWidth() + 6));

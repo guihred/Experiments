@@ -5,11 +5,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 
 public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
     private ToggleGroup toggleGroup = new ToggleGroup();
@@ -62,6 +58,15 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         e.setToggleGroup(toggleGroup);
         return this;
     }
+
+    public SimpleToggleGroupBuilder addToggle(final String node, final Object userData) {
+	    ToggleButton toggleButton = new ToggleButton(node);
+	    toggleButton.setTooltip(new Tooltip(Objects.toString(userData, "")));
+	    Toggle e = toggleButton;
+	    e.setUserData(userData);
+	    e.setToggleGroup(toggleGroup);
+	    return this;
+	}
 
     public  SimpleToggleGroupBuilder addToggle(final Toggle toggle) {
         toggle.setToggleGroup(toggleGroup);
