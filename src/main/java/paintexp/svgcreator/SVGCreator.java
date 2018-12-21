@@ -1,6 +1,5 @@
 package paintexp.svgcreator;
 
-import graphs.entities.ZoomableScrollPane;
 import java.util.List;
 import java.util.Locale;
 import javafx.application.Application;
@@ -11,15 +10,16 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.FillRule;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
+import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 
 public class SVGCreator extends Application {
@@ -44,23 +44,36 @@ public class SVGCreator extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        path.setStroke(Color.BLACK);
         path.setManaged(false);
-        path.setFill(Color.TRANSPARENT);
         stack.setAlignment(Pos.TOP_LEFT);
         stack.addEventHandler(MouseEvent.ANY, this::handleEvent);
         stack.setPrefHeight(500);
         stack.setPrefWidth(500);
-        BorderPane root = new BorderPane(new ZoomableScrollPane(stack));
+        BorderPane root = new BorderPane(stack);
         SimpleToggleGroupBuilder commandsGroup = new SimpleToggleGroupBuilder()
                 .onChange((obj, old, newV) -> onChangeCommand(newV));
         for (SVGCommand svg : SVGCommand.values()) {
             commandsGroup.addToggle(svg.name(), svg);
         }
-        List<Node> togglesAs = commandsGroup.getTogglesAs(Node.class);
+        List<ToggleButton> commandList = commandsGroup.getTogglesAs(ToggleButton.class);
+        commandList.forEach(e -> e.setPrefWidth(50));
         GridPane commands = new GridPane();
-        commands.addColumn(0, togglesAs.subList(0, togglesAs.size() / 2).toArray(new Node[0]));
-        commands.addColumn(1, togglesAs.subList(togglesAs.size() / 2, togglesAs.size()).toArray(new Node[0]));
+        commands.addColumn(0, commandList.subList(0, commandList.size() / 2).toArray(new Node[0]));
+        commands.addColumn(1, commandList.subList(commandList.size() / 2, commandList.size()).toArray(new Node[0]));
+        ColorPicker strokeSelector = new ColorPicker(Color.BLACK);
+        strokeSelector.setPrefWidth(100);
+        path.strokeProperty().bind(strokeSelector.valueProperty());
+        commands.add(strokeSelector, 0, commandList.size(), 2, 1);
+        ColorPicker fillSelector = new ColorPicker(Color.TRANSPARENT);
+        fillSelector.setPrefWidth(100);
+        path.fillProperty().bind(fillSelector.valueProperty());
+        commands.add(fillSelector, 0, commandList.size() + 1, 2, 1);
+        ComboBox<FillRule> fillRule = new SimpleComboBoxBuilder<FillRule>()
+                .items(FillRule.values())
+                .select(0).prefWidth(100).build();
+        path.fillRuleProperty().bind(fillRule.getSelectionModel().selectedItemProperty());
+        commands.add(fillRule, 0, commandList.size() + 2, 2, 1);
+
         commands.prefHeight(1000);
         root.setLeft(commands);
         contentField.textProperty().addListener(e -> onTextChange());
@@ -92,7 +105,6 @@ public class SVGCreator extends Application {
     }
 
     private String getCommandFor6(MouseEvent e, double initialX, double initialY) {
-        String format;
         double x = e.getX();
         double y = e.getY();
         if (points.size() > 1) {
@@ -100,9 +112,8 @@ public class SVGCreator extends Application {
             x = point2d2.getX();
             y = point2d2.getY();
         }
-        format = String.format(Locale.ENGLISH, "%s %s %.1f %.1f %.1f %.1f %.1f %.1f ", getContent(),
+        return String.format(Locale.ENGLISH, "%s %s %.1f %.1f %.1f %.1f %.1f %.1f ", getContent(),
                 command.name(), x, y, e.getX(), e.getY(), initialX, initialY);
-        return format;
     }
 
     private void handleEvent(MouseEvent e) {
@@ -134,7 +145,6 @@ public class SVGCreator extends Application {
             if (pointStage > 0) {
                 handleSimple(e, args);
             }
-
         }
         if (MouseEvent.MOUSE_RELEASED == eventType) {
             int args = command.getArgs() == 7 ? 4 : command.getArgs();
@@ -147,8 +157,8 @@ public class SVGCreator extends Application {
                 points.add(new Point2D(initialX, initialY));
                 setContent(path.getContent());
             }
-
         }
+
 
     }
 

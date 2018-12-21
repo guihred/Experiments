@@ -1,6 +1,5 @@
 package fxtests;
 
-import graphs.entities.ZoomableScrollPane;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -8,6 +7,7 @@ import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
@@ -31,7 +31,7 @@ public class FXEngineSVGCreatorTest extends ApplicationTest implements HasLoggin
     @Test
 	public void testaToolsVerify() throws Exception {
         interactNoWait(RunnableEx.makeRunnable(() -> new SVGCreator().start(currentStage)));
-        Node stack = lookup(ZoomableScrollPane.class::isInstance).queryAs(ZoomableScrollPane.class).getContent();
+        Node stack = lookup(StackPane.class::isInstance).queryAs(StackPane.class);
         testTools(stack);
 	}
 	protected void testTools(final Node stack) {

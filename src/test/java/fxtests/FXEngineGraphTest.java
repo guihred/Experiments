@@ -45,10 +45,12 @@ public class FXEngineGraphTest extends ApplicationTest {
             for (int i = 0; i < items.size(); i++) {
                 int j = i;
                 interact(() -> e.getSelectionModel().select(j));
-                queryAll.forEach(this::clickOn);
+                for (Node node : queryAll) {
+                    clickOn(node);
+                    ConsoleUtils.waitAllProcesses();
+                }
             }
         }
-        ConsoleUtils.waitAllProcesses();
     }
 
     @Test
