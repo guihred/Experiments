@@ -1,9 +1,9 @@
 package paintexp.svgcreator;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -22,11 +22,10 @@ import simplebuilder.SimpleToggleGroupBuilder;
 
 public class SVGCreator extends Application {
 
-    private static final String ARC_COMMAND = "%s %s %.1f %.1f 0 1 1 %.1f %.1f ";
     private SVGCommand command;
     private String content = "";
     private TextField contentField = new TextField();
-    private List<Point2D> points = new ArrayList<>();
+    private ObservableList<Point2D> points = FXCollections.observableArrayList();
     private Point2D lastPoints = new Point2D(0, 0);
 
     private int pointStage;
@@ -63,7 +62,38 @@ public class SVGCreator extends Application {
         stage.setTitle("SVG Creator");
         stage.setScene(scene);
         stage.show();
+    }
 
+    private String getArcCommand(MouseEvent e, double initialX, double initialY) {
+        double d = initialX - lastPoints.getX();
+        double rx = e.getX() - initialX + d / 2;
+        double f = initialY - lastPoints.getY();
+        double ry = e.getY() - initialY + f / 2;
+        int largeArc = rx * rx + ry * ry > (d * d + f * f) / 4 ? 1 : 0;
+        double m = (e.getX() - initialX) * (lastPoints.getY() - initialY)
+                - (e.getY() - initialY) * (lastPoints.getX() - initialX);
+        Point2D e2 = new Point2D(initialX - d / 2, initialY - f / 2);
+        if (!points.contains(e2)) {
+            points.add(e2);
+        }
+        double degrees = Math.toDegrees(Math.atan2(ry, rx));
+        int sweepFlag = m < 0 ? 1 : 0;
+        return String.format(Locale.ENGLISH, "%s %s %.2f %.2f %.1f %d %d %.1f %.1f ", getContent(), command.name(), rx,
+                ry, degrees, largeArc, sweepFlag, initialX, initialY);
+    }
+
+    private String getCommandFor6(MouseEvent e, double initialX, double initialY) {
+        String format;
+        double x = e.getX();
+        double y = e.getY();
+        if (points.size() > 1) {
+            Point2D point2d2 = points.get(1);
+            x = point2d2.getX();
+            y = point2d2.getY();
+        }
+        format = String.format(Locale.ENGLISH, "%s %s %.1f %.1f %.1f %.1f %.1f %.1f ", getContent(),
+                command.name(), x, y, e.getX(), e.getY(), initialX, initialY);
+        return format;
     }
 
     private void handleEvent(MouseEvent e) {
@@ -71,7 +101,7 @@ public class SVGCreator extends Application {
         if (MouseEvent.MOUSE_PRESSED == eventType) {
             if (pointStage == 0) {
                 if (!points.isEmpty()) {
-                    lastPoints=points.get(points.size()-1);
+                    lastPoints = points.get(0);
                 }
                 points.clear();
             }
@@ -93,7 +123,7 @@ public class SVGCreator extends Application {
         if (MouseEvent.MOUSE_MOVED == eventType) {
             int args = command.getArgs();
             if (pointStage > 0) {
-                handleSimple2(e, args);
+                handleSimple(e, args);
             }
 
         }
@@ -103,6 +133,9 @@ public class SVGCreator extends Application {
                 pointStage = (pointStage + 1) % (args / 2);
             }
             if (pointStage == 0) {
+                double initialX = e.getX();
+                double initialY = e.getY();
+                points.add(new Point2D(initialX, initialY));
                 setContent(path.getContent());
             }
 
@@ -132,58 +165,10 @@ public class SVGCreator extends Application {
                         e.getX(), e.getY(), initialX, initialY);
                 break;
             case 6:
-                format = String.format(Locale.ENGLISH, "%s %s %.1f %.1f %.1f %.1f %.1f %.1f ", getContent(),
-                        command.name(), e.getX(), e.getY(), e.getX(), e.getY(), initialX, initialY);
+                format = getCommandFor6(e, initialX, initialY);
                 break;
             case 7:
-                double y = initialX;
-                double x = initialY;
-                double x2 = lastPoints.getX();
-                double y2 = lastPoints.getY();
-                double rx = (x - x2) / 2;
-                double ry = (y - y2) / 2;
-                format = String.format(Locale.ENGLISH, getArcCommand(), getContent(),
-                        command.name(),
-                        rx, ry, initialX, initialY);
-                break;
-            default:
-                break;
-
-        }
-        String initialContent = getContent();
-        contentField.setText(format);
-        setContent(initialContent);
-    }
-
-    private void handleSimple2(MouseEvent e, int args) {
-        String format = getContent();
-        Point2D point2d = points.get(0);
-        double initialX = point2d.getX();
-        double initialY = point2d.getY();
-        switch (args) {
-            case 4:
-                format = String.format(Locale.ENGLISH, "%s %s %.1f %.1f %.1f %.1f ", getContent(), command.name(),
-                        e.getX(), e.getY(), initialX, initialY);
-                break;
-            case 6:
-                double x = e.getX();
-                double y = e.getY();
-                if (points.size() > 1) {
-                    Point2D point2d2 = points.get(1);
-                    x = point2d2.getX();
-                    y = point2d2.getY();
-                }
-                format = String.format(Locale.ENGLISH, "%s %s %.1f %.1f %.1f %.1f %.1f %.1f ", getContent(),
-                        command.name(), x, y, e.getX(), e.getY(), initialX, initialY);
-                break;
-            case 7:
-                double d = initialX - lastPoints.getX();
-                double rx = (e.getX() - initialX + d / 2)
-                        / Math.abs(d / 2d);
-                double f = initialY - lastPoints.getY();
-                double ry = (e.getY() - initialY + f / 2) / Math.abs(f / 2);
-                format = String.format(Locale.ENGLISH, getArcCommand(), getContent(), command.name(),
-                        rx, ry, initialX, initialY);
+                format = getArcCommand(e, initialX, initialY);
                 break;
             default:
                 break;
@@ -208,9 +193,6 @@ public class SVGCreator extends Application {
 
     }
 
-    public static String getArcCommand() {
-        return "%s %s %.2f %.2f 0 1 1 %.1f %.1f ";
-    }
 
     public static void main(String[] args) {
         launch(args);
