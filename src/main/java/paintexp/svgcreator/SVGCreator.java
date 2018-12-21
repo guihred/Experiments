@@ -1,5 +1,7 @@
 package paintexp.svgcreator;
 
+import graphs.entities.ZoomableScrollPane;
+import java.util.List;
 import java.util.Locale;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -13,8 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
@@ -43,17 +45,24 @@ public class SVGCreator extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         path.setStroke(Color.BLACK);
+        path.setManaged(false);
         path.setFill(Color.TRANSPARENT);
         stack.setAlignment(Pos.TOP_LEFT);
         stack.addEventHandler(MouseEvent.ANY, this::handleEvent);
-        BorderPane root = new BorderPane(stack);
+        stack.setPrefHeight(500);
+        stack.setPrefWidth(500);
+        BorderPane root = new BorderPane(new ZoomableScrollPane(stack));
         SimpleToggleGroupBuilder commandsGroup = new SimpleToggleGroupBuilder()
                 .onChange((obj, old, newV) -> onChangeCommand(newV));
         for (SVGCommand svg : SVGCommand.values()) {
             commandsGroup.addToggle(svg.name(), svg);
         }
-        path.setManaged(false);
-        root.setLeft(new VBox(5, commandsGroup.getTogglesAs(Node.class).toArray(new Node[0])));
+        List<Node> togglesAs = commandsGroup.getTogglesAs(Node.class);
+        GridPane commands = new GridPane();
+        commands.addColumn(0, togglesAs.subList(0, togglesAs.size() / 2).toArray(new Node[0]));
+        commands.addColumn(1, togglesAs.subList(togglesAs.size() / 2, togglesAs.size()).toArray(new Node[0]));
+        commands.prefHeight(1000);
+        root.setLeft(commands);
         contentField.textProperty().addListener(e -> onTextChange());
         contentField.setText("M0,0");
         root.setTop(contentField);
