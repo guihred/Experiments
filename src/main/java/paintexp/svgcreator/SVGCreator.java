@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,14 +34,16 @@ import simplebuilder.SimpleToggleGroupBuilder;
 
 public class SVGCreator extends Application {
 
+	static  double currentX = 0, currentY = 0;
 	private SVGCommand command;
 	private String content = "";
 	private TextField contentField = new TextField();
 	private ObservableList<Point2D> points = FXCollections.observableArrayList();
-	private Point2D lastPoints = new Point2D(0, 0);
 
+	private Point2D lastPoints = new Point2D(0, 0);
 	private int pointStage;
 	private SVGPath path = new SVGPath();
+
 	private StackPane stack = new StackPane(path);
 
 	public String getContent() {
@@ -210,26 +214,91 @@ public class SVGCreator extends Application {
 		String replaceAll = path.getContent().replaceAll("[a-zA-Z][^a-zA-Z]+$", "");
 		contentField.setText(replaceAll);
 	}
-
 	public static String convertToRelative(final String path) {
-        Pattern compile = Pattern.compile("([A-Za-z] [^A-Za-z]+)");
-        Matcher a = compile.matcher(path);
-        a.reset();
-        StringBuffer sb = new StringBuffer();
-        while (a.find()) {
-			String group = a.group(1).trim();
-           	String[] split = group.split("\\D+");
+		Pattern compile = Pattern.compile("([A-Za-z][^A-Za-z]+)");
+		Matcher matcher = compile.matcher(path);
+		matcher.reset();
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			String group = matcher.group(1).trim();
+			String[] split = group.split("[\\s,[A-Za-z]]+");
+			System.out.println(group);
 			System.out.println(Arrays.toString(split));
-           
-//            a.appendReplacement(sb, String.format(Locale.ENGLISH, format, parseDouble * prefWidth / max));
-        }
-        a.appendTail(sb);
-        return sb.toString();
+			String substring = group.substring(0, 1);
+			SVGCommand valueOf = SVGCommand.valueOf(substring.toUpperCase());
+			int args = valueOf.getArgs();
+			if (args % 2 == 0) {
+				String a = replaceEvenCommand(split, substring, args);
+				matcher.appendReplacement(sb, a);
+			} else if (args == 7) {
+				String a = replaceOddCommand(split, substring, args);
+				matcher.appendReplacement(sb, a);
+			} else {
+				matcher.appendReplacement(sb, group);
+			}
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
 
 	}
 
 	public static void main(final String[] args) {
+		String original = "M15.53 1A5.52 5.52 0 0 0 11 6 5.52 5.52 0 0 0 0 6C0 12.37 11 20 11 20s11-7.63 11-13.42A5.53 5.53 0 0 0 15.53 1z";
+		System.out.println(convertToRelative(original));
+		System.out.println(original);
+
 		launch(args);
+	}
+
+	private static String replaceEvenCommand(final String[] split, final String substring, final int args) {
+		StringBuilder cmd = new StringBuilder();
+		for (int i = 2; i < split.length; i += 2) {
+			double xCoord = Double.parseDouble(split[i - 1]);
+			double yCoord = Double.parseDouble(split[i]);
+			if (substring.matches("[A-Z]")) {
+				double rx = currentX;
+				double ry = currentY;
+				if (i == args) {
+					currentX = xCoord;
+				}
+				xCoord = xCoord - rx;
+				if (i == args) {
+					currentY = yCoord;
+				}
+				yCoord = yCoord - ry;
+			} else {
+				currentX += xCoord;
+				currentY += yCoord;
+			}
+			String format = String.format(Locale.ENGLISH, " %.1f %.1f", xCoord, yCoord);
+			cmd.append(format);
+		}
+		return String.format("%s %s", substring.toLowerCase(),cmd.toString());
+	}
+
+	private static String replaceOddCommand(final String[] split, final String substring, final int args) {
+		StringBuilder cmd = new StringBuilder();
+		for (int i = args; i < split.length; i += args) {
+			double xCoord = Double.parseDouble(split[i - 1]);
+			double yCoord = Double.parseDouble(split[i]);
+			if (substring.matches("[A-Z]")) {
+				double rx = currentX;
+				double ry = currentY;
+				currentX = xCoord;
+				xCoord = xCoord - rx;
+				currentY = yCoord;
+				yCoord = yCoord - ry;
+			} else {
+				currentX += xCoord;
+				currentY += yCoord;
+			}
+			String string = Stream.of(split).skip(1 + i - args).limit(args - 2)
+					.collect(Collectors.joining(" "));
+			String format = String.format(Locale.ENGLISH, "%s%s %.1f %.1f", substring.toLowerCase(), string,
+					xCoord, yCoord);
+			cmd.append(format);
+		}
+		return cmd.toString();
 	}
 
 }
