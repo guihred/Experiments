@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import javafx.beans.value.ObservableValue;
 import javafx.scene.shape.Circle;
 
 public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle, SimpleCircleBuilder> {
@@ -17,9 +18,19 @@ public class SimpleCircleBuilder extends SimpleShapeBuilder<Circle, SimpleCircle
 		return this;
 	}
 
-	public SimpleCircleBuilder centerY(double d) {
+    public SimpleCircleBuilder centerX(ObservableValue<? extends Number> d) {
+        circle.centerXProperty().bind(d);
+        return this;
+    }
+
+    public SimpleCircleBuilder centerY(double d) {
 		circle.setCenterY(d);
 		return this;
+	}
+
+	public SimpleCircleBuilder centerY(ObservableValue<? extends Number> d) {
+	    circle.centerYProperty().bind(d);
+	    return this;
 	}
 
 	public SimpleCircleBuilder radius(double d) {

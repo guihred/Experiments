@@ -51,12 +51,15 @@ public class FXEngineSVGCreatorTest extends ApplicationTest implements HasLoggin
             drag(MouseButton.PRIMARY);
             moveBy(randomMove(bound), randomMove(bound));
             drop();
+
             moveTo(stack);
             moveBy(randomMove(bound), randomMove(bound));
             drag(MouseButton.PRIMARY);
             moveBy(randomMove(bound), randomMove(bound));
             drop();
+
 		}
+        clickOn(".button");
 	}
 
     private int randomMove(int bound) {
