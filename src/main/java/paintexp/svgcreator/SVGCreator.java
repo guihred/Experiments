@@ -1,6 +1,5 @@
 package paintexp.svgcreator;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -221,9 +220,8 @@ public class SVGCreator extends Application {
 		StringBuffer sb = new StringBuffer();
 		while (matcher.find()) {
 			String group = matcher.group(1).trim();
-			String[] split = group.split("[\\s,[A-Za-z]]+");
+			String[] split = group.split("[\\s,[A-Za-z]]+|(?<=\\d)(?=-)");
 			System.out.println(group);
-			System.out.println(Arrays.toString(split));
 			String substring = group.substring(0, 1);
 			SVGCommand valueOf = SVGCommand.valueOf(substring.toUpperCase());
 			int args = valueOf.getArgs();
