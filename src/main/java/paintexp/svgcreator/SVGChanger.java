@@ -65,10 +65,6 @@ public class SVGChanger {
 
     }
 
-    private boolean isUpperCase(final String substring) {
-        return substring.matches("[A-Z]");
-    }
-
     private String replaceCommand(String group) {
         String svgCommand = group.substring(0, 1);
         int args = SVGCommand.valueOf(svgCommand.toUpperCase()).getArgs();
@@ -115,7 +111,7 @@ public class SVGChanger {
             String format = String.format(Locale.ENGLISH, "%.2f %.2f ", xCoord, yCoord);
             cmd.append(format);
         }
-        if (letter.equalsIgnoreCase("M")) {
+        if ("M".equalsIgnoreCase(letter)) {
             moveX = currentX.get();
             moveY = currentY.get();
         }
@@ -175,6 +171,10 @@ public class SVGChanger {
         LOG.info(convertToRelative);
         LOG.info(original);
 
+    }
+
+    private static boolean isUpperCase(final String substring) {
+        return substring.matches("[A-Z]");
     }
 
 }
