@@ -1,18 +1,15 @@
 package ml;
+import static utils.CommonsFX.newSlider;
 
 import javafx.application.Application;
-import javafx.beans.property.Property;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PieGraph;
-import simplebuilder.SimpleSliderBuilder;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
 public class PieGraphExample extends Application {
@@ -20,7 +17,7 @@ public class PieGraphExample extends Application {
     private static final int SIZE = 650;
 
     @Override
-	public void start(Stage theStage) {
+	public void start(final Stage theStage) {
         theStage.setTitle("Points Graph Example");
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root, SIZE, SIZE);
@@ -38,19 +35,8 @@ public class PieGraphExample extends Application {
 		theStage.show();
 	}
 
-    private VBox newSlider(String string, double min, double max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
-    }
 
-    private VBox newSlider(String string, int min, int max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
-    }
-
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }

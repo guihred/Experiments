@@ -1,10 +1,10 @@
 package ml;
+import static utils.CommonsFX.newSlider;
 
 import java.util.Map.Entry;
 import java.util.Set;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,20 +14,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.HistogramGraph;
 import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import utils.ResourceFXUtils;
 
 public class HistogramExample extends Application {
 
 
     @Override
-	public void start(Stage theStage) {
+	public void start(final Stage theStage) {
         theStage.setTitle("Histogram Example");
 
         BorderPane root = new BorderPane();
@@ -64,12 +62,7 @@ public class HistogramExample extends Application {
 		theStage.show();
 	}
 
-    private VBox newSlider(String string, int min, int max, Property<Number> radius) {
-        return new VBox(new Text(string),
-                new SimpleSliderBuilder().min(min).max(max).bindBidirectional(radius).build());
-    }
-
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }

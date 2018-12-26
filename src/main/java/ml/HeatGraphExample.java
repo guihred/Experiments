@@ -1,9 +1,9 @@
 package ml;
+import static utils.CommonsFX.newSlider;
 
 import java.util.List;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -11,22 +11,18 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Slider;
 import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.HeatGraph;
 import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import utils.ResourceFXUtils;
 public class HeatGraphExample extends Application {
 
 
     @Override
-	public void start(Stage theStage) {
+	public void start(final Stage theStage) {
         theStage.setTitle("Heat Graph Example");
 
         FlowPane root = new FlowPane();
@@ -59,7 +55,7 @@ public class HeatGraphExample extends Application {
 		theStage.show();
 	}
 
-    private ListView<String> createSelection(ObservableList<String> itens, StringProperty xHeader) {
+    private ListView<String> createSelection(final ObservableList<String> itens, final StringProperty xHeader) {
         ListView<String> ySelected = new ListView<>(itens);
         ySelected.setCellFactory(ComboBoxListCell.forListView(itens));
         ySelected.selectionModelProperty().get().setSelectionMode(SelectionMode.SINGLE);
@@ -75,13 +71,8 @@ public class HeatGraphExample extends Application {
         return ySelected;
     }
 
-    private VBox newSlider(String string, int min, int max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
-    }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }

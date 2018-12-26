@@ -1,11 +1,11 @@
 package ml;
+import static utils.CommonsFX.newSlider;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,7 +17,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import ml.data.DataframeML;
@@ -25,7 +24,6 @@ import ml.graph.TimelineGraph;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -36,7 +34,7 @@ public class TimelineExample extends Application {
     private static final Logger LOG = HasLogging.log();
 
 	@Override
-	public void start(Stage theStage) {
+	public void start(final Stage theStage) {
 		theStage.setTitle("Timeline Example");
         BorderPane root = new BorderPane();
         VBox left = new VBox();
@@ -84,21 +82,14 @@ public class TimelineExample extends Application {
 		theStage.show();
 	}
 
-    private VBox newSlider(String string, int min, int max, Property<Number> radius) {
-        return new VBox(new Text(string), new SimpleSliderBuilder()
-                .min(min)
-                .max(max)
-                .bindBidirectional(radius)
-                .build());
-    }
 
-    private List<Entry<String, Color>> sortedLabels(ObservableMap<String, Color> colorsProperty) {
+    private List<Entry<String, Color>> sortedLabels(final ObservableMap<String, Color> colorsProperty) {
         return colorsProperty
                 .entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
                 .collect(Collectors.toList());
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }

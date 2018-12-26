@@ -9,12 +9,18 @@ import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcTo;
@@ -22,13 +28,14 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleSliderBuilder;
 
 public final class CommonsFX {
 
 	private CommonsFX() {
 	}
 
-	public static void displayDialog(String text, String buttonMsg, Runnable c) {
+	public static void displayDialog(final String text, final String buttonMsg, final Runnable c) {
 		final Stage stage1 = new Stage();
 		final Button button = CommonsFX.newButton(buttonMsg, a -> {
 			c.run();
@@ -40,7 +47,7 @@ public final class CommonsFX {
 		stage1.show();
 	}
 
-	public static void displayDialog(String text, String buttonMsg, Supplier<DoubleProperty> c) {
+	public static void displayDialog(final String text, final String buttonMsg, final Supplier<DoubleProperty> c) {
 		final Stage stage1 = new Stage();
 		ProgressIndicator progressIndicator = new ProgressIndicator(0);
 
@@ -58,9 +65,7 @@ public final class CommonsFX {
 		stage1.setScene(new Scene(group));
 		stage1.show();
 	}
-
-
-    public static List<Color> generateRandomColors(int size) {
+	public static List<Color> generateRandomColors(final int size) {
         final int maxByte = 255;
         int max = 256;
         List<Color> availableColors = new ArrayList<>();
@@ -77,8 +82,7 @@ public final class CommonsFX {
     }
 
 
-
-    public static ArcTo newArcTo(int x, int y, int radiusX, int radiusY, boolean sweepFlag) {
+    public static ArcTo newArcTo(final int x, final int y, final int radiusX, final int radiusY, final boolean sweepFlag) {
 		ArcTo arcto = new ArcTo();
 		arcto.setX(x);
 		arcto.setY(y);
@@ -88,7 +92,9 @@ public final class CommonsFX {
 		return arcto;
 	}
 
-    public static Button newButton(double layoutX, double layoutY, String nome, EventHandler<ActionEvent> onAction) {
+
+
+    public static Button newButton(final double layoutX, final double layoutY, final String nome, final EventHandler<ActionEvent> onAction) {
 		Button button = new Button(nome);
 		button.setLayoutX(layoutX);
 		button.setLayoutY(layoutY);
@@ -96,36 +102,36 @@ public final class CommonsFX {
 		return button;
 	}
 
-    public static Button newButton(Node graphic, String id,EventHandler<ActionEvent> onAction) {
+    public static Button newButton(final Node graphic, final String id,final EventHandler<ActionEvent> onAction) {
         Button button = new Button(null,graphic);
         button.setId(id);
         button.setOnAction(onAction);
         return button;
     }
 
-    public static Button newButton(String nome, EventHandler<ActionEvent> onAction) {
+    public static Button newButton(final String nome, final EventHandler<ActionEvent> onAction) {
 		Button button = new Button(nome);
         button.setId(nome);
 		button.setOnAction(onAction);
 		return button;
 	}
 
-    public static CheckBox newCheck(String name, BooleanProperty showWeight) {
+    public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
         CheckBox checkBox = new CheckBox(name);
         checkBox.setSelected(showWeight.get());
         showWeight.bind(checkBox.selectedProperty());
         return checkBox;
     }
 
-    public static CheckBox newCheckBox(String text, boolean disabled) {
+    public static CheckBox newCheckBox(final String text, final boolean disabled) {
 		CheckBox build = new CheckBox(text);
 		build.setDisable(disabled);
 		return build;
 	}
 
-    public static PathTransition newPathTransistion(Duration duration, Shape path, Node node,
-            PathTransition.OrientationType orientation, Interpolator interpolator, boolean autoReverse,
-            int cycleCount) {
+    public static PathTransition newPathTransistion(final Duration duration, final Shape path, final Node node,
+            final PathTransition.OrientationType orientation, final Interpolator interpolator, final boolean autoReverse,
+            final int cycleCount) {
 		PathTransition build = new PathTransition(duration, path, node);
 		build.setOrientation(orientation);
 		build.setInterpolator(interpolator);
@@ -134,14 +140,26 @@ public final class CommonsFX {
 		return build;
 	}
 
-    public static TextField newTextField(String text, int prefColumnCount) {
+    public static VBox newSlider(final String string, final double min, final double max, final Property<Number> radius) {
+    	Slider build = new SimpleSliderBuilder().min(min).max(max).build();
+    	build.valueProperty().bindBidirectional(radius);
+    	return new VBox(new Text(string), build);
+    }
+
+	public static VBox newSlider(final String string, final int min, final int max, final Property<Number> radius) {
+        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
+        build.valueProperty().bindBidirectional(radius);
+        return new VBox(new Text(string), build);
+    }
+
+    public static TextField newTextField(final String text, final int prefColumnCount) {
 		TextField textField = new TextField(text);
 		textField.setPrefColumnCount(prefColumnCount);
 		return textField;
 	}
 
 
-    public static ToggleButton newToggleButton(String id, Node graphic, EventHandler<ActionEvent> onAction) {
+    public static ToggleButton newToggleButton(final String id, final Node graphic, final EventHandler<ActionEvent> onAction) {
         ToggleButton button = new ToggleButton();
         button.setId(id);
         button.setGraphic(graphic);

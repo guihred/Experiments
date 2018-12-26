@@ -1,8 +1,10 @@
 package ml;
 
+import static utils.CommonsFX.newButton;
+import static utils.CommonsFX.newSlider;
+
 import javafx.application.Application;
 import javafx.beans.Observable;
-import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -10,23 +12,19 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Slider;
 import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PointGraph;
-import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import utils.ResourceFXUtils;
 public class PointsExample extends Application {
 
 
     @Override
-	public void start(Stage theStage) {
+	public void start(final Stage theStage) {
         theStage.setTitle("Points Graph Example");
 
         BorderPane root = new BorderPane();
@@ -42,10 +40,10 @@ public class PointsExample extends Application {
         vBox.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
         vBox.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
         vBox.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
+				.add(newButton("Export", e -> ResourceFXUtils.take(canvas)));
         root.setLeft(vBox);
         ObservableList<String> itens = FXCollections.observableArrayList();
-        canvas.statsProperty().addListener((Observable o) -> itens.setAll(canvas.statsProperty().keySet()));
+        canvas.statsProperty().addListener((final Observable o) -> itens.setAll(canvas.statsProperty().keySet()));
         canvas.setDatagram(x);
 
 		ListView<String> xSelected = createSelection(itens, canvas.xHeaderProperty());
@@ -57,11 +55,11 @@ public class PointsExample extends Application {
 		theStage.show();
 	}
 
-    private ListView<String> createSelection(ObservableList<String> itens, StringProperty xHeader) {
+    private ListView<String> createSelection(final ObservableList<String> itens, final StringProperty xHeader) {
         ListView<String> ySelected = new ListView<>(itens);
         ySelected.setCellFactory(ComboBoxListCell.forListView(itens));
         ySelected.selectionModelProperty().get().setSelectionMode(SelectionMode.SINGLE);
-        ySelected.selectionModelProperty().get().getSelectedItems().addListener((Change<? extends String> c) -> {
+        ySelected.selectionModelProperty().get().getSelectedItems().addListener((final Change<? extends String> c) -> {
             c.next();
             if (!c.getAddedSubList().isEmpty()) {
                 xHeader.set(c.getAddedSubList().get(0));
@@ -71,13 +69,8 @@ public class PointsExample extends Application {
         return ySelected;
     }
 
-    private VBox newSlider(String string, int min, int max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
-    }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }

@@ -59,10 +59,15 @@ public class FXEngineSVGCreatorTest extends ApplicationTest implements HasLoggin
             drop();
 
 		}
-        clickOn(".button");
+		lookup(".slider").queryAll().forEach(m -> {
+			drag(m, MouseButton.PRIMARY);
+			moveBy(randomMove(10), 0);
+			drop();
+		});
+		clickOn(".button");
 	}
 
-    private int randomMove(int bound) {
+    private int randomMove(final int bound) {
         return random.nextInt(bound) - bound / 2;
     }
 }

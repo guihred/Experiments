@@ -1,33 +1,30 @@
 package ml;
+import static utils.CommonsFX.newSlider;
 
 import java.util.Map.Entry;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.MultiLineGraph;
 import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import utils.ResourceFXUtils;
 
 public class MultilineExample extends Application {
 
 
     @Override
-	public void start(Stage theStage) {
+	public void start(final Stage theStage) {
         theStage.setTitle("Multiline Example");
 
         BorderPane root = new BorderPane();
@@ -62,13 +59,7 @@ public class MultilineExample extends Application {
 		theStage.show();
 	}
 
-    private VBox newSlider(String string, int min, int max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
-    }
-
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }

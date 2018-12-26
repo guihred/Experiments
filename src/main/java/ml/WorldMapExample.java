@@ -1,23 +1,22 @@
 package ml;
+import static utils.CommonsFX.newSlider;
 
 import java.io.File;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.WorldMapGraph;
 import org.apache.commons.lang3.StringUtils;
-import simplebuilder.*;
+import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleComboBoxBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -25,7 +24,7 @@ public class WorldMapExample extends Application implements HasLogging {
 
 
     @Override
-	public void start(Stage theStage) {
+	public void start(final Stage theStage) {
         theStage.setTitle("World Map Example");
 
         FlowPane root = new FlowPane();
@@ -70,13 +69,8 @@ public class WorldMapExample extends Application implements HasLogging {
 		theStage.show();
 	}
 
-    private VBox newSlider(String string, double min, int max, Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
-    }
 
-    private void updateIndicatorName(Text text, DataframeML x2) {
+    private void updateIndicatorName(final Text text, final DataframeML x2) {
 
         try {
             text.setText(x2.list("Indicator Name").get(0).toString());
@@ -85,7 +79,7 @@ public class WorldMapExample extends Application implements HasLogging {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }
