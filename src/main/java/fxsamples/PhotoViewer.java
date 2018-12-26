@@ -62,7 +62,8 @@ public class PhotoViewer extends Application {
         // create a progress indicator
         progressIndicator = createProgressIndicator(scene);
         root.getChildren().addAll(currentImageView, buttonGroup, progressIndicator);
-        root.getChildren().add(createTickerControl(primaryStage, 80));
+        final int rightPadding = 80;
+        root.getChildren().add(createTickerControl(primaryStage, rightPadding));
         primaryStage.show();
         ClassReflectionUtils.displayCSSStyler(scene, "photo-viewer.css");
         addPicturesFromImagesFolder();

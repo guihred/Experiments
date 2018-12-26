@@ -5,6 +5,7 @@
  */
 package fxpro.ch03;
 
+import java.util.Random;
 /**
  *
  * @author Note
@@ -34,56 +35,64 @@ public final class SimplePropertyExample {
     }
 
     private static void addAndRemoveChangeListener() {
-		LOG.info("\n");
+        int nextInt = new Random().nextInt(1000);
+        LOG.info("\n");
 		final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> LOG
                 .info("The observableValue has changed: oldValue = {}, newValue = {}", oldValue, newValue);
         intProperty.addListener(changeListener);
 		LOG.info("Added change listener.");
-		LOG.info("Calling intProperty.set(5120).");
-        intProperty.set(5120);
+        LOG.info("Calling intProperty.set({}).", nextInt);
+        intProperty.set(nextInt);
         intProperty.removeListener(changeListener);
 		LOG.info("Removed change listener.");
-		LOG.info("Calling intProperty.set(6144).");
-        intProperty.set(6144);
+        nextInt = new Random().nextInt(1000);
+        LOG.info("Calling intProperty.set({}).", nextInt);
+        intProperty.set(nextInt);
     }
 
     private static void addAndRemoveInvalidationListener() {
+        int nextInt = new Random().nextInt(1000);
 		LOG.info("\n");
         final InvalidationListener invalidationListener
 				= (Observable observable) -> LOG.info("The observable has been invalidated: {}.", observable);
         intProperty.addListener(invalidationListener);
 		LOG.info("Added invalidation listener.");
-		LOG.info("Calling intProperty.set(2048).");
-        intProperty.set(2048);
-		LOG.info("Calling intProperty.setValue(3072).");
-        intProperty.setValue(Integer.valueOf(3072));
+        LOG.info("Calling intProperty.set({}).", nextInt);
+        intProperty.set(nextInt);
+        nextInt = new Random().nextInt(1000);
+        LOG.info("Calling intProperty.setValue({}).", nextInt);
+        intProperty.setValue(Integer.valueOf(nextInt));
         intProperty.removeListener(invalidationListener);
 		LOG.info("Removed invalidation listener.");
-		LOG.info("Calling intProperty.set(4096).");
-        intProperty.set(4096);
+        nextInt = new Random().nextInt(1000);
+        LOG.info("Calling intProperty.set({}).", nextInt);
+        intProperty.set(nextInt);
     }
 
     private static void bindAndUnbindOnePropertyToAnother() {
 		LOG.info("\n");
+        int nextInt = new Random().nextInt(1000);
         IntegerProperty otherProperty = new SimpleIntegerProperty(0);
         logOtherProperty(otherProperty);
 		LOG.info("Binding otherProperty to intProperty.");
         otherProperty.bind(intProperty);
         logOtherProperty(otherProperty);
-		LOG.info("Calling intProperty.set(7168).");
-        intProperty.set(7168);
+        LOG.info("Calling intProperty.set({}).", nextInt);
+        intProperty.set(nextInt);
+        nextInt = new Random().nextInt(1000);
         logOtherProperty(otherProperty);
 		LOG.info("Unbinding otherProperty from intProperty.");
         otherProperty.unbind();
         logOtherProperty(otherProperty);
-		LOG.info("Calling intProperty.set(8192).");
-        intProperty.set(8192);
+        LOG.info("Calling intProperty.set({}).", nextInt);
+        intProperty.set(nextInt);
         logOtherProperty(otherProperty);
     }
 
     private static void createProperty() {
 		LOG.info("\n");
-        intProperty = new SimpleIntegerProperty(1024);
+        int nextInt = new Random().nextInt(1000);
+        intProperty = new SimpleIntegerProperty(nextInt);
 		LOG.info("intProperty = {}", intProperty);
 		LOG.info("intProperty.get() = {}", intProperty.get());
         int intValue = intProperty.getValue().intValue();

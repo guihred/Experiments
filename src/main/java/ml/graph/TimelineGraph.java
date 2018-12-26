@@ -17,9 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import utils.CommonsFX;
 
 public class TimelineGraph extends Canvas {
+    private static final int SIZE = 550;
+    private static final double MAX_LAYOUT = 480;
     private String countryNameColumn = "﻿Country Name";
     private DoubleProperty layout = new SimpleDoubleProperty(30);
-	private double maxLayout = 480;
 	private DoubleProperty lineSize = new SimpleDoubleProperty(5);
 	private IntegerProperty bins = new SimpleIntegerProperty(20);
 	private IntegerProperty ybins = new SimpleIntegerProperty(20);
@@ -34,7 +35,7 @@ public class TimelineGraph extends Canvas {
     private String title;
 
 	public TimelineGraph() {
-		super(550, 550);
+        super(SIZE, SIZE);
 		gc = getGraphicsContext2D();
 		drawGraph();
 		InvalidationListener listener = observable -> drawGraph();
@@ -60,23 +61,23 @@ public class TimelineGraph extends Canvas {
         gc.setStroke(Color.BLACK);
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
+        gc.fillText(title, layout.get() + (MAX_LAYOUT - layout.get()) / 2, layout.get() - 20);
 		double e = layout.get();
-        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
-		gc.strokeLine(e, e, e, maxLayout);
+        gc.strokeLine(e, MAX_LAYOUT, MAX_LAYOUT, MAX_LAYOUT);
+        gc.strokeLine(e, e, e, MAX_LAYOUT);
         double d = lineSize.get();
-		double j = (maxLayout - e) / bins.get();
+        double j = (MAX_LAYOUT - e) / bins.get();
 		for (int i = 1; i <= bins.get(); i++) {
 			double x1 = i * j + e;
-            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
+            gc.strokeLine(x1, MAX_LAYOUT, x1, MAX_LAYOUT + 5);
             String xLabel = String.format("%.0f", i * xProportion.get() + colStats.getMin());
             gc.strokeText(xLabel, x1,
-                    maxLayout + 5 * (4 + 3 * (i % 2)));
+                    MAX_LAYOUT + 5 * (4 + 3 * (i % 2)));
 
 		}
-		j = (maxLayout - e) / ybins.get();
+        j = (MAX_LAYOUT - e) / ybins.get();
 		for (int i = 0; i <= ybins.get(); i++) {
-			double y1 = maxLayout - i * j;
+            double y1 = MAX_LAYOUT - i * j;
             gc.strokeLine(e, y1, e - 5, y1);
             String yLabel = String.format("%.1f", i * yProportion + stats.getMin());
             gc.strokeText(yLabel, e - d * 2, y1);
@@ -84,7 +85,7 @@ public class TimelineGraph extends Canvas {
 	}
 
     public final void drawGraph() {
-        gc.clearRect(0, 0, 550, 550);
+        gc.clearRect(0, 0, SIZE, SIZE);
 		if (dataframe == null) {
 			drawAxis();
 			return;
@@ -99,8 +100,8 @@ public class TimelineGraph extends Canvas {
         yProportion = (max2 - stats.getMin()) / ybins.get();
 
         List<String> list = dataframe.list(countryNameColumn, String.class);
-        double j = (maxLayout - layout.get()) / bins.doubleValue();
-        double j2 = (maxLayout - layout.get()) / ybins.get();
+        double j = (MAX_LAYOUT - layout.get()) / bins.doubleValue();
+        double j2 = (MAX_LAYOUT - layout.get()) / ybins.get();
         boolean colorEmpty = colors.isEmpty();
 
         List<Color> generateRandomColors = CommonsFX.generateRandomColors(list.size());
@@ -181,7 +182,7 @@ public class TimelineGraph extends Canvas {
                 continue;
             }
             double y = object.doubleValue() - stats.getMin();
-            double y1 = maxLayout - y / yProportion * j2;
+            double y1 = MAX_LAYOUT - y / yProportion * j2;
             int searchYear = year;
             while (searchYear < maxYear) {
                 double x2 = ++searchYear - (double) minYear;
@@ -190,7 +191,7 @@ public class TimelineGraph extends Canvas {
                 Number object2 = (Number) row.get("" + searchYear);
                 if (object2 != null) {
                     double y2 = object2.doubleValue() - stats.getMin();
-                    double y12 = maxLayout - y2 / yProportion * j2;
+                    double y12 = MAX_LAYOUT - y2 / yProportion * j2;
                     gc.strokeLine(x1, y1, x12, y12);
                     break;
                 }
@@ -209,7 +210,7 @@ public class TimelineGraph extends Canvas {
             double k = (year - minYear) / xProportion.get();
             double x1 = k * j + d;
             double y = object.doubleValue() - stats.getMin();
-            double y1 = maxLayout - y / yProportion * j2;
+            double y1 = MAX_LAYOUT - y / yProportion * j2;
             // gc.strokeLine(x1, maxLayout, x1, y1)
             double h = radius.get();
             gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);

@@ -22,6 +22,7 @@ import utils.CommonsFX;
 import utils.HasLogging;
 
 public class MultiLineGraph extends Canvas implements HasLogging {
+    private static final int SIZE = 550;
     private DoubleProperty layout = new SimpleDoubleProperty(30);
     private double maxLayout = 480;
     private DoubleProperty lineSize = new SimpleDoubleProperty(5);
@@ -37,7 +38,7 @@ public class MultiLineGraph extends Canvas implements HasLogging {
     private String title;
 
     public MultiLineGraph() {
-        super(550, 550);
+        super(SIZE, SIZE);
         gc = getGraphicsContext2D();
         drawGraph();
         InvalidationListener listener = observable -> drawGraph();
@@ -134,7 +135,7 @@ public class MultiLineGraph extends Canvas implements HasLogging {
 
         }
 
-        gc.clearRect(0, 0, 550, 550);
+        gc.clearRect(0, 0, SIZE, SIZE);
         int max = dataframe.getSize() - 1;
         double min = 0;
         xProportion = (max - min) / bins.get();

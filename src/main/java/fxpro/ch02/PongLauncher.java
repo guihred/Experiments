@@ -22,13 +22,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.SimpleCircleBuilder;
-import simplebuilder.SimpleLinearGradientBuilder;
-import simplebuilder.SimpleRectangleBuilder;
-import simplebuilder.SimpleTimelineBuilder;
+import simplebuilder.*;
 import utils.Delta;
 
 public class PongLauncher extends Application {
@@ -77,10 +75,10 @@ public class PongLauncher extends Application {
 	 * Controls whether the startButton is visible
 	 */
 	private BooleanProperty startVisible = new SimpleBooleanProperty(true);
-    private Rectangle topWall = new SimpleRectangleBuilder().x(0).y(0).width(WIDTH).height(1).build();
-    private Rectangle rightWall = new SimpleRectangleBuilder().x(WIDTH).y(0).width(1).height(WIDTH).build();
-    private Rectangle leftWall = new SimpleRectangleBuilder().x(0).y(0).width(1).height(WIDTH).build();
-    private Rectangle bottomWall = new SimpleRectangleBuilder().x(0).y(WIDTH).width(WIDTH).height(1).build();
+    private Line topWall = new SimpleLineBuilder().startX(0).startY(0).endX(WIDTH).endY(0).build();
+    private Line rightWall = new SimpleLineBuilder().startX(WIDTH).startY(0).endX(WIDTH).endY(WIDTH).build();
+    private Line leftWall = new SimpleLineBuilder().startX(0).startY(0).endX(0).endY(WIDTH).build();
+    private Line bottomWall = new SimpleLineBuilder().startX(0).startY(WIDTH).endX(WIDTH).endY(WIDTH).build();
 	/**
 	 * Controls whether the ball is moving right
 	 */
@@ -186,7 +184,7 @@ public class PongLauncher extends Application {
         startButton.visibleProperty().bind(startVisible);
         stage.setScene(scene);
         initialize();
-        stage.setResizable(false);
+        //        stage.setResizable(false);
         stage.setWidth(WIDTH + 8);
         stage.setHeight(WIDTH + 30);
         stage.setTitle("ZenPong Example");

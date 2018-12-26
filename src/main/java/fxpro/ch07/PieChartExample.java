@@ -23,7 +23,7 @@ public class PieChartExample extends Application {
         primaryStage.setTitle("PieChart");
         StackPane root = new StackPane();
         root.getChildren().add(pieChart);
-        primaryStage.setScene(new Scene(root, 400, 250));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

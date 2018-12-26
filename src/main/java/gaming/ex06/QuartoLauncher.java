@@ -223,16 +223,17 @@ public class QuartoLauncher extends Application implements HasLogging{
 	}
 
 	public static int getTranslate(int j) {
+        final int border = 110;
         switch (j) {
             case 0:
-                return -110;
+                return -border;
             case 1:
                 return -90;
             case 2:
                 return 90;
             case 3:
             default:
-                return 110;
+                return border;
 
         }
     }
@@ -242,7 +243,8 @@ public class QuartoLauncher extends Application implements HasLogging{
     }
 
     private static int getPosition(int i) {
-        return i * 40 - 60;
+        final int spacing = 40;
+        return i * spacing - 60;
     }
 }
 

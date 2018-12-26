@@ -154,8 +154,9 @@ public class PlayerControlView extends BaseSongView {
 				songModel.getMediaPlayer().play();
 			}
 		});
-		openButton.setPrefWidth(32);
-		openButton.setPrefHeight(32);
+        final int prefSize = 32;
+        openButton.setPrefWidth(prefSize);
+        openButton.setPrefHeight(prefSize);
 		return openButton;
 	}
 

@@ -45,10 +45,10 @@ public class MetadataView extends BaseSongView {
         year.setId("year");
         year.textProperty().bind(songModel.yearProperty());
         final Reflection reflection = new Reflection();
-        reflection.setFraction(0.2);
+        reflection.setFraction(1. / 5);
 		final Image image = new Image(DEFAULT_PICTURE);
         ImageView albumCover = new ImageView(image);
-        albumCover.setFitWidth(240);
+        albumCover.setFitWidth(500. / 2);
         albumCover.setPreserveRatio(true);
         albumCover.setSmooth(true);
         albumCover.setEffect(reflection);

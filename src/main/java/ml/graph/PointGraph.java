@@ -14,7 +14,7 @@ import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 
 public class PointGraph extends Canvas {
-    private static final int CANVAS_SIZE = 550;
+    private static final int CANVAS_SIZE = 500;
     private static final double MAX_LAYOUT = 480;
     private final DoubleProperty layout = new SimpleDoubleProperty(30);
 	private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
@@ -91,8 +91,9 @@ public class PointGraph extends Canvas {
         double max = xStats.getMax();
         double min = xStats.getMin();
         xProportion = (max - min) / bins.intValue();
-        double max2 = yStats.getMax() + 0.1;
-        double min2 = yStats.getMin() - 0.1;
+        final double pad = 0.1;
+        double max2 = yStats.getMax() + pad;
+        double min2 = yStats.getMin() - pad;
         yProportion = (max2 - min2) / ybins.intValue();
 
         List<Object> entrySetX = data.list(xHeader.get());

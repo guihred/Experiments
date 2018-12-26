@@ -15,19 +15,14 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.SimpleRegionBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 
@@ -37,7 +32,11 @@ import simplebuilder.SimpleVBoxBuilder;
  */
 public class ReversiMain extends Application {
 
-	private ReversiModel model = ReversiModel.getInstance();
+    private static final int HEIGHT = 600;
+    private static final int WIDTH = 400;
+    private static final Font DEFAULT_FONT = Font.font(null, FontWeight.BOLD, 18);
+
+    private ReversiModel model = ReversiModel.getInstance();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -46,8 +45,8 @@ public class ReversiMain extends Application {
         Node restart = restart();
         primaryStage.setScene(new Scene(new AnchorPane(game, restart)));
 
-        primaryStage.setWidth(400);
-        primaryStage.setHeight(600);
+        primaryStage.setWidth(WIDTH);
+        primaryStage.setHeight(HEIGHT);
 		AnchorPane.setTopAnchor(game, 0D);
 		AnchorPane.setBottomAnchor(game, 0D);
 		AnchorPane.setLeftAnchor(game, 0D);
@@ -57,16 +56,15 @@ public class ReversiMain extends Application {
         primaryStage.show();
     }
 
-    private Node createBackground() {
-        final Region region = new Region();
-        region.setStyle("-fx-background-color: radial-gradient(radius 100%, white, gray);");
-
-        return region;
+    private Region createBackground() {
+        return SimpleRegionBuilder.create()
+                .style("-fx-background-color: radial-gradient(radius 100%, white, gray);")
+                .build();
     }
 
     private StackPane createScore(Owner owner) {
-        Region background;
-		Ellipse piece = new Ellipse(32, 20);
+        final int radiusX = 32;
+        Ellipse piece = new Ellipse(radiusX, 20);
 		piece.setEffect(new DropShadow(10, Color.DODGERBLUE));
 		piece.setFill(owner.getColor());
 
@@ -74,14 +72,15 @@ public class ReversiMain extends Application {
 		Text remaining = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 12))
 				.build();
 
-        background = new Region();
+        Region background = new Region();
         background.setStyle("-fx-background-color: " + owner.opposite().getColorStyle());
 		Node[] children = { piece, remaining };
 
 		FlowPane flowPane = new FlowPane(20, 10, score, new SimpleVBoxBuilder().alignment(Pos.CENTER).spacing(10).children(children).build());
 		flowPane.setAlignment(Pos.CENTER);
 		StackPane stack = new StackPane(background, flowPane);
-		stack.setPrefHeight(40);
+        final int prefHeight = 40;
+        stack.setPrefHeight(prefHeight);
         InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
         background.effectProperty().bind(Bindings.when(model.getTurn().isEqualTo(owner))
                 .then(innerShadow)
@@ -103,25 +102,24 @@ public class ReversiMain extends Application {
                 "width").divide(2));
         return tiles;
     }
-
     private Node createTitle() {
         StackPane left = new StackPane();
         left.setStyle("-fx-background-color: black");
 
         Text text = new Text("JavaFX");
-        text.setFont(Font.font(null, FontWeight.BOLD, 18));
+        text.setFont(DEFAULT_FONT);
         text.setFill(Color.WHITE);
         StackPane.setAlignment(text, Pos.CENTER_RIGHT);
         left.getChildren().add(text);
         Text right = new Text("Reversi");
-        right.setFont(Font.font(null, FontWeight.BOLD, 18));
+        right.setFont(DEFAULT_FONT);
         TilePane tiles = new TilePane();
         tiles.setSnapToPixel(false);
         TilePane.setAlignment(right, Pos.CENTER_LEFT);
         tiles.getChildren().addAll(left, right);
-        tiles.setPrefTileHeight(40);
-        tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(),
-                "width").divide(2));
+        final int prefHeight = 40;
+        tiles.setPrefTileHeight(prefHeight);
+        tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(), "width").divide(2));
         return tiles;
     }
     private Node restart() {

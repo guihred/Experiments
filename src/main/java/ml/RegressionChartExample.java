@@ -13,8 +13,8 @@ import ml.data.DataframeML;
 public class RegressionChartExample extends Application {
     @Override
     public void start(Stage primaryStage) {
-        RegressionModel regressionModel = new RegressionModel();
 		DataframeML x = new DataframeML("california_housing_train.csv");
+        RegressionModel regressionModel = new RegressionModel();
 
         ObservableList<Series<Number, Number>> data = regressionModel.createSeries(x.list("total_rooms"),
                 x.list("total_rooms"));

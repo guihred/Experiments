@@ -31,16 +31,16 @@ public class Number3D extends Group {
 		rec2.visibleProperty().bind(visibleIfNot(0, 1, 7));
 		Box rec3 = horizontal();
 		rec3.translateYProperty().bind(sizeProperty);
-		rec3.visibleProperty().bind(visibleIfNot(1, 4, 7));
+        rec3.visibleProperty().bind(visibleIfNot(1, 4, 7));
 		rec3.setTranslateX(0);
 		Box rec4 = vertical();
-        rec4.translateXProperty().bind(sizeProperty.divide(2));
+        rec4.translateXProperty().bind(sizeProperty.divide(-2));
         rec4.translateYProperty().bind(sizeProperty.divide(-2));
-		rec4.visibleProperty().bind(visibleIfNot(1, 2, 3, 7));
+        rec4.visibleProperty().bind(visibleIfNot(1, 2, 3, 7));
 		Box rec5 = vertical();
         rec5.translateXProperty().bind(sizeProperty.divide(-2));
         rec5.translateYProperty().bind(sizeProperty.divide(2));
-		rec5.visibleProperty().bind(visibleIfNot(1, 3, 4, 5, 7, 9));
+        rec5.visibleProperty().bind(visibleIfNot(1, 3, 4, 5, 7, 9));
 		Box rec6 = vertical();
         rec6.translateXProperty().bind(sizeProperty.divide(2));
         rec6.translateYProperty().bind(sizeProperty.divide(-2));
@@ -48,7 +48,7 @@ public class Number3D extends Group {
 		Box rec7 = vertical();
         rec7.translateXProperty().bind(sizeProperty.divide(2));
         rec7.translateYProperty().bind(sizeProperty.divide(2));
-		rec7.visibleProperty().bind(visibleIfNot(2));
+        rec7.visibleProperty().bind(visibleIfNot(2));
 		getChildren().addAll(rec1, rec2, rec3, rec4, rec5, rec6, rec7);
 	}
 

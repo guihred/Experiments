@@ -8,12 +8,7 @@ package gaming.ex02;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -40,8 +35,6 @@ public class MemoryLauncher extends Application {
         final BorderPane borderPane = new BorderPane(gridPane);
         final Scene scene = new Scene(borderPane);
         stage.setScene(scene);
-        stage.setWidth(400);
-        stage.setHeight(200);
         stage.show();
     }
     public static void main(String[] args) {

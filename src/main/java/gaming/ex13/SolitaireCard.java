@@ -23,13 +23,14 @@ public class SolitaireCard extends Region {
 		this.suit = suit;
 		setPadding(new Insets(10));
 		setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), new Insets(1))));
-		setPrefSize(50, 75);
+        final double defaultScale = 0.75;
+        setPrefSize(50, defaultScale * 100);
 
 		Shape s = this.suit.getShape();
 		s.setLayoutX(30);
 		s.setLayoutY(15);
-		s.setScaleX(0.75);
-		s.setScaleY(0.75);
+        s.setScaleX(defaultScale);
+        s.setScaleY(defaultScale);
 		s.visibleProperty().bind(shown);
 
 		Text text = new Text(this.number.getRepresentation());

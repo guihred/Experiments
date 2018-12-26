@@ -49,7 +49,8 @@ public class Shapes3DApp extends Application {
 		Group group = new Group();
 		// size of the cube
 		group.getTransforms().addAll(rotateX, rotateY);
-		Image diffuseMap = createImage(400);
+        final int imageSize = 500;
+        Image diffuseMap = createImage(imageSize);
 		ImageView iv = new ImageView(diffuseMap);
 		iv.setRotationAxis(Rotate.X_AXIS);
 		iv.setRotate(90);
@@ -117,14 +118,14 @@ public class Shapes3DApp extends Application {
 		MeshView pyramid = new MeshView();
 		pyramid.setMesh(pyramidMesh);
 		pyramid.setDrawMode(DrawMode.FILL);
-		pyramid.setTranslateY(-250);
+        pyramid.setTranslateY(-imageSize / 2);
 		// apply material
 		pyramid.setMaterial(material);
 		group.getChildren().add(pyramid);
 		// scene
 		StackPane root = new StackPane();
 		root.getChildren().add(group);
-		Scene scene = new Scene(root, 1600, 900, true,
+        Scene scene = new Scene(root, imageSize * 2, imageSize * 2, true,
 				SceneAntialiasing.BALANCED);
 		scene.setCamera(new PerspectiveCamera());
 		// interaction listeners

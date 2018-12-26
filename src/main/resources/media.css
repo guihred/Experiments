@@ -13,6 +13,7 @@
 }
 .label {
 	-fx-text-fill: #E0E0E0;
+	-fx-pref-width: 300.0px;
 }
 #clipLabel {
 	-fx-font-size: 34.0pt;

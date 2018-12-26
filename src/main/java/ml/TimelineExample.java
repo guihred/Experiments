@@ -13,7 +13,7 @@ import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -32,26 +32,29 @@ import utils.ResourceFXUtils;
 public class TimelineExample extends Application {
 
 
+    private static final int MAX_ROWS = 46;
     private static final Logger LOG = HasLogging.log();
 
 	@Override
 	public void start(Stage theStage) {
 		theStage.setTitle("Timeline Example");
-        FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 1020, 600);
+        BorderPane root = new BorderPane();
+        VBox left = new VBox();
+        Scene theScene = new Scene(root);
 		theStage.setScene(theScene);
-
+        root.setLeft(left);
         TimelineGraph canvas = new TimelineGraph();
 
         DataframeML x = DataframeML.builder("out/WDIDataGC.TAX.TOTL.GD.ZS.csv")
-                .setMaxSize(46)
+                .setMaxSize(MAX_ROWS)
                 .build();
+        canvas.prefWidth(500);
         canvas.setTitle(x.list("Indicator Name").get(0).toString());
-		root.getChildren().add(newSlider("Radius", 1, 375, canvas.radiusProperty()));
-		root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSizeProperty()));
-		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-		root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        left.getChildren().add(newSlider("Radius", 1, 500, canvas.radiusProperty()));
+        left.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        left.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
         canvas.xProportionProperty()
                 .addListener(o -> itens.setAll(sortedLabels(canvas.colorsProperty())));
@@ -67,16 +70,16 @@ public class TimelineExample extends Application {
         itens.setAll(sortedLabels(canvas.colorsProperty()));
         String[] list = ResourceFXUtils.toFile("out").list((dir, name) -> name.endsWith(".csv"));
         ComboBox<String> indicators = new SimpleComboBoxBuilder<String>().items(list).select(0).onSelect(s -> {
-            DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(46).build();
+            DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(MAX_ROWS).build();
             canvas.setTitle(x2.list("Indicator Name").get(0).toString());
             canvas.setHistogram(x2, countryNameColumn);
             itens.setAll(sortedLabels(canvas.colorsProperty()));
         }).build();
 
-        root.getChildren().add(indicators);
-        root.getChildren()
+        left.getChildren().add(indicators);
+        left.getChildren()
                 .add(new SimpleButtonBuilder().text("Export").onAction(d -> ResourceFXUtils.take(canvas)).build());
-        root.getChildren().add(new HBox(listVies, canvas));
+        root.setCenter(new HBox(canvas, listVies));
 
 		theStage.show();
 	}

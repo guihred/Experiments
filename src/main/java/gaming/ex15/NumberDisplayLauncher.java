@@ -16,11 +16,12 @@ public class NumberDisplayLauncher extends Application {
 		SimpleIntegerProperty number = new SimpleIntegerProperty(0);
 		Numbers3D number3d = new Numbers3D(0);
 		number3d.numProperty().bind(number);
-		number3d.setTranslateX(100);
-		number3d.setTranslateY(60);
-		stage.setScene(new Scene(new Group(number3d), 400, 400));
+        final int pad = 60;
+        number3d.setTranslateX(pad);
+        number3d.setTranslateY(pad);
+        stage.setScene(new Scene(new Group(number3d)));
 		Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(number, 0)),
-				new KeyFrame(Duration.seconds(5), new KeyValue(number, 20)));
+                new KeyFrame(Duration.seconds(20), new KeyValue(number, 20)));
 		timeline.setCycleCount(-1);
 		timeline.play();
 		stage.show();

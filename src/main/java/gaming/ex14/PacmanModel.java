@@ -85,7 +85,8 @@ public class PacmanModel implements HasLogging {
 		for (int i = 0; i < ghosts.size(); i++) {
 			PacmanGhost ghost = ghosts.get(i);
             int location = i / 2;
-            ghost.setStartPosition(265 + i % 2 * SQUARE_SIZE, 265 + location * SQUARE_SIZE);
+            final int initialPos = 265;
+            ghost.setStartPosition(initialPos + i % 2 * SQUARE_SIZE, initialPos + location * SQUARE_SIZE);
 			group.getChildren().add(ghost.getCircle());
 		}
 		scene.setOnKeyPressed(this::handleKeyPressed);

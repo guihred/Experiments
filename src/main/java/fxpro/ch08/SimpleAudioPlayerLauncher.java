@@ -51,7 +51,7 @@ public class SimpleAudioPlayerLauncher extends Application {
     public void start(Stage primaryStage) {
         createControls();
         createMedia();
-        final Scene scene = new Scene(createGridPane(), 800, 400);
+        final Scene scene = new Scene(createGridPane());
         try {
 
 			final URL stylesheet = Chapter8Resource.MEDIA.getURL();

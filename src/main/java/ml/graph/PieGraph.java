@@ -23,10 +23,10 @@ public class PieGraph extends Canvas {
     private static final int WIDTH = 550;
     private GraphicsContext gc;
 	private ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
-	private IntegerProperty radius = new SimpleIntegerProperty(275);
+    private IntegerProperty radius = new SimpleIntegerProperty(WIDTH / 2);
     private IntegerProperty bins = new SimpleIntegerProperty(10);
     private IntegerProperty xOffset = new SimpleIntegerProperty(10);
-    private DoubleProperty legendsRadius = new SimpleDoubleProperty(0.75);
+    private DoubleProperty legendsRadius = new SimpleDoubleProperty(3. / 4);
     private List<Color> availableColors;
     private String column = "Region";
     private DataframeML dataframe;

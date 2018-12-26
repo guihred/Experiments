@@ -9,17 +9,18 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 
-class RegressionModel {
+public class RegressionModel {
 
     private static final int MAX_SIZE = 20;
+    private static final double LEARNING_RATE = 0.001;
     private double slope;
     private double initial;
-    private int c;
+	private int c;
 	private List<Double> target;
-	private List<Double> features;
+    private List<Double> features;
     private double bestSlope;
     private double bestInitial;
-	private double learningRate = 0.001;
+
     @SuppressWarnings("unchecked")
 	public ObservableList<Series<Number, Number>> createRandomSeries() {
         Series<Number, Number> series = new Series<>();
@@ -92,7 +93,7 @@ class RegressionModel {
 					.map(y -> (-y + bestInitial + bestSlope * features.get(c++)) * features.get(c - 1))
                     .sum() * 2
 					/ target.size()
-                    * learningRate;
+                    * LEARNING_RATE;
             bestSlope -= adjust;
             c = 0;
 			target.stream().mapToDouble(e -> e).map(e -> -e + bestInitial + bestSlope * features.get(c++))
@@ -103,7 +104,7 @@ class RegressionModel {
             c = 0;
 			double adjust = target.stream().mapToDouble(e -> e)
 					.map(y -> -y + bestInitial + bestSlope * features.get(c++)).sum() * 2 / target.size()
-					* learningRate;
+                    * LEARNING_RATE;
             bestInitial -= adjust;
             c = 0;
 			double loss = target.stream().mapToDouble(e -> e).map(e -> -e + bestInitial + bestSlope * features.get(c++))

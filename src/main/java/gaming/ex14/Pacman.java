@@ -25,8 +25,8 @@ public class Pacman extends Arc {
 	private Timeline eatingAnimation = new SimpleTimelineBuilder()
             .keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), START_ANGLE)),
                     new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), ANGLE_LENGTH)),
-					new KeyFrame(Duration.seconds(0.25), new KeyValue(startAngleProperty(), 0.0F)),
-					new KeyFrame(Duration.seconds(0.25), new KeyValue(lengthProperty(), 360.0F)))
+                    new KeyFrame(Duration.seconds(1. / 4), new KeyValue(startAngleProperty(), 0.0F)),
+                    new KeyFrame(Duration.seconds(1. / 4), new KeyValue(lengthProperty(), 360.0F)))
 			.cycleCount(Animation.INDEFINITE).autoReverse(true).build();
 	public Pacman() {
 		setFill(Color.YELLOW);

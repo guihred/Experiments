@@ -51,14 +51,15 @@ public class PaintController {
     public List<Color> getColors() {
         List<Color> availableColors = new ArrayList<>();
         final double step = 30;
+        final int colorDiff = 64;
         for (int i = 0; i < 2; i++) {
-            availableColors.add(Color.grayRgb(i * 64));
+            availableColors.add(Color.grayRgb(i * colorDiff));
         }
         for (int i = 0; i < 12; i++) {
             availableColors.add(Color.hsb(i * step, 1, 1));
         }
         availableColors.add(Color.WHITE);
-        availableColors.add(Color.grayRgb(128));
+        availableColors.add(Color.grayRgb(colorDiff * 2));
         for (int i = 0; i < 6; i++) {
             availableColors.add(Color.hsb(i * step, 1, 0.5));
         }

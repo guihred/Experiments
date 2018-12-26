@@ -111,7 +111,7 @@ public class SVGChanger {
             String format = String.format(Locale.ENGLISH, "%.2f %.2f ", xCoord, yCoord);
             cmd.append(format);
         }
-        if ("M".equalsIgnoreCase(letter)) {
+        if (SVGCommand.M.name().equalsIgnoreCase(letter)) {
             moveX = currentX.get();
             moveY = currentY.get();
         }

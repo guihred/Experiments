@@ -29,7 +29,7 @@ public class ScatterChartWithFillExample extends Application {
         primaryStage.setTitle("Scatter Chart Filled Example");
         StackPane root = new StackPane();
         root.getChildren().add(scatterChart);
-        primaryStage.setScene(new Scene(root, 400, 250));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 
