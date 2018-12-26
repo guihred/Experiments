@@ -37,9 +37,13 @@ public class ArkanoidModel {
         circle.setCenterX(rectangle.getX() + rectangle.getWidth() / 2);
         circle.setCenterY(rectangle.getY() - circle.getRadius());
 
+        int cols = 15;
+        int spacing = 25;
 		group.getChildren().add(rectangle);
-		group.getChildren()
-				.addAll(range(0, 105).mapToObj(i -> new Rectangle(i % 15 * 25 + 10, i / 15 * 15 + 50, 20, 10))
+        int rows = 6;
+        group.getChildren()
+                .addAll(range(0, cols * rows)
+                        .mapToObj(i -> new Rectangle(i % cols * spacing + 10, i / cols * cols + 50, 20, 10))
 						.peek(r -> r.setFill(Color.AQUA)).collect(toList()));
 		group.getChildren().add(circle);
 		scene.setOnKeyPressed((KeyEvent event) -> {

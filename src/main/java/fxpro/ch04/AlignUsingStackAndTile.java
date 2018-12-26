@@ -13,28 +13,28 @@ import javafx.stage.Stage;
 
 public class AlignUsingStackAndTile extends Application {
 
+    private static final Font FONT = Font.font(null, FontWeight.BOLD, 18);
+
     @Override
     public void start(Stage primaryStage) {
         StackPane left = new StackPane();
         left.setStyle("-fx-background-color: black");
 
         Text text = new Text("JavaFX");
-        text.setFont(Font.font(null, FontWeight.BOLD, 18));
+        text.setFont(FONT);
         text.setFill(Color.WHITE);
 		Text right = new Text("Reversi");
-		right.setFont(Font.font(null, FontWeight.BOLD, 18));
+		right.setFont(FONT);
         StackPane.setAlignment(text, Pos.CENTER_RIGHT);
         left.getChildren().add(text);
         TilePane tiles = new TilePane();
         tiles.setSnapToPixel(false);
         TilePane.setAlignment(right, Pos.CENTER_LEFT);
         tiles.getChildren().addAll(left, right);
-        Scene scene = new Scene(tiles, 400, 100);
+        Scene scene = new Scene(tiles);
         left.prefWidthProperty().bind(scene.widthProperty().divide(2));
         left.prefHeightProperty().bind(scene.heightProperty());
 
-        primaryStage.setHeight(100);
-        primaryStage.setWidth(400);
 
         primaryStage.setScene(scene);
         primaryStage.show();

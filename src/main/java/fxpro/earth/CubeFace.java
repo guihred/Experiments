@@ -1,12 +1,3 @@
-/*
-
- * CubeFace.java
- *
- * Represents a face on the CubeNode UI component.
- *
- * Developed by James L. Weaver (jim.weaver#javafxpert.com) to demonstrate the
- * use of 3D features in the JavaFX 2.0 API
- */
 package fxpro.earth;
 
 import javafx.beans.property.DoubleProperty;
@@ -68,7 +59,7 @@ public class CubeFace extends Parent {
 
 	private final Paint computeFaceHSB() {
 		return Color.hsb(FACE_HUE, FACE_SAT,
-				Math.abs(-zPos.getValue() / (RADIUS * 2)) + 0.40);
+                Math.abs(-zPos.getValue() / (RADIUS * 2)) + 4. / 10);
 	}
 
     private Node createBottomMapTiles(int sideNum) {
@@ -79,10 +70,10 @@ public class CubeFace extends Parent {
 		tilePane.setPrefColumns(2);
 		tilePane.setPrefRows(3);
 
-		PerspectiveTransform build = new SimplePerspectiveTransformBuilder().ulx(0).uly(0)
-				.urx(EDGE_LENGTH).ury(0).llx(EDGE_LENGTH * 0.375)
-				.lly(EDGE_LENGTH * 0.375).lrx(EDGE_LENGTH * 0.625)
-				.lry(EDGE_LENGTH * 0.375).build();
+        final double proportion = 0.375;
+        PerspectiveTransform build = new SimplePerspectiveTransformBuilder().ulx(0).uly(0)
+                .urx(EDGE_LENGTH).ury(0).llx(EDGE_LENGTH * proportion).lly(EDGE_LENGTH * proportion)
+                .lrx(EDGE_LENGTH * (1 - proportion)).lry(EDGE_LENGTH * proportion).build();
 		tilePane.setEffect(build);
 
 		for (int y = 5; y <= 7; y++) {
@@ -162,12 +153,14 @@ public class CubeFace extends Parent {
 		TilePane tilePane;
 		int xOffset = sideNum * 2;
 		tilePane = new TilePane();
-		tilePane.setRotate((450 - sideNum * 90) % 360);
+        final int initialAngle = 450;
+        tilePane.setRotate((initialAngle - sideNum * 90) % 360);
 		tilePane.setPrefColumns(2);
 		tilePane.setPrefRows(3);
-		PerspectiveTransform transform = new SimplePerspectiveTransformBuilder()
-				.ulx(EDGE_LENGTH * 0.375).uly(EDGE_LENGTH * 0.625)
-				.urx(EDGE_LENGTH * 0.625).ury(EDGE_LENGTH * 0.625).llx(0)
+        final double proportion = 0.625;
+        PerspectiveTransform transform = new SimplePerspectiveTransformBuilder()
+                .ulx(EDGE_LENGTH * (1 - proportion)).uly(EDGE_LENGTH * proportion).urx(EDGE_LENGTH * proportion)
+                .ury(EDGE_LENGTH * proportion).llx(0)
 				.lly(EDGE_LENGTH).lrx(EDGE_LENGTH).lry(EDGE_LENGTH).build();
 		tilePane.setEffect(transform);
 

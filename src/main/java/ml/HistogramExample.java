@@ -10,7 +10,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -29,20 +30,21 @@ public class HistogramExample extends Application {
 	public void start(Stage theStage) {
         theStage.setTitle("Histogram Example");
 
-        FlowPane root = new FlowPane();
-        final int width = 800;
+        BorderPane root = new BorderPane();
+        final int width = 900;
         final int height = 600;
         Scene theScene = new Scene(root, width, height);
 		theStage.setScene(theScene);
-
+        VBox left = new VBox();
+        root.setLeft(left);
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         HistogramGraph canvas = new HistogramGraph();
         canvas.setTitle("California Housing");
-        root.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
-        root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        left.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        left.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
 
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
         canvas.statsProperty().addListener((InvalidationListener) o -> {
@@ -55,11 +57,10 @@ public class HistogramExample extends Application {
                 canvas.colorsProperty());
         itensList.setCellFactory(
                 list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
-        root.getChildren()
+        left.getChildren()
                 .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
 
-        root.getChildren().add(itensList);
-        root.getChildren().add(canvas);
+        root.setCenter(new HBox(canvas, itensList));
 		theStage.show();
 	}
 

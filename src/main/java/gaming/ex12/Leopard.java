@@ -52,7 +52,7 @@ public class Leopard extends Player {
 		if (status == LeopardStatus.RUNNING) {
 			runAnimation.update(time);
 		} else if (status == LeopardStatus.JUMPING) {
-			jumpAnimation.update(time * 40.0 / 30.0);
+            jumpAnimation.update(time * 4 / 3);
 		} else {
 			stoppedAnimation.update(time);
 		}

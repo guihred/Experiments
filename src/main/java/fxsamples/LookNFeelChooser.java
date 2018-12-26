@@ -8,7 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import simplebuilder.SimpleMenuBarBuilder;
@@ -26,7 +25,7 @@ public class LookNFeelChooser extends Application {
 	public void start(Stage primaryStage) throws IOException {
 		BorderPane root = new BorderPane();
         Parent content = FXMLLoader.load(ResourceFXUtils.toURL("lnf_demo.fxml"));
-		Scene scene = new Scene(root, 650, 550, Color.WHITE);
+        Scene scene = new Scene(root);
 		root.setCenter(content);
 		// Menu bar
         MenuBar menuBar = new SimpleMenuBarBuilder()

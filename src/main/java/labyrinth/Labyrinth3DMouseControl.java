@@ -20,7 +20,7 @@ import utils.ResourceFXUtils;
 
 public class Labyrinth3DMouseControl extends Application implements CommomLabyrinth {
 
-	private static final Color LIGHT_COLOR = Color.rgb(125, 125, 125);
+    private static final Color LIGHT_COLOR = Color.grayRgb(125);
     private static final String[][] MAPA = {
 			{ "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, 
@@ -78,7 +78,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	@Override
 	public void start(Stage primaryStage) throws Exception {
         Labyrinth3DKillerGhostsAndBalls.createLabyrinth(root, labyrinthWalls, balls, MAPA);
-		SubScene subScene = new SubScene(root, 640, 480, true,
+        SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
@@ -87,7 +87,8 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		camera.setTranslateZ(-100);
 		camera.setRotationAxis(Rotate.Y_AXIS);
         camera.setNearClip(1. / 10);
-		camera.setFieldOfView(40);
+        final int fieldView = 40;
+        camera.setFieldOfView(fieldView);
 		subScene.setCamera(camera);
         PointLight light = new PointLight(LIGHT_COLOR);
 		light.translateXProperty().bind(camera.translateXProperty());
@@ -138,7 +139,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		PhongMaterial sample = new PhongMaterial(enemyColor);
 		sample.setSpecularColor(LIGHT_COLOR);
 		enemy.setDrawMode(DrawMode.FILL);
-		enemy.setTranslateY(14);
+        enemy.setTranslateY(15);
 		enemy.setMaterial(sample);
         int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
 		enemy.setTranslateZ(posicaoInicialZ);

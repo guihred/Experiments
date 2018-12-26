@@ -1,10 +1,15 @@
 package fxpro.ch07;
 
 import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
+import java.util.function.Function;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 
 public final class CommonChartData {
@@ -57,10 +62,22 @@ public final class CommonChartData {
 		return answer;
 	}
 
-	public static ObservableList<PieChart.Data> getPieData() {
+    public static ObservableList<PieChart.Data> getPieData() {
 		return FXCollections.observableArrayList(new PieChart.Data("Java", 17.56),
 				new PieChart.Data("C", 17.06), new PieChart.Data("C++", 8.25), new PieChart.Data("C#", 8.20),
 				new PieChart.Data("ObjectiveC", 6.8), new PieChart.Data("PHP", 6.0),
 				new PieChart.Data("(Visual)Basic", 4.76), new PieChart.Data("Other", 31.37));
 	}
+
+    public static  DoubleSummaryStatistics getStats(ObservableList<Series<Number, Number>> chartData,
+	            Function<? super Data<Number, Number>, ? extends Number> mapper) {
+	        return chartData.stream().map(Series<Number, Number>::dataProperty)
+	                .map(ObjectProperty<ObservableList<Data<Number, Number>>>::get)
+	                .flatMap(ObservableList<Data<Number, Number>>::stream).map(mapper).mapToDouble(Number::doubleValue)
+	                .summaryStatistics();
+	    }
+	public static  void setBounds(NumberAxis yAxis, DoubleSummaryStatistics yStats) {
+	        yAxis.setLowerBound(Math.floor(yStats.getMin() / 10) * 10);
+	        yAxis.setUpperBound(Math.ceil(yStats.getMax() / 10) * 10);
+	    }
 }

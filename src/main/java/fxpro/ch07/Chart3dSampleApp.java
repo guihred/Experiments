@@ -87,7 +87,8 @@ public class Chart3dSampleApp extends Application {
         cameraXform3.setRotateZ(0);
 
         camera.setNearClip(SHIFT_MULTIPLIER);
-        camera.setFarClip(10000.0);
+        final double farClip = 10000.0;
+        camera.setFarClip(farClip);
         camera.setTranslateZ(-CAMERA_DISTANCE);
         cameraXform.setRotateY(0);
         cameraXform.setRotateX(0);
@@ -251,8 +252,8 @@ public class Chart3dSampleApp extends Application {
             double newZ = z + mouseDeltaX * modifierFactor * modifier;
             camera.setTranslateZ(newZ);
         } else if (me.isMiddleButtonDown()) {
-            cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
-            cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
+            cameraXform2.setTx(cameraXform2.getTx() + mouseDeltaX * modifierFactor * modifier * 3 / 10); // -
+            cameraXform2.setTy(cameraXform2.getTy() + mouseDeltaY * modifierFactor * modifier * 3 / 10); // -
         }
     }
 

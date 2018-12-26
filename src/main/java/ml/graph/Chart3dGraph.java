@@ -30,7 +30,7 @@ public class Chart3dGraph extends Application {
     private static final Logger LOG = HasLogging.log();
 
 	// size of graph
-    private int size = 400;
+    private static final int SIZE = 400;
 
     // variables for mouse interaction
     private double mousePosX;
@@ -43,31 +43,31 @@ public class Chart3dGraph extends Application {
     @Override
     public void start(Stage primaryStage) {
         // create axis walls
-        Group cube = createCube(size);
+        Group cube = createCube(SIZE);
         // initial cube rotation
         cube.getTransforms().addAll(rotateX, rotateY);
         // add objects to scene
         StackPane root = new StackPane();
         root.getChildren().add(cube);
         // perlin noise
-        float[][] noiseArray = createPlane(size);
+        float[][] noiseArray = createPlane(SIZE);
         // mesh
         TriangleMesh mesh = new TriangleMesh();
         // create points for x/z
         float amplification = 100; // amplification of noise
-        for (int x = 0; x < size; x++) {
-            for (int z = 0; z < size; z++) {
+        for (int x = 0; x < SIZE; x++) {
+            for (int z = 0; z < SIZE; z++) {
                 mesh.getPoints().addAll(x, noiseArray[x][z] * amplification, z);
             }
         }
         // texture
-        int length = createTexture(mesh, size);
+        int length = createTexture(mesh, SIZE);
 
         // faces
         createFaces(mesh, length);
 
         // material
-        Image diffuseMap = ResourceFXUtils.createImage(size, noiseArray);
+        Image diffuseMap = ResourceFXUtils.createImage(SIZE, noiseArray);
 
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(diffuseMap);
@@ -75,8 +75,8 @@ public class Chart3dGraph extends Application {
 
         // mesh view
         MeshView meshView = new MeshView(mesh);
-        meshView.setTranslateZ(-size / 2D);
-        meshView.setTranslateX(-size / 2D);
+        meshView.setTranslateZ(-SIZE / 2D);
+        meshView.setTranslateX(-SIZE / 2D);
         meshView.setMaterial(material);
         meshView.setDrawMode(DrawMode.FILL);
         meshView.setCullFace(CullFace.NONE);
@@ -85,12 +85,12 @@ public class Chart3dGraph extends Application {
         // testing / debugging stuff: show diffuse map on chart
         ImageView iv = new ImageView(diffuseMap);
         iv.setRotate(90);
-        iv.setTranslateY(-size / 10D);
-        iv.setTranslateX(-size / 2D);
+        iv.setTranslateY(-SIZE / 10D);
+        iv.setTranslateX(-SIZE / 2D);
         iv.setRotationAxis(new Point3D(1, 0, 0));
         cube.getChildren().add(iv);
         // scene
-        Scene scene = new Scene(root, 1600, 900, true, SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(root, SIZE * 4, 900, true, SceneAntialiasing.BALANCED);
         scene.setCamera(new PerspectiveCamera());
         scene.setOnMousePressed(me -> {
             mouseOldY = me.getSceneY();

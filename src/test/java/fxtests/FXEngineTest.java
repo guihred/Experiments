@@ -48,8 +48,7 @@ public class FXEngineTest extends ApplicationTest {
             drop();
         }
         interactNoWait(RunnableEx.makeRunnable(() -> new PongLauncher().start(currentStage)));
-        interactNoWait(RunnableEx.makeRunnable(() -> currentStage.setMaximized(true)));
-        lookup(".button").queryAll().stream().filter(Node::isVisible).forEach(ConsumerEx.makeConsumer(this::clickOn));
+        lookup(".button").queryAll().stream().forEach(ConsumerEx.makeConsumer(t -> clickOn(t, MouseButton.PRIMARY)));
         for (Node next : lookup(e -> e instanceof Rectangle && e.isVisible()).queryAll()) {
             drag(next, MouseButton.PRIMARY);
             moveBy(0, DotsSquare.SQUARE_SIZE);

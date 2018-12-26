@@ -67,15 +67,15 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	@Override
 	public void start(Stage primaryStage) throws Exception {
         createLabyrinth(root, labyrinthWalls, balls, MAPA);
-		SubScene subScene = new SubScene(root, 640, 480, true,
+        SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
 		camera = new PerspectiveCamera(true);
-		camera.setNearClip(0.1);
+        camera.setNearClip(1. / 10);
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
-		camera.setFieldOfView(40);
+        camera.setFieldOfView(30);
 		subScene.setCamera(camera);
 
 
@@ -129,7 +129,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		sample.setSpecularColor(lightColor);
 		sample.setSpecularPower(16);
 		animal.setMaterial(sample);
-		animal.setTranslateY(14);
+        animal.setTranslateY(12);
 
         int posicaoInicialZ = random.nextInt(MAPA[0].length * (int) SIZE);
 		animal.setTranslateZ(posicaoInicialZ);
@@ -139,9 +139,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 			animal.setTranslateZ(animal.getTranslateZ() + 1);
 			animal.setTranslateX(animal.getTranslateX() + 1);
 		}
-		animal.setScaleX(0.4);
+        animal.setScaleX(4. / 10);
 		animal.setScaleY(1);
-		animal.setScaleZ(0.4);
+        animal.setScaleZ(4. / 10);
 		return animal;
 	}
 

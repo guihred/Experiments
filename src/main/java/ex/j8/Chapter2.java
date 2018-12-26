@@ -170,9 +170,10 @@ public final class Chapter2 {
      * Stream<Long>. Try out a = 25214903917, c = 11, and m = 248.
      */
     public static void ex5() {
-        long a = 25_214_903_917L;
+        final long a = 25_214_903_917L;
         long c = 11;
-        long m = 2L << 48;
+        final int i = 48;
+        long m = 2L << i;
         Stream<Long> iterate = Stream.iterate(System.currentTimeMillis(), t -> (a * t + c) % m);
         iterate.limit(10).forEach(s -> LOGGER.trace("{}", s));
     }

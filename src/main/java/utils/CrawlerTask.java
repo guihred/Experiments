@@ -24,7 +24,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
 	public static final String CERTIFICATION_FILE = "C:/Users/guilherme.hmedeiros/Downloads/Instaladores/cacerts";
     private static final String LOGIN = "guilherme.hmedeiros";
-    private static final String PASS = "13-juuSAN";
+    private static final String PASS = "14-juuYON";
     private static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
     private Instant start;
     private boolean cancelled;
@@ -32,7 +32,43 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
             .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes(StandardCharsets.UTF_8));
 
 
-    protected Document getDocument(String url) throws IOException {
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        boolean cancel = super.cancel(mayInterruptIfRunning);
+        setCancelled(true);
+        return cancel;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    @Override
+    protected String call() throws Exception {
+        start = Instant.now();
+        return task();
+    }
+
+    protected Integer convertNumerico(String eleitores) {
+        String replaceAll = eleitores.replaceAll("\\D", "");
+        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
+    }
+
+    protected LocalDate extractDate(String children) {
+        try {
+            return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        } catch (Exception e) {
+            getLogger().trace("", e);
+            return null;
+        }
+    }
+
+	protected Document getDocument(String url) throws IOException {
         Connection connect = Jsoup.connect(url);
 		if (!isNotProxied()) {
 			connect.header("Proxy-Authorization", "Basic " + encoded);
@@ -41,6 +77,8 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0")
                 .get();
     }
+
+    protected abstract String task();
 
     protected void updateAll(long i, long total) {
         updateTitle("Processed " + i + " of " + total + " items.");
@@ -53,11 +91,6 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
             updateMessage("Time estimated unknown");
         }
         updateProgress(i, total);
-    }
-
-    protected Integer convertNumerico(String eleitores) {
-        String replaceAll = eleitores.replaceAll("\\D", "");
-        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
     public static String getHTTPPassword() {
@@ -90,41 +123,8 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
     }
 
-	private static boolean isNotProxied() {
+    private static boolean isNotProxied() {
 		return !new File(CERTIFICATION_FILE).exists();
 	}
-
-    @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        boolean cancel = super.cancel(mayInterruptIfRunning);
-        setCancelled(true);
-        return cancel;
-    }
-
-    @Override
-    protected String call() throws Exception {
-        start = Instant.now();
-        return task();
-    }
-
-    protected abstract String task();
-
-    protected LocalDate extractDate(String children) {
-        try {
-            return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        } catch (Exception e) {
-            getLogger().trace("", e);
-            return null;
-        }
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
 
 }

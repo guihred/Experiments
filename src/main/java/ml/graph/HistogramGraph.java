@@ -15,22 +15,24 @@ import ml.data.DataframeML;
 import utils.CommonsFX;
 
 public class HistogramGraph extends Canvas {
-	private DoubleProperty layout = new SimpleDoubleProperty(30);
-	private DoubleProperty maxLayout = new SimpleDoubleProperty(480);
-	private DoubleProperty lineSize = new SimpleDoubleProperty(5);
-	private IntegerProperty bins = new SimpleIntegerProperty(20);
-	private LongProperty ybins = new SimpleLongProperty(20);
-	private double xProportion;
-	private double yProportion;
-	private GraphicsContext gc;
+    private static final int SIZE = 550;
+    private DoubleProperty layout = new SimpleDoubleProperty(30);
+    private DoubleProperty maxLayout = new SimpleDoubleProperty(SIZE);
+    private DoubleProperty lineSize = new SimpleDoubleProperty(5);
+    private IntegerProperty bins = new SimpleIntegerProperty(20);
+    private LongProperty ybins = new SimpleLongProperty(20);
+    private double xProportion;
+    private double yProportion;
+    private GraphicsContext gc;
     private DataframeML dataframe;
-	private final ObservableMap<String, LongSummaryStatistics> stats = FXCollections.observableHashMap();
-	private final ObservableMap<String, DoubleSummaryStatistics> xstats = FXCollections.observableHashMap();
-	private final ObservableMap<String, Color> colors = FXCollections.observableHashMap();
+    private final ObservableMap<String, LongSummaryStatistics> stats = FXCollections.observableHashMap();
+    private final ObservableMap<String, DoubleSummaryStatistics> xstats = FXCollections.observableHashMap();
+    private final ObservableMap<String, Color> colors = FXCollections.observableHashMap();
+
     private String title;
 
     public HistogramGraph() {
-        super(550, 550);
+        super(SIZE, SIZE);
         gc = getGraphicsContext2D();
         drawGraph();
         InvalidationListener listener = observable -> drawGraph();
@@ -44,12 +46,13 @@ public class HistogramGraph extends Canvas {
     }
 
     public IntegerProperty binsProperty() {
-		return bins;
-	}
+        return bins;
+    }
 
     public ObservableMap<String, Color> colorsProperty() {
-		return colors;
-	}
+        return colors;
+    }
+
     public void drawAxis() {
 
         gc.setFill(Color.BLACK);
@@ -87,7 +90,7 @@ public class HistogramGraph extends Canvas {
             return;
 
         }
-        gc.clearRect(0, 0, 550, 550);
+        gc.clearRect(0, 0, SIZE, SIZE);
         List<Entry<String, LongSummaryStatistics>> yHistogram = stats.entrySet().stream()
                 .filter(e -> colors.containsKey(e.getKey())).collect(Collectors.toList());
         List<Entry<String, DoubleSummaryStatistics>> xHistogram = xstats.entrySet().stream()
@@ -132,18 +135,18 @@ public class HistogramGraph extends Canvas {
 
     }
 
-	public DoubleProperty layoutProperty() {
-		return layout;
-	}
+    public DoubleProperty layoutProperty() {
+        return layout;
+    }
 
-	public DoubleProperty lineSizeProperty() {
-		return lineSize;
-	}
+    public DoubleProperty lineSizeProperty() {
+        return lineSize;
+    }
 
-	public void setHistogram(DataframeML dataframe) {
+    public void setHistogram(DataframeML dataframe) {
         this.dataframe = dataframe;
 
-		dataframe.forEach((col, items) -> {
+        dataframe.forEach((col, items) -> {
             List<Color> generateColors = CommonsFX.generateRandomColors(stats.size());
             Iterator<Color> iterator = generateColors.iterator();
             colors.put(col, iterator.next());
@@ -160,16 +163,16 @@ public class HistogramGraph extends Canvas {
 
     }
 
-	public void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-	public ObservableMap<String, LongSummaryStatistics> statsProperty() {
-		return stats;
-	}
+    public ObservableMap<String, LongSummaryStatistics> statsProperty() {
+        return stats;
+    }
 
-	public LongProperty ybinsProperty() {
-		return ybins;
-	}
+    public LongProperty ybinsProperty() {
+        return ybins;
+    }
 
 }

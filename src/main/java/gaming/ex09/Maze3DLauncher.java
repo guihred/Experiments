@@ -22,21 +22,21 @@ public class Maze3DLauncher extends Application {
     public void start(Stage stage) throws Exception {
         PerspectiveCamera camera = new PerspectiveCamera(true);
         GridPane root = new GridPane();
-        camera.setNearClip(0.01);
+        camera.setNearClip(1. / 100);
         camera.setFarClip(1000.0);
         final Translate translate = new Translate(50, 0, 50);
         final Rotate rotate = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
         camera.getTransforms().addAll(translate, rotate);
 
-        Scene scene = new Scene(root, 400, 600, true, SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(root, 500, 500, true, SceneAntialiasing.BALANCED);
 		Maze3DModel.create(root);
         root.getTransforms().addAll(new Rotate(90, 0, 0, 0, Rotate.X_AXIS));
 
         handleKeyboard(scene, translate, rotate, camera);
         stage.setScene(scene);
         scene.setCamera(camera);
-        stage.setWidth(400);
-        stage.setHeight(600);
+        stage.setWidth(500);
+        stage.setHeight(500);
         stage.show();
 
     }

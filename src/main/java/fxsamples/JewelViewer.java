@@ -51,7 +51,7 @@ public class JewelViewer extends Application {
         group.setTranslateY(50);
 
         Scene scene = new Scene(group, VIEWPORT_SIZE, VIEWPORT_SIZE, true);
-        scene.setFill(Color.rgb(10, 10, 40));
+        scene.setFill(Color.grayRgb(10));
         addCamera(scene);
         scene.setOnMouseClicked(event -> {
             Node picked = event.getPickResult().getIntersectedNode();

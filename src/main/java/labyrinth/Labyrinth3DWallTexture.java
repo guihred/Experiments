@@ -28,7 +28,7 @@ import utils.MouseInScreenHandler;
 import utils.ResourceFXUtils;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
-	private static final Color lightColor = Color.rgb(125, 125, 125);
+    private static final Color lightColor = Color.grayRgb(125);
 
 	protected static final String[][] mapa = { 
 			{ "_", "_", "_", "_", "_", "|" },
@@ -115,7 +115,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 
 
 		createLabyrinth(root);
-		SubScene subScene = new SubScene(root, 640, 480, true,
+        SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
@@ -124,7 +124,8 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-100);
 		camera.setRotationAxis(Rotate.Y_AXIS);
-		camera.setFieldOfView(40);
+        final int fieldView = 40;
+        camera.setFieldOfView(fieldView);
 		subScene.setCamera(camera);
 
         PointLight light = new PointLight(lightColor);
@@ -212,7 +213,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 		PhongMaterial sample = new PhongMaterial(enemyColor);
 		sample.setSpecularColor(lightColor);
 		enemy.setMaterial(sample);
-		enemy.setTranslateY(14);
+        enemy.setTranslateY(15);
 		enemy.setDrawMode(DrawMode.FILL);
 		enemy.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
 		enemy.setTranslateX(random.nextInt(mapa.length * SIZE));

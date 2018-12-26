@@ -14,8 +14,8 @@ import utils.ResourceFXUtils;
 
 public class Labyrinth3DKillerGhosts extends Application implements CommomLabyrinth {
 
-	private static final Color lightColor = Color.rgb(125, 125, 125);
-	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
+    private static final Color lightColor = Color.grayRgb(125);
+    private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" },
@@ -50,8 +50,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		Group root = new Group();
 
 		criarLabirinto(root);
-		SubScene subScene = new SubScene(root, 640, 480, true,
-				SceneAntialiasing.BALANCED);
+        SubScene subScene = new SubScene(root, 500, 500, true, SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
 		camera = new PerspectiveCamera(true);
@@ -121,7 +120,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		sample.setSpecularColor(lightColor);
 		sample.setSpecularPower(16);
 		animal.setMaterial(sample);
-		animal.setTranslateY(14);
+        animal.setTranslateY(15);
 
 		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
 		animal.setTranslateZ(posicaoInicialZ);

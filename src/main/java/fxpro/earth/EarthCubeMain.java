@@ -14,9 +14,11 @@ public class EarthCubeMain extends Application {
 		CubeNode cube = new CubeNode();
 		cube.setFocusTraversable(true);
 		Group root = new Group(cube);
-		root.setLayoutX(150);
-		root.setLayoutY(150);
-		Scene scene = new Scene(root, 800, 800);
+        final int layout = 150;
+        root.setLayoutX(layout);
+        root.setLayoutY(layout);
+        final int size = 800;
+        Scene scene = new Scene(root, size, size);
 		scene.setFill(Color.TRANSPARENT);
 		PerspectiveCamera perspectiveCamera = new PerspectiveCamera();
 		perspectiveCamera.setFieldOfView(30);

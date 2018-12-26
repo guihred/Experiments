@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import utils.ResourceFXUtils;
 
 public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
-	private static final Color lightColor = Color.rgb(125, 125, 125);
+    private static final Color lightColor = Color.grayRgb(125);
 	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
 			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
 			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
@@ -50,12 +50,12 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		Group root = new Group();
 
 		initializeLabyrinth(root);
-		SubScene subScene = new SubScene(root, 640, 480, true,
+        SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
 		subScene.widthProperty().bind(primaryStage.widthProperty());
 		camera = new PerspectiveCamera(true);
-		camera.setNearClip(0.1);
+        camera.setNearClip(1. / 10);
         camera.setTranslateZ(-100);
 		camera.setFarClip(1000.0);
 		subScene.setCamera(camera);
@@ -99,7 +99,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		sample.setSpecularColor(lightColor);
 		animal.setMaterial(sample);
 		sample.setSpecularPower(16);
-		animal.setTranslateY(14);
+        animal.setTranslateY(15);
 
 		animal.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
 		animal.setTranslateX(random.nextInt(mapa.length * SIZE));

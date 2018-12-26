@@ -26,7 +26,7 @@ public class LineChartExample extends Application {
         primaryStage.setTitle("LineChart example");
         StackPane root = new StackPane();
         root.getChildren().add(lineChart);
-        primaryStage.setScene(new Scene(root, 400, 250));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

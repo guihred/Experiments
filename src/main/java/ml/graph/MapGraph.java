@@ -24,6 +24,8 @@ import utils.ResourceFXUtils;
 import utils.RotateUtils;
 
 public class MapGraph extends Application {
+    private static final int FLAG_HEIGHT = 72;
+    private static final int FLAG_WIDTH = 96;
     private ObjectProperty<Country> currentCountry = new SimpleObjectProperty<>();
 
     @Override
@@ -31,33 +33,33 @@ public class MapGraph extends Application {
         // Setting the SVGPath in the form of string
         Group root = new Group();
         StackPane flowPane = new StackPane(root);
-        Scene scene = new Scene(flowPane, 600, 300);
+        Scene scene = new Scene(flowPane);
         flowPane.maxWidthProperty().bind(scene.widthProperty());
         stage.setMaximized(true);
         stage.setScene(scene);
         List<Text> texts = new ArrayList<>();
-        WebView imageView = new WebView();
-        imageView.setMaxWidth(96);
-        imageView.setMaxHeight(72);
+        WebView flagImage = new WebView();
+        flagImage.setMaxWidth(FLAG_WIDTH);
+        flagImage.setMaxHeight(FLAG_HEIGHT);
         RotateUtils.setZoomable(flowPane, true);
         List<SVGPath> countries = Stream.of(Country.values())
-                .map(country -> mapCountryToPath(texts, imageView, country))
+                .map(country -> mapCountryToPath(texts, flagImage, country))
                 .collect(Collectors.toList());
         // Creating a Group object
-        root.getChildren().addAll(imageView);
+        root.getChildren().addAll(flagImage);
         root.getChildren().addAll(countries);
         root.getChildren().addAll(texts);
         currentCountry.addListener((obj, old, newV) -> {
-            imageView.setVisible(newV != null || imageView.isHover());
+            flagImage.setVisible(newV != null || flagImage.isHover());
             if (newV != null) {
                 String url = "4x3/" + newV.getCode() + ".svg";
                 File fullPath = ResourceFXUtils.toFile(url);
                 if (fullPath.exists()) {
-                    imageView.getEngine().load(ResourceFXUtils.toURL(url).toString());
+                    flagImage.getEngine().load(ResourceFXUtils.toURL(url).toString());
                 }
             }
         });
-        imageView.setZoom(0.15);
+        flagImage.setZoom(3. / 20);
         stage.setTitle("Map Graph Example");
         stage.show();
     }
