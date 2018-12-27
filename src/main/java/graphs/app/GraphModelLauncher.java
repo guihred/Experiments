@@ -5,6 +5,7 @@ import graphs.entities.Edge;
 import graphs.entities.Graph;
 import java.util.Comparator;
 import java.util.List;
+import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.Observable;
@@ -14,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -35,10 +37,10 @@ public class GraphModelLauncher extends Application {
     private ComboBox<Layout> selectLayout = new SimpleComboBoxBuilder<Layout>().items(layouts).tooltip("Select Layout")
             .converter(Layout::getName).select(0).build();
     private Timeline timeline = new SimpleTimelineBuilder()
-            .addKeyFrame(50.0, convergeLayout.getEventHandler()).cycleCount(Timeline.INDEFINITE).build();
+			.addKeyFrame(50.0, convergeLayout.getEventHandler()).cycleCount(Animation.INDEFINITE).build();
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
         primaryStage.setTitle("Graph Application");
         BorderPane root = new BorderPane();
 
@@ -132,7 +134,7 @@ public class GraphModelLauncher extends Application {
         ObservableList<String> cells = graph.getModel().getCellIds();
         ComboBox<String> c1 = new SimpleComboBoxBuilder<String>().items(cells).build();
         ComboBox<String> c2 = new SimpleComboBoxBuilder<String>().items(cells).build();
-        cells.addListener((Observable observable) -> {
+        cells.addListener((final Observable observable) -> {
             if (!cells.isEmpty()) {
                 c1.selectionModelProperty().get().select(0);
                 c2.selectionModelProperty().get().select(cells.size() - 1);
@@ -162,21 +164,26 @@ public class GraphModelLauncher extends Application {
         DelaunayTopology delaunayTopology = new DelaunayTopology(10, graph);
         final int netSize = 30;
         PackageTopology packageTopology = new PackageTopology(graph);
-        ObservableList<BaseTopology> topologies = FXCollections
+		NetworkTopology networkTopology = new NetworkTopology(graph);
+		ObservableList<BaseTopology> topologies = FXCollections
                 .observableArrayList(delaunayTopology, new RandomTopology(netSize, graph),
                         new TreeTopology(netSize, graph), new CircleTopology(netSize, graph),
                         new GabrielTopology(netSize, graph), new WordTopology(netSize * 3, graph),
-                        packageTopology, new NetworkTopology(graph), new ProjectTopology(graph))
+						packageTopology, networkTopology, new ProjectTopology(graph))
                 .sorted(Comparator.comparing(BaseTopology::getName));
-
+		TextField networkField = new TextField(networkTopology.getNetworkAddress());
+		networkTopology.networkAddressProperty().bind(networkField.textProperty());
         ComboBox<String> packageSelect = new SimpleComboBoxBuilder<String>().items(packageTopology.getPackages())
-                .tooltip("Package").onChange((old, newV) -> packageTopology.setChosenPackageName(newV)).select(0)
+				.tooltip("Package").onChange((old, newV) -> packageTopology.setChosenPackageName(newV)).select(0)
                 .build();
         ComboBox<BaseTopology> topologySelect = new SimpleComboBoxBuilder<BaseTopology>().items(topologies)
                 .tooltip("Select Topology").converter(BaseTopology::getName).build();
 
+		networkField.visibleProperty()
+				.bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(networkTopology));
+
         packageSelect.visibleProperty()
-                .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(packageTopology));
+				.bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(packageTopology));
 
         topologySelect.getSelectionModel().select(0);
         HBox topologyOptions = new HBox(topologySelect, CommonsFX.newButton("Go", e -> {
@@ -185,7 +192,7 @@ public class GraphModelLauncher extends Application {
                 selectedItem.execute();
             }
         }));
-        return new VBox(new Text("Topology"), topologyOptions, packageSelect);
+		return new VBox(new Text("Topology"), topologyOptions, packageSelect, networkField);
     }
 
     private Button getTriangulateOption() {
@@ -212,7 +219,7 @@ public class GraphModelLauncher extends Application {
         });
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }

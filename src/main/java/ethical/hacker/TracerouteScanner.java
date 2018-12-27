@@ -15,6 +15,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
+import utils.CrawlerTask;
 import utils.HasLogging;
 
 public class TracerouteScanner {
@@ -25,15 +26,16 @@ public class TracerouteScanner {
 	private static final String REUSED_ROUTE_REGEX_1 = "-\\s*Hop (\\d+) is the same as for ([\\d\\.]+)";
 	private static final String HOP_REGEX = "\\d+\\s+[\\d\\.]+ ms\\s+([\\d\\.]+)|\\d+\\s+[\\d\\.]+ ms\\s+[\\w\\.]+ \\(([\\d\\.]+)\\)";
 
-    public static final String IP_TO_SCAN = Stream.of("10", "69", "64", "31").collect(Collectors.joining("."));
-    public static final String NETWORK_ADDRESS = IP_TO_SCAN + "/28";
+	public static final String IP_TO_SCAN = getIPtoScan();
 
-	public static void main(String[] args) {
+	public static final String NETWORK_ADDRESS = getNetworkAddress();
+
+	public static void main(final String[] args) {
 		Map<String, List<String>> scanNetwork = scanNetworkRoutes(NETWORK_ADDRESS);
 		scanNetwork.forEach((h, p) -> LOG.info("Host {} route = {}", h, p));
 	}
 
-	public static ObservableMap<String, List<String>> scanNetworkRoutes(String networkAddress) {
+	public static ObservableMap<String, List<String>> scanNetworkRoutes(final String networkAddress) {
 		ObservableMap<String, List<String>> synchronizedObservableMap = FXCollections
 				.synchronizedObservableMap(FXCollections.observableHashMap());
         String hostRegex = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [\\w\\.]+ \\(([\\d\\.]+)\\)";
@@ -62,12 +64,29 @@ public class TracerouteScanner {
 		return synchronizedObservableMap;
 	}
 
-	private static List<String> extractHops(Map<String, List<String>> hostsPorts, Entry<String, List<String>> e) {
+	private static List<String> extractHops(final Map<String, List<String>> hostsPorts, final Entry<String, List<String>> e) {
         return e.getValue().stream().flatMap(l -> turnReferencesIntoHops(hostsPorts, l))
                 .collect(Collectors.toList());
 	}
 
-    private static Stream<? extends String> turnReferencesIntoHops(Map<String, List<String>> hostsPorts, String line) {
+	private static String getIPtoScan() {
+		if (CrawlerTask.isNotProxied()) {
+			return Stream.of("192", "168", "1", "1").collect(Collectors.joining("."));
+		}
+
+		return Stream.of("10", "69", "64", "31").collect(Collectors.joining("."));
+	}
+
+	private static String getNetworkAddress() {
+		if (CrawlerTask.isNotProxied()) {
+			return IP_TO_SCAN + "/23";
+		}
+		
+		return IP_TO_SCAN + "/28";
+		
+	}
+
+    private static Stream<? extends String> turnReferencesIntoHops(final Map<String, List<String>> hostsPorts, final String line) {
         try {
             if (line.matches(REUSED_ROUTE_REGEX)) {
                 String host = line.replaceAll(REUSED_ROUTE_REGEX, "$3");

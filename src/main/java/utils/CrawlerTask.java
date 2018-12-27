@@ -33,7 +33,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
 
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
+    public boolean cancel(final boolean mayInterruptIfRunning) {
         boolean cancel = super.cancel(mayInterruptIfRunning);
         setCancelled(true);
         return cancel;
@@ -44,7 +44,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         return cancelled;
     }
 
-    public void setCancelled(boolean cancelled) {
+    public void setCancelled(final boolean cancelled) {
         this.cancelled = cancelled;
     }
 
@@ -54,12 +54,12 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         return task();
     }
 
-    protected Integer convertNumerico(String eleitores) {
+    protected Integer convertNumerico(final String eleitores) {
         String replaceAll = eleitores.replaceAll("\\D", "");
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
-    protected LocalDate extractDate(String children) {
+    protected LocalDate extractDate(final String children) {
         try {
             return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         }
     }
 
-	protected Document getDocument(String url) throws IOException {
+	protected Document getDocument(final String url) throws IOException {
         Connection connect = Jsoup.connect(url);
 		if (!isNotProxied()) {
 			connect.header("Proxy-Authorization", "Basic " + encoded);
@@ -80,7 +80,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
     protected abstract String task();
 
-    protected void updateAll(long i, long total) {
+    protected void updateAll(final long i, final long total) {
         updateTitle("Processed " + i + " of " + total + " items.");
         if (i > 0) {
 
@@ -123,7 +123,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
     }
 
-    private static boolean isNotProxied() {
+	public static boolean isNotProxied() {
 		return !new File(CERTIFICATION_FILE).exists();
 	}
 

@@ -19,7 +19,7 @@ import utils.ResourceFXUtils;
 public class FXEngineGraphTest extends ApplicationTest {
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(final Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
         new GraphModelLauncher().start(stage);
     }
@@ -40,7 +40,6 @@ public class FXEngineGraphTest extends ApplicationTest {
                 .collect(Collectors.toSet());
         Set<Node> queryAll = lookup("Go").queryAll();
         for (ComboBox e : queryButtons) {
-
             ObservableList<?> items = e.getItems();
             for (int i = 0; i < items.size(); i++) {
                 int j = i;
