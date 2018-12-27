@@ -1,6 +1,5 @@
 package fxpro.ch02;
 
-import static utils.CommonsFX.newArcTo;
 import static utils.CommonsFX.newButton;
 
 import javafx.animation.Animation;
@@ -13,12 +12,12 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleEllipseBuilder;
 import simplebuilder.SimpleHBoxBuilder;
+import simplebuilder.SimplePathBuilder;
 import simplebuilder.SimplePathTransitionBuilder;
 
 public class PathTransitionExample extends Application {
@@ -26,7 +25,10 @@ public class PathTransitionExample extends Application {
 	private Ellipse ellipse = new SimpleEllipseBuilder().centerX(100).centerY(50).radiusX(4).radiusY(50)
 			.fill(Color.BLUE).build();
 
-	private Path path = new Path(new MoveTo(100, 50), newArcTo(300, 50, 350, 350, true));
+    private Path path = new SimplePathBuilder()
+            .moveTo(100, 50)
+            .arcTo(350, 350, 0, 300, 50, false, true)
+            .build();
 
     private PathTransition anim = new SimplePathTransitionBuilder()
             .orientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT)

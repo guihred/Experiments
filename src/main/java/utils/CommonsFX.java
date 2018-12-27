@@ -16,7 +16,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcTo;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleSliderBuilder;
@@ -71,19 +70,6 @@ public final class CommonsFX {
         Collections.shuffle(availableColors);
         return availableColors;
     }
-
-
-    public static ArcTo newArcTo(final int x, final int y, final int radiusX, final int radiusY, final boolean sweepFlag) {
-		ArcTo arcto = new ArcTo();
-		arcto.setX(x);
-		arcto.setY(y);
-		arcto.setRadiusX(radiusX);
-		arcto.setRadiusY(radiusY);
-		arcto.setSweepFlag(sweepFlag);
-		return arcto;
-	}
-
-
 
     public static Button newButton(final double layoutX, final double layoutY, final String nome, final EventHandler<ActionEvent> onAction) {
 		Button button = new Button(nome);
