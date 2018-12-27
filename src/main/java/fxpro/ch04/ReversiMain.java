@@ -56,12 +56,6 @@ public class ReversiMain extends Application {
         primaryStage.show();
     }
 
-    private Region createBackground() {
-        return SimpleRegionBuilder.create()
-                .style("-fx-background-color: radial-gradient(radius 100%, white, gray);")
-                .build();
-    }
-
     private StackPane createScore(Owner owner) {
         final int radiusX = 32;
         Ellipse piece = new Ellipse(radiusX, 20);
@@ -102,6 +96,7 @@ public class ReversiMain extends Application {
                 "width").divide(2));
         return tiles;
     }
+
     private Node createTitle() {
         StackPane left = new StackPane();
         left.setStyle("-fx-background-color: black");
@@ -125,8 +120,6 @@ public class ReversiMain extends Application {
     private Node restart() {
 		return newButton("Restart", (ActionEvent t) -> model.restart());
     }
-
-  
     private Node tiles() {
         GridPane board = new GridPane();
         for (int i = 0; i < ReversiModel.BOARD_SIZE; i++) {
@@ -140,8 +133,15 @@ public class ReversiMain extends Application {
         return board;
     }
 
+  
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static Region createBackground() {
+        return SimpleRegionBuilder.create()
+                .style("-fx-background-color: radial-gradient(radius 100%, white, gray);")
+                .build();
     }
 
 }

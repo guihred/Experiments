@@ -2,7 +2,6 @@ package fxpro.ch02;
 
 import static utils.CommonsFX.newArcTo;
 import static utils.CommonsFX.newButton;
-import static utils.CommonsFX.newPathTransistion;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -20,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleEllipseBuilder;
 import simplebuilder.SimpleHBoxBuilder;
+import simplebuilder.SimplePathTransitionBuilder;
 
 public class PathTransitionExample extends Application {
 
@@ -28,8 +28,15 @@ public class PathTransitionExample extends Application {
 
 	private Path path = new Path(new MoveTo(100, 50), newArcTo(300, 50, 350, 350, true));
 
-	private PathTransition anim = newPathTransistion(new Duration(1000.0), path, ellipse,
-			PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT, Interpolator.LINEAR, true, Animation.INDEFINITE);
+    private PathTransition anim = new SimplePathTransitionBuilder()
+            .orientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT)
+            .interpolator(Interpolator.LINEAR)
+            .autoReverse(true)
+            .cycleCount(Animation.INDEFINITE)
+            .node(ellipse)
+            .path(path)
+            .duration(new Duration(1000.0))
+            .build();
 
     @Override
     public void start(Stage stage) {

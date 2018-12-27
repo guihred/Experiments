@@ -182,8 +182,7 @@ public class JewelViewer extends Application {
         pointLight.setTranslateY(VIEWPORT_SIZE / 2);
         pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
 
-        Color ambientColor = Color.rgb(80, 80, 80, 0);
-        AmbientLight ambient = new AmbientLight(ambientColor);
+        AmbientLight ambient = new AmbientLight(AMBIENT_COLOR);
         root.getChildren().clear();
         root.getChildren().add(pointLight);
         root.getChildren().add(ambient);

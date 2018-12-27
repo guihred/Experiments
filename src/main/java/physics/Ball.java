@@ -45,8 +45,8 @@ public class Ball extends BasePhysicalObject {
         
         FixtureDef fd = new FixtureDef();
         fd.shape = cs;
-		fd.density = 0.9F;
-		fd.friction = 0.3F;
+        fd.density = 9F / 10;
+        fd.friction = 3F / 10;
 		fd.restitution = 0.5F;
         
         Body b = PhysicalScene.world.createBody(bd); 

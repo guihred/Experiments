@@ -49,7 +49,8 @@ public class CubeNode extends Parent {
 	private CubeFace frontFace;
 
 	private Timeline hideMapTimeline = new Timeline(
-			new KeyFrame(new Duration(0.0), t -> goHomePosition(), new KeyValue(cubeModel.getMapOpacity(), 0.7,Interpolator.LINEAR)),
+            new KeyFrame(new Duration(0.0), t -> goHomePosition(),
+                    new KeyValue(cubeModel.getMapOpacity(), 7. / 10, Interpolator.LINEAR)),
 			new KeyFrame(new Duration(1000.0), new KeyValue(cubeModel.getMapOpacity(), 0.0, Interpolator.EASE_BOTH)))
 	;
 
@@ -154,8 +155,8 @@ public class CubeNode extends Parent {
 
 	private final void arrangeFacesZOrder() {
 		rearFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 0)));
-		bottomFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 270)));
-		leftFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 270)));
+        bottomFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 3 * 90)));
+        leftFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 3 * 90)));
 		rightFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 90)));
 		topFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 90)));
 		frontFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 180)));

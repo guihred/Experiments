@@ -12,7 +12,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
 import javafx.scene.Cursor;
@@ -67,8 +66,8 @@ public class CSSStylingExample extends Application {
 
 		FlowPane sceneRoot = new SimpleFlowPaneBuilder()
 				.layoutX(20)
-				.layoutY(40)
-				.padding(new Insets(0, 20, 40, 0))
+                .layoutY(50)
+                .padding(0, 50, 50, 0)
 				.orientation(Orientation.VERTICAL)
 				.vgap(10)
 				.hgap(20)
@@ -84,7 +83,7 @@ public class CSSStylingExample extends Application {
 						labelStageX, labelStageY, labelStageW, labelStageH)
 				.build();
 
-		sceneRef = new Scene(sceneRoot, 600, 250);
+        sceneRef = new Scene(sceneRoot);
         sceneRef.getStylesheets().addAll(ResourceFXUtils.toExternalForm("onTheScene.css"));
 		stage.setScene(sceneRef);
 		choiceBoxRef.getSelectionModel().selectFirst();

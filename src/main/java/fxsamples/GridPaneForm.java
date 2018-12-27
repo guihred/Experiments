@@ -14,19 +14,19 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class GridPaneForm extends Application {
+    private static final ColumnConstraints COLUMN_2 = new ColumnConstraints(50, 150, 300);
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Grid Pane Form");
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 380, 150, Color.WHITE);
+        Scene scene = new Scene(root);
 		GridPane gridpane = new GridPane();
 		gridpane.setHgap(5);
 		gridpane.setPadding(new Insets(5));
 		gridpane.setVgap(5);
 		ColumnConstraints column1 = new ColumnConstraints(100);
-		ColumnConstraints column2 = new ColumnConstraints(50, 150, 300);
-		column2.setHgrow(Priority.ALWAYS);
-		gridpane.getColumnConstraints().addAll(column1, column2);
+        COLUMN_2.setHgrow(Priority.ALWAYS);
+        gridpane.getColumnConstraints().addAll(column1, COLUMN_2);
 		Label fNameLbl = new Label("First Name");
 		TextField fNameFld = new TextField();
 		Label lNameLbl = new Label("Last Name");
@@ -48,7 +48,8 @@ public class GridPaneForm extends Application {
 		GridPane.setHalignment(saveButton, HPos.RIGHT);
 		gridpane.add(saveButton, 1, 2);
 		FlowPane topBanner = new FlowPane();
-		topBanner.setPrefHeight(40);
+        final int prefHeight = 40;
+        topBanner.setPrefHeight(prefHeight);
 		String backgroundStyle = "-fx-background-color: lightblue;"
 				+ "-fx-background-radius: 30%;" + "-fx-background-inset: 5px;";
 		topBanner.setStyle(backgroundStyle);

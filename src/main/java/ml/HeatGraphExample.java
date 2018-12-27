@@ -26,14 +26,15 @@ public class HeatGraphExample extends Application {
         theStage.setTitle("Heat Graph Example");
 
         FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 1100, 600);
+        int pad = 100;
+        Scene theScene = new Scene(root, 1000 + pad, 500 + pad);
 		theStage.setScene(theScene);
 		HeatGraph canvas = new HeatGraph();
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         canvas.setTitle("California Housing");
-		root.getChildren().add(newSlider("Radius", 10, 40, canvas.radiusProperty()));
-		root.getChildren().add(newSlider("Line", 1, 40, canvas.lineSizeProperty()));
+        root.getChildren().add(newSlider("Radius", 10, 50, canvas.radiusProperty()));
+        root.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
 		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
 		root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
 		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));

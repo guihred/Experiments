@@ -12,7 +12,7 @@ public class DrawingText extends Application {
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Text");
 		Group root = new Group();
-		Scene scene = new Scene(root, 300, 250, Color.WHITE);
+        Scene scene = new Scene(root, 500, 500, Color.WHITE);
 		Random rand = new Random(System.currentTimeMillis());
 		for (int i = 0; i < 100; i++) {
 			int x = rand.nextInt((int) scene.getWidth());
@@ -22,7 +22,7 @@ public class DrawingText extends Application {
 			int blue = rand.nextInt(255);
 			Text text = new Text(x, y, "JavaFX 8");
 			int rot = rand.nextInt(360);
-			text.setFill(Color.rgb(red, green, blue, .99));
+            text.setFill(Color.rgb(red, green, blue, 1. / 2));
 			text.setRotate(rot);
 			root.getChildren().add(text);
 		}

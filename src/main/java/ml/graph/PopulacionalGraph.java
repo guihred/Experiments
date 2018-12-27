@@ -9,14 +9,15 @@ import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 
 public class PopulacionalGraph extends Canvas {
     private static final double BORDER_LEFT = 0.45;
     private static final double BORDER_RIGHT = 0.55;
-    private static final int CANVAS_SIZE = 550;
+    public static final int CANVAS_SIZE = 550;
     private final DoubleProperty layout = new SimpleDoubleProperty(30);
-    private final DoubleProperty maxLayout = new SimpleDoubleProperty(480);
+    private final DoubleProperty maxLayout = new SimpleDoubleProperty(CANVAS_SIZE);
     private final DoubleProperty lineSize = new SimpleDoubleProperty(1);
     private final IntegerProperty bins = new SimpleIntegerProperty(5);
     private String ageHeader = "Subject";
@@ -34,6 +35,8 @@ public class PopulacionalGraph extends Canvas {
 
     public PopulacionalGraph() {
         super(CANVAS_SIZE, CANVAS_SIZE);
+        prefWidth(CANVAS_SIZE);
+        prefHeight(CANVAS_SIZE);
         gc = getGraphicsContext2D();
         drawGraph();
 		lineSize.set(getHeight() / getWidth());
@@ -69,12 +72,13 @@ public class PopulacionalGraph extends Canvas {
 		gc.strokeLine(xMA, layout1, xMA, maxLayout1);
 		gc.strokeLine(xFE, layout1, xFE, maxLayout1);
 		prop(layout1, maxLayout1, 0.5);
+        gc.setTextAlign(TextAlignment.CENTER);
 		double j = (xMA - layout1) / xbins;
 		for (int i = 0; i <= xbins; i++) {
 			double x1 = -i * j + xMA;
             gc.strokeLine(x1, maxLayout1, x1, maxLayout1 + lineSize1);
 			String xLabel = String.format("%.0f", i * xProportion);
-			gc.strokeText(xLabel, x1 - lineSize1 * xLabel.length() / 2, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
+            gc.strokeText(xLabel, x1, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
 
         }
 		j = (maxLayout1 - xFE) / xbins;
@@ -82,7 +86,7 @@ public class PopulacionalGraph extends Canvas {
 			double x1 = i * j + xFE;
 			gc.strokeLine(x1, maxLayout1, x1, maxLayout1 + lineSize1);
 			String xLabel = String.format("%.0f", i * xProportion);
-			gc.strokeText(xLabel, x1 - lineSize1 * xLabel.length() / 2, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
+            gc.strokeText(xLabel, x1, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
 
 		}
 		double h = (maxLayout1 - layout1) / agesSteps.size() - 2;
@@ -92,7 +96,7 @@ public class PopulacionalGraph extends Canvas {
 			gc.strokeLine(xFE, y1, xFE - lineSize1, y1);
 			gc.strokeLine(xMA, y1, xMA + lineSize1, y1);
 			String yLabel = agesSteps.get(i);
-			gc.strokeText(yLabel, xMid - lineSize1 * yLabel.length(), y1 - h / 2);
+            gc.strokeText(yLabel, xMid, y1 - h / 2);
         }
 		gc.scale(1, 1 / lineSize.doubleValue());
     }

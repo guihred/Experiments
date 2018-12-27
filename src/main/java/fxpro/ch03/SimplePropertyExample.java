@@ -19,7 +19,10 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class SimplePropertyExample {
-	private static final Logger LOG = HasLogging.log();
+    private static final String SETTING_PROPERTY = "Calling intProperty.set({}).";
+
+
+    private static final Logger LOG = HasLogging.log();
 
 
 	private static IntegerProperty intProperty;
@@ -41,12 +44,12 @@ public final class SimplePropertyExample {
                 .info("The observableValue has changed: oldValue = {}, newValue = {}", oldValue, newValue);
         intProperty.addListener(changeListener);
 		LOG.info("Added change listener.");
-        LOG.info("Calling intProperty.set({}).", nextInt);
+        LOG.info(SETTING_PROPERTY, nextInt);
         intProperty.set(nextInt);
         intProperty.removeListener(changeListener);
 		LOG.info("Removed change listener.");
         nextInt = new Random().nextInt(1000);
-        LOG.info("Calling intProperty.set({}).", nextInt);
+        LOG.info(SETTING_PROPERTY, nextInt);
         intProperty.set(nextInt);
     }
 
@@ -57,7 +60,7 @@ public final class SimplePropertyExample {
 				= (Observable observable) -> LOG.info("The observable has been invalidated: {}.", observable);
         intProperty.addListener(invalidationListener);
 		LOG.info("Added invalidation listener.");
-        LOG.info("Calling intProperty.set({}).", nextInt);
+        LOG.info(SETTING_PROPERTY, nextInt);
         intProperty.set(nextInt);
         nextInt = new Random().nextInt(1000);
         LOG.info("Calling intProperty.setValue({}).", nextInt);
@@ -65,7 +68,7 @@ public final class SimplePropertyExample {
         intProperty.removeListener(invalidationListener);
 		LOG.info("Removed invalidation listener.");
         nextInt = new Random().nextInt(1000);
-        LOG.info("Calling intProperty.set({}).", nextInt);
+        LOG.info(SETTING_PROPERTY, nextInt);
         intProperty.set(nextInt);
     }
 
@@ -77,14 +80,14 @@ public final class SimplePropertyExample {
 		LOG.info("Binding otherProperty to intProperty.");
         otherProperty.bind(intProperty);
         logOtherProperty(otherProperty);
-        LOG.info("Calling intProperty.set({}).", nextInt);
+        LOG.info(SETTING_PROPERTY, nextInt);
         intProperty.set(nextInt);
         nextInt = new Random().nextInt(1000);
         logOtherProperty(otherProperty);
 		LOG.info("Unbinding otherProperty from intProperty.");
         otherProperty.unbind();
         logOtherProperty(otherProperty);
-        LOG.info("Calling intProperty.set({}).", nextInt);
+        LOG.info(SETTING_PROPERTY, nextInt);
         intProperty.set(nextInt);
         logOtherProperty(otherProperty);
     }

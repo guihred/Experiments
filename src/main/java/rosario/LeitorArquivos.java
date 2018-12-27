@@ -1,17 +1,8 @@
 package rosario;
 
 import java.awt.Color;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.*;
+import java.util.*;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -26,12 +17,7 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -41,6 +27,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class LeitorArquivos {
+    private static final Color RED_COLOR = new Color(1.0F, 0.2F, 0.2F);
     private static final String QTESTOQUECOMERCIAL = "qtestoquecomercial";
     private static final String CODPRODUTO = "codproduto";
     public static final String CODIGO = "Codigo";
@@ -251,7 +238,7 @@ public final class LeitorArquivos {
 
     private static void criarAba(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {
         XSSFCellStyle style = wb.createCellStyle();
-        style.setFillBackgroundColor(new XSSFColor(new Color(1.0F, 0.2F, 0.2F)));
+        style.setFillBackgroundColor(new XSSFColor(RED_COLOR));
         style.setFillPattern(FillPatternType.FINE_DOTS);
         int j = 0;
         for (int i = 0; i < medicamentos.size(); i++) {
@@ -291,7 +278,7 @@ public final class LeitorArquivos {
 
     private static void criarAbaLoja(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {
         XSSFCellStyle style = wb.createCellStyle();
-        style.setFillBackgroundColor(new XSSFColor(new Color(1.0F, 0.2F, 0.2F)));
+        style.setFillBackgroundColor(new XSSFColor(RED_COLOR));
         style.setFillPattern(FillPatternType.FINE_DOTS);
         int j = 0;
         for (int i = 0; i < medicamentos.size(); i++) {

@@ -50,8 +50,8 @@ public class ZoomableScrollPane extends ScrollPane {
     public void zoomOut() {
         scaleValue -= DELTA_ZOOM;
 
-        if (Double.compare(scaleValue, 0.1) < 0) {
-            scaleValue = 0.1;
+        if (Double.compare(scaleValue, DELTA_ZOOM) < 0) {
+            scaleValue = DELTA_ZOOM;
         }
 
         zoomTo(scaleValue);
@@ -111,7 +111,7 @@ public class ZoomableScrollPane extends ScrollPane {
             } else {
                 scaleValue += DELTA_ZOOM;
             }
-            if (scaleValue <= 0.1) {
+            if (scaleValue <= DELTA_ZOOM) {
                 scaleValue = s;
 
             }

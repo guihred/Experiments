@@ -1,4 +1,6 @@
 package ml;
+
+import static utils.CommonsFX.newButton;
 import static utils.CommonsFX.newSlider;
 
 import java.util.Set;
@@ -9,57 +11,73 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PopulacionalGraph;
 import simplebuilder.SimpleComboBoxBuilder;
+import utils.ResourceFXUtils;
 
 public class PopulacionalPyramidExample extends Application {
+
+
+    private static final int DEFAULT_YEAR = 2000;
+
 
 
     @Override
 	public void start(final Stage theStage) {
         theStage.setTitle("Populational Pyramid Example");
 
-        FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 800, 600);
-		theStage.setScene(theScene);
+        BorderPane root = new BorderPane();
 
 		Predicate<String> asPredicate = Pattern.compile("MA|FE").asPredicate();
+        String countryHeader = "Country";
         DataframeML x = DataframeML.builder("POPULACAO.csv")
                 .filter("Unit", "Persons"::equals)
                 .filter("SEX", e->asPredicate.test(e.toString()))
                 .filter("Subject", e -> e.toString().matches("Population.+\\d+"))
-                .addCategory("Country")
+                .addCategory(countryHeader)
                 .addCategory("TIME")
                 .addMapping("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
                 .build();
 
 		PopulacionalGraph canvas = new PopulacionalGraph();
-		root.getChildren().add(newSlider("Prop", 0.1, 2, canvas.lineSizeProperty()));
-        root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-		root.getChildren().add(newSlider("MaxPadding", 10, 900, canvas.maxLayoutProperty()));
-        root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-		canvas.widthProperty().bind(root.widthProperty().add(-20));
+        root.setCenter(canvas);
+        VBox left = new VBox();
+        root.setLeft(left);
+        left.getChildren().add(newSlider("Prop", 1. / 10, 2, canvas.lineSizeProperty()));
+        left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        left.getChildren().add(newSlider("MaxPadding", 10, 1000, canvas.maxLayoutProperty()));
+        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        canvas.widthProperty().bind(root.widthProperty().add(-50));
 
-        Set<String> categorize = x.categorize("Country");
+        Set<String> categorize = x.categorize(countryHeader);
         ComboBox<String> comboBox = new SimpleComboBoxBuilder<String>()
                 .items(FXCollections.observableArrayList(categorize.stream().sorted().collect(Collectors.toList())))
                 .select(0)
                 .onSelect(v -> canvas.countryProperty().set(v)).build();
         ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>()
                 .items(canvas.yearsOptionsProperty())
-                .onSelect(v -> canvas.yearProperty().set(v != null ? v : 2000)).build();
-
-		canvas.lineSizeProperty().set(canvas.getHeight() / canvas.getWidth());
-		canvas.maxLayoutProperty().set(canvas.getWidth() - canvas.layoutProperty().doubleValue() - 20);
+                .onSelect(v -> canvas.yearProperty().set(v != null ? v : DEFAULT_YEAR))
+                .select(0)
+                .build();
 
 		canvas.setHistogram(x);
 
-        root.getChildren().add(comboBox);
-        root.getChildren().add(year);
-        root.getChildren().add(canvas);
+        left.getChildren().add(new Text(countryHeader));
+        left.getChildren().add(comboBox);
+        left.getChildren().add(new Text("Year"));
+        left.getChildren().add(year);
+        left.getChildren().add(newButton("Export", e -> ResourceFXUtils.take(canvas)));
+        double ratio = 3. / 4;
+
+        final int width = 800;
+        Scene theScene = new Scene(root, width, width * ratio);
+        canvas.lineSizeProperty().set(ratio);
+        theStage.setScene(theScene);
 		theStage.show();
 	}
 

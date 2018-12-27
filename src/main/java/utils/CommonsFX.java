@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-import javafx.animation.Interpolator;
-import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -15,19 +13,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcTo;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import simplebuilder.SimpleSliderBuilder;
 
 public final class CommonsFX {
@@ -129,16 +120,6 @@ public final class CommonsFX {
 		return build;
 	}
 
-    public static PathTransition newPathTransistion(final Duration duration, final Shape path, final Node node,
-            final PathTransition.OrientationType orientation, final Interpolator interpolator, final boolean autoReverse,
-            final int cycleCount) {
-		PathTransition build = new PathTransition(duration, path, node);
-		build.setOrientation(orientation);
-		build.setInterpolator(interpolator);
-		build.setAutoReverse(autoReverse);
-		build.setCycleCount(cycleCount);
-		return build;
-	}
 
     public static VBox newSlider(final String string, final double min, final double max, final Property<Number> radius) {
     	Slider build = new SimpleSliderBuilder().min(min).max(max).build();

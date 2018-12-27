@@ -1,6 +1,8 @@
 package fxpro.ch01;
 
+import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -24,7 +26,8 @@ public class AudioConfigLauncher extends Application {
     @Override
     public void start(Stage stage) {
         Text textDb = new SimpleTextBuilder().styleClass(AUDIO_TEXT_STYLE).build();
-        ChoiceBox<String> genreChoiceBox = new ChoiceBox<>(AudioConfigModel.GENRES);
+        ChoiceBox<String> genreChoiceBox = new ChoiceBox<>(AudioConfigModel.GENRES_MAP.keySet().stream()
+                .collect(Collectors.toCollection(FXCollections::observableArrayList)));
 
         CheckBox mutingCheckBox = new CheckBox();
         Slider slider = new SimpleSliderBuilder()

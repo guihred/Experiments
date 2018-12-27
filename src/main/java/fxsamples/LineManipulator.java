@@ -15,15 +15,16 @@ public class LineManipulator extends Application {
 	public void start(final Stage stage) {
 		DoubleProperty startX = new SimpleDoubleProperty(100);
 		DoubleProperty startY = new SimpleDoubleProperty(100);
-		DoubleProperty endX = new SimpleDoubleProperty(300);
-		DoubleProperty endY = new SimpleDoubleProperty(200);
+        int finalValue = 500;
+        DoubleProperty endX = new SimpleDoubleProperty(finalValue - 100);
+        DoubleProperty endY = new SimpleDoubleProperty(finalValue - 100);
 
 		AnchorCircle start = new AnchorCircle(Color.PALEGREEN, startX, startY);
 		AnchorCircle end = new AnchorCircle(Color.TOMATO, endX, endY);
 
 		Line line = new BoundLine(startX, startY, endX, endY);
 		stage.setTitle("Line Manipulation Sample");
-		stage.setScene(new Scene(new Group(line, start, end), 400, 400, Color.ALICEBLUE));
+        stage.setScene(new Scene(new Group(line, start, end), finalValue, finalValue, Color.ALICEBLUE));
 		stage.show();
 	}
 

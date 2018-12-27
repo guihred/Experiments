@@ -19,13 +19,14 @@ import simplebuilder.SimpleTimelineBuilder;
 
 public class PendulumAnimationLauncher extends Application {
 
-	private DoubleProperty startXVal = new SimpleDoubleProperty(100.0);
+	private static final double WIDTH = 400;
+    private DoubleProperty startXVal = new SimpleDoubleProperty(100.0);
 	private Timeline anim = new SimpleTimelineBuilder()
 			.autoReverse(true)
 			.cycleCount(Animation.INDEFINITE)
 			.keyFrames(
 					new KeyFrame(Duration.ZERO, new KeyValue(startXVal, 100.0)),
-					new KeyFrame(new Duration(1000.0), new KeyValue(startXVal, 300.0, Interpolator.LINEAR)))
+                    new KeyFrame(Duration.seconds(1), new KeyValue(startXVal, WIDTH - 100, Interpolator.LINEAR)))
 			.build();
 
 	@Override
@@ -33,8 +34,7 @@ public class PendulumAnimationLauncher extends Application {
         Line line = new SimpleLineBuilder()
 				.startX(0)
 				.startY(50)
-				.endX(200)
-				.endY(400)
+                .endX(WIDTH / 2).endY(WIDTH)
 				.stroke(Color.BLUE)
 				.strokeWidth(4)
 				.build();
@@ -45,11 +45,11 @@ public class PendulumAnimationLauncher extends Application {
 		HBox hbox = new SimpleHBoxBuilder()
 				.children(startButton, pauseButton, resumeButton, stopButton)
 				.layoutX(60)
-				.layoutY(420)
+                .layoutY(WIDTH + 20)
 				.spacing(10)
 				.build();
 		final Group root = new Group(line, hbox);
-		Scene scene = new Scene(root, 400, 500);
+        Scene scene = new Scene(root, WIDTH, 500);
 		line.startXProperty().bind(startXVal);
 		startButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.STOPPED));
 		pauseButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.RUNNING));

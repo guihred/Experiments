@@ -1,13 +1,12 @@
 package fxpro.ch01;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.scene.control.SingleSelectionModel;
 
 public class AudioConfigModel {
@@ -23,13 +22,14 @@ public class AudioConfigModel {
     /**
      * List of some musical genres
      */
-	public static final ObservableList<String> GENRES = FXCollections.observableArrayList(
-            "Chamber",
-            "Cowbell",
-            "Metal",
-            "Polka",
-            "Rock"
-    );
+	public static final ObservableMap<String,Integer> GENRES_MAP = FXCollections.observableMap(
+            ImmutableMap.<String, Integer>builder()
+                    .put("Chamber", 80)
+                    .put("Cowbell", 100)
+                    .put("Metal", 150)
+                    .put("Polka", 140)
+                    .put("Rock", 120)
+                    .build());
     /**
      * The selected audio volume in decibels
      */
@@ -48,15 +48,8 @@ public class AudioConfigModel {
      * contains code that executes when the selection in the ChoiceBox changes.
      */
     public void addListenerToGenreSelectionModel() {
-		Map<Integer, Integer> hashMap = new HashMap<>();
-		hashMap.put(0, 80);
-		hashMap.put(1, 100);
-		hashMap.put(2, 150);
-		hashMap.put(3, 140);
-		hashMap.put(4, 120);
-		hashMap.put(5, 130);
-		genreSelectionModel.selectedIndexProperty().addListener((ov, oldValue, newValue) -> selectedDBs
-				.setValue(hashMap.getOrDefault(newValue, selectedDBs.getValue())));
+        genreSelectionModel.selectedItemProperty().addListener((ov, oldValue, newValue) -> selectedDBs
+                .setValue(GENRES_MAP.getOrDefault(newValue, selectedDBs.getValue())));
     }
 
 	public SingleSelectionModel<String> getGenreSelectionModel() {
