@@ -74,10 +74,11 @@ public class SimpleAudioPlayerLauncher extends Application {
         year = new Label();
         year.setId("year");
         final Reflection reflection = new Reflection();
-        reflection.setFraction(0.2);
+        reflection.setFraction(2. / 10);
 		final Image image = new Image(MetadataView.DEFAULT_PICTURE);
         albumCover = new ImageView(image);
-        albumCover.setFitWidth(240);
+        final int fitWidth = 240;
+        albumCover.setFitWidth(fitWidth);
         albumCover.setPreserveRatio(true);
         albumCover.setSmooth(true);
         albumCover.setEffect(reflection);

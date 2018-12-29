@@ -44,19 +44,20 @@ import utils.HasLogging;
  */
 public final class JavaExercise24 {
 	private static final Logger LOG = HasLogging.log();
-	private static double[] data = { 637.42D, 6300.95D, 7.81D, 6300.95D, 712.72D, 4325.22D, 2.79D, 3125.77D, 813.02D,
-			3125.77D, 6.42D, 1234.56D };
+    private static final double[] DATA = { 637.42D, 6300.95D, 7.81D, 6300.95D, 712.72D, 4325.22D, 2.79D, 3125.77D,
+            813.02D, 3125.77D, 6.42D, 1234.56D };
 
 	private JavaExercise24() {
 	}
 
     public static void countDuplicates() {
-		double[] table = new double[630];
+        final int douplicateCount = 630;
+        double[] table = new double[douplicateCount];
 		Arrays.fill(table, -1);
 		int duplicates = 0;
-		for (int i = 0; i < data.length; i++) {
-			double x = data[i];
-			int n = (int) x % 630;
+        for (int i = 0; i < DATA.length; i++) {
+            double x = DATA[i];
+            int n = (int) x % douplicateCount;
 			if (table[n] == n) {
 				n++;
 			}

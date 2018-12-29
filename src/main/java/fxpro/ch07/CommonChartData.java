@@ -14,12 +14,21 @@ import javafx.scene.chart.XYChart.Series;
 
 public final class CommonChartData {
 
-	private CommonChartData() {
+    private static final int BEGIN_YEAR = 2011;
+    private static final double CPP_AVG = 8.25;
+    private static final double C_AVG = 17.06;
+    private static final double JAVA_AVG = 17.56;
+    private static final ObservableList<PieChart.Data> PIE_DATA = FXCollections.observableArrayList(
+            new PieChart.Data("Java", JAVA_AVG), new PieChart.Data("C", C_AVG), new PieChart.Data("C++", CPP_AVG),
+            new PieChart.Data("C#", 8.20),
+    		new PieChart.Data("ObjectiveC", 6.8), new PieChart.Data("PHP", 6.0),
+    		new PieChart.Data("(Visual)Basic", 4.76), new PieChart.Data("Other", 31.37));
+    private CommonChartData() {
 	}
 	public static ObservableList<XYChart.Series<String, Number>> getCategoryData() {
-		double javaValue = 17.56;
-		double cValue = 17.06;
-		double cppValue = 8.25;
+        double javaValue = JAVA_AVG;
+        double cValue = C_AVG;
+        double cppValue = CPP_AVG;
 		ObservableList<XYChart.Series<String, Number>> answer = FXCollections.observableArrayList();
 		Series<String, Number> java = new Series<>();
 		Series<String, Number> c = new Series<>();
@@ -27,12 +36,14 @@ public final class CommonChartData {
 		java.setName("java");
 		c.setName("C");
 		cpp.setName("C++");
-		for (int i = 2011; i < 2021; i++) {
-			java.getData().add(new XYChart.Data<>(Integer.toString(i), javaValue));
-			javaValue = javaValue + 4 * Math.random() - .2;
-			c.getData().add(new XYChart.Data<>(Integer.toString(i), cValue));
+        for (int i = 0; i < 10; i++) {
+            String year = Integer.toString(i + BEGIN_YEAR);
+            java.getData().add(new XYChart.Data<>(year, javaValue));
+            final double variation = .2;
+            javaValue = javaValue + 4 * Math.random() - variation;
+            c.getData().add(new XYChart.Data<>(year, cValue));
 			cValue = cValue + 4 * Math.random() - 2;
-			cpp.getData().add(new XYChart.Data<>(Integer.toString(i), cppValue));
+            cpp.getData().add(new XYChart.Data<>(year, cppValue));
 			cppValue = cppValue + 4 * Math.random() - 2;
 		}
 		answer.addAll(Arrays.asList(java, c, cpp));
@@ -40,9 +51,9 @@ public final class CommonChartData {
 	}
 
 	public static ObservableList<XYChart.Series<Number, Number>> getChartData() {
-		double javaValue = 17.56;
-		double cValue = 17.06;
-		double cppValue = 8.25;
+        double javaValue = JAVA_AVG;
+        double cValue = C_AVG;
+        double cppValue = CPP_AVG;
 		ObservableList<XYChart.Series<Number, Number>> answer = FXCollections.observableArrayList();
 		Series<Number, Number> java = new Series<>();
 		java.setName("java");
@@ -50,7 +61,7 @@ public final class CommonChartData {
 		c.setName("C");
 		Series<Number, Number> cpp = new Series<>();
 		cpp.setName("C++");
-		for (int i = 2011; i < 2021; i++) {
+        for (int i = BEGIN_YEAR; i < BEGIN_YEAR + 10; i++) {
 			java.getData().add(new XYChart.Data<>(i, javaValue));
 			javaValue = javaValue + 4 * Math.random() - 2;
 			c.getData().add(new XYChart.Data<>(i, cValue));
@@ -63,10 +74,7 @@ public final class CommonChartData {
 	}
 
     public static ObservableList<PieChart.Data> getPieData() {
-		return FXCollections.observableArrayList(new PieChart.Data("Java", 17.56),
-				new PieChart.Data("C", 17.06), new PieChart.Data("C++", 8.25), new PieChart.Data("C#", 8.20),
-				new PieChart.Data("ObjectiveC", 6.8), new PieChart.Data("PHP", 6.0),
-				new PieChart.Data("(Visual)Basic", 4.76), new PieChart.Data("Other", 31.37));
+        return PIE_DATA;
 	}
 
     public static  DoubleSummaryStatistics getStats(ObservableList<Series<Number, Number>> chartData,

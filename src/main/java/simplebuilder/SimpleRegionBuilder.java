@@ -47,7 +47,7 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
         return (Z) this;
     }
 
-	public static SimpleRegionBuilder<Region, SimpleRegionBuilder<Region, SimpleBuilder<Region>>> create() {
+    public static <T extends SimpleRegionBuilder<Region, SimpleRegionBuilder<Region, SimpleBuilder<Region>>>> SimpleRegionBuilder<Region, T> create() {
 		return new SimpleRegionBuilder<>(new Region());
 	}
 

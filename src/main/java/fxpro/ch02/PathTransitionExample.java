@@ -25,7 +25,7 @@ public class PathTransitionExample extends Application {
 	private Ellipse ellipse = new SimpleEllipseBuilder().centerX(100).centerY(50).radiusX(4).radiusY(50)
 			.fill(Color.BLUE).build();
 
-    private Path path = new SimplePathBuilder()
+    private final Path path = new SimplePathBuilder()
             .moveTo(100, 50)
             .arcTo(350, 350, 0, 300, 50, false, true)
             .build();
@@ -46,9 +46,9 @@ public class PathTransitionExample extends Application {
         Button resumeButton = newButton("Resume", e -> anim.play());
         Button pauseButton = newButton("Pause", e -> anim.pause());
         Button startButton = newButton("Start", e -> anim.playFromStart());
-        HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10)
+        final HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10)
                 .children(startButton, pauseButton, resumeButton, stopButton).build();
-		Scene scene = new Scene(new Group(ellipse, hbox), 400, 500);
+        final Scene scene = new Scene(new Group(ellipse, hbox), 400, 500);
 
         startButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.STOPPED));
         pauseButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.RUNNING));

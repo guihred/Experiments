@@ -20,7 +20,7 @@ public final class Chapter5 {
 
 	/* Compute Programmer's Day without using plusDays. */
 	public static void ex1() {
-		LocalDate programmerDay = LocalDate.ofYearDay(2015, 256);
+        final LocalDate programmerDay = LocalDate.ofYearDay(2015, 256);
         LOGGER.trace("{}", programmerDay);
 	}
 
@@ -30,7 +30,7 @@ public final class Chapter5 {
 		LocalTime timeFlight = LocalTime.of(15, 5);
 		ZoneId losAngeles = ZoneId.of("America/Los_Angeles");
 		ZonedDateTime flightBegining = ZonedDateTime.of(date, timeFlight, losAngeles);
-		Duration flightDuration = Duration.ofMinutes(650);
+        final Duration flightDuration = Duration.ofMinutes(650);
 		ZonedDateTime addTo = flightBegining.plus(flightDuration);
 		Instant from = Instant.from(addTo);
 		ZoneId frankfurt = ZoneId.of("Europe/Berlin");
@@ -52,8 +52,8 @@ public final class Chapter5 {
 		LocalDate date = LocalDate.now();
 		ZoneId losAngeles = ZoneId.of("America/Los_Angeles");
 		ZoneId frankfurt = ZoneId.of("Europe/Berlin");
-		ZonedDateTime flightBegining = ZonedDateTime.of(date, LocalTime.of(14, 5), frankfurt);
-		ZonedDateTime flightArrivalDateTime = ZonedDateTime.of(date, LocalTime.of(16, 40), losAngeles);
+        final ZonedDateTime flightBegining = ZonedDateTime.of(date, LocalTime.of(14, 5), frankfurt);
+        final ZonedDateTime flightArrivalDateTime = ZonedDateTime.of(date, LocalTime.of(16, 40), losAngeles);
 
         LOGGER.trace("{}", flightBegining);
         LOGGER.trace("{}", flightArrivalDateTime);
@@ -71,7 +71,7 @@ public final class Chapter5 {
 	 * Local date finds the closest match for that sum.
 	 */
 	public static void ex2() {
-		LocalDate plusYears = LocalDate.of(2000, 2, 29).plusYears(1L);
+        final LocalDate plusYears = LocalDate.of(2000, 2, 29).plusYears(1L);
         LOGGER.trace("{}", plusYears);
 	}
 
@@ -129,7 +129,7 @@ public final class Chapter5 {
 	/* Write a program that prints how many days you have been alive. */
 	public static void ex5() {
 		
-		LocalDate birth = LocalDate.of(1992, 2, 21);
+        final LocalDate birth = LocalDate.of(1992, 2, 21);
 		long l = birth.until(LocalDate.now(), ChronoUnit.DAYS);
         LOGGER.trace("{} days", l);
 
@@ -137,8 +137,10 @@ public final class Chapter5 {
 
 	/* List all Friday the 13th in the twentieth century. */
 	public static void ex6() {
-		LocalDate nextFriday = LocalDate.of(1201, 1, 1);
-		while (nextFriday.get(ChronoField.YEAR) <= 1300) {
+        final int year = 1201;
+        LocalDate nextFriday = LocalDate.of(year, 1, 1);
+        final int century13th = 1300;
+        while (nextFriday.get(ChronoField.YEAR) <= century13th) {
 
 			nextFriday = nextFriday.with(w -> {
 				LocalDate l = LocalDate.from(w);
@@ -190,10 +192,11 @@ public final class Chapter5 {
 
 	public static void ex9() {
 
+        final int secondsInAHour = 3600;
 		Instant now = Instant.now();
 		ZoneId.getAvailableZoneIds().stream().map(ZoneId::of).map(now::atZone)
 				.sorted(Comparator.comparing(ZonedDateTime::toOffsetDateTime))
-				.filter(z -> z.getOffset().getTotalSeconds() % 3600 != 0)
+                .filter(z -> z.getOffset().getTotalSeconds() % secondsInAHour != 0)
 				.map(o -> o.getZone().getDisplayName(TextStyle.NARROW, Locale.getDefault()) + "\t" + o.getOffset())
                 .forEach(LOGGER::trace);
 		

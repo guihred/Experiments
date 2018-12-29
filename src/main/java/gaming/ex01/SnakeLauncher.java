@@ -39,8 +39,6 @@ public class SnakeLauncher extends Application {
                 .cycleCount(Animation.INDEFINITE).build();
         timeline.play();
         stage.setScene(scene);
-        stage.setWidth(400);
-        stage.setHeight(400);
         stage.show();
     }
 

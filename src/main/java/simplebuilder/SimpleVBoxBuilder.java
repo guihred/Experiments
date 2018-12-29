@@ -1,6 +1,7 @@
 package simplebuilder;
 
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
 public class SimpleVBoxBuilder extends SimplePaneBuilder<VBox, SimpleVBoxBuilder> {
@@ -10,6 +11,16 @@ public class SimpleVBoxBuilder extends SimplePaneBuilder<VBox, SimpleVBoxBuilder
 	public SimpleVBoxBuilder() {
 		super(new VBox());
 		vbox = node;
+	}
+
+    public SimpleVBoxBuilder(double gap, Node... spacing) {
+        super(new VBox(gap, spacing));
+        vbox = node;
+    }
+
+    public SimpleVBoxBuilder(Node... spacing) {
+	    super(new VBox(spacing));
+	    vbox = node;
 	}
 
 	public SimpleVBoxBuilder alignment(Pos left) {

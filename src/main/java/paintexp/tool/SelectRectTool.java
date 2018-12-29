@@ -196,7 +196,7 @@ public class SelectRectTool extends PaintTool {
 			imageSelected = new WritableImage((int) width, (int) height);
 		}
 		WritableImage writableImage = destImage != null ? destImage : imageSelected;
-		copyImagePart(srcImage, writableImage, 0, 0, width, height, 0, 0, model.getBackColor());
+        new RectBuilder().width(width).height(height).copyImagePart(srcImage, writableImage, model.getBackColor());
 		if (option == SelectOption.TRANSPARENT) {
 			replaceColor(writableImage, model.getBackColor(), Color.TRANSPARENT);
 		}
@@ -273,7 +273,8 @@ public class SelectRectTool extends PaintTool {
 		int y = (int) getArea().getLayoutY();
 		double width = getArea().getWidth();
 		double height = getArea().getHeight();
-		copyImagePart(imageSelected, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
+        new RectBuilder().width(width).height(height).endX(x).endY(y).copyImagePart(imageSelected,
+                model.getImage(), Color.TRANSPARENT);
 		imageSelected = null;
 		model.getImageStack().getChildren().remove(getArea());
 		model.createImageVersion();
@@ -305,20 +306,21 @@ public class SelectRectTool extends PaintTool {
 			}
 			
 			getArea().setFill(new ImagePattern(imageSelected));
-			drawRect(model, layoutX, layoutY, width, height);
+            new RectBuilder().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model,
+                    model.getBackColor());
 		}
 		return imageSelected;
 	}
 
 	private void cutImage(final PaintModel model, final Bounds bounds) {
 		copyToClipboard(model);
-		drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+		new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth()).height(bounds.getHeight()).drawRect(model, model.getBackColor());
 		model.createImageVersion();
 	}
 
 	private void deleteImage(final PaintModel model, final Bounds bounds) {
 		if (imageSelected == null) {
-			drawRect(model, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+			new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth()).height(bounds.getHeight()).drawRect(model, model.getBackColor());
 		}
 		imageSelected = null;
 		ObservableList<Node> children = model.getImageStack().getChildren();

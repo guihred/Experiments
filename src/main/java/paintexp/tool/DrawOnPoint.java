@@ -15,7 +15,7 @@ public interface DrawOnPoint {
 	    return Math.min(Math.max(min, num), max);
 	}
 	
-    static boolean within(final int y, final double max) {
+    static boolean within(final double y, final double max) {
 	    return 0 <= y && y < max;
 	}
 	
@@ -23,8 +23,17 @@ public interface DrawOnPoint {
         return min <= y && y < max;
     }
 
+    static boolean withinImage(final double x, final double y, final WritableImage image) {
+        return within(y, image.getHeight()) && within(x, image.getWidth());
+    }
+
     static boolean withinImage(final int x, final int y, final WritableImage image) {
         return within(y, image.getHeight()) && within(x, image.getWidth());
+    }
+
+    static boolean withinRange(final double x, final double y, final PaintModel model) {
+        WritableImage image = model.getImage();
+        return withinImage(x, y, image);
     }
 
     static boolean withinRange(final int x, final int y, final PaintModel model) {

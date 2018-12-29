@@ -104,7 +104,8 @@ public class SprayTool extends PaintTool {
     }
 
     private Slider getLengthSlider() {
-		return lengthSlider=lengthSlider!=null?lengthSlider:new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
+        return lengthSlider = lengthSlider != null ? lengthSlider
+                : new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
 	}
 
 }

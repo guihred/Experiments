@@ -4,6 +4,7 @@ import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import paintexp.tool.RectBuilder;
 import paintexp.tool.SelectRectTool;
 
 public class PaintEditUtils {
@@ -14,7 +15,12 @@ public class PaintEditUtils {
     public static void cut(PaintModel paintModel, SelectRectTool a) {
         a.copyToClipboard(paintModel);
         Bounds bounds = a.getArea().getBoundsInParent();
-        a.drawRect(paintModel, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+        new RectBuilder()
+            .startX(bounds.getMinX())
+            .startY(bounds.getMinY())
+            .width(bounds.getWidth())
+            .height(bounds.getHeight())
+            .drawRect(paintModel, paintModel.getBackColor());
     }
 
     public static void paste(PaintModel paintModel, SelectRectTool a) {

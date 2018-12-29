@@ -47,7 +47,7 @@ public class ImageLoading {
                 .load(sourcepath);
 
         // Define threshold value
-        double threshold = 0.15;
+        final double threshold = 0.15;
 
         // Call BinarizeBradley method and pass the threshold value as parameter
         objimage.binarizeBradley(threshold);
@@ -106,7 +106,7 @@ public class ImageLoading {
 
         // Create an instance of Rectangle class and define X,Y and Width, height of the
         // rectangle.
-        Rectangle destRect = new Rectangle(200, 200, 300, 300);
+        final Rectangle destRect = new Rectangle(200, 200, 300, 300);
 
         // Save output image by passing output file name, image options and rectangle
         // object.

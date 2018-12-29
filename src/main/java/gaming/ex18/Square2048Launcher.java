@@ -6,28 +6,22 @@
 package gaming.ex18;
 
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import utils.ResourceFXUtils;
 
 public class Square2048Launcher extends Application {
 
-    private static final int WIDTH = 400;
     @Override
     public void start(Stage stage) throws Exception {
         final GridPane gridPane = new GridPane();
-        gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         final Square2048Model memoryModel = new Square2048Model(gridPane);
 
-        final BorderPane borderPane = new BorderPane(gridPane);
-        final Scene scene = new Scene(borderPane);
+        final Scene scene = new Scene(gridPane);
         stage.setScene(scene);
-        stage.setWidth(WIDTH);
-        stage.setHeight(WIDTH);
-
         scene.setOnKeyPressed(memoryModel::handleKeyPressed);
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("square2048.css"));
         stage.show();
     }
     public static void main(String[] args) {

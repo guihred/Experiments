@@ -4,11 +4,7 @@ package crypt;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -88,7 +84,7 @@ public class VigenereXORCipher {
 			for (int b = 0; b < 256; b++) {
 				int n = b;
 				List<Integer> map = stream.stream().map(l -> (char) (l ^ n) & 255).collect(Collectors.toList());
-				if (map.parallelStream().allMatch(m -> m > 32 && m < 128 && !Character.isDigit(m))) {
+                if (map.parallelStream().allMatch(m -> within(m) && !Character.isDigit(m))) {
 					int size = map.size();
                     Map<Integer, Long> charHistogram = map.parallelStream()
                             .map(c -> Character.valueOf((char) c.intValue()))
@@ -121,7 +117,7 @@ public class VigenereXORCipher {
 
 	}
 
-	public long findKeySize() throws IOException {
+    public long findKeySize() throws IOException {
 		String line = Files.readAllLines(ResourceFXUtils.toPath("ctext.txt")).get(0);
 		String[] split = line.split("(?<=\\G..)");
 		List<Integer> keySizeList = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
@@ -147,6 +143,12 @@ public class VigenereXORCipher {
         LOGGER.info("{}", keySizeList);
 		return bestKeySize;
 	}
+
+	private boolean within(Integer m) {
+        final int minWritableCharacter = 32;
+        final int maxWritableCharacter = 128;
+        return m > minWritableCharacter && m < maxWritableCharacter;
+    }
 
     public static void main(String[] args) {
 		try {

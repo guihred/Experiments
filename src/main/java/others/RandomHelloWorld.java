@@ -13,9 +13,9 @@ public final class RandomHelloWorld {
 
     public static void displayHelloWorld() {
         // EQUIVALENT TO HELLO
-        String randomString = randomString(-229_985_452);
+        final String randomString = randomString(-229_985_452);
         // EQUIVALENT TO WORLD
-        String randomString2 = randomString(-147_909_649);
+        final String randomString2 = randomString(-147_909_649);
         LOG.info("{} {}", randomString, randomString2);
 	}
 
@@ -23,7 +23,7 @@ public final class RandomHelloWorld {
 		Random ran = new Random(i);
 		StringBuilder sb = new StringBuilder();
 		while (true) {
-			int k = ran.nextInt(27);
+            final int k = ran.nextInt(27);
 			if (k == 0) {
 				break;
 			}

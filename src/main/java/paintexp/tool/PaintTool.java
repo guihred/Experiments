@@ -12,9 +12,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat.Type;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -28,14 +25,13 @@ public abstract class PaintTool extends Group {
 
     public PaintTool() {
 		setId(getClass().getSimpleName());
-        getChildren().add(getIcon());
+        Node icon = getIcon();
+        if (icon != null) {
+            getChildren().add(icon);
+        }
     }
 
-	public void drawRect(final PaintModel model, final double x, final double y, final double w, final double h) {
-        drawRect(model, x, y, w, h, model.getBackColor());
-    }
-
-    public abstract Node getIcon();
+	public abstract Node getIcon();
 
 	public Cursor getMouseCursor() {
 		return Cursor.DEFAULT;
@@ -75,39 +71,9 @@ public abstract class PaintTool extends Group {
         int y = (int) bounds.getMinY();
         double width = bounds.getWidth();
         double height = bounds.getHeight();
-        copyImagePart(srcImage, destImage, x, y, width, height, 0, 0, Color.TRANSPARENT);
+        new RectBuilder().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,
+                Color.TRANSPARENT);
     }
-
-    protected void copyImagePart(final Image srcImage, final WritableImage destImage, final int x, final int y,
-            final double width, final double height, final int xOffset, final int yOffset, final Color ignoreColor) {
-        int argb = PixelHelper.toArgb(ignoreColor);
-        boolean isTransparent = Color.TRANSPARENT.equals(ignoreColor);
-        PixelReader pixelReader = srcImage.getPixelReader();
-        double srcWidth = srcImage.getWidth();
-        double srcHeight = srcImage.getHeight();
-        PixelWriter pixelWriter = destImage.getPixelWriter();
-        Type type = pixelReader.getPixelFormat().getType();
-        double destWidth = destImage.getWidth();
-        double destHeight = destImage.getHeight();
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (within(i + xOffset, destWidth) && within(j + yOffset, destHeight) && within(i + x, srcWidth)
-                        && within(j + y, srcHeight)) {
-                    int color = pixelReader.getArgb(i + x, j + y);
-                    if (Type.BYTE_BGRA_PRE == type) {
-                        Color color2 = pixelReader.getColor(i + x, j + y);
-                        color = PixelHelper.toArgb(Color.hsb(color2.getHue(), color2.getSaturation(), color2.getBrightness(),
-                        color2.getOpacity()));
-                    }
-                    if (color != argb) {
-                        pixelWriter.setArgb(i + xOffset, j + yOffset, isTransparent ? color | 0xFF000000 : color);
-                    }
-                }
-            }
-        }
-    }
-
-
 
     protected void drawCircle(final PaintModel model, final double centerX, final double centerY, final double radiusX,
             final double radiusY, final double startAngle) {
@@ -194,39 +160,6 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected void drawRect(final PaintModel model, final double x, final double y, final double w, final double h,
-            final Color backColor) {
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < h; j++) {
-                if (withinRange((int) x + i, (int) y + j, model)) {
-                    model.getImage().getPixelWriter().setColor((int) x + i, (int) y + j, backColor);
-                }
-            }
-        }
-    }
-
-    protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final Color backColor) {
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < w; j++) {
-                if (withinRange(x + i, y + j, model)) {
-                    model.getImage().getPixelWriter().setColor(x + i, y + j, backColor);
-                }
-            }
-        }
-    }
-    protected void drawSquare(final PaintModel model, final int x, final int y, final int w, final int color) {
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < w; j++) {
-                if (withinRange(x + i, y + j, model)) {
-                    int argb = model.getImage().getPixelReader().getArgb(x + i, y + j);
-                    if (argb == color) {
-                        model.getImage().getPixelWriter().setColor(x + i, y + j, model.getBackColor());
-                    }
-                }
-            }
-        }
-    }
-
     protected void drawSquareLine(final PaintModel model, final int startX, final int startY, final int w, final Color color) {
         for (int x = 0; x < w; x++) {
             drawPoint(model, startX+x, startY,color);
@@ -267,16 +200,15 @@ public abstract class PaintTool extends Group {
 	}
 
 	protected void handleSlider(final KeyEvent e, final Property<Number> property, final Slider slider) {
-			
-			if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
-			property.setValue(
-					Math.min(slider.getMax(), slider.getBlockIncrement() + property.getValue().doubleValue()));
-			}
-			if (e.getCode() == KeyCode.SUBTRACT || e.getCode() == KeyCode.MINUS) {
-			property.setValue(
-					Math.max(slider.getMin(), property.getValue().doubleValue() - slider.getBlockIncrement()));
-			}
+        if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
+            property.setValue(
+                    Math.min(slider.getMax(), slider.getBlockIncrement() + property.getValue().doubleValue()));
+        }
+        if (e.getCode() == KeyCode.SUBTRACT || e.getCode() == KeyCode.MINUS) {
+            property.setValue(
+                    Math.max(slider.getMin(), property.getValue().doubleValue() - slider.getBlockIncrement()));
 		}
+    }
 
 	@SuppressWarnings("unused")
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
@@ -320,7 +252,8 @@ public abstract class PaintTool extends Group {
         WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
         int x = (int) bounds.getMinX();
         int y = (int) bounds.getMinY();
-		copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
+        new RectBuilder().startX(0).startY(0).width(width).height(height).endX(x).endY(y)
+                .copyImagePart(textImage, model.getImage(), Color.TRANSPARENT);
         model.getImageStack().getChildren().clear();
         ImageView imageView = new ImageView(model.getImage());
         model.getImageStack().getChildren().add(model.getRectangleBorder(imageView));

@@ -21,10 +21,13 @@ public class SolitaireCard extends Region {
 	public SolitaireCard(SolitaireNumber number, SolitaireSuit suit) {
 		this.number = number;
 		this.suit = suit;
-		setPadding(new Insets(10));
+        setPadding(new Insets(10));
+        setManaged(false);
 		setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), new Insets(1))));
         final double defaultScale = 0.75;
         setPrefSize(50, defaultScale * 100);
+        setWidth(50);
+        setHeight(defaultScale * 100);
 
 		Shape s = this.suit.getShape();
 		s.setLayoutX(30);
@@ -41,7 +44,6 @@ public class SolitaireCard extends Region {
 
 		getChildren().add(text);
 		getChildren().add(s);
-		setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-radius: 5;");
     }
 
 	public SolitaireNumber getNumber() {

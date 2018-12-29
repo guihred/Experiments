@@ -297,7 +297,8 @@ public class TextTool extends PaintTool {
                 new WritableImage(Math.max(Math.abs(width), 1), Math.max(Math.abs(height), 1)));
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
-        copyImagePart(textImage, model.getImage(), 0, 0, width, height, x, y, Color.TRANSPARENT);
+        new RectBuilder().width(width).height(height).endX(x).endY(y).copyImagePart(textImage, model.getImage(),
+                Color.TRANSPARENT);
         model.getImageStack().getChildren().clear();
         ImageView imageView = new ImageView(model.getImage());
         model.getImageStack().getChildren().add(model.getRectangleBorder(imageView));

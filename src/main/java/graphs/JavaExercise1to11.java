@@ -2,11 +2,7 @@ package graphs;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -165,7 +161,8 @@ public final class JavaExercise1to11 {
 	 * of a month is more likely to fall on a Friday than on any other day.
 	 */
 	public static void friday13thProblem() {
-		LocalDate begin = LocalDate.of(1900, 1, 1);
+        final int year = 1900;
+        LocalDate begin = LocalDate.of(year, 1, 1);
 		Map<DayOfWeek, Long> histogram = Stream.iterate(begin, d -> d.plusDays(1)).filter(d -> d.getDayOfMonth() == 13).limit(4800)
 				.collect(Collectors.groupingBy(LocalDate::getDayOfWeek, Collectors.counting()));
         LOG.info("{}", histogram);
@@ -184,7 +181,7 @@ public final class JavaExercise1to11 {
 	 */
 	public static void greenflyProblem() {
 		List<Greenfly> of = Arrays.asList(new Greenfly(-7));
-		for (int i = 0; i < 28; i++) {
+        for (int i = 0; i < 30; i++) {
 			int j = i;
 			of = of.parallelStream().flatMap(g -> g.reproduce(j)).collect(Collectors.toList());
 		}
@@ -199,7 +196,8 @@ public final class JavaExercise1to11 {
 		fibonacciSeriesProblem();
 		greenflyProblem();
 		allPrimeLessThan600Problem();
-		easter(2017);
+        final int currentYear = 2017;
+        easter(currentYear);
 		friday13thProblem();
 		forwardBackwardCountProblem();
 		accumulatingRoundingErrors();
@@ -232,7 +230,7 @@ public final class JavaExercise1to11 {
 	 * that the records are in ascending order of ages.
 	 */
 	public static void sortingRecords() {
-		Person[] p = { new Person("George", 34, 1.71F), new Person("Betty", 22, 1.76F),
+        final Person[] p = { new Person("George", 34, 1.71F), new Person("Betty", 22, 1.76F),
 				new Person("Charles", 24, 1.79F), new Person("Hanna", 29, 1.66F), new Person("Edward", 23, 1.82F),
 				new Person("Frida", 28, 1.77F), new Person("Davina", 33, 1.69F), new Person("Andrew", 25, 1.67F) };
 		sort(p);

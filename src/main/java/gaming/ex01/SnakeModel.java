@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 
 /**
@@ -41,7 +41,7 @@ public class SnakeModel {
 		i = random.nextInt(MAP_SIZE);
 		j = random.nextInt(MAP_SIZE);
 		map[i][j].setState(SnakeState.FOOD);
-		snake.addListener((ListChangeListener.Change<? extends SnakeSquare> c) -> {
+        snake.addListener((Change<? extends SnakeSquare> c) -> {
 			c.next();
 			c.getAddedSubList().forEach((SnakeSquare s) -> s.setState(SnakeState.SNAKE));
 			c.getRemoved().forEach((SnakeSquare s) -> s.setState(SnakeState.NONE));

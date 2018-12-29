@@ -18,13 +18,12 @@ import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleRegionBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
+import utils.ClassReflectionUtils;
 
 /**
  *
@@ -34,7 +33,6 @@ public class ReversiMain extends Application {
 
     private static final int HEIGHT = 600;
     private static final int WIDTH = 400;
-    private static final Font DEFAULT_FONT = Font.font(null, FontWeight.BOLD, 18);
 
     private ReversiModel model = ReversiModel.getInstance();
 
@@ -43,7 +41,8 @@ public class ReversiMain extends Application {
         
         Node game = new BorderPane(new StackPane(createBackground(), tiles()), createTitle(), null, createScoreBoxes(), null);
         Node restart = restart();
-        primaryStage.setScene(new Scene(new AnchorPane(game, restart)));
+        Scene scene = new Scene(new AnchorPane(game, restart));
+        primaryStage.setScene(scene);
 
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
@@ -53,6 +52,7 @@ public class ReversiMain extends Application {
 		AnchorPane.setRightAnchor(game, 0D);
 		AnchorPane.setRightAnchor(restart, 10D);
 		AnchorPane.setTopAnchor(restart, 10D);
+        ClassReflectionUtils.displayCSSStyler(scene, "reversi.css");
         primaryStage.show();
     }
 
@@ -62,16 +62,15 @@ public class ReversiMain extends Application {
 		piece.setEffect(new DropShadow(10, Color.DODGERBLUE));
 		piece.setFill(owner.getColor());
 
-		Text score = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 100)).build();
-		Text remaining = new SimpleTextBuilder().fill(owner.getColor()).font(Font.font(null, FontWeight.BOLD, 12))
-				.build();
+        Text score = new SimpleTextBuilder().fill(owner.getColor()).build();
+        Text remaining = new SimpleTextBuilder().fill(owner.getColor()).build();
 
         Region background = new Region();
         background.setStyle("-fx-background-color: " + owner.opposite().getColorStyle());
 		Node[] children = { piece, remaining };
 
-		FlowPane flowPane = new FlowPane(20, 10, score, new SimpleVBoxBuilder().alignment(Pos.CENTER).spacing(10).children(children).build());
-		flowPane.setAlignment(Pos.CENTER);
+        FlowPane flowPane = new FlowPane(20, 10, score,
+                new SimpleVBoxBuilder(10, children).alignment(Pos.CENTER).build());
 		StackPane stack = new StackPane(background, flowPane);
         final int prefHeight = 40;
         stack.setPrefHeight(prefHeight);
@@ -94,27 +93,25 @@ public class ReversiMain extends Application {
 		tiles.setPrefColumns(2);
         tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(),
                 "width").divide(2));
+        tiles.getStyleClass().add("scores");
         return tiles;
     }
 
     private Node createTitle() {
         StackPane left = new StackPane();
-        left.setStyle("-fx-background-color: black");
-
         Text text = new Text("JavaFX");
-        text.setFont(DEFAULT_FONT);
-        text.setFill(Color.WHITE);
         StackPane.setAlignment(text, Pos.CENTER_RIGHT);
         left.getChildren().add(text);
         Text right = new Text("Reversi");
-        right.setFont(DEFAULT_FONT);
         TilePane tiles = new TilePane();
         tiles.setSnapToPixel(false);
         TilePane.setAlignment(right, Pos.CENTER_LEFT);
         tiles.getChildren().addAll(left, right);
+        tiles.getStyleClass().add("title");
         final int prefHeight = 40;
         tiles.setPrefTileHeight(prefHeight);
         tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(), "width").divide(2));
+
         return tiles;
     }
     private Node restart() {

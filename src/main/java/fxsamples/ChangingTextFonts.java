@@ -25,7 +25,7 @@ public class ChangingTextFonts extends Application {
         String fontNames = Font.getFontNames().stream().collect(Collectors.joining("\n\t", "\n\t", ""));
         LOG.info("Font names: {}", fontNames);
 		Group root = new Group();
-		Scene scene = new Scene(root, 580, 250, Color.WHITE);
+        final Scene scene = new Scene(root, 580, 250, Color.WHITE);
 		// Serif with drop shadow
         Text text2 = new Text(50, 50, INTRO_TEXT);
 		Font serif = Font.font("Serif", 30);
@@ -44,13 +44,13 @@ public class ChangingTextFonts extends Application {
 		text3.setFill(Color.BLUE);
 		root.getChildren().add(text3);
 		// Dialog
-        Text text4 = new Text(50, 150, INTRO_TEXT);
+        final Text text4 = new Text(50, 150, INTRO_TEXT);
 		Font dialogFont = Font.font("Dialog", 30);
 		text4.setFont(dialogFont);
 		text4.setFill(Color.rgb(0, 255, 0));
 		root.getChildren().add(text4);
 		// Monospaced
-        Text text5 = new Text(50, 200, INTRO_TEXT);
+        final Text text5 = new Text(50, 200, INTRO_TEXT);
 		Font monoFont = Font.font("Monospaced", 30);
 		text5.setFont(monoFont);
 		text5.setFill(Color.BLACK);

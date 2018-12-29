@@ -37,7 +37,7 @@ public class WandTool extends SelectRectTool {
             return imageSelected;
         }
         PixelReader pixelReader = model.getImage().getPixelReader();
-        int originalColor = pixelReader.getArgb((int)initialX, (int)initialY);
+        int originalColor = pixelReader.getArgb((int) initialX, (int) initialY);
         WritableImage selectedImage = new WritableImage(width, height);
         int backColor = PixelHelper.toArgb(model.getBackColor());
 
@@ -79,8 +79,8 @@ public class WandTool extends SelectRectTool {
         WritableImage writableImage = new WritableImage(width2, height2);
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
-        copyImagePart(selectedImage, writableImage, x, y, width2, height2, 0, 0,
-                Color.TRANSPARENT);
+        new RectBuilder().startX(x).startY(y).width(width2).height(height2).copyImagePart(selectedImage,
+                writableImage, Color.TRANSPARENT);
         return writableImage;
     }
 

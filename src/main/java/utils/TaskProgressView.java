@@ -38,7 +38,8 @@ public class TaskProgressView {
     }
 
     public TaskProgressView(Worker<String> worker, AtomicBoolean shouldThrow) {
-		progressBar.setMinWidth(250);
+        final int barMinWidth = 250;
+        progressBar.setMinWidth(barMinWidth);
 		progressBar.progressProperty().bind(worker.progressProperty());
 		title.textProperty().bind(worker.titleProperty());
 		message.textProperty().bind(worker.messageProperty());
@@ -62,16 +63,18 @@ public class TaskProgressView {
 		exceptionButton.disableProperty().bind(stateProperty.isNotEqualTo(Worker.State.RUNNING));
 
 		final HBox topPane = new HBox(10, progressBar);
-		topPane.setPadding(new Insets(10, 10, 10, 10));
+        topPane.setPadding(new Insets(10));
 		topPane.setAlignment(Pos.CENTER);
 
 		final ColumnConstraints rightColumn = new ColumnConstraints();
 		rightColumn.setHalignment(HPos.RIGHT);
-		rightColumn.setMinWidth(65);
+        final int minWidth = 65;
+        rightColumn.setMinWidth(minWidth);
 
 		final ColumnConstraints leftColumn = new ColumnConstraints();
 		leftColumn.setHalignment(HPos.LEFT);
-		leftColumn.setMinWidth(200);
+        final int minWidth2 = 200;
+        leftColumn.setMinWidth(minWidth2);
 
 		final GridPane centerPane = new GridPane();
 		centerPane.setHgap(10);
@@ -105,12 +108,12 @@ public class TaskProgressView {
 		hookupEvents(worker, shouldThrow);
 	}
 
+	public Scene getScene() {
+		return scene;
+	}
 	private void hookupEvents(Worker<String> worker, AtomicBoolean shouldThrow) {
 		startButton.setOnAction(actionEvent -> new Thread((Runnable) worker).start());
 		cancelButton.setOnAction(actionEvent -> worker.cancel());
 		exceptionButton.setOnAction(actionEvent -> shouldThrow.getAndSet(true));
-	}
-	public Scene getScene() {
-		return scene;
 	}
 }

@@ -41,11 +41,12 @@ public class Word2VecExample {
         t.setTokenPreProcessor(new CommonPreprocessor());
 
         LOG.info("Building model....");
+        final int seed = 42;
         Word2Vec vec = new Word2Vec.Builder()
                 .minWordFrequency(5)
                 .iterations(1)
                 .layerSize(10)
-                .seed(42)
+                .seed(seed)
                 .windowSize(5)
                 .allowParallelTokenization(true)
                 .iterate(iter)

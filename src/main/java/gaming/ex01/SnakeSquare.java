@@ -24,7 +24,7 @@ public class SnakeSquare extends Region {
 	private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
 
     public SnakeSquare(int i, int j) {
-        setPrefSize(50, 50);
+        setPrefSize(10, 10);
         styleProperty().bind(
 				Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;")
 						.otherwise(Bindings.when(state.isEqualTo(SnakeState.SNAKE))

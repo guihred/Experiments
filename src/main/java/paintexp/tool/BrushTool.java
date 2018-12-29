@@ -182,7 +182,7 @@ public class BrushTool extends PaintTool {
                 case SQUARE:
                     drawSquareLine(model, x2, y2, (int) r, color);
                     if (fill) {
-                        drawSquare(model, x2, y2, (int) r, color);
+                        new RectBuilder().startX(x2).startY(y2).width(r).height(r).drawRect(model, color);
                     }
                     break;
                 case LINE_NW_SE:

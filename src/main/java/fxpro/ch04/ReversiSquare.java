@@ -20,6 +20,7 @@ import simplebuilder.SimpleRegionBuilder;
 public class ReversiSquare extends Region {
     private static final int PREFWIDTH = 200;
     private static ReversiModel model = ReversiModel.getInstance();
+    private static final int AZIMUTH = -135;
 	private Region highlight = SimpleRegionBuilder.create()
             .opacity(0)
             .style("-fx-border-width: 3; -fx-border-color: dodgerblue")
@@ -33,7 +34,7 @@ public class ReversiSquare extends Region {
     public ReversiSquare() {
         setStyle("-fx-background-color: burlywood");
         Light.Distant light = new Light.Distant();
-        light.setAzimuth(-135);
+        light.setAzimuth(AZIMUTH);
         light.setElevation(30);
         setEffect(new Lighting(light));
         setPrefSize(PREFWIDTH, PREFWIDTH);
@@ -44,7 +45,7 @@ public class ReversiSquare extends Region {
                 .then("-fx-background-color: derive(dodgerblue, -60%)")
                 .otherwise("-fx-background-color: burlywood"));
         Light.Distant light = new Light.Distant();
-        light.setAzimuth(-135);
+        light.setAzimuth(AZIMUTH);
         light.setElevation(30);
         setEffect(new Lighting(light));
         setPrefSize(PREFWIDTH, PREFWIDTH);

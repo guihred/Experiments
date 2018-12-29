@@ -13,8 +13,9 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import simplebuilder.SimpleRegionBuilder;
 
-class CardStack extends Pane {
+public class CardStack extends Pane {
 
 	private ObservableList<SolitaireCard> cards = FXCollections.observableArrayList();
 
@@ -22,10 +23,10 @@ class CardStack extends Pane {
 		setPrefSize(50, 75);
 		setPadding(new Insets(10));
 		setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), new Insets(1))));
-		setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-radius: 5;");
+        setManaged(false);
+        addRegion();
 		styleProperty().bind(Bindings.createStringBinding(() -> {
 			StringBuilder style = new StringBuilder();
-			style.append("-fx-border-color: black; -fx-border-width: 1; -fx-border-radius: 5;");
 			if (cards.isEmpty()) {
 				style.append("-fx-background-color:green;");
 			}
@@ -34,7 +35,7 @@ class CardStack extends Pane {
 
 	}
 
-	public void addCards(List<SolitaireCard> cards1) {
+    public void addCards(List<SolitaireCard> cards1) {
 		addCards(cards1.toArray(new SolitaireCard[0]));
 	}
 
@@ -48,10 +49,10 @@ class CardStack extends Pane {
 			}
 		}
 	}
+
 	public void addCardsVertically(List<SolitaireCard> cards1) {
 		addCardsVertically(cards1.toArray(new SolitaireCard[0]));
 	}
-
 	public void addCardsVertically(SolitaireCard... cards1) {
 		for (SolitaireCard solitaireCard : cards1) {
 			if (!cards.contains(solitaireCard)) {
@@ -82,6 +83,7 @@ class CardStack extends Pane {
 
 	public List<SolitaireCard> removeAllCards() {
 		getChildren().clear();
+		addRegion();
         List<SolitaireCard> cardsCopy = cards.stream().collect(Collectors.toList());
 		cards.clear();
         return cardsCopy;
@@ -121,4 +123,12 @@ class CardStack extends Pane {
 		}
 		return lastCards;
 	}
+
+	private void addRegion() {
+        getChildren().add(SimpleRegionBuilder.create()
+                .styleClass("cardStack")
+                .minWidth(50)
+                .prefHeight(75)
+                .build());
+    }
 }

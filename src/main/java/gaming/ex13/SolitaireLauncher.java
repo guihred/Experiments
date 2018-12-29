@@ -3,22 +3,22 @@ package gaming.ex13;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import utils.ResourceFXUtils;
 
 public class SolitaireLauncher extends Application {
 
 
     @Override
     public void start(Stage stage) throws Exception {
-		final Pane group = new Pane();
+        final StackPane group = new StackPane();
 		final BorderPane borderPane = new BorderPane(group);
-		borderPane.setStyle("-fx-background-color:green;");
-        final Scene scene = new Scene(borderPane);
+        final int width = 600;
+        final Scene scene = new Scene(borderPane, width, width);
 		SolitaireModel.create(group, scene);
         stage.setScene(scene);
-		stage.setWidth(700);
-		stage.setHeight(600);
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("solitaire.css"));
         stage.show();
     }
 

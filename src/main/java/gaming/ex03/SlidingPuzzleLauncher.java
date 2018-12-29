@@ -23,8 +23,6 @@ public class SlidingPuzzleLauncher extends Application {
 		SlidingPuzzleModel.create(gridPane);
         final Scene scene = new Scene(gridPane);
         stage.setScene(scene);
-        stage.setWidth(200);
-        stage.setHeight(200);
         stage.show();
     }
 
