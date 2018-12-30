@@ -26,7 +26,7 @@ public class PieGraphExample extends Application {
         DataframeML x = DataframeML.builder("WDICountry.csv").build();
         canvas.setDataframe(x, "Region");
         Button exportButton = CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas));
-        VBox radiusSlider = newSlider("Radius", 1, 375, canvas.radiusProperty());
+        VBox radiusSlider = newSlider("Radius", 1, 500, canvas.radiusProperty());
         VBox binsSlider = newSlider("Bins", 1, 50, canvas.binsProperty());
         VBox xSlider = newSlider("X", 1, SIZE, canvas.xOffsetProperty());
         VBox propSlider = newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());

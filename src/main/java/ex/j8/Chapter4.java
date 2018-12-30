@@ -239,7 +239,7 @@ public final class Chapter4 {
 		public void start(Stage stage) throws Exception {
 			BorderPane pane = new BorderPane();
 			Scene scene = new Scene(pane);
-			Circle planet = new Circle(scene.getWidth() / 4 + 100, scene.getWidth() / 4, 25);
+            Circle planet = new Circle(scene.getWidth() / 4 + 100, scene.getWidth() / 4, 100 / 4);
 			planet.setFill(Color.BLUE);
 			planet.centerXProperty().bind(divide(scene.widthProperty(), 2).add(100));
 			planet.centerYProperty().bind(divide(scene.heightProperty(), 2));
@@ -268,8 +268,9 @@ public final class Chapter4 {
 			Button pulse = new Button("Pulse");
 			pulse.setOnAction(event -> {
 				ScaleTransition st = new ScaleTransition(Duration.millis(500));
-				st.setByX(1.5);
-				st.setByY(1.5);
+                final double maxScale = 1.5;
+                st.setByX(maxScale);
+                st.setByY(maxScale);
 				st.setCycleCount(Animation.INDEFINITE);
 				st.setInterpolator(Interpolator.LINEAR);
 				st.setAutoReverse(true);
@@ -278,11 +279,13 @@ public final class Chapter4 {
 			});
 			Button orbit = new Button("Orbit");
 
-			Arc arc = new SimpleArcBuilder().centerX(divide(scene.widthProperty(), 2)).radiusX(100).radiusY(150)
-					.startAngle(45).length(360).centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
+            final double scaleFactor = 3.6;
+            final int startAngle = 45;
+            final Arc arc = new SimpleArcBuilder().centerX(divide(scene.widthProperty(), 2)).radiusX(100).radiusY(150)
+                    .startAngle(startAngle).length(360).centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
 					.stroke(Color.RED).strokeType(StrokeType.OUTSIDE).strokeLineCap(StrokeLineCap.ROUND).rotate(30D)
-					.radiusX(multiply(radiusSlider.valueProperty(), 3.6)).strokeLineJoin(StrokeLineJoin.ROUND)
-					.rotate(multiply(rotationSlider.valueProperty(), 3.6)).fill(Color.TRANSPARENT).build();
+                    .radiusX(multiply(radiusSlider.valueProperty(), scaleFactor)).strokeLineJoin(StrokeLineJoin.ROUND)
+                    .rotate(multiply(rotationSlider.valueProperty(), scaleFactor)).fill(Color.TRANSPARENT).build();
 			center.getChildren().add(arc);
 			orbit.setOnAction(event -> {
 				PathTransition st = new PathTransition(Duration.millis(1000), arc, center.getCenter());

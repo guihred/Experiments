@@ -86,14 +86,14 @@ public final class JavaExercise1to11 {
 	 * current year
 	 */
 	public static void easter(int y) {
-		int a = y % 19;
-		int b = y / 100;
-		int c = y % 100;
-		int h = (19 * a + b - b / 4 - (b - (b + 8) / 25 + 1) / 3 + 15) % 30;
-		int l = (32 + 2 * (b % 4) + 2 * (c / 4) - h - c % 4) % 7;
-		int m = (a + 11 * h + 22 * l) / 451;
-		int n = (h + l - 7 * m + 114) / 31;
-		int p = (h + l - 7 * m + 114) % 31;
+        final int a = y % 19;
+        final int b = y / 100;
+        final int c = y % 100;
+        final int h = (19 * a + b - b / 4 - (b - (b + 8) / 25 + 1) / 3 + 15) % 30;
+        final int l = (32 + 2 * (b % 4) + 2 * (c / 4) - h - c % 4) % 7;
+        final int m = (a + 11 * h + 22 * l) / 451;
+        final int n = (h + l - 7 * m + 114) / 31;
+        final int p = (h + l - 7 * m + 114) % 31;
         String format = String.format("%02d/%02d/%d", p + 1, n, y);
         LOG.info(format);
 	}
@@ -163,7 +163,10 @@ public final class JavaExercise1to11 {
 	public static void friday13thProblem() {
         final int year = 1900;
         LocalDate begin = LocalDate.of(year, 1, 1);
-		Map<DayOfWeek, Long> histogram = Stream.iterate(begin, d -> d.plusDays(1)).filter(d -> d.getDayOfMonth() == 13).limit(4800)
+        final int thirteen = 13;
+        final int maxYears = 4800;
+        Map<DayOfWeek, Long> histogram = Stream.iterate(begin, d -> d.plusDays(1))
+                .filter(d -> d.getDayOfMonth() == thirteen).limit(maxYears)
 				.collect(Collectors.groupingBy(LocalDate::getDayOfWeek, Collectors.counting()));
         LOG.info("{}", histogram);
 	}

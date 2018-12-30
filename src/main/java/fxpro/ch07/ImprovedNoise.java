@@ -9,7 +9,9 @@ package fxpro.ch07;
  */
 public final class ImprovedNoise {
 
-    private static final int[] p = new int[512];
+    private static final int BUFFER_SIZE = 512;
+
+    private static final int[] p = new int[BUFFER_SIZE];
 
     private static final int[] permutation = { 151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96,
             53, 194,
@@ -71,13 +73,16 @@ public final class ImprovedNoise {
         int h = hash & 15; // CONVERT LO 4 BITS OF HASH CODE
         double u = h < 8 ? x : y;
         // INTO 12 GRADIENT DIRECTIONS.
+        final int maxH = 14;
         double v;
         if (h < 4) {
             v = y;
-        } else if (h == 12 || h == 14) {
-            v = x;
         } else {
-            v = z;
+            if (h == 12 || h == maxH) {
+                v = x;
+            } else {
+                v = z;
+            }
         }
         return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }

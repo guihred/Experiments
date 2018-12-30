@@ -23,11 +23,11 @@ import utils.HasLogging;
 
 public class MultiLineGraph extends Canvas implements HasLogging {
     private static final int SIZE = 550;
-    private DoubleProperty layout = new SimpleDoubleProperty(30);
-    private double maxLayout = 480;
-    private DoubleProperty lineSize = new SimpleDoubleProperty(5);
-    private IntegerProperty bins = new SimpleIntegerProperty(20);
-    private IntegerProperty ybins = new SimpleIntegerProperty(20);
+    private final DoubleProperty layout = new SimpleDoubleProperty(30);
+    private final DoubleProperty maxLayout = new SimpleDoubleProperty(480);
+    private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
+    private final IntegerProperty bins = new SimpleIntegerProperty(20);
+    private final IntegerProperty ybins = new SimpleIntegerProperty(20);
     private double xProportion;
     private double yProportion;
     private GraphicsContext gc;
@@ -103,25 +103,26 @@ public class MultiLineGraph extends Canvas implements HasLogging {
         gc.setLineWidth(1);
         gc.setStroke(Color.BLACK);
         gc.setFill(Color.BLACK);
-        gc.fillText(title, layout.get() + (maxLayout - layout.get()) / 2, layout.get() - 20);
+        double maxLay = maxLayout.get();
+        gc.fillText(title, layout.get() + (maxLay - layout.get()) / 2, layout.get() - 20);
         double e = layout.get();
-        gc.strokeLine(e, e, e, maxLayout);
-        gc.strokeLine(e, maxLayout, maxLayout, maxLayout);
-        double j = (maxLayout - e) / bins.get();
+        gc.strokeLine(e, e, e, maxLay);
+        gc.strokeLine(e, maxLay, maxLay, maxLay);
+        double j = (maxLay - e) / bins.get();
         double d = lineSize.get();
 
         double min = stats.values().stream().mapToDouble(DoubleSummaryStatistics::getMin).min().orElse(0);
 
         for (int i = 1; i <= bins.get(); i++) {
             double x1 = i * j + e;
-            gc.strokeLine(x1, maxLayout, x1, maxLayout + 5);
+            gc.strokeLine(x1, maxLay, x1, maxLay + 5);
             String xLabel = String.format("%.0f", i * xProportion + min);
-            gc.strokeText(xLabel, x1, maxLayout + 5 * (4 + 3 * (i % 2)));
+            gc.strokeText(xLabel, x1, maxLay + 5 * (4 + 3 * (i % 2)));
 
         }
-        j = (maxLayout - e) / ybins.get();
+        j = (maxLay - e) / ybins.get();
         for (int i = 0; i <= ybins.get(); i++) {
-            double y1 = maxLayout - i * j;
+            double y1 = maxLay - i * j;
             gc.strokeLine(e, y1, e - 5, y1);
             String yLabel = String.format("%.1f", i * yProportion + min);
             gc.strokeText(yLabel, e - d * 2, y1);
@@ -162,8 +163,8 @@ public class MultiLineGraph extends Canvas implements HasLogging {
         List<Double> entrySet = dataframe.list(col).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
                 .sorted().boxed().collect(Collectors.toList());
         double d = layout.get();
-        double j = (maxLayout - d) / bins.doubleValue();
-        double j2 = (maxLayout - d) / ybins.get();
+        double j = (maxLayout.get() - d) / bins.doubleValue();
+        double j2 = (maxLayout.get() - d) / ybins.get();
         gc.setFill(p);
         gc.setStroke(p);
         gc.setLineWidth(0.5);
@@ -171,8 +172,8 @@ public class MultiLineGraph extends Canvas implements HasLogging {
             double i = k / xProportion;
             double x1 = i * j + d;
             Double y = entrySet.get(k);
-            double y1 = maxLayout - y / yProportion * j2;
-            // gc.strokeLine(x1, maxLayout, x1, y1)
+            double y1 = maxLayout.get() - y / yProportion * j2;
+            // gc.strokeLine(x1, maxLayout.get(), x1, y1)
             double h = radius.get();
             gc.fillOval(x1 - h / 2, y1 - h / 2, h, h);
         }
@@ -181,13 +182,13 @@ public class MultiLineGraph extends Canvas implements HasLogging {
             double i = x / xProportion;
             double x1 = i * j + d;
             double y = entrySet.get(k);
-            double y1 = maxLayout - y / yProportion * j2;
+            double y1 = maxLayout.get() - y / yProportion * j2;
             if (k < entrySet.size() - 1) {
                 double x2 = 1D + k;
                 double i2 = x2 / xProportion;
                 double x12 = i2 * j + d;
                 double y2 = entrySet.get(k + 1);
-                double y12 = maxLayout - y2 / yProportion * j2;
+                double y12 = maxLayout.get() - y2 / yProportion * j2;
                 gc.strokeLine(x1, y1, x12, y12);
 
             }

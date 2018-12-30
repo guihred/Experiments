@@ -54,7 +54,8 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
             }
         });
         Button splay = CommonsFX.newButton("_Play", e -> playLesson());
-        primaryStage.setWidth(600);
+        final int stageWidth = 600;
+        primaryStage.setWidth(stageWidth);
 		current.set(0);
 		primaryStage.centerOnScreen();
 		Text currentText = new Text();

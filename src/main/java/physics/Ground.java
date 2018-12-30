@@ -32,12 +32,13 @@ public class Ground extends BasePhysicalObject {
         FixtureDef fd = new FixtureDef();
         PolygonShape sd = new PolygonShape();
         
-		sd.setAsBox(200.0F, 11.0F);
+        final float hx = 200.0F;
+        sd.setAsBox(hx, 11.0F);
         fd.shape = sd;
 
         BodyDef bd = new BodyDef();
 		bd.position = new Vec2(0.0F, -10.0F);
-        Body bb = PhysicalScene.world.createBody(bd);
+        Body bb = PhysicalScene.getWorld().createBody(bd);
         bb.createFixture(fd);
         
         return bb;

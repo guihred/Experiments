@@ -15,7 +15,7 @@ public class Leopard extends Player {
 		setPositionY(INITIAL_Y);
 		colisionY = 50;
 		colisionX = 30;
-		colisionWidth = 35;
+        colisionWidth = 7 * 5.;
 	}
 
 	public void jump() {

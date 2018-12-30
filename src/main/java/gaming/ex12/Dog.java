@@ -19,9 +19,10 @@ public class Dog extends Player implements Enemy {
 		setPositionY(INITIAL_Y);
 		setPositionX(INITIAL_X);
 		accelerationY = 1;
-		colisionY = 35;
-		colisionX = 25;
-		colisionWidth = 25;
+        final double i = 25;
+        colisionY = i + 10;
+        colisionX = i;
+		colisionWidth = i;
 		direction = Direction.LEFT;
 	}
 

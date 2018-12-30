@@ -6,7 +6,7 @@
 	-fx-alignment: center;
 	-fx-background-color: white;
 }
-.title Text{
+Text{
 	-fx-font-weight:bold;
 	-fx-font-size:18;
 }

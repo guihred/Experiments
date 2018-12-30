@@ -17,8 +17,6 @@ public class ThreadInformationApp extends Application {
     public void start(Stage stage) throws Exception {
         stage.setTitle("JavaFX Threads Information");
 		stage.setScene(view.getScene());
-        stage.setWidth(440);
-        stage.setHeight(640);
         stage.show();
     }
 

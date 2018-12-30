@@ -23,6 +23,8 @@ import utils.ResourceFXUtils;
 
 public class InlineModelViewer extends Application {
 
+    private static final Color DARK_BLUE = Color.rgb(10, 10, 40);
+
     private static final double VIEWPORT_SIZE = 800;
 
 	private static final double MODEL_SCALE_FACTOR = 40;
@@ -94,7 +96,7 @@ public class InlineModelViewer extends Application {
 	private SubScene createScene3D(Group group) {
 		SubScene scene3d = new SubScene(group, VIEWPORT_SIZE, VIEWPORT_SIZE * 9.0 / 16, true,
 				SceneAntialiasing.BALANCED);
-		scene3d.setFill(Color.rgb(10, 10, 40));
+        scene3d.setFill(DARK_BLUE);
 		scene3d.setCamera(new PerspectiveCamera());
 		return scene3d;
 	}

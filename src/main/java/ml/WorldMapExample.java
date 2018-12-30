@@ -9,8 +9,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.text.Text;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.WorldMapGraph;
@@ -27,57 +27,47 @@ public class WorldMapExample extends Application implements HasLogging {
 	public void start(final Stage theStage) {
         theStage.setTitle("World Map Example");
 
-        FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 800, 600);
+        BorderPane root = new BorderPane();
+        Scene theScene = new Scene(root, WorldMapGraph.WIDTH / 2, WorldMapGraph.HEIGHT / 2);
 		theStage.setScene(theScene);
 		WorldMapGraph canvas = new WorldMapGraph();
-        root.getChildren().add(newSlider("Labels", 1, 10, canvas.binsProperty()));
+        HBox left = new HBox();
+        root.setTop(left);
+        left.getChildren().add(newSlider("Labels", 1, 10, canvas.binsProperty()));
+        left.getChildren().add(newSlider("Font Size", 1, 60, canvas.fontSizeProperty()));
         DataframeML x = DataframeML.builder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
         canvas.valueHeaderProperty().set("2016");
         canvas.setDataframe(x,
                 x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
-        Text text = new Text();
         File file = ResourceFXUtils.toFile("out");
         String[] list = file.list((dir, name) -> name.endsWith(".csv"));
-        ComboBox<String> build2 = new SimpleComboBoxBuilder<String>().items("2016").select("2016")
+        ComboBox<String> yearCombo = new SimpleComboBoxBuilder<String>().items("2016").select("2016")
                 .onSelect(canvas.valueHeaderProperty()::set).build();
 
-        ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(list).select("WDIDataEG.ELC.ACCS.ZS.csv")
+        ComboBox<String> statisticsCombo = new SimpleComboBoxBuilder<String>().items(list)
                 .onSelect(s -> {
                     DataframeML x2 = DataframeML.builder("out/" + s).build();
-                    ObservableList<String> itens = FXCollections.observableArrayList(
-                            x2.cols().stream().filter(StringUtils::isNumeric).sorted()
-                                    .filter(e -> x2.list(e).stream().anyMatch(Objects::nonNull))
-                                    .collect(Collectors.toList()));
-
-                    build2.setItems(itens);
-                    updateIndicatorName(text, x2);
+                    ObservableList<String> itens = x2.cols().stream().filter(StringUtils::isNumeric).sorted()
+                            .filter(e -> x2.list(e).stream().anyMatch(Objects::nonNull))
+                            .collect(Collectors.toCollection(FXCollections::observableArrayList));
+                    yearCombo.setItems(itens);
                     if (!itens.contains(canvas.valueHeaderProperty().get())) {
-                        build2.getSelectionModel().select(itens.size() - 1);
+                        yearCombo.getSelectionModel().select(itens.size() - 1);
                     }
                     canvas.setDataframe(x2,
                             x2.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
-                }).build();
+                }).select("WDIDataEG.ELC.ACCS.ZS.csv").build();
 
-        root.getChildren().add(build);
-        root.getChildren().add(build2);
-        root.getChildren().add(text);
-        root.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
+        left.getChildren().add(statisticsCombo);
+        left.getChildren().add(yearCombo);
+        left.getChildren()
+                .add(new SimpleButtonBuilder().text("Export").onAction(e -> canvas.takeSnapshot())
+                        .build());
 
-        root.getChildren().add(canvas);
+        root.setCenter(canvas);
 		theStage.show();
 	}
 
-
-    private void updateIndicatorName(final Text text, final DataframeML x2) {
-
-        try {
-            text.setText(x2.list("Indicator Name").get(0).toString());
-        } catch (Exception e) {
-            getLogger().error("ERROR CHANGING INDICATOR", e);
-        }
-    }
 
     public static void main(final String[] args) {
         launch(args);

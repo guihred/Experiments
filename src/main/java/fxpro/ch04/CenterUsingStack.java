@@ -10,17 +10,15 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import utils.ResourceFXUtils;
 
 public class CenterUsingStack extends Application {
 
     @Override
     public void start(Stage primaryStage) {
         Text text = new Text("JavaFX Reversi");
-        text.setFont(Font.font(null, FontWeight.BOLD, 18));
         text.setFill(Color.WHITE);
         Ellipse ellipse = new Ellipse();
         StackPane stack = new StackPane();
@@ -28,6 +26,7 @@ public class CenterUsingStack extends Application {
         Scene scene = new Scene(stack, 500, 500);
         ellipse.radiusXProperty().bind(scene.widthProperty().divide(2));
         ellipse.radiusYProperty().bind(scene.heightProperty().divide(2));
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("reversi.css"));
         primaryStage.setScene(scene);
         primaryStage.show();
     }

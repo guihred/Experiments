@@ -9,7 +9,6 @@ import static utils.CommonsFX.newButton;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -115,7 +114,7 @@ public class ReversiMain extends Application {
         return tiles;
     }
     private Node restart() {
-		return newButton("Restart", (ActionEvent t) -> model.restart());
+        return newButton("Restart", t -> model.restart());
     }
     private Node tiles() {
         GridPane board = new GridPane();

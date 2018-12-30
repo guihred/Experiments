@@ -38,7 +38,7 @@ public class ArkanoidModel {
         circle.setCenterY(rectangle.getY() - circle.getRadius());
 
         int cols = 15;
-        int spacing = 25;
+        final int spacing = 25;
 		group.getChildren().add(rectangle);
         int rows = 6;
         group.getChildren()

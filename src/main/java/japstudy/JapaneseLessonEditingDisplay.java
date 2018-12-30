@@ -66,7 +66,8 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
         Button next = CommonsFX.newButton("_Next", e -> nextLesson());
 		next.disableProperty().bind(current.isEqualTo(lessons.size() - 1));
 
-		primaryStage.setWidth(600);
+        final int stageWidth = 600;
+        primaryStage.setWidth(stageWidth);
 		current.set(0);
 		for (int i = 0; i < lessons.size(); i++) {
 			if (lessons.get(i).getStart() == null) {
@@ -96,12 +97,12 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 		});
         Button play = CommonsFX.newButton("_Play", e -> playLesson());
         Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
-		Scene value = new Scene(
+        Scene scene = new Scene(
 				new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"), japanese,
 						new HBox(new VBox(new Text("Start"), start), currentText, new VBox(new Text("End"), end)),
                         new HBox(previous, play, next, save)));
-		primaryStage.setScene(value);
-		value.setOnKeyPressed(e -> {
+        primaryStage.setScene(scene);
+        scene.setOnKeyPressed(e -> {
 			if (e.getCode() == KeyCode.ENTER) {
 				nextLesson();
 			}

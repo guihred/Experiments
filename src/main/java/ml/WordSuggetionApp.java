@@ -18,7 +18,7 @@ public class WordSuggetionApp extends Application {
         theStage.setTitle("Word Suggestion Example");
 
         FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 800, 600);
+        Scene theScene = new Scene(root);
         theStage.setScene(theScene);
         Word2Vec word2Vec = Word2VecExample.createWord2Vec();
         VocabCache<VocabWord> vocab = word2Vec.getVocab();

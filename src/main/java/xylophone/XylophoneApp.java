@@ -39,7 +39,7 @@ public class XylophoneApp extends Application {
             .addKeyFrame(Duration.ZERO,
                     sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(ONE_SECOND, 60D))
             .addKeyFrame(Duration.seconds(4),
-                    sceneRoot.rotateXProperty(), 80D, Interpolator.TANGENT(ONE_SECOND, 80D))
+                    sceneRoot.rotateXProperty(), 90D, Interpolator.TANGENT(ONE_SECOND, 90D))
             .addKeyFrame(Duration.seconds(8),
                     sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(ONE_SECOND, 60D))
 			.build();
@@ -59,7 +59,8 @@ public class XylophoneApp extends Application {
         sceneRoot.setScale(3);
 		Group rectangleGroup = new Group();
 		// Base1
-        Box base1Cube = new Box(BAR_WIDTH * 11.5, BAR_DEPTH * 2, 10);
+        final double proportion = 11.5;
+        Box base1Cube = new Box(BAR_WIDTH * proportion, BAR_DEPTH * 2, 10);
         base1Cube.setMaterial(new PhongMaterial(Color.DARKSALMON));
         final int leftPadding = 128;
         base1Cube.setTranslateX(X_START + leftPadding);
@@ -68,7 +69,7 @@ public class XylophoneApp extends Application {
         base1Cube.setTranslateY(topPadding);
 
 		// Base2
-        Box base2Cube = new Box(BAR_WIDTH * 11.5, BAR_DEPTH * 2, 10);
+        Box base2Cube = new Box(BAR_WIDTH * proportion, BAR_DEPTH * 2, 10);
         base2Cube.setMaterial(new PhongMaterial(Color.DARKSALMON));
         base2Cube.setTranslateX(X_START + leftPadding);
         base2Cube.setTranslateZ(Y_POS - 20.0);
@@ -82,10 +83,12 @@ public class XylophoneApp extends Application {
                 bar8Note };
         addBars(colors, audios, rectangleGroup);
 		sceneRoot.getChildren().add(rectangleGroup);
-		SubScene subScene = new SubScene(sceneRoot, 1150, 570, true, SceneAntialiasing.BALANCED);
+        SubScene subScene = new SubScene(sceneRoot, 1000, 500, true, SceneAntialiasing.BALANCED);
 		subScene.setCamera(new PerspectiveCamera());
-		sceneRoot.translateXProperty().bind(subScene.widthProperty().divide(2.2));
-		sceneRoot.translateYProperty().bind(subScene.heightProperty().divide(1.6));
+        final double other = 2.2;
+        sceneRoot.translateXProperty().bind(subScene.widthProperty().divide(other));
+        final double other2 = 1.6;
+        sceneRoot.translateYProperty().bind(subScene.heightProperty().divide(other2));
 		return new Group(subScene);
 	}
 

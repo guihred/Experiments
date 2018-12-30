@@ -44,7 +44,8 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 	public void start(Stage primaryStage) throws Exception {
 		initializeLabyrinth();
 		Scene scene = new Scene(root);
-		camera.setNearClip(0.1);
+        final double nearClip = 0.1;
+        camera.setNearClip(nearClip);
 		camera.setFarClip(1000.0);
 		camera.setTranslateZ(-1000);
 		scene.setCamera(camera);

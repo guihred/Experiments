@@ -117,7 +117,7 @@ public class PlayingAudio extends Application {
 		// create button control panel
         Group buttonGroup = new Group();
 		// Button area
-        Rectangle buttonArea = new Rectangle(60, 35);
+        final Rectangle buttonArea = new Rectangle(60, 35);
 		buttonArea.setId("button-area");
 		buttonGroup.getChildren().add(buttonArea);
 		// stop button control

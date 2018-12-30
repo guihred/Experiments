@@ -47,7 +47,8 @@ public final class UnZip {
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
 			ZipEntry ze = zipInputStream.getNextEntry();
 
-			byte[] buffer = new byte[1024];
+            final int bufferSize = 1024;
+            byte[] buffer = new byte[bufferSize];
 			while (ze != null) {
 				String fileName = ze.getName().replaceAll(" ", "");
 				File newFile = new File(saida, fileName);

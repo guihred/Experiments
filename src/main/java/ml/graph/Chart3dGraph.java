@@ -90,7 +90,8 @@ public class Chart3dGraph extends Application {
         iv.setRotationAxis(new Point3D(1, 0, 0));
         cube.getChildren().add(iv);
         // scene
-        Scene scene = new Scene(root, SIZE * 4, 900, true, SceneAntialiasing.BALANCED);
+        final int height = 900;
+        Scene scene = new Scene(root, SIZE * 4, height, true, SceneAntialiasing.BALANCED);
         scene.setCamera(new PerspectiveCamera());
         scene.setOnMousePressed(me -> {
             mouseOldY = me.getSceneY();

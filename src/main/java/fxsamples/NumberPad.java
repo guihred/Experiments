@@ -13,7 +13,7 @@ public class NumberPad extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 180, 250);
+        Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceFXUtils.toURL("mobile_buttons.css").toString());
 		String[] keys = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "*",
 				"0", "#" };

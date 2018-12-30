@@ -63,7 +63,7 @@ public class CubeNode extends Parent {
 							new KeyValue(cubeModel.getMapOpacity(), 0.0,
 									Interpolator.LINEAR)),
 					new KeyFrame(new Duration(1000.0), new KeyValue(
-					cubeModel.getMapOpacity(), 0.7, Interpolator.EASE_BOTH)));
+                    cubeModel.getMapOpacity(), 7. / 10, Interpolator.EASE_BOTH)));
 	private CubeFace topFace;
 
 	public CubeNode() {

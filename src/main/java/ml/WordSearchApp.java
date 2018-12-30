@@ -21,11 +21,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.SimpleComboBoxBuilder;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public class WordSearchApp extends Application {
@@ -35,8 +36,8 @@ public class WordSearchApp extends Application {
     @Override
     public void start(Stage theStage) throws Exception {
         theStage.setTitle("Word Search Example");
-        FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 800, 600);
+        BorderPane root = new BorderPane();
+        Scene theScene = new Scene(root);
         theStage.setScene(theScene);
 
         ObservableMap<String, Set<String>> wordMap = FXCollections.observableMap(createMap());
@@ -48,11 +49,11 @@ public class WordSearchApp extends Application {
         FilteredList<String> lines = FXCollections.observableArrayList(allLines).filtered(e -> true);
         listView.setItems(lines);
 
-        root.getChildren().add(listView);
-        root.getChildren().add(filters);
-        Button button = new Button("Add");
-        root.getChildren().add(button);
-        button.setOnAction(a -> search(wordMap, filters, lines));
+        root.setCenter(filters);
+        root.setLeft(listView);
+        Button button = CommonsFX.newButton("Add", a -> search(wordMap, filters, lines));
+        filters.getChildren().add(button);
+        search(wordMap, filters, lines);
 
         theStage.show();
 
@@ -95,7 +96,7 @@ public class WordSearchApp extends Application {
             });
         }).build();
 
-        filters.getChildren().add(new HBox(category, val));
+        filters.getChildren().add(filters.getChildren().size() - 1, new HBox(category, val));
     }
 
     public static Stream<String> getLines(URI txtFile) throws IOException {

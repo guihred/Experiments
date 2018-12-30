@@ -121,8 +121,13 @@ public final class ResourceFXUtils {
     }
 
     public static String take(final Canvas canvas) {
+        return take(canvas, canvas.getWidth(), canvas.getHeight());
+
+    }
+
+    public static String take(final Canvas canvas, double w, double h) {
         try {
-            final WritableImage writableImage = new WritableImage((int) canvas.getWidth(), (int) canvas.getHeight());
+            final WritableImage writableImage = new WritableImage((int) w, (int) h);
             final WritableImage snapshot = canvas.snapshot(new SnapshotParameters(), writableImage);
             File destination = File.createTempFile("snapshot", ".png");
             ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "PNG", destination);

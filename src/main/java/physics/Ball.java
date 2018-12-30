@@ -49,7 +49,7 @@ public class Ball extends BasePhysicalObject {
         fd.friction = 3F / 10;
 		fd.restitution = 0.5F;
         
-        Body b = PhysicalScene.world.createBody(bd); 
+        Body b = PhysicalScene.getWorld().createBody(bd);
         
         b.createFixture(fd);        
         

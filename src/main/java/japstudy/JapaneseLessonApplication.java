@@ -49,7 +49,8 @@ public class JapaneseLessonApplication extends Application {
             }
         });
 		// selection listening
-		tabelaJapaneseLessons.prefWidthProperty().bind(primaryStage.widthProperty().add(-25));
+        final int padding = 25;
+        tabelaJapaneseLessons.prefWidthProperty().bind(primaryStage.widthProperty().add(-padding));
 		primaryStage.setScene(scene);
 		primaryStage.show();
 

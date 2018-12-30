@@ -58,12 +58,12 @@ public class Ramp extends BasePhysicalObject {
 		sd.setAsBox(Math.abs(startX - endX) * 0.5F, 1);
         fd.shape = sd;
 		fd.density = 1.0F;
-		fd.friction = 0.7F;
+        fd.friction = 7 / 10F;
         
         BodyDef bd = new BodyDef();
         bd.position = new Vec2((startX+endX)/2,(startY+endY)/2);        
         bd.angle = angle;
-        Body bb = PhysicalScene.world.createBody(bd);
+        Body bb = PhysicalScene.getWorld().createBody(bd);
         bb.createFixture(fd);       
         
         

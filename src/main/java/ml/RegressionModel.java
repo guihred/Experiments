@@ -99,7 +99,8 @@ public class RegressionModel {
 			target.stream().mapToDouble(e -> e).map(e -> -e + bestInitial + bestSlope * features.get(c++))
                     .map(Math::abs).sum();
         }
-		for (int i = 0; i < 5000; i++) {
+        final int adjustIterations = 5000;
+        for (int i = 0; i < adjustIterations; i++) {
 
             c = 0;
 			double adjust = target.stream().mapToDouble(e -> e)

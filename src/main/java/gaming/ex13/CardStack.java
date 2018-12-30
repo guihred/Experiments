@@ -20,18 +20,13 @@ public class CardStack extends Pane {
 	private ObservableList<SolitaireCard> cards = FXCollections.observableArrayList();
 
 	public CardStack() {
-		setPrefSize(50, 75);
+        setPrefSize(SolitaireCard.PREF_WIDTH, SolitaireCard.PREF_HEIGHT);
 		setPadding(new Insets(10));
 		setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), new Insets(1))));
         setManaged(false);
         addRegion();
-		styleProperty().bind(Bindings.createStringBinding(() -> {
-			StringBuilder style = new StringBuilder();
-			if (cards.isEmpty()) {
-				style.append("-fx-background-color:green;");
-			}
-			return style.toString();
-		}, cards));
+        styleProperty()
+                .bind(Bindings.createStringBinding(() -> cards.isEmpty() ? "-fx-background-color:green;" : "", cards));
 
 	}
 
@@ -127,8 +122,8 @@ public class CardStack extends Pane {
 	private void addRegion() {
         getChildren().add(SimpleRegionBuilder.create()
                 .styleClass("cardStack")
-                .minWidth(50)
-                .prefHeight(75)
+                .minWidth(SolitaireCard.PREF_WIDTH)
+                .prefHeight(SolitaireCard.PREF_HEIGHT)
                 .build());
     }
 }

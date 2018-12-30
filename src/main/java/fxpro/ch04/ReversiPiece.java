@@ -24,7 +24,7 @@ public class ReversiPiece extends Region {
                 .concat("-fx-background-radius: 1000em; -fx-background-insets: 5;"));
         Reflection reflection = new Reflection();
         reflection.setFraction(1);
-        reflection.topOffsetProperty().bind(heightProperty().multiply(-.75));
+        reflection.topOffsetProperty().bind(heightProperty().multiply(-3 / 4.));
         setEffect(reflection);
         setPrefSize(180, 180);
         setMouseTransparent(true);

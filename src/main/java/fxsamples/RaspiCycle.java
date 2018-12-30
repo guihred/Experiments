@@ -25,7 +25,8 @@ import utils.HasLogging;
  * @author Mark Heckler, @MkHeck
  */
 public class RaspiCycle extends Application implements HasLogging {
-	private static final double SCREEN_HEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
+    private static final Color DARK_BLUE = Color.rgb(2, 2, 47);
+    private static final double SCREEN_HEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
 	private static final double SCREEN_WIDTH = Screen.getPrimary().getVisualBounds().getWidth();
 	private int speed = 1;
 	private GraphicsContext gc;
@@ -94,7 +95,7 @@ public class RaspiCycle extends Application implements HasLogging {
 		// Prepare the Game Grid (screen)
         Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
 		gc = canvas.getGraphicsContext2D();
-		gc.setFill(Color.rgb(2, 2, 47));
+        gc.setFill(DARK_BLUE);
 		gc.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		drawGameGrid();
 		drawWalls(bounds);

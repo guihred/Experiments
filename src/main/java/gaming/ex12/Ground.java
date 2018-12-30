@@ -4,7 +4,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 
 public class Ground extends Player {
-	public static final int INITIAL_Y = 350;
+    private static final int GROUND_HEIGHT = 25;
+    public static final int INITIAL_Y = 350;
 	public static final int INITIAL_X = 0;
 	private int width = 1;
 	private int height = 1;
@@ -13,7 +14,7 @@ public class Ground extends Player {
 		super(ImageResource.GROUND);
 		setPositionY(INITIAL_Y);
 		setPositionX(INITIAL_X);
-		colisionY = 25;
+        colisionY = GROUND_HEIGHT;
 	}
 
 	public Ground(int width, int height) {
@@ -22,7 +23,7 @@ public class Ground extends Player {
 		this.height = height;
 		setPositionY(INITIAL_Y);
 		setPositionX(INITIAL_X);
-		colisionY = 25;
+        colisionY = GROUND_HEIGHT;
 	}
 
 	@Override

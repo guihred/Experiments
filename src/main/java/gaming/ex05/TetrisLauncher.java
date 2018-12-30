@@ -31,8 +31,6 @@ public class TetrisLauncher extends Application {
         timeline.play();
 		scene.setOnKeyPressed(this::handleKeyPressed);
         stage.setScene(scene);
-        stage.setWidth(300);
-        stage.setHeight(600);
         stage.show();
     }
 

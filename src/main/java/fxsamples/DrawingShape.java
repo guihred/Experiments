@@ -1,8 +1,10 @@
 package fxsamples;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
@@ -12,10 +14,12 @@ public class DrawingShape extends Application {
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Shapes");
-		Group root = new Group();
-		Scene scene = new Scene(root, 306, 550, Color.WHITE);
-
-		CubicCurve cubicCurve = new SimpleCubicCurveBuilder()
+        Group root = new Group();
+        StackPane stack = new StackPane(root);
+        stack.setPadding(new Insets(20));
+        Scene scene = new Scene(stack);
+        scene.setFill(Color.WHITE);
+        final CubicCurve cubicCurve = new SimpleCubicCurveBuilder()
 				.startX(50)
 				.startY(75)
 				.controlX1(80)
@@ -32,27 +36,15 @@ public class DrawingShape extends Application {
 		root.getChildren().add(cubicCurve);
 
 
-		MoveTo moveTo = new MoveTo();
-		moveTo.setX(50);
-		moveTo.setY(150);
+        final MoveTo moveTo = new MoveTo(50, 150);
 
-		QuadCurveTo quadCurveTo = new QuadCurveTo();
-		quadCurveTo.setX(150);
-		quadCurveTo.setY(150);
-		quadCurveTo.setControlX(100);
-		quadCurveTo.setControlY(50);
+        final QuadCurveTo quadCurveTo = new QuadCurveTo(100, 50, 150, 150);
 
-		LineTo lineTo1 = new LineTo();
-		lineTo1.setX(50);
-		lineTo1.setY(150);
+        final LineTo lineTo1 = new LineTo(50, 150);
 
-		LineTo lineTo2 = new LineTo();
-		lineTo2.setX(100);
-		lineTo2.setY(275);
+        final LineTo lineTo2 = new LineTo(100, 275);
 
-		LineTo lineTo3 = new LineTo();
-		lineTo3.setX(150);
-		lineTo3.setY(150);
+        final LineTo lineTo3 = new LineTo(150, 150);
 
         Path path = new Path();
         path.setStrokeWidth(3);
@@ -61,28 +53,30 @@ public class DrawingShape extends Application {
 		path.setTranslateY(30);
 		root.getChildren().add(path);
 
-		QuadCurve quad = new QuadCurve(50, 50, 125, 150, 150, 50);
+        final QuadCurve quad = new QuadCurve(50, 50, 125, 150, 150, 50);
 		quad.setTranslateY(path.getBoundsInParent().getMaxY());
 		quad.setStrokeWidth(3);
 		quad.setStroke(Color.BLACK);
 		quad.setFill(Color.WHITE);
 		root.getChildren().add(quad);
 
-		Ellipse bigCircle = new Ellipse(100, 100, 50, 75 / 2);
+        final Ellipse bigCircle = new Ellipse(100, 100, 50, 75 / 2);
 		bigCircle.setStrokeWidth(3);
 		bigCircle.setStroke(Color.BLACK);
 		bigCircle.setFill(Color.WHITE);
 
-		Ellipse smallCircle = new Ellipse(100, 100, 35 / 2, 25 / 2);
+        final Ellipse smallCircle = new Ellipse(100, 100, 35 / 2, 25 / 2);
 
 		Shape donut = Shape.subtract(bigCircle, smallCircle);
-		donut.setStrokeWidth(1.8);
+        final double strokeWidth = 1.8;
+        donut.setStrokeWidth(strokeWidth);
 		donut.setStroke(Color.BLACK);
 
-		donut.setFill(Color.rgb(255, 200, 0));
+        final Color purpleColor = Color.rgb(255, 200, 0);
+        donut.setFill(purpleColor);
 
-		DropShadow dropShadow = new DropShadow(5, 2.0F, 2.0F,
-				Color.rgb(50, 50, 50, .588));
+        final DropShadow dropShadow = new DropShadow(5, 2.0F, 2.0F,
+                Color.grayRgb(50, .588));
 		donut.setEffect(dropShadow);
 
 		donut.setTranslateY(quad.getBoundsInParent().getMinY() + 30);

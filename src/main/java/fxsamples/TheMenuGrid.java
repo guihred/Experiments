@@ -13,7 +13,7 @@ public class TheMenuGrid extends Application {
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Menus Example");
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 300, 250, Color.WHITE);
+        Scene scene = new Scene(root, 500, 500, Color.WHITE);
         MenuBar menuBar = new SimpleMenuBarBuilder()
                 .addMenu("File")
                 .addMenuItem("New")

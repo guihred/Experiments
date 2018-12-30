@@ -88,10 +88,11 @@ public final class RotateUtils {
         });
     }
 
-    public static void setZoomable(Node node) {
-        setZoomable(node, false);
+    public static Scale setZoomable(Node node) {
+        return setZoomable(node, false);
     }
-    public static void setZoomable(Node node, boolean onlyClose) {
+
+    public static Scale setZoomable(Node node, boolean onlyClose) {
         Scale scale = new Scale(1, 1);
         Translate translate = new Translate(0, 0);
         node.getTransforms().addAll(scale, translate);
@@ -130,5 +131,6 @@ public final class RotateUtils {
             translate.setX(translate.getX() + deltaX);
             translate.setY(translate.getY() + deltaY);
         });
+        return scale;
     }
 }

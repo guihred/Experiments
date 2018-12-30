@@ -48,12 +48,12 @@ public class Wall extends BasePhysicalObject {
         sd.setAsBox(worldWidth,worldHeight);
         fd.shape = sd;
 		fd.density = 1.0F;
-		fd.friction = 0.3F;
+        fd.friction = 3F / 10;
         
 
         BodyDef bd = new BodyDef();
         bd.position = new Vec2(worldX, worldY);
-        Body bb = PhysicalScene.world.createBody(bd);
+        Body bb = PhysicalScene.getWorld().createBody(bd);
         bb.createFixture(fd);
         
         return bb;

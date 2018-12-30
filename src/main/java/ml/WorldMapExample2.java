@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
+import ml.graph.WorldMapGraph;
 import ml.graph.WorldMapGraph2;
 import simplebuilder.SimpleButtonBuilder;
 import utils.ResourceFXUtils;
@@ -18,7 +19,7 @@ public class WorldMapExample2 extends Application {
         theStage.setTitle("World Map Example 2");
 
         FlowPane root = new FlowPane();
-        Scene theScene = new Scene(root, 800, 600);
+        Scene theScene = new Scene(root, WorldMapGraph.WIDTH / 2, WorldMapGraph.HEIGHT / 2);
 		theStage.setScene(theScene);
 
 		WorldMapGraph2 canvas = new WorldMapGraph2();

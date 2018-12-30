@@ -12,14 +12,15 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class ImageCreating {
-	private static final Logger LOG = HasLogging.log();
+    private static final int BITS_PER_PIXEL = 24;
+    private static final Logger LOG = HasLogging.log();
 
     public static void creating(String nameFile) {
         // For complete examples and data files, please go to
         // https://github.com/Muhammad-Adnan-Ahmad/Aspose.Imaging-for-Java
         // Create an instance of BmpCreateOptions and set its various properties
         BmpOptions createOptions = new BmpOptions();
-        createOptions.setBitsPerPixel(24);
+        createOptions.setBitsPerPixel(BITS_PER_PIXEL);
 
         // Create an instance of FileCreateSource and assign it to Source property
         createOptions.setSource(new FileCreateSource(nameFile, false));
@@ -40,16 +41,19 @@ public class ImageCreating {
         Figure figure = new Figure();
 
         // Add Arc shape to the figure by defining boundary Rectangle
-        figure.addShape(new ArcShape(new RectangleF(10, 10, 300, 300), 0, 45));
+        final ArcShape arcShape = new ArcShape(new RectangleF(10, 10, 300, 300), 0, 45);
+        figure.addShape(arcShape);
 
         // Add Arc Polygon shape to the figure by defining boundary Rectangle
-        figure.addShape(new PolygonShape(
+        final PolygonShape polygonShape = new PolygonShape(
                 new PointF[] { new PointF(150, 10), new PointF(150, 200), new PointF(250, 300), new PointF(350, 400) },
-                true));
+                true);
+        figure.addShape(polygonShape);
 
         // Add Arc Polygon shape to the figure by defining boundary Rectangle
-        figure.addShape(new RectangleShape(
-                new RectangleF(new PointF(250, 250), new SizeF(200, 200))));
+        final RectangleShape rectangleShape = new RectangleShape(
+                new RectangleF(new PointF(250, 250), new SizeF(200, 200)));
+        figure.addShape(rectangleShape);
 
         // Add figures to the GraphicsPath object
         graphicspath.addFigures(new Figure[] { figure });

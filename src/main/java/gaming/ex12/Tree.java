@@ -7,8 +7,9 @@ public class Tree extends Player {
 		super(ImageResource.TREE);
 		setPositionY(INITIAL_Y);
 		setPositionX(INITIAL_X);
-		colisionX = 140;
-		colisionWidth = 140;
+        final int colisionSize = 140;
+        colisionX = colisionSize;
+        colisionWidth = colisionSize;
 	}
 
 }

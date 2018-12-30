@@ -39,9 +39,9 @@ public class BoundsPlayground extends Application {
 		// define some objects to manipulate on the scene.
 		Circle greenCircle = new Circle(100, 100, 50, Color.FORESTGREEN);
 		greenCircle.setId("Green Circle");
-		Circle redCircle = new Circle(300, 200, 50, Color.FIREBRICK);
+        final Circle redCircle = new Circle(300, 200, 50, Color.FIREBRICK);
 		redCircle.setId("Red Circle");
-		Line line = new Line(25, 300, 375, 200);
+        final Line line = new Line(25, 300, 375, 200);
 		line.setId("Line");
 		line.setStrokeLineCap(StrokeLineCap.ROUND);
 		line.setStroke(Color.MIDNIGHTBLUE);
@@ -157,8 +157,9 @@ public class BoundsPlayground extends Application {
 								+ "<dt><b>Bounds in Parent</b></dt><dd>The boundary of the shape, effect and transforms.<br/>The co-ordinates of what you see.</dd>"
 								+ "</dl></body></html>");
 		boundsExplanation.setPrefWidth(100);
-		boundsExplanation.setMinHeight(130);
-		boundsExplanation.setMaxHeight(130);
+        final int height = 130;
+        boundsExplanation.setMinHeight(height);
+        boundsExplanation.setMaxHeight(height);
 		boundsExplanation.setStyle("-fx-background-color: transparent");
 		// layout the utility pane.
 		VBox utilityLayout = new VBox(10);
@@ -166,7 +167,8 @@ public class BoundsPlayground extends Application {
 				"-fx-padding:10; -fx-background-color: linear-gradient(to bottom, lightblue, derive(lightblue, 20%));");
 		utilityLayout.getChildren().addAll(instructions, intersectionInstructions, intersectionView, displayChecks,
 				boundsToggles, boundsExplanation);
-		utilityLayout.setPrefHeight(530);
+        final int prefHeight = 530;
+        utilityLayout.setPrefHeight(prefHeight);
 		reportingStage.setScene(new Scene(utilityLayout));
 		reportingStage.show();
 		// ensure the utility window closes when the main app window closes.

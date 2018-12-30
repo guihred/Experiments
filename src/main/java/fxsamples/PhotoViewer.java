@@ -209,8 +209,9 @@ public class PhotoViewer extends Application {
                 .bind(clipRegion.heightProperty().divide(2).subtract(tickerContent.heightProperty().divide(2)));
         tickerArea.getChildren().add(tickerContent);// scroll news feed
 
+        final int factor = 40;
         SequentialTransition build = new SimpleSequentialTransitionBuilder()
-                .addTranslateTransition(tickerContent, scene.getWidth() * 40, scene.widthProperty(),
+                .addTranslateTransition(tickerContent, scene.getWidth() * factor, scene.widthProperty(),
                         tickerContent.widthProperty().negate())
                 .cycleCount(Animation.INDEFINITE)
                 .build();

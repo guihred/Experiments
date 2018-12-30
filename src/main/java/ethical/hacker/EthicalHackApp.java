@@ -97,7 +97,8 @@ public class EthicalHackApp extends Application {
         vBox.getChildren().addAll(new Text("Network Adress"), networkAddress, portScanner);
 		vBox.getChildren().addAll(progressIndicator);
         HBox hBox = new HBox(vBox, commonTable);
-        commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-120));
+        final int columnWidth = 120;
+        commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-columnWidth));
         primaryStage.setTitle("Ethical Hack App");
         primaryStage.setScene(new Scene(hBox, 500, 500));
         primaryStage.show();

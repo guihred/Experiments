@@ -1,8 +1,10 @@
 package fxsamples;
+
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.StrokeLineCap;
@@ -14,11 +16,15 @@ public class DrawingLines extends Application {
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Lines");
-		Group root = new Group();
-		Scene scene = new Scene(root, 300, 150, Color.GRAY);
-
+        VBox root = new VBox(10);
+        root.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        StackPane stack = new StackPane(root);
+        stack.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        stack.setPadding(new Insets(10));
+        Scene scene = new Scene(stack);
 		// Red line
-		Line redLine = new Line(10, 10, 200, 10);
+        final int endX = 200;
+        Line redLine = new Line(10, 10, endX, 10);
 		// setting common properties
 		redLine.setStroke(Color.RED);
 		redLine.setStrokeWidth(10);
@@ -28,34 +34,30 @@ public class DrawingLines extends Application {
 		redLine.setStrokeDashOffset(0);
 		root.getChildren().add(redLine);
 		// White line
-		Line whiteLine = new Line(10, 30, 200, 30);
+		Line whiteLine = new Line(10, 30, endX, 30);
 		whiteLine.setStroke(Color.WHITE);
 		whiteLine.setStrokeWidth(10);
 		whiteLine.setStrokeLineCap(StrokeLineCap.ROUND);
 		root.getChildren().add(whiteLine);
 		// Blue line
-		Line blueLine = new Line(10, 50, 200, 50);
+		Line blueLine = new Line(10, 50, endX, 50);
 		blueLine.setStroke(Color.BLUE);
 		blueLine.setStrokeWidth(10);
 		root.getChildren().add(blueLine);
 		// slider min, max, and current value
         Slider slider = new SimpleSliderBuilder(0, 100, 0).build();
-		slider.setLayoutX(10);
-		slider.setLayoutY(95);
 		// bind the stroke dash offset property
 		redLine.strokeDashOffsetProperty().bind(slider.valueProperty());
 		root.getChildren().add(slider);
 
 
 		Text offsetText = new Text("Stroke Dash Offset: 0.0");
-		offsetText.setX(10);
-		offsetText.setY(80);
 		offsetText.setStroke(Color.WHITE);
 
 		// display stroke dash offset value
 		slider.valueProperty().addListener(
 				(ov, curVal, newVal) -> offsetText
-						.setText("Stroke Dash Offset: " + slider.getValue()));
+                        .setText(String.format("Stroke Dash Offset: %.2f", slider.getValue())));
 		root.getChildren().add(offsetText);
 
 		primaryStage.setScene(scene);

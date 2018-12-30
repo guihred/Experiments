@@ -93,7 +93,8 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
                 .bind(current.greaterThanOrEqualTo(Bindings.createIntegerBinding(() -> lessons.size() - 1, lessons))
                         .or(current.lessThan(0)));
 
-        primaryStage.setWidth(600);
+        final int width = 600;
+        primaryStage.setWidth(width);
 
         primaryStage.centerOnScreen();
         Scene value = new Scene(new HBox(new VBox(newVBox("Number", number), newVBox("Subject", subject),

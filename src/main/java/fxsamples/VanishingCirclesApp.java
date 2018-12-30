@@ -27,6 +27,8 @@ public class VanishingCirclesApp extends Application {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
 
+    private static final int CIRCLE_DURATION_SECONDS = 40;
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Vanishing Circles");
@@ -34,19 +36,14 @@ public class VanishingCirclesApp extends Application {
         Scene scene = new Scene(root, WIDTH, HEIGHT, Color.BLACK);
         List<Circle> circles = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
-            final Circle circle = new SimpleCircleBuilder().radius(150)
-                    .centerX(Math.random() * WIDTH).centerY(Math.random() * HEIGHT)
-            		.fill(new Color(Math.random(), Math.random(), Math.random(), .2))
-            		.effect(new BoxBlur(10, 10, 3))
-            		.stroke(Color.WHITE)
-                    .build();
+            final Circle circle = new SimpleCircleBuilder().radius(150).centerX(Math.random() * WIDTH)
+                    .centerY(Math.random() * HEIGHT).fill(new Color(Math.random(), Math.random(), Math.random(), .2))
+                    .effect(new BoxBlur(10, 10, 3)).stroke(Color.WHITE).build();
             circle.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent t) -> {
                 KeyValue collapse = new KeyValue(circle.radiusProperty(), 0);
                 new Timeline(new KeyFrame(Duration.seconds(3), collapse)).play();
             });
-            circle.strokeWidthProperty().bind(Bindings.when(circle.hoverProperty())
-                    .then(4)
-                    .otherwise(0));
+            circle.strokeWidthProperty().bind(Bindings.when(circle.hoverProperty()).then(4).otherwise(0));
             circles.add(circle);
         }
         root.getChildren().addAll(circles);
@@ -56,7 +53,7 @@ public class VanishingCirclesApp extends Application {
         circles.forEach(circle -> {
             KeyValue moveX = new KeyValue(circle.centerXProperty(), Math.random() * WIDTH);
             KeyValue moveY = new KeyValue(circle.centerYProperty(), Math.random() * HEIGHT);
-            moveCircles.getKeyFrames().add(new KeyFrame(Duration.seconds(40), moveX, moveY));
+            moveCircles.getKeyFrames().add(new KeyFrame(Duration.seconds(CIRCLE_DURATION_SECONDS), moveX, moveY));
         });
         moveCircles.setCycleCount(Animation.INDEFINITE);
         moveCircles.play();

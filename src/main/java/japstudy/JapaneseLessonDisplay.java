@@ -43,7 +43,8 @@ public class JapaneseLessonDisplay extends Application {
 		TextField answer = new TextField();
 		Button next = new Button("Next");
 		next.setOnAction(e -> nextLesson(answer));
-		primaryStage.setWidth(600);
+        final int stageWidth = 600;
+        primaryStage.setWidth(stageWidth);
         if (!lessons.isEmpty()) {
             current.set(new Random().nextInt(lessons.size()));
         }

@@ -43,7 +43,8 @@ public final class Chapter6 {
 	 * accumulator.
 	 */
 	public static void ex1() throws InterruptedException {
-		Object[] array = Stream.generate(() -> UUID.randomUUID().toString()).limit(10000).toArray();
+        final int maxSize = 10000;
+        Object[] array = Stream.generate(() -> UUID.randomUUID().toString()).limit(maxSize).toArray();
 		AtomicReference<Long> reference = new AtomicReference<>(0L);
 		ExecutorService pool = Executors.newCachedThreadPool();
 		for (int i = 0; i < 100; i++) {

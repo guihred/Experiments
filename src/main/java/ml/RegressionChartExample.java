@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 
@@ -26,13 +26,13 @@ public class RegressionChartExample extends Application {
         data.addAll(expected);
         LineChart<Number, Number> errorGraph = lineChart(error,
                 String.format("Error(%.1f*x + %.1f)", regressionModel.getBestSlope(), regressionModel.getBestInitial()));
-        FlowPane root = new FlowPane();
+        HBox root = new HBox();
 
         root.getChildren().add(lineChart);
         root.getChildren().add(errorGraph);
 
-        primaryStage.setTitle("Regrssion Chart Example");
-        primaryStage.setScene(new Scene(root, 1000, 400));
+        primaryStage.setTitle("Regression Chart Example");
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

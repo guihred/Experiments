@@ -16,8 +16,9 @@ public class Bird extends Player implements Enemy {
 		super(ImageResource.BIRD);
 		setPositionY(INITIAL_Y);
 		setPositionX(INITIAL_X + INITIAL_X);
-		colisionY = 55;
-		colisionHeight = 65;
+        final double i = 55;
+        colisionY = i;
+        colisionHeight = i + 10;
 	}
 
 	@Override

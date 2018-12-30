@@ -33,16 +33,16 @@ public class Physics extends Application {
 		final Ball[] ball = new Ball[MAX_BALLS];
 		Random r = new Random(System.currentTimeMillis());
 		for (int i = 0; i < MAX_BALLS; i++) {
-			ball[i] = new Ball(r.nextInt(100), 95);
+            ball[i] = new Ball(r.nextInt(PHYSICAL_WIDTH), r.nextInt(PHYSICAL_WIDTH));
 		}
 
 		final Ramp leftNet = new Ramp(0, 90, 40, 85);
-		final Ramp rightNet = new Ramp(60, 85, 100, 90);
+        final Ramp rightNet = new Ramp(60, 85, PHYSICAL_WIDTH, 90);
 
 		final Ground ground = new Ground();
 
-		final Wall leftWall = new Wall(0, 0, 1, 100);
-		final Wall rightWall = new Wall(99, 0, 1, 100);
+        final Wall leftWall = new Wall(0, 0, 1, PHYSICAL_HEIGHT);
+        final Wall rightWall = new Wall(99, 0, 1, PHYSICAL_HEIGHT);
 
 		final Ramp topRamp = new Ramp(25, 75, 55, 70);
 		final Ramp middleRamp = new Ramp(50, 50, 80, 60);
@@ -55,7 +55,7 @@ public class Physics extends Application {
 		Duration duration = Duration.seconds(1.0 / 60.0);
 		// one can add a specific action when the keyframe is reached
 		EventHandler<ActionEvent> onFinished = t -> {
-			PhysicalScene.world.step(1.0F / 60.F, 1, 1);
+            PhysicalScene.getWorld().step(1.0F / 60.F, 1, 1);
 			for (int i = 0; i < MAX_BALLS; i++) {
 				float xpos = toPixelX(ball[i].body.getPosition().x);
 				float ypos = toPixelY(ball[i].body.getPosition().y);

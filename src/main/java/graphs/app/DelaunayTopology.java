@@ -28,7 +28,7 @@ public class DelaunayTopology extends BaseTopology {
 		graph.clean();
 		graph.getModel().removeAllCells();
 		Random rnd = new Random();
-		int bound = 150;
+        final int bound = 150;
 		double x = 0;
 		double y = 0;
 		for (int i = 0; i < getSize(); i++) {

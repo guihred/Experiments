@@ -37,7 +37,7 @@ public class QuartoPiece extends Group {
         if ((4 & number) == 4) {
             shape.setScaleY(2);
             shape.setTranslateY(shape.getTranslateY() + 10);
-            height = 40;
+            height *= 2;
         }
 
         if ((8 & number) == 8) {

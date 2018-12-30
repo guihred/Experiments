@@ -12,6 +12,9 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
 public class SolitaireCard extends Region {
+    public static final int PREF_HEIGHT = 75;
+
+    public static final int PREF_WIDTH = 50;
 
 
 	private final SolitaireNumber number;
@@ -24,16 +27,15 @@ public class SolitaireCard extends Region {
         setPadding(new Insets(10));
         setManaged(false);
 		setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), new Insets(1))));
-        final double defaultScale = 0.75;
-        setPrefSize(50, defaultScale * 100);
-        setWidth(50);
-        setHeight(defaultScale * 100);
+        setPrefSize(PREF_WIDTH, PREF_HEIGHT);
+        setWidth(PREF_WIDTH);
+        setHeight(PREF_HEIGHT);
 
 		Shape s = this.suit.getShape();
 		s.setLayoutX(30);
 		s.setLayoutY(15);
-        s.setScaleX(defaultScale);
-        s.setScaleY(defaultScale);
+        s.setScaleX(PREF_HEIGHT / 100);
+        s.setScaleY(PREF_HEIGHT / 100);
 		s.visibleProperty().bind(shown);
 
 		Text text = new Text(this.number.getRepresentation());

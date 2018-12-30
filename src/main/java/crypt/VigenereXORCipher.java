@@ -123,7 +123,8 @@ public class VigenereXORCipher {
 		List<Integer> keySizeList = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
 		long max = 0;
 		long bestKeySize = 0;
-		for (int keySize = 2; keySize < 14; keySize++) {
+        final int maxKeySize = 14;
+        for (int keySize = 2; keySize < maxKeySize; keySize++) {
 			int i = keySize;
 			current = 0;
 			Map<Integer, Long> mapBigFreq = keySizeList.stream().filter(bite -> current++ % i == 0)
@@ -144,12 +145,6 @@ public class VigenereXORCipher {
 		return bestKeySize;
 	}
 
-	private boolean within(Integer m) {
-        final int minWritableCharacter = 32;
-        final int maxWritableCharacter = 128;
-        return m > minWritableCharacter && m < maxWritableCharacter;
-    }
-
     public static void main(String[] args) {
 		try {
             VigenereXORCipher vigenereCypher = new VigenereXORCipher();
@@ -158,5 +153,11 @@ public class VigenereXORCipher {
 			LOGGER.error("", e);
 		}
 	}
+
+    private static boolean within(Integer m) {
+        final int minWritableCharacter = 32;
+        final int maxWritableCharacter = 128;
+        return m > minWritableCharacter && m < maxWritableCharacter;
+    }
 
 }

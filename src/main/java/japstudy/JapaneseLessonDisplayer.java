@@ -39,7 +39,8 @@ public class JapaneseLessonDisplayer extends Stage {
         Button next = new Button("_Next");
         next.setOnAction(e -> nextLesson(answer));
 
-		setWidth(400);
+        final int defaultWidth = 400;
+        setWidth(defaultWidth);
 		currentIndex.set(0);
 		centerOnScreen();
 		Label label = new Label(JapaneseLessonApplication.LESSON);

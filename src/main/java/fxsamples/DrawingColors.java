@@ -1,7 +1,9 @@
 package fxsamples;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.*;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
@@ -14,9 +16,11 @@ public class DrawingColors extends Application {
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Colors");
 		Group root = new Group();
-		Scene scene = new Scene(root, 350, 300, Color.WHITE);
-		
-		RadialGradient gradient1 = new SimpleRadialGradientBuilder()
+        StackPane stackPane = new StackPane(root);
+        stackPane.setPadding(new Insets(20));
+        Scene scene = new Scene(stackPane);
+        scene.setFill(Color.WHITE);
+        final RadialGradient gradient1 = new SimpleRadialGradientBuilder()
 				.focusAngle(0)
 				.focusDistance(1)
 				.centerX(80)
@@ -27,7 +31,7 @@ public class DrawingColors extends Application {
 				.stops(new Stop(0, Color.RED),
 						new Stop(1, Color.BLACK))
 				.build();
-		Ellipse ellipse = new SimpleEllipseBuilder()
+        final Ellipse ellipse = new SimpleEllipseBuilder()
 				.centerX(100)
 				.centerY(85)
 				.radiusX(50)
@@ -37,7 +41,7 @@ public class DrawingColors extends Application {
 		root.getChildren().add(ellipse);
 		double ellipseHeight = ellipse.getBoundsInParent().getHeight();
 
-		Line blackLine = new SimpleLineBuilder()
+        final Line blackLine = new SimpleLineBuilder()
 				.startX(170)
 				.startY(30)
 				.endX(20)
@@ -48,12 +52,12 @@ public class DrawingColors extends Application {
 				.build();
 		root.getChildren().add(blackLine);
 
-		LinearGradient linearGrad = new SimpleLinearGradientBuilder()
+        final LinearGradient linearGrad = new SimpleLinearGradientBuilder()
 				.endY(1)
 				.proportional(true).cycleMethod(CycleMethod.NO_CYCLE)
 				.stops(new Stop(0.1F, Color.rgb(255, 200, 0, .784)), new Stop(1.0F, Color.rgb(0, 0, 0, .784)))
 				.build();
-		Rectangle rectangle = new SimpleRectangleBuilder()
+        final Rectangle rectangle = new SimpleRectangleBuilder()
 				.x(50)
 				.y(50)
 				.width(100)
@@ -63,7 +67,7 @@ public class DrawingColors extends Application {
 				.build();
 		root.getChildren().add(rectangle);
 
-		LinearGradient cycleGrad = new SimpleLinearGradientBuilder()
+        final LinearGradient cycleGrad = new SimpleLinearGradientBuilder()
 				.startX(50)
 				.startY(50)
 				.endX(70)
@@ -72,7 +76,7 @@ public class DrawingColors extends Application {
 				.cycleMethod(CycleMethod.REFLECT)
 				.stops(new Stop(0F, Color.rgb(0, 255, 0, .784)), new Stop(1.0F,Color.rgb(0, 0, 0, .784)))
 				.build();
-		Rectangle roundRect = new SimpleRectangleBuilder()
+        final Rectangle roundRect = new SimpleRectangleBuilder()
 				.x(50)
 				.y(50)
 				.width(100)

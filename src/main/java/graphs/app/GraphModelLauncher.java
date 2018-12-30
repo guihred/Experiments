@@ -156,7 +156,8 @@ public class GraphModelLauncher extends Application {
         });
 
         FlowPane flowPane = new FlowPane(source, target, new VBox(new Text(""), button));
-        flowPane.setMaxWidth(160);
+        final int maxWidth = 160;
+        flowPane.setMaxWidth(maxWidth);
         return flowPane;
     }
 

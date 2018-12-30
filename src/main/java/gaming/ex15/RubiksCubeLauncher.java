@@ -90,7 +90,8 @@ public class RubiksCubeLauncher extends Application {
 		camera.setTranslateZ(-distance);
 		camera.setRotationAxis(Rotate.Y_AXIS);
         camera.setNearClip(2. / 10);
-        camera.setFieldOfView(40);
+        final int fieldOfView = 40;
+        camera.setFieldOfView(fieldOfView);
 		subScene.setCamera(camera);
 
 

@@ -1,8 +1,6 @@
 package gaming.ex14;
 
 import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,10 +12,12 @@ import simplebuilder.SimpleTimelineBuilder;
 public class PacmanBall extends Circle {
 
 	private final BooleanProperty special = new SimpleBooleanProperty(false);
-	private Timeline timeline = new SimpleTimelineBuilder()
-			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(radiusProperty(), 10)),
-					new KeyFrame(Duration.seconds(0.1), new KeyValue(radiusProperty(), 15)))
-			.autoReverse(true).cycleCount(Animation.INDEFINITE).build();
+    private final Timeline timeline = new SimpleTimelineBuilder()
+			.addKeyFrame(Duration.ZERO, radiusProperty(), 10)
+            .addKeyFrame(Duration.seconds(1. / 10), radiusProperty(), 15)
+			.autoReverse(true)
+			.cycleCount(Animation.INDEFINITE)
+			.build();
 
 	public PacmanBall(Double x, Double y) {
 		super(x, y, 5, Color.WHITE);
