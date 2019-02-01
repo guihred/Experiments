@@ -19,12 +19,12 @@ public class SphereSystemApp extends Application {
 
     private Timeline animation;
 
-    Random r = new Random();
+    private Random r = new Random();
 
     public Parent createContent() {
         CubeXForm sceneRoot = new CubeXForm();
         CubeXForm cube1X = new CubeXForm();
-        int size = 40;
+        final int size = 40;
         Xsphere cube1 = new Xsphere(size, Color.YELLOW);
         CubeXForm cube11X = new CubeXForm();
         CubeXForm cube12X = new CubeXForm();
@@ -129,7 +129,8 @@ public class SphereSystemApp extends Application {
     }
 
     private double rndPartialAngle() {
-        return r.nextInt(36) * 10.0;
+        final int bound = 36;
+        return r.nextInt(bound) * 10.0;
     }
 
     private KeyValue[] valuesAt42(List<CubeXForm> cube1X, List<Xsphere> spheres) {
