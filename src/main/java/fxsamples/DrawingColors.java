@@ -18,7 +18,7 @@ public class DrawingColors extends Application {
 		Group root = new Group();
         StackPane stackPane = new StackPane(root);
         stackPane.setPadding(new Insets(20));
-        Scene scene = new Scene(stackPane);
+        final Scene scene = new Scene(stackPane);
         scene.setFill(Color.WHITE);
         final RadialGradient gradient1 = new SimpleRadialGradientBuilder()
 				.focusAngle(0)

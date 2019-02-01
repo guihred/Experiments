@@ -1,5 +1,8 @@
 package cubesystem;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Stream;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -16,10 +19,13 @@ public class SphereSystemApp extends Application {
 
     private Timeline animation;
 
+    Random r = new Random();
+
     public Parent createContent() {
         CubeXForm sceneRoot = new CubeXForm();
         CubeXForm cube1X = new CubeXForm();
-        Xsphere cube1 = new Xsphere(40, new Color(1.0, 0.9, 0.0, 1.0));
+        int size = 40;
+        Xsphere cube1 = new Xsphere(size, Color.YELLOW);
         CubeXForm cube11X = new CubeXForm();
         CubeXForm cube12X = new CubeXForm();
         CubeXForm cube13X = new CubeXForm();
@@ -29,19 +35,20 @@ public class SphereSystemApp extends Application {
         CubeXForm cube17X = new CubeXForm();
         CubeXForm cube18X = new CubeXForm();
         CubeXForm cube19X = new CubeXForm();
-        Xsphere cube11 = new Xsphere(4, Color.RED);
-        Xsphere cube12 = new Xsphere(5, Color.ORANGE);
-        Xsphere cube13 = new Xsphere(6, Color.CORNFLOWERBLUE);
-        Xsphere cube14 = new Xsphere(7, Color.DARKGREEN);
-        Xsphere cube15 = new Xsphere(8, Color.BLUE);
-        Xsphere cube16 = new Xsphere(9, Color.PURPLE);
-        Xsphere cube17 = new Xsphere(10, Color.BLUEVIOLET);
-        Xsphere cube18 = new Xsphere(11, Color.DARKGOLDENROD);
-        Xsphere cube19 = new Xsphere(12, Color.KHAKI);
+        int i = 3;
+        Xsphere cube11 = new Xsphere(++i, Color.RED);
+        Xsphere cube12 = new Xsphere(++i, Color.ORANGE);
+        Xsphere cube13 = new Xsphere(++i, Color.CORNFLOWERBLUE);
+        Xsphere cube14 = new Xsphere(++i, Color.DARKGREEN);
+        Xsphere cube15 = new Xsphere(++i, Color.BLUE);
+        Xsphere cube16 = new Xsphere(++i, Color.PURPLE);
+        Xsphere cube17 = new Xsphere(++i, Color.BLUEVIOLET);
+        Xsphere cube18 = new Xsphere(++i, Color.DARKGOLDENROD);
+        Xsphere cube19 = new Xsphere(++i, Color.KHAKI);
         sceneRoot.getChildren().add(cube1X);
         cube1X.getChildren().addAll(cube1, cube11X, cube12X, cube13X, cube14X, cube15X, cube16X, cube17X, cube18X,
                 cube19X);
-        cube11X.getChildren().add(cube11);
+        cube11X.getChildren().addAll(cube11);
         cube12X.getChildren().add(cube12);
         cube13X.getChildren().add(cube13);
         cube14X.getChildren().add(cube14);
@@ -50,54 +57,57 @@ public class SphereSystemApp extends Application {
         cube17X.getChildren().add(cube17);
         cube18X.getChildren().add(cube18);
         cube19X.getChildren().add(cube19);
-        cube11.setTranslateX(40.0);
-        cube12.setTranslateX(60.0);
-		cube13.setTranslateX(80.0);
-		cube14.setTranslateX(100.0);
-		cube15.setTranslateX(120.0);
-		cube16.setTranslateX(140.0);
-		cube17.setTranslateX(160.0);
-		cube18.setTranslateX(180.0);
-		cube19.setTranslateX(200.0);
-		cube11X.getRx().setAngle(30.0);
-		cube12X.getRz().setAngle(10.0);
-		cube13X.getRz().setAngle(50.0);
-		cube14X.getRz().setAngle(170.0);
-		cube15X.getRz().setAngle(60.0);
-		cube16X.getRz().setAngle(30.0);
-		cube17X.getRz().setAngle(120.0);
-		cube18X.getRz().setAngle(40.0);
-		cube19X.getRz().setAngle(-60.0);
+        final double d = 20.0;
+        i = 1;
+        cube11.setTranslateX(++i * d);
+        cube12.setTranslateX(++i * d);
+        cube13.setTranslateX(++i * d);
+        cube14.setTranslateX(++i * d);
+        cube15.setTranslateX(++i * d);
+        cube16.setTranslateX(++i * d);
+        cube17.setTranslateX(++i * d);
+        cube18.setTranslateX(++i * d);
+        cube19.setTranslateX(++i * d);
+        cube11X.getRx().setAngle(rndPartialAngle());
+        cube12X.getRz().setAngle(rndPartialAngle());
+        cube13X.getRz().setAngle(rndPartialAngle());
+        cube14X.getRz().setAngle(rndPartialAngle());
+        cube15X.getRz().setAngle(rndPartialAngle());
+        cube16X.getRz().setAngle(rndPartialAngle());
+        cube17X.getRz().setAngle(rndPartialAngle());
+        cube18X.getRz().setAngle(rndPartialAngle());
+        cube19X.getRz().setAngle(rndPartialAngle());
 		// Animate
 		animation = new Timeline();
 
-        KeyValue[] valueAtZero = valuesAtZero(
-                new CubeXForm[] { cube1X, cube11X, cube12X, cube13X, cube14X, cube15X, cube16X, cube17X, cube18X,
-                        cube19X },
-                new Xsphere[] { cube11, cube12, cube13, cube14, cube15, cube16, cube17, cube18, cube19 });
-
-		KeyFrame keyFrame = new KeyFrame(Duration.ZERO, valueAtZero);
-		KeyValue[] valuesAt4 = valuesAt42(cube1X, cube11X, cube12X, cube13X, cube14X, cube15X, cube16X, cube17X,
-				cube18X, cube19X, cube11, cube12, cube13, cube14, cube15, cube16, cube17, cube18, cube19);
-		KeyFrame keyFrame2 = new KeyFrame(Duration.seconds(4), valuesAt4);
+        List<CubeXForm> cubesX = Arrays.asList(cube1X, cube11X, cube12X, cube13X, cube14X, cube15X, cube16X, cube17X,
+                cube18X, cube19X);
+        List<Xsphere> cubes = Arrays.asList(cube11, cube12, cube13, cube14, cube15, cube16, cube17, cube18, cube19);
+        KeyFrame keyFrame = new KeyFrame(Duration.ZERO, valuesAtZero(cubesX, cubes));
+        KeyFrame keyFrame2 = new KeyFrame(Duration.seconds(4), valuesAt42(cubesX, cubes));
 		animation.getKeyFrames().addAll(keyFrame, keyFrame2);
 		animation.setCycleCount(Animation.INDEFINITE);
 		animation.setAutoReverse(false);
 		PerspectiveCamera camera = new PerspectiveCamera(true);
-		camera.setFarClip(1500);
-		camera.getTransforms().add(new Translate(0, 0, -900));
-		SubScene subScene = new SubScene(sceneRoot, 640, 480, true, SceneAntialiasing.BALANCED);
+        final int farClip = 1500;
+        camera.setFarClip(farClip);
+        final int pos = 900;
+        camera.getTransforms().add(new Translate(0, 0, -pos));
+        final int width = 640;
+        final int height = 480;
+        SubScene subScene = new SubScene(sceneRoot, width, height, true, SceneAntialiasing.BALANCED);
 		subScene.setCamera(camera);
 		return new Group(subScene);
 	}
-
-	public void play() {
+    public void play() {
         animation.play();
     }
 
 	@Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createContent(), 640, 480, true, SceneAntialiasing.BALANCED));
+        final int width = 640;
+        final int height = 480;
+        primaryStage.setScene(new Scene(createContent(), width, height, true, SceneAntialiasing.BALANCED));
         primaryStage.show();
         play();
     }
@@ -107,29 +117,25 @@ public class SphereSystemApp extends Application {
         animation.pause();
     }
 
-    public KeyValue[] valuesAtZero(CubeXForm[] cube19X, Xsphere[] cube11) {
+    public KeyValue[] valuesAtZero(List<CubeXForm> cube19X, List<Xsphere> cube11) {
         return Stream
-                .concat(Stream.of(cube19X).map(e -> new KeyValue(e.getRy().angleProperty(), 0.0)),
-                        Stream.of(cube11).map(e -> new KeyValue(e.getRx().angleProperty(), 0.0)))
+                .concat(cube19X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), 0.0)),
+                        cube11.stream().map(e -> new KeyValue(e.getRx().angleProperty(), 0.0)))
                 .toArray(KeyValue[]::new);
 	}
 
-    private KeyValue[] valuesAt42(CubeXForm cube1X, CubeXForm cube11X, CubeXForm cube12X, CubeXForm cube13X,
-			CubeXForm cube14X, CubeXForm cube15X, CubeXForm cube16X, CubeXForm cube17X, CubeXForm cube18X,
-			CubeXForm cube19X, Xsphere... spheres) {
-		Stream<KeyValue> array = Stream.of(spheres).map(c -> new KeyValue(c.getRx().angleProperty(), 7200));
-		KeyValue[] keyValues = new KeyValue[] { new KeyValue(cube1X.getRy().angleProperty(), 360.0),
-				new KeyValue(cube1X.getRx().angleProperty(), 360.0),
-				new KeyValue(cube11X.getRy().angleProperty(), -2880.0),
-				new KeyValue(cube12X.getRy().angleProperty(), -1440.0),
-				new KeyValue(cube13X.getRy().angleProperty(), -1080.0),
-				new KeyValue(cube14X.getRy().angleProperty(), -720.0),
-				new KeyValue(cube15X.getRy().angleProperty(), 1440.0),
-				new KeyValue(cube16X.getRy().angleProperty(), 1080.0),
-				new KeyValue(cube17X.getRy().angleProperty(), -360.0),
-				new KeyValue(cube18X.getRy().angleProperty(), -720.0),
-				new KeyValue(cube19X.getRy().angleProperty(), -1080.0) };
-		return Stream.concat(Stream.of(keyValues), array).toArray(KeyValue[]::new);
+    private double rndAngle() {
+        return r.nextInt(8) * 360.0 * (r.nextBoolean() ? 1 : -1);
+    }
+
+    private double rndPartialAngle() {
+        return r.nextInt(36) * 10.0;
+    }
+
+    private KeyValue[] valuesAt42(List<CubeXForm> cube1X, List<Xsphere> spheres) {
+        Stream<KeyValue> array = spheres.stream().map(c -> new KeyValue(c.getRx().angleProperty(), 20 * 360));
+        Stream<KeyValue> collect = cube1X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), rndAngle()));
+        return Stream.concat(array, collect).toArray(KeyValue[]::new);
 	}
 
     /**
