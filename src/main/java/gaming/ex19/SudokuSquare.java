@@ -47,7 +47,7 @@ public final class SudokuSquare extends Region {
         text.setTextOrigin(VPos.CENTER);
 		Font default1 = Font.getDefault();
 
-		text.setFont(Font.font(default1.getFamily(), FontWeight.BOLD, default1.getSize()));
+        text.setFont(Font.font(default1.getFamily(), FontWeight.BOLD, default1.getSize() * 2));
         text.layoutYProperty().bind(heightProperty().divide(2));
         text.setTextAlignment(TextAlignment.CENTER);
         getChildren().add(text);
@@ -58,10 +58,9 @@ public final class SudokuSquare extends Region {
         possibilitiesText.setFont(Font.font(default1.getFamily(), FontWeight.THIN, default1.getSize() * 3 / 4));
 		possibilitiesText.setTextOrigin(VPos.TOP);
 		possibilitiesText.visibleProperty().bind(Bindings.createBooleanBinding(this::isEmpty, number));
-		possibilitiesText.textProperty().bind(Bindings.createStringBinding(
-				() -> possibilities.stream().map(Objects::toString).collect(Collectors.joining(" ", " ", " ")),
-				possibilities));
-		getChildren().add(possibilitiesText);
+        possibilitiesText.textProperty().bind(Bindings.createStringBinding(this::displayPossibilities, possibilities));
+        possibilitiesText.wrappingWidthProperty().bind(widthProperty());
+        getChildren().add(possibilitiesText);
 
     }
 
@@ -88,20 +87,20 @@ public final class SudokuSquare extends Region {
     public int getRow() {
 		return row;
 	}
+
     @Override
 	public int hashCode() {
 		return Objects.hash(getRow(), getCol());
 	}
 
-
-	public boolean isEmpty() {
+    public boolean isEmpty() {
 		return number.get() == 0;
     }
-
-	public boolean isInArea(int row1, int col1) {
+    public boolean isInArea(int row1, int col1) {
 		return row / SudokuModel.MAP_NUMBER == row1 / SudokuModel.MAP_NUMBER
 				&& col / SudokuModel.MAP_NUMBER == col1 / SudokuModel.MAP_NUMBER;
 	}
+
 
 	public boolean isInCol(int col1) {
 		return col == col1;
@@ -111,11 +110,11 @@ public final class SudokuSquare extends Region {
         return row == row1 && col1 == col;
     }
 
-    public boolean isInRow(int row1) {
+	public boolean isInRow(int row1) {
 		return row == row1;
 	}
 
-    public boolean isNotEmpty() {
+	public boolean isNotEmpty() {
         return !isEmpty();
     }
 
@@ -127,13 +126,13 @@ public final class SudokuSquare extends Region {
         return wrong.get();
     }
 
-	public int setEmpty() {
+    public int setEmpty() {
 		int k = number.get();
 		number.set(0);
 		return k;
 	}
 
-	public void setNumber(int value) {
+    public void setNumber(int value) {
         number.set(value);
     }
 
@@ -146,8 +145,21 @@ public final class SudokuSquare extends Region {
 		this.possibilities.setAll(possibilities);
 	}
 
-    public void setWrong(boolean wrong) {
+	public void setWrong(boolean wrong) {
         this.wrong.set(wrong);
+    }
+
+	@Override
+    public String toString() {
+        return "("+row
+                + ","+col
+                + ") "+number.get();
+    }
+
+    private String displayPossibilities() {
+        return possibilities.stream().map(Objects::toString).collect(Collectors.joining(" ", " ", " "))
+                .replaceAll("(\\d \\d \\d)", "$1\n")
+                ;
     }
 
     private void updateStyle() {
