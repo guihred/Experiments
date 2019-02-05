@@ -93,17 +93,20 @@ public class SudokuModel {
             for (int i = 0; i < MAP_N_SQUARED; i++) {
                 for (int k = 0; k <= MAP_N_SQUARED; k++) {
                     int number = k;
-                    List<SudokuSquare> squares = getArea(i, number);
-                    if (squares.size() == 1) {
-                        changed = oneSolution(number, squares);
+                    List<SudokuSquare> area = getArea(i, number);
+                    if (area.size() == 1) {
+                        oneSolution(number, area);
+                        changed = true;
                     }
-                    List<SudokuSquare> squares2 = getRow(i, number);
-                    if (squares2.size() == 1) {
-                        changed = oneSolution(number, squares2);
+                    List<SudokuSquare> row = getRow(i, number);
+                    if (row.size() == 1) {
+                        oneSolution(number, row);
+                        changed = true;
                     }
-                    List<SudokuSquare> squares3 = getCol(i, number);
-                    if (squares3.size() == 1) {
-                        changed = oneSolution(number, squares3);
+                    List<SudokuSquare> col = getCol(i, number);
+                    if (col.size() == 1) {
+                        oneSolution(number, col);
+                        changed = true;
                     }
                 }
             }
@@ -233,12 +236,11 @@ public class SudokuModel {
         return isNumberFit(n, sudokuSquare.getRow(), sudokuSquare.getCol());
     }
 
-    private boolean oneSolution(int number, List<SudokuSquare> squares) {
+    private void oneSolution(int number, List<SudokuSquare> squares) {
         SudokuSquare sq = squares.get(0);
         sq.setNumber(number);
         LOG.info("{} {}", number, sq);
         updatePossibilities();
-        return true;
     }
 
     private void removeDuplicatedPossibilities() {
