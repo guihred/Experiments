@@ -69,7 +69,11 @@ public final class SudokuSquare extends Region {
 		if (super.equals(obj)) {
 			return true;
 		}
-		return obj instanceof SudokuSquare && ((SudokuSquare) obj).getRow() == getRow() && ((SudokuSquare) obj).getCol() == getCol();
+        if (!(obj instanceof SudokuSquare)) {
+            return false;
+        }
+        SudokuSquare sq = (SudokuSquare) obj;
+        return sq.row == row && sq.col == col;
 	}
 
     public int getCol() {

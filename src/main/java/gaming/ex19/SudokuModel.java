@@ -28,7 +28,6 @@ public class SudokuModel {
     public static final int MAP_NUMBER = 3;
 
     public static final int MAP_N_SQUARED = MAP_NUMBER * MAP_NUMBER;
-    private Random random = new Random();
     private GridPane numberBoard = new GridPane();
     private List<NumberButton> numberOptions = new ArrayList<>();
     private List<SudokuSquare> sudokuSquares = new ArrayList<>();
@@ -85,29 +84,44 @@ public class SudokuModel {
     }
 
     public void solve() {
+        updatePossibilities();
+        sudokuSquares.stream().filter(SudokuSquare::isNotEmpty).forEach(e -> e.setPermanent(true));
         boolean changed = true;
         while (changed) {
             changed = false;
             setSquareWithOnePossibility();
-            for (int i = 0; i < MAP_NUMBER; i++) {
-                for (int j = 0; j < MAP_NUMBER; j++) {
-                    int row = i * MAP_NUMBER;
-                    int col = j * MAP_NUMBER;
-                    for (int k = 0; k < MAP_N_SQUARED; k++) {
-                        int number = k;
-                        List<SudokuSquare> squares = sudokuSquares.stream().filter(
-                                e -> e.isEmpty() && e.getPossibilities().contains(number) && e.isInArea(row, col))
-                                .collect(Collectors.toList());
-                        if (squares.size() == 2) {
-                            twoPossible(row, col, number, squares);
-                        }
-                        if (squares.size() == 1) {
-                            changed = oneSolution(number, squares);
-                        }
+            for (int i = 0; i < MAP_N_SQUARED; i++) {
+                for (int k = 0; k <= MAP_N_SQUARED; k++) {
+                    int number = k;
+                    List<SudokuSquare> squares = getArea(i, number);
+                    if (squares.size() == 1) {
+                        changed = oneSolution(number, squares);
+                    }
+                    List<SudokuSquare> squares2 = getRow(i, number);
+                    if (squares2.size() == 1) {
+                        changed = oneSolution(number, squares2);
+                    }
+                    List<SudokuSquare> squares3 = getCol(i, number);
+                    if (squares3.size() == 1) {
+                        changed = oneSolution(number, squares3);
                     }
                 }
             }
             setSquareWithOnePossibility();
+        }
+    }
+
+    private void clearPossibilities(List<SudokuSquare> squares) {
+        for (int l = 0; l < squares.size(); l++) {
+            SudokuSquare sq = squares.get(l);
+            for (int k = l + 1; k < squares.size() && sq.getPossibilities().size() == 2; k++) {
+                SudokuSquare sq2 = squares.get(k);
+                if (Objects.equals(sq.getPossibilities(), sq2.getPossibilities())) {
+                    removeFromCol(sq, sq2);
+                    removeFromRow(sq, sq2);
+                    removeFromArea(sq, sq2);
+                }
+            }
         }
     }
 
@@ -138,12 +152,52 @@ public class SudokuModel {
         }
     }
 
+    private void display() {
+        CommonsFX.displayDialog("Try to Solve", "Solve", () -> {
+            solve();
+            if (!isFullyFilled()) {
+                display();
+            }
+
+        });
+    }
+
+    private List<SudokuSquare> getArea(int row) {
+        return sudokuSquares.stream()
+                .filter(e -> e.isEmpty() && e.isInArea(row % MAP_NUMBER * MAP_NUMBER, row / MAP_NUMBER * MAP_NUMBER))
+                .collect(Collectors.toList());
+    }
+
+    private List<SudokuSquare> getArea(int i, int number) {
+        return sudokuSquares.stream()
+                .filter(e1 -> e1.isEmpty() && e1.isInArea(i % MAP_NUMBER * MAP_NUMBER, i / MAP_NUMBER * MAP_NUMBER))
+                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+    }
+
+    private List<SudokuSquare> getCol(int row) {
+        return sudokuSquares.stream().filter(e -> e.isEmpty() && e.isInCol(row)).collect(Collectors.toList());
+    }
+
+    private List<SudokuSquare> getCol(int i, int number) {
+        return sudokuSquares.stream().filter(e1 -> e1.isEmpty() && e1.isInCol(i))
+                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+    }
+
+    private List<SudokuSquare> getRow(int row) {
+        return sudokuSquares.stream().filter(e -> e.isEmpty() && e.isInRow(row)).collect(Collectors.toList());
+    }
+
+    private List<SudokuSquare> getRow(int i, int number) {
+        return sudokuSquares.stream().filter(e1 -> e1.isEmpty() && e1.isInRow(i))
+                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+    }
+
     private void initialize() {
         numberBoard.setVisible(false);
         for (int i = 0; i < MAP_N_SQUARED; i++) {
             for (int j = 0; j < MAP_N_SQUARED; j++) {
                 SudokuSquare sudokuSquare = new SudokuSquare(i, j);
-                sudokuSquare.setPermanent(true);
+                sudokuSquare.setPermanent(false);
                 sudokuSquares.add(sudokuSquare);
             }
         }
@@ -157,7 +211,9 @@ public class SudokuModel {
         NumberButton child = new NumberButton(0);
         numberOptions.add(child);
         numberBoard.add(child, 3, 0);
-        reset();
+        //        reset();
+
+        display();
     }
 
     private boolean isFullyFilled() {
@@ -183,6 +239,80 @@ public class SudokuModel {
         LOG.info("{} {}", number, sq);
         updatePossibilities();
         return true;
+    }
+
+    private void removeDuplicatedPossibilities() {
+        for (int i = 0; i < MAP_N_SQUARED; i++) {
+            for (int number = 1; number <= MAP_N_SQUARED; number++) {
+                List<SudokuSquare> squares = getArea(i, number);
+                if (squares.size() == 2) {
+                    SudokuSquare sq0 = squares.get(0);
+                    SudokuSquare sq1 = squares.get(1);
+                    removeNumber(number, sq0, sq1);
+                }
+            }
+        }
+        for (int i = 0; i < MAP_N_SQUARED; i++) {
+            clearPossibilities(getRow(i));
+            clearPossibilities(getCol(i));
+            clearPossibilities(getArea(i));
+        }
+    }
+
+    private void removeFromArea(SudokuSquare sq, SudokuSquare sq2) {
+        if (sq.getRow() / MAP_NUMBER == sq2.getRow() / MAP_NUMBER
+                && sq.getCol() / MAP_NUMBER == sq2.getCol() / MAP_NUMBER) {
+            int row = sq.getRow() / MAP_NUMBER;
+            int col = sq.getCol() / MAP_NUMBER;
+            for (int i = 0; i < MAP_NUMBER; i++) {
+                for (int j = 0; j < MAP_NUMBER; j++) {
+                    SudokuSquare mapAt = getMapAt(row * MAP_NUMBER + i, col * MAP_NUMBER + j);
+                    if (!mapAt.equals(sq) && !mapAt.equals(sq2)) {
+                        mapAt.getPossibilities().removeAll(sq.getPossibilities());
+                    }
+                }
+            }
+        }
+    }
+
+    private void removeFromCol(SudokuSquare sq, SudokuSquare sq2) {
+        if (sq.getRow() == sq2.getRow()) {
+            int row = sq.getRow();
+            for (int j = 0; j < MAP_N_SQUARED; j++) {
+                SudokuSquare mapAt = getMapAt(row, j);
+                if (!mapAt.equals(sq) && !mapAt.equals(sq2)) {
+                    mapAt.getPossibilities().removeAll(sq.getPossibilities());
+                }
+            }
+        }
+    }
+
+    private void removeFromRow(SudokuSquare sq, SudokuSquare sq2) {
+        if (sq.getCol() == sq2.getCol()) {
+            int col = sq.getCol();
+            for (int j = 0; j < MAP_N_SQUARED; j++) {
+                SudokuSquare mapAt = getMapAt(j, col);
+                if (!mapAt.equals(sq) && !mapAt.equals(sq2)) {
+                    mapAt.getPossibilities().removeAll(sq.getPossibilities());
+                }
+            }
+        }
+    }
+
+    private void removeNumber(int number, SudokuSquare sq0, SudokuSquare sq1) {
+        boolean sameCol = sq0.getCol() == sq1.getCol();
+        boolean sameRow = sq0.getRow() == sq1.getRow();
+        if (sameCol || sameRow) {
+            for (int l = 0; l < MAP_N_SQUARED; l++) {
+                int row = !sameRow ? l : sq0.getRow();
+                int col = !sameCol ? l : sq0.getCol();
+                SudokuSquare mapAt = getMapAt(row, col);
+                if (!mapAt.isInArea(sq0.getRow(), sq0.getCol())) {
+                    mapAt.getPossibilities().remove(Integer.valueOf(number));
+                }
+
+            }
+        }
     }
 
     private void reset() {
@@ -215,33 +345,11 @@ public class SudokuModel {
         }
     }
 
-    private void twoPossible(int row, int col, int number, List<SudokuSquare> squares) {
-        LOG.info("corredor {} ({},{})", number, row, col);
-        SudokuSquare sq1 = squares.get(1);
-        SudokuSquare sq0 = squares.get(0);
-        if (sq0.getRow() == sq1.getRow()) {
-            for (int l = 0; l < MAP_N_SQUARED; l++) {
-                SudokuSquare mapAt = getMapAt(sq0.getRow(), l);
-                if (!mapAt.isInArea(row, col)) {
-                    LOG.info("removing {} from {}", number, mapAt);
-                    mapAt.getPossibilities().remove(Integer.valueOf(number));
-                }
-            }
-        }
-        if (sq0.getCol() == sq1.getCol()) {
-            for (int l = 0; l < MAP_N_SQUARED; l++) {
-                SudokuSquare mapAt = getMapAt(l, sq0.getCol());
-                if (!mapAt.isInArea(row, col)) {
-                    LOG.info("removing {} from {}", number, mapAt);
-                    mapAt.getPossibilities().remove(Integer.valueOf(number));
-                }
-            }
-        }
-    }
-
     private void updatePossibilities() {
         sudokuSquares.forEach(sq -> sq.setPossibilities(IntStream.rangeClosed(1, MAP_N_SQUARED)
                 .filter(n -> isNumberFit(sq, n)).boxed().collect(Collectors.toList())));
         sudokuSquares.forEach(sq -> sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber())));
+
+        removeDuplicatedPossibilities();
     }
 }
