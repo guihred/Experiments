@@ -231,6 +231,7 @@ public class SudokuModel {
         NumberButton child = new NumberButton(0);
         numberOptions.add(child);
         numberBoard.add(child, 3, 0);
+        reset();
     }
 
     private boolean isFullyFilled() {
