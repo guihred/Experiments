@@ -39,6 +39,14 @@ public class SudokuModel {
 
     }
 
+    public void blank() {
+        sudokuSquares.forEach(e -> {
+            e.setEmpty();
+            e.setPermanent(false);
+            e.getPossibilities().clear();
+        });
+    }
+
     public SudokuSquare getMapAt(int i, int j) {
         return sudokuSquares.get(i * MAP_N_SQUARED + j);
     }
@@ -81,6 +89,25 @@ public class SudokuModel {
         if (isFullyFilled()) {
             CommonsFX.displayDialog("You Won", "Reset", this::reset);
         }
+    }
+
+    public void reset() {
+        createRandomNumbers();
+        List<SudokuSquare> all = sudokuSquares.stream().collect(Collectors.toList());
+        Collections.shuffle(all);
+        for (int i = 0; i < all.size(); i++) {
+            SudokuSquare sudokuSquare = all.get(i);
+            int previousN = sudokuSquare.setEmpty();
+            updatePossibilities();
+            solve();
+            if (isFullyFilled()) {
+                sudokuSquare.setPermanent(false);
+            } else {
+                sudokuSquare.setNumber(previousN);
+            }
+            sudokuSquares.stream().filter(t -> !t.isPermanent()).forEach(SudokuSquare::setEmpty);
+        }
+        updatePossibilities();
     }
 
     public void solve() {
@@ -155,16 +182,6 @@ public class SudokuModel {
         }
     }
 
-    private void display() {
-        CommonsFX.displayDialog("Try to Solve", "Solve", () -> {
-            solve();
-            if (!isFullyFilled()) {
-                display();
-            }
-
-        });
-    }
-
     private List<SudokuSquare> getArea(int row) {
         return sudokuSquares.stream()
                 .filter(e -> e.isEmpty() && e.isInArea(row % MAP_NUMBER * MAP_NUMBER, row / MAP_NUMBER * MAP_NUMBER))
@@ -197,9 +214,9 @@ public class SudokuModel {
 
     private void initialize() {
         numberBoard.setVisible(false);
-        for (int i = 0; i < MAP_N_SQUARED; i++) {
-            for (int j = 0; j < MAP_N_SQUARED; j++) {
-                SudokuSquare sudokuSquare = new SudokuSquare(i, j);
+        for (int i1 = 0; i1 < MAP_N_SQUARED; i1++) {
+            for (int j1 = 0; j1 < MAP_N_SQUARED; j1++) {
+                SudokuSquare sudokuSquare = new SudokuSquare(i1, j1);
                 sudokuSquare.setPermanent(false);
                 sudokuSquares.add(sudokuSquare);
             }
@@ -214,9 +231,6 @@ public class SudokuModel {
         NumberButton child = new NumberButton(0);
         numberOptions.add(child);
         numberBoard.add(child, 3, 0);
-        //        reset();
-
-        display();
     }
 
     private boolean isFullyFilled() {
@@ -315,25 +329,6 @@ public class SudokuModel {
 
             }
         }
-    }
-
-    private void reset() {
-        createRandomNumbers();
-        List<SudokuSquare> all = sudokuSquares.stream().collect(Collectors.toList());
-        Collections.shuffle(all);
-        for (int i = 0; i < all.size(); i++) {
-            SudokuSquare sudokuSquare = all.get(i);
-            int previousN = sudokuSquare.setEmpty();
-            updatePossibilities();
-            solve();
-            if (isFullyFilled()) {
-                sudokuSquare.setPermanent(false);
-            } else {
-                sudokuSquare.setNumber(previousN);
-            }
-            sudokuSquares.stream().filter(t -> !t.isPermanent()).forEach(SudokuSquare::setEmpty);
-        }
-        updatePossibilities();
     }
 
     private void setSquareWithOnePossibility() {

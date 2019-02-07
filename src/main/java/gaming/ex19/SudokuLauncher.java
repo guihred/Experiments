@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 
 public class SudokuLauncher extends Application {
 
@@ -32,11 +33,17 @@ public class SudokuLauncher extends Application {
         Region numberBoard = sudokuModel.getNumberBoard();
         final StackPane borderPane = new StackPane(gridPane, numberBoard);
 		gridPane.minWidthProperty().bind(borderPane.widthProperty());
-        final Scene scene = new Scene(borderPane);
+        BorderPane root = new BorderPane(borderPane);
+        root.setLeft(new VBox(CommonsFX.newButton("Blank", e -> sudokuModel.blank()),
+                CommonsFX.newButton("Reset", e -> sudokuModel.reset()),
+                CommonsFX.newButton("Solve", e -> sudokuModel.solve())));
+        final Scene scene = new Scene(root);
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.setWidth(WIDTH);
         stage.setHeight(WIDTH);
-
+        gridPane.prefWidthProperty().bind(scene.widthProperty());
+        gridPane.prefHeightProperty().bind(scene.heightProperty());
         gridPane.setOnMousePressed(sudokuModel::handleMousePressed);
         gridPane.setOnMouseDragged(sudokuModel::handleMouseMoved);
         gridPane.setOnMouseReleased(sudokuModel::handleMouseReleased);
