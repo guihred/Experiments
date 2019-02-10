@@ -80,7 +80,7 @@ public class MusicOrganizer extends Application implements HasLogging {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
                 List<Music> videos = ResourceFXUtils
-                        .getPathByExtension(selectedFile, ".mp4")
+                        .getPathByExtension(selectedFile, ".mp4", ".wma")
                         .parallelStream()
                         .map(v -> new Music(v.toFile()))
                         .collect(Collectors.toList());

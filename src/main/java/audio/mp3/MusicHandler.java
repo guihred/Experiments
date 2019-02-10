@@ -71,7 +71,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
 
     private void handleMousePressed(final TableView<Music> songsTable) {
         Music selectedItem = songsTable.getSelectionModel().getSelectedItem();
-        if (selectedItem.getTitulo().endsWith(".mp4")) {
+        if (selectedItem.getTitulo().matches(".+\\.(mp4|wma)")) {
             CommonsFX.displayDialog("Convert", "_Convert to Mp3",
                     () -> SongUtils.convertToAudio(selectedItem.getArquivo()));
             return;

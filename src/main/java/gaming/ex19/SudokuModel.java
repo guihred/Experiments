@@ -118,8 +118,7 @@ public class SudokuModel {
             changed = false;
             setSquareWithOnePossibility();
             for (int i = 0; i < MAP_N_SQUARED; i++) {
-                for (int k = 0; k <= MAP_N_SQUARED; k++) {
-                    int number = k;
+                for (int number = 1; number <= MAP_N_SQUARED; number++) {
                     List<SudokuSquare> area = getArea(i, number);
                     if (area.size() == 1) {
                         oneSolution(number, area);
