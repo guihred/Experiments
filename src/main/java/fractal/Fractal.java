@@ -10,13 +10,15 @@ public class Fractal extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        TreeFractal treeFractal = new TreeFractal();
+        OrganicTreeFractal treeFractal = new OrganicTreeFractal();
 
-        VBox radiusSlider = CommonsFX.newSlider("Radius", 1, 100, treeFractal.initialRadiusProperty());
+        VBox radiusSlider = CommonsFX.newSlider("Radius", 1, 200, treeFractal.initialRadiusProperty());
         VBox angleSlider = CommonsFX.newSlider("Angle", 0, Math.PI, treeFractal.deltaAngleProperty());
         VBox ratioSlider = CommonsFX.newSlider("Ratio", 0.5, 0.85, treeFractal.ratioProperty());
+        VBox thicknessSlider = CommonsFX.newSlider("Thickness", 0.01, 1., treeFractal.thicknessProperty());
         primaryStage.setTitle("Tree Fractal");
-        primaryStage.setScene(new Scene(new VBox(radiusSlider, ratioSlider, angleSlider, treeFractal)));
+        primaryStage
+                .setScene(new Scene(new VBox(thicknessSlider, radiusSlider, ratioSlider, angleSlider, treeFractal)));
         primaryStage.show();
     }
 
