@@ -1,21 +1,29 @@
 package fractal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Rotate;
 
 public class OrganicTreeFractal extends Canvas {
 
     private static final double SIZE = 800;
-    private final DoubleProperty thickness = new SimpleDoubleProperty(0.75);
+    private final DoubleProperty thickness = new SimpleDoubleProperty(0.25);
     private final DoubleProperty ratio = new SimpleDoubleProperty(0.75);
-    private final DoubleProperty deltaAngle = new SimpleDoubleProperty(Math.PI / 12);
+    private final DoubleProperty deltaAngle = new SimpleDoubleProperty(Math.PI / 8.5);
     private final DoubleProperty initialRadius = new SimpleDoubleProperty(100);
+    private final DoubleProperty leaf = new SimpleDoubleProperty(5);
 
     Random random = new Random();
+
+    Random random2 = new Random();
 
     public OrganicTreeFractal() {
         super(SIZE, SIZE);
@@ -23,6 +31,7 @@ public class OrganicTreeFractal extends Canvas {
         initialRadius.addListener(e -> drawTree());
         ratio.addListener(e -> drawTree());
         thickness.addListener(e -> drawTree());
+        leaf.addListener(e -> drawTree());
         drawTree();
     }
 
@@ -33,36 +42,64 @@ public class OrganicTreeFractal extends Canvas {
     public void drawTree() {
         GraphicsContext gc = getGraphicsContext2D();
         gc.clearRect(0, 0, SIZE, SIZE);
-        drawBranch(gc, SIZE / 2, SIZE, initialRadius.get(), Math.PI, 1);
+
+        List<double[]> leaves = new ArrayList<>();
+        gc.setStroke(Color.BLACK);
+        drawBranch(gc, SIZE / 2, SIZE, 2, Math.PI, 0, leaves);
+        gc.setFill(Color.GREEN);
+
+        gc.setLineWidth(1);
+        leaves.forEach(e -> drawLeaf(gc, e));
     }
 
     public DoubleProperty initialRadiusProperty() {
         return initialRadius;
     }
 
+
+    public DoubleProperty leafProperty() {
+        return leaf;
+    }
+
     public DoubleProperty ratioProperty() {
         return ratio;
     }
+
     public DoubleProperty thicknessProperty() {
         return thickness;
     }
 
-    private void drawBranch(GraphicsContext gc, double x0, double y0, double radius, double angle, int i) {
-        gc.moveTo(x0, y0);
+    private void drawBranch(GraphicsContext gc, double x0, double y0, int r, double angle, int i,
+            List<double[]> leaves) {
+        double radius = initialRadius.get() * Math.pow(ratio.get(), r);
         double y = Math.cos(angle) * radius;
         double x = Math.sin(angle) * radius;
-        gc.setLineWidth(radius * thicknessProperty().get());
-        gc.setLineCap(StrokeLineCap.ROUND);
+        double d = deltaAngle.get();
+        gc.moveTo(x0, y0);
 
+        gc.setLineWidth(radius * thickness.get());
+        gc.setLineCap(StrokeLineCap.ROUND);
         gc.strokeLine(x0, y0, x0 + x, y0 + y);
-        if (radius > 10) {
-            double d = deltaAngle.get();
-            drawBranch(gc, x0 + x, y0 + y, radius * ratioProperty().get(), angle - d, ++i);
-            if (i % 2 == 0) {
-                drawBranch(gc, x0 + x, y0 + y, radius * ratioProperty().get(), angle + d, ++i);
-            }
+        if (radius < 10) {
+            leaves.add(new double[] { x0 + x, y0 + y, Math.toDegrees(angle) });
+            return;
+        }
+        drawBranch(gc, x0 + x, y0 + y, r + 1, angle + d, i + 1, leaves);
+        if (i % 2 == 0) {
+            drawBranch(gc, x0 + x, y0 + y, r + 1, angle - d, i + 2, leaves);
         }
 
+    }
+
+    private void drawLeaf(GraphicsContext gc, double[] e) {
+        gc.save();
+        double h = leaf.get();
+        double degrees = e[2];
+        Rotate rotate = Rotate.rotate(degrees + 180, e[0], e[1]);
+        Affine affine = new Affine(rotate);
+        gc.transform(affine);
+        gc.fillOval(e[0] - h / 6, e[1] - h / 4, h, h / 2);
+        gc.restore();
     }
 
 }
