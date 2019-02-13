@@ -12,17 +12,22 @@ public class Fractal extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         OrganicTreeFractal treeFractal = new OrganicTreeFractal();
+        TreeFractal tree = new TreeFractal();
 
         VBox radiusSlider = CommonsFX.newSlider("Radius", 1, 200, treeFractal.initialRadiusProperty());
         VBox angleSlider = CommonsFX.newSlider("Angle", 0, 2 * Math.PI, treeFractal.deltaAngleProperty());
         VBox ratioSlider = CommonsFX.newSlider("Ratio", 0.5, 0.85, treeFractal.ratioProperty());
         VBox thicknessSlider = CommonsFX.newSlider("Thickness", 0.01, 1., treeFractal.thicknessProperty());
         VBox leafSlider = CommonsFX.newSlider("Leaf", 1, 200, treeFractal.leafProperty());
+        tree.initialRadiusProperty().bind(treeFractal.initialRadiusProperty());
+        tree.deltaAngleProperty().bind(treeFractal.deltaAngleProperty());
+        tree.ratioProperty().bind(treeFractal.ratioProperty());
+
         primaryStage.setTitle("Tree Fractal");
         primaryStage
                 .setScene(new Scene(
                         new VBox(new HBox(thicknessSlider, radiusSlider, ratioSlider, angleSlider, leafSlider),
-                                treeFractal)));
+                                new HBox(treeFractal, tree))));
         primaryStage.show();
     }
 

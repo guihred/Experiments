@@ -14,7 +14,7 @@ import javafx.scene.transform.Rotate;
 
 public class OrganicTreeFractal extends Canvas {
 
-    private static final double SIZE = 800;
+    private static final double SIZE = 500;
     private final DoubleProperty thickness = new SimpleDoubleProperty(0.25);
     private final DoubleProperty ratio = new SimpleDoubleProperty(0.75);
     private final DoubleProperty deltaAngle = new SimpleDoubleProperty(Math.PI / 8.5);
