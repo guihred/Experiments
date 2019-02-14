@@ -97,8 +97,8 @@ public class OrganicTreeFractal extends Canvas {
         double degrees = e[2];
         Rotate rotate = Rotate.rotate(degrees + 180, e[0], e[1]);
         Affine affine = new Affine(rotate);
-        gc.transform(affine);
         gc.fillOval(e[0] - h / 6, e[1] - h / 4, h, h / 2);
+        gc.transform(affine);
         gc.restore();
     }
 

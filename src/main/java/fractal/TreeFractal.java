@@ -39,7 +39,6 @@ public class TreeFractal extends Canvas {
     }
 
     private void drawBranch(GraphicsContext gc, double x0, double y0, double radius, double angle) {
-        gc.moveTo(x0, y0);
         double y = Math.cos(angle) * radius;
         double x = Math.sin(angle) * radius;
         gc.strokeLine(x0, y0, x0 + x, y0 + y);
