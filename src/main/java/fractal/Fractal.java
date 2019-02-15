@@ -14,11 +14,12 @@ public class Fractal extends Application {
         OrganicTreeFractal treeFractal = new OrganicTreeFractal();
         TreeFractal tree = new TreeFractal();
 
-        VBox radiusSlider = CommonsFX.newSlider("Radius", 1, 200, treeFractal.initialRadiusProperty());
+        VBox radiusSlider = CommonsFX.newSlider("Radius", 1, 360, treeFractal.initialRadiusProperty());
         VBox angleSlider = CommonsFX.newSlider("Angle", 0, 2 * Math.PI, treeFractal.deltaAngleProperty());
-        VBox ratioSlider = CommonsFX.newSlider("Ratio", 0.5, 0.85, treeFractal.ratioProperty());
-        VBox thicknessSlider = CommonsFX.newSlider("Thickness", 0.01, 1., treeFractal.thicknessProperty());
-        VBox leafSlider = CommonsFX.newSlider("Leaf", 1, 200, treeFractal.leafProperty());
+        final double ratioMax = 0.85;
+        VBox ratioSlider = CommonsFX.newSlider("Ratio", 0.5, ratioMax, treeFractal.ratioProperty());
+        VBox thicknessSlider = CommonsFX.newSlider("Thickness", 1. / 100, 1., treeFractal.thicknessProperty());
+        VBox leafSlider = CommonsFX.newSlider("Leaf", 1, 360, treeFractal.leafProperty());
         tree.initialRadiusProperty().bind(treeFractal.initialRadiusProperty());
         tree.deltaAngleProperty().bind(treeFractal.deltaAngleProperty());
         tree.ratioProperty().bind(treeFractal.ratioProperty());

@@ -13,17 +13,13 @@ import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import org.slf4j.Logger;
 import utils.CommonsFX;
-import utils.HasLogging;
 
 /**
  *
  * @author Note
  */
 public class SudokuModel {
-
-    private static final Logger LOG = HasLogging.log();
 
     public static final int MAP_NUMBER = 3;
 
@@ -253,7 +249,6 @@ public class SudokuModel {
     private void oneSolution(int number, List<SudokuSquare> squares) {
         SudokuSquare sq = squares.get(0);
         sq.setNumber(number);
-        LOG.info("{} {}", number, sq);
         updatePossibilities();
     }
 
@@ -333,11 +328,8 @@ public class SudokuModel {
 
     private void setSquareWithOnePossibility() {
         while (sudokuSquares.stream().anyMatch(e -> e.isEmpty() && e.getPossibilities().size() == 1)) {
-            sudokuSquares.stream().filter(e -> e.isEmpty() && e.getPossibilities().size() == 1).forEach(sq -> {
-                Integer number = sq.getPossibilities().get(0);
-                sq.setNumber(number);
-                LOG.info("{} {}", number, sq);
-            });
+            sudokuSquares.stream().filter(e -> e.isEmpty() && e.getPossibilities().size() == 1)
+                    .forEach(sq -> sq.setNumber(sq.getPossibilities().get(0)));
             updatePossibilities();
         }
     }

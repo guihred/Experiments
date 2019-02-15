@@ -8,7 +8,7 @@ import javafx.scene.canvas.GraphicsContext;
 public class SnowflakeFractal extends Canvas {
 
     private static final double SIZE = 500;
-    private DoubleProperty limit = new SimpleDoubleProperty(10);
+    private DoubleProperty limit = new SimpleDoubleProperty(2);
 
     public SnowflakeFractal() {
         super(SIZE, SIZE);
@@ -35,7 +35,7 @@ public class SnowflakeFractal extends Canvas {
     private void drawSnow(GraphicsContext gc, double x0, double y0, double radius, double angle) {
         double y = Math.sin(angle) * radius;
         double x = Math.cos(angle) * radius;
-        if (radius > limit.get()) {
+        if (Math.log(radius / SIZE) / Math.log(1. / 3) < limit.get()) {
             y /= 3;
             x /= 3;
             drawSnow(gc, x0, y0, radius / 3, angle);

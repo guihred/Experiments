@@ -2,7 +2,6 @@ package fractal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.Canvas;
@@ -20,11 +19,6 @@ public class OrganicTreeFractal extends Canvas {
     private final DoubleProperty deltaAngle = new SimpleDoubleProperty(Math.PI / 8.5);
     private final DoubleProperty initialRadius = new SimpleDoubleProperty(100);
     private final DoubleProperty leaf = new SimpleDoubleProperty(5);
-
-    Random random = new Random();
-
-    Random random2 = new Random();
-
     public OrganicTreeFractal() {
         super(SIZE, SIZE);
         deltaAngle.addListener(e -> drawTree());
@@ -74,7 +68,6 @@ public class OrganicTreeFractal extends Canvas {
         double radius = initialRadius.get() * Math.pow(ratio.get(), r);
         double y = Math.cos(angle) * radius;
         double x = Math.sin(angle) * radius;
-        double d = deltaAngle.get();
         gc.moveTo(x0, y0);
 
         gc.setLineWidth(radius * thickness.get());
@@ -84,6 +77,7 @@ public class OrganicTreeFractal extends Canvas {
             leaves.add(new double[] { x0 + x, y0 + y, Math.toDegrees(angle) });
             return;
         }
+        double d = deltaAngle.get();
         drawBranch(gc, x0 + x, y0 + y, r + 1, angle + d, i + 1, leaves);
         if (i % 2 == 0) {
             drawBranch(gc, x0 + x, y0 + y, r + 1, angle - d, i + 2, leaves);

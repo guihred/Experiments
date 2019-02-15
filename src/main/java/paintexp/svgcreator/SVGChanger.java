@@ -43,9 +43,7 @@ public class SVGChanger {
 		StringBuffer sb = new StringBuffer();
 		while (matcher.find()) {
 			String svgCommand = matcher.group(1).trim();
-			LOG.trace(svgCommand);
 			String replace = replaceCommand(svgCommand);
-			LOG.trace(replace);
 			matcher.appendReplacement(sb, replace.replaceAll("\\.0+(\\D)", "$1"));
 			String currentPosition = String.format(Locale.ENGLISH, "(%.2f,%.2f)", currentX.get(), currentY.get());
 			xStats.accept(currentX.get());
@@ -53,10 +51,7 @@ public class SVGChanger {
 			LOG.trace(currentPosition);
 		}
 		matcher.appendTail(sb);
-		LOG.info(path.get());
-		String convertedPath = sb.toString();
-		LOG.info(convertedPath);
-		return convertedPath;
+        return sb.toString();
 
 	}
 
