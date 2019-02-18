@@ -66,7 +66,7 @@ public class LeafFractal extends Application {
                 }
             }
         }
-        builder.build().selectedToggleProperty().addListener(ob -> {
+        builder.onChange(ob -> {
             skip = true;
             treeFractal.coefProperty().set(0);
         });

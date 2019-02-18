@@ -3,6 +3,7 @@ package simplebuilder;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -92,6 +93,11 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
     }
 
     public SimpleToggleGroupBuilder onChange(final ChangeListener<? super Toggle> listener) {
+        toggleGroup.selectedToggleProperty().addListener(listener);
+        return this;
+    }
+
+    public SimpleToggleGroupBuilder onChange(final InvalidationListener listener) {
         toggleGroup.selectedToggleProperty().addListener(listener);
         return this;
     }
