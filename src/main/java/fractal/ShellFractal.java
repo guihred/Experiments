@@ -29,7 +29,7 @@ public class ShellFractal extends Canvas {
     public void drawSnowflake() {
         GraphicsContext gc = getGraphicsContext2D();
         gc.clearRect(0, 0, SIZE, SIZE);
-        double radius = 0.01;
+        final double radius = 0.01;
         gc.beginPath();
         for (int i = 0; i < spirals.get(); i++) {
             gc.moveTo(SIZE / 2, SIZE / 2);

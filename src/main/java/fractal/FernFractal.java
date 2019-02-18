@@ -11,16 +11,22 @@ import javafx.scene.paint.Color;
 
 public class FernFractal extends Canvas {
 
+    private static final double RIGHT_LEAF = 0.93;
+
+    private static final double LEFT_LEAF = 0.86;
+
+    private static final double STEM_LIMIT = 0.01;
+
     public static final double SIZE = 100;
 
-    private static final double[][] MATRIX_X = {
+    protected static final double[][] MATRIX_X = {
             { 0, 0 },
             { 0.85, 0.04 },
             { 0.2, -0.26 },
             { -0.15, 0.28 }
             
     };
-    private static final double[][] MATRIX_Y = {
+    protected static final double[][] MATRIX_Y = {
             { 0, 0.16 },
             { -0.04, 0.85, 1.6 },
             { 0.23, 0.22, 1.6 },
@@ -30,23 +36,25 @@ public class FernFractal extends Canvas {
     private double x;
     private double y;
 
-    private DoubleProperty coef = new SimpleDoubleProperty(0.15);
+    private DoubleProperty coef = new SimpleDoubleProperty(0);
 
-    private DoubleProperty xScale = new SimpleDoubleProperty(SIZE);
+    private final DoubleProperty scale = new SimpleDoubleProperty(SIZE);
 
-    private DoubleProperty yScale = new SimpleDoubleProperty(SIZE);
 
-    private GraphicsContext gc = getGraphicsContext2D();
+    private final GraphicsContext gc = getGraphicsContext2D();
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
-    private IntegerProperty limit = new SimpleIntegerProperty(10000);
+    private final IntegerProperty limit = new SimpleIntegerProperty(10000);
 
     public FernFractal() {
         super(SIZE, SIZE);
         limit.addListener(e -> draw());
-        xScale.addListener(e -> draw());
-        yScale.addListener(e -> draw());
+        scale.addListener(e -> {
+            setWidth(scale.get());
+            setHeight(scale.get());
+            draw();
+        });
         coef.addListener(e -> draw());
         draw();
     }
@@ -69,20 +77,16 @@ public class FernFractal extends Canvas {
         return limit;
     }
 
-    public DoubleProperty xScaleProperty () {
-        return xScale;
-    }
-
-    public DoubleProperty yScaleProperty () {
-        return yScale;
+    public DoubleProperty scaleProperty() {
+        return scale;
     }
 
     /* setting stroke,  mapping canvas and then
     plotting the points */
     private void drawPoint() {
-        gc.setFill(Color.rgb(34, 139, 34));
-        double px = map(x, -2.1820, 2.6558, 0, xScale.get());
-        double py = map(y, 0, 9.9983, yScale.get(), 0);
+        gc.setFill(Color.GREEN);
+        double px = map(x, -3, 3, 0, scale.get());
+        double py = map(y, 0, 10, scale.get(), 0);
         point(px, py);
     }
     /* algorithm for calculating value of (n+1)th
@@ -90,32 +94,31 @@ public class FernFractal extends Canvas {
     matrices */
     private void nextPoint() {
         double r = random(1);
-        double nextX = nextX(r);
         double nextY = nextY(r);
-        x = nextX;
+        x = nextX(r);
         y = nextY;
     }
     private double nextX(double r) {
-        if (r < 0.01) {
+        if (r < STEM_LIMIT) {
             return MATRIX_X[0][0] * x + MATRIX_X[0][1] * y;
         }
-        if (r < 0.86) {
+        if (r < LEFT_LEAF) {
             return MATRIX_X[1][0] * x + MATRIX_X[1][1] * y;
         }
-        if (r < 0.93) {
+        if (r < RIGHT_LEAF) {
             return MATRIX_X[2][0] * x + MATRIX_X[2][1] * y;
 
         }
         return MATRIX_X[3][0] * x + MATRIX_X[3][1] * y;
     }
     private double nextY(double r) {
-        if (r < 0.01) {
+        if (r < STEM_LIMIT) {
             return MATRIX_Y[0][0] * x + MATRIX_Y[0][1] * y;
         }
-        if (r < 0.86) {
+        if (r < LEFT_LEAF) {
             return MATRIX_Y[1][0] * x + MATRIX_Y[1][1] * y+MATRIX_Y[1][2];
         }
-        if (r < 0.93) {
+        if (r < RIGHT_LEAF) {
             return MATRIX_Y[2][0] * x + MATRIX_Y[2][1] * y+MATRIX_Y[2][2];
         }
         return MATRIX_Y[3][0] * x + MATRIX_Y[3][1] * y + MATRIX_Y[3][2];

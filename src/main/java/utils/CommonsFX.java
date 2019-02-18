@@ -107,16 +107,16 @@ public final class CommonsFX {
 	}
 
 
+    public static VBox newSlider(final String string, final double min, final double max, int block,final Property<Number> radius) {
+        Slider build = new SimpleSliderBuilder().min(min).max(max).blocks(block).build();
+        build.valueProperty().bindBidirectional(radius);
+        return new VBox(new Text(string), build);
+    }
+
     public static VBox newSlider(final String string, final double min, final double max, final Property<Number> radius) {
     	Slider build = new SimpleSliderBuilder().min(min).max(max).build();
     	build.valueProperty().bindBidirectional(radius);
     	return new VBox(new Text(string), build);
-    }
-
-	public static VBox newSlider(final String string, final int min, final int max, final Property<Number> radius) {
-        Slider build = new SimpleSliderBuilder().min(min).max(max).build();
-        build.valueProperty().bindBidirectional(radius);
-        return new VBox(new Text(string), build);
     }
 
     public static TextField newTextField(final String text, final int prefColumnCount) {
