@@ -17,7 +17,7 @@ public class SnowFractalApp extends Application {
 
         VBox limitSlider = CommonsFX.newSlider("Limit", 1, 360, shellFractal.limitProperty());
         VBox angleSlider = CommonsFX.newSlider("Angle", 0, 360, shellFractal.deltaAngleProperty());
-        VBox spiralsSlider = CommonsFX.newSlider("Spirals", 1, 10, shellFractal.spiralsProperty());
+        VBox spiralsSlider = CommonsFX.newSlider("Spirals", 2, 10, shellFractal.spiralsProperty());
         VBox ratioSlider = CommonsFX.newSlider("Ratio", 0.01, 0.99, polygonFractal.ratioProperty());
 
         snowFractal.limitProperty().bind(shellFractal.spiralsProperty());

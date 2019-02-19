@@ -45,18 +45,22 @@ public class PolygonFractal extends Canvas {
 
     private void drawPolygon(GraphicsContext gc, final double radius, double off) {
         double ang = Math.PI * 2 / spirals.get();
-        for (int i = 0; i < spirals.get(); i++) {
-            double x1 = radius * Math.cos(i * ang + off) + SIZE / 2;
-            double y1 = radius * Math.sin(i * ang + off) + SIZE / 2;
-            double x2 = radius * Math.cos((i + 1) * ang + off) + SIZE / 2;
-            double y2 = radius * Math.sin((i + 1) * ang + off) + SIZE / 2;
-            gc.strokeLine(x1, y1, x2, y2);
+
+        int k = spirals.get() / 2 + (spirals.get() + 1) % 2;
+        for (int j = 0; j <= spirals.get() % 2; j++) {
+            for (int i = 0; i < spirals.get(); i++) {
+
+                double x1 = radius * Math.cos(i * ang + off) + SIZE / 2;
+                double y1 = radius * Math.sin(i * ang + off) + SIZE / 2;
+                double x2 = radius * Math.cos((i + k) * ang + off) + SIZE / 2;
+                double y2 = radius * Math.sin((i + k) * ang + off) + SIZE / 2;
+                gc.strokeLine(x1, y1, x2, y2);
+            }
         }
         if (radius > limit.get()) {
-            double a = 2 * Math.PI / spirals.get() * (1 - ratio.get());
+            double a = 2 * Math.PI / spirals.get() * (k - ratio.get());
             drawPolygon(gc, radius * ratio.get(), off + a);
         }
     }
-
 
 }
