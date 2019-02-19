@@ -11,7 +11,7 @@ public class ShellFractal extends Canvas {
 
     private static final double SIZE = 500;
     private DoubleProperty limit = new SimpleDoubleProperty(10);
-    private DoubleProperty deltaAngle = new SimpleDoubleProperty(Math.PI / 6);
+    private DoubleProperty deltaAngle = new SimpleDoubleProperty(360);
     private IntegerProperty spirals = new SimpleIntegerProperty(1);
 
     public ShellFractal() {

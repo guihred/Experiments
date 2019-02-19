@@ -7,24 +7,26 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class SnowflakeFractal extends Canvas {
 
-    private static final double SIZE = 500;
+    public static final double SIZE = 500;
+    private DoubleProperty size = new SimpleDoubleProperty(SIZE);
     private DoubleProperty limit = new SimpleDoubleProperty(2);
 
     public SnowflakeFractal() {
         super(SIZE, SIZE);
         limit.addListener(e -> drawSnowflake());
+        size.addListener(e -> drawSnowflake());
         drawSnowflake();
     }
 
     public void drawSnowflake() {
         GraphicsContext gc = getGraphicsContext2D();
-        gc.clearRect(0, 0, SIZE, SIZE);
-        double radius = SIZE / 3;
-        double top = SIZE * Math.sqrt(3) / 3;
+        gc.clearRect(0, 0, getWidth(), getHeight());
+        double radius = size.get() / 3;
+        double top = size.get() * Math.sqrt(3) / 3;
         double y = Math.sin(-2 * Math.PI / 3) * radius;
-        drawSnow(gc, SIZE / 3, top, radius, 0);
-        drawSnow(gc, SIZE * 2 / 3, top, radius, -2 * Math.PI / 3);
-        drawSnow(gc, SIZE / 2, top + y, radius, 2 * Math.PI / 3);
+        drawSnow(gc, size.get() / 3, top, radius, 0);
+        drawSnow(gc, size.get() * 2 / 3, top, radius, -2 * Math.PI / 3);
+        drawSnow(gc, size.get() / 2, top + y, radius, 2 * Math.PI / 3);
 
     }
 
@@ -32,10 +34,14 @@ public class SnowflakeFractal extends Canvas {
         return limit;
     }
 
+    public DoubleProperty sizeProperty() {
+        return size;
+    }
+
     private void drawSnow(GraphicsContext gc, double x0, double y0, double radius, double angle) {
         double y = Math.sin(angle) * radius;
         double x = Math.cos(angle) * radius;
-        if (Math.log(radius / SIZE) / Math.log(1. / 3) < limit.get()) {
+        if (Math.log(radius / size.get()) / Math.log(1. / 3) < limit.get()) {
             y /= 3;
             x /= 3;
             drawSnow(gc, x0, y0, radius / 3, angle);
