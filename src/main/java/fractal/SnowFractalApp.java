@@ -11,18 +11,23 @@ public class SnowFractalApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ShellFractal treeFractal = new ShellFractal();
+        ShellFractal shellFractal = new ShellFractal();
         SnowflakeFractal snowFractal = new SnowflakeFractal();
+        PolygonFractal polygonFractal = new PolygonFractal();
 
-        VBox limitSlider = CommonsFX.newSlider("Limit", 1, 360, treeFractal.limitProperty());
-        VBox angleSlider = CommonsFX.newSlider("Angle", 0, 360, treeFractal.deltaAngleProperty());
-        VBox spiralsSlider = CommonsFX.newSlider("Spirals", 1, 10, treeFractal.spiralsProperty());
+        VBox limitSlider = CommonsFX.newSlider("Limit", 1, 360, shellFractal.limitProperty());
+        VBox angleSlider = CommonsFX.newSlider("Angle", 0, 360, shellFractal.deltaAngleProperty());
+        VBox spiralsSlider = CommonsFX.newSlider("Spirals", 1, 10, shellFractal.spiralsProperty());
+        VBox ratioSlider = CommonsFX.newSlider("Ratio", 0.01, 0.99, polygonFractal.ratioProperty());
 
-        snowFractal.limitProperty().bind(treeFractal.spiralsProperty());
+        snowFractal.limitProperty().bind(shellFractal.spiralsProperty());
+        polygonFractal.spiralsProperty().bind(shellFractal.spiralsProperty());
+        polygonFractal.limitProperty().bind(shellFractal.limitProperty());
         primaryStage.setTitle("Snow Fractal");
         primaryStage
                 .setScene(new Scene(
-                        new VBox(new HBox(angleSlider, limitSlider, spiralsSlider), treeFractal, snowFractal)));
+                        new VBox(new HBox(angleSlider, limitSlider, spiralsSlider, ratioSlider),
+                                new HBox(polygonFractal, shellFractal, snowFractal))));
         primaryStage.show();
     }
 
