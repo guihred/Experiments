@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CommonsFX;
 
-public class LeafFractal extends Application {
+public class LeafFractalApp extends Application {
     private double[][][] matrix = new double[][][] { FernFractal.MATRIX_X, FernFractal.MATRIX_Y };
 
     private boolean skip;

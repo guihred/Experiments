@@ -10,9 +10,9 @@ import cubesystem.GolfBall;
 import cubesystem.SphereSystemApp;
 import election.ElectionCrawlerApp;
 import ex.j8.Chapter4;
-import fractal.Fractal;
-import fractal.LeafFractal;
-import fractal.SnowFractal;
+import fractal.FractalApp;
+import fractal.LeafFractalApp;
+import fractal.SnowFractalApp;
 import furigana.FuriganaCrawlerApp;
 import fxpro.ch01.AudioConfigLauncher;
 import fxpro.ch01.EarthriseChristmasApp;
@@ -124,7 +124,7 @@ public final class FXTest implements HasLogging {
     public void test5() throws Throwable {
         FXTesting.testApps(BasicAudioPlayerWithControlLauncher.class, BasicAudioClipExample.class,
                 AudioConfigLauncher.class, SimpleAudioPlayerLauncher.class, PlayingAudio.class, Physics.class,
-                SngpcViewer.class, JewelViewer.class, LeafFractal.class, Fractal.class, SnowFractal.class);
+                SngpcViewer.class, JewelViewer.class, LeafFractalApp.class, FractalApp.class, SnowFractalApp.class);
     }
 
     @Test

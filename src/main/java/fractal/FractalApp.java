@@ -7,7 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.CommonsFX;
 
-public class Fractal extends Application {
+public class FractalApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {

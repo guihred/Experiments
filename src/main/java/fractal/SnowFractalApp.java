@@ -7,7 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.CommonsFX;
 
-public class SnowFractal extends Application {
+public class SnowFractalApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -19,7 +19,7 @@ public class SnowFractal extends Application {
         VBox spiralsSlider = CommonsFX.newSlider("Spirals", 1, 10, treeFractal.spiralsProperty());
 
         snowFractal.limitProperty().bind(treeFractal.spiralsProperty());
-        primaryStage.setTitle("Tree Fractal");
+        primaryStage.setTitle("Snow Fractal");
         primaryStage
                 .setScene(new Scene(
                         new VBox(new HBox(angleSlider, limitSlider, spiralsSlider), treeFractal, snowFractal)));
