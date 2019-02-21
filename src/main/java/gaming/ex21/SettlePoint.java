@@ -22,9 +22,7 @@ public class SettlePoint extends Group {
 
     public void addAllNeighbors(SettlePoint p) {
         if (p != this) {
-            for (SettlePoint settlePoint : p.getNeighbors()) {
-                addNeighbor(settlePoint);
-            }
+            p.getNeighbors().forEach(this::addNeighbor);
         }
     }
 
@@ -67,6 +65,6 @@ public class SettlePoint extends Group {
 
     @Override
     public String toString() {
-        return "[id=" + id + "]";
+        return "(" + id + ")";
     }
 }

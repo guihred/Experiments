@@ -17,44 +17,27 @@ public class CatanModel {
         List<Integer> numbers = getNumbers();
         List<ResourceType> cells = createResources();
         double radius = Terrain.RADIUS * Math.sqrt(3);
-        for (int i = 3, j = 0, l = 0; j < createResources().size(); j += i, i += j > 11 ? -1 : 1, l++) {
-            List<ResourceType> subList = cells.subList(j, j + i);
-            for (int k = 0; k < subList.size(); k++) {
-                ResourceType resourceType = subList.get(k);
-                Terrain cell = new Terrain(resourceType);
+        for (int i = 3, j = 0, l = 0; j < cells.size(); j += i, i += j > 11 ? -1 : 1, l++) {
+            List<ResourceType> resources = cells.subList(j, j + i);
+            for (int k = 0; k < resources.size(); k++) {
+                Terrain terrain = new Terrain(resources.get(k));
                 double f = -radius / 2 * (i - 3);
                 double x = radius * k + f + radius;
                 double y = radius * l * Math.sqrt(3) / 2;
-                cell.relocate(x, y);
-                if (resourceType != ResourceType.DESERT) {
-                    cell.setNumber(numbers.remove(0));
+                terrain.relocate(x, y);
+                if (resources.get(k) != ResourceType.DESERT) {
+                    terrain.setNumber(numbers.remove(0));
                 }
-                List<SettlePoint> circles = getCircles(x, y);
-                for (SettlePoint p : circles) {
-                    if (settlePoints.stream().noneMatch(e -> e.getBoundsInParent().intersects(p.getBoundsInParent()))) {
-                        settlePoints.add(p);
-                        p.addTerrain(cell);
-                    } else {
-                        p.removeNeighbors();
-                    }
-                    settlePoints.stream().filter(e -> e.getBoundsInParent().intersects(p.getBoundsInParent()))
-                            .findFirst().ifPresent(e -> {
-                                e.addTerrain(cell);
-                                System.out.println(e + " " + p);
-                                e.addAllNeighbors(p);
-                            });
-
-                }
-                terrains.add(cell);
-                root.getChildren().add(cell);
+                createSettlePoints(terrain, x, y);
+                terrains.add(terrain);
+                root.getChildren().add(terrain);
             }
         }
 
         root.getChildren().addAll(settlePoints);
         root.setManaged(false);
-        settlePoints.forEach(e -> System.out
-                .println(e.getIdPoint() + " "
-                        + e.getNeighbors().stream().map(p -> p.getIdPoint()).collect(Collectors.toList())));
+        settlePoints.forEach(e -> System.out.println(e.getIdPoint() + " "
+                + e.getNeighbors().stream().map(SettlePoint::getIdPoint).collect(Collectors.toList())));
     }
 
     private List<ResourceType> createResources() {
@@ -69,6 +52,23 @@ public class CatanModel {
                 .flatMap(e -> Stream.generate(e::getKey).limit(e.getValue())).collect(Collectors.toList());
         Collections.shuffle(resourceTypes);
         return resourceTypes;
+    }
+
+    private void createSettlePoints(Terrain cell, double x, double y) {
+        for (SettlePoint p : getCircles(x, y)) {
+            if (settlePoints.stream().noneMatch(e -> e.getBoundsInParent().intersects(p.getBoundsInParent()))) {
+                settlePoints.add(p);
+                p.addTerrain(cell);
+            } else {
+                p.removeNeighbors();
+            }
+            settlePoints.stream().filter(e -> e.getBoundsInParent().intersects(p.getBoundsInParent()))
+                    .findFirst().ifPresent(e -> {
+                        e.addTerrain(cell);
+                        e.addAllNeighbors(p);
+                    });
+
+        }
     }
 
     private List<SettlePoint> getCircles(double xOff, double yOff) {
@@ -103,10 +103,10 @@ public class CatanModel {
     }
 
     private List<Integer> getNumbers() {
-        List<Integer> collect = IntStream.range(2, 13).flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
+        List<Integer> numbers = IntStream.range(2, 13).flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
                 .boxed().collect(Collectors.toList());
-        Collections.shuffle(collect);
-        return collect;
+        Collections.shuffle(numbers);
+        return numbers;
     }
 
     private void initialize(StackPane root) {
