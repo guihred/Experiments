@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 public class CatanModel {
     private List<Terrain> terrains = new ArrayList<>();
@@ -17,7 +15,6 @@ public class CatanModel {
 
     private void addTerrains(StackPane root) {
         List<Integer> numbers = getNumbers();
-        List<Circle> points = new ArrayList<>();
         List<ResourceType> cells = createResources();
         double radius = Terrain.RADIUS * Math.sqrt(3);
         for (int i = 3, j = 0, l = 0; j < createResources().size(); j += i, i += j > 11 ? -1 : 1, l++) {
@@ -32,19 +29,32 @@ public class CatanModel {
                 if (resourceType != ResourceType.DESERT) {
                     cell.setNumber(numbers.remove(0));
                 }
-                List<Circle> circles = getCircles(x, y);
-                for (Circle circle : circles) {
-                    if (points.stream().noneMatch(e -> e.intersects(circle.getBoundsInLocal()))) {
-                        points.add(circle);
+                List<SettlePoint> circles = getCircles(x, y);
+                for (SettlePoint p : circles) {
+                    if (settlePoints.stream().noneMatch(e -> e.getBoundsInParent().intersects(p.getBoundsInParent()))) {
+                        settlePoints.add(p);
+                        p.addTerrain(cell);
+                    } else {
+                        p.removeNeighbors();
                     }
+                    settlePoints.stream().filter(e -> e.getBoundsInParent().intersects(p.getBoundsInParent()))
+                            .findFirst().ifPresent(e -> {
+                                e.addTerrain(cell);
+                                System.out.println(e + " " + p);
+                                e.addAllNeighbors(p);
+                            });
+
                 }
                 terrains.add(cell);
                 root.getChildren().add(cell);
             }
         }
-        settlePoints = points.stream().map(SettlePoint::new).collect(Collectors.toList());
+
         root.getChildren().addAll(settlePoints);
         root.setManaged(false);
+        settlePoints.forEach(e -> System.out
+                .println(e.getIdPoint() + " "
+                        + e.getNeighbors().stream().map(p -> p.getIdPoint()).collect(Collectors.toList())));
     }
 
     private List<ResourceType> createResources() {
@@ -61,15 +71,23 @@ public class CatanModel {
         return resourceTypes;
     }
 
-    private List<Circle> getCircles(double xOff,double yOff) {
-        List<Circle> circles = new ArrayList<>();
+    private List<SettlePoint> getCircles(double xOff, double yOff) {
+        List<SettlePoint> circles = new ArrayList<>();
         double off = Math.PI / 6;
         for (int i = 0; i < 6; i++) {
             double d = Math.PI / 3;
             double x = Math.cos(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
             double y = Math.sin(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
-            Circle circle = new Circle(xOff + x - Terrain.RADIUS / 10., yOff + y, Terrain.RADIUS / 5, Color.ALICEBLUE);
-            circles.add(circle);
+            double centerX = xOff + x - Terrain.RADIUS / 10.;
+            double centerY = yOff + y;
+            SettlePoint e = new SettlePoint(centerX, centerY);
+            circles.add(e);
+            if (circles.size() > 1) {
+                e.addNeighbor(circles.get(i - 1));
+            }
+            if (circles.size() == 6) {
+                e.addNeighbor(circles.get(0));
+            }
         }
         return circles;
     }
@@ -85,9 +103,8 @@ public class CatanModel {
     }
 
     private List<Integer> getNumbers() {
-        List<Integer> collect = IntStream.range(2, 13)
-                .flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e))).boxed()
-                .collect(Collectors.toList());
+        List<Integer> collect = IntStream.range(2, 13).flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
+                .boxed().collect(Collectors.toList());
         Collections.shuffle(collect);
         return collect;
     }
