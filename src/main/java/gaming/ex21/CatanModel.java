@@ -1,17 +1,20 @@
 package gaming.ex21;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public class CatanModel {
     private List<Terrain> terrains = new ArrayList<>();
     private List<SettlePoint> settlePoints = new ArrayList<>();
+
+    DragContext dragContext= new DragContext();
+    private StackPane center;
 
     private void addTerrains(StackPane root) {
         List<Integer> numbers = getNumbers();
@@ -109,12 +112,80 @@ public class CatanModel {
         return numbers;
     }
 
-    private void initialize(StackPane root) {
-        addTerrains(root);
+    private void handleMouseDragged(MouseEvent event) {
+        double offsetX = event.getScreenX() + dragContext.x;
+        double offsetY = event.getScreenY() + dragContext.y;
+        if (dragContext.element != null) {
+            CatanResource c = dragContext.element;
+            c.relocate(offsetX, offsetY );
+            if (dragContext.point != null) {
+                dragContext.point.toggleFade(1);
+                dragContext.point = null;
+            }
+            settlePoints.stream()
+                    .filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY()))
+                    .findFirst().ifPresent(e -> dragContext.point = e.toggleFade(-1));
+
+        }
     }
 
-    public static void create(StackPane root) {
+    private void handleMousePressed(MouseEvent event) {
+        Node node = (Node) event.getSource();
+        dragContext.x = node.getBoundsInParent().getMinX() - event.getScreenX();
+        dragContext.y = node.getBoundsInParent().getMinY() - event.getScreenY();
+        if (node instanceof CatanResource && center.equals(node.getParent())) {
+            dragContext.element = (CatanResource) node;
+
+        }
+    }
+
+    private void handleMouseReleased(MouseEvent event) {
+        if (dragContext.element instanceof Village) {
+
+            Optional<SettlePoint> findFirst = settlePoints.stream()
+                    .filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())).findFirst();
+            if (findFirst.isPresent() && !findFirst.get().isPointDisabled()) {
+                findFirst.get().setElement(dragContext.element);
+            } else {
+                dragContext.element.relocate(0, 0);
+            }
+            if (dragContext.point != null) {
+                dragContext.point.toggleFade(1);
+                dragContext.point = null;
+            }
+            dragContext.element = null;
+        }
+    }
+
+    private void initialize(StackPane center) {
+        this.center = center;
+        addTerrains(center);
+
+        Village e1 = new Village(PlayerColor.BLUE);
+        makeDraggable(e1);
+        center.getChildren().add(e1);
+        center.getChildren().add(new Road(PlayerColor.GOLD));
+        Village e = new Village(PlayerColor.RED);
+        makeDraggable(e);
+
+        center.getChildren().add(e);
+        center.getChildren().add(new Road(PlayerColor.BEIGE));
+    }
+
+    private void makeDraggable(Village e) {
+        e.setOnMousePressed(this::handleMousePressed);
+        e.setOnMouseDragged(this::handleMouseDragged);
+        e.setOnMouseReleased(this::handleMouseReleased);
+    }
+
+    public static void create(StackPane root, VBox value) {
         new CatanModel().initialize(root);
 
+    }
+
+    class DragContext{
+        double x,y;
+        CatanResource element;
+        SettlePoint point;
     }
 }

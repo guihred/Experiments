@@ -76,15 +76,15 @@ public class PixelHelper {
         return Color.rgb(r, g, b, a / (double) MAX_BYTE);
     }
 
+    public static int getByte(final int argb,int i) {
+        return argb >> 8*i & 0xFF;
+    }
+
     public static int toArgb(Color c) {
         int b = (int) (c.getBlue() * MAX_BYTE);
         int r = (int) (c.getRed() * MAX_BYTE);
         int g = (int) (c.getGreen() * MAX_BYTE);
         int a = (int) (c.getOpacity() * MAX_BYTE);
         return a << 8 * 3 | r << 8 * 2 | g << 8 | b;
-    }
-
-    private static int getByte(final int argb,int i) {
-        return argb >> 8*i & 0xFF;
     }
 }

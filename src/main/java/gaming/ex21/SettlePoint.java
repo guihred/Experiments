@@ -1,23 +1,33 @@
 package gaming.ex21;
 
+import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
+import simplebuilder.SimpleFadeTransitionBuilder;
 
 public class SettlePoint extends Group {
     private static int i = 1;
-    private final Circle circle = new Circle(10, Color.TRANSPARENT);
+
+    private CatanResource element;
+    private final Circle circle = new Circle(20, Color.BLACK);
     private final ObservableList<Terrain> terrains = FXCollections.observableArrayList();
     private final ObservableList<SettlePoint> neighbors = FXCollections.observableArrayList();
     private final int id;
+    private final FadeTransition highlightTransition = new SimpleFadeTransitionBuilder().node(circle)
+            .duration(Duration.millis(200)).fromValue(1).toValue(0).build();
 
     public SettlePoint(double x, double y) {
+        highlightTransition.play();
         relocate(x, y);
         getChildren().add(circle);
         id = i++;
         setManaged(false);
+
     }
 
     public void addAllNeighbors(SettlePoint p) {
@@ -45,6 +55,10 @@ public class SettlePoint extends Group {
         return circle;
     }
 
+    public CatanResource getElement() {
+        return element;
+    }
+
     public int getIdPoint() {
         return id;
     }
@@ -57,14 +71,40 @@ public class SettlePoint extends Group {
         return terrains;
     }
 
+    public boolean isPointDisabled() {
+        return neighbors.stream().anyMatch(e -> e.element != null);
+    }
+
     public void removeNeighbors() {
         for (SettlePoint settlePoint : neighbors) {
             settlePoint.neighbors.remove(this);
         }
     }
 
+    public void setElement(CatanResource element) {
+        StackPane parent = (StackPane) element.getParent();
+        parent.getChildren().remove(element);
+        getChildren().add(element);
+        element.setLayoutX(-element.getImage().getWidth() / 2);
+        element.setLayoutY(-element.getImage().getHeight() / 2);
+        toggleFade(1);
+        this.element = element;
+    }
+
+    public SettlePoint toggleFade(int r) {
+        if (isPointDisabled()) {
+            circle.setFill(Color.RED);
+        }
+        if (element == null) {
+            highlightTransition.setRate(r);
+            highlightTransition.play();
+        }
+        return this;
+    }
+
     @Override
     public String toString() {
         return "(" + id + ")";
     }
+
 }
