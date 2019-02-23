@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 
 public class CatanModel {
     private List<Terrain> terrains = new ArrayList<>();
@@ -41,6 +40,12 @@ public class CatanModel {
         root.setManaged(false);
         settlePoints.forEach(e -> System.out.println(e.getIdPoint() + " "
                 + e.getNeighbors().stream().map(SettlePoint::getIdPoint).collect(Collectors.toList())));
+
+        List<EdgeCatan> collect = settlePoints.stream().flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t)))
+                .distinct().collect(Collectors.toList());
+        root.getChildren()
+                .addAll(collect);
+
     }
 
     private List<ResourceType> createResources() {
@@ -157,9 +162,9 @@ public class CatanModel {
         }
     }
 
-    private void initialize(StackPane center) {
-        this.center = center;
-        addTerrains(center);
+    private void initialize(StackPane center1) {
+        center = center1;
+        addTerrains(center1);
 
         Village e1 = new Village(PlayerColor.BLUE);
         makeDraggable(e1);
@@ -178,7 +183,7 @@ public class CatanModel {
         e.setOnMouseReleased(this::handleMouseReleased);
     }
 
-    public static void create(StackPane root, VBox value) {
+    public static void create(StackPane root) {
         new CatanModel().initialize(root);
 
     }

@@ -71,6 +71,11 @@ public class SettlePoint extends Group {
         return terrains;
     }
 
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     public boolean isPointDisabled() {
         return neighbors.stream().anyMatch(e -> e.element != null);
     }
