@@ -45,10 +45,11 @@ public class SettlePoint extends Group {
         }
     }
 
-    public void addTerrain(Terrain terrain) {
+    public SettlePoint addTerrain(Terrain terrain) {
         if (!terrains.contains(terrain)) {
             terrains.add(terrain);
         }
+        return this;
     }
 
     public Circle getCircle() {

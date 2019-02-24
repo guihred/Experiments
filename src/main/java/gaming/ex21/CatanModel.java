@@ -5,8 +5,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import utils.ResourceFXUtils;
 
 public class CatanModel {
     private List<Terrain> terrains = new ArrayList<>();
@@ -64,33 +68,29 @@ public class CatanModel {
 
     private void createSettlePoints(Terrain cell, double x, double y) {
         for (SettlePoint p : getCircles(x, y)) {
-            if (settlePoints.stream().noneMatch(e -> e.getBoundsInParent().intersects(p.getBoundsInParent()))) {
+            if (settlePoints.stream().noneMatch(e -> intersects(p, e))) {
                 settlePoints.add(p);
                 p.addTerrain(cell);
             } else {
                 p.removeNeighbors();
             }
-            settlePoints.stream().filter(e -> e.getBoundsInParent().intersects(p.getBoundsInParent())).findFirst()
-                    .ifPresent(e -> {
-                        e.addTerrain(cell);
-                        e.addAllNeighbors(p);
-                    });
+            settlePoints.stream().filter(e -> intersects(p, e)).findFirst()
+                    .ifPresent(e -> e.addTerrain(cell).addAllNeighbors(p));
 
         }
     }
 
-    private boolean edgeAcceptRoad(EdgeCatan edgeCatan, Road road) {
-        return edgeCatan.matchColor(road.getPlayer())
+    private boolean edgeAcceptRoad(EdgeCatan edge, Road road) {
+        return edge.matchColor(road.getPlayer())
                 || edges.stream().anyMatch(e -> e.getElement() != null && e.getPoints().stream()
-                        .anyMatch(
-                                p -> edgeCatan.getPoints().contains(p) && e.matchColor(road.getPlayer())));
+                        .anyMatch(p -> edge.getPoints().contains(p) && e.matchColor(road.getPlayer())));
     }
 
-    private boolean edgeAcceptRoad(Optional<EdgeCatan> findFirst, Road road) {
-        if (!findFirst.isPresent()) {
+    private boolean edgeAcceptRoad(Optional<EdgeCatan> firstEdge, Road road) {
+        if (!firstEdge.isPresent()) {
             return false;
         }
-        EdgeCatan edgeCatan = findFirst.get();
+        EdgeCatan edgeCatan = firstEdge.get();
         return edgeAcceptRoad(edgeCatan, road);
     }
 
@@ -143,8 +143,8 @@ public class CatanModel {
                     dragContext.point.toggleFade(1);
                     dragContext.point = null;
                 }
-                settlePoints.stream().filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY()))
-                        .findFirst().ifPresent(e -> dragContext.point = e.toggleFade(-1));
+                settlePoints.stream().filter(e -> inArea(event, e)).findFirst()
+                        .ifPresent(e -> dragContext.point = e.toggleFade(-1));
             }
             if (dragContext.element instanceof Road) {
                 Road element = (Road) dragContext.element;
@@ -152,8 +152,8 @@ public class CatanModel {
                     dragContext.edge.toggleFade(1, edgeAcceptRoad(dragContext.edge, element));
                     dragContext.edge = null;
                 }
-                edges.stream().filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY()))
-                        .findFirst().ifPresent(e -> dragContext.edge = e.toggleFade(-1, edgeAcceptRoad(e, element)));
+                edges.stream().filter(e -> inArea(event, e)).findFirst()
+                        .ifPresent(e -> dragContext.edge = e.toggleFade(-1, edgeAcceptRoad(e, element)));
             }
 
         }
@@ -171,7 +171,7 @@ public class CatanModel {
     private void handleMouseReleased(MouseEvent event) {
         if (dragContext.element instanceof Village) {
             Optional<SettlePoint> findFirst = settlePoints.stream()
-                    .filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())).findFirst();
+                    .filter(e -> inArea(event, e)).findFirst();
             if (findFirst.isPresent() && !findFirst.get().isPointDisabled()) {
                 findFirst.get().setElement(dragContext.element);
             } else {
@@ -185,7 +185,7 @@ public class CatanModel {
         }
         if (dragContext.element instanceof Road) {
             Optional<EdgeCatan> edgeHovered = edges.stream()
-                    .filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())).findFirst();
+                    .filter(e -> inArea(event, e)).findFirst();
             Road road = (Road) dragContext.element;
             if (edgeAcceptRoad(edgeHovered, road)) {
                 edgeHovered.get().setElement(road);
@@ -200,10 +200,13 @@ public class CatanModel {
         }
     }
 
-    private void initialize(StackPane center1) {
+    private boolean inArea(MouseEvent event, Node e) {
+        return e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY());
+    }
+
+    private void initialize(StackPane center1, VBox value) {
         center = center1;
         addTerrains(center1);
-
         center.getChildren().add(makeDraggable(new Village(PlayerColor.BLUE)));
         center.getChildren().add(makeDraggable(new Village(PlayerColor.BEIGE)));
         center.getChildren().add(makeDraggable(new Village(PlayerColor.RED)));
@@ -211,6 +214,26 @@ public class CatanModel {
         center.getChildren().add(makeDraggable(new Road(PlayerColor.BEIGE)));
         center.getChildren().add(makeDraggable(new Road(PlayerColor.BLUE)));
         center.getChildren().add(makeDraggable(new Road(PlayerColor.RED)));
+        
+        for (Combination combination : Combination.values()) {
+            List<ResourceType> resources = combination.getResources();
+            HBox e = new HBox();
+            for (ResourceType resourceType : resources) {
+                ImageView e2 = new ImageView(ResourceFXUtils.toExternalForm("catan/" + resourceType.getPure()));
+                e2.setFitWidth(20);
+                e2.setPreserveRatio(true);
+                e.getChildren().add(e2);
+            }
+            value.getChildren().add(e);
+        }
+        
+        
+        
+        
+    }
+
+    private boolean intersects(SettlePoint p, SettlePoint e) {
+        return e.getBoundsInParent().intersects(p.getBoundsInParent());
     }
 
     private CatanResource makeDraggable(CatanResource e) {
@@ -220,7 +243,7 @@ public class CatanModel {
         return e;
     }
 
-    public static void create(StackPane root) {
-        new CatanModel().initialize(root);
+    public static void create(StackPane root, VBox value) {
+        new CatanModel().initialize(root, value);
     }
 }
