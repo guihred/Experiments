@@ -240,6 +240,8 @@ public class SelectRectTool extends PaintTool {
 
 	@Override
 	protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
 		ObservableList<Node> children = model.getImageStack().getChildren();
 
 		if (children.contains(getArea())) {
@@ -256,19 +258,26 @@ public class SelectRectTool extends PaintTool {
 		initialX = e.getX();
 		initialY = e.getY();
 		addRect(model);
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
 	}
 
 	@Override
 	protected void onMouseReleased(final PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (getArea().getWidth() < 2 && children.contains(getArea()) && imageSelected != null) {
-
 			children.remove(getArea());
 		}
-		area.setStroke(Color.BLUE);
+        area.setStroke(Color.BLUE);
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
 	}
 
 	protected void setIntoImage(final PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
 		int x = (int) getArea().getLayoutX();
 		int y = (int) getArea().getLayoutY();
 		double width = getArea().getWidth();
@@ -278,6 +287,8 @@ public class SelectRectTool extends PaintTool {
 		imageSelected = null;
 		model.getImageStack().getChildren().remove(getArea());
 		model.createImageVersion();
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
 	}
 
 	private void copyFromFile(final PaintModel model, final List<File> files) {
@@ -320,7 +331,8 @@ public class SelectRectTool extends PaintTool {
 
 	private void deleteImage(final PaintModel model, final Bounds bounds) {
 		if (imageSelected == null) {
-			new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth()).height(bounds.getHeight()).drawRect(model, model.getBackColor());
+            new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
+                    .height(bounds.getHeight() - 1).drawRect(model, model.getBackColor());
 		}
 		imageSelected = null;
 		ObservableList<Node> children = model.getImageStack().getChildren();
@@ -338,12 +350,16 @@ public class SelectRectTool extends PaintTool {
 	}
 
 	private void escapeArea(final PaintModel model) {
-		if (imageSelected != null) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        if (imageSelected != null) {
 			setIntoImage(model);
 		}
 		if (model.getImageStack().getChildren().contains(getArea())) {
 			model.getImageStack().getChildren().remove(getArea());
 		}
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
 	}
 
 	private void onChangeOption(final Toggle newV, final PaintModel model) {

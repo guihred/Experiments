@@ -1,6 +1,5 @@
 package paintexp;
 
-import graphs.entities.ZoomableScrollPane;
 import java.util.List;
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -65,7 +64,7 @@ public class PaintMain extends Application {
                 (int) paintModel.getImage().getHeight(), reader, 0, 0);
         paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);
         paintModel.createImageVersion();
-        root.setCenter(new ZoomableScrollPane(paintModel.getImageStack()));
+        root.setCenter(paintModel.getScrollPane());
 
         final int gap = 50;
         HBox hBox = new HBox(gap, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());

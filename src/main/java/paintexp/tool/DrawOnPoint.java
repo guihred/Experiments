@@ -32,8 +32,7 @@ public interface DrawOnPoint {
     }
 
     static boolean withinRange(final double x, final double y, final PaintModel model) {
-        WritableImage image = model.getImage();
-        return withinImage(x, y, image);
+        return withinImage(x, y, model.getImage());
     }
 
     static boolean withinRange(final int x, final int y, final PaintModel model) {

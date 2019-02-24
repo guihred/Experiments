@@ -1,5 +1,6 @@
 package paintexp;
 
+import graphs.entities.ZoomableScrollPane;
 import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
@@ -37,18 +38,24 @@ public class PaintEditUtils {
             paintModel.changeTool(null);
         }
 
-        a.selectArea(0, 0, (int) paintModel.getImage().getWidth(), (int) paintModel.getImage().getHeight(), paintModel);
+        a.selectArea(0, 0, (int) paintModel.getImage().getWidth() - 1, (int) paintModel.getImage().getHeight() - 1,
+                paintModel);
     }
 
     public static void undo(PaintModel paintModel) {
         List<WritableImage> imageVersions = paintModel.getImageVersions();
         if (!imageVersions.isEmpty()) {
+            ZoomableScrollPane scrollPane = paintModel.getScrollPane();
+            double hvalue = scrollPane.getHvalue();
+            double vvalue = scrollPane.getVvalue();
             WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
             paintModel.getImageStack().getChildren().clear();
             ImageView imageView = new ImageView(writableImage);
             paintModel.setImage(writableImage);
             paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
             paintModel.getImageStack().getChildren().add(imageView);
+            scrollPane.setHvalue(hvalue);
+            scrollPane.setVvalue(vvalue);
         }
     }
 

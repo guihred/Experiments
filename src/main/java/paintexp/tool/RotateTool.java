@@ -46,12 +46,16 @@ public class RotateTool extends SelectRectTool {
 
 	@Override
 	protected void addRect(final PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
 		if (!model.getImageStack().getChildren().containsAll(getCircles(model))) {
 			model.getImageStack().getChildren().addAll(getCircles(model));
 		}
 		super.addRect(model);
 		getArea().setRotate(0);
 		dragged = false;
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
 	}
 
 	@Override

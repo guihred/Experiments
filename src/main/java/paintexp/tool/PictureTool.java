@@ -161,11 +161,16 @@ public class PictureTool extends PaintTool {
 
     @Override
     protected  void onMouseReleased(final PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+
         ObservableList<Node> children = model.getImageStack().getChildren();
 		if (children.contains(getArea())) {
 			takeSnapshotFill(model, area);
         }
         children.remove(getArea());
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
     }
 
 }
