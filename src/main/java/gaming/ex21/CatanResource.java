@@ -40,10 +40,13 @@ public abstract class CatanResource extends Group {
         return view.getBoundsInParent();
     }
 
+    public PlayerColor getPlayer() {
+        return player.get();
+    }
+
     public ObjectProperty<PlayerColor> playerProperty() {
         return player;
     }
-
     public void setPlayer(PlayerColor color) {
         player.set(color);
     }

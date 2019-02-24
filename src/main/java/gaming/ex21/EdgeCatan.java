@@ -1,5 +1,6 @@
 package gaming.ex21;
 
+import graphs.entities.Edge;
 import java.util.HashSet;
 import java.util.Set;
 import javafx.animation.FadeTransition;
@@ -22,7 +23,9 @@ public class EdgeCatan extends Group {
         double x = a.getLayoutX() + b.getLayoutX();
         double y = a.getLayoutY() + b.getLayoutY();
         relocate(x / 2, y / 2);
+        highlightTransition.play();
         double value = -a.getLayoutX() + x / 2;
+        line.setFill(Color.TRANSPARENT);
         line.setStartX(value);
         line.setStartY(-a.getLayoutY() + y / 2);
         double value2 = x / 2 - b.getLayoutX();
@@ -46,6 +49,10 @@ public class EdgeCatan extends Group {
         return ((EdgeCatan) obj).points.equals(points);
     }
 
+    public CatanResource getElement() {
+        return element;
+    }
+
     public Set<SettlePoint> getPoints() {
         return points;
     }
@@ -55,18 +62,28 @@ public class EdgeCatan extends Group {
         return points.hashCode();
     }
 
-    public void setElement(CatanResource element) {
+    public boolean matchColor(PlayerColor player) {
+        return points.stream()
+                .anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == player);
+    }
+
+    public void setElement(Road element) {
         StackPane parent = (StackPane) element.getParent();
         parent.getChildren().remove(element);
         getChildren().add(element);
         element.setLayoutX(-element.getImage().getWidth() / 2);
         element.setLayoutY(-element.getImage().getHeight() / 2);
-        toggleFade(1);
+        toggleFade(1, true);
+        double angulo = Edge.getAngulo(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
+        element.setRotate(Math.toDegrees(angulo) - 90);
         this.element = element;
     }
 
-    public EdgeCatan toggleFade(int r) {
-        line.setFill(Color.RED);
+    public EdgeCatan toggleFade(int r, boolean enable) {
+        if (enable) {
+            line.setStroke(Color.GREEN);
+        }
+
         if (element == null) {
             highlightTransition.setRate(r);
             highlightTransition.play();

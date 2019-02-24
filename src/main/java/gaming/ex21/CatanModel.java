@@ -12,8 +12,9 @@ public class CatanModel {
     private List<Terrain> terrains = new ArrayList<>();
     private List<SettlePoint> settlePoints = new ArrayList<>();
 
-    DragContext dragContext= new DragContext();
+    private DragContext dragContext = new DragContext();
     private StackPane center;
+    private List<EdgeCatan> edges;
 
     private void addTerrains(StackPane root) {
         List<Integer> numbers = getNumbers();
@@ -36,15 +37,14 @@ public class CatanModel {
             }
         }
 
-        root.getChildren().addAll(settlePoints);
         root.setManaged(false);
         settlePoints.forEach(e -> System.out.println(e.getIdPoint() + " "
                 + e.getNeighbors().stream().map(SettlePoint::getIdPoint).collect(Collectors.toList())));
 
-        List<EdgeCatan> collect = settlePoints.stream().flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t)))
-                .distinct().collect(Collectors.toList());
-        root.getChildren()
-                .addAll(collect);
+        edges = settlePoints.stream().flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
+                .collect(Collectors.toList());
+        root.getChildren().addAll(edges);
+        root.getChildren().addAll(settlePoints);
 
     }
 
@@ -70,13 +70,28 @@ public class CatanModel {
             } else {
                 p.removeNeighbors();
             }
-            settlePoints.stream().filter(e -> e.getBoundsInParent().intersects(p.getBoundsInParent()))
-                    .findFirst().ifPresent(e -> {
+            settlePoints.stream().filter(e -> e.getBoundsInParent().intersects(p.getBoundsInParent())).findFirst()
+                    .ifPresent(e -> {
                         e.addTerrain(cell);
                         e.addAllNeighbors(p);
                     });
 
         }
+    }
+
+    private boolean edgeAcceptRoad(EdgeCatan edgeCatan, Road road) {
+        return edgeCatan.matchColor(road.getPlayer())
+                || edges.stream().anyMatch(e -> e.getElement() != null && e.getPoints().stream()
+                        .anyMatch(
+                                p -> edgeCatan.getPoints().contains(p) && e.matchColor(road.getPlayer())));
+    }
+
+    private boolean edgeAcceptRoad(Optional<EdgeCatan> findFirst, Road road) {
+        if (!findFirst.isPresent()) {
+            return false;
+        }
+        EdgeCatan edgeCatan = findFirst.get();
+        return edgeAcceptRoad(edgeCatan, road);
     }
 
     private List<SettlePoint> getCircles(double xOff, double yOff) {
@@ -122,14 +137,24 @@ public class CatanModel {
         double offsetY = event.getScreenY() + dragContext.y;
         if (dragContext.element != null) {
             CatanResource c = dragContext.element;
-            c.relocate(offsetX, offsetY );
-            if (dragContext.point != null) {
-                dragContext.point.toggleFade(1);
-                dragContext.point = null;
+            c.relocate(offsetX, offsetY);
+            if (dragContext.element instanceof Village) {
+                if (dragContext.point != null) {
+                    dragContext.point.toggleFade(1);
+                    dragContext.point = null;
+                }
+                settlePoints.stream().filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY()))
+                        .findFirst().ifPresent(e -> dragContext.point = e.toggleFade(-1));
             }
-            settlePoints.stream()
-                    .filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY()))
-                    .findFirst().ifPresent(e -> dragContext.point = e.toggleFade(-1));
+            if (dragContext.element instanceof Road) {
+                Road element = (Road) dragContext.element;
+                if (dragContext.edge != null) {
+                    dragContext.edge.toggleFade(1, edgeAcceptRoad(dragContext.edge, element));
+                    dragContext.edge = null;
+                }
+                edges.stream().filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY()))
+                        .findFirst().ifPresent(e -> dragContext.edge = e.toggleFade(-1, edgeAcceptRoad(e, element)));
+            }
 
         }
     }
@@ -140,13 +165,11 @@ public class CatanModel {
         dragContext.y = node.getBoundsInParent().getMinY() - event.getScreenY();
         if (node instanceof CatanResource && center.equals(node.getParent())) {
             dragContext.element = (CatanResource) node;
-
         }
     }
 
     private void handleMouseReleased(MouseEvent event) {
         if (dragContext.element instanceof Village) {
-
             Optional<SettlePoint> findFirst = settlePoints.stream()
                     .filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())).findFirst();
             if (findFirst.isPresent() && !findFirst.get().isPointDisabled()) {
@@ -160,37 +183,44 @@ public class CatanModel {
             }
             dragContext.element = null;
         }
+        if (dragContext.element instanceof Road) {
+            Optional<EdgeCatan> edgeHovered = edges.stream()
+                    .filter(e -> e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())).findFirst();
+            Road road = (Road) dragContext.element;
+            if (edgeAcceptRoad(edgeHovered, road)) {
+                edgeHovered.get().setElement(road);
+            } else {
+                dragContext.element.relocate(0, 0);
+            }
+            if (dragContext.edge != null) {
+                dragContext.edge.toggleFade(1, edgeAcceptRoad(edgeHovered, road));
+                dragContext.edge = null;
+            }
+            dragContext.element = null;
+        }
     }
 
     private void initialize(StackPane center1) {
         center = center1;
         addTerrains(center1);
 
-        Village e1 = new Village(PlayerColor.BLUE);
-        makeDraggable(e1);
-        center.getChildren().add(e1);
-        center.getChildren().add(new Road(PlayerColor.GOLD));
-        Village e = new Village(PlayerColor.RED);
-        makeDraggable(e);
-
-        center.getChildren().add(e);
-        center.getChildren().add(new Road(PlayerColor.BEIGE));
+        center.getChildren().add(makeDraggable(new Village(PlayerColor.BLUE)));
+        center.getChildren().add(makeDraggable(new Village(PlayerColor.BEIGE)));
+        center.getChildren().add(makeDraggable(new Village(PlayerColor.RED)));
+        center.getChildren().add(makeDraggable(new Road(PlayerColor.BEIGE)));
+        center.getChildren().add(makeDraggable(new Road(PlayerColor.BEIGE)));
+        center.getChildren().add(makeDraggable(new Road(PlayerColor.BLUE)));
+        center.getChildren().add(makeDraggable(new Road(PlayerColor.RED)));
     }
 
-    private void makeDraggable(Village e) {
+    private CatanResource makeDraggable(CatanResource e) {
         e.setOnMousePressed(this::handleMousePressed);
         e.setOnMouseDragged(this::handleMouseDragged);
         e.setOnMouseReleased(this::handleMouseReleased);
+        return e;
     }
 
     public static void create(StackPane root) {
         new CatanModel().initialize(root);
-
-    }
-
-    class DragContext{
-        double x,y;
-        CatanResource element;
-        SettlePoint point;
     }
 }

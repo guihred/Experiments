@@ -80,6 +80,10 @@ public class SettlePoint extends Group {
         return neighbors.stream().anyMatch(e -> e.element != null);
     }
 
+    public boolean matchColor(PlayerColor player) {
+        return element != null && element.getPlayer() == player;
+    }
+
     public void removeNeighbors() {
         for (SettlePoint settlePoint : neighbors) {
             settlePoint.neighbors.remove(this);
