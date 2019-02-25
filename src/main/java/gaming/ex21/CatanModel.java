@@ -1,56 +1,89 @@
 package gaming.ex21;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public class CatanModel {
     private List<Terrain> terrains = new ArrayList<>();
     private List<SettlePoint> settlePoints = new ArrayList<>();
-
+	private List<EdgeCatan> edges;
+	private ObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
+	private ObservableList<Node> elements = FXCollections.observableArrayList();
     private DragContext dragContext = new DragContext();
     private StackPane center;
-    private List<EdgeCatan> edges;
 
-    private void addTerrains(StackPane root) {
-        List<Integer> numbers = getNumbers();
-        List<ResourceType> cells = createResources();
-        double radius = Terrain.RADIUS * Math.sqrt(3);
-        for (int i = 3, j = 0, l = 0; j < cells.size(); j += i, i += j > 11 ? -1 : 1, l++) {
-            List<ResourceType> resources = cells.subList(j, j + i);
-            for (int k = 0; k < resources.size(); k++) {
-                Terrain terrain = new Terrain(resources.get(k));
-                double f = -radius / 2 * (i - 3);
-                double x = radius * k + f + radius;
-                double y = radius * l * Math.sqrt(3) / 2;
-                terrain.relocate(x, y);
-                if (resources.get(k) != ResourceType.DESERT) {
-                    terrain.setNumber(numbers.remove(0));
-                }
-                createSettlePoints(terrain, x, y);
-                terrains.add(terrain);
-                root.getChildren().add(terrain);
+	private Node addCombinations() {
+		GridPane value = new GridPane();
+		Combination[] combinations = Combination.values();
+		for (int i = 0; i < combinations.length; i++) {
+			Combination combination = combinations[i];
+			List<ResourceType> resources = combination.getResources();
+			ImageView el = new ImageView(ResourceFXUtils.toExternalForm("catan/" + combination.getElement()));
+			el.setFitWidth(30);
+			el.setFitHeight(30);
+			el.setPreserveRatio(true);
+			value.addRow(i, CommonsFX.newButton(el, "" + combination, e -> onCombinationClicked(combination)));
+            for (ResourceType resourceType : resources) {
+                ImageView e2 = new ImageView(ResourceFXUtils.toExternalForm("catan/" + resourceType.getPure()));
+                e2.setFitWidth(20);
+                e2.setPreserveRatio(true);
+				value.addRow(i, e2);
             }
-        }
+		}
+		return value;
+	}
 
-        root.setManaged(false);
-        settlePoints.forEach(e -> System.out.println(e.getIdPoint() + " "
-                + e.getNeighbors().stream().map(SettlePoint::getIdPoint).collect(Collectors.toList())));
+	private void addTerrains(final StackPane root) {
+		List<Integer> numbers = getNumbers();
+		List<ResourceType> cells = createResources();
+		double radius = Terrain.RADIUS * Math.sqrt(3);
+		for (int i = 3, j = 0, l = 0; j < cells.size(); j += i, i += j > 11 ? -1 : 1, l++) {
+			List<ResourceType> resources = cells.subList(j, j + i);
+			for (int k = 0; k < resources.size(); k++) {
+				Terrain terrain = new Terrain(resources.get(k));
+				double f = -radius / 2 * (i - 3);
+				double x = radius * k + f + radius;
+				double y = radius * l * Math.sqrt(3) / 2;
+				terrain.relocate(x, y);
+				if (resources.get(k) != ResourceType.DESERT) {
+					terrain.setNumber(numbers.remove(0));
+				}
+				createSettlePoints(terrain, x, y);
+				terrains.add(terrain);
+				root.getChildren().add(terrain);
+			}
+		}
 
-        edges = settlePoints.stream().flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
-                .collect(Collectors.toList());
-        root.getChildren().addAll(edges);
-        root.getChildren().addAll(settlePoints);
+		root.setManaged(false);
+		settlePoints.forEach(e -> System.out.println(e.getIdPoint() + " "
+				+ e.getNeighbors().stream().map(SettlePoint::getIdPoint).collect(Collectors.toList())));
 
-    }
+		edges = settlePoints.stream().flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
+				.collect(Collectors.toList());
+		root.getChildren().addAll(edges);
+		root.getChildren().addAll(settlePoints);
+
+	}
 
     private List<ResourceType> createResources() {
         EnumMap<ResourceType, Integer> resourcesMap = new EnumMap<>(ResourceType.class);
@@ -66,7 +99,7 @@ public class CatanModel {
         return resourceTypes;
     }
 
-    private void createSettlePoints(Terrain cell, double x, double y) {
+    private void createSettlePoints(final Terrain cell, final double x, final double y) {
         for (SettlePoint p : getCircles(x, y)) {
             if (settlePoints.stream().noneMatch(e -> intersects(p, e))) {
                 settlePoints.add(p);
@@ -80,13 +113,13 @@ public class CatanModel {
         }
     }
 
-    private boolean edgeAcceptRoad(EdgeCatan edge, Road road) {
+    private boolean edgeAcceptRoad(final EdgeCatan edge, final Road road) {
         return edge.matchColor(road.getPlayer())
                 || edges.stream().anyMatch(e -> e.getElement() != null && e.getPoints().stream()
                         .anyMatch(p -> edge.getPoints().contains(p) && e.matchColor(road.getPlayer())));
     }
 
-    private boolean edgeAcceptRoad(Optional<EdgeCatan> firstEdge, Road road) {
+    private boolean edgeAcceptRoad(final Optional<EdgeCatan> firstEdge, final Road road) {
         if (!firstEdge.isPresent()) {
             return false;
         }
@@ -94,7 +127,7 @@ public class CatanModel {
         return edgeAcceptRoad(edgeCatan, road);
     }
 
-    private List<SettlePoint> getCircles(double xOff, double yOff) {
+    private List<SettlePoint> getCircles(final double xOff, final double yOff) {
         List<SettlePoint> circles = new ArrayList<>();
         double off = Math.PI / 6;
         for (int i = 0; i < 6; i++) {
@@ -115,7 +148,7 @@ public class CatanModel {
         return circles;
     }
 
-    private int getLimit(int e) {
+    private int getLimit(final int e) {
         if (e == 7) {
             return 0;
         }
@@ -132,7 +165,7 @@ public class CatanModel {
         return numbers;
     }
 
-    private void handleMouseDragged(MouseEvent event) {
+    private void handleMouseDragged(final MouseEvent event) {
         double offsetX = event.getScreenX() + dragContext.x;
         double offsetY = event.getScreenY() + dragContext.y;
         if (dragContext.element != null) {
@@ -159,23 +192,24 @@ public class CatanModel {
         }
     }
 
-    private void handleMousePressed(MouseEvent event) {
+    private void handleMousePressed(final MouseEvent event) {
         Node node = (Node) event.getSource();
         dragContext.x = node.getBoundsInParent().getMinX() - event.getScreenX();
         dragContext.y = node.getBoundsInParent().getMinY() - event.getScreenY();
         if (node instanceof CatanResource && center.equals(node.getParent())) {
             dragContext.element = (CatanResource) node;
+			elements.remove(node);
         }
     }
 
-    private void handleMouseReleased(MouseEvent event) {
+    private void handleMouseReleased(final MouseEvent event) {
         if (dragContext.element instanceof Village) {
             Optional<SettlePoint> findFirst = settlePoints.stream()
                     .filter(e -> inArea(event, e)).findFirst();
             if (findFirst.isPresent() && !findFirst.get().isPointDisabled()) {
                 findFirst.get().setElement(dragContext.element);
             } else {
-                dragContext.element.relocate(0, 0);
+				elements.add(0, dragContext.element);
             }
             if (dragContext.point != null) {
                 dragContext.point.toggleFade(1);
@@ -190,7 +224,7 @@ public class CatanModel {
             if (edgeAcceptRoad(edgeHovered, road)) {
                 edgeHovered.get().setElement(road);
             } else {
-                dragContext.element.relocate(0, 0);
+				elements.add(0, dragContext.element);
             }
             if (dragContext.edge != null) {
                 dragContext.edge.toggleFade(1, edgeAcceptRoad(edgeHovered, road));
@@ -200,50 +234,67 @@ public class CatanModel {
         }
     }
 
-    private boolean inArea(MouseEvent event, Node e) {
+    private boolean inArea(final MouseEvent event, final Node e) {
         return e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY());
     }
 
-    private void initialize(StackPane center1, VBox value) {
+    private void initialize(final StackPane center1, final VBox right) {
         center = center1;
         addTerrains(center1);
-        center.getChildren().add(makeDraggable(new Village(PlayerColor.BLUE)));
-        center.getChildren().add(makeDraggable(new Village(PlayerColor.BEIGE)));
-        center.getChildren().add(makeDraggable(new Village(PlayerColor.RED)));
-        center.getChildren().add(makeDraggable(new Road(PlayerColor.BEIGE)));
-        center.getChildren().add(makeDraggable(new Road(PlayerColor.BEIGE)));
-        center.getChildren().add(makeDraggable(new Road(PlayerColor.BLUE)));
-        center.getChildren().add(makeDraggable(new Road(PlayerColor.RED)));
-        
-        for (Combination combination : Combination.values()) {
-            List<ResourceType> resources = combination.getResources();
-            HBox e = new HBox();
-            for (ResourceType resourceType : resources) {
-                ImageView e2 = new ImageView(ResourceFXUtils.toExternalForm("catan/" + resourceType.getPure()));
-                e2.setFitWidth(20);
-                e2.setPreserveRatio(true);
-                e.getChildren().add(e2);
-            }
-            value.getChildren().add(e);
-        }
-        
-        
-        
-        
-    }
+		elements.addListener(this::onElementsChange);
+		for (PlayerColor playerColor : PlayerColor.values()) {
+			elements.add(makeDraggable(new Village(playerColor)));
+			elements.add(makeDraggable(new Road(playerColor)));
+		}
 
-    private boolean intersects(SettlePoint p, SettlePoint e) {
+		currentPlayer.addListener((ob, old, newV) -> onChangePlayer(right, newV));
+		right.getChildren().add(addCombinations());
+		currentPlayer.set(PlayerColor.BLUE);
+	}
+
+	private boolean intersects(final SettlePoint p, final SettlePoint e) {
         return e.getBoundsInParent().intersects(p.getBoundsInParent());
     }
 
-    private CatanResource makeDraggable(CatanResource e) {
+	private CatanResource makeDraggable(final CatanResource e) {
         e.setOnMousePressed(this::handleMousePressed);
         e.setOnMouseDragged(this::handleMouseDragged);
         e.setOnMouseReleased(this::handleMouseReleased);
         return e;
     }
 
-    public static void create(StackPane root, VBox value) {
+	private void onChangePlayer(final VBox right, final PlayerColor newV) {
+		ImageView element = new ImageView(CatanResource
+				.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")), newV.getColor()));
+
+		if (right.getChildren().size() > 1) {
+			right.getChildren().remove(0);
+		}
+		right.getChildren().add(0, element);
+	}
+
+    private void onCombinationClicked(final Combination combination) {
+		System.out.println(combination);
+	}
+
+    private void onElementsChange(final Change<? extends Node> e) {
+		while (e.next()) {
+			List<? extends Node> addedSubList = e.getList();
+			double layoutX = 0;
+			double layoutY = center.getScene().getHeight()
+					- addedSubList.stream().mapToDouble(e1 -> e1.getBoundsInLocal().getHeight()).min().orElse(0) * 2;
+			for (Node node : addedSubList) {
+				node.setLayoutX(layoutX);
+				node.setLayoutY(layoutY);
+				if (node.getParent() == null) {
+					center.getChildren().add(node);
+				}
+				layoutX += node.getBoundsInLocal().getWidth() + 20;
+			}
+		}
+	}
+
+    public static void create(final StackPane root, final VBox value) {
         new CatanModel().initialize(root, value);
     }
 }

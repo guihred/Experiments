@@ -15,28 +15,17 @@ public abstract class CatanResource extends Group {
     private final ObjectProperty<PlayerColor> player = new SimpleObjectProperty<>();
     private final Image image;
     protected final ImageView view;
-    public CatanResource(String url) {
+    public CatanResource(final String url) {
         image = new Image(ResourceFXUtils.toExternalForm(url));
-        int w = (int) image.getWidth();
-        int h = (int) image.getHeight();
         view = new ImageView(image);
         view.setPreserveRatio(true);
         getChildren().add(view);
         setManaged(false);
-        player.addListener((ob, old, newV) -> {
-            WritableImage writableImage = new WritableImage(w, h);
+		player.addListener(
+				(ob, old, newV) -> view.setImage(convertImage(image, newV != null ? newV.getColor() : Color.BLACK)));
+	}
 
-            PixelChanger reader = new PixelChanger(image.getPixelReader());
-            if (newV != null) {
-                reader.put(Color.BLACK, newV.getColor());
-                reader.put(Color.GRAY, newV.getColor().darker());
-            }
-            writableImage.getPixelWriter().setPixels(0, 0, w, h, reader, 0, 0);
-            view.setImage(writableImage);
-        });
-    }
-
-    public Bounds getImage() {
+	public Bounds getImage() {
         return view.getBoundsInParent();
     }
 
@@ -47,8 +36,19 @@ public abstract class CatanResource extends Group {
     public ObjectProperty<PlayerColor> playerProperty() {
         return player;
     }
-    public void setPlayer(PlayerColor color) {
+
+    public void setPlayer(final PlayerColor color) {
         player.set(color);
     }
+    public static WritableImage convertImage(final Image image,final Color color) {
+		int w = (int) image.getWidth();
+		int h = (int) image.getHeight();
+		WritableImage writableImage = new WritableImage(w, h);
+		PixelChanger reader = new PixelChanger(image.getPixelReader());
+		reader.put(Color.BLACK, color);
+		reader.put(Color.GRAY, color.darker());
+		writableImage.getPixelWriter().setPixels(0, 0, w, h, reader, 0, 0);
+		return writableImage;
+	}
 
 }
