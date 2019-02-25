@@ -18,8 +18,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
@@ -238,7 +238,7 @@ public class CatanModel {
         return e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY());
     }
 
-    private void initialize(final StackPane center1, final VBox right) {
+	private void initialize(final StackPane center1, final Pane right) {
         center = center1;
         addTerrains(center1);
 		elements.addListener(this::onElementsChange);
@@ -263,7 +263,7 @@ public class CatanModel {
         return e;
     }
 
-	private void onChangePlayer(final VBox right, final PlayerColor newV) {
+	private void onChangePlayer(final Pane right, final PlayerColor newV) {
 		ImageView element = new ImageView(CatanResource
 				.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")), newV.getColor()));
 
@@ -294,7 +294,7 @@ public class CatanModel {
 		}
 	}
 
-    public static void create(final StackPane root, final VBox value) {
+	public static void create(final StackPane root, final Pane value) {
         new CatanModel().initialize(root, value);
     }
 }
