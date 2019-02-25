@@ -3,6 +3,7 @@ package gaming.ex21;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -12,7 +13,7 @@ public class CatanApp extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception {
         StackPane center = new StackPane();
-        VBox value = new VBox();
+		Pane value = new VBox();
         BorderPane root = new BorderPane(center);
         root.setRight(value);
         double size = Terrain.RADIUS * Math.sqrt(3) * 5.5;
