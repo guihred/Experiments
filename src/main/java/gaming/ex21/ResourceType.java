@@ -2,7 +2,7 @@ package gaming.ex21;
 
 public enum ResourceType {
     WOOD("forest.png", "wood.png", "purewood.png"),
-    BRICK("barrenarea.png", "brick.png", "purebricks.png"),
+	BRICK("barrenarea.png", "bricks.png", "purebricks.png"),
     ROCK("mountain.png", "rock.png", "purerock.png"),
     SHEEP("grassfield.png", "sheep.png", "puresheep.png"),
     WHEAT("cropfield.png", "wheat.png", "purewheat.png"),
@@ -11,12 +11,12 @@ public enum ResourceType {
     private final String resource;
     private String pure;
 
-    ResourceType(String terrain, String resource) {
+    ResourceType(final String terrain, final String resource) {
         this.terrain = terrain;
         this.resource = resource;
     }
 
-    ResourceType(String terrain, String resource, String pure) {
+    ResourceType(final String terrain, final String resource, final String pure) {
         this.terrain = terrain;
         this.resource = resource;
         this.pure = pure;

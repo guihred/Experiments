@@ -21,20 +21,23 @@ public class Terrain extends Group {
     private final ResourceType type;
     private final IntegerProperty number = new SimpleIntegerProperty();
 
-    public Terrain(ResourceType type) {
+    public Terrain(final ResourceType type) {
         this.type = type;
         getChildren().add(new StackPane(getPolygon(), getCircle(), getNumberText()));
         setManaged(false);
     }
 
+    public int getNumber() {
+		return number.get();
+	}
+
     public ResourceType getType() {
         return type;
     }
 
-    public void setNumber(int number) {
-        this.number.set(number);
-    }
-
+	public void setNumber(final int number) {
+		this.number.set(number);
+	}
     private Circle getCircle() {
         Circle e2 = new Circle(RADIUS / 5, Color.BEIGE);
         e2.setStroke(Color.BLACK);

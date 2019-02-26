@@ -1,5 +1,7 @@
 package gaming.ex21;
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,6 +16,7 @@ public class SettlePoint extends Group {
     private static int i = 1;
 
     private CatanResource element;
+	private final List<EdgeCatan> edges = new ArrayList<>();
     private final Circle circle = new Circle(20, Color.BLACK);
     private final ObservableList<Terrain> terrains = FXCollections.observableArrayList();
     private final ObservableList<SettlePoint> neighbors = FXCollections.observableArrayList();
@@ -21,7 +24,7 @@ public class SettlePoint extends Group {
     private final FadeTransition highlightTransition = new SimpleFadeTransitionBuilder().node(circle)
             .duration(Duration.millis(200)).fromValue(1).toValue(0).build();
 
-    public SettlePoint(double x, double y) {
+    public SettlePoint(final double x, final double y) {
         highlightTransition.play();
         relocate(x, y);
         getChildren().add(circle);
@@ -30,13 +33,13 @@ public class SettlePoint extends Group {
 
     }
 
-    public void addAllNeighbors(SettlePoint p) {
+    public void addAllNeighbors(final SettlePoint p) {
         if (p != this) {
             p.getNeighbors().forEach(this::addNeighbor);
         }
     }
 
-    public void addNeighbor(SettlePoint point) {
+    public void addNeighbor(final SettlePoint point) {
         if (!getNeighbors().contains(point)) {
             getNeighbors().add(point);
         }
@@ -45,7 +48,7 @@ public class SettlePoint extends Group {
         }
     }
 
-    public SettlePoint addTerrain(Terrain terrain) {
+    public SettlePoint addTerrain(final Terrain terrain) {
         if (!terrains.contains(terrain)) {
             terrains.add(terrain);
         }
@@ -55,6 +58,10 @@ public class SettlePoint extends Group {
     public Circle getCircle() {
         return circle;
     }
+
+    public List<EdgeCatan> getEdges() {
+		return edges;
+	}
 
     public CatanResource getElement() {
         return element;
@@ -81,7 +88,7 @@ public class SettlePoint extends Group {
         return neighbors.stream().anyMatch(e -> e.element != null);
     }
 
-    public boolean matchColor(PlayerColor player) {
+    public boolean matchColor(final PlayerColor player) {
         return element != null && element.getPlayer() == player;
     }
 
@@ -91,7 +98,10 @@ public class SettlePoint extends Group {
         }
     }
 
-    public void setElement(CatanResource element) {
+    public void setElement(final CatanResource element) {
+		if (this.element != null) {
+			getChildren().remove(this.element);
+		}
         StackPane parent = (StackPane) element.getParent();
         parent.getChildren().remove(element);
         getChildren().add(element);
@@ -101,7 +111,7 @@ public class SettlePoint extends Group {
         this.element = element;
     }
 
-    public SettlePoint toggleFade(int r) {
+    public SettlePoint toggleFade(final int r) {
         if (isPointDisabled()) {
             circle.setFill(Color.RED);
         }
@@ -112,7 +122,7 @@ public class SettlePoint extends Group {
         return this;
     }
 
-    @Override
+	@Override
     public String toString() {
         return "(" + id + ")";
     }

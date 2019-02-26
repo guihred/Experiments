@@ -6,10 +6,10 @@ public enum PlayerColor {
     GOLD(Color.GOLD),
     RED(Color.RED),
     BLUE(Color.BLUE),
-    BEIGE(Color.BEIGE);
+	GREEN(Color.GREEN);
     private final Color color;
 
-    private PlayerColor(Color color) {
+    private PlayerColor(final Color color) {
         this.color = color;
     }
 
