@@ -51,7 +51,11 @@ public class CatanModel {
 			.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")), Color.BLUE));
 	
 
-	private Node addCombinations() {
+	private Dice dice1 = new Dice();
+
+	private Dice dice2 = new Dice();
+
+    private Node addCombinations() {
 		GridPane value = new GridPane();
 		Combination[] combinations = Combination.values();
 		for (int i = 0; i < combinations.length; i++) {
@@ -189,14 +193,14 @@ public class CatanModel {
         return 2;
     }
 
-    private List<Integer> getNumbers() {
+	private List<Integer> getNumbers() {
         List<Integer> numbers = IntStream.range(2, 13).flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
                 .boxed().collect(Collectors.toList());
         Collections.shuffle(numbers);
         return numbers;
     }
 
-    private void handleMouseDragged(final MouseEvent event) {
+	private void handleMouseDragged(final MouseEvent event) {
         double offsetX = event.getScreenX() + dragContext.x;
         double offsetY = event.getScreenY() + dragContext.y;
         if (dragContext.element != null) {
@@ -232,7 +236,7 @@ public class CatanModel {
         }
     }
 
-	private void handleMousePressed(final MouseEvent event) {
+    private void handleMousePressed(final MouseEvent event) {
 		Node node = (Node) event.getSource();
 		dragContext.x = node.getBoundsInParent().getMinX() - event.getScreenX();
 		dragContext.y = node.getBoundsInParent().getMinY() - event.getScreenY();
@@ -288,9 +292,9 @@ public class CatanModel {
         }
     }
 
-    private boolean inArea(final MouseEvent event, final Node e) {
-        return e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY());
-    }
+	private boolean inArea(final MouseEvent event, final Node e) {
+		return e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY());
+	}
 
 	private void initialize(final StackPane center1, final Pane right) {
         center = center1;
@@ -310,6 +314,7 @@ public class CatanModel {
 		Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
 		throwButton.disableProperty().bind(diceThrown);
 		right.getChildren().add(new HBox(skipButton, throwButton));
+		right.getChildren().add(new HBox(dice1, dice2));
 		right.getChildren().add(addCombinations());
 		currentPlayer.set(PlayerColor.BLUE);
 	}
@@ -415,8 +420,7 @@ public class CatanModel {
 	}
 
 	private void throwDice() {
-		Random random = new Random();
-		int a = random.nextInt(6) + random.nextInt(6) + 2;
+		int a = dice1.throwDice() + dice2.throwDice();
 		settlePoints.stream().filter(e -> e.getElement() != null)
 				.forEach(e -> cards.get(e.getElement().getPlayer())
 						.addAll(e.getTerrains().stream().filter(t -> t.getNumber() == a)
