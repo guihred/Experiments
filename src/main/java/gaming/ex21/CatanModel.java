@@ -12,13 +12,16 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -38,6 +41,7 @@ public class CatanModel {
 	private ObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
 	private ObservableList<Node> elements = FXCollections.observableArrayList();
     private DragContext dragContext = new DragContext();
+	private BooleanProperty diceThrown = new SimpleBooleanProperty(false);
     private StackPane center;
 
 	private Group cardGroup = new Group();
@@ -296,18 +300,16 @@ public class CatanModel {
 			elements.add(makeDraggable(new Village(playerColor)));
 			elements.add(makeDraggable(new Road(playerColor)));
 			cards.put(playerColor, new ArrayList<>());
-			for (ResourceType type : ResourceType.values()) {
-				if (type.getResource() != null) {
-					cards.get(playerColor).add(new CatanCard(type));
-					cards.get(playerColor).add(new CatanCard(type));
-				}
-			}
 		}
 		currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
 		right.getChildren().add(userImage);
 		right.getChildren().add(cardGroup);
-		right.getChildren().add(new HBox(CommonsFX.newButton("Skip Turn", e -> onSkipTurn()),
-				CommonsFX.newButton("Throw Dices", e -> throwDice())));
+		Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
+		skipButton.disableProperty().bind(diceThrown.not());
+
+		Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
+		throwButton.disableProperty().bind(diceThrown);
+		right.getChildren().add(new HBox(skipButton, throwButton));
 		right.getChildren().add(addCombinations());
 		currentPlayer.set(PlayerColor.BLUE);
 	}
@@ -329,6 +331,7 @@ public class CatanModel {
     }
 
 	private void onChangePlayer(final PlayerColor newV) {
+
 		userImage.setFitWidth(100);
 		userImage.setPreserveRatio(true);
 		userImage.setImage(CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")),
@@ -363,8 +366,7 @@ public class CatanModel {
 			List<ResourceType> resources = combination.getResources().stream().collect(Collectors.toList());
 			for (int i = 0; i < resources.size(); i++) {
 				ResourceType r = resources.get(i);
-				CatanCard orElse = list.stream().filter(e -> e.getResource() == r).findFirst().orElse(null);
-				list.remove(orElse);
+				list.remove(list.stream().filter(e -> e.getResource() == r).findFirst().orElse(null));
 			}
 			switch (combination) {
 				case VILLAGE:
@@ -409,6 +411,7 @@ public class CatanModel {
 		PlayerColor value = currentPlayer.get();
 		PlayerColor[] values = PlayerColor.values();
 		currentPlayer.set(values[(value.ordinal() + 1) % values.length]);
+		diceThrown.set(false);
 	}
 
 	private void throwDice() {
@@ -419,6 +422,7 @@ public class CatanModel {
 						.addAll(e.getTerrains().stream().filter(t -> t.getNumber() == a)
 								.map(t -> new CatanCard(t.getType())).collect(Collectors.toList())));
 		onChangePlayer(currentPlayer.get());
+		diceThrown.set(true);
 	}
 
 

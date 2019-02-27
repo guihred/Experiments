@@ -1,10 +1,12 @@
 package gaming.ex21;
 
-
 import java.util.Objects;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import utils.ResourceFXUtils;
@@ -19,17 +21,33 @@ public class CatanCard extends Rectangle {
 	private final BooleanProperty selected = new SimpleBooleanProperty(false);
 
 	public CatanCard(final DevelopmentType type) {
-		development= type;
+		development = type;
 		setStandard(type.getImage());
 	}
 
 	public CatanCard(final ResourceType type) {
-		setResource(type);
+		resource = type;
 		setStandard(type.getResource());
+	}
+
+	public DevelopmentType getDevelopment() {
+		return development;
+	}
+
+	public ResourceType getResource() {
+		return resource;
 	}
 
 	public boolean isSelected() {
 		return selected.get();
+	}
+
+	public void setDevelopment(final DevelopmentType development) {
+		this.development = development;
+	}
+
+	public void setResource(final ResourceType resource) {
+		this.resource = resource;
 	}
 
 	public void setSelected(final Boolean value) {
@@ -38,33 +56,19 @@ public class CatanCard extends Rectangle {
 
 	@Override
 	public String toString() {
-		return Objects.toString(getResource(), Objects.toString(development, ""));
+		return Objects.toString(resource, Objects.toString(development, ""));
 	}
 
 	private void setStandard(final String type) {
-		// setPadding(new Insets(10));
 		setManaged(false);
 		String externalForm = ResourceFXUtils.toExternalForm("catan/" + type);
 		setFill(new ImagePattern(new Image(externalForm)));
 		setWidth(PREF_WIDTH);
 		setHeight(PREF_HEIGHT);
-	}
+		setOnMouseClicked(e -> selected.set(!selected.get()));
 
-	public ResourceType getResource() {
-		return resource;
-	}
-
-	public void setResource(ResourceType resource) {
-		this.resource = resource;
-	}
-
-	public DevelopmentType getDevelopment() {
-		return development;
-	}
-
-	public void setDevelopment(DevelopmentType development) {
-		this.development = development;
+		InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
+		effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
 	}
 
 }
-
