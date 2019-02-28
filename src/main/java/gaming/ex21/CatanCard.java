@@ -65,7 +65,6 @@ public class CatanCard extends Rectangle {
 		setFill(new ImagePattern(new Image(externalForm)));
 		setWidth(PREF_WIDTH);
 		setHeight(PREF_HEIGHT);
-		setOnMouseClicked(e -> selected.set(!selected.get()));
 
 		InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
 		effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));

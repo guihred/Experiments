@@ -1,9 +1,11 @@
 package gaming.ex21;
 
 import javafx.scene.Group;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import utils.ResourceFXUtils;
 
 public class Port extends Group {
 
@@ -12,7 +14,9 @@ public class Port extends Group {
 
     public Port(final ResourceType type) {
         this.type = type;
-		getChildren().add(new StackPane(getNumberText()));
+        getChildren().add(new StackPane(new ImageView(ResourceFXUtils.toExternalForm("catan/boat.png")),
+                new ImageView(ResourceFXUtils.toExternalForm("catan/" + type.getPure())),
+                getNumberText()));
         setManaged(false);
     }
 
