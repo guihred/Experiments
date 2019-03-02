@@ -1,6 +1,14 @@
 package gaming.ex21;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -354,8 +362,7 @@ public class CatanModel {
     }
 
 	private boolean isSuitableForCity(final MouseEvent event, final SettlePoint e) {
-		return e.getElement() != null
-				&& e.getElement().getPlayer() == currentPlayer.get() && inArea(event, e);
+		return inArea(event, e) && e.getElement() != null && e.getElement().getPlayer() == currentPlayer.get();
 	}
 
 	private CatanResource makeDraggable(final CatanResource e) {
@@ -365,13 +372,13 @@ public class CatanModel {
         return e;
     }
 
-	private CatanCard newCard(DevelopmentType type) {
+	private CatanCard newCard(final DevelopmentType type) {
         CatanCard card = new CatanCard(type);
         card.setOnMouseClicked(e -> onSelectCard(card));
         return card;
     }
 
-	private CatanCard newCard(ResourceType t) {
+	private CatanCard newCard(final ResourceType t) {
         CatanCard catanCard = new CatanCard(t);
         catanCard.setOnMouseClicked(e -> onSelectCard(catanCard));
         return catanCard;
@@ -455,7 +462,7 @@ public class CatanModel {
 		}
 	}
 
-    private void onSelectCard(CatanCard catanCard) {
+    private void onSelectCard(final CatanCard catanCard) {
         catanCard.setSelected(!catanCard.isSelected());
         long count = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected).count();
         long c = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected)
@@ -466,7 +473,7 @@ public class CatanModel {
 
     }
 
-    private void onSelectResource(SimpleToggleGroupBuilder group, HBox res, Toggle n) {
+    private void onSelectResource(final SimpleToggleGroupBuilder group, final HBox res, final Toggle n) {
         if(n==null) {
             return;
         }
@@ -509,7 +516,7 @@ public class CatanModel {
 	private void throwDice() {
 		int a = dice1.throwDice() + dice2.throwDice();
 		settlePoints.stream().filter(e -> e.getElement() != null)
-                .flatMap((SettlePoint e) -> e.getElement() instanceof City ? Stream.of(e, e) : Stream.of(e))
+                .flatMap((final SettlePoint e) -> e.getElement() instanceof City ? Stream.of(e, e) : Stream.of(e))
 				.forEach(e -> cards.get(e.getElement().getPlayer())
 						.addAll(e.getTerrains().stream().filter(t -> t.getNumber() == a)
                                 .map(t -> newCard(t.getType())).collect(Collectors.toList())));

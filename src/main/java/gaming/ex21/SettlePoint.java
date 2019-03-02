@@ -115,10 +115,8 @@ public class SettlePoint extends Group {
         if (isPointDisabled()) {
             circle.setFill(Color.RED);
         }
-        if (element == null) {
-            highlightTransition.setRate(r);
-            highlightTransition.play();
-        }
+		highlightTransition.setRate(r);
+		highlightTransition.play();
         return this;
     }
 
