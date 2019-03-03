@@ -32,6 +32,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
@@ -50,22 +51,15 @@ public class CatanModel {
     private StackPane center;
 	private int resourcesToSelect = 0;
 	private Group cardGroup = new Group();
-
+	private Text userPoints = new Text("0");
 	private ImageView userImage = new ImageView(
 			CatanResource
 			.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")), Color.BLUE));
-	
-
 	private Dice dice1 = new Dice();
-
 	private Dice dice2 = new Dice();
-
     private int turnCount;
-
     private Button exchangeButton = new Button("Exchange");
-
     private HBox resourceChoices = createResourceChoices();
-
     private Thief thief = makeDraggable(new Thief());
 
     private Node addCombinations() {
@@ -137,6 +131,16 @@ public class CatanModel {
 		}
 		return true;
 	}
+    private String countPoints(final PlayerColor newV) {
+		long count = settlePoints.stream().filter(s->s.getElement() instanceof Village)
+				.filter(e->e.getElement().getPlayer()==newV)
+				.count();
+		count += settlePoints.stream().filter(s -> s.getElement() instanceof City)
+				.filter(e -> e.getElement().getPlayer() == newV).count() * 2;
+		count += usedCards.get(newV).stream().filter(e -> e == DevelopmentType.UNIVERSITY).count();
+		return ""+count;
+	}
+
     private HBox createResourceChoices() {
         SimpleToggleGroupBuilder group = new SimpleToggleGroupBuilder();
         for (ResourceType type : ResourceType.values()) {
@@ -181,7 +185,7 @@ public class CatanModel {
         }
     }
 
-    private boolean disableCombination(final Combination combination) {
+	private boolean disableCombination(final Combination combination) {
         List<CatanCard> list = cards.get(currentPlayer.get());
         if (list == null) {
             return true;
@@ -195,7 +199,7 @@ public class CatanModel {
                         .anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == road.getPlayer())));
     }
 
-	private boolean edgeAcceptRoad(final Optional<EdgeCatan> firstEdge, final Road road) {
+    private boolean edgeAcceptRoad(final Optional<EdgeCatan> firstEdge, final Road road) {
         if (!firstEdge.isPresent()) {
             return false;
         }
@@ -203,7 +207,7 @@ public class CatanModel {
         return edgeAcceptRoad(edgeCatan, road);
     }
 
-    private List<SettlePoint> getCircles(final double xOff, final double yOff) {
+	private List<SettlePoint> getCircles(final double xOff, final double yOff) {
         List<SettlePoint> circles = new ArrayList<>();
         double off = Math.PI / 6;
         for (int i = 0; i < 6; i++) {
@@ -281,7 +285,7 @@ public class CatanModel {
         }
     }
 
-	private void handleMousePressed(final MouseEvent event) {
+    private void handleMousePressed(final MouseEvent event) {
 		Node node = (Node) event.getSource();
 		dragContext.x = node.getBoundsInParent().getMinX() - event.getScreenX();
 		dragContext.y = node.getBoundsInParent().getMinY() - event.getScreenY();
@@ -304,19 +308,20 @@ public class CatanModel {
         if (dragContext.element instanceof Thief) {
             onReleaseThief(event);
         }
+		updatePoints(currentPlayer.get());
     }
 
     private boolean inArea(final MouseEvent event, final Node e) {
         return e.getBoundsInParent().contains(event.getSceneX(), event.getSceneY());
     }
 
-    private void initialize(final StackPane center1, final Pane right) {
+	private void initialize(final StackPane center1, final Pane right) {
         center = center1;
         addTerrains(center1);
 		elements.addListener(this::onElementsChange);
 		newMapList();
 		currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
-		right.getChildren().add(userImage);
+		right.getChildren().add(new HBox(userImage, userPoints));
 		right.getChildren().add(cardGroup);
 		Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
 		skipButton.disableProperty().bind(diceThrown.not());
@@ -332,7 +337,7 @@ public class CatanModel {
         onSkipTurn();
 	}
 
-	private boolean intersects(final SettlePoint p, final SettlePoint e) {
+    private boolean intersects(final SettlePoint p, final SettlePoint e) {
 		return e.getBoundsInParent().intersects(p.getBoundsInParent());
 	}
 
@@ -349,7 +354,7 @@ public class CatanModel {
 		return inArea(event, e) && e.getElement() != null && e.getElement().getPlayer() == currentPlayer.get();
 	}
 
-    private <E extends CatanResource> E makeDraggable(final E e) {
+	private <E extends CatanResource> E makeDraggable(final E e) {
         e.setOnMousePressed(this::handleMousePressed);
         e.setOnMouseDragged(this::handleMouseDragged);
         e.setOnMouseReleased(this::handleMouseReleased);
@@ -369,7 +374,7 @@ public class CatanModel {
     }
 
 	private void onChangePlayer(final PlayerColor newV) {
-
+		updatePoints(newV);
 		userImage.setFitWidth(100);
 		userImage.setPreserveRatio(true);
 		userImage.setImage(CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")),
@@ -379,12 +384,12 @@ public class CatanModel {
 		for (CatanCard type : currentCards) {
 			cardGroup.getChildren().add(type);
 		}
-		Collection<List<CatanCard>> values = currentCards.stream()
-				.filter(e -> e.getResource() != null)
+		Collection<List<CatanCard>> values = currentCards.stream().filter(e -> e.getResource() != null)
 				.collect(Collectors.groupingBy(CatanCard::getResource)).values().stream().collect(Collectors.toList());
 		double layoutX = 0;
 		double layoutY = 0;
-		List<CatanCard> collect = currentCards.stream().filter(e -> e.getResource() == null).collect(Collectors.toList());
+		List<CatanCard> collect = currentCards.stream().filter(e -> e.getResource() == null)
+				.collect(Collectors.toList());
 		values.add(collect);
 		for (List<CatanCard> list : values) {
 			for (CatanCard catanCard : list) {
@@ -430,8 +435,7 @@ public class CatanModel {
         list.forEach(this::onSelectCard);
 	}
 
-
-    private void onElementsChange(final Change<? extends Node> e) {
+	private void onElementsChange(final Change<? extends Node> e) {
 		while (e.next()) {
 			List<? extends Node> addedSubList = e.getList();
 			double layoutX = 0;
@@ -448,7 +452,8 @@ public class CatanModel {
 		}
 	}
 
-	private void onReleaseCity(final MouseEvent event, final City element) {
+
+    private void onReleaseCity(final MouseEvent event, final City element) {
         Optional<SettlePoint> findFirst = settlePoints.stream()
                 .filter(e -> inArea(event, e))
                 .filter(t -> !t.isPointDisabled())
@@ -465,7 +470,7 @@ public class CatanModel {
         dragContext.element = null;
     }
 
-    private void onReleaseRoad(final MouseEvent event, final Road road) {
+	private void onReleaseRoad(final MouseEvent event, final Road road) {
         Optional<EdgeCatan> edgeHovered = edges.stream()
                 .filter(e -> inArea(event, e))
                 .filter(e -> edgeAcceptRoad(e, road))
@@ -516,7 +521,7 @@ public class CatanModel {
         dragContext.element = null;
     }
 
-	private void onSelectCard(final CatanCard catanCard) {
+    private void onSelectCard(final CatanCard catanCard) {
         catanCard.setSelected(!catanCard.isSelected());
         long count = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected).count();
         long c = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected)
@@ -588,7 +593,7 @@ public class CatanModel {
         invalidateDice();
     }
 
-    private void onSkipTurn() {
+	private void onSkipTurn() {
 		PlayerColor value = currentPlayer.get();
 		PlayerColor[] values = PlayerColor.values();
         PlayerColor playerColor = values[(value.ordinal() + 1) % values.length];
@@ -611,13 +616,13 @@ public class CatanModel {
         }
 
 	}
+
     private boolean pointAcceptVillage(final SettlePoint point, final Village village) {
 
         return point.getElement() == null && point.getEdges().stream()
                 .anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == village.getPlayer());
     }
-
-	private void replaceThief() {
+    private void replaceThief() {
 		terrains.stream().filter(t -> t.getThief() != null).forEach(t -> t.toggleFade(-1));
 		Group parent = (Group) thief.getParent();
 		if (parent != null) {
@@ -626,7 +631,7 @@ public class CatanModel {
 		elements.add(thief);
 	}
 
-    private void throwDice() {
+	private void throwDice() {
 		int a = dice1.throwDice() + dice2.throwDice();
 		settlePoints.stream().filter(e -> e.getElement() != null)
                 .flatMap((final SettlePoint e) -> e.getElement() instanceof City ? Stream.of(e, e) : Stream.of(e))
@@ -641,6 +646,10 @@ public class CatanModel {
 		}
 		
 		
+	}
+
+    private void updatePoints(final PlayerColor newV) {
+		userPoints.setText(countPoints(newV));
 	}
 
 	public static void create(final StackPane root, final Pane value) {
