@@ -5,4 +5,5 @@ class DragContext {
     CatanResource element;
     SettlePoint point;
     EdgeCatan edge;
+    Terrain terrain;
 }
