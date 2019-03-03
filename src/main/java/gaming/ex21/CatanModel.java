@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -63,7 +62,6 @@ public class CatanModel {
 
     private int turnCount;
 
-    private Random random = new Random();
     private Button exchangeButton = new Button("Exchange");
 
     private HBox resourceChoices = createResourceChoices();
@@ -419,9 +417,7 @@ public class CatanModel {
 					elements.add(makeDraggable(new Road(currentPlayer.get())));
 					break;
 				case DEVELOPMENT:
-					DevelopmentType[] values = DevelopmentType.values();
-                    DevelopmentType type = values[random.nextInt(values.length)];
-                    list.add(newCard(type));
+					list.add(newCard(DevelopmentType.randomDevelopment()));
 					break;
 
 				default:
@@ -433,6 +429,7 @@ public class CatanModel {
         list.forEach(e -> e.setSelected(true));
         list.forEach(this::onSelectCard);
 	}
+
 
     private void onElementsChange(final Change<? extends Node> e) {
 		while (e.next()) {
