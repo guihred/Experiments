@@ -75,7 +75,7 @@ public class EdgeCatan extends Group {
         element.setLayoutY(-element.getImage().getHeight() / 2);
         toggleFade(1, true);
         double angulo = Edge.getAngulo(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
-        element.setRotate(Math.toDegrees(angulo) - 90);
+        element.setRotate(Math.toDegrees(angulo));
         this.element = element;
     }
 

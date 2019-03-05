@@ -6,14 +6,14 @@ public enum ResourceType {
     ROCK("mountain.png", "rock.png", "purerock.png"),
     SHEEP("grassfield.png", "sheep.png", "puresheep.png"),
     WHEAT("cropfield.png", "wheat.png", "purewheat.png"),
-    DESERT("desert.png", null),;
+    DESERT("desert.png"),;
     private final String terrain;
     private final String resource;
     private String pure;
 
-    ResourceType(final String terrain, final String resource) {
+    ResourceType(final String terrain) {
         this.terrain = terrain;
-        this.resource = resource;
+        resource = null;
     }
 
     ResourceType(final String terrain, final String resource, final String pure) {

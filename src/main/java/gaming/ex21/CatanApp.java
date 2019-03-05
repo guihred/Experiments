@@ -20,8 +20,8 @@ public class CatanApp extends Application {
 		Scene scene = new Scene(root, size * 1.5, size);
         primaryStage.setTitle("Settlers of Catan");
         primaryStage.setScene(scene);
+        CatanModel.create(center, value);
         primaryStage.show();
-		CatanModel.create(center, value);
     }
 
 

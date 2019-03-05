@@ -111,7 +111,7 @@ public class Edge extends Group implements Comparable<Edge> {
 	public static double getAngulo(double ax, double ay, double bx, double by) {
 		double a = ax - bx;
 		double b = ay - by;
-		return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
+        return Math.PI / 2 - (a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a));
 	}
 
 }
