@@ -18,15 +18,15 @@ public class Edge extends Group implements Comparable<Edge> {
 	private Line line;
 	private final Integer valor;
 
-	public Edge(Cell source, Cell target) {
+	public Edge(final Cell source, final Cell target) {
 		this(source, target, 1);
 	}
 
-	public Edge(Cell source, Cell target, Integer valor) {
+	public Edge(final Cell source, final Cell target, final Integer valor) {
 		this(source, target, valor, true);
 	}
 
-	public Edge(Cell source, Cell target, Integer valor, boolean directed) {
+	public Edge(final Cell source, final Cell target, final Integer valor, final boolean directed) {
 
 		this.source = source;
 		this.target = target;
@@ -71,7 +71,7 @@ public class Edge extends Group implements Comparable<Edge> {
 	}
 
 	@Override
-	public int compareTo(Edge o) {
+	public int compareTo(final Edge o) {
 		return Integer.compare(valor, o.valor);
 	}
 
@@ -99,7 +99,7 @@ public class Edge extends Group implements Comparable<Edge> {
 		return valor;
 	}
 
-	public void setSelected(boolean selected) {
+	public void setSelected(final boolean selected) {
 		this.selected.set(selected);
 	}
 
@@ -108,10 +108,10 @@ public class Edge extends Group implements Comparable<Edge> {
 		return source + "->" + target + "(" + valor + ")";
 	}
 
-	public static double getAngulo(double ax, double ay, double bx, double by) {
+	public static double getAngulo(final double ax, final double ay, final double bx, final double by) {
 		double a = ax - bx;
 		double b = ay - by;
-        return Math.PI / 2 - (a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a));
+		return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
 	}
 
 }

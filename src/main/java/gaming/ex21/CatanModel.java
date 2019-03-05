@@ -1,7 +1,15 @@
 package gaming.ex21;
 
 import graphs.entities.Edge;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -21,8 +29,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Toggle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -55,43 +61,18 @@ public class CatanModel {
     private Dice dice1 = new Dice();
     private Dice dice2 = new Dice();
     private int turnCount;
-    private int layX = -Terrain.RADIUS / 2, layY = -Terrain.RADIUS / 2;
+	private int layX = -Terrain.RADIUS / 2;
+	private int layY = -Terrain.RADIUS / 2;
     private Button exchangeButton = new Button("Exchange");
     private HBox resourceChoices = createResourceChoices();
     private Thief thief = makeDraggable(new Thief());
 
     private List<Port> ports = Stream.of(ResourceType.values())
-            .flatMap(t -> Stream.generate(() -> t).limit(t == ResourceType.DESERT ? 4 : 1)).map(Port::new)
+			.flatMap(t -> Stream.generate(() -> t).limit(t == ResourceType.DESERT ? 4 : 1)).map(Port::new)
             .collect(Collectors.toList());
 
     private Circle circle = new Circle(2);
 
-    protected void onKeyPressed(KeyEvent e, double radius) {
-        KeyCode code = e.getCode();
-        int x = 0, y = 0;
-        switch (code) {
-            case UP:
-                y--;
-                break;
-            case DOWN:
-                y++;
-                break;
-            case RIGHT:
-                x++;
-                break;
-            case LEFT:
-                x--;
-                break;
-            default:
-                break;
-        }
-        layX += x;
-        layY += y;
-        circle.setLayoutX(circle.getLayoutX() + x);
-        circle.setLayoutY(circle.getLayoutY() + y);
-
-        relocatePorts(radius);
-    }
 
     private Node addCombinations() {
         GridPane value = new GridPane();
@@ -145,10 +126,11 @@ public class CatanModel {
         edges.forEach(e -> e.getPoints().forEach(p -> p.getEdges().add(e)));
         Collections.shuffle(ports);
         relocatePorts(radius / 4);
-        root.getChildren().addAll(ports);
         root.getChildren().addAll(edges);
+		root.getChildren().addAll(ports);
         root.getChildren().addAll(settlePoints);
-//        root.getScene().addEventFilter(KeyEvent.KEY_PRESSED, e -> onKeyPressed(e, radius));
+		// root.getScene().addEventFilter(KeyEvent.KEY_PRESSED, e ->
+		// relocatePorts(radius / 4));
 
     }
 
@@ -551,36 +533,46 @@ public class CatanModel {
         long count = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected).count();
         long c = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected)
                 .filter(e -> e.getResource() != null).map(CatanCard::getResource).distinct().count();
-        exchangeButton.setDisable(count != 4 || c != 1);
-        if (catanCard.isSelected() && catanCard.getDevelopment() != null) {
-            cards.get(currentPlayer.get()).remove(catanCard);
-            usedCards.get(currentPlayer.get()).add(catanCard.getDevelopment());
-            switch (catanCard.getDevelopment()) {
-                case KNIGHT:
-                    replaceThief();
-                    break;
-                case MONOPOLY:
-                    resourcesToSelect = 3;
-                    resourceChoices.setVisible(true);
-                    break;
-                case ROAD_BUILDING:
-                    elements.add(makeDraggable(new Road(currentPlayer.get())));
-                    elements.add(makeDraggable(new Road(currentPlayer.get())));
-                    break;
-                case UNIVERSITY:
-                    break;
-                case YEAR_OF_PLENTY:
-                    resourcesToSelect = 2;
-                    resourceChoices.setVisible(true);
-                    break;
-                default:
-                    break;
-            }
-            onChangePlayer(currentPlayer.get());
-            invalidateDice();
+		boolean containsPort = c == 1 && ports.stream()
+				.anyMatch(p -> p.getNumber() == count
+						&& (p.getType() == catanCard.getResource() || p.getType() == ResourceType.DESERT)
+						&& p.getPoints().stream().anyMatch(
+								s -> s.getElement() != null && s.getElement().getPlayer() == currentPlayer.get()));
+		exchangeButton.setDisable((count != 4 || c != 1) && !containsPort);
+        DevelopmentType development = catanCard.getDevelopment();
+		if (catanCard.isSelected() && development != null) {
+			onSelectDevelopment(catanCard, development);
         }
 
     }
+
+	private void onSelectDevelopment(final CatanCard catanCard, final DevelopmentType development) {
+		cards.get(currentPlayer.get()).remove(catanCard);
+		usedCards.get(currentPlayer.get()).add(development);
+		switch (development) {
+		    case KNIGHT:
+		        replaceThief();
+		        break;
+		    case MONOPOLY:
+		        resourcesToSelect = 3;
+		        resourceChoices.setVisible(true);
+		        break;
+		    case ROAD_BUILDING:
+		        elements.add(makeDraggable(new Road(currentPlayer.get())));
+		        elements.add(makeDraggable(new Road(currentPlayer.get())));
+		        break;
+		    case UNIVERSITY:
+		        break;
+		    case YEAR_OF_PLENTY:
+		        resourcesToSelect = 2;
+		        resourceChoices.setVisible(true);
+		        break;
+		    default:
+		        break;
+		}
+		onChangePlayer(currentPlayer.get());
+		invalidateDice();
+	}
 
     private void onSelectResource(final SimpleToggleGroupBuilder group, final Toggle n) {
         if (n == null) {
@@ -645,20 +637,21 @@ public class CatanModel {
                 .anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == village.getPlayer());
     }
 
-    private void relocatePorts(double radius) {
+    private void relocatePorts(final double radius) {
         
         List<SettlePoint> s = settlePoints.stream().collect(Collectors.toList());
-        List<List<SettlePoint>> collect = s.stream()
-                .flatMap(p0 -> s.stream().filter(p1 -> !Objects.equals(p1, p0))
-                        .filter(p1 -> p1.getNeighbors().contains(p0)).map(p1 -> new HashSet<>(Arrays.asList(p0, p1))))
-                .filter(p0 -> p0.stream().anyMatch(p -> p.getNeighbors().size() == 2)).distinct().map(ArrayList::new)
+		Collections.shuffle(s);
+		List<List<SettlePoint>> portLocations = s.stream()
+				.filter(p -> p.getNeighbors().size() == 2)
+				.flatMap(p0 -> p0.getNeighbors().stream().map(p1 -> Arrays.asList(p0, p1)))
                 .collect(Collectors.toList());
-        Collections.shuffle(s);
-        for (int j = 0; j < ports.size() && j < collect.size(); j++) {
+		for (int j = 0; j < ports.size() && !portLocations.isEmpty(); j++) {
             Port port = ports.get(j);
-            List<SettlePoint> list = collect.get(j);
-            Optional<SettlePoint> first = list.stream().filter(l -> l.getNeighbors().size() == 3).findFirst();
-            collect.removeIf(p -> p.contains(list.get(0)));
+			List<SettlePoint> points = portLocations.remove(0);
+			Optional<SettlePoint> first = points.stream().filter(l -> l.getNeighbors().size() == 3).findFirst();
+			portLocations.removeIf(p -> p.contains(points.get(0)));
+			portLocations.removeIf(p -> p.contains(points.get(1)));
+			port.getPoints().addAll(points);
             if (first.isPresent()) {
                 ObservableList<SettlePoint> neighbors = first.get().getNeighbors()
                         .filtered(p -> p.getNeighbors().size() == 2);
@@ -666,9 +659,9 @@ public class CatanModel {
                 double y = neighbors.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
                 port.relocate(x + layX, y + layY);
             } else {
-                double x = list.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
-                double y = list.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
-                double angulo = Edge.getAngulo(circle.getLayoutX(), circle.getLayoutY(), x, y);
+				double x = points.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
+				double y = points.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
+				double angulo = Math.PI / 2 - Edge.getAngulo(circle.getLayoutX(), circle.getLayoutY(), x, y);
                 double m = Math.sin(angulo) * radius;
                 double n = Math.cos(angulo) * radius;
                 port.relocate(x + m + layX, y + n + layY);

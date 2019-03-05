@@ -19,7 +19,7 @@ public class EdgeCatan extends Group {
             .duration(Duration.millis(200)).fromValue(1).toValue(0).build();
     private CatanResource element;
 
-    public EdgeCatan(SettlePoint a, SettlePoint b) {
+    public EdgeCatan(final SettlePoint a, final SettlePoint b) {
         double x = a.getLayoutX() + b.getLayoutX();
         double y = a.getLayoutY() + b.getLayoutY();
         relocate(x / 2, y / 2);
@@ -39,7 +39,7 @@ public class EdgeCatan extends Group {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }
@@ -62,12 +62,12 @@ public class EdgeCatan extends Group {
         return points.hashCode();
     }
 
-    public boolean matchColor(PlayerColor player) {
+    public boolean matchColor(final PlayerColor player) {
         return points.stream()
                 .anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == player);
     }
 
-    public void setElement(Road element) {
+    public void setElement(final Road element) {
         StackPane parent = (StackPane) element.getParent();
         parent.getChildren().remove(element);
         getChildren().add(element);
@@ -75,11 +75,11 @@ public class EdgeCatan extends Group {
         element.setLayoutY(-element.getImage().getHeight() / 2);
         toggleFade(1, true);
         double angulo = Edge.getAngulo(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
-        element.setRotate(Math.toDegrees(angulo));
+		element.setRotate(Math.toDegrees(angulo) - 90);
         this.element = element;
     }
 
-    public EdgeCatan toggleFade(int r, boolean enable) {
+    public EdgeCatan toggleFade(final int r, final boolean enable) {
         if (enable) {
             line.setStroke(Color.GREEN);
         }
