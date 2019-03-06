@@ -374,7 +374,7 @@ public class CatanModel {
 		Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
 		throwButton.disableProperty().bind(diceThrown);
 		right.getChildren().add(new HBox(skipButton, throwButton, exchangeButton));
-		exchangeButton.setOnAction(e -> resourceChoices.setVisible(!resourceChoices.isVisible()));
+		exchangeButton.setOnAction(e -> resourceChoices.setVisible(true));
 		right.getChildren().add(new HBox(dice1, dice2));
 		right.getChildren().add(resourceChoices);
 		right.getChildren().add(addCombinations());
