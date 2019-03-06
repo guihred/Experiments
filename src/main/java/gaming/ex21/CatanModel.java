@@ -368,13 +368,13 @@ public class CatanModel {
 		right.getChildren().add(new HBox(userImage, new VBox(userPoints, availablePorts), largestArmy, longestRoad));
 		right.getChildren().add(cardGroup);
 		Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
-		skipButton.disableProperty().bind(diceThrown.not());
+		skipButton.disableProperty().bind(diceThrown.not().or(resourceChoices.visibleProperty()));
 		largestArmy.visibleProperty().bind(currentPlayer.isEqualTo(largestArmy.playerProperty()));
 		longestRoad.visibleProperty().bind(currentPlayer.isEqualTo(longestRoad.playerProperty()));
 		Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
 		throwButton.disableProperty().bind(diceThrown);
 		right.getChildren().add(new HBox(skipButton, throwButton, exchangeButton));
-		exchangeButton.setOnAction(e -> resourceChoices.setVisible(true));
+		exchangeButton.setOnAction(e -> resourceChoices.setVisible(!resourceChoices.isVisible()));
 		right.getChildren().add(new HBox(dice1, dice2));
 		right.getChildren().add(resourceChoices);
 		right.getChildren().add(addCombinations());
