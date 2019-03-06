@@ -129,8 +129,6 @@ public class CatanModel {
 		root.getChildren().addAll(edges);
 		root.getChildren().addAll(ports);
 		root.getChildren().addAll(settlePoints);
-		// root.getScene().addEventFilter(KeyEvent.KEY_PRESSED, e ->
-		// relocatePorts(radius / 4));
 
 	}
 
@@ -180,11 +178,9 @@ public class CatanModel {
 			List<SettlePoint> collect2 = collect.stream().flatMap(e -> e.getPoints().stream()).distinct()
 					.collect(Collectors.toList());
 
-			int roadSize = collect2.stream().map(m -> dijkstra(m, collect2, collect)).mapToInt(
+			return collect2.stream().map(m -> dijkstra(m, collect2, collect)).mapToInt(
 					d -> d.values().stream().mapToInt(e -> e).filter(e -> e != Integer.MAX_VALUE).max().orElse(0))
 					.max().orElse(0);
-			System.out.println(roadSize);
-			return roadSize;
 		}
 
 		return 0;
@@ -812,7 +808,6 @@ public class CatanModel {
                 }
             }
 		}
-		System.out.println(distance);
         return distance;
     }
 
