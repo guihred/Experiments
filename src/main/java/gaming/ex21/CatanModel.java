@@ -59,6 +59,11 @@ public class CatanModel {
 	private int layY = -Terrain.RADIUS / 2;
 	private Button exchangeButton = new Button("Exchange");
 	private HBox resourceChoices = createResourceChoices();
+	private Button makeDeal = CommonsFX.newButton("Make Deal", e -> {
+		resourcesToSelect = 4;
+		resourceChoices.setVisible(true);
+	});
+	private VBox deals = new VBox();
 	private Thief thief = makeDraggable(new Thief());
 
 	private List<Port> ports = Stream.of(ResourceType.values())
@@ -365,7 +370,8 @@ public class CatanModel {
 		addTerrains(center1);
 		elements.addListener(this::onElementsChange);
 		currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
-		right.getChildren().add(new HBox(userImage, new VBox(userPoints, availablePorts), largestArmy, longestRoad));
+		right.getChildren()
+				.add(new HBox(userImage, new VBox(userPoints, availablePorts), largestArmy, longestRoad, deals));
 		right.getChildren().add(cardGroup);
 		Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
 		skipButton.disableProperty().bind(diceThrown.not().or(resourceChoices.visibleProperty()));
@@ -373,8 +379,9 @@ public class CatanModel {
 		longestRoad.visibleProperty().bind(currentPlayer.isEqualTo(longestRoad.playerProperty()));
 		Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
 		throwButton.disableProperty().bind(diceThrown);
-		right.getChildren().add(new HBox(skipButton, throwButton, exchangeButton));
+		right.getChildren().add(new HBox(skipButton, throwButton, exchangeButton, makeDeal));
 		exchangeButton.setOnAction(e -> resourceChoices.setVisible(true));
+		makeDeal.setDisable(true);
 		right.getChildren().add(new HBox(dice1, dice2));
 		right.getChildren().add(resourceChoices);
 		right.getChildren().add(addCombinations());
@@ -421,8 +428,6 @@ public class CatanModel {
 
 	private void onChangePlayer(final PlayerColor newV) {
 		updatePoints(newV);
-
-
 		userImage.setFitWidth(100);
 		userImage.setPreserveRatio(true);
 		userImage.setImage(CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")),
@@ -447,6 +452,7 @@ public class CatanModel {
 			layoutX = 0;
 			layoutY += CatanCard.PREF_HEIGHT;
 		}
+
 	}
 
 	private void onCombinationClicked(final Combination combination) {
@@ -580,7 +586,7 @@ public class CatanModel {
 		if (catanCard.isSelected() && development != null) {
 			onSelectDevelopment(catanCard, development);
 		}
-
+		makeDeal.setDisable(c == 0);
 	}
 
 	private void onSelectDevelopment(final CatanCard catanCard, final DevelopmentType development) {
@@ -616,16 +622,25 @@ public class CatanModel {
 			return;
 		}
 		ResourceType selectedType = (ResourceType) n.getUserData();
-		if (resourcesToSelect == 3) {
-			List<CatanCard> collect = new ArrayList<>();
+		if (resourcesToSelect == 4) {
+			List<ResourceType> dealTypes = cards.get(currentPlayer.get()).stream()
+					.filter(e -> e.getResource() != null)
+					.filter(CatanCard::isSelected)
+					.map(CatanCard::getResource)
+					.collect(Collectors.toList());
+			deals.getChildren().add(new Deal(currentPlayer.get(), selectedType, dealTypes));
+			resourceChoices.setVisible(false);
+			resourcesToSelect = 0;
+		} else if (resourcesToSelect == 3) {
+			List<CatanCard> cardsTransfered = new ArrayList<>();
 			PlayerColor[] values = PlayerColor.values();
 			for (PlayerColor color : values) {
 				List<CatanCard> collect2 = cards.get(color).stream().filter(e -> e.getResource() == selectedType)
 						.collect(Collectors.toList());
 				cards.get(color).removeAll(collect2);
-				collect.addAll(collect2);
+				cardsTransfered.addAll(collect2);
 			}
-			cards.get(currentPlayer.get()).addAll(collect);
+			cards.get(currentPlayer.get()).addAll(cardsTransfered);
 			resourcesToSelect = 0;
 			resourceChoices.setVisible(false);
 		} else {
@@ -665,7 +680,7 @@ public class CatanModel {
 			onChangePlayer(currentPlayer.get());
 			invalidateDice();
 		}
-
+		deals.getChildren().removeIf(d -> d instanceof Deal && ((Deal) d).getProposer() == playerColor);
 	}
 
 	private boolean pointAcceptVillage(final SettlePoint point, final Village village) {

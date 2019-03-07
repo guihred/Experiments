@@ -17,7 +17,7 @@ import utils.ResourceFXUtils;
 
 public class Port extends Group {
 
-	private static final double SIZE = Terrain.RADIUS * 0.9;
+	public static final double SIZE = Terrain.RADIUS * 0.9;
 	private final ResourceType type;
 	private final ObservableList<SettlePoint> points = FXCollections.observableArrayList();
 	private final IntegerProperty number = new SimpleIntegerProperty(2);
