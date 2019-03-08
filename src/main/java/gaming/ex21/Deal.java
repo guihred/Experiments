@@ -17,7 +17,7 @@ public class Deal extends HBox {
 		this.proposer = proposer;
 		wantedType = type;
 		this.dealTypes = dealTypes;
-		getChildren().addAll(newUserImage(), newResource(wantedType), new Text("->"));
+		getChildren().addAll(newResource(wantedType), new Text("<->"), newUserImage());
 		getChildren().addAll(this.dealTypes.stream().map(this::newResource).collect(Collectors.toList()));
 	}
 

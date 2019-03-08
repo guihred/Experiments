@@ -184,8 +184,8 @@ public class CatanModel {
 					.collect(Collectors.toList());
 
 			return collect2.stream().map(m -> dijkstra(m, collect2, collect)).mapToInt(
-					d -> d.values().stream().mapToInt(e -> e).filter(e -> e != Integer.MAX_VALUE).max().orElse(0))
-					.max().orElse(0);
+					d -> d.values().stream().mapToInt(e -> e).filter(e -> e != Integer.MAX_VALUE).max().orElse(0)).max()
+					.orElse(0);
 		}
 
 		return 0;
@@ -203,6 +203,7 @@ public class CatanModel {
 		}
 		HBox res = new HBox(group.getTogglesAs(Node.class).toArray(new Node[0]));
 		res.setVisible(false);
+		res.managedProperty().bind(res.visibleProperty());
 		group.onChange((ob, old, n) -> onSelectResource(group, n));
 		return res;
 	}
@@ -372,6 +373,7 @@ public class CatanModel {
 		currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
 		right.getChildren()
 				.add(new HBox(userImage, new VBox(userPoints, availablePorts), largestArmy, longestRoad, deals));
+		right.getChildren().add(new HBox(dice1, dice2));
 		right.getChildren().add(cardGroup);
 		Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
 		skipButton.disableProperty().bind(diceThrown.not().or(resourceChoices.visibleProperty()));
@@ -379,10 +381,9 @@ public class CatanModel {
 		longestRoad.visibleProperty().bind(currentPlayer.isEqualTo(longestRoad.playerProperty()));
 		Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
 		throwButton.disableProperty().bind(diceThrown);
-		right.getChildren().add(new HBox(skipButton, throwButton, exchangeButton, makeDeal));
+		right.getChildren().add(new VBox(skipButton, throwButton, exchangeButton, makeDeal));
 		exchangeButton.setOnAction(e -> resourceChoices.setVisible(true));
 		makeDeal.setDisable(true);
-		right.getChildren().add(new HBox(dice1, dice2));
 		right.getChildren().add(resourceChoices);
 		right.getChildren().add(addCombinations());
 		currentPlayer.set(PlayerColor.BLUE);
@@ -506,6 +507,36 @@ public class CatanModel {
 		}
 	}
 
+	private void onMakeDeal(final Deal deal) {
+		List<CatanCard> listProposer = cards.get(deal.getProposer());
+		List<CatanCard> list = cards.get(currentPlayer.get());
+		ResourceType wantedType = deal.getWantedType();
+		Optional<CatanCard> currentUserCard = list.stream().filter(e -> e.getResource() == wantedType).findFirst();
+		if (currentUserCard.isPresent()) {
+			CatanCard catanCard = currentUserCard.get();
+			List<ResourceType> dealTypes = deal.getDealTypes();
+			List<CatanCard> cardsGiven = new ArrayList<>();
+			for (ResourceType resourceType : dealTypes) {
+				Optional<CatanCard> first = listProposer.stream().filter(c -> !cardsGiven.contains(c))
+						.filter(c -> c.getResource() == resourceType).findFirst();
+				if (first.isPresent()) {
+					cardsGiven.add(first.get());
+				} else {
+					return;
+				}
+
+			}
+			list.remove(catanCard);
+			listProposer.add(catanCard);
+			list.addAll(cardsGiven);
+			listProposer.removeAll(cardsGiven);
+			deals.getChildren().removeIf(e -> e instanceof Button && deal.equals(((Button) e).getGraphic()));
+
+		}
+		onChangePlayer(currentPlayer.get());
+		invalidateDice();
+	}
+
 	private void onReleaseCity(final MouseEvent event, final City element) {
 		Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> inArea(event, e))
 				.filter(t -> !t.isPointDisabled()).filter(e -> isSuitableForCity(event, e)).findFirst();
@@ -623,13 +654,15 @@ public class CatanModel {
 		}
 		ResourceType selectedType = (ResourceType) n.getUserData();
 		if (resourcesToSelect == 4) {
-			List<ResourceType> dealTypes = cards.get(currentPlayer.get()).stream()
-					.filter(e -> e.getResource() != null)
-					.filter(CatanCard::isSelected)
-					.map(CatanCard::getResource)
-					.collect(Collectors.toList());
-			deals.getChildren().add(new Deal(currentPlayer.get(), selectedType, dealTypes));
+			List<ResourceType> dealTypes = cards.get(currentPlayer.get()).stream().filter(e -> e.getResource() != null)
+					.filter(CatanCard::isSelected).map(CatanCard::getResource).collect(Collectors.toList());
+			PlayerColor proposer = currentPlayer.get();
+			Deal deal = new Deal(proposer, selectedType, dealTypes);
+			Button dealButton = CommonsFX.newButton(deal, "", e -> onMakeDeal(deal));
+			dealButton.disableProperty().bind(currentPlayer.isEqualTo(proposer));
+			deals.getChildren().add(dealButton);
 			resourceChoices.setVisible(false);
+			makeDeal.setDisable(true);
 			resourcesToSelect = 0;
 		} else if (resourcesToSelect == 3) {
 			List<CatanCard> cardsTransfered = new ArrayList<>();
@@ -658,6 +691,7 @@ public class CatanModel {
 		group.select(null);
 		exchangeButton.setDisable(true);
 		invalidateDice();
+		makeDeal.setDisable(true);
 	}
 
 	private void onSkipTurn() {
@@ -680,7 +714,7 @@ public class CatanModel {
 			onChangePlayer(currentPlayer.get());
 			invalidateDice();
 		}
-		deals.getChildren().removeIf(d -> d instanceof Deal && ((Deal) d).getProposer() == playerColor);
+		deals.getChildren().removeIf(d -> ((Deal) ((Button) d).getGraphic()).getProposer() == playerColor);
 	}
 
 	private boolean pointAcceptVillage(final SettlePoint point, final Village village) {
@@ -794,43 +828,46 @@ public class CatanModel {
 	}
 
 	private static Integer cost(final SettlePoint v, final SettlePoint w, final List<EdgeCatan> allEdges) {
-		return (int) allEdges.stream().filter(e->e.getPoints().contains(v)&&e.getPoints().contains(w)).count();
+		return (int) allEdges.stream().filter(e -> e.getPoints().contains(v) && e.getPoints().contains(w)).count();
 	}
 
-	private static Map<SettlePoint, Boolean> createDistanceMap(final SettlePoint source, final Map<SettlePoint, Integer> distance, final List<SettlePoint> allCells) {
-        Map<SettlePoint, Boolean> known = new HashMap<>();
-        for (SettlePoint v : allCells) {
-            distance.put(v, Integer.MAX_VALUE);
-            known.put(v, false);
-        }
-        distance.put(source, 0);
-        return known;
-    }
-
-	private	static Map<SettlePoint, Integer> dijkstra(final SettlePoint s, final List<SettlePoint> allSettlePoints, final List<EdgeCatan> allEdges) {
-        Map<SettlePoint, Integer> distance = new HashMap<>();
-        Map<SettlePoint, Boolean> known = createDistanceMap(s, distance, allSettlePoints);
-        while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
-            SettlePoint v = getMinDistanceSettlePoint(distance, known);
-            known.put(v, true);
-            for (SettlePoint w : adjacents(v, allEdges)) {
-                if (!known.get(w)) {
-                    Integer cvw = cost(v, w, allEdges);
-					if (distance.get(v) + cvw < distance.get(w)) {
-                        int value = distance.get(v) + cvw;
-						distance.put(w, value);
-                    }
-                }
-            }
+	private static Map<SettlePoint, Boolean> createDistanceMap(final SettlePoint source,
+			final Map<SettlePoint, Integer> distance, final List<SettlePoint> allCells) {
+		Map<SettlePoint, Boolean> known = new HashMap<>();
+		for (SettlePoint v : allCells) {
+			distance.put(v, Integer.MAX_VALUE);
+			known.put(v, false);
 		}
-        return distance;
-    }
+		distance.put(source, 0);
+		return known;
+	}
 
-	private static SettlePoint getMinDistanceSettlePoint(final Map<SettlePoint, Integer> distance, final Map<SettlePoint, Boolean> known) {
-        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
+	private static Map<SettlePoint, Integer> dijkstra(final SettlePoint s, final List<SettlePoint> allSettlePoints,
+			final List<EdgeCatan> allEdges) {
+		Map<SettlePoint, Integer> distance = new HashMap<>();
+		Map<SettlePoint, Boolean> known = createDistanceMap(s, distance, allSettlePoints);
+		while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
+			SettlePoint v = getMinDistanceSettlePoint(distance, known);
+			known.put(v, true);
+			for (SettlePoint w : adjacents(v, allEdges)) {
+				if (!known.get(w)) {
+					Integer cvw = cost(v, w, allEdges);
+					if (distance.get(v) + cvw < distance.get(w)) {
+						int value = distance.get(v) + cvw;
+						distance.put(w, value);
+					}
+				}
+			}
+		}
+		return distance;
+	}
+
+	private static SettlePoint getMinDistanceSettlePoint(final Map<SettlePoint, Integer> distance,
+			final Map<SettlePoint, Boolean> known) {
+		return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
 				.min(Comparator.comparing(Entry<SettlePoint, Integer>::getValue))
-                .orElseThrow(() -> new RuntimeException("There should be someone")).getKey();
-    }
+				.orElseThrow(() -> new RuntimeException("There should be someone")).getKey();
+	}
 
 	private static <T> ObservableMap<PlayerColor, List<T>> newMapList() {
 		ObservableMap<PlayerColor, List<T>> observableHashMap = FXCollections.observableHashMap();
