@@ -27,27 +27,28 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class WordService implements HasLogging {
-
+public final class WordService implements HasLogging {
 
 	private static final Logger LOG = HasLogging.log();
+	private WordService() {
+	}
 
-    public static void getPowerPointImages(String arquivo) {
-        try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo))) {
+	public static void getPowerPointImages(String arquivo) {
+		try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo))) {
 			List<XSLFPictureData> pictureData = a.getPictureData();
 			for (XSLFPictureData data : pictureData) {
-                recordPicture(data);
+				recordPicture(data);
 			}
 
 		} catch (IOException e) {
-            LOG.error("FILE ERROR", e);
+			LOG.error("FILE ERROR", e);
 		}
 	}
 
-    public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
+	public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
 
-        try (InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
-                XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
+		try (InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
+				XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
 			for (XWPFHeader p : document1.getHeaderList()) {
 				List<XWPFParagraph> paragraphs = p.getParagraphs();
 				for (XWPFParagraph paragraph : paragraphs) {
@@ -61,29 +62,29 @@ public class WordService implements HasLogging {
 
 			List<IBodyElement> bodyElements = document1.getBodyElements();
 			bodyElements.stream().filter(e -> e.getElementType() == BodyElementType.PARAGRAPH)
-					.forEach((IBodyElement element) -> substituirParagrafo(mapaSubstituicao, (XWPFParagraph) element));
+			.forEach((IBodyElement element) -> substituirParagrafo(mapaSubstituicao, (XWPFParagraph) element));
 			bodyElements.stream().filter(e -> e.getElementType() == BodyElementType.TABLE)
-					.forEach(tabela -> substituirTabela(tabela, mapaSubstituicao));
-            document1.write(new FileOutputStream(outStream));
+			.forEach(tabela -> substituirTabela(tabela, mapaSubstituicao));
+			document1.write(new FileOutputStream(outStream));
 		} catch (Exception e) {
-            LOG.error("", e);
+			LOG.error("", e);
 		}
 	}
 
 
-    private static Object getObject(Map<String, Object> map, String cellText) {
+	private static Object getObject(Map<String, Object> map, String cellText) {
 		return map.containsKey(cellText) ? map.get(cellText) : map.get(cellText.trim());
 	}
 
-    private static void recordPicture(XSLFPictureData data) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(
+	private static void recordPicture(XSLFPictureData data) {
+		try (FileOutputStream fileOutputStream = new FileOutputStream(
 				new File(new File("out"), data.getFileName()))) {
-            InputStream inputStream = data.getInputStream();
-            IOUtils.copy(inputStream, fileOutputStream);
-        } catch (IOException e) {
-            LOG.error("FILE ERROR", e);
-        }
-    }
+			InputStream inputStream = data.getInputStream();
+			IOUtils.copy(inputStream, fileOutputStream);
+		} catch (IOException e) {
+			LOG.error("FILE ERROR", e);
+		}
+	}
 
 	private static void removerLinks(XWPFParagraph paragraph) {
 		int size = paragraph.getCTP().getHyperlinkArray().length;
@@ -133,7 +134,7 @@ public class WordService implements HasLogging {
 		}
 	}
 
-    private static void substituirParagrafo(XWPFParagraph paragraph, String string) {
+	private static void substituirParagrafo(XWPFParagraph paragraph, String string) {
 		paragraph.getRuns().get(0).setText(string, 0);
 		int size = paragraph.getRuns().size();
 		for (int j = 1; j < size; j++) {
@@ -150,7 +151,7 @@ public class WordService implements HasLogging {
 			List<XWPFTableCell> tableCells = row.getTableCells();
 			for (int j = 0; j < tableCells.size(); j++) {
 				XWPFTableCell cell = row.getCell(j);
-                String cellText = cell.getText();
+				String cellText = cell.getText();
 				if (map.containsKey(cellText) || map.containsKey(cellText.trim())) {
 					Object object = getObject(map, cellText);
 					if (object instanceof String) {

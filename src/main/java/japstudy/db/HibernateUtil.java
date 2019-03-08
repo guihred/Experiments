@@ -3,28 +3,30 @@ package japstudy.db;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-public class HibernateUtil {
+public final class HibernateUtil {
 
-    private static SessionFactory sessionFactory = buildSessionFactory();
-    private static boolean shutdownEnabled;
+	private static SessionFactory sessionFactory = buildSessionFactory();
+	private static boolean shutdownEnabled;
 
+	private HibernateUtil() {
+	}
 	public static SessionFactory getSessionFactory() {
-        if (sessionFactory == null || sessionFactory.isClosed()) {
-            sessionFactory = buildSessionFactory();
-        }
+		if (sessionFactory == null || sessionFactory.isClosed()) {
+			sessionFactory = buildSessionFactory();
+		}
 
-        return sessionFactory;
+		return sessionFactory;
 	}
 
 	public static void setShutdownEnabled(boolean shutdownEnabled) {
-        HibernateUtil.shutdownEnabled = shutdownEnabled;
-    }
+		HibernateUtil.shutdownEnabled = shutdownEnabled;
+	}
 
-    public static void shutdown() {
-        // Close caches and connection pools
-        if (shutdownEnabled && !getSessionFactory().isClosed()) {
-            getSessionFactory().close();
-        }
+	public static void shutdown() {
+		// Close caches and connection pools
+		if (shutdownEnabled && !getSessionFactory().isClosed()) {
+			getSessionFactory().close();
+		}
 	}
 
 	private static SessionFactory buildSessionFactory() {
@@ -33,7 +35,7 @@ public class HibernateUtil {
 					.configure()
 					.buildSessionFactory();
 
-        } catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new ExceptionInInitializerError(ex);
 		}
 	}

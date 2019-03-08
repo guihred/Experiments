@@ -19,6 +19,14 @@ public class Ch1 {
 	private static final Logger LOG = HasLogging.log();
 
 	/**
+	 * 13. Write a program that prints a lottery combination, picking six distinct
+	 * numbers between 1 and 50. To pick six distinct numbers, start with an array
+	 * list filled with1 ... 50. Pick a random index and remove the element. Repeat
+	 * six times. Print the result in sorted order.
+	 */
+	private static final Random RANDOM = new Random();
+
+	/**
 	 * 16. Improve the average method so that it is called with at least one
 	 * parameter.
 	 */
@@ -37,6 +45,7 @@ public class Ch1 {
 
 	}
 
+
 	/**
 	 * 6. Write a program that computes the factorial n! = 1 × 2 × ... × n, using
 	 * BigInteger. Compute the factorial of 1000.
@@ -48,25 +57,16 @@ public class Ch1 {
 		return Stream.iterate(BigInteger.ONE, BigInteger.ONE::add).limit(n).parallel().reduce(BigInteger.ONE,
 				BigInteger::multiply);
 	}
-
-
-	/**
-     * 13. Write a program that prints a lottery combination, picking six distinct
-     * numbers between 1 and 50. To pick six distinct numbers, start with an array
-     * list filled with1 ... 50. Pick a random index and remove the element. Repeat
-     * six times. Print the result in sorted order.
-     */
 	public static List<Integer> lotteryCombination() {
-		Random random = new Random();
-        return IntStream.generate(() -> random.nextInt(50)).distinct().limit(6).sorted().boxed().collect(toList());
+		return IntStream.generate(() -> RANDOM.nextInt(50)).distinct().limit(6).sorted().boxed().collect(toList());
 	}
 
 	public static void main(String[] args) {
 		extremeDoubles();
-        // System.out.println(factorial(1000))
-        // System.out.println(lotteryCombination())
-        // System.out.println(pascalTriangle(10))
-        // System.out.println(average(1,2,3,4,5,6,7,8))
+		// System.out.println(factorial(1000))
+		// System.out.println(lotteryCombination())
+		// System.out.println(pascalTriangle(10))
+		// System.out.println(average(1,2,3,4,5,6,7,8))
 	}
 
 	/**
@@ -83,9 +83,8 @@ public class Ch1 {
 	 */
 	public static String randomLetters() {
 
-		Random random = new Random();
-		long nextLong = random.nextLong();
-        return Long.toString(abs(nextLong), Character.MAX_RADIX);
+		long nextLong = RANDOM.nextLong();
+		return Long.toString(abs(nextLong), Character.MAX_RADIX);
 	}
 
 	private static List<Integer> mapPascal(List<Integer> previousPascal) {

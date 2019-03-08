@@ -21,17 +21,17 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class Shapes3DApp extends Application {
-    private double mousePosX;
-    private double mousePosY;
-    private double mouseOldX;
-    private double mouseOldY;
+	private double mousePosX;
+	private double mousePosY;
+	private double mouseOldX;
+	private double mouseOldY;
 	private final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
 	private final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
+	private final Random rnd = new Random();
 	/**
 	 * Create image with random noise
 	 */
 	public Image createImage(int size) {
-		Random rnd = new Random();
 		WritableImage wr = new WritableImage(size, size);
 		PixelWriter pw = wr.getPixelWriter();
 		for (int x = 0; x < size; x++) {
@@ -49,13 +49,13 @@ public class Shapes3DApp extends Application {
 		Group group = new Group();
 		// size of the cube
 		group.getTransforms().addAll(rotateX, rotateY);
-        final int imageSize = 500;
-        Image diffuseMap = createImage(imageSize);
+		final int imageSize = 500;
+		Image diffuseMap = createImage(imageSize);
 		ImageView iv = new ImageView(diffuseMap);
 		iv.setRotationAxis(Rotate.X_AXIS);
 		iv.setRotate(90);
-        iv.setTranslateX(-diffuseMap.getWidth() / 2);
-        iv.setTranslateY(-diffuseMap.getHeight() / 5);
+		iv.setTranslateX(-diffuseMap.getWidth() / 2);
+		iv.setTranslateY(-diffuseMap.getHeight() / 5);
 		group.getChildren().add(iv);
 		// create material out of the noise image
 		PhongMaterial material = new PhongMaterial();
@@ -66,9 +66,9 @@ public class Shapes3DApp extends Application {
 		group.getChildren().add(box);
 		// create pyramid with diffuse map
 		// Height
-        final float h = 150;
+		final float h = 150;
 		// Side
-        final float s = 150;
+		final float s = 150;
 		float hs = s / 2;
 		// coordinates of the mapped image
 		float x0 = 0.0F;
@@ -118,14 +118,14 @@ public class Shapes3DApp extends Application {
 		MeshView pyramid = new MeshView();
 		pyramid.setMesh(pyramidMesh);
 		pyramid.setDrawMode(DrawMode.FILL);
-        pyramid.setTranslateY(-imageSize / 2);
+		pyramid.setTranslateY(-imageSize / 2);
 		// apply material
 		pyramid.setMaterial(material);
 		group.getChildren().add(pyramid);
 		// scene
 		StackPane root = new StackPane();
 		root.getChildren().add(group);
-        Scene scene = new Scene(root, imageSize * 2, imageSize * 2, true,
+		Scene scene = new Scene(root, imageSize * 2, imageSize * 2, true,
 				SceneAntialiasing.BALANCED);
 		scene.setCamera(new PerspectiveCamera());
 		// interaction listeners

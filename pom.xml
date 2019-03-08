@@ -196,8 +196,6 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.5</version>
 		</dependency>
-		<!-- <dependency> <groupId>jim</groupId> <artifactId>jim</artifactId> <version>1</version> 
-			</dependency> -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

@@ -1,23 +1,27 @@
 package graphs.app;
 
-import graphs.entities.*;
+import graphs.entities.Cell;
+import graphs.entities.CellType;
+import graphs.entities.Edge;
+import graphs.entities.EdgeDistancePack;
+import graphs.entities.Graph;
 import java.util.List;
 import java.util.Random;
 
 public class TreeTopology extends BaseTopology {
 
+	private 	Random rnd = new Random();
+
+
 	public TreeTopology(int size, Graph graph) {
 		super(graph, "Tree", size);
 	}
-
-
 
 	@Override
 	public void execute() {
 		graph.clean();
 		graph.getModel().removeAllCells();
 		graph.getModel().removeAllEdges();
-		Random rnd = new Random();
 		int bound = 100;
 		int nextInt = rnd.nextInt(180) - 180;
 		double x = bound * Math.cos(Math.toRadians(nextInt));
@@ -36,9 +40,9 @@ public class TreeTopology extends BaseTopology {
 			for (Cell cell2 : cells) {
 				double m = (x1 + cell2.getLayoutX()) / 2;
 				double n = (y1 + cell2.getLayoutY()) / 2;
-                double r = EdgeDistancePack.distance(x1, cell2.getLayoutX(), y1, cell2.getLayoutY());
-                if (cells.stream().filter(c -> c != cell && c != cell2)
-                        .noneMatch(c -> EdgeDistancePack.distance(m, c.getLayoutX(), n, c.getLayoutY()) <= r / 2)) {
+				double r = EdgeDistancePack.distance(x1, cell2.getLayoutX(), y1, cell2.getLayoutY());
+				if (cells.stream().filter(c -> c != cell && c != cell2)
+						.noneMatch(c -> EdgeDistancePack.distance(m, c.getLayoutX(), n, c.getLayoutY()) <= r / 2)) {
 					graph.getModel().addBiEdge(cell.getCellId(), cell2.getCellId(), 1);
 				}
 

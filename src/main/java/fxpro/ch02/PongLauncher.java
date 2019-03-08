@@ -26,7 +26,11 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.*;
+import simplebuilder.SimpleCircleBuilder;
+import simplebuilder.SimpleLineBuilder;
+import simplebuilder.SimpleLinearGradientBuilder;
+import simplebuilder.SimpleRectangleBuilder;
+import simplebuilder.SimpleTimelineBuilder;
 import utils.Delta;
 
 public class PongLauncher extends Application {
@@ -184,7 +188,6 @@ public class PongLauncher extends Application {
         startButton.visibleProperty().bind(startVisible);
         stage.setScene(scene);
         initialize();
-        //        stage.setResizable(false);
         stage.setWidth(WIDTH + 8);
         stage.setHeight(WIDTH + 30);
         stage.setTitle("ZenPong Example");

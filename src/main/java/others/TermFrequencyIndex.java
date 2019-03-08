@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -25,45 +26,45 @@ public final class TermFrequencyIndex {
 	private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
 
 	/**
-     * 
-     * Tf, in its basic form, is just the frequency that we look up in
-     * appropriate table. In this case, it's one.
-     * 
-     * Idf is a bit more involved:
-     * 
-     * idf("this", D) = log( N/f(t,D))
-     * 
-     * The numerator of the fraction is the number of documents, which is two.
-     * The number of documents in which "this" appears is also two, giving
-     * 
-     * idf("this", D) = log (2/2) = 0
-     * 
-     * So tf-idf is zero for this term, and with the basic definition this is
-     * true of any term that occurs in all documents.
-     * 
-     * A slightly more interesting example arises from the word "example", which
-     * occurs three times but in only one document. For this document, tf-idf of
-     * "example" is:
-     * 
-     * D = conjunto total de documento
-     * 
-     * d_i = um documento i
-     * 
-     * tf("example", d_i) = 3 idf("example", D) = log (2/1) ~= 0.3010
-     * tfidf("example", d_i) = tf("example", d_i) x idf("example", D) = 3 x
-     * 0.3010 = 0.9030
-     * 
-     * Modos de calcular tf(t,d)=
-     * 
-     * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
-     * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
-     * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
-     * documents, e.g. raw frequency divided by the maximum raw frequency of any
-     * term in the document:
-     * 
-     * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
-     * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
-     */
+	 * 
+	 * Tf, in its basic form, is just the frequency that we look up in
+	 * appropriate table. In this case, it's one.
+	 * 
+	 * Idf is a bit more involved:
+	 * 
+	 * idf("this", D) = log( N/f(t,D))
+	 * 
+	 * The numerator of the fraction is the number of documents, which is two.
+	 * The number of documents in which "this" appears is also two, giving
+	 * 
+	 * idf("this", D) = log (2/2) = 0
+	 * 
+	 * So tf-idf is zero for this term, and with the basic definition this is
+	 * true of any term that occurs in all documents.
+	 * 
+	 * A slightly more interesting example arises from the word "example", which
+	 * occurs three times but in only one document. For this document, tf-idf of
+	 * "example" is:
+	 * 
+	 * D = conjunto total de documento
+	 * 
+	 * d_i = um documento i
+	 * 
+	 * tf("example", d_i) = 3 idf("example", D) = log (2/1) ~= 0.3010
+	 * tfidf("example", d_i) = tf("example", d_i) x idf("example", D) = 3 x
+	 * 0.3010 = 0.9030
+	 * 
+	 * Modos de calcular tf(t,d)=
+	 * 
+	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;
+	 * logarithmically scaled frequency: tf(t,d) = 1 + log f(t,d), or zero if
+	 * f(t, d) is zero; augmented frequency, to prevent a bias towards longer
+	 * documents, e.g. raw frequency divided by the maximum raw frequency of any
+	 * term in the document:
+	 * 
+	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
+	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
+	 */
 	private static final Map<File, Map<String, Long>> MAPA_DOCUMENTO = new HashMap<>();
 
 	/**
@@ -84,7 +85,7 @@ public final class TermFrequencyIndex {
 	private TermFrequencyIndex() {
 	}
 
-	public static Map<File, Map<String, Long>> getDocumentMap(File f) throws IOException {
+	public static Map<File, Map<String, Long>> getDocumentMap(File f) {
 
 		if (!f.isDirectory()) {
 			if (f.getName().endsWith(".java")) {
@@ -116,21 +117,21 @@ public final class TermFrequencyIndex {
 	 * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
 	 * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
 	 */
-	public static Map<String, Long> getFrequencyMap(File d) throws IOException {
-        try (BufferedReader bufferedReader = Files.newBufferedReader(d.toPath())) {
+	public static Map<String, Long> getFrequencyMap(File d) {
+		try (BufferedReader bufferedReader = Files.newBufferedReader(d.toPath())) {
 
 			String readLine;
-            Map<String, Long> frequencyMap = new ConcurrentHashMap<>();
+			Map<String, Long> frequencyMap = new ConcurrentHashMap<>();
 			do {
 				readLine = bufferedReader.readLine();
 				if (readLine != null) {
 
 					String[] split = readLine.split(REGEX_CAMEL_CASE);
 					List<String> asList = Arrays.asList(split);
-                    asList.parallelStream().filter(a -> !a.isEmpty()).reduce(frequencyMap, (mapa, a) -> {
+					asList.parallelStream().filter(a -> !a.isEmpty()).reduce(frequencyMap, (mapa, a) -> {
 						if (mapa.containsKey(a.toLowerCase())) {
-                            Long long1 = mapa.get(a.toLowerCase());
-                            mapa.put(a.toLowerCase(), long1 + 1L);
+							Long long1 = mapa.get(a.toLowerCase());
+							mapa.put(a.toLowerCase(), long1 + 1L);
 						} else {
 							mapa.put(a.toLowerCase(), 1L);
 						}
@@ -139,10 +140,9 @@ public final class TermFrequencyIndex {
 				}
 			} while (readLine != null);
 
-            return frequencyMap;
+			return frequencyMap;
 		} catch (IOException e) {
-			LOGGER.error("", e);
-			throw e;
+			throw new RuntimeIOException("ERROR READING FILE", e);
 		}
 	}
 
@@ -156,7 +156,7 @@ public final class TermFrequencyIndex {
 				if (!TermFrequencyIndex.MAP_TF_IDF.containsKey(p)) {
 					MAP_TF_IDF.put(p, new HashMap<File, Double>());
 				}
-                double termFrequency = getTermFrequency(fre);
+				double termFrequency = getTermFrequency(fre);
 				MAP_TF_IDF.get(p).put(c, idf * termFrequency);
 			}));
 			// MAP_TF_IDF =
@@ -164,9 +164,9 @@ public final class TermFrequencyIndex {
 
 			entrySet.sort(new ValueComparator());
 			// MAP
-            File file2 = ResourceFXUtils.toFile("out");
+			File file2 = ResourceFXUtils.toFile("out");
 
-            File file = new File(file2, "resultado.txt");
+			File file = new File(file2, "resultado.txt");
 
 			printWordFound(entrySet, file);
 		} catch (Exception e2) {
@@ -186,12 +186,12 @@ public final class TermFrequencyIndex {
 		return Math.log(MAPA_DOCUMENTO.size() / idf);
 	}
 
-    private static double getTermFrequency(long fre) {
+	private static double getTermFrequency(long fre) {
 		return fre == 0 ? 0D : 1 + Math.log(fre);
 	}
 
-    private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
-        try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
+	private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
+		try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
 			List<String> javaKeywords = Arrays.asList("abstract", "continue", "for", "new", "switch", "assert",
 					"default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break",
 					"double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
@@ -211,24 +211,24 @@ public final class TermFrequencyIndex {
 		}
 	}
 
-    public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
+	public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
 
 		// Note: this comparator imposes orderings that are inconsistent with
 		// equals.
 		@Override
 		public int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
-            double da = 0D;
+			double da = 0D;
 			for (Entry<File, Double> entry : a.getValue().entrySet()) {
-                double value = entry.getValue().doubleValue();
-                da = da < value ? value : da;
+				double value = entry.getValue().doubleValue();
+				da = da < value ? value : da;
 			}
-            double db = 0D;
+			double db = 0D;
 			for (Entry<File, Double> entry : b.getValue().entrySet()) {
-                double value = entry.getValue().doubleValue();
-                db = db < value ? value : db;
+				double value = entry.getValue().doubleValue();
+				db = db < value ? value : db;
 			}
 
-            return Double.compare(db, da);
+			return Double.compare(db, da);
 		}
 	}
 }

@@ -7,12 +7,12 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class SnowflakeFractal extends Canvas {
 
-    public static final double SIZE = 500;
-    private DoubleProperty size = new SimpleDoubleProperty(SIZE);
+    public static final double DEFAULT_SIZE = 500;
+    private DoubleProperty size = new SimpleDoubleProperty(DEFAULT_SIZE);
     private DoubleProperty limit = new SimpleDoubleProperty(2);
 
     public SnowflakeFractal() {
-        super(SIZE, SIZE);
+        super(DEFAULT_SIZE, DEFAULT_SIZE);
         limit.addListener(e -> drawSnowflake());
         size.addListener(e -> drawSnowflake());
         drawSnowflake();

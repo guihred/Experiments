@@ -12,8 +12,6 @@ public class PuzzleLauncher extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Puzzle");
         Group root = new Group();
-        // Canvas canvas = new Canvas(500, 500);
-        // GraphicsContext gc = canvas.getGraphicsContext2D();
         PuzzleModel puzzlePiece = new PuzzleModel();
         root.getChildren().add(puzzlePiece);
         Scene value = new Scene(root);

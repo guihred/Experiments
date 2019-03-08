@@ -9,8 +9,10 @@ import java.util.Random;
 
 public class GridLayout implements Layout {
 
-	private Graph graph;
+	private static final    Random rnd = new Random();
 
+
+	private Graph graph;
 
 	public GridLayout(Graph graph) {
 		this.graph = graph;
@@ -20,17 +22,15 @@ public class GridLayout implements Layout {
 	public void execute() {
 
 		Cell[] cells = graph.getModel().getAllCells().stream().toArray(Cell[]::new);
-        graph.clean();
-        layoutInGrid(cells, graph);
+		graph.clean();
+		layoutInGrid(cells, graph);
 	}
 
-    public static int radius(int size2) {
+	public static int radius(int size2) {
 		return 100 * (size2 / 50 + 1);
 	}
-
 	private static void layoutInGrid(Cell[] cells, Graph graph) {
-        Random rnd = new Random();
-        Cell cell2 = cells[0];
+		Cell cell2 = cells[0];
 		Map<Cell, Integer> w = graph.getModel().unweightedUndirected(cell2.getCellId());
 		Comparator<Cell> comparing = Comparator.comparing(w::get);
 		Arrays.sort(cells, comparing);
@@ -45,14 +45,14 @@ public class GridLayout implements Layout {
 				w.putAll(graph.getModel().unweightedUndirected(cell.getCellId()));
 				Arrays.sort(cells, i, size, comparing);
 			}
-            int j = i / sqrt;
-            int f = -radius / 2;
-            double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + rnd.nextInt(11) - 5d;
-            int k = j * radius;
+			int j = i / sqrt;
+			int f = -radius / 2;
+			double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + rnd.nextInt(11) - 5d;
+			int k = j * radius;
 			double y = k * sqrt2 / 2;
 
 			cell.relocate(x, y);
 		}
-    }
+	}
 
 }

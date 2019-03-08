@@ -9,8 +9,10 @@ import java.util.Random;
 
 public class RandomLayout implements Layout {
 
-    private Graph graph;
+	private static final	Random rnd = new Random();
 
+
+	private Graph graph;
 
 	public RandomLayout(Graph graph) {
 		this.graph = graph;
@@ -19,16 +21,14 @@ public class RandomLayout implements Layout {
 	@Override
 	public void execute() {
 
-        List<Cell> cells = graph.getModel().getAllCells();
-        List<Edge> allEdges = graph.getModel().getAllEdges();
-        graph.clean();
-        layoutRandom(cells, allEdges, graph.getScrollPane().getWidth());
+		List<Cell> cells = graph.getModel().getAllCells();
+		List<Edge> allEdges = graph.getModel().getAllEdges();
+		graph.clean();
+		layoutRandom(cells, allEdges, graph.getScrollPane().getWidth());
 
-    }
-
-    public static void layoutRandom(List<Cell> cells, List<Edge> allEdges, double width) {
-		Random rnd = new Random();
-        double bound = width;
+	}
+	public static void layoutRandom(List<Cell> cells, List<Edge> allEdges, double width) {
+		double bound = width;
 
 		for (Cell cell : cells) {
 			int i = 0;
@@ -37,8 +37,8 @@ public class RandomLayout implements Layout {
 			double minx = 0;
 			List<Edge> edges = GraphModelAlgorithms.edges(cell, allEdges);
 			do {
-                double x = rnd.nextDouble() * bound;
-                double y = rnd.nextDouble() * bound;
+				double x = rnd.nextDouble() * bound;
+				double y = rnd.nextDouble() * bound;
 				cell.relocate(x, y);
 				int j = 0;
 				for (Edge edge : edges) {
@@ -50,7 +50,7 @@ public class RandomLayout implements Layout {
 					minIntersection = j;
 				}
 			} while (minIntersection == Integer.MAX_VALUE
-                    || i++ < 10 && GraphModelAlgorithms.anyIntersection(edges, allEdges));
+					|| i++ < 10 && GraphModelAlgorithms.anyIntersection(edges, allEdges));
 			cell.relocate(minx, miny);
 		}
 	}

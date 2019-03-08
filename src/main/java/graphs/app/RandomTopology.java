@@ -8,6 +8,8 @@ import java.util.Random;
 
 public class RandomTopology extends BaseTopology {
 
+	private final	Random random = new Random();
+
 	public RandomTopology(int size, Graph graph) {
 		super(graph, "Random", size);
 	}
@@ -17,11 +19,10 @@ public class RandomTopology extends BaseTopology {
 		graph.clean();
 		graph.getModel().removeAllCells();
 		graph.getModel().removeAllEdges();
-        final int bounds = 400;
-		Random random = new Random();
+		final int bounds = 400;
 		for (int i = 0; i < getSize(); i++) {
-            Cell addCell = graph.getModel().addCell(identifier(i), i % 2 == 0 ? CellType.CIRCLE : CellType.TRIANGLE);
-            addCell.relocate(random.nextGaussian() * bounds, random.nextGaussian() * bounds);
+			Cell addCell = graph.getModel().addCell(identifier(i), i % 2 == 0 ? CellType.CIRCLE : CellType.TRIANGLE);
+			addCell.relocate(random.nextGaussian() * bounds, random.nextGaussian() * bounds);
 		}
 		int nextInt = random.nextInt(getSize() * (getSize() - 1) / 2) + 1;
 		for (int i = 0; i < nextInt; i++) {

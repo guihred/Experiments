@@ -144,7 +144,8 @@ public final class ResourceFXUtils {
         try {
 			return ResourceFXUtils.class.getClassLoader().getResource(arquivo).toExternalForm();
 		} catch (RuntimeException e) {
-			HasLogging.log(1).error("ERRO FILE \"" + arquivo + "\"", e);
+			Logger log = HasLogging.log(1);
+			log.error("ERRO FILE \"" + arquivo + "\"", e);
 			throw e;
 		}
     }

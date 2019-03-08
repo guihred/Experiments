@@ -18,13 +18,13 @@ import simplebuilder.SimpleSliderBuilder;
 
 public class BorderTool extends RectangleTool {
 
-    private ImageView icon;
+	private ImageView icon;
 	private IntegerProperty length = new SimpleIntegerProperty(1);
 	private Slider lengthSlider;
 	@Override
-    public ImageView getIcon() {
+	public ImageView getIcon() {
 		if (icon == null) {
-            icon = getIconByURL("Border.png");
+			icon = getIconByURL("Border.png");
 
 		}
 		return icon;
@@ -37,11 +37,11 @@ public class BorderTool extends RectangleTool {
 
 	@Override
 	public void onSelected(final PaintModel model) {
-	    model.getToolOptions().getChildren().clear();
-        model.getToolOptions().setSpacing(5);
+		model.getToolOptions().getChildren().clear();
+		model.getToolOptions().setSpacing(5);
 		model.getToolOptions().getChildren()
-				.add(getLengthSlider());
-	
+		.add(getLengthSlider());
+
 	}
 
 	protected void drawBorders(final int layoutX, final int layoutY,final int width, final int height, final PaintModel model) {
@@ -87,22 +87,22 @@ public class BorderTool extends RectangleTool {
 	}
 
 	@Override
-    protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
+	protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
 		double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
 		dragTo(e,x, y);
 	}
 
 
-    @Override
+	@Override
 	protected void onMouseReleased(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (getArea().getWidth() > 2 && children.contains(getArea())) {
 			Bounds boundsInLocal = getArea().getBoundsInParent();
-            int startX = (int) boundsInLocal.getMinX();
-            int startY = (int) boundsInLocal.getMinY();
-            int height = (int) boundsInLocal.getHeight();
-            int width = (int) boundsInLocal.getWidth();
+			int startX = (int) boundsInLocal.getMinX();
+			int startY = (int) boundsInLocal.getMinY();
+			int height = (int) boundsInLocal.getHeight();
+			int width = (int) boundsInLocal.getWidth();
 
 			drawBorders(startX, startY, width, height, model);
 		}
@@ -112,7 +112,10 @@ public class BorderTool extends RectangleTool {
 
 
 	private Slider getLengthSlider() {
-		return lengthSlider=lengthSlider!=null?lengthSlider:new SimpleSliderBuilder(0, 4, 1).bindBidirectional(length).prefWidth(50).build();
+		if (lengthSlider == null) {
+			lengthSlider = new SimpleSliderBuilder(0, 4, 1).bindBidirectional(length).prefWidth(50).build();
+		}
+		return lengthSlider;
 	}
 
 }

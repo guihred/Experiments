@@ -10,6 +10,8 @@ import java.util.Random;
 public class DelaunayTopology extends BaseTopology {
 
 
+	private final Random rnd = new Random();
+
 	public DelaunayTopology(int size, Graph graph) {
 		super(graph, "Delaunay", size);
 	}
@@ -19,7 +21,6 @@ public class DelaunayTopology extends BaseTopology {
 		double b = y1 - y2;
 		return Math.sqrt(a * a + b * b);
 	}
-
 	@Override
 	public void execute() {
 
@@ -27,8 +28,7 @@ public class DelaunayTopology extends BaseTopology {
 		setSize(allCells.size());
 		graph.clean();
 		graph.getModel().removeAllCells();
-		Random rnd = new Random();
-        final int bound = 150;
+		final int bound = 150;
 		double x = 0;
 		double y = 0;
 		for (int i = 0; i < getSize(); i++) {
@@ -39,7 +39,7 @@ public class DelaunayTopology extends BaseTopology {
 			cell.relocate(x, y);
 		}
 
-        GraphModelAlgorithms.triangulate(graph, graph.getModel().getAddedCells());
+		GraphModelAlgorithms.triangulate(graph, graph.getModel().getAddedCells());
 
 		graph.endUpdate();
 	}
