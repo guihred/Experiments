@@ -18,6 +18,7 @@ public class PuzzleModel extends Group {
 	public static final int PUZZLE_WIDTH = 8;
 	public static final int PUZZLE_HEIGHT = 4;
 
+	private final Random random = new Random();
 	private PuzzlePiece[][] puzzle = initializePieces();
 	private int width;
 	private int height;
@@ -25,7 +26,6 @@ public class PuzzleModel extends Group {
 	private Object source;
 	private List<List<PuzzlePiece>> linkedPieces = new LinkedList<>();
 
-	private final     Random random = new Random();
 
 	public PuzzleModel() {
 		for (int i = 0; i < PUZZLE_WIDTH; i++) {

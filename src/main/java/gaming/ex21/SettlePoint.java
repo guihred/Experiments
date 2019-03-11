@@ -2,7 +2,6 @@ package gaming.ex21;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -58,7 +57,7 @@ public class SettlePoint extends Group {
 
 	@Override
 	public boolean equals(Object arg0) {
-		return Objects.hash(this) == Objects.hash(arg0);
+		return super.equals(arg0);
 	}
 
 	public Circle getCircle() {

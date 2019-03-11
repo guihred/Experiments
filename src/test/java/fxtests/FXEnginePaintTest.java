@@ -33,7 +33,7 @@ public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
 
 	private Stage currentStage;
 
-	Random random = new Random();
+	private Random random = new Random();
 
 	@Override
 	public void start(final Stage stage) throws Exception {
