@@ -69,6 +69,7 @@ public class CatanModel {
 	private List<Port> ports = Stream.of(ResourceType.values())
 			.flatMap(t -> Stream.generate(() -> t).limit(t == ResourceType.DESERT ? 4 : 1)).map(Port::new)
 			.collect(Collectors.toList());
+	private final List<DevelopmentType> developmentCards = getDevelopmentCards();
 
 	private Circle circle = new Circle(2);
 	private Pane right;
@@ -135,6 +136,16 @@ public class CatanModel {
 		root.getChildren().addAll(ports);
 		root.getChildren().addAll(settlePoints);
 
+	}
+
+	private int amountDevelopment(final DevelopmentType t) {
+		if (t == DevelopmentType.KNIGHT) {
+			return 14;
+		} else if (t == DevelopmentType.UNIVERSITY) {
+			return 5;
+		} else {
+			return 2;
+		}
 	}
 
 	private boolean containsEnough(final Combination combination, final List<CatanCard> list) {
@@ -237,11 +248,33 @@ public class CatanModel {
 	}
 
 	private boolean disableCombination(final Combination combination) {
-		List<CatanCard> list = cards.get(currentPlayer.get());
+		PlayerColor key = currentPlayer.get();
+		List<CatanCard> list = cards.get(key);
 		if (list == null) {
 			return true;
 		}
-		return !containsEnough(combination, list);
+		boolean b = !containsEnough(combination, list);
+		if (b) {
+			return b;
+		}
+		Map<Class<?>, Long> elementCount = settlePoints.stream()
+				.filter(s -> s.getElement() != null && s.getElement().getPlayer() == key).map(e -> e.getElement())
+				.collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting()));
+				
+		elementCount.putAll(edges.stream().filter(s -> s.getElement() != null && s.getElement().getPlayer() == key)
+				.map(e -> e.getElement())
+				.collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting())));
+		if (combination == Combination.CITY) {
+			return elementCount.getOrDefault(City.class, 0L) >= 4;
+		}
+		if (combination == Combination.VILLAGE) {
+			return elementCount.getOrDefault(Village.class, 0L) >= 5;
+		}
+		if (combination == Combination.ROAD) {
+			return elementCount.getOrDefault(Road.class, 0L) >= 15;
+		}
+
+		return developmentCards.isEmpty();
 	}
 
 	private boolean edgeAcceptRoad(final EdgeCatan edge, final Road road) {
@@ -277,6 +310,15 @@ public class CatanModel {
 			}
 		}
 		return circles;
+	}
+
+	private List<DevelopmentType> getDevelopmentCards() {
+		List<DevelopmentType> developments = Stream.of(DevelopmentType.values())
+				.flatMap(t -> Stream.generate(() -> t)
+						.limit(amountDevelopment(t)))
+				.collect(Collectors.toList());
+		Collections.shuffle(developments);
+		return developments;
 	}
 
 	private int getLimit(final int e) {
@@ -477,7 +519,8 @@ public class CatanModel {
 					elements.add(makeDraggable(new Road(currentPlayer.get())));
 					break;
 				case DEVELOPMENT:
-					list.add(newCard(DevelopmentType.randomDevelopment()));
+
+					list.add(newCard(developmentCards.remove(0)));
 					break;
 
 				default:
@@ -809,7 +852,7 @@ public class CatanModel {
 					newStatus.visibleProperty().bind(currentPlayer.isEqualTo(newV));
 
 				});
-		if (countPoints(newV) == 10) {
+		if (countPoints(newV) >= 10) {
 			CommonsFX.displayDialog("Player " + newV + " Won", "Reset", () -> {
 				center.getChildren().clear();
 				right.getChildren().clear();
