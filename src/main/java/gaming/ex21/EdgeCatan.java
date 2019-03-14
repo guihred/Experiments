@@ -38,6 +38,12 @@ public class EdgeCatan extends Group {
         setManaged(false);
     }
 
+	public boolean edgeAcceptRoad(final Road road) {
+    	return getElement() == null
+				&& (matchColor(road.getPlayer()) || getPoints().stream().anyMatch(p -> p.getEdges().stream()
+						.anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == road.getPlayer())));
+	}
+
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -79,7 +85,7 @@ public class EdgeCatan extends Group {
         this.element = element;
     }
 
-    public EdgeCatan toggleFade(final int r, final boolean enable) {
+	public EdgeCatan toggleFade(final int r, final boolean enable) {
         if (enable) {
             line.setStroke(Color.GREEN);
         }
@@ -91,7 +97,7 @@ public class EdgeCatan extends Group {
         return this;
     }
 
-    @Override
+	@Override
     public String toString() {
         return "(" + points + ")";
     }

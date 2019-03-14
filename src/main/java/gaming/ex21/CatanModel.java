@@ -149,10 +149,14 @@ public class CatanModel {
 	}
 
 	private boolean containsEnough(final Combination combination, final List<CatanCard> list) {
+		return containsEnough(list, combination.getResources());
+	}
+
+	private boolean containsEnough(final List<CatanCard> list, final List<ResourceType> resourcesNeeded) {
 		List<ResourceType> resources = list.stream().map(CatanCard::getResource).filter(Objects::nonNull)
 				.collect(Collectors.toList());
 
-		List<ResourceType> resourcesNecessary = combination.getResources().stream().collect(Collectors.toList());
+		List<ResourceType> resourcesNecessary = resourcesNeeded.stream().collect(Collectors.toList());
 		for (int i = 0; i < resourcesNecessary.size(); i++) {
 			if (!resources.remove(resourcesNecessary.get(i))) {
 				return false;
@@ -258,11 +262,11 @@ public class CatanModel {
 			return b;
 		}
 		Map<Class<?>, Long> elementCount = settlePoints.stream()
-				.filter(s -> s.getElement() != null && s.getElement().getPlayer() == key).map(e -> e.getElement())
+				.filter(s -> s.getElement() != null && s.getElement().getPlayer() == key).map(SettlePoint::getElement)
 				.collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting()));
-				
+
 		elementCount.putAll(edges.stream().filter(s -> s.getElement() != null && s.getElement().getPlayer() == key)
-				.map(e -> e.getElement())
+				.map(EdgeCatan::getElement)
 				.collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting())));
 		if (combination == Combination.CITY) {
 			return elementCount.getOrDefault(City.class, 0L) >= 4;
@@ -278,9 +282,7 @@ public class CatanModel {
 	}
 
 	private boolean edgeAcceptRoad(final EdgeCatan edge, final Road road) {
-		return edge.getElement() == null
-				&& (edge.matchColor(road.getPlayer()) || edge.getPoints().stream().anyMatch(p -> p.getEdges().stream()
-						.anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == road.getPlayer())));
+		return edge.edgeAcceptRoad(road);
 	}
 
 	private boolean edgeAcceptRoad(final Optional<EdgeCatan> firstEdge, final Road road) {
@@ -314,9 +316,7 @@ public class CatanModel {
 
 	private List<DevelopmentType> getDevelopmentCards() {
 		List<DevelopmentType> developments = Stream.of(DevelopmentType.values())
-				.flatMap(t -> Stream.generate(() -> t)
-						.limit(amountDevelopment(t)))
-				.collect(Collectors.toList());
+				.flatMap(t -> Stream.generate(() -> t).limit(amountDevelopment(t))).collect(Collectors.toList());
 		Collections.shuffle(developments);
 		return developments;
 	}
@@ -699,11 +699,17 @@ public class CatanModel {
 		if (resourcesToSelect == 4) {
 			List<ResourceType> dealTypes = cards.get(currentPlayer.get()).stream().filter(e -> e.getResource() != null)
 					.filter(CatanCard::isSelected).map(CatanCard::getResource).collect(Collectors.toList());
-			PlayerColor proposer = currentPlayer.get();
-			Deal deal = new Deal(proposer, selectedType, dealTypes);
-			Button dealButton = CommonsFX.newButton(deal, "", e -> onMakeDeal(deal));
-			dealButton.disableProperty().bind(currentPlayer.isEqualTo(proposer));
-			deals.getChildren().add(dealButton);
+			if (!dealTypes.isEmpty()) {
+				PlayerColor proposer = currentPlayer.get();
+				Deal deal = new Deal(proposer, selectedType, dealTypes);
+				Button dealButton = CommonsFX.newButton(deal, "", e -> onMakeDeal(deal));
+				dealButton.disableProperty().bind(Bindings.createBooleanBinding(() -> currentPlayer.get() == proposer
+						|| cards.get(currentPlayer.get()).stream().noneMatch(e -> e.getResource() == selectedType)
+						|| !containsEnough(cards.get(proposer), dealTypes), currentPlayer)
+
+				);
+				deals.getChildren().add(dealButton);
+			}
 			resourceChoices.setVisible(false);
 			makeDeal.setDisable(true);
 			resourcesToSelect = 0;
