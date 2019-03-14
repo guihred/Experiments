@@ -2,11 +2,7 @@ package fxtests;
 
 import graphs.entities.ZoomableScrollPane;
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
@@ -17,29 +13,18 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 import org.junit.Test;
-import org.testfx.framework.junit.ApplicationTest;
 import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
 import utils.ConsumerEx;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
-public class FXEnginePaintTest extends ApplicationTest implements HasLogging {
+public class FXEnginePaintTest extends AbstractTestExecution {
 
 	private static final String TEST_FILE = "test.png";
 
-	private Stage currentStage;
-
 	private Random random = new Random();
-
-	@Override
-	public void start(final Stage stage) throws Exception {
-		ResourceFXUtils.initializeFX();
-		currentStage = stage;
-	}
 
 	@Test
 	public void testaToolsVerify() throws Exception {

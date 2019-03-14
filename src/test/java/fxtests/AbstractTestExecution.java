@@ -1,43 +1,85 @@
 package fxtests;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import org.junit.Test;
+import org.apache.commons.lang.SystemUtils;
+import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.util.WaitForAsyncUtils;
-import utils.FunctionEx;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
-public abstract class AbstractTestExecution extends ApplicationTest {
+public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
+	protected Stage currentStage;
+	protected boolean isLinux = SystemUtils.IS_OS_LINUX;
 
-    private Stage currentStage;
-    private List<Class<? extends Application>> applications;
-    @SafeVarargs
-    public AbstractTestExecution(Class<? extends Application>... applications) {
-        this.applications = Arrays.asList(applications);
-    }
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        currentStage = stage;
-    }
+	@Override
+	public FxRobotInterface clickOn(Node node, MouseButton... buttons) {
+		if (isLinux) {
+			moveTo(node);
 
-    @Test
-    public void testLabyrinth2() throws Exception {
-        List<? extends Application> apps = applications.stream()
-                .map(FunctionEx.makeFunction(Class<? extends Application>::newInstance)).collect(Collectors.toList());
-        for (int i = 0; i < applications.size(); i++) {
+			return super.clickOn(buttons);
+		}
 
-            int j = i;
-            Platform.runLater(RunnableEx.makeRunnable(() -> apps.get(j).start(currentStage)));
-            WaitForAsyncUtils.waitForFxEvents();
-            execute();
-        }
-    }
+		return super.clickOn(node, buttons);
+	}
 
-    public abstract void execute();
+	@Override
+	public FxRobotInterface clickOn(String node, MouseButton... buttons) {
+		if (isLinux) {
+			Node query = lookup(node).query();
+			moveTo(query);
+			return super.clickOn(buttons);
+		}
+
+		return super.clickOn(node, buttons);
+	}
+
+	@Override
+	public FxRobotInterface doubleClickOn(Node node, MouseButton... buttons) {
+		if (isLinux) {
+			moveTo(node);
+			return super.doubleClickOn(buttons);
+		}
+		return super.doubleClickOn(node, buttons);
+	}
+
+	@Override
+	public FxRobotInterface moveTo(Node next) {
+		if (isLinux) {
+			if (next.getScene() != null && next.getScene().getWindow() != null) {
+				next.getScene().getWindow().setX(0);
+				next.getScene().getWindow().setY(0);
+				double x2 = next.getScene().getX();
+				Bounds local = next.getBoundsInParent();
+				double x = -local.getWidth() / 2 - local.getMinX();
+				Point2D offset = new Point2D(x + x2 / 2, 0);
+				return super.moveTo(next, offset);
+			}
+		}
+		return super.moveTo(next);
+	}
+
+	@Override
+	public void start(Stage stage) throws Exception {
+		ResourceFXUtils.initializeFX();
+		currentStage = stage;
+		currentStage.setX(0);
+		currentStage.setY(0);
+	}
+
+	protected <T extends Application> void show(Class<T> c) {
+		try {
+			T newInstance = c.newInstance();
+			interactNoWait(RunnableEx.makeRunnable(() -> newInstance.start(currentStage)));
+		} catch (Exception e) {
+			getLogger().error(String.format("ERRO IN %s", c), e);
+		}
+	}
+
 }

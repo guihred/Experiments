@@ -1,6 +1,5 @@
 package utils;
 
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +14,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.imageio.ImageIO;
+import javax.swing.filechooser.FileSystemView;
+
+import org.slf4j.Logger;
+
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
@@ -25,9 +32,6 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Mesh;
-import javax.imageio.ImageIO;
-import javax.swing.filechooser.FileSystemView;
-import org.slf4j.Logger;
 
 /**
  * @author Note
@@ -41,6 +45,26 @@ public final class ResourceFXUtils {
 	private static final Logger LOGGER = HasLogging.log();
 
 	private ResourceFXUtils() {
+		addLinuxProperties();
+	}
+
+
+	public static void addLinuxProperties() {
+		try {
+			Class.forName("com.sun.glass.ui.monocle.MonoclePlatformFactory");
+			// Class exists, continue in Headless Mode
+			System.setProperty("java.awt.headless", String.valueOf(true));
+			System.setProperty("testfx.robot", "glass");
+			System.setProperty("testfx.headless", String.valueOf(true));
+			System.setProperty("prism.order", "sw");
+			System.setProperty("prims.text", "t2k");
+			System.setProperty("glass.platform", "Monocle");
+			System.setProperty("monocle.platform", "Headless");
+			System.setProperty("glass.platform", "Monocle");
+
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
 	}
 
 	public static double clamp(final double value, final double min, final double max) {
@@ -112,6 +136,10 @@ public final class ResourceFXUtils {
 		new JFXPanel().toString();
 	}
 
+	private static double normalizeValue(final double value, final double min, final double max, final double newMin, final double newMax) {
+		return (value - min) * (newMax - newMin) / (max - min) + newMin;
+	}
+
 	public static void runOnFiles(final File userFolder,final ConsumerEx<File> run) {
 
 		try (Stream<Path> s = Files.list(userFolder.toPath())) {
@@ -172,10 +200,10 @@ public final class ResourceFXUtils {
 		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toPath();
 	}
 
+
 	public static InputStream toStream(final String arquivo) {
 		return ResourceFXUtils.class.getClassLoader().getResourceAsStream(arquivo);
 	}
-
 
 	public static URI toURI(final String arquivo) {
 		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();
@@ -183,10 +211,6 @@ public final class ResourceFXUtils {
 
 	public static URL toURL(final String arquivo) {
 		return ResourceFXUtils.class.getClassLoader().getResource(arquivo);
-	}
-
-	private static double normalizeValue(final double value, final double min, final double max, final double newMin, final double newMax) {
-		return (value - min) * (newMax - newMin) / (max - min) + newMin;
 	}
 
 }

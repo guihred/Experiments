@@ -5,51 +5,50 @@ import javafx.scene.control.TableRow;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.Test;
-import org.testfx.framework.junit.ApplicationTest;
 import utils.ConsoleUtils;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
+
+public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
 
-public class FXEngineMusicOrganizerTest extends ApplicationTest implements HasLogging {
+	@Test
+	public void convertToMp3() throws Exception {
 
-    private MusicOrganizer musicOrganizer;
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        ResourceFXUtils.initializeFX();
-        stage.setMaximized(true);
-        musicOrganizer = new MusicOrganizer();
-        musicOrganizer.start(stage);
-    }
-
-    @Test
-    public void convertToMp3() throws Exception {
-
-        clickOn("Carregar Vídeos");
-
-        type(KeyCode.M);
-        type(KeyCode.DOWN);
-        type(KeyCode.TAB);
-        type(KeyCode.ENTER);
-        lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
+		clickOn("Carregar Vídeos");
+		typeIfLinux();
+		sleep(1000);
+		lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
 		lookup("_Convert to Mp3").queryAll().forEach(this::clickOn);
-        ConsoleUtils.waitAllProcesses();
-    }
+		ConsoleUtils.waitAllProcesses();
+	}
 
-    @Test
-    public void splitAudio() {
-        clickOn("Carregar Musicas");
-        type(KeyCode.M);
-        type(KeyCode.DOWN);
-        type(KeyCode.TAB);
-        type(KeyCode.ENTER);
-        lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
+	@Test
+	public void splitAudio() {
+		clickOn("Carregar Musicas");
+		typeIfLinux();
+		lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
 		lookup("_Split").queryAll().forEach(this::clickOn);
-    }
+	}
 
-    @Test
-    public void closeAll() {
-        closeCurrentWindow();
-    }
+	@Override
+	public void start(Stage stage) throws Exception {
+		super.start(stage);
+		stage.setMaximized(true);
+		show(MusicOrganizer.class);
+	}
+
+	private void typeIfLinux() {
+		if (isLinux) {
+			type(KeyCode.DOWN);
+			type(KeyCode.ENTER);
+			type(KeyCode.M);
+			type(KeyCode.DOWN);
+			type(KeyCode.ENTER);
+			type(KeyCode.ENTER);
+		} else {
+			type(KeyCode.M);
+			type(KeyCode.DOWN);
+			type(KeyCode.TAB);
+			type(KeyCode.ENTER);
+		}
+	}
 }

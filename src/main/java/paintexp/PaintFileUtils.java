@@ -85,6 +85,7 @@ public final class PaintFileUtils {
 
 	public static void setDefaultFile(File defaultFile) {
 		PaintFileUtils.defaultFile = defaultFile;
+		HasLogging.log().info("DEFAULT FILE SET TO {}", defaultFile);
 	}
 
 }
