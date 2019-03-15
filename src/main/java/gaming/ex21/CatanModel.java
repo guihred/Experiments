@@ -813,6 +813,7 @@ public class CatanModel {
 		if (parent instanceof Group) {
 			((Group) parent).getChildren().remove(thief);
 		}
+		thief.setPlayer(currentPlayer.get());
 		elements.add(thief);
 	}
 

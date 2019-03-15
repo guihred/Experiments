@@ -61,21 +61,25 @@ public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
 	}
 
 	private void clickCards() {
-		List<CatanCard> collect = lookup(CatanCard.class::isInstance).queryAllAs(CatanCard.class).stream()
-
+		List<CatanCard> allCards = lookup(CatanCard.class::isInstance).queryAllAs(CatanCard.class).stream()
 				.collect(Collectors.toList());
-		Collections.shuffle(collect);
+		List<CatanCard> cardsToSelect = new ArrayList<>(allCards);
+		if (cardsToSelect.stream().filter(e -> e.isSelected()).count() > 4) {
+			return;
+		}
+		Collections.shuffle(cardsToSelect);
 		Comparator<CatanCard> comparator = Comparator
-				.comparing((final CatanCard c) -> collect.stream()
+				.comparing((final CatanCard c) -> cardsToSelect.stream()
 						.filter(e -> e.getResource() == c.getResource()).filter(e -> e.isSelected()).count())
 				.reversed();
-		collect.sort(comparator);
-		collect.removeIf(e -> e.isSelected());
-		if (random.nextBoolean() && !collect.isEmpty()) {
+		cardsToSelect.sort(comparator);
+		cardsToSelect.removeIf(e -> e.isSelected());
+		if (random.nextBoolean() && !cardsToSelect.isEmpty()) {
 			targetPos(Pos.TOP_LEFT);
-			clickOn(collect.remove(0));
-			if (random.nextBoolean() && !collect.isEmpty()) {
-				clickOn(collect.remove(0));
+			clickOn(cardsToSelect.remove(0));
+			if (random.nextBoolean() && !cardsToSelect.isEmpty()
+					&& allCards.stream().filter(e -> e.isSelected()).count() < 4) {
+				clickOn(cardsToSelect.remove(0));
 			}
 			targetPos(Pos.CENTER);
 		}
