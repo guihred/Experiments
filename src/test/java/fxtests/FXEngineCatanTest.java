@@ -22,30 +22,48 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import org.junit.Test;
-import org.testfx.framework.junit.ApplicationTest;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
 
-public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
+public class FXEngineCatanTest extends AbstractTestExecution {
 
 	private static final int MAX_TRIES = 300;
-	private Stage currentStage;
 
 	private Random random = new Random();
 
-	@Override
-	public void start(final Stage stage) throws Exception {
-		ResourceFXUtils.initializeFX();
-		currentStage = stage;
-	}
-
 	@Test
 	public void testaToolsVerify() throws Exception {
-		interactNoWait(RunnableEx.makeRunnable(() -> new CatanApp().start(currentStage)));
+		show(CatanApp.class);
 		testTools();
+	}
+
+	public void testTools() {
+		List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
+				.collect(Collectors.toList());
+		Collections.shuffle(allEdge);
+		List<Village> allVillages = new ArrayList<>();
+		List<City> cities = new ArrayList<>();
+		List<SettlePoint> settlePoints = lookup(SettlePoint.class::isInstance).queryAllAs(SettlePoint.class).stream()
+				.collect(Collectors.toList());
+		List<Road> allRoads = new ArrayList<>();
+		Collections.shuffle(settlePoints);
+		List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
+				.collect(Collectors.toList());
+		allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
+		Set<ButtonBase> clickedButtons = new HashSet<>();
+		List<Terrain> allTerrains = lookup(Terrain.class::isInstance).queryAllAs(Terrain.class).stream()
+				.collect(Collectors.toList());
+		Collections.shuffle(allTerrains);
+		for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
+			clickVillages(allVillages, settlePoints);
+			clickCities(cities);
+			clickRoads(allEdge, allRoads);
+			clickThiefs(allTerrains);
+			clickCards();
+			clickButton(allButtons, clickedButtons);
+			allButtons.removeIf(e -> e.getParent() == null);
+			clickedButtons.removeIf(e -> e.getParent() == null);
+			getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
+		}
 	}
 
 	private void clickButton(final List<ButtonBase> allButtons, final Set<ButtonBase> clickedButtons) {
@@ -150,37 +168,6 @@ public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
 
 	private EdgeCatan getEdge(final Road road, final List<EdgeCatan> allEdge) {
 		return allEdge.parallelStream().filter(e -> e.edgeAcceptRoad(road)).findFirst().orElse(allEdge.get(0));
-	}
-
-	private void testTools() {
-		List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
-				.collect(Collectors.toList());
-		Collections.shuffle(allEdge);
-		List<Village> allVillages = new ArrayList<>();
-		List<City> cities = new ArrayList<>();
-		List<SettlePoint> settlePoints = lookup(SettlePoint.class::isInstance).queryAllAs(SettlePoint.class).stream()
-				.collect(Collectors.toList());
-		List<Road> allRoads = new ArrayList<>();
-		Collections.shuffle(settlePoints);
-		List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
-				.collect(Collectors.toList());
-		allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
-		Set<ButtonBase> clickedButtons = new HashSet<>();
-		List<Terrain> allTerrains = lookup(Terrain.class::isInstance).queryAllAs(Terrain.class).stream()
-				.collect(Collectors.toList());
-		Collections.shuffle(allTerrains);
-		for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
-			clickVillages(allVillages, settlePoints);
-			clickCities(cities);
-
-			clickRoads(allEdge, allRoads);
-			clickThiefs(allTerrains);
-			clickCards();
-			clickButton(allButtons, clickedButtons);
-			allButtons.removeIf(e -> e.getParent() == null);
-			clickedButtons.removeIf(e -> e.getParent() == null);
-			getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
-		}
 	}
 
 	private void tryToClick(final ButtonBase t) {

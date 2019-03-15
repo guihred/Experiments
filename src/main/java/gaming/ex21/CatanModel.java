@@ -43,7 +43,7 @@ public class CatanModel {
 	private Map<PlayerColor, List<CatanCard>> cards = newMapList();
 	private Map<PlayerColor, List<DevelopmentType>> usedCards = newMapList();
 	private ObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
-	private ObservableList<Node> elements = FXCollections.observableArrayList();
+	private ObservableList<CatanResource> elements = FXCollections.observableArrayList();
 	private DragContext dragContext = new DragContext();
 	private BooleanProperty diceThrown = new SimpleBooleanProperty(false);
 	private StackPane center;
@@ -423,7 +423,9 @@ public class CatanModel {
 		right.getChildren().add(new HBox(dice1, dice2));
 		right.getChildren().add(cardGroup);
 		Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
-		skipButton.disableProperty().bind(diceThrown.not().or(resourceChoices.visibleProperty()));
+		skipButton.disableProperty()
+				.bind(Bindings.createBooleanBinding(this::isSkippable, diceThrown, resourceChoices.visibleProperty(),
+						currentPlayer, elements));
 		largestArmy.visibleProperty().bind(currentPlayer.isEqualTo(largestArmy.playerProperty()));
 		longestRoad.visibleProperty().bind(currentPlayer.isEqualTo(longestRoad.playerProperty()));
 		Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
@@ -449,6 +451,11 @@ public class CatanModel {
 
 	private boolean isPositioningPhase() {
 		return turnCount <= 8;
+	}
+
+	private Boolean isSkippable() {
+		return !diceThrown.get() || resourceChoices.isVisible()
+				|| elements.stream().anyMatch(e -> e.getPlayer() == currentPlayer.get());
 	}
 
 	private boolean isSuitableForCity(final SettlePoint e, final City element) {
@@ -623,7 +630,6 @@ public class CatanModel {
 			Terrain terrain = edgeHovered.get();
 			terrain.setThief(thief);
 			stealResource(terrain);
-
 		} else {
 			elements.add(0, dragContext.element);
 		}
