@@ -269,10 +269,14 @@ public class CatanModel {
 				.map(EdgeCatan::getElement)
 				.collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting())));
 		if (combination == Combination.CITY) {
-			return elementCount.getOrDefault(City.class, 0L) >= 4;
+			return elementCount.getOrDefault(City.class, 0L) >= 4
+					|| settlePoints.stream().noneMatch(s -> s.acceptCity(key));
 		}
 		if (combination == Combination.VILLAGE) {
-			return elementCount.getOrDefault(Village.class, 0L) >= 5;
+			return elementCount.getOrDefault(Village.class, 0L) >= 5
+					|| settlePoints.stream().noneMatch(s -> s.acceptVillage(key))
+
+			;
 		}
 		if (combination == Combination.ROAD) {
 			return elementCount.getOrDefault(Road.class, 0L) >= 15;
@@ -357,7 +361,8 @@ public class CatanModel {
 						.ifPresent(e -> dragContext.point = e.toggleFade(-1));
 			}
 			if (dragContext.element instanceof City) {
-				settlePoints.stream().filter(e -> isSuitableForCity(event, e)).findFirst()
+				settlePoints.stream().filter(e -> inArea(event, e))
+						.filter(e -> isSuitableForCity(e, (City) dragContext.element)).findFirst()
 						.ifPresent(e -> dragContext.point = e.toggleFade(-1));
 			}
 			if (dragContext.element instanceof Thief) {
@@ -446,8 +451,8 @@ public class CatanModel {
 		return turnCount <= 8;
 	}
 
-	private boolean isSuitableForCity(final MouseEvent event, final SettlePoint e) {
-		return inArea(event, e) && e.getElement() != null && e.getElement().getPlayer() == currentPlayer.get();
+	private boolean isSuitableForCity(final SettlePoint e, final City element) {
+		return e.isSuitableForCity(element);
 	}
 
 	private <E extends CatanResource> E makeDraggable(final E e) {
@@ -582,7 +587,7 @@ public class CatanModel {
 
 	private void onReleaseCity(final MouseEvent event, final City element) {
 		Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> inArea(event, e))
-				.filter(t -> !t.isPointDisabled()).filter(e -> isSuitableForCity(event, e)).findFirst();
+				.filter(t -> !t.isPointDisabled()).filter(e -> isSuitableForCity(e, element)).findFirst();
 		if (findFirst.isPresent()) {
 			findFirst.get().setElement(element);
 		} else {
@@ -705,7 +710,7 @@ public class CatanModel {
 				Button dealButton = CommonsFX.newButton(deal, "", e -> onMakeDeal(deal));
 				dealButton.disableProperty().bind(Bindings.createBooleanBinding(() -> currentPlayer.get() == proposer
 						|| cards.get(currentPlayer.get()).stream().noneMatch(e -> e.getResource() == selectedType)
-						|| !containsEnough(cards.get(proposer), dealTypes), currentPlayer)
+						|| !containsEnough(cards.get(proposer), dealTypes), currentPlayer, diceThrown)
 
 				);
 				deals.getChildren().add(dealButton);
@@ -767,9 +772,7 @@ public class CatanModel {
 	}
 
 	private boolean pointAcceptVillage(final SettlePoint point, final Village village) {
-
-		return point.getElement() == null && point.getEdges().stream()
-				.anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == village.getPlayer());
+		return point.pointAcceptVillage(village);
 	}
 
 	private void relocatePorts(final double radius) {

@@ -33,6 +33,15 @@ public class SettlePoint extends Group {
 
 	}
 
+	public boolean acceptCity(final PlayerColor player) {
+		return getElement() != null && getElement() instanceof Village && getElement().getPlayer() == player;
+	}
+	public boolean acceptVillage(final PlayerColor player) {
+		return getElement() == null && getNeighbors().stream().allMatch(e -> e.getElement() == null)
+				&& getEdges().stream()
+				.anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == player);
+	}
+
 	public void addAllNeighbors(final SettlePoint p) {
 		if (p != this) {
 			p.getNeighbors().forEach(this::addNeighbor);
@@ -56,7 +65,7 @@ public class SettlePoint extends Group {
 	}
 
 	@Override
-	public boolean equals(Object arg0) {
+	public boolean equals(final Object arg0) {
 		return super.equals(arg0);
 	}
 
@@ -93,8 +102,18 @@ public class SettlePoint extends Group {
 		return neighbors.stream().anyMatch(e -> e.element != null);
 	}
 
+	public boolean isSuitableForCity(final City city) {
+		PlayerColor player = city.getPlayer();
+		return acceptCity(player);
+	}
+
 	public boolean matchColor(final PlayerColor player) {
 		return element != null && element.getPlayer() == player;
+	}
+
+	public boolean pointAcceptVillage(final Village village) {
+		PlayerColor player = village.getPlayer();
+		return acceptVillage(player);
 	}
 
 	public void removeNeighbors() {

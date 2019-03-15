@@ -2,6 +2,7 @@ package fxtests;
 
 import gaming.ex21.CatanApp;
 import gaming.ex21.CatanCard;
+import gaming.ex21.City;
 import gaming.ex21.EdgeCatan;
 import gaming.ex21.Road;
 import gaming.ex21.SettlePoint;
@@ -13,8 +14,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
@@ -28,8 +31,10 @@ import utils.RunnableEx;
 
 public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
 
-	private static final int MAX_TRIES = 100;
+	private static final int MAX_TRIES = 300;
 	private Stage currentStage;
+
+	private Random random = new Random();
 
 	@Override
 	public void start(final Stage stage) throws Exception {
@@ -43,13 +48,55 @@ public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
 		testTools();
 	}
 
+	private void clickButton(final List<ButtonBase> allButtons, final Set<ButtonBase> clickedButtons) {
+		Collections.shuffle(allButtons);
+		allButtons.addAll(lookup(".button").queryAllAs(ButtonBase.class).stream().filter(t -> !allButtons.contains(t))
+				.collect(Collectors.toList()));
+		allButtons.stream().filter(e -> !e.isDisabled()).filter(e -> e.getParent() != null)
+				.filter(ButtonBase::isVisible).filter(e -> e.getParent().isVisible())
+				.sorted(Comparator.comparing(clickedButtons::contains)).findFirst().ifPresent(t -> {
+					clickedButtons.add(t);
+					tryToClick(t);
+				});
+	}
+
 	private void clickCards() {
 		List<CatanCard> collect = lookup(CatanCard.class::isInstance).queryAllAs(CatanCard.class).stream()
+
 				.collect(Collectors.toList());
 		Collections.shuffle(collect);
-		if (!collect.isEmpty()) {
-			clickOn(collect.get(0));
+		Comparator<CatanCard> comparator = Comparator
+				.comparing((final CatanCard c) -> collect.stream()
+						.filter(e -> e.getResource() == c.getResource()).filter(e -> e.isSelected()).count())
+				.reversed();
+		collect.sort(comparator);
+		collect.removeIf(e -> e.isSelected());
+		if (random.nextBoolean() && !collect.isEmpty()) {
+			targetPos(Pos.TOP_LEFT);
+			clickOn(collect.remove(0));
+			if (random.nextBoolean() && !collect.isEmpty()) {
+				clickOn(collect.remove(0));
+			}
+			targetPos(Pos.CENTER);
 		}
+	}
+
+	private void clickCities(final List<City> cities) {
+		List<City> notClickedVillages = lookup(City.class::isInstance).queryAllAs(City.class).stream()
+				.filter(t -> !cities.contains(t)).collect(Collectors.toList());
+
+		if (notClickedVillages.isEmpty()) {
+			return;
+		}
+		List<SettlePoint> settlePoints = lookup(SettlePoint.class::isInstance).queryAllAs(SettlePoint.class)
+				.parallelStream().collect(Collectors.toList());
+		City next = notClickedVillages.remove(0);
+		drag(next, MouseButton.PRIMARY);
+		SettlePoint remove = settlePoints.parallelStream().filter(e -> e.isSuitableForCity(next)).findAny()
+				.orElse(settlePoints.get(0));
+		moveTo(remove);
+		drop();
+		cities.add(next);
 	}
 
 	private void clickRoads(final List<EdgeCatan> allEdge, final List<Road> allRoads) {
@@ -58,17 +105,20 @@ public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
 			drag(e, MouseButton.PRIMARY);
 			moveTo(getEdge(e, allEdge));
 			drop();
-			allRoads.add(e);
+			if (!(e.getParent() instanceof StackPane)) {
+				allRoads.add(e);
+			}
 		});
 	}
 
-	private void clickThiefs() {
+	private void clickThiefs(final List<Terrain> queryAllAs) {
+		Collections.shuffle(queryAllAs);
 		lookup(Thief.class::isInstance).queryAllAs(Thief.class).stream().filter(e -> e.getParent() instanceof StackPane)
 				.forEach(e -> {
 					moveTo(e);
 					drag(e, MouseButton.PRIMARY);
-					lookup(Terrain.class::isInstance).queryAllAs(Terrain.class).parallelStream().findAny()
-							.ifPresent(this::moveTo);
+
+					queryAllAs.parallelStream().findAny().ifPresent(this::moveTo);
 					drop();
 				});
 	}
@@ -76,18 +126,22 @@ public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
 	private void clickVillages(final List<Village> allVillages, final List<SettlePoint> settlePoints) {
 		List<Village> notClickedVillages = lookup(Village.class::isInstance).queryAllAs(Village.class).stream()
 				.filter(v -> !allVillages.contains(v)).collect(Collectors.toList());
-
+		Collections.shuffle(notClickedVillages);
 		if (notClickedVillages.isEmpty()) {
 			return;
 		}
 
 		Village next = notClickedVillages.remove(0);
 		drag(next, MouseButton.PRIMARY);
-		SettlePoint remove = settlePoints.remove(0);
+		SettlePoint remove = settlePoints.parallelStream().filter(e -> e.pointAcceptVillage(next)).findAny()
+				.orElse(settlePoints.get(0));
 		moveTo(remove);
 		drop();
-		settlePoints.removeAll(remove.getNeighbors());
-		allVillages.add(next);
+		if (!(next.getParent() instanceof StackPane)) {
+			settlePoints.remove(remove);
+			settlePoints.removeAll(remove.getNeighbors());
+			allVillages.add(next);
+		}
 	}
 
 	private EdgeCatan getEdge(final Road road, final List<EdgeCatan> allEdge) {
@@ -97,7 +151,9 @@ public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
 	private void testTools() {
 		List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
 				.collect(Collectors.toList());
+		Collections.shuffle(allEdge);
 		List<Village> allVillages = new ArrayList<>();
+		List<City> cities = new ArrayList<>();
 		List<SettlePoint> settlePoints = lookup(SettlePoint.class::isInstance).queryAllAs(SettlePoint.class).stream()
 				.collect(Collectors.toList());
 		List<Road> allRoads = new ArrayList<>();
@@ -106,22 +162,17 @@ public class FXEngineCatanTest extends ApplicationTest implements HasLogging {
 				.collect(Collectors.toList());
 		allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
 		Set<ButtonBase> clickedButtons = new HashSet<>();
-
+		List<Terrain> allTerrains = lookup(Terrain.class::isInstance).queryAllAs(Terrain.class).stream()
+				.collect(Collectors.toList());
+		Collections.shuffle(allTerrains);
 		for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
 			clickVillages(allVillages, settlePoints);
+			clickCities(cities);
 
 			clickRoads(allEdge, allRoads);
-			clickThiefs();
+			clickThiefs(allTerrains);
 			clickCards();
-			Collections.shuffle(allButtons);
-			allButtons.addAll(lookup(".button").queryAllAs(ButtonBase.class).stream()
-					.filter(t -> !allButtons.contains(t)).collect(Collectors.toList()));
-			allButtons.stream().filter(e -> !e.isDisabled()).filter(e -> e.getParent() != null)
-					.filter(ButtonBase::isVisible).filter(e -> e.getParent().isVisible())
-					.sorted(Comparator.comparing(clickedButtons::contains)).findFirst().ifPresent(t -> {
-						clickedButtons.add(t);
-						tryToClick(t);
-					});
+			clickButton(allButtons, clickedButtons);
 			allButtons.removeIf(e -> e.getParent() == null);
 			clickedButtons.removeIf(e -> e.getParent() == null);
 			getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
