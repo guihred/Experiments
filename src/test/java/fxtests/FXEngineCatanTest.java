@@ -1,21 +1,7 @@
 package fxtests;
 
-import gaming.ex21.CatanApp;
-import gaming.ex21.CatanCard;
-import gaming.ex21.City;
-import gaming.ex21.EdgeCatan;
-import gaming.ex21.Road;
-import gaming.ex21.SettlePoint;
-import gaming.ex21.Terrain;
-import gaming.ex21.Thief;
-import gaming.ex21.Village;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import gaming.ex21.*;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBase;
@@ -60,8 +46,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 			clickThiefs(allTerrains);
 			clickCards();
 			clickButton(allButtons, clickedButtons);
-			allButtons.removeIf(e -> e.getParent() == null);
-			clickedButtons.removeIf(e -> e.getParent() == null);
 			getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
 		}
 	}
@@ -76,22 +60,24 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 					clickedButtons.add(t);
 					tryToClick(t);
 				});
+        allButtons.removeIf(e -> e.getParent() == null);
+        clickedButtons.removeIf(e -> e.getParent() == null);
 	}
 
 	private void clickCards() {
 		List<CatanCard> allCards = lookup(CatanCard.class::isInstance).queryAllAs(CatanCard.class).stream()
 				.collect(Collectors.toList());
-		List<CatanCard> cardsToSelect = new ArrayList<>(allCards);
-		if (cardsToSelect.stream().filter(e -> e.isSelected()).count() > 4) {
+        if (allCards.stream().filter(CatanCard::isSelected).count() > 4) {
 			return;
 		}
+        List<CatanCard> cardsToSelect = new ArrayList<>(allCards);
 		Collections.shuffle(cardsToSelect);
 		Comparator<CatanCard> comparator = Comparator
 				.comparing((final CatanCard c) -> cardsToSelect.stream()
 						.filter(e -> e.getResource() == c.getResource()).filter(e -> e.isSelected()).count())
 				.reversed();
 		cardsToSelect.sort(comparator);
-		cardsToSelect.removeIf(e -> e.isSelected());
+        cardsToSelect.removeIf(CatanCard::isSelected);
 		if (random.nextBoolean() && !cardsToSelect.isEmpty()) {
 			targetPos(Pos.TOP_LEFT);
 			clickOn(cardsToSelect.remove(0));

@@ -20,23 +20,16 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Toggle;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CommonsFX;
-import utils.ResourceFXUtils;
 
 public class CatanModel {
-	private static final String CATAN = "catan/";
 	private List<Terrain> terrains = new ArrayList<>();
 	private List<SettlePoint> settlePoints = new ArrayList<>();
 	private List<EdgeCatan> edges;
@@ -50,8 +43,7 @@ public class CatanModel {
 	private int resourcesToSelect = 0;
 	private Group cardGroup = new Group();
 	private Text userPoints = new Text("0");
-	private ImageView userImage = new ImageView(
-			CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")), Color.BLUE));
+    private ImageView userImage = CatanResource.newImage("user.png", Color.BLUE, 100);
 	private Dice dice1 = new Dice();
 	private Dice dice2 = new Dice();
 	private int turnCount;
@@ -86,18 +78,13 @@ public class CatanModel {
 		for (int i = 0; i < combinations.length; i++) {
 			Combination combination = combinations[i];
 			List<ResourceType> resources = combination.getResources();
-			ImageView el = new ImageView(ResourceFXUtils.toExternalForm(CATAN + combination.getElement()));
-			el.setFitWidth(30);
-			el.setFitHeight(30);
-			el.setPreserveRatio(true);
+            ImageView el = CatanResource.newImage(combination.getElement(), 30, 30);
 			Button button = CommonsFX.newButton(el, "" + combination, e -> onCombinationClicked(combination));
 			button.disableProperty().bind(
 					Bindings.createBooleanBinding(() -> disableCombination(combination), currentPlayer, diceThrown));
 			value.addRow(i, button);
 			for (ResourceType resourceType : resources) {
-				ImageView e2 = new ImageView(ResourceFXUtils.toExternalForm(CATAN + resourceType.getPure()));
-				e2.setFitWidth(20);
-				e2.setPreserveRatio(true);
+                ImageView e2 = CatanResource.newImage(resourceType.getPure(), 20);
 				value.addRow(i, e2);
 			}
 		}
@@ -210,9 +197,7 @@ public class CatanModel {
 		SimpleToggleGroupBuilder group = new SimpleToggleGroupBuilder();
 		for (ResourceType type : ResourceType.values()) {
 			if (type.getPure() != null) {
-				ImageView node = new ImageView(ResourceFXUtils.toExternalForm(CATAN + type.getPure()));
-				node.setFitWidth(20);
-				node.setPreserveRatio(true);
+                ImageView node = CatanResource.newImage(type.getPure(), 20);
 				group.addToggle(node, type);
 			}
 		}
@@ -483,10 +468,7 @@ public class CatanModel {
 
 	private void onChangePlayer(final PlayerColor newV) {
 		updatePoints(newV);
-		userImage.setFitWidth(100);
-		userImage.setPreserveRatio(true);
-		userImage.setImage(CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm("catan/user.png")),
-				newV.getColor()));
+        userImage.setImage(CatanResource.newImage("user.png", newV.getColor()));
 		cardGroup.getChildren().clear();
 		List<CatanCard> currentCards = cards.get(currentPlayer.get());
 		for (CatanCard type : currentCards) {

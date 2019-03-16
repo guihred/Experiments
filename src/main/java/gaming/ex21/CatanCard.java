@@ -5,11 +5,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import utils.ResourceFXUtils;
 
 public class CatanCard extends Rectangle {
 	public static final int PREF_HEIGHT = 75;
@@ -61,8 +58,7 @@ public class CatanCard extends Rectangle {
 
 	private void setStandard(final String type) {
 		setManaged(false);
-		String externalForm = ResourceFXUtils.toExternalForm("catan/" + type);
-		setFill(new ImagePattern(new Image(externalForm)));
+        setFill(CatanResource.newPattern(type));
 		setWidth(PREF_WIDTH);
 		setHeight(PREF_HEIGHT);
 

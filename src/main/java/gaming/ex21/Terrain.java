@@ -5,10 +5,8 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
-import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
@@ -17,7 +15,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleFillTransitionBuilder;
-import utils.ResourceFXUtils;
 
 public class Terrain extends Group {
 
@@ -108,8 +105,10 @@ public class Terrain extends Group {
             double y = Math.sin(off + d * i) * RADIUS;
             polygon.getPoints().addAll(x, y);
         }
-        polygon.setFill(new ImagePattern(new Image(ResourceFXUtils.toExternalForm("catan/" + type.getTerrain()))));
+        polygon.setFill(CatanResource.newPattern(type.getTerrain()));
         return polygon;
     }
+
+
 
 }

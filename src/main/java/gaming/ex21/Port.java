@@ -13,7 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import utils.ResourceFXUtils;
 
 public class Port extends Group {
 
@@ -71,10 +70,7 @@ public class Port extends Group {
 	}
 
 	private ImageView newBoat() {
-		ImageView boat = new ImageView(ResourceFXUtils.toExternalForm("catan/boat.png"));
-		boat.setFitWidth(SIZE);
-		boat.setPreserveRatio(true);
-		return boat;
+        return CatanResource.newImage("boat.png", SIZE);
 	}
 
 	private Text newInterrogation() {
@@ -95,8 +91,7 @@ public class Port extends Group {
 	}
 
 	private ImageView newResource() {
-		ImageView e = new ImageView(ResourceFXUtils.toExternalForm("catan/" + type.getPure()));
-		e.setFitWidth(SIZE / 4.);
+        ImageView e = CatanResource.newImage(type.getPure(), SIZE / 4.);
 		e.setLayoutX(SIZE / 2.5);
 		e.setLayoutY(SIZE * 5 / 24.);
 		e.setPreserveRatio(true);
