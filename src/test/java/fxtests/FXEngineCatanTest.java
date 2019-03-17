@@ -72,42 +72,38 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 		}
         List<CatanCard> cardsToSelect = new ArrayList<>(allCards);
 		Collections.shuffle(cardsToSelect);
-		Comparator<CatanCard> comparator = Comparator
-				.comparing((final CatanCard c) -> cardsToSelect.stream()
-						.filter(e -> e.getResource() == c.getResource()).filter(e -> e.isSelected()).count())
-				.reversed();
-		cardsToSelect.sort(comparator);
+        cardsToSelect.sort(Comparator.comparing(c -> orderByResources(cardsToSelect, c)));
         cardsToSelect.removeIf(CatanCard::isSelected);
 		if (random.nextBoolean() && !cardsToSelect.isEmpty()) {
 			targetPos(Pos.TOP_LEFT);
 			clickOn(cardsToSelect.remove(0));
 			if (random.nextBoolean() && !cardsToSelect.isEmpty()
-					&& allCards.stream().filter(e -> e.isSelected()).count() < 4) {
+                    && allCards.stream().filter(CatanCard::isSelected).count() < 4) {
 				clickOn(cardsToSelect.remove(0));
 			}
 			targetPos(Pos.CENTER);
 		}
 	}
 
-	private void clickCities(final List<City> cities) {
-		List<City> notClickedVillages = lookup(City.class::isInstance).queryAllAs(City.class).stream()
-				.filter(t -> !cities.contains(t)).collect(Collectors.toList());
+    private void clickCities(final List<City> cities) {
+        List<City> notClickedVillages = lookup(City.class::isInstance).queryAllAs(City.class).stream()
+                .filter(t -> !cities.contains(t)).collect(Collectors.toList());
 
-		if (notClickedVillages.isEmpty()) {
-			return;
-		}
-		List<SettlePoint> settlePoints = lookup(SettlePoint.class::isInstance).queryAllAs(SettlePoint.class)
-				.parallelStream().collect(Collectors.toList());
-		City next = notClickedVillages.remove(0);
-		drag(next, MouseButton.PRIMARY);
-		SettlePoint remove = settlePoints.parallelStream().filter(e -> e.isSuitableForCity(next)).findAny()
-				.orElse(settlePoints.get(0));
-		moveTo(remove);
-		drop();
-		cities.add(next);
-	}
+        if (notClickedVillages.isEmpty()) {
+            return;
+        }
+        List<SettlePoint> settlePoints = lookup(SettlePoint.class::isInstance).queryAllAs(SettlePoint.class)
+                .parallelStream().collect(Collectors.toList());
+        City next = notClickedVillages.remove(0);
+        drag(next, MouseButton.PRIMARY);
+        SettlePoint remove = settlePoints.parallelStream().filter(e -> e.isSuitableForCity(next)).findAny()
+                .orElse(settlePoints.get(0));
+        moveTo(remove);
+        drop();
+        cities.add(next);
+    }
 
-	private void clickRoads(final List<EdgeCatan> allEdge, final List<Road> allRoads) {
+    private void clickRoads(final List<EdgeCatan> allEdge, final List<Road> allRoads) {
 		lookup(Road.class::isInstance).queryAllAs(Road.class).stream().filter(r -> !allRoads.contains(r)).forEach(e -> {
 			moveTo(e);
 			drag(e, MouseButton.PRIMARY);
@@ -155,6 +151,11 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 	private EdgeCatan getEdge(final Road road, final List<EdgeCatan> allEdge) {
 		return allEdge.parallelStream().filter(e -> e.edgeAcceptRoad(road)).findFirst().orElse(allEdge.get(0));
 	}
+
+    private Long orderByResources(List<CatanCard> cardsToSelect, final CatanCard c) {
+        return -cardsToSelect.stream()
+                .filter(e -> e.getResource() == c.getResource()).filter(CatanCard::isSelected).count();
+    }
 
 	private void tryToClick(final ButtonBase t) {
 		try {
