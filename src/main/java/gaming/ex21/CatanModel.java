@@ -589,13 +589,15 @@ public class CatanModel {
     }
 
     private void replaceThief() {
-        terrains.stream().filter(t -> t.getThief() != null).forEach(t -> t.fadeOut());
+        terrains.stream().filter(t -> t.getThief() != null).forEach(Terrain::fadeOut);
         Parent parent = thief.getParent();
         if (parent instanceof Group) {
             ((Group) parent).getChildren().remove(thief);
         }
         thief.setPlayer(currentPlayer.get());
-        elements.add(thief);
+        if (!elements.contains(thief)) {
+            elements.add(thief);
+        }
     }
 
     private void stealResource(final Terrain terrain) {
