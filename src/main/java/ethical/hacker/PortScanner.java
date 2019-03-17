@@ -44,7 +44,7 @@ public class PortScanner {
         String portRegex = "\\d+/.+";
         ObservableList<String> executeInConsole = ConsoleUtils
                 .executeInConsoleInfoAsync(
-                        NMAP_FILES + " -sV --top-ports 10 " + networkAddress);
+                        NMAP_FILES + " -sV --top-ports 5 " + networkAddress);
         ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();
         StringProperty host = new SimpleStringProperty("");
         executeInConsole.addListener((Change<? extends String> c) -> {
