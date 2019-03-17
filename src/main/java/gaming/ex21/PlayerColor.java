@@ -1,5 +1,9 @@
 package gaming.ex21;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import javafx.scene.paint.Color;
 
 public enum PlayerColor {
@@ -15,5 +19,13 @@ public enum PlayerColor {
 
     public Color getColor() {
         return color;
+    }
+
+    public static <T> Map<PlayerColor, List<T>> newMapList() {
+        Map<PlayerColor, List<T>> map = new EnumMap<>(PlayerColor.class);
+        for (PlayerColor playerColor : PlayerColor.values()) {
+            map.put(playerColor, new ArrayList<>());
+        }
+        return map;
     }
 }

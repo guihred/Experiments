@@ -1,5 +1,10 @@
 package gaming.ex21;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.animation.FillTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -37,17 +42,61 @@ public class Terrain extends Group {
         setManaged(false);
     }
 
+    public void createSettlePoints(final double x, final double y, List<SettlePoint> settlePoints2) {
+        Terrain cell = this;
+        for (SettlePoint p : cell.getSettlePoints(x, y)) {
+            if (settlePoints2.stream().noneMatch(e -> intersects(p, e))) {
+                settlePoints2.add(p);
+                p.addTerrain(cell);
+            } else {
+                p.removeNeighbors();
+            }
+            settlePoints2.stream().filter(e -> intersects(p, e)).findFirst()
+                    .ifPresent(e -> e.addTerrain(cell).addAllNeighbors(p));
+        }
+    }
+
+    public Terrain fadeIn() {
+        return toggleFade(1);
+    }
+
+    public Terrain fadeOut() {
+        return toggleFade(-1);
+    }
+
     public int getNumber() {
-		return number.get();
-	}
+        return number.get();
+    }
+
+    public List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
+        List<SettlePoint> points = new ArrayList<>();
+        double off = Math.PI / 6;
+        for (int i = 0; i < 6; i++) {
+            double d = Math.PI / 3;
+            double x = Math.cos(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
+            double y = Math.sin(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
+            double centerX = xOff + x - Terrain.RADIUS / 10.;
+            double centerY = yOff + y;
+            SettlePoint e = new SettlePoint(centerX, centerY);
+            points.add(e);
+            if (points.size() > 1) {
+                e.addNeighbor(points.get(i - 1));
+            }
+            if (points.size() == 6) {
+                e.addNeighbor(points.get(0));
+            }
+        }
+        return points;
+    }
 
     public Thief getThief() {
         return thief;
     }
 
-	public ResourceType getType() {
+    public ResourceType getType() {
         return type;
     }
+
     public void removeThief() {
         if (thief != null) {
             stack.getChildren().remove(thief);
@@ -55,8 +104,8 @@ public class Terrain extends Group {
     }
 
     public void setNumber(final int number) {
-		this.number.set(number);
-	}
+        this.number.set(number);
+    }
 
     public void setThief(Thief thief) {
         if (thief != null) {
@@ -67,8 +116,8 @@ public class Terrain extends Group {
             thief.setLayoutY(Terrain.RADIUS - Terrain.RADIUS / 4.);
             highlightTransition.setToValue(Color.RED);
         } else {
-            if (highlightTransition.getToValue().equals(Color.RED)) {
-                toggleFade(-1);
+            if (Color.RED.equals(highlightTransition.getToValue())) {
+                fadeOut();
             }
         }
 
@@ -109,6 +158,25 @@ public class Terrain extends Group {
         return polygon;
     }
 
+    private boolean intersects(final SettlePoint p, final SettlePoint e) {
+        return e.getBoundsInParent().intersects(p.getBoundsInParent());
+    }
 
+    public static List<Integer> getNumbers() {
+        List<Integer> numbers = IntStream.range(2, 13).flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
+                .boxed().collect(Collectors.toList());
+        Collections.shuffle(numbers);
+        return numbers;
+    }
+
+    private static int getLimit(final int e) {
+        if (e == 7) {
+            return 0;
+        }
+        if (e == 2 || e == 12) {
+            return 1;
+        }
+        return 2;
+    }
 
 }

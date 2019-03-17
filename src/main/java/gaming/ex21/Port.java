@@ -1,6 +1,11 @@
 package gaming.ex21;
 
+import graphs.entities.Edge;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -53,9 +58,8 @@ public class Port extends Group {
 		return type;
 	}
 
-	public HBox newStatus() {
+	public HBox getStatus() {
 		if (status == null) {
-
 			Text text = new Text();
 			text.textProperty().bind(number.asString());
 			Node newResource = type != ResourceType.DESERT ? newResource() : newInterrogation();
@@ -112,5 +116,36 @@ public class Port extends Group {
 			}
 		}
 	}
+
+    public static void relocatePorts(final List<SettlePoint> settlePoints2, final List<Port> ports2) {
+        final double radius = Terrain.RADIUS * Math.sqrt(3) / 4;
+        List<SettlePoint> s = settlePoints2.stream().collect(Collectors.toList());
+        Collections.shuffle(s);
+        List<List<SettlePoint>> portLocations = s.stream().filter(p -> p.getNeighbors().size() == 2)
+                .flatMap(p0 -> p0.getNeighbors().stream().map(p1 -> Arrays.asList(p0, p1)))
+                .collect(Collectors.toList());
+        for (int j = 0; j < ports2.size() && !portLocations.isEmpty(); j++) {
+            Port port = ports2.get(j);
+            List<SettlePoint> points = portLocations.remove(0);
+            Optional<SettlePoint> first = points.stream().filter(l -> l.getNeighbors().size() == 3).findFirst();
+            portLocations.removeIf(p -> p.contains(points.get(0)));
+            portLocations.removeIf(p -> p.contains(points.get(1)));
+            port.getPoints().addAll(points);
+            if (first.isPresent()) {
+                ObservableList<SettlePoint> neighbors = first.get().getNeighbors()
+                        .filtered(p -> p.getNeighbors().size() == 2);
+                double x = neighbors.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
+                double y = neighbors.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
+                port.relocate(x - Terrain.RADIUS / 2., y - Terrain.RADIUS / 2.);
+            } else {
+                double x = points.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
+                double y = points.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
+                double angulo = Math.PI / 2 - Edge.getAngulo(radius * 3, radius * 2.7, x, y);
+                double m = Math.sin(angulo) * radius;
+                double n = Math.cos(angulo) * radius;
+                port.relocate(x + m - Terrain.RADIUS / 2., y + n - Terrain.RADIUS / 2.);
+            }
+        }
+    }
 
 }

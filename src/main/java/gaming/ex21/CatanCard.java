@@ -1,6 +1,7 @@
 package gaming.ex21;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -17,17 +18,19 @@ public class CatanCard extends Rectangle {
 	private DevelopmentType development;
 	private final BooleanProperty selected = new SimpleBooleanProperty(false);
 
-	public CatanCard(final DevelopmentType type) {
-		development = type;
-		setStandard(type.getImage());
+	public CatanCard(DevelopmentType type, Consumer<CatanCard> object) {
+	    development = type;
+	    setStandard(type.getImage());
+	    setOnMouseClicked(e->object.accept(this));
 	}
 
-	public CatanCard(final ResourceType type) {
-		resource = type;
-		setStandard(type.getResource());
-	}
+    public CatanCard(final ResourceType type, Consumer<CatanCard> object) {
+        resource = type;
+        setStandard(type.getResource());
+        setOnMouseClicked(e -> object.accept(this));
+    }
 
-	public DevelopmentType getDevelopment() {
+    public DevelopmentType getDevelopment() {
 		return development;
 	}
 
