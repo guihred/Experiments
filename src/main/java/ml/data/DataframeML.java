@@ -195,7 +195,7 @@ public class DataframeML implements HasLogging {
 		DataframeUtils.trim(header, trimmingSize, this);
 	}
 
-	@SuppressWarnings({ "unchecked", "unused" })
+	@SuppressWarnings({ "unchecked" })
 	public <T> List<T> typedList(List<Object> list, Class<T> c) {
 		return (List<T>) list;
 	}

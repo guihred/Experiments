@@ -14,6 +14,7 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ResourceFXUtils;
 
 public class CSVUtils {
 
@@ -53,11 +54,7 @@ public class CSVUtils {
 	}
 
 	public static void splitFile(String csvFile, int columnIndex) {
-		Map<String, Writer> hashMap = new HashMap<>();
-		File file = new File("out");
-		if (!file.exists()) {
-			file.mkdir();
-		}
+		Map<String, Writer> writersBytype = new HashMap<>();
 
 		try (Scanner scanner = new Scanner(new File(csvFile), StandardCharsets.UTF_8.displayName())) {
 			String firstLine = scanner.nextLine();
@@ -65,12 +62,14 @@ public class CSVUtils {
 				String nextLine = scanner.nextLine();
 				List<String> parseLine = CSVUtils.parseLine(nextLine);
 				String string = parseLine.get(columnIndex);
-				if (!hashMap.containsKey(string)) {
-					Writer output = createWriter("out/" + csvFile.replaceAll("\\..+", "") + string + ".csv");
+				if (!writersBytype.containsKey(string)) {
+					File file = new File(ResourceFXUtils.getOutFile(),
+							csvFile.replaceAll("\\..+", "") + string + ".csv");
+					Writer output = createWriter(file.getAbsolutePath());
 					output.append(firstLine + "\n");
-					hashMap.put(string, output);
+					writersBytype.put(string, output);
 				}
-				hashMap.get(string).append(nextLine + "\n");
+				writersBytype.get(string).append(nextLine + "\n");
 			}
 		}catch(Exception e) {
 			LOGGER.error("ERROR ", e);

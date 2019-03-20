@@ -34,7 +34,7 @@ public class SettlePoint extends Group {
 	}
 
 	public boolean acceptCity(final PlayerColor player) {
-		return getElement() != null && getElement() instanceof Village && getElement().getPlayer() == player;
+		return getElement() instanceof Village && getElement().getPlayer() == player;
 	}
 	public boolean acceptVillage(final PlayerColor player) {
 		return getElement() == null && getNeighbors().stream().allMatch(e -> e.getElement() == null)
@@ -69,12 +69,12 @@ public class SettlePoint extends Group {
 		return super.equals(arg0);
 	}
 
-    public SettlePoint fadeIn() {
-	    return toggleFade(-1);
+	public SettlePoint fadeIn() {
+		return toggleFade(-1);
 	}
 
-    public SettlePoint fadeOut() {
-	    return toggleFade(1);
+	public SettlePoint fadeOut() {
+		return toggleFade(1);
 	}
 
 	public Circle getCircle() {
@@ -124,13 +124,13 @@ public class SettlePoint extends Group {
 		return acceptVillage(player);
 	}
 
-    public void removeNeighbors() {
-        for (SettlePoint settlePoint : neighbors) {
-            settlePoint.neighbors.remove(this);
-        }
-    }
+	public void removeNeighbors() {
+		for (SettlePoint settlePoint : neighbors) {
+			settlePoint.neighbors.remove(this);
+		}
+	}
 
-    public void setElement(final CatanResource element) {
+	public void setElement(final CatanResource element) {
 		if (this.element != null) {
 			getChildren().remove(this.element);
 		}
@@ -139,7 +139,7 @@ public class SettlePoint extends Group {
 		getChildren().add(element);
 		element.setLayoutX(-element.getImage().getWidth() / 2);
 		element.setLayoutY(-element.getImage().getHeight() / 2);
-        fadeOut();
+		fadeOut();
 		this.element = element;
 	}
 	public SettlePoint toggleFade(final int r) {

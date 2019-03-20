@@ -22,14 +22,14 @@ import utils.RunnableEx;
 public final class Chapter1 {
 
 
-    public static final String DOCUMENTS_FOLDER = new JFileChooser().getFileSystemView().getDefaultDirectory()
+	public static final String DOCUMENTS_FOLDER = new JFileChooser().getFileSystemView().getDefaultDirectory()
 			.getAbsolutePath();
 	private static final Logger LOGGER = HasLogging.log();
 
-    private Chapter1() {
+	private Chapter1() {
 	}
 
-    /***
+	/***
 	 * Write a static method andThen that takes as parameters two Runnable
 	 * instances and returns a Runnable that runs the first, then the second. In
 	 * the main method, pass two lambda expressions into a call to andThen, and
@@ -45,20 +45,20 @@ public final class Chapter1 {
 	}
 
 	/**
-     * Is the comparator code in the Arrays.sort method called in the same
-     * thread as the call to sort or a different thread?
-     * 
-     * A: in the same thread.
-     * @return 
-     */
-    public static String ex1(Integer[] a) {
+	 * Is the comparator code in the Arrays.sort method called in the same
+	 * thread as the call to sort or a different thread?
+	 * 
+	 * A: in the same thread.
+	 * @return 
+	 */
+	public static String ex1(Integer[] a) {
 
-        Property<String> property = new SimpleObjectProperty<>();
+		Property<String> property = new SimpleObjectProperty<>();
 		Arrays.sort(a, (o1, o2) -> {
-            property.setValue(Thread.currentThread().getName());
+			property.setValue(Thread.currentThread().getName());
 			return Integer.compare(o1, o2);
 		});
-        return property.getValue();
+		return property.getValue();
 	}
 
 	/**
@@ -70,9 +70,9 @@ public final class Chapter1 {
 	public static void ex2(File directory) {
 
 		Arrays.asList(directory.listFiles(File::isDirectory)).forEach(
-                s -> LOGGER.trace("{}", s));
-        Arrays.asList(directory.listFiles(File::isDirectory))
-                .forEach(s -> LOGGER.trace("{}", s));
+				s -> LOGGER.trace("{}", s));
+		Arrays.asList(directory.listFiles(File::isDirectory))
+		.forEach(s -> LOGGER.trace("{}", s));
 
 	}
 
@@ -83,8 +83,8 @@ public final class Chapter1 {
 	 * from the enclosing scope does it capture?
 	 */
 	public static void ex3(File directory, String extension) {
-        Arrays.asList(directory.listFiles((FilenameFilter) (dir, name) -> name.endsWith(extension)))
-                .forEach(s -> LOGGER.trace("{}", s));
+		Arrays.asList(directory.listFiles((FilenameFilter) (dir, name) -> name.endsWith(extension)))
+		.forEach(s -> LOGGER.trace("{}", s));
 
 	}
 
@@ -97,11 +97,11 @@ public final class Chapter1 {
 		List<File> asList = Arrays.asList(listFiles);
 		Collections.shuffle(asList);
 
-        String unsorted = asList.stream().map(File::getName).collect(Collectors.joining(", ", "Before: ", ""));
-        LOGGER.trace(unsorted);
+		String unsorted = asList.stream().map(File::getName).collect(Collectors.joining(", ", "Before: ", ""));
+		LOGGER.trace(unsorted);
 		asList.sort(Comparator.comparing(File::isFile).thenComparing(File::getName));
-        String sorted = asList.stream().map(File::getName).collect(Collectors.joining(", ", "After: ", ""));
-        LOGGER.trace(sorted);
+		String sorted = asList.stream().map(File::getName).collect(Collectors.joining(", ", "After: ", ""));
+		LOGGER.trace(sorted);
 
 	}
 
@@ -111,60 +111,60 @@ public final class Chapter1 {
 	}
 
 	/**
-     * Didn't you always hate it that you had to deal with checked exceptions in
-     * a Runnable? Write a method uncheck that catches all checked exceptions
-     * and turns them into unchecked exceptions. For example, new
-     * Thread(uncheck( () -> { LOGGER.trace("Zzz"); Thread.sleep(1000);
-     * })).start(); // Look, no catch (InterruptedException)! Hint: Define an
-     * interface RunnableEx whose run method may throw any exceptions. Then
-     * implement public static Runnable uncheck(RunnableEx runner). Use a lambda
-     * expression inside the uncheck function. Why can't you just use
-     * Callable<Void> instead of RunnableEx?
-     * 
-     * A: Can't use Callable<Void> because it causes a compilation error if you
-     * don't return a Void Object.
-     */
+	 * Didn't you always hate it that you had to deal with checked exceptions in
+	 * a Runnable? Write a method uncheck that catches all checked exceptions
+	 * and turns them into unchecked exceptions. For example, new
+	 * Thread(uncheck( () -> { LOGGER.trace("Zzz"); Thread.sleep(1000);
+	 * })).start(); // Look, no catch (InterruptedException)! Hint: Define an
+	 * interface RunnableEx whose run method may throw any exceptions. Then
+	 * implement public static Runnable uncheck(RunnableEx runner). Use a lambda
+	 * expression inside the uncheck function. Why can't you just use
+	 * Callable<Void> instead of RunnableEx?
+	 * 
+	 * A: Can't use Callable<Void> because it causes a compilation error if you
+	 * don't return a Void Object.
+	 */
 	public static void ex6() {
-        new Thread(RunnableEx.makeRunnable(() -> {
-            LOGGER.trace("Zzzz!!");
+		new Thread(RunnableEx.makeRunnable(() -> {
+			LOGGER.trace("Zzzz!!");
 			Thread.sleep(1000);
-            LOGGER.trace("!!!!");
+			LOGGER.trace("!!!!");
 		})).start();
 	}
 
 	public static void ex7() {
 		andThen(
-                () -> LOGGER.trace("first"), () -> LOGGER.trace("second")
-		).run();
+				() -> LOGGER.trace("first"), () -> LOGGER.trace("second")
+				).run();
 	}
 
 	/**
-     * What happens when a lambda expression captures values in an enhanced for
-     * loop such as this one? String[] names = { "Peter", "Paul", "Mary" };
-     * List<Runnable> runners = new ArrayList<>(); for (String name : names)
-     * runners.add(() -> LOGGER.trace(name));
-     * 
-     * Is it legal? Does each lambda expression capture a different value, or do
-     * they all get the last value? What happens if you use a traditional loop
-     * for (int i = 0; i < names.length; i++)?
-     * 
-     * A: They all get a different value.
-     */
+	 * What happens when a lambda expression captures values in an enhanced for
+	 * loop such as this one? String[] names = { "Peter", "Paul", "Mary" };
+	 * List<Runnable> runners = new ArrayList<>(); for (String name : names)
+	 * runners.add(() -> LOGGER.trace(name));
+	 * 
+	 * Is it legal? Does each lambda expression capture a different value, or do
+	 * they all get the last value? What happens if you use a traditional loop
+	 * for (int i = 0; i < names.length; i++)?
+	 * 
+	 * A: They all get a different value.
+	 */
 	public static void ex8() {
 		String[] names = { "Peter", "Paul", "Mary" };
 		List<Runnable> runners = new ArrayList<>();
 		for (String name : names) {
-            runners.add(() -> LOGGER.trace(name));
+			runners.add(() -> LOGGER.trace(name));
 		}
 
 		runners.forEach(r -> new Thread(r).start());
 
 		for (int i = 0; i < names.length; i++) {
 			// This would give you a compilation error because 'i' is changeable
-            // runners.add(() -> LOGGER.trace(names[i]));
+			// runners.add(() -> LOGGER.trace(names[i]))
 			String name = names[i];
 			// But this works perfectly fine
-            runners.add(() -> LOGGER.trace(name));
+			runners.add(() -> LOGGER.trace(name));
 
 		}
 
@@ -179,22 +179,22 @@ public final class Chapter1 {
 		a.add("");
 		a.add("d");
 
-        a.forEachIf(LOGGER::trace, s -> !s.isEmpty());
+		a.forEachIf(LOGGER::trace, s -> !s.isEmpty());
 
 	}
 
 	public static void main(String[] args) {
 		ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 });
 		ex2(new File("."));
-        ex3(new File(DOCUMENTS_FOLDER), "log");
-        ex4(new File(DOCUMENTS_FOLDER).listFiles());
+		ex3(new File(DOCUMENTS_FOLDER), "log");
+		ex4(new File(DOCUMENTS_FOLDER).listFiles());
 		ex6();
 		ex7();
 		ex8();
 		ex9();
 	}
 
-	static interface Collection2<T> extends Collection<T> {
+	interface Collection2<T> extends Collection<T> {
 
 		default void forEachIf(Consumer<? super T> action, Predicate<? super T> p) {
 			forEach(t -> {
@@ -205,7 +205,7 @@ public final class Chapter1 {
 		}
 
 	}
-	
+
 	static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
 		private static final long serialVersionUID = 1L;
 	}

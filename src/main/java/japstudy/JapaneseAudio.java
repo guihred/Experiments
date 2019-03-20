@@ -13,56 +13,56 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public enum JapaneseAudio {
-    AUDIO_1(1, "jaf01lesson122216.mp3"),
-    AUDIO_2(2, "jaf02lesson122216.mp3"),
-    AUDIO_3(3, "jaf03lesson122216"),
-    AUDIO_4(4, "jaf04lesson122216"),
-    AUDIO_5(5, "jaf05lesson032814"),
-    AUDIO_6(6, "jaf06lesson122216"),
-    AUDIO_7(7, "jaf07lesson122216"),
-    AUDIO_8(8, "jaf08lesson122216"),
-    AUDIO_9(9, "jaf09lesson122216"),
-    AUDIO_10(10, "jaf10lesson122216"),
-    AUDIO_11(11, "jaf11lesson122216"),
-    AUDIO_12(12, "jaf12lesson122216"),
-    AUDIO_13(13, "jaf13lesson122216"),
-    AUDIO_14(14, "jaf14lesson122216"),
-    AUDIO_15(15, "jaf15lesson122216"),
-    AUDIO_16(16, "jaf16lesson122216"),
-    AUDIO_17(17, "jaf17lesson122216");
+	AUDIO_1(1, "jaf01lesson122216.mp3"),
+	AUDIO_2(2, "jaf02lesson122216.mp3"),
+	AUDIO_3(3, "jaf03lesson122216"),
+	AUDIO_4(4, "jaf04lesson122216"),
+	AUDIO_5(5, "jaf05lesson032814"),
+	AUDIO_6(6, "jaf06lesson122216"),
+	AUDIO_7(7, "jaf07lesson122216"),
+	AUDIO_8(8, "jaf08lesson122216"),
+	AUDIO_9(9, "jaf09lesson122216"),
+	AUDIO_10(10, "jaf10lesson122216"),
+	AUDIO_11(11, "jaf11lesson122216"),
+	AUDIO_12(12, "jaf12lesson122216"),
+	AUDIO_13(13, "jaf13lesson122216"),
+	AUDIO_14(14, "jaf14lesson122216"),
+	AUDIO_15(15, "jaf15lesson122216"),
+	AUDIO_16(16, "jaf16lesson122216"),
+	AUDIO_17(17, "jaf17lesson122216");
 	private static final Logger LOG = HasLogging.log();
-	private static final String OUTPUT_FILE = "out/create_database.sql";
-    private final String file;
-    private final int lesson;
+	private static final String OUTPUT_FILE = "create_database.sql";
+	private final String file;
+	private final int lesson;
 
-    JapaneseAudio(int lesson, String file) {
-        this.lesson = lesson;
-        this.file = file;
+	JapaneseAudio(int lesson, String file) {
+		this.lesson = lesson;
+		this.file = file;
 
-    }
+	}
 
-    public File getFile() {
-        return ResourceFXUtils.toFile("jap/" + file);
-    }
+	public File getFile() {
+		return ResourceFXUtils.toFile("jap/" + file);
+	}
 
-    public int getLesson() {
-        return lesson;
-    }
+	public int getLesson() {
+		return lesson;
+	}
 
-    public URL getURL() {
-        return ResourceFXUtils.toURL("jap/" + file);
-    }
+	public URL getURL() {
+		return ResourceFXUtils.toURL("jap/" + file);
+	}
 
-    public static JapaneseAudio getAudio(int lesson) {
-        return Stream.of(values()).filter(e -> e.lesson == lesson).findFirst().orElse(null);
-    }
+	public static JapaneseAudio getAudio(int lesson) {
+		return Stream.of(values()).filter(e -> e.lesson == lesson).findFirst().orElse(null);
+	}
 
-    public static void main(String[] args) {
-        ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
-        /*
+	public static void main(String[] args) {
+		ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
+		/*
             CREATE TABLE "android_metadata" ("locale" TEXT DEFAULT 'en_US') 
             INSERT INTO "android_metadata" VALUES ('en_US')
-            
+
             CREATE TABLE "JAPANESE_LESSON" (
                     english TEXT,
                     japanese TEXT,
@@ -70,27 +70,27 @@ public enum JapaneseAudio {
                     exercise INT,
                     lesson INT,
                     PRIMARY KEY (exercise,lesson)) 
-         */
-        File file2 = new File(OUTPUT_FILE);
+		 */
+		File file2 = new File(ResourceFXUtils.getOutFile(), OUTPUT_FILE);
 
-        try (PrintStream out = new PrintStream(file2, StandardCharsets.UTF_8.displayName())) {
+		try (PrintStream out = new PrintStream(file2, StandardCharsets.UTF_8.displayName())) {
 
-            for (JapaneseLesson lesson : lessons) {
+			for (JapaneseLesson lesson : lessons) {
 
-                String format = String.format(
-                        "INSERT INTO JAPANESE_LESSON(english,japanese,romaji,exercise,lesson) VALUES('%s','%s','%s',%d,%d);",
-                        treatStr(lesson.getEnglish()), treatStr(lesson.getJapanese()), treatStr(lesson.getRomaji()),
-                        lesson.getExercise(), lesson.getLesson());
-                out.println(format);
-            }
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
-        HibernateUtil.shutdown();
-    }
+				String format = String.format(
+						"INSERT INTO JAPANESE_LESSON(english,japanese,romaji,exercise,lesson) VALUES('%s','%s','%s',%d,%d);",
+						treatStr(lesson.getEnglish()), treatStr(lesson.getJapanese()), treatStr(lesson.getRomaji()),
+						lesson.getExercise(), lesson.getLesson());
+				out.println(format);
+			}
+		} catch (Exception e) {
+			LOG.error("", e);
+		}
+		HibernateUtil.shutdown();
+	}
 
-    private static String treatStr(String string) {
-        return Objects.toString(string, "").replaceAll("'", "''").replaceAll(";", ",");
-    }
+	private static String treatStr(String string) {
+		return Objects.toString(string, "").replaceAll("'", "''").replaceAll(";", ",");
+	}
 
 }

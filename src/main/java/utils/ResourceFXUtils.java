@@ -1,5 +1,6 @@
 package utils;
 
+import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.imageio.ImageIO;
-import javax.swing.filechooser.FileSystemView;
-
-import org.slf4j.Logger;
-
-import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
@@ -32,6 +25,10 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Mesh;
+import javax.imageio.ImageIO;
+import javax.swing.filechooser.FileSystemView;
+import org.assertj.core.api.exception.RuntimeIOException;
+import org.slf4j.Logger;
 
 /**
  * @author Note
@@ -99,6 +96,15 @@ public final class ResourceFXUtils {
 		return getPathByExtension(dir, other).stream().findFirst().orElse(null);
 	}
 
+	public static File getOutFile() {
+		File parentFile = toFile("alice.txt").getParentFile();
+		File file = new File(parentFile, "out");
+		if (!file.exists()) {
+			file.mkdir();
+		}
+		return file;
+	}
+
 	public static List<Path> getPathByExtension(final File dir, final String... other) {
 		try (Stream<Path> walk = Files.walk(dir.toPath(), 20, FileVisitOption.FOLLOW_LINKS)) {
 			return walk.filter(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex)))
@@ -136,10 +142,6 @@ public final class ResourceFXUtils {
 		new JFXPanel().toString();
 	}
 
-	private static double normalizeValue(final double value, final double min, final double max, final double newMin, final double newMax) {
-		return (value - min) * (newMax - newMin) / (max - min) + newMin;
-	}
-
 	public static void runOnFiles(final File userFolder,final ConsumerEx<File> run) {
 
 		try (Stream<Path> s = Files.list(userFolder.toPath())) {
@@ -172,16 +174,13 @@ public final class ResourceFXUtils {
 		try {
 			return ResourceFXUtils.class.getClassLoader().getResource(arquivo).toExternalForm();
 		} catch (RuntimeException e) {
-			Logger log = HasLogging.log(1);
-			log.error("ERRO FILE \"" + arquivo + "\"", e);
-			throw e;
+			throw new RuntimeIOException("ERRO FILE \"" + arquivo + "\"", e);
 		}
 	}
 
 	public static File toFile(final String arquivo) {
 		return new File(toFullPath(arquivo));
 	}
-
 	public static String toFullPath(final String arquivo) {
 		try {
 			return URLDecoder.decode(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile(), "UTF-8");
@@ -200,10 +199,10 @@ public final class ResourceFXUtils {
 		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toPath();
 	}
 
-
 	public static InputStream toStream(final String arquivo) {
 		return ResourceFXUtils.class.getClassLoader().getResourceAsStream(arquivo);
 	}
+
 
 	public static URI toURI(final String arquivo) {
 		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();
@@ -211,6 +210,10 @@ public final class ResourceFXUtils {
 
 	public static URL toURL(final String arquivo) {
 		return ResourceFXUtils.class.getClassLoader().getResource(arquivo);
+	}
+
+	private static double normalizeValue(final double value, final double min, final double max, final double newMin, final double newMax) {
+		return (value - min) * (newMax - newMin) / (max - min) + newMin;
 	}
 
 }

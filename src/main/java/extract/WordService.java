@@ -78,7 +78,7 @@ public final class WordService implements HasLogging {
 
 	private static void recordPicture(XSLFPictureData data) {
 		try (FileOutputStream fileOutputStream = new FileOutputStream(
-				new File(new File("out"), data.getFileName()))) {
+				new File(ResourceFXUtils.getOutFile(), data.getFileName()))) {
 			InputStream inputStream = data.getInputStream();
 			IOUtils.copy(inputStream, fileOutputStream);
 		} catch (IOException e) {

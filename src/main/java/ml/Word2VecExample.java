@@ -22,8 +22,9 @@ public final class Word2VecExample {
 	private Word2VecExample() {
 	}
 	public static Word2Vec createWord2Vec() throws FileNotFoundException {
-		if (new File(PATH_TO_SAVE_MODEL_TXT).exists()) {
-			return WordVectorSerializer.readWord2VecModel(PATH_TO_SAVE_MODEL_TXT);
+		File pathToSave = getPathToSave();
+		if (pathToSave.exists()) {
+			return WordVectorSerializer.readWord2VecModel(pathToSave.getAbsoluteFile());
 
 		}
 
@@ -62,6 +63,7 @@ public final class Word2VecExample {
 		LOG.info("Closest Words:");
 		return vec;
 	}
+
 	public static void fit() throws FileNotFoundException {
 		Word2Vec word2Vec = createWord2Vec();
 
@@ -76,6 +78,10 @@ public final class Word2VecExample {
 
 		word2Vec.fit();
 
+	}
+
+	public static File getPathToSave() {
+		return new File(ResourceFXUtils.getOutFile(),PATH_TO_SAVE_MODEL_TXT);
 	}
 
 }

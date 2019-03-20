@@ -129,7 +129,7 @@ public class FXFileReadersTest extends ApplicationTest {
 
 	@Test
 	public void testWord2Vec() {
-		File file = new File(Word2VecExample.PATH_TO_SAVE_MODEL_TXT);
+		File file = Word2VecExample.getPathToSave();
 		if (file.exists()) {
 			Files.delete(file);
 		}
