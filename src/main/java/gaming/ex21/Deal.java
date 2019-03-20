@@ -16,7 +16,7 @@ public class Deal extends HBox {
 		wantedType = type;
 		this.dealTypes = dealTypes;
 		getChildren().addAll(newResource(wantedType), new Text("<->"), newUserImage());
-		getChildren().addAll(this.dealTypes.stream().map(this::newResource).collect(Collectors.toList()));
+		getChildren().addAll(this.dealTypes.stream().map(Deal::newResource).collect(Collectors.toList()));
 	}
 
 	public List<ResourceType> getDealTypes() {
@@ -31,14 +31,14 @@ public class Deal extends HBox {
 		return wantedType;
 	}
 
-	private ImageView newResource(final ResourceType type) {
-		String pure = type.getPure();
-        return CatanResource.newImage(pure, Port.SIZE / 4.);
+	private ImageView newUserImage() {
+		return CatanResource.newImage(CatanResource.newImage("user.png", getProposer().getColor()),
+				Port.SIZE / 4.);
 	}
 
-	private ImageView newUserImage() {
-        return CatanResource.newImage(CatanResource.newImage("user.png", getProposer().getColor()),
-                Port.SIZE / 4.);
+	private static ImageView newResource(final ResourceType type) {
+		String pure = type.getPure();
+		return CatanResource.newImage(pure, Port.SIZE / 4.);
 	}
 
 

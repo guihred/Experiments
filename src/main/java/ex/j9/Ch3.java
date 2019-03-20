@@ -4,7 +4,12 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Stream;
@@ -12,9 +17,9 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class Ch3 {
-    private static final Logger LOG = HasLogging.log();
+	private static final Logger LOG = HasLogging.log();
 
-    public static double average(Collection<? extends Measurable> objects) {
+	public static double average(Collection<? extends Measurable> objects) {
 		return objects.stream().mapToDouble(Measurable::getMeasure).average().orElse(0);
 	}
 
@@ -26,7 +31,7 @@ public class Ch3 {
 		return () -> runInOrder(runnables);
 	}
 
-    public static <T> boolean isSorted(List<T> a, Comparator<T> comp) {
+	public static <T> boolean isSorted(List<T> a, Comparator<T> comp) {
 		for (int i = 0; i < a.size() - 1; i++) {
 			if (comp.compare(a.get(i), a.get(i + 1)) > 0) {
 				return false;
@@ -42,7 +47,7 @@ public class Ch3 {
 	 * largest(Measurable[] objects) . Use it to find the name of the employee with
 	 * the largest salary. Why do you need a cast?
 	 */
-    public static <T extends Measurable> T largest(Collection<T> objects) {
+	public static <T extends Measurable> T largest(Collection<T> objects) {
 		return objects.stream().max(Comparator.comparing(Measurable::getMeasure)).orElse(null);
 	}
 
@@ -75,21 +80,21 @@ public class Ch3 {
 	 */
 	public static void main(String[] args) {
 		Random random = new Random();
-        List<Employee> randomEmployees = random.ints(1, 10).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
+		List<Employee> randomEmployees = random.ints(1, 10).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
 				.collect(toList());
 
-        LOG.info("{}", average(randomEmployees));
-        LOG.info("{}", largest(randomEmployees));
-        // IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
-        // IntSequence.constant(1).foreach(e -> log.info("{}",e))
-        // new SquareSequence().foreach(e -> log.info("{}",e))
-        // log.info("{}",isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo))
+		LOG.info("{}", average(randomEmployees));
+		LOG.info("{}", largest(randomEmployees));
+		// IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
+		// IntSequence.constant(1).foreach(e -> log.info("{}",e))
+		// new SquareSequence().foreach(e -> log.info("{}",e))
+		// log.info("{}",isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo))
 		//
-        // List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e")
-        // log.info("{}",asList)
-        // luckySort(asList, String::compareTo)
-        // log.info("{}",asList)
-        // log.info("{}",subdirectories(new File(".")))
+		// List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e")
+		// log.info("{}",asList)
+		// luckySort(asList, String::compareTo)
+		// log.info("{}",asList)
+		// log.info("{}",subdirectories(new File(".")))
 		LOG.info("{}",sortFiles(new File(".").listFiles()));
 	}
 
@@ -108,9 +113,9 @@ public class Ch3 {
 	 * return when the last one has completed.
 	 */
 	public static void runTogether(Runnable... tasks) {
-        List<Thread> threadList = Stream.of(tasks).parallel().map(Thread::new).collect(toList());
-        threadList.forEach(Thread::start);
-        while (threadList.stream().anyMatch(Thread::isAlive)) {
+		List<Thread> threadList = Stream.of(tasks).parallel().map(Thread::new).collect(toList());
+		threadList.forEach(Thread::start);
+		while (threadList.stream().anyMatch(Thread::isAlive)) {
 			// DOES NOTHING
 		}
 	}
@@ -146,7 +151,7 @@ public class Ch3 {
 				()->LOG.info("{}","9"),
 				()->LOG.info("{}","10"),
 				()->LOG.info("{}","11"),
-				
+
 		};
 		LOG.info("{}","In Order");
 		runInOrder(tasks);
@@ -162,9 +167,9 @@ public class Ch3 {
 	 */
 
 	public static class Employee implements Measurable {
-        private static int i;
-        private static final List<String> NAMES = Arrays.asList("Michael", "Charlie", "Jonas", "Margareth", "Juliet",
-                "Frank",
+		private static int i;
+		private static final List<String> NAMES = Arrays.asList("Michael", "Charlie", "Jonas", "Margareth", "Juliet",
+				"Frank",
 				"Harry");
 
 		private String name;
@@ -181,7 +186,7 @@ public class Ch3 {
 		}
 		@Override
 		public double getMeasure() {
-			return getSalary();
+			return salary;
 		}
 		public String getName() {
 			return name;
@@ -234,16 +239,16 @@ public class Ch3 {
 			return true;
 		}
 
-        // By default, sequences are infinite
+		// By default, sequences are infinite
 		int next();
 
-        static IntSequence constant(int seq) {
+		static IntSequence constant(int seq) {
 			return () -> seq;
 		}
 
-        static IntSequence of(int... seq) {
+		static IntSequence of(int... seq) {
 			return new IntSequence() {
-                private int i;
+				private int i;
 
 				@Override
 				public boolean hasNext() {
@@ -270,7 +275,7 @@ public class Ch3 {
 			return true;
 		}
 
-        // By default, sequences are infinite
+		// By default, sequences are infinite
 		T next();
 
 		static <T> Sequence<T> constant(T seq) {
@@ -278,9 +283,9 @@ public class Ch3 {
 		}
 
 		@SafeVarargs
-        static <T> Sequence<T> of(T... seq) {
+		static <T> Sequence<T> of(T... seq) {
 			return new Sequence<T>() {
-                private int i;
+				private int i;
 
 				@Override
 				public boolean hasNext() {
@@ -303,34 +308,35 @@ public class Ch3 {
 	 */
 	public static class SquareSequence implements Sequence<BigInteger> {
 		private BigInteger i = BigInteger.ZERO;
-        private int c;
-        private int limit = 50;
+		private int c;
+		private int limit = 50;
 		@Override
-        public boolean hasNext() {
-            return c < limit;
-        }
+		public boolean hasNext() {
+			return c < limit;
+		}
 
-        public SquareSequence limit(int limit1) {
-            limit = limit1;
-            return this;
-        }
+		public SquareSequence limit(int limit1) {
+			limit = limit1;
+			return this;
+		}
 
-        @Override
+		@Override
 		public BigInteger next() {
-            c++;
+			c++;
 			i = i.add(BigInteger.ONE);
 			return i.multiply(i);
 		}
 	}
 
-    
+
 	/*
-     * 1. Provide an interface Measurable with a method double getMeasure() that
-     * measures an object in some way. Make Employee implement Measurable . Provide
-     * a method double average(Measurable[] objects) that computes the average
-     * measure. Use it to compute the average salary of an array of employees.
-     */
-	static interface Measurable {
+	 * 1. Provide an interface Measurable with a method double getMeasure() that
+	 * measures an object in some way. Make Employee implement Measurable . Provide
+	 * a method double average(Measurable[] objects) that computes the average
+	 * measure. Use it to compute the average salary of an array of employees.
+	 */
+	@FunctionalInterface
+	interface Measurable {
 		double getMeasure();
 	}
 }

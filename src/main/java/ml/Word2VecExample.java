@@ -58,7 +58,7 @@ public final class Word2VecExample {
 		vec.fit();
 
 		LOG.info("Writing word vectors to text file....");
-		WordVectorSerializer.writeWord2VecModel(vec, PATH_TO_SAVE_MODEL_TXT);
+		WordVectorSerializer.writeWord2VecModel(vec, pathToSave);
 		// Prints out the closest 10 words to "day". An example on what to do with these Word Vectors.
 		LOG.info("Closest Words:");
 		return vec;

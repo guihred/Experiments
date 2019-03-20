@@ -11,27 +11,26 @@ public class ElectionCrawlerApp extends Application {
     public final Worker<String> worker;
     private TaskProgressView view;
 
-
     public ElectionCrawlerApp() {
-        worker = new CrawlerCompleteCandidateTask();
-        view = new TaskProgressView(worker);
+	worker = new CrawlerCompleteCandidateTask();
+	view = new TaskProgressView(worker);
     }
 
     public ElectionCrawlerApp(Worker<String> worker) {
-        this.worker = worker;
-        view = new TaskProgressView(worker);
+	this.worker = worker;
+	view = new TaskProgressView(worker);
     }
+
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setTitle("Election Crawler");
-        stage.setScene(view.getScene());
-        stage.show();
-        stage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+	stage.setTitle("Election Crawler");
+	stage.setScene(view.getScene());
+	stage.show();
+	stage.setOnCloseRequest(e -> HibernateUtil.shutdown());
     }
 
-
-	public static void main(String[] args) {
-        launch(args);
+    public static void main(String[] args) {
+	launch(args);
     }
 
 }

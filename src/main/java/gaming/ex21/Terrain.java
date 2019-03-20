@@ -23,160 +23,160 @@ import simplebuilder.SimpleFillTransitionBuilder;
 
 public class Terrain extends Group {
 
-    public static final int RADIUS = 70;
-    private Thief thief;
-    private final ResourceType type;
-    private final IntegerProperty number = new SimpleIntegerProperty();
-    private final StackPane stack;
-    private final Circle circle;
-    private final FillTransition highlightTransition;
+	public static final int RADIUS = 70;
+	private Thief thief;
+	private final ResourceType type;
+	private final IntegerProperty number = new SimpleIntegerProperty();
+	private final StackPane stack;
+	private final Circle circle;
+	private final FillTransition highlightTransition;
 
-    public Terrain(final ResourceType type) {
-        this.type = type;
-        circle = new SimpleCircleBuilder().radius(RADIUS / 5.).fill(Color.BEIGE).visible(type != ResourceType.DESERT)
-                .stroke(Color.BLACK).build();
-        stack = new StackPane(getPolygon(), getCircle(), getNumberText());
-        getChildren().add(stack);
-        highlightTransition = new SimpleFillTransitionBuilder().shape(circle).duration(Duration.millis(200))
-                .fromValue(Color.BEIGE).toValue(Color.GREEN).build();
-        setManaged(false);
-    }
+	public Terrain(final ResourceType type) {
+		this.type = type;
+		circle = new SimpleCircleBuilder().radius(RADIUS / 5.).fill(Color.BEIGE).visible(type != ResourceType.DESERT)
+				.stroke(Color.BLACK).build();
+		stack = new StackPane(getPolygon(), getCircle(), getNumberText());
+		getChildren().add(stack);
+		highlightTransition = new SimpleFillTransitionBuilder().shape(circle).duration(Duration.millis(200))
+				.fromValue(Color.BEIGE).toValue(Color.GREEN).build();
+		setManaged(false);
+	}
 
-    public void createSettlePoints(final double x, final double y, List<SettlePoint> settlePoints2) {
-        Terrain cell = this;
-        for (SettlePoint p : cell.getSettlePoints(x, y)) {
-            if (settlePoints2.stream().noneMatch(e -> intersects(p, e))) {
-                settlePoints2.add(p);
-                p.addTerrain(cell);
-            } else {
-                p.removeNeighbors();
-            }
-            settlePoints2.stream().filter(e -> intersects(p, e)).findFirst()
-                    .ifPresent(e -> e.addTerrain(cell).addAllNeighbors(p));
-        }
-    }
+	public void createSettlePoints(final double x, final double y, List<SettlePoint> settlePoints2) {
+		Terrain cell = this;
+		for (SettlePoint p : cell.getSettlePoints(x, y)) {
+			if (settlePoints2.stream().noneMatch(e -> intersects(p, e))) {
+				settlePoints2.add(p);
+				p.addTerrain(cell);
+			} else {
+				p.removeNeighbors();
+			}
+			settlePoints2.stream().filter(e -> intersects(p, e)).findFirst()
+			.ifPresent(e -> e.addTerrain(cell).addAllNeighbors(p));
+		}
+	}
 
-    public Terrain fadeIn() {
-        return toggleFade(1);
-    }
+	public Terrain fadeIn() {
+		return toggleFade(1);
+	}
 
-    public Terrain fadeOut() {
-        return toggleFade(-1);
-    }
+	public Terrain fadeOut() {
+		return toggleFade(-1);
+	}
 
-    public int getNumber() {
-        return number.get();
-    }
+	public int getNumber() {
+		return number.get();
+	}
 
-    public List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
-        List<SettlePoint> points = new ArrayList<>();
-        double off = Math.PI / 6;
-        for (int i = 0; i < 6; i++) {
-            double d = Math.PI / 3;
-            double x = Math.cos(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
-            double y = Math.sin(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
-            double centerX = xOff + x - Terrain.RADIUS / 10.;
-            double centerY = yOff + y;
-            SettlePoint e = new SettlePoint(centerX, centerY);
-            points.add(e);
-            if (points.size() > 1) {
-                e.addNeighbor(points.get(i - 1));
-            }
-            if (points.size() == 6) {
-                e.addNeighbor(points.get(0));
-            }
-        }
-        return points;
-    }
+	public List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
+		List<SettlePoint> points = new ArrayList<>();
+		double off = Math.PI / 6;
+		for (int i = 0; i < 6; i++) {
+			double d = Math.PI / 3;
+			double x = Math.cos(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
+			double y = Math.sin(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
+			double centerX = xOff + x - Terrain.RADIUS / 10.;
+			double centerY = yOff + y;
+			SettlePoint e = new SettlePoint(centerX, centerY);
+			points.add(e);
+			if (points.size() > 1) {
+				e.addNeighbor(points.get(i - 1));
+			}
+			if (points.size() == 6) {
+				e.addNeighbor(points.get(0));
+			}
+		}
+		return points;
+	}
 
-    public Thief getThief() {
-        return thief;
-    }
+	public Thief getThief() {
+		return thief;
+	}
 
-    public ResourceType getType() {
-        return type;
-    }
+	public ResourceType getType() {
+		return type;
+	}
 
-    public void removeThief() {
-        if (thief != null) {
-            stack.getChildren().remove(thief);
-        }
-    }
+	public void removeThief() {
+		if (thief != null) {
+			stack.getChildren().remove(thief);
+		}
+	}
 
-    public void setNumber(final int number) {
-        this.number.set(number);
-    }
+	public void setNumber(final int number) {
+		this.number.set(number);
+	}
 
-    public void setThief(Thief thief) {
-        if (thief != null) {
-            StackPane parent = (StackPane) thief.getParent();
-            parent.getChildren().remove(thief);
-            getChildren().add(thief);
-            thief.setLayoutX(Terrain.RADIUS * Math.sqrt(3) / 2 - Terrain.RADIUS / 4.);
-            thief.setLayoutY(Terrain.RADIUS - Terrain.RADIUS / 4.);
-            highlightTransition.setToValue(Color.RED);
-        } else {
-            if (Color.RED.equals(highlightTransition.getToValue())) {
-                fadeOut();
-            }
-        }
+	public void setThief(Thief thief) {
+		if (thief != null) {
+			StackPane parent = (StackPane) thief.getParent();
+			parent.getChildren().remove(thief);
+			getChildren().add(thief);
+			thief.setLayoutX(Terrain.RADIUS * Math.sqrt(3) / 2 - Terrain.RADIUS / 4.);
+			thief.setLayoutY(Terrain.RADIUS - Terrain.RADIUS / 4.);
+			highlightTransition.setToValue(Color.RED);
+		} else {
+			if (Color.RED.equals(highlightTransition.getToValue())) {
+				fadeOut();
+			}
+		}
 
-        this.thief = thief;
-    }
+		this.thief = thief;
+	}
 
-    public Terrain toggleFade(final int r) {
-        highlightTransition.setToValue(thief != null ? Color.RED : Color.GREEN);
-        highlightTransition.setRate(r);
-        highlightTransition.play();
-        return this;
-    }
+	public Terrain toggleFade(final int r) {
+		highlightTransition.setToValue(thief != null ? Color.RED : Color.GREEN);
+		highlightTransition.setRate(r);
+		highlightTransition.play();
+		return this;
+	}
 
-    private Circle getCircle() {
-        return circle;
-    }
+	private Circle getCircle() {
+		return circle;
+	}
 
-    private Text getNumberText() {
-        Text e = new Text();
-        e.setTextOrigin(VPos.CENTER);
-        e.setTextAlignment(TextAlignment.CENTER);
-        e.setFont(Font.font(20));
-        e.textProperty().bind(number.asString());
-        e.setVisible(type != ResourceType.DESERT);
-        return e;
-    }
+	private Text getNumberText() {
+		Text e = new Text();
+		e.setTextOrigin(VPos.CENTER);
+		e.setTextAlignment(TextAlignment.CENTER);
+		e.setFont(Font.font(20));
+		e.textProperty().bind(number.asString());
+		e.setVisible(type != ResourceType.DESERT);
+		return e;
+	}
 
-    private Polygon getPolygon() {
-        Polygon polygon = new Polygon();
-        double off = Math.PI / 6;
-        for (int i = 0; i < 6; i++) {
-            double d = Math.PI / 3;
-            double x = Math.cos(off + d * i) * RADIUS;
-            double y = Math.sin(off + d * i) * RADIUS;
-            polygon.getPoints().addAll(x, y);
-        }
-        polygon.setFill(CatanResource.newPattern(type.getTerrain()));
-        return polygon;
-    }
+	private Polygon getPolygon() {
+		Polygon polygon = new Polygon();
+		double off = Math.PI / 6;
+		for (int i = 0; i < 6; i++) {
+			double d = Math.PI / 3;
+			double x = Math.cos(off + d * i) * RADIUS;
+			double y = Math.sin(off + d * i) * RADIUS;
+			polygon.getPoints().addAll(x, y);
+		}
+		polygon.setFill(CatanResource.newPattern(type.getTerrain()));
+		return polygon;
+	}
 
-    private boolean intersects(final SettlePoint p, final SettlePoint e) {
-        return e.getBoundsInParent().intersects(p.getBoundsInParent());
-    }
+	public static List<Integer> getNumbers() {
+		List<Integer> numbers = IntStream.range(2, 13).flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
+				.boxed().collect(Collectors.toList());
+		Collections.shuffle(numbers);
+		return numbers;
+	}
 
-    public static List<Integer> getNumbers() {
-        List<Integer> numbers = IntStream.range(2, 13).flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
-                .boxed().collect(Collectors.toList());
-        Collections.shuffle(numbers);
-        return numbers;
-    }
+	private static int getLimit(final int e) {
+		if (e == 7) {
+			return 0;
+		}
+		if (e == 2 || e == 12) {
+			return 1;
+		}
+		return 2;
+	}
 
-    private static int getLimit(final int e) {
-        if (e == 7) {
-            return 0;
-        }
-        if (e == 2 || e == 12) {
-            return 1;
-        }
-        return 2;
-    }
+	private static boolean intersects(final SettlePoint p, final SettlePoint e) {
+		return e.getBoundsInParent().intersects(p.getBoundsInParent());
+	}
 
 }

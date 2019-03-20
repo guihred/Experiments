@@ -36,8 +36,10 @@ public class Shapes3DApp extends Application {
 		PixelWriter pw = wr.getPixelWriter();
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
-				Color color = Color.rgb(rnd.nextInt(256), rnd.nextInt(256),
-						rnd.nextInt(256));
+				int r = rnd.nextInt(256);
+				int g = rnd.nextInt(256);
+				int b = rnd.nextInt(256);
+				Color color = Color.rgb(r, g, b);
 				pw.setColor(x, y, color);
 			}
 		}

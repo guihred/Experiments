@@ -14,72 +14,79 @@ import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
-	protected Stage currentStage;
-	protected boolean isLinux = SystemUtils.IS_OS_LINUX;
+    protected Stage currentStage;
+    protected boolean isLinux = SystemUtils.IS_OS_LINUX;
 
+    @Override
+    public FxRobotInterface clickOn(Node node, MouseButton... buttons) {
+	if (isLinux) {
+	    moveTo(node);
 
-	@Override
-	public FxRobotInterface clickOn(Node node, MouseButton... buttons) {
-		if (isLinux) {
-			moveTo(node);
-
-			return super.clickOn(buttons);
-		}
-
-		return super.clickOn(node, buttons);
+	    return super.clickOn(buttons);
 	}
 
-	@Override
-	public FxRobotInterface clickOn(String node, MouseButton... buttons) {
-		if (isLinux) {
-			Node query = lookup(node).query();
-			moveTo(query);
-			return super.clickOn(buttons);
-		}
+	return super.clickOn(node, buttons);
+    }
 
-		return super.clickOn(node, buttons);
+    @Override
+    public FxRobotInterface clickOn(String node, MouseButton... buttons) {
+	if (isLinux) {
+	    Node query = lookup(node).query();
+	    moveTo(query);
+	    return super.clickOn(buttons);
 	}
 
-	@Override
-	public FxRobotInterface doubleClickOn(Node node, MouseButton... buttons) {
-		if (isLinux) {
-			moveTo(node);
-			return super.doubleClickOn(buttons);
-		}
-		return super.doubleClickOn(node, buttons);
-	}
+	return super.clickOn(node, buttons);
+    }
 
-	@Override
-	public FxRobotInterface moveTo(Node next) {
-		if (isLinux) {
-			if (next.getScene() != null && next.getScene().getWindow() != null) {
-				next.getScene().getWindow().setX(0);
-				next.getScene().getWindow().setY(0);
-				double x2 = next.getScene().getX();
-				Bounds local = next.getBoundsInParent();
-				double x = -local.getWidth() / 2 - local.getMinX();
-				Point2D offset = new Point2D(x + x2 / 2, 0);
-				return super.moveTo(next, offset);
-			}
-		}
-		return super.moveTo(next);
+    @Override
+    public FxRobotInterface doubleClickOn(Node node, MouseButton... buttons) {
+	if (isLinux) {
+	    moveTo(node);
+	    return super.doubleClickOn(buttons);
 	}
+	return super.doubleClickOn(node, buttons);
+    }
 
-	@Override
-	public void start(Stage stage) throws Exception {
-		ResourceFXUtils.initializeFX();
-		currentStage = stage;
-		currentStage.setX(0);
-		currentStage.setY(0);
+    @Override
+    public FxRobotInterface moveTo(Node next) {
+	if (isLinux) {
+	    if (next.getScene() != null && next.getScene().getWindow() != null) {
+		next.getScene().getWindow().setX(0);
+		next.getScene().getWindow().setY(0);
+		double x2 = next.getScene().getX();
+		Bounds local = next.getBoundsInParent();
+		double x = -local.getWidth() / 2 - local.getMinX();
+		Point2D offset = new Point2D(x + x2 / 2, 0);
+		return super.moveTo(next, offset);
+	    }
 	}
+	return super.moveTo(next);
+    }
 
-	protected <T extends Application> void show(Class<T> c) {
-		try {
-			T newInstance = c.newInstance();
-			interactNoWait(RunnableEx.makeRunnable(() -> newInstance.start(currentStage)));
-		} catch (Exception e) {
-			getLogger().error(String.format("ERRO IN %s", c), e);
-		}
+    @Override
+    public void start(Stage stage) throws Exception {
+	ResourceFXUtils.initializeFX();
+	currentStage = stage;
+	currentStage.setX(0);
+	currentStage.setY(0);
+    }
+
+    protected <T extends Application> void show(Class<T> c) {
+	try {
+	    T newInstance = c.newInstance();
+	    interactNoWait(RunnableEx.makeRunnable(() -> newInstance.start(currentStage)));
+	} catch (Exception e) {
+	    getLogger().error(String.format("ERRO IN %s", c), e);
 	}
+    }
+
+    protected <T extends Application> void show(T application) {
+	try {
+	    interactNoWait(RunnableEx.makeRunnable(() -> application.start(currentStage)));
+	} catch (Exception e) {
+	    getLogger().error(String.format("ERRO IN %s", application), e);
+	}
+    }
 
 }

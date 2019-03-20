@@ -27,7 +27,8 @@ public class NumberPad extends Application {
 		// Call button
 		Button call = new Button("Call");
 		call.setId("call-button");
-		call.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		double maxValue = Double.MAX_VALUE;
+		call.setMaxSize(maxValue, maxValue);
 		numPad.add(call, 0, 4);
 		GridPane.setColumnSpan(call, 3);
 		GridPane.setHgrow(call, Priority.ALWAYS);

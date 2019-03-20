@@ -10,16 +10,16 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class UnZip {
-    public static final String ZIPPED_FILE_FOLDER = "C:\\Users\\guilherme.hmedeiros\\git\\FXperiment";
+	public static final String ZIPPED_FILE_FOLDER = new File("").getAbsolutePath();
 	private static final Logger LOGGER = HasLogging.log();
 
 	private UnZip() {
 	}
 
 	public static void extractZippedFiles(File jap) {
-        if (jap.isDirectory()) {
+		if (jap.isDirectory()) {
 			File[] listFiles = jap.listFiles();
-            File output = new File(jap, "out");
+			File output = new File(jap, "out");
 			if (!output.exists()) {
 				output.mkdir();
 			}
@@ -29,35 +29,35 @@ public final class UnZip {
 				}
 			}
 		}
-    }
+	}
 
-    public static void extractZippedFiles(String jap) {
-        extractZippedFiles(new File(jap));
-    }
+	public static void extractZippedFiles(String jap) {
+		extractZippedFiles(new File(jap));
+	}
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        File jap = new File(ZIPPED_FILE_FOLDER);
-        extractZippedFiles(jap);
+		File jap = new File(ZIPPED_FILE_FOLDER);
+		extractZippedFiles(jap);
 
 	}
 
 	private static void extractZip(File saida, File file) {
 
-        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
+		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
 			ZipEntry ze = zipInputStream.getNextEntry();
 
-            final int bufferSize = 1024;
-            byte[] buffer = new byte[bufferSize];
+			final int bufferSize = 1024;
+			byte[] buffer = new byte[bufferSize];
 			while (ze != null) {
 				String fileName = ze.getName().replaceAll(" ", "");
 				File newFile = new File(saida, fileName);
 
-                LOGGER.info("file unzip : {}", newFile.getAbsoluteFile());
+				LOGGER.info("file unzip : {}", newFile.getAbsoluteFile());
 
 				// create all non exists folders
 				// else you will hit FileNotFoundException for compressed folder
-                // new File(newFile.getParent()).mkdirs()
+				// new File(newFile.getParent()).mkdirs()
 
 				if (ze.isDirectory()) {
 					newFile.mkdirs();
@@ -74,7 +74,7 @@ public final class UnZip {
 	}
 
 	private static void writeNewFile(ZipInputStream zipInputStream, byte[] buffer, File newFile) {
-        try (FileOutputStream fos = new FileOutputStream(newFile)) {
+		try (FileOutputStream fos = new FileOutputStream(newFile)) {
 
 			int len;
 			while ((len = zipInputStream.read(buffer)) > 0) {

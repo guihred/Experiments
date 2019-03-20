@@ -11,13 +11,21 @@ import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -39,9 +47,9 @@ public class BoundsPlayground extends Application {
 		// define some objects to manipulate on the scene.
 		Circle greenCircle = new Circle(100, 100, 50, Color.FORESTGREEN);
 		greenCircle.setId("Green Circle");
-        final Circle redCircle = new Circle(300, 200, 50, Color.FIREBRICK);
+		final Circle redCircle = new Circle(300, 200, 50, Color.FIREBRICK);
 		redCircle.setId("Red Circle");
-        final Line line = new Line(25, 300, 375, 200);
+		final Line line = new Line(25, 300, 375, 200);
 		line.setId("Line");
 		line.setStrokeLineCap(StrokeLineCap.ROUND);
 		line.setStroke(Color.MIDNIGHTBLUE);
@@ -57,10 +65,10 @@ public class BoundsPlayground extends Application {
 		Circle[] circles = { greenCircle, redCircle, anchor1, anchor2 };
 		for (Circle circle : circles) {
 			enableDrag(circle);
-			circle.centerXProperty().addListener(
-					(ChangeListener<Number>) (observableValue, oldValue, newValue) -> testIntersections());
-			circle.centerYProperty().addListener(
-					(ChangeListener<Number>) (observableValue, oldValue, newValue) -> testIntersections());
+			circle.centerXProperty()
+					.addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> testIntersections());
+			circle.centerYProperty()
+					.addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> testIntersections());
 		}
 		// define an overlay to show the layout bounds of the scene's shapes.
 		Group layoutBoundsOverlay = new Group();
@@ -79,13 +87,13 @@ public class BoundsPlayground extends Application {
 	}
 
 	private void changeBoundsType(final Group boundsOverlay, Boolean isSelected, BoundsType boundsInParent) {
-        if (isSelected) {
-            boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast)
-                    .forEach(b -> b.monitorBounds(boundsInParent));
-            getSelectedBoundsType().set(boundsInParent);
-            testIntersections();
-        }
-    }
+		if (isSelected) {
+			boundsOverlay.getChildren().stream().map(BoundsDisplay.class::cast)
+					.forEach(b -> b.monitorBounds(boundsInParent));
+			getSelectedBoundsType().set(boundsInParent);
+			testIntersections();
+		}
+	}
 
 	// define a utility stage for reporting intersections.
 	private void createUtilityWindow(Stage stage, final Group boundsOverlay, final Shape[] transformableShapes) {
@@ -97,24 +105,32 @@ public class BoundsPlayground extends Application {
 		// define content for the intersections utility panel.
 		final ListView<ShapePair> intersectionView = new ListView<>(intersections);
 		final Label instructions = new Label("Click on any circle in the scene to the left to drag it around.");
-		instructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+		double prefSize = Region.USE_PREF_SIZE;
+		instructions.setMinSize(prefSize, prefSize);
 		instructions.setStyle("-fx-font-weight: bold; -fx-text-fill: darkgreen;");
-		final Label intersectionInstructions = new Label("Any intersecting bounds in the scene will be reported below.");
-		instructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+		final Label intersectionInstructions = new Label(
+				"Any intersecting bounds in the scene will be reported below.");
+		instructions.setMinSize(prefSize, prefSize);
 		// add the ability to set a translate value for the circles.
 		final CheckBox translateNodes = new CheckBox("Translate circles");
-		translateNodes.selectedProperty().addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> s.setTranslateY(doTranslate ? 100 : 0)).forEach(s -> testIntersections()));
+		translateNodes.selectedProperty()
+				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes)
+						.peek(s -> s.setTranslateY(doTranslate ? 100 : 0)).forEach(s -> testIntersections()));
 		translateNodes.selectedProperty().set(false);
 		// add the ability to add an effect to the circles.
 		final Label modifyInstructions = new Label("Modify visual display aspects.");
 		modifyInstructions.setStyle("-fx-font-weight: bold;");
-		modifyInstructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+		modifyInstructions.setMinSize(prefSize, prefSize);
 		final CheckBox effectNodes = new CheckBox("Add an effect to circles");
-		effectNodes.selectedProperty().addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> s.setEffect(doTranslate ? new DropShadow() : null)).forEach(s -> testIntersections()));
+		effectNodes.selectedProperty()
+				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes)
+						.peek(s -> s.setEffect(doTranslate ? new DropShadow() : null))
+						.forEach(s -> testIntersections()));
 		effectNodes.selectedProperty().set(true);
 		// add the ability to add a stroke to the circles.
 		final CheckBox strokeNodes = new CheckBox("Add outside strokes to circles");
-		strokeNodes.selectedProperty().addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> {
+		strokeNodes.selectedProperty()
+				.addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes).peek(s -> {
 					if (doTranslate) {
 						s.setStroke(Color.LIGHTSEAGREEN);
 					}
@@ -123,13 +139,14 @@ public class BoundsPlayground extends Application {
 		// add the ability to show or hide the layout bounds overlay.
 		final Label showBoundsInstructions = new Label("The gray squares represent layout bounds.");
 		showBoundsInstructions.setStyle("-fx-font-weight: bold;");
-		showBoundsInstructions.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+		showBoundsInstructions.setMinSize(prefSize, prefSize);
 		final CheckBox showBounds = new CheckBox("Show Bounds");
 		boundsOverlay.visibleProperty().bind(showBounds.selectedProperty());
 		showBounds.selectedProperty().set(true);
 		// create a container for the display control checkboxes.
 		VBox displayChecks = new VBox(10);
-		displayChecks.getChildren().addAll(modifyInstructions, translateNodes, effectNodes, strokeNodes,showBoundsInstructions, showBounds);
+		displayChecks.getChildren().addAll(modifyInstructions, translateNodes, effectNodes, strokeNodes,
+				showBoundsInstructions, showBounds);
 		// create a toggle group for the bounds type to use.
 		ToggleGroup boundsToggleGroup = new ToggleGroup();
 		final RadioButton useLayoutBounds = new RadioButton("Use Layout Bounds");
@@ -142,24 +159,24 @@ public class BoundsPlayground extends Application {
 		boundsToggles.getChildren().addAll(useLayoutBounds, useBoundsInLocal, useBoundsInParent);
 		// change the layout bounds display depending on which bounds type has
 		// been selected.
-        useLayoutBounds.selectedProperty().addListener(
-                (o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.LAYOUT_BOUNDS));
-        useBoundsInLocal.selectedProperty().addListener(
-                (o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.BOUNDS_IN_LOCAL));
-        useBoundsInParent.selectedProperty().addListener(
-                (o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.BOUNDS_IN_PARENT));
+		useLayoutBounds.selectedProperty().addListener(
+				(o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.LAYOUT_BOUNDS));
+		useBoundsInLocal.selectedProperty().addListener(
+				(o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.BOUNDS_IN_LOCAL));
+		useBoundsInParent.selectedProperty().addListener(
+				(o, a, isSelected) -> changeBoundsType(boundsOverlay, isSelected, BoundsType.BOUNDS_IN_PARENT));
 		useLayoutBounds.selectedProperty().set(true);
 		WebView boundsExplanation = new WebView();
-		boundsExplanation.getEngine().loadContent(
-						"<html><body bgcolor='darkseagreen' fgcolor='lightgrey' style='font-size:12px'><dl>"
-								+ "<dt><b>Layout Bounds</b></dt><dd>The boundary of the shape.</dd><br/>"
-								+ "<dt><b>Bounds in Local</b></dt><dd>The boundary of the shape and effect.</dd><br/>"
-								+ "<dt><b>Bounds in Parent</b></dt><dd>The boundary of the shape, effect and transforms.<br/>The co-ordinates of what you see.</dd>"
-								+ "</dl></body></html>");
+		boundsExplanation.getEngine()
+				.loadContent("<html><body bgcolor='darkseagreen' fgcolor='lightgrey' style='font-size:12px'><dl>"
+						+ "<dt><b>Layout Bounds</b></dt><dd>The boundary of the shape.</dd><br/>"
+						+ "<dt><b>Bounds in Local</b></dt><dd>The boundary of the shape and effect.</dd><br/>"
+						+ "<dt><b>Bounds in Parent</b></dt><dd>The boundary of the shape, effect and transforms.<br/>The co-ordinates of what you see.</dd>"
+						+ "</dl></body></html>");
 		boundsExplanation.setPrefWidth(100);
-        final int height = 130;
-        boundsExplanation.setMinHeight(height);
-        boundsExplanation.setMaxHeight(height);
+		final int height = 130;
+		boundsExplanation.setMinHeight(height);
+		boundsExplanation.setMaxHeight(height);
 		boundsExplanation.setStyle("-fx-background-color: transparent");
 		// layout the utility pane.
 		VBox utilityLayout = new VBox(10);
@@ -167,8 +184,8 @@ public class BoundsPlayground extends Application {
 				"-fx-padding:10; -fx-background-color: linear-gradient(to bottom, lightblue, derive(lightblue, 20%));");
 		utilityLayout.getChildren().addAll(instructions, intersectionInstructions, intersectionView, displayChecks,
 				boundsToggles, boundsExplanation);
-        final int prefHeight = 530;
-        utilityLayout.setPrefHeight(prefHeight);
+		final int prefHeight = 530;
+		utilityLayout.setPrefHeight(prefHeight);
 		reportingStage.setScene(new Scene(utilityLayout));
 		reportingStage.show();
 		// ensure the utility window closes when the main app window closes.
@@ -221,13 +238,7 @@ public class BoundsPlayground extends Application {
 		launch(args);
 	}
 
-	// records relative x and y co-ordinates.
-	private static class Delta {
-        protected double x;
-        protected double y;
-	}
-
-    // an anchor displayed around a point.
+	// an anchor displayed around a point.
 	class Anchor extends Circle {
 		Anchor(String id, DoubleProperty x, DoubleProperty y) {
 			super(x.get(), y.get(), 10);
@@ -245,5 +256,11 @@ public class BoundsPlayground extends Application {
 	// a helper enumeration of the various types of bounds we can work with.
 	enum BoundsType {
 		LAYOUT_BOUNDS, BOUNDS_IN_LOCAL, BOUNDS_IN_PARENT
+	}
+
+	// records relative x and y co-ordinates.
+	private static class Delta {
+		protected double x;
+		protected double y;
 	}
 }

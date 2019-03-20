@@ -29,10 +29,10 @@ public class VigenereCipher {
 	public static void main(String[] args) {
 		VigenereCipher vigenereCypher = new VigenereCipher();
 		String k = "spy";
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(vigenereCypher.encrypt(k, "seeyouatnoon"));
-            LOGGER.info(vigenereCypher.decrypt(k, vigenereCypher.encrypt(k, "seeyouatnoon")));
-        }
+        String encrypt = vigenereCypher.encrypt(k, "seeyouatnoon");
+		LOGGER.info(encrypt);
+        String decrypt = vigenereCypher.decrypt(k, vigenereCypher.encrypt(k, "seeyouatnoon"));
+		LOGGER.info(decrypt);
 
 	}
 

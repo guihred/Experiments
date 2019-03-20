@@ -23,59 +23,49 @@ import javafx.scene.shape.Shape;
  */
 public class MinesweeperSquare extends Region {
 
-    private final int i;
+	private final int i;
 
-    private final int j;
-    private ObjectProperty<MinesweeperImage> minesweeperImage = new SimpleObjectProperty<>(MinesweeperImage.BLANK);
+	private final int j;
+	private ObjectProperty<MinesweeperImage> minesweeperImage = new SimpleObjectProperty<>(MinesweeperImage.BLANK);
 	private int num;
 	private Shape shape;
-    private Shape flag = MinesweeperImage.FLAG.getShape(0);
-    private ObjectProperty<State> state = new SimpleObjectProperty<>(State.HIDDEN);
+	private Shape flag = MinesweeperImage.FLAG.getShape(0);
+	private ObjectProperty<State> state = new SimpleObjectProperty<>(State.HIDDEN);
 
-    public MinesweeperSquare(int i, int j) {
-        this.i = i;
-        this.j = j;
-        setPadding(new Insets(10));
-        setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
-    		styleProperty().bind(
-                    Bindings.when(state.isEqualTo(State.SHOWN))
-                        .then("-fx-background-color: white;").otherwise("-fx-background-color: burlywood;")
-                        .concat("-fx-border-color: black;-fx-border-width: 1;"));
-        flag.visibleProperty().bind(state.isEqualTo(State.FLAGGED));
+	public MinesweeperSquare(int i, int j) {
+		this.i = i;
+		this.j = j;
+		setPadding(new Insets(10));
+		setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
+		styleProperty().bind(Bindings.when(state.isEqualTo(State.SHOWN)).then("-fx-background-color: white;")
+				.otherwise("-fx-background-color: burlywood;").concat("-fx-border-color: black;-fx-border-width: 1;"));
+		flag.visibleProperty().bind(state.isEqualTo(State.FLAGGED));
 		setEffect(new InnerShadow());
-        setPrefSize(50, 50);
-    }
-
+		setPrefSize(50, 50);
+	}
 
 	public Shape getFinalShape() {
 		if (shape == null) {
 			shape = getMinesweeperImage().getShape(getNum());
-            Color color;
-            if (getMinesweeperImage().equals(MinesweeperImage.BOMB)) {
-                color = Color.RED;
-            } else if (getMinesweeperImage().equals(MinesweeperImage.NUMBER)) {
-                color = Color.BLUE;
-            } else {
-                color = Color.WHITE;
-            }
+			Color color = getColor();
 
 			shape.fillProperty()
-                    .bind(Bindings.when(state.isEqualTo(State.SHOWN)).then(color).otherwise(Color.TRANSPARENT));
+			.bind(Bindings.when(state.isEqualTo(State.SHOWN)).then(color).otherwise(Color.TRANSPARENT));
 
 		}
 
 		return shape;
 	}
 
-    public Shape getFlag() {
-        return flag;
-    }
+	public Shape getFlag() {
+		return flag;
+	}
 
-    public int getI() {
+	public int getI() {
 		return i;
 	}
 
-    public int getJ() {
+	public int getJ() {
 		return j;
 	}
 
@@ -93,14 +83,13 @@ public class MinesweeperSquare extends Region {
 
 	public void setFinalShape(Shape shape) {
 		this.shape = shape;
-    }
-
+	}
 
 	public final void setMinesweeperImage(final MinesweeperImage minesweeperImage) {
 		this.minesweeperImage.set(minesweeperImage);
 	}
 
-    public void setNum(int num) {
+	public void setNum(int num) {
 		this.num = num;
 	}
 
@@ -109,19 +98,28 @@ public class MinesweeperSquare extends Region {
 	}
 
 	public ObjectProperty<State> stateProperty() {
-        return state;
-    }
+		return state;
+	}
 
 	@Override
-    public String toString() {
-        return "MinesweeperSquare [i=" + i + ", j=" + j + ", minesweeperImage=" + minesweeperImage + ", num=" + num
-                + ", state=" + state + "]";
-    }
+	public String toString() {
+		return "MinesweeperSquare [i=" + i + ", j=" + j + ", minesweeperImage=" + minesweeperImage + ", num=" + num
+				+ ", state=" + state + "]";
+	}
 
-    public enum State {
-        HIDDEN,
-        SHOWN,
-        FLAGGED
-    }
+	private Color getColor() {
+		if (getMinesweeperImage() == MinesweeperImage.BOMB) {
+			return Color.RED;
+		}
+		if (getMinesweeperImage() == MinesweeperImage.NUMBER) {
+			return Color.BLUE;
+		}
+		return Color.WHITE;
+
+	}
+
+	public enum State {
+		HIDDEN, SHOWN, FLAGGED
+	}
 
 }

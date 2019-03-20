@@ -5,7 +5,7 @@ import utils.HasLogging;
 
 public final class JavaExercise19 {
 	private static final Logger LOG = HasLogging.log();
-    private JavaExercise19() {
+	private JavaExercise19() {
 	}
 
 	/**
@@ -14,11 +14,11 @@ public final class JavaExercise19 {
 	 * the program in and trying it.
 	 */
 
-    public static void testingJavaConcepts() {
+	public static void testingJavaConcepts() {
 
 		Jack ink = new Jack();
-        fred(ink, 1000);
-        LOG.info("Value is {}", K.el);
+		fred(ink, 1000);
+		LOG.info("Value is {}", K.el);
 	}
 	private static void fred(JJ uk, int n) {
 		int a = 10 * n;
@@ -45,10 +45,11 @@ class Jill implements JJ {
 	public void upk() {
 		Jack ink = new Jack();
 		ink.upk();
-        K.el += 100;
+		K.el += 100;
 	}
 }
 
+@FunctionalInterface
 interface JJ {
 	void upk();
 }

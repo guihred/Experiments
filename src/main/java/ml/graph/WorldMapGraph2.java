@@ -190,9 +190,10 @@ public class WorldMapGraph2 extends WorldMapGraph {
 			double latitudeInDegrees = list.get(i).doubleValue();
 			double longitudeInDegrees = lis2t.get(i).doubleValue();
 			double[] screenLocation = mercatorMap.getScreenLocation(latitudeInDegrees, longitudeInDegrees);
-			double x = xScale.get() + screenLocation[0] * radius.get();
-			double y = yScale.get() + screenLocation[1] * radius.get();
-			getGc().fillOval(x, y, radius.get(), radius.get());
+			double r = radius.get();
+			double x = xScale.get() + screenLocation[0] * r;
+			double y = yScale.get() + screenLocation[1] * r;
+			getGc().fillOval(x, y, r, r);
 			getGc().fillText(citu.get(i), x, y);
 		}
 	}
