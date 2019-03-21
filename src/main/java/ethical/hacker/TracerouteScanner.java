@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
 import utils.CrawlerTask;
@@ -39,8 +40,10 @@ public class TracerouteScanner {
 		ObservableMap<String, List<String>> synchronizedObservableMap = FXCollections
 				.synchronizedObservableMap(FXCollections.observableHashMap());
 		String hostRegex = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [\\w\\.]+ \\(([\\d\\.]+)\\)";
+
+		String nmapCommand = getNmapCommand();
 		ObservableList<String> executeInConsole = ConsoleUtils
-				.executeInConsoleInfoAsync("\"" + NMAP_FILES + "\" --traceroute -sn " + networkAddress);
+				.executeInConsoleInfoAsync(nmapCommand + " --traceroute -sn " + networkAddress);
 		Map<String, List<String>> hostsPorts = new HashMap<>();
 		StringProperty host = new SimpleStringProperty("");
 		executeInConsole.addListener((ListChangeListener<String>) c -> {
@@ -64,9 +67,9 @@ public class TracerouteScanner {
 		return synchronizedObservableMap;
 	}
 
-	private static List<String> extractHops(final Map<String, List<String>> hostsPorts, final Entry<String, List<String>> e) {
-		return e.getValue().stream().flatMap(l -> turnReferencesIntoHops(hostsPorts, l))
-				.collect(Collectors.toList());
+	private static List<String> extractHops(final Map<String, List<String>> hostsPorts,
+			final Entry<String, List<String>> e) {
+		return e.getValue().stream().flatMap(l -> turnReferencesIntoHops(hostsPorts, l)).collect(Collectors.toList());
 	}
 
 	private static String getIPtoScan() {
@@ -84,6 +87,13 @@ public class TracerouteScanner {
 
 		return IP_TO_SCAN + "/28";
 
+	}
+
+	private static String getNmapCommand() {
+		if(SystemUtils.IS_OS_LINUX) {
+			return "nmap ";
+		}
+		return "\"" + NMAP_FILES + "\"";
 	}
 
 	private static Stream<? extends String> turnReferencesIntoHops(final Map<String, List<String>> hostsPorts, final String line) {

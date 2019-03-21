@@ -1,28 +1,18 @@
 package fxtests;
 
 import javafx.scene.Node;
-import javafx.stage.Stage;
 import ml.WordSuggetionApp;
 import org.junit.Test;
-import org.testfx.framework.junit.ApplicationTest;
-import utils.ResourceFXUtils;
 
 
-public class FXEngineWordSearchTest extends ApplicationTest {
+public class FXEngineWordSearchTest extends AbstractTestExecution {
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        ResourceFXUtils.initializeFX();
-
-        new WordSuggetionApp().start(stage);
-    }
-
-    @Test
-    public void verify() throws Exception {
-
-        Node query = lookup(".text-field").query();
-        clickOn(query);
-        write("new york ");
-    }
+	@Test
+	public void verify() throws Exception {
+		show(WordSuggetionApp.class);
+		Node query = lookup(".text-field").query();
+		clickOn(query);
+		write("new york ");
+	}
 
 }

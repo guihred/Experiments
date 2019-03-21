@@ -99,7 +99,8 @@ public final class ConsoleUtils {
 		return result;
 	}
 
-	public static Map<String, ObservableList<String>> executeInConsoleAsync(final String cmd, final Map<String, String> responses) {
+	public static Map<String, ObservableList<String>> executeInConsoleAsync(final String cmd,
+			final Map<String, String> responses) {
 		Map<String, ObservableList<String>> result = new HashMap<>();
 		result.put(ACTIVE_FLAG, FXCollections.observableArrayList());
 		responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
@@ -133,12 +134,19 @@ public final class ConsoleUtils {
 		LOGGER.info(EXECUTING, cmd);
 		PROCESSES.put(cmd, false);
 		new Thread(() -> {
-			Process p = newProcess(cmd);
+			Process p;
+			try {
+				p = newProcess(cmd);
+			} catch (Exception e1) {
+				PROCESSES.put(cmd, true);
+				LOGGER.error("", e1);
+				return;
+			}
 			try (BufferedReader in2 = new BufferedReader(
 					new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
 				String line;
 				while ((line = in2.readLine()) != null) {
-					LOGGER.trace("{}", line);
+					LOGGER.info("{}", line);
 					execution.add(line);
 				}
 				p.waitFor();
@@ -154,6 +162,7 @@ public final class ConsoleUtils {
 	}
 
 	public static void waitAllProcesses() {
+		long currentTimeMillis = System.currentTimeMillis();
 		while (PROCESSES.values().stream().anyMatch(e -> !e)) {
 			try {
 				List<String> processes = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
@@ -161,6 +170,10 @@ public final class ConsoleUtils {
 				String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
 				LOGGER.info("Running {} processes {}", processes.size(), formated);
 				Thread.sleep(WAIT_INTERVAL_MILLIS);
+				if (System.currentTimeMillis() - currentTimeMillis > WAIT_INTERVAL_MILLIS * 60) {
+					LOGGER.error("Processes \"{}\" taking too long", formated);
+					break;
+				}
 			} catch (Exception e1) {
 				LOGGER.trace("", e1);
 			}
