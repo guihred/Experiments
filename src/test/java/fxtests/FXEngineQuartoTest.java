@@ -7,53 +7,42 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.MouseButton;
-import javafx.stage.Stage;
 import org.junit.Test;
-import org.testfx.framework.junit.ApplicationTest;
-import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
-public class FXEngineQuartoTest extends ApplicationTest {
+public class FXEngineQuartoTest extends AbstractTestExecution {
 
-    private Stage currentStage;
+	@Test
+	public void verify() throws Exception {
+		interactNoWait(RunnableEx.makeRunnable(() -> {
+			new QuartoLauncher().start(currentStage);
+			currentStage.setMaximized(true);
+		}));
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        ResourceFXUtils.initializeFX();
-        currentStage = stage;
-    }
-
-    @Test
-    public void verify() throws Exception {
-        interactNoWait(RunnableEx.makeRunnable(() -> {
-            new QuartoLauncher().start(currentStage);
-            currentStage.setMaximized(true);
-        }));
-
-        KeyCode[] keycodes = new KeyCode[] { KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.Z };
+		KeyCode[] keycodes = new KeyCode[] { KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.Z };
 		Modifier[] modifiers = new Modifier[] { KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN,
 				KeyCombination.CONTROL_DOWN };
-        for (int i = 0; i < modifiers.length; i++) {
-            for (int j = 0; j < keycodes.length; j++) {
-                push(new KeyCodeCombination(keycodes[j], modifiers[i]));
-            }
-        }
-        closeCurrentWindow();
-    }
+		for (int i = 0; i < modifiers.length; i++) {
+			for (int j = 0; j < keycodes.length; j++) {
+				push(new KeyCodeCombination(keycodes[j], modifiers[i]));
+			}
+		}
+		closeCurrentWindow();
+	}
 
-    @Test
-    public void verify2() throws Exception {
-        interactNoWait(RunnableEx.makeRunnable(() -> {
-            new QuartoLauncher().start(currentStage);
-            currentStage.setMaximized(true);
-        }));
-        Random random = new Random();
-        for (int i = 0; i < 100; i++) {
+	@Test
+	public void verify2() throws Exception {
+		interactNoWait(RunnableEx.makeRunnable(() -> {
+			new QuartoLauncher().start(currentStage);
+			currentStage.setMaximized(true);
+		}));
+		Random random = new Random();
+		for (int i = 0; i < 100; i++) {
 
-            clickOn(random.nextDouble() * currentStage.getWidth() / 2 + currentStage.getWidth() / 4,
-                    +random.nextDouble() * currentStage.getHeight() / 2 + currentStage.getHeight() / 4,
-                    MouseButton.PRIMARY);
-        }
-    }
+			clickOn(random.nextDouble() * currentStage.getWidth() / 2 + currentStage.getWidth() / 4,
+					+random.nextDouble() * currentStage.getHeight() / 2 + currentStage.getHeight() / 4,
+					MouseButton.PRIMARY);
+		}
+	}
 
 }

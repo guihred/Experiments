@@ -214,8 +214,7 @@ public class CatanModel {
 
     private void exchangeForOneResource(ResourceType selectedType) {
 	cards.get(currentPlayer.get()).removeIf(CatanCard::isSelected);
-	final ResourceType t = selectedType;
-	cards.get(currentPlayer.get()).add(new CatanCard(t, this::onSelectCard));
+	cards.get(currentPlayer.get()).add(new CatanCard(selectedType, this::onSelectCard));
 	resourceChoices.setVisible(false);
     }
 
@@ -546,7 +545,7 @@ public class CatanModel {
 	deals.removeIf(d -> d.getProposer() == playerColor);
     }
 
-    private void plentyOfTwoResources(ResourceType selectedType) {
+    private void plentyOfTwoResources(final ResourceType selectedType) {
 	cards.get(currentPlayer.get()).forEach(e -> e.setSelected(false));
 	cards.get(currentPlayer.get()).add(new CatanCard(selectedType, this::onSelectCard));
 	resourcesToSelect = SelectResourceType.EXCHANGE;

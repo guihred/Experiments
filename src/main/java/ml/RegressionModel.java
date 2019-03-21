@@ -155,12 +155,12 @@ public class RegressionModel {
 		slope = (random.nextDouble() - .5) * 10;
 		initial = (random.nextDouble() - .5) * 10;
 		c = 0;
-		return DoubleStream.generate(() -> random(random)).limit(MAX_SIZE);
+		return DoubleStream.generate(() -> random()).limit(MAX_SIZE);
 	}
 	private Data<Number, Number> mapToData(double e) {
 		return new Data<>(features.get(c++), e);
 	}
-	private double random(Random random) {
+	private double random() {
 		double e = (random.nextDouble() - .5) * 5;
 		return initial + e + slope * c++;
 	}
