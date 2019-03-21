@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import simplebuilder.SimpleTextBuilder;
 
 public class Port extends Group {
 
@@ -60,7 +61,7 @@ public class Port extends Group {
 	    Text text = new Text();
 	    text.textProperty().bind(number.asString());
 	    Node newResource = type != ResourceType.DESERT ? newResource() : newInterrogation();
-	    status = new HBox(text, newResource, new Text("->?"));
+	    status = new HBox(text, newResource, new SimpleTextBuilder().text("->?").size(12).build());
 	    status.managedProperty().bind(status.visibleProperty());
 	}
 	return status;
@@ -76,7 +77,7 @@ public class Port extends Group {
 
     private Text newInterrogation() {
 	Text e = new Text("?");
-	e.setFont(Font.font(15));
+	e.setFont(Font.font(12));
 	e.setLayoutX(SIZE * 5 / 10);
 	e.setLayoutY(SIZE * 10 / 24.);
 	return e;

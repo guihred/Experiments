@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
@@ -28,14 +29,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import utils.CommonsFX;
 
 public class CatanModel {
     private final List<Terrain> terrains = new ArrayList<>();
     private final List<SettlePoint> settlePoints = new ArrayList<>();
-    private List<EdgeCatan> edges;
+    private final List<EdgeCatan> edges;
     private final Map<PlayerColor, List<CatanCard>> cards = PlayerColor.newMapList();
     private final Map<PlayerColor, List<DevelopmentType>> usedCards = PlayerColor.newMapList();
     private final ObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
@@ -45,10 +44,6 @@ public class CatanModel {
     private final StackPane center;
     private SelectResourceType resourcesToSelect = SelectResourceType.EXCHANGE;
     private final Group cardGroup = new Group();
-    private final Text userPoints = new Text("0");
-    private final ImageView userImage = CatanResource.newImage("user.png", Color.BLUE, 100);
-    private Dice dice1 = new Dice();
-    private Dice dice2 = new Dice();
     private int turnCount;
     private final HBox resourceChoices = ResourceType.createResourceChoices(this::onSelectResource);
     private final Button exchangeButton = CommonsFX.newButton("Exchange", e -> {
@@ -67,19 +62,19 @@ public class CatanModel {
     private final VBox availablePorts = new VBox();
     private final ExtraPoint largestArmy = new ExtraPoint("largestarmy.png");
     private final ExtraPoint longestRoad = new ExtraPoint("longestroad.png");
+    private final UserChart userChart = new UserChart();
 
     public CatanModel(StackPane root, Pane value) {
 	center = root;
 	right = value;
-	addTerrains(center);
+	edges = addTerrains(center);
 	center.setOnMousePressed(this::handleMousePressed);
 	center.setOnMouseDragged(this::handleMouseDragged);
 	center.setOnMouseReleased(this::handleMouseReleased);
 	elements.addListener(ListHelper.onChangeElement(center));
 	currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
 	VBox vBox = ListHelper.newDeal(deals, this::isDealUnfeasible, this::onMakeDeal, currentPlayer, diceThrown);
-	right.getChildren().add(new HBox(new VBox(userImage, userPoints, new HBox(dice1, dice2)),
-		new VBox(availablePorts, vBox), largestArmy, longestRoad));
+	right.getChildren().add(new HBox(userChart, new VBox(availablePorts, vBox), largestArmy, longestRoad));
 	right.getChildren().add(cardGroup);
 	Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
 	skipButton.disableProperty().bind(Bindings.createBooleanBinding(this::isSkippable, diceThrown,
@@ -116,7 +111,7 @@ public class CatanModel {
 	return value;
     }
 
-    private void addTerrains(final StackPane root) {
+    private List<EdgeCatan> addTerrains(final StackPane root) {
 	List<Integer> numbers = Terrain.getNumbers();
 	List<ResourceType> cells = ResourceType.createResources();
 	final double radius = Terrain.RADIUS * Math.sqrt(3);
@@ -138,7 +133,8 @@ public class CatanModel {
 	    }
 	}
 
-	edges = settlePoints.stream().flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
+	List<EdgeCatan> edges = settlePoints.stream()
+		.flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
 		.collect(Collectors.toList());
 	edges.forEach(e -> e.getPoints().forEach(p -> p.getEdges().add(e)));
 	Collections.shuffle(ports);
@@ -146,6 +142,7 @@ public class CatanModel {
 	root.getChildren().addAll(edges);
 	root.getChildren().addAll(ports);
 	root.getChildren().addAll(settlePoints);
+	return edges;
 
     }
 
@@ -180,7 +177,6 @@ public class CatanModel {
 	if (longestRoad.getPlayer() == newPlayer) {
 	    pointsCount += 2;
 	}
-
 	return pointsCount;
     }
 
@@ -337,7 +333,7 @@ public class CatanModel {
 
     private void onChangePlayer(final PlayerColor newV) {
 	updatePoints(newV);
-	userImage.setImage(CatanResource.newImage("user.png", newV.getColor()));
+	userChart.setColor(newV);
 	cardGroup.getChildren().clear();
 	List<CatanCard> currentCards = cards.get(currentPlayer.get());
 	for (CatanCard type : currentCards) {
@@ -551,10 +547,23 @@ public class CatanModel {
     }
 
     private void plentyOfTwoResources(ResourceType selectedType) {
-	cards.get(currentPlayer.get()).removeIf(CatanCard::isSelected);
-	final ResourceType t = selectedType;
-	cards.get(currentPlayer.get()).add(new CatanCard(t, this::onSelectCard));
+	cards.get(currentPlayer.get()).forEach(e -> e.setSelected(false));
+	cards.get(currentPlayer.get()).add(new CatanCard(selectedType, this::onSelectCard));
 	resourcesToSelect = SelectResourceType.EXCHANGE;
+    }
+
+    private void removeHalfOfCards() {
+	Random random = new Random();
+	for (List<CatanCard> list : cards.values()) {
+	    List<CatanCard> cardss = list.parallelStream().filter(e -> e.getDevelopment() == null)
+		    .collect(Collectors.toList());
+	    if (cardss.size() > 7) {
+		int size = cardss.size();
+		for (int i = 0; i < size / 2; i++) {
+		    list.remove(cardss.remove(random.nextInt(cardss.size())));
+		}
+	    }
+	}
     }
 
     private void replaceThief() {
@@ -588,7 +597,7 @@ public class CatanModel {
     }
 
     private void throwDice() {
-	int a = dice1.throwDice() + dice2.throwDice();
+	int a = userChart.throwDice();
 	settlePoints.stream().filter(e -> e.getElement() != null)
 		.flatMap(e -> e.getElement() instanceof City ? Stream.of(e, e) : Stream.of(e))
 		.forEach(e -> cards.get(e.getElement().getPlayer()).addAll(e.getTerrains().stream()
@@ -598,11 +607,12 @@ public class CatanModel {
 	diceThrown.set(true);
 	if (a == 7) {
 	    replaceThief();
+	    removeHalfOfCards();
 	}
     }
 
     private void updatePoints(final PlayerColor newV) {
-	userPoints.setText(countPoints(newV) + " Points");
+	userChart.setPoints(countPoints(newV), this::countPoints);
 	ports.stream().filter(p -> !availablePorts.getChildren().contains(p.getStatus()))
 		.filter(p -> settlePoints.stream().filter(s -> s.getElement() != null)
 			.filter(s -> s.getElement().getPlayer() == newV).anyMatch(p.getPoints()::contains))
