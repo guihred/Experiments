@@ -43,7 +43,7 @@ public class PointsExample extends Application {
 				.add(newButton("Export", e -> ResourceFXUtils.take(canvas)));
         root.setLeft(vBox);
         ObservableList<String> itens = FXCollections.observableArrayList();
-        canvas.statsProperty().addListener((final Observable o) -> itens.setAll(canvas.statsProperty().keySet()));
+        canvas.statsProperty().addListener((Observable o) -> itens.setAll(canvas.statsProperty().keySet()));
         canvas.setDatagram(x);
 
 		ListView<String> xSelected = createSelection(itens, canvas.xHeaderProperty());

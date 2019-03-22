@@ -10,6 +10,7 @@ import ml.data.DataframeML;
 import ml.graph.WorldMapGraph;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
+import utils.ResourceFXUtils;
 
 public class WorldMapExample3 extends Application {
 
@@ -32,8 +33,7 @@ public class WorldMapExample3 extends Application {
         ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(x.cols()).select("Currency Unit")
                 .onSelect(canvas.valueHeaderProperty()::set).build();
         root.getChildren().add(build);
-        root.getChildren()
-                .add(CommonsFX.newButton("Export", e -> canvas.takeSnapshot()));
+        root.getChildren().add(CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas)));
         root.getChildren().add(canvas);
 		theStage.show();
 	}

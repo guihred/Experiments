@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.WorldMapGraph;
 import ml.graph.WorldMapGraph2;
-import simplebuilder.SimpleButtonBuilder;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public class WorldMapExample2 extends Application {
@@ -38,7 +38,7 @@ public class WorldMapExample2 extends Application {
         canvas.setDataframe(points, "Country");
         canvas.setPoints(latDegree, lonDegree);
         root.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
+            .add(CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas)));
         root.getChildren().add(canvas);
 		theStage.show();
 	}

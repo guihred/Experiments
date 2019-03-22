@@ -22,8 +22,8 @@ import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.TimelineGraph;
 import org.slf4j.Logger;
-import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
+import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -67,16 +67,16 @@ public class TimelineExample extends Application {
         canvas.setHistogram(x, countryNameColumn);
         itens.setAll(sortedLabels(canvas.colorsProperty()));
         String[] list = ResourceFXUtils.toFile("out").list((dir, name) -> name.endsWith(".csv"));
-        ComboBox<String> indicators = new SimpleComboBoxBuilder<String>().items(list).select(0).onSelect(s -> {
-            DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(MAX_ROWS).build();
-            canvas.setTitle(x2.list("Indicator Name").get(0).toString());
-            canvas.setHistogram(x2, countryNameColumn);
-            itens.setAll(sortedLabels(canvas.colorsProperty()));
-        }).build();
+        ComboBox<String> indicators = new SimpleComboBoxBuilder<String>().items(list)
+            .select(0).onSelect(s -> {
+                DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(MAX_ROWS).build();
+                canvas.setTitle(x2.list("Indicator Name").get(0).toString());
+                canvas.setHistogram(x2, countryNameColumn);
+                itens.setAll(sortedLabels(canvas.colorsProperty()));
+            }).build();
 
         left.getChildren().add(indicators);
-        left.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(d -> ResourceFXUtils.take(canvas)).build());
+        left.getChildren().add(CommonsFX.newButton("Export", d -> ResourceFXUtils.take(canvas)));
         root.setCenter(new HBox(canvas, listVies));
 
 		theStage.show();
@@ -84,8 +84,7 @@ public class TimelineExample extends Application {
 
 
     private List<Entry<String, Color>> sortedLabels(final ObservableMap<String, Color> colorsProperty) {
-        return colorsProperty
-                .entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
+        return colorsProperty.entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
                 .collect(Collectors.toList());
     }
 

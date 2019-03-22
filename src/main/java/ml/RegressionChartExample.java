@@ -13,19 +13,19 @@ import ml.data.DataframeML;
 public class RegressionChartExample extends Application {
     @Override
     public void start(Stage primaryStage) {
-		DataframeML x = new DataframeML("california_housing_train.csv");
+        DataframeML x = new DataframeML("california_housing_train.csv");
         RegressionModel regressionModel = new RegressionModel();
 
-        ObservableList<Series<Number, Number>> data = regressionModel.createSeries(x.list("total_rooms"),
-                x.list("total_rooms"));
+        ObservableList<Series<Number, Number>> data = regressionModel
+            .createSeries(x.list("total_rooms"), x.list("total_rooms"));
         LineChart<Number, Number> lineChart = lineChart(data,
-                String.format("Speculations(%.1f*x + %.1f)", regressionModel.getSlope(), regressionModel.getInitial()));
+            String.format("Speculations(%.1f*x + %.1f)", regressionModel.getSlope(), regressionModel.getInitial()));
 
         ObservableList<Series<Number, Number>> error = regressionModel.getErrorSeries();
-		ObservableList<Series<Number, Number>> expected = regressionModel.getExpectedSeries();
+        ObservableList<Series<Number, Number>> expected = regressionModel.getExpectedSeries();
         data.addAll(expected);
         LineChart<Number, Number> errorGraph = lineChart(error,
-                String.format("Error(%.1f*x + %.1f)", regressionModel.getBestSlope(), regressionModel.getBestInitial()));
+            String.format("Error(%.1f*x + %.1f)", regressionModel.getBestSlope(), regressionModel.getBestInitial()));
         HBox root = new HBox();
 
         root.getChildren().add(lineChart);
@@ -46,6 +46,6 @@ public class RegressionChartExample extends Application {
     }
 
     public static void main(String[] args) {
-		launch(args);
+        launch(args);
     }
 }
