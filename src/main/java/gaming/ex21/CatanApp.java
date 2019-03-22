@@ -12,20 +12,20 @@ public class CatanApp extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-	StackPane center = new StackPane();
-	Pane value = new VBox();
-	BorderPane root = new BorderPane(center);
-	root.setLeft(value);
-	double size = Terrain.RADIUS * Math.sqrt(3) * 5.5;
-	Scene scene = new Scene(root, size * 1.5, size);
-	primaryStage.setTitle("Settlers of Catan");
-	primaryStage.setScene(scene);
-	CatanModel.create(center, value);
-	primaryStage.show();
+        StackPane center = new StackPane();
+        Pane value = new VBox();
+        BorderPane root = new BorderPane(center);
+        root.setLeft(value);
+        double size = Terrain.RADIUS * Math.sqrt(3) * 5.5;
+        Scene scene = new Scene(root, size * 1.5, size);
+        primaryStage.setTitle("Settlers of Catan");
+        primaryStage.setScene(scene);
+        CatanModel.create(center, value);
+        primaryStage.show();
     }
 
     public static void main(final String[] args) {
-	launch(args);
+        launch(args);
     }
 
 }
