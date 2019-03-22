@@ -134,14 +134,7 @@ public final class ConsoleUtils {
 		LOGGER.info(EXECUTING, cmd);
 		PROCESSES.put(cmd, false);
 		new Thread(() -> {
-			Process p;
-			try {
-				p = newProcess(cmd);
-			} catch (Exception e1) {
-				PROCESSES.put(cmd, true);
-				LOGGER.error("", e1);
-				return;
-			}
+            Process p = newProcess(cmd);
 			try (BufferedReader in2 = new BufferedReader(
 					new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
 				String line;

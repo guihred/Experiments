@@ -8,9 +8,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public final class UnZip {
-	public static final String ZIPPED_FILE_FOLDER = new File("").getAbsolutePath();
+    public static final String ZIPPED_FILE_FOLDER = ResourceFXUtils.getOutFile().getParent();
 	private static final Logger LOGGER = HasLogging.log();
 
 	private UnZip() {
