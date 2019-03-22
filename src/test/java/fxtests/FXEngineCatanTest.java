@@ -33,10 +33,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     @Test
     public void testaToolsVerify() throws Exception {
 	show(CatanApp.class);
-	testTools();
-    }
-
-    public void testTools() {
 	List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
 		.collect(Collectors.toList());
 	Collections.shuffle(allEdge);
@@ -64,7 +60,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 	}
     }
 
-    private void clickButton(final List<ButtonBase> allButtons, final Set<ButtonBase> clickedButtons) {
+    private void clickButton(List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
 	Collections.shuffle(allButtons);
 	allButtons.addAll(lookup(".button").queryAllAs(ButtonBase.class).stream().filter(t -> !allButtons.contains(t))
 		.collect(Collectors.toList()));

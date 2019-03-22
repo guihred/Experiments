@@ -2,19 +2,22 @@ package gaming.ex21;
 
 import java.util.EnumMap;
 import java.util.List;
-import java.util.function.ToLongFunction;
+import java.util.Map;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.VPos;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import simplebuilder.SimpleTextBuilder;
+import utils.CommonsFX;
 
 public class UserChart extends VBox {
     private static final String USER_PNG = "user.png";
@@ -27,6 +30,8 @@ public class UserChart extends VBox {
     private final ObjectProperty<PlayerColor> color = new SimpleObjectProperty<>(PlayerColor.BLUE);
 
     private final VBox availablePorts = new VBox();
+    private final ExtraPoint largestArmy = new ExtraPoint("largestarmy.png");
+    private final ExtraPoint longestRoad = new ExtraPoint("longestroad.png");
 
     public UserChart() {
 	VBox vBox = new VBox();
@@ -40,7 +45,37 @@ public class UserChart extends VBox {
 	    e.managedProperty().bind(e.visibleProperty());
 	    vBox.getChildren().add(e);
 	}
-	getChildren().addAll(new HBox(vBox, new VBox(userImage, userPoints, new HBox(dice1, dice2)), availablePorts));
+	VBox vBox2 = new VBox(userImage, userPoints, new HBox(dice1, dice2));
+	getChildren().addAll(new HBox(vBox, vBox2, availablePorts, largestArmy, longestRoad));
+
+	largestArmy.visibleProperty().bind(color.isEqualTo(largestArmy.playerProperty()));
+	longestRoad.visibleProperty().bind(color.isEqualTo(longestRoad.playerProperty()));
+    }
+
+    public long countPoints(final PlayerColor newPlayer, List<SettlePoint> settlePoints,
+	    Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
+	long pointsCount = settlePoints.stream().filter(s -> s.getElement() instanceof Village)
+		.filter(e -> e.getElement().getPlayer() == newPlayer).count();
+	pointsCount += settlePoints.stream().filter(s -> s.getElement() instanceof City)
+		.filter(e -> e.getElement().getPlayer() == newPlayer).count() * 2;
+	pointsCount += usedCards.get(newPlayer).stream().filter(e -> e == DevelopmentType.UNIVERSITY).count();
+	long armySize = usedCards.get(newPlayer).stream().filter(e1 -> e1 == DevelopmentType.KNIGHT).count();
+	if (armySize >= 3 && largestArmy.getRecord() < armySize) {
+	    largestArmy.setPlayer(newPlayer);
+	    largestArmy.setRecord(armySize);
+	}
+	if (largestArmy.getPlayer() == newPlayer) {
+	    pointsCount += 2;
+	}
+	long roadSize = EdgeCatan.countRoadSize(newPlayer, edges);
+	if (roadSize >= 5 && longestRoad.getRecord() < roadSize) {
+	    longestRoad.setPlayer(newPlayer);
+	    longestRoad.setRecord(roadSize);
+	}
+	if (longestRoad.getPlayer() == newPlayer) {
+	    pointsCount += 2;
+	}
+	return pointsCount;
     }
 
     public void setColor(PlayerColor newV) {
@@ -48,11 +83,24 @@ public class UserChart extends VBox {
 	color.setValue(newV);
     }
 
-    public void setPoints(long countPoints, ToLongFunction<PlayerColor> countPoint) {
-	userPoints.setText(countPoints + " Points");
+    public void setPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
+	    Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
 	for (PlayerColor playerColor : PlayerColor.values()) {
-	    long points = countPoint.applyAsLong(playerColor);
+	    long points = countPoints(playerColor, settlePoints, usedCards, edges);
 	    playersPoints.get(playerColor).set(points);
+	    if (playerColor == newPlayer) {
+		userPoints.setText(points + " Points");
+	    }
+	    if (points >= 10) {
+		CommonsFX.displayDialog("Player " + playerColor + " Won", "Reset", () -> {
+		    BorderPane root = (BorderPane) availablePorts.getScene().getRoot();
+		    Pane center = (Pane) root.getCenter();
+		    center.getChildren().clear();
+		    Pane right = (Pane) root.getRight();
+		    right.getChildren().clear();
+		    CatanModel.create(center, right);
+		});
+	    }
 	}
     }
 
@@ -71,5 +119,4 @@ public class UserChart extends VBox {
 		    newStatus.visibleProperty().bind(currentPlayer.isEqualTo(newV));
 		});
     }
-
 }
