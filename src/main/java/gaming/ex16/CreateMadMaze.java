@@ -8,9 +8,9 @@ import java.util.Random;
 public class CreateMadMaze {
 	private int r;
 
-	private     final Random random = new Random();
+    private final Random random = new Random();
 
-	private boolean getBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
+    private boolean goBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
 		final MadTriangle remove = history.remove(history.size() - 1);
 		r = createdMaze.indexOf(remove);
 		return false;
@@ -46,7 +46,7 @@ public class CreateMadMaze {
 				removeEdgeOfTriangle(maze, allEdges, openC.orElse(null), openB.orElse(null), openA.orElse(null),
 						direction);
 			} else {
-				getBackIn(maze, history);
+                goBackIn(maze, history);
 			}
 		}
 

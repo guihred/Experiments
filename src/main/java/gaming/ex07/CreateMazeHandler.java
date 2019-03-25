@@ -34,7 +34,7 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 				final String direction = check.get(random.nextInt(check.size()));
                 setSidesByDirection(direction);
 			} else {
-				boolean backIn = getBackIn(history);
+                boolean backIn = goBack(history);
 				if (backIn) {
 					return;
 				}
@@ -59,7 +59,7 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
         }
     }
 
-    private boolean getBackIn(List<MazeSquare> history1) {
+    private boolean goBack(List<MazeSquare> history1) {
 		final MazeSquare remove = history1.remove(history1.size() - 1);
 		for (int i = 0; i < createdMaze.length; i++) {
 			for (int j = 0; j < createdMaze.length; j++) {

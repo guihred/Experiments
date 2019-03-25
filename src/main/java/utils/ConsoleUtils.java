@@ -163,7 +163,7 @@ public final class ConsoleUtils {
 				String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
 				LOGGER.info("Running {} processes {}", processes.size(), formated);
 				Thread.sleep(WAIT_INTERVAL_MILLIS);
-				if (System.currentTimeMillis() - currentTimeMillis > WAIT_INTERVAL_MILLIS * 60) {
+                if (System.currentTimeMillis() - currentTimeMillis > WAIT_INTERVAL_MILLIS * 24) {
 					LOGGER.error("Processes \"{}\" taking too long", formated);
 					break;
 				}

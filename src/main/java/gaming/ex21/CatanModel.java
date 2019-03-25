@@ -3,7 +3,6 @@ package gaming.ex21;
 import static gaming.ex21.ResourceType.containsEnough;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -41,14 +40,12 @@ public class CatanModel {
     private final BooleanProperty diceThrown = new SimpleBooleanProperty(false);
     private final Pane center;
     private SelectResourceType resourcesToSelect = SelectResourceType.DEFAULT;
-    private final Group cardGroup = new Group();
     private int turnCount;
     private final HBox resourceChoices = ResourceType.createResourceChoices(this::onSelectResource);
     private final Button exchangeButton = CommonsFX.newButton("Exchange",
         e -> setResourceSelect(SelectResourceType.EXCHANGE));
     private final Button makeDeal = CommonsFX.newButton("Make Deal",
         e -> setResourceSelect(SelectResourceType.MAKE_DEAL));
-
     private final ObservableList<Deal> deals = FXCollections.observableArrayList();
     private final Thief thief = new Thief();
     private final List<Port> ports = Port.getPorts();
@@ -63,8 +60,7 @@ public class CatanModel {
         center.setOnMouseReleased(this::handleMouseReleased);
         elements.addListener(ListHelper.onChangeElement(center));
         currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
-        right.getChildren().add(new HBox(userChart));
-        right.getChildren().add(cardGroup);
+        right.getChildren().add(userChart);
         Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
         skipButton.disableProperty()
             .bind(Bindings.createBooleanBinding(this::isSkippable, diceThrown, resourceChoices.visibleProperty(),
@@ -313,32 +309,9 @@ public class CatanModel {
     private void onChangePlayer(PlayerColor newV) {
         updatePoints(newV);
         userChart.setColor(newV);
-        cardGroup.getChildren().clear();
         List<CatanCard> currentCards = cards.get(currentPlayer.get());
-        for (CatanCard type : currentCards) {
-            cardGroup.getChildren().add(type);
-        }
-        Collection<List<CatanCard>> values = currentCards.stream()
-            .filter(e -> e.getResource() != null)
-            .collect(Collectors.groupingBy(CatanCard::getResource))
-            .values()
-            .stream()
-            .collect(Collectors.toList());
-        double layoutX = 0;
-        double layoutY = 0;
-        List<CatanCard> collect = currentCards.stream()
-            .filter(e -> e.getResource() == null)
-            .collect(Collectors.toList());
-        values.add(collect);
-        for (List<CatanCard> list : values) {
-            for (CatanCard catanCard : list) {
-                catanCard.relocate(layoutY, layoutX);
-                layoutX += 10;
+        userChart.setCards(currentCards);
             }
-            layoutX = 0;
-            layoutY += CatanCard.PREF_WIDTH;
-        }
-    }
 
     private void onCombinationClicked(Combination combination) {
         List<CatanCard> list = cards.get(currentPlayer.get());

@@ -32,7 +32,7 @@ public class RoundMazeHandler {
 				final String direction = check.get(random.nextInt(check.size()));
                 setSidesByDirection(direction);
 			} else {
-                getBackIn(history);
+                goBackIn(history);
 			}
 		}
         int cell = random.nextInt(RoundMazeModel.MAZE_WIDTH);
@@ -86,7 +86,7 @@ public class RoundMazeHandler {
         }
     }
 
-	private boolean getBackIn(List<RoundMazeSquare> history1) {
+	private boolean goBackIn(List<RoundMazeSquare> history1) {
 		final RoundMazeSquare remove = history1.remove(history1.size() - 1);
 		for (int i = 0; i < createdMaze.length; i++) {
 			for (int j = 0; j < createdMaze[i].length; j++) {
