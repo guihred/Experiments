@@ -97,7 +97,12 @@ public class EdgeCatan extends Group {
 		this.element = element;
 	}
 
-	public EdgeCatan toggleFade(final int r, final boolean enable) {
+    @Override
+    public String toString() {
+        return "(" + points + ")";
+    }
+
+    private EdgeCatan toggleFade(final int r, final boolean enable) {
 		line.setStroke(enable ? Color.GREEN : Color.RED);
 
 		if (element == null) {
@@ -105,10 +110,6 @@ public class EdgeCatan extends Group {
 			highlightTransition.play();
 		}
 		return this;
-	}
-	@Override
-	public String toString() {
-		return "(" + points + ")";
 	}
 
 	public static long countRoadSize(PlayerColor player, List<EdgeCatan> edges) {

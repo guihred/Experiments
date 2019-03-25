@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import simplebuilder.SimpleTextBuilder;
 
 public class Port extends Group {
@@ -31,129 +32,129 @@ public class Port extends Group {
     private HBox status;
 
     public Port(final ResourceType type) {
-	this.type = type;
-	Group e = new Group();
-	e.getChildren().add(newBoat());
-	if (type != ResourceType.DESERT) {
-	    e.getChildren().add(newResource());
-	} else {
-	    number.set(3);
-	    e.getChildren().add(newInterrogation());
-	}
-	e.getChildren().add(newNumberText());
-	getChildren().add(e);
-	setManaged(false);
+        this.type = type;
+        Group e = new Group();
+        e.getChildren().add(newBoat());
+        if (type != ResourceType.DESERT) {
+            e.getChildren().add(newResource());
+        } else {
+            number.set(3);
+            e.getChildren().add(newInterrogation());
+        }
+        e.getChildren().add(newNumberText());
+        getChildren().add(e);
+        setManaged(false);
 
-	points.addListener(this::onElementsChange);
+        points.addListener(this::onElementsChange);
 
     }
 
     public int getNumber() {
-	return number.get();
+        return number.get();
     }
 
     public List<SettlePoint> getPoints() {
-	return points;
+        return points;
     }
 
     public HBox getStatus() {
-	if (status == null) {
-	    Text text = new Text();
-	    text.textProperty().bind(number.asString());
-	    Node newResource = type != ResourceType.DESERT ? newResource() : newInterrogation();
-	    status = new HBox(text, newResource, new SimpleTextBuilder().text("->?").size(12).build());
-	    status.managedProperty().bind(status.visibleProperty());
-	}
-	return status;
+        if (status == null) {
+            Text text = new Text();
+            text.textProperty().bind(number.asString());
+            Node newResource = type != ResourceType.DESERT ? newResource() : newInterrogation();
+            status = new HBox(text, newResource, new SimpleTextBuilder().text("->?").size(12).build());
+            status.managedProperty().bind(status.visibleProperty());
+        }
+        return status;
     }
 
     public ResourceType getType() {
-	return type;
+        return type;
     }
 
     public IntegerProperty numberProperty() {
-	return number;
+        return number;
     }
 
     private Text newInterrogation() {
-	Text e = new Text("?");
-	e.setFont(Font.font(12));
-	e.setLayoutX(SIZE * 5 / 10);
-	e.setLayoutY(SIZE * 10 / 24.);
-	return e;
+        Text e = new Text("?");
+        e.setFont(Font.font(12));
+        e.setLayoutX(SIZE / 2);
+        e.setLayoutY(SIZE * 5 / 12.);
+        return e;
     }
 
     private Text newNumberText() {
-	Text e = new Text();
-	e.setFont(Font.font(12));
-	e.textProperty().bind(number.asString().concat(":1"));
-	e.setLayoutX(SIZE / 2.5);
-	e.setLayoutY(SIZE * 13 / 20.);
-	return e;
+        return new SimpleTextBuilder()
+            .size(12)
+            .textAlignment(TextAlignment.CENTER)
+            .text(number.asString().concat(":1"))
+            .layoutX(SIZE * 5 / 2)
+            .layoutY(SIZE * 13. / 20)
+            .build();
     }
 
     private ImageView newResource() {
-	ImageView e = CatanResource.newImage(type.getPure(), SIZE / 4.);
-	e.setLayoutX(SIZE / 2.5);
-	e.setLayoutY(SIZE * 5 / 24.);
-	e.setPreserveRatio(true);
-	return e;
+        ImageView e = CatanResource.newImage(type.getPure(), SIZE / 4.);
+        e.setLayoutX(SIZE * 5 / 2);
+        e.setLayoutY(SIZE * 5. / 24);
+        e.setPreserveRatio(true);
+        return e;
     }
 
     private void onElementsChange(final Change<? extends SettlePoint> e) {
-	while (e.next()) {
-	    List<? extends SettlePoint> addedSubList = e.getList();
-	    for (Node node : addedSubList) {
-		Line e2 = new Line();
-		e2.startXProperty().bind(node.layoutXProperty().subtract(layoutXProperty()));
-		e2.startYProperty().bind(node.layoutYProperty().subtract(layoutYProperty()));
-		e2.setEndX(SIZE / 2);
-		e2.setEndY(SIZE / 2);
+        while (e.next()) {
+            List<? extends SettlePoint> addedSubList = e.getList();
+            for (Node node : addedSubList) {
+                Line e2 = new Line();
+                e2.startXProperty().bind(node.layoutXProperty().subtract(layoutXProperty()));
+                e2.startYProperty().bind(node.layoutYProperty().subtract(layoutYProperty()));
+                e2.setEndX(SIZE / 2);
+                e2.setEndY(SIZE / 2);
 
-		getChildren().add(0, e2);
-	    }
-	}
+                getChildren().add(0, e2);
+            }
+        }
     }
 
     public static List<Port> getPorts() {
-	return Stream.of(ResourceType.values())
-		.flatMap(t -> Stream.generate(() -> t).limit(t == ResourceType.DESERT ? 4 : 1)).map(Port::new)
-		.collect(Collectors.toList());
+        return Stream.of(ResourceType.values())
+            .flatMap(t -> Stream.generate(() -> t).limit(t == ResourceType.DESERT ? 4 : 1)).map(Port::new)
+            .collect(Collectors.toList());
     }
 
     public static void relocatePorts(final List<SettlePoint> settlePoints2, final List<Port> ports2) {
-	final double radius = Terrain.RADIUS * Math.sqrt(3) / 4;
-	List<SettlePoint> s = settlePoints2.stream().collect(Collectors.toList());
-	Collections.shuffle(s);
-	List<List<SettlePoint>> portLocations = s.stream().filter(p -> p.getNeighbors().size() == 2)
-		.flatMap(p0 -> p0.getNeighbors().stream().map(p1 -> Arrays.asList(p0, p1)))
-		.collect(Collectors.toList());
-	for (int j = 0; j < ports2.size() && !portLocations.isEmpty(); j++) {
-	    Port port = ports2.get(j);
-	    List<SettlePoint> points = portLocations.remove(0);
-	    Optional<SettlePoint> first = points.stream().filter(l -> l.getNeighbors().size() == 3).findFirst();
-	    portLocations.removeIf(p -> p.contains(points.get(0)));
-	    portLocations.removeIf(p -> p.contains(points.get(1)));
-	    port.getPoints().addAll(points);
-	    if (first.isPresent()) {
-		ObservableList<SettlePoint> neighbors = first.get().getNeighbors()
-			.filtered(p -> p.getNeighbors().size() == 2);
-		double x = neighbors.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
-		double y = neighbors.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
-		port.relocate(x - Terrain.RADIUS / 2., y - Terrain.RADIUS / 2.);
-	    } else {
-		double x = points.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
-		double y = points.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
-		double angulo = Math.PI / 2 - Edge.getAngulo(radius * 3, radius * 2.7, x, y);
-		double m = Math.sin(angulo) * radius;
-		double n = Math.cos(angulo) * radius;
-		port.relocate(x + m - Terrain.RADIUS / 2., y + n - Terrain.RADIUS / 2.);
-	    }
-	}
+        List<SettlePoint> s = settlePoints2.stream().collect(Collectors.toList());
+        Collections.shuffle(s);
+        List<List<SettlePoint>> portLocations = s.stream().filter(p -> p.getNeighbors().size() == 2)
+            .flatMap(p0 -> p0.getNeighbors().stream().map(p1 -> Arrays.asList(p0, p1))).collect(Collectors.toList());
+        for (int j = 0; j < ports2.size() && !portLocations.isEmpty(); j++) {
+            Port port = ports2.get(j);
+            List<SettlePoint> points = portLocations.remove(0);
+            Optional<SettlePoint> first = points.stream().filter(l -> l.getNeighbors().size() == 3).findFirst();
+            portLocations.removeIf(p -> p.contains(points.get(0)));
+            portLocations.removeIf(p -> p.contains(points.get(1)));
+            port.getPoints().addAll(points);
+            if (first.isPresent()) {
+                ObservableList<SettlePoint> neighbors = first.get().getNeighbors()
+                    .filtered(p -> p.getNeighbors().size() == 2);
+                double x = neighbors.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
+                double y = neighbors.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
+                port.relocate(x - Terrain.RADIUS / 2., y - Terrain.RADIUS / 2.);
+            } else {
+                final double radius = Terrain.RADIUS * Math.sqrt(3) / 4;
+                double x = points.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
+                double y = points.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
+                double angulo = Math.PI / 2 - Edge.getAngulo(radius * 3, radius * 3 * 9 / 10, x, y);
+                double m = Math.sin(angulo) * radius;
+                double n = Math.cos(angulo) * radius;
+                port.relocate(x + m - Terrain.RADIUS / 2., y + n - Terrain.RADIUS / 2.);
+            }
+        }
     }
 
     private static ImageView newBoat() {
-	return CatanResource.newImage("boat.png", SIZE);
+        return CatanResource.newImage("boat.png", SIZE);
     }
 
 }

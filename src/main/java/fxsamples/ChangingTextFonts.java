@@ -27,31 +27,33 @@ public class ChangingTextFonts extends Application {
 		Group root = new Group();
         final Scene scene = new Scene(root, 580, 250, Color.WHITE);
 		// Serif with drop shadow
-        Text text2 = new Text(50, 50, INTRO_TEXT);
-		Font serif = Font.font("Serif", 30);
+        final int layout = 50;
+        Text text2 = new Text(layout, layout, INTRO_TEXT);
+        int layout2 = 30;
+        Font serif = Font.font("Serif", layout2);
 		text2.setFont(serif);
 		text2.setFill(Color.RED);
 		DropShadow dropShadow = new DropShadow();
         dropShadow.setOffsetX(2);
         dropShadow.setOffsetY(2);
-        dropShadow.setColor(Color.rgb(50, 50, 50, .5));
+        dropShadow.setColor(Color.rgb(layout, layout, layout, .5));
 		text2.setEffect(dropShadow);
 		root.getChildren().add(text2);
 		// SanSerif
-        Text text3 = new Text(50, 100, INTRO_TEXT);
-		Font sanSerif = Font.font("SanSerif", 30);
+        Text text3 = new Text(layout, 100, INTRO_TEXT);
+        Font sanSerif = Font.font("SanSerif", layout2);
 		text3.setFont(sanSerif);
 		text3.setFill(Color.BLUE);
 		root.getChildren().add(text3);
 		// Dialog
-        final Text text4 = new Text(50, 150, INTRO_TEXT);
-		Font dialogFont = Font.font("Dialog", 30);
+        final Text text4 = new Text(layout, 150, INTRO_TEXT);
+        Font dialogFont = Font.font("Dialog", layout2);
 		text4.setFont(dialogFont);
 		text4.setFill(Color.rgb(0, 255, 0));
 		root.getChildren().add(text4);
 		// Monospaced
-        final Text text5 = new Text(50, 200, INTRO_TEXT);
-		Font monoFont = Font.font("Monospaced", 30);
+        final Text text5 = new Text(layout, 200, INTRO_TEXT);
+        Font monoFont = Font.font("Monospaced", layout2);
 		text5.setFont(monoFont);
 		text5.setFill(Color.BLACK);
 		root.getChildren().add(text5);
