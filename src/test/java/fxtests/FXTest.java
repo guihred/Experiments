@@ -88,6 +88,7 @@ import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
+import org.testfx.util.WaitForAsyncUtils;
 import paintexp.ColorChooser;
 import pdfreader.PdfReader;
 import physics.Physics;
@@ -97,7 +98,7 @@ import utils.HasLogging;
 import xylophone.XylophoneApp;
 
 public final class FXTest implements HasLogging {
-	@Test
+    @Test
 	public void test() throws Throwable {
 		FXTesting.testApps(AreaChartExample.class, BackgroundProcesses.class, PieGraphExample.class,
 				BarChartExample.class, BoundsPlayground.class, BubbleChartExample.class, CenterUsingBind.class,
@@ -112,7 +113,7 @@ public final class FXTest implements HasLogging {
 				ArkanoidLauncher.class);
 	}
 
-	@Test
+    @Test
 	public void test2() throws Throwable {
 		FXTesting.testApps(MapGraph.class, Maze3DLauncher.class,
 				MazeLauncher.class, MediaPlayerExample.class, MemoryLauncher.class, MinesweeperLauncher.class,
@@ -127,7 +128,7 @@ public final class FXTest implements HasLogging {
 				Shapes3DApp.class);
 	}
 
-	@Test
+    @Test
 	public void test3() throws Throwable {
 		FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
 				ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class, PdfReader.class,
@@ -140,14 +141,14 @@ public final class FXTest implements HasLogging {
 				WorldMapExample3.class);
 	}
 
-	@Test
+    @Test
 	public void test4() throws Throwable {
 		FXTesting.testApps(Labyrinth2D.class, Labyrinth3D.class, Labyrinth3DAntiAliasing.class,
 				Labyrinth3DCollisions.class, Labyrinth3DGhosts.class, Labyrinth3DKillerGhosts.class,
 				Labyrinth3DKillerGhostsAndBalls.class, Labyrinth3DMouseControl.class, Labyrinth3DWallTexture.class);
 	}
 
-	@Test
+    @Test
 	public void test5() throws Throwable {
 		FXTesting.testApps(BasicAudioPlayerWithControlLauncher.class, BasicAudioClipExample.class,
 				AudioConfigLauncher.class, SimpleAudioPlayerLauncher.class, PlayingAudio.class, Physics.class,
@@ -158,5 +159,8 @@ public final class FXTest implements HasLogging {
 	public void testChapter4() {
 		measureTime("Chapter4.testApps", () -> FXTesting.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class,
 				Chapter4.Ex5.class, Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class, Chapter4.Ex10.class));
+        FXTesting.verifyAndRun(e -> e.clickOn(".button"), Chapter4.Ex9.class);
+        WaitForAsyncUtils.waitForFxEvents();
 	}
+
 }

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
+import org.testfx.api.FxRobot;
 import org.testfx.framework.junit.ApplicationTest;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -28,19 +30,8 @@ public final class FXTesting implements HasLogging {
 
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 
-    @SafeVarargs
-    public static void verifyAndRun(ApplicationTest app, Stage currentStage, Runnable consumer,
-            Class<? extends Application>... applicationClasses) {
-        for (int i = 0; i < applicationClasses.length; i++) {
-            Class<? extends Application> class1 = applicationClasses[i];
-            app.interactNoWait(RunnableEx.makeRunnable(() -> class1.newInstance().start(currentStage)));
-            consumer.run();
-        }
-    }
-
-    @SafeVarargs
-    public static void testApps(Class<? extends Application>... applicationClasses) {
-        new FXTesting().testApplications(Arrays.asList(applicationClasses));
+    private synchronized void setClass(Class<? extends Application> class1, Throwable e) {
+        exceptionMap.put(class1, e);
     }
 
     private void testApplications(List<Class<? extends Application>> applicationClasses) {
@@ -103,6 +94,16 @@ public final class FXTesting implements HasLogging {
         LOGGER.info(TIME_TOOK_FORMAT, name, formatDuration);
     }
 
+    public static <T> T measureTime(String name, SupplierEx<T> runnable) {
+        long currentTimeMillis = System.currentTimeMillis();
+        T t = SupplierEx.makeSupplier(runnable).get();
+        long currentTimeMillis2 = System.currentTimeMillis();
+        long arg2 = currentTimeMillis2 - currentTimeMillis;
+        String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
+        LOGGER.info(TIME_TOOK_FORMAT, name, formatDuration);
+        return t;
+    }
+
     public static void measureTimeExpectException(String name, RunnableEx runnable) {
         long currentTimeMillis = System.currentTimeMillis();
         try {
@@ -116,17 +117,32 @@ public final class FXTesting implements HasLogging {
         }
     }
 
-    public static <T> T measureTime(String name, SupplierEx<T> runnable) {
-        long currentTimeMillis = System.currentTimeMillis();
-        T t = SupplierEx.makeSupplier(runnable).get();
-        long currentTimeMillis2 = System.currentTimeMillis();
-        long arg2 = currentTimeMillis2 - currentTimeMillis;
-        String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
-        LOGGER.info(TIME_TOOK_FORMAT, name, formatDuration);
-        return t;
+    @SafeVarargs
+    public static void testApps(Class<? extends Application>... applicationClasses) {
+        new FXTesting().testApplications(Arrays.asList(applicationClasses));
     }
 
-    private synchronized void setClass(Class<? extends Application> class1, Throwable e) {
-        exceptionMap.put(class1, e);
+    @SafeVarargs
+    public static void verifyAndRun(ApplicationTest app, Stage currentStage, Runnable consumer,
+        Class<? extends Application>... applicationClasses) {
+        for (int i = 0; i < applicationClasses.length; i++) {
+            Class<? extends Application> class1 = applicationClasses[i];
+            app.interactNoWait(RunnableEx.makeRunnable(() -> class1.newInstance().start(currentStage)));
+            consumer.run();
+        }
+    }
+
+    @SafeVarargs
+    public static void verifyAndRun(Consumer<FxRobot> consumer,
+            Class<? extends Application>... applicationClasses) {
+        for (int i = 0; i < applicationClasses.length; i++) {
+            Class<? extends Application> class1 = applicationClasses[i];
+            Platform.runLater(() -> {
+                FxRobot fxRobot = new FxRobot();
+                Stage currentStage = new Stage();
+                fxRobot.interactNoWait(RunnableEx.makeRunnable(() -> class1.newInstance().start(currentStage)));
+                consumer.accept(fxRobot);
+            });
+        }
     }
 }

@@ -25,51 +25,51 @@ public class FXHibernateTest extends AbstractTestExecution {
 
     @Override
     public void init() throws Exception {
-	super.init();
-	HibernateUtil.getSessionFactory();
-	HibernateUtil.setShutdownEnabled(false);
+        super.init();
+        HibernateUtil.getSessionFactory();
+        HibernateUtil.setShutdownEnabled(false);
     }
 
     @Test
     public void verify() throws Exception {
-	measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
-	currentStage.setHeight(1000);
-	show(new JapaneseLessonApplication());
-	clickAllButtons();
-	closeCurrentWindow();
-	show(new BackgroundProcesses());
-	clickAllButtons();
-	show(new FuriganaCrawlerApp());
-	clickAllButtons();
-	show(new ElectionCrawlerApp(new CrawlerCitiesTask()));
-	clickAllButtons();
-	show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
-	clickAllButtons();
-	show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
-	clickAllButtons();
-	show(new TaskProgressApp());
-	clickAllButtons();
-	show(new ContestQuestionEditingDisplay());
-	clickAllButtons();
+        measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
+        currentStage.setHeight(1000);
+        show(new JapaneseLessonApplication());
+        clickAllButtons();
+        closeCurrentWindow();
+        show(new BackgroundProcesses());
+        clickAllButtons();
+        show(new FuriganaCrawlerApp());
+        clickAllButtons();
+        show(new ElectionCrawlerApp(new CrawlerCitiesTask()));
+        clickAllButtons();
+        show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
+        clickAllButtons();
+        show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
+        clickAllButtons();
+        show(new TaskProgressApp());
+        clickAllButtons();
+        show(new ContestQuestionEditingDisplay());
+        clickAllButtons();
 
-	FXTesting.testApps(ElectionCrawlerApp.class, JapaneseLessonApplication.class,
-		JapaneseLessonEditingDisplay.class, JapaneseLessonAudioSplitDisplay.class, JapaneseLessonDisplay.class);
+        FXTesting.testApps(ElectionCrawlerApp.class, JapaneseLessonApplication.class,
+            JapaneseLessonEditingDisplay.class, JapaneseLessonAudioSplitDisplay.class, JapaneseLessonDisplay.class);
     }
 
     private void clickAllButtons() {
-	Set<Node> queryButtons = lookup(".button").queryAll();
-	for (Node e : queryButtons) {
-	    if (e.isVisible()) {
-		clickOn(e);
-	    }
-	    sleep(1000);
-	}
+        Set<Node> queryButtons = lookup(".button").queryAll();
+        for (Node e : queryButtons) {
+            if (e.isVisible()) {
+                clickOn(e);
+            }
+            sleep(1000);
+        }
     }
 
     @AfterClass
     public static void cleanUp() {
-	HibernateUtil.setShutdownEnabled(true);
-	HibernateUtil.shutdown();
+        HibernateUtil.setShutdownEnabled(true);
+        HibernateUtil.shutdown();
     }
 
 }

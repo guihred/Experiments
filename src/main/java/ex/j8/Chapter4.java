@@ -20,9 +20,22 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -39,7 +52,7 @@ public final class Chapter4 {
 	}
 
 	public static void main(String[] args) {
-        Application.launch(Ex10.class, args);
+        Application.launch(Ex9.class, args);
 	}
 
 	public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t, ObservableValue<U> u) {
@@ -295,8 +308,8 @@ public final class Chapter4 {
 			HBox hBox = new HBox();
 			hBox.getChildren().addAll(pulse, orbit);
 			pane.setBottom(hBox);
-			stage.setWidth(0.5);
-			stage.setHeight(0.5);
+//			stage.setWidth(0.5);
+//			stage.setHeight(0.5);
 
 			stage.setScene(scene);
 			stage.setTitle("EX9");
