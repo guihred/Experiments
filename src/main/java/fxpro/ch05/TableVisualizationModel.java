@@ -1,6 +1,6 @@
 package fxpro.ch05;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -23,7 +23,10 @@ public final class TableVisualizationModel {
 	public static final double MAX_KPH = 300.0;
 	public static final double MAX_RPM = 8000.0;
 	public static final DoubleProperty RPM = new SimpleDoubleProperty(0);
-	private TableVisualizationModel() {
+
+	public static final	SecureRandom secureRandom = new SecureRandom();
+
+    private TableVisualizationModel() {
 	}
 
     public static String getRandomWebSite() {
@@ -36,8 +39,7 @@ public final class TableVisualizationModel {
             "http://www.weiqigao.com/blog",
             "http://google.com"
         };
-        int randomIdx = new Random().nextInt(webSites.length);
-        return webSites[randomIdx];
+        return webSites[secureRandom.nextInt(webSites.length)];
     }
 	public static ObservableList<Person> getTeamMembers() {
         ObservableList<Person> teamMembers = FXCollections.observableArrayList();

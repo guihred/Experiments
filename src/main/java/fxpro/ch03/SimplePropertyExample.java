@@ -5,6 +5,7 @@
  */
 package fxpro.ch03;
 
+import java.security.SecureRandom;
 import java.util.Random;
 /**
  *
@@ -27,7 +28,7 @@ public final class SimplePropertyExample {
 
 	private static IntegerProperty intProperty;
 
-	private static Random random = new Random();
+    private static Random random = new SecureRandom();
 
 	private SimplePropertyExample() {
 	}

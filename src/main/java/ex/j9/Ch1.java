@@ -4,6 +4,7 @@ import static java.lang.Math.abs;
 import static java.util.stream.Collectors.toList;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -24,7 +25,7 @@ public class Ch1 {
 	 * list filled with1 ... 50. Pick a random index and remove the element. Repeat
 	 * six times. Print the result in sorted order.
 	 */
-	private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
 	/**
 	 * 16. Improve the average method so that it is called with at least one

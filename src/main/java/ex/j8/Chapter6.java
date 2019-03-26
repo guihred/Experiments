@@ -8,6 +8,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -52,7 +53,7 @@ public final class Chapter6 {
 	 * In my computer, parallel sorting started to be faster when the size of
 	 * the array reached 1.000.000 items;
 	 */
-	private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
 	private Chapter6() {
 	}

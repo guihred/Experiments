@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,7 +21,7 @@ public class Ch3 {
     private static final Logger LOG = HasLogging.log();
 
     public static double average(Collection<? extends Measurable> objects) {
-	return objects.stream().mapToDouble(Measurable::getMeasure).average().orElse(0);
+        return objects.stream().mapToDouble(Measurable::getMeasure).average().orElse(0);
     }
 
     /*
@@ -28,16 +29,16 @@ public class Ch3 {
      * Runnable whose run method executes them in order. Return a lambda expression.
      */
     public static Runnable inOrder(Runnable... runnables) {
-	return () -> runInOrder(runnables);
+        return () -> runInOrder(runnables);
     }
 
     public static <T> boolean isSorted(List<T> a, Comparator<T> comp) {
-	for (int i = 0; i < a.size() - 1; i++) {
-	    if (comp.compare(a.get(i), a.get(i + 1)) > 0) {
-		return false;
-	    }
-	}
-	return true;
+        for (int i = 0; i < a.size() - 1; i++) {
+            if (comp.compare(a.get(i), a.get(i + 1)) > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /*
@@ -46,12 +47,12 @@ public class Ch3 {
      * the largest salary. Why do you need a cast?
      */
     public static <T extends Measurable> T largest(Collection<T> objects) {
-	return objects.stream().max(Comparator.comparing(Measurable::getMeasure)).orElse(null);
+        return objects.stream().max(Comparator.comparing(Measurable::getMeasure)).orElse(null);
     }
 
     public static List<String> listByExtension(File file, String extension) {
-	String[] listFiles = file.list((f, name) -> name.endsWith(extension));
-	return Arrays.asList(listFiles);
+        String[] listFiles = file.list((f, name) -> name.endsWith(extension));
+        return Arrays.asList(listFiles);
 
     }
 
@@ -62,9 +63,9 @@ public class Ch3 {
      * comparator.
      */
     public static void luckySort(List<String> strings, Comparator<String> comp) {
-	while (!isSorted(strings, comp)) {
-	    Collections.shuffle(strings);
-	}
+        while (!isSorted(strings, comp)) {
+            Collections.shuffle(strings);
+        }
 
     }
 
@@ -76,30 +77,30 @@ public class Ch3 {
      * 129) as a nested class, outside the randomInts method.
      */
     public static void main(String[] args) {
-	Random random = new Random();
-	List<Employee> randomEmployees = random.ints(1, 10).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
-		.collect(toList());
+        Random random = new SecureRandom();
+        List<Employee> randomEmployees = random.ints(1, 10).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
+            .collect(toList());
 
-	LOG.info("{}", average(randomEmployees));
-	LOG.info("{}", largest(randomEmployees));
-	// IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
-	// IntSequence.constant(1).foreach(e -> log.info("{}",e))
-	// new SquareSequence().foreach(e -> log.info("{}",e))
-	// log.info("{}",isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo))
-	//
-	// List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e",
-	// "e")
-	// log.info("{}",asList)
-	// luckySort(asList, String::compareTo)
-	// log.info("{}",asList)
-	// log.info("{}",subdirectories(new File(".")))
-	LOG.info("{}", sortFiles(new File(".").listFiles()));
+        LOG.info("{}", average(randomEmployees));
+        LOG.info("{}", largest(randomEmployees));
+        // IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
+        // IntSequence.constant(1).foreach(e -> log.info("{}",e))
+        // new SquareSequence().foreach(e -> log.info("{}",e))
+        // log.info("{}",isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo))
+        //
+        // List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e",
+        // "e")
+        // log.info("{}",asList)
+        // luckySort(asList, String::compareTo)
+        // log.info("{}",asList)
+        // log.info("{}",subdirectories(new File(".")))
+        LOG.info("{}", sortFiles(new File(".").listFiles()));
     }
 
     public static void runInOrder(Runnable... tasks) {
-	for (Runnable runnable : tasks) {
-	    runnable.run();
-	}
+        for (Runnable runnable : tasks) {
+            runnable.run();
+        }
 
     }
 
@@ -111,17 +112,17 @@ public class Ch3 {
      * return when the last one has completed.
      */
     public static void runTogether(Runnable... tasks) {
-	List<Thread> threadList = Stream.of(tasks).parallel().map(Thread::new).collect(toList());
-	threadList.forEach(Thread::start);
-	while (threadList.stream().anyMatch(Thread::isAlive)) {
-	    // DOES NOTHING
-	}
+        List<Thread> threadList = Stream.of(tasks).parallel().map(Thread::new).collect(toList());
+        threadList.forEach(Thread::start);
+        while (threadList.stream().anyMatch(Thread::isAlive)) {
+            // DOES NOTHING
+        }
     }
 
     public static List<File> sortFiles(File[] file) {
 
-	Arrays.sort(file, Comparator.comparing(File::isDirectory).reversed().thenComparing(File::getName));
-	return Arrays.asList(file);
+        Arrays.sort(file, Comparator.comparing(File::isDirectory).reversed().thenComparing(File::getName));
+        return Arrays.asList(file);
     }
 
     /*
@@ -131,22 +132,22 @@ public class Ch3 {
      * with a method expression and an anonymous inner class.
      */
     public static List<File> subdirectories(File file) {
-	File[] listFiles = file.listFiles(File::isDirectory);
-	return Arrays.asList(listFiles);
+        File[] listFiles = file.listFiles(File::isDirectory);
+        return Arrays.asList(listFiles);
 
     }
 
     public static void tasks() {
-	Runnable[] tasks = new Runnable[] { () -> LOG.info("{}", "1"), () -> LOG.info("{}", "2"),
-		() -> LOG.info("{}", "3"), () -> LOG.info("{}", "4"), () -> LOG.info("{}", "5"),
-		() -> LOG.info("{}", "6"), () -> LOG.info("{}", "7"), () -> LOG.info("{}", "8"),
-		() -> LOG.info("{}", "9"), () -> LOG.info("{}", "10"), () -> LOG.info("{}", "11"),
+        Runnable[] tasks = new Runnable[] { () -> LOG.info("{}", "1"), () -> LOG.info("{}", "2"),
+            () -> LOG.info("{}", "3"), () -> LOG.info("{}", "4"), () -> LOG.info("{}", "5"), () -> LOG.info("{}", "6"),
+            () -> LOG.info("{}", "7"), () -> LOG.info("{}", "8"), () -> LOG.info("{}", "9"), () -> LOG.info("{}", "10"),
+            () -> LOG.info("{}", "11"),
 
-	};
-	LOG.info("{}", "In Order");
-	runInOrder(tasks);
-	LOG.info("{}", "Together");
-	runTogether(tasks);
+        };
+        LOG.info("{}", "In Order");
+        runInOrder(tasks);
+        LOG.info("{}", "Together");
+        runTogether(tasks);
     }
 
     /*
@@ -157,48 +158,48 @@ public class Ch3 {
      */
 
     public static class Employee implements Measurable {
-	private static int i;
-	private static final List<String> NAMES = Arrays.asList("Michael", "Charlie", "Jonas", "Margareth", "Juliet",
-		"Frank", "Harry");
+        private static int i;
+        private static final List<String> NAMES = Arrays.asList("Michael", "Charlie", "Jonas", "Margareth", "Juliet",
+            "Frank", "Harry");
 
-	private String name;
-	private double salary;
+        private String name;
+        private double salary;
 
-	public Employee(double salary) {
-	    this.salary = salary;
-	    name = NAMES.get(i++ % NAMES.size());
-	}
+        public Employee(double salary) {
+            this.salary = salary;
+            name = NAMES.get(i++ % NAMES.size());
+        }
 
-	public Employee(String name, double salary) {
-	    this.name = name;
-	    this.salary = salary;
-	}
+        public Employee(String name, double salary) {
+            this.name = name;
+            this.salary = salary;
+        }
 
-	@Override
-	public double getMeasure() {
-	    return getSalary();
-	}
+        @Override
+        public double getMeasure() {
+            return getSalary();
+        }
 
-	public String getName() {
-	    return name;
-	}
+        public String getName() {
+            return name;
+        }
 
-	public double getSalary() {
-	    return salary;
-	}
+        public double getSalary() {
+            return salary;
+        }
 
-	public void setName(String name) {
-	    this.name = name;
-	}
+        public void setName(String name) {
+            this.name = name;
+        }
 
-	public void setSalary(double salary) {
-	    this.salary = salary;
-	}
+        public void setSalary(double salary) {
+            this.salary = salary;
+        }
 
-	@Override
-	public String toString() {
-	    return name + " " + salary + "  ";
-	}
+        @Override
+        public String toString() {
+            return name + " " + salary + "  ";
+        }
     }
 
     /*
@@ -221,75 +222,75 @@ public class Ch3 {
      */
     @FunctionalInterface
     public interface IntSequence {
-	default void foreach(IntConsumer e) {
-	    while (hasNext()) {
-		e.accept(next());
-	    }
-	}
+        default void foreach(IntConsumer e) {
+            while (hasNext()) {
+                e.accept(next());
+            }
+        }
 
-	default boolean hasNext() {
-	    return true;
-	}
+        default boolean hasNext() {
+            return true;
+        }
 
-	// By default, sequences are infinite
-	int next();
+        // By default, sequences are infinite
+        int next();
 
-	static IntSequence constant(int seq) {
-	    return () -> seq;
-	}
+        static IntSequence constant(int seq) {
+            return () -> seq;
+        }
 
-	static IntSequence of(int... seq) {
-	    return new IntSequence() {
-		private int i;
+        static IntSequence of(int... seq) {
+            return new IntSequence() {
+                private int i;
 
-		@Override
-		public boolean hasNext() {
-		    return i < seq.length;
-		}
+                @Override
+                public boolean hasNext() {
+                    return i < seq.length;
+                }
 
-		@Override
-		public int next() {
-		    return seq[i++];
-		}
-	    };
-	}
+                @Override
+                public int next() {
+                    return seq[i++];
+                }
+            };
+        }
     }
 
     @FunctionalInterface
     public interface Sequence<T> {
-	default void foreach(Consumer<T> e) {
-	    while (hasNext()) {
-		e.accept(next());
-	    }
-	}
+        default void foreach(Consumer<T> e) {
+            while (hasNext()) {
+                e.accept(next());
+            }
+        }
 
-	default boolean hasNext() {
-	    return true;
-	}
+        default boolean hasNext() {
+            return true;
+        }
 
-	// By default, sequences are infinite
-	T next();
+        // By default, sequences are infinite
+        T next();
 
-	static <T> Sequence<T> constant(T seq) {
-	    return () -> seq;
-	}
+        static <T> Sequence<T> constant(T seq) {
+            return () -> seq;
+        }
 
-	@SafeVarargs
-	static <T> Sequence<T> of(T... seq) {
-	    return new Sequence<T>() {
-		private int i;
+        @SafeVarargs
+        static <T> Sequence<T> of(T... seq) {
+            return new Sequence<T>() {
+                private int i;
 
-		@Override
-		public boolean hasNext() {
-		    return i < seq.length;
-		}
+                @Override
+                public boolean hasNext() {
+                    return i < seq.length;
+                }
 
-		@Override
-		public T next() {
-		    return seq[i++];
-		}
-	    };
-	}
+                @Override
+                public T next() {
+                    return seq[i++];
+                }
+            };
+        }
     }
 
     /*
@@ -299,26 +300,26 @@ public class Ch3 {
      * implements Sequence<BigInteger> .
      */
     public static class SquareSequence implements Sequence<BigInteger> {
-	private BigInteger i = BigInteger.ZERO;
-	private int c;
-	private int limit = 50;
+        private BigInteger i = BigInteger.ZERO;
+        private int c;
+        private int limit = 50;
 
-	@Override
-	public boolean hasNext() {
-	    return c < limit;
-	}
+        @Override
+        public boolean hasNext() {
+            return c < limit;
+        }
 
-	public SquareSequence limit(int limit1) {
-	    limit = limit1;
-	    return this;
-	}
+        public SquareSequence limit(int limit1) {
+            limit = limit1;
+            return this;
+        }
 
-	@Override
-	public BigInteger next() {
-	    c++;
-	    i = i.add(BigInteger.ONE);
-	    return i.multiply(i);
-	}
+        @Override
+        public BigInteger next() {
+            c++;
+            i = i.add(BigInteger.ONE);
+            return i.multiply(i);
+        }
     }
 
     /*
@@ -329,6 +330,6 @@ public class Ch3 {
      */
     @FunctionalInterface
     interface Measurable {
-	double getMeasure();
+        double getMeasure();
     }
 }

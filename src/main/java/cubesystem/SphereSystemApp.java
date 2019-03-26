@@ -1,5 +1,6 @@
 package cubesystem;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -9,7 +10,12 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -19,7 +25,7 @@ public class SphereSystemApp extends Application {
 
     private Timeline animation;
 
-    private Random r = new Random();
+    private Random r = new SecureRandom();
 
     public Parent createContent() {
         CubeXForm sceneRoot = new CubeXForm();

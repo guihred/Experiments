@@ -14,6 +14,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -40,7 +41,10 @@ public final class Chapter8 {
 	 * zero for equal objects). Hint: First compare the x-coordinates, then the
 	 * y-coordinates. Do the same for Rectangle2D.
 	 */
-	private static final   Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
+
+	private Chapter8() {
+	}
 
 	/*
 	 * Write a program that adds, subtracts, divides, and compares numbers
@@ -262,7 +266,6 @@ public final class Chapter8 {
 			LOGGER.error("", e);
 		}
 	}
-
 	public static void ex6() {
 		final int bound = 30;
 		String points = Stream.generate(() -> new Point2D(RANDOM.nextInt(bound), RANDOM.nextInt(bound))).limit(20)
@@ -279,6 +282,7 @@ public final class Chapter8 {
 
 		LOGGER.trace(rectangles);
 	}
+
 	/*
 	 * Express nullsFirst(naturalOrder()).reversed() without calling reversed.
 	 */
@@ -440,8 +444,5 @@ public final class Chapter8 {
 		return StreamSupport
 				.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false)
 				.flatMap(s -> Stream.of(s.split("[\\P{L}]+")));
-	}
-
-	private Chapter8() {
 	}
 }

@@ -40,11 +40,11 @@ public final class CommonChartData {
             String year = Integer.toString(i + BEGIN_YEAR);
             java.getData().add(new XYChart.Data<>(year, javaValue));
             final double variation = .2;
-            javaValue = javaValue + 4 * Math.random() - variation;
+            javaValue += 4 * Math.random() - variation;
             c.getData().add(new XYChart.Data<>(year, cValue));
-			cValue = cValue + 4 * Math.random() - 2;
+            cValue += 4 * Math.random() - 2;
             cpp.getData().add(new XYChart.Data<>(year, cppValue));
-			cppValue = cppValue + 4 * Math.random() - 2;
+            cppValue += 4 * Math.random() - 2;
 		}
 		answer.addAll(Arrays.asList(java, c, cpp));
 		return answer;
@@ -63,11 +63,11 @@ public final class CommonChartData {
 		cpp.setName("C++");
         for (int i = BEGIN_YEAR; i < BEGIN_YEAR + 10; i++) {
 			java.getData().add(new XYChart.Data<>(i, javaValue));
-			javaValue = javaValue + 4 * Math.random() - 2;
+            javaValue += 4 * Math.random() - 2;
 			c.getData().add(new XYChart.Data<>(i, cValue));
-			cValue = cValue + Math.random() - .5;
+            cValue += Math.random() - .5;
 			cpp.getData().add(new XYChart.Data<>(i, cppValue));
-			cppValue = cppValue + 4 * Math.random() - 2;
+            cppValue += 4 * Math.random() - 2;
 		}
 		answer.addAll(Arrays.asList(java, c, cpp));
 		return answer;

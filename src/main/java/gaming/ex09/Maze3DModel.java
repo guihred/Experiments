@@ -41,8 +41,6 @@ public class Maze3DModel {
                 .cycleCount(Animation.INDEFINITE)
                 .build();
         timeline.play();
-
-        
         circle = new Circle(Maze3DSquare.SQUARE_SIZE / 3, Color.RED);
         maze[0][0].setCenter(circle);
         
