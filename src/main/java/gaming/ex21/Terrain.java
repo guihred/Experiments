@@ -159,7 +159,8 @@ public class Terrain extends Group {
 	}
 
 	public static List<Integer> getNumbers() {
-		List<Integer> numbers = IntStream.range(2, 13).flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
+        List<Integer> numbers = IntStream.rangeClosed(2, 12)
+            .flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
 				.boxed().collect(Collectors.toList());
 		Collections.shuffle(numbers);
 		return numbers;

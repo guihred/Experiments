@@ -78,7 +78,7 @@ public class Port extends Group {
 
     private Text newInterrogation() {
         Text e = new Text("?");
-        e.setFont(Font.font(12));
+        e.setFont(Font.font(15));
         e.setLayoutX(SIZE / 2);
         e.setLayoutY(SIZE * 5 / 12.);
         return e;
@@ -87,13 +87,13 @@ public class Port extends Group {
     private Text newNumberText() {
         final double layoutY = SIZE * 13. / 20;
         return new SimpleTextBuilder().size(12).textAlignment(TextAlignment.CENTER).text(number.asString().concat(":1"))
-            .layoutX(SIZE * 5 / 2).layoutY(layoutY).build();
+            .layoutX(SIZE * 2 / 5).layoutY(layoutY).build();
     }
 
     private ImageView newResource() {
         final double d = SIZE * 5. / 24;
         ImageView e = CatanResource.newImage(type.getPure(), SIZE / 4.);
-        e.setLayoutX(SIZE * 5 / 2);
+        e.setLayoutX(SIZE * 2 / 5);
         e.setLayoutY(d);
         e.setPreserveRatio(true);
         return e;
