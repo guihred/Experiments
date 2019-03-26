@@ -85,19 +85,16 @@ public class Port extends Group {
     }
 
     private Text newNumberText() {
-        return new SimpleTextBuilder()
-            .size(12)
-            .textAlignment(TextAlignment.CENTER)
-            .text(number.asString().concat(":1"))
-            .layoutX(SIZE * 5 / 2)
-            .layoutY(SIZE * 13. / 20)
-            .build();
+        final double layoutY = SIZE * 13. / 20;
+        return new SimpleTextBuilder().size(12).textAlignment(TextAlignment.CENTER).text(number.asString().concat(":1"))
+            .layoutX(SIZE * 5 / 2).layoutY(layoutY).build();
     }
 
     private ImageView newResource() {
+        final double d = SIZE * 5. / 24;
         ImageView e = CatanResource.newImage(type.getPure(), SIZE / 4.);
         e.setLayoutX(SIZE * 5 / 2);
-        e.setLayoutY(SIZE * 5. / 24);
+        e.setLayoutY(d);
         e.setPreserveRatio(true);
         return e;
     }

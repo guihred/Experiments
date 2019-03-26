@@ -21,7 +21,8 @@ import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 
 public final class ConsoleUtils {
-	private static final int WAIT_INTERVAL_MILLIS = 5000;
+    private static final int WAIT_INTERVAL_MILLIS = 5000; // 5 SECONDS
+    private static final int PROCESS_MAX_TIME_LIMIT = 120000; // 2 MINUTES
 	private static final String ACTIVE_FLAG = "active";
 	private static final Logger LOGGER = HasLogging.log();
 	private static final String EXECUTING = "Executing \"{}\"";
@@ -163,7 +164,7 @@ public final class ConsoleUtils {
 				String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
 				LOGGER.info("Running {} processes {}", processes.size(), formated);
 				Thread.sleep(WAIT_INTERVAL_MILLIS);
-                if (System.currentTimeMillis() - currentTimeMillis > WAIT_INTERVAL_MILLIS * 24) {
+                if (System.currentTimeMillis() - currentTimeMillis > PROCESS_MAX_TIME_LIMIT) {
 					LOGGER.error("Processes \"{}\" taking too long", formated);
 					break;
 				}

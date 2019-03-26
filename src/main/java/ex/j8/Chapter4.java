@@ -8,8 +8,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
-import javafx.animation.PathTransition;
-import javafx.animation.ScaleTransition;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,6 +29,9 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleArcBuilder;
+import simplebuilder.SimplePathTransitionBuilder;
+import simplebuilder.SimpleScaleTransitionBuilder;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public final class Chapter4 {
@@ -41,7 +42,50 @@ public final class Chapter4 {
         Application.launch(Ex10.class, args);
 	}
 
-	/**
+	public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t, ObservableValue<U> u) {
+	    return new SimpleObjectProperty<R>() {
+	        @Override
+	        public void addListener(ChangeListener<? super R> listener) {
+	            t.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(oldValue, u.getValue()),f.apply(newValue, u.getValue())));
+	            u.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(t.getValue(), oldValue),f.apply(t.getValue(), newValue)));
+	        }
+	        
+	        @Override
+	        public void addListener(InvalidationListener listener) {
+	            t.addListener(listener);
+	            u.addListener(listener);
+	        }
+	        
+	        @Override
+	        public R getValue() {
+	            return f.apply(t.getValue(), u.getValue());
+	        }
+	        
+	    };
+	}
+
+	public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
+	    return new SimpleObjectProperty<R>() {
+	        @Override
+	        public void addListener(ChangeListener<? super R> listener) {
+	            t.addListener((arg0, arg1, arg2) -> listener.changed(this,
+	                f.apply(arg1), f.apply(arg2)));
+	        }
+	        
+	        @Override
+	        public void addListener(InvalidationListener arg0) {
+	            t.addListener(arg0);
+	        }
+	        
+	        @Override
+	        public R getValue() {
+	            return f.apply(t.getValue());
+	        }
+	        
+	    };
+	}
+
+    /**
 	 * Write a program with a text field and a label. As with the Hello, JavaFX
 	 * program, the label should have the string Hello, FX in a 100 point font.
 	 * Initialize the text field with the same string. Update the label as the
@@ -92,29 +136,28 @@ public final class Chapter4 {
 	}
 
     /**
-	 * Enhance the program in Section 4.5, Bindings, on page 75 so that the
-	 * circle stays centered and always touches at least two of the sides of the
-	 * scene.s
-	 */
-	public static class Ex4 extends Application {
+     * Enhance the program in Section 4.5, Bindings, on page 75 so that the circle
+     * stays centered and always touches at least two of the sides of the scene.s
+     */
+    public static class Ex4 extends Application {
 
-		@Override
-		public void start(Stage stage) throws Exception {
-			Circle circle = new Circle(100, 100, 100);
-			circle.setFill(Color.RED);
-			Pane pane = new Pane();
-			Scene scene = new Scene(pane);
-			pane.getChildren().add(circle);
-			circle.centerXProperty().bind(divide(scene.widthProperty(), 2));
-			circle.centerYProperty().bind(divide(scene.heightProperty(), 2));
-			circle.radiusProperty().bind(min(divide(scene.widthProperty(), 2), divide(scene.heightProperty(), 2)));
-			stage.setScene(scene);
-			stage.setTitle("EX4");
-			stage.show();
-		}
-	}
+        @Override
+        public void start(Stage stage) throws Exception {
+            Circle circle = new Circle(100, 100, 100);
+            circle.setFill(Color.RED);
+            Pane pane = new Pane();
+            Scene scene = new Scene(pane);
+            pane.getChildren().add(circle);
+            circle.centerXProperty().bind(divide(scene.widthProperty(), 2));
+            circle.centerYProperty().bind(divide(scene.heightProperty(), 2));
+            circle.radiusProperty().bind(min(divide(scene.widthProperty(), 2), divide(scene.heightProperty(), 2)));
+            stage.setScene(scene);
+            stage.setTitle("EX4");
+            stage.show();
+        }
+    }
 
-	/**
+    /**
 	 * Write methods
 	 * 
 	 * public static <T, R> ObservableValue<R> observe( Function<T, R> f,
@@ -148,48 +191,6 @@ public final class Chapter4 {
 			stage.show();
 		}
 
-		public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t, ObservableValue<U> u) {
-			return new SimpleObjectProperty<R>() {
-				@Override
-				public void addListener(ChangeListener<? super R> listener) {
-					t.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(oldValue, u.getValue()),f.apply(newValue, u.getValue())));
-					u.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(t.getValue(), oldValue),f.apply(t.getValue(), newValue)));
-				}
-
-				@Override
-				public void addListener(InvalidationListener listener) {
-					t.addListener(listener);
-					u.addListener(listener);
-				}
-
-				@Override
-				public R getValue() {
-					return f.apply(t.getValue(), u.getValue());
-				}
-
-			};
-		}
-
-		public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
-			return new SimpleObjectProperty<R>() {
-				@Override
-				public void addListener(ChangeListener<? super R> listener) {
-					t.addListener((arg0, arg1, arg2) -> listener.changed(this,
-							f.apply(arg1), f.apply(arg2)));
-				}
-
-				@Override
-				public void addListener(InvalidationListener arg0) {
-					t.addListener(arg0);
-				}
-
-				@Override
-				public R getValue() {
-					return f.apply(t.getValue());
-				}
-
-			};
-		}
 	}
 
 	/** 6. Center the top and bottom buttons in Figure 4.7. */
@@ -265,35 +266,30 @@ public final class Chapter4 {
 			BorderPane.setAlignment(pane.getCenter(), Pos.CENTER);
 
 
-			Button pulse = new Button("Pulse");
-			pulse.setOnAction(event -> {
-				ScaleTransition st = new ScaleTransition(Duration.millis(500));
-                final double maxScale = 1.5;
-                st.setByX(maxScale);
-                st.setByY(maxScale);
-				st.setCycleCount(Animation.INDEFINITE);
-				st.setInterpolator(Interpolator.LINEAR);
-				st.setAutoReverse(true);
-				st.setNode(planet);
-				st.play();
-			});
-			Button orbit = new Button("Orbit");
+			final double maxScale = 1.5;
+            Button pulse = CommonsFX.newButton("Pulse",
+                event -> new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
+                    .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet)
+                    .build().play());
 
             final double scaleFactor = 3.6;
             final int startAngle = 45;
-            final Arc arc = new SimpleArcBuilder().centerX(divide(scene.widthProperty(), 2)).radiusX(100).radiusY(150)
-                    .startAngle(startAngle).length(360).centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
-					.stroke(Color.RED).strokeType(StrokeType.OUTSIDE).strokeLineCap(StrokeLineCap.ROUND).rotate(30D)
-                    .radiusX(multiply(radiusSlider.valueProperty(), scaleFactor)).strokeLineJoin(StrokeLineJoin.ROUND)
-                    .rotate(multiply(rotationSlider.valueProperty(), scaleFactor)).fill(Color.TRANSPARENT).build();
+            final Arc arc = new SimpleArcBuilder()
+                .centerX(divide(scene.widthProperty(), 2))
+                .radiusX(100).radiusY(150)
+                .startAngle(startAngle).length(360)
+                .centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
+                .stroke(Color.RED).strokeType(StrokeType.OUTSIDE)
+                .strokeLineCap(StrokeLineCap.ROUND).rotate(30D)
+                .radiusX(multiply(radiusSlider.valueProperty(), scaleFactor))
+                .strokeLineJoin(StrokeLineJoin.ROUND)
+                .rotate(multiply(rotationSlider.valueProperty(), scaleFactor))
+                .fill(Color.TRANSPARENT).build();
 			center.getChildren().add(arc);
-			orbit.setOnAction(event -> {
-				PathTransition st = new PathTransition(Duration.millis(1000), arc, center.getCenter());
-				st.setCycleCount(Animation.INDEFINITE);
-				st.setInterpolator(Interpolator.LINEAR);
-				st.setNode(planet);
-				st.play();
-			});
+            Button orbit = CommonsFX.newButton("Orbit",
+                event -> new SimplePathTransitionBuilder().duration(Duration.millis(1000))
+                    .interpolator(Interpolator.LINEAR).node(planet).cycleCount(Animation.INDEFINITE).path(arc).build()
+                    .play());
 
 
 			HBox hBox = new HBox();

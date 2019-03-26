@@ -38,15 +38,12 @@ public final class ListHelper {
 		return vBox;
 	}
 
-	public static ListChangeListener<CatanResource> onChangeElement(final Pane center1) {
+    public static <T extends Node> ListChangeListener<T> onChangeElement(final Pane center1) {
 		return c -> {
 			while (c.next()) {
-				List<? extends Node> addedSubList = c.getList();
-				double layoutX = 0;
-				double layoutY = 0;
-				for (Node node : addedSubList) {
+                double layoutX = 0;
+				for (Node node : c.getList()) {
 					node.setLayoutX(layoutX);
-					node.setLayoutY(layoutY);
 					if (node.getParent() == null) {
 						center1.getChildren().add(node);
 					}

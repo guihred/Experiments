@@ -16,8 +16,8 @@ public class CatanApp extends Application {
         Pane value = new VBox();
         BorderPane root = new BorderPane(center);
         root.setLeft(value);
-        double size = Terrain.RADIUS * Math.sqrt(3) * 5.5;
-        Scene scene = new Scene(root, size * 1.5, size);
+        double size = Terrain.RADIUS * Math.sqrt(3) * 11 / 2;
+        Scene scene = new Scene(root, size * 3 / 2, size);
         primaryStage.setTitle("Settlers of Catan");
         primaryStage.setScene(scene);
         CatanModel.create(center, value);
