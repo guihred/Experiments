@@ -24,73 +24,82 @@ public enum ResourceType {
     private String pure;
 
     ResourceType(final String terrain) {
-	this.terrain = terrain;
-	resource = null;
+        this.terrain = terrain;
+        resource = null;
     }
 
     ResourceType(final String terrain, final String resource, final String pure) {
-	this.terrain = terrain;
-	this.resource = resource;
-	this.pure = pure;
+        this.terrain = terrain;
+        this.resource = resource;
+        this.pure = pure;
     }
 
     public String getPure() {
-	return pure;
+        return pure;
     }
 
     public String getResource() {
-	return resource;
+        return resource;
     }
 
     public String getTerrain() {
-	return terrain;
+        return terrain;
     }
 
     public static boolean containsEnough(final List<CatanCard> list, final List<ResourceType> resourcesNeeded) {
-	List<ResourceType> resources = list.stream().map(CatanCard::getResource).filter(Objects::nonNull)
-		.collect(Collectors.toList());
-	List<ResourceType> resourcesNecessary = resourcesNeeded.stream().collect(Collectors.toList());
-	for (int i = 0; i < resourcesNecessary.size(); i++) {
-	    if (!resources.remove(resourcesNecessary.get(i))) {
-		return false;
-	    }
-	}
-	return true;
+        List<ResourceType> resources = list.stream().map(CatanCard::getResource).filter(Objects::nonNull)
+            .collect(Collectors.toList());
+        List<ResourceType> resourcesNecessary = resourcesNeeded.stream().collect(Collectors.toList());
+        for (int i = 0; i < resourcesNecessary.size(); i++) {
+            if (!resources.remove(resourcesNecessary.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static HBox createResourceChoices(Consumer<ResourceType> onSelect) {
-	SimpleToggleGroupBuilder group = new SimpleToggleGroupBuilder();
-	for (ResourceType type : ResourceType.values()) {
-	    if (type.getPure() != null) {
-		ImageView node = CatanResource.newImage(type.getPure(), 20);
-		group.addToggle(node, type);
-	    }
-	}
-	HBox res = new HBox(group.getTogglesAs(Node.class).toArray(new Node[0]));
-	res.setVisible(false);
-	res.managedProperty().bind(res.visibleProperty());
-	group.onChange((ob, old, n) -> {
-	    if (n == null) {
-		return;
-	    }
-	    ResourceType selectedType = (ResourceType) n.getUserData();
-	    onSelect.accept(selectedType);
-	    group.select(null);
-	});
-	return res;
+        SimpleToggleGroupBuilder group = new SimpleToggleGroupBuilder();
+        for (ResourceType type : ResourceType.values()) {
+            if (type.getPure() != null) {
+                ImageView node = CatanResource.newImage(type.getPure(), 20);
+                group.addToggle(node, type);
+            }
+        }
+        HBox res = new HBox(group.getTogglesAs(Node.class).toArray(new Node[0]));
+        res.setVisible(false);
+        res.managedProperty().bind(res.visibleProperty());
+        group.onChange((ob, old, n) -> {
+            if (n == null) {
+                return;
+            }
+            ResourceType selectedType = (ResourceType) n.getUserData();
+            onSelect.accept(selectedType);
+            group.select(null);
+        });
+        return res;
     }
 
     public static List<ResourceType> createResources() {
-	EnumMap<ResourceType, Integer> resourcesMap = new EnumMap<>(ResourceType.class);
-	resourcesMap.put(ResourceType.DESERT, 1);
-	resourcesMap.put(ResourceType.BRICK, 3);
-	resourcesMap.put(ResourceType.ROCK, 3);
-	resourcesMap.put(ResourceType.SHEEP, 4);
-	resourcesMap.put(ResourceType.WHEAT, 4);
-	resourcesMap.put(ResourceType.WOOD, 4);
-	List<ResourceType> resourceTypes = resourcesMap.entrySet().stream()
-		.flatMap(e -> Stream.generate(e::getKey).limit(e.getValue())).collect(Collectors.toList());
-	Collections.shuffle(resourceTypes);
-	return resourceTypes;
+        EnumMap<ResourceType, Integer> resourcesMap = new EnumMap<>(ResourceType.class);
+        resourcesMap.put(ResourceType.DESERT, 1);
+        resourcesMap.put(ResourceType.BRICK, 3);
+        resourcesMap.put(ResourceType.ROCK, 3);
+        resourcesMap.put(ResourceType.SHEEP, 4);
+        resourcesMap.put(ResourceType.WHEAT, 4);
+        resourcesMap.put(ResourceType.WOOD, 4);
+        List<ResourceType> resourceTypes = resourcesMap.entrySet().stream()
+            .flatMap(e -> Stream.generate(e::getKey).limit(e.getValue())).collect(Collectors.toList());
+        Collections.shuffle(resourceTypes);
+        return resourceTypes;
     }
+
+    public static ResourceType[] getResources() {
+        return new ResourceType[] { 
+            ResourceType.BRICK, 
+            ResourceType.ROCK, 
+            ResourceType.SHEEP, 
+            ResourceType.WHEAT,
+            ResourceType.WOOD };
+        }
 }

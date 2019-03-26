@@ -4,22 +4,14 @@ import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
-import java.util.function.DoubleUnaryOperator;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class DataframeML implements HasLogging {
 
-	private static final Logger LOG = HasLogging.log();
 	private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
 	protected int maxSize = FRAME_MAX_SIZE;
 
@@ -38,11 +30,23 @@ public class DataframeML implements HasLogging {
 		readCSV(csvFile);
 	}
 
+	public <T extends Comparable<?>> void addCols(List<String> cols, Class<T> classes) {
+        for (String string : cols) {
+            dataframe.put(string, new ArrayList<>());
+            formatMap.put(string, classes);
+        }
+    }
+
+    public <T extends Comparable<?>> void addCols(String string, Class<T> classes) {
+        dataframe.put(string, new ArrayList<>());
+        formatMap.put(string, classes);
+    }
 	public void apply(String header, DoubleUnaryOperator mapper) {
 		dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
 				.map(mapper).boxed().collect(Collectors.toList()));
 		formatMap.put(header, Double.class);
 	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Set<String> categorize(String header) {
 		if (categories.containsKey(header)) {
@@ -55,7 +59,7 @@ public class DataframeML implements HasLogging {
 
 	}
 
-	public Set<String> cols() {
+    public Set<String> cols() {
 		return dataframe.keySet();
 	}
 
@@ -202,11 +206,5 @@ public class DataframeML implements HasLogging {
 
 	public static DataframeBuilder builder(String csvFile) {
 		return new DataframeBuilder(csvFile);
-	}
-
-	public static void main(String[] args) {
-		DataframeML x = new DataframeML("california_housing_train.csv");
-		x.describe();
-		LOG.info("{}", x);
 	}
 }

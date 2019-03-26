@@ -2,11 +2,7 @@ package gaming.ex21;
 
 import static gaming.ex21.ResourceType.containsEnough;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
@@ -29,28 +25,28 @@ import javafx.scene.layout.VBox;
 import utils.CommonsFX;
 
 public class CatanModel {
-    private final List<Terrain> terrains = new ArrayList<>();
-    private final List<SettlePoint> settlePoints = new ArrayList<>();
-    private final List<EdgeCatan> edges;
-    private final Map<PlayerColor, List<CatanCard>> cards = PlayerColor.newMapList();
-    private final Map<PlayerColor, List<DevelopmentType>> usedCards = PlayerColor.newMapList();
-    private final ObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
+    protected final List<Terrain> terrains = new ArrayList<>();
+    protected final List<SettlePoint> settlePoints = new ArrayList<>();
+    protected final List<EdgeCatan> edges;
+    protected final Map<PlayerColor, List<CatanCard>> cards = PlayerColor.newMapList();
+    protected final Map<PlayerColor, List<DevelopmentType>> usedCards = PlayerColor.newMapList();
+    protected final ObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
     private final ObservableList<CatanResource> elements = FXCollections.observableArrayList();
     private final DragContext dragContext = new DragContext();
-    private final BooleanProperty diceThrown = new SimpleBooleanProperty(false);
+    protected final BooleanProperty diceThrown = new SimpleBooleanProperty(false);
     private final Pane center;
-    private SelectResourceType resourcesToSelect = SelectResourceType.DEFAULT;
+    protected SelectResourceType resourcesToSelect = SelectResourceType.DEFAULT;
     private int turnCount;
     private final HBox resourceChoices = ResourceType.createResourceChoices(this::onSelectResource);
     private final Button exchangeButton = CommonsFX.newButton("Exchange",
         e -> setResourceSelect(SelectResourceType.EXCHANGE));
     private final Button makeDeal = CommonsFX.newButton("Make Deal",
         e -> setResourceSelect(SelectResourceType.MAKE_DEAL));
-    private final ObservableList<Deal> deals = FXCollections.observableArrayList();
-    private final Thief thief = new Thief();
-    private final List<Port> ports = Port.getPorts();
-    private final List<DevelopmentType> developmentCards = DevelopmentType.getDevelopmentCards();
-    private final UserChart userChart = new UserChart();
+    protected final ObservableList<Deal> deals = FXCollections.observableArrayList();
+    protected final Thief thief = new Thief();
+    protected final List<Port> ports = Port.getPorts();
+    protected final List<DevelopmentType> developmentCards = DevelopmentType.getDevelopmentCards();
+    protected final UserChart userChart = new UserChart();
 
     public CatanModel(Pane center, Pane right) {
         this.center = center;
@@ -522,6 +518,7 @@ public class CatanModel {
             invalidateDice();
         }
         deals.removeIf(d -> d.getProposer() == playerColor);
+        CatanLogger.log(this);
     }
 
     private void replaceThief() {
