@@ -13,7 +13,7 @@ public class CatanLogger {
     private static final Logger LOG = HasLogging.log();
     private static final DataframeML DATAFRAME_ML = getDataframe();
 
-    public static void log(CatanModel model) {
+    public static void log(final CatanModel model) {
         PlayerColor playerColor = model.currentPlayer.get();
         Map<PlayerColor, List<CatanCard>> cards = model.cards;
         List<CatanCard> list = cards.get(playerColor);
@@ -21,9 +21,9 @@ public class CatanLogger {
             .collect(Collectors.groupingBy(e -> e.getResource(), Collectors.counting()));
 
         ResourceType[] values = ResourceType.getResources();
-        DATAFRAME_ML.list(PLAYER).add(playerColor);
+		DATAFRAME_ML.add(PLAYER, playerColor.toString());
         for (ResourceType r : values) {
-            DATAFRAME_ML.list(r.toString()).add(collect.getOrDefault(r, 0L));
+			DATAFRAME_ML.add(r.toString(), collect.getOrDefault(r, 0L));
         }
         LOG.info("{}", DATAFRAME_ML);
         
@@ -31,7 +31,8 @@ public class CatanLogger {
     
     private static DataframeML getDataframe() {
         DataframeML dataframeML = new DataframeML();
-        List<String> collect2 = Stream.of(ResourceType.values()).map(e->e.toString()).collect(Collectors.toList());
+		List<String> collect2 = Stream.of(ResourceType.getResources()).map(e -> e.toString())
+				.collect(Collectors.toList());
         dataframeML.addCols(PLAYER, String.class);
         dataframeML.addCols(collect2, Long.class);
         return dataframeML;
