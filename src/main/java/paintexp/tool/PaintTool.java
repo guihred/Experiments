@@ -181,7 +181,7 @@ public abstract class PaintTool extends Group {
 	}
 
 	protected ImageView getIconByURL(final String src) {
-		ImageView icon = new ImageView(ResourceFXUtils.toExternalForm(src));
+        ImageView icon = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
 		icon.setPreserveRatio(true);
 		icon.setFitWidth(10);
 		icon.maxWidth(10);
@@ -191,7 +191,7 @@ public abstract class PaintTool extends Group {
 	}
 
 	protected ImageView getIconByURL(final String src, final double width) {
-		ImageView icon = new ImageView(ResourceFXUtils.toExternalForm(src));
+        ImageView icon = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
 		icon.setPreserveRatio(true);
 		icon.setFitWidth(width);
 		icon.maxWidth(width);

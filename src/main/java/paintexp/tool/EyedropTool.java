@@ -37,7 +37,7 @@ public class EyedropTool extends PaintTool {
 
     @Override
     public Cursor getMouseCursor() {
-        return Cursor.cursor(ResourceFXUtils.toExternalForm("eyedrop.png"));
+        return Cursor.cursor(ResourceFXUtils.toExternalForm("paint/eyedrop.png"));
     }
 
     @Override
