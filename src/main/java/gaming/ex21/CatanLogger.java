@@ -64,7 +64,7 @@ public class CatanLogger {
 			.collect(Collectors.toList());
         dataframeML.addCols(PLAYER, String.class);
         dataframeML.addCols(POINTS, Long.class);
-        dataframeML.addCols(WINNER, Long.class);
+        dataframeML.addCols(WINNER, String.class);
         dataframeML.addCols(resources, Long.class);
 
         for (PlayerColor r : PlayerColor.values()) {
