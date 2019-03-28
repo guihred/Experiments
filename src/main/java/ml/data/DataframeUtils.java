@@ -1,13 +1,8 @@
 package ml.data;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
@@ -134,6 +129,12 @@ public final class DataframeUtils extends DataframeML {
         }
     }
 
+    public static BinaryOperator<Object> throwError() {
+        return (u, v) -> {
+            throw new IllegalStateException(String.format("Duplicate key %s", u));
+        };
+    }
+
     public static String toString(DataframeML dataframe) {
         StringBuilder str = new StringBuilder();
         str.append("\n");
@@ -159,9 +160,7 @@ public final class DataframeUtils extends DataframeML {
         }
         str.append("Size=" + dataframe.size + " \n");
         return str.toString();
-    }
-
-    public static void trim(String header, int trimmingSize, DataframeML dataframe) {
+    }public static void trim(String header, int trimmingSize, DataframeML dataframe) {
         List<Object> list = dataframe.list(header);
         List<List<Object>> trimmedColumns = dataframe.dataframe.entrySet().stream()
                 .filter(e -> !e.getKey().equals(header))
@@ -185,6 +184,7 @@ public final class DataframeUtils extends DataframeML {
             dataframe.dataframe.put(entry.getKey(), value.subList(trimmingSize, value.size() - trimmingSize - 1));
         }
     }
+
 
     private static void categorizeIfCategorizable(DataframeML dataframe, String key, Object tryNumber) {
         if (dataframe.categories.containsKey(key)) {

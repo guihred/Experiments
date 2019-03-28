@@ -19,54 +19,54 @@ public class CatanCard extends Rectangle {
     private final BooleanProperty selected = new SimpleBooleanProperty(false);
 
     public CatanCard(DevelopmentType type, Consumer<CatanCard> object) {
-	development = type;
-	setStandard(type.getImage());
-	setOnMouseClicked(e -> object.accept(this));
+        development = type;
+        setStandard(type.getImage());
+        setOnMouseClicked(e -> object.accept(this));
     }
 
     public CatanCard(final ResourceType type, Consumer<CatanCard> object) {
-	resource = type;
-	setStandard(type.getResource());
-	setOnMouseClicked(e -> object.accept(this));
+        resource = type;
+        setStandard(type.getResource());
+        setOnMouseClicked(e -> object.accept(this));
     }
 
     public DevelopmentType getDevelopment() {
-	return development;
+        return development;
     }
 
     public ResourceType getResource() {
-	return resource;
+        return resource;
     }
 
     public boolean isSelected() {
-	return selected.get();
+        return selected.get();
     }
 
     public void setDevelopment(final DevelopmentType development) {
-	this.development = development;
+        this.development = development;
     }
 
     public void setResource(final ResourceType resource) {
-	this.resource = resource;
+        this.resource = resource;
     }
 
     public void setSelected(final Boolean value) {
-	selected.set(value);
+        selected.set(value);
     }
 
     @Override
     public String toString() {
-	return Objects.toString(resource, Objects.toString(development, ""));
+        return Objects.toString(resource, Objects.toString(development, ""));
     }
 
     private void setStandard(final String type) {
-	setManaged(false);
-	setFill(CatanResource.newPattern(type));
-	setWidth(PREF_WIDTH);
-	setHeight(PREF_HEIGHT);
+        setManaged(false);
+        setFill(CatanResource.newPattern(type));
+        setWidth(PREF_WIDTH);
+        setHeight(PREF_HEIGHT);
 
-	InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
-	effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
+        InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
+        effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
     }
 
 }

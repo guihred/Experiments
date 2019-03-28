@@ -1,4 +1,7 @@
 package ml.data;
+import static ml.data.DataframeUtils.displayCorrelation;
+import static ml.data.DataframeUtils.displayStats;
+import static ml.data.DataframeUtils.readRows;
 
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
@@ -70,7 +73,7 @@ public class DataframeML implements HasLogging {
 	}
 
 	public void correlation() {
-		DataframeUtils.displayCorrelation(this);
+        displayCorrelation(this);
 	}
 
 	public List<Entry<Number, Number>> createNumberEntries(final String feature, final String target) {
@@ -97,7 +100,7 @@ public class DataframeML implements HasLogging {
 							DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
 					(m1, m2) -> m1, LinkedHashMap::new));
 		}
-		DataframeUtils.displayStats(stats);
+        displayStats(stats);
 	}
 
 	public void filterString(final String header, final Predicate<String> v) {
@@ -176,7 +179,7 @@ public class DataframeML implements HasLogging {
 				formatMap.put(column, String.class);
 			}
 
-			DataframeUtils.readRows(this, scanner, header);
+            readRows(this, scanner, header);
 		} catch (FileNotFoundException e) {
 			getLogger().error("FILE NOT FOUND", e);
 		}
@@ -184,11 +187,13 @@ public class DataframeML implements HasLogging {
 
 
 	public Map<String, Object> rowMap(final int i) {
-		return dataframe.entrySet().stream().filter(e -> e.getValue().get(i) != null)
-				.collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i)));
+        return dataframe.entrySet().stream().filter(e -> e.getValue().get(i) != null)
+            .collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i),
+                DataframeUtils.throwError(),
+                LinkedHashMap<String, Object>::new));
 	}
 
-	public DoubleSummaryStatistics summary(final String header) {
+    public DoubleSummaryStatistics summary(final String header) {
 		if (!dataframe.containsKey(header)) {
 			return new DoubleSummaryStatistics();
 		}
@@ -209,6 +214,7 @@ public class DataframeML implements HasLogging {
 	public <T> List<T> typedList(final List<Object> list, final Class<T> c) {
 		return (List<T>) list;
 	}
+
 
 	public static DataframeBuilder builder(final String csvFile) {
 		return new DataframeBuilder(csvFile);

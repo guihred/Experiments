@@ -2,6 +2,7 @@ package gaming.ex21;
 
 import static gaming.ex21.ResourceType.containsEnough;
 
+import gaming.ex21.CatanLogger.CatanAction;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,9 +59,8 @@ public class CatanModel {
         currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
         right.getChildren().add(userChart);
         Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
-        skipButton.disableProperty()
-            .bind(Bindings.createBooleanBinding(this::isSkippable, diceThrown, resourceChoices.visibleProperty(),
-                currentPlayer, elements));
+        skipButton.disableProperty().bind(Bindings.createBooleanBinding(this::isSkippable, diceThrown,
+            resourceChoices.visibleProperty(), currentPlayer, elements));
         Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
         throwButton.disableProperty().bind(diceThrown);
         VBox dealsBox = ListHelper.newDeal(deals, this::isDealUnfeasible, this::onMakeDeal, currentPlayer, diceThrown);
@@ -115,8 +115,7 @@ public class CatanModel {
         }
 
         List<EdgeCatan> catanEdges = settlePoints.stream()
-            .flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t)))
-            .distinct()
+            .flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
             .collect(Collectors.toList());
         catanEdges.forEach(e -> e.getPoints().forEach(p -> p.getEdges().add(e)));
         Collections.shuffle(ports);
@@ -135,9 +134,7 @@ public class CatanModel {
         }
         return ports.stream()
             .anyMatch(p -> p.getNumber() == totalCards
-                && (p.getType() == distinct.get(0) || p.getType() == ResourceType.DESERT)
-                && p.getPoints()
-                    .stream()
+                && (p.getType() == distinct.get(0) || p.getType() == ResourceType.DESERT) && p.getPoints().stream()
                     .anyMatch(s -> s.getElement() != null && s.getElement().getPlayer() == currentPlayer.get()));
     }
 
@@ -151,14 +148,11 @@ public class CatanModel {
             return true;
         }
         Map<Class<?>, Long> elementCount = settlePoints.stream()
-            .filter(s -> s.getElement() != null && s.getElement().getPlayer() == key)
-            .map(SettlePoint::getElement)
+            .filter(s -> s.getElement() != null && s.getElement().getPlayer() == key).map(SettlePoint::getElement)
             .collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting()));
 
-        elementCount.putAll(edges.stream()
-            .filter(s -> s.getElement() != null && s.getElement().getPlayer() == key)
-            .map(EdgeCatan::getElement)
-            .collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting())));
+        elementCount.putAll(edges.stream().filter(s -> s.getElement() != null && s.getElement().getPlayer() == key)
+            .map(EdgeCatan::getElement).collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting())));
         if (combination == Combination.CITY) {
             return elementCount.getOrDefault(City.class, 0L) >= 4
                 || settlePoints.stream().noneMatch(s -> s.acceptCity(key));
@@ -183,30 +177,22 @@ public class CatanModel {
             dragContext.pointFadeOut();
             dragContext.toggleTerrain(-1);
             if (dragContext.getElement() instanceof Village) {
-                settlePoints.stream()
-                    .filter(e -> inArea(event, e))
-                    .findFirst()
+                settlePoints.stream().filter(e -> inArea(event, e)).findFirst()
                     .ifPresent(e -> dragContext.setPoint(e.fadeIn()));
             }
             if (dragContext.getElement() instanceof City) {
-                settlePoints.stream()
-                    .filter(e -> inArea(event, e))
-                    .filter(e -> e.isSuitableForCity((City) dragContext.getElement()))
-                    .findFirst()
+                settlePoints.stream().filter(e -> inArea(event, e))
+                    .filter(e -> e.isSuitableForCity((City) dragContext.getElement())).findFirst()
                     .ifPresent(e -> dragContext.setPoint(e.fadeOut()));
             }
             if (dragContext.getElement() instanceof Thief) {
-                terrains.stream()
-                    .filter(e -> inArea(event, e))
-                    .findFirst()
+                terrains.stream().filter(e -> inArea(event, e)).findFirst()
                     .ifPresent(e -> dragContext.setTerrain(e.fadeIn()));
             }
             if (dragContext.getElement() instanceof Road) {
                 Road element = (Road) dragContext.getElement();
                 dragContext.edgeFadeOut(EdgeCatan.edgeAcceptRoad(dragContext.getEdge(), element));
-                edges.stream()
-                    .filter(e -> inArea(event, e))
-                    .findFirst()
+                edges.stream().filter(e -> inArea(event, e)).findFirst()
                     .ifPresent(e -> dragContext.setEdge(e.fadeIn(EdgeCatan.edgeAcceptRoad(e, element))));
             }
 
@@ -214,12 +200,10 @@ public class CatanModel {
     }
 
     private void handleMousePressed(MouseEvent event) {
-        Optional<Node> findFirst = center.getChildren()
-            .parallelStream()
-            .filter(e -> e.getBoundsInParent().contains(event.getX(), event.getY()))
-            .findFirst();
-        if (findFirst.isPresent()) {
-            Node node = findFirst.get();
+        Optional<Node> resourcePressed = center.getChildren().parallelStream()
+            .filter(e -> e.getBoundsInParent().contains(event.getX(), event.getY())).findFirst();
+        if (resourcePressed.isPresent()) {
+            Node node = resourcePressed.get();
             dragContext.setX(node.getBoundsInParent().getMinX() - event.getX());
             dragContext.setY(node.getBoundsInParent().getMinY() - event.getY());
             if (node instanceof CatanResource && elements.contains(node)) {
@@ -271,15 +255,12 @@ public class CatanModel {
     }
 
     private void makeDealButton(ResourceType selectedType) {
-        List<ResourceType> dealTypes = cards.get(currentPlayer.get())
-            .stream()
-            .filter(e -> e.getResource() != null)
-            .filter(CatanCard::isSelected)
-            .map(CatanCard::getResource)
-            .collect(Collectors.toList());
+        List<ResourceType> dealTypes = cards.get(currentPlayer.get()).stream().filter(e -> e.getResource() != null)
+            .filter(CatanCard::isSelected).map(CatanCard::getResource).collect(Collectors.toList());
         if (!dealTypes.isEmpty()) {
             PlayerColor proposer = currentPlayer.get();
             deals.add(new Deal(proposer, selectedType, dealTypes));
+            CatanLogger.log(this, CatanAction.MAKE_DEAL);
         }
         resourceChoices.setVisible(false);
         makeDeal.setDisable(true);
@@ -290,9 +271,7 @@ public class CatanModel {
         List<CatanCard> cardsTransfered = new ArrayList<>();
         PlayerColor[] values = PlayerColor.values();
         for (PlayerColor color : values) {
-            List<CatanCard> collect2 = cards.get(color)
-                .stream()
-                .filter(e -> e.getResource() == selectedType)
+            List<CatanCard> collect2 = cards.get(color).stream().filter(e -> e.getResource() == selectedType)
                 .collect(Collectors.toList());
             cards.get(color).removeAll(collect2);
             cardsTransfered.addAll(collect2);
@@ -307,15 +286,15 @@ public class CatanModel {
         userChart.setColor(newV);
         List<CatanCard> currentCards = cards.get(currentPlayer.get());
         userChart.setCards(currentCards);
-            }
+    }
 
     private void onCombinationClicked(Combination combination) {
-        List<CatanCard> list = cards.get(currentPlayer.get());
-        if (containsEnough(list, combination.getResources())) {
+        List<CatanCard> currentCards = cards.get(currentPlayer.get());
+        if (containsEnough(currentCards, combination.getResources())) {
             List<ResourceType> resources = combination.getResources().stream().collect(Collectors.toList());
             for (int i = 0; i < resources.size(); i++) {
                 ResourceType r = resources.get(i);
-                list.remove(list.stream().filter(e -> e.getResource() == r).findFirst().orElse(null));
+                currentCards.remove(currentCards.stream().filter(e -> e.getResource() == r).findFirst().orElse(null));
             }
             if (Combination.VILLAGE == combination) {
                 elements.add(new Village(currentPlayer.get()));
@@ -324,13 +303,14 @@ public class CatanModel {
             } else if (Combination.ROAD == combination) {
                 elements.add(new Road(currentPlayer.get()));
             } else if (Combination.DEVELOPMENT == combination) {
-                list.add(new CatanCard(developmentCards.remove(0), this::onSelectCard));
+                currentCards.add(new CatanCard(developmentCards.remove(0), this::onSelectCard));
             }
+            CatanLogger.log(this, combination);
         }
         invalidateDice();
         onChangePlayer(currentPlayer.get());
-        list.forEach(e -> e.setSelected(true));
-        list.forEach(this::onSelectCard);
+        currentCards.forEach(e -> e.setSelected(true));
+        currentCards.forEach(this::onSelectCard);
     }
 
     private void onMakeDeal(Deal deal) {
@@ -343,10 +323,8 @@ public class CatanModel {
             List<ResourceType> dealTypes = deal.getDealTypes();
             List<CatanCard> cardsGiven = new ArrayList<>();
             for (ResourceType resourceType : dealTypes) {
-                Optional<CatanCard> first = listProposer.stream()
-                    .filter(c -> !cardsGiven.contains(c))
-                    .filter(c -> c.getResource() == resourceType)
-                    .findFirst();
+                Optional<CatanCard> first = listProposer.stream().filter(c -> !cardsGiven.contains(c))
+                    .filter(c -> c.getResource() == resourceType).findFirst();
                 if (!first.isPresent()) {
                     return;
                 }
@@ -357,19 +335,18 @@ public class CatanModel {
             list.addAll(cardsGiven);
             listProposer.removeAll(cardsGiven);
             deals.remove(deal);
+            CatanLogger.log(this, CatanAction.ACCEPT_DEAL);
         }
         onChangePlayer(currentPlayer.get());
         invalidateDice();
     }
 
     private void onReleaseCity(MouseEvent event, City element) {
-        Optional<SettlePoint> findFirst = settlePoints.stream()
-            .filter(e -> inArea(event, e))
-            .filter(t -> !t.isPointDisabled())
-            .filter(e -> e.isSuitableForCity(element))
-            .findFirst();
+        Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> inArea(event, e))
+            .filter(t -> !t.isPointDisabled()).filter(e -> e.isSuitableForCity(element)).findFirst();
         if (findFirst.isPresent()) {
             findFirst.get().setElement(element);
+            CatanLogger.log(this, CatanAction.PLACE_CITY);
         } else {
             elements.add(0, dragContext.getElement());
         }
@@ -378,12 +355,11 @@ public class CatanModel {
     }
 
     private void onReleaseRoad(MouseEvent event, Road road) {
-        Optional<EdgeCatan> edgeHovered = edges.stream()
-            .filter(e -> inArea(event, e))
-            .filter(e -> EdgeCatan.edgeAcceptRoad(e, road))
-            .findFirst();
+        Optional<EdgeCatan> edgeHovered = edges.stream().filter(e -> inArea(event, e))
+            .filter(e -> EdgeCatan.edgeAcceptRoad(e, road)).findFirst();
         if (edgeHovered.isPresent()) {
             edgeHovered.get().setElement(road);
+            CatanLogger.log(this, CatanAction.PLACE_ROAD);
         } else {
             elements.add(0, dragContext.getElement());
         }
@@ -392,10 +368,8 @@ public class CatanModel {
     }
 
     private void onReleaseThief(MouseEvent event) {
-        Optional<Terrain> edgeHovered = terrains.stream()
-            .filter(e -> inArea(event, e))
-            .filter(e -> e.getThief() == null)
-            .findFirst();
+        Optional<Terrain> edgeHovered = terrains.stream().filter(e -> inArea(event, e))
+            .filter(e -> e.getThief() == null).findFirst();
         if (edgeHovered.isPresent()) {
             terrains.forEach(t -> t.setThief(null));
             Terrain terrain = edgeHovered.get();
@@ -409,13 +383,12 @@ public class CatanModel {
     }
 
     private void onReleaseVillage(MouseEvent event, Village village) {
-        Optional<SettlePoint> findFirst = settlePoints.stream()
-            .filter(e -> inArea(event, e))
-            .filter(t -> !t.isPointDisabled())
-            .filter(t -> isPositioningPhase() || t.pointAcceptVillage(village))
+        Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> inArea(event, e))
+            .filter(t -> !t.isPointDisabled()).filter(t -> isPositioningPhase() || t.pointAcceptVillage(village))
             .findFirst();
         if (findFirst.isPresent()) {
             findFirst.get().setElement(village);
+            CatanLogger.log(this, CatanAction.PLACE_VILLAGE);
         } else {
             elements.add(0, dragContext.getElement());
         }
@@ -424,21 +397,23 @@ public class CatanModel {
     }
 
     private void onSelectCard(CatanCard catanCard) {
+        if (resourcesToSelect != SelectResourceType.DEFAULT) {
+            return;
+        }
+
         catanCard.setSelected(!catanCard.isSelected());
         long totalCards = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected).count();
-        List<ResourceType> distinct = cards.get(currentPlayer.get())
-            .stream()
-            .filter(CatanCard::isSelected)
-            .filter(e -> e.getResource() != null)
-            .map(CatanCard::getResource)
-            .distinct()
-            .collect(Collectors.toList());
+        List<ResourceType> distinct = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected)
+            .filter(e -> e.getResource() != null).map(CatanCard::getResource).distinct().collect(Collectors.toList());
         boolean containsPort = containsPort(distinct, totalCards);
         long distinctCount = distinct.size();
         exchangeButton.setDisable((totalCards != 4 || distinctCount != 1) && !containsPort);
         DevelopmentType development = catanCard.getDevelopment();
-        if (catanCard.isSelected() && development != null) {
-            onSelectDevelopment(catanCard, development);
+        if (catanCard.isSelected()) {
+            if (development != null) {
+                onSelectDevelopment(catanCard, development);
+            }
+            CatanLogger.log(this, catanCard);
         }
         makeDeal.setDisable(distinctCount == 0);
     }
@@ -505,20 +480,15 @@ public class CatanModel {
             elements.add(new Village(playerColor));
             elements.add(new Road(playerColor));
         } else if (turnCount == 9) {
-            settlePoints.stream()
-                .filter(e -> e.getElement() != null)
+            settlePoints.stream().filter(e -> e.getElement() != null)
                 .forEach(e -> cards.get(e.getElement().getPlayer())
-                    .addAll(e.getTerrains()
-                        .stream()
-                        .map(Terrain::getType)
-                        .filter(t -> t != ResourceType.DESERT)
-                        .map(t -> new CatanCard(t, this::onSelectCard))
-                        .collect(Collectors.toList())));
+                    .addAll(e.getTerrains().stream().map(Terrain::getType).filter(t -> t != ResourceType.DESERT)
+                        .map(t -> new CatanCard(t, this::onSelectCard)).collect(Collectors.toList())));
             onChangePlayer(currentPlayer.get());
             invalidateDice();
         }
         deals.removeIf(d -> d.getProposer() == playerColor);
-        CatanLogger.log(this);
+        CatanLogger.log(this, CatanAction.SKIP_TURN);
     }
 
     private void replaceThief() {
@@ -543,8 +513,7 @@ public class CatanModel {
     private void stealResource(Terrain terrain) {
         List<PlayerColor> playersToSteal = settlePoints.stream()
             .filter(p -> p.getElement() != null && p.getTerrains().contains(terrain))
-            .filter(p -> p.getElement().getPlayer() != currentPlayer.get())
-            .map(p -> p.getElement().getPlayer())
+            .filter(p -> p.getElement().getPlayer() != currentPlayer.get()).map(p -> p.getElement().getPlayer())
             .collect(Collectors.toList());
         if (!playersToSteal.isEmpty()) {
             Collections.shuffle(playersToSteal);
@@ -557,20 +526,17 @@ public class CatanModel {
         }
         onChangePlayer(currentPlayer.get());
         invalidateDice();
+        CatanLogger.log(this, CatanAction.PLACE_THIEF);
     }
 
     private void throwDice() {
         int diceValue = userChart.throwDice();
-        settlePoints.stream()
-            .filter(e -> e.getElement() != null)
-            .flatMap(e -> e.getElement() instanceof City ? Stream.of(e, e) : Stream.of(e))
-            .forEach(e -> cards.get(e.getElement().getPlayer())
-                .addAll(e.getTerrains()
-                    .stream()
-                    .filter(t -> t.getNumber() == diceValue)
-                    .filter(t -> t.getThief() == null)
-                    .map(t -> new CatanCard(t.getType(), this::onSelectCard))
-                    .collect(Collectors.toList())));
+        settlePoints.stream().filter(e -> e.getElement() != null)
+            .flatMap(e -> e.getElement() instanceof City ? Stream.of(e, e) : Stream.of(e)).forEach(
+                e -> cards.get(e.getElement().getPlayer())
+                    .addAll(e.getTerrains().stream().filter(t -> t.getNumber() == diceValue)
+                        .filter(t -> t.getThief() == null).map(t -> new CatanCard(t.getType(), this::onSelectCard))
+                        .collect(Collectors.toList())));
 
         onChangePlayer(currentPlayer.get());
         diceThrown.set(true);
@@ -578,6 +544,7 @@ public class CatanModel {
             replaceThief();
             thief.removeHalfOfCards(cards);
         }
+        CatanLogger.log(this, CatanAction.THROW_DICE);
     }
 
     private void updatePoints(PlayerColor newV) {
