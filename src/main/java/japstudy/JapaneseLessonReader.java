@@ -102,7 +102,7 @@ public final class JapaneseLessonReader implements HasLogging {
 			lessonDAO.saveOrUpdate(japaneseLesson);
 			listaExercises.add(japaneseLesson);
 			if (japaneseLesson.getExercise() > exerciseNumber) {
-				lesson++;
+				return lesson + 1;
 			}
 		}
 		return lesson;

@@ -21,6 +21,7 @@ import javafx.scene.paint.Color;
 import paintexp.PaintModel;
 import utils.ResourceFXUtils;
 
+@SuppressWarnings({ "unused" })
 public abstract class PaintTool extends Group {
 	private static final int N_POINTS_MULTIPLIER = 16;
 

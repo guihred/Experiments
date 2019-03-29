@@ -100,14 +100,6 @@ public class WorldMapGraph2 extends WorldMapGraph {
 		return categoryMap;
 	}
 
-	@Override
-	public  Color getColorForValue(double value, double min, double max) {
-		if (value < min || value > max) {
-			return Color.BLACK;
-		}
-		double saturation = (value - min) / (max - min);
-		return Color.hsb(RED_HUE, saturation, 1.0);
-	}
 
 
 	public GraphicsContext getGc() {
@@ -211,7 +203,8 @@ public class WorldMapGraph2 extends WorldMapGraph {
 			List<Object> list = dataframeML.list(valueHeader.get());
 			Object object = DataframeUtils.getFromList(j, list);
 			if (object instanceof Number) {
-				enumMap.put(countries, getColorForValue(((Number) object).doubleValue(), min, max));
+				enumMap.put(countries, ColorPattern.getColorForValue(ColorPattern.SATURATION,
+						((Number) object).doubleValue(), min, max));
 			} else if (object instanceof String) {
 				enumMap.put(countries, getCategoryMap().get(object));
 			}

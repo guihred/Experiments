@@ -2,7 +2,6 @@ package gaming.ex21;
 
 import static gaming.ex21.ResourceType.containsEnough;
 
-import gaming.ex21.CatanLogger.CatanAction;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

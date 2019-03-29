@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 
 public class OrganicTreeFractal extends Canvas {
 
@@ -85,11 +86,11 @@ public class OrganicTreeFractal extends Canvas {
 
     }
 
-    private void drawLeaf(GraphicsContext gc, double[] e) {
+	private void drawLeaf(GraphicsContext gc, double[] e) {
         gc.save();
         double h = leaf.get();
         double degrees = e[2];
-        Rotate rotate = Rotate.rotate(degrees + 180, e[0], e[1]);
+        Rotate rotate = Transform.rotate(degrees + 180, e[0], e[1]);
         Affine affine = new Affine(rotate);
         gc.fillOval(e[0] - h / 6, e[1] - h / 4, h, h / 2);
         gc.transform(affine);

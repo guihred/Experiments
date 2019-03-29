@@ -14,8 +14,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
+import ml.graph.ColorPattern;
 import ml.graph.WorldMapGraph;
-import ml.graph.WorldMapGraph.ColorPattern;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
@@ -36,8 +36,8 @@ public class WorldMapExample extends Application implements HasLogging {
         root.setTop(left);
         left.getChildren().add(newSlider("Labels", 1, 10, canvas.binsProperty()));
         left.getChildren().add(newSlider("Font Size", 1, 60, canvas.fontSizeProperty()));
-        ComboBox<ColorPattern> patternCombo = new SimpleComboBoxBuilder<WorldMapGraph.ColorPattern>()
-            .items(WorldMapGraph.ColorPattern.values())
+        ComboBox<ColorPattern> patternCombo = new SimpleComboBoxBuilder<ColorPattern>()
+            .items(ColorPattern.values())
             .onSelect(canvas.patternProperty()::set)
             .select(0)
             .build();

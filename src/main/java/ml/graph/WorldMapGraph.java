@@ -1,4 +1,5 @@
 package ml.graph;
+import static ml.graph.ColorPattern.getColorForValue;
 
 import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
@@ -123,26 +124,6 @@ public class WorldMapGraph extends Canvas implements HasLogging {
 		return fontSize;
 	}
 
-	public Color getColorForValue(double value, double min, double max) {
-		if (value < min || value > max) {
-			return Color.BLACK;
-		}
-		ColorPattern colorPattern = pattern.get();
-		switch (colorPattern) {
-			case BRIGHTNESS:
-				double brightness = 1 - (value - min) / (max - min);
-				return Color.hsb(RED_HUE, 1.0, brightness);
-			case HUE:
-				double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - min) / (max - min);
-				return Color.hsb(hue, 1.0, 1.0);
-			case SATURATION:
-				double saturation = (value - min) / (max - min);
-				return Color.hsb(RED_HUE, saturation, 1.0);
-			default:
-				return Color.BLACK;
-		}
-
-	}
 
 	public Scale getScale() {
 		return scale;
@@ -238,10 +219,10 @@ public class WorldMapGraph extends Canvas implements HasLogging {
 				s = min + i * h;
 				gc.setFill(Color.BLACK);
 				gc.fillText(String.format("%11.2f", s), x + w / 2, y + step * i + size / 2.);
-				gc.setFill(getColorForValue(s, min, max));
+				gc.setFill(pattern.get().getColorForValue( s, min, max));
 				gc.fillRect(x, y + step * i, size, size);
 			} else {
-				gc.setFill(getColorForValue(s, min, max));
+				gc.setFill(pattern.get().getColorForValue(  s, min, max));
 				gc.fillRect(x, y + step * i, size, size);
 				gc.setFill(Color.BLACK);
 				gc.fillText(String.format("%11.0f", s), x + w / 2, y + step * i + size / 2.);
@@ -309,7 +290,7 @@ public class WorldMapGraph extends Canvas implements HasLogging {
 
 	private Color getColor(Object object) {
 		if (object instanceof Number) {
-			return getColorForValue(((Number) object).doubleValue(), min, max);
+			return getColorForValue(pattern.get(), ((Number) object).doubleValue(), min, max);
 		} else if (object instanceof String) {
 			return categoryMap.get(object);
 		}
@@ -331,9 +312,5 @@ public class WorldMapGraph extends Canvas implements HasLogging {
 
 	private boolean isSuitableForSummary() {
 		return summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class;
-	}
-
-	public enum ColorPattern {
-		BRIGHTNESS, SATURATION, HUE;
 	}
 }

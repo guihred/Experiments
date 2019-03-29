@@ -7,7 +7,13 @@ import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.DoubleUnaryOperator;
+import java.util.function.Function;
+import java.util.function.IntConsumer;
+import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import utils.HasLogging;
@@ -152,7 +158,7 @@ public class DataframeML implements HasLogging {
 		return dataframe.get(header);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 	public <T> List<T> list(final String header, final Class<T> c) {
 		return (List) dataframe.get(header);
 	}
@@ -210,7 +216,7 @@ public class DataframeML implements HasLogging {
 		DataframeUtils.trim(header, trimmingSize, this);
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "unused" })
 	public <T> List<T> typedList(final List<Object> list, final Class<T> c) {
 		return (List<T>) list;
 	}

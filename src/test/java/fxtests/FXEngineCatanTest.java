@@ -1,7 +1,21 @@
 package fxtests;
 
-import gaming.ex21.*;
-import java.util.*;
+import gaming.ex21.CatanApp;
+import gaming.ex21.CatanCard;
+import gaming.ex21.City;
+import gaming.ex21.EdgeCatan;
+import gaming.ex21.Road;
+import gaming.ex21.SettlePoint;
+import gaming.ex21.Terrain;
+import gaming.ex21.Thief;
+import gaming.ex21.Village;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBase;
