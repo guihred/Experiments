@@ -35,35 +35,36 @@ public class DataframeML implements HasLogging {
 	public DataframeML() {
 	}
 
-	public DataframeML(final String csvFile) {
+	public DataframeML(String csvFile) {
 		readCSV(csvFile);
 	}
 
-	public void add(final String header, final Object obj) {
+	public void add(String header, Object obj) {
 		List<Object> list = list(header);
 		list.add(obj);
 		size=Math.max(size, list.size());
 	}
 
-    public <T extends Comparable<?>> void addCols(final List<String> cols, final Class<T> classes) {
+	public <T extends Comparable<?>> void addCols(List<String> cols, Class<T> classes) {
         for (String string : cols) {
             dataframe.put(string, new ArrayList<>());
             formatMap.put(string, classes);
         }
     }
-	public <T extends Comparable<?>> void addCols(final String string, final Class<T> classes) {
+
+	public <T extends Comparable<?>> void addCols(String string, Class<T> classes) {
         dataframe.put(string, new ArrayList<>());
         formatMap.put(string, classes);
     }
 
-	public void apply(final String header, final DoubleUnaryOperator mapper) {
+	public void apply(String header, DoubleUnaryOperator mapper) {
 		dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
 				.map(mapper).boxed().collect(Collectors.toList()));
 		formatMap.put(header, Double.class);
 	}
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	public Set<String> categorize(final String header) {
+	public Set<String> categorize(String header) {
 		if (categories.containsKey(header)) {
 			return categories.get(header);
 		}
@@ -82,20 +83,20 @@ public class DataframeML implements HasLogging {
         displayCorrelation(this);
 	}
 
-	public List<Entry<Number, Number>> createNumberEntries(final String feature, final String target) {
+	public List<Entry<Number, Number>> createNumberEntries(String feature, String target) {
 		List<Object> list = dataframe.get(feature);
 		List<Object> list2 = dataframe.get(target);
 		List<Entry<Number, Number>> data = new ArrayList<>();
 		IntStream.range(0, size).filter(i -> list.get(i) != null && list2.get(i) != null).forEach(
-				(final int i) -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
+				(int i) -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
 		return data;
 	}
 
-	public List<Double> crossFeature(final String header, final ToDoubleFunction<double[]> mapper, final String... dependent) {
+	public List<Double> crossFeature(String header, ToDoubleFunction<double[]> mapper, String... dependent) {
 		return DataframeUtils.crossFeature(this, header, mapper, dependent);
 	}
 
-	public List<Double> crossFeatureObject(final String header, final ToDoubleFunction<Object[]> mapper, final String... dependent) {
+	public List<Double> crossFeatureObject(String header, ToDoubleFunction<Object[]> mapper, String... dependent) {
 		return DataframeUtils.crossFeatureObject(this, header, mapper, dependent);
 	}
 
@@ -109,7 +110,7 @@ public class DataframeML implements HasLogging {
         displayStats(stats);
 	}
 
-	public void filterString(final String header, final Predicate<String> v) {
+	public void filterString(String header, Predicate<String> v) {
 		List<Object> list = dataframe.get(header);
 		for (int i = 0; i < list.size(); i++) {
 			if (!v.test(Objects.toString(list.get(i)))) {
@@ -121,11 +122,16 @@ public class DataframeML implements HasLogging {
 		}
 	}
 
-	public void forEach(final BiConsumer<String, List<Object>> action) {
+	public void forEach(BiConsumer<String, List<Object>> action) {
 		dataframe.forEach(action);
 	}
 
-	public Class<? extends Comparable<?>> getFormat(final String header) {
+	public Set<Object> freeCategory(String header) {
+    	return new HashSet<>(dataframe.get(header));
+    	
+    }
+
+	public Class<? extends Comparable<?>> getFormat(String header) {
 		return formatMap.get(header);
 	}
 
@@ -133,15 +139,15 @@ public class DataframeML implements HasLogging {
 		return size;
 	}
 
-	public Map<String, Long> histogram(final String header) {
+	public Map<String, Long> histogram(String header) {
 		List<Object> list = dataframe.get(header);
-		List<String> stringList = list.stream().filter(Objects::nonNull).map(String.class::cast)
+		List<String> stringList = list.stream().filter(Objects::nonNull).map(Objects::toString)
 				.collect(Collectors.toList());
 		return stringList.parallelStream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
 	}
 
-	public Map<Double, Long> histogram(final String header, final int bins) {
+	public Map<Double, Long> histogram(String header, int bins) {
 		List<Object> list = dataframe.get(header);
 		List<Double> columnList = list.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).boxed()
 				.collect(Collectors.toList());
@@ -154,20 +160,20 @@ public class DataframeML implements HasLogging {
 
 	}
 
-	public List<Object> list(final String header) {
+	public List<Object> list(String header) {
 		return dataframe.get(header);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
-	public <T> List<T> list(final String header, final Class<T> c) {
+	public <T> List<T> list(String header, Class<T> c) {
 		return (List) dataframe.get(header);
 	}
 
-	public void map(final String header, final UnaryOperator<Object> mapper) {
+	public void map(String header, UnaryOperator<Object> mapper) {
 		dataframe.put(header, dataframe.get(header).stream().map(mapper).collect(Collectors.toList()));
 	}
 
-	public void only(final String header, final Predicate<String> v, final IntConsumer cons) {
+	public void only(String header, Predicate<String> v, IntConsumer cons) {
 		List<Object> list = dataframe.get(header);
 		for (int i = 0; i < list.size(); i++) {
 			if (v.test(Objects.toString(list.get(i)))) {
@@ -176,7 +182,7 @@ public class DataframeML implements HasLogging {
 		}
 	}
 
-	public void readCSV(final String csvFile) {
+	public void readCSV(String csvFile) {
 		try (Scanner scanner = new Scanner(ResourceFXUtils.toFile(csvFile), StandardCharsets.UTF_8.displayName())) {
 			List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
 					.collect(Collectors.toList());
@@ -192,14 +198,14 @@ public class DataframeML implements HasLogging {
 	}
 
 
-	public Map<String, Object> rowMap(final int i) {
+	public Map<String, Object> rowMap(int i) {
         return dataframe.entrySet().stream().filter(e -> e.getValue().get(i) != null)
             .collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i),
                 DataframeUtils.throwError(),
                 LinkedHashMap<String, Object>::new));
 	}
 
-    public DoubleSummaryStatistics summary(final String header) {
+	public DoubleSummaryStatistics summary(String header) {
 		if (!dataframe.containsKey(header)) {
 			return new DoubleSummaryStatistics();
 		}
@@ -212,17 +218,17 @@ public class DataframeML implements HasLogging {
 		return DataframeUtils.toString(this);
 	}
 
-	public void trim(final String header, final int trimmingSize) {
+	public void trim(String header, int trimmingSize) {
 		DataframeUtils.trim(header, trimmingSize, this);
 	}
 
 	@SuppressWarnings({ "unchecked", "unused" })
-	public <T> List<T> typedList(final List<Object> list, final Class<T> c) {
+	public <T> List<T> typedList(List<Object> list, Class<T> c) {
 		return (List<T>) list;
 	}
 
 
-	public static DataframeBuilder builder(final String csvFile) {
+	public static DataframeBuilder builder(String csvFile) {
 		return new DataframeBuilder(csvFile);
 	}
 }
