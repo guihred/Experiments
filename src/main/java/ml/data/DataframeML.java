@@ -7,13 +7,7 @@ import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
-import java.util.function.DoubleUnaryOperator;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import utils.HasLogging;
@@ -35,6 +29,17 @@ public class DataframeML implements HasLogging {
 	public DataframeML() {
 	}
 
+    public DataframeML(DataframeML frame) {
+
+        frame.dataframe.forEach((h, l) -> dataframe.put(h, new ArrayList<>(l)));
+        formatMap = new LinkedHashMap<>(frame.formatMap);
+        mapping = new LinkedHashMap<>(frame.mapping);
+        size = frame.size;
+        stats = frame.stats;
+        filters = new HashMap<>(frame.filters);
+
+    }
+
 	public DataframeML(String csvFile) {
 		readCSV(csvFile);
 	}
@@ -44,6 +49,17 @@ public class DataframeML implements HasLogging {
 		list.add(obj);
 		size=Math.max(size, list.size());
 	}
+
+    public void addAll(Object... obj) {
+        Collection<List<Object>> values = dataframe.values();
+        int i = 0;
+        for (Iterator<List<Object>> iterator = values.iterator(); iterator.hasNext();) {
+            List<Object> list = iterator.next();
+            list.add(obj[i]);
+            i++;
+        }
+        size = dataframe.values().stream().mapToInt(e -> e.size()).max().orElse(0);
+    }
 
 	public <T extends Comparable<?>> void addCols(List<String> cols, Class<T> classes) {
         for (String string : cols) {
@@ -88,7 +104,7 @@ public class DataframeML implements HasLogging {
 		List<Object> list2 = dataframe.get(target);
 		List<Entry<Number, Number>> data = new ArrayList<>();
 		IntStream.range(0, size).filter(i -> list.get(i) != null && list2.get(i) != null).forEach(
-				(int i) -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
+            i -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
 		return data;
 	}
 
@@ -110,16 +126,17 @@ public class DataframeML implements HasLogging {
         displayStats(stats);
 	}
 
-	public void filterString(String header, Predicate<String> v) {
+    public DataframeML filterString(String header, Predicate<String> v) {
 		List<Object> list = dataframe.get(header);
 		for (int i = 0; i < list.size(); i++) {
 			if (!v.test(Objects.toString(list.get(i)))) {
 				int j = i;
 				dataframe.forEach((c, l) -> l.remove(j));
 				i--;
-				size--;
 			}
 		}
+        size = dataframe.values().stream().mapToInt(e -> e.size()).max().orElse(0);
+        return this;
 	}
 
 	public void forEach(BiConsumer<String, List<Object>> action) {
