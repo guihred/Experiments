@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.apache.commons.lang.SystemUtils;
+import org.assertj.core.api.exception.RuntimeIOException;
 import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
 import utils.HasLogging;
@@ -71,12 +72,13 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 		currentStage.setY(0);
 	}
 
-	protected <T extends Application> void show(Class<T> c) {
+    protected <T extends Application> T show(Class<T> c) {
 		try {
 			T newInstance = c.newInstance();
 			interactNoWait(RunnableEx.makeRunnable(() -> newInstance.start(currentStage)));
+            return newInstance;
 		} catch (Exception e) {
-			getLogger().error(String.format("ERRO IN %s", c), e);
+            throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
 		}
 	}
 

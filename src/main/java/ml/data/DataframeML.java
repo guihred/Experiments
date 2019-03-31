@@ -42,13 +42,17 @@ public class DataframeML implements HasLogging {
 		readCSV(csvFile);
 	}
 
-	public void add(String header, Object obj) {
+	public void add(Map<String, Object> row) {
+        row.forEach(this::add);
+    }
+
+    public void add(String header, Object obj) {
 		List<Object> list = list(header);
 		list.add(obj);
 		size=Math.max(size, list.size());
 	}
 
-    public void addAll(Object... obj) {
+	public void addAll(Object... obj) {
         Collection<List<Object>> values = dataframe.values();
         int i = 0;
         for (Iterator<List<Object>> iterator = values.iterator(); iterator.hasNext();) {
@@ -71,13 +75,13 @@ public class DataframeML implements HasLogging {
         formatMap.put(string, classes);
     }
 
-	public void apply(String header, DoubleUnaryOperator mapper) {
+    public void apply(String header, DoubleUnaryOperator mapper) {
 		dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
 				.map(mapper).boxed().collect(Collectors.toList()));
 		formatMap.put(header, Double.class);
 	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Set<String> categorize(String header) {
 		if (categories.containsKey(header)) {
 			return categories.get(header);
@@ -114,7 +118,7 @@ public class DataframeML implements HasLogging {
 		return DataframeUtils.crossFeatureObject(this, header, mapper, dependent);
 	}
 
-	public void describe() {
+    public void describe() {
 		if (stats == null) {
 			stats = dataframe.entrySet().stream().collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
 					e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(this, e.getKey()),
@@ -138,7 +142,7 @@ public class DataframeML implements HasLogging {
         return this;
     }
 
-    public DataframeML filterString(String header, Predicate<String> v) {
+	public DataframeML filterString(String header, Predicate<String> v) {
 		List<Object> list = dataframe.get(header);
 		for (int i = 0; i < list.size(); i++) {
 			if (!v.test(Objects.toString(list.get(i)))) {
@@ -211,7 +215,8 @@ public class DataframeML implements HasLogging {
 		}
 	}
 
-	public void readCSV(String csvFile) {
+
+    public void readCSV(String csvFile) {
 		try (Scanner scanner = new Scanner(ResourceFXUtils.toFile(csvFile), StandardCharsets.UTF_8.displayName())) {
 			List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
 					.collect(Collectors.toList());
@@ -226,8 +231,7 @@ public class DataframeML implements HasLogging {
 		}
 	}
 
-
-    public void removeCol(String... cols) {
+	public void removeCol(String... cols) {
         for (String string : cols) {
             dataframe.remove(string);
             formatMap.remove(string);
@@ -254,17 +258,17 @@ public class DataframeML implements HasLogging {
 		return DataframeUtils.toString(this);
 	}
 
+
 	public void trim(String header, int trimmingSize) {
 		DataframeUtils.trim(header, trimmingSize, this);
 	}
-
 
 	@SuppressWarnings({ "unchecked", "unused" })
 	public <T> List<T> typedList(List<Object> list, Class<T> c) {
 		return (List<T>) list;
 	}
 
-	public static DataframeBuilder builder(String csvFile) {
+    public static DataframeBuilder builder(String csvFile) {
 		return new DataframeBuilder(csvFile);
 	}
 }

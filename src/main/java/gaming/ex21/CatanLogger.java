@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ml.data.DataframeML;
@@ -20,7 +21,7 @@ public final class CatanLogger {
 	private static final String PLAYER = "PLAYER";
 	private static final String ACTION = "ACTION";
 	private static final Logger LOG = HasLogging.log();
-	private static List<Class<? extends CatanResource>> HAS_CLASSES = Arrays.asList(Thief.class, City.class,
+    private static final List<Class<? extends CatanResource>> HAS_CLASSES = Arrays.asList(Thief.class, City.class,
 			Village.class, Road.class);
 	private static final DataframeML DATAFRAME_ML = getDataframe();
 
@@ -45,40 +46,11 @@ public final class CatanLogger {
 	}
 
 	public static void log(CatanModel model, CatanAction action) {
-		PlayerColor playerColor = model.currentPlayer.get();
-		List<CatanCard> cards = model.cards.get(playerColor);
-		Map<String, Long> resourceCount = cards.stream()
-				.map(e -> Objects.toString(e.getResource(), Objects.toString(e.getDevelopment())))
-				.collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-
-		DATAFRAME_ML.add(PLAYER, playerColor.toString());
-		for (ResourceType r : ResourceType.getResources()) {
-			DATAFRAME_ML.add(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
-		}
-		for (DevelopmentType r : DevelopmentType.values()) {
-			DATAFRAME_ML.add(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
-		}
-		// addCount2(VILLAGE, model.settlePoints, Village.class);
-		// addCount2(CITY, model.settlePoints, City.class);
-		// addCount(ROAD, model.edges, Road.class);
-
-		PlayerColor currentWinner = PlayerColor.vals().parallelStream().max(Comparator.comparing(
-				(PlayerColor e) -> model.getUserChart().countPoints(e, model.settlePoints, model.usedCards, model.edges))
-				.thenComparing((PlayerColor e) -> model.cards.get(e).size())).orElse(playerColor);
-		DATAFRAME_ML.add(WINNER, currentWinner);
-		DATAFRAME_ML.add(ACTION, action);
-		boolean anyMatch = model.deals.stream().anyMatch(m -> !model.isDealUnfeasible(m));
-		DATAFRAME_ML.add(HAS_DEAL, Objects.toString(anyMatch));
-
-		for (Class<? extends CatanResource> class1 : HAS_CLASSES) {
-			DATAFRAME_ML.add("HAS_" + class1.getSimpleName().toUpperCase(),
-					Objects.toString(model.elements.stream().anyMatch(class1::isInstance)));
-		}
-
-		Map<String, Object> rowMap = DATAFRAME_ML.rowMap(DATAFRAME_ML.getSize() - 1);
-		LOG.trace("{}", rowMap);
-
-		appendLine(rowMap);
+        Map<String, Object> row = row(model);
+        row.put(ACTION, action);
+        DATAFRAME_ML.add(row);
+        LOG.trace("{}", row);
+        appendLine(row);
 	}
 
     public static void log(CatanModel model, CatanCard catanCard) {
@@ -215,7 +187,10 @@ public final class CatanLogger {
 			if (!exists) {
 				fw.append(collect + "\n");
 			}
-			fw.append(rowMap.values().stream().map(Object::toString).collect(Collectors.joining(",", "", "\n")));
+            List<String> cols = DATAFRAME_ML.cols().stream().collect(Collectors.toList());
+
+            fw.append(rowMap.entrySet().stream().sorted(Comparator.comparing(t -> cols.indexOf(t.getKey())))
+                .map(Entry<String, Object>::getValue).map(Object::toString).collect(Collectors.joining(",", "", "\n")));
 		} catch (Exception e1) {
 			LOG.error("{}", e1);
 		}

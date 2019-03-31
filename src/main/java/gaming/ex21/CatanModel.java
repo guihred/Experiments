@@ -266,7 +266,10 @@ public class CatanModel {
 
     private void makeDealButton(ResourceType selectedType) {
         List<ResourceType> dealTypes = cards.get(currentPlayer.get()).stream().filter(e -> e.getResource() != null)
-            .filter(CatanCard::isSelected).map(CatanCard::getResource).collect(Collectors.toList());
+            .filter(CatanCard::isSelected)
+            .filter(e -> e.getResource() != selectedType)
+            .map(CatanCard::getResource)
+            .collect(Collectors.toList());
         if (!dealTypes.isEmpty()) {
             PlayerColor proposer = currentPlayer.get();
             deals.add(new Deal(proposer, selectedType, dealTypes));
@@ -385,6 +388,7 @@ public class CatanModel {
             Terrain terrain = edgeHovered.get();
             terrain.setThief(thief);
             stealResource(terrain);
+            elements.removeIf(e -> e == thief);
         } else {
             elements.add(0, dragContext.getElement());
         }
@@ -522,6 +526,9 @@ public class CatanModel {
             resourcesToSelect = deal;
             resourceChoices.setVisible(true);
         }
+        if (deal == SelectResourceType.MAKE_DEAL) {
+            makeDeal.setDisable(true);
+        }
     }
 
     private void stealResource(Terrain terrain) {
@@ -554,12 +561,12 @@ public class CatanModel {
                         .filter(t -> t.getThief() == null).map(t -> new CatanCard(t.getType(), this::onSelectCard))
                         .collect(Collectors.toList())));
 
-        onChangePlayer(currentPlayer.get());
         diceThrown.set(true);
         if (diceValue == 7) {
             replaceThief();
             thief.removeHalfOfCards(cards);
         }
+        onChangePlayer(currentPlayer.get());
         CatanLogger.log(this, CatanAction.THROW_DICE);
     }
 
