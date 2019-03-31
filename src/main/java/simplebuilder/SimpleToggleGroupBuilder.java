@@ -26,11 +26,11 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
 
 	public SimpleToggleGroupBuilder addToggle(final Node node, final Object userData) {
         ToggleButton toggleButton = new ToggleButton(null, node);
-		toggleButton.setTooltip(new Tooltip(Objects.toString(userData, "")));
-        Toggle e = toggleButton;
-		e.setUserData(userData);
-
-        e.setToggleGroup(toggleGroup);
+        String tooltip = Objects.toString(userData, "");
+        toggleButton.setTooltip(new Tooltip(tooltip));
+        toggleButton.setUserData(userData);
+        toggleButton.getStyleClass().add(tooltip.toLowerCase().replaceAll(" ", "-"));
+        toggleButton.setToggleGroup(toggleGroup);
         return this;
     }
 

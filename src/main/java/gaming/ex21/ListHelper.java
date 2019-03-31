@@ -25,6 +25,7 @@ public final class ListHelper {
 				List<? extends Deal> addedSubList = c.getAddedSubList();
 				for (Deal deal1 : addedSubList) {
 					Button dealButton = CommonsFX.newButton(deal1, "", e -> onAction.accept(deal1));
+                    dealButton.getStyleClass().add("accept-deal");
 					dealButton.disableProperty().bind(Bindings.createBooleanBinding(() -> disableIf.test(deal1), a));
 					vBox.getChildren().add(dealButton);
 				}

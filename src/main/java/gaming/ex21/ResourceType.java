@@ -70,12 +70,11 @@ public enum ResourceType {
         res.setVisible(false);
         res.managedProperty().bind(res.visibleProperty());
         group.onChange((ob, old, n) -> {
-            if (n == null) {
-                return;
+            if (n != null) {
+                ResourceType selectedType = (ResourceType) n.getUserData();
+                onSelect.accept(selectedType);
+                group.select(null);
             }
-            ResourceType selectedType = (ResourceType) n.getUserData();
-            onSelect.accept(selectedType);
-            group.select(null);
         });
         return res;
     }

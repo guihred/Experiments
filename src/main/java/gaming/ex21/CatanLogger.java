@@ -81,16 +81,20 @@ public final class CatanLogger {
 		appendLine(rowMap);
 	}
 
-	public static void log(CatanModel model, CatanCard catanCard) {
+    public static void log(CatanModel model, CatanCard catanCard) {
 		if (catanCard.getDevelopment() != null) {
 			log(model, action(catanCard.getDevelopment()));
 		} else {
 			log(model, action(catanCard.getResource()));
 		}
 	}
-
 	public static void log(CatanModel model, Combination combination) {
 		log(model, action(combination));
+	}
+
+
+	public static void log(CatanModel model, ResourceType catanCard) {
+	    log(model, actionResource(catanCard));
 	}
 
 	public static Map<String, Object> row(CatanModel model) {
@@ -172,6 +176,24 @@ public final class CatanLogger {
 		}
 		return null;
 	}
+
+    private static CatanAction actionResource(ResourceType resource) {
+        switch (resource) {
+            case BRICK:
+                return CatanAction.RESOURCE_BRICK;
+            case ROCK:
+                return CatanAction.RESOURCE_ROCK;
+            case SHEEP:
+                return CatanAction.RESOURCE_SHEEP;
+            case WHEAT:
+                return CatanAction.RESOURCE_WHEAT;
+            case WOOD:
+                return CatanAction.RESOURCE_WOOD;
+            default:
+                break;
+        }
+        return null;
+    }
 
 	private static void appendLine(Map<String, Object> rowMap) {
 		File file = new File(ResourceFXUtils.getOutFile(), "catan_log.txt");

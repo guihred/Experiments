@@ -8,8 +8,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import utils.HasLogging;
 
-public class CatanCard extends Rectangle {
+public class CatanCard extends Rectangle implements HasLogging {
     public static final int PREF_HEIGHT = 75;
 
     public static final int PREF_WIDTH = 50;
@@ -64,7 +65,8 @@ public class CatanCard extends Rectangle {
         setFill(CatanResource.newPattern(type));
         setWidth(PREF_WIDTH);
         setHeight(PREF_HEIGHT);
-		getStyleClass().add(Objects.toString(development, Objects.toString(resource + "-card")));
+        getStyleClass().add(
+            Objects.toString(development, Objects.toString(resource)).toLowerCase().replaceAll("_", "-") + "-card");
         InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
         effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
     }

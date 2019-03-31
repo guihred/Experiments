@@ -16,13 +16,12 @@ import utils.RunnableEx;
 
 public class FXEngineCatanTest extends AbstractTestExecution {
 
-	private static final int MAX_TRIES = 500;
+    private static final int MAX_TRIES = 400;
 
 	private Random random = new Random();
 
-	private CatanAction lastPredict;
 
-	// @Test
+    @Test
 	public void testaToolsVerify() throws Exception {
 		show(CatanApp.class);
 		List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
@@ -52,7 +51,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 		}
 	}
 
-	@Test
+    @Test
 	public void testDecisions() throws Exception {
 		CatanApp newInstance = new CatanApp();
 		try {
@@ -61,7 +60,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 			getLogger().error(String.format("ERRO IN %s", CatanApp.class), e);
 		}
 		DataframeML build = DataframeML.builder("out/catan_log.txt").build();
-		build.removeCol("WINNER");
+        build.removeCol("WINNER", "PLAYER");
 		List<Object> list = build.list("ACTION");
 		list.add(list.remove(0));
 		DecisionNode buildTree = DecisionTree.buildTree(build, "ACTION");
@@ -95,23 +94,13 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 			makeDecision(buildTree, allEdge, allVillages, cities, settlePoints, allRoads, allTerrains, newInstance,
 					allButtons, clickedButtons);
 
-			getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES * 2, clickedButtons.size(), allButtons.size());
+            getLogger().info("{}/{}", i + 1, MAX_TRIES * 2);
 		}
 
 	}
 
 	private void clickButton(List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
-		Collections.shuffle(allButtons);
-		allButtons.addAll(lookup(".button").queryAllAs(ButtonBase.class).stream().filter(t -> !allButtons.contains(t))
-				.collect(Collectors.toList()));
-		allButtons.stream().filter(e -> !e.isDisabled()).filter(e -> e.getParent() != null)
-				.filter(ButtonBase::isVisible).filter(e -> e.getParent().isVisible())
-				.sorted(Comparator.comparing(clickedButtons::contains)).findFirst().ifPresent(t -> {
-					clickedButtons.add(t);
-					tryToClick(t);
-				});
-		allButtons.removeIf(e -> e.getParent() == null);
-		clickedButtons.removeIf(e -> e.getParent() == null);
+        clickButton(null, allButtons, clickedButtons);
 	}
 
 	private void clickButton(String btn, List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
@@ -136,6 +125,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 	}
 
 	private void clickCards(String btn) {
+
 		List<CatanCard> allCards = lookup(CatanCard.class::isInstance).queryAllAs(CatanCard.class).stream()
 				.collect(Collectors.toList());
 		if (allCards.stream().filter(CatanCard::isSelected).count() > 4) {
@@ -147,10 +137,10 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 				(CatanCard c) -> matches(btn, c))
 				.thenComparing(c -> orderByResources(cardsToSelect, c)));
 		cardsToSelect.removeIf(CatanCard::isSelected);
-		if (random.nextBoolean() && !cardsToSelect.isEmpty()) {
+        if ((random.nextBoolean() || btn != null) && !cardsToSelect.isEmpty()) {
 			targetPos(Pos.TOP_CENTER);
-			clickOn(cardsToSelect.remove(0));
-			if (random.nextBoolean() && !cardsToSelect.isEmpty()
+            clickOn(cardsToSelect.remove(0));
+            if (random.nextBoolean() && !cardsToSelect.isEmpty()
 					&& allCards.stream().filter(CatanCard::isSelected).count() < 4) {
 				clickOn(cardsToSelect.remove(0));
 			}
@@ -161,7 +151,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 	private void clickCities(final List<City> cities) {
 		List<City> notClickedVillages = lookup(City.class::isInstance).queryAllAs(City.class).stream()
 				.filter(t -> !cities.contains(t)).collect(Collectors.toList());
-
 		if (notClickedVillages.isEmpty()) {
 			return;
 		}
@@ -232,14 +221,18 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 		CatanModel model = newInstance.getModel();
 		Map<String, Object> row = CatanLogger.row(model);
 		CatanAction predict = CatanAction.valueOf(Objects.toString(buildTree.predict(row)));
-		if (lastPredict == predict) {
-			CatanAction[] values = CatanAction.values();
-			predict = values[random.nextInt(values.length)];
-			if (model.getElements().stream().anyMatch(City.class::isInstance)) {
-				predict = CatanAction.PLACE_CITY;
-			}
+        if (model.getElements().stream().anyMatch(City.class::isInstance)) {
+            predict = CatanAction.PLACE_CITY;
 		}
-		lastPredict = predict;
+        if (model.getElements().stream().anyMatch(Thief.class::isInstance)) {
+            predict = CatanAction.PLACE_THIEF;
+        }
+        if (model.getElements().stream().anyMatch(Road.class::isInstance)) {
+            predict = CatanAction.PLACE_ROAD;
+        }
+        if (model.getElements().stream().anyMatch(Village.class::isInstance)) {
+            predict = CatanAction.PLACE_VILLAGE;
+        }
 		switch (predict) {
 			case PLACE_CITY:
 				clickCities(cities);
@@ -262,18 +255,26 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 			case THROW_DICE:
 			case EXCHANGE:
 			case MAKE_DEAL:
-				clickButton(predict.toString().replaceAll("BUY_", "").replaceAll("_", " ").toLowerCase(), allButtons,
+            case RESOURCE_BRICK:
+            case RESOURCE_ROCK:
+            case RESOURCE_SHEEP:
+            case RESOURCE_WHEAT:
+            case RESOURCE_WOOD:
+                clickButton(
+                    predict.toString().replaceAll("BUY_", "").replaceAll("RESOURCE_", "").replaceAll("_", " ")
+                        .toLowerCase(),
+                    allButtons,
 						clickedButtons);
 				break;
 			case SELECT_BRICK:
+            case SELECT_ROCK:
+            case SELECT_SHEEP:
+            case SELECT_WHEAT:
+            case SELECT_WOOD:
 			case SELECT_KNIGHT:
 			case SELECT_MONOPOLY:
 			case SELECT_ROAD_BUILDING:
-			case SELECT_ROCK:
-			case SELECT_SHEEP:
 			case SELECT_UNIVERSITY:
-			case SELECT_WHEAT:
-			case SELECT_WOOD:
 			case SELECT_YEAR_OF_PLENTY:
 				clickCards(predict.toString().replaceAll("SELECT_", "").replaceAll("_", " ").toLowerCase());
 				break;
@@ -284,14 +285,22 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 	}
 
 	private boolean matches(String btn, ButtonBase c) {
-		return !Objects.toString(c.getStyleClass()).contains(btn)
-				&& !Objects.toString(c.getId()).contains(btn)
-				&& !Objects.toString(c.getText(), "").toLowerCase().contains(btn);
+        if (btn == null) {
+            return false;
+        }
+        return !Objects.toString(c.getStyleClass()).toLowerCase().contains(btn)
+            && !Objects.toString(c.getStyleClass()).toLowerCase().contains(btn.replaceAll(" ", "-"))
+            && !Objects.toString(c.getId()).toLowerCase().contains(btn)
+            && !Objects.toString(c.getText(), "").toLowerCase().contains(btn);
 	}
 
-	private boolean matches(String btn, CatanCard c) {
-		return !Objects.toString(c.getStyleClass(), "").contains(btn + "-card")
-				&& !Objects.toString(c.getId()).contains(btn + "-card");
+    private boolean matches(String btn, CatanCard c) {
+        if (btn == null) {
+            return false;
+        }
+        String s = btn.replaceAll(" ", "-") + "-card";
+        return !Objects.toString(c.getStyleClass(), "").contains(s)
+            && !Objects.toString(c.getId(), "").contains(s);
 	}
 
 	private Long orderByResources(List<CatanCard> cardsToSelect, final CatanCard c) {

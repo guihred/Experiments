@@ -7,7 +7,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import utils.ClassReflectionUtils;
 
 public class CatanApp extends Application {
 
@@ -29,7 +28,6 @@ public class CatanApp extends Application {
         primaryStage.setScene(scene);
         model = CatanModel.create(center, value);
         primaryStage.show();
-		ClassReflectionUtils.displayStyleClass(root);
     }
 
 	public static void main(final String[] args) {

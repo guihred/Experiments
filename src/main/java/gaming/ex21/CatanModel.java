@@ -426,7 +426,8 @@ public class CatanModel {
             }
             CatanLogger.log(this, catanCard);
         }
-        makeDeal.setDisable(distinctCount == 0);
+        makeDeal.setDisable(
+            distinctCount == 0 || deals.stream().filter(e -> e.getProposer() == getCurrentPlayer()).count() > 4);
     }
 
     private void onSelectDevelopment(CatanCard catanCard, DevelopmentType development) {
@@ -475,12 +476,14 @@ public class CatanModel {
         exchangeButton.setDisable(true);
         invalidateDice();
         makeDeal.setDisable(true);
+        CatanLogger.log(this, selectedType);
     }
 
     private void onSkipTurn() {
         PlayerColor value = currentPlayer.get();
         PlayerColor[] values = PlayerColor.values();
-        PlayerColor playerColor = values[(value.ordinal() + 1) % values.length];
+        int next = turnCount == 4 ? 0 : turnCount > 4 && turnCount < 8 ? -1 : 1;
+        PlayerColor playerColor = values[(value.ordinal() + next + values.length) % values.length];
         currentPlayer.set(playerColor);
         diceThrown.set(false);
         exchangeButton.setDisable(true);

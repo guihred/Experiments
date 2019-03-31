@@ -29,5 +29,10 @@ public enum CatanAction {
     SELECT_WHEAT,
     SELECT_WOOD,
 
+    RESOURCE_BRICK,
+    RESOURCE_ROCK,
+    RESOURCE_SHEEP,
+    RESOURCE_WHEAT,
+    RESOURCE_WOOD,
 
 }

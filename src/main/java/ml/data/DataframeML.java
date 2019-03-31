@@ -227,9 +227,11 @@ public class DataframeML implements HasLogging {
 	}
 
 
-	public void removeCol(String string) {
-		dataframe.remove(string);
-		formatMap.remove(string);
+    public void removeCol(String... cols) {
+        for (String string : cols) {
+            dataframe.remove(string);
+            formatMap.remove(string);
+        }
 	}
 
 	public Map<String, Object> rowMap(int i) {
