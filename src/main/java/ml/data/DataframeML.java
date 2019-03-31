@@ -30,14 +30,12 @@ public class DataframeML implements HasLogging {
 	}
 
     public DataframeML(DataframeML frame) {
-
         frame.dataframe.forEach((h, l) -> dataframe.put(h, new ArrayList<>(l)));
         formatMap = new LinkedHashMap<>(frame.formatMap);
         mapping = new LinkedHashMap<>(frame.mapping);
         size = frame.size;
         stats = frame.stats;
         filters = new HashMap<>(frame.filters);
-
     }
 
 	public DataframeML(String csvFile) {
@@ -129,7 +127,8 @@ public class DataframeML implements HasLogging {
     public DataframeML filter(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);
         for (int i = 0; i < list.size(); i++) {
-            if (!v.test(list.get(i))) {
+            Object t = list.get(i);
+			if (t == null || !v.test(t)) {
                 int j = i;
                 dataframe.forEach((c, l) -> l.remove(j));
                 i--;
@@ -228,6 +227,11 @@ public class DataframeML implements HasLogging {
 	}
 
 
+	public void removeCol(String string) {
+		dataframe.remove(string);
+		formatMap.remove(string);
+	}
+
 	public Map<String, Object> rowMap(int i) {
         return dataframe.entrySet().stream().filter(e -> e.getValue().get(i) != null)
             .collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i),
@@ -252,11 +256,11 @@ public class DataframeML implements HasLogging {
 		DataframeUtils.trim(header, trimmingSize, this);
 	}
 
+
 	@SuppressWarnings({ "unchecked", "unused" })
 	public <T> List<T> typedList(List<Object> list, Class<T> c) {
 		return (List<T>) list;
 	}
-
 
 	public static DataframeBuilder builder(String csvFile) {
 		return new DataframeBuilder(csvFile);

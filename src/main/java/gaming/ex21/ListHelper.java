@@ -44,6 +44,7 @@ public final class ListHelper {
                 double layoutX = 0;
 				for (Node node : c.getList()) {
 					node.setLayoutX(layoutX);
+					node.setLayoutY(0);
 					if (node.getParent() == null) {
 						center1.getChildren().add(node);
 					}

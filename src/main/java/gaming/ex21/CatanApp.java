@@ -7,8 +7,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import utils.ClassReflectionUtils;
 
 public class CatanApp extends Application {
+
+	private CatanModel model;
+
+	public CatanModel getModel() {
+		return model;
+	}
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
@@ -20,12 +27,13 @@ public class CatanApp extends Application {
         Scene scene = new Scene(root, size * 3 / 2, size);
         primaryStage.setTitle("Settlers of Catan");
         primaryStage.setScene(scene);
-        CatanModel.create(center, value);
+        model = CatanModel.create(center, value);
         primaryStage.show();
+		ClassReflectionUtils.displayStyleClass(root);
     }
 
-    public static void main(final String[] args) {
-        launch(args);
-    }
+	public static void main(final String[] args) {
+		launch(args);
+	}
 
 }

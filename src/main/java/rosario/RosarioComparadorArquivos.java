@@ -32,8 +32,6 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
     private Map<String, FileChooser> fileChoose = new HashMap<>();
     private boolean openAtExport = true;
 
-
-
     public Map<String, FileChooser> getFileChoose() {
 		return fileChoose;
 	}

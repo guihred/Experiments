@@ -56,6 +56,13 @@ public class UserChart extends VBox {
 
     }
 
+	public boolean anyPlayerPoints(int i, CatanModel model) {
+		return PlayerColor.vals().stream().mapToLong(e -> countPoints(e, model)).max().orElse(0) >= i;
+	}
+    public long countPoints(final PlayerColor newPlayer, CatanModel model) {
+    	return countPoints(newPlayer, model.settlePoints, model.usedCards, model.edges);
+    }
+
     public long countPoints(final PlayerColor newPlayer, List<SettlePoint> settlePoints,
         Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
         long pointsCount = settlePoints.stream().filter(s -> s.getElement() instanceof Village)
@@ -122,7 +129,7 @@ public class UserChart extends VBox {
                     BorderPane root = (BorderPane) availablePorts.getScene().getRoot();
                     Pane center = (Pane) root.getCenter();
                     center.getChildren().clear();
-                    Pane right = (Pane) root.getRight();
+					Pane right = (Pane) root.getLeft();
                     right.getChildren().clear();
                     CatanModel.create(center, right);
                 });
@@ -134,7 +141,7 @@ public class UserChart extends VBox {
         return dice1.throwDice() + dice2.throwDice();
     }
 
-    public void updatePorts(final PlayerColor newV, List<Port> ports, List<SettlePoint> settlePoints,
+	public void updatePorts(final PlayerColor newV, List<Port> ports, List<SettlePoint> settlePoints,
         ObjectProperty<PlayerColor> currentPlayer) {
         ports.stream().filter(p -> !availablePorts.getChildren().contains(p.getStatus()))
             .filter(p -> settlePoints.stream().filter(s -> s.getElement() != null)

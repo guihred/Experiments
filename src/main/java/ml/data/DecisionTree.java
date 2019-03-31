@@ -14,7 +14,7 @@ public class DecisionTree {
         if (question == null || question.getInfoGain() == 0) {
             return new DecisionNode(label, frame);
         }
-        DataframeML trueFrame = new DataframeML(frame).filter(question.getColName(), c -> question.answer(c));
+		DataframeML trueFrame = new DataframeML(frame).filter(question.getColName(), question::answer);
         DataframeML falseFrame = new DataframeML(frame).filter(question.getColName(), c -> !question.answer(c));
                 
         DecisionNode trueTree = buildTree(trueFrame, label);
@@ -27,15 +27,16 @@ public class DecisionTree {
         DataframeML dataframeML = new DataframeML();
         dataframeML.addCols("Color", String.class);
         dataframeML.addCols("Diam", Integer.class);
-        dataframeML.addCols("Label", String.class);
+		String labelHeader = "Label";
+		dataframeML.addCols(labelHeader, String.class);
         dataframeML.addAll("Green", 3, "Apple");
         dataframeML.addAll("Yellow", 3, "Apple");
         dataframeML.addAll("Red", 1, "Grape");
         dataframeML.addAll("Red", 1, "Grape");
         dataframeML.addAll("Yellow", 3, "Lemon");
-        LOG.info("{}", gini(dataframeML, "Label"));
+		LOG.info("{}", gini(dataframeML, labelHeader));
 
-        DecisionNode buildTree = buildTree(dataframeML, "Label");
+		DecisionNode buildTree = buildTree(dataframeML, labelHeader);
         Map<String, Object> row = dataframeML.rowMap(4);
         LOG.info("{}", buildTree);
         Object predict = buildTree.predict(row);
@@ -47,7 +48,7 @@ public class DecisionTree {
         cols.remove(label);
         double bestGain = 0.00;
         Question bestQuestion = null;
-        double currentUncenrtainty = gini(dataframe, label);
+		double currentUncertainty = gini(dataframe, label);
         for (String col : cols) {
             Set<Object> values = dataframe.freeCategory(col);
             QuestionType[] values2 = dataframe.getFormat(col) == String.class ? new QuestionType[] { QuestionType.EQ }
@@ -60,7 +61,7 @@ public class DecisionTree {
                     if (trueFrame.getSize() == 0 || falseFrame.getSize() == 0) {
                         continue;
                     }
-                    double infoGain = infoGain(trueFrame, falseFrame, currentUncenrtainty, label);
+					double infoGain = infoGain(trueFrame, falseFrame, currentUncertainty, label);
                     if (infoGain >= bestGain) {
                         bestGain = infoGain;
                         bestQuestion = question;
@@ -86,16 +87,15 @@ public class DecisionTree {
                 impurity -= prob * prob;
             }
             return impurity;
-        } else {
-            Set<Object> categorize = dataframe.freeCategory(header);
-            Map<Double, Long> histogram = dataframe.histogram(header, categorize.size());
-            double impurity = 1.;
-            for (Object cat : categorize) {
-                double prob = histogram.get(cat) / size;
-                impurity -= prob * prob;
-            }
-            return impurity;
         }
+		Set<Object> categorize = dataframe.freeCategory(header);
+		Map<Double, Long> histogram = dataframe.histogram(header, categorize.size());
+		double impurity = 1.;
+		for (Object cat : categorize) {
+		    double prob = histogram.get(cat) / size;
+		    impurity -= prob * prob;
+		}
+		return impurity;
 
     }
 
@@ -107,13 +107,14 @@ public class DecisionTree {
 
     public static void main(String[] args) {
         DataframeML build = DataframeML.builder("out/catan_log.txt").build();
+		List<Object> list = build.list("ACTION");
+		list.add(list.remove(0));
         DecisionNode buildTree = buildTree(build, "ACTION");
         LOG.info("{}", buildTree);
-
     }
 
     public static class DecisionNode {
-
+ 
         private Random random;
 
         private DecisionNode trueNode;

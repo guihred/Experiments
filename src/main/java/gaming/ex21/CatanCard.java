@@ -24,7 +24,7 @@ public class CatanCard extends Rectangle {
         setOnMouseClicked(e -> object.accept(this));
     }
 
-    public CatanCard(final ResourceType type, Consumer<CatanCard> object) {
+	public CatanCard(ResourceType type, Consumer<CatanCard> object) {
         resource = type;
         setStandard(type.getResource());
         setOnMouseClicked(e -> object.accept(this));
@@ -64,7 +64,7 @@ public class CatanCard extends Rectangle {
         setFill(CatanResource.newPattern(type));
         setWidth(PREF_WIDTH);
         setHeight(PREF_HEIGHT);
-
+		getStyleClass().add(Objects.toString(development, Objects.toString(resource + "-card")));
         InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
         effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
     }

@@ -107,7 +107,7 @@ public class SettlePoint extends Group {
 	}
 
 	public boolean isPointDisabled() {
-		return neighbors.stream().anyMatch(e -> e.element != null);
+		return element != null || neighbors.stream().anyMatch(e -> e.element != null);
 	}
 
 	public boolean isSuitableForCity(final City city) {

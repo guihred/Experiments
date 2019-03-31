@@ -4,7 +4,7 @@ import java.util.*;
 import javafx.scene.paint.Color;
 
 public enum PlayerColor {
-    GOLD(Color.GOLD),
+	YELLOW(Color.GOLD),
     RED(Color.RED),
     BLUE(Color.BLUE),
 	GREEN(Color.GREEN);

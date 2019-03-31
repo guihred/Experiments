@@ -1,6 +1,6 @@
 package gaming.ex21;
 
-enum CatanAction {
+public enum CatanAction {
     EXCHANGE,
     MAKE_DEAL,
     THROW_DICE,

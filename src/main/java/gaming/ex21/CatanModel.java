@@ -31,7 +31,7 @@ public class CatanModel {
     protected final Map<PlayerColor, List<CatanCard>> cards = PlayerColor.newMapList();
     protected final Map<PlayerColor, List<DevelopmentType>> usedCards = PlayerColor.newMapList();
     protected final ObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
-    private final ObservableList<CatanResource> elements = FXCollections.observableArrayList();
+	protected final ObservableList<CatanResource> elements = FXCollections.observableArrayList();
     private final DragContext dragContext = new DragContext();
     protected final BooleanProperty diceThrown = new SimpleBooleanProperty(false);
     private final Pane center;
@@ -46,7 +46,7 @@ public class CatanModel {
     protected final Thief thief = new Thief();
     protected final List<Port> ports = Port.getPorts();
     protected final List<DevelopmentType> developmentCards = DevelopmentType.getDevelopmentCards();
-    protected final UserChart userChart = new UserChart();
+    private final UserChart userChart = new UserChart();
 
     public CatanModel(Pane center, Pane right) {
         this.center = center;
@@ -70,6 +70,25 @@ public class CatanModel {
         right.getChildren().add(addCombinations());
         currentPlayer.set(PlayerColor.BLUE);
         onSkipTurn();
+    }
+
+    public PlayerColor getCurrentPlayer() {
+		return currentPlayer.get();
+	}
+
+	public ObservableList<CatanResource> getElements() {
+		return elements;
+	}
+
+    public UserChart getUserChart() {
+		return userChart;
+	}
+
+    public Boolean isDealUnfeasible(Deal deal) {
+        PlayerColor proposer = deal.getProposer();
+        return currentPlayer.get() == proposer
+            || cards.get(currentPlayer.get()).stream().noneMatch(e -> e.getResource() == deal.getWantedType())
+            || !containsEnough(cards.get(proposer), deal.getDealTypes());
     }
 
     private Node addCombinations() {
@@ -106,8 +125,7 @@ public class CatanModel {
                 if (resources.get(k) != ResourceType.DESERT) {
                     terrain.setNumber(numbers.remove(0));
                 }
-                final Terrain cell = terrain;
-                cell.createSettlePoints(x, y, settlePoints);
+                terrain.createSettlePoints(x, y, settlePoints);
                 terrains.add(terrain);
                 root.getChildren().add(terrain);
             }
@@ -212,7 +230,7 @@ public class CatanModel {
         }
     }
 
-    private void handleMouseReleased(MouseEvent event) {
+	private void handleMouseReleased(MouseEvent event) {
         if (dragContext.getElement() instanceof Village) {
             onReleaseVillage(event, (Village) dragContext.getElement());
         }
@@ -235,13 +253,6 @@ public class CatanModel {
     private void invalidateDice() {
         diceThrown.set(!diceThrown.get());
         diceThrown.set(!diceThrown.get());
-    }
-
-    private Boolean isDealUnfeasible(Deal deal) {
-        PlayerColor proposer = deal.getProposer();
-        return currentPlayer.get() == proposer
-            || cards.get(currentPlayer.get()).stream().noneMatch(e -> e.getResource() == deal.getWantedType())
-            || !containsEnough(cards.get(proposer), deal.getDealTypes());
     }
 
     private boolean isPositioningPhase() {
@@ -282,9 +293,9 @@ public class CatanModel {
 
     private void onChangePlayer(PlayerColor newV) {
         updatePoints(newV);
-        userChart.setColor(newV);
+        getUserChart().setColor(newV);
         List<CatanCard> currentCards = cards.get(currentPlayer.get());
-        userChart.setCards(currentCards);
+        getUserChart().setCards(currentCards);
     }
 
     private void onCombinationClicked(Combination combination) {
@@ -342,7 +353,7 @@ public class CatanModel {
 
     private void onReleaseCity(MouseEvent event, City element) {
         Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> inArea(event, e))
-            .filter(t -> !t.isPointDisabled()).filter(e -> e.isSuitableForCity(element)).findFirst();
+				.filter(e -> e.isSuitableForCity(element)).findFirst();
         if (findFirst.isPresent()) {
             findFirst.get().setElement(element);
             CatanLogger.log(this, CatanAction.PLACE_CITY);
@@ -383,7 +394,8 @@ public class CatanModel {
 
     private void onReleaseVillage(MouseEvent event, Village village) {
         Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> inArea(event, e))
-            .filter(t -> !t.isPointDisabled()).filter(t -> isPositioningPhase() || t.pointAcceptVillage(village))
+				.filter(t -> !t.isPointDisabled())
+				.filter(t -> isPositioningPhase() || t.pointAcceptVillage(village))
             .findFirst();
         if (findFirst.isPresent()) {
             findFirst.get().setElement(village);
@@ -517,10 +529,12 @@ public class CatanModel {
         if (!playersToSteal.isEmpty()) {
             Collections.shuffle(playersToSteal);
             List<CatanCard> list = cards.get(playersToSteal.get(0));
-            if (!list.isEmpty()) {
-                Collections.shuffle(list);
-                CatanCard catanCard = list.remove(0);
-                cards.get(currentPlayer.get()).add(catanCard);
+			Collections.shuffle(list);
+			Optional<CatanCard> catanCard = list.parallelStream().filter(e -> e.getResource() != null).findFirst();
+			if (catanCard.isPresent()) {
+				CatanCard o = catanCard.get();
+				list.remove(o);
+				cards.get(currentPlayer.get()).add(o);
             }
         }
         onChangePlayer(currentPlayer.get());
@@ -529,7 +543,7 @@ public class CatanModel {
     }
 
     private void throwDice() {
-        int diceValue = userChart.throwDice();
+        int diceValue = getUserChart().throwDice();
         settlePoints.stream().filter(e -> e.getElement() != null)
             .flatMap(e -> e.getElement() instanceof City ? Stream.of(e, e) : Stream.of(e)).forEach(
                 e -> cards.get(e.getElement().getPlayer())
@@ -546,12 +560,13 @@ public class CatanModel {
         CatanLogger.log(this, CatanAction.THROW_DICE);
     }
 
-    private void updatePoints(PlayerColor newV) {
-        userChart.setPoints(newV, settlePoints, usedCards, edges);
-        userChart.updatePorts(newV, ports, settlePoints, currentPlayer);
+	private void updatePoints(PlayerColor newV) {
+        getUserChart().setPoints(newV, settlePoints, usedCards, edges);
+        getUserChart().updatePorts(newV, ports, settlePoints, currentPlayer);
+		invalidateDice();
     }
 
-    public static CatanModel create(Pane root, Pane value) {
+	public static CatanModel create(Pane root, Pane value) {
         return new CatanModel(root, value);
     }
 }
