@@ -52,7 +52,7 @@ public class DataframeML implements HasLogging {
 		size=Math.max(size, list.size());
 	}
 
-	public void addAll(Object... obj) {
+    public void addAll(Object... obj) {
         Collection<List<Object>> values = dataframe.values();
         int i = 0;
         for (Iterator<List<Object>> iterator = values.iterator(); iterator.hasNext();) {
@@ -75,13 +75,13 @@ public class DataframeML implements HasLogging {
         formatMap.put(string, classes);
     }
 
-    public void apply(String header, DoubleUnaryOperator mapper) {
+	public void apply(String header, DoubleUnaryOperator mapper) {
 		dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
 				.map(mapper).boxed().collect(Collectors.toList()));
 		formatMap.put(header, Double.class);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	public Set<String> categorize(String header) {
 		if (categories.containsKey(header)) {
 			return categories.get(header);
@@ -91,6 +91,11 @@ public class DataframeML implements HasLogging {
 		categories.put(header, checkedSet);
 		return checkedSet;
 
+	}
+
+	public void clear() {
+        dataframe.values().forEach(e -> e.clear());
+	    size=0;
 	}
 
 	public Set<String> cols() {

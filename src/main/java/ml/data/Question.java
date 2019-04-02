@@ -46,7 +46,7 @@ class Question {
 
     @Override
     public String toString() {
-        return String.format("Is %s %s %s", getColName(), type.getSign(), ob);
+        return String.format("%s %s %s", getColName(), type.getSign(), ob);
     }
 
     public enum QuestionType {

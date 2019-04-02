@@ -18,6 +18,7 @@ public final class CatanLogger {
 	// private static final String VILLAGE = "VILLAGE_";
 	// private static final String CITY = "CITY_";
 	private static final String WINNER = "WINNER";
+    private static final String POINTS = "POINTS";
 	private static final String PLAYER = "PLAYER";
 	private static final String ACTION = "ACTION";
 	private static final Logger LOG = HasLogging.log();
@@ -77,6 +78,7 @@ public final class CatanLogger {
 				.map(e -> Objects.toString(e.getResource(), Objects.toString(e.getDevelopment())))
 				.collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 		currentState.put(PLAYER, playerColor.toString());
+        currentState.put(POINTS, model.getUserChart().countPoints(playerColor, model));
 		for (ResourceType r : ResourceType.getResources()) {
 			currentState.put(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
 		}
@@ -202,6 +204,7 @@ public final class CatanLogger {
 		dataframeML.addCols(ACTION, String.class);
 		dataframeML.addCols(WINNER, String.class);
 		dataframeML.addCols(HAS_DEAL, String.class);
+        dataframeML.addCols(POINTS, Long.class);
 		for (Class<? extends CatanResource> class1 : HAS_CLASSES) {
 			dataframeML.addCols("HAS_" + class1.getSimpleName().toUpperCase(), String.class);
 		}

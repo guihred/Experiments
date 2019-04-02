@@ -19,36 +19,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 
     private Random random = new Random();
 
-//    @Test
-    public void testaToolsVerify() throws Exception {
-        show(CatanApp.class);
-        List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
-            .collect(Collectors.toList());
-        Collections.shuffle(allEdge);
-        List<Village> allVillages = new ArrayList<>();
-        List<City> cities = new ArrayList<>();
-        List<SettlePoint> settlePoints = lookup(SettlePoint.class::isInstance).queryAllAs(SettlePoint.class).stream()
-            .collect(Collectors.toList());
-        List<Road> allRoads = new ArrayList<>();
-        Collections.shuffle(settlePoints);
-        List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
-            .collect(Collectors.toList());
-        allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
-        Set<ButtonBase> clickedButtons = new HashSet<>();
-        List<Terrain> allTerrains = lookup(Terrain.class::isInstance).queryAllAs(Terrain.class).stream()
-            .collect(Collectors.toList());
-        Collections.shuffle(allTerrains);
-        for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
-            clickVillages(allVillages, settlePoints);
-            clickCities(cities);
-            clickRoads(allEdge, allRoads);
-            clickThiefs(allTerrains);
-            clickCards();
-            clickButton(allButtons, clickedButtons);
-            getLogger().trace("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
-        }
-    }
-
     @Test
     public void testDecisions() throws Exception {
         CatanApp newInstance = show(CatanApp.class);
@@ -57,7 +27,8 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));
         DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION");
-        getLogger().info("{}", decisionTree);
+//        getLogger().info("{}", decisionTree);
+        getLogger().info("{}", decisionTree.size());
 
         List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
             .collect(Collectors.toList());
@@ -90,11 +61,45 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             if (makeDecision) {
                 getLogger().info("{}/{}", i + 1, MAX_TRIES * 2);
             } else {
-                getLogger().info("{}", action);
-                makeDecision(getRandomAction(), allEdge, allVillages, cities, settlePoints, allRoads, allTerrains, allButtons,
-                    clickedButtons);
-                i--;
+                CatanAction randomAction = getRandomAction();
+                boolean decision = makeDecision(randomAction, allEdge, allVillages, cities, settlePoints, allRoads,
+                    allTerrains, allButtons, clickedButtons);
+                if (decision) {
+                    getLogger().info("{}/{} {}", i + 1, MAX_TRIES * 2, randomAction);
+                } else {
+                    i--;
+                }
             }
+        }
+    }
+
+    @Test
+    public void testToolsVerify() throws Exception {
+        show(CatanApp.class);
+        List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
+            .collect(Collectors.toList());
+        Collections.shuffle(allEdge);
+        List<Village> allVillages = new ArrayList<>();
+        List<City> cities = new ArrayList<>();
+        List<SettlePoint> settlePoints = lookup(SettlePoint.class::isInstance).queryAllAs(SettlePoint.class).stream()
+            .collect(Collectors.toList());
+        List<Road> allRoads = new ArrayList<>();
+        Collections.shuffle(settlePoints);
+        List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
+            .collect(Collectors.toList());
+        allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
+        Set<ButtonBase> clickedButtons = new HashSet<>();
+        List<Terrain> allTerrains = lookup(Terrain.class::isInstance).queryAllAs(Terrain.class).stream()
+            .collect(Collectors.toList());
+        Collections.shuffle(allTerrains);
+        for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
+            clickVillages(allVillages, settlePoints);
+            clickCities(cities);
+            clickRoads(allEdge, allRoads);
+            clickThiefs(allTerrains);
+            clickCards();
+            clickButton(allButtons, clickedButtons);
+            getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
         }
     }
 
@@ -112,12 +117,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         if (model.getElements().stream().anyMatch(Road.class::isInstance)) {
             return CatanAction.PLACE_ROAD;
         }
-        CatanAction valueOf = CatanAction.valueOf(Objects.toString(buildTree.predict(row)));
-        String cardClass = getCardClass(valueOf);
-        if (valueOf.name().startsWith("SELECT_") && getCards().stream().noneMatch(e -> !matches(cardClass, e))) {
-            return getRandomAction();
-        }
-        return valueOf;
+        return CatanAction.valueOf(Objects.toString(buildTree.predict(row)));
     }
 
     private void clickButton(List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {

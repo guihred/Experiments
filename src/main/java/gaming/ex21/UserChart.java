@@ -38,7 +38,7 @@ public class UserChart extends VBox {
     private final Group cardGroup = new Group();
 
     public UserChart() {
-        VBox vBox = new VBox();
+        VBox otherPlayers = new VBox();
         for (PlayerColor playerColor : PlayerColor.values()) {
             SimpleLongProperty value = new SimpleLongProperty(0);
             playersPoints.put(playerColor, value);
@@ -47,12 +47,13 @@ public class UserChart extends VBox {
             HBox e = new HBox(newImage, build);
             e.visibleProperty().bind(color.isEqualTo(playerColor).not());
             e.managedProperty().bind(e.visibleProperty());
-            vBox.getChildren().add(e);
+            otherPlayers.getChildren().add(e);
         }
-        VBox vBox2 = new VBox(userImage, userPoints, new HBox(dice1, dice2));
+        VBox currentStatus = new VBox(userImage, userPoints, new HBox(dice1, dice2));
         largestArmy.visibleProperty().bind(color.isEqualTo(largestArmy.playerProperty()));
         longestRoad.visibleProperty().bind(color.isEqualTo(longestRoad.playerProperty()));
-        getChildren().addAll(new HBox(vBox, vBox2, availablePorts, largestArmy, longestRoad), cardGroup);
+        getChildren().addAll(new HBox(otherPlayers, currentStatus, availablePorts, largestArmy, longestRoad),
+            cardGroup);
 
     }
 
