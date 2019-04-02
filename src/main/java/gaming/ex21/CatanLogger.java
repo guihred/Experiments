@@ -13,6 +13,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class CatanLogger {
+	private static final String SELECT_RESOURCE = "SELECT_RESOURCE";
 	private static final String HAS_DEAL = "HAS_DEAL";
 	// private static final String ROAD = "ROAD_";
 	// private static final String VILLAGE = "VILLAGE_";
@@ -91,6 +92,7 @@ public final class CatanLogger {
 		currentState.put(WINNER, currentWinner);
 		boolean anyMatch = model.deals.stream().anyMatch(m -> !model.isDealUnfeasible(m));
 		currentState.put(HAS_DEAL, Objects.toString(anyMatch));
+		currentState.put(SELECT_RESOURCE, Objects.toString(model.resourcesToSelect));
 		
 		for (Class<? extends CatanResource> class1 : HAS_CLASSES) {
 			currentState.put("HAS_" + class1.getSimpleName().toUpperCase(),
@@ -98,6 +100,11 @@ public final class CatanLogger {
 		}
 		
 		return currentState;
+	}
+
+	public static void winner(PlayerColor playerWinner) {
+		DATAFRAME_ML.filter(PLAYER, c->c.equals(playerWinner.toString()));
+		DATAFRAME_ML.forEachRow(CatanLogger::appendLine);
 	}
 
 	private static CatanAction action(Combination combination) {
@@ -133,7 +140,7 @@ public final class CatanLogger {
 		}
 	}
 
-	private static CatanAction action(ResourceType resource) {
+    private static CatanAction action(ResourceType resource) {
 		switch (resource) {
 			case BRICK:
 				return CatanAction.SELECT_BRICK;
@@ -151,7 +158,7 @@ public final class CatanLogger {
 		return null;
 	}
 
-    private static CatanAction actionResource(ResourceType resource) {
+	private static CatanAction actionResource(ResourceType resource) {
         switch (resource) {
             case BRICK:
                 return CatanAction.RESOURCE_BRICK;
@@ -177,11 +184,13 @@ public final class CatanLogger {
 			try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
 				String nextLine = scanner.nextLine();
 				if (!collect.equals(nextLine)) {
-					file.delete();
 					exists = false;
 				}
 			} catch (Exception e) {
 				LOG.error("{}", e);
+			}
+			if (!exists) {
+				file.delete();
 			}
 		}
 
@@ -203,8 +212,9 @@ public final class CatanLogger {
 		dataframeML.addCols(PLAYER, String.class);
 		dataframeML.addCols(ACTION, String.class);
 		dataframeML.addCols(WINNER, String.class);
+		dataframeML.addCols(SELECT_RESOURCE, String.class);
 		dataframeML.addCols(HAS_DEAL, String.class);
-        dataframeML.addCols(POINTS, Long.class);
+		dataframeML.addCols(POINTS, Long.class);
 		for (Class<? extends CatanResource> class1 : HAS_CLASSES) {
 			dataframeML.addCols("HAS_" + class1.getSimpleName().toUpperCase(), String.class);
 		}
@@ -214,12 +224,6 @@ public final class CatanLogger {
 						Stream.of(DevelopmentType.values()).map(DevelopmentType::toString))
 				.collect(Collectors.toList());
 		dataframeML.addCols(resources, Long.class);
-
-		// for (PlayerColor r : PlayerColor.values()) {
-		// dataframeML.addCols(CITY + r.toString(), Long.class);
-		// dataframeML.addCols(VILLAGE + r.toString(), Long.class);
-		// dataframeML.addCols(ROAD + r.toString(), Long.class);
-		// }
 
 		return dataframeML;
 	}

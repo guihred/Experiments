@@ -27,8 +27,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));
         DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION");
-//        getLogger().info("{}", decisionTree);
-        getLogger().info("{}", decisionTree.size());
 
         List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
             .collect(Collectors.toList());
@@ -51,7 +49,9 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             // while (model.getCurrentPlayer() == PlayerColor.GREEN) {
             // sleep(1000);
             // }
-            if (model.getUserChart().anyPlayerPoints(9, model)) {
+			if (model.getUserChart().anyPlayerPoints(9, model)) {
+				PlayerColor playerWinner = model.getUserChart().getPlayerWinner(model);
+				CatanLogger.winner(playerWinner);
                 return;
             }
 
@@ -71,9 +71,13 @@ public class FXEngineCatanTest extends AbstractTestExecution {
                 }
             }
         }
+		PlayerColor playerWinner = model.getUserChart().getPlayerWinner(model);
+		CatanLogger.winner(playerWinner);
+		getLogger().info("{}", decisionTree);
+
     }
 
-    @Test
+	@Test
     public void testToolsVerify() throws Exception {
         show(CatanApp.class);
         List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()

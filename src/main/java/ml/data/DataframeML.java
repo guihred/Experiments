@@ -164,6 +164,12 @@ public class DataframeML implements HasLogging {
 		dataframe.forEach(action);
 	}
 
+	public void forEachRow(Consumer<Map<String, Object>> foreach) {
+		for (int i = 0; i < size; i++) {
+			foreach.accept(rowMap(i));
+		}
+	}
+
 	public Set<Object> freeCategory(String header) {
     	return new HashSet<>(dataframe.get(header));
     	
@@ -211,7 +217,8 @@ public class DataframeML implements HasLogging {
 		dataframe.put(header, dataframe.get(header).stream().map(mapper).collect(Collectors.toList()));
 	}
 
-	public void only(String header, Predicate<String> v, IntConsumer cons) {
+
+    public void only(String header, Predicate<String> v, IntConsumer cons) {
 		List<Object> list = dataframe.get(header);
 		for (int i = 0; i < list.size(); i++) {
 			if (v.test(Objects.toString(list.get(i)))) {
@@ -220,8 +227,7 @@ public class DataframeML implements HasLogging {
 		}
 	}
 
-
-    public void readCSV(String csvFile) {
+	public void readCSV(String csvFile) {
 		try (Scanner scanner = new Scanner(ResourceFXUtils.toFile(csvFile), StandardCharsets.UTF_8.displayName())) {
 			List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
 					.collect(Collectors.toList());
@@ -244,10 +250,9 @@ public class DataframeML implements HasLogging {
 	}
 
 	public Map<String, Object> rowMap(int i) {
-        return dataframe.entrySet().stream().filter(e -> e.getValue().get(i) != null)
-            .collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i),
-                DataframeUtils.throwError(),
-                LinkedHashMap<String, Object>::new));
+		return dataframe.entrySet().stream().filter(e -> e.getValue().get(i) != null)
+				.collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i),
+						DataframeUtils.throwError(), LinkedHashMap<String, Object>::new));
 	}
 
 	public DoubleSummaryStatistics summary(String header) {
