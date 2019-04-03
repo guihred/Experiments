@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ml.data.DataframeML;
+import org.assertj.core.util.Files;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -15,9 +16,6 @@ import utils.ResourceFXUtils;
 public final class CatanLogger {
 	private static final String SELECT_RESOURCE = "SELECT_RESOURCE";
 	private static final String HAS_DEAL = "HAS_DEAL";
-	// private static final String ROAD = "ROAD_";
-	// private static final String VILLAGE = "VILLAGE_";
-	// private static final String CITY = "CITY_";
 	private static final String WINNER = "WINNER";
     private static final String POINTS = "POINTS";
 	private static final String PLAYER = "PLAYER";
@@ -190,7 +188,7 @@ public final class CatanLogger {
 				LOG.error("{}", e);
 			}
 			if (!exists) {
-				file.delete();
+                Files.delete(file);
 			}
 		}
 

@@ -1,5 +1,4 @@
 package ml.data;
-import static ml.data.DataframeUtils.displayCorrelation;
 import static ml.data.DataframeUtils.displayStats;
 import static ml.data.DataframeUtils.readRows;
 
@@ -60,7 +59,7 @@ public class DataframeML implements HasLogging {
             list.add(obj[i]);
             i++;
         }
-        size = dataframe.values().stream().mapToInt(e -> e.size()).max().orElse(0);
+        size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
     }
 
 	public <T extends Comparable<?>> void addCols(List<String> cols, Class<T> classes) {
@@ -94,16 +93,12 @@ public class DataframeML implements HasLogging {
 	}
 
 	public void clear() {
-        dataframe.values().forEach(e -> e.clear());
+        dataframe.values().forEach(List<Object>::clear);
 	    size=0;
 	}
 
 	public Set<String> cols() {
 		return dataframe.keySet();
-	}
-
-	public void correlation() {
-        displayCorrelation(this);
 	}
 
 	public List<Entry<Number, Number>> createNumberEntries(String feature, String target) {
@@ -143,7 +138,7 @@ public class DataframeML implements HasLogging {
                 i--;
             }
         }
-        size = dataframe.values().stream().mapToInt(e -> e.size()).max().orElse(0);
+        size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
         return this;
     }
 
@@ -156,7 +151,7 @@ public class DataframeML implements HasLogging {
 				i--;
 			}
 		}
-        size = dataframe.values().stream().mapToInt(e -> e.size()).max().orElse(0);
+        size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
         return this;
 	}
 
@@ -201,22 +196,19 @@ public class DataframeML implements HasLogging {
 		double binSize = (max - min) / bins;
 		return columnList.parallelStream()
 				.collect(Collectors.groupingBy(e -> Math.ceil(e / binSize) * binSize, Collectors.counting()));
-
 	}
 
 	public List<Object> list(String header) {
 		return dataframe.get(header);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 	public <T> List<T> list(String header, Class<T> c) {
-		return (List) dataframe.get(header);
+        return DataframeUtils.typedList(dataframe.get(header), c);
 	}
 
 	public void map(String header, UnaryOperator<Object> mapper) {
 		dataframe.put(header, dataframe.get(header).stream().map(mapper).collect(Collectors.toList()));
 	}
-
 
     public void only(String header, Predicate<String> v, IntConsumer cons) {
 		List<Object> list = dataframe.get(header);
@@ -266,16 +258,6 @@ public class DataframeML implements HasLogging {
 	@Override
 	public String toString() {
 		return DataframeUtils.toString(this);
-	}
-
-
-	public void trim(String header, int trimmingSize) {
-		DataframeUtils.trim(header, trimmingSize, this);
-	}
-
-	@SuppressWarnings({ "unchecked", "unused" })
-	public <T> List<T> typedList(List<Object> list, Class<T> c) {
-		return (List<T>) list;
 	}
 
     public static DataframeBuilder builder(String csvFile) {

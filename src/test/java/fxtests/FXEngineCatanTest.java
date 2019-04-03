@@ -9,8 +9,8 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import ml.data.DataframeML;
+import ml.data.DecisionNode;
 import ml.data.DecisionTree;
-import ml.data.DecisionTree.DecisionNode;
 import org.junit.Test;
 
 public class FXEngineCatanTest extends AbstractTestExecution {
@@ -50,9 +50,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             // sleep(1000);
             // }
 			if (model.getUserChart().anyPlayerPoints(9, model)) {
-				PlayerColor playerWinner = model.getUserChart().getPlayerWinner(model);
-				CatanLogger.winner(playerWinner);
-                return;
+                break;
             }
 
             CatanAction action = chooseAction(decisionTree, model);

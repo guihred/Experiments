@@ -28,7 +28,8 @@ public class DataframeBuilder extends DataframeML {
 		return dataframeML;
 	}
 
-	public DataframeBuilder filter(String d, Predicate<Object> fil) {
+    @Override
+    public DataframeBuilder filter(String d, Predicate<Object> fil) {
 		dataframeML.filters.put(d, fil);
 		return this;
 	}

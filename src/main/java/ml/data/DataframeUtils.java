@@ -169,7 +169,7 @@ public final class DataframeUtils extends DataframeML {
 
         Class<?> class1 = dataframe.getFormat(header);
         if (class1 == String.class) {
-            QuickSortML.sort(dataframe.typedList(list, String.class), (i, j) -> {
+            QuickSortML.sort(typedList(list, String.class), (i, j) -> {
                 for (List<Object> list2 : trimmedColumns) {
                     Object object = list2.get(i);
                     list2.set(i, list2.get(j));
@@ -185,6 +185,10 @@ public final class DataframeUtils extends DataframeML {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> typedList(List<Object> list, Class<T> c) {
+        return (List<T>) list;
+    }
 
     private static void categorizeIfCategorizable(DataframeML dataframe, String key, Object tryNumber) {
         if (dataframe.categories.containsKey(key)) {

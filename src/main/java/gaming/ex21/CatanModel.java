@@ -185,6 +185,16 @@ public class CatanModel {
         return developmentCards.isEmpty();
     }
 
+    private int getDirection() {
+        if (turnCount == 4) {
+            return 0;
+        } else if (turnCount > 4 && turnCount < 8) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
     private void handleMouseDragged(MouseEvent event) {
         double offsetX = event.getX() + dragContext.getX();
         double offsetY = event.getY() + dragContext.getY();
@@ -216,7 +226,7 @@ public class CatanModel {
         }
     }
 
-    private void handleMousePressed(MouseEvent event) {
+	private void handleMousePressed(MouseEvent event) {
         Optional<Node> resourcePressed = center.getChildren().parallelStream()
             .filter(e -> e.getBoundsInParent().contains(event.getX(), event.getY())).findFirst();
         if (resourcePressed.isPresent()) {
@@ -230,7 +240,7 @@ public class CatanModel {
         }
     }
 
-	private void handleMouseReleased(MouseEvent event) {
+    private void handleMouseReleased(MouseEvent event) {
         if (dragContext.getElement() instanceof Village) {
             onReleaseVillage(event, (Village) dragContext.getElement());
         }
@@ -486,7 +496,7 @@ public class CatanModel {
     private void onSkipTurn() {
         PlayerColor value = currentPlayer.get();
         PlayerColor[] values = PlayerColor.values();
-        int next = turnCount == 4 ? 0 : turnCount > 4 && turnCount < 8 ? -1 : 1;
+        int next = getDirection();
         PlayerColor playerColor = values[(value.ordinal() + next + values.length) % values.length];
         currentPlayer.set(playerColor);
         diceThrown.set(false);
