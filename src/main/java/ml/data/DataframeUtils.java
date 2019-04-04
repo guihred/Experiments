@@ -185,7 +185,7 @@ public final class DataframeUtils extends DataframeML {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unused", "unchecked" })
     public static <T> List<T> typedList(List<Object> list, Class<T> c) {
         return (List<T>) list;
     }

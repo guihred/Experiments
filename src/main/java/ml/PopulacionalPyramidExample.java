@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
@@ -55,25 +56,24 @@ public class PopulacionalPyramidExample extends Application {
         canvas.widthProperty().bind(root.widthProperty().add(-50));
 
         Set<String> categorize = x.categorize(countryHeader);
-        ComboBox<String> comboBox = new SimpleComboBoxBuilder<String>()
-                .items(FXCollections.observableArrayList(categorize.stream().sorted().collect(Collectors.toList())))
-                .select(0)
-                .onSelect(v -> canvas.countryProperty().set(v)).build();
+        ObservableList<String> observableArrayList = FXCollections.observableArrayList(categorize.stream().sorted().collect(Collectors.toList()));
+        ComboBox<String> countryBox = new SimpleComboBoxBuilder<String>()
+            .items(observableArrayList)
+            .select(0)
+            .onSelect(country -> canvas.countryProperty().set(country)).build();
         ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>()
-                .items(canvas.yearsOptionsProperty())
-                .onSelect(v -> canvas.yearProperty().set(v != null ? v : DEFAULT_YEAR))
-                .select(0)
-                .build();
+            .items(canvas.yearsOptionsProperty())
+            .onSelect(yearV -> canvas.yearProperty().set(yearV != null ? yearV : DEFAULT_YEAR))
+            .select(0).build();
 
 		canvas.setHistogram(x);
 
         left.getChildren().add(new Text(countryHeader));
-        left.getChildren().add(comboBox);
+        left.getChildren().add(countryBox);
         left.getChildren().add(new Text("Year"));
         left.getChildren().add(year);
         left.getChildren().add(newButton("Export", e -> ResourceFXUtils.take(canvas)));
         double ratio = 3. / 4;
-
         final int width = 800;
         Scene theScene = new Scene(root, width, width * ratio);
         canvas.lineSizeProperty().set(ratio);

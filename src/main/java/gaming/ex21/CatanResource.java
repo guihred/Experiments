@@ -25,7 +25,7 @@ public abstract class CatanResource extends Group {
         getChildren().add(view);
         setManaged(false);
         player.addListener(
-                (ob, old, newV) -> view.setImage(convertImage(image, newV != null ? newV.getColor() : Color.BLACK)));
+            (obj, old, newV) -> view.setImage(convertImage(image, newV != null ? newV.getColor() : Color.BLACK)));
     }
 
     public Bounds getImage() {
@@ -63,17 +63,17 @@ public abstract class CatanResource extends Group {
     }
 
     public static ImageView newImage(String url) {
-        ImageView el = new ImageView(ResourceFXUtils.toExternalForm(CATAN + url));
-        el.setPreserveRatio(true);
-        return el;
+        ImageView view = new ImageView(ResourceFXUtils.toExternalForm(CATAN + url));
+        view.setPreserveRatio(true);
+        return view;
     }
 
-    public static WritableImage newImage(String url, Color c) {
-        return CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm(CATAN + url)), c);
+    public static WritableImage newImage(String url, Color color) {
+        return CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm(CATAN + url)), color);
     }
 
-    public static ImageView newImage(String url, Color c, int width) {
-        ImageView newImage = new ImageView(newImage(url, c));
+    public static ImageView newImage(String url, Color color, int width) {
+        ImageView newImage = new ImageView(newImage(url, color));
         newImage.setFitWidth(width);
         newImage.setPreserveRatio(true);
         return newImage;
@@ -87,11 +87,11 @@ public abstract class CatanResource extends Group {
     }
 
     public static ImageView newImage(String url, double width, int height) {
-        ImageView el = new ImageView(ResourceFXUtils.toExternalForm(CATAN + url));
-        el.setPreserveRatio(true);
-        el.setFitWidth(width);
-        el.setFitHeight(height);
-        return el;
+        ImageView view = new ImageView(ResourceFXUtils.toExternalForm(CATAN + url));
+        view.setPreserveRatio(true);
+        view.setFitWidth(width);
+        view.setFitHeight(height);
+        return view;
     }
 
     public static ImagePattern newPattern(String terrain) {

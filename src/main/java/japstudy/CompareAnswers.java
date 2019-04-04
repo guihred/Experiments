@@ -13,17 +13,17 @@ public final class CompareAnswers {
 		String s = Objects.toString(x, "");
 		String s2 = Objects.toString(y, "");
 
-		List<String> arrayList = bigrams(s);
-		List<String> arrayList2 = bigrams(s2);
-		double nx = arrayList.size();
-		double ny = arrayList2.size();
-		arrayList2.removeAll(arrayList);
+        List<String> set = bigrams(s);
+        List<String> set2 = bigrams(s2);
+        double nx = set.size();
+        double ny = set2.size();
+        set2.removeAll(set);
 
 		if (nx + ny == 0) {
 			return 1;
 		}
 
-		return 1 - 2.0 * arrayList2.size() / (nx + ny);
+        return 1 - 2 * set2.size() / (nx + ny);
 	}
 
 	private static List<String> bigrams(String s) {

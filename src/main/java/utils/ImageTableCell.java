@@ -16,14 +16,13 @@ public final class ImageTableCell extends TableCell<HasImage, String> {
             super.setText(null);
             super.setGraphic(null);
         } else {
-            super.setGraphic(new VBox(
-                    Stream.of(item.split(";")).map(i -> {
-                        ImageView imageView = new ImageView(ResourceFXUtils.toExternalForm("out/" + i));
-                        imageView.fitWidthProperty().bind(super.widthProperty());
-                        imageView.setPreserveRatio(true);
-                        return imageView;
-                    })
-                            .toArray(ImageView[]::new)));
+            super.setGraphic(new VBox(Stream.of(item.split(";")).map(image -> {
+                String imageUrl = ResourceFXUtils.toExternalForm("out/" + image);
+                ImageView imageView = new ImageView(imageUrl);
+                imageView.fitWidthProperty().bind(super.widthProperty());
+                imageView.setPreserveRatio(true);
+                return imageView;
+            }).toArray(ImageView[]::new)));
         }
     }
 }

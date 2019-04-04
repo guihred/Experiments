@@ -6,14 +6,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
@@ -81,6 +75,13 @@ public final class TermFrequencyIndex {
 	 */
 
 	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
+
+    public static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
+        "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
+        "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
+        "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
+        "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
+        "super", "while");
 
 	private TermFrequencyIndex() {
 	}
@@ -186,21 +187,15 @@ public final class TermFrequencyIndex {
 		return Math.log(MAPA_DOCUMENTO.size() / idf);
 	}
 
-	private static double getTermFrequency(long fre) {
-		return fre == 0 ? 0D : 1 + Math.log(fre);
-	}
+    private static double getTermFrequency(long fre) {
+        return fre == 0 ? 0D : 1 + Math.log(fre);
+    }
 
-	private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
+    private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
 		try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
-			List<String> javaKeywords = Arrays.asList("abstract", "continue", "for", "new", "switch", "assert",
-					"default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break",
-					"double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
-					"case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try",
-					"char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp",
-					"volatile", "const", "float", "native", "super", "while");
 
 			entrySet.forEach(e -> {
-				if (!javaKeywords.contains(e.getKey())) {
+                if (!JAVA_KEYWORDS.contains(e.getKey())) {
 					out.println(e.getKey() + "={");
 					e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
 					out.println("}");

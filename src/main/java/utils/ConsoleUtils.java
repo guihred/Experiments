@@ -86,7 +86,7 @@ public final class ConsoleUtils {
 				new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = in.readLine()) != null) {
-				LOGGER.info(line);
+                LOGGER.trace(line);
 				String line1 = line;
 				result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey())).collect(Collectors
 						.toMap(Entry<String, String>::getKey, e -> line1.replaceAll(e.getKey(), e.getValue()))));
