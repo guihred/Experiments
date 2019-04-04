@@ -52,9 +52,9 @@ public final class TermFrequency {
                 readLine = buff.readLine();
                 if (readLine != null) {
                     Stream.of(readLine.split(REGEX)).parallel()
-                        .map(e -> e.toLowerCase())
+                        .map(String::toLowerCase)
                         .filter(e -> !StringUtils.isNumeric(e))
-                        .filter(t -> !TermFrequencyIndex.JAVA_KEYWORDS.contains(t))
+                        .filter(t -> !TermFrequencyIndex.getJavaKeywords().contains(t))
                         .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
                 }
             } while (readLine != null);

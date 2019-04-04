@@ -113,6 +113,10 @@ public class DecisionTree {
     }
 
     public static void main(String[] args) {
+        testCatanDecisionTree();
+    }
+
+    public static void testCatanDecisionTree() {
         DataframeML build = DataframeML.builder("out/catan_log.txt").build();
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));

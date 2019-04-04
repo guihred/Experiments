@@ -49,9 +49,6 @@ public class RubiksCubeLauncher extends Application {
             e.rotate(face, angle, clockwise);
         }
 		timeline.playFromStart();
-        if (RubiksCubeLauncher.DEBUG) {
-            LOGGER.info("{}", face);
-        }
 		List<RubiksPiece> arrayList = new ArrayList<>();
         for (int i = 0; i < piecesInFace.size(); i++) {
 			int j = !clockwise ? rotateAntiClockWise(i) : rotateClockWise(i);

@@ -2,21 +2,23 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import contest.db.Contest;
 import ethical.hacker.PortServices;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.Point;
 import ex.j9.ch4.PrimaryColor;
 import ex.j9.ch4.Rectangle;
 import extract.ExcelService;
+import graphs.Edge;
 import graphs.app.JavaFileDependecy;
 import graphs.app.PackageTopology;
 import graphs.entities.EdgeDistancePack;
 import graphs.entities.Linha;
 import graphs.entities.Ponto;
+import japstudy.LessonPK;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,8 +120,13 @@ public class FXFileReadersTest extends ApplicationTest {
 
 	@Test
 	public void testPoints() {
-		measureTime("Chapter4.points", () -> new HashSet<>(Arrays.asList(new Point(2, 4), new LabeledPoint("Oi", 3, 5),
-				PrimaryColor.RED, new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5), new Rectangle(new Point(2, 4), 3, 5))));
+        measureTime("Test.equals",
+            () -> {
+                List<Object> equalsTest = Arrays.asList(new Point(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
+                    new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
+                    new Rectangle(new Point(2, 4), 3, 5), new Edge(), new Contest(), new LessonPK());
+                equalsTest.forEach(e -> equalsTest.contains(e));
+            });
 	}
 
 	@Test

@@ -76,15 +76,15 @@ public final class TermFrequencyIndex {
 
 	public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
 
-    public static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
+    private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
         "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
         "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
         "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
         "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
         "super", "while");
 
-	private TermFrequencyIndex() {
-	}
+    private TermFrequencyIndex() {
+    }
 
 	public static Map<File, Map<String, Long>> getDocumentMap(File f) {
 
@@ -146,6 +146,10 @@ public final class TermFrequencyIndex {
 			throw new RuntimeIOException("ERROR READING FILE", e);
 		}
 	}
+
+	public static List<String> getJavaKeywords() {
+        return JAVA_KEYWORDS;
+    }
 
 	public static void identifyKeyWordsInSourceFiles() {
 		try {

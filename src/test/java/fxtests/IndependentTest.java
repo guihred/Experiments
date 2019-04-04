@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.DoubleStream;
+import ml.data.DecisionTree;
 import ml.data.FastFourierTransform;
 import ml.data.QuickSortML;
 import org.apache.commons.math3.complex.Complex;
@@ -75,6 +76,12 @@ public class IndependentTest implements HasLogging {
     public void testCh4() {
         measureTime("Ch4.cyclicToString",
                 () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
+    }
+
+	@Test
+	public void testDecision() {
+	    measureTime("DecisionTree.executeSimpleTest", DecisionTree::executeSimpleTest);
+	    measureTime("DecisionTree.testCatanDecisionTree",	        DecisionTree::testCatanDecisionTree);
     }
 
 	@Test
@@ -155,13 +162,9 @@ public class IndependentTest implements HasLogging {
         measureTime("GoogleImagesUtils.displayCountByExtension", () -> GoogleImagesUtils.displayCountByExtension());
     }
 
-	@Test
+    @Test
     public void testTermFrequency() {
         measureTime("TermFrequency.displayTermFrequency", TermFrequency::displayTermFrequency);
-    }
-
-    @Test
-    public void testTermFrequencyIndex() {
         measureTime("TermFrequencyIndex.identifyKeyWordsInSourceFiles",
                 TermFrequencyIndex::identifyKeyWordsInSourceFiles);
     }

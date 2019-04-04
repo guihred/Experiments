@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import org.junit.Test;
 import utils.ConsoleUtils;
 
-
 public class FXEngineEthicalHackTest extends AbstractTestExecution {
 
 	@Test

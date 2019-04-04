@@ -1,6 +1,10 @@
 package fxtests;
 
+import static fxtests.FXTesting.measureTime;
+
+import ex.j8.Chapter4;
 import fxpro.ch02.PongLauncher;
+import fxsamples.PlayingAudio;
 import gaming.ex01.SnakeLauncher;
 import gaming.ex11.DotsLauncher;
 import gaming.ex11.DotsSquare;
@@ -13,11 +17,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Rectangle;
 import org.junit.Test;
+import org.testfx.util.WaitForAsyncUtils;
+import pdfreader.PdfReader;
 import utils.ConsumerEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
-	@Test
+    @Test
 	public void verify() throws Exception {
 		show(SnakeLauncher.class);
 		type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
@@ -44,5 +50,12 @@ public class FXEngineTest extends AbstractTestExecution {
 			drop();
 		}
 	}
+	@Test
+    public void verifyButtons() throws Exception {
+
+        measureTime("Test.testButtons", () -> FXTesting.verifyAndRun(e -> e.clickOn(".button"), PdfReader.class,
+            Chapter4.Ex9.class, PlayingAudio.class));
+        WaitForAsyncUtils.waitForFxEvents();
+    }
 
 }

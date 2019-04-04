@@ -17,30 +17,13 @@ import furigana.FuriganaCrawlerApp;
 import fxpro.ch01.AudioConfigLauncher;
 import fxpro.ch01.EarthriseChristmasApp;
 import fxpro.ch01.HelloWorldApp;
-import fxpro.ch02.CSSStylingExample;
-import fxpro.ch02.PathTransitionExample;
-import fxpro.ch02.PendulumAnimationLauncher;
-import fxpro.ch02.PongLauncher;
-import fxpro.ch02.StageControlExample;
-import fxpro.ch04.AlignUsingStackAndTile;
-import fxpro.ch04.CenterUsingBind;
-import fxpro.ch04.CenterUsingStack;
-import fxpro.ch04.ReversiMain;
-import fxpro.ch04.ReversiPieceTest;
-import fxpro.ch04.ReversiSquareApp;
+import fxpro.ch02.*;
+import fxpro.ch04.*;
 import fxpro.ch05.TableVisualizationExampleApp;
 import fxpro.ch06.ResponsiveUIApp;
 import fxpro.ch06.TaskProgressApp;
 import fxpro.ch06.ThreadInformationApp;
-import fxpro.ch07.AreaChartExample;
-import fxpro.ch07.BarChartExample;
-import fxpro.ch07.BubbleChartExample;
-import fxpro.ch07.Chart3dDemo;
-import fxpro.ch07.Chart3dSampleApp;
-import fxpro.ch07.LineChartExample;
-import fxpro.ch07.PieChartExample;
-import fxpro.ch07.ScatterChartExample;
-import fxpro.ch07.ScatterChartWithFillExample;
+import fxpro.ch07.*;
 import fxpro.ch08.BasicAudioClipExample;
 import fxpro.ch08.BasicAudioPlayerWithControlLauncher;
 import fxpro.ch08.MediaPlayerExample;
@@ -75,20 +58,11 @@ import gaming.ex19.SudokuLauncher;
 import gaming.ex20.RoundMazeLauncher;
 import gaming.ex21.CatanApp;
 import graphs.app.GraphModelLauncher;
-import labyrinth.Labyrinth2D;
-import labyrinth.Labyrinth3D;
-import labyrinth.Labyrinth3DAntiAliasing;
-import labyrinth.Labyrinth3DCollisions;
-import labyrinth.Labyrinth3DGhosts;
-import labyrinth.Labyrinth3DKillerGhosts;
-import labyrinth.Labyrinth3DKillerGhostsAndBalls;
-import labyrinth.Labyrinth3DMouseControl;
-import labyrinth.Labyrinth3DWallTexture;
+import labyrinth.*;
 import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
-import org.testfx.util.WaitForAsyncUtils;
 import paintexp.ColorChooser;
 import pdfreader.PdfReader;
 import physics.Physics;
@@ -159,8 +133,6 @@ public final class FXTest implements HasLogging {
 	public void testChapter4() {
 		measureTime("Chapter4.testApps", () -> FXTesting.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class,
 				Chapter4.Ex5.class, Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class, Chapter4.Ex10.class));
-        FXTesting.verifyAndRun(e -> e.clickOn(".button"), Chapter4.Ex9.class);
-        WaitForAsyncUtils.waitForFxEvents();
-	}
+    }
 
 }
