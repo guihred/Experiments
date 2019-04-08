@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,18 +18,10 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import javafx.stage.Stage;
 import javax.imageio.ImageIO;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.jsoup.Connection;
@@ -41,11 +32,10 @@ import org.slf4j.Logger;
 import sun.misc.BASE64Decoder;
 import utils.CrawlerTask;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public final class GoogleImagesUtils {
 
-    private static final Logger LOGGER = HasLogging.log();
+    static final Logger LOGGER = HasLogging.log();
 
     private GoogleImagesUtils() {
 
@@ -79,8 +69,18 @@ public final class GoogleImagesUtils {
         }
     }
 
-    public static void main(String[] args) {
-        PageImage.launch(PageImage.class, args);
+
+
+    static List<String> getImagens(String artista) {
+        CrawlerTask.insertProxyConfig();
+        LOGGER.info("SEARCHING FOR {}", artista);
+        String encode = encode(artista);
+        String url = "http://www.google.com/search?q=" + encode
+            + "&client=firefox-b-d&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiC07SYkLnhAhVdHbkGHTwpBKwQ_AUIDigB&biw=425&bih=942";
+        List<String> images = new ArrayList<>();
+        CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(images::addAll);
+        ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
+        return images;
     }
 
     private static BufferedImage decodeToImage(String imageString) {
@@ -92,12 +92,6 @@ public final class GoogleImagesUtils {
             ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
             BufferedImage image = ImageIO.read(bis);
             bis.close();
-            try {
-                IOUtils.copy(new ByteArrayInputStream(imageByte), Files.newOutputStream(
-                    new File(ResourceFXUtils.getOutFile(), "oioi.gif").toPath(), LinkOption.NOFOLLOW_LINKS));
-            } catch (Exception e) {
-                LOGGER.trace("ERROR", e);
-            }
             return image;
         } catch (Exception e) {
             LOGGER.info("ERROR LOADING {}", imageString);
@@ -120,26 +114,8 @@ public final class GoogleImagesUtils {
         if (!CrawlerTask.isNotProxied()) {
             connect.header("Proxy-Authorization", "Basic " + CrawlerTask.getEncodedAuthorization());
         }
-        Platform.runLater(() -> {
-            WebEngine engine = new WebView().getEngine();
-            engine.setOnStatusChanged(e -> System.out.println(e));
-            engine.load(url);
-        });
-
         return connect
             .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0").get();
-    }
-
-    private static List<String> getImagens(String artista) {
-        CrawlerTask.insertProxyConfig();
-        LOGGER.info("SEARCHING FOR {}", artista);
-        String encode = encode(artista);
-        String url = "http://www.google.com/search?q=" + encode
-            + "&client=firefox-b-d&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiC07SYkLnhAhVdHbkGHTwpBKwQ_AUIDigB&biw=425&bih=942";
-        List<String> images = new ArrayList<>();
-        CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(l -> images.addAll(l));
-        ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
-        return images;
     }
 
     private static List<String> readPage(String urlString) {
@@ -152,33 +128,6 @@ public final class GoogleImagesUtils {
         } catch (Exception e) {
             throw new RuntimeIOException("ERROR Reading Page", e);
         }
-    }
-
-    public static class PageImage extends Application {
-        @Override
-        public void start(Stage primaryStage) throws Exception {
-            FlowPane root = new FlowPane();
-            Platform.runLater(() -> {
-                for (String url : getImagens("Cachorro")) {
-                    try {
-
-                        ImageView imageView = convertToImage(url);
-                        root.getChildren().add(imageView);
-                        LOGGER.info("{} FOUND", url);
-                    } catch (Exception e) {
-                        LOGGER.info("{} NOT found", url);
-                        LOGGER.trace("", e);
-                    }
-                }
-
-            });
-            Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-        }
-
-
     }
 
 }

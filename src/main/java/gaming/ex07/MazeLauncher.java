@@ -23,9 +23,6 @@ public class MazeLauncher extends Application {
         stage.setWidth(MazeModel.MAZE_SIZE * MazeSquare.SQUARE_SIZE + 30);
         stage.setHeight(MazeModel.MAZE_SIZE * MazeSquare.SQUARE_SIZE + 60);
         stage.show();
-
-        
-
     }
 
     public static void main(String[] args) {

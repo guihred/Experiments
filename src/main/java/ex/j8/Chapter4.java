@@ -29,111 +29,146 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleArcBuilder;
+import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimplePathTransitionBuilder;
 import simplebuilder.SimpleScaleTransitionBuilder;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public final class Chapter4 {
-	private Chapter4() {
-	}
+    private Chapter4() {
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         Application.launch(Ex9.class, args);
-	}
+    }
 
-	public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t, ObservableValue<U> u) {
-	    return new SimpleObjectProperty<R>() {
-	        @Override
-	        public void addListener(ChangeListener<? super R> listener) {
-	            t.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(oldValue, u.getValue()),f.apply(newValue, u.getValue())));
-	            u.addListener((observable, oldValue, newValue) -> listener.changed(this, f.apply(t.getValue(), oldValue),f.apply(t.getValue(), newValue)));
-	        }
-	        
-	        @Override
-	        public void addListener(InvalidationListener listener) {
-	            t.addListener(listener);
-	            u.addListener(listener);
-	        }
-	        
-	        @Override
-	        public R getValue() {
-	            return f.apply(t.getValue(), u.getValue());
-	        }
-	        
-	    };
-	}
+    public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t,
+        ObservableValue<U> u) {
+        return new SimpleObjectProperty<R>() {
+            @Override
+            public void addListener(ChangeListener<? super R> listener) {
+                t.addListener((o, old, value) -> listener.changed(this, f.apply(old, u.getValue()),
+                    f.apply(value, u.getValue())));
+                u.addListener((o, old, value) -> listener.changed(this, f.apply(t.getValue(), old),
+                    f.apply(t.getValue(), value)));
+            }
+            @Override
+            public void addListener(InvalidationListener listener) {
+                t.addListener(listener);
+                u.addListener(listener);
+            }
+            @Override
+            public R getValue() {
+                return f.apply(t.getValue(), u.getValue());
+            }
+        };
+    }
 
-	public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
-	    return new SimpleObjectProperty<R>() {
-	        @Override
-	        public void addListener(ChangeListener<? super R> listener) {
-	            t.addListener((arg0, arg1, arg2) -> listener.changed(this,
-	                f.apply(arg1), f.apply(arg2)));
-	        }
-	        
-	        @Override
-	        public void addListener(InvalidationListener arg0) {
-	            t.addListener(arg0);
-	        }
-	        
-	        @Override
-	        public R getValue() {
-	            return f.apply(t.getValue());
-	        }
-	        
-	    };
-	}
+    public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
+        return new SimpleObjectProperty<R>() {
+            @Override
+            public void addListener(ChangeListener<? super R> listener) {
+                t.addListener((arg0, arg1, arg2) -> listener.changed(this, f.apply(arg1), f.apply(arg2)));
+            }
+            @Override
+            public void addListener(InvalidationListener arg0) {
+                t.addListener(arg0);
+            }
+            @Override
+            public R getValue() {
+                return f.apply(t.getValue());
+            }
+        };
+    }
+
+    private static Arc buildArc(Scene scene, Slider rotationSlider, Slider radiusSlider) {
+        final double scaleFactor = 3.6;
+        final int startAngle = 45;
+        return new SimpleArcBuilder().centerX(divide(scene.widthProperty(), 2)).radiusX(100).radiusY(150)
+            .startAngle(startAngle).length(360).centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
+            .stroke(Color.RED).strokeType(StrokeType.OUTSIDE).strokeLineCap(StrokeLineCap.ROUND).rotate(30D)
+            .radiusX(multiply(radiusSlider.valueProperty(), scaleFactor)).strokeLineJoin(StrokeLineJoin.ROUND)
+            .rotate(multiply(rotationSlider.valueProperty(), scaleFactor)).fill(Color.TRANSPARENT).build();
+    }
+
+    private static Circle buildPlanet(Scene scene) {
+        Circle planet = new SimpleCircleBuilder().centerX(scene.getWidth() / 4 + 100).centerY(scene.getWidth() / 4)
+            .fill(Color.BLUE).radius(100 / 4).build();
+        planet.centerXProperty().bind(divide(scene.widthProperty(), 2).add(100));
+        planet.centerYProperty().bind(divide(scene.heightProperty(), 2));
+        return planet;
+    }
+
+    private static Circle buildSun(Scene scene) {
+        Circle theSun = new SimpleCircleBuilder().radius(50).fill(Color.YELLOW).build();
+        theSun.centerXProperty().bind(divide(scene.widthProperty(), 2));
+        theSun.centerYProperty().bind(divide(scene.heightProperty(), 2));
+        return theSun;
+    }
+
+    private static void createOrbitAnimation(Scene scene, Circle planet, Slider rotationSlider, Slider radiusSlider) {
+        new SimplePathTransitionBuilder().duration(Duration.millis(1000))
+        .interpolator(Interpolator.LINEAR).node(planet).cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build()
+        .play();
+    }
+
+    private static void createPulseAnimation(Circle planet) {
+        final double maxScale = 1.5;
+        new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
+        .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet)
+        .build().play();
+    }
 
     /**
-	 * Write a program with a text field and a label. As with the Hello, JavaFX
-	 * program, the label should have the string Hello, FX in a 100 point font.
-	 * Initialize the text field with the same string. Update the label as the
-	 * user edits the text field.
-	 */
-	public static class Ex1 extends Application {
+     * Write a program with a text field and a label. As with the Hello, JavaFX
+     * program, the label should have the string Hello, FX in a 100 point font.
+     * Initialize the text field with the same string. Update the label as the user
+     * edits the text field.
+     */
+    public static class Ex1 extends Application {
 
-		@Override
-		public void start(Stage stage) throws Exception {
-			Label message = new Label("Hello, JavaFX!");
-			message.setFont(new Font(100));
-			TextField textField = new TextField("Hello, JavaFX!");
-			message.textProperty().bind(textField.textProperty());
-			VBox pane = new VBox(10);
-			pane.getChildren().addAll(message, textField);
-			stage.setScene(new Scene(pane));
-			stage.setTitle("EX1");
-			stage.show();
-		}
-	}
+        @Override
+        public void start(Stage stage) throws Exception {
+            Label message = new Label("Hello, JavaFX!");
+            message.setFont(new Font(100));
+            TextField textField = new TextField("Hello, JavaFX!");
+            message.textProperty().bind(textField.textProperty());
+            VBox pane = new VBox(10);
+            pane.getChildren().addAll(message, textField);
+            stage.setScene(new Scene(pane));
+            stage.setTitle("EX1");
+            stage.show();
+        }
+    }
 
-	/**
-	 * Using the web viewer, implement a browser with a URL bar and a back
-	 * button. Hint: WebEngine.getHistory().
-	 */
+    /**
+     * Using the web viewer, implement a browser with a URL bar and a back button.
+     * Hint: WebEngine.getHistory().
+     */
 
-	public static class Ex10 extends Application {
+    public static class Ex10 extends Application {
 
-		@Override
-		public void start(Stage stage) throws Exception {
+        @Override
+        public void start(Stage stage) throws Exception {
             TextField textField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
-			WebView browser = new WebView();
-			WebEngine engine = browser.getEngine();
-			Button backButton = new Button("Back");
-			backButton.setOnAction(event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
-			Button loadButton = new Button("Go");
-			loadButton.setOnAction(event -> engine.load(textField.getText()));
+            WebView browser = new WebView();
+            WebEngine engine = browser.getEngine();
+            Button backButton = new Button("Back");
+            backButton.setOnAction(event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
+            Button loadButton = new Button("Go");
+            loadButton.setOnAction(event -> engine.load(textField.getText()));
 
-			HBox top = new HBox();
-			top.getChildren().addAll(backButton, textField, loadButton);
-			BorderPane pane = new BorderPane();
-			pane.setTop(top);
-			pane.setCenter(browser);
-			stage.setScene(new Scene(pane));
-			stage.setTitle("EX10");
-			stage.show();
-		}
-	}
+            HBox top = new HBox();
+            top.getChildren().addAll(backButton, textField, loadButton);
+            BorderPane pane = new BorderPane();
+            pane.setTop(top);
+            pane.setCenter(browser);
+            stage.setScene(new Scene(pane));
+            stage.setTitle("EX10");
+            stage.show();
+        }
+    }
 
     /**
      * Enhance the program in Section 4.5, Bindings, on page 75 so that the circle
@@ -158,149 +193,111 @@ public final class Chapter4 {
     }
 
     /**
-	 * Write methods
-	 * 
-	 * public static <T, R> ObservableValue<R> observe( Function<T, R> f,
-	 * ObservableValue<T> t)
-	 * 
-	 * public static <T, U, R> ObservableValue<R> observe( BiFunction<T, U, R>
-	 * f, ObservableValue<T> t, ObservableValue<U> u)
-	 * 
-	 * that return observable values whose getValue method returns the value of
-	 * the lambda expression, and whose invalidation and change listeners are
-	 * fired when any of the inputs become invalid or change. For example,
-	 * 
-	 * larger.disableProperty().bind(observe( t -> t >= 100,
-	 * gauge.widthProperty()));
-	 */
-	public static class Ex5 extends Application {
+     * Write methods
+     * 
+     * public static <T, R> ObservableValue<R> observe( Function<T, R> f,
+     * ObservableValue<T> t)
+     * 
+     * public static <T, U, R> ObservableValue<R> observe( BiFunction<T, U, R> f,
+     * ObservableValue<T> t, ObservableValue<U> u)
+     * 
+     * that return observable values whose getValue method returns the value of the
+     * lambda expression, and whose invalidation and change listeners are fired when
+     * any of the inputs become invalid or change. For example,
+     * 
+     * larger.disableProperty().bind(observe( t -> t >= 100,
+     * gauge.widthProperty()));
+     */
+    public static class Ex5 extends Application {
 
-		@Override
-		public void start(Stage stage) throws Exception {
-			Pane pane = new VBox();
-			Scene scene = new Scene(pane);
-			Slider slider = new Slider();
-			Button button = new Button("Teste Disabled");
-			Label message = new Label("Teste Disabled");
+        @Override
+        public void start(Stage stage) throws Exception {
+            Pane pane = new VBox();
+            Scene scene = new Scene(pane);
+            Slider slider = new Slider();
+            Button button = new Button("Teste Disabled");
+            Label message = new Label("Teste Disabled");
 
-			button.disableProperty().bind(observe(t -> t.doubleValue() > 50, slider.valueProperty()));
-			message.textProperty().bind(observe(t -> (t.doubleValue() > 50) + "", slider.valueProperty()));
-			pane.getChildren().addAll(slider, button, message);
-			stage.setScene(scene);
-			stage.setTitle("EX5");
-			stage.show();
-		}
+            button.disableProperty().bind(observe(t -> t.doubleValue() > 50, slider.valueProperty()));
+            message.textProperty().bind(observe(t -> (t.doubleValue() > 50) + "", slider.valueProperty()));
+            pane.getChildren().addAll(slider, button, message);
+            stage.setScene(scene);
+            stage.setTitle("EX5");
+            stage.show();
+        }
 
-	}
+    }
 
-	/** 6. Center the top and bottom buttons in Figure 4.7. */
-	public static class Ex6 extends Application {
+    /** 6. Center the top and bottom buttons in Figure 4.7. */
+    public static class Ex6 extends Application {
 
-		@Override
-		public void start(Stage stage) throws Exception {
-			BorderPane pane = new BorderPane(new Button("Center"),new Button("Top"),new Button("Right"),new Button("Bottom"),new Button("Left"));
-			BorderPane.setAlignment(pane.getTop(), Pos.CENTER);
-			BorderPane.setAlignment(pane.getBottom(), Pos.CENTER);
-			Scene scene = new Scene(pane);
-			stage.setScene(scene);
-			stage.setTitle("EX6");
-			stage.show();
-		}
-	}
+        @Override
+        public void start(Stage stage) throws Exception {
+            BorderPane pane = new BorderPane(new Button("Center"), new Button("Top"), new Button("Right"),
+                new Button("Bottom"), new Button("Left"));
+            BorderPane.setAlignment(pane.getTop(), Pos.CENTER);
+            BorderPane.setAlignment(pane.getBottom(), Pos.CENTER);
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
+            stage.setTitle("EX6");
+            stage.show();
+        }
+    }
 
-	/** Find out how to set the border of a control without using CSS. */
-	public static class Ex7 extends Application {
+    /** Find out how to set the border of a control without using CSS. */
+    public static class Ex7 extends Application {
 
-		@Override
-		public void start(Stage stage) throws Exception {
-			BorderPane pane = new BorderPane();
-			pane.setCenter(new Button("Center"));
-			Button top = new Button("Top");
-			pane.setLeft(new Button("Left"));
-			pane.setBottom(new Button("Bottom"));
-			pane.setRight(new Button("Right"));
-			Scene scene = new Scene(pane);
-			top.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(1))));
-			pane.setTop(top);
+        @Override
+        public void start(Stage stage) throws Exception {
+            BorderPane pane = new BorderPane();
+            pane.setCenter(new Button("Center"));
+            Button top = new Button("Top");
+            pane.setLeft(new Button("Left"));
+            pane.setBottom(new Button("Bottom"));
+            pane.setRight(new Button("Right"));
+            Scene scene = new Scene(pane);
+            top.setBorder(new Border(
+                new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(1))));
+            pane.setTop(top);
 
-			stage.setScene(scene);
-			stage.setTitle("EX7");
-			stage.show();
-		}
-	}
+            stage.setScene(scene);
+            stage.setTitle("EX7");
+            stage.show();
+        }
+    }
 
-	/**
-	 * Animate a circle, representing a planet, so it travels along an
-	 * elliptical orbit. Use a PathTransition.
-	 */
+    /**
+     * Animate a circle, representing a planet, so it travels along an elliptical
+     * orbit. Use a PathTransition.
+     */
 
-	public static class Ex9 extends Application {
-
-		@Override
-		public void start(Stage stage) throws Exception {
-			BorderPane pane = new BorderPane();
-			Scene scene = new Scene(pane);
-            Circle planet = new Circle(scene.getWidth() / 4 + 100, scene.getWidth() / 4, 100 / 4);
-			planet.setFill(Color.BLUE);
-			planet.centerXProperty().bind(divide(scene.widthProperty(), 2).add(100));
-			planet.centerYProperty().bind(divide(scene.heightProperty(), 2));
-			Circle theSun = new Circle(50);
-			theSun.setFill(Color.YELLOW);
-			theSun.centerXProperty().bind(divide(scene.widthProperty(), 2));
-			theSun.centerYProperty().bind(divide(scene.heightProperty(), 2));
-			BorderPane center = new BorderPane();
-			center.getChildren().addAll(theSun, planet);
-
-			HBox right = new HBox();
-			Slider rotationSlider = new Slider();
-			rotationSlider.setOrientation(Orientation.VERTICAL);
-			rotationSlider.setValue(10);
-
-			Slider radiusSlider = new Slider();
-			radiusSlider.setOrientation(Orientation.VERTICAL);
-			radiusSlider.setValue(30);
-			right.getChildren().addAll(radiusSlider, rotationSlider);
-
-			pane.setRight(right);
-			pane.setCenter(center);
-			BorderPane.setAlignment(pane.getCenter(), Pos.CENTER);
-
-
-			final double maxScale = 1.5;
-            Button pulse = CommonsFX.newButton("Pulse",
-                event -> new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
-                    .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet)
-                    .build().play());
-
-            final double scaleFactor = 3.6;
-            final int startAngle = 45;
-            final Arc arc = new SimpleArcBuilder()
-                .centerX(divide(scene.widthProperty(), 2))
-                .radiusX(100).radiusY(150)
-                .startAngle(startAngle).length(360)
-                .centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
-                .stroke(Color.RED).strokeType(StrokeType.OUTSIDE)
-                .strokeLineCap(StrokeLineCap.ROUND).rotate(30D)
-                .radiusX(multiply(radiusSlider.valueProperty(), scaleFactor))
-                .strokeLineJoin(StrokeLineJoin.ROUND)
-                .rotate(multiply(rotationSlider.valueProperty(), scaleFactor))
-                .fill(Color.TRANSPARENT).build();
-			center.getChildren().add(arc);
+    public static class Ex9 extends Application {
+        @Override
+        public void start(Stage stage) throws Exception {
+            BorderPane pane = new BorderPane();
+            Scene scene = new Scene(pane);
+            Circle planet = buildPlanet(scene);
+            Circle theSun = buildSun(scene);
+            BorderPane center = new BorderPane();
+            center.getChildren().addAll(theSun, planet);
+            Slider rotationSlider = new Slider();
+            rotationSlider.setOrientation(Orientation.VERTICAL);
+            rotationSlider.setValue(10);
+            Slider radiusSlider = new Slider();
+            radiusSlider.setOrientation(Orientation.VERTICAL);
+            radiusSlider.setValue(30);
+            pane.setRight(new HBox(radiusSlider, rotationSlider));
+            pane.setCenter(center);
+            BorderPane.setAlignment(pane.getCenter(), Pos.CENTER);
+            Button pulse = CommonsFX.newButton("Pulse", e -> createPulseAnimation(planet));
+            center.getChildren().add(buildArc(scene, rotationSlider, radiusSlider));
             Button orbit = CommonsFX.newButton("Orbit",
-                event -> new SimplePathTransitionBuilder().duration(Duration.millis(1000))
-                    .interpolator(Interpolator.LINEAR).node(planet).cycleCount(Animation.INDEFINITE).path(arc).build()
-                    .play());
-
-
-			HBox hBox = new HBox();
-			hBox.getChildren().addAll(pulse, orbit);
-			pane.setBottom(hBox);
-
-			stage.setScene(scene);
-			stage.setTitle("EX9");
-			stage.show();
-		}
-	}
+                e -> createOrbitAnimation(scene, planet, rotationSlider, radiusSlider));
+            pane.setBottom(new HBox(pulse, orbit));
+            stage.setScene(scene);
+            stage.setTitle("EX9");
+            stage.show();
+        }
+    }
 
 }
-

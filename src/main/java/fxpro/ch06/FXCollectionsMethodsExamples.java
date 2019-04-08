@@ -26,25 +26,25 @@ public final class FXCollectionsMethodsExamples {
     public static void main(String[] args) {
         ObservableList<String> strings = FXCollections.observableArrayList();
         strings.addListener(new MyListenerMethodsExamples());
-		LOGGER.info("Calling addAll(\"Zero\", \"One\", \"Two\", \"Three\"): ");
+        LOGGER.trace("Calling addAll(\"Zero\", \"One\", \"Two\", \"Three\"): ");
         strings.addAll("Zero", "One", "Two", "Three");
-		LOGGER.info("Calling copy: ");
+        LOGGER.trace("Calling copy: ");
         FXCollections.copy(strings, Arrays.asList("Four", "Five"));
-		LOGGER.info("Calling replaceAll: ");
+        LOGGER.trace("Calling replaceAll: ");
         FXCollections.replaceAll(strings, "Two", "Two_1");
-		LOGGER.info("Calling reverse: ");
+        LOGGER.trace("Calling reverse: ");
         FXCollections.reverse(strings);
-		LOGGER.info("Calling rotate(strings, 2: ");
+        LOGGER.trace("Calling rotate(strings, 2: ");
         FXCollections.rotate(strings, 2);
-		LOGGER.info("Calling shuffle(strings): ");
+        LOGGER.trace("Calling shuffle(strings): ");
         FXCollections.shuffle(strings);
-		LOGGER.info("Calling shuffle(strings, new Random(0L)): ");
+        LOGGER.trace("Calling shuffle(strings, new Random(0L)): ");
         FXCollections.shuffle(strings, new Random(0L));
-		LOGGER.info("Calling sort(strings): ");
+        LOGGER.trace("Calling sort(strings): ");
         FXCollections.sort(strings);
-		LOGGER.info("Calling sort(strings, c) with custom comparator: ");
+        LOGGER.trace("Calling sort(strings, c) with custom comparator: ");
         FXCollections.sort(strings, (String lhs, String rhs) -> rhs.compareTo(lhs));
-		LOGGER.info("Calling fill(strings, \"Ten\"): ");
+        LOGGER.trace("Calling fill(strings, \"Ten\"): ");
         FXCollections.fill(strings, "Ten");
     }
 

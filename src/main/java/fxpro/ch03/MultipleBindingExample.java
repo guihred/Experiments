@@ -14,26 +14,26 @@ public final class MultipleBindingExample {
 	}
 
 	public static void main(String[] args) {
-        LOG.info("Constructing x with initial value of 2.0.");
+        LOG.trace("Constructing x with initial value of 2.0.");
         final DoubleProperty x = new SimpleDoubleProperty(null, "x", 2.0);
-        LOG.info("Constructing y with initial value of 3.0.");
+        LOG.trace("Constructing y with initial value of 3.0.");
         final DoubleProperty y = new SimpleDoubleProperty(null, "y", 3.0);
-        LOG.info("Creating binding area with dependencies x and y.");
+        LOG.trace("Creating binding area with dependencies x and y.");
 		DoubleBinding area = Bindings.createDoubleBinding(() -> {
-            LOG.info("computeValue() is called.");
+            LOG.trace("computeValue() is called.");
 			return x.get() * y.get();
 		}, x, y);
 
         logBinding(area);
         logBinding(area);
-        LOG.info("Setting x to 5");
+        LOG.trace("Setting x to 5");
         x.set(5);
-        LOG.info("Setting y to 7");
+        LOG.trace("Setting y to 7");
         y.set(7);
         logBinding(area);
     }
 
     private static void logBinding(DoubleBinding area) {
-        LOG.info("area.get() = {}", area.get());
+        LOG.trace("area.get() = {}", area.get());
     }
 }

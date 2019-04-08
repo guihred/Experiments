@@ -8,35 +8,17 @@ import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import org.junit.Test;
-import org.testfx.framework.junit.ApplicationTest;
 import paintexp.svgcreator.SVGCreator;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
 
-public class FXEngineSVGCreatorTest extends ApplicationTest implements HasLogging {
-
-    private Stage currentStage;
+public class FXEngineSVGCreatorTest extends AbstractTestExecution {
 
     private Random random = new Random();
 
-	@Override
-	public void start(final Stage stage) throws Exception {
-		ResourceFXUtils.initializeFX();
-		currentStage = stage;
-	}
-
     @Test
 	public void testaToolsVerify() throws Exception {
-        interactNoWait(RunnableEx.makeRunnable(() -> new SVGCreator().start(currentStage)));
+        show(SVGCreator.class);
         Node stack = lookup(StackPane.class::isInstance).queryAs(StackPane.class);
-        testTools(stack);
-	}
-	protected void testTools(final Node stack) {
-
-
         List<Node> queryAll = lookup(ToggleButton.class::isInstance).queryAll().stream().collect(Collectors.toList());
 		Collections.shuffle(queryAll);
         int bound = (int) (stack.getBoundsInParent().getWidth() / 4);

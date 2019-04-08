@@ -18,7 +18,6 @@ import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
 import utils.ConsumerEx;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
 
 public class FXEnginePaintTest extends AbstractTestExecution {
 
@@ -28,7 +27,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 
 	@Test
 	public void testaToolsVerify() throws Exception {
-		interactNoWait(RunnableEx.makeRunnable(() -> new PaintMain().start(currentStage)));
+        show(PaintMain.class);
 		Node stack = lookup(e -> e instanceof ZoomableScrollPane).queryAs(ZoomableScrollPane.class).getContent();
 		testTools(stack);
 		testMenus(stack);
@@ -42,6 +41,11 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 				.flatMap(e -> e.getChildren().stream()).collect(Collectors.toList());
 		int bound = (int) (stack.getBoundsInParent().getWidth() / 3);
 		for (Node next : queryAll) {
+            Object userData = next.getUserData();
+            if (userData != null) {
+                getLogger().info("Testing {} ", userData.getClass().getSimpleName());
+            }
+
 			if (!colors.isEmpty()) {
 				clickOn(colors.remove(random.nextInt(colors.size())),
 						random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY);
@@ -79,8 +83,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 					interactNoWait(() -> f.requestFocus());
 					write(getRandomString());
 				});
-
-
 				type(KeyCode.ESCAPE);
 			});
 		}

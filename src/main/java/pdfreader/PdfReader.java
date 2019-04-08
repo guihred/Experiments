@@ -29,8 +29,7 @@ import utils.*;
 
 public class PdfReader extends Application implements HasLogging {
     private static final int WORD_DISPLAY_PERIOD = 200;
-    private static final String PDF_FILE = ResourceFXUtils
-            .toFullPath("102 - Analista de Tecnologia da Informacao - Tipo D.pdf");
+    private static final String PDF_FILE = ResourceFXUtils.toFullPath("sngpc2808.pdf");
     private ObservableList<String> lines = FXCollections.observableArrayList();
     private ObservableList<String> skipLines = FXCollections.observableArrayList();
     private ObservableList<String> words = FXCollections.observableArrayList();
@@ -68,7 +67,7 @@ public class PdfReader extends Application implements HasLogging {
                 .cycleCount(Animation.INDEFINITE).build();
         currentWord.setFont(Font.font(60));
         currentPage.textProperty().bind(pageIndex.asString().concat("/" + pdfInfo.getNumberOfPages()));
-        VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton, newPDF, pageButton);
+        VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton, pageButton, newPDF);
         currentLine.wrappingWidthProperty().bind(root.widthProperty().subtract(30));
         currentLine.setTextAlignment(TextAlignment.CENTER);
         root.setAlignment(Pos.CENTER);

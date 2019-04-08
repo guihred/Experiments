@@ -11,16 +11,11 @@ import utils.ClassReflectionUtils;
 import utils.FunctionEx;
 import utils.HasLogging;
 
-public class NetworkInformationScanner {
+public final class NetworkInformationScanner {
 
 	private static final Logger LOG = HasLogging.log();
 
-    public static void main(String[] args) {
-        try {
-            displayNetworkInformation();
-        } catch (SocketException e) {
-            LOG.error("", e);
-        }
+    private NetworkInformationScanner() {
     }
 
     public static void displayNetworkInformation() throws SocketException {
@@ -67,14 +62,6 @@ public class NetworkInformationScanner {
         }
     }
 
-    private static String convertToString(InetAddress o) {
-        return o.getHostAddress();
-    }
-
-    private static boolean isLocallyAdministered(byte[] macAddress) {
-        return (2 & macAddress[0]) == 0;
-    }
-
     private static Stream<String> convertStream(byte[] ipOrMacAddress) {
         if (ipOrMacAddress.length == 16) {
             String[] a = new String[ipOrMacAddress.length / 2];
@@ -98,6 +85,10 @@ public class NetworkInformationScanner {
                 .collect(Collectors.joining(delimiter));
     }
 
+    private static String convertToString(InetAddress o) {
+        return o.getHostAddress();
+    }
+
     private static String delimiter(byte[] invoke) {
         switch (invoke.length) {
             case 16:
@@ -107,6 +98,10 @@ public class NetworkInformationScanner {
             default:
                 return "-";
         }
+    }
+
+    private static boolean isLocallyAdministered(byte[] macAddress) {
+        return (2 & macAddress[0]) == 0;
     }
 
 }

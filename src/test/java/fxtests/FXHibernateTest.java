@@ -47,9 +47,12 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
         show(new ContestQuestionEditingDisplay());
         clickAllButtons();
-
-        FXTesting.testApps(ElectionCrawlerApp.class, JapaneseLessonApplication.class,
-            JapaneseLessonEditingDisplay.class, JapaneseLessonAudioSplitDisplay.class, JapaneseLessonDisplay.class);
+        show(new JapaneseLessonEditingDisplay());
+        clickAllButtons();
+        show(new JapaneseLessonAudioSplitDisplay());
+        clickAllButtons();
+        show(new JapaneseLessonDisplay());
+        clickAllButtons();
     }
 
     private void clickAllButtons() {

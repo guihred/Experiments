@@ -14,7 +14,6 @@ public final class HibernateUtil {
 		if (sessionFactory == null || sessionFactory.isClosed()) {
 			sessionFactory = buildSessionFactory();
 		}
-
 		return sessionFactory;
 	}
 

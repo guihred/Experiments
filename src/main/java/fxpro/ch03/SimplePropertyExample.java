@@ -42,70 +42,70 @@ public final class SimplePropertyExample {
 
 	private static void addAndRemoveChangeListener() {
 		int nextInt = random.nextInt(1000);
-		LOG.info("\n");
+        LOG.trace("\n");
 		final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> LOG
-				.info("The observableValue has changed: oldValue = {}, newValue = {}", oldValue, newValue);
+            .trace("The observableValue has changed: oldValue = {}, newValue = {}", oldValue, newValue);
 		intProperty.addListener(changeListener);
-		LOG.info("Added change listener.");
-		LOG.info(SETTING_PROPERTY, nextInt);
+        LOG.trace("Added change listener.");
+        LOG.trace(SETTING_PROPERTY, nextInt);
 		intProperty.set(nextInt);
 		intProperty.removeListener(changeListener);
-		LOG.info("Removed change listener.");
+        LOG.trace("Removed change listener.");
 		nextInt = random.nextInt(1000);
-		LOG.info(SETTING_PROPERTY, nextInt);
+        LOG.trace(SETTING_PROPERTY, nextInt);
 		intProperty.set(nextInt);
 	}
 
 	private static void addAndRemoveInvalidationListener() {
 		int nextInt = random.nextInt(1000);
-		LOG.info("\n");
+        LOG.trace("\n");
 		final InvalidationListener invalidationListener
-		= (Observable observable) -> LOG.info("The observable has been invalidated: {}.", observable);
+            = (Observable observable) -> LOG.trace("The observable has been invalidated: {}.", observable);
 		intProperty.addListener(invalidationListener);
-		LOG.info("Added invalidation listener.");
-		LOG.info(SETTING_PROPERTY, nextInt);
+        LOG.trace("Added invalidation listener.");
+        LOG.trace(SETTING_PROPERTY, nextInt);
 		intProperty.set(nextInt);
 		nextInt = random.nextInt(1000);
-		LOG.info("Calling intProperty.setValue({}).", nextInt);
+        LOG.trace("Calling intProperty.setValue({}).", nextInt);
 		intProperty.setValue(Integer.valueOf(nextInt));
 		intProperty.removeListener(invalidationListener);
-		LOG.info("Removed invalidation listener.");
+        LOG.trace("Removed invalidation listener.");
 		nextInt = random.nextInt(1000);
-		LOG.info(SETTING_PROPERTY, nextInt);
+        LOG.trace(SETTING_PROPERTY, nextInt);
 		intProperty.set(nextInt);
 	}
 
 	private static void bindAndUnbindOnePropertyToAnother() {
-		LOG.info("\n");
+        LOG.trace("\n");
 		int nextInt = random.nextInt(1000);
 		IntegerProperty otherProperty = new SimpleIntegerProperty(0);
 		logOtherProperty(otherProperty);
-		LOG.info("Binding otherProperty to intProperty.");
+        LOG.trace("Binding otherProperty to intProperty.");
 		otherProperty.bind(intProperty);
 		logOtherProperty(otherProperty);
-		LOG.info(SETTING_PROPERTY, nextInt);
+        LOG.trace(SETTING_PROPERTY, nextInt);
 		intProperty.set(nextInt);
 		nextInt = random.nextInt(1000);
 		logOtherProperty(otherProperty);
-		LOG.info("Unbinding otherProperty from intProperty.");
+        LOG.trace("Unbinding otherProperty from intProperty.");
 		otherProperty.unbind();
 		logOtherProperty(otherProperty);
-		LOG.info(SETTING_PROPERTY, nextInt);
+        LOG.trace(SETTING_PROPERTY, nextInt);
 		intProperty.set(nextInt);
 		logOtherProperty(otherProperty);
 	}
 
 	private static void createProperty() {
-		LOG.info("\n");
+        LOG.trace("\n");
 		int nextInt = random.nextInt(1000);
 		intProperty = new SimpleIntegerProperty(nextInt);
-		LOG.info("intProperty = {}", intProperty);
-		LOG.info("intProperty.get() = {}", intProperty.get());
+        LOG.trace("intProperty = {}", intProperty);
+        LOG.trace("intProperty.get() = {}", intProperty.get());
 		int intValue = intProperty.getValue().intValue();
-		LOG.info("intProperty.getValue() = {}", intValue);
+        LOG.trace("intProperty.getValue() = {}", intValue);
 	}
 
 	private static void logOtherProperty(IntegerProperty otherProperty) {
-		LOG.info("otherProperty.get() = {}", otherProperty.get());
+        LOG.trace("otherProperty.get() = {}", otherProperty.get());
 	}
 }

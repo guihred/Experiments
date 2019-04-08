@@ -31,7 +31,8 @@ public class SolitaireCard extends Region {
 
 		Shape s = this.suit.getShape();
         s.setFill(this.suit.getColor());
-        s.setLayoutX(35);
+        final int layoutX = 35;
+        s.setLayoutX(layoutX);
         s.setLayoutY(15);
 		s.visibleProperty().bind(shown);
 

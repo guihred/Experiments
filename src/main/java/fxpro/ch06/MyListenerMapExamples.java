@@ -7,9 +7,9 @@ class MyListenerMapExamples implements MapChangeListener<String, Integer>, HasLo
 
 	@Override
 	public void onChanged(Change<? extends String, ? extends Integer> change) {
-        getLogger().info("\tmap = {}", change.getMap());
+        getLogger().trace("\tmap = {}", change.getMap());
         String prettyPrint = prettyPrint(change);
-        getLogger().info(prettyPrint);
+        getLogger().trace(prettyPrint);
 	}
 	
 	private String prettyPrint(Change<? extends String, ? extends Integer> change) {

@@ -24,15 +24,15 @@ public final class FXCollectionsExamples {
 	public static void main(String[] args) {
         ObservableList<String> strings = FXCollections.observableArrayList();
         strings.addListener(new MyListenerExamples());
-		LOGGER.info("Calling addAll(\"Zero\", \"One\", \"Two\", \"Three\"): ");
+        LOGGER.trace("Calling addAll(\"Zero\", \"One\", \"Two\", \"Three\"): ");
         strings.addAll("Zero", "One", "Two", "Three");
-		LOGGER.info("Calling FXCollections.sort(strings): ");
+        LOGGER.trace("Calling FXCollections.sort(strings): ");
         FXCollections.sort(strings);
-		LOGGER.info("Calling set(1, \"Three_1\"): ");
+        LOGGER.trace("Calling set(1, \"Three_1\"): ");
         strings.set(1, "Three_1");
-		LOGGER.info("Calling setAll(\"One_1\", \"Three_1\", \"Two_1\", \"Zero_1\"): ");
+        LOGGER.trace("Calling setAll(\"One_1\", \"Three_1\", \"Two_1\", \"Zero_1\"): ");
         strings.setAll("One_1", "Three_1", "Two_1", "Zero_1");
-		LOGGER.info("Calling removeAll(\"One_1\", \"Two_1\", \"Zero_1\"): ");
+        LOGGER.trace("Calling removeAll(\"One_1\", \"Two_1\", \"Zero_1\"): ");
         strings.removeAll("One_1", "Two_1", "Zero_1");
     }
 
