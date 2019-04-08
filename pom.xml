@@ -86,12 +86,6 @@
 			<artifactId>JID3</artifactId>
 			<version>0.46</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.google.apis</groupId>
-			<artifactId>google-api-services-customsearch</artifactId>
-			<version>v1-rev53-1.22.0</version>
-		</dependency>
 		<dependency>
 			<groupId>com.google.collections</groupId>
 			<artifactId>google-collections</artifactId>

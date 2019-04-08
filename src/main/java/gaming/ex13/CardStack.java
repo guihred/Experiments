@@ -24,6 +24,7 @@ public class CardStack extends Pane {
 		setPadding(new Insets(10));
 		setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), new Insets(1))));
         setManaged(false);
+        getStyleClass().add("cardstack");
         addRegion();
         styleProperty()
                 .bind(Bindings.createStringBinding(() -> cards.isEmpty() ? "-fx-background-color:green;" : "", cards));

@@ -17,7 +17,7 @@ public final class TermFrequency {
     private static final Logger LOGGER = HasLogging.log();
     private static final String REGEX = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
-    private static final Map<File, Map<String, Long>> mapaDocumentos = new HashMap<>();
+    private static final Map<File, Map<String, Long>> MAPA_DOCUMENTOS = new HashMap<>();
 
     private TermFrequency() {
     }
@@ -30,7 +30,7 @@ public final class TermFrequency {
                 Map<File, Map<String, Long>> mapa = getMapaDocumentos(file, ".java");
                 mapa.forEach((k, v) -> v.entrySet().stream()
                     .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-                    .forEach(p -> LOGGER.info("{},{}={}", k.getName(), p.getKey(), p.getValue())));
+                    .forEach(p -> LOGGER.trace("{},{}={}", k.getName(), p.getKey(), p.getValue())));
             } catch (Exception e) {
                 LOGGER.debug("", e);
             }
@@ -66,18 +66,18 @@ public final class TermFrequency {
 
     public static double getInvertDocumentFrequency(String t) {
         Double idf = 1D;
-        for (Entry<File, Map<String, Long>> entry : mapaDocumentos.entrySet()) {
+        for (Entry<File, Map<String, Long>> entry : MAPA_DOCUMENTOS.entrySet()) {
             if (entry.getValue().containsKey(t)) {
                 idf += 1;
             }
         }
-        return Math.log(mapaDocumentos.size() / idf);
+        return Math.log(MAPA_DOCUMENTOS.size() / idf);
     }
 
     public static Map<File, Map<String, Long>> getMapaDocumentos(File file, String suffix) {
         if (!file.isDirectory()) {
             Map<String, Long> termFrequencyMap = getFrequencyMap(file, suffix);
-            mapaDocumentos.put(file, termFrequencyMap);
+            MAPA_DOCUMENTOS.put(file, termFrequencyMap);
         } else {
             String[] list = file.list();
             if (list != null) {
@@ -91,11 +91,11 @@ public final class TermFrequency {
             }
         }
 
-        return mapaDocumentos;
+        return MAPA_DOCUMENTOS;
     }
 
     public static double getTermFrequency(String t, File d) {
-        long freq = mapaDocumentos.get(d).getOrDefault(t, 0L);
+        long freq = MAPA_DOCUMENTOS.get(d).getOrDefault(t, 0L);
         if (freq == 0) {
             return 0;
         }

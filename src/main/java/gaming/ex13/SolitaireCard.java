@@ -13,9 +13,7 @@ import javafx.scene.text.Text;
 
 public class SolitaireCard extends Region {
     public static final int PREF_HEIGHT = 75;
-
     public static final int PREF_WIDTH = 50;
-
 
 	private final SolitaireNumber number;
 	private final SolitaireSuit suit;
@@ -32,10 +30,9 @@ public class SolitaireCard extends Region {
         setHeight(PREF_HEIGHT);
 
 		Shape s = this.suit.getShape();
-		s.setLayoutX(30);
-		s.setLayoutY(15);
-        s.setScaleX(PREF_HEIGHT / 100);
-        s.setScaleY(PREF_HEIGHT / 100);
+        s.setFill(this.suit.getColor());
+        s.setLayoutX(35);
+        s.setLayoutY(15);
 		s.visibleProperty().bind(shown);
 
 		Text text = new Text(this.number.getRepresentation());

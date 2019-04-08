@@ -10,11 +10,7 @@ import election.ElectionCrawlerApp;
 import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;
 import fxsamples.BackgroundProcesses;
-import japstudy.JapaneseLessonApplication;
-import japstudy.JapaneseLessonAudioSplitDisplay;
-import japstudy.JapaneseLessonDisplay;
-import japstudy.JapaneseLessonEditingDisplay;
-import japstudy.JapaneseLessonReader;
+import japstudy.*;
 import japstudy.db.HibernateUtil;
 import java.util.Set;
 import javafx.scene.Node;
@@ -58,11 +54,12 @@ public class FXHibernateTest extends AbstractTestExecution {
 
     private void clickAllButtons() {
         Set<Node> queryButtons = lookup(".button").queryAll();
+        final int milliseconds = 3000;
         for (Node e : queryButtons) {
             if (e.isVisible()) {
                 clickOn(e);
             }
-            sleep(1000);
+            sleep(milliseconds);
         }
     }
 

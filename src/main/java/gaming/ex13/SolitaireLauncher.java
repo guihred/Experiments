@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
 
 public class SolitaireLauncher extends Application {
@@ -20,6 +21,7 @@ public class SolitaireLauncher extends Application {
         stage.setScene(scene);
         scene.getStylesheets().add(ResourceFXUtils.toExternalForm("solitaire.css"));
         stage.show();
+        ClassReflectionUtils.displayStyleClass(borderPane);
     }
 
     public static void main(String[] args) {

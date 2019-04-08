@@ -3,12 +3,7 @@ package ex.j8;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -133,9 +128,7 @@ public final class Chapter1 {
 	}
 
 	public static void ex7() {
-		andThen(
-				() -> LOGGER.trace("first"), () -> LOGGER.trace("second")
-				).run();
+        andThen(() -> LOGGER.trace("first"), () -> LOGGER.trace("second")).run();
 	}
 
 	/**

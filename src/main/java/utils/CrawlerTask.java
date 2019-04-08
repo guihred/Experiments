@@ -32,8 +32,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
     private Instant start;
     private boolean cancelled;
-    private String encoded = Base64.getEncoder()
-        .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes(StandardCharsets.UTF_8));
+    private String encoded = getEncodedAuthorization();
 
     @Override
     public boolean cancel(final boolean mayInterruptIfRunning) {
@@ -95,6 +94,11 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         updateProgress(i, total);
     }
 
+    public static String getEncodedAuthorization() {
+        return Base64.getEncoder()
+            .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes(StandardCharsets.UTF_8));
+    }
+
     public static String getHTTPPassword() {
         return PASS;
     }
@@ -131,7 +135,8 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
     private static boolean isProxied() {
         try {
-            return InetAddress.getByName(PROXY_CONFIG).isReachable(5000);
+            final int timeout = 5000;
+            return InetAddress.getByName(PROXY_CONFIG).isReachable(timeout);
         } catch (Exception e) {
             LOG.error("NET PROBLEM", e);
 

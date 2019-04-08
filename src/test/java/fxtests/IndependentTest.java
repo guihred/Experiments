@@ -34,18 +34,18 @@ import utils.MatrixSolver;
 import utils.ResourceFXUtils;
 
 public class IndependentTest implements HasLogging {
-	private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log();
 
-	@Test
+    @Test
     public void matrixTest() {
         double[][] matr = { { 4, 5, 3 }, { 2, -5, -2 }, { 4, 5, 6 } };
         double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
         double[] solve = MatrixSolver.solve(matr, coef2);
         Assert.assertArrayEquals("The solved Matrix should match the solution", solve, new double[] { -0.3, 0.5, 0.6 },
-                0.01);
+            0.01);
     }
 
-	@Test
+    @Test
     public void testCh1() {
         measureTime("Ch1.extremeDoubles", Ch1::extremeDoubles);
         measureTime("Ch1.factorial", () -> Ch1.factorial(1000));
@@ -54,48 +54,48 @@ public class IndependentTest implements HasLogging {
         measureTime("Ch1.average", () -> Ch1.average(1, 2, 3, 4, 5, 6, 7, 8));
     }
 
-	@Test
+    @Test
     public void testCh3() {
         Random random = new Random();
-		List<Employee> randomEmployees = random.ints(1, 11).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
-                .collect(toList());
+        List<Employee> randomEmployees = random.ints(1, 11).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
+            .collect(toList());
         measureTime("Ch3.average", () -> Ch3.average(randomEmployees));
         measureTime("Ch3.largest", () -> Ch3.largest(randomEmployees));
         measureTime("Ch3.IntSequence.of", () -> Ch3.IntSequence.of(1, 2, 3).foreach(e -> LOGGER.trace("{}", e)));
         measureTime("new Ch3.SquareSequence",
-                () -> new Ch3.SquareSequence().limit(10).foreach(e -> LOGGER.trace("{}", e)));
+            () -> new Ch3.SquareSequence().limit(10).foreach(e -> LOGGER.trace("{}", e)));
         measureTime("Ch3.isSorted", () -> Ch3.isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo));
         measureTime("Ch3.luckySort",
-                () -> Ch3.luckySort(Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e"), String::compareTo));
+            () -> Ch3.luckySort(Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e"), String::compareTo));
         measureTime("Ch3.subdirectories", () -> Ch3.subdirectories(new File(".")));
         measureTime("Ch3.sortFiles", () -> Ch3.sortFiles(new File(".").listFiles()));
 
     }
 
-	@Test
+    @Test
     public void testCh4() {
         measureTime("Ch4.cyclicToString",
-                () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
+            () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
     }
 
-	@Test
-	public void testDecision() {
-	    measureTime("DecisionTree.executeSimpleTest", DecisionTree::executeSimpleTest);
-	    measureTime("DecisionTree.testCatanDecisionTree",	        DecisionTree::testCatanDecisionTree);
+    @Test
+    public void testDecision() {
+        measureTime("DecisionTree.executeSimpleTest", DecisionTree::executeSimpleTest);
+        measureTime("DecisionTree.testCatanDecisionTree", DecisionTree::testCatanDecisionTree);
     }
 
-	@Test
+    @Test
     public void testElementWiseOperations() {
         measureTime("ElementWiseOp.scalarOp",
-                () -> ElementWiseOp.printMatrix(ElementWiseOp.scalarOp(ElementWiseOp.Operation.MUL,
-                        new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } }, 3.0)));
+            () -> ElementWiseOp.printMatrix(ElementWiseOp.scalarOp(ElementWiseOp.Operation.MUL,
+                new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } }, 3.0)));
         measureTime("ElementWiseOp.matrOp",
-                () -> ElementWiseOp.printMatrix(ElementWiseOp.matrOp(ElementWiseOp.Operation.DIV,
-                        new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } },
-                        new Double[][] { { 1.0, 2.0 }, { 3.0, 4.0 } })));
+            () -> ElementWiseOp.printMatrix(ElementWiseOp.matrOp(ElementWiseOp.Operation.DIV,
+                new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } },
+                new Double[][] { { 1.0, 2.0 }, { 3.0, 4.0 } })));
     }
 
-	@Test
+    @Test
     public void testFastFourierTransform() {
         double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
         Complex[] cinput = measureTime("FastFourierTransform.fft", () -> FastFourierTransform.fft(input));
@@ -104,14 +104,20 @@ public class IndependentTest implements HasLogging {
         }
     }
 
-	@Test
+    @Test
+    public void testGoogleImages() {
+        measureTime("GoogleImagesUtils.displayCountByExtension", () -> GoogleImagesUtils.displayCountByExtension());
+        measureTime("GoogleImagesUtils.testApps", () -> FXTesting.testApps(GoogleImagesUtils.PageImage.class));
+    }
+
+    @Test
     public void testHiragana() {
         measureTime("HiraganaMaker.displayInHiragana", HiraganaMaker::displayInHiragana);
     }
 
-	@Test
+    @Test
     public void testImagesTest() {
-		File userFolder = ResourceFXUtils.toFile("out").getParentFile();
+        File userFolder = ResourceFXUtils.toFile("out").getParentFile();
         String dataDir = userFolder + "\\";
         String nameFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".jpg").toString();
         String svgFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".svg").toString();
@@ -127,7 +133,7 @@ public class IndependentTest implements HasLogging {
         measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
     }
 
-	@Test
+    @Test
     public void testOthersTest() {
         int[] arr = { 3, 5, 6, 8, 7, 2 };
         measureTime("OthersTests.minMax", () -> OthersTests.minMax(arr));
@@ -135,13 +141,13 @@ public class IndependentTest implements HasLogging {
         measureTime("OthersTests.squareDigits", () -> OthersTests.squareDigits(5));
         measureTime("OthersTests.unique", () -> OthersTests.unique(arr));
         measureTime("OthersTests.reverse", () -> OthersTests.reverse("HIHI"));
-        measureTime("OthersTests.p", () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3),
-                new Complex(-1, 1), new Complex(-9, -5)));
+        measureTime("OthersTests.p",
+            () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5)));
         measureTime("OthersTests.getStateMachine", () -> OthersTests.getStateMachine(OthersTests.Estado.CLOSED,
-                Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
+            Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
     }
 
-	@Test
+    @Test
     public void testQuickSort() {
         List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
         Comparator<Integer> c = Integer::compareTo;
@@ -150,22 +156,21 @@ public class IndependentTest implements HasLogging {
 
     }
 
-	@Test
+    @Test
     public void testRandomHelloWorld() {
         measureTime("RandomHelloWorld.displayHelloWorld", RandomHelloWorld::displayHelloWorld);
     }
 
-	@Test
+    @Test
     public void testRarAndZIP() {
         measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
         measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
-        measureTime("GoogleImagesUtils.displayCountByExtension", () -> GoogleImagesUtils.displayCountByExtension());
     }
 
     @Test
     public void testTermFrequency() {
         measureTime("TermFrequency.displayTermFrequency", TermFrequency::displayTermFrequency);
         measureTime("TermFrequencyIndex.identifyKeyWordsInSourceFiles",
-                TermFrequencyIndex::identifyKeyWordsInSourceFiles);
+            TermFrequencyIndex::identifyKeyWordsInSourceFiles);
     }
 }
