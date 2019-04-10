@@ -92,6 +92,6 @@ public class DecisionNode {
         String trueBranch = trueNode.toString().replaceAll(" {2}( *)", "    $1");
         String falseBranch = falseNode.toString().replaceAll(" {2}( *)", "    $1");
         return String.format("%n  if(%s){%n  %s%n  }else{%n  %s%n  }", question, trueBranch, falseBranch)
-            .replaceAll("\n *\n", "\n").replaceAll("\n *\n", "\n");
+            .replaceAll("\n\\s*\n", "\n");
     }
 }

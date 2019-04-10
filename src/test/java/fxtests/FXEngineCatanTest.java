@@ -26,7 +26,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         build.removeCol("WINNER", "PLAYER");
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));
-        DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION");
+        DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION", 0.01);
 
         List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
             .collect(Collectors.toList());
@@ -45,7 +45,8 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             .collect(Collectors.toList());
         Collections.shuffle(allTerrains);
         CatanModel model = newInstance.getModel();
-        for (int i = 0; i < MAX_TRIES * 2; i++) {
+        int j = MAX_TRIES;
+        for (int i = 0; i < j; i++) {
             // while (model.getCurrentPlayer() == PlayerColor.GREEN) {
             // sleep(1000);
             // }
@@ -57,13 +58,13 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             boolean makeDecision = makeDecision(action, allEdge, allVillages, cities, settlePoints, allRoads,
                 allTerrains, allButtons, clickedButtons);
             if (makeDecision) {
-                getLogger().info("{}/{}", i + 1, MAX_TRIES * 2);
+                getLogger().info("{}/{}", i + 1, j);
             } else {
                 CatanAction randomAction = getRandomAction();
                 boolean decision = makeDecision(randomAction, allEdge, allVillages, cities, settlePoints, allRoads,
                     allTerrains, allButtons, clickedButtons);
                 if (decision) {
-                    getLogger().info("{}/{} {}", i + 1, MAX_TRIES * 2, randomAction);
+                    getLogger().info("{}/{} {}", i + 1, j, randomAction);
                 } else {
                     i--;
                 }

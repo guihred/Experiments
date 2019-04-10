@@ -118,7 +118,7 @@ public class VigenereXORCipher {
 	}
 
     public long findKeySize() throws IOException {
-		String line = Files.readAllLines(ResourceFXUtils.toPath("ctext.txt")).get(0);
+        String line = Files.lines(ResourceFXUtils.toPath("ctext.txt")).findFirst().orElse("");
 		String[] split = line.split("(?<=\\G..)");
 		List<Integer> keySizeList = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
 		long max = 0;

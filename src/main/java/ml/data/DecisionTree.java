@@ -12,8 +12,12 @@ public class DecisionTree {
     private static final Logger LOG = HasLogging.log();
 
     public static DecisionNode buildTree(DataframeML frame, String label) {
+        return buildTree(frame, label, MIN_GAIN);
+    }
+
+    public static DecisionNode buildTree(DataframeML frame, String label, double minGain) {
         Question question = findBestSplit(frame, label);
-        if (question == null || question.getInfoGain() <= MIN_GAIN) {
+        if (question == null || question.getInfoGain() <= minGain) {
             return new DecisionNode(label, frame);
         }
         DataframeML trueFrame = new DataframeML(frame).filter(question.getColName(), question::answer);
