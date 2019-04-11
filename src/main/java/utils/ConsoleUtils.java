@@ -21,8 +21,8 @@ import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 
 public final class ConsoleUtils {
-    private static final int WAIT_INTERVAL_MILLIS = 5000; // 5 SECONDS
-    private static final int PROCESS_MAX_TIME_LIMIT = 120000; // 2 MINUTES
+    private static final int WAIT_INTERVAL_MILLIS = 5_000; // 5 SECONDS
+    private static final int PROCESS_MAX_TIME_LIMIT = 120_000; // 2 MINUTES
 	private static final String ACTIVE_FLAG = "active";
 	private static final Logger LOGGER = HasLogging.log();
 	private static final String EXECUTING = "Executing \"{}\"";
@@ -119,7 +119,7 @@ public final class ConsoleUtils {
 				new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = in2.readLine()) != null) {
-				LOGGER.info("{}", line);
+                LOGGER.trace("{}", line);
 				execution.add(line);
 			}
 			p.waitFor();
@@ -140,7 +140,7 @@ public final class ConsoleUtils {
 					new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
 				String line;
 				while ((line = in2.readLine()) != null) {
-					LOGGER.info("{}", line);
+                    LOGGER.trace("{}", line);
 					execution.add(line);
 				}
 				p.waitFor();
@@ -165,6 +165,7 @@ public final class ConsoleUtils {
 				LOGGER.info("Running {} processes {}", processes.size(), formated);
 				Thread.sleep(WAIT_INTERVAL_MILLIS);
                 if (System.currentTimeMillis() - currentTimeMillis > PROCESS_MAX_TIME_LIMIT) {
+                    PROCESSES.keySet().stream().collect(Collectors.toList()).forEach(k -> PROCESSES.put(k, true));
 					LOGGER.error("Processes \"{}\" taking too long", formated);
 					break;
 				}
