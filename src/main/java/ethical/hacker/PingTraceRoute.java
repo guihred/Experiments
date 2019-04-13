@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import utils.ConsoleUtils;
 import utils.HasLogging;
 
-public class PingTraceRoute {
+public final class PingTraceRoute {
 	private static final Logger LOG = HasLogging.log();
 
+	private PingTraceRoute() {
+	}
     public static Map<String, String> getInformation(String address) {
         Map<String, String> responses = new HashMap<>();
         String ipRegex = ".+\\[(.+)\\].+";
@@ -55,10 +57,6 @@ public class PingTraceRoute {
         return info;
     }
 
-    public static void main(String[] args) {
-        getInformation(TracerouteScanner.IP_TO_SCAN);
-    }
-
     public static List<String> traceRoute(String address) {
         return traceRoute(new ArrayList<>(), address, 1);
     }
@@ -73,7 +71,7 @@ public class PingTraceRoute {
                 .executeInConsole("ping " + address + " -i " + i + " -n 1 ", responses);
 
         String string = executeInConsole.get(route);
-        if (string != null && !string.matches("Host de destino inacess.+") && i < 100) {
+		if (string != null && !string.matches("Host de destino inacess.+") && i < 100 && !n.contains(string)) {
             n.add(string);
             return traceRoute(n, address, i + 1);
         }

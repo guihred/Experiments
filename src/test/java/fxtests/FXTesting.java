@@ -1,7 +1,6 @@
 package fxtests;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -9,9 +8,7 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
-import org.testfx.api.FxRobot;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.util.WaitForAsyncUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
@@ -125,19 +122,6 @@ public final class FXTesting implements HasLogging {
             Class<? extends Application> class1 = applicationClasses[i];
             app.interactNoWait(RunnableEx.makeRunnable(() -> class1.newInstance().start(currentStage)));
             consumer.run();
-        }
-    }
-
-    @SafeVarargs
-    public static void verifyAndRun(Consumer<FxRobot> consumer, Class<? extends Application>... applicationClasses) {
-        for (Class<? extends Application> class1 : applicationClasses) {
-            Platform.runLater(() -> {
-                FxRobot fxRobot = new FxRobot();
-                Stage currentStage = new Stage();
-                fxRobot.interactNoWait(RunnableEx.makeRunnable(() -> class1.newInstance().start(currentStage)));
-                consumer.accept(fxRobot);
-            });
-            WaitForAsyncUtils.waitForFxEvents();
         }
     }
 }
