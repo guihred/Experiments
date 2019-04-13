@@ -11,13 +11,12 @@ import gaming.ex10.MinesweeperSquare;
 import gaming.ex11.DotsLauncher;
 import gaming.ex11.DotsSquare;
 import gaming.ex13.CardStack;
+import gaming.ex13.SolitaireCard;
 import gaming.ex13.SolitaireLauncher;
 import gaming.ex18.Square2048Launcher;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -28,7 +27,7 @@ import utils.ConsumerEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
-    @Test
+	@Test
     public void verifyButtons() throws Exception {
         measureTime("Test.testButtons",
             () -> FXTesting.verifyAndRun(this, currentStage, () -> {
@@ -41,7 +40,7 @@ public class FXEngineTest extends AbstractTestExecution {
 
     }
 
-    @Test
+	@Test
     public void verifyDots() throws Exception {
         show(DotsLauncher.class);
         Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
@@ -58,7 +57,7 @@ public class FXEngineTest extends AbstractTestExecution {
         }
     }
 
-    @Test
+	@Test
     public void verifyMinesweeper() throws Exception {
         show(MinesweeperLauncher.class);
         List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll().parallelStream().limit(40)
@@ -70,7 +69,7 @@ public class FXEngineTest extends AbstractTestExecution {
         }
     }
 
-    @Test
+	@Test
     public void verifyPong() throws Exception {
         show(PongLauncher.class);
         lookup(".button").queryAll().stream().forEach(ConsumerEx.makeConsumer(t -> clickOn(t, MouseButton.PRIMARY)));
@@ -82,7 +81,7 @@ public class FXEngineTest extends AbstractTestExecution {
         }
     }
 
-    @Test
+	@Test
     public void verifySnake() throws Exception {
         show(SnakeLauncher.class);
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
@@ -93,23 +92,47 @@ public class FXEngineTest extends AbstractTestExecution {
         show(SolitaireLauncher.class);
         List<CardStack> cardStacks = lookup(".cardstack").queryAllAs(CardStack.class).stream()
             .collect(Collectors.toList());
+		Collections.shuffle(cardStacks);
         for (CardStack cardStack : cardStacks) {
-            if (cardStack.getChildren().isEmpty()) {
+			if (cardStack.getChildren().size() <= 1) {
                 continue;
             }
-            Node card = cardStack.getChildren().get(cardStack.getChildren().size() - 1);
-            for (Node stack : cardStacks) {
+			Node card = getLastCard(cardStack);
+			clickOn(cardStack);
+			for (CardStack stack : cardStacks) {
                 drag(card, MouseButton.PRIMARY);
                 moveTo(stack);
                 drop();
+				if (!cardStack.getChildren().contains(card)) {
+					if (cardStack.getChildren().size() > 1) {
+						card = getLastCard(cardStack);
+						clickOn(cardStack);
+					} else {
+						continue;
+					}
+				}
+
             }
         }
     }
 
-    @Test
+	@Test
     public void verifySquare() throws Exception {
         show(Square2048Launcher.class);
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
     }
+
+	private Node getLastCard(CardStack cardStack) {
+		
+		ObservableList<Node> children = cardStack.getChildren();
+		Optional<Node> findFirst = children.stream().filter(e -> e instanceof SolitaireCard)
+				.filter(e->((SolitaireCard)e).isShown())
+				.findFirst();
+		if(findFirst.isPresent()) {
+			return findFirst.get();
+		}
+		
+		return children.get(children.size() - 1);
+	}
 
 }

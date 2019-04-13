@@ -84,6 +84,7 @@ public class SolitaireModel {
 		Node node = (Node) event.getSource();
 		dragContext.x = node.getBoundsInParent().getMinX() - event.getScreenX();
 		dragContext.y = node.getBoundsInParent().getMinY() - event.getScreenY();
+		dragContext.cards = null;
 		if (node instanceof CardStack) {
 			CardStack cardStack = (CardStack) node;
 			if (Stream.of(simpleStacks).anyMatch(s -> s == node)) {
@@ -173,6 +174,7 @@ public class SolitaireModel {
 			return;
 		}
 		dragContext.stack.addCards(dragContext.cards);
+		dragContext.cards = null;
         verifyEnd();
     }
 
