@@ -46,7 +46,7 @@ public class FXEngineSVGCreatorTest extends AbstractTestExecution {
 			moveBy(randomMove(10), 0);
 			drop();
 		});
-		clickOn(".button");
+		tryClickButtons();
 	}
 
     private int randomMove(final int bound) {
