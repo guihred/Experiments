@@ -10,9 +10,9 @@ public class MyListenerExamples implements ListChangeListener<String>, HasLoggin
     public void onChanged(Change<? extends String> change) {
 
         ObservableList<? extends String> list = change.getList();
-        getLogger().info("\tlist = {}", list);
+        getLogger().trace("\tlist = {}", list);
         String prettyPrint = MyListenerMethodsExamples.prettyPrint(change);
-        getLogger().info(prettyPrint);
+        getLogger().trace(prettyPrint);
     }
 
 

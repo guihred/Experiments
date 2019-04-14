@@ -22,7 +22,7 @@ public enum PuzzlePath {
 		int i = x + y > 0 ? 1 : -1;
         return Arrays.asList(new LineTo(i * y / 2, i * x / 2), new LineTo(x, y), new LineTo(i * -y / 2, i * -x / 2));
     }),
-    WAVE((x, y) -> wave(x, y)),
+    WAVE(PuzzlePath::wave),
     ROUNDED((x, y) -> {
         boolean b = x + y > 0;
         boolean m = x == 0;
