@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class PortServices {
+public final class PortServices {
 
     private static final Map<Integer, String> TCP_SERVICES = new LinkedHashMap<>();
     private static final Map<Integer, String> UDP_SERVICES = new LinkedHashMap<>();
@@ -22,7 +22,7 @@ public class PortServices {
     private final String type;
     private final int[] ports;
 
-    PortServices(String name, String type, int... ports) {
+    private PortServices(String name, String type, int... ports) {
         description = name;
         this.type = type;
         this.ports = ports;
@@ -62,26 +62,8 @@ public class PortServices {
         try (InputStream inStr = ResourceFXUtils.toStream("nmap-services");
                 InputStreamReader inStrReader = new InputStreamReader(inStr, Charset.defaultCharset());
                 BufferedReader bRead = new BufferedReader(inStrReader)) {
-            String line;
-
-            while ((line = bRead.readLine()) != null) {
-                line = line.trim();
-                String[] toks;
-                String[] portAndProtocol;
-                if (line.length() == 0 || line.charAt(0) == '#' || (toks = line.split("\\s+")).length < 2
-                        || (portAndProtocol = toks[1].split("/")).length != 2) {
-                    continue;
-                }
-                String serviceName = toks[0];
-                Integer port = Integer.valueOf(portAndProtocol[0]);
-                String protocol = portAndProtocol[1].trim();
-                if ("tcp".equalsIgnoreCase(protocol)) {
-                    TCP_SERVICES.put(port, serviceName);
-                } else if ("udp".equalsIgnoreCase(protocol)) {
-                    UDP_SERVICES.put(port, serviceName);
-                } else {
-                    LOG.error("Unrecognized protocol in line: \"{}\"", line);
-                }
+            for (String line = bRead.readLine(); line != null; line = bRead.readLine()) {
+                classifyService(line.trim());
             }
 
         } catch (Exception e) {
@@ -97,6 +79,33 @@ public class PortServices {
         String tcpServices = TCP_SERVICES.entrySet().stream().map(Entry<Integer, String>::toString)
                 .collect(Collectors.joining("\n\t", "\n\t", ""));
         LOG.info("TCP = {}", tcpServices);
+    }
+
+    private static void classifyService(String line) {
+        if (line.length() == 0 || line.charAt(0) == '#') {
+            return;
+        }
+        String[] toks = line.split("\\s+");
+        if (toks.length < 2) {
+            return;
+        }
+
+        String[] portAndProtocol = toks[1].split("/");
+        if (portAndProtocol.length != 2) {
+            return;
+        }
+
+        String serviceName = toks[0];
+        Integer port = Integer.valueOf(portAndProtocol[0]);
+        String protocol = portAndProtocol[1].trim();
+        if ("tcp".equalsIgnoreCase(protocol)) {
+            TCP_SERVICES.put(port, serviceName);
+        } else if ("udp".equalsIgnoreCase(protocol)) {
+            UDP_SERVICES.put(port, serviceName);
+        } else {
+            LOG.error("Unrecognized protocol in line: \"{}\"", line);
+        }
+        
     }
 
 }

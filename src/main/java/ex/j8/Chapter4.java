@@ -85,7 +85,8 @@ public final class Chapter4 {
     private static Arc buildArc(Scene scene, Slider rotationSlider, Slider radiusSlider) {
         final double scaleFactor = 3.6;
         final int startAngle = 45;
-        return new SimpleArcBuilder().centerX(divide(scene.widthProperty(), 2)).radiusX(100).radiusY(150)
+        final int radiusY = 150;
+        return new SimpleArcBuilder().centerX(divide(scene.widthProperty(), 2)).radiusX(100).radiusY(radiusY)
             .startAngle(startAngle).length(360).centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
             .stroke(Color.RED).strokeType(StrokeType.OUTSIDE).strokeLineCap(StrokeLineCap.ROUND).rotate(30D)
             .radiusX(multiply(radiusSlider.valueProperty(), scaleFactor)).strokeLineJoin(StrokeLineJoin.ROUND)
