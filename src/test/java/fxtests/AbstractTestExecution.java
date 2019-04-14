@@ -1,15 +1,11 @@
 package fxtests;
 
 import javafx.application.Application;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.apache.commons.lang.SystemUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
-import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
+import utils.ConsumerEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
@@ -19,52 +15,6 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 	protected boolean isLinux = SystemUtils.IS_OS_LINUX;
 
 	@Override
-	public FxRobotInterface clickOn(Node node, MouseButton... buttons) {
-		if (isLinux) {
-			moveTo(node);
-			return super.clickOn(buttons);
-		}
-
-		return super.clickOn(node, buttons);
-	}
-
-	@Override
-	public FxRobotInterface clickOn(String node, MouseButton... buttons) {
-		if (isLinux) {
-			Node query = lookup(node).query();
-			moveTo(query);
-			return super.clickOn(buttons);
-		}
-
-		return super.clickOn(node, buttons);
-	}
-
-	@Override
-	public FxRobotInterface doubleClickOn(Node node, MouseButton... buttons) {
-		if (isLinux) {
-			moveTo(node);
-			return super.doubleClickOn(buttons);
-		}
-		return super.doubleClickOn(node, buttons);
-	}
-
-	@Override
-	public FxRobotInterface moveTo(Node next) {
-		if (isLinux) {
-			if (next.getScene() != null && next.getScene().getWindow() != null) {
-				next.getScene().getWindow().setX(0);
-				next.getScene().getWindow().setY(0);
-				double x2 = next.getScene().getX();
-				Bounds local = next.getBoundsInParent();
-				double x = -local.getWidth() / 2 - local.getMinX();
-				Point2D offset = new Point2D(x + x2 / 2, 0);
-				return super.moveTo(next, offset);
-			}
-		}
-		return super.moveTo(next);
-	}
-
-	@Override
 	public void start(Stage stage) throws Exception {
 		ResourceFXUtils.initializeFX();
 		currentStage = stage;
@@ -72,7 +22,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 		currentStage.setY(0);
 	}
 
-    protected <T extends Application> T show(Class<T> c) {
+	protected <T extends Application> T show(Class<T> c) {
 		try {
 			T newInstance = c.newInstance();
 			interactNoWait(RunnableEx.makeRunnable(() -> newInstance.start(currentStage)));
@@ -81,13 +31,16 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
             throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
 		}
 	}
-
-	protected <T extends Application> void show(T application) {
+    protected <T extends Application> void show(T application) {
 		try {
 			interactNoWait(RunnableEx.makeRunnable(() -> application.start(currentStage)));
 		} catch (Exception e) {
 			getLogger().error(String.format("ERRO IN %s", application), e);
 		}
+	}
+
+	protected void tryClickButtons() {
+		lookup(".button").queryAll().forEach(ConsumerEx.makeConsumer(this::clickOn));
 	}
 
 }

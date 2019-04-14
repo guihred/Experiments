@@ -46,6 +46,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 			type(KeyCode.ENTER);
 		} else {
 			type(KeyCode.M);
+			type(KeyCode.U);
 			type(KeyCode.DOWN);
 			type(KeyCode.TAB);
 			type(KeyCode.ENTER);

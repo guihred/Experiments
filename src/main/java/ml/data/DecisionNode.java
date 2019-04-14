@@ -12,7 +12,7 @@ public class DecisionNode {
     private DecisionNode trueNode;
     private DecisionNode falseNode;
     private Question question;
-    List<String> result;
+	private List<String> result;
 
     public DecisionNode(Question question, DecisionNode trueNode, DecisionNode falseNode) {
         this.question = question;
@@ -23,6 +23,10 @@ public class DecisionNode {
     public DecisionNode(String label, DataframeML rows) {
         result = new ArrayList<>(rows.categorize(label));
     }
+
+    public List<String> getResult() {
+		return result;
+	}
 
     public boolean isLeaf() {
         return question == null;
@@ -84,7 +88,7 @@ public class DecisionNode {
         return Math.max(trueNode.size(), falseNode.size()) + 1;
     }
 
-    @Override
+	@Override
     public String toString() {
         if (isLeaf()) {
             return "  " + result;
@@ -94,4 +98,5 @@ public class DecisionNode {
         return String.format("%n  if(%s){%n  %s%n  }else{%n  %s%n  }", question, trueBranch, falseBranch)
             .replaceAll("\n\\s*\n", "\n");
     }
+
 }

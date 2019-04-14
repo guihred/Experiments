@@ -52,7 +52,8 @@ public class BrazilianWordRulesTest {
         });
     }
 
-    public static void main(String[] args) {
+	@Test
+	public void testWords() {
         try {
             Stream<String> words = getWords(ResourceFXUtils.toURI("pt_PT.dic"));
             Map<String, Set<String>> wordAttributes = words.filter(e -> e.contains("\t"))
@@ -69,7 +70,6 @@ public class BrazilianWordRulesTest {
             List<String> a = Arrays.asList("inf", "ppa", "pp", "c", "f", "ip", "i", "pic", "p", "pmp", "pc", "pi",
                 "fc");
             for (String s : a) {
-
                 getWords(ResourceFXUtils.toURI("pt_PT.dic")).filter(e -> e.contains("T=" + s))
                     .map(e -> e.split("\t")[0].replaceAll("/\\w+", "")).forEach(e -> System.out.print(e + " "));
             }

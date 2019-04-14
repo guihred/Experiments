@@ -12,6 +12,12 @@ import utils.RunnableEx;
 
 public class FXEngineQuartoTest extends AbstractTestExecution {
 
+	Random random = new Random();
+
+	public double randAngle(int  r) {
+		return random.nextInt(r) * Math.PI * 2 / r;
+	}
+
 	@Test
 	public void verify() throws Exception {
 		interactNoWait(RunnableEx.makeRunnable(() -> {
@@ -36,13 +42,38 @@ public class FXEngineQuartoTest extends AbstractTestExecution {
 			new QuartoLauncher().start(currentStage);
 			currentStage.setMaximized(true);
 		}));
-		Random random = new Random();
-		for (int i = 0; i < 100; i++) {
 
-			clickOn(random.nextDouble() * currentStage.getWidth() / 2 + currentStage.getWidth() / 4,
-					+random.nextDouble() * currentStage.getHeight() / 2 + currentStage.getHeight() / 4,
-					MouseButton.PRIMARY);
+		press(KeyCode.SHIFT, KeyCode.CONTROL, KeyCode.ALT);
+		for (int i = 0; i < 10; i++) {
+			type(KeyCode.UP);
 		}
+		for (int i = 0; i < 20; i++) {
+			double height = currentStage.getHeight();
+			double width = currentStage.getWidth();
+			double ratio = .21;
+			clickOn(width * ratio + randDistance(width), height / 2, MouseButton.PRIMARY);
+			randButton(width, height);
+			clickOn(width / 2, height * ratio + randDistance(height), MouseButton.PRIMARY);
+			randButton(width, height);
+			clickOn(width / 2, height * (1 - ratio) + randDistance(width), MouseButton.PRIMARY);
+			randButton(width, height);
+			clickOn(width * (1 - ratio) + randDistance(height), height / 2, MouseButton.PRIMARY);
+			randButton(width, height);
+		}
+	}
+
+	private void randButton(double width, double height) {
+
+		boolean bigRadius = random.nextBoolean();
+		double angle = randAngle(bigRadius ? 12 : 4);
+
+		double x = Math.cos(angle) * width / 7 / (bigRadius ? 1 : 2) + width / 2;
+		double y = Math.sin(angle) * height / 7 / (bigRadius ? 1 : 2) + height / 2;
+		clickOn(x, y, MouseButton.PRIMARY);
+	}
+
+	private double randDistance(double height) {
+		return (Math.random() - .5) * height / 40;
 	}
 
 }
