@@ -13,6 +13,8 @@ import gaming.ex11.DotsSquare;
 import gaming.ex13.CardStack;
 import gaming.ex13.SolitaireCard;
 import gaming.ex13.SolitaireLauncher;
+import gaming.ex17.PuzzleLauncher;
+import gaming.ex17.PuzzlePiece;
 import gaming.ex18.Square2048Launcher;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Rectangle;
 import org.junit.Test;
 import pdfreader.PdfReader;
+import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
@@ -32,6 +35,7 @@ public class FXEngineTest extends AbstractTestExecution {
 				() -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
 					sleep(1000);
 					clickOn(t);
+					type(KeyCode.ESCAPE);
 				}), Chapter4.Ex9.class, PlayingAudio.class, PdfReader.class));
 
 	}
@@ -44,25 +48,28 @@ public class FXEngineTest extends AbstractTestExecution {
 		Random random = new Random();
 		for (Node next : queryAll) {
 			drag(next, MouseButton.PRIMARY);
+            int a = random.nextBoolean() ? 1 : -1;
 			if (random.nextBoolean()) {
-				moveBy(DotsSquare.SQUARE_SIZE, 0);
+                moveBy(a * DotsSquare.SQUARE_SIZE, 0);
 			} else {
-				moveBy(0, DotsSquare.SQUARE_SIZE);
+                moveBy(0, a * DotsSquare.SQUARE_SIZE);
 			}
 			drop();
 		}
 	}
 
-	@Test
+    @Test
 	public void verifyMinesweeper() throws Exception {
 		show(MinesweeperLauncher.class);
-		List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll().parallelStream().limit(40)
-				.collect(Collectors.toList());
+        List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll()
+            .parallelStream()
+            .collect(Collectors.toList());
 		Collections.shuffle(queryAll);
-		for (Node next : queryAll) {
-			clickOn(next);
+        for (int i = 0; i < 30; i++) {
+            Node next = queryAll.get(i);
+            clickOn(next);
 			tryClickButtons();
-		}
+        }
 	}
 
 	@Test
@@ -75,6 +82,22 @@ public class FXEngineTest extends AbstractTestExecution {
 			moveBy(0, -DotsSquare.SQUARE_SIZE);
 			drop();
 		}
+	}
+
+	@Test
+	public void verifyPuzzle() throws Exception {
+	    show(PuzzleLauncher.class);
+        interactNoWait(() -> currentStage.setMaximized(true));
+        List<Node> queryAll = lookup(e -> e instanceof PuzzlePiece).queryAll().stream().filter(e -> e.isVisible())
+            .collect(Collectors.toList());
+        int squareSize = DotsSquare.SQUARE_SIZE;
+        for (int i = 0; i < queryAll.size() / 5; i++) {
+            Node next = queryAll.get(i);
+            RunnableEx.makeRunnable(() -> drag(next, MouseButton.PRIMARY)).run();
+            moveBy(Math.random() * squareSize - squareSize / 2, Math.random() * squareSize - squareSize / 2);
+	        drop();
+        }
+        interactNoWait(() -> currentStage.setMaximized(false));
 	}
 
 	@Test

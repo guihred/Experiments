@@ -40,8 +40,9 @@ public final class ExcelService implements HasLogging {
 			CellStyle formatoBigDecimal = xssfWorkbook.createCellStyle();
 			formatoBigDecimal.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.00"));
 
-			List<T> apply;
-			for (int i = 0; !(apply = lista.apply(i, 100)).isEmpty(); i += 100) {
+            final int step = 100;
+            int i = 0;
+            for (List<T> apply = lista.apply(0, step); !apply.isEmpty(); i += step, apply = lista.apply(i, step)) {
 				for (int j = 0; j < apply.size(); j++) {
 					T entidade = apply.get(j);
 					Row row = sheetAt.createRow(i + 1 + j);

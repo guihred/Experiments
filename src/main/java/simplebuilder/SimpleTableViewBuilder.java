@@ -1,10 +1,7 @@
 package simplebuilder;
 
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -38,23 +35,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     	return this;
     }
 
-	public <V> SimpleTableViewBuilder<T> addColumn(final String columnName,
-            final Callback<TableColumn<T, V>, TableCell<T, V>> value) {
-        final TableColumn<T, V> column = new TableColumn<>(columnName);
-        column.setCellFactory(value);
-        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-        table.getColumns().add(column);
-        return this;
-    }
 
-    public SimpleTableViewBuilder<T> addColumn(final String columnName, final Function<T, String> propertyName) {
-        final TableColumn<T, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(
-                param -> new SimpleStringProperty(Objects.toString(propertyName.apply(param.getValue()))));
-        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-        table.getColumns().add(column);
-        return this;
-    }
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
@@ -83,17 +64,9 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName, final double prefWidth) {
-        final TableColumn<T, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
-        column.setPrefWidth(prefWidth);
-        table.getColumns().add(column);
-        return this;
-    }
 
     public SimpleTableViewBuilder<T> equalColumns() {
         ObservableList<TableColumn<T, ?>> columns = table.getColumns();
-
         columns.forEach(c -> c.prefWidthProperty().bind(table.prefWidthProperty().divide(columns.size())));
         return this;
     }
@@ -116,6 +89,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+        return this;
+    }
+
+    public SimpleTableViewBuilder<T> scrollTo(int value) {
+        table.scrollTo(value);
         return this;
     }
 

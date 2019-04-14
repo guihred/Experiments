@@ -212,13 +212,14 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             if (KANJI_BLOCK.contains(of)) {
                 currentWord.append(currentLetter);
             }
-            if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() == 0) {
+            if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() > 0) {
                 String reading = getReading(currentWord.toString(), currentLetter);
                 if (reading.equals(currentWord.toString())) {
                     currentLine.append(currentWord);
                 } else {
                     currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
                 }
+                getLogger().info("{}={}", currentWord, reading);
                 currentWord.delete(0, currentWord.length());
             }
             if (!KANJI_BLOCK.contains(of)) {

@@ -16,8 +16,6 @@ public class PuzzleLauncher extends Application {
         root.getChildren().add(puzzlePiece);
         Scene value = new Scene(root);
         primaryStage.setScene(value);
-
-
         primaryStage.show();
 
     }

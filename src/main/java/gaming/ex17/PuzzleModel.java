@@ -2,11 +2,7 @@ package gaming.ex17;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -15,8 +11,8 @@ import utils.ResourceFXUtils;
 
 public class PuzzleModel extends Group {
 
-	public static final int PUZZLE_WIDTH = 8;
-	public static final int PUZZLE_HEIGHT = 4;
+    public static final int PUZZLE_WIDTH = 8;
+    public static final int PUZZLE_HEIGHT = 4;
 
 	private final Random random = new Random();
 	private PuzzlePiece[][] puzzle = initializePieces();
@@ -69,17 +65,19 @@ public class PuzzleModel extends Group {
 				puzzlePieces[i][j].setImage(image);
 			}
 		}
-		PuzzlePath[] values = { PuzzlePath.ROUND, PuzzlePath.ZIGZAGGED, PuzzlePath.SQUARE, PuzzlePath.WAVE };
+        PuzzlePath[] values = {
+            PuzzlePath.ROUND, PuzzlePath.ZIGZAGGED, PuzzlePath.SQUARE, PuzzlePath.WAVE,
+            PuzzlePath.ROUNDED, PuzzlePath.ROUNDED_2 };
 		for (int i = 0; i < PUZZLE_WIDTH; i++) {
 			for (int j = 0; j < PUZZLE_HEIGHT; j++) {
-				PuzzlePath puzzlePath2 = values[random.nextInt(values.length)];
+                PuzzlePath path = values[random.nextInt(values.length)];
 				if (i < PUZZLE_WIDTH - 1) {
-					puzzlePieces[i][j].setRight(puzzlePath2);
-					puzzlePieces[i + 1][j].setLeft(puzzlePath2);
+                    puzzlePieces[i][j].setRight(path);
+                    puzzlePieces[i + 1][j].setLeft(path);
 				}
 				if (j < PUZZLE_HEIGHT - 1) {
-					puzzlePieces[i][j].setDown(puzzlePath2);
-					puzzlePieces[i][j + 1].setUp(puzzlePath2);
+                    puzzlePieces[i][j].setDown(path);
+                    puzzlePieces[i][j + 1].setUp(path);
 				}
 				puzzlePieces[i][j].getChildren().add(puzzlePieces[i][j].getPath());
 
