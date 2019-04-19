@@ -67,7 +67,7 @@ public class PageImage extends Application {
                 ObservableList<Node> children = root.getChildren();
                 ImageView imageView = WikiImagesUtils.convertToImage(url);
                 int i = 1;
-                for (; i < children.size() && byWidth(children.get(i)) > byWidth(imageView); i++) {
+                for (; i < children.size() && byArea(children.get(i)) > byArea(imageView); i++) {
                 }
                 children.add(i, imageView);
             }
@@ -86,7 +86,7 @@ public class PageImage extends Application {
         thread.start();
     }
 
-    private double byWidth(Node e) {
+    private double byArea(Node e) {
         return e.getBoundsInLocal().getWidth() * e.getBoundsInLocal().getHeight();
     }
 
