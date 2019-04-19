@@ -1,7 +1,6 @@
 package fxsamples;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import javafx.application.Application;
 import javafx.scene.*;
@@ -197,8 +196,8 @@ public class JewelViewer extends Application {
     private void tryLoadMeshViews(String url) {
         try {
             loadMeshViews(new File(new URL(url).getFile()));
-        } catch (MalformedURLException e) {
-            LOGGER.error("", e);
+        } catch (Exception e) {
+            LOGGER.error("USELESS EXCEPTION", e);
         }
     }
 

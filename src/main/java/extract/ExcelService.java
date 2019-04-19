@@ -128,9 +128,7 @@ public final class ExcelService implements HasLogging {
 					i--;
 					continue;
 				}
-				Iterator<Row> rowIterator = sheet.iterator();
-				while (rowIterator.hasNext()) {
-					Row row = rowIterator.next();
+                for (Row row : sheet) {
 					for (Cell cell : row) {
 						alterarValorCell(map, sheet, row, cell);
 					}

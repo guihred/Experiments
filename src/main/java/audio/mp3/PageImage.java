@@ -28,12 +28,12 @@ public class PageImage extends Application {
         root.setPrefWidth(200);
         root.setAlignment(Pos.TOP_LEFT);
         ScrollPane scrollPane = new ScrollPane(root);
-        TextField text = new TextField();
-        text.textProperty().addListener((ob, t, value) -> addThread(root, value));
-        root.getChildren().add(text);
-        text.setText("Dog");
+        TextField textField = new TextField();
+        textField.textProperty().addListener((ob, t, value) -> addThread(root, value));
+        root.getChildren().add(textField);
+        textField.setText("Dog");
         Scene scene = new Scene(scrollPane);
-        text.prefWidthProperty().bind(scene.widthProperty().multiply(0.9));
+        textField.prefWidthProperty().bind(scene.widthProperty().multiply(9. / 10));
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -42,11 +42,7 @@ public class PageImage extends Application {
     private void addImages(Pane root, String text) {
         this.text = text;
         ObservableList<String> images = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
-        images.addListener((Change<? extends String> c) -> {
-            Platform.runLater(() -> {
-                addImages(root, text, c);
-            });
-        });
+        images.addListener((Change<? extends String> c) -> Platform.runLater(() -> addImages(root, text, c)));
         Platform.runLater(() -> {
             Node node = root.getChildren().get(0);
             root.getChildren().clear();
@@ -66,9 +62,7 @@ public class PageImage extends Application {
                 LOG.info("NEW IMAGE {}", url);
                 ObservableList<Node> children = root.getChildren();
                 ImageView imageView = WikiImagesUtils.convertToImage(url);
-                int i = 1;
-                for (; i < children.size() && byArea(children.get(i)) > byArea(imageView); i++) {
-                }
+                int i = getIndex(children, imageView);
                 children.add(i, imageView);
             }
         }
@@ -88,6 +82,16 @@ public class PageImage extends Application {
 
     private double byArea(Node e) {
         return e.getBoundsInLocal().getWidth() * e.getBoundsInLocal().getHeight();
+    }
+
+    private int getIndex(ObservableList<Node> children, ImageView imageView) {
+        int i = 1;
+        for (; i < children.size() ; i++) {
+            if(byArea(children.get(i)) < byArea(imageView)) {
+                return i;
+            }
+        }
+        return i;
     }
 
     public static void main(String[] args) {

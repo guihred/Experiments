@@ -3,8 +3,8 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 import static java.util.stream.Collectors.toList;
 
-import audio.mp3.WikiImagesUtils;
 import audio.mp3.PageImage;
+import audio.mp3.WikiImagesUtils;
 import cubesystem.ElementWiseOp;
 import ethical.hacker.NetworkInformationScanner;
 import ex.j9.Ch1;
@@ -26,6 +26,7 @@ import java.util.stream.DoubleStream;
 import ml.data.DecisionTree;
 import ml.data.FastFourierTransform;
 import ml.data.QuickSortML;
+import neuro.BrazilianVerbsConjugator;
 import org.apache.commons.math3.complex.Complex;
 import org.junit.Assert;
 import org.junit.Test;
@@ -178,5 +179,11 @@ public class IndependentTest implements HasLogging {
         measureTime("TermFrequency.displayTermFrequency", TermFrequency::displayTermFrequency);
         measureTime("TermFrequencyIndex.identifyKeyWordsInSourceFiles",
             TermFrequencyIndex::identifyKeyWordsInSourceFiles);
+    }
+
+    @Test
+    public void testVerbs() {
+        measureTime("BrazilianVerbsConjugator.conjugate", () -> BrazilianVerbsConjugator
+            .getWords(ResourceFXUtils.toURI("verbs.dic")).forEach(BrazilianVerbsConjugator::conjugate));
     }
 }
