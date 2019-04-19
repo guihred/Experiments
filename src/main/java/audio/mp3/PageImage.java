@@ -28,10 +28,10 @@ public class PageImage extends Application {
         root.setPrefWidth(200);
         root.setAlignment(Pos.TOP_LEFT);
         ScrollPane scrollPane = new ScrollPane(root);
-        TextField text = new TextField("Dog");
+        TextField text = new TextField();
         text.textProperty().addListener((ob, t, value) -> addThread(root, value));
         root.getChildren().add(text);
-        addThread(root, text.getText());
+        text.setText("Dog");
         Scene scene = new Scene(scrollPane);
         text.prefWidthProperty().bind(scene.widthProperty().multiply(0.9));
         primaryStage.setScene(scene);
@@ -57,7 +57,7 @@ public class PageImage extends Application {
     }
 
     private void addImages(Pane root, String text, Change<? extends String> c) {
-        LOG.info("ADD IMAGES{}", text);
+        LOG.info("ADD IMAGE {}", text);
         while (c.next()) {
             for (String url : c.getAddedSubList()) {
                 if (!text.equals(this.text)) {
@@ -66,17 +66,10 @@ public class PageImage extends Application {
                 LOG.info("NEW IMAGE {}", url);
                 ObservableList<Node> children = root.getChildren();
                 ImageView imageView = WikiImagesUtils.convertToImage(url);
-                boolean made = false;
-                for (int i = 1; i < children.size(); i++) {
-                    if (byWidth(children.get(i)) < byWidth(imageView)) {
-                        children.add(i, imageView);
-                        made = true;
-                        break;
-                    }
+                int i = 1;
+                for (; i < children.size() && byWidth(children.get(i)) > byWidth(imageView); i++) {
                 }
-                if (!made) {
-                    children.add(imageView);
-                }
+                children.add(i, imageView);
             }
         }
     }
