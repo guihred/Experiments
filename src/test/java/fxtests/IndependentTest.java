@@ -3,7 +3,7 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 import static java.util.stream.Collectors.toList;
 
-import audio.mp3.GoogleImagesUtils;
+import audio.mp3.WikiImagesUtils;
 import audio.mp3.PageImage;
 import cubesystem.ElementWiseOp;
 import ethical.hacker.NetworkInformationScanner;
@@ -110,7 +110,7 @@ public class IndependentTest implements HasLogging {
 
     @Test
     public void testGoogleImages() {
-        measureTime("GoogleImagesUtils.displayCountByExtension", () -> GoogleImagesUtils.displayCountByExtension());
+        measureTime("GoogleImagesUtils.displayCountByExtension", () -> WikiImagesUtils.displayCountByExtension());
         measureTime("GoogleImagesUtils.testApps", () -> FXTesting.testApps(PageImage.class));
         measureTime("NetworkInformationScanner.displayNetworkInformation",
             () -> NetworkInformationScanner.displayNetworkInformation());

@@ -1,27 +1,25 @@
 package audio.mp3;
 
+import com.twelvemonkeys.imageio.stream.ByteArrayImageInputStream;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.jsoup.Connection;
@@ -29,15 +27,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import sun.misc.BASE64Decoder;
 import utils.CrawlerTask;
 import utils.HasLogging;
 
-public final class GoogleImagesUtils {
+public final class WikiImagesUtils {
 
     static final Logger LOGGER = HasLogging.log();
 
-    private GoogleImagesUtils() {
+    private WikiImagesUtils() {
 
     }
 
@@ -51,9 +48,8 @@ public final class GoogleImagesUtils {
             return imageView;
         }
         
-        String host = "https://www.google.com";
+        String host = url.startsWith("//") ? "https:" : "https://en.wikipedia.org";
         ImageView imageView = new ImageView(host + url);
-        imageView.setFitWidth(100);
         imageView.setPreserveRatio(true);
         return imageView;
     }
@@ -71,31 +67,38 @@ public final class GoogleImagesUtils {
 
 
 
-    static List<String> getImagens(String artista) {
+    public static List<String> getImagens(String artista) {
         CrawlerTask.insertProxyConfig();
         LOGGER.info("SEARCHING FOR {}", artista);
-        String encode = encode(artista);
-        String url = "http://www.google.com/search?q=" + encode
-            + "&client=firefox-b-d&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiC07SYkLnhAhVdHbkGHTwpBKwQ_AUIDigB&biw=425&bih=942";
+        String encode = encode(artista.replace(' ', '_'));
+        String url = "https://en.wikipedia.org/wiki/" + encode;
         List<String> images = new ArrayList<>();
         CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(images::addAll);
         ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
         return images;
     }
 
+    public static ObservableList<String> getImagensForked(String artista, ObservableList<String> images) {
+        CrawlerTask.insertProxyConfig();
+        LOGGER.info("SEARCHING FOR {}", artista);
+        String encode = encode(artista.replace(' ', '_'));
+        String url = "https://en.wikipedia.org/wiki/" + encode;
+
+        CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(images::addAll);
+        ForkJoinPool.commonPool().awaitQuiescence(180, TimeUnit.SECONDS);
+        return images;
+    }
+
     private static BufferedImage decodeToImage(String imageString) {
         try {
             String replaceAll = imageString.replaceAll("data:image/gif;base64,", "");
-
-            BASE64Decoder decoder = new BASE64Decoder();
-            byte[] imageByte = decoder.decodeBuffer(replaceAll);
-            ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-            BufferedImage image = ImageIO.read(bis);
-            bis.close();
-            return image;
+            byte[] imageByte = Base64.getDecoder().decode(replaceAll);
+            ImageReader next = ImageIO.getImageReadersByFormatName("gif").next();
+            next.setInput(new ByteArrayImageInputStream(imageByte));
+            return next.read(0);
         } catch (Exception e) {
             LOGGER.info("ERROR LOADING {}", imageString);
-            LOGGER.trace("ERROR", e);
+            LOGGER.info("ERROR", e);
             return null;
         }
     }
@@ -103,7 +106,7 @@ public final class GoogleImagesUtils {
     private static String encode(String artista) {
         try {
             return URLEncoder.encode(artista, "utf-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             throw new RuntimeIOException("ERROR Reading Page", e);
         }
     }
@@ -123,8 +126,8 @@ public final class GoogleImagesUtils {
             Document parse = getDocument(urlString);
             LOGGER.info("READING PAGE {}", urlString);
             Elements kun = parse.select("img");
-
-            return kun.stream().map(e -> e.attr("src")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+            return kun.stream().map(e -> e.attr("src"))
+                .filter(StringUtils::isNotBlank).collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeIOException("ERROR Reading Page", e);
         }
