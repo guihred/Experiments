@@ -22,7 +22,9 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 		rosarioComparadorArquivos.start(stage);
 		rosarioComparadorArquivos.setOpenAtExport(false);
 		rosarioComparadorArquivos.getFileChoose().get("Carregar Arquivo SNGPC")
-		.setInitialDirectory(value.getParentFile());
+            .setInitialDirectory(value.getParentFile());
+        rosarioComparadorArquivos.getFileChoose().get("Carregar Arquivo Anvisa")
+            .setInitialDirectory(value.getParentFile());
 		getLogger().info("FXEngineRosarioTest STARTED");
 	}
 
@@ -30,12 +32,12 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 	public void verify() throws Exception {
 		getLogger().info("VERIFYING FXEngineRosarioTest ");
 		clickOn("#SNGPC");
-		String name = value.getName();
-		KeyCode[] array = name.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
-				.map(s -> ".".equals(s) ? "Period" : s).map(KeyCode::getKeyCode)
-				.toArray(KeyCode[]::new);
-		type(array);
+		type(typeName(value.getName()));
 		type(KeyCode.ENTER);
+        clickOn("#anvisa");
+        type(typeName("anvisa2208.xlsx"));
+        type(KeyCode.ENTER);
+        clickOn("Importar Arquivo");
 		clickOn(".text-field");
 		String text = "asdsd";
 		write(text);
@@ -43,5 +45,11 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 		clickOn("Exportar Excel");
 		getLogger().info("VERIFIED FXEngineRosarioTest ");
 	}
+
+    private KeyCode[] typeName(String name) {
+        return name.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
+				.map(s -> ".".equals(s) ? "Period" : s).map(KeyCode::getKeyCode)
+				.toArray(KeyCode[]::new);
+    }
 
 }

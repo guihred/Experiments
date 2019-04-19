@@ -108,6 +108,7 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 		FileChooser fileChooser2 = choseFile("Carregar Arquivo Anvisa");
 		Button button2 = new Button("Carregar Arquivo Anvisa");
 		final TableView<Medicamento> medicamentosAnvisaTable = tabelaMedicamentos(true);
+        button2.setId("anvisa");
 		button2.setOnAction(a -> {
 			File selectedFile = fileChooser2.showOpenDialog(primaryStage);
 			if (selectedFile != null) {

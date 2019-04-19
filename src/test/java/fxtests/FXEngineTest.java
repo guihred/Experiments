@@ -19,17 +19,20 @@ import gaming.ex18.Square2048Launcher;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Rectangle;
 import org.junit.Test;
 import pdfreader.PdfReader;
+import schema.sngpc.SngpcViewer;
 import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
-	@Test
+    @Test
 	public void verifyButtons() throws Exception {
 		measureTime("Test.testButtons",
 				() -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
@@ -40,7 +43,7 @@ public class FXEngineTest extends AbstractTestExecution {
 
 	}
 
-	@Test
+    @Test
 	public void verifyDots() throws Exception {
 		show(DotsLauncher.class);
 		Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
@@ -72,7 +75,7 @@ public class FXEngineTest extends AbstractTestExecution {
         }
 	}
 
-	@Test
+    @Test
 	public void verifyPong() throws Exception {
 		show(PongLauncher.class);
 		tryClickButtons();
@@ -84,7 +87,7 @@ public class FXEngineTest extends AbstractTestExecution {
 		}
 	}
 
-	@Test
+    @Test
 	public void verifyPuzzle() throws Exception {
 	    show(PuzzleLauncher.class);
         interactNoWait(() -> currentStage.setMaximized(true));
@@ -100,18 +103,31 @@ public class FXEngineTest extends AbstractTestExecution {
         interactNoWait(() -> currentStage.setMaximized(false));
 	}
 
-	@Test
+    @Test
 	public void verifySnake() throws Exception {
 		show(SnakeLauncher.class);
 		type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
 	}
 
 	@Test
+	public void verifySngpcViewer() throws Exception {
+	    show(SngpcViewer.class);
+        sleep(500);
+	    Node tree = lookup(e -> e instanceof TreeView).queryAll().stream().limit(1)
+	        .findFirst().orElse(null);
+        targetPos(Pos.TOP_CENTER);
+	    clickOn(tree);
+        targetPos(Pos.CENTER);
+        type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
+	}
+
+    @Test
 	public void verifySolitaire() throws Exception {
 		show(SolitaireLauncher.class);
 		List<CardStack> cardStacks = lookup(".cardstack").queryAllAs(CardStack.class).stream()
 				.collect(Collectors.toList());
 		Collections.shuffle(cardStacks);
+        targetPos(Pos.TOP_CENTER);
 		for (CardStack cardStack : cardStacks) {
 			if (cardStack.getChildren().size() <= 1) {
 				continue;
@@ -133,9 +149,10 @@ public class FXEngineTest extends AbstractTestExecution {
 
 			}
 		}
+        targetPos(Pos.CENTER);
 	}
 
-	@Test
+    @Test
 	public void verifySquare() throws Exception {
 		show(Square2048Launcher.class);
 		type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);

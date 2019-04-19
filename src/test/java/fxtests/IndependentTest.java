@@ -71,6 +71,8 @@ public class IndependentTest implements HasLogging {
             () -> Ch3.luckySort(Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e"), String::compareTo));
         measureTime("Ch3.subdirectories", () -> Ch3.subdirectories(new File(".")));
         measureTime("Ch3.sortFiles", () -> Ch3.sortFiles(new File(".").listFiles()));
+        measureTime("Ch3.listByExtension", () -> Ch3.listByExtension(ResourceFXUtils.getOutFile(), "png"));
+        measureTime("Ch3.tasks", () -> Ch3.tasks());
 
     }
 

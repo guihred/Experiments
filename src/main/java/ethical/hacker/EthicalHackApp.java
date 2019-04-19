@@ -32,7 +32,8 @@ public class EthicalHackApp extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception {
         VBox vBox = new VBox();
-        ObservableList<Map<String, String>> items = FXCollections.observableArrayList();
+        ObservableList<Map<String, String>> items = FXCollections
+            .synchronizedObservableList(FXCollections.observableArrayList());
         FilteredList<Map<String, String>> filt = items.filtered(e -> true);
         TableView<Map<String, String>> commonTable = new SimpleTableViewBuilder<Map<String, String>>().items(filt)
             .build();

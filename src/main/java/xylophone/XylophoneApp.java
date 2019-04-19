@@ -1,5 +1,7 @@
 package xylophone;
 
+import static utils.ResourceFXUtils.toExternalForm;
+
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.Timeline;
@@ -12,7 +14,6 @@ import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.ResourceFXUtils;
 import utils.Xform;
 
 public class XylophoneApp extends Application {
@@ -44,14 +45,14 @@ public class XylophoneApp extends Application {
                     sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(ONE_SECOND, 60D))
 			.build();
     // I didn't have any xylophone sounds so I added piano sounds :P
-    private final AudioClip bar1Note = new AudioClip(ResourceFXUtils.toURL("waves/C.wav").toString());
-    private final AudioClip bar2Note = new AudioClip(ResourceFXUtils.toURL("waves/D.wav").toString());
-    private final AudioClip bar3Note = new AudioClip(ResourceFXUtils.toURL("waves/E.wav").toString());
-    private final AudioClip bar4Note = new AudioClip(ResourceFXUtils.toURL("waves/F.wav").toString());
-    private final AudioClip bar5Note = new AudioClip(ResourceFXUtils.toURL("waves/G.wav").toString());
-    private final AudioClip bar6Note = new AudioClip(ResourceFXUtils.toURL("waves/A.wav").toString());
-    private final AudioClip bar7Note = new AudioClip(ResourceFXUtils.toURL("waves/B.wav").toString());
-    private final AudioClip bar8Note = new AudioClip(ResourceFXUtils.toURL("waves/mC.wav").toString());
+    private final AudioClip bar1Note = new AudioClip(toExternalForm("waves/C.wav"));
+    private final AudioClip bar2Note = new AudioClip(toExternalForm("waves/D.wav"));
+    private final AudioClip bar3Note = new AudioClip(toExternalForm("waves/E.wav"));
+    private final AudioClip bar4Note = new AudioClip(toExternalForm("waves/F.wav"));
+    private final AudioClip bar5Note = new AudioClip(toExternalForm("waves/G.wav"));
+    private final AudioClip bar6Note = new AudioClip(toExternalForm("waves/A.wav"));
+    private final AudioClip bar7Note = new AudioClip(toExternalForm("waves/B.wav"));
+    private final AudioClip bar8Note = new AudioClip(toExternalForm("waves/mC.wav"));
 
 	public Parent createContent() {
         sceneRoot.setRx(9. * 5);

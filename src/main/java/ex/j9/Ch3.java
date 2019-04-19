@@ -5,12 +5,7 @@ import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Stream;
@@ -50,10 +45,15 @@ public class Ch3 {
         return objects.stream().max(Comparator.comparing(Measurable::getMeasure)).orElse(null);
     }
 
+    /*
+     * 12. Using the list(FilenameFilter) method of the java.io.File class, write a
+     * method that returns all files in a given directory with a given extension.
+     * Use a lambda expression, not a FilenameFilter. Which variable from the
+     * enclosing scope does it capture?
+     */
     public static List<String> listByExtension(File file, String extension) {
         String[] listFiles = file.list((f, name) -> name.endsWith(extension));
         return Arrays.asList(listFiles);
-
     }
 
     /*
@@ -119,8 +119,12 @@ public class Ch3 {
         }
     }
 
+    /*
+     * 13. Given an array of File objects, sort it so that directories come before
+     * files, and within each group, elements are sorted by path name. Use a lambda
+     * expression to specify the Comparator .
+     */
     public static List<File> sortFiles(File[] file) {
-
         Arrays.sort(file, Comparator.comparing(File::isDirectory).reversed().thenComparing(File::getName));
         return Arrays.asList(file);
     }
@@ -150,12 +154,7 @@ public class Ch3 {
         runTogether(tasks);
     }
 
-    /*
-     * 12. Using the list(FilenameFilter) method of the java.io.File class, write a
-     * method that returns all files in a given directory with a given extension.
-     * Use a lambda expression, not a FilenameFilter . Which variable from the
-     * enclosing scope does it capture?
-     */
+
 
     public static class Employee implements Measurable {
         private static int i;
@@ -202,11 +201,6 @@ public class Ch3 {
         }
     }
 
-    /*
-     * 13. Given an array of File objects, sort it so that directories come before
-     * files, and within each group, elements are sorted by path name. Use a lambda
-     * expression to specify the Comparator .
-     */
 
     /*
      * 4. Implement a static of method of the IntSequence class that yields a
@@ -214,12 +208,7 @@ public class Ch3 {
      * yields a sequence with six values. Extra credit if you return an instance of
      * an anonymous inner class.
      */
-    /*
-     * 5. Add a static method with the name constant of the IntSequence class that
-     * yields an infinite constant sequence. For example, IntSequence.constant(1)
-     * yields values 1 1 1... , ad infinitum. Extra credit if you do this with a
-     * lambda expression.
-     */
+
     @FunctionalInterface
     public interface IntSequence {
         default void foreach(IntConsumer e) {
@@ -235,6 +224,12 @@ public class Ch3 {
         // By default, sequences are infinite
         int next();
 
+        /*
+         * 5. Add a static method with the name constant of the IntSequence class that
+         * yields an infinite constant sequence. For example, IntSequence.constant(1)
+         * yields values 1 1 1... , ad infinitum. Extra credit if you do this with a
+         * lambda expression.
+         */
         static IntSequence constant(int seq) {
             return () -> seq;
         }
