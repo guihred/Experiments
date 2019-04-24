@@ -1,14 +1,8 @@
 package gaming.ex21;
 
 import graphs.entities.Edge;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
 import javafx.scene.Group;
@@ -112,7 +106,7 @@ public class EdgeCatan extends Group {
 		return this;
 	}
 
-	public static long countRoadSize(PlayerColor player, List<EdgeCatan> edges) {
+    public static long countRoadSize(PlayerColor player, Collection<EdgeCatan> edges) {
 		List<EdgeCatan> playersEdges = edges.stream().filter(e -> e.getElement() != null)
 				.filter(e -> e.getElement().getPlayer() == player).collect(Collectors.toList());
 		if (playersEdges.size() >= 5) {

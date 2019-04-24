@@ -36,7 +36,7 @@ public class MadTopology {
         for (int i = 0; i < size; i++) {
             MadCell cell = new MadCell(i);
             int n = i / sqrt;
-            float x = i % sqrt * radius + (n % 2 == 0 ? 0f : -radius / 2) + 30;
+            float x = i % sqrt * radius + (n % 2 == 0 ? 0F : -radius / 2) + 30;
             int j = i / sqrt;
             float k = j * radius;
             float y = k * sqrt2 / 2;
@@ -84,16 +84,16 @@ public class MadTopology {
 
     private List<MadTriangle> triangulate(List<MadCell> all) {
         List<MadTriangle> triangleSoup = new ArrayList<>();
-        float maxOfAnyCoordinate = 0.0f;
+        float maxOfAnyCoordinate = 0.0F;
         List<MadPonto> pointSet = getPointSet(all);
         for (MadPonto vector : pointSet) {
             maxOfAnyCoordinate = Math.max(Math.max(vector.getX(), vector.getY()), maxOfAnyCoordinate);
         }
 
         maxOfAnyCoordinate *= 16.0D;
-        MadPonto p1 = new MadPonto(0.0f, 3.0f * maxOfAnyCoordinate, null);
-        MadPonto p2 = new MadPonto(3.0f * maxOfAnyCoordinate, 0.0f, null);
-        MadPonto p3 = new MadPonto(-3.0f * maxOfAnyCoordinate, -3.0f * maxOfAnyCoordinate, null);
+        MadPonto p1 = new MadPonto(0.0F, 3.0F * maxOfAnyCoordinate, null);
+        MadPonto p2 = new MadPonto(3.0F * maxOfAnyCoordinate, 0.0F, null);
+        MadPonto p3 = new MadPonto(-3.0F * maxOfAnyCoordinate, -3.0F * maxOfAnyCoordinate, null);
         MadTriangle superMadTriangle = new MadTriangle(p1, p2, p3);
         triangleSoup.add(superMadTriangle);
         for (int i = 0; i < pointSet.size(); i++) {

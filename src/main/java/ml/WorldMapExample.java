@@ -13,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import ml.data.Country;
 import ml.data.DataframeML;
 import ml.graph.ColorPattern;
 import ml.graph.WorldMapGraph;
@@ -27,7 +28,7 @@ public class WorldMapExample extends Application implements HasLogging {
     @Override
     public void start(final Stage theStage) {
         theStage.setTitle("World Map Example");
-
+        Country.loadPaths();
         BorderPane root = new BorderPane();
         Scene theScene = new Scene(root, WorldMapGraph.WIDTH / 2, WorldMapGraph.HEIGHT / 2);
         theStage.setScene(theScene);
@@ -47,7 +48,7 @@ public class WorldMapExample extends Application implements HasLogging {
         canvas.setDataframe(x,
             x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
         File file = ResourceFXUtils.toFile("out");
-        String[] list = file.list((dir, name) -> name.endsWith(".csv"));
+        String[] list = file.list((dir, name) -> name.matches("WDIData.+.csv"));
         ComboBox<String> yearCombo = new SimpleComboBoxBuilder<String>().items("2016")
             .select(0)
             .onSelect(canvas.valueHeaderProperty()::set)

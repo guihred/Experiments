@@ -1,13 +1,13 @@
 package gaming.ex21;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ml.data.DataframeML;
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.assertj.core.util.Files;
 import org.slf4j.Logger;
 import utils.HasLogging;
@@ -28,7 +28,7 @@ public final class CatanLogger {
 	private CatanLogger() {
 	}
 
-	public static void addCount(String string, List<EdgeCatan> edges, Class<Road> a) {
+    public static void addCount(String string, Collection<EdgeCatan> edges, Class<Road> a) {
 		Map<PlayerColor, Long> roadCount = edges.stream().filter(e -> a.isInstance(e.getElement()))
 				.map(e -> e.getElement().getPlayer()).collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 		for (PlayerColor r : PlayerColor.values()) {
@@ -36,7 +36,7 @@ public final class CatanLogger {
 		}
 	}
 
-	public static <T extends CatanResource> void addCount2(String string, List<SettlePoint> edges,
+    public static <T extends CatanResource> void addCount2(String string, Collection<SettlePoint> edges,
 			Class<T> catanResourceType) {
 		Map<PlayerColor, Long> roadCount = edges.stream().filter(e -> catanResourceType.isInstance(e.getElement()))
 				.collect(Collectors.groupingBy(e -> e.getElement().getPlayer(), Collectors.counting()));
@@ -192,7 +192,7 @@ public final class CatanLogger {
 			}
 		}
 
-		try (FileWriter fw = new FileWriter(file, true);) {
+        try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true);) {
 			if (!exists) {
 				fw.append(collect + "\n");
 			}

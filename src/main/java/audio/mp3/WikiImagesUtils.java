@@ -32,7 +32,7 @@ import utils.HasLogging;
 
 public final class WikiImagesUtils {
 
-    static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log();
 
     private WikiImagesUtils() {
 

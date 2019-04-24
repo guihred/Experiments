@@ -1,10 +1,7 @@
 package gaming.ex21;
 
 import graphs.entities.Edge;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
@@ -120,7 +117,7 @@ public class Port extends Group {
             .collect(Collectors.toList());
     }
 
-    public static void relocatePorts(final List<SettlePoint> settlePoints2, final List<Port> ports2) {
+    public static void relocatePorts(Collection<SettlePoint> settlePoints2, List<Port> ports2) {
         List<SettlePoint> s = settlePoints2.stream().collect(Collectors.toList());
         Collections.shuffle(s);
         List<List<SettlePoint>> portLocations = s.stream().filter(p -> p.getNeighbors().size() == 2)

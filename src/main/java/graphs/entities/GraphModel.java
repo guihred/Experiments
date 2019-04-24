@@ -238,7 +238,7 @@ public class GraphModel {
         bindCellsId();
     }
 
-    private boolean isEdgeExistent(String sourceId, String targetId, Edge e) {
+    private static boolean isEdgeExistent(String sourceId, String targetId, Edge e) {
         return e.source.getCellId().equals(sourceId) && e.target.getCellId().equals(targetId)
                 || e.target.getCellId().equals(sourceId) && e.source.getCellId().equals(targetId);
     }

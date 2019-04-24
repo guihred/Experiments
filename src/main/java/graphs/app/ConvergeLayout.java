@@ -39,7 +39,7 @@ public class ConvergeLayout implements Layout {
 		}
 
         int c = allCells.size() / 50;
-        double bound = (c + 1) * 100d;
+        double bound = (c + 1) * 100.;
 
 		Cell cell = allCells.get(rnd.nextInt(allCells.size()));
         List<Edge> edges = graph1.getModel().edges(cell);

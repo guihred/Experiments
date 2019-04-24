@@ -64,7 +64,7 @@ class Question {
 
 		private final String sign;
 
-		private QuestionType(String sign) {
+        QuestionType(String sign) {
 			this.sign = sign;
 		}
 

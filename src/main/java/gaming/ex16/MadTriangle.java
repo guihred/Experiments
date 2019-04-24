@@ -157,10 +157,10 @@ public class MadTriangle {
         MadPonto ab = edge.getB().sub(edge.getA());
         float t = point.sub(edge.getA()).dot(ab) / ab.dot(ab);
 
-        if (t < 0.0f) {
-            t = 0.0f;
+        if (t < 0.F) {
+            t = 0.F;
         } else if (t > 1.0D) {
-            t = 1.0f;
+            t = 1.F;
         }
 
         return edge.getA().add(ab.mult(t));

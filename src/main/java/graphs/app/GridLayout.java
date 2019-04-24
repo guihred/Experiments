@@ -47,7 +47,7 @@ public class GridLayout implements Layout {
 			}
 			int j = i / sqrt;
 			int f = -radius / 2;
-			double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + rnd.nextInt(11) - 5d;
+            double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + rnd.nextInt(11) - 5.;
 			int k = j * radius;
 			double y = k * sqrt2 / 2;
 

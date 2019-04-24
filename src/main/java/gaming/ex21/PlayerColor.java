@@ -12,7 +12,7 @@ public enum PlayerColor {
 
     private final Color color;
 
-    private PlayerColor(final Color color) {
+    PlayerColor(final Color color) {
         this.color = color;
     }
 

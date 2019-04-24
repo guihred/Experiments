@@ -29,7 +29,7 @@ public class Chart3dGraph extends Application {
 
     private static final Logger LOG = HasLogging.log();
 
-	// size of graph
+    // size of graph
     private static final int SIZE = 400;
 
     // variables for mouse interaction
@@ -178,10 +178,10 @@ public class Chart3dGraph extends Application {
                 float x1 = (x + 1) / total;
                 float y1 = (y + 1) / total;
                 mesh.getTexCoords().addAll( //
-                        x0, y0, // 0, top-left
-                        x0, y1, // 1, bottom-left
-                        x1, y1, // 2, top-right
-                        x1, y1 // 3, bottom-right
+                    x0, y0, // 0, top-left
+                    x0, y1, // 1, bottom-left
+                    x1, y1, // 2, top-right
+                    x1, y1 // 3, bottom-right
                 );
 
             }
@@ -194,19 +194,18 @@ public class Chart3dGraph extends Application {
     }
 
     /**
-	 * Create an array of the given size with values of perlin noise
-	 * 
-	 * @param size1
-	 * @return
-	 * @return
-	 */
+     * Create an array of the given size with values of perlin noise
+     * 
+     * @param size1
+     * @return
+     * @return
+     */
 
     /* T(°C) = (T(°F) - minF) × (size)/(maxF-minF) */
 
     private static double convert(double f, double size1, double maxF, double minF) {
-		return (f - minF) * size1 / (maxF - minF);
+        return (f - minF) * size1 / (maxF - minF);
     }
-
 
     private static float[][] createPlane(int size1) {
         DataframeML dataframeML = new DataframeML("california_housing_train.csv");
@@ -214,19 +213,17 @@ public class Chart3dGraph extends Application {
         DoubleSummaryStatistics lon = dataframeML.summary("longitude");
         DoubleSummaryStatistics pop = dataframeML.summary("population");
         int total = dataframeML.getSize();
-		List<Double> xLatitude = dataframeML.crossFeature("x",
-                d -> convert(d[0], size1 - 1d, lat.getMax(), lat.getMin()),
-                "latitude");
+        List<Double> xLatitude = dataframeML.crossFeature("x",
+            d -> convert(d[0], size1 - 1., lat.getMax(), lat.getMin()), "latitude");
         List<Double> yLongitude = dataframeML.crossFeature("y",
-                d -> convert(d[0], size1 - 1d, lon.getMax(), lon.getMin()),
-                "longitude");
+            d -> convert(d[0], size1 - 1., lon.getMax(), lon.getMin()), "longitude");
         List<Double> z = dataframeML.crossFeature("z", d -> -convert(d[0], 5, pop.getMax(), 0), "population");
 
-		float[][] noiseArray = new float[size1][size1];
+        float[][] noiseArray = new float[size1][size1];
         for (int i = 0; i < total; i++) {
             int x = xLatitude.get(i).intValue();
             int y = yLongitude.get(i).intValue();
-			if (x > size1 || y > size1) {
+            if (x > size1 || y > size1) {
                 LOG.info("ERRRRROOOOOOOOOO");
                 return noiseArray;
             }

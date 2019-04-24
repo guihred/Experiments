@@ -28,7 +28,7 @@ class MovimentacaoAleatoria extends AnimationTimer {
             if (checkCollision(enemy)) {
                 goToDirection(dir, enemy, -step);
 				enemy.setRotationAxis(Rotate.Y_AXIS);
-                enemy.setRotate(direction[i] * 90d);
+                enemy.setRotate(direction[i] * 90.);
 				direction[i] = random.nextInt(4);
 
 			}

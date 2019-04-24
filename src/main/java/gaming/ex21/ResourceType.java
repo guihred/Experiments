@@ -1,9 +1,6 @@
 package gaming.ex21;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,7 +43,7 @@ public enum ResourceType {
         return terrain;
     }
 
-    public static boolean containsEnough(final List<CatanCard> list, final List<ResourceType> resourcesNeeded) {
+    public static boolean containsEnough(Collection<CatanCard> list, Collection<ResourceType> resourcesNeeded) {
         List<ResourceType> resources = list.stream().map(CatanCard::getResource).filter(Objects::nonNull)
             .collect(Collectors.toList());
         List<ResourceType> resourcesNecessary = resourcesNeeded.stream().collect(Collectors.toList());

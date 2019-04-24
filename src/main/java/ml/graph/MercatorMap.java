@@ -92,6 +92,6 @@ public class MercatorMap {
 	}
 
 	private static double getScreenYRelative(double latitudeInDegrees) {
-		return Math.log(Math.tan(latitudeInDegrees / 360f * Math.PI + Math.PI / 4));
+        return Math.log(Math.tan(latitudeInDegrees / 360 * Math.PI + Math.PI / 4));
 	}
 }

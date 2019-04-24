@@ -17,7 +17,7 @@ public class Music {
 
 	private StringProperty titulo = new SimpleStringProperty("");
 
-	private StringProperty trilha = new SimpleStringProperty("");
+    private StringProperty trilha = new SimpleStringProperty("");
     private StringProperty pasta = new SimpleStringProperty("");
 
     public Music() {

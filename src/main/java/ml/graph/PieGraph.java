@@ -65,7 +65,7 @@ public class PieGraph extends Canvas {
         int radius2 = radius.get();
         for (int i = 0; i < histogramLevels.size(); i++) {
             Entry<String, Long> entry = histogramLevels.get(i);
-            double arcExtent = entry.getValue() * 360d / sum;
+            double arcExtent = entry.getValue() * 360. / sum;
             gc.setFill(availableColors.get(i));
 
             gc.fillArc(centerX, centerY, radius2, radius2, startAngle, arcExtent, ArcType.ROUND);
@@ -76,7 +76,7 @@ public class PieGraph extends Canvas {
         startAngle = 90;
         for (int i = 0; i < histogramLevels.size(); i++) {
             Entry<String, Long> entry = histogramLevels.get(i);
-            double arcExtent = entry.getValue() * 360d / sum;
+            double arcExtent = entry.getValue() * 360. / sum;
             int j = radius2 / 2;
             double d = legendsRadius.get();
             double x = Math.sin(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 * d + centerX + j;

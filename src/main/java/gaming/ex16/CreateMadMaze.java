@@ -10,16 +10,11 @@ public class CreateMadMaze {
 
     private final Random random = new Random();
 
-    private boolean edgeHasCell(MadCell cellB, MadCell cellC, MadEdge e) {
-        return e.getSource().equals(cellC) && e.getTarget().equals(cellB)
-        		|| e.getSource().equals(cellB) && e.getTarget().equals(cellC);
-    }
-	private boolean goBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
+    private boolean goBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
 		final MadTriangle remove = history.remove(history.size() - 1);
 		r = createdMaze.indexOf(remove);
 		return false;
 	}
-
 	private void handle(List<MadTriangle> maze, List<MadEdge> allEdges) {
 		final List<MadTriangle> history = new ArrayList<>();
 		final List<Character> check = new ArrayList<>();
@@ -57,7 +52,7 @@ public class CreateMadMaze {
 
 	}
 
-    private void removeEdgeOfTriangle(List<MadTriangle> maze, List<MadEdge> allEdges, MadTriangle openC,
+	private void removeEdgeOfTriangle(List<MadTriangle> maze, List<MadEdge> allEdges, MadTriangle openC,
 			MadTriangle openB, MadTriangle openA, Character direction) {
 		if ('A' == direction && openA != null) {
 			MadTriangle madTriangle = openA;
@@ -82,7 +77,7 @@ public class CreateMadMaze {
 		}
 	}
 
-	public static void createLabyrinth(List<MadTriangle> maze, List<MadEdge> allEdges) {
+    public static void createLabyrinth(List<MadTriangle> maze, List<MadEdge> allEdges) {
 		new CreateMadMaze().handle(maze, allEdges);
 	}
 
@@ -91,5 +86,10 @@ public class CreateMadMaze {
 			check.add(a);
 		}
 	}
+
+	private static boolean edgeHasCell(MadCell cellB, MadCell cellC, MadEdge e) {
+        return e.getSource().equals(cellC) && e.getTarget().equals(cellB)
+        		|| e.getSource().equals(cellB) && e.getTarget().equals(cellC);
+    }
 
 }

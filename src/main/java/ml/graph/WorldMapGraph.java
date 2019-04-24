@@ -1,25 +1,13 @@
 package ml.graph;
 import static ml.graph.ColorPattern.getColorForValue;
 
-import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -250,7 +238,8 @@ public class WorldMapGraph extends Canvas implements HasLogging {
 			});
 		}
 		gc.setFill(countriesColors.getOrDefault(countries, categoryMap.get(NO_INFO)));
-		gc.appendSVGPath(countries.getPath());
+		String path = countries.getPath();
+        gc.appendSVGPath(path);
 		gc.fill();
 		gc.stroke();
 		gc.closePath();

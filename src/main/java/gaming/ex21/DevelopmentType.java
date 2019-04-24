@@ -15,7 +15,7 @@ public enum DevelopmentType {
 	private final String image;
     private final int amount;
 
-    private DevelopmentType(final String image, int amount) {
+    DevelopmentType(final String image, int amount) {
 		this.image = image;
         this.amount = amount;
 	}
