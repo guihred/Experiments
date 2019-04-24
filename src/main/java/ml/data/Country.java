@@ -410,11 +410,7 @@ public enum Country {
             while (scanner.hasNext()) {
                 String firstLine = scanner.nextLine();
                 String[] split = firstLine.split(";");
-                Country valueOf = Country.valueOf(split[0]);
-                if (valueOf == null) {
-                    System.out.println(split[0]);
-                }
-                valueOf.path = split[1];
+                Country.valueOf(split[0]).path = split[1];
             }
         } catch (Exception e) {
             log.error("ERROR ", e);

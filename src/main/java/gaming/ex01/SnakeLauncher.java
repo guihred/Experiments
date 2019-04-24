@@ -32,11 +32,10 @@ public class SnakeLauncher extends Application {
         }
 
         final Scene scene = new Scene(gridPane);
-		scene.setOnKeyPressed(this::handleKeyPressed);
+        scene.setOnKeyPressed(this::handleKeyPressed);
 
-        timeline = new SimpleTimelineBuilder()
-                .addKeyFrame(new Duration(UPDATE_MILLIS), t -> gameLoop())
-                .cycleCount(Animation.INDEFINITE).build();
+        timeline = new SimpleTimelineBuilder().addKeyFrame(new Duration(UPDATE_MILLIS), t -> gameLoop())
+            .cycleCount(Animation.INDEFINITE).build();
         timeline.play();
         stage.setScene(scene);
         stage.show();
@@ -54,45 +53,46 @@ public class SnakeLauncher extends Application {
                 timeline.play();
             }
         }
-	    if (newGameModel.updateMap()) {
-		    timeline.stop();
-			CommonsFX.displayDialog("You Got " + newGameModel.getSnake().size() + " points", "Reset", () -> {
-				newGameModel.reset();
-				timeline.play();
-		    });
-		}
-	}
-	private void handleKeyPressed(KeyEvent e) {
-		final KeyCode code = e.getCode();
-		switch (code) {
-		case UP:
-		case W:
-			if (newGameModel.getDirection() != SnakeDirection.DOWN) {
-				newGameModel.setDirection(SnakeDirection.UP);
-			}
-			break;
-		case LEFT:
-		case A:
-			if (newGameModel.getDirection() != SnakeDirection.RIGHT) {
-				newGameModel.setDirection(SnakeDirection.LEFT);
-			}
-			break;
-		case RIGHT:
-		case S:
-			if (newGameModel.getDirection() != SnakeDirection.LEFT) {
-				newGameModel.setDirection(SnakeDirection.RIGHT);
-			}
-			break;
-		case DOWN:
-		case D:
-			if (newGameModel.getDirection() != SnakeDirection.UP) {
-				newGameModel.setDirection(SnakeDirection.DOWN);
-			}
-			break;
-		default:
-		}
-		newGameModel.updateMap();
-	}
+        if (newGameModel.updateMap()) {
+            timeline.stop();
+            CommonsFX.displayDialog("You Got " + newGameModel.getSnake().size() + " points", "Reset", () -> {
+                newGameModel.reset();
+                timeline.play();
+            });
+        }
+    }
+
+    private void handleKeyPressed(KeyEvent e) {
+        final KeyCode code = e.getCode();
+        switch (code) {
+            case UP:
+            case W:
+                if (newGameModel.getDirection() != SnakeDirection.DOWN) {
+                    newGameModel.setDirection(SnakeDirection.UP);
+                }
+                break;
+            case LEFT:
+            case A:
+                if (newGameModel.getDirection() != SnakeDirection.RIGHT) {
+                    newGameModel.setDirection(SnakeDirection.LEFT);
+                }
+                break;
+            case RIGHT:
+            case S:
+                if (newGameModel.getDirection() != SnakeDirection.LEFT) {
+                    newGameModel.setDirection(SnakeDirection.RIGHT);
+                }
+                break;
+            case DOWN:
+            case D:
+                if (newGameModel.getDirection() != SnakeDirection.UP) {
+                    newGameModel.setDirection(SnakeDirection.DOWN);
+                }
+                break;
+            default:
+        }
+        newGameModel.updateMap();
+    }
 
     public static void main(String[] args) {
         launch(SnakeLauncher.class, args);
