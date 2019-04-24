@@ -60,7 +60,10 @@ public class GabrielTopology extends BaseTopology {
 		double cx = c.getLayoutX();
 		double dy = d.getLayoutY();
 		double dx = d.getLayoutX();
-		double[][] matrix = new double[][] { { ax, ay, ax * ax + ay * ay, 1 }, { bx, by, bx * bx + by * by, 1 }, { cx, cy, cx * cx + cy * cy, 1 },
+        double[][] matrix = new double[][] { 
+            { ax, ay, ax * ax + ay * ay, 1 }, 
+            { bx, by, bx * bx + by * by, 1 },
+            { cx, cy, cx * cx + cy * cy, 1 },
 			{ dx, dy, dx * dx + dy * dy, 1 } };
 			return MatrixSolver.determinant(matrix);
 

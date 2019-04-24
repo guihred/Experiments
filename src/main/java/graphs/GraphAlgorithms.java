@@ -63,8 +63,8 @@ public final class GraphAlgorithms {
 	}
 
 	public static List<Vertex> createGraph4() {
-		String[] words = { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire", "wind", "wing", "wink", "wins",
-				"none", "gone", "note", "vote", "site", "bite" };
+        String[] words = { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire",
+            "wind", "wing", "wink", "wins", "none", "gone", "note", "vote", "site", "bite" };
 
 		AtomicInteger id = new AtomicInteger(0);
 		List<Vertex> graph = Stream.of(words).map(a -> new Vertex(id.incrementAndGet(), a)).collect(Collectors.toList());

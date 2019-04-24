@@ -42,7 +42,8 @@ public class Ramp extends BasePhysicalObject {
 
     @Override
     public Node create() {
-        Line rect = new Line(Physics.toPixelX(startX)+fudgeX,Physics.toPixelY(startY)-fudgeY,Physics.toPixelWidth(endX)-fudgeX,Physics.toPixelY(endY)+fudgeY);
+        Line rect = new Line(Physics.toPixelX(startX) + fudgeX, Physics.toPixelY(startY) - fudgeY,
+            Physics.toPixelWidth(endX) - fudgeX, Physics.toPixelY(endY) + fudgeY);
         rect.setStrokeLineCap(StrokeLineCap.ROUND);
         rect.setFill(Color.BLACK);
 		rect.setStrokeWidth(Physics.toPixelHeight(1.0F));

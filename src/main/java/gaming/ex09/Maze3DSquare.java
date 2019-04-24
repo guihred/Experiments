@@ -18,7 +18,8 @@ public class Maze3DSquare extends BorderPane {
 	private BooleanProperty south = new SimpleBooleanProperty(false);
 
     public Maze3DSquare() {
-        styleProperty().bind(Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
+        styleProperty()
+            .bind(Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
         setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
         final PhongMaterial phongMaterial = new PhongMaterial(Color.ROYALBLUE);
 

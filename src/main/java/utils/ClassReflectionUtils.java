@@ -73,8 +73,9 @@ public final class ClassReflectionUtils {
 
     }
 
-    public static <T> String getDescription(T obj, Class<?> class1, Map<Class<?>, FunctionEx<Object, String>> toStringMap,
-            Set<Object> invokedObjects, Map<Class<?>, List<Method>> getterMethods) {
+    public static <T> String getDescription(T obj, Class<?> class1,
+        Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
+        Map<Class<?>, List<Method>> getterMethods) {
         if (!invokedObjects.contains(obj)) {
             invokedObjects.add(obj);
         } else {
@@ -96,7 +97,8 @@ public final class ClassReflectionUtils {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
             } else if (invoke instanceof Enumeration) {
                 Enumeration<?> invoke2 = (Enumeration<?>) invoke;
-                description.append(getEnumerationDescription(fieldName, invoke2, toStringMap, invokedObjects, getterMethods));
+                description
+                    .append(getEnumerationDescription(fieldName, invoke2, toStringMap, invokedObjects, getterMethods));
             } else {
                 description.append(invoke);
             }
@@ -106,14 +108,14 @@ public final class ClassReflectionUtils {
     }
 
     public static Map<String, String> getDescriptionMap(Object obj,
-            Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
+        Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
         return getDescriptionMap(obj, obj.getClass(), toStringMap, new HashSet<>(), new HashMap<>(), new HashMap<>());
 
     }
 
     public static <T> Map<String, String> getDescriptionMap(T obj, Class<?> objClass,
-            Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
-            Map<Class<?>, List<Method>> getterMethods, Map<String, String> descriptionMap) {
+        Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
+        Map<Class<?>, List<Method>> getterMethods, Map<String, String> descriptionMap) {
         if (invokedObjects.contains(obj)) {
             return descriptionMap;
         }
@@ -132,7 +134,8 @@ public final class ClassReflectionUtils {
             if (invoke != null && toStringMap.containsKey(invoke.getClass())) {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
             } else if (invoke instanceof Enumeration) {
-                description.append(getEnumerationDescription(fieldName, (Enumeration<?>) invoke, toStringMap, invokedObjects, getterMethods));
+                description.append(getEnumerationDescription(fieldName, (Enumeration<?>) invoke, toStringMap,
+                    invokedObjects, getterMethods));
             } else {
                 description.append(invoke);
             }
@@ -145,7 +148,7 @@ public final class ClassReflectionUtils {
         return getGetterMethods(targetClass, new HashMap<>());
     }
 
-    private static void displayStyleClass(String n,Node node) {
+    private static void displayStyleClass(String n, Node node) {
         String arg1 = n + node.getClass().getSimpleName();
         if (node instanceof Labeled) {
             HasLogging.log(1).info("{} = {} = \"{}\"", arg1, node.getStyleClass(), ((Labeled) node).getText());
@@ -157,22 +160,23 @@ public final class ClassReflectionUtils {
         } else {
             HasLogging.log(1).info("{} = .{}", arg1, node.getStyleClass());
         }
-        if(node instanceof Parent) {
+        if (node instanceof Parent) {
             ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
-            childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(n+"-",t));
+            childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(n + "-", t));
         }
     }
 
     private static <T> String getEnumerationDescription(String fieldName, Enumeration<T> enumeration,
-            Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invoked, Map<Class<?>, List<Method>> getterMethods) {
+        Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invoked,
+        Map<Class<?>, List<Method>> getterMethods) {
         StringBuilder descriptionBuilder = new StringBuilder("{\n");
         int i = 0;
         while (enumeration.hasMoreElements()) {
             T element = enumeration.nextElement();
             if (toStringMap.containsKey(element.getClass())
-                    || toStringMap.keySet().stream().anyMatch(e -> e.isAssignableFrom(element.getClass()))) {
+                || toStringMap.keySet().stream().anyMatch(e -> e.isAssignableFrom(element.getClass()))) {
                 Class<?> orElse = toStringMap.keySet().stream().filter(e -> e.isAssignableFrom(element.getClass()))
-                        .findAny().orElse(element.getClass());
+                    .findAny().orElse(element.getClass());
 
                 String apply = FunctionEx.makeFunction(toStringMap.get(orElse)).apply(element);
                 descriptionBuilder.append(apply);
@@ -199,16 +203,14 @@ public final class ClassReflectionUtils {
     private static List<Method> getGetterMethods(Class<?> class1, Map<Class<?>, List<Method>> getterMethods) {
         if (!getterMethods.containsKey(class1)) {
             getterMethods.put(class1,
-                    Stream.of(class1.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
-                            .filter(m -> m.getName().matches(METHOD_REGEX)).filter(m -> m.getParameterCount() == 0)
-                            .sorted(Comparator.comparing(t -> t.getName().replaceAll(METHOD_REGEX, "$1$2")))
-                            .collect(Collectors.toList()));
+                Stream.of(class1.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
+                    .filter(m -> m.getName().matches(METHOD_REGEX)).filter(m -> m.getParameterCount() == 0)
+                    .sorted(Comparator.comparing(t -> t.getName().replaceAll(METHOD_REGEX, "$1$2")))
+                    .collect(Collectors.toList()));
         }
         return getterMethods.get(class1);
 
     }
-
-
 
     private static String getText(File file) {
         try {
@@ -222,6 +224,7 @@ public final class ClassReflectionUtils {
     }
 
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
-        return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0 && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(class1.getName());
+        return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
+            && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(class1.getName());
     }
 }

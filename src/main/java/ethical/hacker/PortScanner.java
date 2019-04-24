@@ -92,7 +92,8 @@ public class PortScanner {
 
     public static ObservableMap<String, List<String>> scanPossibleOSes(String networkAddress) {
         String hostRegex = "Nmap scan report for ([\\d\\.]+)";
-		String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*|OS details: (.+)";
+        String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)"
+            + "|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*|OS details: (.+)";
         ObservableList<String> executeInConsole = ConsoleUtils
                 .executeInConsoleInfoAsync(NMAP_FILES + " -p 22,80,445,65123,56123 --traceroute -O " + networkAddress);
         ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();

@@ -35,8 +35,8 @@ public class BucketTool extends PaintTool {
 		}
 	}
 
-	public void setColor(final int initX, final int initY, final int originalColor, final int frontColor, final PixelReader pixelReader,
-			final PaintModel model) {
+    public void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
+        final PixelReader pixelReader, final PaintModel model) {
 		List<Integer> toGo = new ArrayList<>();
 		toGo.add(index(initX, initY));
 		while (!toGo.isEmpty()) {
@@ -77,7 +77,8 @@ public class BucketTool extends PaintTool {
 		height = (int) model.getImage().getHeight();
 		PixelReader pixelReader = model.getImage().getPixelReader();
 		int originalColor = pixelReader.getArgb(initialX, initialY);
-		int frontColor = PixelHelper.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
+        int frontColor = PixelHelper
+            .toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
 		if (originalColor != frontColor) {
 			Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
 		}

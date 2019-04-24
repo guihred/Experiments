@@ -28,18 +28,19 @@ public class Ground extends Player {
 
 	@Override
 	public Rectangle2D getBoundary() {
-		return new Rectangle2D(getPositionX() + colisionX, getPositionY() + colisionY, width * picture.getScaledWidth() - colisionX - colisionWidth,
-				height
-				* picture.getScaledHeight() - colisionY - colisionHeight);
+        return new Rectangle2D(getPositionX() + colisionX, getPositionY() + colisionY,
+            width * picture.getScaledWidth() - colisionX - colisionWidth,
+            height * picture.getScaledHeight() - colisionY - colisionHeight);
 	}
 
 	@Override
 	public void render(GraphicsContext gc) {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				gc.drawImage(picture.asImage(), i % picture.getColumns() * picture.getWidth(), j * picture.getHeight(), picture.getWidth(),
-						picture.getHeight(), getPositionX() + i * picture.getScaledWidth(), getPositionY() + j * picture.getScaledHeight(),
-						picture.getScaledWidth(), picture.getScaledHeight());
+                gc.drawImage(picture.asImage(), i % picture.getColumns() * picture.getWidth(), j * picture.getHeight(),
+                    picture.getWidth(), picture.getHeight(), getPositionX() + i * picture.getScaledWidth(),
+                    getPositionY() + j * picture.getScaledHeight(), picture.getScaledWidth(),
+                    picture.getScaledHeight());
 			}
 		}
 	}

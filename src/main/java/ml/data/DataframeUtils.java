@@ -177,7 +177,8 @@ public final class DataframeUtils extends DataframeML {
                 }
             }, String::compareTo);
         }
-        List<Entry<String, List<Object>>> entrySet = dataframe.dataframe.entrySet().stream().collect(Collectors.toList());
+        List<Entry<String, List<Object>>> entrySet = dataframe.dataframe.entrySet().stream()
+            .collect(Collectors.toList());
         for (int i = 0; i < entrySet.size(); i++) {
             Entry<String, List<Object>> entry = entrySet.get(i);
             List<Object> value = entry.getValue();

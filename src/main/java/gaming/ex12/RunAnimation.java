@@ -35,8 +35,8 @@ class RunAnimation {
 			positionX = positionX + scaledWidth;
 			scaledWidth = -scaledWidth;
 		}
-		gc.drawImage(image.asImage(), x, y, image.getWidth(), image.getHeight(), positionX, player.getPositionY(), scaledWidth,
-				image.getScaledHeight());
+        gc.drawImage(image.asImage(), x, y, image.getWidth(), image.getHeight(), positionX, player.getPositionY(),
+            scaledWidth, image.getScaledHeight());
 	}
 
 	public void update(double k) {

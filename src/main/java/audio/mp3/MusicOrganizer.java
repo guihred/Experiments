@@ -33,74 +33,59 @@ public class MusicOrganizer extends Application implements HasLogging {
         VBox root = new VBox();
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Carregar Pasta de Músicas");
-		final TableView<Music> musicasTable = tabelaMusicas();
+        final TableView<Music> musicasTable = tabelaMusicas();
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
         chooser.setInitialDirectory(musicsDirectory.getParentFile());
 
-		musicasTable.setItems(MusicReader.getMusicas(musicsDirectory));
+        musicasTable.setItems(MusicReader.getMusicas(musicsDirectory));
         musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
-		TextField filterField = new TextField();
+        TextField filterField = new TextField();
         Button buttonMusic = loadMusic(primaryStage, chooser, musicasTable, filterField);
         configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList());
         Button buttonVideos = loadVideos(primaryStage, chooser, musicasTable, filterField);
         root.getChildren()
-                .add(new VBox(new Label("Lista Músicas"), new HBox(buttonMusic, buttonVideos, filterField), musicasTable));
+            .add(new VBox(new Label("Lista Músicas"), new HBox(buttonMusic, buttonVideos, filterField), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-
     private void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
-			ObservableList<Music> musicas) {
-		FilteredList<Music> filteredData = new FilteredList<>(musicas, p -> true);
-		musicasEstoqueTable.setItems(filteredData);
-        filterField.textProperty()
-                .addListener((o, old, newV) -> filteredData.setPredicate(musica -> StringUtils.isEmpty(newV)
-                        || StringUtils.containsIgnoreCase(musica.toString(), newV)));
-	}
+        ObservableList<Music> musicas) {
+        FilteredList<Music> filteredData = new FilteredList<>(musicas, p -> true);
+        musicasEstoqueTable.setItems(filteredData);
+        filterField.textProperty().addListener((o, old, newV) -> filteredData.setPredicate(
+            musica -> StringUtils.isEmpty(newV) || StringUtils.containsIgnoreCase(musica.toString(), newV)));
+    }
 
-
-    private Button loadMusic(Stage primaryStage, DirectoryChooser chooser,
-            final TableView<Music> musicasTable,
-            TextField filterField) {
+    private Button loadMusic(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
+        TextField filterField) {
         return CommonsFX.newButton("Carregar Musicas", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
-				ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
-				musicasTable.setItems(musicas);
-				configurarFiltroRapido(filterField, musicasTable, musicas);
+                ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
+                musicasTable.setItems(musicas);
+                configurarFiltroRapido(filterField, musicasTable, musicas);
             }
         });
     }
 
     private Button loadVideos(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
-            TextField filterField) {
+        TextField filterField) {
         return CommonsFX.newButton("Carregar Vídeos", e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
-                List<Music> videos = ResourceFXUtils
-                        .getPathByExtension(selectedFile, ".mp4", ".wma")
-                        .parallelStream()
-                        .map(v -> new Music(v.toFile()))
-                        .collect(Collectors.toList());
+                List<Music> videos = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma").parallelStream()
+                    .map(v -> new Music(v.toFile())).collect(Collectors.toList());
                 configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(videos));
             }
         });
     }
 
     private TableView<Music> tabelaMusicas() {
-        TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>()
-                .prefWidth(WIDTH)
-                .scaleShape(false)
-                .addColumn("Título", "titulo")
-                .addColumn("Artista", "artista")
-                .addColumn("Álbum", "album")
-                .addColumn("Ano", "ano")
-                .addColumn("Gênero", "genero")
-                .addColumn("Pasta", "pasta")
-                .equalColumns()
-                .build();
+        TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>().prefWidth(WIDTH).scaleShape(false)
+            .addColumn("Título", "titulo").addColumn("Artista", "artista").addColumn("Álbum", "album")
+            .addColumn("Ano", "ano").addColumn("Gênero", "genero").addColumn("Pasta", "pasta").equalColumns().build();
         musicaTable.setOnMousePressed(new MusicHandler(musicaTable));
         return musicaTable;
     }

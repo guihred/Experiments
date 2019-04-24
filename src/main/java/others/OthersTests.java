@@ -2,12 +2,7 @@ package others;
 
 import static com.google.common.collect.ImmutableMap.of;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.IntSummaryStatistics;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,7 +15,8 @@ public class OthersTests {
     private static final String APP_CLOSE = "APP_CLOSE";
 
     public static Estado getStateMachine(Estado estado, Collection<String> eventList) {
-		return eventList.stream().sequential().reduce(estado, (e, s) -> e.getMap().getOrDefault(s, Estado.ERROR), (e, f) -> e);
+        return eventList.stream().sequential().reduce(estado, (e, s) -> e.getMap().getOrDefault(s, Estado.ERROR),
+            (e, f) -> e);
 	}
 
 	public static Estado getStateMachine(Estado estado, Estado... eventList) {

@@ -88,7 +88,8 @@ public class QuartoModel {
     }
 
     private boolean neighborsNotNull(int i, int j) {
-        return getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null || getMapQuarto()[i + 1][j + 1] == null;
+        return getMapQuarto()[i][j] == null || getMapQuarto()[i][j + 1] == null || getMapQuarto()[i + 1][j] == null
+            || getMapQuarto()[i + 1][j + 1] == null;
     }
 
 	private static boolean somethingInCommon(List<Integer> a) {

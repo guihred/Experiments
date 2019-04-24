@@ -38,25 +38,23 @@ public class DotsSquare extends Region {
     public Stream<DotsSquare> almostSquare() {
         // ONE link away from being a square
         return adjacencies.stream()
-                .flatMap(a -> a.adjacencies.stream()
-                        .filter(b -> b != this)
-                        .flatMap(b -> b.adjacencies.stream()
-                                .filter((DotsSquare c) -> a != c && !c.contains(this)
-                                        && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)));
+            .flatMap(a -> a.adjacencies.stream().filter(b -> b != this)
+                .flatMap(b -> b.adjacencies.stream().filter((DotsSquare c) -> a != c && !c.contains(this)
+                    && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)));
     }
 
     public Set<Set<DotsSquare>> check() {
         final List<DotsSquare> adjContainingThis = adjacencies.stream()
-                .filter(a -> a.adjacencies.stream()
-                        .anyMatch(b -> b != this && b.adjacencies.stream()
-                                .anyMatch(c -> a != c && c.adjacencies.contains(this)))).collect(Collectors.toList());
+            .filter(a -> a.adjacencies.stream().anyMatch(
+                b -> b != this && b.adjacencies.stream().anyMatch(c -> a != c && c.adjacencies.contains(this))))
+            .collect(Collectors.toList());
         Set<Set<DotsSquare>> pontos = new HashSet<>();
         for (DotsSquare a : adjContainingThis) {
             for (DotsSquare b : a.adjacencies.stream()
-                    .filter(b -> b != this && b.adjacencies.stream()
-                            .anyMatch(c -> a != c && c.adjacencies.contains(this))).collect(Collectors.toList())) {
-                for (DotsSquare c : b.adjacencies.stream()
-                        .filter(c -> a != c && c.adjacencies.contains(this)).collect(Collectors.toList())) {
+                .filter(b -> b != this && b.adjacencies.stream().anyMatch(c -> a != c && c.adjacencies.contains(this)))
+                .collect(Collectors.toList())) {
+                for (DotsSquare c : b.adjacencies.stream().filter(c -> a != c && c.adjacencies.contains(this))
+                    .collect(Collectors.toList())) {
                     pontos.add(new LinkedHashSet<>(Arrays.asList(a, b, c, this)));
                 }
             }
@@ -69,15 +67,14 @@ public class DotsSquare extends Region {
     }
 
     public boolean checkMelhor(DotsSquare adj) {
-        final Set<DotsSquare> arrayList = new HashSet<>(adjacencies);
-        arrayList.add(adj);
+        final Set<DotsSquare> newAdjacencies = new HashSet<>(adjacencies);
+        newAdjacencies.add(adj);
 
-        return arrayList.stream()
-                .flatMap(a -> a.adjacencies.stream()
-                        .filter(b -> b != this)
-                        .flatMap(b -> b.adjacencies.stream()
-                                .filter((DotsSquare c) -> a != c && !c.contains(this)
-                                        && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1))).count() == 0;
+        return newAdjacencies.stream()
+            .flatMap(a -> a.adjacencies.stream().filter(b -> b != this)
+                .flatMap(b -> b.adjacencies.stream().filter(c -> a != c && !c.contains(this)
+                    && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)))
+            .count() == 0;
     }
 
     public boolean contains(DotsSquare selected) {
@@ -100,16 +97,16 @@ public class DotsSquare extends Region {
     }
 
     public Double[] getCenter() {
-        return new Double[] {getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2};
+        return new Double[] { getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2 };
     }
 
     public int getI() {
-		return i;
-	}
+        return i;
+    }
 
     public int getJ() {
-		return j;
-	}
+        return j;
+    }
 
     @Override
     public int hashCode() {
@@ -119,12 +116,12 @@ public class DotsSquare extends Region {
         return hash;
     }
 
-	public void removeAdj(DotsSquare value) {
+    public void removeAdj(DotsSquare value) {
         adjacencies.remove(value);
         value.adjacencies.remove(this);
     }
 
-	@Override
+    @Override
     public String toString() {
         return "(" + i + "," + j + ")";
     }

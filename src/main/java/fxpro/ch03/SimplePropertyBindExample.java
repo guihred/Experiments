@@ -16,19 +16,19 @@ public final class SimplePropertyBindExample {
 	private SimplePropertyBindExample() {
 	}
     public static void main(String[] args) {
-		LOG.info("Constructing two StringProperty objects.");
+        LOG.trace("Constructing two StringProperty objects.");
         StringProperty prop1 = new SimpleStringProperty("");
         StringProperty prop2 = new SimpleStringProperty("");
-		LOG.info("Calling bindBidirectional.");
+        LOG.trace("Calling bindBidirectional.");
         prop2.bindBidirectional(prop1);
-		LOG.info("prop1.isBound() = {}", prop1.isBound());
-		LOG.info("prop2.isBound() = {}", prop2.isBound());
-		LOG.info("Calling prop1.set(\"prop1 says: Hi!\")");
+        LOG.trace("prop1.isBound() = {}", prop1.isBound());
+        LOG.trace("prop2.isBound() = {}", prop2.isBound());
+        LOG.trace("Calling prop1.set(\"prop1 says: Hi!\")");
         prop1.set("prop1 says: Hi!");
-		LOG.info("prop2.get() returned:");
-		LOG.info(prop2.get());
-		LOG.info("Calling prop2.set(prop2.get() + \"\\nprop2 says: Bye!\")");
+        LOG.trace("prop2.get() returned:");
+        LOG.trace(prop2.get());
+        LOG.trace("Calling prop2.set(prop2.get() + \"\\nprop2 says: Bye!\")");
         prop2.set(prop2.get() + "\nprop2 says: Bye!");
-		LOG.info("prop1.get() returned:{}", prop1.get());
+        LOG.trace("prop1.get() returned:{}", prop1.get());
     }
 }

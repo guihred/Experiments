@@ -54,26 +54,26 @@ public class JavaFXBeanController {
         ObjectProperty<Lighting> root = new SimpleObjectProperty<>();
         final ObjectBinding<Color> selectBinding = Bindings.select(root, "light", "color");
 		selectBinding.addListener((observableValue, oldValue, newValue) -> LOG
-                .info("The color changed:\n\t\told color = {},\n\t\tnew color = {}", oldValue, newValue));
-		LOG.info("firstLight is black.");
+            .trace("The color changed:\n\t\told color = {},\n\t\tnew color = {}", oldValue, newValue));
+        LOG.trace("firstLight is black.");
         Light firstLight = new Light.Point();
         firstLight.setColor(Color.BLACK);
-		LOG.info("secondLight is white.");
+        LOG.trace("secondLight is white.");
         Light secondLight = new Light.Point();
         secondLight.setColor(Color.WHITE);
-		LOG.info("firstLighting has firstLight.");
+        LOG.trace("firstLighting has firstLight.");
         Lighting firstLighting = new Lighting();
         firstLighting.setLight(firstLight);
-		LOG.info("secondLighting has secondLight.");
+        LOG.trace("secondLighting has secondLight.");
         Lighting secondLighting = new Lighting();
         secondLighting.setLight(secondLight);
-		LOG.info("Making root observe firstLighting.");
+        LOG.trace("Making root observe firstLighting.");
         root.set(firstLighting);
-		LOG.info("Making root observe secondLighting.");
+        LOG.trace("Making root observe secondLighting.");
         root.set(secondLighting);
-		LOG.info("Changing secondLighting's light to firstLight");
+        LOG.trace("Changing secondLighting's light to firstLight");
         secondLighting.setLight(firstLight);
-		LOG.info("Changing firstLight's color to red");
+        LOG.trace("Changing firstLight's color to red");
         firstLight.setColor(Color.RED);
     }
 }

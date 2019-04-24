@@ -106,7 +106,8 @@ public class Graph {
         List<Ponto> allPoints = triangulate.stream().flatMap(Triangle::allPoints).distinct()
                 .collect(Collectors.toList());
         for (Ponto ponto : allPoints) {
-			List<Triangle> tr = triangulate.stream().filter(t -> t.allPoints().anyMatch(ponto::equals)).collect(Collectors.toList());
+            List<Triangle> tr = triangulate.stream().filter(t -> t.allPoints().anyMatch(ponto::equals))
+                .collect(Collectors.toList());
 			VoronoiRegion voronoiRegion = new VoronoiRegion(ponto, tr);
 			getCellLayer().getChildren().add(0, voronoiRegion);
 		}

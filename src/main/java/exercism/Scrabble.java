@@ -51,7 +51,8 @@ public class Scrabble {
 		if (input == null) {
 			return 0;
 		}
-		return Stream.of(input.toUpperCase().split("")).filter(Pattern.compile("[A-Z]").asPredicate()).mapToInt(PER_LETTER::get).sum();
+        return Stream.of(input.toUpperCase().split("")).filter(Pattern.compile("[A-Z]").asPredicate())
+            .mapToInt(PER_LETTER::get).sum();
 	}
 
 	private static Map<String, Integer> getMapPerLetter() {

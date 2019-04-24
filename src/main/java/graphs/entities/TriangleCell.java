@@ -16,7 +16,8 @@ public class TriangleCell extends Cell {
 		Polygon view1 = new Polygon(width / 2, 0, width, height, 0, height);
         view1.setStroke(Color.BLACK);
 		view1.fillProperty().bind(
-				Bindings.when(selected).then(Color.RED).otherwise(Bindings.when(color.isNull()).then(Color.DODGERBLUE).otherwise(color)));
+            Bindings.when(selected).then(Color.RED)
+                .otherwise(Bindings.when(color.isNull()).then(Color.DODGERBLUE).otherwise(color)));
 
 		setView(new StackPane(view1, text));
 

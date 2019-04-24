@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
@@ -61,7 +60,6 @@ public class RaspiCycle extends Application implements HasLogging {
 			speed = 3;
 		} else if (event.getCode() == KeyCode.ESCAPE) {
 			animTimer.stop();
-			Platform.exit();
 		}
 		if (isNewDir) {
 			// User sent Light Cycle in a new direction...
@@ -156,7 +154,6 @@ public class RaspiCycle extends Application implements HasLogging {
 				.forEach(line -> {
 					animTimer.stop();
                     getLogger().info("COLLISION!");
-					Platform.exit();
 				});
 	}
 

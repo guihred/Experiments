@@ -38,8 +38,7 @@ public class GraphModel {
             return;
         }
         if (addedEdges.stream()
-                .anyMatch(e -> e.source.getCellId().equals(sourceId) && e.target.getCellId().equals(targetId)
-                        || e.target.getCellId().equals(sourceId) && e.source.getCellId().equals(targetId))) {
+            .anyMatch(e -> isEdgeExistent(sourceId, targetId, e))) {
             return;
         }
 
@@ -50,6 +49,7 @@ public class GraphModel {
         addedEdges.add(edge);
         addedEdges.add(edge2);
     }
+
     public Cell addCell(String id, CellType type) {
         switch (type) {
             case CIRCLE:
@@ -62,7 +62,6 @@ public class GraphModel {
                 throw new UnsupportedOperationException("Unsupported type: " + type);
         }
     }
-
     public Integer addedCost(String v, String w) {
         return GraphModelAlgorithms.addedCost(v, w, addedEdges, cellMap);
     }
@@ -119,10 +118,10 @@ public class GraphModel {
         }
     }
 
-
     public List<Edge> edges(Cell c) {
 		return GraphModelAlgorithms.edges(c, allEdges);
     }
+
 
     public void findArticulations() {
         GraphModelAlgorithms.findArticulations(allCells, allEdges);
@@ -148,11 +147,11 @@ public class GraphModel {
 		return cellMap.get(key);
 	}
 
-
-
     public ObservableList<String> getCellIds() {
         return cellIds;
     }
+
+
 
     public ObservableMap<String, Cell> getCellMap() {
         return cellMap;
@@ -237,6 +236,11 @@ public class GraphModel {
 
         cellMap = FXCollections.observableHashMap();
         bindCellsId();
+    }
+
+    private boolean isEdgeExistent(String sourceId, String targetId, Edge e) {
+        return e.source.getCellId().equals(sourceId) && e.target.getCellId().equals(targetId)
+                || e.target.getCellId().equals(sourceId) && e.source.getCellId().equals(targetId);
     }
 
 }

@@ -147,8 +147,8 @@ public class TimelineGraph extends Canvas {
 
 
             if (StringUtils.isNumeric(col)) {
-                DoubleSummaryStatistics summaryStatistics = items.stream().filter(Objects::nonNull).map(Number.class::cast)
-                        .mapToDouble(Number::doubleValue).summaryStatistics();
+                DoubleSummaryStatistics summaryStatistics = items.stream().filter(Objects::nonNull)
+                    .map(Number.class::cast).mapToDouble(Number::doubleValue).summaryStatistics();
                 if (summaryStatistics.getCount() > 0) {
                     colStats.accept(Integer.valueOf(col));
                     stats.combine(
@@ -199,7 +199,8 @@ public class TimelineGraph extends Canvas {
         }
     }
 
-    private boolean drawPoints(int maxYear, int minYear, double d, double j, double j2, String labelRow, Map<String, Object> row) {
+    private boolean drawPoints(int maxYear, int minYear, double d, double j, double j2, String labelRow,
+        Map<String, Object> row) {
         boolean hasPoint = false;
         for (int year = minYear; year <= maxYear; year++) {
             Number object = (Number) row.get("" + year);

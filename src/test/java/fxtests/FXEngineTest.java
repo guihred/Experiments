@@ -28,6 +28,7 @@ import javafx.scene.shape.Rectangle;
 import org.junit.Test;
 import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
+import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
@@ -39,7 +40,7 @@ public class FXEngineTest extends AbstractTestExecution {
 					sleep(1000);
 					clickOn(t);
 					type(KeyCode.ESCAPE);
-				}), Chapter4.Ex9.class, PlayingAudio.class, PdfReader.class));
+            }), Chapter4.Ex9.class, PdfReader.class));
 
 	}
 
@@ -76,6 +77,13 @@ public class FXEngineTest extends AbstractTestExecution {
 	}
 
     @Test
+    public void verifyPlayingAudio() throws Exception {
+        PlayingAudio show = show(PlayingAudio.class);
+        interactNoWait(() -> show.playMedia(ResourceFXUtils.toExternalForm("TeenTitans.mp3")));
+        tryClickButtons();
+    }
+
+    @Test
 	public void verifyPong() throws Exception {
 		show(PongLauncher.class);
 		tryClickButtons();
@@ -109,7 +117,7 @@ public class FXEngineTest extends AbstractTestExecution {
 		type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
 	}
 
-	@Test
+    @Test
 	public void verifySngpcViewer() throws Exception {
 	    show(SngpcViewer.class);
         sleep(500);

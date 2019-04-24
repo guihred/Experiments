@@ -53,6 +53,72 @@ public class PlayingAudio extends Application {
     private Group pauseButton;
 
 	/**
+	 * After a file is dragged onto the application a new MediaPlayer instance
+	 * is created with a media file.
+	 *
+	 * @param stage
+	 *            The stage window (primaryStage)
+	 * @param url
+	 *            The URL pointing to an audio file
+	 */
+	public void playMedia(String url) {
+		Scene scene = mainStage.getScene();
+		if (mediaPlayer != null) {
+			mediaPlayer.pause();
+			mediaPlayer.setOnPaused(null);
+			mediaPlayer.setOnPlaying(null);
+			mediaPlayer.setOnReady(null);
+			mediaPlayer.currentTimeProperty().removeListener(progressListener);
+			mediaPlayer.setAudioSpectrumListener(null);
+		}
+		Media media = new Media(url);
+		// display media's metadata
+		for (String s : media.getMetadata().keySet()) {
+            LOGGER.info(s);
+		}
+		mediaPlayer = new MediaPlayer(media);
+		// as the media is playing move the slider for progress
+		mediaPlayer.currentTimeProperty().addListener(progressListener);
+
+		mediaPlayer.setOnReady(() -> {
+			updatePlayAndPauseButtons(false);
+			Slider progressSlider = (Slider) scene.lookup("#" + SEEK_POS_SLIDER_ID);
+			progressSlider.setValue(0);
+			progressSlider.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
+			mediaPlayer.play();
+		});
+			// back to the beginning
+		mediaPlayer.setOnEndOfMedia(() -> {
+			updatePlayAndPauseButtons(true);
+			// change buttons to play and rewind
+				mediaPlayer.stop();
+		});
+				// setup visualization (circle container)
+		Group vizContainer = (Group) mainStage.getScene().lookup("#" + VIS_CONTAINER_ID);
+		mediaPlayer
+				.setAudioSpectrumListener((double timestamp, double duration, float[] magnitudes, float[] phases) -> {
+					vizContainer.getChildren().clear();
+					int i = 0;
+					double y = mainStage.getScene().getHeight() / 2;
+					Random rand = new Random(System.currentTimeMillis());
+					// Build random colored circles
+                    final int bound = 255;
+					for (float phase : phases) {
+                        int red = rand.nextInt(bound);
+						int green = rand.nextInt(bound);
+						int blue = rand.nextInt(bound);
+						Circle circle = new SimpleCircleBuilder().radius(10)
+								.centerX((double) 10 + i)
+								.centerY(y + (double) phase * 100)
+                                .fill(Color.rgb(red, green, blue, 7. / 10))
+								.build();
+						vizContainer.getChildren().add(circle);
+						i += 5;
+					}
+				});
+	}
+
+	/**
 	 * @param args
 	 *            the command line arguments
 	 */
@@ -265,72 +331,6 @@ public class PlayingAudio extends Application {
 		// Initialize previousLocation after Stage is shown
 		mainStage.addEventHandler(WindowEvent.WINDOW_SHOWN,
 				t -> previousLocation = new Point2D(mainStage.getX(), mainStage.getY()));
-	}
-
-	/**
-	 * After a file is dragged onto the application a new MediaPlayer instance
-	 * is created with a media file.
-	 *
-	 * @param stage
-	 *            The stage window (primaryStage)
-	 * @param url
-	 *            The URL pointing to an audio file
-	 */
-	private void playMedia(String url) {
-		Scene scene = mainStage.getScene();
-		if (mediaPlayer != null) {
-			mediaPlayer.pause();
-			mediaPlayer.setOnPaused(null);
-			mediaPlayer.setOnPlaying(null);
-			mediaPlayer.setOnReady(null);
-			mediaPlayer.currentTimeProperty().removeListener(progressListener);
-			mediaPlayer.setAudioSpectrumListener(null);
-		}
-		Media media = new Media(url);
-		// display media's metadata
-		for (String s : media.getMetadata().keySet()) {
-            LOGGER.info(s);
-		}
-		mediaPlayer = new MediaPlayer(media);
-		// as the media is playing move the slider for progress
-		mediaPlayer.currentTimeProperty().addListener(progressListener);
-
-		mediaPlayer.setOnReady(() -> {
-			updatePlayAndPauseButtons(false);
-			Slider progressSlider = (Slider) scene.lookup("#" + SEEK_POS_SLIDER_ID);
-			progressSlider.setValue(0);
-			progressSlider.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
-			mediaPlayer.play();
-		});
-			// back to the beginning
-		mediaPlayer.setOnEndOfMedia(() -> {
-			updatePlayAndPauseButtons(true);
-			// change buttons to play and rewind
-				mediaPlayer.stop();
-		});
-				// setup visualization (circle container)
-		Group vizContainer = (Group) mainStage.getScene().lookup("#" + VIS_CONTAINER_ID);
-		mediaPlayer
-				.setAudioSpectrumListener((double timestamp, double duration, float[] magnitudes, float[] phases) -> {
-					vizContainer.getChildren().clear();
-					int i = 0;
-					double y = mainStage.getScene().getHeight() / 2;
-					Random rand = new Random(System.currentTimeMillis());
-					// Build random colored circles
-                    final int bound = 255;
-					for (float phase : phases) {
-                        int red = rand.nextInt(bound);
-						int green = rand.nextInt(bound);
-						int blue = rand.nextInt(bound);
-						Circle circle = new SimpleCircleBuilder().radius(10)
-								.centerX((double) 10 + i)
-								.centerY(y + (double) phase * 100)
-                                .fill(Color.rgb(red, green, blue, 7. / 10))
-								.build();
-						vizContainer.getChildren().add(circle);
-						i += 5;
-					}
-				});
 	}
 
     private void tryPlayMedia(Dragboard db) {

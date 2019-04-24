@@ -1,5 +1,7 @@
 package fxpro.ch05;
 
+import static fxpro.ch05.TableVisualizationModel.*;
+
 import java.util.List;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -99,7 +101,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
         return new SimpleMenuBarBuilder()
                 .addMenu("File")
-                .addMenuItem("New...",new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png")
+            .addMenuItem("New...",
+                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png")
                         ,"Ctrl+N"
                         , e -> getLogger().info("{} occurred on MenuItem New", e.getEventType()))
                 .addMenuItem("Save")
@@ -111,15 +114,15 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 	}
 
     private Node createScrollMiscDemoNode() {
-		ChoiceBox<String> choiceBox = new ChoiceBox<>(TableVisualizationModel.CHOICE_BOX_ITEMS);
+        ChoiceBox<String> choiceBox = new ChoiceBox<>(CHOICE_BOX_ITEMS);
 		choiceBox.getSelectionModel().selectFirst();
         choiceBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> getLogger().info("{} chosen in ChoiceBox", newValue));
+            .addListener((ob, oldValue, newValue) -> getLogger().info("{} chosen in ChoiceBox", newValue));
 		final TextField textField = new TextField();
 		textField.setPromptText("Enter user name");
 		textField.setPrefColumnCount(16);
         textField.textProperty()
-                .addListener((ov, oldValue, newValue) -> getLogger().info("TextField text is: {}" , textField.getText()));
+            .addListener((ov, oldValue, newValue) -> getLogger().info("TextField text is: {}", textField.getText()));
 		final PasswordField passwordField = new PasswordField();
 		passwordField.setPromptText("Enter password");
 		passwordField.setPrefColumnCount(16);
@@ -140,19 +143,19 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
         final int standardSize = 200;
         slider.setPrefWidth(standardSize);
 		slider.setMin(-1);
-		slider.setMax(TableVisualizationModel.MAX_RPM);
-		slider.valueProperty().bindBidirectional(TableVisualizationModel.RPM);
+        slider.setMax(MAX_RPM);
+        slider.valueProperty().bindBidirectional(RPM);
 		ProgressIndicator progressIndicator = new ProgressIndicator();
         progressIndicator.setPrefWidth(standardSize);
-		progressIndicator.progressProperty().bind(TableVisualizationModel.RPM.divide(TableVisualizationModel.MAX_RPM));
+        progressIndicator.progressProperty().bind(RPM.divide(MAX_RPM));
 		ProgressBar progressBar = new ProgressBar();
         progressBar.setPrefWidth(standardSize);
-		progressBar.progressProperty().bind(TableVisualizationModel.KPH.divide(TableVisualizationModel.MAX_KPH));
+        progressBar.progressProperty().bind(KPH.divide(MAX_KPH));
 		ScrollBar scrollBar = new ScrollBar();
         scrollBar.setPrefWidth(standardSize);
 		scrollBar.setMin(-1);
-		scrollBar.setMax(TableVisualizationModel.MAX_KPH);
-		scrollBar.valueProperty().bindBidirectional(TableVisualizationModel.KPH);
+        scrollBar.setMax(MAX_KPH);
+        scrollBar.valueProperty().bindBidirectional(KPH);
 		CheckBox checkBox = new CheckBox("CheckBox");
         checkBox.setOnAction(e -> {
             getLogger().info("{} occurred on CheckBox", e.getEventType());
@@ -212,17 +215,17 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .showRoot(false)
                 .onSelect(newValue->{
                     if (newValue != null && newValue.isLeaf()) {
-                        TableVisualizationModel.updateList(newValue.getValue());
+                    updateList(newValue.getValue());
                     }    
                 })
-		        .build(), new ListView<>(TableVisualizationModel.LIST_VIEW_ITEMS));
+            .build(), new ListView<>(LIST_VIEW_ITEMS));
 	}
 
 
 
     private Node createTableDemoNode() {
         return new SimpleTableViewBuilder<Person>()
-                .items(TableVisualizationModel.getTeamMembers())
+            .items(getTeamMembers())
                 .addColumn("First Name", "firstName")
                 .addColumn("Last Name", "lastName")
                 .addColumn("Phone Number", "phone")
@@ -239,7 +242,7 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
                 .addTab("HTMLEditor", createHtmlEditorDemoNode())
                 .addTab("WebView", webView, (tab, evt) -> {
                     if (tab.isSelected()) {
-                        String randomWebSite = TableVisualizationModel.getRandomWebSite();
+                    String randomWebSite = getRandomWebSite();
                         webView.getEngine().load(randomWebSite);
                         getLogger().info("WebView tab is selected, loading: {}", randomWebSite);
                     }
@@ -250,8 +253,8 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
 
     private ToolBar createToolBar() {
         final Button newButton = CommonsFX.newButton(
-                new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "newButton",
-                e -> getLogger().info("New toolbar button clicked"));
+            new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "newButton",
+            e -> getLogger().info("New toolbar button clicked"));
         newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
 
         final Button editButton = CommonsFX.newButton(new Circle(8, Color.GREEN), "editButton", null);

@@ -43,9 +43,10 @@ public class IndependentTest implements HasLogging {
     public void matrixTest() {
         double[][] matr = { { 4, 5, 3 }, { 2, -5, -2 }, { 4, 5, 6 } };
         double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
-        double[] solve = MatrixSolver.solve(matr, coef2);
-        Assert.assertArrayEquals("The solved Matrix should match the solution", solve, new double[] { -0.3, 0.5, 0.6 },
-            0.01);
+        double[] solve = measureTime("MatrixSolver.solve", () -> MatrixSolver.solve(matr, coef2));
+        double[] correctAnswear = new double[] { -0.3, 0.5, 0.6 };
+        Assert.assertArrayEquals("The solved Matrix should match the solution", solve, correctAnswear, 0.01);
+        measureTime("MatrixSolver.determinant", () -> MatrixSolver.determinant(matr));
     }
 
     @Test
@@ -111,8 +112,8 @@ public class IndependentTest implements HasLogging {
 
     @Test
     public void testGoogleImages() {
-        measureTime("GoogleImagesUtils.displayCountByExtension", () -> WikiImagesUtils.displayCountByExtension());
-        measureTime("GoogleImagesUtils.testApps", () -> FXTesting.testApps(PageImage.class));
+        measureTime("WikiImagesUtils.displayCountByExtension", () -> WikiImagesUtils.displayCountByExtension());
+        measureTime("PageImage.testApps", () -> FXTesting.testApps(PageImage.class));
         measureTime("NetworkInformationScanner.displayNetworkInformation",
             () -> NetworkInformationScanner.displayNetworkInformation());
     }

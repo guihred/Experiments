@@ -111,12 +111,15 @@ public class MadTriangle {
         float a22 = b.getY() - point.getY();
         float a32 = c.getY() - point.getY();
 
-        float a13 = (a.getX() - point.getX()) * (a.getX() - point.getX()) + (a.getY() - point.getY()) * (a.getY() - point.getY());
-        float a23 = (b.getX() - point.getX()) * (b.getX() - point.getX()) + (b.getY() - point.getY()) * (b.getY() - point.getY());
-        float a33 = (c.getX() - point.getX()) * (c.getX() - point.getX()) + (c.getY() - point.getY()) * (c.getY() - point.getY());
+        float a13 = (a.getX() - point.getX()) * (a.getX() - point.getX())
+            + (a.getY() - point.getY()) * (a.getY() - point.getY());
+        float a23 = (b.getX() - point.getX()) * (b.getX() - point.getX())
+            + (b.getY() - point.getY()) * (b.getY() - point.getY());
+        float a33 = (c.getX() - point.getX()) * (c.getX() - point.getX())
+            + (c.getY() - point.getY()) * (c.getY() - point.getY());
 
         float det = a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 - a13 * a22 * a31 - a12 * a21 * a33
-                - a11 * a23 * a32;
+            - a11 * a23 * a32;
 
         if (isOrientedCCW()) {
             return det > 0.0D;

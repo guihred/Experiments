@@ -110,8 +110,9 @@ public final class Chapter4 {
 
     private static void createOrbitAnimation(Scene scene, Circle planet, Slider rotationSlider, Slider radiusSlider) {
         new SimplePathTransitionBuilder().duration(Duration.millis(1000))
-        .interpolator(Interpolator.LINEAR).node(planet).cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build()
-        .play();
+            .interpolator(Interpolator.LINEAR).node(planet).cycleCount(Animation.INDEFINITE)
+            .path(buildArc(scene, rotationSlider, radiusSlider)).build()
+            .play();
     }
 
     private static void createPulseAnimation(Circle planet) {

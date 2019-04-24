@@ -106,12 +106,6 @@ public final class SongUtils {
         return String.format("%02d:%02d", minutes, seconds);
     }
 
-    public static String formatDurationMillis(Duration duration) {
-        long millis = (long) duration.toMillis();
-        long seconds = millis / 1000 % SECONDS_IN_A_MINUTE;
-        long minutes = millis / (1000 * SECONDS_IN_A_MINUTE);
-        return String.format("%02d:%02d.%03d", minutes, seconds, millis % 1000);
-    }
 
     public static String formatFullDuration(Duration duration) {
         long millis = (long) duration.toMillis();

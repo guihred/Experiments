@@ -45,9 +45,9 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName, final boolean editable) {
+    public SimpleTableViewBuilder<T> addColumn(String columnName, String property, boolean editable) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
+        column.setCellValueFactory(new PropertyValueFactory<>(property));
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         column.setEditable(editable);
         table.getColumns().add(column);

@@ -13,7 +13,8 @@ import java.util.stream.Stream;
 import utils.HasLogging;
 
 public class JavaFileDependecy implements HasLogging {
-    private static final String IMPORT_REGEX = "import ([\\w\\.]+)\\.[\\w\\*]+;|import static ([\\w\\.]+)\\.\\w+\\.\\w+;";
+    private static final String IMPORT_REGEX = "import ([\\w\\.]+)\\.[\\w\\*]+;"
+        + "|import static ([\\w\\.]+)\\.\\w+\\.\\w+;";
     private static final String CLASS_REGEX = "\\W+([A-Z]\\w+)\\W";
     private static final String PACKAGE_REGEX = "package ([\\w\\.]+);";
     private Path javaPath;

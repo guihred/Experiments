@@ -1,11 +1,14 @@
 package ethical.hacker;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -22,10 +25,11 @@ import utils.HasLogging;
 public class TracerouteScanner {
 
 	private static final Logger LOG = HasLogging.log();
-	private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
-	private static final String REUSED_ROUTE_REGEX = "-\\s*Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
-	private static final String REUSED_ROUTE_REGEX_1 = "-\\s*Hop (\\d+) is the same as for ([\\d\\.]+)";
-	private static final String HOP_REGEX = "\\d+\\s+[\\d\\.]+ ms\\s+([\\d\\.]+)|\\d+\\s+[\\d\\.]+ ms\\s+[\\w\\.]+ \\(([\\d\\.]+)\\)";
+    private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
+    private static final String REUSED_ROUTE_REGEX = "-\\s*Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
+    private static final String REUSED_ROUTE_REGEX_1 = "-\\s*Hop (\\d+) is the same as for ([\\d\\.]+)";
+    private static final String HOP_REGEX = "\\d+\\s+[\\d\\.]+ ms\\s+([\\d\\.]+)"
+        + "|\\d+\\s+[\\d\\.]+ ms\\s+[\\w\\.]+ \\(([\\d\\.]+)\\)";
 
 	public static final String IP_TO_SCAN = getIPtoScan();
 
@@ -59,25 +63,25 @@ public class TracerouteScanner {
 					}
 				}
 			}
-			Map<String, List<String>> netRoutes = hostsPorts.entrySet().stream()
-					.collect(Collectors.toMap(Entry<String, List<String>>::getKey, e -> extractHops(hostsPorts, e)));
-			synchronizedObservableMap.putAll(netRoutes);
-		});
+            Map<String, List<String>> netRoutes = hostsPorts.entrySet().stream()
+                .collect(toMap(Entry<String, List<String>>::getKey, e -> extractHops(hostsPorts, e)));
+            synchronizedObservableMap.putAll(netRoutes);
+        });
 
 		return synchronizedObservableMap;
 	}
 
 	private static List<String> extractHops(final Map<String, List<String>> hostsPorts,
 			final Entry<String, List<String>> e) {
-		return e.getValue().stream().flatMap(l -> turnReferencesIntoHops(hostsPorts, l)).collect(Collectors.toList());
+        return e.getValue().stream().flatMap(l -> turnReferencesIntoHops(hostsPorts, l)).collect(toList());
 	}
 
 	private static String getIPtoScan() {
 		if (CrawlerTask.isNotProxied()) {
-			return Stream.of("169", "254", "29", "121").collect(Collectors.joining("."));
+            return Stream.of("169", "254", "29", "121").collect(joining("."));
 		}
 
-		return Stream.of("10", "69", "64", "31").collect(Collectors.joining("."));
+        return Stream.of("10", "69", "64", "31").collect(joining("."));
 	}
 
 	private static String getNetworkAddress() {
@@ -96,7 +100,8 @@ public class TracerouteScanner {
 		return "\"" + NMAP_FILES + "\"";
 	}
 
-	private static Stream<? extends String> turnReferencesIntoHops(final Map<String, List<String>> hostsPorts, final String line) {
+    private static Stream<? extends String> turnReferencesIntoHops(final Map<String, List<String>> hostsPorts,
+        final String line) {
 		try {
 			if (line.matches(REUSED_ROUTE_REGEX)) {
 				String host = line.replaceAll(REUSED_ROUTE_REGEX, "$3");

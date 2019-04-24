@@ -21,7 +21,8 @@ public class Ground extends BasePhysicalObject {
     
     @Override
     public Node create() {
-        Rectangle rect = new Rectangle(0,Physics.toPixelY(1),Physics.toPixelX(100),Physics.toPixelY(0)-Physics.toPixelY(1));
+        Rectangle rect = new Rectangle(0, Physics.toPixelY(1), Physics.toPixelX(100),
+            Physics.toPixelY(0) - Physics.toPixelY(1));
         rect.setFill(Color.BLACK);
         return rect;
     }

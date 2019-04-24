@@ -325,7 +325,8 @@ public class SelectRectTool extends PaintTool {
 
 	private void cutImage(final PaintModel model, final Bounds bounds) {
 		copyToClipboard(model);
-		new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth()).height(bounds.getHeight()).drawRect(model, model.getBackColor());
+        new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth())
+            .height(bounds.getHeight()).drawRect(model, model.getBackColor());
 		model.createImageVersion();
 	}
 

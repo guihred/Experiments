@@ -71,7 +71,6 @@ public final class FXTesting implements HasLogging {
                     .collect(Collectors.joining("\n", "\n", "\n"));
             Assert.fail(classesExceptions);
         }
-        Assert.assertTrue("TESTS SUCCESSFULL", true);
     }
 
     public static void measureTime(String name, RunnableEx runnable) {
@@ -120,6 +119,7 @@ public final class FXTesting implements HasLogging {
         Class<? extends Application>... applicationClasses) {
         for (int i = 0; i < applicationClasses.length; i++) {
             Class<? extends Application> class1 = applicationClasses[i];
+            LOGGER.info(" RUN {}", class1.getSimpleName());
             app.interactNoWait(RunnableEx.makeRunnable(() -> class1.newInstance().start(currentStage)));
             consumer.run();
         }

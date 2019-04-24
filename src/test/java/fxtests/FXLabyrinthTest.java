@@ -4,13 +4,16 @@ import static javafx.scene.input.KeyCode.*;
 
 import fxpro.ch07.Chart3dSampleApp;
 import fxsamples.JewelViewer;
+import fxsamples.RaspiCycle;
 import fxsamples.SimpleScene3D;
 import gaming.ex04.TronLauncher;
 import gaming.ex05.TetrisLauncher;
 import gaming.ex06.MoleculeSampleApp;
 import gaming.ex07.MazeLauncher;
 import gaming.ex09.Maze3DLauncher;
+import gaming.ex14.PacmanLauncher;
 import gaming.ex15.RubiksCubeLauncher;
+import gaming.ex20.RoundMazeLauncher;
 import java.util.Arrays;
 import javafx.scene.input.KeyCode;
 import labyrinth.Labyrinth3DMouseControl;
@@ -34,7 +37,8 @@ public class FXLabyrinthTest extends AbstractTestExecution {
             }
         }, RubiksCubeLauncher.class, TetrisLauncher.class, SimpleScene3D.class, Maze3DLauncher.class,
             Labyrinth3DMouseControl.class, TronLauncher.class, JewelViewer.class, MoleculeSampleApp.class,
-            Chart3dSampleApp.class, MazeLauncher.class, Labyrinth3DWallTexture.class);
+            Chart3dSampleApp.class, PacmanLauncher.class, RoundMazeLauncher.class, MazeLauncher.class,
+            Labyrinth3DWallTexture.class, RaspiCycle.class);
 		interactNoWait(currentStage::close);
 	}
 }

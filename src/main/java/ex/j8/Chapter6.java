@@ -12,20 +12,9 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
@@ -211,8 +200,9 @@ public final class Chapter6 {
 				.collect(
 						Collectors.groupingBy(w -> w, Collectors.counting()));
 
-		Entry<String, Long> entries = new ConcurrentHashMap<>(wordCount).reduceEntries(4, (t, u) -> t.getValue() > u.getValue() ? t : u);
-		LOGGER.trace("{}", " The word \"" + entries.getKey() + "\" appeared " + entries.getValue() + " times");
+        Entry<String, Long> entries = new ConcurrentHashMap<>(wordCount).reduceEntries(4,
+            (t, u) -> t.getValue() > u.getValue() ? t : u);
+        LOGGER.trace("{}", " The word \"" + entries.getKey() + "\" appeared " + entries.getValue() + " times");
 
 	}
 

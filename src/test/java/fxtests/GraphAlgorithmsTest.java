@@ -22,6 +22,9 @@ public class GraphAlgorithmsTest {
         measureTime("Vertex.kruskal", () -> Vertex.kruskal(vertices));
         measureTime("Vertex.prim", () -> Vertex.prim(vertices));
         measureTime("Vertex.sortTopology", () -> Vertex.sortTopology(vertices));
+        measureTime("Vertex.chain", () -> Vertex.chain("A", "F", vertices));
+        measureTime("Vertex.unweighted", () -> Vertex.unweighted(vertices));
+        measureTime("Vertex.weightedNegative", () -> Vertex.weightedNegative(vertices));
 
         measureTime("GraphAlgorithms.createGraph1", GraphAlgorithms::createGraph1);
         measureTime("GraphAlgorithms.createGraph2", GraphAlgorithms::createGraph2);

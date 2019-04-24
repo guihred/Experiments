@@ -48,7 +48,8 @@ public class Maze3DLauncher extends Application {
 
             @Override
             public void handle(MouseEvent event) {
-                if (event.getEventType() == MouseEvent.MOUSE_PRESSED || event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                if (event.getEventType() == MouseEvent.MOUSE_PRESSED
+                    || event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                     double mouseYnew = event.getSceneY();
                     if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                         double pitchRotate = rotate.getAngle() + (mouseYnew - mouseYold) / 1;

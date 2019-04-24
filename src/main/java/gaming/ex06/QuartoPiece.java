@@ -31,7 +31,8 @@ public class QuartoPiece extends Group {
 
         shape.setMaterial(material);
         final Color color = (2 & number) == 0 ? Color.WHITE : Color.DARKVIOLET;
-        material.diffuseColorProperty().bind(Bindings.when(selected).then(Color.BLUE).otherwise(Bindings.when(shape.hoverProperty()).then(Color.RED).otherwise(color)));
+        material.diffuseColorProperty().bind(Bindings.when(selected).then(Color.BLUE)
+            .otherwise(Bindings.when(shape.hoverProperty()).then(Color.RED).otherwise(color)));
 
         shape.setTranslateY(10);
         if ((4 & number) == 4) {

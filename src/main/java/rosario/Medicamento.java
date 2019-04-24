@@ -162,7 +162,7 @@ public class Medicamento implements Serializable {
 
 	private boolean loteIgual(Medicamento m) {
 		return Objects.equals(m.getLote(), lote)
-				|| StringUtils.isNumeric(lote) && StringUtils.isNumeric(m.getLote())
-						&& Objects.equals(Integer.valueOf(m.getLote()), Integer.valueOf(lote));
+            || StringUtils.isNumeric(lote) && StringUtils.isNumeric(m.getLote())
+                && Objects.equals(Integer.valueOf(m.getLote()), Integer.valueOf(lote));
 	}
 }

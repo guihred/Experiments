@@ -159,7 +159,8 @@ public class BrushTool extends PaintTool {
 		model.createImageVersion();
 	}
 
-	private void drawCircleOption(final PaintModel model, final int x2, final int y2, final double r, final Color color, final boolean fill) {
+    private void drawCircleOption(final PaintModel model, final int x2, final int y2, final double r, final Color color,
+        final boolean fill) {
 		drawCircle(model, x2, y2, r, r, color);
 		drawCircle(model, x2, y2, r, r - 1, color);
 		if (fill) {
@@ -170,7 +171,8 @@ public class BrushTool extends PaintTool {
 		}
 	}
 
-	private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2, final boolean fill) {
+    private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2,
+        final boolean fill) {
 
 		if (withinRange(x2, y2, model)) {
 			double r = length.getValue().doubleValue();

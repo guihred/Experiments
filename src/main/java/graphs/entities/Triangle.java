@@ -31,9 +31,12 @@ public class Triangle {
 	public EdgeDistancePack findNearestEdge(Ponto point) {
 		EdgeDistancePack[] edges = new EdgeDistancePack[3];
 
-		edges[0] = new EdgeDistancePack(new Linha(a, b), computeClosestPoint(new Linha(a, b), point).sub(point).mag());
-		edges[1] = new EdgeDistancePack(new Linha(b, c), computeClosestPoint(new Linha(b, c), point).sub(point).mag());
-		edges[2] = new EdgeDistancePack(new Linha(c, a), computeClosestPoint(new Linha(c, a), point).sub(point).mag());
+        edges[0] = new EdgeDistancePack(new Linha(a, b), 
+            computeClosestPoint(new Linha(a, b), point).sub(point).mag());
+		edges[1] = new EdgeDistancePack(new Linha(b, c), 
+		    computeClosestPoint(new Linha(b, c), point).sub(point).mag());
+		edges[2] = new EdgeDistancePack(new Linha(c, a), 
+		    computeClosestPoint(new Linha(c, a), point).sub(point).mag());
 
 
 		Arrays.sort(edges);
@@ -69,7 +72,8 @@ public class Triangle {
 	}
 
 	public boolean isNeighbour(Linha edge) {
-        return Stream.of(a, b, c).anyMatch(s -> s == edge.getA()) && Stream.of(a, b, c).anyMatch(s -> s == edge.getB());
+        return Stream.of(a, b, c).anyMatch(s -> s == edge.getA()) 
+            && Stream.of(a, b, c).anyMatch(s -> s == edge.getB());
 	}
 
 	public boolean isOrientedCCW() {
@@ -93,11 +97,15 @@ public class Triangle {
 		double a22 = b.getY() - point.getY();
 		double a32 = c.getY() - point.getY();
 
-		double a13 = (a.getX() - point.getX()) * (a.getX() - point.getX()) + (a.getY() - point.getY()) * (a.getY() - point.getY());
-		double a23 = (b.getX() - point.getX()) * (b.getX() - point.getX()) + (b.getY() - point.getY()) * (b.getY() - point.getY());
-		double a33 = (c.getX() - point.getX()) * (c.getX() - point.getX()) + (c.getY() - point.getY()) * (c.getY() - point.getY());
+        double a13 = (a.getX() - point.getX()) * (a.getX() - point.getX())
+            + (a.getY() - point.getY()) * (a.getY() - point.getY());
+        double a23 = (b.getX() - point.getX()) * (b.getX() - point.getX())
+            + (b.getY() - point.getY()) * (b.getY() - point.getY());
+        double a33 = (c.getX() - point.getX()) * (c.getX() - point.getX())
+            + (c.getY() - point.getY()) * (c.getY() - point.getY());
 
-		double det = a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 - a13 * a22 * a31 - a12 * a21 * a33 - a11 * a23 * a32;
+        double det = a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 - a13 * a22 * a31 - a12 * a21 * a33
+            - a11 * a23 * a32;
 
 		if (isOrientedCCW()) {
 			return det > 0.0D;

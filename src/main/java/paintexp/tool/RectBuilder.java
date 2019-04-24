@@ -77,10 +77,12 @@ public class RectBuilder extends PaintTool {
     public void drawFill(final PaintModel model) {
         final double x = centerX1;
         final double y = startY;
-        new RectBuilder().startX(x).startY(y).width(centerX2 - centerX1).height(endY - startY).drawRect(model, model.getBackColor());
+        new RectBuilder().startX(x).startY(y).width(centerX2 - centerX1).height(endY - startY).drawRect(model,
+            model.getBackColor());
         final double x1 = startX;
         final double y1 = centerY1;
-        new RectBuilder().startX(x1).startY(y1).width(endX - startX).height(centerY2 - centerY1).drawRect(model, model.getBackColor());
+        new RectBuilder().startX(x1).startY(y1).width(endX - startX).height(centerY2 - centerY1).drawRect(model,
+            model.getBackColor());
         for (int i = 0; i < radiusX; i++) {
             drawCirclePart(model, centerX1, centerY1, i, radiusY, Math.PI, model.getBackColor());
             drawCirclePart(model, centerX2, centerY1, i, radiusY, Math.PI * 3 / 2, model.getBackColor());

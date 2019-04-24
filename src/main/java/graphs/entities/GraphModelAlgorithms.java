@@ -60,8 +60,7 @@ public final class GraphModelAlgorithms {
 					return Collections.emptyList();
 				}
 				Cell p = path;
-				chain.addAll(allEdges.stream().filter(e -> e.source.equals(p) && e.target.equals(pathTo)
-						|| e.target.equals(p) && e.source.equals(pathTo)).collect(Collectors.toList()));
+                chain.addAll(allEdges.stream().filter(e -> isEdgePresent(pathTo, p, e)).collect(Collectors.toList()));
 				path = pathTo;
 
 			}
@@ -69,7 +68,7 @@ public final class GraphModelAlgorithms {
 		return chain;
 	}
 
-	public static void coloring(Collection<Cell> allCells2, List<Edge> allEdges) {
+    public static void coloring(Collection<Cell> allCells2, List<Edge> allEdges) {
 		List<Color> availableColors = CommonsFX.generateRandomColors(allCells2.size());
 		int i = 0;
 		List<Cell> vertices = allCells2.stream()
@@ -97,12 +96,10 @@ public final class GraphModelAlgorithms {
 	}
 
 	public static long edgesNumber(Cell c, List<Edge> allEdges, Collection<Cell> allCells) {
-		return allEdges.stream().filter(e -> e.source.equals(c) && allCells.contains(e.target)
-				|| e.target.equals(c) && allCells.contains(e.source)).count();
+        return allEdges.stream().filter(e -> isEdgeContained(c, allCells, e)).count();
 	}
 
-
-	public static void findArticulations(List<Cell> allCells, List<Edge> allEdges) {
+    public static void findArticulations(List<Cell> allCells, List<Edge> allEdges) {
 		Map<Cell, Integer> num = new HashMap<>();
 		Map<Cell, Integer> low = new HashMap<>();
 		Map<Cell, Cell> parent = new HashMap<>();
@@ -120,7 +117,6 @@ public final class GraphModelAlgorithms {
 		return cells.stream().filter(e -> e != cell2 && e.getBoundsInParent().intersects(cell2.getBoundsInParent()))
 				.count();
 	}
-
 
 	public static List<Edge> kruskal(List<Cell> allCells, List<Edge> allEdges) {
 		int numVertices = allCells.size();
@@ -144,7 +140,6 @@ public final class GraphModelAlgorithms {
 
 		return mst;
 	}
-
 
 
 	public static double[] pageRank(List<Cell> allCells, List<Edge> allEdges) {
@@ -176,6 +171,7 @@ public final class GraphModelAlgorithms {
 
 		return pageRank;
 	}
+
 
 	public static Map<Cell, Integer> sortTopology(Collection<Cell> allCells, List<Edge> allEdges) {
 		int counter = 0;
@@ -209,6 +205,8 @@ public final class GraphModelAlgorithms {
 		}
 		return topNum;
 	}
+
+
 
 	public static List<Triangle> triangulate(Graph graph, List<Cell> all) {
 		graph.getModel().removeAllEdges();
@@ -371,8 +369,6 @@ public final class GraphModelAlgorithms {
 		return known;
 	}
 
-
-
 	private static Map<Cell, Integer> dijkstra(Cell s, List<Cell> allCells, List<Edge> allEdges,
 			Map<Cell, Map<Cell, Cell>> paths) {
 		Map<Cell, Integer> distance = new HashMap<>();
@@ -393,17 +389,19 @@ public final class GraphModelAlgorithms {
 		return distance;
 	}
 
-
 	private static Cell getMinDistanceCell(Map<Cell, Integer> distance, Map<Cell, Boolean> known) {
 		return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
 				.min(Comparator.comparing(Entry<Cell, Integer>::getValue))
 				.orElseThrow(() -> new RuntimeException("There should be someone")).getKey();
 	}
 
+
+
 	private static List<Ponto> getPointSet(List<Cell> all) {
 
 		return all.stream().map(c -> new Ponto(c.getLayoutX(), c.getLayoutY(), c)).collect(Collectors.toList());
 	}
+
 
 	private static int indexOf(String s, List<Cell> allCells) {
 		for (int i = 0; i < allCells.size(); i++) {
@@ -413,6 +411,16 @@ public final class GraphModelAlgorithms {
 		}
 		return -1;
 	}
+
+	private static boolean isEdgeContained(Cell c, Collection<Cell> allCells, Edge e) {
+        return e.source.equals(c) && allCells.contains(e.target)
+				|| e.target.equals(c) && allCells.contains(e.source);
+    }
+
+	private static boolean isEdgePresent(Cell pathTo, Cell p, Edge e) {
+        return e.source.equals(p) && e.target.equals(pathTo)
+        		|| e.target.equals(p) && e.source.equals(pathTo);
+    }
 
 	private static void legalizeEdge(List<Triangle> triangleSoup1, Triangle triangle, Linha edge, Ponto newVertex) {
 		Triangle neighbourTriangle = triangleSoup1.stream().filter(t -> t.isNeighbour(edge) && t != triangle)

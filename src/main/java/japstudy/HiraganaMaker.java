@@ -69,7 +69,9 @@ public class HiraganaMaker {
             .put("''", "")
             .put("‘", "").put("’", "")
             .build();
-    public static final String LESSON_REGEX = "INSERT INTO JAPANESE_LESSON\\(english,japanese,romaji,exercise,lesson\\) VALUES\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
+    public static final String LESSON_REGEX = "INSERT INTO JAPANESE_LESSON"
+        + "\\(english,japanese,romaji,exercise,lesson\\) VALUES"
+        + "\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
 	public static final String TXT_FILE = ResourceFXUtils.toFullPath("create_database.sql");
     private static final Logger LOG = HasLogging.log();
     private static final List<String> SPECIAL_LETTERS = Arrays.asList("n", "m", "h");

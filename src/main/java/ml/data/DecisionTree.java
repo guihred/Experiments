@@ -132,7 +132,8 @@ public class DecisionTree {
     }
 
     private static boolean isRedundantNode(DecisionNode trueTree, DecisionNode falseTree) {
-        return trueTree.isLeaf() && falseTree.isLeaf() && trueTree.getResult().containsAll(falseTree.getResult()) && falseTree.getResult().containsAll(trueTree.getResult());
+        return trueTree.isLeaf() && falseTree.isLeaf() && trueTree.getResult().containsAll(falseTree.getResult())
+            && falseTree.getResult().containsAll(trueTree.getResult());
     }
 
 }

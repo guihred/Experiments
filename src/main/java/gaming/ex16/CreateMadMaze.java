@@ -10,11 +10,16 @@ public class CreateMadMaze {
 
     private final Random random = new Random();
 
-    private boolean goBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
+    private boolean edgeHasCell(MadCell cellB, MadCell cellC, MadEdge e) {
+        return e.getSource().equals(cellC) && e.getTarget().equals(cellB)
+        		|| e.getSource().equals(cellB) && e.getTarget().equals(cellC);
+    }
+	private boolean goBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
 		final MadTriangle remove = history.remove(history.size() - 1);
 		r = createdMaze.indexOf(remove);
 		return false;
 	}
+
 	private void handle(List<MadTriangle> maze, List<MadEdge> allEdges) {
 		final List<MadTriangle> history = new ArrayList<>();
 		final List<Character> check = new ArrayList<>();
@@ -52,30 +57,27 @@ public class CreateMadMaze {
 
 	}
 
-	private void removeEdgeOfTriangle(List<MadTriangle> maze, List<MadEdge> allEdges, MadTriangle openC,
+    private void removeEdgeOfTriangle(List<MadTriangle> maze, List<MadEdge> allEdges, MadTriangle openC,
 			MadTriangle openB, MadTriangle openA, Character direction) {
 		if ('A' == direction && openA != null) {
 			MadTriangle madTriangle = openA;
 			MadCell cellB = maze.get(r).getB().getCell();
 			MadCell cellC = maze.get(r).getC().getCell();
-			allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellB)
-					|| e.getSource().equals(cellB) && e.getTarget().equals(cellC));
+			allEdges.removeIf(e -> edgeHasCell(cellB, cellC, e));
 			r = maze.indexOf(madTriangle);
 		}
 		if ('B' == direction && openB != null) {
 			MadTriangle madTriangle = openB;
 			MadCell cellA = maze.get(r).getA().getCell();
 			MadCell cellC = maze.get(r).getC().getCell();
-			allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellA)
-					|| e.getSource().equals(cellA) && e.getTarget().equals(cellC));
+			allEdges.removeIf(e -> edgeHasCell(cellA, cellC, e));
 			r = maze.indexOf(madTriangle);
 		}
 		if ('C' == direction && openC != null) {
 			MadTriangle madTriangle = openC;
 			MadCell cellA = maze.get(r).getA().getCell();
 			MadCell cellB = maze.get(r).getB().getCell();
-			allEdges.removeIf(e -> e.getSource().equals(cellB) && e.getTarget().equals(cellA)
-					|| e.getSource().equals(cellA) && e.getTarget().equals(cellB));
+			allEdges.removeIf(e -> edgeHasCell(cellA, cellB, e));
 			r = maze.indexOf(madTriangle);
 		}
 	}

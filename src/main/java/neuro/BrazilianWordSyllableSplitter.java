@@ -22,7 +22,8 @@ public final class BrazilianWordSyllableSplitter {
 	private static final String REGEX_CONSONANT_CLUSTER = "(?i)" + CONSONANT_CLUSTER;
 	private static final String REGEX_CONSONANTS = "(?i)[bçcdfghjklmnpqrstvwxyz]";
 	// notice the consonants do not include 'q'
-	private static final String REGEX_ASCENDING_DIPHTHONG = "(?i)[bçcdfghjklmnprstvwxyz]*([iu][aeo]|iu|[eo]a|eo|ee|oo)[ms]*";
+    private static final String REGEX_ASCENDING_DIPHTHONG = "(?i)[bçcdfghjklmnprstvwxyz]*"
+        + "([iu][aeo]|iu|[eo]a|eo|ee|oo)[ms]*";
 	private static final String REGEX_HAS_ACCENT = "(?i).*[áéíóúâêîôû].*";
 	private static final String REGEX_VOWEL = "(?i)" + VOWELS;
 	private static final String REGEX_DIPHTHONG = "(?i)(?<=[aeiou])(?=[aeiou])";

@@ -45,8 +45,8 @@ public class Edge extends Group implements Comparable<Edge> {
 
 		getChildren().add(line);
 		if (directed) {
-			Polygon view1 = new Polygon(-Math.sqrt(3) * ARROW_SIZE / 2, 0, Math.sqrt(3) * ARROW_SIZE / 2, ARROW_SIZE, Math.sqrt(3) * ARROW_SIZE / 2,
-					-ARROW_SIZE);
+            Polygon view1 = new Polygon(-Math.sqrt(3) * ARROW_SIZE / 2, 0, Math.sqrt(3) * ARROW_SIZE / 2, ARROW_SIZE,
+                Math.sqrt(3) * ARROW_SIZE / 2, -ARROW_SIZE);
 			view1.strokeProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
 			view1.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
 			double width = target.getBoundsInParent().getWidth() / 3 * 2;

@@ -72,8 +72,8 @@ public class DotsModel {
             for (int j = 0; j < MAZE_SIZE; j++) {
                 final List<DotsSquare> checkMelhor = maze[i][j].checkMelhor();
                 final DotsSquare maze1 = maze[i][j];
-                final List<Map.Entry<DotsSquare, DotsSquare>> collect = checkMelhor.stream().map(e -> new AbstractMap.SimpleEntry<>(maze1, e)).collect(Collectors.toList());
-                melhor.addAll(collect);
+                melhor.addAll(checkMelhor.stream()
+                    .map(e -> new AbstractMap.SimpleEntry<>(maze1, e)).collect(Collectors.toList()));
             }
         }
         return melhor;

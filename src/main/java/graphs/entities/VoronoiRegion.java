@@ -15,7 +15,8 @@ public class VoronoiRegion extends Group {
 	public VoronoiRegion(Ponto p, List<Triangle> triangles) {
         Comparator<double[]> comparator = Comparator
                 .comparing((double[] pon) -> Edge.getAngulo(pon[0], pon[1], x(p.getC()), y(p.getC())));
-		List<double[]> centerPoints = triangles.stream().map(t -> centerCircle(t.getA().getC(), t.getB().getC(), t.getC().getC())).collect(Collectors.toList());
+        List<double[]> centerPoints = triangles.stream()
+            .map(t -> centerCircle(t.getA().getC(), t.getB().getC(), t.getC().getC())).collect(Collectors.toList());
 		for (double[] es : centerPoints) {
 			Circle circle = new Circle(2);
 			circle.setLayoutX(es[0]);
@@ -23,15 +24,17 @@ public class VoronoiRegion extends Group {
 			circle.setFill(Color.RED);
 			getChildren().add(0, circle);
 		}
-		double w = p.getC().getBoundsInLocal().getWidth() / 2;
-		double h = p.getC().getBoundsInLocal().getHeight() / 2;
-		List<double[]> pontosImportantes = triangles.stream().flatMap(Triangle::allPoints).filter(pon -> !p.equals(pon)).distinct().map(p::add)
-				.map(po -> po.mult(0.5)).map(po -> new double[] { po.getX() + w, po.getY() + h }).collect(Collectors.toList());
+        double w = p.getC().getBoundsInLocal().getWidth() / 2;
+        double h = p.getC().getBoundsInLocal().getHeight() / 2;
+        List<double[]> pontosImportantes = triangles.stream().flatMap(Triangle::allPoints).filter(pon -> !p.equals(pon))
+            .distinct().map(p::add).map(po -> po.mult(0.5)).map(po -> new double[] { po.getX() + w, po.getY() + h })
+            .collect(Collectors.toList());
 
-		double[] array = centerPoints.stream().sorted(comparator).flatMap((double[]t) -> Stream.of(cen(t))).mapToDouble(d -> d).toArray();
+        double[] array = centerPoints.stream().sorted(comparator).flatMap((double[] t) -> Stream.of(cen(t)))
+            .mapToDouble(d -> d).toArray();
 
-		Polygon polygon = new Polygon(array);
-		double x = x(p.getC());
+        Polygon polygon = new Polygon(array);
+        double x = x(p.getC());
 		double y = y(p.getC());
 		pontosImportantes.add(new double[] { x, y });
 		for (int i = 0; i < pontosImportantes.size(); i++) {
@@ -66,9 +69,10 @@ public class VoronoiRegion extends Group {
 		double bx = x(b);
 		double by = y(b);
 		double cy = y(c);
-		double cx = x(c);
-		double[] coef2 = new double[] { -ay * ay - ax * ax + bx * bx + by * by, -ay * ay - ax * ax + cx * cx + cy * cy };
-		double[][] matr = new double[][] { { 2 * (bx - ax), 2 * (by - ay) }, { 2 * (cx - ax), 2 * (cy - ay) }, };
+        double cx = x(c);
+        double[] coef2 = new double[] { -ay * ay - ax * ax + bx * bx + by * by,
+            -ay * ay - ax * ax + cx * cx + cy * cy };
+        double[][] matr = new double[][] { { 2 * (bx - ax), 2 * (by - ay) }, { 2 * (cx - ax), 2 * (cy - ay) }, };
 
 		return MatrixSolver.solve(matr, coef2);
 	}

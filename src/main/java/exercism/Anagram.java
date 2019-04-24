@@ -32,6 +32,7 @@ public class Anagram {
 	}
 
 	private static Map<String, Long> createHistogram(String st) {
-		return Stream.of(st.toLowerCase().split("")).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        return Stream.of(st.toLowerCase().split(""))
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 	}
 }

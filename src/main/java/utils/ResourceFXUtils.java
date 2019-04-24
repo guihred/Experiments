@@ -42,27 +42,9 @@ public final class ResourceFXUtils {
 	private static final Logger LOGGER = HasLogging.log();
 
 	private ResourceFXUtils() {
-		addLinuxProperties();
 	}
 
 
-	public static void addLinuxProperties() {
-		try {
-			Class.forName("com.sun.glass.ui.monocle.MonoclePlatformFactory");
-			// Class exists, continue in Headless Mode
-			System.setProperty("java.awt.headless", String.valueOf(true));
-			System.setProperty("testfx.robot", "glass");
-			System.setProperty("testfx.headless", String.valueOf(true));
-			System.setProperty("prism.order", "sw");
-			System.setProperty("prims.text", "t2k");
-			System.setProperty("glass.platform", "Monocle");
-			System.setProperty("monocle.platform", "Headless");
-			System.setProperty("glass.platform", "Monocle");
-
-		} catch (Exception e) {
-			LOGGER.error("", e);
-		}
-	}
 
 	public static double clamp(final double value, final double min, final double max) {
 		if (Double.compare(value, min) < 0) {
@@ -212,7 +194,7 @@ public final class ResourceFXUtils {
 		return ResourceFXUtils.class.getClassLoader().getResource(arquivo);
 	}
 
-	private static double normalizeValue(final double value, final double min, final double max, final double newMin, final double newMax) {
+    private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
 		return (value - min) * (newMax - newMin) / (max - min) + newMin;
 	}
 

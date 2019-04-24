@@ -74,7 +74,8 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 		return this;
 	}
 
-    public SimpleMenuBarBuilder addMenuItem(final String text, final Node graphic,final String combination, final EventHandler<ActionEvent> action) {
+    public SimpleMenuBarBuilder addMenuItem(final String text, final Node graphic, final String combination,
+        final EventHandler<ActionEvent> action) {
         MenuItem item = new MenuItem(text);
         item.setOnAction(action);
         item.setGraphic(graphic);
@@ -87,7 +88,8 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addMenuItem(final String text, final String combination, final EventHandler<ActionEvent> action) {
+    public SimpleMenuBarBuilder addMenuItem(final String text, final String combination,
+        final EventHandler<ActionEvent> action) {
         MenuItem item = new MenuItem(text);
         item.setOnAction(action);
         item.setAccelerator(KeyCombination.keyCombination(combination));

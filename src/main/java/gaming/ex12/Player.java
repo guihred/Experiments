@@ -52,8 +52,9 @@ public class Player {
 
 	public void render(GraphicsContext gc) {
 		if (debug) {
-			gc.fillRect(getPositionX() + colisionX, getPositionY() + colisionY, picture.getScaledWidth() - colisionX - colisionWidth, picture.getScaledHeight()
-					- colisionY - colisionHeight);
+            gc.fillRect(getPositionX() + colisionX, getPositionY() + colisionY,
+                picture.getScaledWidth() - colisionX - colisionWidth,
+                picture.getScaledHeight() - colisionY - colisionHeight);
 		}
 		gc.drawImage(picture.asImage(), getPositionX(), getPositionY(), picture.getScaledWidth(), picture.getScaledHeight());
 	}

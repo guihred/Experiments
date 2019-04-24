@@ -51,11 +51,14 @@ public class GridPaneForm extends Application {
         final int prefHeight = 40;
         topBanner.setPrefHeight(prefHeight);
 		String backgroundStyle = "-fx-background-color: lightblue;"
-				+ "-fx-background-radius: 30%;" + "-fx-background-inset: 5px;";
+            + "-fx-background-radius: 30%;-fx-background-inset: 5px;";
 		topBanner.setStyle(backgroundStyle);
 		SVGPath svgIcon = new SVGPath();
 		// icon from http://raphaeljs.com/icons/#people
-		svgIcon.setContent("M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z");
+        svgIcon.setContent(
+            "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 "
+                + "10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 "
+                + "16.447,18.746 21.948,24.248z");
 		svgIcon.setStroke(Color.LIGHTGRAY);
 		svgIcon.setFill(Color.WHITE);
 		Text contactText = new Text("Contacts");

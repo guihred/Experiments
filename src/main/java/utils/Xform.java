@@ -129,7 +129,8 @@ public class Xform extends Group {
     @Override
     public String toString() {
         return String.format(
-            "Xform[t = (%.1f, %.1f, %.1f)  r = (%.1f, %.1f, %.1f)  s = (%.1f, %.1f, %.1f)  p = (%.1f, %.1f, %.1f)  ip = (%.1f, %.1f, %.1f)]",
+            "Xform[t = (%.1f, %.1f, %.1f)  r = (%.1f, %.1f, %.1f)  s = (%.1f, %.1f, %.1f) "
+                + " p = (%.1f, %.1f, %.1f)  ip = (%.1f, %.1f, %.1f)]",
             t.getX(), t.getY(), t.getZ(), rx.getAngle(), ry.getAngle(), rz.getAngle(), s.getX(), s.getY(), s.getZ(),
             p.getX(), p.getY(), p.getZ(), ip.getX(), ip.getY(), ip.getZ());
     }
