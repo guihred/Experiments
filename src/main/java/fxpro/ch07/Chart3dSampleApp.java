@@ -107,19 +107,19 @@ public class Chart3dSampleApp extends Application {
 
         pyramidMesh.getTexCoords().addAll(0, 0);
         pyramidMesh.getPoints().addAll(0, 0, 0, // Point 0 - Top
-                0, h, -s / 2, // Point 1 - Front
-                -s / 2, h, 0, // Point 2 - Left
-                s / 2, h, 0, // Point 3 - Back
-                0, h, s / 2 // Point 4 - Right
+            0, h, -s / 2, // Point 1 - Front
+            -s / 2, h, 0, // Point 2 - Left
+            s / 2, h, 0, // Point 3 - Back
+            0, h, s / 2 // Point 4 - Right
         );
 
         pyramidMesh.getFaces().addAll(
-                0, 0, 2, 0, 1, 0, // Front left face
-                0, 0, 1, 0, 3, 0, // Front right face
-                0, 0, 3, 0, 4, 0, // Back right face
-                0, 0, 4, 0, 2, 0, // Back left face
-                4, 0, 1, 0, 2, 0, // Bottom rear face
-                4, 0, 3, 0, 1, 0 // Bottom front face
+            0, 0, 2, 0, 1, 0, // Front left face
+            0, 0, 1, 0, 3, 0, // Front right face
+            0, 0, 3, 0, 4, 0, // Back right face
+            0, 0, 4, 0, 2, 0, // Back left face
+            4, 0, 1, 0, 2, 0, // Bottom rear face
+            4, 0, 3, 0, 1, 0 // Bottom front face
         );
 
         MeshView pyramid = new MeshView(pyramidMesh);
@@ -155,8 +155,8 @@ public class Chart3dSampleApp extends Application {
             case LEFT:
                 moveLeft(event);
                 break;
-        default:
-        	break;
+            default:
+                break;
         }
     }
 
@@ -279,14 +279,11 @@ public class Chart3dSampleApp extends Application {
      * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
      * main().
      *
-     * @param args
-     *            the command line arguments
+     * @param args the command line arguments
      */
     public static void main(String[] args) {
         System.setProperty("prism.dirtyopts", "false");
         launch(args);
     }
-
-
 
 }

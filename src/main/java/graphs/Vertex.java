@@ -52,7 +52,7 @@ public class Vertex implements HasLogging {
                 }
                 low.put(v, Integer.min(low.get(v), low.get(w)));
 
-            } else if (v.parent != w) {
+            } else if (!Objects.equals(v.parent, w)) {
                 low.put(v, Integer.min(low.get(v), num.get(w)));
             }
 
@@ -191,7 +191,7 @@ public class Vertex implements HasLogging {
         chain.add(path);
         Integer integer = dijkstra.get(v2);
         if (integer != null && integer < Integer.MAX_VALUE) {
-            while (path != v1) {
+            while (!Objects.equals(path, v1)) {
                 path = path.pathTo(v1, vertices);
                 chain.add(path);
             }

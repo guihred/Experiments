@@ -39,21 +39,24 @@ public class DotsSquare extends Region {
         // ONE link away from being a square
         return adjacencies.stream()
             .flatMap(a -> a.adjacencies.stream().filter(b -> b != this)
-                .flatMap(b -> b.adjacencies.stream().filter((DotsSquare c) -> a != c && !c.contains(this)
+                .flatMap(b -> b.adjacencies.stream().filter((DotsSquare c) -> !Objects.equals(a, b) && !c.contains(this)
                     && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)));
     }
 
     public Set<Set<DotsSquare>> check() {
         final List<DotsSquare> adjContainingThis = adjacencies.stream()
             .filter(a -> a.adjacencies.stream().anyMatch(
-                b -> b != this && b.adjacencies.stream().anyMatch(c -> a != c && c.adjacencies.contains(this))))
+                b -> b != this
+                    && b.adjacencies.stream().anyMatch(c -> !Objects.equals(a, c) && c.adjacencies.contains(this))))
             .collect(Collectors.toList());
         Set<Set<DotsSquare>> pontos = new HashSet<>();
         for (DotsSquare a : adjContainingThis) {
             for (DotsSquare b : a.adjacencies.stream()
-                .filter(b -> b != this && b.adjacencies.stream().anyMatch(c -> a != c && c.adjacencies.contains(this)))
+                .filter(b -> b != this
+                    && b.adjacencies.stream().anyMatch(c -> !Objects.equals(a, c) && c.adjacencies.contains(this)))
                 .collect(Collectors.toList())) {
-                for (DotsSquare c : b.adjacencies.stream().filter(c -> a != c && c.adjacencies.contains(this))
+                for (DotsSquare c : b.adjacencies.stream()
+                    .filter(c -> !Objects.equals(a, c) && c.adjacencies.contains(this))
                     .collect(Collectors.toList())) {
                     pontos.add(new LinkedHashSet<>(Arrays.asList(a, b, c, this)));
                 }
@@ -72,7 +75,7 @@ public class DotsSquare extends Region {
 
         return newAdjacencies.stream()
             .flatMap(a -> a.adjacencies.stream().filter(b -> b != this)
-                .flatMap(b -> b.adjacencies.stream().filter(c -> a != c && !c.contains(this)
+                .flatMap(b -> b.adjacencies.stream().filter(c -> !Objects.equals(a, c) && !c.contains(this)
                     && Math.abs(c.getI() - getI()) + Math.abs(c.getJ() - getJ()) == 1)))
             .count() == 0;
     }

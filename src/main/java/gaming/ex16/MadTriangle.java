@@ -1,6 +1,7 @@
 package gaming.ex16;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 import utils.MatrixSolver;
 
@@ -45,14 +46,12 @@ public class MadTriangle {
 
     public MadEdgeDistance findNearestEdge(MadPonto point) {
         MadEdgeDistance[] edges = new MadEdgeDistance[3];
-
         edges[0] = new MadEdgeDistance(new MadLinha(a, b),
                 computeClosestPoint(new MadLinha(a, b), point).sub(point).mag());
         edges[1] = new MadEdgeDistance(new MadLinha(b, c),
                 computeClosestPoint(new MadLinha(b, c), point).sub(point).mag());
         edges[2] = new MadEdgeDistance(new MadLinha(c, a),
                 computeClosestPoint(new MadLinha(c, a), point).sub(point).mag());
-
         Arrays.sort(edges);
         return edges[0];
     }
@@ -70,22 +69,21 @@ public class MadTriangle {
     }
 
     public MadPonto getNoneEdgeVertex(MadLinha edge) {
-        if (a != edge.getA() && a != edge.getB()) {
+        if (!Objects.equals(a, edge.getA()) && !Objects.equals(a, edge.getB())) {
             return a;
-        } else if (b != edge.getA() && b != edge.getB()) {
+        } else if (!Objects.equals(b, edge.getA()) && !Objects.equals(b, edge.getB())) {
             return b;
-        } else if (c != edge.getA() && c != edge.getB()) {
+        } else if (!Objects.equals(c, edge.getA()) && !Objects.equals(c, edge.getB())) {
             return c;
         }
         return null;
     }
 
     public boolean hasVertex(MadPonto vertex) {
-        return a == vertex || b == vertex || c == vertex;
+        return Objects.equals(a, vertex) || Objects.equals(b, vertex) || Objects.equals(c, vertex);
     }
 
     public boolean isNeighbour(MadLinha edge) {
-
         return Stream.of(a, b, c).anyMatch(edge.getA()::equals)
                 && Stream.of(a, b, c).anyMatch(edge.getB()::equals);
     }

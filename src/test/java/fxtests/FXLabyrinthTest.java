@@ -2,6 +2,7 @@ package fxtests;
 
 import static javafx.scene.input.KeyCode.*;
 
+import cubesystem.DeathStar;
 import fxpro.ch07.Chart3dSampleApp;
 import fxsamples.JewelViewer;
 import fxsamples.RaspiCycle;
@@ -37,7 +38,7 @@ public class FXLabyrinthTest extends AbstractTestExecution {
             }
         }, RubiksCubeLauncher.class, TetrisLauncher.class, SimpleScene3D.class, Maze3DLauncher.class,
             Labyrinth3DMouseControl.class, TronLauncher.class, JewelViewer.class, MoleculeSampleApp.class,
-            Chart3dSampleApp.class, PacmanLauncher.class, RoundMazeLauncher.class, MazeLauncher.class,
+            DeathStar.class, Chart3dSampleApp.class, PacmanLauncher.class, RoundMazeLauncher.class, MazeLauncher.class,
             Labyrinth3DWallTexture.class, RaspiCycle.class);
 		interactNoWait(currentStage::close);
 	}

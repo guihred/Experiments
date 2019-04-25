@@ -26,11 +26,11 @@ import org.slf4j.Logger;
  */
 public final class MatrixSolver {
 
-	private static final Logger LOGGER = HasLogging.log();
-	private static boolean debug=true;
+    private static final Logger LOGGER = HasLogging.log();
+    private static boolean debug = true;
 
-	private MatrixSolver() {
-	}
+    private MatrixSolver() {
+    }
 
     public static double determinant(double[][] matrix) {
         if (matrix.length == 1) {
@@ -58,8 +58,7 @@ public final class MatrixSolver {
         return DoubleStream.of(v).map(e -> e / norm).toArray();
     }
 
-
-	public static double[] matmul(double[][] matrix, double[] v) {
+    public static double[] matmul(double[][] matrix, double[] v) {
         double[] a = new double[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             a[i] = 0;
@@ -70,7 +69,7 @@ public final class MatrixSolver {
         return a;
     }
 
-    public  static double norm(double [] v) {
+    public static double norm(double[] v) {
         return vectorNorm(v, 2);
     }
 
@@ -80,7 +79,7 @@ public final class MatrixSolver {
             for (int i = 0; i < matr.length; i++) {
                 desc.append("\n\t");
                 desc.append(DoubleStream.of(matr[i]).mapToObj(e -> String.format(Locale.US, "[%.3f]", e))
-                        .collect(Collectors.joining(", ")));
+                    .collect(Collectors.joining(", ")));
                 if (coef != null && coef.length > 0) {
                     desc.append(String.format(Locale.US, "[%.1f]", coef[i % coef.length]));
                 }
@@ -88,6 +87,7 @@ public final class MatrixSolver {
             LOGGER.info("{}", desc);
         }
     }
+
     public static double[] solve(double[][] matr, double[] coef2) {
 
         double[] coef = Arrays.copyOf(coef2, coef2.length);
@@ -113,11 +113,12 @@ public final class MatrixSolver {
 
         return coef;
     }
-    public static double[] sub(double[] v, double[] lastV) {
-            return IntStream.range(0, v.length).mapToDouble(i -> v[i] - lastV[i]).toArray();
-        }
 
-	public static double vectorNorm(double[] a, final double p) {
+    public static double[] sub(double[] v, double[] lastV) {
+        return IntStream.range(0, v.length).mapToDouble(i -> v[i] - lastV[i]).toArray();
+    }
+
+    public static double vectorNorm(double[] a, final double p) {
         double n = 0;
         for (int i = 0; i < a.length; i++) {
             n += Math.abs(Math.pow(a[i], p));
@@ -125,56 +126,54 @@ public final class MatrixSolver {
         return Math.pow(n, 1. / p);
     }
 
-	private static void correctOrder(double[] coef, double[][] temp) {
-		for (int i = 0; i < coef.length; i++) {
-			if (temp[i][0] == 0 && i < coef.length - 1) {
-				swap(temp, i);
-				double d = coef[i];
-				coef[i] = coef[i + 1];
-				coef[i + 1] = d;
-			}
-		}
-	}
+    private static void correctOrder(double[] coef, double[][] temp) {
+        for (int i = 0; i < coef.length; i++) {
+            if (temp[i][0] == 0 && i < coef.length - 1) {
+                swap(temp, i);
+                double d = coef[i];
+                coef[i] = coef[i + 1];
+                coef[i + 1] = d;
+            }
+        }
+    }
 
-	private static void multiplyAndAdd(double[] ds, double[] ds2, double[] coef, int i, int j) {
-		double nonZero = nonZero(ds);
-		double nonZero2 = nonZero(ds2);
-		if (nonZeroIndex(ds) != nonZeroIndex(ds2)) {
-			nonZero = ds[nonZeroIndex(ds2)];
+    private static void multiplyAndAdd(double[] ds, double[] ds2, double[] coef, int i, int j) {
+        double nonZero = nonZero(ds);
+        double nonZero2 = nonZero(ds2);
+        if (nonZeroIndex(ds) != nonZeroIndex(ds2)) {
+            nonZero = ds[nonZeroIndex(ds2)];
 
-		}
-		coef[j] = coef[j] * -nonZero2 + coef[i] * nonZero;
+        }
+        coef[j] = coef[j] * -nonZero2 + coef[i] * nonZero;
 
-		for (int k = 0; k < ds.length; k++) {
-			ds[k] = ds[k] * -nonZero2 + ds2[k] * nonZero;
-		}
+        for (int k = 0; k < ds.length; k++) {
+            ds[k] = ds[k] * -nonZero2 + ds2[k] * nonZero;
+        }
 
-	}
+    }
 
     private static double nonZero(double[] temp) {
-		for (int i = 0; i < temp.length; i++) {
-			if (temp[i] != 0) {
-				return temp[i];
-			}
-		}
-		return 1;
-	}
+        for (int i = 0; i < temp.length; i++) {
+            if (temp[i] != 0) {
+                return temp[i];
+            }
+        }
+        return 1;
+    }
 
     private static int nonZeroIndex(double[] temp) {
-		for (int i = 0; i < temp.length; i++) {
-			if (temp[i] != 0) {
-				return i;
-			}
-		}
-		return 0;
-	}
-
-
+        for (int i = 0; i < temp.length; i++) {
+            if (temp[i] != 0) {
+                return i;
+            }
+        }
+        return 0;
+    }
 
     private static void swap(double[][] temp, int i) {
-		double[] a = temp[i];
-		temp[i] = temp[i + 1];
-		temp[i + 1] = a;
-	}
+        double[] a = temp[i];
+        temp[i] = temp[i + 1];
+        temp[i + 1] = a;
+    }
 
 }

@@ -154,7 +154,7 @@ public final class ResourceFXUtils {
 
 	public static String toExternalForm(final String arquivo) {
 		try {
-			return ResourceFXUtils.class.getClassLoader().getResource(arquivo).toExternalForm();
+            return Thread.currentThread().getContextClassLoader().getResource(arquivo).toExternalForm();
 		} catch (RuntimeException e) {
 			throw new RuntimeIOException("ERRO FILE \"" + arquivo + "\"", e);
 		}
@@ -165,7 +165,8 @@ public final class ResourceFXUtils {
 	}
 	public static String toFullPath(final String arquivo) {
 		try {
-			return URLDecoder.decode(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile(), "UTF-8");
+            return URLDecoder.decode(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile(),
+                "UTF-8");
 		} catch (Exception e) {
 			LOGGER.trace("File Error:" + arquivo, e);
 			try {
@@ -178,20 +179,20 @@ public final class ResourceFXUtils {
 	}
 
 	public static Path toPath(final String arquivo) {
-		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toPath();
+        return new File(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile()).toPath();
 	}
 
 	public static InputStream toStream(final String arquivo) {
-		return ResourceFXUtils.class.getClassLoader().getResourceAsStream(arquivo);
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(arquivo);
 	}
 
 
 	public static URI toURI(final String arquivo) {
-		return new File(ResourceFXUtils.class.getClassLoader().getResource(arquivo).getFile()).toURI();
+        return new File(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile()).toURI();
 	}
 
 	public static URL toURL(final String arquivo) {
-		return ResourceFXUtils.class.getClassLoader().getResource(arquivo);
+        return Thread.currentThread().getContextClassLoader().getResource(arquivo);
 	}
 
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {

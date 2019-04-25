@@ -1,6 +1,7 @@
 package graphs.entities;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class Triangle {
@@ -56,11 +57,11 @@ public class Triangle {
 	}
 
 	public Ponto getNoneEdgeVertex(Linha edge) {
-		if (a != edge.getA() && a != edge.getB()) {
+        if (!Objects.equals(a, edge.getA()) && !Objects.equals(a, edge.getB())) {
 			return a;
-		} else if (b != edge.getA() && b != edge.getB()) {
+        } else if (!Objects.equals(b, edge.getA()) && !Objects.equals(b, edge.getB())) {
 			return b;
-		} else if (c != edge.getA() && c != edge.getB()) {
+        } else if (!Objects.equals(c, edge.getA()) && !Objects.equals(c, edge.getB())) {
 			return c;
 		}
 
@@ -68,12 +69,12 @@ public class Triangle {
 	}
 
 	public boolean hasVertex(Ponto vertex) {
-		return a == vertex || b == vertex || c == vertex;
+        return Objects.equals(a, vertex) || Objects.equals(b, vertex) || Objects.equals(c, vertex);
 	}
 
 	public boolean isNeighbour(Linha edge) {
-        return Stream.of(a, b, c).anyMatch(s -> s == edge.getA()) 
-            && Stream.of(a, b, c).anyMatch(s -> s == edge.getB());
+        return Stream.of(a, b, c).anyMatch(s -> Objects.equals(s, edge.getA()))
+            && Stream.of(a, b, c).anyMatch(s -> Objects.equals(s, edge.getB()));
 	}
 
 	public boolean isOrientedCCW() {

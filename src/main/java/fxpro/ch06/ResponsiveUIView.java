@@ -17,17 +17,17 @@ import utils.RunnableEx;
 final class ResponsiveUIView implements HasLogging {
 
     private static final int WAIT_TIME_MILLIS = 3000;
-    private static final    int SIZE = 200;
-	private HBox buttonHBox;
-	private Button changeFillButton;
-	private Button changeStrokeButton;
+    private static final int SIZE = 200;
+    private HBox buttonHBox;
+    private Button changeFillButton;
+    private Button changeStrokeButton;
     private Rectangle rectangle;
     private Scene scene;
 
     ResponsiveUIView(ResponsiveUIModel model) {
         rectangle = new Rectangle(SIZE, SIZE);
         rectangle.setStrokeWidth(10);
-		rectangle.fillProperty().bind(model.getFillPaint());
+        rectangle.fillProperty().bind(model.getFillPaint());
         rectangle.strokeProperty().bind(model.getStrokePaint());
         changeFillButton = new Button("Change Fill");
         changeStrokeButton = new Button("Change Stroke");
@@ -38,29 +38,29 @@ final class ResponsiveUIView implements HasLogging {
         borderPane.setPadding(new Insets(10, 10, 10, 10));
 
         scene = new Scene(borderPane);
-		hookupEvents(model);
-	}
+        hookupEvents(model);
+    }
 
-	public Scene getScene() {
-		return scene;
-	}
+    public Scene getScene() {
+        return scene;
+    }
 
-	private void hookupEvents(ResponsiveUIModel model) {
-		changeFillButton.setOnAction((ActionEvent actionEvent) -> {
-			final Paint fillPaint = model.getFillPaint().get();
-			model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
+    private void hookupEvents(ResponsiveUIModel model) {
+        changeFillButton.setOnAction((ActionEvent actionEvent) -> {
+            final Paint fillPaint = model.getFillPaint().get();
+            model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
             new Thread(RunnableEx.makeRunnable(() -> {
                 Thread.sleep(WAIT_TIME_MILLIS);
-				Platform.runLater(() -> {
-					final Rectangle rect = rectangle;
-					double newArcSize = rect.getArcHeight() < 20 ? 30 : 0;
-					rect.setArcWidth(newArcSize);
-					rect.setArcHeight(newArcSize);
-				});
-			})).start();
-		});
-		changeStrokeButton.setOnAction(e -> model.getStrokePaint()
-				.set(model.getStrokePaint().get().equals(Color.DARKGRAY) ? Color.BLACK : Color.DARKGRAY));
+                Platform.runLater(() -> {
+                    final Rectangle rect = rectangle;
+                    double newArcSize = rect.getArcHeight() < 20 ? 30 : 0;
+                    rect.setArcWidth(newArcSize);
+                    rect.setArcHeight(newArcSize);
+                });
+            })).start();
+        });
+        changeStrokeButton.setOnAction(e -> model.getStrokePaint()
+            .set(model.getStrokePaint().get().equals(Color.DARKGRAY) ? Color.BLACK : Color.DARKGRAY));
     }
 
 }

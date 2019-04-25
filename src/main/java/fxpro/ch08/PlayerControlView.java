@@ -164,7 +164,8 @@ public class PlayerControlView extends BaseSongView {
         pauseImg = new Image(
             "https://cdn1.iconfinder.com/data/icons/material-audio-video/20/pause-circle-outline-128.png");
         playImg = new Image(
-            "https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_play_circle_outline_48px-128.png");
+            "https://cdn3.iconfinder.com/data/icons/google-material-design-icons/"
+                + "48/ic_play_circle_outline_48px-128.png");
         playPauseIcon = new ImageView(playImg);
         playPauseIcon.setScaleX(0.5);
         playPauseIcon.setScaleY(0.5);

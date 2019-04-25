@@ -13,9 +13,6 @@ public class MadPonto {
         cell = c;
     }
 
-
-
-
     public MadPonto add(MadPonto vector) {
         return new MadPonto(x + vector.x, y + vector.y, cell);
     }
@@ -55,13 +52,9 @@ public class MadPonto {
         return (float) Math.sqrt(x * x + y * y);
     }
 
-
-
     public MadPonto mult(float scalar) {
         return new MadPonto(x * scalar, y * scalar, cell);
     }
-
-
 
     public void setCell(MadCell cell) {
         this.cell = cell;
@@ -75,15 +68,9 @@ public class MadPonto {
         this.y = y;
     }
 
-
-
-
     public MadPonto sub(MadPonto vector) {
         return new MadPonto(x - vector.x, y - vector.y, cell);
     }
-
-
-
 
     @Override
     public String toString() {

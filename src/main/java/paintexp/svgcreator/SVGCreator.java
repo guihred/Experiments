@@ -7,23 +7,21 @@ import javafx.stage.Stage;
 
 public class SVGCreator extends Application {
 
-
-	@Override
-	public void start(final Stage stage) throws Exception {
+    @Override
+    public void start(final Stage stage) throws Exception {
         SVGModel svgModel = new SVGModel();
         Scene scene = new Scene(svgModel.createBorderPane());
-		scene.setOnKeyPressed(e -> {
-			if (e.isControlDown() && e.getCode() == KeyCode.Z) {
+        scene.setOnKeyPressed(e -> {
+            if (e.isControlDown() && e.getCode() == KeyCode.Z) {
                 svgModel.undo();
-			}
-		});
-		stage.setTitle("SVG Creator");
-		stage.setScene(scene);
-		stage.show();
-	}
+            }
+        });
+        stage.setTitle("SVG Creator");
+        stage.setScene(scene);
+        stage.show();
+    }
 
-
-	public static void main(final String[] args) {
-		launch(args);
-	}
+    public static void main(final String[] args) {
+        launch(args);
+    }
 }

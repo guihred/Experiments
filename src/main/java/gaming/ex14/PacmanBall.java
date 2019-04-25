@@ -11,35 +11,32 @@ import simplebuilder.SimpleTimelineBuilder;
 
 public class PacmanBall extends Circle {
 
-	private final BooleanProperty special = new SimpleBooleanProperty(false);
-    private final Timeline timeline = new SimpleTimelineBuilder()
-			.addKeyFrame(Duration.ZERO, radiusProperty(), 10)
-            .addKeyFrame(Duration.seconds(1. / 10), radiusProperty(), 15)
-			.autoReverse(true)
-			.cycleCount(Animation.INDEFINITE)
-			.build();
+    private final BooleanProperty special = new SimpleBooleanProperty(false);
+    private final Timeline timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.ZERO, radiusProperty(), 10)
+        .addKeyFrame(Duration.seconds(1. / 10), radiusProperty(), 15).autoReverse(true).cycleCount(Animation.INDEFINITE)
+        .build();
 
-	public PacmanBall(Double x, Double y) {
-		super(x, y, 5, Color.WHITE);
-		special.addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				timeline.play();
-			} else {
-				timeline.stop();
-			}
-		});
-	}
+    public PacmanBall(Double x, Double y) {
+        super(x, y, 5, Color.WHITE);
+        special.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                timeline.play();
+            } else {
+                timeline.stop();
+            }
+        });
+    }
 
-	public final boolean isSpecial() {
-		return special.get();
-	}
+    public final boolean isSpecial() {
+        return special.get();
+    }
 
-	public final void setSpecial(final boolean special) {
-		this.special.set(special);
-	}
+    public final void setSpecial(final boolean special) {
+        this.special.set(special);
+    }
 
-	public final BooleanProperty specialProperty() {
-		return special;
-	}
+    public final BooleanProperty specialProperty() {
+        return special;
+    }
 
 }

@@ -26,13 +26,14 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public class SimpleAudioPlayerLauncher extends Application {
-	private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log();
     private Label album;
     private ImageView albumCover;
     private Label artist;
     private Label title;
     private Label year;
-    public void createMedia()  {
+
+    public void createMedia() {
         Media media = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setOnError(() -> {
@@ -40,13 +41,14 @@ public class SimpleAudioPlayerLauncher extends Application {
             LOGGER.error("error:{}", errorMessage);
         });
         mediaPlayer.setVolume(0);
-		media.getMetadata().addListener((MapChangeListener<String, Object>) ch -> {
-                if (ch.wasAdded()) {
-                    handleMetadata(ch.getKey(), ch.getValueAdded());
-                }
+        media.getMetadata().addListener((MapChangeListener<String, Object>) ch -> {
+            if (ch.wasAdded()) {
+                handleMetadata(ch.getKey(), ch.getValueAdded());
+            }
         });
         mediaPlayer.setAutoPlay(true);
     }
+
     @Override
     public void start(Stage primaryStage) {
         createControls();
@@ -54,10 +56,10 @@ public class SimpleAudioPlayerLauncher extends Application {
         final Scene scene = new Scene(createGridPane());
         try {
 
-			final URL stylesheet = Chapter8Resource.MEDIA.getURL();
+            final URL stylesheet = Chapter8Resource.MEDIA.getURL();
             scene.getStylesheets().add(stylesheet.toString());
         } catch (Exception e) {
-			LOGGER.error("", e);
+            LOGGER.error("", e);
         }
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simple Audio Player");
@@ -75,7 +77,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         year.setId("year");
         final Reflection reflection = new Reflection();
         reflection.setFraction(2. / 10);
-		final Image image = new Image(MetadataView.DEFAULT_PICTURE);
+        final Image image = new Image(MetadataView.DEFAULT_PICTURE);
         albumCover = new ImageView(image);
         final int fitWidth = 240;
         albumCover.setFitWidth(fitWidth);
@@ -105,18 +107,18 @@ public class SimpleAudioPlayerLauncher extends Application {
 
     private void handleMetadata(String key, Object value) {
         LOGGER.info("Key={},Value={}", key, value);
-		if ("album".equals(key)) {
+        if ("album".equals(key)) {
             album.setText(value.toString());
-		} else if ("artist".equals(key)) {
+        } else if ("artist".equals(key)) {
             artist.setText(value.toString());
         }
-		if ("title".equals(key)) {
+        if ("title".equals(key)) {
             title.setText(value.toString());
         }
-		if ("year".equals(key)) {
+        if ("year".equals(key)) {
             year.setText(value.toString());
         }
-		if ("image".equals(key)) {
+        if ("image".equals(key)) {
             albumCover.setImage((Image) value);
         }
     }

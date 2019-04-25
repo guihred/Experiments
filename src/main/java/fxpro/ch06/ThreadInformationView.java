@@ -9,32 +9,32 @@ import javafx.scene.layout.VBox;
 
 class ThreadInformationView {
 
-	private Scene scene;
-	private final TextArea stackTrace = new TextArea();
-	private final ListView<String> threadNames;
-	private final Button updateButton;
+    private Scene scene;
+    private final TextArea stackTrace = new TextArea();
+    private final ListView<String> threadNames;
+    private final Button updateButton;
 
-	public ThreadInformationView(ThreadInformationModel model) {
-		threadNames = new ListView<>(model.getThreadNames());
-		updateButton = new Button("Update");
-		final VBox vbox = new VBox(10, threadNames, stackTrace, updateButton);
-		vbox.setPadding(new Insets(10, 10, 10, 10));
-		scene = new Scene(vbox);
-		hookupEvents(model);
-	}
+    public ThreadInformationView(ThreadInformationModel model) {
+        threadNames = new ListView<>(model.getThreadNames());
+        updateButton = new Button("Update");
+        final VBox vbox = new VBox(10, threadNames, stackTrace, updateButton);
+        vbox.setPadding(new Insets(10, 10, 10, 10));
+        scene = new Scene(vbox);
+        hookupEvents(model);
+    }
 
-	public Scene getScene() {
-		return scene;
-	}
+    public Scene getScene() {
+        return scene;
+    }
 
-	private void hookupEvents(ThreadInformationModel model) {
-		updateButton.setOnAction(e -> model.update());
-		threadNames.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> {
-			int index = (Integer) newValue;
-			if (index >= 0) {
-				stackTrace.setText(model.getStackTraces().get(index));
-			}
-		});
-	}
+    private void hookupEvents(ThreadInformationModel model) {
+        updateButton.setOnAction(e -> model.update());
+        threadNames.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> {
+            int index = (Integer) newValue;
+            if (index >= 0) {
+                stackTrace.setText(model.getStackTraces().get(index));
+            }
+        });
+    }
 
 }

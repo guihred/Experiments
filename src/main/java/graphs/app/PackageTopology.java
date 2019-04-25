@@ -18,13 +18,13 @@ import utils.HasLogging;
 public class PackageTopology extends BaseTopology {
 
     private static final Logger LOG = HasLogging.log();
-	private String chosenPackageName;
+    private String chosenPackageName;
     private ObservableList<String> packages = getJavaFileDependencies(null).stream().map(JavaFileDependecy::getPackage)
-            .distinct().collect(Collectors.toCollection(FXCollections::observableArrayList));
+        .distinct().collect(Collectors.toCollection(FXCollections::observableArrayList));
 
     public PackageTopology(Graph graph) {
         super(graph, "Package");
-	}
+    }
 
     @Override
     public void execute() {
@@ -42,19 +42,19 @@ public class PackageTopology extends BaseTopology {
 
     private List<JavaFileDependecy> createGraph() {
         graph.clean();
-		graph.getModel().removeAllCells();
-		graph.getModel().removeAllEdges();
+        graph.getModel().removeAllCells();
+        graph.getModel().removeAllEdges();
         List<JavaFileDependecy> javaFiles = getJavaFileDependencies(chosenPackageName);
         Map<String, Map<String, Long>> packageDependencyMap = createFileDependencyMap(javaFiles);
         for (String packageName : packageDependencyMap.keySet()) {
             graph.getModel().addCell(packageName, CellType.RECTANGLE);
-		}
-		List<Cell> cells = graph.getModel().getAddedCells();
-		for (Cell cell : cells) {
+        }
+        List<Cell> cells = graph.getModel().getAddedCells();
+        for (Cell cell : cells) {
             String cellId = cell.getCellId();
             Map<String, Long> map = packageDependencyMap.get(cellId);
             map.forEach((dep, weight) -> graph.getModel().addEdge(cellId, dep, weight.intValue()));
-		}
+        }
         List<Edge> addedEdges = graph.getModel().getAddedEdges();
         LayerLayout.layoutInLayers(cells, addedEdges);
         graph.endUpdate();
@@ -62,21 +62,18 @@ public class PackageTopology extends BaseTopology {
     }
 
     public static Map<String, Map<String, Long>> createFileDependencyMap(Collection<JavaFileDependecy> javaFiles) {
-        List<String> classesNames = javaFiles.stream().map(JavaFileDependecy::getName)
-                    .collect(Collectors.toList());
-            Map<String, Map<String, Long>> packageDependencyMap = new HashMap<>();
+        List<String> classesNames = javaFiles.stream().map(JavaFileDependecy::getName).collect(Collectors.toList());
+        Map<String, Map<String, Long>> packageDependencyMap = new HashMap<>();
         javaFiles.forEach(k -> packageDependencyMap.put(k.getName(), k.getClasses().stream()
-                .filter(classesNames::contains).collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
+            .filter(classesNames::contains).collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
         return packageDependencyMap;
     }
 
     public static List<JavaFileDependecy> getJavaFileDependencies(String packName) {
         File file = new File("src");
         try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
-            return walk.filter(e -> e.toFile().getName().endsWith(".java"))
-                    .map(JavaFileDependecy::new)
-                    .filter(e -> packName == null || e.getPackage().equals(packName))
-                    .collect(Collectors.toList());
+            return walk.filter(e -> e.toFile().getName().endsWith(".java")).map(JavaFileDependecy::new)
+                .filter(e -> packName == null || e.getPackage().equals(packName)).collect(Collectors.toList());
         } catch (Exception e) {
             LOG.error("", e);
             return new ArrayList<>();
@@ -87,7 +84,7 @@ public class PackageTopology extends BaseTopology {
 
         List<JavaFileDependecy> javaFiles = getJavaFileDependencies(null);
         Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
-                .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
+            .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
         filesByPackage.forEach((pack, files) -> {
             Map<String, Map<String, Long>> packageDependencyMap = createFileDependencyMap(files);
             printDependencyMap(packageDependencyMap);
@@ -97,13 +94,12 @@ public class PackageTopology extends BaseTopology {
 
     public static void printDependencyMap(Map<String, Map<String, Long>> packageDependencyMap) {
         List<String> packNames = packageDependencyMap.keySet().stream()
-                .sorted(Comparator
-                        .comparing(e -> packageDependencyMap.get(e).values().stream().mapToLong(l -> l).sum()))
-                .collect(Collectors.toList());
+            .sorted(Comparator.comparing(e -> packageDependencyMap.get(e).values().stream().mapToLong(l -> l).sum()))
+            .collect(Collectors.toList());
         int maxLength = packNames.stream().mapToInt(String::length).max().orElse(0);
 
         String paddedNames = packNames.stream().map(e -> mapString(e, e.length() + 1))
-                .collect(Collectors.joining("", "\n" + mapString("", maxLength), "\n"));
+            .collect(Collectors.joining("", "\n" + mapString("", maxLength), "\n"));
         StringBuilder table = new StringBuilder();
         table.append(paddedNames);
         for (String pack : packNames) {

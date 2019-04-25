@@ -17,25 +17,23 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder() {
         super(new TableView<T>());
         table = node;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <V extends TableCell<T, Object>> SimpleTableViewBuilder<T> addColumn(final String columnName,
-    		final BiConsumer<T, V> value) {
-		final TableColumn<T, Object> column = new TableColumn<>(columnName);
-		column.setCellFactory(p -> new CustomableTableCell<T, Object>() {
-			@Override
-            protected void setStyleable(final T auxMed) {
-				value.accept(auxMed, (V) this);
-			}
-
-		});
-        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-    	table.getColumns().add(column);
-    	return this;
     }
 
+    @SuppressWarnings("unchecked")
+    public <V extends TableCell<T, Object>> SimpleTableViewBuilder<T> addColumn(final String columnName,
+        final BiConsumer<T, V> value) {
+        final TableColumn<T, Object> column = new TableColumn<>(columnName);
+        column.setCellFactory(p -> new CustomableTableCell<T, Object>() {
+            @Override
+            protected void setStyleable(final T auxMed) {
+                value.accept(auxMed, (V) this);
+            }
 
+        });
+        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
+        table.getColumns().add(column);
+        return this;
+    }
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
@@ -55,7 +53,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName,
-            final Callback<TableColumn<T, String>, TableCell<T, String>> value) {
+        final Callback<TableColumn<T, String>, TableCell<T, String>> value) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setCellFactory(value);
@@ -63,7 +61,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table.getColumns().add(column);
         return this;
     }
-
 
     public SimpleTableViewBuilder<T> equalColumns() {
         ObservableList<TableColumn<T, ?>> columns = table.getColumns();
@@ -77,7 +74,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> onDoubleClick(final Consumer<T> object) {
-        node.setOnMouseClicked(e->{
+        node.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
                 T selectedItem = table.getSelectionModel().getSelectedItem();
                 object.accept(selectedItem);
@@ -88,7 +85,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public SimpleTableViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+            .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
         return this;
     }
 
@@ -97,20 +94,20 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-	private abstract class CustomableTableCell<M, X> extends TableCell<M, X> {
+    private abstract class CustomableTableCell<M, X> extends TableCell<M, X> {
 
-		protected abstract void setStyleable(M auxMed);
+        protected abstract void setStyleable(M auxMed);
 
         @Override
-		protected void updateItem(final X item, final boolean empty) {
-			super.updateItem(item, empty);
-			int index = getIndex();
-			int size = getTableView().getItems().size();
-			if (index >= 0 && index < size) {
-				M auxMed = getTableView().getItems().get(index);
-				setStyleable(auxMed);
-			}
-		}
-	}
+        protected void updateItem(final X item, final boolean empty) {
+            super.updateItem(item, empty);
+            int index = getIndex();
+            int size = getTableView().getItems().size();
+            if (index >= 0 && index < size) {
+                M auxMed = getTableView().getItems().get(index);
+                setStyleable(auxMed);
+            }
+        }
+    }
 
 }

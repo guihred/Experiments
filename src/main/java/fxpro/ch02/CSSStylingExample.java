@@ -34,100 +34,90 @@ public class CSSStylingExample extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CSSStylingExample.class);
 
-	private ObservableList<Cursor> cursors = FXCollections.observableArrayList(Cursor.DEFAULT, Cursor.CROSSHAIR,
-			Cursor.WAIT, Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE,
-			Cursor.SE_RESIZE, Cursor.S_RESIZE, Cursor.SW_RESIZE, Cursor.W_RESIZE, Cursor.NW_RESIZE, Cursor.NONE);
-	private ChoiceBox<Cursor> choiceBoxRef = new ChoiceBox<>(cursors);
+    private ObservableList<Cursor> cursors = FXCollections.observableArrayList(Cursor.DEFAULT, Cursor.CROSSHAIR,
+        Cursor.WAIT, Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE,
+        Cursor.SE_RESIZE, Cursor.S_RESIZE, Cursor.SW_RESIZE, Cursor.W_RESIZE, Cursor.NW_RESIZE, Cursor.NONE);
+    private ChoiceBox<Cursor> choiceBoxRef = new ChoiceBox<>(cursors);
 
-	private DoubleProperty fillVals = new SimpleDoubleProperty(255.0);
+    private DoubleProperty fillVals = new SimpleDoubleProperty(255.0);
 
-	private Label labelStageH = new Label();
-	private Label labelStageW = new Label();
-	private Label labelStageX = new SimpleLabelBuilder().id("stageX").build();
-	private Label labelStageY = new SimpleLabelBuilder().id("stageY").build();
-	private Scene sceneRef;
-	private Slider sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255).orientation(Orientation.VERTICAL)
-			.build();
+    private Label labelStageH = new Label();
+    private Label labelStageW = new Label();
+    private Label labelStageX = new SimpleLabelBuilder().id("stageX").build();
+    private Label labelStageY = new SimpleLabelBuilder().id("stageY").build();
+    private Scene sceneRef;
+    private Slider sliderRef = new SimpleSliderBuilder().min(0).max(255).value(255).orientation(Orientation.VERTICAL)
+        .build();
     private Text textSceneH = new SimpleTextBuilder().styleClass(EMPHASIZED_TEXT_CLASS).id("sceneHeightText").build();
 
     private Text textSceneW = new SimpleTextBuilder().styleClass(EMPHASIZED_TEXT_CLASS).build();
 
     private Text textSceneX = new SimpleTextBuilder().styleClass(EMPHASIZED_TEXT_CLASS).build();
     private Text textSceneY = new SimpleTextBuilder().styleClass(EMPHASIZED_TEXT_CLASS).build();
-	@Override
-	public void start(Stage stage) {
-		final ToggleGroup toggleGrp = new ToggleGroup();
 
+    @Override
+    public void start(Stage stage) {
+        final ToggleGroup toggleGrp = new ToggleGroup();
 
-		Hyperlink build = new SimpleHyperlinkBuilder().text("lookup()").onAction(e -> {
-			Text textRef = (Text) sceneRef.lookup("#sceneHeightText");
-			LOGGER.info(textRef.getText());
-		}).build();
+        Hyperlink build = new SimpleHyperlinkBuilder().text("lookup()").onAction(e -> {
+            Text textRef = (Text) sceneRef.lookup("#sceneHeightText");
+            LOGGER.info(textRef.getText());
+        }).build();
 
-		FlowPane sceneRoot = new SimpleFlowPaneBuilder()
-				.layoutX(20)
-                .layoutY(50)
-                .padding(0, 50, 50, 0)
-				.orientation(Orientation.VERTICAL)
-				.vgap(10)
-				.hgap(20)
-				.columnHalignment(HPos.LEFT)
-				.children(new HBox(10, sliderRef, choiceBoxRef)
-						, textSceneX, textSceneY, textSceneW, textSceneH,
-						build,
-						new SimpleRadioButtonBuilder().text("onTheScene.css")
-								.toggleGroup(toggleGrp).selected(true)
-								.build(),
-						new SimpleRadioButtonBuilder().text("changeOfScenes.css")
-								.toggleGroup(toggleGrp).build(),
-						labelStageX, labelStageY, labelStageW, labelStageH)
-				.build();
+        FlowPane sceneRoot = new SimpleFlowPaneBuilder().layoutX(20).layoutY(50).padding(0, 50, 50, 0)
+            .orientation(Orientation.VERTICAL).vgap(10).hgap(20).columnHalignment(HPos.LEFT)
+            .children(new HBox(10, sliderRef, choiceBoxRef), textSceneX, textSceneY, textSceneW, textSceneH, build,
+                new SimpleRadioButtonBuilder().text("onTheScene.css").toggleGroup(toggleGrp).selected(true).build(),
+                new SimpleRadioButtonBuilder().text("changeOfScenes.css").toggleGroup(toggleGrp).build(), labelStageX,
+                labelStageY, labelStageW, labelStageH)
+            .build();
 
         sceneRef = new Scene(sceneRoot);
         sceneRef.getStylesheets().addAll(ResourceFXUtils.toExternalForm("onTheScene.css"));
-		stage.setScene(sceneRef);
-		choiceBoxRef.getSelectionModel().selectFirst();
-		// Setup various property binding
-		textSceneX.textProperty().bind(new SimpleStringProperty("Scene x: ").concat(sceneRef.xProperty().asString()));
-		textSceneY.textProperty().bind(new SimpleStringProperty("Scene y: ").concat(sceneRef.yProperty().asString()));
-		textSceneW.textProperty()
-				.bind(new SimpleStringProperty("Scene width: ").concat(sceneRef.widthProperty().asString()));
-		textSceneH.textProperty()
-				.bind(new SimpleStringProperty("Scene height: ").concat(sceneRef.heightProperty().asString()));
-		labelStageX.textProperty()
-				.bind(new SimpleStringProperty("Stage x: ").concat(sceneRef.getWindow().xProperty().asString()));
-		labelStageY.textProperty()
-				.bind(new SimpleStringProperty("Stage y: ").concat(sceneRef.getWindow().yProperty().asString()));
-		labelStageW.textProperty().bind(
-				new SimpleStringProperty("Stage width: ").concat(sceneRef.getWindow().widthProperty().asString()));
-		labelStageH.textProperty().bind(
-				new SimpleStringProperty("Stage height: ").concat(sceneRef.getWindow().heightProperty().asString()));
-		sceneRef.cursorProperty().bind(choiceBoxRef.getSelectionModel().selectedItemProperty());
-		fillVals.bind(sliderRef.valueProperty());
-		// When fillVals changes, use that value as the RGB to fill the scene
-		fillVals.addListener((ov, oldValue, newValue) -> {
-			Double fillValue = fillVals.getValue() / 256.0;
-			sceneRef.setFill(new Color(fillValue, fillValue, fillValue, 1.0));
-		});
-		// When the selected radio button changes, set the appropriate
-		// stylesheet
-		toggleGrp.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
-			String radioButtonText = ((RadioButton) toggleGrp.getSelectedToggle()).getText();
+        stage.setScene(sceneRef);
+        choiceBoxRef.getSelectionModel().selectFirst();
+        // Setup various property binding
+        textSceneX.textProperty().bind(new SimpleStringProperty("Scene x: ").concat(sceneRef.xProperty().asString()));
+        textSceneY.textProperty().bind(new SimpleStringProperty("Scene y: ").concat(sceneRef.yProperty().asString()));
+        textSceneW.textProperty()
+            .bind(new SimpleStringProperty("Scene width: ").concat(sceneRef.widthProperty().asString()));
+        textSceneH.textProperty()
+            .bind(new SimpleStringProperty("Scene height: ").concat(sceneRef.heightProperty().asString()));
+        labelStageX.textProperty()
+            .bind(new SimpleStringProperty("Stage x: ").concat(sceneRef.getWindow().xProperty().asString()));
+        labelStageY.textProperty()
+            .bind(new SimpleStringProperty("Stage y: ").concat(sceneRef.getWindow().yProperty().asString()));
+        labelStageW.textProperty()
+            .bind(new SimpleStringProperty("Stage width: ").concat(sceneRef.getWindow().widthProperty().asString()));
+        labelStageH.textProperty()
+            .bind(new SimpleStringProperty("Stage height: ").concat(sceneRef.getWindow().heightProperty().asString()));
+        sceneRef.cursorProperty().bind(choiceBoxRef.getSelectionModel().selectedItemProperty());
+        fillVals.bind(sliderRef.valueProperty());
+        // When fillVals changes, use that value as the RGB to fill the scene
+        fillVals.addListener((ov, oldValue, newValue) -> {
+            Double fillValue = fillVals.getValue() / 256.0;
+            sceneRef.setFill(new Color(fillValue, fillValue, fillValue, 1.0));
+        });
+        // When the selected radio button changes, set the appropriate
+        // stylesheet
+        toggleGrp.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
+            String radioButtonText = ((RadioButton) toggleGrp.getSelectedToggle()).getText();
             sceneRef.getStylesheets().clear();
             sceneRef.getStylesheets().add(ResourceFXUtils.toExternalForm(radioButtonText));
-		});
-		stage.setTitle("On the Scene");
-		stage.show();
-		// Define an unmanaged node that will display Text
-		Text addedTextRef = new SimpleTextBuilder().x(0).y(-30).textOrigin(VPos.TOP).fill(Color.BLUE)
-				.font(Font.font("Sans Serif", FontWeight.BOLD, 16)).managed(false).build();
-		// Bind the text of the added Text node to the fill property of the
-		// Scene
-		addedTextRef.textProperty().bind(new SimpleStringProperty("Scene fill: ").concat(sceneRef.fillProperty()));
-		// Add to the Text node to the FlowPane
-		((FlowPane) sceneRef.getRoot()).getChildren().add(addedTextRef);
-	}
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
+        });
+        stage.setTitle("On the Scene");
+        stage.show();
+        // Define an unmanaged node that will display Text
+        Text addedTextRef = new SimpleTextBuilder().x(0).y(-30).textOrigin(VPos.TOP).fill(Color.BLUE)
+            .font(Font.font("Sans Serif", FontWeight.BOLD, 16)).managed(false).build();
+        // Bind the text of the added Text node to the fill property of the
+        // Scene
+        addedTextRef.textProperty().bind(new SimpleStringProperty("Scene fill: ").concat(sceneRef.fillProperty()));
+        // Add to the Text node to the FlowPane
+        ((FlowPane) sceneRef.getRoot()).getChildren().add(addedTextRef);
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
 }

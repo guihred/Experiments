@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 public class DraggingRectangle extends Application {
 
     private static final int SIZE = 800;
+
     @Override
     public void start(final Stage primaryStage) {
 
@@ -30,7 +31,6 @@ public class DraggingRectangle extends Application {
         root.getChildren().add(rect);
         createDraggableRectangle(rect);
         rect.setFill(Color.NAVY);
-
 
         Scene scene = new Scene(root, SIZE, SIZE);
         primaryStage.setScene(scene);
@@ -46,7 +46,6 @@ public class DraggingRectangle extends Application {
         // bind to top left corner of Rectangle:
         resizeHandleNW.layoutXProperty().bind(rect.layoutXProperty());
         resizeHandleNW.layoutYProperty().bind(rect.layoutYProperty());
-
 
         // bottom right resize handle:
         Circle resizeHandleSE = new Circle(handleRadius, Color.TRANSPARENT);
@@ -68,13 +67,13 @@ public class DraggingRectangle extends Application {
         Parent newParent = rect.getParent();
         List<Circle> nodes = Arrays.asList(resizeHandleNW, resizeHandleSE, moveHandle);
         for (Circle c : nodes) {
-                if (newParent instanceof Pane && !((Pane) newParent).getChildren().contains(c)) {
-                    ((Pane) newParent).getChildren().add(c);
-                }
-                if (newParent instanceof Group && !((Group) newParent).getChildren().contains(c)) {
-                    ((Group) newParent).getChildren().add(c);
-                }
+            if (newParent instanceof Pane && !((Pane) newParent).getChildren().contains(c)) {
+                ((Pane) newParent).getChildren().add(c);
             }
+            if (newParent instanceof Group && !((Group) newParent).getChildren().contains(c)) {
+                ((Group) newParent).getChildren().add(c);
+            }
+        }
 
         Wrapper<Point2D> mouseLocation = new Wrapper<>();
 
@@ -95,7 +94,7 @@ public class DraggingRectangle extends Application {
     }
 
     private static void onMoveHandleDrag(final Rectangle rect, final double handleRadius,
-            Wrapper<Point2D> mouseLocation, MouseEvent event) {
+        Wrapper<Point2D> mouseLocation, MouseEvent event) {
         if (mouseLocation.value != null) {
             double deltaX = event.getSceneX() - mouseLocation.value.getX();
             double deltaY = event.getSceneY() - mouseLocation.value.getY();
@@ -114,7 +113,7 @@ public class DraggingRectangle extends Application {
     }
 
     private static void onNWDrag(final Rectangle rect, final double handleRadius, Wrapper<Point2D> mouseLocation,
-            MouseEvent event) {
+        MouseEvent event) {
         if (mouseLocation.value != null) {
             double deltaX = event.getSceneX() - mouseLocation.value.getX();
             double deltaY = event.getSceneY() - mouseLocation.value.getY();
@@ -133,18 +132,16 @@ public class DraggingRectangle extends Application {
     }
 
     private static void onSEDrag(final Rectangle rect, final double handleRadius, Wrapper<Point2D> mouseLocation,
-            MouseEvent event) {
+        MouseEvent event) {
         if (mouseLocation.value != null) {
             double deltaX = event.getSceneX() - mouseLocation.value.getX();
             double deltaY = event.getSceneY() - mouseLocation.value.getY();
             double newMaxX = rect.getLayoutX() + rect.getWidth() + deltaX;
-            if (newMaxX >= rect.getLayoutX()
-        			&& newMaxX <= rect.getWidth() - handleRadius) {
+            if (newMaxX >= rect.getLayoutX() && newMaxX <= rect.getWidth() - handleRadius) {
                 rect.setWidth(rect.getWidth() + deltaX);
             }
             double newMaxY = rect.getLayoutY() + rect.getHeight() + deltaY;
-            if (newMaxY >= rect.getLayoutY()
-        			&& newMaxY <= rect.getHeight() - handleRadius) {
+            if (newMaxY >= rect.getLayoutY() && newMaxY <= rect.getHeight() - handleRadius) {
                 rect.setHeight(rect.getHeight() + deltaY);
             }
             mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
@@ -155,17 +152,17 @@ public class DraggingRectangle extends Application {
 
         circle.setOnDragDetected(event -> {
             Parent parent = circle.getParent();
-            if(parent!=null) {
-				parent.setCursor(Cursor.CLOSED_HAND);
-			}
+            if (parent != null) {
+                parent.setCursor(Cursor.CLOSED_HAND);
+            }
             mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
         });
 
         circle.setOnMouseReleased(event -> {
-        	Parent parent = circle.getParent();
-        	if(parent!=null) {
-				parent.setCursor(Cursor.DEFAULT);
-			}
+            Parent parent = circle.getParent();
+            if (parent != null) {
+                parent.setCursor(Cursor.DEFAULT);
+            }
             mouseLocation.value = null;
         });
     }

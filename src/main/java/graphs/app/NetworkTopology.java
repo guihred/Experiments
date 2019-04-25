@@ -17,96 +17,96 @@ import javafx.collections.ObservableMap;
 
 public class NetworkTopology extends BaseTopology {
 
-	private ObservableMap<String, List<String>> scanNetworkRoutes;
-	private ObservableMap<String, List<String>> scanPossibleOSes = FXCollections.observableHashMap();
+    private ObservableMap<String, List<String>> scanNetworkRoutes;
+    private ObservableMap<String, List<String>> scanPossibleOSes = FXCollections.observableHashMap();
 
-	private final StringProperty networkAddress = new SimpleStringProperty(TracerouteScanner.NETWORK_ADDRESS);
+    private final StringProperty networkAddress = new SimpleStringProperty(TracerouteScanner.NETWORK_ADDRESS);
 
-	public NetworkTopology(final Graph graph) {
-		super(graph, "Network");
-		networkAddress.addListener(o -> scanNetworkRoutes = null);
-	}
+    public NetworkTopology(final Graph graph) {
+        super(graph, "Network");
+        networkAddress.addListener(o -> scanNetworkRoutes = null);
+    }
 
-	@Override
-	public synchronized void execute() {
-		graph.clean();
-		graph.getModel().removeAllCells();
-		graph.getModel().removeAllEdges();
+    @Override
+    public synchronized void execute() {
+        graph.clean();
+        graph.getModel().removeAllCells();
+        graph.getModel().removeAllEdges();
 
-		if (scanNetworkRoutes == null) {
-			scanNetworkRoutes = TracerouteScanner.scanNetworkRoutes(networkAddress.get());
-			scanNetworkRoutes.addListener(this::scanOSes);
-		}
+        if (scanNetworkRoutes == null) {
+            scanNetworkRoutes = TracerouteScanner.scanNetworkRoutes(networkAddress.get());
+            scanNetworkRoutes.addListener(this::scanOSes);
+        }
 
-		List<String> hosts = allHosts();
+        List<String> hosts = allHosts();
 
-		graph.getModel().addCell("localhost", CellType.RECTANGLE);
+        graph.getModel().addCell("localhost", CellType.RECTANGLE);
 
-		for (String packageName : hosts) {
-			graph.getModel().addCell(packageName, CellType.RECTANGLE);
-		}
-		List<List<String>> values = scanNetworkRoutes.values().stream().collect(Collectors.toList());
-		for (int l = 0; l < values.size(); l++) {
-			List<String> hops = values.get(l);
-			String currentCell = "localhost";
-			for (String hop : hops) {
-				graph.getModel().addEdge(currentCell, hop, 1);
-				currentCell = hop;
-			}
-		}
-		scanPossibleOSes.forEach(this::addDescription);
-		graph.endUpdate();
-		ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
-				graph.getScrollPane().getWidth() / 3);
+        for (String packageName : hosts) {
+            graph.getModel().addCell(packageName, CellType.RECTANGLE);
+        }
+        List<List<String>> values = scanNetworkRoutes.values().stream().collect(Collectors.toList());
+        for (int l = 0; l < values.size(); l++) {
+            List<String> hops = values.get(l);
+            String currentCell = "localhost";
+            for (String hop : hops) {
+                graph.getModel().addEdge(currentCell, hop, 1);
+                currentCell = hop;
+            }
+        }
+        scanPossibleOSes.forEach(this::addDescription);
+        graph.endUpdate();
+        ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
+            graph.getScrollPane().getWidth() / 3);
 
-	}
+    }
 
-	public String getNetworkAddress() {
-		return networkAddress.get();
-	}
+    public String getNetworkAddress() {
+        return networkAddress.get();
+    }
 
-	public StringProperty networkAddressProperty() {
-		return networkAddress;
-	}
+    public StringProperty networkAddressProperty() {
+        return networkAddress;
+    }
 
-	private void addDescription(final String ip, final List<String> valueAdded) {
-		if (!valueAdded.isEmpty()) {
-			String collect = valueAdded.stream().limit(3).collect(Collectors.joining("\n"));
-			Cell cell = graph.getModel().getCell(ip);
-			if (cell != null && !cell.getText().contains(collect)) {
-				cell.addText(collect);
-			}
-		}
-	}
+    private void addDescription(final String ip, final List<String> valueAdded) {
+        if (!valueAdded.isEmpty()) {
+            String collect = valueAdded.stream().limit(3).collect(Collectors.joining("\n"));
+            Cell cell = graph.getModel().getCell(ip);
+            if (cell != null && !cell.getText().contains(collect)) {
+                cell.addText(collect);
+            }
+        }
+    }
 
-	private List<String> allHosts() {
+    private List<String> allHosts() {
 
-		try {
-			return scanNetworkRoutes.values().stream().flatMap(List<String>::stream).distinct()
-					.collect(Collectors.toList());
-		} catch (Exception e) {
-			getLogger().trace(" CONCURRENCY ISSUE", e);
-			return scanNetworkRoutes.values().stream().flatMap(List<String>::stream).distinct()
-					.collect(Collectors.toList());
-		}
-	}
+        try {
+            return scanNetworkRoutes.values().stream().flatMap(List<String>::stream).distinct()
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            getLogger().trace(" CONCURRENCY ISSUE", e);
+            return scanNetworkRoutes.values().stream().flatMap(List<String>::stream).distinct()
+                .collect(Collectors.toList());
+        }
+    }
 
-	private InvalidationListener onChange(final ObservableMap<String, List<String>> scanOSes) {
-		return observable -> {
-			scanPossibleOSes.putAll(scanOSes);
-			Platform.runLater(this::execute);
-		};
-	}
+    private InvalidationListener onChange(final ObservableMap<String, List<String>> scanOSes) {
+        return observable -> {
+            scanPossibleOSes.putAll(scanOSes);
+            Platform.runLater(this::execute);
+        };
+    }
 
-	private void scanOSes(final Change<? extends String, ? extends List<String>> change) {
-		Platform.runLater(this::execute);
-		String ip = change.getKey();
-		if (!change.wasRemoved()) {
-			new Thread(() -> {
-				ObservableMap<String, List<String>> scanOSes = PortScanner.scanPossibleOSes(ip);
-				scanOSes.addListener(onChange(scanOSes));
-			}).start();
-		}
-	}
+    private void scanOSes(final Change<? extends String, ? extends List<String>> change) {
+        Platform.runLater(this::execute);
+        String ip = change.getKey();
+        if (!change.wasRemoved()) {
+            new Thread(() -> {
+                ObservableMap<String, List<String>> scanOSes = PortScanner.scanPossibleOSes(ip);
+                scanOSes.addListener(onChange(scanOSes));
+            }).start();
+        }
+    }
 
 }

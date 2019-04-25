@@ -22,46 +22,48 @@ public class Pacman extends Arc {
 
     private PacmanDirection direction = PacmanDirection.RIGHT;
 
-	private Timeline eatingAnimation = new SimpleTimelineBuilder()
-            .keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), START_ANGLE)),
-                    new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), ANGLE_LENGTH)),
-                    new KeyFrame(Duration.seconds(1. / 4), new KeyValue(startAngleProperty(), 0.0F)),
-                    new KeyFrame(Duration.seconds(1. / 4), new KeyValue(lengthProperty(), 360.0F)))
-			.cycleCount(Animation.INDEFINITE).autoReverse(true).build();
-	public Pacman() {
-		setFill(Color.YELLOW);
+    private Timeline eatingAnimation = new SimpleTimelineBuilder()
+        .keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), START_ANGLE)),
+            new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), ANGLE_LENGTH)),
+            new KeyFrame(Duration.seconds(1. / 4), new KeyValue(startAngleProperty(), 0.0F)),
+            new KeyFrame(Duration.seconds(1. / 4), new KeyValue(lengthProperty(), 360.0F)))
+        .cycleCount(Animation.INDEFINITE).autoReverse(true).build();
+
+    public Pacman() {
+        setFill(Color.YELLOW);
         setRadiusX(RADIUS);
         setRadiusY(RADIUS);
         setStartAngle(START_ANGLE);
         setLength(ANGLE_LENGTH);
-		setType(ArcType.ROUND);
-		eatingAnimation.playFromStart();
-	}
-	public void die() {
-		if (eatingAnimation.getStatus() == Status.RUNNING) {
-			turn(null);
-			eatingAnimation.stop();
+        setType(ArcType.ROUND);
+        eatingAnimation.playFromStart();
+    }
+
+    public void die() {
+        if (eatingAnimation.getStatus() == Status.RUNNING) {
+            turn(null);
+            eatingAnimation.stop();
             Timeline timeline = new Timeline(
-                    new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), START_ANGLE)),
-                    new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), ANGLE_LENGTH)),
-					new KeyFrame(Duration.seconds(2), new KeyValue(startAngleProperty(), 180.0F)),
-					new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0F)));
-			timeline.play();
-			timeline.setOnFinished(e -> {
-				setLayoutX(PacmanModel.SQUARE_SIZE / 2);
-				setLayoutY(PacmanModel.SQUARE_SIZE / 2);
-				eatingAnimation.play();
-			});
-		}
+                new KeyFrame(Duration.ZERO, new KeyValue(startAngleProperty(), START_ANGLE)),
+                new KeyFrame(Duration.ZERO, new KeyValue(lengthProperty(), ANGLE_LENGTH)),
+                new KeyFrame(Duration.seconds(2), new KeyValue(startAngleProperty(), 180.0F)),
+                new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0F)));
+            timeline.play();
+            timeline.setOnFinished(e -> {
+                setLayoutX(PacmanModel.SQUARE_SIZE / 2);
+                setLayoutY(PacmanModel.SQUARE_SIZE / 2);
+                eatingAnimation.play();
+            });
+        }
 
-	}
+    }
 
-	public void move(ObservableList<Node> observableList) {
-		if (direction == null) {
-			return;
-		}
+    public void move(ObservableList<Node> observableList) {
+        if (direction == null) {
+            return;
+        }
 
-		int step = 2;
+        int step = 2;
         switch (direction) {
             case RIGHT:
                 moveSideways(observableList, -step);
@@ -78,35 +80,34 @@ public class Pacman extends Arc {
             default:
                 break;
         }
-	}
+    }
 
-	@Override
-	public String toString() {
-		return "Pacman [" + getLayoutX() + "," + getLayoutY() + "]";
-	}
+    @Override
+    public String toString() {
+        return "Pacman [" + getLayoutX() + "," + getLayoutY() + "]";
+    }
 
     public void turn(PacmanDirection direction1) {
-		if (eatingAnimation.getStatus() == Status.RUNNING) {
-			direction = direction1;
-			if (direction1 != null) {
-				setRotate(direction1.angle);
-			}
-		}
-	}
+        if (eatingAnimation.getStatus() == Status.RUNNING) {
+            direction = direction1;
+            if (direction1 != null) {
+                setRotate(direction1.angle);
+            }
+        }
+    }
 
     private boolean checkCollision(ObservableList<Node> observableList) {
 
-		return observableList.stream().filter(Rectangle.class::isInstance)
-                .anyMatch(p -> {
-                    Bounds boundsInParent = getBoundsInParent();
+        return observableList.stream().filter(Rectangle.class::isInstance).anyMatch(p -> {
+            Bounds boundsInParent = getBoundsInParent();
 
-                    return p.getBoundsInParent().intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
-                            boundsInParent.getWidth(), boundsInParent.getHeight());
+            return p.getBoundsInParent().intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
+                boundsInParent.getWidth(), boundsInParent.getHeight());
 
-                });
-	}
+        });
+    }
 
-	private void moveSideways(ObservableList<Node> observableList, int step) {
+    private void moveSideways(ObservableList<Node> observableList, int step) {
         if (!checkCollision(observableList)) {
             setLayoutX(getLayoutX() - step);
             if (checkCollision(observableList)) {
@@ -115,7 +116,7 @@ public class Pacman extends Arc {
         }
     }
 
-	private void moveUpAndDown(ObservableList<Node> observableList, int step) {
+    private void moveUpAndDown(ObservableList<Node> observableList, int step) {
         if (!checkCollision(observableList)) {
             setLayoutY(getLayoutY() - step);
             if (checkCollision(observableList)) {
@@ -124,16 +125,19 @@ public class Pacman extends Arc {
         }
     }
 
-	public enum PacmanDirection {
-		DOWN(90), LEFT(180), RIGHT(0), UP(270);
-		protected final int angle;
+    public enum PacmanDirection {
+        DOWN(90),
+        LEFT(180),
+        RIGHT(0),
+        UP(270);
+        protected final int angle;
 
         PacmanDirection(int angle) {
-			this.angle = angle;
-		}
+            this.angle = angle;
+        }
 
-		public int getAngle() {
-			return angle;
-		}
-	}
+        public int getAngle() {
+            return angle;
+        }
+    }
 }
