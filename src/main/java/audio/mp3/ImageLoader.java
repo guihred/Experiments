@@ -89,7 +89,7 @@ public class ImageLoader {
 
     public static void loadImages(ObservableList<Node> root, String... value) {
         Set<String> keywords = Stream.of(value).filter(StringUtils::isNotBlank).map(String::trim)
-            .map(e -> e.replaceAll(".mp3", "")).flatMap(e -> Stream.of(e.split("\\s+-\\s+")))
+            .flatMap(e -> Stream.of(e.split("\\s+-\\s+")))
             .collect(Collectors.toSet());
         for (String string : keywords) {
             new ImageLoader().addThread(root, string);
