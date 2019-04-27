@@ -3,11 +3,14 @@ package audio.mp3;
 import java.io.File;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.image.Image;
+import org.apache.commons.lang3.StringUtils;
 
 public class Music {
 	private StringProperty album = new SimpleStringProperty("");
 
 	private StringProperty ano = new SimpleStringProperty("");
+    private Image image;
 
 	private File arquivo;
 
@@ -53,6 +56,10 @@ public class Music {
 		return ano.get();
 	}
 
+	public int getAnoInt() {
+        return StringUtils.isNumeric(ano.get()) ? Integer.parseInt(ano.get()) : 2000;
+    }
+
 	public File getArquivo() {
 		return arquivo;
 	}
@@ -64,6 +71,10 @@ public class Music {
 	public String getGenero() {
 		return genero.get();
 	}
+
+	public Image getImage() {
+        return image;
+    }
 
 	public String getPasta() {
         return pasta.get();
@@ -101,15 +112,19 @@ public class Music {
 		this.genero.set(genero);
 	}
 
-	public void setPasta(String pasta) {
+	public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public void setPasta(String pasta) {
         this.pasta.set(pasta);
     }
 
-	public void setTitulo(String titulo) {
+    public void setTitulo(String titulo) {
 		this.titulo.set(titulo);
 	}
 
-	public void setTrilha(String trilha) {
+    public void setTrilha(String trilha) {
 		this.trilha.set(trilha);
 	}
 
@@ -120,7 +135,7 @@ public class Music {
     @Override
     public String toString() {
         return String.format("[%s, %s, %s, %s, %s, %s, %s]", titulo.get(), artista.get(), album.get(), ano.get(),
-                trilha.get(), genero.get(), arquivo.getPath());
+            trilha.get(), genero.get(), arquivo.getPath());
     }
 
     public StringProperty trilhaProperty() {

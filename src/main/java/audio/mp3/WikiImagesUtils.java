@@ -83,9 +83,11 @@ public final class WikiImagesUtils {
         LOGGER.info("SEARCHING FOR {}", artista);
         String encode = encode(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;
+        String url2 = "https://pt.wikipedia.org/wiki/" + encode;
 
         CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(images::addAll);
-        ForkJoinPool.commonPool().awaitQuiescence(180, TimeUnit.SECONDS);
+        CompletableFuture.supplyAsync(() -> readPage(url2)).thenAccept(images::addAll);
+        ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
         return images;
     }
 
