@@ -104,7 +104,7 @@ public class FXEngineTest extends AbstractTestExecution {
         int squareSize = DotsSquare.SQUARE_SIZE;
         for (int i = 0; i < queryAll.size() / 5; i++) {
             Node next = queryAll.get(i);
-            RunnableEx.makeRunnable(() -> drag(next, MouseButton.PRIMARY)).run();
+            RunnableEx.ignore(() -> drag(next, MouseButton.PRIMARY));
             moveBy(Math.random() * squareSize - squareSize / 2, Math.random() * squareSize - squareSize / 2);
 	        drop();
         }

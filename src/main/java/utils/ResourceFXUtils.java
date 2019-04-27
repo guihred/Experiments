@@ -11,6 +11,10 @@ import java.net.URLDecoder;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,9 +48,7 @@ public final class ResourceFXUtils {
 	private ResourceFXUtils() {
 	}
 
-
-
-	public static double clamp(final double value, final double min, final double max) {
+    public static double clamp(final double value, final double min, final double max) {
 		if (Double.compare(value, min) < 0) {
 			return min;
 		}
@@ -55,6 +57,7 @@ public final class ResourceFXUtils {
 		}
 		return value;
 	}
+
 
 	public static Image createImage(final double size1, final float[][] noise) {
 		int width = (int) size1;
@@ -101,6 +104,16 @@ public final class ResourceFXUtils {
 		String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
 		return new File(new File(path).getParentFile(), dir);
 	}
+
+	public static int getYearCreation(Path path ) {
+        try {
+            BasicFileAttributes readAttributes = Files.readAttributes(path, BasicFileAttributes.class);
+            Instant l = readAttributes.creationTime().toInstant();
+            return ZonedDateTime.ofInstant(l, ZoneId.systemDefault()).getYear();
+        } catch (IOException e) {
+            return ZonedDateTime.now().getYear();
+        }
+    }
 
 	public static Mesh importStlMesh(final File file) {
 		StlMeshImporter importer = new StlMeshImporter();

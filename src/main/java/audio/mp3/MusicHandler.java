@@ -21,7 +21,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -73,19 +72,17 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         return new Node[] { new Label(nome), textField };
     }
 
-
     private void findImage(Music selectedItem, Stage stage) {
         String value = MusicReader.getDescription(selectedItem);
         ObservableList<Node> children = FXCollections.observableArrayList();
         children.add(new Text(value));
 
         SimpleTableViewBuilder<Node> tableBuilder = new SimpleTableViewBuilder<>();
+        final int prefWidth = 300;
         TableView<Node> tableView = tableBuilder.addColumn("Image", (p, cell) -> {
             cell.setAlignment(Pos.CENTER);
             cell.setGraphic(p);
-        }).items(children)
-            .prefWidth(300)
-            .equalColumns()
+        }).items(children).prefWidth(prefWidth).equalColumns()
 
             .build();
         Stage dialog = CommonsFX.displayDialog(value, tableView);
@@ -96,15 +93,13 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
                 selectedItem.setImage(image);
                 mediaPlayer.stop();
                 mediaPlayer.dispose();
-                while (mediaPlayer.getStatus() != Status.DISPOSED) {
-                }
                 MusicReader.saveMetadata(selectedItem);
             }
             dialog.close();
             stage.close();
         });
-        ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(),
-            selectedItem.getPasta(), selectedItem.getTitulo());
+        ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
+            selectedItem.getTitulo());
     }
 
     private void handleMousePressed(final TableView<Music> songsTable) {

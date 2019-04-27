@@ -22,50 +22,44 @@ public class ImageLoader {
     private void addImages(ObservableList<Node> children, String text) {
         this.text = text;
         ObservableList<String> images = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
-        images.addListener((Change<? extends String> c) -> {
-
-            Platform.runLater(() -> addImages(children, text, c));
-        });
+        images.addListener((Change<? extends String> c) -> Platform.runLater(() -> addImages(children, text, c)));
         Platform.runLater(() -> {
             Node node = children.get(0);
             children.clear();
             children.add(node);
-            LOG.info("CLEARING IMAGES");
+            LOG.trace("CLEARING IMAGES");
         });
         WikiImagesUtils.getImagensForked(text, images);
     }
 
     private void addImages(ObservableList<Node> children, String text, Change<? extends String> c) {
-        synchronized (children) {
-            LOG.info("ADD IMAGE {}", text);
-            while (c.next()) {
-                List<? extends String> addedSubList = c.getAddedSubList();
+        LOG.trace("ADD IMAGE {}", text);
+        while (c.next()) {
+            addImageViews(children, text, c.getAddedSubList());
+        }
+    }
+
+    private void addImageViews(ObservableList<Node> children, String text, List<? extends String> addedSubList) {
+        try {
+            int size = addedSubList.size();
+            for (int j = 0; j < size; j++) {
                 try {
-                    int size = addedSubList.size();
-                    for (int j = 0; j < size; j++) {
-                        try {
-                            String url = addedSubList.get(j);
-                            if (!text.equals(this.text)) {
-                                return;
-                            }
-                            LOG.info("NEW IMAGE {}", url);
-                            ImageView imageView = WikiImagesUtils.convertToImage(url);
-                            int i = getIndex(children, imageView);
-                            children.add(i, imageView);
-                        } catch (Exception e) {
-                            LOG.trace("ERROR {}", e);
-                        }
+                    String url = addedSubList.get(j);
+                    if (!text.equals(this.text)) {
+                        return;
                     }
+                    LOG.trace("NEW IMAGE {}", url);
+                    ImageView imageView = WikiImagesUtils.convertToImage(url);
+                    int i = getIndex(children, imageView);
+                    children.add(i, imageView);
                 } catch (Exception e) {
                     LOG.trace("ERROR {}", e);
                 }
             }
+        } catch (Exception e) {
+            LOG.trace("ERROR {}", e);
         }
     }
-
-//    private void addImages(Pane root, String text, Change<? extends String> c) {
-//        addImages(root.getChildren(), text, c);
-//    }
 
     private void addThread(ObservableList<Node> root, String value) {
         try {
@@ -73,7 +67,7 @@ public class ImageLoader {
                 thread.interrupt();
             }
         } catch (Exception e1) {
-            LOG.info("TRYING TO STOP", e1);
+            LOG.trace("TRYING TO STOP", e1);
         }
         thread = new Thread(() -> addImages(root, value));
         thread.start();
@@ -95,8 +89,7 @@ public class ImageLoader {
 
     public static void loadImages(ObservableList<Node> root, String... value) {
         Set<String> keywords = Stream.of(value).filter(StringUtils::isNotBlank).map(String::trim)
-            .map(e -> e.replaceAll(".mp3", ""))
-            .flatMap(e -> Stream.of(e.split("\\s+-\\s+")))
+            .map(e -> e.replaceAll(".mp3", "")).flatMap(e -> Stream.of(e.split("\\s+-\\s+")))
             .collect(Collectors.toSet());
         for (String string : keywords) {
             new ImageLoader().addThread(root, string);

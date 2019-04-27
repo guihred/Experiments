@@ -44,13 +44,13 @@ public class DecisionTree {
         dataframeML.addAll("Red", 1, "Grape");
         dataframeML.addAll("Red", 1, "Grape");
         dataframeML.addAll("Yellow", 3, "Lemon");
-        LOG.info("{}", gini(dataframeML, labelHeader));
+        LOG.trace("{}", gini(dataframeML, labelHeader));
 
         DecisionNode buildTree = buildTree(dataframeML, labelHeader);
         Map<String, Object> row = dataframeML.rowMap(4);
-        LOG.info("{}", buildTree);
+        LOG.trace("{}", buildTree);
         Object predict = buildTree.predict(row);
-        LOG.info("{}", predict);
+        LOG.trace("{}", predict);
     }
 
     public static Question findBestSplit(DataframeML dataframe, String label) {
@@ -126,9 +126,9 @@ public class DecisionTree {
         list.add(list.remove(0));
         build.removeCol("WINNER", "PLAYER");
         DecisionNode buildTree = buildTree(build, "ACTION");
-        LOG.info("\n{}", buildTree);
-        LOG.info("{}", buildTree.size());
-        LOG.info("\n{}", buildTree.shuffle());
+        LOG.trace("\n{}", buildTree);
+        LOG.trace("{}", buildTree.size());
+        LOG.trace("\n{}", buildTree.shuffle());
     }
 
     private static boolean isRedundantNode(DecisionNode trueTree, DecisionNode falseTree) {
