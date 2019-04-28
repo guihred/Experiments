@@ -1,6 +1,5 @@
 package utils;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,22 +8,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
-import org.blinkenlights.jid3.ID3Tag;
-import org.blinkenlights.jid3.MP3File;
-import org.blinkenlights.jid3.v2.APICID3V2Frame;
-import org.blinkenlights.jid3.v2.ID3V2Frame;
-import org.blinkenlights.jid3.v2.ID3V2Tag;
-import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
 
 public final class SongUtils {
@@ -74,30 +65,7 @@ public final class SongUtils {
     }
 
 
-    public static Image extractEmbeddedImage(File mp3) {
-        MP3File mp31 = new MP3File(mp3);
-        try {
-            for (ID3Tag tag : mp31.getTags()) {
 
-                if (tag instanceof ID3V2_3_0Tag) {
-                    ID3V2_3_0Tag tag2 = (ID3V2_3_0Tag) tag;
-
-                    if (tag2.getAPICFrames() != null && tag2.getAPICFrames().length > 0) {
-                        // Simply take the first image that is available.
-                        APICID3V2Frame frame = tag2.getAPICFrames()[0];
-                        return new Image(new ByteArrayInputStream(frame.getPictureData()));
-                    }
-                }
-            }
-            ID3V2Tag id3v2Tag = mp31.getID3V2Tag();
-            ID3V2Frame[] singleFrames = id3v2Tag.getSingleFrames();
-            String singleFramesStr = Arrays.toString(singleFrames);
-            LOG.trace("SingleFrames={}", singleFramesStr);
-        } catch (Exception e) {
-            LOG.trace("", e);
-        }
-        return null;
-    }
 
     public static String formatDuration(Duration duration) {
         double millis = duration.toMillis();
@@ -154,6 +122,11 @@ public final class SongUtils {
 		// ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
         Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils
 				.executeInConsoleAsync(cmd.toString(), responses);
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync,
                 s -> Math.abs(end.subtract(start).toMillis()), SongUtils::convertTimeToMillis);
     }

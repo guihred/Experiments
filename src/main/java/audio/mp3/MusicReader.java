@@ -1,9 +1,16 @@
 package audio.mp3;
 
+import com.mpatric.mp3agic.ID3v1;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.ID3v24Tag;
+import com.mpatric.mp3agic.Mp3File;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
+import java.nio.file.StandardCopyOption;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,59 +18,64 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
-import org.blinkenlights.jid3.ID3Tag;
-import org.blinkenlights.jid3.MP3File;
-import org.blinkenlights.jid3.v1.ID3V1Tag.Genre;
-import org.blinkenlights.jid3.v1.ID3V1_0Tag;
-import org.blinkenlights.jid3.v2.APICID3V2Frame;
-import org.blinkenlights.jid3.v2.APICID3V2Frame.PictureType;
-import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
-import utils.SongUtils;
 
 public final class MusicReader {
-	private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log();
 
-	private MusicReader() {
-	}
-
-	public static String getDescription(Music selectedItem) {
-        if (StringUtils.isNotBlank(selectedItem.getAlbum())) {
-            return selectedItem.getAlbum();
-        }
-        if (StringUtils.isNotBlank(selectedItem.getArtista())) {
-            return selectedItem.getArtista();
-        }
-
-        return selectedItem.getPasta();
+    private MusicReader() {
     }
 
+    public static Image extractEmbeddedImage(File mp3) {
+        try {
+            Mp3File mp31 = new Mp3File(mp3);
+            if (mp31.hasId3v2Tag()) {
+                ID3v2 tag = mp31.getId3v2Tag();
+                byte[] albumImage = tag.getAlbumImage();
+                if (albumImage != null) {
+                    return new Image(new ByteArrayInputStream(albumImage));
+                }
+
+            }
+
+        } catch (Exception e) {
+            LOGGER.trace("", e);
+        }
+        return null;
+    }
+
+    public static String getDescription(Music selectedItem) {
+        return Stream
+            .of(selectedItem.getTitulo(), selectedItem.getArtista(), selectedItem.getAlbum(), selectedItem.getPasta())
+            .filter(StringUtils::isNotBlank).distinct().map(e -> e.replaceAll("[ /:]", "_"))
+            .collect(Collectors.joining(" - "));
+    }
 
     public static ObservableList<Music> getMusicas(File file) {
 
-		ObservableList<Music> musicas = FXCollections.observableArrayList();
-		Path start = file.toPath();
+        ObservableList<Music> musicas = FXCollections.observableArrayList();
+        Path start = file.toPath();
         try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
-            find.forEach(
-            		path -> musicas.add(readTags(path.toFile())));
+            find.forEach(path -> musicas.add(readTags(path.toFile())));
         } catch (Exception e) {
             LOGGER.trace("", e);
         }
-		return musicas;
-	}
+        return musicas;
+    }
 
     public static void main(String[] args) {
 
-		try {
+        try {
             File file = ResourceFXUtils.getUserFolder("Music");
             ObservableList<Music> musicas = getMusicas(file);
-            musicas.forEach(s -> LOGGER.trace("{}", s));
+            musicas.forEach(s -> LOGGER.info("{}", s));
         } catch (Exception e) {
             LOGGER.trace("", e);
-		}
-	}
+        }
+    }
+
     public static Music readTags(File sourceFile) {
         Music musica = new Music(sourceFile);
         String title = "";
@@ -72,56 +84,45 @@ public final class MusicReader {
         String year = "";
         String track = "";
         String genre2 = "";
-		MP3File mediaFile = new MP3File(sourceFile);
-		boolean v1 = false;
-		try {
+        try {
+            Mp3File mediaFile = new Mp3File(sourceFile);
 
-			ID3Tag[] lesTags = mediaFile.getTags();
-			Genre genre = Genre.Undefined;
-			for (int i = 0; i < lesTags.length; i++) {
-				if (lesTags[i] instanceof ID3V1_0Tag) {
-					v1 = true;
-					ID3V1_0Tag leTag = (ID3V1_0Tag) lesTags[i];
-                    title = notNull(leTag.getTitle(), title);
-                    artist = notNull(leTag.getArtist(), artist);
-                    album = notNull(leTag.getAlbum(), album);
-					year = trySetYear(year, leTag);
-                    genre = notNull(leTag.getGenre(), genre);
+            ID3v1 tagv1 = mediaFile.getId3v1Tag();
+            ID3v2 tagv2 = mediaFile.getId3v2Tag();
+            if (mediaFile.hasId3v1Tag()) {
+                ID3v1 leTag = tagv1;
+                title = notNull(leTag.getTitle(), title);
+                artist = notNull(leTag.getArtist(), artist);
+                album = notNull(leTag.getAlbum(), album);
+                year = notNull(leTag.getYear(), year);
+                genre2 = notNull(leTag.getGenreDescription(), genre2);
+            }
+            if (mediaFile.hasId3v2Tag()) {
+                ID3v2 leTag = tagv2;
+                title = notNull(leTag.getTitle(), title);
+                artist = notNull(leTag.getArtist(), artist);
+                album = notNull(leTag.getAlbum(), album);
+                year = notNull(leTag.getYear(), year);
+                track = notNull(leTag.getTrack(), track);
+                musica.setImage(extractEmbeddedImage(sourceFile));
+                genre2 = notNull(leTag.getGenreDescription(), genre2);
+            }
+        } catch (Exception e) {
+            LOGGER.error("ERROR FILE {}", sourceFile, e);
+        }
 
-				} else if (lesTags[i] instanceof ID3V2_3_0Tag) {
-					ID3V2_3_0Tag leTag = (ID3V2_3_0Tag) lesTags[i];
-                    title = notNull(leTag.getTitle(), title);
-                    artist = notNull(leTag.getArtist(), artist);
-                    album = notNull(leTag.getAlbum(), album);
-					year = trySetYear(year, leTag);
-					track = trySetTrack(track, leTag);
-                    musica.setImage(SongUtils.extractEmbeddedImage(sourceFile));
-                    genre2 = notNull(leTag.getGenre(), genre2);
-				}
-			}
-
-			if (v1) {
-				genre2 = genre.toString();
-			}
-
-		} catch (Exception e) {
-            LOGGER.trace("", e);
-		}
-
-		if (genre2.indexOf('(') == 0 || "".equals(genre2)) {
-			genre2 = "Undefined";
-		}
+        if (genre2.indexOf('(') == 0 || "".equals(genre2)) {
+            genre2 = "Undefined";
+        }
         musica.setTitulo(StringUtils.isBlank(title) ? sourceFile.getName().replaceAll("\\.mp3", "") : title);
-		musica.setGenero(genre2);
+        musica.setGenero(genre2);
         musica.setArtista(artist);
-		musica.setAlbum(album);
-		musica.setAno(year);
-		musica.setTrilha(track);
-		musica.setArquivo(sourceFile);
-
-
-		return musica;
-	}
+        musica.setAlbum(album);
+        musica.setAno(year);
+        musica.setTrilha(track);
+        musica.setArquivo(sourceFile);
+        return musica;
+    }
 
     public static void saveMetadata(Music a) {
         saveMetadata(a, a.getArquivo());
@@ -129,32 +130,50 @@ public final class MusicReader {
 
     public static void saveMetadata(Music a, File file) {
 
+        File file2 = new File(file.getParent(), "copy" + file.getName());
         try {
-            MP3File mp3File = new MP3File(file);
-            ID3V2_3_0Tag tags = new ID3V2_3_0Tag();
+            Files.copy(file.toPath(), file2.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            Mp3File mp3File = new Mp3File(file);
+            mp3File.removeId3v1Tag();
+            ID3v2 tags = mp3File.hasId3v2Tag() ? mp3File.getId3v2Tag() : new ID3v24Tag();
             tags.setAlbum(a.getAlbum());
             tags.setArtist(a.getArtista());
             tags.setTitle(a.getTitulo());
-            tags.setYear(a.getAnoInt());
+            tags.setYear(a.getAno());
             if (a.getImage() != null) {
-                String value = Objects.toString(a.getAlbum(), Objects.toString(a.getArtista(), a.getTitulo()));
+                String value = getDescription(a);
                 Image image = a.getImage();
                 File destination = new File(ResourceFXUtils.getOutFile(), "test" + value + ".png");
                 ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", destination);
-                PictureType oPictureType = PictureType.FrontCover;
                 byte[] allBytes = Files.readAllBytes(destination.toPath());
-                APICID3V2Frame oAPICID3V2Frame = new APICID3V2Frame("image/png", oPictureType, value, allBytes);
-                tags.addAPICFrame(oAPICID3V2Frame);
+                tags.setAlbumImage(allBytes, "image/png");
             }
-            mp3File.setID3Tag(tags);
-            mp3File.sync();
+            mp3File.setId3v2Tag(tags);
+            mp3File.save(file2.getAbsolutePath());
+
+            if (Files.isWritable(file.toPath())) {
+                copyFileBack(file, file2);
+            }
+            Files.deleteIfExists(file2.toPath());
             LOGGER.info("Saving {} in {}", a, file);
         } catch (Exception e) {
-			LOGGER.error("", e);
+            copyFileBack(file, file2);
+
+            LOGGER.error("", e);
         }
     }
 
-	@SuppressWarnings("unchecked")
+    private static void copyFileBack(File file, File file2) {
+        try {
+            Files.copy(file2.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.deleteIfExists(file2.toPath());
+        } catch (IOException e1) {
+            LOGGER.error("ERROR COPYING", e1);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     private static <T> T notNull(T... objects) {
         for (int i = 0; i < objects.length; i++) {
             if (objects[i] != null) {
@@ -163,34 +182,5 @@ public final class MusicReader {
         }
         return null;
     }
-
-
-	private static String trySetTrack(String track, ID3V2_3_0Tag leTag) {
-		try {
-			return Integer.toString(leTag.getTrackNumber());
-		} catch (Exception e) {
-            LOGGER.trace("", e);
-		}
-		return track;
-	}
-
-	private static String trySetYear(String y, ID3Tag leTag) {
-		try {
-			if (leTag instanceof ID3V1_0Tag) {
-				return ((ID3V1_0Tag) leTag).getYear();
-			}
-			if (leTag instanceof ID3V2_3_0Tag) {
-				return Integer.toString(((ID3V2_3_0Tag) leTag).getYear());
-			}
-
-		} catch (Exception e) {
-            LOGGER.trace("", e);
-		}
-		return y;
-	}
-
-
-
-
 
 }

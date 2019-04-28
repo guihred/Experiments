@@ -41,7 +41,7 @@ public final class ConsoleUtils {
                     simpleDoubleProperty.set(newValue);
                     Thread.sleep(500);
                 } catch (Exception e1) {
-                    LOGGER.trace("", e1);
+                    LOGGER.info("", e1);
                 }
             }
             simpleDoubleProperty.set(1);
@@ -86,7 +86,7 @@ public final class ConsoleUtils {
             new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
-                LOGGER.trace(line);
+                LOGGER.info(line);
                 String line1 = line;
                 result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey())).collect(
                     Collectors.toMap(Entry<String, String>::getKey, e -> line1.replaceAll(e.getKey(), e.getValue()))));
@@ -119,7 +119,7 @@ public final class ConsoleUtils {
             new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in2.readLine()) != null) {
-                LOGGER.trace("{}", line);
+                LOGGER.info("{}", line);
                 execution.add(line);
             }
             p.waitFor();
@@ -140,7 +140,7 @@ public final class ConsoleUtils {
                 new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in2.readLine()) != null) {
-                    LOGGER.trace("{}", line);
+                    LOGGER.info("{}", line);
                     execution.add(line);
                 }
                 p.waitFor();
@@ -170,7 +170,7 @@ public final class ConsoleUtils {
                     break;
                 }
             } catch (Exception e1) {
-                LOGGER.trace("", e1);
+                LOGGER.info("", e1);
             }
         }
     }
@@ -193,7 +193,7 @@ public final class ConsoleUtils {
             new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
-                LOGGER.trace(line);
+                LOGGER.info(line);
                 String line1 = line;
                 Map<String, String> regMap = responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
                     .collect(Collectors.toMap(Entry<String, String>::getKey,

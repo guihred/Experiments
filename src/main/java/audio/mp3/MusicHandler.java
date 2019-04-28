@@ -115,7 +115,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         root.getChildren().addAll(criarField("Artista", selectedItem.artistaProperty()));
         root.getChildren().addAll(criarField("Álbum", selectedItem.albumProperty()));
         root.setAlignment(Pos.CENTER);
-        Image imageData = SongUtils.extractEmbeddedImage(selectedItem.getArquivo());
+        Image imageData = MusicReader.extractEmbeddedImage(selectedItem.getArquivo());
         if (imageData != null) {
             ImageView imageView = new ImageView(imageData);
             imageView.setFitWidth(IMAGE_MAX_WIDTH);

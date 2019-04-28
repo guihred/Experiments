@@ -43,13 +43,14 @@ public final class WikiImagesUtils {
             BufferedImage image = decodeToImage(url);
             Image image2 = SwingFXUtils.toFXImage(image, null);
             ImageView imageView = new ImageView(image2);
-            imageView.setFitWidth(100);
             imageView.setPreserveRatio(true);
+            imageView.getStyleClass().add("wiki");
             return imageView;
         }
         
         String host = url.startsWith("//") ? "https:" : "https://en.wikipedia.org";
         ImageView imageView = new ImageView(host + url);
+        imageView.getStyleClass().add("wiki");
         imageView.setPreserveRatio(true);
         return imageView;
     }

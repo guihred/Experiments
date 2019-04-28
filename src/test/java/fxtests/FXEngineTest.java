@@ -34,47 +34,46 @@ import utils.RunnableEx;
 public class FXEngineTest extends AbstractTestExecution {
 
     @Test
-	public void verifyButtons() throws Exception {
-		measureTime("Test.testButtons",
-				() -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
-					sleep(1000);
-					clickOn(t);
-					type(KeyCode.ESCAPE);
+    public void verifyButtons() throws Exception {
+        measureTime("Test.testButtons",
+            () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
+                sleep(1000);
+                RunnableEx.ignore(() -> clickOn(t));
+                type(KeyCode.ESCAPE);
             }), Chapter4.Ex9.class, PdfReader.class));
 
-	}
+    }
 
     @Test
-	public void verifyDots() throws Exception {
-		show(DotsLauncher.class);
-		Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
-				.collect(Collectors.toSet());
-		Random random = new Random();
-		for (Node next : queryAll) {
-			drag(next, MouseButton.PRIMARY);
+    public void verifyDots() throws Exception {
+        show(DotsLauncher.class);
+        Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
+            .collect(Collectors.toSet());
+        Random random = new Random();
+        for (Node next : queryAll) {
+            drag(next, MouseButton.PRIMARY);
             int a = random.nextBoolean() ? 1 : -1;
-			if (random.nextBoolean()) {
+            if (random.nextBoolean()) {
                 moveBy(a * DotsSquare.SQUARE_SIZE, 0);
-			} else {
+            } else {
                 moveBy(0, a * DotsSquare.SQUARE_SIZE);
-			}
-			drop();
-		}
-	}
+            }
+            drop();
+        }
+    }
 
     @Test
-	public void verifyMinesweeper() throws Exception {
-		show(MinesweeperLauncher.class);
-        List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll()
-            .parallelStream()
+    public void verifyMinesweeper() throws Exception {
+        show(MinesweeperLauncher.class);
+        List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll().parallelStream()
             .collect(Collectors.toList());
-		Collections.shuffle(queryAll);
+        Collections.shuffle(queryAll);
         for (int i = 0; i < 30; i++) {
             Node next = queryAll.get(i);
             clickOn(next);
-			tryClickButtons();
+            tryClickButtons();
         }
-	}
+    }
 
     @Test
     public void verifyPlayingAudio() throws Exception {
@@ -84,20 +83,20 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-	public void verifyPong() throws Exception {
-		show(PongLauncher.class);
-		tryClickButtons();
-		for (Node next : lookup(e -> e instanceof Rectangle && e.isVisible()).queryAll()) {
-			drag(next, MouseButton.PRIMARY);
-			moveBy(0, DotsSquare.SQUARE_SIZE);
-			moveBy(0, -DotsSquare.SQUARE_SIZE);
-			drop();
-		}
-	}
+    public void verifyPong() throws Exception {
+        show(PongLauncher.class);
+        tryClickButtons();
+        for (Node next : lookup(e -> e instanceof Rectangle && e.isVisible()).queryAll()) {
+            drag(next, MouseButton.PRIMARY);
+            moveBy(0, DotsSquare.SQUARE_SIZE);
+            moveBy(0, -DotsSquare.SQUARE_SIZE);
+            drop();
+        }
+    }
 
     @Test
-	public void verifyPuzzle() throws Exception {
-	    show(PuzzleLauncher.class);
+    public void verifyPuzzle() throws Exception {
+        show(PuzzleLauncher.class);
         interactNoWait(() -> currentStage.setMaximized(true));
         List<Node> queryAll = lookup(e -> e instanceof PuzzlePiece).queryAll().stream().filter(e -> e.isVisible())
             .collect(Collectors.toList());
@@ -106,76 +105,75 @@ public class FXEngineTest extends AbstractTestExecution {
             Node next = queryAll.get(i);
             RunnableEx.ignore(() -> drag(next, MouseButton.PRIMARY));
             moveBy(Math.random() * squareSize - squareSize / 2, Math.random() * squareSize - squareSize / 2);
-	        drop();
+            drop();
         }
         interactNoWait(() -> currentStage.setMaximized(false));
-	}
+    }
 
     @Test
-	public void verifySnake() throws Exception {
-		show(SnakeLauncher.class);
-		type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
-	}
+    public void verifySnake() throws Exception {
+        show(SnakeLauncher.class);
+        type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
+    }
 
     @Test
-	public void verifySngpcViewer() throws Exception {
-	    show(SngpcViewer.class);
+    public void verifySngpcViewer() throws Exception {
+        show(SngpcViewer.class);
         sleep(500);
-	    Node tree = lookup(e -> e instanceof TreeView).queryAll().stream().limit(1)
-	        .findFirst().orElse(null);
+        Node tree = lookup(e -> e instanceof TreeView).queryAll().stream().limit(1).findFirst().orElse(null);
         targetPos(Pos.TOP_CENTER);
-	    clickOn(tree);
+        clickOn(tree);
         targetPos(Pos.CENTER);
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
-	}
+    }
 
     @Test
-	public void verifySolitaire() throws Exception {
-		show(SolitaireLauncher.class);
-		List<CardStack> cardStacks = lookup(".cardstack").queryAllAs(CardStack.class).stream()
-				.collect(Collectors.toList());
-		Collections.shuffle(cardStacks);
+    public void verifySolitaire() throws Exception {
+        show(SolitaireLauncher.class);
+        List<CardStack> cardStacks = lookup(".cardstack").queryAllAs(CardStack.class).stream()
+            .collect(Collectors.toList());
+        Collections.shuffle(cardStacks);
         targetPos(Pos.TOP_CENTER);
-		for (CardStack cardStack : cardStacks) {
-			if (cardStack.getChildren().size() <= 1) {
-				continue;
-			}
-			Node card = getLastCard(cardStack);
-			clickOn(cardStack);
-			for (CardStack stack : cardStacks) {
-				drag(card, MouseButton.PRIMARY);
-				moveTo(stack);
-				drop();
-				if (!cardStack.getChildren().contains(card)) {
-					if (cardStack.getChildren().size() > 1) {
-						card = getLastCard(cardStack);
-						clickOn(cardStack);
-					} else {
-						continue;
-					}
-				}
+        for (CardStack cardStack : cardStacks) {
+            if (cardStack.getChildren().size() <= 1) {
+                continue;
+            }
+            Node card = getLastCard(cardStack);
+            clickOn(cardStack);
+            for (CardStack stack : cardStacks) {
+                drag(card, MouseButton.PRIMARY);
+                moveTo(stack);
+                drop();
+                if (!cardStack.getChildren().contains(card)) {
+                    if (cardStack.getChildren().size() > 1) {
+                        card = getLastCard(cardStack);
+                        clickOn(cardStack);
+                    } else {
+                        continue;
+                    }
+                }
 
-			}
-		}
+            }
+        }
         targetPos(Pos.CENTER);
-	}
+    }
 
     @Test
-	public void verifySquare() throws Exception {
-		show(Square2048Launcher.class);
-		type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
-	}
+    public void verifySquare() throws Exception {
+        show(Square2048Launcher.class);
+        type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
+    }
 
-	private Node getLastCard(CardStack cardStack) {
+    private Node getLastCard(CardStack cardStack) {
 
-		ObservableList<Node> children = cardStack.getChildren();
-		Optional<Node> findFirst = children.stream().filter(e -> e instanceof SolitaireCard)
-				.filter(e -> ((SolitaireCard) e).isShown()).findFirst();
-		if (findFirst.isPresent()) {
-			return findFirst.get();
-		}
+        ObservableList<Node> children = cardStack.getChildren();
+        Optional<Node> findFirst = children.stream().filter(e -> e instanceof SolitaireCard)
+            .filter(e -> ((SolitaireCard) e).isShown()).findFirst();
+        if (findFirst.isPresent()) {
+            return findFirst.get();
+        }
 
-		return children.get(children.size() - 1);
-	}
+        return children.get(children.size() - 1);
+    }
 
 }

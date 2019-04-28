@@ -219,7 +219,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 } else {
                     currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
                 }
-                getLogger().info("{}={}", currentWord, reading);
+                getLogger().trace("{}={}", currentWord, reading);
                 currentWord.delete(0, currentWord.length());
             }
             if (!KANJI_BLOCK.contains(of)) {
