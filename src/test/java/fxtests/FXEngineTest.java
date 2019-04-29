@@ -20,11 +20,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Rectangle;
+import ml.WorldMapExample;
+import ml.WorldMapExample2;
 import org.junit.Test;
 import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
@@ -108,6 +111,16 @@ public class FXEngineTest extends AbstractTestExecution {
             drop();
         }
         interactNoWait(() -> currentStage.setMaximized(false));
+    }
+
+    @Test
+    public void verifyScroll() throws Exception {
+        measureTime("Test.verifyScroll",
+            () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
+                scroll(2, VerticalDirection.DOWN);
+                scroll(2, VerticalDirection.UP);
+            }), WorldMapExample.class, WorldMapExample2.class));
+        
     }
 
     @Test
