@@ -60,7 +60,13 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     public String getReading(String currentWord, char currentLetter) {
-        return getReading(currentWord, currentLetter, 0);
+		String key = currentWord + currentLetter;
+		boolean notContains = !mapReading.containsKey(key);
+        String reading = getReading(currentWord, currentLetter, 0);
+		if (notContains) {
+			getLogger().info("{}={}", key, reading);
+		}
+		return reading;
     }
 
     public String getReading(String currentWord, char currentLetter, int recursive) {
@@ -177,7 +183,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             long i = ths.size() - count;
             updateAll(i, total);
         }
-        try (PrintStream printStream = new PrintStream(new File(ResourceFXUtils.toFile("out"), "hp1Tex2Converted.tex"),
+		try (PrintStream printStream = new PrintStream(new File(ResourceFXUtils.getOutFile(), "hp1Tex2Converted.tex"),
             StandardCharsets.UTF_8.displayName())) {
             for (String s : lines) {
                 printStream.println(s);
@@ -219,7 +225,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 } else {
                     currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
                 }
-                getLogger().info("{}={}", currentWord, reading);
+				getLogger().trace("{}={}", currentWord, reading);
                 currentWord.delete(0, currentWord.length());
             }
             if (!KANJI_BLOCK.contains(of)) {
