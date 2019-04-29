@@ -40,7 +40,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 	}
 
 	protected void tryClickButtons() {
-		lookup(".button").queryAll().forEach(ConsumerEx.makeConsumer(this::clickOn));
+        lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
 	}
 
 }

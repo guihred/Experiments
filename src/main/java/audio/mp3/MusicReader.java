@@ -108,7 +108,8 @@ public final class MusicReader {
                 genre2 = notNull(leTag.getGenreDescription(), genre2);
             }
         } catch (Exception e) {
-            LOGGER.error("ERROR FILE {}", sourceFile, e);
+            LOGGER.error("ERROR FILE {}", sourceFile);
+            LOGGER.trace("ERROR FILE {}", sourceFile, e);
         }
 
         if (genre2.indexOf('(') == 0 || "".equals(genre2)) {

@@ -111,7 +111,7 @@ public class FXFileReadersTest extends ApplicationTest {
 			Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
 					.collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
 			filesByPackage.forEach((pack, files) -> {
-				LOG.info(pack);
+                LOG.trace(pack);
 				Map<String, Map<String, Long>> packageDependencyMap = PackageTopology.createFileDependencyMap(files);
 				PackageTopology.printDependencyMap(packageDependencyMap);
 			});

@@ -98,7 +98,7 @@ public final class SongModel implements HasLogging {
     }
 
     private void handleMetadata(String key, Object value) {
-        getLogger().info("Key={},Value={}", key, value);
+        getLogger().trace("Key={},Value={}", key, value);
 		if ("album".equals(key)) {
             setAlbum(value.toString());
 		} else if ("artist".equals(key)) {
@@ -128,11 +128,11 @@ public final class SongModel implements HasLogging {
             mediaPlayer.getValue().volumeProperty().set(0);
             mediaPlayer.get().setOnError(() -> {
                 String errorMessage = mediaPlayer.get().getError().getMessage();
-                getLogger().info("MediaPlayer Error: {}", errorMessage);
+                getLogger().trace("MediaPlayer Error: {}", errorMessage);
             });
         } catch (RuntimeException re) {
 			LOGGER.error("", re);
-            getLogger().info("Caught Exception: {}", re.getMessage());
+            getLogger().trace("Caught Exception: {}", re.getMessage());
         }
     }
     private void resetProperties() {
