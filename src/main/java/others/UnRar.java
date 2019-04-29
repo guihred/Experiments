@@ -49,22 +49,19 @@ public final class UnRar {
 	}
 
 	private static void printSummary() {
-        LOGGER.info("\n\n\nSuccessfully tested archives:\n");
+        LOGGER.info("\nSuccessfully tested archives:\n");
 		for (String sf : successfulFiles) {
             LOGGER.info(sf);
 		}
-        LOGGER.info("");
         LOGGER.info("Unsupported archives:\n");
 		for (String uf : unsupportedFiles) {
             LOGGER.info(uf);
 		}
-        LOGGER.info("");
         LOGGER.info("Failed archives:");
 		for (String ff : errorFiles) {
             LOGGER.info(ff);
 		}
-        LOGGER.info("");
-        LOGGER.info("\n\n\nSummary\n");
+        LOGGER.info("\nSummary\n");
         LOGGER.info("tested:\t\t{}", successfulFiles.size() + unsupportedFiles.size() + errorFiles.size());
         LOGGER.info("successful:\t{}", successfulFiles.size());
         LOGGER.info("unsupported:\t{}", unsupportedFiles.size());

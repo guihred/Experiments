@@ -94,6 +94,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public SimpleTableViewBuilder<T> sortable(boolean value) {
+        table.getColumns().forEach(e -> e.setSortable(value));
+        return this;
+    }
+
     private abstract class CustomableTableCell<M, X> extends TableCell<M, X> {
 
         protected abstract void setStyleable(M auxMed);

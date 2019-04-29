@@ -77,9 +77,9 @@ public class JewelViewer extends Application {
 
     private PerspectiveCamera addCamera(Scene scene) {
         camera = new PerspectiveCamera();
-        LOGGER.info("Near Clip: {}", camera.getNearClip());
-        LOGGER.info("Far Clip:  {}", camera.getFarClip());
-        LOGGER.info("FOV:       {}", camera.getFieldOfView());
+        LOGGER.trace("Near Clip: {}", camera.getNearClip());
+        LOGGER.trace("Far Clip:  {}", camera.getFarClip());
+        LOGGER.trace("FOV:       {}", camera.getFieldOfView());
 
         scene.setCamera(camera);
         return camera;

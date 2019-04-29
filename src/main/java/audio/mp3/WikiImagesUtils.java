@@ -43,13 +43,14 @@ public final class WikiImagesUtils {
             BufferedImage image = decodeToImage(url);
             Image image2 = SwingFXUtils.toFXImage(image, null);
             ImageView imageView = new ImageView(image2);
-            imageView.setFitWidth(100);
             imageView.setPreserveRatio(true);
+            imageView.getStyleClass().add("wiki");
             return imageView;
         }
         
         String host = url.startsWith("//") ? "https:" : "https://en.wikipedia.org";
         ImageView imageView = new ImageView(host + url);
+        imageView.getStyleClass().add("wiki");
         imageView.setPreserveRatio(true);
         return imageView;
     }
@@ -83,9 +84,11 @@ public final class WikiImagesUtils {
         LOGGER.info("SEARCHING FOR {}", artista);
         String encode = encode(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;
+        String url2 = "https://pt.wikipedia.org/wiki/" + encode;
 
         CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(images::addAll);
-        ForkJoinPool.commonPool().awaitQuiescence(180, TimeUnit.SECONDS);
+        CompletableFuture.supplyAsync(() -> readPage(url2)).thenAccept(images::addAll);
+        ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
         return images;
     }
 

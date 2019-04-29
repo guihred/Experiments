@@ -8,10 +8,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -26,6 +25,7 @@ public class MusicOrganizer extends Application implements HasLogging {
 
     private static final int HEIGHT = 250;
     private static final int WIDTH = 600;
+    private static final Image DEFAULT_VIEW = defaultView();
 
     @Override
     public void start(Stage primaryStage) {
@@ -37,11 +37,11 @@ public class MusicOrganizer extends Application implements HasLogging {
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
         chooser.setInitialDirectory(musicsDirectory.getParentFile());
 
-        musicasTable.setItems(MusicReader.getMusicas(musicsDirectory));
         musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
         TextField filterField = new TextField();
         Button buttonMusic = loadMusic(primaryStage, chooser, musicasTable, filterField);
-        configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList());
+        ObservableList<Music> musics = FXCollections.observableArrayList();
+        configurarFiltroRapido(filterField, musicasTable, musics);
         Button buttonVideos = loadVideos(primaryStage, chooser, musicasTable, filterField);
         root.getChildren()
             .add(new VBox(new Label("Lista Músicas"), new HBox(buttonMusic, buttonVideos, filterField), musicasTable));
@@ -56,6 +56,10 @@ public class MusicOrganizer extends Application implements HasLogging {
         musicasEstoqueTable.setItems(filteredData);
         filterField.textProperty().addListener((o, old, newV) -> filteredData.setPredicate(
             musica -> StringUtils.isEmpty(newV) || StringUtils.containsIgnoreCase(musica.toString(), newV)));
+    }
+
+    private void convertToImage(Music music, TableCell<Music, Object> cell) {
+        cell.setGraphic(view(music.getImage() != null ? music.getImage() : DEFAULT_VIEW));
     }
 
     private Button loadMusic(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
@@ -84,14 +88,26 @@ public class MusicOrganizer extends Application implements HasLogging {
 
     private TableView<Music> tabelaMusicas() {
         TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>().prefWidth(WIDTH).scaleShape(false)
-            .addColumn("Título", "titulo").addColumn("Artista", "artista").addColumn("Álbum", "album")
-            .addColumn("Ano", "ano").addColumn("Gênero", "genero").addColumn("Pasta", "pasta").equalColumns().build();
+            .addColumn("Image", this::convertToImage).addColumn("Título", "titulo").addColumn("Artista", "artista")
+            .addColumn("Álbum", "album").addColumn("Pasta", "pasta").addColumn("Gênero", "genero")
+            .addColumn("Ano", "ano").sortable(true).equalColumns().build();
         musicaTable.setOnMousePressed(new MusicHandler(musicaTable));
         return musicaTable;
     }
 
+    private ImageView view(Image music) {
+        ImageView imageView = new ImageView(music);
+        imageView.setFitWidth(50);
+        imageView.setPreserveRatio(true);
+        return imageView;
+    }
+
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static Image defaultView() {
+        return new Image(ResourceFXUtils.toExternalForm("fb.jpg"));
     }
 
 }

@@ -29,7 +29,6 @@ public final class Word2VecExample {
 		}
 
 		File filePath = ResourceFXUtils.toFile(RAW_SENTENCES_TXT).getAbsoluteFile();
-		LOG.info("Load & Vectorize Sentences....");
 		// Strip white space before and after for each line
 		SentenceIterator iter = new BasicLineIterator(filePath);
 		// Split on white spaces in the line to get words
@@ -42,7 +41,6 @@ public final class Word2VecExample {
 		 */
 		t.setTokenPreProcessor(new CommonPreprocessor());
 
-		LOG.info("Building model....");
 		final int seed = 42;
 		Word2Vec vec = new Word2Vec.Builder()
 				.minWordFrequency(5)
@@ -54,7 +52,6 @@ public final class Word2VecExample {
 				.iterate(iter)
 				.tokenizerFactory(t)
 				.build();
-		LOG.info("Fitting Word2Vec model....");
 		vec.fit();
 
 		LOG.info("Writing word vectors to text file....");

@@ -43,7 +43,7 @@ public final class PdfUtils {
                     images.put(i, pageImages);
                 }
             } catch (Exception e) {
-                LOG.info("", e);
+                LOG.trace("", e);
             }
         }).start();
         return images;
@@ -82,7 +82,7 @@ public final class PdfUtils {
             pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages() - start);
             pdfInfo.setImages(PdfUtils.extractImages(file1, start, pdfInfo.getNumberOfPages()));
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.trace("", e);
         }
         return pdfInfo;
     }
@@ -90,10 +90,10 @@ public final class PdfUtils {
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
         try {
             List<PdfImage> images1 = printImageLocations.processPage(page, i);
-            LOG.info("images extracted {}", images1);
+            LOG.trace("images extracted {}", images1);
             return images1;
         } catch (Exception e) {
-            LOG.info("", e);
+            LOG.trace("", e);
             return Collections.emptyList();
         }
     }

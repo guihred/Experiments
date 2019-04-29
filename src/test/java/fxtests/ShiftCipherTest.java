@@ -57,6 +57,7 @@ public final class ShiftCipherTest implements HasLogging {
             long start = System.currentTimeMillis();
             final long maxTime = 30_000;
             while (System.currentTimeMillis() - start < maxTime) {
+				// DOES NOTHING
             }
             thread.interrupt();
         } catch (Exception e) {

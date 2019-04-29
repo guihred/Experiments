@@ -5,6 +5,7 @@
  */
 package fxpro.ch08;
 
+import audio.mp3.MusicReader;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -17,7 +18,6 @@ import javafx.scene.media.MediaPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HasLogging;
-import utils.SongUtils;
 
 public final class SongModel implements HasLogging {
 
@@ -98,7 +98,7 @@ public final class SongModel implements HasLogging {
     }
 
     private void handleMetadata(String key, Object value) {
-        getLogger().info("Key={},Value={}", key, value);
+        getLogger().trace("Key={},Value={}", key, value);
 		if ("album".equals(key)) {
             setAlbum(value.toString());
 		} else if ("artist".equals(key)) {
@@ -128,11 +128,11 @@ public final class SongModel implements HasLogging {
             mediaPlayer.getValue().volumeProperty().set(0);
             mediaPlayer.get().setOnError(() -> {
                 String errorMessage = mediaPlayer.get().getError().getMessage();
-                getLogger().info("MediaPlayer Error: {}", errorMessage);
+                getLogger().trace("MediaPlayer Error: {}", errorMessage);
             });
         } catch (RuntimeException re) {
 			LOGGER.error("", re);
-            getLogger().info("Caught Exception: {}", re.getMessage());
+            getLogger().trace("Caught Exception: {}", re.getMessage());
         }
     }
     private void resetProperties() {
@@ -162,7 +162,7 @@ public final class SongModel implements HasLogging {
 
     private void tryGetAlbumCover(String url) {
 		try {
-            Image extractEmbeddedImageData = SongUtils
+            Image extractEmbeddedImageData = MusicReader
                     .extractEmbeddedImage(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
             setAlbumCover(extractEmbeddedImageData);
 		} catch (Exception e) {

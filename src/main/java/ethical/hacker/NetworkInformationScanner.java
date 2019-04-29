@@ -30,7 +30,7 @@ public final class NetworkInformationScanner {
             }
             String description = ClassReflectionUtils.getDescription(n, toStringMAp);
             if (!description.isEmpty()) {
-                LOG.info("{}", description);
+                LOG.trace("{}", description);
             }
         }
     }
@@ -51,7 +51,7 @@ public final class NetworkInformationScanner {
                 }
                 Map<String, String> description = ClassReflectionUtils.getDescriptionMap(n, toStringMAp);
                 if (!description.isEmpty()) {
-                    LOG.info("{}", description);
+                    LOG.trace("{}", description);
                     arrayList.add(description);
                 }
             }

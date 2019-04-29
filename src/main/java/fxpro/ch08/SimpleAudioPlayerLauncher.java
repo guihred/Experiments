@@ -106,7 +106,7 @@ public class SimpleAudioPlayerLauncher extends Application {
     }
 
     private void handleMetadata(String key, Object value) {
-        LOGGER.info("Key={},Value={}", key, value);
+        LOGGER.trace("Key={},Value={}", key, value);
         if ("album".equals(key)) {
             album.setText(value.toString());
         } else if ("artist".equals(key)) {

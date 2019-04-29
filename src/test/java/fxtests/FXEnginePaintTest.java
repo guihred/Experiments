@@ -68,7 +68,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 			drop();
 			Set<Node> queryAll2 = lookup("#tools .toggle-button").queryAll();
 			queryAll2.forEach(e -> {
-				ConsumerEx.makeConsumer((Node f) -> clickOn(f)).accept(e);
+                ConsumerEx.ignore((Node f) -> clickOn(f)).accept(e);
 				scroll(1, VerticalDirection.DOWN);
 				moveTo(stack);
 				moveBy(randomMove(bound), randomMove(bound));
