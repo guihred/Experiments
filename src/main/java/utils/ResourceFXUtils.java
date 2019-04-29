@@ -111,6 +111,7 @@ public final class ResourceFXUtils {
             Instant l = readAttributes.creationTime().toInstant();
             return ZonedDateTime.ofInstant(l, ZoneId.systemDefault()).getYear();
         } catch (IOException e) {
+            LOGGER.trace("", e);
             return ZonedDateTime.now().getYear();
         }
     }

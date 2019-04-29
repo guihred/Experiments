@@ -40,7 +40,7 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
         clickOn("Importar Arquivo");
 		clickOn(".text-field");
 		String text = "asdsd";
-		write(text);
+        type(typeName(text));
 		eraseText(text.length());
 		clickOn("Exportar Excel");
 		getLogger().info("VERIFIED FXEngineRosarioTest ");

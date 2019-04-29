@@ -25,7 +25,7 @@ public class MusicOrganizer extends Application implements HasLogging {
 
     private static final int HEIGHT = 250;
     private static final int WIDTH = 600;
-    private Image DEFAULT_VIEW = defaultView();
+    private static final Image DEFAULT_VIEW = defaultView();
 
     @Override
     public void start(Stage primaryStage) {
@@ -60,10 +60,6 @@ public class MusicOrganizer extends Application implements HasLogging {
 
     private void convertToImage(Music music, TableCell<Music, Object> cell) {
         cell.setGraphic(view(music.getImage() != null ? music.getImage() : DEFAULT_VIEW));
-    }
-
-    private Image defaultView() {
-        return new Image(ResourceFXUtils.toExternalForm("fb.jpg"));
     }
 
     private Button loadMusic(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
@@ -108,6 +104,10 @@ public class MusicOrganizer extends Application implements HasLogging {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static Image defaultView() {
+        return new Image(ResourceFXUtils.toExternalForm("fb.jpg"));
     }
 
 }

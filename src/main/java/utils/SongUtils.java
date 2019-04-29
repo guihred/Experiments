@@ -122,11 +122,6 @@ public final class SongUtils {
 		// ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
         Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils
 				.executeInConsoleAsync(cmd.toString(), responses);
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync,
                 s -> Math.abs(end.subtract(start).toMillis()), SongUtils::convertTimeToMillis);
     }

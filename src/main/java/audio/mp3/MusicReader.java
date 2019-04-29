@@ -112,7 +112,7 @@ public final class MusicReader {
             LOGGER.trace("ERROR FILE {}", sourceFile, e);
         }
 
-        if (genre2.indexOf('(') == 0 || "".equals(genre2)) {
+        if (genre2 == null || genre2.indexOf('(') == 0 || "".equals(genre2)) {
             genre2 = "Undefined";
         }
         musica.setTitulo(StringUtils.isBlank(title) ? sourceFile.getName().replaceAll("\\.mp3", "") : title);

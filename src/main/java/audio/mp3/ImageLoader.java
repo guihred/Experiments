@@ -39,22 +39,26 @@ public class ImageLoader {
         }
     }
 
+    private void addImageView(ObservableList<Node> children, List<? extends String> addedSubList, int j) {
+        try {
+            String url = addedSubList.get(j);
+            LOG.trace("NEW IMAGE {}", url);
+            ImageView imageView = WikiImagesUtils.convertToImage(url);
+            int i = getIndex(children, imageView);
+            children.add(i, imageView);
+        } catch (Exception e) {
+            LOG.trace("ERROR {}", e);
+        }
+    }
+
     private void addImageViews(ObservableList<Node> children, String text, List<? extends String> addedSubList) {
         try {
             int size = addedSubList.size();
             for (int j = 0; j < size; j++) {
-                try {
-                    String url = addedSubList.get(j);
-                    if (!text.equals(this.text)) {
-                        return;
-                    }
-                    LOG.trace("NEW IMAGE {}", url);
-                    ImageView imageView = WikiImagesUtils.convertToImage(url);
-                    int i = getIndex(children, imageView);
-                    children.add(i, imageView);
-                } catch (Exception e) {
-                    LOG.trace("ERROR {}", e);
+                if (!text.equals(this.text)) {
+                    return;
                 }
+                addImageView(children, addedSubList, j);
             }
         } catch (Exception e) {
             LOG.trace("ERROR {}", e);
