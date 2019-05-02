@@ -40,21 +40,23 @@ public class PortScanner {
 
     public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress) {
         Locale.setDefault(Locale.ENGLISH);
-        String hostRegex = "Nmap scan report for ([\\d\\.]+)";
+        String hostRegex = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [^\\s]+ \\(([\\d\\.]+)\\)";
         String portRegex = "\\d+/.+";
         ObservableList<String> executeInConsole = ConsoleUtils
-                .executeInConsoleInfoAsync(
-                        NMAP_FILES + " -sV --top-ports 5 " + networkAddress);
+            .executeInConsoleInfoAsync(NMAP_FILES + " -sV --top-ports 5 " + networkAddress);
         ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();
         StringProperty host = new SimpleStringProperty("");
         executeInConsole.addListener((Change<? extends String> c) -> {
             while (c.next()) {
                 for (String line : c.getAddedSubList()) {
                     if (line.matches(hostRegex)) {
-                        host.set(line.replaceAll(hostRegex, "$1"));
+                        host.set(line.replaceAll(hostRegex, "$1$2"));
                         hostsPorts.put(host.get(), new ArrayList<>());
                     }
-                    if (line.matches(portRegex) && hostsPorts.containsKey(host.get())) {
+                    if (line.matches(portRegex)) {
+                        if (!hostsPorts.containsKey(host.get())) {
+                            hostsPorts.put(host.get(), new ArrayList<>());
+                        }
                         List<String> list = hostsPorts.get(host.get());
                         list.add(line);
                         hostsPorts.remove(host.get());
@@ -91,7 +93,8 @@ public class PortScanner {
     }
 
     public static ObservableMap<String, List<String>> scanPossibleOSes(String networkAddress) {
-        String hostRegex = "Nmap scan report for ([\\d\\.]+)";
+
+        String hostRegex = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [^\\s]+ \\(([\\d\\.]+)\\)";
         String osRegex = "Aggressive OS guesses: (.+)|Running: (.+)|Running \\(JUST GUESSING\\): (.+)"
             + "|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*|OS details: (.+)";
         ObservableList<String> executeInConsole = ConsoleUtils
@@ -102,10 +105,13 @@ public class PortScanner {
             while (c.next()) {
                 for (String line : c.getAddedSubList()) {
                     if (line.matches(hostRegex)) {
-                        host.set(line.replaceAll(hostRegex, "$1"));
+                        host.set(line.replaceAll(hostRegex, "$1$2"));
                         hostsPorts.put(host.get(), new ArrayList<>());
                     }
-                    if (line.matches(osRegex) && hostsPorts.containsKey(host.get())) {
+                    if (line.matches(osRegex)) {
+                        if (!hostsPorts.containsKey(host.get())) {
+                            hostsPorts.put(host.get(), new ArrayList<>());
+                        }
                         List<String> list = hostsPorts.get(host.get());
                         String replaceAll = line.replaceAll(osRegex, "$1$2$3$4$5");
                         list.addAll(Stream.of(replaceAll.split(", ")).collect(Collectors.toList()));

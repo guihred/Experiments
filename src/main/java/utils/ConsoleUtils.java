@@ -35,14 +35,10 @@ public final class ConsoleUtils {
         SimpleDoubleProperty simpleDoubleProperty = new SimpleDoubleProperty(0);
         new Thread(() -> {
             while (PROCESSES.values().stream().anyMatch(e -> !e)) {
-                try {
-                    long count = PROCESSES.values().stream().filter(e -> !e).count();
-                    double newValue = (n - count) / n;
-                    simpleDoubleProperty.set(newValue);
-                    Thread.sleep(500);
-                } catch (Exception e1) {
-                    LOGGER.trace("", e1);
-                }
+                long count = PROCESSES.values().stream().filter(e -> !e).count();
+                double newValue = (n - count) / n;
+                simpleDoubleProperty.set(newValue);
+                RunnableEx.ignore(() -> Thread.sleep(500));
             }
             simpleDoubleProperty.set(1);
         }).start();
@@ -134,7 +130,8 @@ public final class ConsoleUtils {
         ObservableList<String> execution = FXCollections.observableArrayList();
         LOGGER.trace(EXECUTING, cmd);
         PROCESSES.put(cmd, false);
-        new Thread(() -> {
+        Thread thread = new Thread(() -> {
+            RunnableEx.ignore(() -> Thread.sleep(100));
             Process p = newProcess(cmd);
             try (BufferedReader in2 = new BufferedReader(
                 new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
@@ -151,7 +148,8 @@ public final class ConsoleUtils {
             } catch (Exception e) {
                 LOGGER.error("", e);
             }
-        }).start();
+        });
+        thread.start();
         return execution;
     }
 
@@ -165,7 +163,7 @@ public final class ConsoleUtils {
                 LOGGER.trace("Running {} processes {}", processes.size(), formated);
                 Thread.sleep(WAIT_INTERVAL_MILLIS);
                 if (System.currentTimeMillis() - currentTimeMillis > PROCESS_MAX_TIME_LIMIT) {
-                    PROCESSES.keySet().stream().collect(Collectors.toList()).forEach(k -> PROCESSES.put(k, true));
+                    PROCESSES.keySet().stream().forEach(k -> PROCESSES.put(k, true));
                     LOGGER.error("Processes \"{}\" taking too long", formated);
                     break;
                 }
