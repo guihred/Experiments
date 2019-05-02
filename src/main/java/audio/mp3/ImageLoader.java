@@ -19,23 +19,23 @@ public class ImageLoader {
     private Thread thread;
     private String text;
 
-    private void addImages(ObservableList<Node> children, String text) {
-        this.text = text;
+	private void addImages(ObservableList<Node> children, String text1) {
+		text = text1;
         ObservableList<String> images = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
-        images.addListener((Change<? extends String> c) -> Platform.runLater(() -> addImages(children, text, c)));
+		images.addListener((Change<? extends String> c) -> Platform.runLater(() -> addImages(children, text1, c)));
         Platform.runLater(() -> {
             Node node = children.get(0);
             children.clear();
             children.add(node);
             LOG.trace("CLEARING IMAGES");
         });
-        WikiImagesUtils.getImagensForked(text, images);
+		WikiImagesUtils.getImagensForked(text1, images);
     }
 
-    private void addImages(ObservableList<Node> children, String text, Change<? extends String> c) {
-        LOG.trace("ADD IMAGE {}", text);
+	private void addImages(ObservableList<Node> children, String text1, Change<? extends String> c) {
+		LOG.trace("ADD IMAGE {}", text1);
         while (c.next()) {
-            addImageViews(children, text, c.getAddedSubList());
+			addImageViews(children, text1, c.getAddedSubList());
         }
     }
 
@@ -51,11 +51,11 @@ public class ImageLoader {
         }
     }
 
-    private void addImageViews(ObservableList<Node> children, String text, List<? extends String> addedSubList) {
+	private void addImageViews(ObservableList<Node> children, String text1, List<? extends String> addedSubList) {
         try {
             int size = addedSubList.size();
             for (int j = 0; j < size; j++) {
-                if (!text.equals(this.text)) {
+				if (!text1.equals(text)) {
                     return;
                 }
                 addImageView(children, addedSubList, j);

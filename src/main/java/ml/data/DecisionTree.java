@@ -1,14 +1,18 @@
 
 package ml.data;
 
+import java.io.File;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import ml.data.Question.QuestionType;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class DecisionTree {
 
-    private static final double MIN_GAIN = 0.005;
+	private static final double MIN_GAIN = 0.000;
     private static final Logger LOG = HasLogging.log();
 
     public static DecisionNode buildTree(DataframeML frame, String label) {
@@ -33,6 +37,20 @@ public class DecisionTree {
 
     }
 
+    public static double entropy(DataframeML dataframe, String header) {
+    	List<Object> list = dataframe.list(header);
+    	Map<Object, Long> collect = list.stream().collect(Collectors.groupingBy(e->e,Collectors.counting()));
+    	Set<Entry<Object, Long>> entrySet = collect.entrySet();
+    	double s=list.size();
+    	double sum = 0;
+    	for (Entry<Object, Long> entry : entrySet) {
+			double p = entry.getValue()/s;
+			sum-=p*Math.log(p);
+			
+		}
+    	return sum;
+    }
+
     public static void executeSimpleTest() {
         DataframeML dataframeML = new DataframeML();
         dataframeML.addCols("Color", String.class);
@@ -44,21 +62,22 @@ public class DecisionTree {
         dataframeML.addAll("Red", 1, "Grape");
         dataframeML.addAll("Red", 1, "Grape");
         dataframeML.addAll("Yellow", 3, "Lemon");
-        LOG.trace("{}", gini(dataframeML, labelHeader));
+		LOG.info("{}", entropy(dataframeML, labelHeader));
 
         DecisionNode buildTree = buildTree(dataframeML, labelHeader);
+
         Map<String, Object> row = dataframeML.rowMap(4);
         LOG.trace("{}", buildTree);
         Object predict = buildTree.predict(row);
         LOG.trace("{}", predict);
     }
 
-    public static Question findBestSplit(DataframeML dataframe, String label) {
+	public static Question findBestSplit(DataframeML dataframe, String label) {
         Set<String> cols = new HashSet<>(dataframe.cols());
         cols.remove(label);
         double bestGain = 0.00;
         Question bestQuestion = null;
-        double currentUncertainty = gini(dataframe, label);
+		final double currentUncertainty = entropy(dataframe, label);
         for (String col : cols) {
             Set<Object> values = dataframe.freeCategory(col);
             List<QuestionType> values2 = dataframe.getFormat(col) == String.class ? Arrays.asList(QuestionType.EQ)
@@ -72,7 +91,7 @@ public class DecisionTree {
                     if (trueFrame.getSize() == 0 || falseFrame.getSize() == 0) {
                         continue;
                     }
-                    double infoGain = infoGain(trueFrame, falseFrame, currentUncertainty, label);
+					double infoGain = currentUncertainty - infoGain(trueFrame, falseFrame, label);
                     if (infoGain >= bestGain) {
                         bestGain = infoGain;
                         bestQuestion = question;
@@ -83,7 +102,6 @@ public class DecisionTree {
         }
         return bestQuestion;
     }
-
     public static double gini(DataframeML dataframe, String header) {
         double size = dataframe.getSize();
         if (size <= 0) {
@@ -116,12 +134,20 @@ public class DecisionTree {
         return uncertainty - p * gini(left, labelHeader) - (1 - p) * gini(right, labelHeader);
     }
 
+	public static double infoGain(DataframeML left, DataframeML right, String labelHeader) {
+
+		double sum = entropy(left, labelHeader);
+		sum += entropy(right, labelHeader);
+		return sum;
+	}
+
     public static void main(String[] args) {
-        testCatanDecisionTree();
+		testCatanDecisionTree();
     }
 
     public static void testCatanDecisionTree() {
-        DataframeML build = DataframeML.builder("out/catan_log.txt").build();
+		File csvFile = new File(ResourceFXUtils.getOutFile(), "catan_log.txt");
+		DataframeML build = new DataframeML(csvFile);
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));
         build.removeCol("WINNER", "PLAYER");
