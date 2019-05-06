@@ -24,6 +24,7 @@ import utils.HasLogging;
 
 public class TracerouteScanner {
 
+    public static final String NMAP_SCAN_REGEX = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [^\\s]+ \\(([\\d\\.]+)\\)";
     private static final Logger LOG = HasLogging.log();
     private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
     private static final String REUSED_ROUTE_REGEX = "-\\s*Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
@@ -43,7 +44,6 @@ public class TracerouteScanner {
     public static ObservableMap<String, List<String>> scanNetworkRoutes(final String networkAddress) {
         ObservableMap<String, List<String>> synchronizedObservableMap = FXCollections
             .synchronizedObservableMap(FXCollections.observableHashMap());
-        String hostRegex = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [^\\s]+ \\(([\\d\\.]+)\\)";
         String nmapCommand = getNmapCommand();
         ObservableList<String> executeInConsole = ConsoleUtils
             .executeInConsoleInfoAsync(nmapCommand + " --traceroute -sn " + networkAddress);
@@ -52,8 +52,8 @@ public class TracerouteScanner {
         executeInConsole.addListener((ListChangeListener<String>) c -> {
             while (c.next()) {
                 for (String line : c.getAddedSubList()) {
-                    if (line.matches(hostRegex)) {
-                        host.set(line.replaceAll(hostRegex, "$1$2"));
+                    if (line.matches(NMAP_SCAN_REGEX)) {
+                        host.set(line.replaceAll(NMAP_SCAN_REGEX, "$1$2"));
                         hostsPorts.put(host.get(), new ArrayList<>());
                     }
                     if (line.matches(REUSED_ROUTE_REGEX + "|" + REUSED_ROUTE_REGEX_1 + "|" + HOP_REGEX)) {

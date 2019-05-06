@@ -20,7 +20,11 @@ public class DataframeMLTest implements HasLogging {
         measureTime("DataframeML.cols", x::cols);
         measureTime("DataframeML.correlation", () -> DataframeUtils.displayCorrelation(x));
         measureTime("DataframeML.histogram", () -> x.histogram("population", 10));
-        measureTime("DataframeML.histogram", () -> DataframeUtils.trim("population", 10, x));
+        measureTime("DataframeML.trim", () -> DataframeUtils.trim("population", 10, x));
         measureTime("DataframeML.apply", () -> x.apply("population", s -> s));
+        measureTime("DataframeML.createNumberEntries",
+            () -> DataframeUtils.createNumberEntries(x, "longitude", "latitude"));
+        DataframeBuilder b2 = DataframeML.builder("cities.csv");
+        measureTime("DataframeML.displayStats", () -> DataframeUtils.displayStats(b2.build()));
 	}
 }

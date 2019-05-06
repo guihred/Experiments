@@ -153,29 +153,6 @@ public final class LeitorArquivos {
 
     }
 
-    public static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) {
-        try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-            Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream)) {
-            Sheet sheetAt = xssfWorkbook.getSheetAt(0);
-            Iterator<Row> iterator = sheetAt.iterator();
-            ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
-            int i = 1;
-            while (iterator.hasNext()) {
-                i++;
-                boolean tryReadAnvisaLine = tryReadRosarioLine(iterator, medicamentos, i);
-                if (!tryReadAnvisaLine) {
-                    break;
-                }
-            }
-            return medicamentos;
-
-        } catch (IOException e) {
-            LOGGER.error("ERROR WHEN READING EXCEL", e);
-            return FXCollections.observableArrayList();
-        }
-
-    }
-
     public static ObservableList<Medicamento> getMedicamentosSNGPCPDF(File file) throws IOException {
         PDFTextStripper pdfStripper = new PDFTextStripper();
 
@@ -217,10 +194,6 @@ public final class LeitorArquivos {
 
     public static boolean isExcel(File file) {
         return file.getName().endsWith("xlsx") || file.getName().endsWith("xls");
-    }
-
-    public static boolean isPDF(File selectedFile) {
-        return selectedFile.getName().endsWith(".pdf");
     }
 
     public static void main(String[] args) {
@@ -316,6 +289,29 @@ public final class LeitorArquivos {
         return "";
     }
 
+    private static ObservableList<Medicamento> getMedicamentosRosarioExcel(File selectedFile) {
+        try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
+            Workbook xssfWorkbook = getWorkbook(selectedFile, fileInputStream)) {
+            Sheet sheetAt = xssfWorkbook.getSheetAt(0);
+            Iterator<Row> iterator = sheetAt.iterator();
+            ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
+            int i = 1;
+            while (iterator.hasNext()) {
+                i++;
+                boolean tryReadAnvisaLine = tryReadRosarioLine(iterator, medicamentos, i);
+                if (!tryReadAnvisaLine) {
+                    break;
+                }
+            }
+            return medicamentos;
+
+        } catch (IOException e) {
+            LOGGER.error("ERROR WHEN READING EXCEL", e);
+            return FXCollections.observableArrayList();
+        }
+
+    }
+
     private static String getRegistro(Cell cell0) {
         if (cell0.getCellTypeEnum() == CellType.NUMERIC) {
             return Integer.toString((int) cell0.getNumericCellValue());
@@ -343,6 +339,10 @@ public final class LeitorArquivos {
             LOGGER.trace("", e);
             return null;
         }
+    }
+
+    private static boolean isPDF(File selectedFile) {
+        return selectedFile.getName().endsWith(".pdf");
     }
 
     private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {

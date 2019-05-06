@@ -14,19 +14,30 @@ import utils.HasLogging;
 
 public final class DataframeUtils extends DataframeML {
 
-	private static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
-            Double.class);
+        Double.class);
 
     private DataframeUtils() {
     }
 
+    public static List<Entry<Number, Number>> createNumberEntries(DataframeML dataframe, String feature,
+        String target) {
+        List<Object> list = dataframe.dataframe.get(feature);
+        List<Object> list2 = dataframe.dataframe.get(target);
+        List<Entry<Number, Number>> data = new ArrayList<>();
+        IntStream.range(0, dataframe.size).filter(i -> i < list.size() && i < list2.size())
+            .filter(i -> list.get(i) != null && list2.get(i) != null)
+            .forEach(i -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
+        return data;
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static List<Double> crossFeature(DataframeML dataframe, String header, ToDoubleFunction<double[]> mapper,
-            String... dependent) {
+        String... dependent) {
         List<Double> newColumn = IntStream.range(0, dataframe.size)
-                .mapToObj(i -> toDoubleArray(dataframe, i, dependent)).mapToDouble(mapper).boxed()
-                .collect(Collectors.toList());
+            .mapToObj(i -> toDoubleArray(dataframe, i, dependent)).mapToDouble(mapper).boxed()
+            .collect(Collectors.toList());
         dataframe.dataframe.put(header, (List) newColumn);
         dataframe.formatMap.put(header, Double.class);
         return newColumn;
@@ -34,9 +45,9 @@ public final class DataframeUtils extends DataframeML {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static List<Double> crossFeatureObject(DataframeML dataframe, String header,
-            ToDoubleFunction<Object[]> mapper, String... dependent) {
+        ToDoubleFunction<Object[]> mapper, String... dependent) {
         List<Double> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
-                .mapToDouble(mapper).boxed().collect(Collectors.toList());
+            .mapToDouble(mapper).boxed().collect(Collectors.toList());
         dataframe.dataframe.put(header, (List) mappedColumn);
         dataframe.formatMap.put(header, Double.class);
         return mappedColumn;
@@ -44,10 +55,9 @@ public final class DataframeUtils extends DataframeML {
 
     public static void displayCorrelation(DataframeML dataframe) {
         Map<String, DataframeStatisticAccumulator> stats = dataframe.dataframe.entrySet().stream()
-                .collect(Collectors.toMap(
-                Entry<String, List<Object>>::getKey,
+            .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
                 e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(dataframe, e.getKey()),
-                        DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
+                    DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                 (m1, m2) -> m1, LinkedHashMap::new));
 
         StringBuilder s = new StringBuilder();
@@ -62,7 +72,7 @@ public final class DataframeUtils extends DataframeML {
             double self = stats.get(variable).getCorrelation(variable);
             for (String variable2 : keySet) {
                 s.append(String.format(floatFormating(variable2.length()),
-                        stats.get(variable).getCorrelation(variable2) / self));
+                    stats.get(variable).getCorrelation(variable2) / self));
             }
             s.append("\n");
 
@@ -71,26 +81,36 @@ public final class DataframeUtils extends DataframeML {
         LOG.info(correlationTable);
     }
 
+    public static void displayStats(DataframeML dataframe) {
+        Map<String, DataframeStatisticAccumulator> stats = dataframe.dataframe.entrySet().stream()
+            .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
+                e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(dataframe, e.getKey()),
+                    DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
+                (m1, m2) -> m1.combine(m2), LinkedHashMap::new));
+        displayStats(stats);
+    }
+
     public static void displayStats(Map<String, DataframeStatisticAccumulator> stats) {
         StringBuilder s = new StringBuilder();
         s.append("\n");
-        stats.forEach((k, v) -> s.append(String.format("\t%s", k)));
+
+        stats.forEach((k, v) -> s.append(format(len(k, v.getFormat()), k)));
         s.append("\ncount");
-        stats.forEach((k, v) -> s.append(String.format(intFormating(k), v.getCount())));
+        stats.forEach((k, v) -> s.append(String.format(intFormating(len(k, v.getFormat())), v.getCount())));
         s.append("\nmean");
-        stats.forEach((k, v) -> s.append(String.format(floatFormating(k.length()), v.getMean())));
+        stats.forEach((k, v) -> s.append(format(len(k, v.getFormat()), v.getMean())));
         s.append("\nstd");
-        stats.forEach((k, v) -> s.append(String.format(floatFormating(k.length()), v.getStd())));
+        stats.forEach((k, v) -> s.append(format(len(k, v.getFormat()), v.getStd())));
         s.append("\nmin");
-        stats.forEach((k, v) -> s.append(String.format(floatFormating(k.length()), v.getMin())));
-        s.append("\n25%");
-        stats.forEach((k, v) -> s.append(String.format(floatFormating(k.length()), v.getMedian25())));
-        s.append("\n50%");
-        stats.forEach((k, v) -> s.append(String.format(floatFormating(k.length()), v.getMedian50())));
-        s.append("\n75%");
-        stats.forEach((k, v) -> s.append(String.format(floatFormating(k.length()), v.getMedian75())));
+        stats.forEach((k, v) -> s.append(format(len(k, v.getFormat()), v.getMin())));
         s.append("\nmax");
-        stats.forEach((k, v) -> s.append(String.format(floatFormating(k.length()), v.getMax())));
+        stats.forEach((k, v) -> s.append(format(len(k, v.getFormat()), v.getMax())));
+        s.append("\n25%");
+        stats.forEach((k, v) -> s.append(format(len(k, v.getFormat()), v.getMedian25())));
+        s.append("\n50%");
+        stats.forEach((k, v) -> s.append(format(len(k, v.getFormat()), v.getMedian50())));
+        s.append("\n75%");
+        stats.forEach((k, v) -> s.append(format(len(k, v.getFormat()), v.getMedian75())));
         String description = s.toString();
         LOG.info(description);
     }
@@ -98,8 +118,6 @@ public final class DataframeUtils extends DataframeML {
     public static <T> T getFromList(int j, List<T> list) {
         return list != null && j < list.size() ? list.get(j) : null;
     }
-
-
 
     public static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
         while (scanner.hasNext()) {
@@ -160,12 +178,13 @@ public final class DataframeUtils extends DataframeML {
         }
         str.append("Size=" + dataframe.size + " \n");
         return str.toString();
-    }public static void trim(String header, int trimmingSize, DataframeML dataframe) {
+    }
+
+    public static void trim(String header, int trimmingSize, DataframeML dataframe) {
         List<Object> list = dataframe.list(header);
         List<List<Object>> trimmedColumns = dataframe.dataframe.entrySet().stream()
-                .filter(e -> !e.getKey().equals(header))
-                .map(Entry<String, List<Object>>::getValue)
-                .collect(Collectors.toList());
+            .filter(e -> !e.getKey().equals(header)).map(Entry<String, List<Object>>::getValue)
+            .collect(Collectors.toList());
 
         Class<?> class1 = dataframe.getFormat(header);
         if (class1 == String.class) {
@@ -212,6 +231,14 @@ public final class DataframeUtils extends DataframeML {
         return "\t%" + length + ".1f";
     }
 
+    private static String format(int length, Object mean) {
+        if (!(mean instanceof Double)) {
+            String format = "\t%" + length + "s";
+            return String.format(format, mean);
+        }
+        return String.format(floatFormating(length), mean);
+    }
+
     private static String formating(String s) {
         if (StringUtils.isBlank(s)) {
             return "%s\t";
@@ -219,13 +246,17 @@ public final class DataframeUtils extends DataframeML {
         return "%" + s.length() + "s\t";
     }
 
-    private static String intFormating(String k) {
-        return "\t%" + k.length() + "d";
+    private static String intFormating(int length) {
+        return "\t%" + length + "d";
+    }
+
+    private static int len(String k, Class<? extends Comparable<?>> class1) {
+        return class1==String.class?k.length() * 2:k.length();
     }
 
     private static Object mapIfMappable(DataframeML dataframe, String key, Object tryNumber) {
         if (dataframe.mapping.containsKey(key)) {
-			return dataframe.mapping.get(key).apply(tryNumber);
+            return dataframe.mapping.get(key).apply(tryNumber);
         }
         return tryNumber;
     }
@@ -259,8 +290,7 @@ public final class DataframeUtils extends DataframeML {
     }
 
     private static <T extends Comparable<?>> Object tryNumber(DataframeML dataframeML, Class<T> class1,
-            Class<?> currentFormat, String number,
-            String header, Function<String, T> func) {
+        Class<?> currentFormat, String number, String header, Function<String, T> func) {
         if (FORMAT_HIERARCHY.indexOf(currentFormat) <= FORMAT_HIERARCHY.indexOf(class1)) {
             T valueOf = func.apply(number);
             if (currentFormat != class1) {
@@ -278,7 +308,7 @@ public final class DataframeUtils extends DataframeML {
         }
         Class<?> currentFormat = dataframeML.getFormat(header);
         if (currentFormat == String.class && dataframeML.getSize() > 1
-                && dataframeML.list(header).stream().anyMatch(String.class::isInstance)) {
+            && dataframeML.list(header).stream().anyMatch(String.class::isInstance)) {
             return field;
         }
 
@@ -308,5 +338,4 @@ public final class DataframeUtils extends DataframeML {
         }
         return number;
     }
-
 }

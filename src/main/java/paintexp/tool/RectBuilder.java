@@ -92,10 +92,12 @@ public class RectBuilder extends PaintTool {
     }
 
     public void drawRect(final PaintModel model, final Color backColor) {
+        int startX2 = (int) startX;
+        int startY2 = (int) startY;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (withinRange(startX + i, startY + j, model)) {
-                    model.getImage().getPixelWriter().setColor((int) startX + i, (int) startY + j, backColor);
+                if (withinRange(startX2 + i, startY2 + j, model)) {
+                    model.getImage().getPixelWriter().setColor(startX2 + i, startY2 + j, backColor);
                 }
             }
         }

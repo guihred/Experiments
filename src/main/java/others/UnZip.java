@@ -46,27 +46,20 @@ public final class UnZip {
 	private static void extractZip(File saida, File file) {
 
 		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
-			ZipEntry ze = zipInputStream.getNextEntry();
-
 			final int bufferSize = 1024;
 			byte[] buffer = new byte[bufferSize];
-			while (ze != null) {
+            for (ZipEntry ze = zipInputStream.getNextEntry(); ze != null; ze = zipInputStream.getNextEntry()) {
 				String fileName = ze.getName().replaceAll(" ", "");
 				File newFile = new File(saida, fileName);
-
 				LOGGER.info("file unzip : {}", newFile.getAbsoluteFile());
-
 				// create all non exists folders
 				// else you will hit FileNotFoundException for compressed folder
 				// new File(newFile.getParent()).mkdirs()
-
 				if (ze.isDirectory()) {
 					newFile.mkdirs();
 				} else {
 					writeNewFile(zipInputStream, buffer, newFile);
 				}
-
-				ze = zipInputStream.getNextEntry();
 			}
 			zipInputStream.closeEntry();
 		} catch (IOException e) {

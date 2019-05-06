@@ -36,9 +36,8 @@ public class VanishingCirclesApp extends Application {
         Scene scene = new Scene(root, WIDTH, HEIGHT, Color.BLACK);
         List<Circle> circles = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
-            final Circle circle = new SimpleCircleBuilder().radius(150).centerX(Math.random() * WIDTH)
-                    .centerY(Math.random() * HEIGHT).fill(new Color(Math.random(), Math.random(), Math.random(), .2))
-                    .effect(new BoxBlur(10, 10, 3)).stroke(Color.WHITE).build();
+            final Circle circle = new SimpleCircleBuilder().radius(150).centerX(rnd(WIDTH)).centerY(rnd(HEIGHT))
+                .fill(new Color(rnd(1), rnd(1), rnd(1), .2)).effect(new BoxBlur(10, 10, 3)).stroke(Color.WHITE).build();
             circle.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent t) -> {
                 KeyValue collapse = new KeyValue(circle.radiusProperty(), 0);
                 new Timeline(new KeyFrame(Duration.seconds(3), collapse)).play();
@@ -50,16 +49,20 @@ public class VanishingCirclesApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         Timeline moveCircles = new Timeline();
-        circles.forEach(circle -> {
-            KeyValue moveX = new KeyValue(circle.centerXProperty(), Math.random() * WIDTH);
-            KeyValue moveY = new KeyValue(circle.centerYProperty(), Math.random() * HEIGHT);
+        for (Circle circle : circles) {
+            KeyValue moveX = new KeyValue(circle.centerXProperty(), rnd(WIDTH));
+            KeyValue moveY = new KeyValue(circle.centerYProperty(), rnd(HEIGHT));
             moveCircles.getKeyFrames().add(new KeyFrame(Duration.seconds(CIRCLE_DURATION_SECONDS), moveX, moveY));
-        });
+        }
         moveCircles.setCycleCount(Animation.INDEFINITE);
         moveCircles.play();
     }
 
     public static void main(String[] args) {
         Application.launch(args);
+    }
+
+    private static double rnd(int width2) {
+        return Math.random() * width2;
     }
 }

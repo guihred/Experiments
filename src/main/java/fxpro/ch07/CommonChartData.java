@@ -43,9 +43,9 @@ public final class CommonChartData {
             final double variation = .2;
             javaValue += 4 * Math.random() - variation;
             c.getData().add(new XYChart.Data<>(year, cValue));
-            cValue += 4 * Math.random() - 2;
+            cValue += randomVariation();
             cpp.getData().add(new XYChart.Data<>(year, cppValue));
-            cppValue += 4 * Math.random() - 2;
+            cppValue += randomVariation();
         }
         answer.addAll(Arrays.asList(java, c, cpp));
         return answer;
@@ -64,11 +64,11 @@ public final class CommonChartData {
         cpp.setName("C++");
         for (int i = BEGIN_YEAR; i < BEGIN_YEAR + 10; i++) {
             java.getData().add(new XYChart.Data<>(i, javaValue));
-            javaValue += 4 * Math.random() - 2;
+            javaValue += randomVariation();
             c.getData().add(new XYChart.Data<>(i, cValue));
-            cValue += Math.random() - .5;
+            cValue += randomVariation(1);
             cpp.getData().add(new XYChart.Data<>(i, cppValue));
-            cppValue += 4 * Math.random() - 2;
+            cppValue += randomVariation();
         }
         answer.addAll(Arrays.asList(java, c, cpp));
         return answer;
@@ -89,5 +89,13 @@ public final class CommonChartData {
     public static void setBounds(NumberAxis yAxis, DoubleSummaryStatistics yStats) {
         yAxis.setLowerBound(Math.floor(yStats.getMin() / 10) * 10);
         yAxis.setUpperBound(Math.ceil(yStats.getMax() / 10) * 10);
+    }
+
+    private static double randomVariation() {
+        return randomVariation(4);
+    }
+
+    private static double randomVariation(double total) {
+        return total * Math.random() - total / 2;
     }
 }

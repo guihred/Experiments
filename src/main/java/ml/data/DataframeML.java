@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -97,22 +96,8 @@ public class DataframeML implements HasLogging {
 
 	}
 
-	public void clear() {
-        dataframe.values().forEach(List<Object>::clear);
-	    size=0;
-	}
-
 	public Set<String> cols() {
 		return dataframe.keySet();
-	}
-
-	public List<Entry<Number, Number>> createNumberEntries(String feature, String target) {
-		List<Object> list = dataframe.get(feature);
-		List<Object> list2 = dataframe.get(target);
-		List<Entry<Number, Number>> data = new ArrayList<>();
-		IntStream.range(0, size).filter(i -> list.get(i) != null && list2.get(i) != null).forEach(
-            i -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
-		return data;
 	}
 
 	public List<Double> crossFeature(String header, ToDoubleFunction<double[]> mapper, String... dependent) {

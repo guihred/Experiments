@@ -17,7 +17,8 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class JapaneseLessonReader implements HasLogging {
-	private static final Logger LOGGER = HasLogging.log();
+    private static final String JAP_REGEX = ".*([\u2E80-\u6FFF]+.*)$";
+    private static final Logger LOGGER = HasLogging.log();
 	private static LessonDAO lessonDAO = new LessonDAO();
 	private JapaneseLessonReader() {
 	}
@@ -84,10 +85,10 @@ public final class JapaneseLessonReader implements HasLogging {
 					japaneseLesson.setLesson(lesson);
 					japaneseLesson.setExercise(exerciseNumber);
 					japaneseLesson.addEnglish(text.replaceAll("^\\d+\\.", "").trim());
-					if (text.matches(".*[\u2E80-\u6FFF]+.*")) {
-						japaneseLesson.addJapanese(text.replaceAll(".*([\u2E80-\u6FFF]+.*)$", "$1"));
+                    if (text.matches(JAP_REGEX)) {
+                        japaneseLesson.addJapanese(text.replaceAll(JAP_REGEX, "$1"));
 					}
-				} else if (text.matches(".*[\u2E80-\u6FFF]+.*")) {
+                } else if (text.matches(JAP_REGEX)) {
 					addJapanese(japaneseLesson, text);
 				} else if (japaneseLesson != null) {
 					japaneseLesson.addRomaji(text.trim());
