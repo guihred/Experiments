@@ -34,6 +34,8 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 	private PerspectiveCamera camera;
 
 	private final List<LabyrinthWall> cubes = new ArrayList<>();
+	private	Random random = new Random();
+
 	@Override
 	public PerspectiveCamera getCamera() {
 		return camera;
@@ -113,31 +115,34 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 		}
 	}
 
-	private MeshView generateGhost(String arquivo, Color animalColor) {
+    private MeshView generateGhost(String arquivo, Color animalColor) {
         Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
-		MeshView animal = new MeshView(mesh);
-		PhongMaterial sample = new PhongMaterial(animalColor);
-		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
-		animal.setMaterial(sample);
+        MeshView animal = new MeshView(mesh);
+        PhongMaterial sample = new PhongMaterial(animalColor);
+        sample.setSpecularColor(lightColor);
+        sample.setSpecularPower(16);
+        animal.setMaterial(sample);
         animal.setTranslateY(15);
 
-		int posicaoInicialZ = new Random().nextInt(mapa[0].length * SIZE);
-		animal.setTranslateZ(posicaoInicialZ);
-		int posicaoInicialX = new Random().nextInt(mapa.length * SIZE);
-		animal.setTranslateX(posicaoInicialX);
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
-		}
-
+        int posicaoInicialZ = rnd(mapa[0].length * SIZE);
+        animal.setTranslateZ(posicaoInicialZ);
+        int posicaoInicialX = rnd(mapa.length * SIZE);
+        animal.setTranslateX(posicaoInicialX);
+        while (checkColision(animal.getBoundsInParent())) {
+            animal.setTranslateZ(animal.getTranslateZ() + 1);
+            animal.setTranslateX(animal.getTranslateX() + 1);
+        }
 
         animal.setScaleX(4. / 10);
         animal.setScaleZ(4. / 10);
-		animal.setScaleY(1);
+        animal.setScaleY(1);
 
-		return animal;
-	}
+        return animal;
+    }
+
+    private int rnd(int bound) {
+        return random.nextInt(bound);
+    }
 
 	public static void main(String[] args) {
 		launch(args);

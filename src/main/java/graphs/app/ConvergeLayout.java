@@ -3,14 +3,13 @@ package graphs.app;
 import graphs.entities.Cell;
 import graphs.entities.Edge;
 import graphs.entities.Graph;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public class ConvergeLayout implements Layout {
-
-	private Random rnd = new Random();
 
 	private final EventHandler<ActionEvent> eventHandler;
 
@@ -40,8 +39,9 @@ public class ConvergeLayout implements Layout {
 
         int c = allCells.size() / 50;
         double bound = (c + 1) * 100.;
-
-		Cell cell = allCells.get(rnd.nextInt(allCells.size()));
+        List<Cell> cellsCopy = allCells.parallelStream().collect(Collectors.toList());
+        Collections.shuffle(cellsCopy);
+        Cell cell = cellsCopy.get(0);
         List<Edge> edges = graph1.getModel().edges(cell);
 		if (!edges.isEmpty()) {
 

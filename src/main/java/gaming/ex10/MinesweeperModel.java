@@ -6,7 +6,9 @@
 package gaming.ex10;
 
 import gaming.ex10.MinesweeperSquare.State;
-import java.util.Random;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -23,160 +25,155 @@ import utils.CommonsFX;
  */
 public class MinesweeperModel {
 
-	private static final int NUMBER_OF_BOMBS = 30;
-	public static final int MAP_HEIGHT = 16;
-	public static final int MAP_WIDTH = 16;
+    private static final int NUMBER_OF_BOMBS = 30;
+    public static final int MAP_HEIGHT = 16;
+    public static final int MAP_WIDTH = 16;
 
-	private GridPane gridPane;
-	private final MinesweeperSquare[][] map = new MinesweeperSquare[MAP_WIDTH][MAP_HEIGHT];
-	private IntegerProperty nPlayed = new SimpleIntegerProperty(0);
-	private long startTime;
+    private GridPane gridPane;
+    private final MinesweeperSquare[][] map = new MinesweeperSquare[MAP_WIDTH][MAP_HEIGHT];
+    private IntegerProperty nPlayed = new SimpleIntegerProperty(0);
+    private long startTime;
 
-	private     final Random random = new Random();
+    public MinesweeperModel(GridPane gridPane) {
+        this.gridPane = gridPane;
 
-	public MinesweeperModel(GridPane gridPane) {
-		this.gridPane = gridPane;
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                map[i][j] = new MinesweeperSquare(i, j);
+            }
+        }
+        setBombs();
+        startTime = System.currentTimeMillis();
 
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[i].length; j++) {
-				map[i][j] = new MinesweeperSquare(i, j);
-			}
-		}
-		setBombs();
-		startTime = System.currentTimeMillis();
+    }
 
-	}
+    public MinesweeperSquare[][] getMap() {
+        return map;
+    }
 
-	public MinesweeperSquare[][] getMap() {
-		return map;
-	}
+    final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
+        EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(event, mem);
+        mem.getFinalShape().setOnMouseClicked(mouseClicked);
+        mem.getFlag().setOnMouseClicked(mouseClicked);
+        mem.setOnMouseClicked(mouseClicked);
+        return mouseClicked;
+    }
 
-	final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
-		EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(event, mem);
-		mem.getFinalShape().setOnMouseClicked(mouseClicked);
-		mem.getFlag().setOnMouseClicked(mouseClicked);
-		mem.setOnMouseClicked(mouseClicked);
-		return mouseClicked;
-	}
+    private int countBombsAround(int i, int j) {
+        int num = 0;
+        for (int k = -1; k <= 1; k++) {
+            for (int l = -1; l <= 1; l++) {
+                if (l == 0 && k == 0) {
+                    continue;
+                }
+                if (withinRange(i, k, MAP_WIDTH) && withinRange(l, j, MAP_HEIGHT)
+                    && map[i + k][j + l].getMinesweeperImage() == MinesweeperImage.BOMB) {
+                    num++;
+                }
+            }
+        }
+        return num;
+    }
 
-	private int countBombsAround(int i, int j) {
-		int num = 0;
-		for (int k = -1; k <= 1; k++) {
-			for (int l = -1; l <= 1; l++) {
-				if (l == 0 && k == 0) {
-					continue;
-				}
-				if (withinRange(i, k, MAP_WIDTH) && withinRange(l, j, MAP_HEIGHT)
-						&& map[i + k][j + l].getMinesweeperImage() == MinesweeperImage.BOMB) {
-					num++;
-				}
-			}
-		}
-		return num;
-	}
+    private void handleClick(MouseEvent event, MinesweeperSquare mem) {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            if (mem.getState() == State.HIDDEN) {
+                mem.setState(MinesweeperSquare.State.FLAGGED);
+            } else if (mem.getState() == State.FLAGGED) {
+                mem.setState(MinesweeperSquare.State.HIDDEN);
+            }
+            return;
+        }
 
-	private void handleClick(MouseEvent event, MinesweeperSquare mem) {
-		if (event.getButton() == MouseButton.SECONDARY) {
-			if (mem.getState() == State.HIDDEN) {
-				mem.setState(MinesweeperSquare.State.FLAGGED);
-			} else if (mem.getState() == State.FLAGGED) {
-				mem.setState(MinesweeperSquare.State.HIDDEN);
-			}
-			return;
-		}
+        if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
+            nPlayed.set(nPlayed.get() + 1);
+            mem.setState(MinesweeperSquare.State.SHOWN);
+            if (mem.getMinesweeperImage() == MinesweeperImage.BOMB) {
+                if (nPlayed.get() == 0) {
+                    reset();
+                }
+                CommonsFX.displayDialog("You exploded!", "Reset", this::reset);
+            }
+            if (mem.getMinesweeperImage() == MinesweeperImage.BLANK) {
+                showNeighbours(mem.getI(), mem.getJ());
+            }
+            if (verifyEnd()) {
+                String text2 = "You won in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds! ";
+                CommonsFX.displayDialog(text2, "Reset", this::reset);
+            }
 
-		if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
-			nPlayed.set(nPlayed.get() + 1);
-			mem.setState(MinesweeperSquare.State.SHOWN);
-			if (mem.getMinesweeperImage()==MinesweeperImage.BOMB) {
-				if (nPlayed.get() == 0) {
-					reset();
-				}
-				CommonsFX.displayDialog("You exploded!", "Reset", this::reset);
-			}
-			if (mem.getMinesweeperImage()==MinesweeperImage.BLANK) {
-				showNeighbours(mem.getI(), mem.getJ());
-			}
-			if (verifyEnd()) {
-				String text2 = "You won in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds! ";
-				CommonsFX.displayDialog(text2, "Reset", this::reset);
-			}
+        }
+    }
 
-		}
-	}
-	private void reset() {
-		nPlayed.set(0);
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[i].length; j++) {
-				map[i][j].setFinalShape(null);
-				map[i][j].setMinesweeperImage(MinesweeperImage.BLANK);
-				map[i][j].setState(MinesweeperSquare.State.HIDDEN);
-			}
-		}
-		setBombs();
-		gridPane.getChildren().clear();
-		for (int i = 0; i < MAP_WIDTH; i++) {
-			for (int j = 0; j < MAP_HEIGHT; j++) {
-				MinesweeperSquare map1 = map[i][j];
-				gridPane.add(new StackPane(map1, map1.getFinalShape(), map1.getFlag()), i, j);
-			}
-		}
-		startTime = System.currentTimeMillis();
-	}
+    private void reset() {
+        nPlayed.set(0);
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                map[i][j].setFinalShape(null);
+                map[i][j].setMinesweeperImage(MinesweeperImage.BLANK);
+                map[i][j].setState(MinesweeperSquare.State.HIDDEN);
+            }
+        }
+        setBombs();
+        gridPane.getChildren().clear();
+        for (int i = 0; i < MAP_WIDTH; i++) {
+            for (int j = 0; j < MAP_HEIGHT; j++) {
+                MinesweeperSquare map1 = map[i][j];
+                gridPane.add(new StackPane(map1, map1.getFinalShape(), map1.getFlag()), i, j);
+            }
+        }
+        startTime = System.currentTimeMillis();
+    }
 
-	private void setBombs() {
-		long count = 0;
-		while (count < NUMBER_OF_BOMBS) {
+    private void setBombs() {
 
-			int j = random.nextInt(MAP_WIDTH);
-			int k = random.nextInt(MAP_HEIGHT);
+        List<MinesweeperSquare> sqrts = Stream.of(map).flatMap(Stream::of).collect(Collectors.toList());
+        Collections.shuffle(sqrts);
+        for (long count = 0; count < NUMBER_OF_BOMBS; count++) {
+            final MinesweeperSquare mem = sqrts.remove(0);
+            mem.setMinesweeperImage(MinesweeperImage.BOMB);
+        }
+        for (int i = 0; i < MAP_WIDTH; i++) {
+            for (int j = 0; j < MAP_HEIGHT; j++) {
+                if (map[i][j].getMinesweeperImage() == MinesweeperImage.BLANK) {
+                    int num = countBombsAround(i, j);
+                    if (num != 0) {
+                        map[i][j].setNum(num);
+                        map[i][j].setMinesweeperImage(MinesweeperImage.NUMBER);
+                    }
 
-			final MinesweeperSquare mem = map[j][k];
-			mem.setMinesweeperImage(MinesweeperImage.BOMB);
-			count = Stream.of(map).flatMap(Stream::of).filter(e -> e.getMinesweeperImage() == MinesweeperImage.BOMB)
-					.count();
-		}
-		for (int i = 0; i < MAP_WIDTH; i++) {
-			for (int j = 0; j < MAP_HEIGHT; j++) {
-				if (map[i][j].getMinesweeperImage() == MinesweeperImage.BLANK) {
-					int num = countBombsAround(i, j);
-					if (num != 0) {
-						map[i][j].setNum(num);
-						map[i][j].setMinesweeperImage(MinesweeperImage.NUMBER);
-					}
+                }
+                createMouseClickedEvent(map[i][j]);
+            }
+        }
+    }
 
-				}
-				createMouseClickedEvent(map[i][j]);
-			}
-		}
-	}
+    private void showNeighbours(int i, int j) {
+        map[i][j].setState(MinesweeperSquare.State.SHOWN);
+        for (int k = -1; k <= 1; k++) {
+            for (int l = -1; l <= 1; l++) {
+                if (l == 0 && k == 0) {
+                    continue;
+                }
+                if (withinRange(i, k, MAP_WIDTH) && withinRange(j, l, MAP_HEIGHT)) {
+                    if (map[i + k][j + l].getMinesweeperImage() == MinesweeperImage.BLANK
+                        && map[i + k][j + l].getState() == MinesweeperSquare.State.HIDDEN) {
+                        showNeighbours(i + k, j + l);
+                    }
+                    map[i + k][j + l].setState(MinesweeperSquare.State.SHOWN);
+                }
+            }
+        }
 
-	private void showNeighbours(int i, int j) {
-		map[i][j].setState(MinesweeperSquare.State.SHOWN);
-		for (int k = -1; k <= 1; k++) {
-			for (int l = -1; l <= 1; l++) {
-				if (l == 0 && k == 0) {
-					continue;
-				}
-				if (withinRange(i, k, MAP_WIDTH) && withinRange(j, l, MAP_HEIGHT)) {
-					if (map[i + k][j + l].getMinesweeperImage()==MinesweeperImage.BLANK
-							&& map[i + k][j + l].getState()==MinesweeperSquare.State.HIDDEN) {
-						showNeighbours(i + k, j + l);
-					}
-					map[i + k][j + l].setState(MinesweeperSquare.State.SHOWN);
-				}
-			}
-		}
+    }
 
-	}
+    private boolean verifyEnd() {
+        return Stream.of(map).flatMap(Stream::of).noneMatch(s -> s.getState().equals(MinesweeperSquare.State.HIDDEN)
+            && !s.getMinesweeperImage().equals(MinesweeperImage.BOMB));
+    }
 
-	private boolean verifyEnd() {
-		return Stream.of(map).flatMap(Stream::of).noneMatch(s -> s.getState().equals(MinesweeperSquare.State.HIDDEN)
-				&& !s.getMinesweeperImage().equals(MinesweeperImage.BOMB));
-	}
-
-	private static boolean withinRange(int i, int k, int mapWidth) {
-		return i + k >= 0 && i + k < mapWidth;
-	}
+    private static boolean withinRange(int i, int k, int mapWidth) {
+        return i + k >= 0 && i + k < mapWidth;
+    }
 
 }

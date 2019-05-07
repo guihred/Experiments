@@ -6,6 +6,7 @@
 package gaming.ex18;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -84,8 +85,9 @@ public class Square2048Model {
         }
         
         List<Square2048> emptySquares = mapAsList.stream().filter(Square2048::isEmpty).collect(Collectors.toList());
+        Collections.shuffle(emptySquares);
         if (!emptySquares.isEmpty()) {
-            emptySquares.get(random.nextInt(emptySquares.size())).setNumber(newNumber());
+            emptySquares.remove(0).setNumber(newNumber());
         } else if (noPossibleMove()) {
             CommonsFX.displayDialog("You Lose", "_Reset", () -> {
                 gridPane.getChildren().clear();

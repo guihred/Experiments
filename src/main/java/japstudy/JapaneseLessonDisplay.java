@@ -17,6 +17,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class JapaneseLessonDisplay extends Application {
+    private Random random = new Random();
     private IntegerProperty current = new SimpleIntegerProperty(1);
     private ObservableList<JapaneseLesson> lessons = getLessons();
     private DoubleProperty score = new SimpleDoubleProperty(1);
@@ -47,7 +48,7 @@ public class JapaneseLessonDisplay extends Application {
         final int stageWidth = 600;
         primaryStage.setWidth(stageWidth);
         if (!lessons.isEmpty()) {
-            current.set(new Random().nextInt(lessons.size()));
+            current.set(random.nextInt(lessons.size()));
         }
         primaryStage.centerOnScreen();
         Text scoreText = new Text();

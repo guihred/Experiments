@@ -1,19 +1,11 @@
 package graphs.app;
 
-import graphs.entities.Cell;
-import graphs.entities.Edge;
-import graphs.entities.Graph;
-import graphs.entities.GraphModel;
-import graphs.entities.GraphModelAlgorithms;
+import graphs.entities.*;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CustomLayout implements Layout {
-
-	private static final	Random RND = new Random();
-
 
 	private Graph graph;
 
@@ -23,7 +15,6 @@ public class CustomLayout implements Layout {
 
 	@Override
 	public void execute() {
-
 		GraphModel model = graph.getModel();
 		graph.clean();
 		List<Cell> cells = model.getAllCells();
@@ -41,9 +32,9 @@ public class CustomLayout implements Layout {
 					int i = 0;
 					final int maxAtempts = 20;
 					do {
-						int nextInt = RND.nextInt(bound * 2) - 180;
-						double x = bound * (0.5 + Math.random()) * Math.cos(Math.toRadians(nextInt));
-						double y = bound * (0.5 + Math.random()) * Math.sin(Math.toRadians(nextInt));
+                        double rndAngle = rnd(bound * 2);
+                        double x = rnd(bound) * Math.cos(Math.toRadians(rndAngle));
+                        double y = rnd(bound) * Math.sin(Math.toRadians(rndAngle));
 						cell2.relocate(x + cell.getLayoutX(), y + cell.getLayoutY());
 						cellSet.remove(cell2);
 					} while (i++ < maxAtempts && GraphModelAlgorithms.anyIntersection(cells, cell2));
@@ -53,5 +44,8 @@ public class CustomLayout implements Layout {
 		}
 	}
 
+    private static double rnd(double bound) {
+        return Math.random() * bound - bound / 2;
+    }
 
 }

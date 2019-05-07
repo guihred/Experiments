@@ -7,7 +7,6 @@ import static utils.ResourceFXUtils.toFullPath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
@@ -57,7 +56,6 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 
     private MovimentacaoAleatoria movimentacao;
 
-    public final Random random = new Random();
     private final Group root = new Group();
 
     @Override
@@ -184,8 +182,8 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
         enemy.setMaterial(sample);
         enemy.setTranslateY(15);
         enemy.setDrawMode(DrawMode.FILL);
-        enemy.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
-        enemy.setTranslateX(random.nextInt(mapa.length * SIZE));
+        enemy.setTranslateZ(Math.random() * mapa[0].length * SIZE);
+        enemy.setTranslateX(Math.random() * mapa.length * SIZE);
         while (checkColision(enemy.getBoundsInParent())) {
             enemy.setTranslateX(enemy.getTranslateX() + 1);
             enemy.setTranslateZ(enemy.getTranslateZ() + 1);

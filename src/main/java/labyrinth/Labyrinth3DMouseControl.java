@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.*;
@@ -57,7 +56,6 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
 	private MovimentacaoAleatoria movimentacao;
 
-	public final Random random = new Random();
 	private Group root = new Group();
 
 	@Override
@@ -141,9 +139,9 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		enemy.setDrawMode(DrawMode.FILL);
         enemy.setTranslateY(15);
 		enemy.setMaterial(sample);
-        int posicaoInicialZ = random.nextInt(MAPA[0].length * SIZE);
+        double posicaoInicialZ = Math.random() * MAPA[0].length * SIZE;
 		enemy.setTranslateZ(posicaoInicialZ);
-        int posicaoInicialX = random.nextInt(MAPA.length * SIZE);
+        double posicaoInicialX = Math.random() * MAPA.length * SIZE;
 		enemy.setTranslateX(posicaoInicialX);
 		while (checkColision(enemy.getBoundsInParent())) {
 			enemy.setTranslateZ(enemy.getTranslateZ() + 1);

@@ -5,12 +5,10 @@ import graphs.entities.CellType;
 import graphs.entities.EdgeDistancePack;
 import graphs.entities.Graph;
 import java.util.List;
-import java.util.Random;
 import utils.MatrixSolver;
 
 public class GabrielTopology extends BaseTopology {
 
-    private final Random rnd = new Random();
 
     public GabrielTopology(int size, Graph graph) {
         super(graph, "Gabriel", size);
@@ -22,14 +20,14 @@ public class GabrielTopology extends BaseTopology {
         graph.getModel().removeAllCells();
         graph.getModel().removeAllEdges();
         int bound = 100;
-        int nextInt = rnd.nextInt(180) - 180;
-        double y = bound * Math.sin(Math.toRadians(nextInt));
-        double x = bound * Math.cos(Math.toRadians(nextInt));
+        double angle = newAngle();
+        double y = bound * Math.sin(Math.toRadians(angle));
+        double x = bound * Math.cos(Math.toRadians(angle));
         for (int i = 0; i < getSize(); i++) {
             Cell cell = graph.getModel().addCell(BaseTopology.identifier(i), CellType.CIRCLE);
-            nextInt = rnd.nextInt(360);
-            x += bound * Math.cos(Math.toRadians(nextInt));
-            y += bound * Math.sin(Math.toRadians(nextInt));
+            angle = newAngle();
+            x += bound * Math.cos(Math.toRadians(angle));
+            y += bound * Math.sin(Math.toRadians(angle));
             cell.relocate(x, y);
         }
         List<Cell> cells = graph.getModel().getAddedCells();
@@ -49,6 +47,10 @@ public class GabrielTopology extends BaseTopology {
         }
         graph.endUpdate();
 
+    }
+
+    private double newAngle() {
+        return Math.random() * 360 - 180;
     }
 
     public static double determinant(Cell a, Cell b, Cell c, Cell d) {

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -25,8 +24,6 @@ public class RegressionModel {
     private double bestSlope;
     private double bestInitial;
 
-    private final Random random = new Random();
-
     @SuppressWarnings("unchecked")
     public ObservableList<Series<Number, Number>> createRandomSeries() {
         Series<Number, Number> series = new Series<>();
@@ -44,11 +41,11 @@ public class RegressionModel {
 
     @SuppressWarnings("unchecked")
     public ObservableList<Series<Number, Number>> createSeries(Collection<?> features1, Collection<?> target1) {
-        slope = (random.nextDouble() - .5) * 10;
-        initial = (random.nextDouble() - .5) * 10;
+        slope = (Math.random() - .5) * 10;
+        initial = (Math.random() - .5) * 10;
 
-        bestSlope = (random.nextDouble() - .5) * 10;
-        bestInitial = (random.nextDouble() - .5) * 10;
+        bestSlope = (Math.random() - .5) * 10;
+        bestInitial = (Math.random() - .5) * 10;
 
         features = features1
             .stream().map(Number.class::cast).filter(Objects::nonNull).map(Number::doubleValue).limit(MAX_SIZE)
@@ -152,8 +149,8 @@ public class RegressionModel {
     }
 
     private DoubleStream doubleStream() {
-        slope = (random.nextDouble() - .5) * 10;
-        initial = (random.nextDouble() - .5) * 10;
+        slope = (Math.random() - .5) * 10;
+        initial = (Math.random() - .5) * 10;
         c = 0;
         return DoubleStream.generate(this::random).limit(MAX_SIZE);
     }
@@ -163,7 +160,7 @@ public class RegressionModel {
     }
 
     private double random() {
-        double e = (random.nextDouble() - .5) * 5;
+        double e = (Math.random() - .5) * 5;
         return initial + e + slope * c++;
     }
 

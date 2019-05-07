@@ -2,7 +2,6 @@ package labyrinth;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
@@ -29,7 +28,6 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
 
 	private static final int SIZE = 60;
-	private Random random = new Random();
 
 	private PerspectiveCamera camera;
 
@@ -101,8 +99,8 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		sample.setSpecularPower(16);
         animal.setTranslateY(15);
 
-		animal.setTranslateZ(random.nextInt(mapa[0].length * SIZE));
-		animal.setTranslateX(random.nextInt(mapa.length * SIZE));
+        animal.setTranslateZ(Math.random() * mapa[0].length * SIZE);
+        animal.setTranslateX(Math.random() * mapa.length * SIZE);
 		while (checkColision(animal.getBoundsInParent())) {
 			animal.setTranslateZ(animal.getTranslateZ() + 1);
 			animal.setTranslateX(animal.getTranslateX() + 1);

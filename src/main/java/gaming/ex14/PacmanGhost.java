@@ -31,6 +31,7 @@ public class PacmanGhost extends Group implements HasLogging {
     private MazeSquare mazeSquare;
     private final Circle circle = new Circle(2);
     private GhostColor color;
+    private Random random = new Random();
 
     public PacmanGhost(GhostColor color) {
         this.color = color;
@@ -183,11 +184,11 @@ public class PacmanGhost extends Group implements HasLogging {
         addTranslate(step);
         if (checkColision(getBoundsInParent(), observableList)) {
             addTranslate(-step);
-            setDirection(values[new Random().nextInt(values.length)]);
+            setDirection(rndValue(values));
         }
 
         if (now % 500 == 0) {
-            setDirection(values[new Random().nextInt(values.length)]);
+            setDirection(rndValue(values));
         }
     }
 
@@ -203,6 +204,10 @@ public class PacmanGhost extends Group implements HasLogging {
         return PacmanModel.SQUARE_SIZE / 2 + (getLayoutY() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
                 ? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
                 : i * PacmanModel.SQUARE_SIZE);
+    }
+
+    private GhostDirection rndValue(GhostDirection[] values) {
+        return values[random.nextInt(values.length)];
     }
 
     private void shortestMovement(long now, ObservableList<Node> otherNodes, Pacman pacman, MazeSquare[][] maze) {

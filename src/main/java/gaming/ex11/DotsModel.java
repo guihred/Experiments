@@ -45,7 +45,6 @@ public class DotsModel {
     private final Line line = new Line(0, 0, 0, 0);
     private DotsSquare[][] maze = new DotsSquare[MAZE_SIZE][MAZE_SIZE];
     private final ObservableMap<String, ObservableSet<Set<DotsSquare>>> points = FXCollections.observableHashMap();
-    private Random random = new Random();
     private DotsSquare selected;
 
     public DotsModel(BorderPane borderPane) {
@@ -155,6 +154,7 @@ public class DotsModel {
                 }
             }
         }
+        Collections.shuffle(possibilities);
         return possibilities;
     }
 
@@ -241,8 +241,7 @@ public class DotsModel {
                         currentPlayer = (currentPlayer + 1) % jogadores.length;
                         break;
                     }
-                    final Map.Entry<DotsSquare, DotsSquare> get = possibilities
-                        .get(random.nextInt(possibilities.size()));
+                    final Map.Entry<DotsSquare, DotsSquare> get = possibilities.remove(0);
                     final Double[] center = get.getKey().getCenter();
                     final Double[] center2 = get.getValue().getCenter();
                     final Line line2 = new Line(center[0], center[1], center[0], center[1]);

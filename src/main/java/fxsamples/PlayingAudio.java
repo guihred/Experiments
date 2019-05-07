@@ -52,6 +52,8 @@ public class PlayingAudio extends Application {
     private Group playButton;
     private Group pauseButton;
 
+    private Random rand = new Random(System.currentTimeMillis());
+
     /**
      * After a file is dragged onto the application a new MediaPlayer instance is
      * created with a media file.
@@ -98,13 +100,11 @@ public class PlayingAudio extends Application {
                 vizContainer.getChildren().clear();
                 int i = 0;
                 double y = mainStage.getScene().getHeight() / 2;
-                Random rand = new Random(System.currentTimeMillis());
                 // Build random colored circles
-                final int bound = 255;
                 for (float phase : phases) {
-                    int red = rand.nextInt(bound);
-                    int green = rand.nextInt(bound);
-                    int blue = rand.nextInt(bound);
+                    int red = rnd();
+                    int green = rnd();
+                    int blue = rnd();
                     Circle circle = new SimpleCircleBuilder().radius(10).centerX((double) 10 + i)
                         .centerY(y + (double) phase * 100).fill(Color.rgb(red, green, blue, 7. / 10)).build();
                     vizContainer.getChildren().add(circle);
@@ -322,6 +322,11 @@ public class PlayingAudio extends Application {
         // Initialize previousLocation after Stage is shown
         mainStage.addEventHandler(WindowEvent.WINDOW_SHOWN,
             t -> previousLocation = new Point2D(mainStage.getX(), mainStage.getY()));
+    }
+
+    private int rnd() {
+        final int bound = 256;
+        return rand.nextInt(bound);
     }
 
     private void tryPlayMedia(Dragboard db) {

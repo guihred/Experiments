@@ -24,7 +24,8 @@ import utils.HasLogging;
 
 public class TracerouteScanner {
 
-    public static final String NMAP_SCAN_REGEX = "Nmap scan report for ([\\d\\.]+)|Nmap scan report for [^\\s]+ \\(([\\d\\.]+)\\)";
+    public static final String NMAP_SCAN_REGEX = "Nmap scan report for ([\\d\\.]+)"
+        + "|Nmap scan report for [^\\s]+ \\(([\\d\\.]+)\\)";
     private static final Logger LOG = HasLogging.log();
     private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
     private static final String REUSED_ROUTE_REGEX = "-\\s*Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";

@@ -3,7 +3,6 @@ package labyrinth;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.*;
@@ -40,14 +39,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 
     private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(MAPA.length * MAPA[0].length);
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
-
 	private final Color lightColor = Color.rgb(125, 125, 125);
-
 	private MovimentacaoAleatoria movimentacao;
-
-	private final Random random = new Random();
 	private Group root = new Group();
-
 
     @Override
 	public void endKeyboard() {
@@ -131,9 +125,9 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		animal.setMaterial(sample);
         animal.setTranslateY(12);
 
-        int posicaoInicialZ = random.nextInt(MAPA[0].length * (int) SIZE);
+        double posicaoInicialZ = Math.random() * MAPA[0].length * SIZE;
 		animal.setTranslateZ(posicaoInicialZ);
-        int posicaoInicialX = random.nextInt(MAPA.length * (int) SIZE);
+        double posicaoInicialX = Math.random() * MAPA.length * SIZE;
 		animal.setTranslateX(posicaoInicialX);
 		while (checkColision(animal.getBoundsInParent())) {
 			animal.setTranslateZ(animal.getTranslateZ() + 1);

@@ -6,8 +6,8 @@ import gaming.ex07.MazeSquare;
 import gaming.ex14.Pacman.PacmanDirection;
 import gaming.ex14.PacmanGhost.GhostColor;
 import gaming.ex14.PacmanGhost.GhostStatus;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -67,10 +67,10 @@ public class PacmanModel implements HasLogging {
             }
         };
         animationTimer.start();
-        Random random = new Random();
+        List<PacmanBall> ballCopy = balls.stream().collect(Collectors.toList());
+        Collections.shuffle(ballCopy);
         for (int i = 0; i < 5; i++) {
-            int nextInt = random.nextInt(balls.size());
-            PacmanBall pacmanBall = balls.get(nextInt);
+            PacmanBall pacmanBall = ballCopy.remove(0);
             pacmanBall.setSpecial(true);
         }
         group.getChildren().addAll(balls);
