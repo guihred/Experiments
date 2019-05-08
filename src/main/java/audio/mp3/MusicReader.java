@@ -145,7 +145,7 @@ public final class MusicReader {
             if (a.getImage() != null) {
                 String value = getDescription(a);
                 Image image = a.getImage();
-                File destination = new File(ResourceFXUtils.getOutFile(), "test" + value + ".png");
+                File destination = ResourceFXUtils.getOutFile("test" + value + ".png");
                 ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", destination);
                 byte[] allBytes = Files.readAllBytes(destination.toPath());
                 tags.setAlbumImage(allBytes, "image/png");

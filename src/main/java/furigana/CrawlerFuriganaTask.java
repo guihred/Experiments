@@ -1,6 +1,5 @@
 package furigana;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.Character.UnicodeBlock;
@@ -183,7 +182,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             long i = ths.size() - count;
             updateAll(i, total);
         }
-		try (PrintStream printStream = new PrintStream(new File(ResourceFXUtils.getOutFile(), "hp1Tex2Converted.tex"),
+        try (PrintStream printStream = new PrintStream(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex"),
             StandardCharsets.UTF_8.displayName())) {
             for (String s : lines) {
                 printStream.println(s);

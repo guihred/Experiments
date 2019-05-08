@@ -71,7 +71,7 @@ public enum JapaneseAudio {
                     lesson INT,
                     PRIMARY KEY (exercise,lesson)) 
 		 */
-		File file2 = new File(ResourceFXUtils.getOutFile(), OUTPUT_FILE);
+        File file2 = ResourceFXUtils.getOutFile(OUTPUT_FILE);
 
 		try (PrintStream out = new PrintStream(file2, StandardCharsets.UTF_8.displayName())) {
 

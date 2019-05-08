@@ -146,7 +146,7 @@ public class DecisionTree {
     }
 
     public static void testCatanDecisionTree() {
-		File csvFile = new File(ResourceFXUtils.getOutFile(), "catan_log.txt");
+        File csvFile = ResourceFXUtils.getOutFile("catan_log.txt");
 		DataframeML build = new DataframeML(csvFile);
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));

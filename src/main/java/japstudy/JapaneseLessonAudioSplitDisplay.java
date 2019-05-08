@@ -91,8 +91,8 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
 
         String type = currentState == 0 ? "ing" : "jap";
         Duration startTime2 = startTime;
-        File newFile = new File(ResourceFXUtils.getOutFile(),
-            String.format("%s%dx%d.mp3", type, japaneseLesson.getLesson(), japaneseLesson.getExercise()));
+        String format = String.format("%s%dx%d.mp3", type, japaneseLesson.getLesson(), japaneseLesson.getExercise());
+        File newFile = ResourceFXUtils.getOutFile(format);
         new Thread(() -> SongUtils.splitAudio(audio.getFile(), newFile, startTime2, currentTime)).start();
         currentState = (currentState + 1) % 2;
         startTime = currentTime;

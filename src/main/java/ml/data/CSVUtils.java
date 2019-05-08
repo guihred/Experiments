@@ -5,11 +5,8 @@ import java.io.File;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.nio.file.Paths;
+import java.util.*;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
@@ -55,16 +52,16 @@ public class CSVUtils {
 
     public static void splitFile(String csvFile, int columnIndex) {
         Map<String, Writer> writersBytype = new HashMap<>();
-
-        try (Scanner scanner = new Scanner(new File(csvFile), StandardCharsets.UTF_8.displayName())) {
+        File source = Paths.get(csvFile).toFile();
+        try (Scanner scanner = new Scanner(source, StandardCharsets.UTF_8.displayName())) {
             String firstLine = scanner.nextLine();
             while (scanner.hasNext()) {
                 String nextLine = scanner.nextLine();
                 List<String> parseLine = CSVUtils.parseLine(nextLine);
                 String string = parseLine.get(columnIndex);
                 if (!writersBytype.containsKey(string)) {
-                    File file = new File(ResourceFXUtils.getOutFile(),
-                        csvFile.replaceAll("\\..+", "") + string + ".csv");
+                    String child = source.getName().replaceAll("\\..+", "") + string + ".csv";
+                    File file = ResourceFXUtils.getOutFile(child);
                     Writer output = createWriter(file.getAbsolutePath());
                     output.append(firstLine + "\n");
                     writersBytype.put(string, output);

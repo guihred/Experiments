@@ -134,7 +134,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         Slider finalSlider = addSlider(root);
         finalSlider.setValue(1 - 1. / 1000);
         mediaPlayer.totalDurationProperty().addListener(e -> finalSlider.setValue(1));
-        File outFile = new File(ResourceFXUtils.getOutFile(), selectedItem.getArquivo().getName());
+        File outFile = ResourceFXUtils.getOutFile(selectedItem.getArquivo().getName());
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
         progressIndicator.setVisible(false);
@@ -220,7 +220,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
             ? String.format("%s.mp3", music.getTitulo().replaceAll("\\..+", ""))
             : String.format("%s-%s.mp3", music.getTitulo().replaceAll("\\..+", ""), music.getArtista());
 
-        File newFile = new File(ResourceFXUtils.getOutFile(), format);
+        File newFile = ResourceFXUtils.getOutFile(format);
         DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime, currentTime);
         progressIndicator.progressProperty().bind(splitAudio);
         progressIndicator.setVisible(true);

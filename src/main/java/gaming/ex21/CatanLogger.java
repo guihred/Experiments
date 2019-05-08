@@ -176,7 +176,7 @@ public final class CatanLogger {
     }
 
 	private static void appendLine(Map<String, Object> rowMap) {
-		File file = new File(ResourceFXUtils.getOutFile(), CATAN_LOG);
+        File file = ResourceFXUtils.getOutFile(CATAN_LOG);
 		boolean exists = file.exists();
 		String collect = DATAFRAME_ML.cols().stream().collect(Collectors.joining(",", "", ""));
 		if (exists) {

@@ -11,11 +11,7 @@ import javax.imageio.ImageIO;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.state.Concatenate;
-import org.apache.pdfbox.contentstream.operator.state.Restore;
-import org.apache.pdfbox.contentstream.operator.state.Save;
-import org.apache.pdfbox.contentstream.operator.state.SetGraphicsStateParameters;
-import org.apache.pdfbox.contentstream.operator.state.SetMatrix;
+import org.apache.pdfbox.contentstream.operator.state.*;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -99,8 +95,7 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
 	public static File save(int pageNumber, Object numb, BufferedImage image, String ext) {
 
 		String string = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
-		File url = ResourceFXUtils.getOutFile();
-		File file = new File(url, pageNumber + "-" + numb + "." + string);
+        File file = ResourceFXUtils.getOutFile(pageNumber + "-" + numb + "." + string);
 		try {
 			ImageIO.write(image, string, file); // ignore returned boolean
 		} catch (IOException e) {

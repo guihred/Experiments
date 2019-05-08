@@ -78,7 +78,7 @@ public final class Word2VecExample {
 	}
 
 	public static File getPathToSave() {
-		return new File(ResourceFXUtils.getOutFile(),PATH_TO_SAVE_MODEL_TXT);
+        return ResourceFXUtils.getOutFile(PATH_TO_SAVE_MODEL_TXT);
 	}
 
 }

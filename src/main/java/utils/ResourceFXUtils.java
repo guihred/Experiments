@@ -90,6 +90,15 @@ public final class ResourceFXUtils {
 		return file;
 	}
 
+    public static File getOutFile(String out) {
+        File parentFile = toFile("alice.txt").getParentFile();
+        File file = new File(parentFile, "out");
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        return new File(file, out);
+    }
+
 	public static List<Path> getPathByExtension(final File dir, final String... other) {
 		try (Stream<Path> walk = Files.walk(dir.toPath(), 20, FileVisitOption.FOLLOW_LINKS)) {
 			return walk.filter(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex)))
