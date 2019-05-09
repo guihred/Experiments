@@ -23,7 +23,7 @@ public class CustomLayout implements Layout {
 	public static void layoutInCustom(List<Cell> cells, List<Edge> allEdges) {
 		cells.get(0).relocate(50, 50);
 		Set<Cell> cellSet = cells.stream().collect(Collectors.toSet());
-		final int bound = 150;
+        final double bound = 150.;
 
 		for (Cell cell : cells) {
 			List<Cell> edges = GraphModelAlgorithms.adjacents(cell, allEdges);
@@ -32,9 +32,9 @@ public class CustomLayout implements Layout {
 					int i = 0;
 					final int maxAtempts = 20;
 					do {
-                        double rndAngle = rnd(bound * 2);
-                        double x = rnd(bound) * Math.cos(Math.toRadians(rndAngle));
-                        double y = rnd(bound) * Math.sin(Math.toRadians(rndAngle));
+                        double rndAngle = BaseTopology.rnd(bound * 2);
+                        double x = BaseTopology.rnd(bound) * Math.cos(Math.toRadians(rndAngle));
+                        double y = BaseTopology.rnd(bound) * Math.sin(Math.toRadians(rndAngle));
 						cell2.relocate(x + cell.getLayoutX(), y + cell.getLayoutY());
 						cellSet.remove(cell2);
 					} while (i++ < maxAtempts && GraphModelAlgorithms.anyIntersection(cells, cell2));
@@ -44,8 +44,6 @@ public class CustomLayout implements Layout {
 		}
 	}
 
-    private static double rnd(double bound) {
-        return Math.random() * bound - bound / 2;
-    }
+
 
 }

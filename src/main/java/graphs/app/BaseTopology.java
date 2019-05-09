@@ -62,4 +62,15 @@ public abstract class BaseTopology implements HasLogging {
 		return Objects.toString((char) ('A' + i));
 
 	}
+    public static double rnd(double bound) {
+        return Math.random() * bound - bound / 2;
+    }
+
+    public static double rndPositive(double bound) {
+        return Math.random() * bound;
+    }
+
+    protected static double newAngle() {
+        return Math.random() * 360 - 180;
+    }
 }

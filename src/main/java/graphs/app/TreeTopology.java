@@ -50,9 +50,5 @@ public class TreeTopology extends BaseTopology {
         graph.sortChildren();
     }
 
-    private double newAngle() {
-        return Math.random() * 360 - 180;
-    }
-
 
 }

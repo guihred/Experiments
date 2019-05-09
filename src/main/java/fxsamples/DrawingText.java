@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class DrawingText extends Application {
-    Random rand = new Random(System.currentTimeMillis());
+    private Random rand = new Random(System.currentTimeMillis());
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Text");

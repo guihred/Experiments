@@ -137,7 +137,7 @@ public class VigenereXORCipher {
                     bestKeySize = keySize;
                 }
 
-                LOGGER.info("keysize={}{}", keySize, sorted);
+                LOGGER.trace("keysize={}{}", keySize, sorted);
 
             }
 

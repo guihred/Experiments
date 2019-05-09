@@ -49,9 +49,7 @@ public class GabrielTopology extends BaseTopology {
 
     }
 
-    private double newAngle() {
-        return Math.random() * 360 - 180;
-    }
+
 
     public static double determinant(Cell a, Cell b, Cell c, Cell d) {
         double ay = a.getLayoutY();

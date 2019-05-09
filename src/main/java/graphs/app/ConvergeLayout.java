@@ -31,7 +31,20 @@ public class ConvergeLayout implements Layout {
 		return eventHandler;
 	}
 
-    private void convergeLayoutLoop(Graph graph1) {
+    private static double calculateXSum(double bound, double media, Edge e1) {
+        double angulo1 = e1.getAngulo();
+        Integer valor = 1;
+        e1.getValor();
+        return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
+	}
+
+	private static double calculateYSum(double bound, double media, Edge e2) {
+		double angulo2 = e2.getAngulo();
+		Integer valor = 1;e2.getValor();
+		return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
+	}
+
+	private static void convergeLayoutLoop(Graph graph1) {
         List<Cell> allCells = graph1.getModel().getAllCells();
 		if (allCells.size() > 100) {
 			return;
@@ -56,18 +69,5 @@ public class ConvergeLayout implements Layout {
 			}
 
 		}
-	}
-
-	private static double calculateXSum(double bound, double media, Edge e1) {
-        double angulo1 = e1.getAngulo();
-        Integer valor = 1;
-        e1.getValor();
-        return Math.cos(angulo1) * bound * valor / media - Math.cos(angulo1) * e1.getModulo() * valor / media;
-	}
-
-	private static double calculateYSum(double bound, double media, Edge e2) {
-		double angulo2 = e2.getAngulo();
-		Integer valor = 1;e2.getValor();
-		return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
 	}
 }

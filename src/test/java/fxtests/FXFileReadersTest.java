@@ -87,22 +87,28 @@ public class FXFileReadersTest extends ApplicationTest {
     @Test
     public void testLeitorArquivos() {
         File file = ResourceFXUtils.toFile("anvisa2208.xlsx");
-        ObservableList<String> sheetsExcel = LeitorArquivos.getSheetsExcel(file);
+        ObservableList<String> sheetsExcel = measureTime("LeitorArquivos.getSheetsExcel",
+            () -> LeitorArquivos.getSheetsExcel(file));
+
         WaitForAsyncUtils.waitForFxEvents();
-        ObservableList<List<String>> listExcel = LeitorArquivos.getListExcel(file, sheetsExcel.get(0));
+        ObservableList<List<String>> listExcel = measureTime("LeitorArquivos.getListExcel",
+            () -> LeitorArquivos.getListExcel(file, sheetsExcel.get(0)));
         WaitForAsyncUtils.waitForFxEvents();
-        ObservableList<Medicamento> converterMedicamentos = LeitorArquivos.converterMedicamentos(listExcel, Arrays
-            .asList(LeitorArquivos.REGISTRO, LeitorArquivos.NOME, LeitorArquivos.LOTE, LeitorArquivos.QUANTIDADE));
+        ObservableList<Medicamento> converterMedicamentos = measureTime("LeitorArquivos.converterMedicamentos",
+            () -> LeitorArquivos.converterMedicamentos(listExcel, Arrays.asList(LeitorArquivos.REGISTRO,
+                LeitorArquivos.NOME, LeitorArquivos.LOTE, LeitorArquivos.QUANTIDADE)));
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Size must be equal", 679, converterMedicamentos.size());
     }
 
     @Test
     public void testLeitorArquivosPDF() throws IOException {
-        File file = ResourceFXUtils.toFile("sngpc2808.pdf");
-        ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosSNGPCPDF(file);
-        WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("Size must be equal", 656, medicamentos.size());
+        measureTime("LeitorArquivos.getMedicamentosSNGPCPDF", () -> {
+            File file = ResourceFXUtils.toFile("sngpc2808.pdf");
+            ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosSNGPCPDF(file);
+            WaitForAsyncUtils.waitForFxEvents();
+            Assert.assertEquals("Size must be equal", 656, medicamentos.size());
+        });
     }
 
     @Test

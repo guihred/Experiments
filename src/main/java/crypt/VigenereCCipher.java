@@ -104,7 +104,7 @@ public class VigenereCCipher implements HasLogging {
             getLogger().trace("{}, key length: {}, {}", fit, j, key);
             if (fit < bestFit) {
                 bestFit = fit;
-                LOGGER.info("{} <--- best so far", bestFit);
+                LOGGER.info("{} <--- best key length so far", j);
             }
         }
 

@@ -108,8 +108,8 @@ public class SprayTool extends PaintTool {
         return lengthSlider;
     }
 
-    private double rnd(double i) {
-        return Math.random() *i;
+    protected static double rnd(double i) {
+        return Math.random() * i;
     }
 
 }

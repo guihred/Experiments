@@ -32,8 +32,8 @@ public class RandomLayout implements Layout {
             double minx = 0;
             List<Edge> edges = GraphModelAlgorithms.edges(cell, allEdges);
             do {
-                double x = Math.random() * bound;
-                double y = Math.random() * bound;
+                double x = BaseTopology.rndPositive(bound);
+                double y = BaseTopology.rndPositive(bound);
                 cell.relocate(x, y);
                 int j = 0;
                 for (Edge edge : edges) {

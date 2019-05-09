@@ -29,7 +29,7 @@ public class DelaunayTopology extends BaseTopology {
         double y = 0;
         for (int i = 0; i < getSize(); i++) {
             Cell cell = graph.getModel().addCell(BaseTopology.identifier(i), CellType.CIRCLE);
-            double a = Math.random() * 2 * Math.PI;
+            double a = rndPositive(2 * Math.PI);
             x += bound * Math.cos(a);
             y += bound * Math.sin(a);
             cell.relocate(x, y);

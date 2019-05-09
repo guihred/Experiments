@@ -110,8 +110,6 @@ public class TriangleMeshes extends Application implements HasLogging {
         // Step 2c:
         // for now we'll just make an empty texCoordinate group
         mesh.getTexCoords().addAll(0, 0);
-        int texCoordElementSize = mesh.getTexCoordElementSize();
-        getLogger().info("{}", texCoordElementSize);
         // End Step 2c
         // Step 2d: Add the faces "winding" the points generally counter clock
         // wise

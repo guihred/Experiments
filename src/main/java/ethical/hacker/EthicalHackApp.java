@@ -155,7 +155,7 @@ public class EthicalHackApp extends Application {
             Set<String> orDefault = count.getOrDefault(primaryKey, new HashSet<>());
             orDefault.add(key);
             count.put(targetKey, orDefault);
-            LOG.info("{} of {} = {}", targetKey, key, valueAdded);
+            LOG.trace("{} of {} = {}", targetKey, key, valueAdded);
         }
     }
 
