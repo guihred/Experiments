@@ -7,8 +7,7 @@ import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -30,20 +29,17 @@ import utils.*;
 public class PdfReader extends Application implements HasLogging {
     private static final int WORD_DISPLAY_PERIOD = 200;
     private static final String PDF_FILE = ResourceFXUtils.toFullPath("sngpc2808.pdf");
-    private ObservableList<String> lines = FXCollections.observableArrayList();
-    private ObservableList<String> skipLines = FXCollections.observableArrayList();
-    private ObservableList<String> words = FXCollections.observableArrayList();
+
     private Timeline timeline;
     private final Text currentWord = new Text();
     private final Text currentLine = new Text();
     private final Text currentPage = new Text();
-    private int index;
-    private int lineIndex;
+
     private PdfInfo pdfInfo = new PdfInfo();
 
-    private IntegerProperty pageIndex = new SimpleIntegerProperty(0);
     private ObservableList<HasImage> currentImages = FXCollections
-            .synchronizedObservableList(FXCollections.observableArrayList());
+        .synchronizedObservableList(FXCollections.observableArrayList());
+
     public PdfReader() {
         pdfInfo.setFile(new File(PDF_FILE));
     }
@@ -57,17 +53,23 @@ public class PdfReader extends Application implements HasLogging {
         if (pdfInfo.getFile() == null) {
             pdfInfo.setFile(displayDialog(primaryStage));
         }
-        pdfInfo = PdfUtils.readFile(pdfInfo.getFile());
+        PdfUtils.readFile(pdfInfo, pdfInfo.getFile());
         primaryStage.setTitle("PDF Read Helper");
         final Button startButton = CommonsFX.newButton("_Start/Stop", e -> toggleTimelineStatus());
         final Button nextButton = CommonsFX.newButton("_Next Line", e -> displayNextLine());
         final Button pageButton = CommonsFX.newButton("_Next Page", e -> displayNextPage());
-        final Button newPDF = CommonsFX.newButton("New _PDF", e -> PdfUtils.readFile(displayDialog(primaryStage)));
+        final Button newPDF = CommonsFX.newButton("New _PDF",
+            e -> PdfUtils.readFile(pdfInfo, displayDialog(primaryStage)));
         timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), e -> displayNextWord())
-                .cycleCount(Animation.INDEFINITE).build();
+            .cycleCount(Animation.INDEFINITE).build();
         currentWord.setFont(Font.font(60));
-        currentPage.textProperty().bind(pageIndex.asString().concat("/" + pdfInfo.getNumberOfPages()));
-        VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton, pageButton, newPDF);
+        Property<Number> rate = timeline.rateProperty();
+        VBox rateSlider = CommonsFX.newSlider("Rate", 0.01, 5, rate);
+
+        currentPage.textProperty()
+            .bind(pdfInfo.getPageIndex().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));
+        VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton, pageButton, newPDF,
+            rateSlider);
         currentLine.wrappingWidthProperty().bind(root.widthProperty().subtract(30));
         currentLine.setTextAlignment(TextAlignment.CENTER);
         root.setAlignment(Pos.CENTER);
@@ -84,12 +86,8 @@ public class PdfReader extends Application implements HasLogging {
     }
 
     private TableView<HasImage> createImagesTable() {
-        return new SimpleTableViewBuilder<HasImage>()
-                .scaleShape(false)
-                .addColumn("Image", "image",s -> new ImageTableCell())
-                .items(currentImages)
-                .equalColumns()
-                .build();
+        return new SimpleTableViewBuilder<HasImage>().scaleShape(false)
+            .addColumn("Image", "image", s -> new ImageTableCell()).items(currentImages).equalColumns().build();
     }
 
     private File displayDialog(Stage primaryStage) {
@@ -101,51 +99,52 @@ public class PdfReader extends Application implements HasLogging {
     }
 
     private void displayNextLine() {
-        if (lineIndex < lines.size()) {
-            String value = lines.get(lineIndex++);
-            skipLines.add(value);
+        if (pdfInfo.getLineIndex() < pdfInfo.getLines().size()) {
+            String value = pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
+            pdfInfo.getSkipLines().add(value);
             currentLine.setText(value);
-            words.setAll(Arrays.asList(value.split(PdfUtils.SPLIT_WORDS_REGEX)));
-            index = 0;
-            if (lineIndex >= lines.size()) {
+            pdfInfo.getWords().setAll(Arrays.asList(value.split(PdfUtils.SPLIT_WORDS_REGEX)));
+            pdfInfo.setIndex(0);
+            if (pdfInfo.getLineIndex() >= pdfInfo.getLines().size()) {
                 timeline.stop();
             }
         }
     }
 
     private void displayNextPage() {
-        if (pageIndex.get() < pdfInfo.getNumberOfPages() - 1) {
-            pageIndex.set(pageIndex.get() + 1);
-            lines.setAll(pdfInfo.getPages().get(pageIndex.get()));
+        if (pdfInfo.getPageIndex().get() < pdfInfo.getNumberOfPages() - 1) {
+            pdfInfo.getPageIndex().set(pdfInfo.getPageIndex().get() + 1);
+            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex().get()));
         }
     }
 
     private void displayNextWord() {
-        if (index >= words.size()) {
-            if (lineIndex >= lines.size()) {
-                lines.setAll(pdfInfo.getPages().get(pageIndex.get()));
-                if (pdfInfo.getImages().containsKey(pageIndex.get())) {
-                    List<PdfImage> col = pdfInfo.getImages().get(pageIndex.get());
+        if (pdfInfo.getIndex() >= pdfInfo.getWords().size()) {
+            if (pdfInfo.getLineIndex() >= pdfInfo.getLines().size()) {
+                pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex().get()));
+                if (pdfInfo.getImages().containsKey(pdfInfo.getPageIndex().get())) {
+                    List<PdfImage> col = pdfInfo.getImages().get(pdfInfo.getPageIndex().get());
                     currentImages.setAll(col);
                 } else {
                     currentImages.clear();
                 }
-                pageIndex.set(pageIndex.get() + 1);
-                lineIndex = 0;
-                if (pageIndex.get() >= pdfInfo.getPages().size()) {
+                pdfInfo.getPageIndex().set(pdfInfo.getPageIndex().get() + 1);
+                pdfInfo.setLineIndex(0);
+                if (pdfInfo.getPageIndex().get() >= pdfInfo.getPages().size()) {
                     timeline.stop();
                 }
             }
-            String value = lines.get(lineIndex++);
-            if (skipLines.contains(value) && lineIndex < lines.size() - 1) {
-                value = lines.get(lineIndex++);
+            String value = pdfInfo.getLines().isEmpty() ? ""
+                : pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd() % pdfInfo.getLines().size());
+            if (pdfInfo.getSkipLines().contains(value) && pdfInfo.getLineIndex() < pdfInfo.getLines().size() - 1) {
+                value = pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
             }
             currentLine.setText(value);
-            words.setAll(Arrays.asList(value.split(PdfUtils.SPLIT_WORDS_REGEX)));
-            index = 0;
+            pdfInfo.getWords().setAll(Arrays.asList(value.split(PdfUtils.SPLIT_WORDS_REGEX)));
+            pdfInfo.setIndex(0);
         }
-        if (!words.isEmpty()) {
-            currentWord.setText(words.get(index++));
+        if (!pdfInfo.getWords().isEmpty()) {
+            currentWord.setText(pdfInfo.getWords().get(pdfInfo.getIndexAndAdd()));
         }
     }
 
@@ -161,6 +160,5 @@ public class PdfReader extends Application implements HasLogging {
     public static void main(String[] args) {
         launch(args);
     }
-
 
 }

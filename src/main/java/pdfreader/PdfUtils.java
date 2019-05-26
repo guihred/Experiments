@@ -20,6 +20,7 @@ public final class PdfUtils {
     public static final String SPLIT_WORDS_REGEX = "[\\s]+";
 
     private static final Logger LOG = HasLogging.log();
+
     private PdfUtils() {
 
     }
@@ -32,8 +33,8 @@ public final class PdfUtils {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
         new Thread(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
-                    COSDocument cosDoc = parseAndGet(source);
-                    PDDocument pdDoc = new PDDocument(cosDoc)) {
+                COSDocument cosDoc = parseAndGet(source);
+                PDDocument pdDoc = new PDDocument(cosDoc)) {
                 int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
 
                 for (int i = start; i < nPag; i++) {
@@ -55,16 +56,24 @@ public final class PdfUtils {
         return parser.getDocument();
     }
 
-    public static PdfInfo readFile(File file1) {
-        PdfInfo pdfInfo = new PdfInfo();
+    public static PdfInfo readFile(PdfInfo pdfInfo, File file1) {
+        if (file1 == null) {
+            return pdfInfo;
+        }
+        pdfInfo.setIndex(0);
+        pdfInfo.setLineIndex(0);
+        pdfInfo.getLines().clear();
+        pdfInfo.getSkipLines().clear();
+        pdfInfo.getWords().clear();
         pdfInfo.setFile(file1);
+        pdfInfo.setPageIndex(0);
+        pdfInfo.getPages().clear();
         try (RandomAccessFile source = new RandomAccessFile(file1, "r");
-                COSDocument cosDoc = PdfUtils.parseAndGet(source);
-                PDDocument pdDoc = new PDDocument(cosDoc)) {
+            COSDocument cosDoc = PdfUtils.parseAndGet(source);
+            PDDocument pdDoc = new PDDocument(cosDoc)) {
             pdfInfo.setNumberOfPages(pdDoc.getNumberOfPages());
-            int start = 0;
             PDFTextStripper pdfStripper = new PDFTextStripper();
-            for (int i = start; i < pdfInfo.getNumberOfPages(); i++) {
+            for (int i = 0; i < pdfInfo.getNumberOfPages(); i++) {
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
                 String parsedText = pdfStripper.getText(pdDoc);
@@ -78,12 +87,18 @@ public final class PdfUtils {
                     lines1.add(string.replaceAll("\t", " "));
                 }
                 pdfInfo.getPages().add(lines1);
+                LOG.info("READING PAGE {}", i);
             }
-            pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages() - start);
-            pdfInfo.setImages(PdfUtils.extractImages(file1, start, pdfInfo.getNumberOfPages()));
+            pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages());
+            pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages()));
+
+            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex().get()));
+
         } catch (Exception e) {
             LOG.info("", e);
         }
+//        pdfInfo.setLines(lines);
+
         return pdfInfo;
     }
 

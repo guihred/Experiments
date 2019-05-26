@@ -10,7 +10,7 @@ public final class ShiftCipherExercise {
 	}
 
 	public static String decrypt(int k, String s) {
-		return s.chars().map(i -> (i - 'a' - k + NUMBER_OF_LETTERS) % NUMBER_OF_LETTERS + 'a')
+	    return s.chars().map(i -> (i - 'a' - k + NUMBER_OF_LETTERS) % NUMBER_OF_LETTERS + 'a')
 				.mapToObj(i -> Character.valueOf((char) i))
 				.map(Object::toString)
 				.collect(Collectors.joining());
