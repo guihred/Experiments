@@ -32,7 +32,9 @@ public class PdfReader extends Application implements HasLogging {
     private static final int WORD_DISPLAY_PERIOD = 200;
     private static final String PDF_FILE = ResourceFXUtils.toFullPath("sngpc2808.pdf");
 
-    private Timeline timeline;
+    private final Timeline timeline = new SimpleTimelineBuilder()
+        .addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), e -> displayNextWord()).cycleCount(Animation.INDEFINITE)
+        .build();
     private final Text currentWord = new Text();
     private final Text currentLine = new Text();
     private final Text currentPage = new Text();
@@ -62,8 +64,6 @@ public class PdfReader extends Application implements HasLogging {
         final Button pageButton = CommonsFX.newButton("_Next Page", e -> displayNextPage());
         final Button newPDF = CommonsFX.newButton("New _PDF",
             e -> PdfUtils.readFile(pdfInfo, displayDialog(primaryStage)));
-        timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), e -> displayNextWord())
-            .cycleCount(Animation.INDEFINITE).build();
         currentWord.setFont(Font.font(60));
         Property<Number> rate = timeline.rateProperty();
         VBox rateSlider = CommonsFX.newSlider("Rate", 0.01, 5, rate);
@@ -128,7 +128,7 @@ public class PdfReader extends Application implements HasLogging {
                 if (!pdfInfo.getLines().isEmpty()) {
                     List<String> repeated = linesNextPage.stream().filter(l -> pdfInfo.getLines().contains(l))
                         .collect(Collectors.toList());
-                        pdfInfo.getSkipLines().addAll(repeated);
+                    pdfInfo.getSkipLines().addAll(repeated);
 
                 }
                 pdfInfo.getLines().setAll(linesNextPage);
