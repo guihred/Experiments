@@ -92,7 +92,7 @@ public final class PdfUtils {
             pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages());
             pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages()));
 
-            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex().get()));
+            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
 
         } catch (Exception e) {
             LOG.info("", e);
