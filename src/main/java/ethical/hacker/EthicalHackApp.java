@@ -94,6 +94,7 @@ public class EthicalHackApp extends Application {
                 networkRoutes.addListener(updateItemOnChange(items, "Host", "Route"));
                 DoubleProperty defineProgress = ConsoleUtils.defineProgress(3);
                 progressIndicator.setVisible(true);
+                progressIndicator.progressProperty().unbind();
                 progressIndicator.progressProperty().bind(defineProgress);
                 ConsoleUtils.waitAllProcesses();
             }).start();

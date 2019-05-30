@@ -3,6 +3,7 @@ package pdfreader;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
@@ -14,6 +15,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -74,7 +76,7 @@ public class PdfReader extends Application implements HasLogging {
         currentLine.setTextAlignment(TextAlignment.CENTER);
         root.setAlignment(Pos.CENTER);
         TableView<HasImage> imagesTable = createImagesTable();
-        VBox root2 = new VBox(root, imagesTable);
+        HBox root2 = new HBox(root, imagesTable);
         root.prefWidthProperty().bind(root2.widthProperty().divide(2));
         imagesTable.prefWidthProperty().bind(root2.widthProperty().divide(2));
         root2.setAlignment(Pos.CENTER);
@@ -121,7 +123,17 @@ public class PdfReader extends Application implements HasLogging {
     private void displayNextWord() {
         if (pdfInfo.getIndex() >= pdfInfo.getWords().size()) {
             if (pdfInfo.getLineIndex() >= pdfInfo.getLines().size()) {
-                pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex().get()));
+
+                List<String> linesNextPage = pdfInfo.getPages().get(pdfInfo.getPageIndex().get());
+                if (!pdfInfo.getLines().isEmpty()) {
+                    List<String> collect = linesNextPage.stream().filter(l -> pdfInfo.getLines().contains(l))
+                        .collect(Collectors.toList());
+                    if (!collect.isEmpty()) {
+                        pdfInfo.getSkipLines().addAll(collect);
+                    }
+
+                }
+                pdfInfo.getLines().setAll(linesNextPage);
                 if (pdfInfo.getImages().containsKey(pdfInfo.getPageIndex().get())) {
                     List<PdfImage> col = pdfInfo.getImages().get(pdfInfo.getPageIndex().get());
                     currentImages.setAll(col);

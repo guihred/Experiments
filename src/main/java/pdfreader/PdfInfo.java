@@ -7,6 +7,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 
 class PdfInfo {
     private File file;
@@ -16,7 +17,7 @@ class PdfInfo {
     private int index;
     private int lineIndex;
     private final ObservableList<String> lines = FXCollections.observableArrayList();
-    private final ObservableList<String> skipLines = FXCollections.observableArrayList();
+    private final ObservableSet<String> skipLines = FXCollections.observableSet();
     private final ObservableList<String> words = FXCollections.observableArrayList();
 
     private final IntegerProperty pageIndex = new SimpleIntegerProperty(0);
@@ -61,7 +62,7 @@ class PdfInfo {
         return pages;
     }
 
-    public ObservableList<String> getSkipLines() {
+    public ObservableSet<String> getSkipLines() {
         return skipLines;
     }
 
@@ -108,9 +109,6 @@ class PdfInfo {
         this.pages = pages;
     }
 
-    public void setSkipLines(ObservableList<String> skipLines) {
-        this.skipLines.setAll(skipLines);
-    }
 
     public void setWords(ObservableList<String> words) {
         this.words.setAll(words);

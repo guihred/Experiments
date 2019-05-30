@@ -87,7 +87,7 @@ public final class PdfUtils {
                     lines1.add(string.replaceAll("\t", " "));
                 }
                 pdfInfo.getPages().add(lines1);
-                LOG.info("READING PAGE {}", i);
+                LOG.trace("READING PAGE {}", i);
             }
             pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages());
             pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages()));
