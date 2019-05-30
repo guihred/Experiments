@@ -69,7 +69,7 @@ public class PdfReader extends Application implements HasLogging {
         VBox rateSlider = CommonsFX.newSlider("Rate", 0.01, 5, rate);
 
         currentPage.textProperty()
-            .bind(pdfInfo.getPageIndex().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));
+            .bind(pdfInfo.pageIndexProperty().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));
         VBox root = new VBox(currentWord, currentLine, currentPage, startButton, nextButton, pageButton, newPDF,
             rateSlider);
         currentLine.wrappingWidthProperty().bind(root.widthProperty().subtract(30));
@@ -114,9 +114,9 @@ public class PdfReader extends Application implements HasLogging {
     }
 
     private void displayNextPage() {
-        if (pdfInfo.getPageIndex().get() < pdfInfo.getNumberOfPages() - 1) {
-            pdfInfo.getPageIndex().set(pdfInfo.getPageIndex().get() + 1);
-            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex().get()));
+        if (pdfInfo.getPageIndex() < pdfInfo.getNumberOfPages() - 1) {
+            pdfInfo.setPageIndex(pdfInfo.getPageIndex() + 1);
+            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
         }
     }
 
@@ -124,25 +124,23 @@ public class PdfReader extends Application implements HasLogging {
         if (pdfInfo.getIndex() >= pdfInfo.getWords().size()) {
             if (pdfInfo.getLineIndex() >= pdfInfo.getLines().size()) {
 
-                List<String> linesNextPage = pdfInfo.getPages().get(pdfInfo.getPageIndex().get());
+                List<String> linesNextPage = pdfInfo.getPages().get(pdfInfo.getPageIndex());
                 if (!pdfInfo.getLines().isEmpty()) {
-                    List<String> collect = linesNextPage.stream().filter(l -> pdfInfo.getLines().contains(l))
+                    List<String> repeated = linesNextPage.stream().filter(l -> pdfInfo.getLines().contains(l))
                         .collect(Collectors.toList());
-                    if (!collect.isEmpty()) {
-                        pdfInfo.getSkipLines().addAll(collect);
-                    }
+                        pdfInfo.getSkipLines().addAll(repeated);
 
                 }
                 pdfInfo.getLines().setAll(linesNextPage);
-                if (pdfInfo.getImages().containsKey(pdfInfo.getPageIndex().get())) {
-                    List<PdfImage> col = pdfInfo.getImages().get(pdfInfo.getPageIndex().get());
+                if (pdfInfo.getImages().containsKey(pdfInfo.getPageIndex())) {
+                    List<PdfImage> col = pdfInfo.getImages().get(pdfInfo.getPageIndex());
                     currentImages.setAll(col);
                 } else {
                     currentImages.clear();
                 }
-                pdfInfo.getPageIndex().set(pdfInfo.getPageIndex().get() + 1);
+                pdfInfo.setPageIndex(pdfInfo.getPageIndex() + 1);
                 pdfInfo.setLineIndex(0);
-                if (pdfInfo.getPageIndex().get() >= pdfInfo.getPages().size()) {
+                if (pdfInfo.getPageIndex() >= pdfInfo.getPages().size()) {
                     timeline.stop();
                 }
             }

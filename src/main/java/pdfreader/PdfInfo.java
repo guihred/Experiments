@@ -54,10 +54,9 @@ class PdfInfo {
         return numberOfPages.get();
     }
 
-    public IntegerProperty getPageIndex() {
-        return pageIndex;
+    public int getPageIndex() {
+        return pageIndex.get();
     }
-
     public ObservableList<List<String>> getPages() {
         return pages;
     }
@@ -72,6 +71,10 @@ class PdfInfo {
 
     public IntegerProperty numberOfPagesProperty() {
         return numberOfPages;
+    }
+
+    public IntegerProperty pageIndexProperty() {
+        return pageIndex;
     }
 
 
