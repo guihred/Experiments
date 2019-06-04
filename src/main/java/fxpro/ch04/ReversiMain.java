@@ -122,7 +122,7 @@ public class ReversiMain extends Application {
             for (int j = 0; j < ReversiModel.BOARD_SIZE; j++) {
                 ReversiSquare square = new ReversiSquare(i, j);
                 ReversiPiece piece = new ReversiPiece();
-                piece.ownerProperty().bind(model.board[i][j]);
+                piece.ownerProperty().bind(model.get(i, j));
                 board.add(new StackPane(square, piece), i, j);
             }
         }

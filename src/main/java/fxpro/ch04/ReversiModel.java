@@ -7,14 +7,14 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public final class ReversiModel {
-
+public enum ReversiModel {
+    MODEL;
     public static final int BOARD_SIZE = 8;
     private ObjectProperty<Owner> turn = new SimpleObjectProperty<>(Owner.BLACK);
     @SuppressWarnings("unchecked")
-    public ObjectProperty<Owner>[][] board = new ObjectProperty[BOARD_SIZE][BOARD_SIZE];
+    private ObjectProperty<Owner>[][] board = new ObjectProperty[BOARD_SIZE][BOARD_SIZE];
 
-    private ReversiModel() {
+    ReversiModel() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 board[i][j] = new SimpleObjectProperty<>(Owner.NONE);
@@ -65,6 +65,10 @@ public final class ReversiModel {
                 y += directionY;
             }
         }
+    }
+
+    public ObjectProperty<Owner> get(int i, int j) {
+        return board[i][j];
     }
 
     public NumberExpression getScore(Owner owner) {
@@ -134,17 +138,11 @@ public final class ReversiModel {
     }
 
     public static ReversiModel getInstance() {
-        return ReversiModelHolder.INSTANCE;
+        return MODEL;
     }
 
     private static boolean xAndYWithinBoardSize(int x, int y) {
         return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
     }
 
-    private static final class ReversiModelHolder {
-        private static final ReversiModel INSTANCE = new ReversiModel();
-
-        private ReversiModelHolder() {
-        }
-    }
 }

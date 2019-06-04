@@ -38,7 +38,7 @@ public class CubeNode extends Parent {
 
     private DoubleProperty angleY = new SimpleDoubleProperty(0);
     private CubeFace bottomFace;
-    private CubeModel cubeModel = CubeModel.instance;
+    private CubeModel cubeModel = CubeModel.MODEL;
     private double dragPressedAngleX;
     private double dragPressedAngleY;
 

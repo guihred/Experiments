@@ -66,7 +66,8 @@ public class PdfReader extends Application implements HasLogging {
             e -> PdfUtils.readFile(pdfInfo, displayDialog(primaryStage)));
         currentWord.setFont(Font.font(60));
         Property<Number> rate = timeline.rateProperty();
-        VBox rateSlider = CommonsFX.newSlider("Rate", 0.01, 5, rate);
+        final double min = 0.01;
+        VBox rateSlider = CommonsFX.newSlider("Rate", min, 5, rate);
 
         currentPage.textProperty()
             .bind(pdfInfo.pageIndexProperty().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));

@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import others.*;
+import pdfreader.Speaker;
 import utils.HasLogging;
 import utils.MatrixSolver;
 import utils.ResourceFXUtils;
@@ -173,6 +174,16 @@ public class IndependentTest implements HasLogging {
     public void testRarAndZIP() {
         measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
         measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
+    }
+
+    @Test
+    public void testSpeaker() throws Exception {
+        measureTime("Speaker.speak", () -> {
+            Speaker.SPEAKER.speak("Hi");
+            Speaker.SPEAKER.speak("How Are You");
+            Speaker.SPEAKER.speak("Show me the money");
+            Speaker.SPEAKER.dealocate();
+        });
     }
 
     @Test

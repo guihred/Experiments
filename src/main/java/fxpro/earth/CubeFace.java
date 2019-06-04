@@ -33,7 +33,7 @@ public class CubeFace extends Parent {
 	public static final double EDGE_LENGTH = 512;
 	public static final double RADIUS = EDGE_LENGTH * 0.5;
 
-	private CubeModel cubeModel = CubeModel.instance;
+	private CubeModel cubeModel = CubeModel.MODEL;
 
 	private Rectangle faceRect;
 	private DoubleProperty zPos = new SimpleDoubleProperty(0);

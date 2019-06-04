@@ -17,8 +17,8 @@ import javafx.beans.property.SimpleDoubleProperty;
  *
  * @author Jim Weaver
  */
-public class CubeModel {
-	public static final CubeModel instance = new CubeModel();
+public enum CubeModel {
+    MODEL;
 	private final DoubleProperty mapOpacity = new SimpleDoubleProperty(0);
 
 	public DoubleProperty getMapOpacity() {

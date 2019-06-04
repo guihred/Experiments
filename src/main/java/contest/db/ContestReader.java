@@ -20,11 +20,11 @@ import pdfreader.PrintImageLocations;
 import utils.HasImage;
 import utils.HasLogging;
 
-public final class ContestReader implements HasLogging {
+public enum ContestReader implements HasLogging {
+    INSTANCE;
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
     public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     public static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
-    private static final ContestReader INSTANCE = new ContestReader();
     private static final String LINE_PATTERN = "^\\d+\\s+$";
 
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";

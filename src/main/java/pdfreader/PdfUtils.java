@@ -97,7 +97,6 @@ public final class PdfUtils {
         } catch (Exception e) {
             LOG.info("", e);
         }
-//        pdfInfo.setLines(lines);
 
         return pdfInfo;
     }
