@@ -38,7 +38,8 @@ public class WorldMapExample2 extends Application {
         root.getChildren()
             .add(CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas)));
         root.getChildren().add(canvas);
-		theStage.show();
+        theStage.show();
+
 	}
 
 
