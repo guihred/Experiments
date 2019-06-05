@@ -48,7 +48,7 @@ public class WorldMapExample extends Application implements HasLogging {
         canvas.setDataframe(x,
             x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
         File file = ResourceFXUtils.toFile("out");
-        String[] list = file.list((dir, name) -> name.matches("WDIData.+.csv"));
+        String[] list = file.list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
         ComboBox<String> yearCombo = new SimpleComboBoxBuilder<String>().items("2016")
             .select(0)
             .onSelect(canvas.valueHeaderProperty()::set)

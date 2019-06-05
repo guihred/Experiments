@@ -27,13 +27,11 @@ public class WorldMapExample2 extends Application {
 		root.getChildren().add(newSlider("Radius", -2, 2, canvas.radiusProperty()));
 		root.getChildren().add(newSlider("X", -360, 360, canvas.yScaleProperty()));
 		root.getChildren().add(newSlider("Y", -360, 360, canvas.xScaleProperty()));
-        DataframeML points = DataframeML.builder("cities.csv")
-
-				.build();
+        DataframeML points = DataframeML.builder("cities.csv").build();
 		String latDegree = "Lat Degree";
-        points.crossFeatureObject(latDegree, WorldMapExample2::convertToDegrees, "Lat Degree", "Lat Minute");
+        points.crossFeatureObject(latDegree, WorldMapExample2::convertToDegrees, latDegree, "Lat Minute");
 		String lonDegree = "Lon Degree";
-        points.crossFeatureObject(lonDegree, WorldMapExample2::convertToDegrees, "Lon Degree", "Lon Minute");
+        points.crossFeatureObject(lonDegree, WorldMapExample2::convertToDegrees, lonDegree, "Lon Minute");
         canvas.valueHeaderProperty().set("Time");
         canvas.setDataframe(points, "Country");
         canvas.setPoints(latDegree, lonDegree);

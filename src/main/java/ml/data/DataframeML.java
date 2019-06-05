@@ -134,13 +134,15 @@ public class DataframeML implements HasLogging {
 
 	public DataframeML filterString(String header, Predicate<String> v) {
 		List<Object> list = dataframe.get(header);
-		for (int i = 0; i < list.size(); i++) {
-			if (!v.test(Objects.toString(list.get(i)))) {
-				int j = i;
-				dataframe.forEach((c, l) -> l.remove(j));
-				i--;
-			}
-		}
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+            	if (!v.test(Objects.toString(list.get(i)))) {
+            		int j = i;
+            		dataframe.forEach((c, l) -> l.remove(j));
+            		i--;
+            	}
+            }
+        }
         size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
         return this;
 	}

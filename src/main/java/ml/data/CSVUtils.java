@@ -20,7 +20,7 @@ public class CSVUtils {
     private static final char DEFAULT_QUOTE = '"';
 
     public static void main(String[] args) {
-        splitFile("WDIData.csv", 3);
+        splitFile(ResourceFXUtils.getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3);
     }
 
     public static List<String> parseLine(String cvsLine) {
@@ -54,19 +54,24 @@ public class CSVUtils {
         Map<String, Writer> writersBytype = new HashMap<>();
         File source = Paths.get(csvFile).toFile();
         try (Scanner scanner = new Scanner(source, StandardCharsets.UTF_8.displayName())) {
-            String firstLine = scanner.nextLine();
+            String firstLine = null;
             while (scanner.hasNext()) {
                 String nextLine = scanner.nextLine();
                 List<String> parseLine = CSVUtils.parseLine(nextLine);
-                String string = parseLine.get(columnIndex);
-                if (!writersBytype.containsKey(string)) {
-                    String child = source.getName().replaceAll("\\..+", "") + string + ".csv";
-                    File file = ResourceFXUtils.getOutFile(child);
-                    Writer output = createWriter(file.getAbsolutePath());
-                    output.append(firstLine + "\n");
-                    writersBytype.put(string, output);
+                if (parseLine.size() > columnIndex) {
+                    if (firstLine == null) {
+                        firstLine = nextLine;
+                    }
+                    String string = parseLine.get(columnIndex);
+                    if (!writersBytype.containsKey(string)) {
+                        String child = source.getName().replaceAll("\\..+", "") + string + ".csv";
+                        File file = ResourceFXUtils.getOutFile(child);
+                        Writer output = createWriter(file.getAbsolutePath());
+                        output.append(firstLine + "\n");
+                        writersBytype.put(string, output);
+                    }
+                    writersBytype.get(string).append(nextLine + "\n");
                 }
-                writersBytype.get(string).append(nextLine + "\n");
             }
         } catch (Exception e) {
             LOGGER.error("ERROR ", e);
