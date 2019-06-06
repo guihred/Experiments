@@ -1,5 +1,6 @@
 package graphs.entities;
 
+import java.util.Objects;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -75,13 +76,25 @@ public class Edge extends Group implements Comparable<Edge> {
 		return Integer.compare(valor, o.valor);
 	}
 
-	public final double getAngulo() {
-		double a = line.getEndX() - line.getStartX();
-		double b = line.getEndY() - line.getStartY();
-		return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!getClass().isInstance(obj)) {
+            return false;
+        }
+        Edge other = (Edge) obj;
+        return Objects.equals(source, other.source) && Objects.equals(target, other.target);
+    }
 
-	public double getModulo() {
+    public final double getAngulo() {
+        double a = line.getEndX() - line.getStartX();
+        double b = line.getEndY() - line.getStartY();
+        return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
+    }
+
+    public double getModulo() {
 		double a = line.getStartX() - line.getEndX();
 		double b = line.getStartY() - line.getEndY();
 		return Math.sqrt(a * a + b * b);
@@ -98,6 +111,11 @@ public class Edge extends Group implements Comparable<Edge> {
 	public Integer getValor() {
 		return valor;
 	}
+
+	@Override
+    public int hashCode() {
+        return Objects.hash(source, target);
+    }
 
 	public void setSelected(final boolean selected) {
 		this.selected.set(selected);

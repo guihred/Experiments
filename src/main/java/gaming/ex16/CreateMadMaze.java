@@ -87,8 +87,7 @@ public class CreateMadMaze {
     }
 
     private static boolean edgeHasCell(MadCell cellB, MadCell cellC, MadEdge e) {
-        return e.getSource().equals(cellC) && e.getTarget().equals(cellB)
-            || e.getSource().equals(cellB) && e.getTarget().equals(cellC);
+        return e.edgeHasCell(cellB, cellC);
     }
 
 }

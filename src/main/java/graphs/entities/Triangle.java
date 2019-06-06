@@ -38,8 +38,6 @@ public class Triangle {
 		    computeClosestPoint(new Linha(b, c), point).sub(point).mag());
 		edges[2] = new EdgeDistancePack(new Linha(c, a), 
 		    computeClosestPoint(new Linha(c, a), point).sub(point).mag());
-
-
 		Arrays.sort(edges);
 		return edges[0];
 	}

@@ -189,22 +189,22 @@ public class BrushTool extends PaintTool {
         if (withinRange(x2, y2, model)) {
             double r = length.getValue().doubleValue();
             Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
+            double op = opacity.get();
             switch (option) {
                 case CIRCLE:
                     drawCircleOption(model, x2, y2, r, color, fill);
                     break;
                 case SQUARE:
-                    drawSquareLine(model, x2, y2, (int) r, color, opacity.get());
+                    drawSquareLine(model, x2, y2, (int) r, color, op);
                     if (fill) {
-                        new RectBuilder().startX(x2).startY(y2).width(r).height(r).drawRect(model, color,
-                            opacity.get());
+                        new RectBuilder().startX(x2).startY(y2).width(r).height(r).drawRect(model, color, op);
                     }
                     break;
                 case LINE_NW_SE:
-                    drawLine(model, x2, y2, x2 + r, y2 + r, color, opacity.get());
+                    drawLine(model, x2, y2, x2 + r, y2 + r, color, op);
                     break;
                 case LINE_SW_NE:
-                    drawLine(model, x2, y2, x2 + r, y2 - r, color, opacity.get());
+                    drawLine(model, x2, y2, x2 + r, y2 - r, color, op);
                     break;
                 default:
                     break;

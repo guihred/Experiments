@@ -10,9 +10,9 @@ import javafx.beans.property.SimpleObjectProperty;
 public enum ReversiModel {
     MODEL;
     public static final int BOARD_SIZE = 8;
-    private ObjectProperty<Owner> turn = new SimpleObjectProperty<>(Owner.BLACK);
+    private final ObjectProperty<Owner> turn = new SimpleObjectProperty<>(Owner.BLACK);
     @SuppressWarnings("unchecked")
-    private ObjectProperty<Owner>[][] board = new ObjectProperty[BOARD_SIZE][BOARD_SIZE];
+    private final ObjectProperty<Owner>[][] board = new ObjectProperty[BOARD_SIZE][BOARD_SIZE];
 
     ReversiModel() {
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -20,7 +20,6 @@ public enum ReversiModel {
                 board[i][j] = new SimpleObjectProperty<>(Owner.NONE);
             }
         }
-
         initBoard();
     }
 
@@ -122,10 +121,6 @@ public enum ReversiModel {
         }
         initBoard();
         turn.setValue(Owner.BLACK);
-    }
-
-    public void setTurn(ObjectProperty<Owner> turn) {
-        this.turn = turn;
     }
 
     private void initBoard() {

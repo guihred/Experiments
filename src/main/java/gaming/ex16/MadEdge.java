@@ -1,5 +1,7 @@
 package gaming.ex16;
 
+import java.util.Objects;
+
 public class MadEdge implements Comparable<MadEdge> {
 
     private MadCell source;
@@ -16,12 +18,33 @@ public class MadEdge implements Comparable<MadEdge> {
         return 0;
     }
 
+    public boolean edgeHasCell(MadCell cellB, MadCell cellC) {
+        return source.equals(cellC) && target.equals(cellB) || source.equals(cellB) && target.equals(cellC);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!getClass().isInstance(obj)) {
+            return false;
+        }
+        MadEdge other = (MadEdge) obj;
+        return Objects.equals(source, other.source) && Objects.equals(target, other.target);
+    }
+
     public MadCell getSource() {
         return source;
     }
 
     public MadCell getTarget() {
         return target;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(source, target);
     }
 
     public boolean isMain() {
