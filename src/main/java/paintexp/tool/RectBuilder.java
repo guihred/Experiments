@@ -103,6 +103,18 @@ public class RectBuilder extends PaintTool {
         }
     }
 
+    public void drawRect(final PaintModel model, final Color backColor, final double opacity) {
+        int startX2 = (int) startX;
+        int startY2 = (int) startY;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (withinRange(startX2 + i, startY2 + j, model)) {
+                    PaintTool.drawPointTransparency(model, startX2 + i, startY2 + j, backColor, opacity);
+                }
+            }
+        }
+    }
+
     public void drawStroke(final PaintModel model) {
         drawLine(model, startX, centerY1, startX, centerY2);//LEFT
         drawLine(model, endX, centerY1, endX, centerY2);//RIGHT

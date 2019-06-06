@@ -87,9 +87,19 @@ public abstract class PaintTool extends Group {
 		for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
 			int x = (int) Math.round(radiusX * Math.cos(t));
 			int y = (int) Math.round(radiusY * Math.sin(t));
-			drawPoint(model, x + centerX, y + centerY, color);
+            drawPoint(model, x + centerX, y + centerY, color);
 		}
 	}
+
+    protected void drawCircle(final PaintModel model, final int centerX, final int centerY, final double radiusX,
+        final double radiusY, final Color color, final double opacity) {
+        double nPoints = Math.max(radiusX, radiusY) * N_POINTS_MULTIPLIER;
+        for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
+            int x = (int) Math.round(radiusX * Math.cos(t));
+            int y = (int) Math.round(radiusY * Math.sin(t));
+            drawPointTransparency(model, x + centerX, y + centerY, color, opacity);
+        }
+    }
 
 	protected void drawCirclePart(final PaintModel model, final double centerX, final double centerY,
 			final double radiusX, final double radiusY, final double startAngle, final Color frontColor) {
@@ -112,6 +122,11 @@ public abstract class PaintTool extends Group {
 			final double endY, final Color color) {
 		drawLine(model, startX, startY, endX, endY, (x, y) -> model.getImage().getPixelWriter().setColor(x, y, color));
 	}
+
+    protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
+        final double endY, final Color color, final double opacity) {
+        drawLine(model, startX, startY, endX, endY, (x, y) -> drawPointTransparency(model, x, y, color, opacity));
+    }
 
 	protected void drawLine(final PaintModel model, final double startX, final double startY, final double endX,
 			final double endY, final DrawOnPoint onPoint) {
@@ -151,7 +166,7 @@ public abstract class PaintTool extends Group {
 		}
 	}
 
-	protected void drawPointIf(final PaintModel model, final int x2, final int y2, final int color,
+    protected void drawPointIf(final PaintModel model, final int x2, final int y2, final int color,
 			final Color backColor) {
 		if (withinRange(x2, y2, model)) {
 			int argb = model.getImage().getPixelReader().getArgb(x2, y2);
@@ -161,7 +176,7 @@ public abstract class PaintTool extends Group {
 		}
 	}
 
-	protected void drawSquareLine(final PaintModel model, final int startX, final int startY, final int w,
+    protected void drawSquareLine(final PaintModel model, final int startX, final int startY, final int w,
 			final Color color) {
 		for (int x = 0; x < w; x++) {
 			drawPoint(model, startX + x, startY, color);
@@ -171,7 +186,17 @@ public abstract class PaintTool extends Group {
 		}
 	}
 
-	protected void drawSquareLine(final PaintModel model, final int x, final int y, final int w, final int color) {
+	protected void drawSquareLine(final PaintModel model, final int startX, final int startY, final int w,
+        final Color color, double opacity) {
+        for (int x = 0; x < w; x++) {
+            drawPointTransparency(model, startX + x, startY, color, opacity);
+            drawPointTransparency(model, startX, startY + x, color, opacity);
+            drawPointTransparency(model, startX + x, startY + w, color, opacity);
+            drawPointTransparency(model, startX + w, startY + x, color, opacity);
+        }
+    }
+
+    protected void drawSquareLine(final PaintModel model, final int x, final int y, final int w, final int color) {
 		Color backColor = model.getBackColor();
 		for (int i = 0; i < w; i++) {
 			drawPointIf(model, x + i, y, color, backColor);
@@ -255,5 +280,15 @@ public abstract class PaintTool extends Group {
 		model.getImageStack().getChildren().add(model.getRectangleBorder(imageView));
 		model.getImageStack().getChildren().add(imageView);
 	}
+
+	protected static void drawPointTransparency(final PaintModel model, final int x2, final int y2, final Color frontColor,
+        double opacity) {
+        if (withinRange(x2, y2, model)) {
+            int index = Math.max(model.getImageVersions().size() - 1, 0);
+            Color color = model.getImageVersions().get(index).getPixelReader().getColor(x2, y2);
+            Color color2 = color.interpolate(frontColor, opacity);
+            model.getImage().getPixelWriter().setColor(x2, y2, color2);
+        }
+    }
 
 }
