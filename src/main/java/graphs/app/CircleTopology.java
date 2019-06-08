@@ -38,8 +38,8 @@ public class CircleTopology extends BaseTopology {
 				}
 			} while (graph.getModel().addedCost(sourceId, targetId) != null || sourceId.equals(targetId));
 		}
-		graph.endUpdate();
 		CircleLayout.generateCircle(graph.getModel().getAllCells(), graph.getModel().getAllEdges());
+		graph.endUpdate();
 	}
 
 

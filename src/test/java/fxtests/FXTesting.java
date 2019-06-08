@@ -83,7 +83,7 @@ public final class FXTesting implements HasLogging {
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
-        LOGGER.info(TIME_TOOK_FORMAT, name, formatDuration);
+        HasLogging.log(1).info(TIME_TOOK_FORMAT, name, formatDuration);
     }
 
     public static <T> T measureTime(String name, SupplierEx<T> runnable) {
@@ -92,7 +92,7 @@ public final class FXTesting implements HasLogging {
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
-        LOGGER.info(TIME_TOOK_FORMAT, name, formatDuration);
+        HasLogging.log(1).info(TIME_TOOK_FORMAT, name, formatDuration);
         return t;
     }
 
@@ -104,7 +104,7 @@ public final class FXTesting implements HasLogging {
             long currentTimeMillis2 = System.currentTimeMillis();
             long arg2 = currentTimeMillis2 - currentTimeMillis;
             String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
-            LOGGER.info(TIME_TOOK_FORMAT, name, formatDuration);
+            HasLogging.log(1).info(TIME_TOOK_FORMAT, name, formatDuration);
             LOGGER.trace("Exception in " + name, e);
         }
     }

@@ -78,14 +78,7 @@ public class Edge extends Group implements Comparable<Edge> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!getClass().isInstance(obj)) {
-            return false;
-        }
-        Edge other = (Edge) obj;
-        return Objects.equals(source, other.source) && Objects.equals(target, other.target);
+        return this == obj;
     }
 
     public final double getAngulo() {

@@ -27,6 +27,9 @@ public class MadEdge implements Comparable<MadEdge> {
         if (this == obj) {
             return true;
         }
+        if (obj == null) {
+            return false;
+        }
         if (!getClass().isInstance(obj)) {
             return false;
         }

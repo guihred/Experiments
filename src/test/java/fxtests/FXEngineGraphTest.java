@@ -12,6 +12,8 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.junit.Test;
 import utils.ConsoleUtils;
+import utils.ConsumerEx;
+import utils.RunnableEx;
 
 
 public class FXEngineGraphTest extends AbstractTestExecution {
@@ -23,11 +25,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 	}
 	@Test
 	public void verify() throws Exception {
-		Set<Node> queryButtons = lookup(".button").queryAll();
-		for (Node e : queryButtons) {
-			clickOn(e);
-		}
-
+        lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -54,7 +52,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 	public void verifyZoomable() throws Exception {
 		Set<Node> queryButtons = lookup(Cell.class::isInstance).queryAll();
 		queryButtons.forEach(e -> {
-            clickOn(e);
+            RunnableEx.ignore(() -> clickOn(e));
             drag(e, MouseButton.PRIMARY);
 			moveBy(100, 100);
 			drop();
