@@ -128,7 +128,7 @@ public final class ConsoleUtils {
 
     public static ObservableList<String> executeInConsoleInfoAsync(final String cmd, final Runnable... onFinish) {
         ObservableList<String> execution = FXCollections.observableArrayList();
-        LOGGER.trace(EXECUTING, cmd);
+        LOGGER.info(EXECUTING, cmd);
         PROCESSES.put(cmd, false);
         Thread thread = new Thread(() -> {
             RunnableEx.ignore(() -> Thread.sleep(100));

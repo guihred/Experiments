@@ -58,6 +58,13 @@ public final class PortServices {
         return new PortServices("Unknown", "", port);
     }
 
+    public static Map<Integer, String> getTcpServices() {
+        if (TCP_SERVICES.isEmpty()) {
+            loadServiceNames();
+        }
+        return TCP_SERVICES;
+    }
+
     public static void loadServiceNames() {
         try (InputStream inStr = ResourceFXUtils.toStream("nmap-services");
                 InputStreamReader inStrReader = new InputStreamReader(inStr, Charset.defaultCharset());

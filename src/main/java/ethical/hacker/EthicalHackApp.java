@@ -1,6 +1,7 @@
 package ethical.hacker;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -53,6 +54,7 @@ public class EthicalHackApp extends Application {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
             addColumns(commonTable, keySet);
         });
+        vBox.getChildren().addAll(new Text("Filter Results"), configurarFiltroRapido(filt));
         vBox.getChildren().addAll(detworkInformationScanner, processScanner);
 
         TextField dns = new TextField("google.com");
@@ -76,6 +78,7 @@ public class EthicalHackApp extends Application {
         });
         vBox.getChildren().addAll(new Text("Ping Adress"), address, pingTrace);
 
+        List<Integer> portsSelected = new ArrayList<>();
         TextField networkAddress = new TextField(TracerouteScanner.NETWORK_ADDRESS);
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
@@ -84,8 +87,9 @@ public class EthicalHackApp extends Application {
             items.clear();
             addColumns(commonTable, Arrays.asList("Host", "Route", "OS", "Ports"));
             new Thread(() -> {
+                progressIndicator.setVisible(true);
                 ObservableMap<String, List<String>> scanNetworkOpenPorts = PortScanner
-                    .scanNetworkOpenPorts(networkAddress.getText());
+                    .scanNetworkOpenPorts(networkAddress.getText(), portsSelected);
                 scanNetworkOpenPorts.addListener(updateItemOnChange(items, "Host", "Ports"));
                 ObservableMap<String, List<String>> oses = PortScanner.scanPossibleOSes(networkAddress.getText());
                 oses.addListener(updateItemOnChange(items, "Host", "OS"));
@@ -93,7 +97,6 @@ public class EthicalHackApp extends Application {
                     .scanNetworkRoutes(networkAddress.getText());
                 networkRoutes.addListener(updateItemOnChange(items, "Host", "Route"));
                 DoubleProperty defineProgress = ConsoleUtils.defineProgress(3);
-                progressIndicator.setVisible(true);
                 progressIndicator.progressProperty().unbind();
                 progressIndicator.progressProperty().bind(defineProgress);
                 ConsoleUtils.waitAllProcesses();
@@ -102,8 +105,8 @@ public class EthicalHackApp extends Application {
         });
         vBox.getChildren().addAll(new Text("Network Adress"), networkAddress, portScanner);
         vBox.getChildren().addAll(progressIndicator);
+        vBox.getChildren().addAll(portTable(portsSelected));
 
-        vBox.getChildren().addAll(new Text("Filter Results"), configurarFiltroRapido(filt));
         HBox hBox = new HBox(vBox, commonTable);
         final int columnWidth = 120;
         commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-columnWidth));
@@ -125,16 +128,57 @@ public class EthicalHackApp extends Application {
         });
     }
 
-    private TextField configurarFiltroRapido(FilteredList<Map<String, String>> filteredData) {
+    private void addIfChecked(List<Integer> arrayList, Entry<Integer, String> e, Boolean val) {
+        if(val) {
+            arrayList.add(e.getKey());
+        }else{
+            arrayList.remove(e.getKey());
+        }
+    }
+
+    private TextField configurarFiltroRapido(FilteredList<?> filteredData) {
         TextField filterField = new TextField();
-        filterField.textProperty()
-            .addListener((o, old, value) -> filteredData.setPredicate(row -> {
-                if (value == null || value.isEmpty()) {
-                    return true;
-                }
-                return row.toString().toLowerCase().contains(value.toLowerCase());
-            }));
+        filterField.textProperty().addListener((o, old, value) -> filteredData.setPredicate(row -> {
+            if (value == null || value.isEmpty()) {
+                return true;
+            }
+            return row.toString().toLowerCase().contains(value.toLowerCase());
+        }));
         return filterField;
+    }
+
+    private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> hashMap, Entry<Integer, String> e) {
+        CheckBox checkBox = new CheckBox();
+        if (hashMap.containsKey(e.getKey())) {
+            checkBox=hashMap.get(e.getKey());
+        } else {
+            checkBox = new CheckBox();
+            hashMap.put(e.getKey(),checkBox);
+        }
+        checkBox.selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
+        return checkBox;
+    }
+
+    private VBox portTable(List<Integer> selectedPorts) {
+
+        Map<Integer, String> tcpServices = PortServices.getTcpServices();
+        ObservableList<Entry<Integer, String>> items = FXCollections
+            .synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet()));
+
+        FilteredList<Entry<Integer, String>> filt = items.filtered(e -> true);
+
+        Map<Integer, CheckBox> portChecks = new HashMap<>();
+
+        TableView<Entry<Integer, String>> commonTable = new SimpleTableViewBuilder<Entry<Integer, String>>()
+            .addColumn("Service", (e, v) -> v.setText(e.getValue()))
+            .addColumn("Port", (e, v) -> {
+                v.setGraphic(getCheckBox(selectedPorts, portChecks, e));
+                v.setText(Objects.toString(e.getKey()));
+            }).items(filt).build();
+
+        TextField filtro = configurarFiltroRapido(filt);
+
+        return new VBox(new Text("Port Services"), filtro, commonTable);
     }
 
     private void updateItem(final ObservableList<Map<String, String>> items, final String primaryKey,

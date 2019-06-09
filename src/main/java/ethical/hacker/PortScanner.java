@@ -42,13 +42,18 @@ public class PortScanner {
     }
 
     public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress) {
-        return scanNetworkOpenPorts(networkAddress, 5);
+        return scanNetworkOpenPorts(networkAddress, Collections.emptyList());
     }
 
-    public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress, int nPorts) {
+    public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress,
+        List<Integer> portsSelected) {
         Locale.setDefault(Locale.ENGLISH);
+        int nPorts = 5;
+        String s = portsSelected.isEmpty() ? "--top-ports " + nPorts
+            : "-p" + portsSelected.stream().map(Object::toString).collect(Collectors.joining(","));
+
         ObservableList<String> executeInConsole = ConsoleUtils
-            .executeInConsoleInfoAsync(NMAP_FILES + " -sV --top-ports " + nPorts + " " + networkAddress);
+            .executeInConsoleInfoAsync(String.format("%s -sV %s %s", NMAP_FILES, s, networkAddress));
         ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();
         StringProperty host = new SimpleStringProperty("");
         executeInConsole.addListener((Change<? extends String> c) -> {
