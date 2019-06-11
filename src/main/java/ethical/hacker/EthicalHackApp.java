@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -78,7 +79,7 @@ public class EthicalHackApp extends Application {
         });
         vBox.getChildren().addAll(new Text("Ping Adress"), address, pingTrace);
 
-        List<Integer> portsSelected = new ArrayList<>();
+        ObservableList<Integer> portsSelected = FXCollections.observableArrayList();
         TextField networkAddress = new TextField(TracerouteScanner.NETWORK_ADDRESS);
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
@@ -129,9 +130,9 @@ public class EthicalHackApp extends Application {
     }
 
     private void addIfChecked(List<Integer> arrayList, Entry<Integer, String> e, Boolean val) {
-        if(val) {
+        if (val) {
             arrayList.add(e.getKey());
-        }else{
+        } else {
             arrayList.remove(e.getKey());
         }
     }
@@ -150,16 +151,16 @@ public class EthicalHackApp extends Application {
     private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> hashMap, Entry<Integer, String> e) {
         CheckBox checkBox = new CheckBox();
         if (hashMap.containsKey(e.getKey())) {
-            checkBox=hashMap.get(e.getKey());
+            checkBox = hashMap.get(e.getKey());
         } else {
             checkBox = new CheckBox();
-            hashMap.put(e.getKey(),checkBox);
+            hashMap.put(e.getKey(), checkBox);
         }
         checkBox.selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
         return checkBox;
     }
 
-    private VBox portTable(List<Integer> selectedPorts) {
+    private VBox portTable(ObservableList<Integer> selectedPorts) {
 
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> items = FXCollections
@@ -170,15 +171,16 @@ public class EthicalHackApp extends Application {
         Map<Integer, CheckBox> portChecks = new HashMap<>();
 
         TableView<Entry<Integer, String>> commonTable = new SimpleTableViewBuilder<Entry<Integer, String>>()
-            .addColumn("Service", (e, v) -> v.setText(e.getValue()))
-            .addColumn("Port", (e, v) -> {
+            .addColumn("Service", (e, v) -> v.setText(e.getValue())).addColumn("Port", (e, v) -> {
                 v.setGraphic(getCheckBox(selectedPorts, portChecks, e));
                 v.setText(Objects.toString(e.getKey()));
-            }).items(filt).build();
+            }).items(filt).prefWidthColumns(2, 1).build();
 
         TextField filtro = configurarFiltroRapido(filt);
-
-        return new VBox(new Text("Port Services"), filtro, commonTable);
+        Text text = new Text("Port Services");
+        text.textProperty()
+            .bind(Bindings.createStringBinding(() -> String.format("Port Services %s", selectedPorts), selectedPorts));
+        return new VBox(text, filtro, commonTable);
     }
 
     private void updateItem(final ObservableList<Map<String, String>> items, final String primaryKey,

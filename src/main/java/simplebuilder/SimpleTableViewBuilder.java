@@ -2,6 +2,7 @@ package simplebuilder;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.DoubleStream;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -72,7 +73,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table.setItems(value);
         return this;
     }
-
     public SimpleTableViewBuilder<T> onDoubleClick(final Consumer<T> object) {
         node.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
@@ -87,6 +87,17 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table.getSelectionModel().selectedItemProperty()
             .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
         return this;
+    }
+
+    public SimpleTableViewBuilder<T> prefWidthColumns(double... prefs) {
+        ObservableList<TableColumn<T, ?>> columns = table.getColumns();
+        double sum = DoubleStream.of(prefs).sum();
+        for (int i = 0; i < prefs.length; i++) {
+            double pref = prefs[i];
+            columns.get(i).prefWidthProperty().bind(table.widthProperty().multiply(pref/sum));
+        }
+        return this;
+        
     }
 
     public SimpleTableViewBuilder<T> scrollTo(int value) {
