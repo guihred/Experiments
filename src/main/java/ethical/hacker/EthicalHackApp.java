@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +20,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleTableViewBuilder;
@@ -81,12 +83,13 @@ public class EthicalHackApp extends Application {
 
         ObservableList<Integer> portsSelected = FXCollections.observableArrayList();
         TextField networkAddress = new TextField(TracerouteScanner.NETWORK_ADDRESS);
+        FileChooser chooser = new FileChooser();
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
         progressIndicator.setVisible(false);
         Button portScanner = CommonsFX.newButton("_Port Scan", e -> {
             items.clear();
-            addColumns(commonTable, Arrays.asList("Host", "Route", "OS", "Ports"));
+            addColumns(commonTable, Arrays.asList("Host", "Ports", "Route", "OS"));
             new Thread(() -> {
                 progressIndicator.setVisible(true);
                 ObservableMap<String, List<String>> scanNetworkOpenPorts = PortScanner
@@ -104,8 +107,12 @@ public class EthicalHackApp extends Application {
             }).start();
 
         });
-        vBox.getChildren().addAll(new Text("Network Adress"), networkAddress, portScanner);
-        vBox.getChildren().addAll(progressIndicator);
+        vBox.getChildren().addAll(new Text("Network Adress"), new HBox(networkAddress, CommonsFX.newButton("Ips", e -> {
+            File showOpenDialog = chooser.showOpenDialog(primaryStage);
+            if (showOpenDialog != null) {
+                networkAddress.setText("-iL " + showOpenDialog);
+            }
+        })), new HBox(portScanner, progressIndicator));
         vBox.getChildren().addAll(portTable(portsSelected));
 
         HBox hBox = new HBox(vBox, commonTable);
@@ -129,14 +136,6 @@ public class EthicalHackApp extends Application {
         });
     }
 
-    private void addIfChecked(List<Integer> arrayList, Entry<Integer, String> e, Boolean val) {
-        if (val) {
-            arrayList.add(e.getKey());
-        } else {
-            arrayList.remove(e.getKey());
-        }
-    }
-
     private TextField configurarFiltroRapido(FilteredList<?> filteredData) {
         TextField filterField = new TextField();
         filterField.textProperty().addListener((o, old, value) -> filteredData.setPredicate(row -> {
@@ -149,7 +148,7 @@ public class EthicalHackApp extends Application {
     }
 
     private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> hashMap, Entry<Integer, String> e) {
-        CheckBox checkBox = new CheckBox();
+        CheckBox checkBox;
         if (hashMap.containsKey(e.getKey())) {
             checkBox = hashMap.get(e.getKey());
         } else {
@@ -164,7 +163,8 @@ public class EthicalHackApp extends Application {
 
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> items = FXCollections
-            .synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet()));
+            .synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet().stream()
+                .map(e -> new AbstractMap.SimpleEntry<>(e)).collect(Collectors.toSet())));
 
         FilteredList<Entry<Integer, String>> filt = items.filtered(e -> true);
 
@@ -214,6 +214,14 @@ public class EthicalHackApp extends Application {
 
     public static void main(final String[] args) {
         launch(args);
+    }
+
+    private static void addIfChecked(List<Integer> list, Entry<Integer, String> e, Boolean val) {
+        if (!val) {
+            list.remove(e.getKey());
+        } else if (!list.contains(e.getKey())) {
+            list.add(e.getKey());
+        }
     }
 
 }

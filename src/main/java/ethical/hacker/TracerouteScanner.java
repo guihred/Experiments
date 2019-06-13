@@ -25,7 +25,7 @@ import utils.HasLogging;
 public class TracerouteScanner {
 
     public static final String NMAP_SCAN_REGEX = "Nmap scan report for ([\\d\\.]+)"
-        + "|Nmap scan report for [^\\s]+ \\(([\\d\\.]+)\\)";
+        + "|Nmap scan report for ([^\\s]+) \\(([\\d\\.]+)\\)";
     private static final Logger LOG = HasLogging.log();
     private static final String NMAP_FILES = "C:\\Program Files (x86)\\Nmap\\nmap.exe";
     private static final String REUSED_ROUTE_REGEX = "-\\s*Hops (\\d+)-(\\d+) are the same as for ([\\d\\.]+)";
@@ -54,7 +54,7 @@ public class TracerouteScanner {
             while (c.next()) {
                 for (String line : c.getAddedSubList()) {
                     if (line.matches(NMAP_SCAN_REGEX)) {
-                        host.set(line.replaceAll(NMAP_SCAN_REGEX, "$1$2"));
+                        host.set(line.replaceAll(NMAP_SCAN_REGEX, "$1$3"));
                         hostsPorts.put(host.get(), new ArrayList<>());
                     }
                     if (line.matches(REUSED_ROUTE_REGEX + "|" + REUSED_ROUTE_REGEX_1 + "|" + HOP_REGEX)) {
