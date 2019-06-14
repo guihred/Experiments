@@ -110,7 +110,7 @@ public class EthicalHackApp extends Application {
         vBox.getChildren().addAll(new Text("Network Adress"), new HBox(networkAddress, CommonsFX.newButton("Ips", e -> {
             File showOpenDialog = chooser.showOpenDialog(primaryStage);
             if (showOpenDialog != null) {
-                networkAddress.setText("-iL " + showOpenDialog);
+                networkAddress.setText(String.format("-iL \"%s\"", showOpenDialog));
             }
         })), new HBox(portScanner, progressIndicator));
         vBox.getChildren().addAll(portTable(portsSelected));
@@ -164,7 +164,7 @@ public class EthicalHackApp extends Application {
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> items = FXCollections
             .synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet().stream()
-                .map(e -> new AbstractMap.SimpleEntry<>(e)).collect(Collectors.toSet())));
+                .map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
 
         FilteredList<Entry<Integer, String>> filt = items.filtered(e -> true);
 

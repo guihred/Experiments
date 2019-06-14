@@ -1,11 +1,23 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
+import static javafx.scene.input.KeyCode.*;
 
+import cubesystem.DeathStar;
+import ethical.hacker.EthicalHackApp;
 import ex.j8.Chapter4;
 import fxpro.ch02.PongLauncher;
+import fxpro.ch07.Chart3dSampleApp;
+import fxsamples.JewelViewer;
 import fxsamples.PlayingAudio;
+import fxsamples.RaspiCycle;
+import fxsamples.SimpleScene3D;
 import gaming.ex01.SnakeLauncher;
+import gaming.ex04.TronLauncher;
+import gaming.ex05.TetrisLauncher;
+import gaming.ex06.MoleculeSampleApp;
+import gaming.ex07.MazeLauncher;
+import gaming.ex09.Maze3DLauncher;
 import gaming.ex10.MinesweeperLauncher;
 import gaming.ex10.MinesweeperSquare;
 import gaming.ex11.DotsLauncher;
@@ -13,29 +25,45 @@ import gaming.ex11.DotsSquare;
 import gaming.ex13.CardStack;
 import gaming.ex13.SolitaireCard;
 import gaming.ex13.SolitaireLauncher;
+import gaming.ex14.PacmanLauncher;
+import gaming.ex15.RubiksCubeLauncher;
 import gaming.ex17.PuzzleLauncher;
 import gaming.ex17.PuzzlePiece;
 import gaming.ex18.Square2048Launcher;
+import gaming.ex20.RoundMazeLauncher;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Rectangle;
+import labyrinth.Labyrinth3DMouseControl;
+import labyrinth.Labyrinth3DWallTexture;
+import ml.WordSuggetionApp;
 import ml.WorldMapExample;
 import ml.WorldMapExample2;
 import org.junit.Test;
 import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
+import utils.ConsoleUtils;
+import utils.ConsumerEx;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
+    @Test
+    public void verify() throws Exception {
+        show(EthicalHackApp.class);
+        lookup(".button").queryAll().stream().filter(e -> !((Labeled) e).getText().equals("Ips"))
+            .forEach(ConsumerEx.ignore(this::clickOn));
+        ConsoleUtils.waitAllProcesses();
+    }
     @Test
     public void verifyButtons() throws Exception {
         measureTime("Test.testButtons",
@@ -46,7 +74,6 @@ public class FXEngineTest extends AbstractTestExecution {
             }), Chapter4.Ex9.class, PdfReader.class));
 
     }
-
     @Test
     public void verifyDots() throws Exception {
         show(DotsLauncher.class);
@@ -76,6 +103,27 @@ public class FXEngineTest extends AbstractTestExecution {
             clickOn(next);
             tryClickButtons();
         }
+    }
+
+    @Test
+    public void verifyMouseMovements() throws Exception {
+        FXTesting.verifyAndRun(this, currentStage, () -> {
+            moveTo(200, 200);
+            moveBy(-1000, 0);
+            moveBy(1000, 0);
+            type(W, 20);
+            for (KeyCode keyCode : Arrays.asList(W, S, A, DOWN, D, UP, R, L, U, D, B, F, Z, X, LEFT, RIGHT)) {
+                press(keyCode).release(keyCode);
+                press(CONTROL, keyCode).release(keyCode);
+                press(ALT, keyCode).release(keyCode);
+                press(SHIFT, keyCode).release(keyCode);
+                release(CONTROL, ALT, SHIFT);
+            }
+        }, RubiksCubeLauncher.class, TetrisLauncher.class, SimpleScene3D.class, Maze3DLauncher.class,
+            Labyrinth3DMouseControl.class, TronLauncher.class, JewelViewer.class, MoleculeSampleApp.class,
+            DeathStar.class, Chart3dSampleApp.class, PacmanLauncher.class, RoundMazeLauncher.class, MazeLauncher.class,
+            Labyrinth3DWallTexture.class, RaspiCycle.class);
+        interactNoWait(currentStage::close);
     }
 
     @Test
@@ -175,6 +223,15 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifySquare() throws Exception {
         show(Square2048Launcher.class);
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
+    }
+
+    @Test
+    public void verifyWordSuggetion() throws Exception {
+        show(WordSuggetionApp.class);
+        lookup(".text-field").queryAll().forEach(ConsumerEx.makeConsumer(t -> {
+            clickOn(t);
+            write("new york ");
+        }));
     }
 
     private Node getLastCard(CardStack cardStack) {
