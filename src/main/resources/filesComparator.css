@@ -1,3 +1,10 @@
 .vermelho{
 	-fx-background-color:lightcoral;
 }
+.percentage {
+	-fx-scale-y: 0;
+}
+.progress-indicator:determinate {
+	-fx-progress-color: green;
+
+}

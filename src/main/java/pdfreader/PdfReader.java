@@ -90,7 +90,8 @@ public class PdfReader extends Application implements HasLogging {
 
     private TableView<HasImage> createImagesTable() {
         return new SimpleTableViewBuilder<HasImage>().scaleShape(false)
-            .addColumn("Image", "image", s -> new ImageTableCell()).items(currentImages).equalColumns().build();
+            .addColumn("Image", "image", s -> new ImageTableCell<>())
+            .items(currentImages).equalColumns().build();
     }
 
     private File displayDialog(Stage primaryStage) {

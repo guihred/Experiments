@@ -7,7 +7,7 @@ import java.util.List;
 import utils.CrawlerTask;
 
 public abstract class CommonCrawlerTask<T> extends CrawlerTask {
-    private static final int MAX_THREAD_COUNT = 5;
+    private static final int MAX_THREAD_COUNT = 10;
 
     protected abstract List<T> getList();
 

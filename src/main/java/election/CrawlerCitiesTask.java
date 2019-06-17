@@ -27,7 +27,7 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
     }
     private void crawlThroughSite(String estado, String letter) {
         try {
-        	Document parse = getDocument("https://www.eleicoes2016.com.br/" + estado + "/" + letter + "/");
+            Document parse = getDocument("https://www.todapolitica.com/eleicoes-2016/" + estado + "/" + letter + "/");
 
             Elements select = parse.select(".lista-estados .custom li");
             for (Element element : select) {

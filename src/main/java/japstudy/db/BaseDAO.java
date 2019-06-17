@@ -9,7 +9,7 @@ import utils.HasLogging;
 
 public class BaseDAO implements HasLogging {
 
-	public <T> T execute(Function<Session, T> run) {
+    protected <T> T execute(Function<Session, T> run) {
 		try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
 			Transaction transaction = getTransaction(session);
 			T apply = run.apply(session);
@@ -23,7 +23,7 @@ public class BaseDAO implements HasLogging {
 		}
 	}
 
-	public void executeRun(Consumer<Session> run) {
+    protected void executeRun(Consumer<Session> run) {
 		try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
 			Transaction transaction = getTransaction(session);
 			run.accept(session);

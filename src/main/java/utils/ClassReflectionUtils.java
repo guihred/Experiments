@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,6 +21,8 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 
 public final class ClassReflectionUtils {
@@ -57,6 +60,16 @@ public final class ClassReflectionUtils {
         textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));
         stage2.setHeight(500);
         stage2.show();
+
+        if (scene.getWindow() != null) {
+            Window window = scene.getWindow();
+            EventHandler<WindowEvent> onCloseRequest = scene.getWindow().getOnCloseRequest();
+            window.setOnCloseRequest(e -> closeBoth(stage2, onCloseRequest, e));
+        }
+        scene.windowProperty().addListener((ob, o, n) -> {
+            EventHandler<WindowEvent> onCloseRequest = n.getOnCloseRequest();
+            n.setOnCloseRequest(e -> closeBoth(stage2, onCloseRequest, e));
+        });
     }
 
     public static void displayStyleClass(Node node) {
@@ -146,6 +159,13 @@ public final class ClassReflectionUtils {
 
     public static List<Method> getGetterMethods(Class<?> targetClass) {
         return getGetterMethods(targetClass, new HashMap<>());
+    }
+
+    private static void closeBoth(Stage stage2, EventHandler<WindowEvent> onCloseRequest, WindowEvent e) {
+        if (onCloseRequest != null) {
+            onCloseRequest.handle(e);
+        }
+        stage2.close();
     }
 
     private static void displayStyleClass(String n, Node node) {

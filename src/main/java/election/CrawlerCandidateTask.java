@@ -16,24 +16,25 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
 
     @Override
     protected void performTask(Cidade cidade) {
-        int i = 2;
+        int i = 1;
         while (true) {
             try {
-                Document parse = getDocument("https://www.eleicoes2016.com.br" + cidade.getHref() + i);
+                String url = "https://www.todapolitica.com" + cidade.getHref() + i + "/";
+                Document parse = getDocument(url);
 
-                Elements select = parse.select(".candidato-js");
+                Elements select = parse.select(".cr-js");
                 for (Element element : select) {
                     Candidato candidato = new Candidato();
                     candidato.setCidade(cidade);
                     candidato.setCargo(element.select(".cargo").text());
-                    candidato.setFotoUrl(element.select(".foto img").attr("src"));
-                    candidato.setHref(element.attr("data-url"));
-                    candidato.setNome(element.select(".nome b").text());
+                    candidato.setFotoUrl(element.select("img").attr("src"));
+                    candidato.setHref(element.select(".nome").attr("href"));
+                    candidato.setNome(element.select(".nome").text());
                     String text = element.select(".nome span").text();
                     candidato.setNumero(convertNumerico(text));
                     candidato.setPartido(element.select(".partido").text());
                     candidato.setVotos(convertNumerico(element.select(".votos").first().text()));
-                    candidato.setEleito("Eleito".equalsIgnoreCase(element.select(".info .badge").text()));
+                    candidato.setEleito(element.className().contains("eleito"));
                     cidadeDAO.saveOrUpdate(candidato);
                 }
                 if (select.isEmpty()) {

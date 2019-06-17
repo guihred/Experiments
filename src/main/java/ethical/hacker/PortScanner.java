@@ -62,7 +62,10 @@ public class PortScanner {
                     if (line.matches(TracerouteScanner.NMAP_SCAN_REGEX)) {
                         host.set(line.replaceAll(TracerouteScanner.NMAP_SCAN_REGEX, "$1$3"));
                         hostsPorts.put(host.get(), new ArrayList<>());
-                        hostsPorts.get(host.get()).add(line.replaceAll(TracerouteScanner.NMAP_SCAN_REGEX, "$2"));
+                        String replaceAll = line.replaceAll(TracerouteScanner.NMAP_SCAN_REGEX, "$2");
+                        if (!replaceAll.isEmpty()) {
+                            hostsPorts.get(host.get()).add(replaceAll);
+                        }
                     }
                     if (line.matches(PORT_REGEX)) {
                         if (!hostsPorts.containsKey(host.get())) {

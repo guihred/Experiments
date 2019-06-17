@@ -25,9 +25,9 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
     }
 
     private void extractCandidateInfo(Candidato candidato) {
-        for (int tried = 0; tried < 10; tried++) {
+        for (int tried = 0; tried < 3; tried++) {
             try {
-				Document parse = getDocument("https://www.eleicoes2016.com.br/" + candidato.getHref() + "/");
+                Document parse = getDocument("https://www.todapolitica.com" + candidato.getHref());
                 Elements select = parse.select(".info-candidato");
                 Elements children = select.first().children();
                 String nomeCompleto = children.get(0).child(1).text();
@@ -39,7 +39,8 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
                 candidatoDAO.saveOrUpdate(candidato);
                 break;
             } catch (Exception e) {
-                getLogger().error("ERRO candidato " + candidato, e);
+                getLogger().error("ERRO candidato " + candidato);
+                getLogger().trace("ERRO candidato " + candidato, e);
             }
         }
     }

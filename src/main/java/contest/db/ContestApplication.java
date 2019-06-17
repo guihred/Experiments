@@ -96,7 +96,7 @@ public class ContestApplication extends Application implements HasLogging {
                 .prefWidth(root.widthProperty().add(-10).divide(3))
                 .prefHeight(root.heightProperty().add(-30))
                 .scaleShape(false)
-                .addColumn("Image", "image",s -> new ImageTableCell())
+            .addColumn("Image", "image", s -> new ImageTableCell<>())
                 .equalColumns()
                 .build();
     }

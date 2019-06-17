@@ -5,7 +5,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
-public final class ImageTableCell extends TableCell<HasImage, String> {
+public final class ImageTableCell<T> extends TableCell<T, String> {
     @Override
     protected void updateItem(String item, boolean empty) {
         if (item == getItem()) {
@@ -17,7 +17,7 @@ public final class ImageTableCell extends TableCell<HasImage, String> {
             super.setGraphic(null);
         } else {
             super.setGraphic(new VBox(Stream.of(item.split(";")).map(image -> {
-                String imageUrl = ResourceFXUtils.toExternalForm("out/" + image);
+                String imageUrl = image.startsWith("http") ? image : ResourceFXUtils.toExternalForm("out/" + image);
                 ImageView imageView = new ImageView(imageUrl);
                 imageView.fitWidthProperty().bind(super.widthProperty());
                 imageView.setPreserveRatio(true);

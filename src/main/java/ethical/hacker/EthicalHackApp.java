@@ -22,11 +22,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.ConsoleUtils;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class EthicalHackApp extends Application {
 
@@ -87,6 +89,7 @@ public class EthicalHackApp extends Application {
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
         progressIndicator.setVisible(false);
+        progressIndicator.setMinSize(40, 40);
         Button portScanner = CommonsFX.newButton("_Port Scan", e -> {
             items.clear();
             addColumns(commonTable, Arrays.asList("Host", "Ports", "Route", "OS"));
@@ -119,7 +122,9 @@ public class EthicalHackApp extends Application {
         final int columnWidth = 120;
         commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-columnWidth));
         primaryStage.setTitle("Ethical Hack App");
-        primaryStage.setScene(new Scene(hBox, 500, 500));
+        Scene scene = new Scene(hBox, 500, 500);
+        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("filesComparator.css"));
+        primaryStage.setScene(scene);
         primaryStage.show();
 
     }
@@ -139,10 +144,11 @@ public class EthicalHackApp extends Application {
     private TextField configurarFiltroRapido(FilteredList<?> filteredData) {
         TextField filterField = new TextField();
         filterField.textProperty().addListener((o, old, value) -> filteredData.setPredicate(row -> {
-            if (value == null || value.isEmpty()) {
+            if (value == null) {
                 return true;
             }
-            return row.toString().toLowerCase().contains(value.toLowerCase());
+            return StringUtils.containsIgnoreCase(row.toString(), value);
+
         }));
         return filterField;
     }
@@ -163,8 +169,8 @@ public class EthicalHackApp extends Application {
 
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> items = FXCollections
-            .synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet().stream()
-                .map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
+            .synchronizedObservableList(FXCollections.observableArrayList(
+                tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
 
         FilteredList<Entry<Integer, String>> filt = items.filtered(e -> true);
 

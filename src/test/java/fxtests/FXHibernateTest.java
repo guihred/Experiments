@@ -26,7 +26,7 @@ public class FXHibernateTest extends AbstractTestExecution {
         HibernateUtil.setShutdownEnabled(false);
     }
 
-    @Test
+//    @Test
     public void verify() throws Exception {
         measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
         currentStage.setHeight(1000);
@@ -37,12 +37,6 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
         show(new FuriganaCrawlerApp());
         clickAllButtons();
-        show(new ElectionCrawlerApp(new CrawlerCitiesTask()));
-        clickAllButtons();
-        show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
-        clickAllButtons();
-        show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
-        clickAllButtons();
         show(new TaskProgressApp());
         clickAllButtons();
         show(new ContestQuestionEditingDisplay());
@@ -52,6 +46,16 @@ public class FXHibernateTest extends AbstractTestExecution {
         show(new JapaneseLessonAudioSplitDisplay());
         clickAllButtons();
         show(new JapaneseLessonDisplay());
+        clickAllButtons();
+    }
+
+    @Test
+    public void verifyElectionApp() {
+        show(new ElectionCrawlerApp(new CrawlerCitiesTask()));
+        clickAllButtons();
+        show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
+        clickAllButtons();
+        show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
         clickAllButtons();
     }
 
