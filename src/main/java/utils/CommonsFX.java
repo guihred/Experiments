@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleSliderBuilder;
 
 public final class CommonsFX {
@@ -43,7 +45,6 @@ public final class CommonsFX {
         stage1.show();
     }
 
-
     public static List<Color> generateRandomColors(final int size) {
         final int maxByte = 255;
         int max = 256;
@@ -59,6 +60,7 @@ public final class CommonsFX {
         Collections.shuffle(availableColors);
         return availableColors;
     }
+
 
     public static Button newButton(final double layoutX, final double layoutY, final String nome,
         final EventHandler<ActionEvent> onAction) {
@@ -94,6 +96,18 @@ public final class CommonsFX {
         CheckBox build = new CheckBox(text);
         build.setDisable(disabled);
         return build;
+    }
+
+    public static TextField newFastFilter(FilteredList<?> filteredData) {
+        TextField filterField = new TextField();
+        filterField.textProperty().addListener((o, old, value) -> filteredData.setPredicate(row -> {
+            if (value == null) {
+                return true;
+            }
+            return StringUtils.containsIgnoreCase(row.toString(), value);
+
+        }));
+        return filterField;
     }
 
     public static VBox newSlider(final String string, final double min, final double max, int block,

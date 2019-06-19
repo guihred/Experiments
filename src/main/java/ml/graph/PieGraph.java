@@ -22,7 +22,7 @@ import utils.CommonsFX;
 public class PieGraph extends Canvas {
     private static final int WIDTH = 550;
     private GraphicsContext gc;
-	private ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
+    private final ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
     private IntegerProperty radius = new SimpleIntegerProperty(WIDTH / 2);
     private IntegerProperty bins = new SimpleIntegerProperty(10);
     private IntegerProperty xOffset = new SimpleIntegerProperty(10);
@@ -124,7 +124,15 @@ public class PieGraph extends Canvas {
 	public void setDataframe(DataframeML dataframe, String column) {
         this.dataframe = dataframe;
         this.column = column;
+        histogram.clear();
         histogram.putAll(convertToHistogram());
+        availableColors = CommonsFX.generateRandomColors(histogram.size());
+        drawGraph();
+    }
+
+    public void setHistogram(Map<String, Long> dataframe) {
+        histogram.clear();
+        histogram.putAll(dataframe);
         availableColors = CommonsFX.generateRandomColors(histogram.size());
         drawGraph();
     }
@@ -134,6 +142,10 @@ public class PieGraph extends Canvas {
     }
 
     private Map<String, Long> convertToHistogram() {
+        if (dataframe == null) {
+            return histogram;
+        }
+
         if (dataframe.getFormat(column) != String.class) {
             Map<Double, Long> dataframeHistogram = dataframe.histogram(column, bins.get());
             return dataframeHistogram.entrySet().stream()

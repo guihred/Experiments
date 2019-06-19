@@ -23,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 public final class ClassReflectionUtils {
@@ -102,7 +103,7 @@ public final class ClassReflectionUtils {
             if (isRecursiveCall(class1, invoke)) {
                 return;
             }
-            String fieldName = method.getName().replaceAll(METHOD_REGEX, "$1$2");
+            String fieldName = getFieldName(method);
             description.append("\t");
             description.append(fieldName);
             description.append(" = ");
@@ -142,7 +143,7 @@ public final class ClassReflectionUtils {
                     return;
                 }
             }
-            String fieldName = o.getName().replaceAll(METHOD_REGEX, "$1$2");
+            String fieldName = getFieldName(o);
             StringBuilder description = new StringBuilder("\n");
             if (invoke != null && toStringMap.containsKey(invoke.getClass())) {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
@@ -157,8 +158,33 @@ public final class ClassReflectionUtils {
         return descriptionMap;
     }
 
+    public static String getFieldName(Method t) {
+        return t.getName().replaceAll(METHOD_REGEX, "$1$2");
+    }
+
     public static List<Method> getGetterMethods(Class<?> targetClass) {
         return getGetterMethods(targetClass, new HashMap<>());
+    }
+
+    public static Object invoke(Object ob, Method method) {
+        try {
+            return method.invoke(ob);
+        } catch (Exception e) {
+            LOG.trace("", e);
+            return null;
+        }
+    }
+
+    public static Object invoke(Object ob, String method) {
+        try {
+
+            return getGetterMethods(ob.getClass()).stream()
+                .filter(e -> StringUtils.containsIgnoreCase(e.getName(), method)).findFirst()
+                .map(FunctionEx.makeFunction(m -> m.invoke(ob))).orElse(null);
+        } catch (Exception e) {
+            LOG.trace("", e);
+            return null;
+        }
     }
 
     private static void closeBoth(Stage stage2, EventHandler<WindowEvent> onCloseRequest, WindowEvent e) {
@@ -225,8 +251,7 @@ public final class ClassReflectionUtils {
             getterMethods.put(class1,
                 Stream.of(class1.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
                     .filter(m -> m.getName().matches(METHOD_REGEX)).filter(m -> m.getParameterCount() == 0)
-                    .sorted(Comparator.comparing(t -> t.getName().replaceAll(METHOD_REGEX, "$1$2")))
-                    .collect(Collectors.toList()));
+                    .sorted(Comparator.comparing(t -> getFieldName(t))).collect(Collectors.toList()));
         }
         return getterMethods.get(class1);
 

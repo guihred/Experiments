@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
@@ -20,6 +21,11 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         super(new ComboBox<>());
         comboBox = region;
 
+    }
+
+    public SimpleComboBoxBuilder<T> bind(Property<T> column) {
+        column.bind(comboBox.getSelectionModel().selectedItemProperty());
+        return this;
     }
 
     public SimpleComboBoxBuilder<T> converter(Function<T, String> func) {
@@ -118,7 +124,6 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         comboBox.setTooltip(new Tooltip(text));
         return this;
     }
-
 
 
 

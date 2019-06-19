@@ -33,7 +33,7 @@ public class DataframeML implements HasLogging {
         formatMap = new LinkedHashMap<>(frame.formatMap);
         mapping = new LinkedHashMap<>(frame.mapping);
         size = frame.size;
-        stats = frame.stats;
+        stats = new HashMap<>(frame.stats);
         filters = new HashMap<>(frame.filters);
     }
 
@@ -45,11 +45,11 @@ public class DataframeML implements HasLogging {
 		readCSV(csvFile);
 	}
 
-	public void add(Map<String, Object> row) {
+    public void add(Map<String, Object> row) {
         row.forEach(this::add);
     }
 
-    public void add(String header, Object obj) {
+	public void add(String header, Object obj) {
 		List<Object> list = list(header);
 		list.add(obj);
 		size=Math.max(size, list.size());
@@ -66,7 +66,7 @@ public class DataframeML implements HasLogging {
         size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
     }
 
-	public <T extends Comparable<?>> void addCols(List<String> cols, Class<T> classes) {
+    public <T extends Comparable<?>> void addCols(List<String> cols, Class<T> classes) {
         for (String string : cols) {
             dataframe.put(string, new ArrayList<>());
             formatMap.put(string, classes);
@@ -84,7 +84,7 @@ public class DataframeML implements HasLogging {
 		formatMap.put(header, Double.class);
 	}
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Set<String> categorize(String header) {
 		if (categories.containsKey(header)) {
 			return categories.get(header);
@@ -96,7 +96,7 @@ public class DataframeML implements HasLogging {
 
 	}
 
-	public Set<String> cols() {
+    public Set<String> cols() {
 		return dataframe.keySet();
 	}
 
@@ -108,7 +108,7 @@ public class DataframeML implements HasLogging {
 		return DataframeUtils.crossFeatureObject(this, header, mapper, dependent);
 	}
 
-    public void describe() {
+	public void describe() {
 		if (stats == null) {
 			stats = dataframe.entrySet().stream().collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
 					e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(this, e.getKey()),
@@ -132,7 +132,7 @@ public class DataframeML implements HasLogging {
         return this;
     }
 
-	public DataframeML filterString(String header, Predicate<String> v) {
+    public DataframeML filterString(String header, Predicate<String> v) {
 		List<Object> list = dataframe.get(header);
         if (list != null) {
             for (int i = 0; i < list.size(); i++) {
@@ -202,7 +202,7 @@ public class DataframeML implements HasLogging {
 		dataframe.put(header, dataframe.get(header).stream().map(mapper).collect(Collectors.toList()));
 	}
 
-    public void only(String header, Predicate<String> v, IntConsumer cons) {
+	public void only(String header, Predicate<String> v, IntConsumer cons) {
 		List<Object> list = dataframe.get(header);
 		for (int i = 0; i < list.size(); i++) {
 			if (v.test(Objects.toString(list.get(i)))) {
@@ -211,7 +211,7 @@ public class DataframeML implements HasLogging {
 		}
 	}
 
-	public void readCSV(File csvFile) {
+    public void readCSV(File csvFile) {
 		try (Scanner scanner = new Scanner(csvFile, StandardCharsets.UTF_8.displayName())) {
 			List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
 					.collect(Collectors.toList());

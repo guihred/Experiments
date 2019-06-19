@@ -22,7 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
@@ -59,7 +58,7 @@ public class EthicalHackApp extends Application {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
             addColumns(commonTable, keySet);
         });
-        vBox.getChildren().addAll(new Text("Filter Results"), configurarFiltroRapido(filt));
+        vBox.getChildren().addAll(new Text("Filter Results"), CommonsFX.newFastFilter(filt));
         vBox.getChildren().addAll(detworkInformationScanner, processScanner);
 
         TextField dns = new TextField("google.com");
@@ -141,18 +140,6 @@ public class EthicalHackApp extends Application {
         });
     }
 
-    private TextField configurarFiltroRapido(FilteredList<?> filteredData) {
-        TextField filterField = new TextField();
-        filterField.textProperty().addListener((o, old, value) -> filteredData.setPredicate(row -> {
-            if (value == null) {
-                return true;
-            }
-            return StringUtils.containsIgnoreCase(row.toString(), value);
-
-        }));
-        return filterField;
-    }
-
     private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> hashMap, Entry<Integer, String> e) {
         CheckBox checkBox;
         if (hashMap.containsKey(e.getKey())) {
@@ -182,7 +169,7 @@ public class EthicalHackApp extends Application {
                 v.setText(Objects.toString(e.getKey()));
             }).items(filt).prefWidthColumns(2, 1).build();
 
-        TextField filtro = configurarFiltroRapido(filt);
+        TextField filtro = CommonsFX.newFastFilter(filt);
         Text text = new Text("Port Services");
         text.textProperty()
             .bind(Bindings.createStringBinding(() -> String.format("Port Services %s", selectedPorts), selectedPorts));

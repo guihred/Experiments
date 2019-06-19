@@ -16,6 +16,10 @@ public class Cidade extends BaseEntity {
 	private String href;
 
 
+	public String getCity() {
+        return String.format("%s - %s", nome, estado);
+    }
+
 	public Integer getEleitores() {
 		return eleitores;
 	}
@@ -44,14 +48,14 @@ public class Cidade extends BaseEntity {
 		this.href = href;
 	}
 
-	public void setNome(String nome) {
+    public void setNome(String nome) {
 		this.nome = nome;
 	}
 
-	@Override
-	public String toString() {
-		return String.format("Cidade[nome=%s,estado=%s,eleitores=%d,href=%s]", nome, estado, eleitores, href);
-	}
+    @Override
+    public String toString() {
+        return String.format("Cidade[%s,%s,%d,%s]", nome, estado, eleitores, href);
+    }
 
 
     @Override

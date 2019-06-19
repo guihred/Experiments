@@ -1,9 +1,7 @@
 package election;
 
 import japstudy.db.BaseEntity;
-import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.Optional;
 import javax.persistence.*;
 
 @Entity
@@ -157,12 +155,9 @@ public class Candidato extends BaseEntity {
 
     @Override
     public String toString() {
-        return MessageFormat.format(
-            "Candidato [cargo={0}, cidade={1}, grauInstrucao={2}, href={3}, fotoUrl={4}, "
-                + "nascimento={5}, naturalidade={6}, nome={7}, nomeCompleto={8}, numero={9}, "
-                + "ocupacao={10}, partido={11}, votos={12}]",
-            cargo, Optional.ofNullable(cidade).map(e -> e.getNome() + " - " + e.getEstado()).orElse(null),
-            grauInstrucao, href, fotoUrl, nascimento, naturalidade, nome, nomeCompleto, numero, ocupacao, partido,
-            votos);
+        return String.format("[%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s]", numero, cargo, cidade,
+            fotoUrl, grauInstrucao, href, nascimento, naturalidade, nome, nomeCompleto, ocupacao, partido, votos,
+            eleito);
     }
+
 }

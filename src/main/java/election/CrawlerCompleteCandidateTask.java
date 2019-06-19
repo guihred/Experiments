@@ -31,6 +31,7 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
                 Elements select = parse.select(".info-candidato");
                 Elements children = select.first().children();
                 String nomeCompleto = children.get(0).child(1).text();
+                candidato.setFotoUrl(parse.select("#topo-candidato .imagem img").attr("src"));
                 candidato.setNomeCompleto(nomeCompleto);
                 candidato.setNascimento(extractDate(children.get(2).child(1).text()));
                 candidato.setNaturalidade(children.get(3).child(1).text());
