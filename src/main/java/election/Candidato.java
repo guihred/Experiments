@@ -13,6 +13,7 @@ public class Candidato extends BaseEntity {
     @ManyToOne
     @JoinColumn
     private Cidade cidade;
+    private String estado;
 
     private String fotoUrl;
 
@@ -46,6 +47,10 @@ public class Candidato extends BaseEntity {
 
     public Boolean getEleito() {
         return eleito;
+    }
+
+    public String getEstado() {
+        return estado;
     }
 
     public String getFotoUrl() {
@@ -109,6 +114,10 @@ public class Candidato extends BaseEntity {
         this.eleito = eleito;
     }
 
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
     public void setFotoUrl(String fotoUrl) {
         this.fotoUrl = fotoUrl;
     }
@@ -155,9 +164,8 @@ public class Candidato extends BaseEntity {
 
     @Override
     public String toString() {
-        return String.format("[%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s]", numero, cargo, cidade,
-            fotoUrl, grauInstrucao, href, nascimento, naturalidade, nome, nomeCompleto, ocupacao, partido, votos,
-            eleito);
+        return String.format("[%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s]", numero, cargo, cidade, fotoUrl,
+            grauInstrucao, href, nascimento, naturalidade, nome, nomeCompleto, ocupacao, partido, votos, eleito);
     }
 
 }

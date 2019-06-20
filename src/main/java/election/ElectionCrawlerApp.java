@@ -12,7 +12,7 @@ public class ElectionCrawlerApp extends Application {
     private TaskProgressView view;
 
     public ElectionCrawlerApp() {
-        worker = new CrawlerCompleteCandidateTask();
+        worker = new CrawlerCities2018Task();
         view = new TaskProgressView(worker);
     }
 
@@ -25,8 +25,8 @@ public class ElectionCrawlerApp extends Application {
     public void start(Stage stage) throws Exception {
         stage.setTitle("Election Crawler");
         stage.setScene(view.getScene());
-        stage.show();
         stage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        stage.show();
     }
 
     public static void main(String[] args) {

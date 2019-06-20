@@ -26,6 +26,7 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
                 for (Element element : select) {
                     Candidato candidato = new Candidato();
                     candidato.setCidade(cidade);
+                    candidato.setEstado(cidade.getEstado());
                     candidato.setCargo(element.select(".cargo").text());
                     candidato.setFotoUrl(element.select("img").attr("src"));
                     candidato.setHref(element.select(".nome").attr("href"));

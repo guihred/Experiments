@@ -42,7 +42,7 @@ public class CandidatoDAO extends BaseDAO {
             hql.append(" FROM Candidato ");
             hql.append(" WHERE ");
             hql.append(field);
-            hql.append(" IS NOT NULL AND eleito IS TRUE ");
+            hql.append(" IS NOT NULL ");
             hql.append(" GROUP BY ");
             hql.append(field);
             hql.append(" ORDER BY c DESC");

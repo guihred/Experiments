@@ -6,7 +6,7 @@ import org.hibernate.cfg.Configuration;
 public final class HibernateUtil {
 
 	private static SessionFactory sessionFactory = buildSessionFactory();
-	private static boolean shutdownEnabled;
+    private static boolean shutdownEnabled = true;
 
 	private HibernateUtil() {
 	}
