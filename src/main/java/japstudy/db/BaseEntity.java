@@ -23,10 +23,7 @@ public abstract class BaseEntity implements Serializable, HasLogging {
             return false;
         }
         BaseEntity other = (BaseEntity) obj;
-        if (!Objects.equals(other.getKey(), getKey())) {
-            return false;
-        }
-        return obj == this;
+        return Objects.equals(other.getKey(), getKey());
     }
 
     @Override

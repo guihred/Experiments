@@ -162,6 +162,10 @@ public final class ClassReflectionUtils {
         return t.getName().replaceAll(METHOD_REGEX, "$1$2");
     }
 
+    public static List<String> getFields(Class<?> class1) {
+        return Stream.of(class1.getDeclaredFields()).map(e->e.getName()).collect(Collectors.toList());
+    }
+
     public static List<Method> getGetterMethods(Class<?> targetClass) {
         return getGetterMethods(targetClass, new HashMap<>());
     }

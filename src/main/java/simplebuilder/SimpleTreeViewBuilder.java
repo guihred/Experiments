@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,7 +20,14 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         return this;
     }
 
-	@SuppressWarnings("unchecked")
+	public SimpleTreeViewBuilder<T> addItem(T value, List<T> children) {
+	    TreeItem<T> e = new TreeItem<>(value);
+	    e.getChildren().addAll(children.stream().map(TreeItem<T>::new).collect(Collectors.toList()));
+	    treeView.getRoot().getChildren().add(e);
+	    return this;
+	}
+
+    @SuppressWarnings("unchecked")
     public SimpleTreeViewBuilder<T> addItem(T value, T... children) {
         TreeItem<T> e = new TreeItem<>(value);
 		e.getChildren().addAll(Stream.of(children).map(TreeItem<T>::new).collect(Collectors.toList()));

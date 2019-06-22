@@ -140,16 +140,12 @@ public class EthicalHackApp extends Application {
         });
     }
 
-    private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> hashMap, Entry<Integer, String> e) {
-        CheckBox checkBox;
-        if (hashMap.containsKey(e.getKey())) {
-            checkBox = hashMap.get(e.getKey());
-        } else {
-            checkBox = new CheckBox();
-            hashMap.put(e.getKey(), checkBox);
+    private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> checkbox, Entry<Integer, String> e) {
+        if (!checkbox.containsKey(e.getKey())) {
+            checkbox.put(e.getKey(), new CheckBox());
+            checkbox.get(e.getKey()).selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
         }
-        checkBox.selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
-        return checkBox;
+        return checkbox.get(e.getKey());
     }
 
     private VBox portTable(ObservableList<Integer> selectedPorts) {

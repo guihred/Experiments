@@ -41,9 +41,7 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                 if ("deputado-estadual".equals(cargo) && "distrito-federal".equals(estado)) {
                     cargo = "deputado-distrital";
                 }
-                if (!"presidencia".equals(cargo)) {
-                    urls.add("candidatos-" + cargo + "-" + estado);
-                }
+                urls.add("candidatos-" + cargo + "-" + estado);
             }
         }
 
@@ -62,6 +60,8 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                 Document parse = getDocument(getUrl(estado, i));
 
                 Elements select = parse.select(".card-candidate-results");
+                boolean umEleito = false;
+
                 for (Element element : select) {
                     Candidato candidato = new Candidato();
                     candidato.setEstado(estadosMap.getOrDefault(es, "BR"));
@@ -75,12 +75,16 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                     candidato.setPartido(element.select(".candidate-party").text().split(" - ")[0]);
                     candidato.setVotos(convertNumerico(element.select(".number-votes").first().text()));
                     String text2 = element.select(".elect-state").text();
-                    candidato.setEleito(text2.equals("Eleito"));
+                    boolean equals = text2.equals("Eleito");
+                    if (equals) {
+                        umEleito=true;
+                    }
+                    candidato.setEleito(equals);
                     Document detailsDocument = getDocument(ELEICOES_2018_URL + href);
                     Elements select2 = detailsDocument.select(".info-candidato");
                     Elements children = select2.first().children();
                     String nomeCompleto = children.get(0).child(1).text();
-                    candidato.setFotoUrl(parse.select(".candidate-photo img").attr("src"));
+                    candidato.setFotoUrl(detailsDocument.select(".candidate-photo img").attr("src"));
                     candidato.setNomeCompleto(nomeCompleto);
                     candidato.setNascimento(extractDate(children.get(2).child(1).text()));
                     candidato.setNaturalidade(children.get(3).child(1).text());
@@ -97,9 +101,12 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                     }
                     break;
                 }
+                if (!umEleito) {
+                    getLogger().error("ERRO in " + estado);
+                }
                 i++;
             } catch (Exception e) {
-                getLogger().error("ERRO cidade " + estado);
+                getLogger().error("ERRO cidade {}", estado);
                 getLogger().trace("ERRO cidade " + estado, e);
                 break;
             }
