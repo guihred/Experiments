@@ -33,7 +33,10 @@ public class DataframeML implements HasLogging {
         formatMap = new LinkedHashMap<>(frame.formatMap);
         mapping = new LinkedHashMap<>(frame.mapping);
         size = frame.size;
-        stats = new HashMap<>(frame.stats);
+        stats = new HashMap<>();
+        if (frame.stats != null) {
+            stats.putAll(frame.stats);
+        }
         filters = new HashMap<>(frame.filters);
     }
 

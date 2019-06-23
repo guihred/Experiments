@@ -50,7 +50,7 @@ public class HibernateCrawler extends Application {
         TableView<Object> build = new SimpleTableViewBuilder<>().addColumn("fotoUrl", "fotoUrl", ImageTableCell::new)
             .addColumn("nome", "nome").addColumn("numero", "numero").addColumn("partido", "partido")
             .addColumn("cidade", Cidade::getCity, "cidade").addColumn("votos", "votos")
-            .addColumn("eleito", this::simNao, "eleito").addColumn("grauInstrucao", "grauInstrucao")
+            .addColumn("eleito", HibernateCrawler::simNao, "eleito").addColumn("grauInstrucao", "grauInstrucao")
             .addColumn("cargo", "cargo").addColumn("nascimento", dateFormat::format, "nascimento")
             .addColumn("naturalidade", "naturalidade").addColumn("ocupacao", "ocupacao")
             .addColumn("nomeCompleto", "nomeCompleto").prefWidth(500).equalColumns().items(candidatesFiltered).build();
@@ -84,10 +84,6 @@ public class HibernateCrawler extends Application {
             .collect(Collectors.toList());
     }
 
-    private String simNao(Boolean a) {
-        return a ? "Sim" : "Não";
-    }
-
     private TreeView<String> treeView(Map<String, Set<String>> fieldMap, IntegerProperty first,
         IntegerProperty maxResult, StringProperty column, PieGraph pieGraph, ObservableList<Object> candidates) {
         Map<String, CheckBox> portChecks = new HashMap<>();
@@ -106,14 +102,12 @@ public class HibernateCrawler extends Application {
                 }
             });
         for (String field : getRelevantFields()) {
-            {
-                List<String> distinct = candidatoDAO.distinct(field);
-                ObservableSet<String> observableSet = FXCollections.observableSet();
-                observableSet.addListener((Change<? extends String> e) -> updateTable(first, maxResult.get(),
-                    column.get(), pieGraph, candidates, fieldMap));
-                fieldMap.put(field, observableSet);
-                treeView.addItem(field, distinct);
-            }
+            List<String> distinct = candidatoDAO.distinct(field);
+            ObservableSet<String> observableSet = FXCollections.observableSet();
+            observableSet.addListener((Change<? extends String> e) -> updateTable(first, maxResult.get(), column.get(),
+                pieGraph, candidates, fieldMap));
+            fieldMap.put(field, observableSet);
+            treeView.addItem(field, distinct);
         }
 
         return treeView.build();
@@ -139,5 +133,9 @@ public class HibernateCrawler extends Application {
             set.add(value);
         }
 
+    }
+
+    private static String simNao(Boolean a) {
+        return a ? "Sim" : "Não";
     }
 }

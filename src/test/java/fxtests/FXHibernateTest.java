@@ -3,10 +3,7 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 
 import contest.db.ContestQuestionEditingDisplay;
-import election.CrawlerCandidateTask;
-import election.CrawlerCitiesTask;
-import election.CrawlerCompleteCandidateTask;
-import election.ElectionCrawlerApp;
+import election.*;
 import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;
 import fxsamples.BackgroundProcesses;
@@ -26,7 +23,7 @@ public class FXHibernateTest extends AbstractTestExecution {
         HibernateUtil.setShutdownEnabled(false);
     }
 
-//    @Test
+    @Test
     public void verify() throws Exception {
         measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
         currentStage.setHeight(1000);
@@ -43,6 +40,8 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
         show(new JapaneseLessonEditingDisplay());
         clickAllButtons();
+        show(new HibernateCrawler());
+        clickAllButtons();
         show(new JapaneseLessonAudioSplitDisplay());
         clickAllButtons();
         show(new JapaneseLessonDisplay());
@@ -54,6 +53,8 @@ public class FXHibernateTest extends AbstractTestExecution {
         show(new ElectionCrawlerApp(new CrawlerCitiesTask()));
         clickAllButtons();
         show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
+        clickAllButtons();
+        show(new ElectionCrawlerApp(new CrawlerCities2018Task()));
         clickAllButtons();
         show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
         clickAllButtons();

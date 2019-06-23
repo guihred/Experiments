@@ -4,9 +4,7 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -64,12 +62,12 @@ public final class ClassReflectionUtils {
 
         if (scene.getWindow() != null) {
             Window window = scene.getWindow();
-            EventHandler<WindowEvent> onCloseRequest = scene.getWindow().getOnCloseRequest();
-            window.setOnCloseRequest(e -> closeBoth(stage2, onCloseRequest, e));
+            final EventHandler<WindowEvent> closeRequest = scene.getWindow().getOnCloseRequest();
+            window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
         }
         scene.windowProperty().addListener((ob, o, n) -> {
-            EventHandler<WindowEvent> onCloseRequest = n.getOnCloseRequest();
-            n.setOnCloseRequest(e -> closeBoth(stage2, onCloseRequest, e));
+            final EventHandler<WindowEvent> closeRequest = n.getOnCloseRequest();
+            n.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
         });
     }
 
@@ -158,12 +156,12 @@ public final class ClassReflectionUtils {
         return descriptionMap;
     }
 
-    public static String getFieldName(Method t) {
+    public static String getFieldName(Member t) {
         return t.getName().replaceAll(METHOD_REGEX, "$1$2");
     }
 
     public static List<String> getFields(Class<?> class1) {
-        return Stream.of(class1.getDeclaredFields()).map(e->e.getName()).collect(Collectors.toList());
+        return Stream.of(class1.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
     }
 
     public static List<Method> getGetterMethods(Class<?> targetClass) {
@@ -255,7 +253,7 @@ public final class ClassReflectionUtils {
             getterMethods.put(class1,
                 Stream.of(class1.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
                     .filter(m -> m.getName().matches(METHOD_REGEX)).filter(m -> m.getParameterCount() == 0)
-                    .sorted(Comparator.comparing(t -> getFieldName(t))).collect(Collectors.toList()));
+                    .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList()));
         }
         return getterMethods.get(class1);
 

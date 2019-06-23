@@ -56,29 +56,7 @@ public class PortScanner {
             .executeInConsoleInfoAsync(String.format("%s -sV %s %s", NMAP_FILES, s, networkAddress));
         ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();
         StringProperty host = new SimpleStringProperty("");
-        executeInConsole.addListener((Change<? extends String> c) -> {
-            while (c.next()) {
-                for (String line : c.getAddedSubList()) {
-                    if (line.matches(TracerouteScanner.NMAP_SCAN_REGEX)) {
-                        host.set(line.replaceAll(TracerouteScanner.NMAP_SCAN_REGEX, "$1$3"));
-                        hostsPorts.put(host.get(), new ArrayList<>());
-                        String replaceAll = line.replaceAll(TracerouteScanner.NMAP_SCAN_REGEX, "$2");
-                        if (!replaceAll.isEmpty()) {
-                            hostsPorts.get(host.get()).add(replaceAll);
-                        }
-                    }
-                    if (line.matches(PORT_REGEX)) {
-                        if (!hostsPorts.containsKey(host.get())) {
-                            hostsPorts.put(host.get(), new ArrayList<>());
-                        }
-                        List<String> list = hostsPorts.get(host.get());
-                        list.add(line);
-                        hostsPorts.remove(host.get());
-                        hostsPorts.put(host.get(), new ArrayList<>(list));
-                    }
-                }
-            }
-        });
+        executeInConsole.addListener((Change<? extends String> c) -> addPort(hostsPorts, host, c));
         return hostsPorts;
     }
 
@@ -113,6 +91,31 @@ public class PortScanner {
         StringProperty host = new SimpleStringProperty("");
         executeInConsole.addListener((Change<? extends String> c) -> addPortOnChange(hostsPorts, host, c));
         return hostsPorts;
+    }
+
+    private static void addPort(ObservableMap<String, List<String>> hostsPorts, StringProperty host,
+        Change<? extends String> c) {
+        while (c.next()) {
+            for (String line : c.getAddedSubList()) {
+                if (line.matches(TracerouteScanner.NMAP_SCAN_REGEX)) {
+                    host.set(line.replaceAll(TracerouteScanner.NMAP_SCAN_REGEX, "$1$3"));
+                    hostsPorts.put(host.get(), new ArrayList<>());
+                    String replaceAll = line.replaceAll(TracerouteScanner.NMAP_SCAN_REGEX, "$2");
+                    if (!replaceAll.isEmpty()) {
+                        hostsPorts.get(host.get()).add(replaceAll);
+                    }
+                }
+                if (line.matches(PORT_REGEX)) {
+                    if (!hostsPorts.containsKey(host.get())) {
+                        hostsPorts.put(host.get(), new ArrayList<>());
+                    }
+                    List<String> list = hostsPorts.get(host.get());
+                    list.add(line);
+                    hostsPorts.remove(host.get());
+                    hostsPorts.put(host.get(), new ArrayList<>(list));
+                }
+            }
+        }
     }
 
     private static void addPortOnChange(ObservableMap<String, List<String>> hostsPorts, StringProperty host,

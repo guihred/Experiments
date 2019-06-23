@@ -19,16 +19,14 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
         "distrito-federal", "espirito-santo", "goias", "maranhao", "minas-gerais", "mato-grosso-sul", "mato-grosso",
         "para", "paraiba", "pernambuco", "piaui", "parana", "rio-janeiro", "rio-grande-norte", "rondonia", "roraima",
         "rio-grande-sul", "santa-catarina", "sergipe", "sao-paulo", "tocantins");
-    private Map<String, String> estadosMap = ImmutableMap.<String, String>builder()
-        .put("acre", "AC").put("alagoas", "AL").put("amazonas", "AM").put("amapa", "AP").put("bahia", "BA")
-        .put("ceara", "CE").put("distrito-federal", "DF").put("espirito-santo", "ES").put("goias", "GO")
-        .put("maranhao", "MA").put("minas-gerais", "MG").put("mato-grosso-sul", "MS").put("mato-grosso", "MT")
-        .put("para", "PA").put("paraiba", "PB").put("pernambuco", "PE").put("piaui", "PI").put("parana", "PR")
-        .put("rio-janeiro", "RJ").put("rio-grande-norte", "RN").put("rondonia", "RO").put("roraima", "RR")
-        .put("rio-grande-sul", "RS").put("santa-catarina", "SC").put("sergipe", "SE").put("sao-paulo", "SP")
-        .put("tocantins", "TO").build();
-    private List<String> cargos = Arrays.asList("senador", "governador", "deputado-federal",
-        "deputado-estadual");
+    private Map<String, String> estadosMap = ImmutableMap.<String, String>builder().put("acre", "AC")
+        .put("alagoas", "AL").put("amazonas", "AM").put("amapa", "AP").put("bahia", "BA").put("ceara", "CE")
+        .put("distrito-federal", "DF").put("espirito-santo", "ES").put("goias", "GO").put("maranhao", "MA")
+        .put("minas-gerais", "MG").put("mato-grosso-sul", "MS").put("mato-grosso", "MT").put("para", "PA")
+        .put("paraiba", "PB").put("pernambuco", "PE").put("piaui", "PI").put("parana", "PR").put("rio-janeiro", "RJ")
+        .put("rio-grande-norte", "RN").put("rondonia", "RO").put("roraima", "RR").put("rio-grande-sul", "RS")
+        .put("santa-catarina", "SC").put("sergipe", "SE").put("sao-paulo", "SP").put("tocantins", "TO").build();
+    private List<String> cargos = Arrays.asList("senador", "governador", "deputado-federal", "deputado-estadual");
 
     @Override
     protected List<String> getList() {
@@ -51,9 +49,9 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
     @Override
     protected void performTask(String estado) {
 
-        String es = estados.stream().filter(e -> estado.contains(e)).findFirst().orElse("brasil");
+        String es = estados.stream().filter(estado::contains).findFirst().orElse("brasil");
         String cargo = estado.contains("presidencia") ? "presidente"
-            : cargos.stream().filter(e -> estado.contains(e)).findFirst().orElse("deputado-distrital");
+            : cargos.stream().filter(estado::contains).findFirst().orElse("deputado-distrital");
         int i = 1;
         while (true) {
             try {
@@ -75,9 +73,9 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                     candidato.setPartido(element.select(".candidate-party").text().split(" - ")[0]);
                     candidato.setVotos(convertNumerico(element.select(".number-votes").first().text()));
                     String text2 = element.select(".elect-state").text();
-                    boolean equals = text2.equals("Eleito");
+                    boolean equals = "Eleito".equals(text2);
                     if (equals) {
-                        umEleito=true;
+                        umEleito = true;
                     }
                     candidato.setEleito(equals);
                     Document detailsDocument = getDocument(ELEICOES_2018_URL + href);
@@ -97,24 +95,24 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                 }
                 if (select.isEmpty()) {
                     if (i == 1) {
-                        getLogger().error("NOT FOUND" + estado);
+                        getLogger().error("NOT FOUND {}", estado);
                     }
                     break;
                 }
                 if (!umEleito) {
-                    getLogger().error("ERRO in " + estado);
+                    getLogger().error("ERRO in {}", estado);
                 }
                 i++;
             } catch (Exception e) {
                 getLogger().error("ERRO cidade {}", estado);
                 getLogger().trace("ERRO cidade " + estado, e);
-                break;
+                return;
             }
         }
     }
 
-    private String getUrl(String estado, int i) {
-        if(i==1) {
+    private static String getUrl(String estado, int i) {
+        if (i == 1) {
             return ELEICOES_2018_URL + "/eleicoes-2018/" + estado + "/";
         }
         return ELEICOES_2018_URL + "/eleicoes-2018/" + estado + "/" + i + "/";

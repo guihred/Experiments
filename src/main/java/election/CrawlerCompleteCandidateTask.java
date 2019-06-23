@@ -40,7 +40,7 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
                 candidatoDAO.saveOrUpdate(candidato);
                 break;
             } catch (Exception e) {
-                getLogger().error("ERRO candidato " + candidato);
+                getLogger().error("ERRO candidato {}", candidato);
                 getLogger().trace("ERRO candidato " + candidato, e);
             }
         }

@@ -88,7 +88,8 @@ public class EthicalHackApp extends Application {
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
         progressIndicator.setVisible(false);
-        progressIndicator.setMinSize(40, 40);
+        final int minWidth = 40;
+        progressIndicator.setMinSize(minWidth, minWidth);
         Button portScanner = CommonsFX.newButton("_Port Scan", e -> {
             items.clear();
             addColumns(commonTable, Arrays.asList("Host", "Ports", "Route", "OS"));

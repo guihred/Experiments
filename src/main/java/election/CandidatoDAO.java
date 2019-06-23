@@ -90,7 +90,7 @@ public class CandidatoDAO extends BaseDAO {
         });
     }
 
-    private String getConditions(Map<String, Set<String>> fieldMap) {
+    private static String getConditions(Map<String, Set<String>> fieldMap) {
         return fieldMap.entrySet().stream().filter(e -> !e.getValue().isEmpty())
             .map(e -> " AND " + e.getKey() + " IN "
                 + e.getValue().stream().collect(Collectors.joining("','", "('", "')")))
