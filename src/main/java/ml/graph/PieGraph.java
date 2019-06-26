@@ -79,11 +79,18 @@ public class PieGraph extends Canvas {
             double arcExtent = entry.getValue() * 360. / sum;
             int j = radius2 / 2;
             double d = legendsRadius.get();
-            double x = Math.sin(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 * d + centerX + j;
-            double y = Math.cos(Math.toRadians(arcExtent / 2 + startAngle + 90)) * radius2 * d + centerY + j;
+            double angdeg = arcExtent / 2 + startAngle + 90;
+            double x = Math.sin(Math.toRadians(angdeg)) * radius2 * d + centerX + j;
+            double y = Math.cos(Math.toRadians(angdeg)) * radius2 * d + centerY + j;
 
             gc.setFill(Color.BLACK);
-            gc.fillText(entry.getKey(), x, y);
+            gc.save();
+            gc.translate(x, y);
+            double degrees = 360 - startAngle - arcExtent / 2;
+            double degrees2 = degrees > 90 ? degrees + 180 : degrees;
+            gc.rotate(degrees2);
+            gc.fillText(entry.getKey(), 0, 0);
+            gc.restore();
 
             startAngle += arcExtent;
         }
@@ -113,6 +120,7 @@ public class PieGraph extends Canvas {
             gc.strokeRect(x2 - 10, y2 - 8, 8, 8);
         }
     }
+
     public DoubleProperty legendsRadiusProperty() {
         return legendsRadius;
     }

@@ -30,6 +30,10 @@ public class CandidatoDAO extends BaseDAO {
         }).longValue();
     }
 
+    public void flush() {
+        executeRun(session -> session.flush());
+    }
+
     public Map<String, Long> histogram(String field, Map<String, Set<String>> fieldMap) {
 
         List<Object[]> execute = execute(session -> {
@@ -56,10 +60,10 @@ public class CandidatoDAO extends BaseDAO {
         }
         return linkedHashMap;
     }
-
     public List<Candidato> list(int startPosition, int maxResult) {
         return list(startPosition, maxResult, new HashMap<>());
     }
+
     public List<Candidato> list(int startPosition, int maxResult, Map<String, Set<String>> fieldMap) {
         return execute(session -> {
             StringBuilder hql = new StringBuilder();

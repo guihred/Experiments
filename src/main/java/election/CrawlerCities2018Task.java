@@ -60,7 +60,8 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                 Elements select = parse.select(".card-candidate-results");
                 boolean umEleito = false;
 
-                for (Element element : select) {
+                for (int j = select.size() - 1; j >= 0; j--) {
+                    Element element = select.get(j);
                     Candidato candidato = new Candidato();
                     candidato.setEstado(estadosMap.getOrDefault(es, "BR"));
                     candidato.setCargo(cargo);
@@ -72,7 +73,7 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                     candidato.setNumero(convertNumerico(text));
                     candidato.setPartido(element.select(".candidate-party").text().split(" - ")[0]);
                     candidato.setVotos(convertNumerico(element.select(".number-votes").first().text()));
-                    String text2 = element.select(".elect-state").text();
+                    String text2 = element.select(".elect-state").text().trim();
                     boolean equals = "Eleito".equals(text2);
                     if (equals) {
                         umEleito = true;
@@ -88,10 +89,8 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                     candidato.setNaturalidade(children.get(3).child(1).text());
                     candidato.setOcupacao(children.get(5).child(1).text());
                     candidato.setGrauInstrucao(children.get(6).child(1).text());
-
-                    //
-
                     candidatoDAO.saveOrUpdate(candidato);
+                    candidatoDAO.flush();
                 }
                 if (select.isEmpty()) {
                     if (i == 1) {
