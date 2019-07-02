@@ -90,7 +90,6 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                     candidato.setOcupacao(children.get(5).child(1).text());
                     candidato.setGrauInstrucao(children.get(6).child(1).text());
                     candidatoDAO.saveOrUpdate(candidato);
-                    candidatoDAO.flush();
                 }
                 if (select.isEmpty()) {
                     if (i == 1) {

@@ -116,6 +116,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         System.setProperty("http.proxyPort", "3128");
         System.setProperty("https.proxyHost", PROXY_CONFIG);
         System.setProperty("https.proxyPort", "3128");
+        System.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
         System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
 
         Authenticator.setDefault(new Authenticator() {

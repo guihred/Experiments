@@ -30,9 +30,6 @@ public class CandidatoDAO extends BaseDAO {
         }).longValue();
     }
 
-    public void flush() {
-        executeRun(session -> session.flush());
-    }
 
     public Map<String, Long> histogram(String field, Map<String, Set<String>> fieldMap) {
 

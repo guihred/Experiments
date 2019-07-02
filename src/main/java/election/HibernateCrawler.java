@@ -35,6 +35,7 @@ import utils.CrawlerTask;
 import utils.ImageTableCell;
 
 public class HibernateCrawler extends Application {
+    private static final int RELEVANT_FIELD_THRESHOLD = 250;
     private CandidatoDAO candidatoDAO = new CandidatoDAO();
 
     @Override
@@ -77,17 +78,17 @@ public class HibernateCrawler extends Application {
             .filter(e -> !e.getValue().isEmpty()).map(Objects::toString).collect(Collectors.joining(",")), fieldMap));
 
         BorderPane borderPane = new BorderPane(root);
-        borderPane.setLeft(treeView(fieldMap, first, maxResult, column, pieGraph, candidates));
+        TreeView<String> treeView = treeView(fieldMap, first, maxResult, column, pieGraph, candidates);
+        borderPane.setLeft(treeView);
         primaryStage.setTitle("Hibernate Entities");
         primaryStage.setScene(new Scene(borderPane));
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
-
         primaryStage.show();
     }
 
     private List<String> getRelevantFields() {
         return ClassReflectionUtils.getFields(Candidato.class).stream()
-            .filter(e -> candidatoDAO.distinctNumber(e) < 250)
+            .filter(e -> candidatoDAO.distinctNumber(e) < RELEVANT_FIELD_THRESHOLD)
             .collect(Collectors.toList());
     }
 
