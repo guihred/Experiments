@@ -2,6 +2,7 @@ package pdfreader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,9 +18,11 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineNode;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
+import utils.ClassReflectionUtils;
 import utils.HasLogging;
 
 public final class PdfUtils {
+
     public static final String SPLIT_WORDS_REGEX = "[\\s]+";
 
     private static final Logger LOG = HasLogging.log();
@@ -53,18 +56,24 @@ public final class PdfUtils {
         return images;
     }
 
-    public static void main(String[] args) {
-        readFile(new PdfInfo(), new File(
-            "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\FXperiments\\Material\\SSH - The Secure Shell.pdf"));
-    }
-
     public static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
         PDFParser parser = new PDFParser(source);
         parser.parse();
         return parser.getDocument();
     }
 
+    public static PdfInfo readFile(File file1) {
+        return readFile(new PdfInfo(), file1, null);
+    }
+
+    public static PdfInfo readFile(File file1, PrintStream out) {
+        return readFile(new PdfInfo(), file1, out);
+    }
     public static PdfInfo readFile(PdfInfo pdfInfo, File file1) {
+        return readFile(pdfInfo, file1, null);
+    }
+
+    public static PdfInfo readFile(PdfInfo pdfInfo, File file1, PrintStream out) {
         if (file1 == null) {
             return pdfInfo;
         }
@@ -95,7 +104,9 @@ public final class PdfUtils {
                     lines1.add(string.replaceAll("\t", " "));
                 }
                 pdfInfo.getPages().add(lines1);
-                lines1.forEach(e -> System.out.println(e));
+                if (out != null) {
+                    lines1.forEach(out::println);
+                }
 
                 LOG.trace("READING PAGE {}", i);
             }
@@ -111,12 +122,14 @@ public final class PdfUtils {
         return pdfInfo;
     }
 
-    static void printBookmark(List<COSObject> indentation) throws IOException {
+    static void printBookmark(List<COSObject> indentation, PrintStream out) {
         Map<String, Object> hashSet = new HashMap<>();
         Set<String> names = new HashSet<>();
 
         for (COSObject object : indentation) {
-//            System.out.println(ClassReflectionUtils.getDescription(object));
+            if (out != null) {
+                out.println(ClassReflectionUtils.getDescription(object));
+            }
             COSBase object2 = object.getObject();
             if (object2 instanceof COSDictionary) {
                 COSDictionary a = (COSDictionary) object2;
@@ -127,26 +140,28 @@ public final class PdfUtils {
 
             }
         }
-        hashSet.entrySet().forEach(System.out::println);
-        names.forEach(System.out::println);
+        if (out != null) {
+            hashSet.entrySet().forEach(out::println);
+            names.forEach(out::println);
+        }
     }
 
-    static void printBookmark(PDOutlineNode bookmark, String indentation) throws IOException {
+    static void printBookmark(PDOutlineNode bookmark, String indentation, PrintStream out) throws IOException {
         PDOutlineItem current = bookmark.getFirstChild();
         while (current != null) {
             if (current.getDestination() instanceof PDPageDestination) {
                 PDPageDestination pd = (PDPageDestination) current.getDestination();
-                System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
+                out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
             }
             if (current.getAction() instanceof PDActionGoTo) {
                 PDActionGoTo gta = (PDActionGoTo) current.getAction();
                 if (gta.getDestination() instanceof PDPageDestination) {
                     PDPageDestination pd = (PDPageDestination) gta.getDestination();
-                    System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
+                    out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
                 }
             }
-            System.out.println(indentation + current.getTitle());
-            printBookmark(current, indentation + " - ");
+            out.println(indentation + current.getTitle());
+            printBookmark(current, indentation + " - ", out);
             current = current.getNextSibling();
         }
     }

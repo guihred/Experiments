@@ -1,7 +1,6 @@
 package contest.db;
 
 import japstudy.db.BaseEntity;
-import java.text.MessageFormat;
 import java.util.Objects;
 import javax.persistence.*;
 import utils.HasImage;
@@ -110,7 +109,7 @@ public class ContestText extends BaseEntity implements HasImage {
 
     @Override
     public String toString() {
-        return MessageFormat.format("ContestText [contest={0}, key={1}, max={2}, min={3}]", contest, key, max, min);
+        return String.format("ContestText [contest=%s, key=%d, max=%d, min=%d]", contest, key, max, min);
     }
 
 }

@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import others.*;
+import pdfreader.PdfUtils;
 import pdfreader.Speaker;
 import utils.HasLogging;
 import utils.MatrixSolver;
@@ -154,6 +155,12 @@ public class IndependentTest implements HasLogging {
             () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5)));
         measureTime("OthersTests.getStateMachine", () -> OthersTests.getStateMachine(OthersTests.Estado.CLOSED,
             Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
+    }
+
+    @Test
+    public void testPdfUtils() {
+        final String FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\FXperiments\\Material\\SSH - The Secure Shell.pdf";
+        measureTime("PdfUtils.readFile", () -> PdfUtils.readFile(new File(FILE), System.out));
     }
 
     @Test

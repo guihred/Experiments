@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>Experiments</groupId>
@@ -12,17 +13,15 @@
 		<downloadJavadocs>true</downloadJavadocs>
 		<jacoco.version>0.6.4.201312101107</jacoco.version>
 		<skip.jacoco>false</skip.jacoco>
-   	</properties>	
-   	<!-- 
-   	mvn org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false 
-   	-->
+	</properties>
+	<!-- mvn org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false -->
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-			</resource> 
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
@@ -56,7 +55,7 @@
 					<additionalAppResources>src/main/resources</additionalAppResources>
 				</configuration>
 			</plugin>
-	
+
 		</plugins>
 	</build>
 	<dependencies>
@@ -71,13 +70,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.sshd/sshd-core -->
+		<dependency>
+			<groupId>org.apache.sshd</groupId>
+			<artifactId>sshd-core</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/net.sf.sociaal/freetts -->
 		<dependency>
-		    <groupId>net.sf.sociaal</groupId>
-		    <artifactId>freetts</artifactId>
-		    <version>1.2.2</version>
+			<groupId>net.sf.sociaal</groupId>
+			<artifactId>freetts</artifactId>
+			<version>1.2.2</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.github.jai-imageio</groupId>
 			<artifactId>jai-imageio-core</artifactId>
@@ -89,10 +95,10 @@
 			<version>4.0.0</version>
 		</dependency>
 		<dependency>
-  <groupId>com.mpatric</groupId>
-	<artifactId>mp3agic</artifactId>
-	<version>0.9.1</version>
-</dependency>
+			<groupId>com.mpatric</groupId>
+			<artifactId>mp3agic</artifactId>
+			<version>0.9.1</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.collections</groupId>
 			<artifactId>google-collections</artifactId>
@@ -119,7 +125,7 @@
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-junit</artifactId>
 			<version>2.0.0.0</version>
-			
+
 		</dependency>
 		<dependency>
 			<groupId>org.loadui</groupId>
@@ -279,7 +285,7 @@
 			<id>AsposeJavaAPI</id>
 			<name>Aspose Java API</name>
 			<url>https://artifact.aspose.com/repo/</url>
-        </repository>
+		</repository>
 		<repository>
 			<id>gluonhq</id>
 			<name>Gluon</name>
