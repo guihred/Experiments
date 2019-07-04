@@ -4,7 +4,7 @@ import org.apache.sshd.common.util.logging.AbstractLoggingBean;
 import org.apache.sshd.server.auth.password.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 
-class BogusPasswordAuthenticator extends AbstractLoggingBean implements PasswordAuthenticator {
+final class BogusPasswordAuthenticator extends AbstractLoggingBean implements PasswordAuthenticator {
     public static final BogusPasswordAuthenticator INSTANCE = new BogusPasswordAuthenticator();
 
     private BogusPasswordAuthenticator() {

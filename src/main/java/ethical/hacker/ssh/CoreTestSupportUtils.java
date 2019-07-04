@@ -13,7 +13,7 @@ final class CoreTestSupportUtils {
         throw new UnsupportedOperationException("No instance");
     }
 
-    public static SshClient setupTestClient(Class<?> anchor) {
+    public static SshClient setupTestClient() {
         SshClient client = SshClient.setUpDefaultClient();
         client.setServerKeyVerifier(AcceptAllServerKeyVerifier.INSTANCE);
         client.setHostConfigEntryResolver(HostConfigEntryResolver.EMPTY);

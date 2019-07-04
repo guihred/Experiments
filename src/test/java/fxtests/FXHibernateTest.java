@@ -16,13 +16,14 @@ import org.junit.Test;
 
 public class FXHibernateTest extends AbstractTestExecution {
 
+    private static final int WAIT_TIME = 3000;
+
     @Override
     public void init() throws Exception {
         super.init();
         HibernateUtil.getSessionFactory();
         HibernateUtil.setShutdownEnabled(false);
     }
-
     @Test
     public void verify() throws Exception {
         measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
@@ -40,12 +41,12 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
         show(new JapaneseLessonEditingDisplay());
         clickAllButtons();
-        show(new HibernateCrawler());
-        clickAllButtons();
         show(new JapaneseLessonAudioSplitDisplay());
         clickAllButtons();
         show(new JapaneseLessonDisplay());
         clickAllButtons();
+        show(new HibernateCrawler());
+        sleep(WAIT_TIME);
     }
 
     @Test
@@ -62,12 +63,11 @@ public class FXHibernateTest extends AbstractTestExecution {
 
     private void clickAllButtons() {
         Set<Node> queryButtons = lookup(".button").queryAll();
-        final int milliseconds = 3000;
         for (Node e : queryButtons) {
             if (e.isVisible()) {
                 clickOn(e);
             }
-            sleep(milliseconds);
+            sleep(WAIT_TIME);
         }
     }
 

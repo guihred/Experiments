@@ -38,14 +38,17 @@ abstract class CommandExecutionHelper extends AbstractCommandSupport {
                 handleCommandLine(command);
             }
         } catch (InterruptedIOException e) {
+            log.trace("IGNORED Exception", e);
             // Ignore - signaled end
         } catch (Exception e) {
+            log.trace("Exception", e);
             String message = "Failed (" + e.getClass().getSimpleName() + ") to handle '" + command + "': "
                 + e.getMessage();
             try {
                 OutputStream stderr = getErrorStream();
                 stderr.write(message.getBytes(StandardCharsets.US_ASCII));
             } catch (IOException ioe) {
+                log.trace("Exception", ioe);
                 log.warn("Failed ({}) to write error message={}: {}", e.getClass().getSimpleName(), message,
                     ioe.getMessage());
             } finally {

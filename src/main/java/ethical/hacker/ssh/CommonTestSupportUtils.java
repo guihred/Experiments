@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
@@ -20,6 +19,7 @@ import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ValidateUtils;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+import org.assertj.core.api.exception.RuntimeIOException;
 
 final class CommonTestSupportUtils {
     /**
@@ -122,7 +122,7 @@ final class CommonTestSupportUtils {
      */
     private static Path detectTargetFolder(Path anchorFile) {
         for (Path file = anchorFile; file != null; file = file.getParent()) {
-            if (!Files.isDirectory(file)) {
+            if (!file.toFile().isDirectory()) {
                 continue;
             }
 
@@ -166,11 +166,11 @@ final class CommonTestSupportUtils {
      * @see #getClassContainerLocationURI(Class)
      * @see #toPathSource(URI)
      */
-    private static Path getClassContainerLocationPath(Class<?> clazz) throws IllegalArgumentException {
+    private static Path getClassContainerLocationPath(Class<?> clazz) {
         try {
             URI uri = getClassContainerLocationURI(clazz);
             return toPathSource(uri);
-        } catch (URISyntaxException | MalformedURLException e) {
+        } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
         }
     }
@@ -248,7 +248,7 @@ final class CommonTestSupportUtils {
      * @see #getURLSource(String)
      */
     private static String getURLSource(URI uri) {
-        return getURLSource(uri == null ? null : uri.toString());
+        return getURLSource(uri.toString());
     }
 
     /**
@@ -258,7 +258,7 @@ final class CommonTestSupportUtils {
      * @see #getURLSource(String)
      */
     private static String getURLSource(URL url) {
-        return getURLSource(url == null ? null : url.toExternalForm());
+        return getURLSource(url.toExternalForm());
     }
 
     private static String stripJarURLPrefix(String externalForm) {
@@ -284,21 +284,21 @@ final class CommonTestSupportUtils {
      * @throws MalformedURLException If source URI does not refer to a file location
      * @see #getURLSource(URI)
      */
-    private static Path toPathSource(URI uri) throws MalformedURLException {
+    private static Path toPathSource(URI uri) {
         String src = getURLSource(uri);
         if (GenericUtils.isEmpty(src)) {
             return null;
         }
 
         if (!src.startsWith(FILE_URL_PREFIX)) {
-            throw new MalformedURLException("toFileSource(" + src + ") not a '" + FILE_URL_SCHEME + "' scheme");
+            throw new RuntimeIOException("toFileSource(" + src + ") not a '" + FILE_URL_SCHEME + "' scheme");
         }
 
         try {
             return Paths.get(new URI(src));
         } catch (URISyntaxException e) {
-            throw new MalformedURLException("toFileSource(" + src + ")" + " cannot (" + e.getClass().getSimpleName()
-                + ")" + " convert to URI: " + e.getMessage());
+            throw new RuntimeIOException("toFileSource(" + src + ")" + " cannot (" + e.getClass().getSimpleName()
+                + ")" + " convert to URI: " + e.getMessage(), e);
         }
     }
 
@@ -310,7 +310,7 @@ final class CommonTestSupportUtils {
         try {
             keys = Objects.requireNonNull(provider.loadKeys(null), "No keys loaded");
         } catch (IOException | GeneralSecurityException e) {
-            throw new RuntimeException(
+            throw new RuntimeIOException(
                 "Unexpected " + e.getClass().getSimpleName() + ")" + " keys loading exception: " + e.getMessage(), e);
         }
 

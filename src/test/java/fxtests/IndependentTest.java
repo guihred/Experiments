@@ -193,6 +193,7 @@ public class IndependentTest implements HasLogging {
         });
     }
 
+
     @Test
     public void testTermFrequency() {
         measureTime("TermFrequency.displayTermFrequency", TermFrequency::displayTermFrequency);
