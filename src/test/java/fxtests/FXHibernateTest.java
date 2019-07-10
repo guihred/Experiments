@@ -13,6 +13,7 @@ import java.util.Set;
 import javafx.scene.Node;
 import org.junit.AfterClass;
 import org.junit.Test;
+import utils.CrawlerTask;
 
 public class FXHibernateTest extends AbstractTestExecution {
 
@@ -45,6 +46,7 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
         show(new JapaneseLessonDisplay());
         clickAllButtons();
+        CrawlerTask.insertProxyConfig();
         show(new HibernateCrawler());
         sleep(WAIT_TIME * 2);
     }
