@@ -19,8 +19,7 @@ public interface HasLogging {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		int index = indexOf(stackTrace) + i;
 		StackTraceElement stackTraceElement = stackTrace[Integer.min(index + 1, stackTrace.length - 1)];
-        String className = stackTraceElement.getClassName();
-        return className;
+        return stackTraceElement.getClassName();
     }
 
     static int indexOf(StackTraceElement[] stackTrace) {

@@ -37,6 +37,7 @@ import pdfreader.Speaker;
 import utils.HasLogging;
 import utils.MatrixSolver;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 
 public class IndependentTest implements HasLogging {
     private static final Logger LOGGER = HasLogging.log();
@@ -193,6 +194,31 @@ public class IndependentTest implements HasLogging {
         });
     }
 
+    @Test
+    public void testStringSiga() {
+        String nome = "32154";
+        measureTime("StringSigaUtils.codificar", () -> StringSigaUtils.codificar(nome));
+        measureTime("StringSigaUtils.corrigirProblemaEncoding", () -> StringSigaUtils.corrigirProblemaEncoding(nome));
+        measureTime("StringSigaUtils.decodificar", () -> StringSigaUtils.decodificar(nome));
+        measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
+        measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
+        measureTime("StringSigaUtils.getApenasNumeros", () -> StringSigaUtils.getApenasNumeros(nome));
+        measureTime("StringSigaUtils.getApenasNumerosInt", () -> StringSigaUtils.getApenasNumerosInt(nome));
+        measureTime("StringSigaUtils.getCEPFormatado", () -> StringSigaUtils.getCEPFormatado(nome));
+        measureTime("StringSigaUtils.getCEPFormatado", () -> StringSigaUtils.getCEPFormatado(nome));
+        measureTime("StringSigaUtils.getCnpjFormatado", () -> StringSigaUtils.getCnpjFormatado(nome));
+        measureTime("StringSigaUtils.getCnpjFormatado", () -> StringSigaUtils.getCnpjFormatado(nome));
+        measureTime("StringSigaUtils.getCpfDesformatado", () -> StringSigaUtils.getCpfDesformatado(nome));
+        measureTime("StringSigaUtils.getCpfFormatado", () -> StringSigaUtils.getCpfFormatado(nome));
+        measureTime("StringSigaUtils.getCpfFormatado", () -> StringSigaUtils.getCpfFormatado(nome));
+        measureTime("StringSigaUtils.getMatriculaFormatado", () -> StringSigaUtils.getMatriculaFormatado(nome));
+        measureTime("StringSigaUtils.getPAPFormatado", () -> StringSigaUtils.getPAPFormatado(nome));
+        measureTime("StringSigaUtils.getURLSiga", () -> StringSigaUtils.getURLSiga(nome));
+        measureTime("StringSigaUtils.removerDiacritico", () -> StringSigaUtils.removerDiacritico(nome));
+        measureTime("StringSigaUtils.retirarMascara", () -> StringSigaUtils.retirarMascara(nome));
+        measureTime("StringSigaUtils.substituirNaoNumeros", () -> StringSigaUtils.substituirNaoNumeros(nome));
+        measureTime("StringSigaUtils.toInteger", () -> StringSigaUtils.toInteger(nome));
+    }
 
     @Test
     public void testTermFrequency() {

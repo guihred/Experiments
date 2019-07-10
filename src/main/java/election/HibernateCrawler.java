@@ -64,11 +64,13 @@ public class HibernateCrawler extends Application {
 
         ObservableMap<String, Set<String>> fieldMap = FXCollections.observableHashMap();
         ComboBox<String> columnCombo = new SimpleComboBoxBuilder<String>().items(getRelevantFields())
+            .select(0)
             .onChange((old, n) -> updateTable(first, maxResult.get(), n, pieGraph, candidates, fieldMap)).bind(column)
-            .select(0).build();
-        ComboBox<Number> maxCombo = new SimpleComboBoxBuilder<Number>().items(10, 50, 100, 200)
+            .build();
+        SimpleComboBoxBuilder<Number> maxBuilder = new SimpleComboBoxBuilder<>();
+        ComboBox<Number> maxCombo = maxBuilder.items(10, 50, 100, 200).select(0)
             .onChange((old, n) -> updateTable(first, n.intValue(), column.get(), pieGraph, candidates, fieldMap))
-            .bind(maxResult).select(0).build();
+            .bind(maxResult).build();
         Text text = new Text("");
         VBox propSlider = newSlider("", 0, 1., pieGraph.legendsRadiusProperty());
 
@@ -84,6 +86,7 @@ public class HibernateCrawler extends Application {
         primaryStage.setScene(new Scene(borderPane));
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
         primaryStage.show();
+        maxBuilder.select(0);
     }
 
     private List<String> getRelevantFields() {

@@ -135,7 +135,7 @@ public final class PdfUtils {
                 COSDictionary a = (COSDictionary) object2;
                 a.entrySet().stream().filter(e -> !hashSet.containsKey(e.getKey().getName()))
                     .forEach(e -> hashSet.put(e.getKey().getName(), extractObj(e)));
-                String collect = a.keySet().stream().map(e -> e.getName()).collect(Collectors.joining(","));
+                String collect = a.keySet().stream().map(COSName::getName).collect(Collectors.joining(","));
                 names.add(collect);
 
             }

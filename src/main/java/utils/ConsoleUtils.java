@@ -2,6 +2,7 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,14 +113,18 @@ public final class ConsoleUtils {
         Process p = newProcess(cmd);
 
         try (BufferedReader in2 = new BufferedReader(
-            new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+            new InputStreamReader(p.getInputStream(), StandardCharsets.ISO_8859_1))) {
             String line;
             while ((line = in2.readLine()) != null) {
-                LOGGER.trace("{}", line);
-                execution.add(line);
+                String fixEncoding = StringSigaUtils.fixEncoding(line, StandardCharsets.ISO_8859_1,
+                    Charset.forName("IBM00858"));
+                LOGGER.trace("{}", fixEncoding);
+                execution.add(fixEncoding);
             }
+
             p.waitFor();
             PROCESSES.put(cmd, true);
+
         } catch (Exception e) {
             LOGGER.error("", e);
         }
@@ -172,6 +177,7 @@ public final class ConsoleUtils {
             }
         }
     }
+
 
     private static Process newProcess(final String cmd) {
         try {

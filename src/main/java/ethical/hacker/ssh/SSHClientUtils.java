@@ -22,11 +22,12 @@ import org.apache.sshd.common.PropertyResolverUtils;
 import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.common.cipher.BuiltinCiphers;
 import org.apache.sshd.common.kex.BuiltinDHFactories;
+import org.assertj.core.api.exception.RuntimeIOException;
 
 public class SSHClientUtils extends BaseTestSupport {
 
     public static void sendMessage(String msg, String host, int port, String username, String password,
-        OutputStream out) throws Exception {
+        OutputStream out) throws InterruptedException {
         final List<Throwable> errors = new ArrayList<>();
         final CountDownLatch latch = new CountDownLatch(1);
         Runnable r = () -> {
@@ -41,7 +42,7 @@ public class SSHClientUtils extends BaseTestSupport {
         new Thread(r).start();
         latch.await();
         if (!errors.isEmpty()) {
-            throw new Exception("Errors", errors.get(0));
+            throw new RuntimeIOException("Errors", errors.get(0));
         }
     }
 
@@ -61,6 +62,7 @@ public class SSHClientUtils extends BaseTestSupport {
                 session.addPasswordIdentity(password);
                 session.auth().verify(10L, TimeUnit.SECONDS);
 
+
                 try (OutputStream out2 = out;
                     ByteArrayOutputStream err = new ByteArrayOutputStream();
                     ClientChannel channel = session.createChannel(Channel.CHANNEL_SHELL)) {
@@ -70,7 +72,7 @@ public class SSHClientUtils extends BaseTestSupport {
                     try {
                         channel.open().verify(9L, TimeUnit.SECONDS);
                         try (OutputStream pipedIn = channel.getInvertedIn()) {
-                            msg += "\nexit\n";
+                            msg += "\n";
                             pipedIn.write(msg.getBytes(StandardCharsets.UTF_8));
                             pipedIn.flush();
                         }

@@ -46,7 +46,7 @@ public class FXHibernateTest extends AbstractTestExecution {
         show(new JapaneseLessonDisplay());
         clickAllButtons();
         show(new HibernateCrawler());
-        sleep(WAIT_TIME);
+        sleep(WAIT_TIME * 2);
     }
 
     @Test

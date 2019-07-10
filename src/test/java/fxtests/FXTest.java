@@ -9,6 +9,7 @@ import cubesystem.DeathStar;
 import cubesystem.GolfBall;
 import cubesystem.SphereSystemApp;
 import election.ElectionCrawlerApp;
+import ethical.hacker.ssh.SSHSessionApp;
 import ex.j8.Chapter4;
 import extract.FilesComparator;
 import fractal.FractalApp;
@@ -124,7 +125,7 @@ public final class FXTest {
         FXTesting.testApps(BasicAudioPlayerWithControlLauncher.class, BasicAudioClipExample.class,
             AudioConfigLauncher.class, SimpleAudioPlayerLauncher.class, PlayingAudio.class, Physics.class,
             SngpcViewer.class, FilesComparator.class, JewelViewer.class, LeafFractalApp.class, FractalApp.class,
-            SnowFractalApp.class);
+            SnowFractalApp.class, SSHSessionApp.class);
     }
 
     @Test

@@ -19,7 +19,7 @@ public class BaseTestSupport {
         super();
     }
 
-    public final static String getCurrentTestName() {
+    public static final String getCurrentTestName() {
         return HasLogging.getCurrentClass(0).replaceAll("^.+\\.(\\w+)$", "$1");
     }
 
