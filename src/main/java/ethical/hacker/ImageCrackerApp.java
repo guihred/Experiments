@@ -23,7 +23,7 @@ import utils.StringSigaUtils;
 public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
     private static final String URL = "https://www-sisgf/SisGF/faces/pages/index.xhtml";
-    private boolean successfull = false;
+    private boolean successfull;
     @Override
     public void start(Stage stage) throws Exception {
         WebView browser = new WebView();
@@ -87,8 +87,7 @@ public class ImageCrackerApp extends Application {
             WritableImage writableImage = new WritableImage((int) viewport.getWidth(), (int) viewport.getHeight());
             SnapshotParameters params = new SnapshotParameters();
             params.setViewport(viewport);
-            WritableImage snapshot = canvas.snapshot(params, writableImage);
-            return snapshot;
+            return canvas.snapshot(params, writableImage);
         } catch (final Exception e) {
             LOG.error("ERROR ", e);
             return null;

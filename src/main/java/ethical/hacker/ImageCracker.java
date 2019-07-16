@@ -1,9 +1,6 @@
 package ethical.hacker;
 
-import static utils.ResourceFXUtils.toFile;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javafx.embed.swing.SwingFXUtils;
@@ -19,9 +16,13 @@ import paintexp.tool.PixelHelper;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class ImageCracker {
+public final class ImageCracker {
     private static final Tesseract INSTANCE = getInstance();
     private static final Logger LOG = HasLogging.log();
+
+    private ImageCracker() {
+    }
+
 
     public static String crackImage(File imageFile) {
         try {
@@ -32,7 +33,6 @@ public class ImageCracker {
             return "Error while reading image";
         }
     }
-
     public static String crackImage(Image img) {
         File outFile = ResourceFXUtils.getOutFile("captchaOut.png");
         try (FileOutputStream out = new FileOutputStream(outFile);) {
@@ -43,6 +43,7 @@ public class ImageCracker {
         }
         return crackImage(outFile);
     }
+
     public static WritableImage createSelectedImage(Image image) {
         PixelReader pixelReader = image.getPixelReader();
         return createSelectedImage(new WritableImage(pixelReader, (int) image.getWidth(), (int) image.getHeight()));
@@ -78,22 +79,6 @@ public class ImageCracker {
         return image;
     }
 
-    public static void main(String[] args) {
-        LOG.info(crackImage(toFile("CAPTCHA.jpg")));
-        try {
-            Image image = new Image(new FileInputStream(toFile("CAPTCHA.jpg")));
-            WritableImage createSelectedImage = createSelectedImage(image);
-            File outFile = ResourceFXUtils.getOutFile("captchaOut.png");
-            ImageIO.write(SwingFXUtils.fromFXImage(createSelectedImage, null), "PNG",
-                outFile);
-            LOG.info(crackImage(outFile));
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
-
-        LOG.info(crackImage(toFile("CAPTCHA2.jpg")));
-    }
-
     private static int finalColor(int white, int black, int blacks, double brightness) {
         int limit = 2;
         if (Math.abs(blacks) > limit) {
@@ -104,9 +89,10 @@ public class ImageCracker {
     }
 
     private static Tesseract getInstance() {
-        String parent = ResourceFXUtils.getOutFile().getParent();
+        String parent = ResourceFXUtils.toFile("tessdata/eng.traineddata").getParent();
         Tesseract instance = new Tesseract();
         instance.setDatapath(parent);
         return instance;
     }
+
 }

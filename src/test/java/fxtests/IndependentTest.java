@@ -21,6 +21,7 @@ import image.ImageCreating;
 import image.ImageLoading;
 import japstudy.HiraganaMaker;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -40,6 +41,7 @@ import pdfreader.PdfUtils;
 import pdfreader.Speaker;
 import utils.HasLogging;
 import utils.MatrixSolver;
+import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 
 public class IndependentTest implements HasLogging {
@@ -172,7 +174,8 @@ public class IndependentTest implements HasLogging {
     @Test
     public void testPdfUtils() {
         final String FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\FXperiments\\Material\\SSH - The Secure Shell.pdf";
-        measureTime("PdfUtils.readFile", () -> PdfUtils.readFile(new File(FILE), System.out));
+        measureTime("PdfUtils.readFile",
+            () -> PdfUtils.readFile(new File(FILE), new PrintStream(ResourceFXUtils.getOutFile("ssh.txt"))));
     }
 
     @Test
