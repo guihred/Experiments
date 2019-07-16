@@ -4,10 +4,10 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import utils.HasLogging;
@@ -77,24 +77,25 @@ public class Ch3 {
      * 129) as a nested class, outside the randomInts method.
      */
     public static void main(String[] args) {
-        Random random = new SecureRandom();
-        List<Employee> randomEmployees = random.ints(1, 10).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
-            .collect(toList());
-
-        LOG.info("{}", average(randomEmployees));
-        LOG.info("{}", largest(randomEmployees));
-        // IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
-        // IntSequence.constant(1).foreach(e -> log.info("{}",e))
-        // new SquareSequence().foreach(e -> log.info("{}",e))
-        // log.info("{}",isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo))
-        //
-        // List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e",
-        // "e")
-        // log.info("{}",asList)
-        // luckySort(asList, String::compareTo)
-        // log.info("{}",asList)
-        // log.info("{}",subdirectories(new File(".")))
-        LOG.info("{}", sortFiles(new File(".").listFiles()));
+        tasks();
+//        Random random = new SecureRandom();
+//        List<Employee> randomEmployees = random.ints(1, 10).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
+//            .collect(toList());
+//
+//        LOG.info("{}", average(randomEmployees));
+//        LOG.info("{}", largest(randomEmployees));
+//        // IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
+//        // IntSequence.constant(1).foreach(e -> log.info("{}",e))
+//        // new SquareSequence().foreach(e -> log.info("{}",e))
+//        // log.info("{}",isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo))
+//        //
+//        // List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e",
+//        // "e")
+//        // log.info("{}",asList)
+//        // luckySort(asList, String::compareTo)
+//        // log.info("{}",asList)
+//        // log.info("{}",subdirectories(new File(".")))
+//        LOG.info("{}", sortFiles(new File(".").listFiles()));
     }
 
     public static void runInOrder(Runnable... tasks) {
@@ -142,16 +143,15 @@ public class Ch3 {
     }
 
     public static void tasks() {
-        Runnable[] tasks = new Runnable[] { () -> LOG.info("{}", "1"), () -> LOG.info("{}", "2"),
-            () -> LOG.info("{}", "3"), () -> LOG.info("{}", "4"), () -> LOG.info("{}", "5"), () -> LOG.info("{}", "6"),
-            () -> LOG.info("{}", "7"), () -> LOG.info("{}", "8"), () -> LOG.info("{}", "9"), () -> LOG.info("{}", "10"),
-            () -> LOG.info("{}", "11"),
+        StringBuffer s = new StringBuffer();
+        Runnable[] array = IntStream.range(1, 12).mapToObj(r -> (Runnable) () -> s.append(r + " "))
+            .toArray(Runnable[]::new);
 
-        };
-        LOG.info("{}", "In Order");
-        runInOrder(tasks);
-        LOG.info("{}", "Together");
-        runTogether(tasks);
+        runInOrder(array);
+        LOG.info("In Order {}", s);
+        s.replace(0, s.length(), "");
+        runTogether(array);
+        LOG.info("Together {}", s);
     }
 
 

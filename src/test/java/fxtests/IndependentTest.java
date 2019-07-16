@@ -1,10 +1,10 @@
 package fxtests;
 
-import static ethical.hacker.ImageCracker.crackImage;
-import static ethical.hacker.ImageCracker.createSelectedImage;
 import static fxtests.FXTesting.measureTime;
 import static java.util.stream.Collectors.toList;
-import static utils.ResourceFXUtils.*;
+import static utils.ResourceFXUtils.getFirstPathByExtension;
+import static utils.ResourceFXUtils.getOutFile;
+import static utils.ResourceFXUtils.toURI;
 
 import audio.mp3.PageImage;
 import audio.mp3.WikiImagesUtils;
@@ -21,13 +21,13 @@ import image.ImageCreating;
 import image.ImageLoading;
 import japstudy.HiraganaMaker;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.DoubleStream;
-import javafx.scene.image.Image;
 import ml.data.DecisionTree;
 import ml.data.FastFourierTransform;
 import ml.data.QuickSortML;
@@ -131,21 +131,15 @@ public class IndependentTest implements HasLogging {
         measureTime("HiraganaMaker.displayInHiragana", HiraganaMaker::displayInHiragana);
     }
 
-    @Test
-    public void testImageCracker() {
-        measureTime("ImageCracker.crackImage", () -> crackImage(toFile("CAPTCHA.jpg")));
-        measureTime("ImageCracker.crackImage", () -> crackImage(toFile("CAPTCHA2.jpg")));
-        measureTime("ImageCracker.createSelectedImage",
-            () -> crackImage(createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
-    }
 
     @Test
-    public void testImagesTest() {
-        File userFolder = toFile("out").getParentFile();
+    public void testImagesTest() throws IOException {
+        File userFolder = ResourceFXUtils.getOutFile();
         String dataDir = userFolder + "\\";
-        String nameFile = getFirstPathByExtension(userFolder, ".jpg").toString();
-        String svgFile = getFirstPathByExtension(userFolder, ".svg").toString();
-        String pngFile = getFirstPathByExtension(userFolder, ".png").toString();
+        File createTempFile = File.createTempFile("created", ".jpg", ResourceFXUtils.getOutFile());
+        String nameFile = createTempFile.toPath().toString();
+        String svgFile = getFirstPathByExtension(userFolder.getParentFile(), ".svg").toString();
+        String pngFile = getFirstPathByExtension(userFolder.getParentFile(), ".png").toString();
         measureTime("ImageCreating.creating", () -> ImageCreating.creating(nameFile));
         measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, svgFile));
         measureTime("ImageLoading.binarize", () -> ImageLoading.binarize(dataDir, nameFile));

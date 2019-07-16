@@ -26,10 +26,10 @@ public final class ImageCracker {
 
     public static String crackImage(File imageFile) {
         try {
-            LOG.info("{}", imageFile);
             return INSTANCE.doOCR(imageFile);
         } catch (Exception e) {
-            LOG.error("", e);
+            String format = String.format("ERROR IN %s", imageFile);
+            LOG.error(format, e);
             return "Error while reading image";
         }
     }

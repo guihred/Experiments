@@ -11,4 +11,7 @@
     <appender-ref ref="STDOUT" />
   </root>
    <logger name="ch.qos.logback.classic" level="OFF"/>
+   <logger name="org.deeplearning4j.models" level="OFF"/>
+   <logger name="org.nd4j" level="OFF"/>
+   
 </configuration>

@@ -1,6 +1,10 @@
 package fxtests;
 
+import static ethical.hacker.ImageCracker.crackImage;
+import static ethical.hacker.ImageCracker.createSelectedImage;
 import static fxtests.FXTesting.measureTime;
+import static utils.ResourceFXUtils.toExternalForm;
+import static utils.ResourceFXUtils.toFile;
 
 import contest.db.Contest;
 import ethical.hacker.PortServices;
@@ -24,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ml.Word2VecExample;
 import ml.data.CSVUtils;
@@ -82,6 +87,14 @@ public class FXFileReadersTest extends ApplicationTest {
         ExcelService.getExcel((i, s) -> medicamentos.subList(Integer.min(i, maxI), Integer.min(i + s, maxI)), campos,
             new File(new File("out"), "sngpcMeds.xlsx"));
 
+    }
+
+    @Test
+    public void testImageCracker() {
+        measureTime("ImageCracker.crackImage", () -> crackImage(toFile("CAPTCHA.jpg")));
+        measureTime("ImageCracker.crackImage", () -> crackImage(toFile("CAPTCHA2.jpg")));
+        measureTime("ImageCracker.createSelectedImage",
+            () -> crackImage(createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
     }
 
     @Test

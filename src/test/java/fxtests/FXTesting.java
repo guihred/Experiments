@@ -19,7 +19,7 @@ public final class FXTesting implements HasLogging {
 
     private static final String TIME_FORMAT = "HHH:mm:ss.SSS";
 
-	private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOGGER = HasLogging.log();
 
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 
@@ -54,21 +54,21 @@ public final class FXTesting implements HasLogging {
                 getLogger().info("{}/{} done", testedApps.size() + exceptionMap.size(), applicationClasses.size());
                 size = testedApps.size();
             }
-            if (System.currentTimeMillis() - currentTimeMillis > 2 * 60 * 1000) {//2 minutes
+            if (System.currentTimeMillis() - currentTimeMillis > 2 * 60 * 1000) {// 2 minutes
                 List<Class<? extends Application>> notExecutedApps = applicationClasses.stream()
-                        .collect(Collectors.toList());
+                    .collect(Collectors.toList());
                 notExecutedApps.removeAll(testedApps);
                 String notExecuted = notExecutedApps.stream().map(Class::getSimpleName)
-                        .collect(Collectors.joining(",", "(", ")"));
+                    .collect(Collectors.joining(",", "(", ")"));
                 Assert.fail("Test is taking too long, not executed " + notExecuted);
                 break;
             }
         }
         if (!exceptionMap.isEmpty()) {
             String classesExceptions = exceptionMap.entrySet().stream()
-                    .peek(e -> getLogger().error("Class " + e.getKey().getSimpleName() + " threw an exception", e))
-                    .map(e -> e.getKey().getSimpleName()).map(e -> String.format("Class %s threw an exception", e))
-                    .collect(Collectors.joining("\n", "\n", "\n"));
+                .peek(e -> getLogger().error("Class " + e.getKey().getSimpleName() + " threw an exception", e))
+                .map(e -> e.getKey().getSimpleName()).map(e -> String.format("Class %s threw an exception", e))
+                .collect(Collectors.joining("\n", "\n", "\n"));
             Assert.fail(classesExceptions);
         }
     }
@@ -88,7 +88,12 @@ public final class FXTesting implements HasLogging {
 
     public static <T> T measureTime(String name, SupplierEx<T> runnable) {
         long currentTimeMillis = System.currentTimeMillis();
-        T t = SupplierEx.makeSupplier(runnable).get();
+        T t = null;
+        try {
+            t = runnable.get();
+        } catch (Exception e) {
+            LOGGER.error("Exception in " + name, e);
+        }
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
