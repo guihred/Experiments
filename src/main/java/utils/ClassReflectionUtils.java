@@ -1,6 +1,7 @@
 package utils;
 
 import com.google.common.io.Files;
+import japstudy.db.BaseEntity;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -76,6 +77,9 @@ public final class ClassReflectionUtils {
     }
 
     public static String getDescription(Object i) {
+        if (i == null) {
+            return null;
+        }
         return getDescription(i, i.getClass(), new HashMap<>(), new HashSet<>(), new HashMap<>());
 
     }
@@ -161,7 +165,14 @@ public final class ClassReflectionUtils {
     }
 
     public static List<String> getFields(Class<?> class1) {
-        return Stream.of(class1.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
+        return Stream.of(class1.getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .map(Field::getName).collect(Collectors.toList());
+    }
+
+    public static Object getFieldValue(Object ob, String name) {
+        return Stream.of(ob.getClass().getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .filter(e -> e.getName().equals(name)).findFirst()
+            .map(field -> BaseEntity.getFieldValue(ob, field)).orElse(null);
     }
 
     public static List<Method> getGetterMethods(Class<?> targetClass) {

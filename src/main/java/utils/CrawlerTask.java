@@ -71,12 +71,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
     }
 
     protected Document getDocument(final String url) throws IOException {
-        Connection connect = Jsoup.connect(url);
-        if (!isNotProxied()) {
-            connect.header("Proxy-Authorization", "Basic " + encoded);
-        }
-        return connect
-            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0").get();
+        return getDocument(url, encoded);
     }
 
     protected abstract String task();
@@ -92,6 +87,15 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
             updateMessage("Time estimated unknown");
         }
         updateProgress(i, total);
+    }
+
+    public static Document getDocument(final String url, String encoded) throws IOException {
+        Connection connect = Jsoup.connect(url);
+        if (!isNotProxied()) {
+            connect.header("Proxy-Authorization", "Basic " + encoded);
+        }
+        return connect
+            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0").get();
     }
 
     public static String getEncodedAuthorization() {

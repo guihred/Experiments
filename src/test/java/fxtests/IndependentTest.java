@@ -1,7 +1,10 @@
 package fxtests;
 
+import static ethical.hacker.ImageCracker.crackImage;
+import static ethical.hacker.ImageCracker.createSelectedImage;
 import static fxtests.FXTesting.measureTime;
 import static java.util.stream.Collectors.toList;
+import static utils.ResourceFXUtils.*;
 
 import audio.mp3.PageImage;
 import audio.mp3.WikiImagesUtils;
@@ -23,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.DoubleStream;
+import javafx.scene.image.Image;
 import ml.data.DecisionTree;
 import ml.data.FastFourierTransform;
 import ml.data.QuickSortML;
@@ -36,7 +40,6 @@ import pdfreader.PdfUtils;
 import pdfreader.Speaker;
 import utils.HasLogging;
 import utils.MatrixSolver;
-import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 
 public class IndependentTest implements HasLogging {
@@ -76,7 +79,7 @@ public class IndependentTest implements HasLogging {
             () -> Ch3.luckySort(Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e"), String::compareTo));
         measureTime("Ch3.subdirectories", () -> Ch3.subdirectories(new File(".")));
         measureTime("Ch3.sortFiles", () -> Ch3.sortFiles(new File(".").listFiles()));
-        measureTime("Ch3.listByExtension", () -> Ch3.listByExtension(ResourceFXUtils.getOutFile(), "png"));
+        measureTime("Ch3.listByExtension", () -> Ch3.listByExtension(getOutFile(), "png"));
         measureTime("Ch3.tasks", () -> Ch3.tasks());
 
     }
@@ -127,12 +130,20 @@ public class IndependentTest implements HasLogging {
     }
 
     @Test
+    public void testImageCracker() {
+        measureTime("ImageCracker.crackImage", () -> crackImage(toFile("CAPTCHA.jpg")));
+        measureTime("ImageCracker.crackImage", () -> crackImage(toFile("CAPTCHA2.jpg")));
+        measureTime("ImageCracker.createSelectedImage",
+            () -> crackImage(createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
+    }
+
+    @Test
     public void testImagesTest() {
-        File userFolder = ResourceFXUtils.toFile("out").getParentFile();
+        File userFolder = toFile("out").getParentFile();
         String dataDir = userFolder + "\\";
-        String nameFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".jpg").toString();
-        String svgFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".svg").toString();
-        String pngFile = ResourceFXUtils.getFirstPathByExtension(userFolder, ".png").toString();
+        String nameFile = getFirstPathByExtension(userFolder, ".jpg").toString();
+        String svgFile = getFirstPathByExtension(userFolder, ".svg").toString();
+        String pngFile = getFirstPathByExtension(userFolder, ".png").toString();
         measureTime("ImageCreating.creating", () -> ImageCreating.creating(nameFile));
         measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, svgFile));
         measureTime("ImageLoading.binarize", () -> ImageLoading.binarize(dataDir, nameFile));
@@ -230,6 +241,6 @@ public class IndependentTest implements HasLogging {
     @Test
     public void testVerbs() {
         measureTime("BrazilianVerbsConjugator.conjugate", () -> BrazilianVerbsConjugator
-            .getWords(ResourceFXUtils.toURI("verbs.dic")).forEach(BrazilianVerbsConjugator::conjugate));
+            .getWords(toURI("verbs.dic")).forEach(BrazilianVerbsConjugator::conjugate));
     }
 }

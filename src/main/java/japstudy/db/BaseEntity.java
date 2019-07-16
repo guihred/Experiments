@@ -49,11 +49,15 @@ public abstract class BaseEntity implements Serializable, HasLogging {
     protected abstract Serializable getKey();
 
     private Object getFieldValue(Field e) {
+        return getFieldValue(this, e);
+    }
+
+    public static Object getFieldValue(Object ob, Field e) {
         try {
             e.setAccessible(true);
-            return e.get(this);
+            return e.get(ob);
         } catch (Exception e1) {
-            getLogger().error("", e1);
+            HasLogging.log(1).error("", e1);
         }
         return null;
     }

@@ -190,6 +190,17 @@ public class StringSigaUtils extends StringUtils {
         return numero.replaceAll("\\D", "");
     }
 
+    public static Integer toInteger(Object numero) {
+        if (numero instanceof Number) {
+            return ((Number) numero).intValue();
+        }
+        try {
+            return toInteger(Objects.toString(numero, ""));
+        } catch (Exception e) {
+            LOGGER.trace("", e);
+            return 0;
+        }
+    }
     public static Integer toInteger(String numero) {
         String replaceAll = numero.replaceAll("\\D", "");
         return Integer.valueOf(replaceAll);

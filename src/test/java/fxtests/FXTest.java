@@ -9,6 +9,7 @@ import cubesystem.DeathStar;
 import cubesystem.GolfBall;
 import cubesystem.SphereSystemApp;
 import election.ElectionCrawlerApp;
+import ethical.hacker.ImageCrackerApp;
 import ethical.hacker.ssh.SSHSessionApp;
 import ex.j8.Chapter4;
 import extract.FilesComparator;
@@ -109,8 +110,8 @@ public final class FXTest {
             WorkingWithTableView.class, Square2048Launcher.class, StageControlExample.class, TaskProgressApp.class,
             TetrisLauncher.class, TheMenuGrid.class, ThreadInformationApp.class, TimelineExample.class,
             TriangleMeshes.class, TronLauncher.class, VanishingCirclesApp.class, WordSearchApp.class,
-            WordSuggetionApp.class, WorkingListsViews.class, WorldMapExample.class, WorldMapExample2.class,
-            WorldMapExample3.class);
+            ImageCrackerApp.class, WordSuggetionApp.class, WorkingListsViews.class, WorldMapExample.class,
+            WorldMapExample2.class, WorldMapExample3.class);
     }
 
     @Test
