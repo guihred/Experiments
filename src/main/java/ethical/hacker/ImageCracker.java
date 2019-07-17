@@ -11,9 +11,9 @@ import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 import net.sourceforge.tess4j.Tesseract;
 import org.slf4j.Logger;
-import paintexp.tool.DrawOnPoint;
-import paintexp.tool.PixelHelper;
+import utils.DrawOnPoint;
 import utils.HasLogging;
+import utils.PixelHelper;
 import utils.ResourceFXUtils;
 
 public final class ImageCracker {

@@ -1,7 +1,7 @@
 package paintexp;
 
-import static paintexp.tool.DrawOnPoint.getWithinRange;
-import static paintexp.tool.PixelHelper.MAX_BYTE;
+import static utils.DrawOnPoint.getWithinRange;
+import static utils.PixelHelper.MAX_BYTE;
 
 import java.util.Objects;
 import javafx.application.Application;
@@ -19,11 +19,11 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import paintexp.tool.PixelHelper;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTabPaneBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
+import utils.PixelHelper;
 import utils.ResourceFXUtils;
 
 public class ColorChooser extends Application {

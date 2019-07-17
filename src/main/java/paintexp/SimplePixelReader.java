@@ -1,6 +1,6 @@
 package paintexp;
 
-import static paintexp.tool.PixelHelper.MAX_BYTE;
+import static utils.PixelHelper.MAX_BYTE;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -9,8 +9,8 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
-import paintexp.tool.PixelHelper;
 import utils.HasLogging;
+import utils.PixelHelper;
 
 public final class SimplePixelReader implements PixelReader {
     private Color onlyColor;

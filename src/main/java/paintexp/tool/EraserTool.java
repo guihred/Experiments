@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
+import utils.PixelHelper;
 
 public class EraserTool extends PaintTool {
 

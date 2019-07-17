@@ -1,7 +1,7 @@
 package paintexp.tool;
 
-import static paintexp.tool.DrawOnPoint.within;
-import static paintexp.tool.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.within;
+import static utils.DrawOnPoint.withinRange;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
@@ -12,6 +12,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import paintexp.PaintModel;
+import utils.PixelHelper;
 
 public class RectBuilder extends PaintTool {
     private double startX;

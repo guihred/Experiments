@@ -1,6 +1,5 @@
 package graphs.entities;
 
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -22,11 +21,26 @@ public class ZoomableScrollPane extends ScrollPane {
         scaleTransform = new Scale(scaleValue, scaleValue, 0, 0);
         zoomGroup.getTransforms().add(scaleTransform);
 
-        zoomGroup.setOnScroll(new ZoomHandler());
+        zoomGroup.setOnScroll(this::handle);
     }
 
     public double getScaleValue() {
         return scaleValue;
+    }
+
+    public void handle(ScrollEvent scrollEvent) {
+        double s = scaleValue;
+        if (scrollEvent.getDeltaY() < 0) {
+            scaleValue -= DELTA_ZOOM;
+        } else {
+            scaleValue += DELTA_ZOOM;
+        }
+        if (scaleValue <= DELTA_ZOOM) {
+            scaleValue = s;
+
+        }
+        zoomTo(scaleValue);
+        scrollEvent.consume();
     }
 
     public void zoomActual() {
@@ -101,22 +115,4 @@ public class ZoomableScrollPane extends ScrollPane {
 
     }
 
-    class ZoomHandler implements EventHandler<ScrollEvent> {
-
-        @Override
-        public void handle(ScrollEvent scrollEvent) {
-            double s = scaleValue;
-            if (scrollEvent.getDeltaY() < 0) {
-                scaleValue -= DELTA_ZOOM;
-            } else {
-                scaleValue += DELTA_ZOOM;
-            }
-            if (scaleValue <= DELTA_ZOOM) {
-                scaleValue = s;
-
-            }
-            zoomTo(scaleValue);
-            scrollEvent.consume();
-        }
-    }
 }

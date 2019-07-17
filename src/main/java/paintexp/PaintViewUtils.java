@@ -1,6 +1,6 @@
 package paintexp;
 
-import static paintexp.tool.DrawOnPoint.withinImage;
+import static utils.DrawOnPoint.withinImage;
 
 import java.util.List;
 import javafx.scene.Scene;

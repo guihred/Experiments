@@ -1,8 +1,8 @@
 package gaming.ex14;
 
 import gaming.ex07.MazeSquare;
+import java.security.SecureRandom;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -31,7 +31,7 @@ public class PacmanGhost extends Group implements HasLogging {
     private MazeSquare mazeSquare;
     private final Circle circle = new Circle(2);
     private GhostColor color;
-    private Random random = new Random();
+    private SecureRandom random = new SecureRandom();
 
     public PacmanGhost(GhostColor color) {
         this.color = color;

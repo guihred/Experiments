@@ -1,6 +1,6 @@
 package paintexp.tool;
 
-import static paintexp.tool.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinRange;
 
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.IntegerProperty;
@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
 import utils.HasLogging;
+import utils.PixelHelper;
 
 public class SprayTool extends PaintTool {
 

@@ -1,7 +1,7 @@
 package paintexp.tool;
 
-import static paintexp.tool.DrawOnPoint.within;
-import static paintexp.tool.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.within;
+import static utils.DrawOnPoint.withinRange;
 
 import javafx.beans.property.Property;
 import javafx.event.EventType;
@@ -19,6 +19,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import paintexp.PaintModel;
+import utils.DrawOnPoint;
 import utils.ResourceFXUtils;
 
 @SuppressWarnings({ "unused" })

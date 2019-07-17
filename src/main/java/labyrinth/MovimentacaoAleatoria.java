@@ -1,6 +1,6 @@
 package labyrinth;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import javafx.animation.AnimationTimer;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
@@ -10,7 +10,7 @@ class MovimentacaoAleatoria extends AnimationTimer {
 	private MeshView[] animais;
 	// EAST, WEST, NORTH, SOUTH
 	private int[] direction;
-	private Random random = new Random();
+    private SecureRandom random = new SecureRandom();
 
 	public MovimentacaoAleatoria(CommomLabyrinth labyrinth3dWallTexture, MeshView... animais) {
 		this.labyrinth3dWallTexture = labyrinth3dWallTexture;

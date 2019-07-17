@@ -2,14 +2,14 @@ package graphs.app;
 
 import graphs.entities.Cell;
 import graphs.entities.Graph;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Random;
 
 public class GridLayout implements Layout {
 
-    private static final Random rnd = new Random();
+    private static final SecureRandom RND = new SecureRandom();
 
     private Graph graph;
 
@@ -47,7 +47,7 @@ public class GridLayout implements Layout {
             }
             int j = i / sqrt;
             int f = -radius / 2;
-            double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + rnd.nextInt(11) - 5.;
+            double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + RND.nextInt(11) - 5.;
             int k = j * radius;
             double y = k * sqrt2 / 2;
 

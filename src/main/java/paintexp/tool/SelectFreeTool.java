@@ -1,7 +1,7 @@
 package paintexp.tool;
 
-import static paintexp.tool.DrawOnPoint.getWithinRange;
-import static paintexp.tool.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.getWithinRange;
+import static utils.DrawOnPoint.withinRange;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
@@ -18,6 +18,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.SVGPath;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSvgPathBuilder;
+import utils.PixelHelper;
 
 public class SelectFreeTool extends SelectRectTool {
 

@@ -1,6 +1,6 @@
 package gaming.ex21;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -12,7 +12,7 @@ import javafx.scene.shape.Rectangle;
 public class Dice extends Group {
     private Rectangle rectangle1 = createSquare(0);
     private IntegerProperty number = new SimpleIntegerProperty();
-    private Random random = new Random();
+    private SecureRandom random = new SecureRandom();
 
     public Dice() {
         circle(0, 0, (a, b, c) -> a ^ b || a && b && !c);// A

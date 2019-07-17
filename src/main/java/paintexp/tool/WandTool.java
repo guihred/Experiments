@@ -1,6 +1,6 @@
 package paintexp.tool;
-import static paintexp.tool.DrawOnPoint.within;
-import static paintexp.tool.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.within;
+import static utils.DrawOnPoint.withinRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Text;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
+import utils.PixelHelper;
 
 public class WandTool extends SelectRectTool {
 

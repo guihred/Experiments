@@ -1,8 +1,8 @@
 package labyrinth;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
@@ -34,7 +34,7 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 	private PerspectiveCamera camera;
 
 	private final List<LabyrinthWall> cubes = new ArrayList<>();
-	private	Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
 	@Override
 	public PerspectiveCamera getCamera() {

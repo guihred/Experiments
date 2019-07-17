@@ -5,10 +5,10 @@
 */
 package gaming.ex05;
 
+import java.security.SecureRandom;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import javafx.animation.Timeline;
 import javafx.scene.layout.GridPane;
 import utils.CommonsFX;
@@ -25,7 +25,7 @@ public class TetrisModel {
 
     private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
 
-    private Random random = new Random();
+    private SecureRandom random = new SecureRandom();
 
     public TetrisModel(GridPane gridPane) {
         for (int i = 0; i < MAP_WIDTH; i++) {
@@ -140,6 +140,18 @@ public class TetrisModel {
         this.currentJ = currentJ;
     }
 
+    final int[][] rotateMap(int[][] pieceMap) {
+        int width = pieceMap.length;
+        int height = pieceMap[0].length;
+        int[][] left = new int[height][width];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                left[j][i] = pieceMap[i][height - j - 1];
+            }
+        }
+        return left;
+    }
+
     private void drawPiece(TetrisPieceState state) {
         final int[][] get = pieceDirection.get(piece).get(direction);
         for (int i = 0; i < get.length; i++) {
@@ -179,18 +191,6 @@ public class TetrisModel {
                 map[i][j].setState(TetrisPieceState.EMPTY);
             }
         }
-    }
-
-    final int[][] rotateMap(int[][] pieceMap) {
-        int width = pieceMap.length;
-        int height = pieceMap[0].length;
-        int[][] left = new int[height][width];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                left[j][i] = pieceMap[i][height - j - 1];
-            }
-        }
-        return left;
     }
 
 }

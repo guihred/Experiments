@@ -76,27 +76,6 @@ public class Ch3 {
      * 16. Implement the RandomSequence in Section 3.9.1 , “Local Classes ” (page
      * 129) as a nested class, outside the randomInts method.
      */
-    public static void main(String[] args) {
-        tasks();
-//        Random random = new SecureRandom();
-//        List<Employee> randomEmployees = random.ints(1, 10).map(e -> (e + 1) * 500).limit(5).mapToObj(Employee::new)
-//            .collect(toList());
-//
-//        LOG.info("{}", average(randomEmployees));
-//        LOG.info("{}", largest(randomEmployees));
-//        // IntSequence.of(1, 2, 3).foreach(e -> log.info("{}",e))
-//        // IntSequence.constant(1).foreach(e -> log.info("{}",e))
-//        // new SquareSequence().foreach(e -> log.info("{}",e))
-//        // log.info("{}",isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo))
-//        //
-//        // List<String> asList = Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e",
-//        // "e")
-//        // log.info("{}",asList)
-//        // luckySort(asList, String::compareTo)
-//        // log.info("{}",asList)
-//        // log.info("{}",subdirectories(new File(".")))
-//        LOG.info("{}", sortFiles(new File(".").listFiles()));
-    }
 
     public static void runInOrder(Runnable... tasks) {
         for (Runnable runnable : tasks) {

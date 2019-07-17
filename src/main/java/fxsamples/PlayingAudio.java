@@ -1,7 +1,7 @@
 package fxsamples;
 
 import java.net.MalformedURLException;
-import java.util.Random;
+import java.security.SecureRandom;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -52,7 +52,7 @@ public class PlayingAudio extends Application {
     private Group playButton;
     private Group pauseButton;
 
-    private Random rand = new Random(System.currentTimeMillis());
+    private SecureRandom rand = new SecureRandom();
 
     /**
      * After a file is dragged onto the application a new MediaPlayer instance is

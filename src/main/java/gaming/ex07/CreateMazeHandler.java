@@ -1,8 +1,8 @@
 package gaming.ex07;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,7 +10,7 @@ import javafx.event.EventHandler;
 public class CreateMazeHandler implements EventHandler<ActionEvent> {
     private int r;
     private int c;
-	private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 	private final Timeline timeline;
 	private final List<MazeSquare> history = new ArrayList<>();
 	private final List<String> check = new ArrayList<>();

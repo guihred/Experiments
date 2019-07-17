@@ -1,6 +1,6 @@
 package paintexp.tool;
-import static paintexp.tool.DrawOnPoint.getWithinRange;
-import static paintexp.tool.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.getWithinRange;
+import static utils.DrawOnPoint.withinRange;
 
 import java.util.Arrays;
 import javafx.beans.property.IntegerProperty;
@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
+import utils.PixelHelper;
 
 public class BlurTool extends PaintTool {
 

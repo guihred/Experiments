@@ -1,13 +1,13 @@
 package gaming.ex20;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class RoundMazeHandler {
     private int r;
     private int c;
-	private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 	private final List<RoundMazeSquare> history = new ArrayList<>();
 	private final List<String> check = new ArrayList<>();
 	private final RoundMazeSquare[][] createdMaze;
@@ -16,10 +16,6 @@ public class RoundMazeHandler {
 		createdMaze = maze;
 		history.add(maze[0][0]);
 	}
-
-    public static void createMaze(RoundMazeSquare[][] maze) {
-        new RoundMazeHandler(maze).create();
-    }
 
     public void create() {
 		while (!history.isEmpty()) {
@@ -41,6 +37,37 @@ public class RoundMazeHandler {
 			createdMaze[0][(cell + i) % RoundMazeModel.MAZE_HEIGHT].setNorth(true);
 		}
     }
+
+    private void addPossibleSides() {
+        if (!createdMaze[r][w(c - 1)].isVisited()) {
+        	check.add("L");
+            check.add("L");
+        }
+        if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
+        	check.add("U");
+        }
+        if (!createdMaze[r][w(c + 1)].isVisited()) {
+        	check.add("R");
+            check.add("R");
+        }
+        if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
+        	check.add("D");
+        }
+    }
+
+    private boolean goBackIn(List<RoundMazeSquare> history1) {
+		final RoundMazeSquare remove = history1.remove(history1.size() - 1);
+		for (int i = 0; i < createdMaze.length; i++) {
+			for (int j = 0; j < createdMaze[i].length; j++) {
+				if (createdMaze[i][j] == remove) {
+					r = i;
+					c = j;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
     private void setSidesByDirection(final String direction) {
         if ("L".equals(direction)) {
@@ -65,38 +92,11 @@ public class RoundMazeHandler {
         }
     }
 
-    private static int w(int c1) {
+    public static void createMaze(RoundMazeSquare[][] maze) {
+        new RoundMazeHandler(maze).create();
+    }
+
+	private static int w(int c1) {
         return (c1 + RoundMazeModel.MAZE_HEIGHT) % RoundMazeModel.MAZE_HEIGHT;
     }
-
-    private void addPossibleSides() {
-        if (!createdMaze[r][w(c - 1)].isVisited()) {
-        	check.add("L");
-            check.add("L");
-        }
-        if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
-        	check.add("U");
-        }
-        if (!createdMaze[r][w(c + 1)].isVisited()) {
-        	check.add("R");
-            check.add("R");
-        }
-        if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
-        	check.add("D");
-        }
-    }
-
-	private boolean goBackIn(List<RoundMazeSquare> history1) {
-		final RoundMazeSquare remove = history1.remove(history1.size() - 1);
-		for (int i = 0; i < createdMaze.length; i++) {
-			for (int j = 0; j < createdMaze[i].length; j++) {
-				if (createdMaze[i][j] == remove) {
-					r = i;
-					c = j;
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 }

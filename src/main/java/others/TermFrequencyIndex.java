@@ -86,6 +86,21 @@ public final class TermFrequencyIndex {
     private TermFrequencyIndex() {
     }
 
+    public static int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
+        double da = 0D;
+        for (Entry<File, Double> entry : a.getValue().entrySet()) {
+            double value = entry.getValue().doubleValue();
+            da = da < value ? value : da;
+        }
+        double db = 0D;
+        for (Entry<File, Double> entry : b.getValue().entrySet()) {
+            double value = entry.getValue().doubleValue();
+            db = db < value ? value : db;
+        }
+        
+        return Double.compare(db, da);
+    }
+
     public static Map<File, Map<String, Long>> getDocumentMap(File f) {
 
         if (!f.isDirectory()) {
@@ -167,7 +182,7 @@ public final class TermFrequencyIndex {
             // MAP_TF_IDF =
             List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(MAP_TF_IDF.entrySet());
 
-            entrySet.sort(new ValueComparator());
+            entrySet.sort(TermFrequencyIndex::compare);
             // MAP
             File file2 = ResourceFXUtils.toFile("out");
 
@@ -207,27 +222,6 @@ public final class TermFrequencyIndex {
             });
         } catch (Exception e2) {
             LOGGER.error("", e2);
-        }
-    }
-
-    public static class ValueComparator implements Comparator<Entry<String, Map<File, Double>>> {
-
-        // Note: this comparator imposes orderings that are inconsistent with
-        // equals.
-        @Override
-        public int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
-            double da = 0D;
-            for (Entry<File, Double> entry : a.getValue().entrySet()) {
-                double value = entry.getValue().doubleValue();
-                da = da < value ? value : da;
-            }
-            double db = 0D;
-            for (Entry<File, Double> entry : b.getValue().entrySet()) {
-                double value = entry.getValue().doubleValue();
-                db = db < value ? value : db;
-            }
-
-            return Double.compare(db, da);
         }
     }
 }

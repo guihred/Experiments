@@ -1,6 +1,6 @@
 package paintexp.tool;
 
-import static paintexp.tool.DrawOnPoint.getWithinRange;
+import static utils.DrawOnPoint.getWithinRange;
 
 import java.io.File;
 import java.util.HashMap;
@@ -23,6 +23,7 @@ import paintexp.PaintModel;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.HasLogging;
+import utils.PixelHelper;
 
 public class SelectRectTool extends PaintTool {
 

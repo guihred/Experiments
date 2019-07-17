@@ -3,7 +3,7 @@ package fxsamples;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Random;
+import java.security.SecureRandom;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -96,7 +96,7 @@ public class BackgroundProcesses extends Application {
         // simulate a long time
         IOUtils.copy(new FileInputStream(src), new FileOutputStream(dest));
 
-        Random rnd = new Random(System.currentTimeMillis());
+        SecureRandom rnd = new SecureRandom();
         long millis = rnd.nextInt(1000);
         Thread.sleep(millis);
     }

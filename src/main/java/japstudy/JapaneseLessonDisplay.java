@@ -1,7 +1,7 @@
 package japstudy;
 
 import japstudy.db.HibernateUtil;
-import java.util.Random;
+import java.security.SecureRandom;
 import javafx.application.Application;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
@@ -17,7 +17,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class JapaneseLessonDisplay extends Application {
-    private Random random = new Random();
+    private SecureRandom random = new SecureRandom();
     private IntegerProperty current = new SimpleIntegerProperty(1);
     private ObservableList<JapaneseLesson> lessons = getLessons();
     private DoubleProperty score = new SimpleDoubleProperty(1);

@@ -1,6 +1,6 @@
 package physics;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -31,7 +31,7 @@ public class Physics extends Application {
         PhysicalScene scene = new PhysicalScene(root, WIDTH, HEIGHT);
 
         final Ball[] ball = new Ball[MAX_BALLS];
-        Random r = new Random(System.currentTimeMillis());
+        SecureRandom r = new SecureRandom();
         for (int i = 0; i < MAX_BALLS; i++) {
             ball[i] = new Ball(r.nextInt(PHYSICAL_WIDTH), r.nextInt(PHYSICAL_WIDTH));
         }

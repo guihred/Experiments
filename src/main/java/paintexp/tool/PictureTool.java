@@ -1,5 +1,5 @@
 package paintexp.tool;
-import static paintexp.tool.DrawOnPoint.getWithinRange;
+import static utils.DrawOnPoint.getWithinRange;
 
 import java.util.List;
 import java.util.stream.Collectors;

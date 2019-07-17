@@ -1,6 +1,6 @@
 package paintexp.tool;
 
-import static paintexp.tool.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinRange;
 
 import java.util.EnumMap;
 import java.util.List;

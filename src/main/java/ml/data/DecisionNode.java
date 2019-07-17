@@ -1,13 +1,13 @@
 package ml.data;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class DecisionNode {
 
-    private Random random = new Random();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private DecisionNode trueNode;
     private DecisionNode falseNode;
@@ -34,7 +34,7 @@ public class DecisionNode {
 
     public Object predict(Map<String, Object> row) {
         if (isLeaf()) {
-            return result.get(random.nextInt(result.size()));
+            return result.get(RANDOM.nextInt(result.size()));
         }
         boolean answer = question.answer(row.get(question.getColName()));
         return answer ? trueNode.predict(row) : falseNode.predict(row);
@@ -44,14 +44,14 @@ public class DecisionNode {
         if (isLeaf()) {
             return this;
         }
-        boolean bBoolean = random.nextBoolean();
+        boolean bBoolean = RANDOM.nextBoolean();
         DecisionNode b = bBoolean ? trueNode : falseNode;
-        boolean aBoolean = random.nextBoolean();
+        boolean aBoolean = RANDOM.nextBoolean();
         DecisionNode a = aBoolean ? b.trueNode : b.falseNode;
         if (a == null || a.isLeaf()) {
             return this;
         }
-        if (random.nextBoolean()) {
+        if (RANDOM.nextBoolean()) {
             if (bBoolean) {
                 trueNode = a;
                 if (aBoolean) {
@@ -72,10 +72,10 @@ public class DecisionNode {
                 }
             }
         }
-        if (random.nextBoolean()) {
+        if (RANDOM.nextBoolean()) {
             trueNode.shuffle();
         }
-        if (random.nextBoolean()) {
+        if (RANDOM.nextBoolean()) {
             falseNode.shuffle();
         }
         return this;

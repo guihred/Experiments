@@ -6,7 +6,6 @@
 package fxpro.ch06;
 
 import java.util.Arrays;
-import java.util.Random;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ public final class FXCollectionsMethodsExamples {
         LOGGER.trace("Calling shuffle(strings): ");
         FXCollections.shuffle(strings);
         LOGGER.trace("Calling shuffle(strings, new Random(0L)): ");
-        FXCollections.shuffle(strings, new Random(0L));
+        FXCollections.shuffle(strings);
         LOGGER.trace("Calling sort(strings): ");
         FXCollections.sort(strings);
         LOGGER.trace("Calling sort(strings, c) with custom comparator: ");

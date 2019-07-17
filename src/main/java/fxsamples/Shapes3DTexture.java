@@ -1,6 +1,6 @@
 package fxsamples;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -28,7 +28,7 @@ public class Shapes3DTexture extends Application {
     private double mouseOldY;
     private final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
     private final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
-    private final Random rnd = new Random();
+    private final SecureRandom rnd = new SecureRandom();
 
     /**
      * Create image with random noise
