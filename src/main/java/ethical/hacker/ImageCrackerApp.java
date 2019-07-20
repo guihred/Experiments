@@ -24,20 +24,23 @@ public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
     private static final String URL = "https://www-sisgf/SisGF/faces/pages/index.xhtml";
     private boolean successfull;
+    private WebEngine engine;
+
+    public void loadURL() {
+        try {
+            CrawlerTask.insertProxyConfig();
+            engine.load(URL);
+        } catch (Exception ex) {
+            LOG.info("", ex);
+        }
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
         WebView browser = new WebView();
 
-        WebEngine engine = browser.getEngine();
-        Button loadButton = CommonsFX.newButton("Go", e -> {
-            try {
-                CrawlerTask.insertProxyConfig();
-                engine.load(URL);
-            } catch (Exception ex) {
-                LOG.info("", ex);
-            }
-
-        });
+        engine = browser.getEngine();
+        Button loadButton = CommonsFX.newButton("Go", e -> loadURL());
         engine.getLoadWorker().stateProperty().addListener((ob, oldValue, newState) -> {
             stage.setTitle(engine.getLocation() + " " + newState);
             if (newState == State.SUCCEEDED) {
