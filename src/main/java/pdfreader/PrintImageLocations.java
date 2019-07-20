@@ -3,6 +3,7 @@ package pdfreader;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
 import javax.imageio.ImageIO;
@@ -105,7 +106,7 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
                 .filter(e -> e.getName().endsWith(extension)).filter(e -> !e.equals(file))
                 .filter(f -> contentEquals(file, f)).findFirst();
             if (findFirst.isPresent()) {
-                file.delete();
+                Files.deleteIfExists(file.toPath());
                 return findFirst.get();
             }
 

@@ -69,7 +69,7 @@ public class FXFileReadersTest extends ApplicationTest {
         campos.put("Lote", Medicamento::getLote);
         campos.put("Quantidade", Medicamento::getQuantidade);
         campos.put("Codigo", Medicamento::getCodigo);
-        ExcelService.getExcel(medicamentosSNGPCPDF, campos, new File(new File("out"), "sngpcMeds.xlsx"));
+        ExcelService.getExcel(medicamentosSNGPCPDF, campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx"));
 
     }
 
@@ -85,7 +85,7 @@ public class FXFileReadersTest extends ApplicationTest {
         campos.put("Codigo", Medicamento::getCodigo);
         int maxI = medicamentos.size() - 1;
         ExcelService.getExcel((i, s) -> medicamentos.subList(Integer.min(i, maxI), Integer.min(i + s, maxI)), campos,
-            new File(new File("out"), "sngpcMeds.xlsx"));
+            ResourceFXUtils.getOutFile("sngpcMeds.xlsx"));
 
     }
 

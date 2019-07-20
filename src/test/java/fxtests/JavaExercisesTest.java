@@ -6,12 +6,7 @@ import static japstudy.JapanRefactoring.TXT_FILE;
 import static japstudy.JapanRefactoring.refactorJapaneseFile;
 import static japstudy.JapanRefactoring.renameFile;
 
-import ex.j8.Chapter1;
-import ex.j8.Chapter2;
-import ex.j8.Chapter3;
-import ex.j8.Chapter5;
-import ex.j8.Chapter6;
-import ex.j8.Chapter8;
+import ex.j8.*;
 import extract.ExcelService;
 import extract.WordService;
 import furigana.JapaneseVerbConjugate;
@@ -23,21 +18,11 @@ import fxpro.ch06.FXCollectionsChangeExamples;
 import fxpro.ch06.FXCollectionsExamples;
 import fxpro.ch06.FXCollectionsMapExamples;
 import fxpro.ch06.FXCollectionsMethodsExamples;
-import graphs.BigNo;
-import graphs.JavaExercise19;
-import graphs.JavaExercise1to11;
-import graphs.JavaExercise24;
-import graphs.JavaExercise25;
-import graphs.Link;
-import graphs.Node;
+import graphs.*;
 import japstudy.CompareAnswers;
 import java.io.File;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javafx.collections.ObservableList;
 import org.junit.Assert;
 import org.junit.Test;
@@ -135,15 +120,39 @@ public final class JavaExercisesTest implements HasLogging {
     }
 
     @Test
-    public void testJavaFXBenController() throws Exception {
-        JavaFXBeanController.main(null);
-        MultipleBindingExample.main(null);
-        SimplePropertyBindExample.main(null);
-        SimplePropertyExample.main(null);
-        FXCollectionsChangeExamples.main(null);
-        FXCollectionsExamples.main(null);
-        FXCollectionsMapExamples.main(null);
-        FXCollectionsMethodsExamples.main(null);
+    public void testExcelAndWordFile() throws Exception {
+        ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
+                () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
+        Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
+        campos.put("Registro", Medicamento::getRegistro);
+        campos.put("Codigo", Medicamento::getCodigo);
+        campos.put("Lote", Medicamento::getLote);
+        campos.put("Nome", Medicamento::getNome);
+        campos.put("Quantidade", Medicamento::getQuantidade);
+        measureTime("ExcelService.exportList",
+                () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos,
+						new File(new File("out"), "sngpcMeds.xlsx")));
+        measureTime("WordService.getPowerPointImages",
+                () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
+        measureTime("WordService.getWord", () -> {
+            Map<String, Object> mapaSubstituicao = new HashMap<>();
+            File file =ResourceFXUtils.getOutFile("resultado.docx");
+            mapaSubstituicao.put("443", "444");
+            WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
+
+        });
+        measureTime("JapanRefactoring.refactorJapaneseFile",
+                () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
+    }
+
+    @Test
+    public void testJapaneseConjugate() throws Exception {
+        List<String> measureTime2 = measureTime("JapaneseVerbConjugate.conjugateVerb",
+                () -> JapaneseVerbConjugate.conjugateVerb("よい"));
+        Assert.assertTrue("Conjugation must contain all these",
+                measureTime2.containsAll(Arrays.asList("よく", "よくない", "よくて", "よかった", "よくなかった", "よければ")));
+        Double comparedAnswer = measureTime("CompareAnswers.compare", () -> CompareAnswers.compare("oi", "oi"));
+        Assert.assertEquals("Comparison must 100 percent", 1.0, comparedAnswer, 0.01);
     }
 
     @Test
@@ -189,38 +198,14 @@ public final class JavaExercisesTest implements HasLogging {
     }
 
     @Test
-    public void testJapaneseConjugate() throws Exception {
-        List<String> measureTime2 = measureTime("JapaneseVerbConjugate.conjugateVerb",
-                () -> JapaneseVerbConjugate.conjugateVerb("よい"));
-        Assert.assertTrue("Conjugation must contain all these",
-                measureTime2.containsAll(Arrays.asList("よく", "よくない", "よくて", "よかった", "よくなかった", "よければ")));
-        Double comparedAnswer = measureTime("CompareAnswers.compare", () -> CompareAnswers.compare("oi", "oi"));
-        Assert.assertEquals("Comparison must 100 percent", 1.0, comparedAnswer, 0.01);
-    }
-
-    @Test
-    public void testExcelAndWordFile() throws Exception {
-        ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
-                () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
-        Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
-        campos.put("Registro", Medicamento::getRegistro);
-        campos.put("Codigo", Medicamento::getCodigo);
-        campos.put("Lote", Medicamento::getLote);
-        campos.put("Nome", Medicamento::getNome);
-        campos.put("Quantidade", Medicamento::getQuantidade);
-        measureTime("ExcelService.exportList",
-                () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos,
-						new File(new File("out"), "sngpcMeds.xlsx")));
-        measureTime("WordService.getPowerPointImages",
-                () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
-        measureTime("WordService.getWord", () -> {
-            Map<String, Object> mapaSubstituicao = new HashMap<>();
-            File file = new File(new File("out"), "resultado.docx");
-            mapaSubstituicao.put("443", "444");
-            WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
-
-        });
-        measureTime("JapanRefactoring.refactorJapaneseFile",
-                () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
+    public void testJavaFXBenController() throws Exception {
+        JavaFXBeanController.main(null);
+        MultipleBindingExample.main(null);
+        SimplePropertyBindExample.main(null);
+        SimplePropertyExample.main(null);
+        FXCollectionsChangeExamples.main(null);
+        FXCollectionsExamples.main(null);
+        FXCollectionsMapExamples.main(null);
+        FXCollectionsMethodsExamples.main(null);
     }
 }

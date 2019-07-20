@@ -225,7 +225,7 @@ public class DataframeML implements HasLogging {
 
 			readRows(this, scanner, header);
 		} catch (FileNotFoundException e) {
-			getLogger().error("FILE NOT FOUND", e);
+            getLogger().error("FILE NOT FOUND " + csvFile, e);
 		}
 	}
 
