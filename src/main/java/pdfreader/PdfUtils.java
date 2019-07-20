@@ -50,7 +50,7 @@ public final class PdfUtils {
                     images.put(i, pageImages);
                 }
             } catch (Exception e) {
-                LOG.trace("", e);
+                LOG.error("", e);
             }
         }).start();
         return images;
@@ -166,11 +166,16 @@ public final class PdfUtils {
         }
     }
 
-    private static Object extracted(COSBase value) {
-        return extracted(value, 0);
+    private static Object extractObj(Entry<COSName, COSBase> obj) {
+        COSBase value = obj.getValue();
+        return extractValue(value);
     }
 
-    private static Object extracted(COSBase value, int i) {
+    private static Object extractValue(COSBase value) {
+        return extractValue(value, 0);
+    }
+
+    private static Object extractValue(COSBase value, int i) {
         if (i > 2) {
             return value;
         }
@@ -188,7 +193,7 @@ public final class PdfUtils {
         }
         if (value instanceof COSArray) {
             COSArray name = (COSArray) value;
-            return name.toList().stream().map(e -> extracted(e, i + 1)).collect(Collectors.toList());
+            return name.toList().stream().map(e -> extractValue(e, i + 1)).collect(Collectors.toList());
         }
         if (value instanceof COSName) {
             COSName name = (COSName) value;
@@ -196,23 +201,18 @@ public final class PdfUtils {
         }
         if (value instanceof COSObject) {
             COSObject name = (COSObject) value;
-            return extracted(name.getObject(), i + 1);
+            return extractValue(name.getObject(), i + 1);
         }
         if (value instanceof COSDictionary) {
             COSDictionary name = (COSDictionary) value;
             Map<Object, Object> hashMap = new HashMap<>();
             for (Entry<COSName, COSBase> entry : name.entrySet()) {
-                hashMap.put(extracted(entry.getKey(), i + 1), extracted(entry.getValue(), i + 1));
+                hashMap.put(extractValue(entry.getKey(), i + 1), extractValue(entry.getValue(), i + 1));
             }
             return hashMap;
         }
 
         return value;
-    }
-
-    private static Object extractObj(Entry<COSName, COSBase> obj) {
-        COSBase value = obj.getValue();
-        return extracted(value);
     }
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {

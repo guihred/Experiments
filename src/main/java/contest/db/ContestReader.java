@@ -233,7 +233,8 @@ public enum ContestReader implements HasLogging {
                     questionPosition.stream().filter(e -> e.getPage() == j)
                         .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())))
                         .ifPresent(position -> imageElements.stream().filter(p -> p.matches(position.getLine()))
-                            .forEach(p -> p.appendImage(pdfImage.getFile().getName())));
+                            .forEach(p -> p
+                                .appendImage(pdfImage.getFile().getParent() + "/" + pdfImage.getFile().getName())));
                 }
                 // concat.forEach(action)
             }

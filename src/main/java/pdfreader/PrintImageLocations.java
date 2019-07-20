@@ -3,11 +3,10 @@ package pdfreader;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Stream;
 import javax.imageio.ImageIO;
+import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -92,16 +91,37 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
 
 	}
 
-	public static File save(int pageNumber, Object numb, BufferedImage image, String ext) {
-
-		String string = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
-        File file = ResourceFXUtils.getOutFile(pageNumber + "-" + numb + "." + string);
+    public static File save(int pageNumber, Object number, BufferedImage image, String ext) {
+        File outFile = ResourceFXUtils.getOutFile("pdfResult");
+        if (!outFile.exists()) {
+            outFile.mkdir();
+        }
+        String extension = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
+        File file = new File(outFile, pageNumber + "-" + number + "." + extension);
 		try {
-			ImageIO.write(image, string, file); // ignore returned boolean
+
+            ImageIO.write(image, extension, file); // ignore returned boolean
+            Optional<File> findFirst = Stream.of(outFile.listFiles())
+                .filter(e -> e.getName().endsWith(extension)).filter(e -> !e.equals(file))
+                .filter(f -> contentEquals(file, f)).findFirst();
+            if (findFirst.isPresent()) {
+                file.delete();
+                return findFirst.get();
+            }
+
 		} catch (IOException e) {
 			LOG.error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
 		}
 		return file;
 	}
+
+    private static boolean contentEquals(File file, File f) {
+        try {
+            return FileUtils.contentEquals(file, f);
+        } catch (IOException e1) {
+            LOG.trace("", e1);
+            return false;
+        }
+    }
 
 }
