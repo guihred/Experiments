@@ -13,6 +13,7 @@ import ex.j9.ch4.Point;
 import ex.j9.ch4.PrimaryColor;
 import ex.j9.ch4.Rectangle;
 import extract.ExcelService;
+import gaming.ex16.MadEdge;
 import graphs.Edge;
 import graphs.app.JavaFileDependecy;
 import graphs.app.PackageTopology;
@@ -143,7 +144,8 @@ public class FXFileReadersTest extends ApplicationTest {
         measureTime("Test.equals", () -> {
             List<Object> equalsTest = Arrays.asList(new Point(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
                 new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
-                new Rectangle(new Point(2, 4), 3, 5), new Edge(), new Contest(), new LessonPK());
+                new Rectangle(new Point(2, 4), 3, 5), new Edge(), new Contest(), new LessonPK(),
+                new MadEdge(null, null));
             equalsTest.forEach(e -> equalsTest.contains(e));
         });
     }

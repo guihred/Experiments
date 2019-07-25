@@ -1,5 +1,7 @@
 package ethical.hacker;
 
+import static utils.ResourceFXUtils.toExternalForm;
+
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
@@ -27,7 +29,6 @@ import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.ConsoleUtils;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class EthicalHackApp extends Application {
 
@@ -123,7 +124,7 @@ public class EthicalHackApp extends Application {
         commonTable.prefWidthProperty().bind(hBox.widthProperty().add(-columnWidth));
         primaryStage.setTitle("Ethical Hack App");
         Scene scene = new Scene(hBox, 500, 500);
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("filesComparator.css"));
+        scene.getStylesheets().add(toExternalForm("filesComparator.css"));
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -161,7 +162,8 @@ public class EthicalHackApp extends Application {
         Map<Integer, CheckBox> portChecks = new HashMap<>();
 
         TableView<Entry<Integer, String>> commonTable = new SimpleTableViewBuilder<Entry<Integer, String>>()
-            .addColumn("Service", (e, v) -> v.setText(e.getValue())).addColumn("Port", (e, v) -> {
+            .addColumn("Service", (e, v) -> v.setText(e.getValue()))
+            .addColumn("Port", (e, v) -> {
                 v.setGraphic(getCheckBox(selectedPorts, portChecks, e));
                 v.setText(Objects.toString(e.getKey()));
             }).items(filt).prefWidthColumns(2, 1).build();

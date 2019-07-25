@@ -12,7 +12,7 @@ public class ElectionCrawlerApp extends Application {
     private TaskProgressView view;
 
     public ElectionCrawlerApp() {
-        worker = new CrawlerCities2018Task();
+        worker = new CrawlerCandidates2018Task();
         view = new TaskProgressView(worker);
     }
 

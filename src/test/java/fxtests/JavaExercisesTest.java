@@ -66,10 +66,8 @@ public final class JavaExercisesTest implements HasLogging {
     @Test
     public void testChapter3() {
         measureTime("Chapter3.getRich",
-                () -> Chapter3.getRich(Arrays.asList(20, 66, 12, 48, 38, 38, 20, 65, 54), 0, 8));
+            () -> Chapter3.getRich(Arrays.asList(20, 66, 12, 48, 38, 38, 20, 65, 54), 0, 8));
     }
-
-
 
     @Test
     public void testChapter5() {
@@ -122,7 +120,7 @@ public final class JavaExercisesTest implements HasLogging {
     @Test
     public void testExcelAndWordFile() throws Exception {
         ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
-                () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
+            () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
         Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
         campos.put("Registro", Medicamento::getRegistro);
         campos.put("Codigo", Medicamento::getCodigo);
@@ -130,27 +128,26 @@ public final class JavaExercisesTest implements HasLogging {
         campos.put("Nome", Medicamento::getNome);
         campos.put("Quantidade", Medicamento::getQuantidade);
         measureTime("ExcelService.exportList",
-                () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos,
-						new File(new File("out"), "sngpcMeds.xlsx")));
+            () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
         measureTime("WordService.getPowerPointImages",
-                () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
+            () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
         measureTime("WordService.getWord", () -> {
             Map<String, Object> mapaSubstituicao = new HashMap<>();
-            File file =ResourceFXUtils.getOutFile("resultado.docx");
+            File file = ResourceFXUtils.getOutFile("resultado.docx");
             mapaSubstituicao.put("443", "444");
             WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
 
         });
         measureTime("JapanRefactoring.refactorJapaneseFile",
-                () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
+            () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
     }
 
     @Test
     public void testJapaneseConjugate() throws Exception {
         List<String> measureTime2 = measureTime("JapaneseVerbConjugate.conjugateVerb",
-                () -> JapaneseVerbConjugate.conjugateVerb("よい"));
+            () -> JapaneseVerbConjugate.conjugateVerb("よい"));
         Assert.assertTrue("Conjugation must contain all these",
-                measureTime2.containsAll(Arrays.asList("よく", "よくない", "よくて", "よかった", "よくなかった", "よければ")));
+            measureTime2.containsAll(Arrays.asList("よく", "よくない", "よくて", "よかった", "よくなかった", "よければ")));
         Double comparedAnswer = measureTime("CompareAnswers.compare", () -> CompareAnswers.compare("oi", "oi"));
         Assert.assertEquals("Comparison must 100 percent", 1.0, comparedAnswer, 0.01);
     }

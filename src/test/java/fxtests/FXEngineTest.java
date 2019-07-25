@@ -37,7 +37,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
-import javafx.scene.control.Labeled;
+import javafx.scene.control.Button;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -60,7 +60,7 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verify() throws Exception {
         show(EthicalHackApp.class);
-        lookup(".button").queryAll().stream().filter(e -> !((Labeled) e).getText().equals("Ips"))
+        lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(ConsumerEx.ignore(this::clickOn));
         ConsoleUtils.waitAllProcesses();
     }

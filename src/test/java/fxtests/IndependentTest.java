@@ -5,10 +5,12 @@ import static java.util.stream.Collectors.toList;
 import static utils.ResourceFXUtils.getFirstPathByExtension;
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.ResourceFXUtils.toURI;
+import static utils.StringSigaUtils.*;
 
 import audio.mp3.PageImage;
 import audio.mp3.WikiImagesUtils;
 import cubesystem.ElementWiseOp;
+import ethical.hacker.AlarmClock;
 import ethical.hacker.NetworkInformationScanner;
 import ex.j9.Ch1;
 import ex.j9.Ch3;
@@ -23,6 +25,7 @@ import japstudy.HiraganaMaker;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +45,6 @@ import pdfreader.Speaker;
 import utils.HasLogging;
 import utils.MatrixSolver;
 import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
 
 public class IndependentTest implements HasLogging {
     private static final Logger LOGGER = HasLogging.log();
@@ -55,6 +57,12 @@ public class IndependentTest implements HasLogging {
         double[] correctAnswear = new double[] { -0.3, 0.5, 0.6 };
         Assert.assertArrayEquals("The solved Matrix should match the solution", solve, correctAnswear, 0.01);
         measureTime("MatrixSolver.determinant", () -> MatrixSolver.determinant(matr));
+    }
+
+    @Test
+    public void testAlarmClock() {
+        measureTime("AlarmClock.activateAlarmThenStop", () -> AlarmClock
+            .scheduleToRun(LocalTime.now().plusMinutes(1), () -> LOGGER.info("RUN AT {}", LocalTime.now())));
     }
 
     @Test
@@ -126,11 +134,11 @@ public class IndependentTest implements HasLogging {
             () -> NetworkInformationScanner.displayNetworkInformation());
     }
 
+
     @Test
     public void testHiragana() {
         measureTime("HiraganaMaker.displayInHiragana", HiraganaMaker::displayInHiragana);
     }
-
 
     @Test
     public void testImagesTest() throws IOException {
@@ -205,27 +213,27 @@ public class IndependentTest implements HasLogging {
     @Test
     public void testStringSiga() {
         String nome = "32154";
-        measureTime("StringSigaUtils.codificar", () -> StringSigaUtils.codificar(nome));
-        measureTime("StringSigaUtils.corrigirProblemaEncoding", () -> StringSigaUtils.corrigirProblemaEncoding(nome));
-        measureTime("StringSigaUtils.decodificar", () -> StringSigaUtils.decodificar(nome));
-        measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
-        measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
-        measureTime("StringSigaUtils.getApenasNumeros", () -> StringSigaUtils.getApenasNumeros(nome));
-        measureTime("StringSigaUtils.getApenasNumerosInt", () -> StringSigaUtils.getApenasNumerosInt(nome));
-        measureTime("StringSigaUtils.getCEPFormatado", () -> StringSigaUtils.getCEPFormatado(nome));
-        measureTime("StringSigaUtils.getCEPFormatado", () -> StringSigaUtils.getCEPFormatado(nome));
-        measureTime("StringSigaUtils.getCnpjFormatado", () -> StringSigaUtils.getCnpjFormatado(nome));
-        measureTime("StringSigaUtils.getCnpjFormatado", () -> StringSigaUtils.getCnpjFormatado(nome));
-        measureTime("StringSigaUtils.getCpfDesformatado", () -> StringSigaUtils.getCpfDesformatado(nome));
-        measureTime("StringSigaUtils.getCpfFormatado", () -> StringSigaUtils.getCpfFormatado(nome));
-        measureTime("StringSigaUtils.getCpfFormatado", () -> StringSigaUtils.getCpfFormatado(nome));
-        measureTime("StringSigaUtils.getMatriculaFormatado", () -> StringSigaUtils.getMatriculaFormatado(nome));
-        measureTime("StringSigaUtils.getPAPFormatado", () -> StringSigaUtils.getPAPFormatado(nome));
-        measureTime("StringSigaUtils.getURLSiga", () -> StringSigaUtils.getURLSiga(nome));
-        measureTime("StringSigaUtils.removerDiacritico", () -> StringSigaUtils.removerDiacritico(nome));
-        measureTime("StringSigaUtils.retirarMascara", () -> StringSigaUtils.retirarMascara(nome));
-        measureTime("StringSigaUtils.substituirNaoNumeros", () -> StringSigaUtils.substituirNaoNumeros(nome));
-        measureTime("StringSigaUtils.toInteger", () -> StringSigaUtils.toInteger(nome));
+        measureTime("StringSigaUtils.codificar", () -> codificar(nome));
+        measureTime("StringSigaUtils.corrigirProblemaEncoding", () -> corrigirProblemaEncoding(nome));
+        measureTime("StringSigaUtils.decodificar", () -> decodificar(nome));
+        measureTime("StringSigaUtils.fixEncoding", () -> fixEncoding(nome));
+        measureTime("StringSigaUtils.fixEncoding", () -> fixEncoding(nome));
+        measureTime("StringSigaUtils.getApenasNumeros", () -> getApenasNumeros(nome));
+        measureTime("StringSigaUtils.getApenasNumerosInt", () -> getApenasNumerosInt(nome));
+        measureTime("StringSigaUtils.getCEPFormatado", () -> getCEPFormatado(nome));
+        measureTime("StringSigaUtils.getCEPFormatado", () -> getCEPFormatado(nome));
+        measureTime("StringSigaUtils.getCnpjFormatado", () -> getCnpjFormatado(nome));
+        measureTime("StringSigaUtils.getCnpjFormatado", () -> getCnpjFormatado(nome));
+        measureTime("StringSigaUtils.getCpfDesformatado", () -> getCpfDesformatado(nome));
+        measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
+        measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
+        measureTime("StringSigaUtils.getMatriculaFormatado", () -> getMatriculaFormatado(nome));
+        measureTime("StringSigaUtils.getPAPFormatado", () -> getPAPFormatado(nome));
+        measureTime("StringSigaUtils.getURLSiga", () -> getURLSiga(nome));
+        measureTime("StringSigaUtils.removerDiacritico", () -> removerDiacritico(nome));
+        measureTime("StringSigaUtils.retirarMascara", () -> retirarMascara(nome));
+        measureTime("StringSigaUtils.substituirNaoNumeros", () -> substituirNaoNumeros(nome));
+        measureTime("StringSigaUtils.toInteger", () -> toInteger(nome));
     }
 
     @Test

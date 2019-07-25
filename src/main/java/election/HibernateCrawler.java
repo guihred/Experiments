@@ -35,7 +35,7 @@ import utils.CrawlerTask;
 import utils.ImageTableCell;
 
 public class HibernateCrawler extends Application {
-    private static final int RELEVANT_FIELD_THRESHOLD = 250;
+    private static final int RELEVANT_FIELD_THRESHOLD = 410;
     private CandidatoDAO candidatoDAO = new CandidatoDAO();
 
     @Override
@@ -50,12 +50,11 @@ public class HibernateCrawler extends Application {
         FilteredList<Object> candidatesFiltered = candidates.filtered(e -> true);
         DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
         TableView<Object> build = new SimpleTableViewBuilder<>().addColumn("fotoUrl", "fotoUrl", ImageTableCell::new)
-            .addColumn("nome", "nome").addColumn("numero", "numero").addColumn("partido", "partido")
-            .addColumn("cidade", Cidade::getCity, "cidade").addColumn("votos", "votos")
-            .addColumn("eleito", HibernateCrawler::simNao, "eleito").addColumn("grauInstrucao", "grauInstrucao")
-            .addColumn("cargo", "cargo").addColumn("nascimento", dateFormat::format, "nascimento")
-            .addColumn("naturalidade", "naturalidade").addColumn("ocupacao", "ocupacao")
-            .addColumn("nomeCompleto", "nomeCompleto").prefWidth(500).equalColumns().items(candidatesFiltered).build();
+            .addColumns("nome", "numero", "partido", "grauInstrucao", "cargo", "naturalidade", "ocupacao",
+                "nomeCompleto", "votos")
+            .addColumn("cidade", Cidade::getCity, "cidade").addColumn("eleito", HibernateCrawler::simNao, "eleito")
+            .addColumn("nascimento", dateFormat::format, "nascimento").prefWidth(500).equalColumns()
+            .items(candidatesFiltered).build();
 
         TextField newFastFilter = CommonsFX.newFastFilter(candidatesFiltered);
         root.getChildren().add(newFastFilter);
@@ -65,8 +64,7 @@ public class HibernateCrawler extends Application {
         ObservableMap<String, Set<String>> fieldMap = FXCollections.observableHashMap();
         ComboBox<String> columnCombo = new SimpleComboBoxBuilder<String>().items(getRelevantFields())
             .onChange((old, n) -> updateTable(first, maxResult.get(), n, pieGraph, candidates, fieldMap)).bind(column)
-            .select(0)
-            .build();
+            .select(0).build();
         SimpleComboBoxBuilder<Number> maxBuilder = new SimpleComboBoxBuilder<>();
         ComboBox<Number> maxCombo = maxBuilder.items(10, 50, 100, 200)
             .onChange((old, n) -> updateTable(first, n.intValue(), column.get(), pieGraph, candidates, fieldMap))
@@ -91,8 +89,7 @@ public class HibernateCrawler extends Application {
 
     private List<String> getRelevantFields() {
         return ClassReflectionUtils.getFields(Candidato.class).stream()
-            .filter(e -> candidatoDAO.distinctNumber(e) < RELEVANT_FIELD_THRESHOLD)
-            .collect(Collectors.toList());
+            .filter(e -> candidatoDAO.distinctNumber(e) < RELEVANT_FIELD_THRESHOLD).collect(Collectors.toList());
     }
 
     private TreeView<String> treeView(ObservableMap<String, Set<String>> fieldMap, IntegerProperty first,
@@ -120,9 +117,8 @@ public class HibernateCrawler extends Application {
 
         }
 
-        fieldMap
-            .addListener((MapChangeListener<String, Set<String>>) e -> updateTable(first, maxResult.get(), column.get(),
-                pieGraph, candidates, fieldMap));
+        fieldMap.addListener((MapChangeListener<String, Set<String>>) e -> updateTable(first, maxResult.get(),
+            column.get(), pieGraph, candidates, fieldMap));
 
         return treeView.build();
     }

@@ -57,7 +57,7 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
         show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
         clickAllButtons();
-        show(new ElectionCrawlerApp(new CrawlerCities2018Task()));
+        show(new ElectionCrawlerApp(new CrawlerCandidates2018Task()));
         clickAllButtons();
         show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
         clickAllButtons();

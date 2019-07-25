@@ -14,6 +14,7 @@ public class Candidato extends BaseEntity {
     @JoinColumn
     private Cidade cidade;
     private String estado;
+    private String coligacao;
 
     private String fotoUrl;
 
@@ -43,6 +44,10 @@ public class Candidato extends BaseEntity {
 
     public Cidade getCidade() {
         return cidade;
+    }
+
+    public String getColigacao() {
+        return coligacao;
     }
 
     public Boolean getEleito() {
@@ -108,6 +113,10 @@ public class Candidato extends BaseEntity {
 
     public void setCidade(Cidade cidade) {
         this.cidade = cidade;
+    }
+
+    public void setColigacao(String coligacao) {
+        this.coligacao = coligacao;
     }
 
     public void setEleito(Boolean eleito) {

@@ -1,6 +1,8 @@
 package ethical.hacker;
 
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Worker.State;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -23,16 +25,18 @@ import utils.StringSigaUtils;
 public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
     private static final String URL = "https://www-sisgf/SisGF/faces/pages/index.xhtml";
-    private boolean successfull;
+    private BooleanProperty successfull = new SimpleBooleanProperty();
     private WebEngine engine;
 
-    public void loadURL() {
+    public BooleanProperty loadURL() {
+        successfull.set(false);
         try {
             CrawlerTask.insertProxyConfig();
             engine.load(URL);
         } catch (Exception ex) {
             LOG.info("", ex);
         }
+        return successfull;
     }
 
     @Override
@@ -44,7 +48,11 @@ public class ImageCrackerApp extends Application {
         engine.getLoadWorker().stateProperty().addListener((ob, oldValue, newState) -> {
             stage.setTitle(engine.getLocation() + " " + newState);
             if (newState == State.SUCCEEDED) {
-                tryToLog(browser, engine);
+                try {
+                    tryToLog(browser);
+                } catch (Exception e1) {
+                    LOG.error("", e1);
+                }
             }
         });
 
@@ -58,7 +66,7 @@ public class ImageCrackerApp extends Application {
         stage.show();
     }
 
-    private void tryToLog(WebView browser, WebEngine engine) {
+    private void tryToLog(WebView browser) {
         engine.executeScript(String.format("$('#j_username').val('%s')", CrawlerTask.getHTTPUsername()));
         engine.executeScript(String.format("$('#j_password').val('%s')", CrawlerTask.getHTTPPassword()));
         JSObject o = (JSObject) engine.executeScript("$('#dtpCaptcha img').offset()");
@@ -69,14 +77,17 @@ public class ImageCrackerApp extends Application {
         Integer left = StringSigaUtils.toInteger(o.getMember("left"));
 
         Rectangle2D viewport = new Rectangle2D(left, top, width, height);
+        waitABit();
         WritableImage take = take(browser, viewport);
         WritableImage createSelectedImage = ImageCracker.createSelectedImage(take);
         String crackImage = ImageCracker.crackImage(createSelectedImage).replaceAll("\\D", "");
         LOG.info("cracked Image = {}", crackImage);
-        if (!successfull && crackImage.matches("\\d{4}")) {
+        if (!successfull.get() && crackImage.matches("\\d{4}")) {
             engine.executeScript(String.format("$('#captchaId').val('%s')", crackImage));
             engine.executeScript("$('#btnRegistrar').click()");
-            successfull = true;
+            successfull.set(true);
+        } else {
+
         }
     }
 
@@ -94,6 +105,14 @@ public class ImageCrackerApp extends Application {
         } catch (final Exception e) {
             LOG.error("ERROR ", e);
             return null;
+        }
+    }
+
+    public static void waitABit() {
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            LOG.error("NOT SUPPOSED TO HAPPEN", e);
         }
     }
 }

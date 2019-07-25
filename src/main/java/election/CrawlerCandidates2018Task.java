@@ -1,15 +1,12 @@
 package election;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
+public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
 
     private static final String ELEICOES_2018_URL = "https://www.todapolitica.com";
 
@@ -80,8 +77,8 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                     }
                     candidato.setEleito(equals);
                     Document detailsDocument = getDocument(ELEICOES_2018_URL + href);
-                    Elements select2 = detailsDocument.select(".info-candidato");
-                    Elements children = select2.first().children();
+                    Map<String, String> fields = new HashMap<>();
+                    Elements children = detailsDocument.select(".info-candidato").first().children();
                     String nomeCompleto = children.get(0).child(1).text();
                     candidato.setFotoUrl(detailsDocument.select(".candidate-photo img").attr("src"));
                     candidato.setNomeCompleto(nomeCompleto);
@@ -89,6 +86,16 @@ public class CrawlerCities2018Task extends CommonCrawlerTask<String> {
                     candidato.setNaturalidade(children.get(3).child(1).text());
                     candidato.setOcupacao(children.get(5).child(1).text());
                     candidato.setGrauInstrucao(children.get(6).child(1).text());
+                    Elements children2 = detailsDocument.select(".info-candidato").get(1).children();
+                    children2.forEach(e -> {
+                        String text3 = e.child(0).text();
+                        fields.put(text3, e.child(1).text());
+                    });
+                    children.forEach(e -> {
+                        String text3 = e.child(0).text();
+                        fields.put(text3, e.child(1).text());
+                    });
+                    candidato.setColigacao(fields.get("Composição"));
                     candidatoDAO.saveOrUpdate(candidato);
                 }
                 if (select.isEmpty()) {
