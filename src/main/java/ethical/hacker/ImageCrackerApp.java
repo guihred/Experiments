@@ -1,8 +1,14 @@
 package ethical.hacker;
 
+import static utils.StringSigaUtils.toInteger;
+
+import java.util.function.Supplier;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker.State;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -20,7 +26,6 @@ import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
-import utils.StringSigaUtils;
 
 public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -49,7 +54,7 @@ public class ImageCrackerApp extends Application {
             stage.setTitle(engine.getLocation() + " " + newState);
             if (newState == State.SUCCEEDED) {
                 try {
-                    tryToLog(browser);
+                    new Thread(() -> tryToLog(browser)).start();
                 } catch (Exception e1) {
                     LOG.error("", e1);
                 }
@@ -66,28 +71,58 @@ public class ImageCrackerApp extends Application {
         stage.show();
     }
 
-    private void tryToLog(WebView browser) {
-        engine.executeScript(String.format("$('#j_username').val('%s')", CrawlerTask.getHTTPUsername()));
-        engine.executeScript(String.format("$('#j_password').val('%s')", CrawlerTask.getHTTPPassword()));
-        JSObject o = (JSObject) engine.executeScript("$('#dtpCaptcha img').offset()");
+    private void runInPlatform(String setValue) {
 
-        Integer width = StringSigaUtils.toInteger(engine.executeScript("$('#dtpCaptcha img').width()")) * 6 / 5;
-        Integer height = StringSigaUtils.toInteger(engine.executeScript("$('#dtpCaptcha img').innerHeight()")) * 3 / 2;
-        Integer top = StringSigaUtils.toInteger(o.getMember("top"));
-        Integer left = StringSigaUtils.toInteger(o.getMember("left"));
+        Platform.runLater(() -> engine.executeScript(setValue));
+    }
+
+    private Object runInPlatformAndWait(String setValue) {
+        ObjectProperty<Object> obj = new SimpleObjectProperty<>();
+        Platform.runLater(() -> obj.set(engine.executeScript(setValue)));
+        while (obj.get() == null) {
+            
+        }
+
+        return obj.get();
+    }
+
+    private <T> T runInPlatformAndWait(Supplier<T> setValue) {
+        ObjectProperty<T> obj = new SimpleObjectProperty<>();
+        Platform.runLater(() -> obj.set(setValue.get()));
+        while (obj.get() == null) {
+        }
+        return obj.get();
+    }
+
+    private String setValue(String id, String httpUsername) {
+        return String.format("document.getElementById(\"%s\").value = \"%s\";", id, httpUsername);
+    }
+
+    private void tryToLog(WebView browser) {
+        runInPlatform(setValue("j_username", CrawlerTask.getHTTPUsername()));
+        runInPlatform(setValue("j_password", CrawlerTask.getHTTPPassword()));
+        JSObject o = (JSObject) runInPlatformAndWait("$('#dtpCaptcha img').offset()");
+
+        Integer width = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').width()")) * 6 / 5;
+        Integer height = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').innerHeight()")) * 3 / 2;
+        Integer top = toInteger(runInPlatformAndWait(() -> o.getMember("top")));
+        Integer left = toInteger(runInPlatformAndWait(() -> o.getMember("left")));
 
         Rectangle2D viewport = new Rectangle2D(left, top, width, height);
-        waitABit();
-        WritableImage take = take(browser, viewport);
-        WritableImage createSelectedImage = ImageCracker.createSelectedImage(take);
-        String crackImage = ImageCracker.crackImage(createSelectedImage).replaceAll("\\D", "");
-        LOG.info("cracked Image = {}", crackImage);
-        if (!successfull.get() && crackImage.matches("\\d{4}")) {
-            engine.executeScript(String.format("$('#captchaId').val('%s')", crackImage));
-            engine.executeScript("$('#btnRegistrar').click()");
-            successfull.set(true);
-        } else {
-
+        for (int i = 0; i < 5 && !successfull.get(); i++) {
+            waitABit();
+            WritableImage take = runInPlatformAndWait(() -> take(browser, viewport));
+            WritableImage createSelectedImage = ImageCracker.createSelectedImage(take);
+            String cracked = ImageCracker.crackImage(createSelectedImage);
+            LOG.info("cracked Image = {} tries={}", cracked, i + 1);
+            String crackImage = cracked.replaceAll("\\D", "");
+            if (crackImage.matches("\\d{4}")) {
+                runInPlatform(setValue("captchaId", crackImage));
+                runInPlatform("$('#btnRegistrar').click()");
+                successfull.set(true);
+            } else {
+                runInPlatform("$('#dtpCaptcha a').get(1).click()");
+            }
         }
     }
 
@@ -102,7 +137,7 @@ public class ImageCrackerApp extends Application {
             SnapshotParameters params = new SnapshotParameters();
             params.setViewport(viewport);
             return canvas.snapshot(params, writableImage);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             LOG.error("ERROR ", e);
             return null;
         }
