@@ -1,6 +1,7 @@
 package audio.mp3;
 
 import java.io.File;
+import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
@@ -43,6 +44,24 @@ public class Music {
 
     public StringProperty artistaProperty() {
         return artista;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Music other = (Music) obj;
+        return Objects.equals(album.get(), other.album.get()) && Objects.equals(artista.get(), other.artista.get())
+            && Objects.equals(pasta.get(), other.pasta.get()) && Objects.equals(image != null, other.image != null)
+            && Objects.equals(titulo.get(), other.titulo.get())
+            && Objects.equals(trilha.get(), other.trilha.get());
     }
 
     public StringProperty generoProperty() {
@@ -90,6 +109,11 @@ public class Music {
 
     public String getTrilha() {
         return trilha.get();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(album, ano, arquivo, artista, genero, image, pasta, titulo, trilha);
     }
 
     public StringProperty pastaProperty() {

@@ -44,7 +44,7 @@ public final class AlarmClock {
                 loadURL.addListener((ob, before, after) -> {
                     if (after) {
                         ImageCrackerApp.waitABit();
-                        stage.close();
+                        Platform.runLater(stage::close);
                     }
                 });
             }));

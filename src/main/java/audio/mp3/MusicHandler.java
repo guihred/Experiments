@@ -47,63 +47,11 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
     @Override
     public void handle(MouseEvent e) {
         if (e.isPrimaryButtonDown() && e.getClickCount() == 2) {
-            handleMousePressed(musicaTable);
+            handleMousePressed(musicaTable.getSelectionModel().getSelectedItem());
         }
     }
 
-    private Slider addSlider(VBox flow) {
-        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(100_000).build();
-        Label label = new Label("00:00");
-
-        label.textProperty()
-            .bind(Bindings.createStringBinding(
-                () -> mediaPlayer.getTotalDuration() == null ? "00:00"
-                    : SongUtils.formatFullDuration(mediaPlayer.getTotalDuration().multiply(slider.getValue())),
-                slider.valueProperty(), mediaPlayer.totalDurationProperty()));
-
-        flow.getChildren().add(label);
-        flow.getChildren().add(slider);
-        return slider;
-    }
-
-    private Node[] criarField(String nome, StringProperty propriedade) {
-        TextField textField = new TextField();
-        textField.textProperty().bindBidirectional(propriedade);
-        return new Node[] { new Label(nome), textField };
-    }
-
-    private void findImage(Music selectedItem, Stage stage) {
-        String value = MusicReader.getDescription(selectedItem);
-        ObservableList<Node> children = FXCollections.observableArrayList();
-        children.add(new Text(value));
-
-        SimpleTableViewBuilder<Node> tableBuilder = new SimpleTableViewBuilder<>();
-        final int prefWidth = 300;
-        TableView<Node> tableView = tableBuilder.addColumn("Image", (p, cell) -> {
-            cell.setAlignment(Pos.CENTER);
-            cell.setGraphic(p);
-        }).items(children).prefWidth(prefWidth).equalColumns()
-
-            .build();
-        Stage dialog = CommonsFX.displayDialog(value, tableView);
-        tableBuilder.onDoubleClick((Node n) -> {
-            if (n instanceof ImageView) {
-                ImageView view = (ImageView) n;
-                Image image = view.getImage();
-                selectedItem.setImage(image);
-                mediaPlayer.stop();
-                mediaPlayer.dispose();
-                MusicReader.saveMetadata(selectedItem);
-            }
-            dialog.close();
-            stage.close();
-        });
-        ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
-            selectedItem.getTitulo());
-    }
-
-    private void handleMousePressed(final TableView<Music> songsTable) {
-        Music selectedItem = songsTable.getSelectionModel().getSelectedItem();
+    public void handleMousePressed(Music selectedItem) {
         if (selectedItem.getTitulo().matches(".+\\.(mp4|wma)")) {
             CommonsFX.displayDialog("Convert", "_Convert to Mp3",
                 () -> SongUtils.convertToAudio(selectedItem.getArquivo()));
@@ -167,6 +115,57 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         stage.show();
         stage.setOnCloseRequest(e -> mediaPlayer.dispose());
         mediaPlayer.play();
+    }
+
+    private Slider addSlider(VBox flow) {
+        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(100_000).build();
+        Label label = new Label("00:00");
+
+        label.textProperty()
+            .bind(Bindings.createStringBinding(
+                () -> mediaPlayer.getTotalDuration() == null ? "00:00"
+                    : SongUtils.formatFullDuration(mediaPlayer.getTotalDuration().multiply(slider.getValue())),
+                slider.valueProperty(), mediaPlayer.totalDurationProperty()));
+
+        flow.getChildren().add(label);
+        flow.getChildren().add(slider);
+        return slider;
+    }
+
+    private Node[] criarField(String nome, StringProperty propriedade) {
+        TextField textField = new TextField();
+        textField.textProperty().bindBidirectional(propriedade);
+        return new Node[] { new Label(nome), textField };
+    }
+
+    private void findImage(Music selectedItem, Stage stage) {
+        String value = MusicReader.getDescription(selectedItem);
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        children.add(new Text(value));
+
+        SimpleTableViewBuilder<Node> tableBuilder = new SimpleTableViewBuilder<>();
+        final int prefWidth = 300;
+        TableView<Node> tableView = tableBuilder.addColumn("Image", (p, cell) -> {
+            cell.setAlignment(Pos.CENTER);
+            cell.setGraphic(p);
+        }).items(children).prefWidth(prefWidth).equalColumns()
+
+            .build();
+        Stage dialog = CommonsFX.displayDialog(value, tableView);
+        tableBuilder.onDoubleClick((Node n) -> {
+            if (n instanceof ImageView) {
+                ImageView view = (ImageView) n;
+                Image image = view.getImage();
+                selectedItem.setImage(image);
+                mediaPlayer.stop();
+                mediaPlayer.dispose();
+                MusicReader.saveMetadata(selectedItem);
+            }
+            dialog.close();
+            stage.close();
+        });
+        ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
+            selectedItem.getTitulo());
     }
 
     private void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider, File outFile,

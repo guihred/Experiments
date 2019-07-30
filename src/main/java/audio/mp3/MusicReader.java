@@ -131,7 +131,7 @@ public final class MusicReader {
 
     public static void saveMetadata(Music a, File file) {
 
-        File file2 = new File(file.getParent(), "copy" + file.getName());
+        File file2 = ResourceFXUtils.getOutFile("copy_" + file.getName());
         try {
             Files.copy(file.toPath(), file2.toPath(), StandardCopyOption.REPLACE_EXISTING);
 

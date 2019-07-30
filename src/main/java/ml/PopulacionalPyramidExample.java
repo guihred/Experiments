@@ -23,29 +23,22 @@ import utils.ResourceFXUtils;
 
 public class PopulacionalPyramidExample extends Application {
 
-
     private static final int DEFAULT_YEAR = 2000;
 
-
-
     @Override
-	public void start(final Stage theStage) {
+    public void start(final Stage theStage) {
         theStage.setTitle("Populational Pyramid Example");
 
         BorderPane root = new BorderPane();
-
-		Predicate<String> asPredicate = Pattern.compile("MA|FE").asPredicate();
+        Predicate<String> asPredicate = Pattern.compile("MA|FE").asPredicate();
         String countryHeader = "Country";
-        DataframeML x = DataframeML.builder("POPULACAO.csv")
-                .filter("Unit", "Persons"::equals)
-                .filter("SEX", e->asPredicate.test(e.toString()))
-                .filter("Subject", e -> e.toString().matches("Population.+\\d+"))
-                .addCategory(countryHeader)
-                .addCategory("TIME")
-                .addMapping("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
-                .build();
+        DataframeML x = DataframeML.builder("POPULACAO.csv").filter("Unit", "Persons"::equals)
+            .filter("SEX", e -> asPredicate.test(e.toString()))
+            .filter("Subject", e -> e.toString().matches("Population.+\\d+")).addCategory(countryHeader)
+            .addCategory("TIME").addMapping("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
+            .build();
 
-		PopulacionalGraph canvas = new PopulacionalGraph();
+        PopulacionalGraph canvas = new PopulacionalGraph();
         root.setCenter(canvas);
         VBox left = new VBox();
         root.setLeft(left);
@@ -58,16 +51,12 @@ public class PopulacionalPyramidExample extends Application {
         Set<String> categorize = x.categorize(countryHeader);
         ObservableList<String> sortedCountries = FXCollections
             .observableArrayList(categorize.stream().sorted().collect(Collectors.toList()));
-        ComboBox<String> countryBox = new SimpleComboBoxBuilder<String>()
-            .items(sortedCountries)
-            .select(0)
+        ComboBox<String> countryBox = new SimpleComboBoxBuilder<String>().items(sortedCountries).select(0)
             .onSelect(country -> canvas.countryProperty().set(country)).build();
-        ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>()
-            .items(canvas.yearsOptionsProperty())
-            .onSelect(yearV -> canvas.yearProperty().set(yearV != null ? yearV : DEFAULT_YEAR))
-            .select(0).build();
+        ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>().items(canvas.yearsOptionsProperty())
+            .onSelect(yearV -> canvas.yearProperty().set(yearV != null ? yearV : DEFAULT_YEAR)).select(0).build();
 
-		canvas.setHistogram(x);
+        canvas.setHistogram(x);
 
         left.getChildren().add(new Text(countryHeader));
         left.getChildren().add(countryBox);
@@ -79,13 +68,10 @@ public class PopulacionalPyramidExample extends Application {
         Scene theScene = new Scene(root, width, width * ratio);
         canvas.lineSizeProperty().set(ratio);
         theStage.setScene(theScene);
-		theStage.show();
-	}
-
-
+        theStage.show();
+    }
 
     public static void main(final String[] args) {
         launch(args);
     }
 }
-

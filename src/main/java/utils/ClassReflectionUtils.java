@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -55,7 +56,6 @@ public final class ClassReflectionUtils {
             } catch (Exception e1) {
                 LOG.error("", e1);
             }
-
         }))));
         textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));
         stage2.setHeight(500);
@@ -198,6 +198,13 @@ public final class ClassReflectionUtils {
             LOG.trace("", e);
             return null;
         }
+    }
+
+    public static Object mapProperty(Object e) {
+        if (e instanceof Property<?>) {
+            return ((Property<?>) e).getValue();
+        }
+        return e;
     }
 
     private static void closeBoth(Stage stage2, EventHandler<WindowEvent> onCloseRequest, WindowEvent e) {

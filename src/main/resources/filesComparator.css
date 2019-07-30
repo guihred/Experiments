@@ -1,6 +1,19 @@
 .vermelho{
 	-fx-background-color:lightcoral;
 }
+.amarelo{
+	-fx-background-color: lightyellow;
+}
+
+.cell:selected > .amarelo{
+	-fx-background-color: yellow;
+	-fx-text-fill: black;
+}
+.cell:selected > .vermelho{
+	-fx-background-color: red;
+	-fx-text-fill: black;
+}
+
 .percentage {
 	-fx-scale-y: 0;
 }
