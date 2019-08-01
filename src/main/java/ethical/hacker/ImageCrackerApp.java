@@ -16,6 +16,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -49,13 +51,14 @@ public class ImageCrackerApp extends Application {
     public void start(Stage stage) throws Exception {
         WebView browser = new WebView();
 
+        ImageView imageView = new ImageView();
         engine = browser.getEngine();
         Button loadButton = CommonsFX.newButton("Go", e -> loadURL());
         engine.getLoadWorker().stateProperty().addListener((ob, oldValue, newState) -> {
             stage.setTitle(engine.getLocation() + " " + newState);
             if (newState == State.SUCCEEDED) {
                 try {
-                    new Thread(() -> tryToLog(browser)).start();
+                    new Thread(() -> tryToLog(browser, imageView)).start();
                 } catch (Exception e1) {
                     LOG.error("", e1);
                 }
@@ -67,6 +70,7 @@ public class ImageCrackerApp extends Application {
         BorderPane pane = new BorderPane();
         pane.setTop(top);
         pane.setCenter(browser);
+        pane.setLeft(imageView);
         stage.setScene(new Scene(pane));
         stage.setTitle("Image Cracker");
         stage.show();
@@ -90,7 +94,7 @@ public class ImageCrackerApp extends Application {
         return obj.get();
     }
 
-    private void tryToLog(WebView browser) {
+    private void tryToLog(WebView browser, ImageView imageView) {
         runInPlatform(setValue("j_username", CrawlerTask.getHTTPUsername()));
         runInPlatform(setValue("j_password", CrawlerTask.getHTTPPassword()));
         JSObject o = (JSObject) runInPlatformAndWait("$('#dtpCaptcha img').offset()");
@@ -99,12 +103,13 @@ public class ImageCrackerApp extends Application {
         Integer height = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').innerHeight()")) * 3 / 2;
         Integer top = toInteger(runInPlatformAndWait(() -> o.getMember("top")));
         Integer left = toInteger(runInPlatformAndWait(() -> o.getMember("left")));
-
+        LOG.info("{},{},{},{}", left, top, width, height);
         Rectangle2D viewport = new Rectangle2D(left, top, width, height);
         for (int i = 0; i < 5 && !successfull.get(); i++) {
             waitABit();
-            WritableImage take = runInPlatformAndWait(() -> take(browser, viewport));
+            Image take = runInPlatformAndWait(() -> take(browser, viewport));
             WritableImage createSelectedImage = ImageCracker.createSelectedImage(take);
+            imageView.setImage(createSelectedImage);
             String cracked = ImageCracker.crackImage(createSelectedImage);
             LOG.info("cracked Image = {} tries={}", cracked, i + 1);
             String crackImage = cracked.replaceAll("\\D", "");

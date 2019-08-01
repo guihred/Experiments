@@ -186,11 +186,8 @@ public class DataframeStatisticAccumulator {
 
     private void acceptString(String n) {
         sum++;
-        if (!countMap.containsKey(n)) {
-            countMap.put(n, 0);
-        }
         count++;
-        countMap.put(n, countMap.get(n) + 1);
+        countMap.put(n, countMap.computeIfAbsent(n, a -> 0) + 1);
         min = countMap.values().stream().mapToDouble(e -> e).min().orElse(min);
         max = countMap.values().stream().mapToDouble(e -> e).max().orElse(max);
     }

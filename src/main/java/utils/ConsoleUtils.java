@@ -191,7 +191,7 @@ public final class ConsoleUtils {
 
     private static void updateRegexMapValues(final String cmd, final Map<String, String> responses,
         final Map<String, ObservableList<String>> result) {
-        LOGGER.trace(EXECUTING, cmd);
+        LOGGER.info(EXECUTING, cmd);
         Process exec = newProcess(cmd);
         try (BufferedReader in = new BufferedReader(
             new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {

@@ -140,7 +140,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
     }
 
     private static Predicate<Integer> isProxied() {
-        return PredicateEx.makeTest((timeout) -> InetAddress.getByName(PROXY_CONFIG).isReachable(timeout));
+        return PredicateEx.makeTest(timeout -> InetAddress.getByName(PROXY_CONFIG).isReachable(timeout));
     }
 
 }

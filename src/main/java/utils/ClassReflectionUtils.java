@@ -267,14 +267,14 @@ public final class ClassReflectionUtils {
     }
 
     private static List<Method> getGetterMethods(Class<?> class1, Map<Class<?>, List<Method>> getterMethods) {
-        if (!getterMethods.containsKey(class1)) {
-            getterMethods.put(class1,
-                Stream.of(class1.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
-                    .filter(m -> m.getName().matches(METHOD_REGEX)).filter(m -> m.getParameterCount() == 0)
-                    .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList()));
-        }
-        return getterMethods.get(class1);
+        return getterMethods.computeIfAbsent(class1, ClassReflectionUtils::getters);
 
+    }
+
+    private static List<Method> getters(Class<?> c) {
+        return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
+            .filter(m -> m.getName().matches(METHOD_REGEX)).filter(m -> m.getParameterCount() == 0)
+            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
     }
 
     private static String getText(File file) {

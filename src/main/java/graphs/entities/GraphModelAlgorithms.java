@@ -457,10 +457,7 @@ public final class GraphModelAlgorithms {
 		if (paths == null) {
 			paths = new HashMap<>();
 		}
-		if (!paths.containsKey(from)) {
-			paths.put(from, new HashMap<>());
-		}
-		paths.get(from).put(to, by);
+        paths.computeIfAbsent(from, f -> new HashMap<>()).put(to, by);
 	}
 
 

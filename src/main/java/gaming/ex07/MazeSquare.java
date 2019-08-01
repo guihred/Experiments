@@ -124,25 +124,25 @@ public class MazeSquare extends BorderPane implements HasLogging {
 
 	}
 
+    public final boolean isNorth() {
+		return north.get();
+	}
+
     public boolean isSouth() {
         return south.get();
     }
 
-    public final boolean isNorth() {
-		return north.get();
-	}
+	public final boolean isVisited() {
+        return visited.get();
+    }
 
 	public final boolean isWest() {
 		return west.get();
 	}
 
-	public BooleanProperty northProperty() {
+    public BooleanProperty northProperty() {
 		return north;
 	}
-
-    public final boolean isVisited() {
-        return visited.get();
-    }
 
 	public final void setEast(final boolean east) {
 		this.east.set(east);
@@ -185,10 +185,7 @@ public class MazeSquare extends BorderPane implements HasLogging {
         if (paths == null) {
             paths = new LinkedHashMap<>();
         }
-        if (!paths.containsKey(from)) {
-            paths.put(from, new LinkedHashMap<>());
-		}
-        paths.get(from).put(to, by);
+        paths.computeIfAbsent(from, f -> new LinkedHashMap<>()).put(to, by);
 	}
 
     private static Map<MazeSquare, Boolean> createDistanceMap(MazeSquare source, Map<MazeSquare, Integer> distance,

@@ -13,7 +13,6 @@ import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -24,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
+import pdfreader.PdfUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -51,7 +51,6 @@ public final class LeitorArquivos {
             if (medicamento.getQuantidade() != null && StringUtils.isNotBlank(medicamento.getNome())) {
                 medicamentos.add(medicamento);
             }
-
         }
         return medicamentos;
     }
@@ -60,17 +59,13 @@ public final class LeitorArquivos {
         List<Medicamento> medicamentosSNGPC, ObservableList<Medicamento> medicamentosAnvisa) {
 
         XSSFWorkbook wb = new XSSFWorkbook();
-        Sheet sheetLoja = wb.createSheet("Estoque Loja");
-        criarAbaLoja(medicamentosLoja, wb, sheetLoja);
-        Sheet createSheet = wb.createSheet("Estoque SNGPC");
-        criarAba(medicamentosSNGPC, wb, createSheet);
-        Sheet sheet = wb.createSheet("Estoque ANVISA");
-        criarAba(medicamentosAnvisa, wb, sheet);
+        criarAbaLoja(medicamentosLoja, wb, "Estoque Loja");
+        criarAba(medicamentosSNGPC, wb, "Estoque SNGPC");
+        criarAba(medicamentosAnvisa, wb, "Estoque ANVISA");
 
         File file2 = new File("resultado.xlsx");
         try (OutputStream file = new FileOutputStream(file2)) {
             wb.write(file);
-
         } catch (Exception e) {
             LOGGER.error("", e);
         }
@@ -128,7 +123,7 @@ public final class LeitorArquivos {
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
-            COSDocument cosDoc = parseAndGet(source);
+            COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {
             pdfStripper.setStartPage(1);
             String parsedText = pdfStripper.getText(pdDoc);
@@ -157,7 +152,7 @@ public final class LeitorArquivos {
         PDFTextStripper pdfStripper = new PDFTextStripper();
 
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
-            COSDocument cosDoc = parseAndGet(source);
+            COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {
             pdfStripper.setStartPage(1);
             String parsedText = pdfStripper.getText(pdDoc);
@@ -207,7 +202,9 @@ public final class LeitorArquivos {
         }
     }
 
-    private static void criarAba(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {
+    private static void criarAba(List<Medicamento> medicamentos, XSSFWorkbook wb, String sheetName) {
+        Sheet createSheet = wb.createSheet(sheetName);
+
         XSSFCellStyle style = wb.createCellStyle();
         style.setFillBackgroundColor(new XSSFColor(RED_COLOR));
         style.setFillPattern(FillPatternType.FINE_DOTS);
@@ -247,7 +244,9 @@ public final class LeitorArquivos {
         createSheet.autoSizeColumn(4);
     }
 
-    private static void criarAbaLoja(List<Medicamento> medicamentos, XSSFWorkbook wb, Sheet createSheet) {
+    private static void criarAbaLoja(List<Medicamento> medicamentos, XSSFWorkbook wb, String sheetname) {
+
+        Sheet createSheet = wb.createSheet(sheetname);
         XSSFCellStyle style = wb.createCellStyle();
         style.setFillBackgroundColor(new XSSFColor(RED_COLOR));
         style.setFillPattern(FillPatternType.FINE_DOTS);
@@ -343,12 +342,6 @@ public final class LeitorArquivos {
 
     private static boolean isPDF(File selectedFile) {
         return selectedFile.getName().endsWith(".pdf");
-    }
-
-    private static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
-        PDFParser parser = new PDFParser(source);
-        parser.parse();
-        return parser.getDocument();
     }
 
     private static void setCampos(List<String> colunas, List<String> item, Medicamento medicamento) {

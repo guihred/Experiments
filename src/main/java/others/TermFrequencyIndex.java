@@ -145,12 +145,8 @@ public final class TermFrequencyIndex {
                     String[] split = readLine.split(REGEX_CAMEL_CASE);
                     List<String> asList = Arrays.asList(split);
                     asList.parallelStream().filter(a -> !a.isEmpty()).reduce(frequencyMap, (mapa, a) -> {
-                        if (mapa.containsKey(a.toLowerCase())) {
-                            Long long1 = mapa.get(a.toLowerCase());
-                            mapa.put(a.toLowerCase(), long1 + 1L);
-                        } else {
-                            mapa.put(a.toLowerCase(), 1L);
-                        }
+                        Long long1 = mapa.computeIfAbsent(a.toLowerCase(), m -> 0L);
+                        mapa.put(a.toLowerCase(), long1 + 1L);
                         return mapa;
                     }, (mapa1, mapa2) -> mapa1);
                 }
@@ -173,11 +169,8 @@ public final class TermFrequencyIndex {
             Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
             documentMap.forEach((c, v) -> v.forEach((p, fre) -> {
                 double idf = getInverseDocumentFrequency(p);
-                if (!TermFrequencyIndex.MAP_TF_IDF.containsKey(p)) {
-                    MAP_TF_IDF.put(p, new HashMap<File, Double>());
-                }
                 double termFrequency = getTermFrequency(fre);
-                MAP_TF_IDF.get(p).put(c, idf * termFrequency);
+                MAP_TF_IDF.computeIfAbsent(p, m -> new HashMap<>()).put(c, idf * termFrequency);
             }));
             // MAP_TF_IDF =
             List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(MAP_TF_IDF.entrySet());

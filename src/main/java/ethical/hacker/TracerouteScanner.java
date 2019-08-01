@@ -58,10 +58,7 @@ public class TracerouteScanner {
                         hostsPorts.put(host.get(), new ArrayList<>());
                     }
                     if (line.matches(REUSED_ROUTE_REGEX + "|" + REUSED_ROUTE_REGEX_1 + "|" + HOP_REGEX)) {
-                        if (!hostsPorts.containsKey(host.get())) {
-                            hostsPorts.put(host.get(), new ArrayList<>());
-                        }
-                        hostsPorts.get(host.get()).add(line);
+                        hostsPorts.computeIfAbsent(host.get(), e -> new ArrayList<>()).add(line);
                     }
                 }
             }

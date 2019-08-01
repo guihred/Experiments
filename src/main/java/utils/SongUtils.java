@@ -53,9 +53,10 @@ public final class SongUtils {
         cmd.append(obj);
         cmd.append("\"");
         Map<String, String> responses = new HashMap<>();
-        String key = "size=\\s.+ time=(.+) bitrate=.+";
+        String key = "size=\\s*.+ time=(.+) bitrate=.+";
+
         responses.put(key, "$1");
-        String key2 = "\\s*Duration: ([^,]+), .+";
+        String key2 = "\\s*Duration: ([\\.:\\d]+),.+";
         responses.put(key2, "$1");
         // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
         Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils
@@ -93,10 +94,10 @@ public final class SongUtils {
         }
     }
 
-    public static DoubleProperty splitAudio(File mp3File, File mp4File, Duration start, Duration end) {
-        if (mp4File.exists()) {
+    public static DoubleProperty splitAudio(File inFile, File outFile, Duration start, Duration end) {
+        if (outFile.exists()) {
             try {
-                Files.delete(mp4File.toPath());
+                Files.delete(outFile.toPath());
             } catch (IOException e) {
                 LOG.error("ERRO AO DELETAR", e);
             }
@@ -105,14 +106,14 @@ public final class SongUtils {
         StringBuilder cmd = new StringBuilder();
         cmd.append(FFMPEG);
         cmd.append(" -i \"");
-        cmd.append(mp3File);
+        cmd.append(inFile);
         cmd.append("\" -ss ");
         cmd.append(formatFullDuration(start));
         cmd.append(" -r 1 -to ");
         cmd.append(formatFullDuration(end));
         cmd.append(" \"");
 
-        cmd.append(mp4File);
+        cmd.append(outFile);
         cmd.append("\"");
 		Map<String, String> responses = new HashMap<>();
 		String duration = "\\s*Duration: ([^,]+),.+";

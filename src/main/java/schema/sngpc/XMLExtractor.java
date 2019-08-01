@@ -19,9 +19,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import utils.HasLogging;
 
-public class XMLExtractor {
+public final class XMLExtractor {
     private static final Logger LOG = HasLogging.log();
 
+    private XMLExtractor() {
+    }
     public static void addValue(Node item, TreeItem<Map<String, String>> e) {
         try {
             NamedNodeMap attributes = item.getAttributes();

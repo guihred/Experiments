@@ -107,10 +107,7 @@ public final class TermFrequency {
             return mapa;
         }
         String str2 = str.toLowerCase();
-        if (!mapa.containsKey(str2)) {
-            mapa.put(str2, 1L);
-        }
-        mapa.put(str2, mapa.get(str2) + 1);
+        mapa.put(str2, mapa.computeIfAbsent(str2, s -> 1L) + 1);
         return mapa;
     }
 

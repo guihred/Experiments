@@ -143,11 +143,13 @@ public class EthicalHackApp extends Application {
     }
 
     private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> checkbox, Entry<Integer, String> e) {
-        if (!checkbox.containsKey(e.getKey())) {
-            checkbox.put(e.getKey(), new CheckBox());
-            checkbox.get(e.getKey()).selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
-        }
-        return checkbox.get(e.getKey());
+        return checkbox.computeIfAbsent(e.getKey(), (i) -> newCheck(arrayList, e));
+    }
+
+    private CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
+        CheckBox check = new CheckBox();
+        check.selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
+        return check;
     }
 
     private VBox portTable(ObservableList<Integer> selectedPorts) {

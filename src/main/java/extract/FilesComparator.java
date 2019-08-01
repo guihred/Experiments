@@ -93,8 +93,8 @@ public class FilesComparator extends Application {
             if (selectedFile != null) {
                 getSongs(selectedFile, items1);
                 dir.setValue(selectedFile);
+                updateCells(table1);
             }
-            updateCells(table1);
 
         });
         Text text = new Text("");
@@ -149,10 +149,7 @@ public class FilesComparator extends Application {
     }
 
     private Music getFromMap(File m) {
-        if (!fileMap.containsKey(m)) {
-            fileMap.put(m, MusicReader.readTags(m));
-        }
-        return fileMap.get(m);
+        return fileMap.computeIfAbsent(m, MusicReader::readTags);
     }
 
     private String getItemClass(ObservableList<File> items2, File s) {

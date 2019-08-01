@@ -2,10 +2,8 @@ package ethical.hacker;
 
 import static utils.RunnableEx.make;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -76,10 +74,7 @@ public final class AlarmClock {
     }
 
     private static long calculateDelay(LocalTime of) {
-        Instant instant = LocalDate.now().atTime(of).atZone(ZoneId.systemDefault()).toInstant();
-        long epochSecond = instant.getEpochSecond();
-        long currentTimeMillis = System.currentTimeMillis() / 1000;
-        return epochSecond - currentTimeMillis;
+        return ChronoUnit.SECONDS.between(LocalTime.now(), of);
     }
 
     private static void log(String msg) {

@@ -1,7 +1,10 @@
 package ml.data;
 
+import static utils.FunctionEx.makeFunction;
+
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -62,15 +65,10 @@ public class CSVUtils {
                     if (firstLine == null) {
                         firstLine = nextLine;
                     }
+                    final String fline = firstLine;
                     String string = parseLine.get(columnIndex);
-                    if (!writersBytype.containsKey(string)) {
-                        String child = source.getName().replaceAll("\\..+", "") + string + ".csv";
-                        File file = ResourceFXUtils.getOutFile(child);
-                        Writer output = createWriter(file.getAbsolutePath());
-                        output.append(firstLine + "\n");
-                        writersBytype.put(string, output);
-                    }
-                    writersBytype.get(string).append(nextLine + "\n");
+                    writersBytype.computeIfAbsent(string, makeFunction(s -> newWrite(source, fline, s)))
+                        .append(nextLine + "\n");
                 }
             }
         } catch (Exception e) {
@@ -130,6 +128,14 @@ public class CSVUtils {
             }
         }
         return curVal;
+    }
+
+    private static Writer newWrite(File source, String firstLine, String string) throws IOException {
+        String child = source.getName().replaceAll("\\..+", "") + string + ".csv";
+        File file = ResourceFXUtils.getOutFile(child);
+        Writer output = createWriter(file.getAbsolutePath());
+        output.append(firstLine + "\n");
+        return output;
     }
 
 }
