@@ -10,7 +10,9 @@ import javafx.scene.image.PixelFormat.Type;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import paintexp.PaintModel;
 import utils.PixelHelper;
 
@@ -191,4 +193,22 @@ public class RectBuilder extends PaintTool {
         centerX2 = Math.max(endX - radiusX, endX - width / 2);
     }
 
+    public static void moveArea(KeyCode code, Rectangle area2) {
+        switch (code) {
+            case RIGHT:
+                area2.setLayoutX(area2.getLayoutX() + 1);
+                break;
+            case LEFT:
+                area2.setLayoutX(area2.getLayoutX() - 1);
+                break;
+            case DOWN:
+                area2.setLayoutY(area2.getLayoutY() + 1);
+                break;
+            case UP:
+                area2.setLayoutY(area2.getLayoutY() - 1);
+                break;
+            default:
+                break;
+        }
+    }
 }

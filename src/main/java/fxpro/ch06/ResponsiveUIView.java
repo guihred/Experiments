@@ -49,7 +49,7 @@ final class ResponsiveUIView implements HasLogging {
         changeFillButton.setOnAction((ActionEvent actionEvent) -> {
             final Paint fillPaint = model.getFillPaint().get();
             model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
-            new Thread(RunnableEx.makeRunnable(() -> {
+            new Thread(RunnableEx.make(() -> {
                 Thread.sleep(WAIT_TIME_MILLIS);
                 Platform.runLater(() -> {
                     final Rectangle rect = rectangle;

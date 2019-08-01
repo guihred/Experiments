@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -47,14 +46,11 @@ public class FilesComparator extends Application {
 
     private Map<File, Music> fileMap = new ConcurrentHashMap<>();
 
-    public  ObservableList<File> getSongs(File file, ObservableList<File> musicas) {
+    public ObservableList<File> getSongs(File file, ObservableList<File> musicas) {
         musicas.clear();
 
-        try (Stream<Path> find = Files.find(file.toPath(), 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
-            find.map(Path::toFile).forEach(musicas::add);
-        } catch (Exception e) {
-            LOG.trace("", e);
-        }
+        List<Path> find = ResourceFXUtils.getPathByExtension(file, ".mp3");
+        find.stream().map(Path::toFile).forEach(musicas::add);
         musicas.sort(comparing(FilesComparator::toFileString));
         new Thread(() -> musicas.forEach(this::getFromMap)).start();
         return musicas;
@@ -88,7 +84,7 @@ public class FilesComparator extends Application {
                 c.getStyleClass().add(itemClass);
             }
         }).onDoubleClick(e -> musicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
-
+        table1.setId(nome);
 //        new 
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Carregar Pasta de Músicas");
@@ -172,7 +168,7 @@ public class FilesComparator extends Application {
                 Object fieldValue = mapProperty(getFieldValue(music, f));
                 Object fieldValue2 = mapProperty(getFieldValue(music2, f));
                 if (!Objects.equals(fieldValue, fieldValue2)) {
-                    System.out.println(s + " " + f + " " + fieldValue + "!=" + fieldValue2);
+                    LOG.info("{} {} {}!={}", s, f, fieldValue, fieldValue2);
                 }
             }
 
@@ -186,22 +182,22 @@ public class FilesComparator extends Application {
         return Objects.equals(getFromMap(s), getFromMap(m));
     }
 
-    private boolean notRepeated(ObservableList<File> items2, File s) {
-        String fileString = toFileString(s);
-        return !items2.stream().anyMatch(m -> toFileString(m).equals(fileString));
-    }
-
-    private void updateCells(Node table1) {
-        for (Node cell : table1.getScene().getRoot().lookupAll(".cell")) {
-            cell.getStyleClass().removeAll("", "vermelho", "amarelo");
-        }
-    }
-
     public static void main(String[] args) {
         launch(args);
     }
 
+    private static boolean notRepeated(ObservableList<File> items2, File s) {
+        String fileString = toFileString(s);
+        return !items2.stream().anyMatch(m -> toFileString(m).equals(fileString));
+    }
+
     private static String toFileString(File s) {
         return s.getParentFile().getName() + "/" + s.getName();
+    }
+
+    private static void updateCells(Node table1) {
+        for (Node cell : table1.getScene().getRoot().lookupAll(".cell")) {
+            cell.getStyleClass().removeAll("", "vermelho", "amarelo");
+        }
     }
 }

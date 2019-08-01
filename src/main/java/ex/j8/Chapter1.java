@@ -116,7 +116,7 @@ public final class Chapter1 {
      * don't return a Void Object.
      */
     public static void ex6() {
-        new Thread(RunnableEx.makeRunnable(() -> {
+        new Thread(RunnableEx.make(() -> {
             LOGGER.trace("Zzzz!!");
             Thread.sleep(1000);
             LOGGER.trace("!!!!");

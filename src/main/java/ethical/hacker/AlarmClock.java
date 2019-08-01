@@ -1,6 +1,6 @@
 package ethical.hacker;
 
-import static utils.RunnableEx.makeRunnable;
+import static utils.RunnableEx.make;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -36,7 +36,7 @@ public final class AlarmClock {
         log("Main started.");
         RunnableEx run = () -> {
             ResourceFXUtils.initializeFX();
-            Platform.runLater(makeRunnable(() -> {
+            Platform.runLater(make(() -> {
                 ImageCrackerApp imageCrackerApp = new ImageCrackerApp();
                 Stage stage = new Stage();
                 imageCrackerApp.start(stage);
@@ -65,7 +65,7 @@ public final class AlarmClock {
         }
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(NUM_THREADS);
         Runnable soundAlarmTask = () -> {
-            makeRunnable(run).run();
+            make(run).run();
             log("Executed in " + LocalTime.now());
             SCHEDULED_TASKS.remove(time);
             if (SCHEDULED_TASKS.isEmpty()) {

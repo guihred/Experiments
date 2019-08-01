@@ -1,10 +1,7 @@
 package ml.data;
 import static ml.data.DataframeUtils.displayStats;
-import static ml.data.DataframeUtils.readRows;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
@@ -41,7 +38,7 @@ public class DataframeML implements HasLogging {
     }
 
 	public DataframeML(File csvFile) {
-		readCSV(csvFile);
+		DataframeUtils.readCSV(csvFile, this);
 	}
 
 	public DataframeML(String csvFile) {
@@ -214,23 +211,8 @@ public class DataframeML implements HasLogging {
 		}
 	}
 
-    public void readCSV(File csvFile) {
-		try (Scanner scanner = new Scanner(csvFile, StandardCharsets.UTF_8.displayName())) {
-			List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
-					.collect(Collectors.toList());
-			for (String column : header) {
-				dataframe.put(column, new ArrayList<>());
-				formatMap.put(column, String.class);
-			}
-
-			readRows(this, scanner, header);
-		} catch (FileNotFoundException e) {
-            getLogger().error("FILE NOT FOUND " + csvFile, e);
-		}
-	}
-
-	public void readCSV(String csvFile) {
-    	readCSV(ResourceFXUtils.toFile(csvFile));
+    public void readCSV(String csvFile) {
+    	DataframeUtils.readCSV(ResourceFXUtils.toFile(csvFile), this);
     }
 
 	public void removeCol(String... cols) {

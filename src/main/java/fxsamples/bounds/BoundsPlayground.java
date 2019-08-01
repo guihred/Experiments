@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
@@ -58,9 +57,9 @@ public class BoundsPlayground extends Application {
         for (Circle circle : circles) {
             enableDrag(circle);
             circle.centerXProperty()
-                .addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> testIntersections());
+                .addListener((ob, oldValue, newValue) -> testIntersections());
             circle.centerYProperty()
-                .addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> testIntersections());
+                .addListener((ob, oldValue, newValue) -> testIntersections());
         }
         // define an overlay to show the layout bounds of the scene's shapes.
         Group layoutBoundsOverlay = new Group();

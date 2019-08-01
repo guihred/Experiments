@@ -20,7 +20,7 @@ public class FXEngineQuartoTest extends AbstractTestExecution {
 
 	@Test
 	public void verify() throws Exception {
-		interactNoWait(RunnableEx.makeRunnable(() -> {
+		interactNoWait(RunnableEx.make(() -> {
 			new QuartoLauncher().start(currentStage);
 			currentStage.setMaximized(true);
 		}));
@@ -38,7 +38,7 @@ public class FXEngineQuartoTest extends AbstractTestExecution {
 
 	@Test
 	public void verify2() throws Exception {
-		interactNoWait(RunnableEx.makeRunnable(() -> {
+		interactNoWait(RunnableEx.make(() -> {
 			new QuartoLauncher().start(currentStage);
 			currentStage.setMaximized(true);
 		}));

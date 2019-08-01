@@ -102,7 +102,7 @@ public final class ConsoleUtils {
         Map<String, ObservableList<String>> result = new HashMap<>();
         result.put(ACTIVE_FLAG, FXCollections.observableArrayList());
         responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
-        new Thread(RunnableEx.makeRunnable(() -> updateRegexMapValues(cmd, responses, result))).start();
+        new Thread(RunnableEx.make(() -> updateRegexMapValues(cmd, responses, result))).start();
         return result;
     }
 

@@ -25,7 +25,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 	protected <T extends Application> T show(Class<T> c) {
 		try {
 			T newInstance = c.newInstance();
-			interactNoWait(RunnableEx.makeRunnable(() -> newInstance.start(currentStage)));
+			interactNoWait(RunnableEx.make(() -> newInstance.start(currentStage)));
             return newInstance;
 		} catch (Exception e) {
             throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
@@ -33,7 +33,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 	}
     protected <T extends Application> void show(T application) {
 		try {
-			interactNoWait(RunnableEx.makeRunnable(() -> application.start(currentStage)));
+			interactNoWait(RunnableEx.make(() -> application.start(currentStage)));
 		} catch (Exception e) {
 			getLogger().error(String.format("ERRO IN %s", application), e);
 		}

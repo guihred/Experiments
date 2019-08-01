@@ -102,7 +102,9 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             clickThiefs(allTerrains);
             clickCards();
             clickButton(allButtons, clickedButtons);
-            getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
+            if (i % 10 == 0) {
+                getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
+            }
         }
     }
 

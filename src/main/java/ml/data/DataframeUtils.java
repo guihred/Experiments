@@ -1,5 +1,8 @@
 package ml.data;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BinaryOperator;
@@ -117,6 +120,21 @@ public final class DataframeUtils extends DataframeML {
 
     public static <T> T getFromList(int j, List<T> list) {
         return list != null && j < list.size() ? list.get(j) : null;
+    }
+
+    public static void readCSV(File csvFile,DataframeML dataframeML) {
+        try (Scanner scanner = new Scanner(csvFile, StandardCharsets.UTF_8.displayName())) {
+            List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
+                    .collect(Collectors.toList());
+            for (String column : header) {
+                dataframeML.dataframe.put(column, new ArrayList<>());
+                dataframeML.formatMap.put(column, String.class);
+            }
+
+            readRows(dataframeML, scanner, header);
+        } catch (FileNotFoundException e) {
+            LOG.error("FILE NOT FOUND " + csvFile, e);
+        }
     }
 
     public static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {

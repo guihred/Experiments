@@ -1,6 +1,7 @@
 package contest.db;
 
 import japstudy.db.HibernateUtil;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -192,8 +193,7 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
 
     private void setImage(VBox newImage, String image) {
         if (image != null) {
-            List<ImageView> images = Stream.of(image.split(";"))
-                .map(i -> new ImageView(ResourceFXUtils.toExternalForm("out/" + i)))
+            List<ImageView> images = Stream.of(image.split(";")).map(i -> new ImageView(toURL(i)))
                 .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
             newImage.getChildren().setAll(images);
         } else if (!newImage.getChildren().isEmpty()) {
@@ -213,6 +213,15 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         if (newV != null) {
             ContestQuestion contestQuestion = lessons.get(current.intValue());
             a.accept(contestQuestion, newV);
+        }
+    }
+
+    private String toURL(String i) {
+        try {
+            return new File(i).toURI().toURL().toString();
+        } catch (Exception e) {
+            getLogger().error("", e);
+            return null;
         }
     }
 

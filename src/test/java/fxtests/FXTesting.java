@@ -125,7 +125,7 @@ public final class FXTesting implements HasLogging {
         for (int i = 0; i < applicationClasses.length; i++) {
             Class<? extends Application> class1 = applicationClasses[i];
             LOGGER.info(" RUN {}", class1.getSimpleName());
-            app.interactNoWait(RunnableEx.makeRunnable(() -> class1.newInstance().start(currentStage)));
+            app.interactNoWait(RunnableEx.make(() -> class1.newInstance().start(currentStage)));
             consumer.run();
         }
     }

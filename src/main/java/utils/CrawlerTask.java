@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.concurrent.Task;
@@ -28,7 +29,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "14-juuYON";
     private static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
-    private static final boolean IS_PROXIED = isProxied();
+    private static final boolean IS_PROXIED = isProxied().test(5000);
 
     private Instant start;
     private boolean cancelled;
@@ -65,7 +66,7 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         try {
             return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         } catch (Exception e) {
-            getLogger().trace("", e);
+            LOG.trace("", e);
             return null;
         }
     }
@@ -138,15 +139,8 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         return !IS_PROXIED;
     }
 
-    private static boolean isProxied() {
-        try {
-            final int timeout = 5000;
-            return InetAddress.getByName(PROXY_CONFIG).isReachable(timeout);
-        } catch (Exception e) {
-            LOG.error("NET PROBLEM", e);
-
-            return false;
-        }
+    private static Predicate<Integer> isProxied() {
+        return PredicateEx.makeTest((timeout) -> InetAddress.getByName(PROXY_CONFIG).isReachable(timeout));
     }
 
 }

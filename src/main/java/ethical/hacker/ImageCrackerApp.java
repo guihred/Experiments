@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import static utils.RunnableEx.make;
 import static utils.StringSigaUtils.toInteger;
 
 import java.util.function.Supplier;
@@ -73,29 +74,20 @@ public class ImageCrackerApp extends Application {
 
     private void runInPlatform(String setValue) {
 
-        Platform.runLater(() -> engine.executeScript(setValue));
+        Platform.runLater(make(() -> engine.executeScript(setValue)));
     }
 
     private Object runInPlatformAndWait(String setValue) {
-        ObjectProperty<Object> obj = new SimpleObjectProperty<>();
-        Platform.runLater(() -> obj.set(engine.executeScript(setValue)));
-        while (obj.get() == null) {
-            
-        }
-
-        return obj.get();
+        return runInPlatformAndWait(() -> engine.executeScript(setValue));
     }
 
-    private <T> T runInPlatformAndWait(Supplier<T> setValue) {
+    private <T> T runInPlatformAndWait(Supplier<T> expression) {
         ObjectProperty<T> obj = new SimpleObjectProperty<>();
-        Platform.runLater(() -> obj.set(setValue.get()));
+        Platform.runLater(make(() -> obj.set(expression.get())));
         while (obj.get() == null) {
+            // DO NOTHING
         }
         return obj.get();
-    }
-
-    private String setValue(String id, String httpUsername) {
-        return String.format("document.getElementById(\"%s\").value = \"%s\";", id, httpUsername);
     }
 
     private void tryToLog(WebView browser) {
@@ -149,5 +141,9 @@ public class ImageCrackerApp extends Application {
         } catch (Exception e) {
             LOG.error("NOT SUPPOSED TO HAPPEN", e);
         }
+    }
+
+    private static String setValue(String id, String httpUsername) {
+        return String.format("document.getElementById(\"%s\").value = \"%s\";", id, httpUsername);
     }
 }

@@ -1,6 +1,7 @@
 package utils;
 import static utils.DrawOnPoint.getWithinRange;
 
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 public class PixelHelper {
@@ -79,6 +80,19 @@ public class PixelHelper {
     public static int getByte(final int argb,int i) {
         return argb >> 8*i & 0xFF;
     }
+
+    public  static void replaceColor(WritableImage writableImage, Color backColor, Color transparent) {
+        int colorToBe = PixelHelper.toArgb(transparent);
+        int colorReplace = PixelHelper.toArgb(backColor);
+        for (int i = 0; i < writableImage.getWidth(); i++) {
+            for (int j = 0; j < writableImage.getHeight(); j++) {
+                if (writableImage.getPixelReader().getArgb(i, j) == colorReplace) {
+                    writableImage.getPixelWriter().setArgb(i, j, colorToBe);
+                }
+            }
+        }
+    }
+
 
     public static int toArgb(Color c) {
         int b = (int) (c.getBlue() * MAX_BYTE);

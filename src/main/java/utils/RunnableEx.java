@@ -13,7 +13,7 @@ interface RunnableEx extends HasLogging {
         }
     }
 
-    static Runnable makeRunnable(RunnableEx run) {
+    static Runnable make(RunnableEx run) {
         return () -> {
             try {
                 run.run();

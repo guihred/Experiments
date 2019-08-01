@@ -1,5 +1,8 @@
 package pdfreader;
 
+import static org.apache.commons.io.FileUtils.contentEquals;
+import static utils.PredicateEx.makeTest;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +10,6 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
 import javax.imageio.ImageIO;
-import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -29,100 +31,94 @@ import utils.ResourceFXUtils;
  * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
-	private static final Logger LOG = HasLogging.log();
-	private int num;
-	private List<PdfImage> images = new ArrayList<>();
-	private int pageNumber;
+    public static final String OUT_FOLDER = "pdfResult";
+    private static final Logger LOG = HasLogging.log();
+    private List<PdfImage> images = new ArrayList<>();
+    private int num;
 
-	public PrintImageLocations() {
-		addOperator(new Concatenate());
-		addOperator(new DrawObject());
-		addOperator(new SetGraphicsStateParameters());
-		addOperator(new Save());
-		addOperator(new Restore());
-		addOperator(new SetMatrix());
-	}
+    private int pageNumber;
 
-	public List<PdfImage> processPage(PDPage page, int pageNumber1) throws IOException {
-		pageNumber = pageNumber1;
-		int size = images.size();
-		super.processPage(page);
-		if (images.size() > size) {
-			return images.subList(size, images.size());
-		}
-		return Collections.emptyList();
-	}
-	@Override
-	protected void processOperator(Operator operator, List<COSBase> operands) throws IOException {
-		String operation = operator.getName();
-		if (!"Do".equals(operation)) {
-			super.processOperator(operator, operands);
-			return;
-		}
+    public PrintImageLocations() {
+        addOperator(new Concatenate());
+        addOperator(new DrawObject());
+        addOperator(new SetGraphicsStateParameters());
+        addOperator(new Save());
+        addOperator(new Restore());
+        addOperator(new SetMatrix());
+    }
 
-		COSName objectName = (COSName) operands.get(0);
-		PDXObject xobject = getResources().getXObject(objectName);
+    public List<PdfImage> processPage(PDPage page, int pageNumber1) throws IOException {
+        pageNumber = pageNumber1;
+        int size = images.size();
+        super.processPage(page);
+        if (images.size() > size) {
+            return images.subList(size, images.size());
+        }
+        return Collections.emptyList();
+    }
 
-		if (xobject instanceof PDFormXObject) {
-			PDFormXObject form = (PDFormXObject) xobject;
-			showForm(form);
-			return;
-		}
-		if (xobject instanceof PDImageXObject) {
-			PDImageXObject image = (PDImageXObject) xobject;
-			BufferedImage image2 = image.getImage();
-			File save = save(pageNumber, num++, image2, image.getSuffix());
+    @Override
+    protected void processOperator(Operator operator, List<COSBase> operands) throws IOException {
+        String operation = operator.getName();
+        if (!"Do".equals(operation)) {
+            super.processOperator(operator, operands);
+            return;
+        }
 
-			Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
+        COSName objectName = (COSName) operands.get(0);
+        PDXObject xobject = getResources().getXObject(objectName);
 
-			// position in user space units. 1 unit = 1/72 inch at 72 dpi
-			float translateX = ctmNew.getTranslateX();
-			float translateY = ctmNew.getTranslateY();
-			// raw size in pixels
+        if (xobject instanceof PDFormXObject) {
+            PDFormXObject form = (PDFormXObject) xobject;
+            showForm(form);
+            return;
+        }
+        if (xobject instanceof PDImageXObject) {
+            PDImageXObject image = (PDImageXObject) xobject;
+            BufferedImage image2 = image.getImage();
+            File save = save(pageNumber, num++, image2, image.getSuffix());
 
-			PdfImage pdfImage = new PdfImage();
-			pdfImage.setFile(save);
-			pdfImage.setX(translateX);
-			pdfImage.setY(translateY - ctmNew.getScalingFactorY());
-			pdfImage.setPageN(pageNumber);
-			images.add(pdfImage);
-			getLogger().trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(), pageNumber);
+            Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
 
-		}
+            // position in user space units. 1 unit = 1/72 inch at 72 dpi
+            float translateX = ctmNew.getTranslateX();
+            float translateY = ctmNew.getTranslateY();
+            // raw size in pixels
 
-	}
+            PdfImage pdfImage = new PdfImage();
+            pdfImage.setFile(save);
+            pdfImage.setX(translateX);
+            pdfImage.setY(translateY - ctmNew.getScalingFactorY());
+            pdfImage.setPageN(pageNumber);
+            images.add(pdfImage);
+            getLogger().trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(),
+                pageNumber);
+
+        }
+
+    }
 
     public static File save(int pageNumber, Object number, BufferedImage image, String ext) {
-        File outFile = ResourceFXUtils.getOutFile("pdfResult");
+        File outFile = ResourceFXUtils.getOutFile(OUT_FOLDER);
         if (!outFile.exists()) {
             outFile.mkdir();
         }
         String extension = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
         File file = new File(outFile, pageNumber + "-" + number + "." + extension);
-		try {
+        try {
 
             ImageIO.write(image, extension, file); // ignore returned boolean
-            Optional<File> findFirst = Stream.of(outFile.listFiles())
-                .filter(e -> e.getName().endsWith(extension)).filter(e -> !e.equals(file))
-                .filter(f -> contentEquals(file, f)).findFirst();
+            Optional<File> findFirst = Stream.of(outFile.listFiles()).filter(e -> e.getName().endsWith(extension))
+                .filter(e -> !e.equals(file)).filter(makeTest(f -> contentEquals(file, f))).findFirst();
             if (findFirst.isPresent()) {
                 Files.deleteIfExists(file.toPath());
                 return findFirst.get();
             }
 
-		} catch (IOException e) {
-			LOG.error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
-		}
-		return file;
-	}
-
-    private static boolean contentEquals(File file, File f) {
-        try {
-            return FileUtils.contentEquals(file, f);
-        } catch (IOException e1) {
-            LOG.trace("", e1);
-            return false;
+        } catch (IOException e) {
+            LOG.error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
         }
+        return file;
     }
 
 }

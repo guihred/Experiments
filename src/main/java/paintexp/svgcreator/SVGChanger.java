@@ -28,8 +28,12 @@ public class SVGChanger {
 	private DoubleSummaryStatistics xStats = new DoubleSummaryStatistics();
 	private DoubleSummaryStatistics yStats = new DoubleSummaryStatistics();
 
-	public SVGChanger(final String path) {
-		this.path.set(path);
+    public SVGChanger(String stringProperty) {
+        path.set(stringProperty);
+    }
+
+    public SVGChanger(StringProperty stringProperty) {
+        path.bind(stringProperty);
 	}
 
 	public String convertToRelative() {

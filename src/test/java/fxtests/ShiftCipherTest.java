@@ -49,7 +49,7 @@ public final class ShiftCipherTest implements HasLogging {
     @Test
     public void testVigenereXORFindKey() {
         try {
-            Thread thread = new Thread(RunnableEx.makeRunnable(() -> {
+            Thread thread = new Thread(RunnableEx.make(() -> {
                 long decrypt = new VigenereXORCipher().findKeySize();
                 getLogger().error(" key size found {}", decrypt);
             }));

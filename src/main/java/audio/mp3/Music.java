@@ -59,9 +59,9 @@ public class Music {
         }
         Music other = (Music) obj;
         return Objects.equals(album.get(), other.album.get()) && Objects.equals(artista.get(), other.artista.get())
-            && Objects.equals(pasta.get(), other.pasta.get()) && Objects.equals(image != null, other.image != null)
+            && Objects.equals(image != null, other.image != null)
             && Objects.equals(titulo.get(), other.titulo.get())
-            && Objects.equals(trilha.get(), other.trilha.get());
+        ;
     }
 
     public StringProperty generoProperty() {

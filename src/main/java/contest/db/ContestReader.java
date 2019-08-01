@@ -192,6 +192,8 @@ public enum ContestReader implements HasLogging {
     }
 
     private void readFile(File file) {
+        PdfUtils.extractImages(file);
+
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {

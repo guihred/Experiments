@@ -3,22 +3,18 @@ package pdfreader;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import org.apache.pdfbox.cos.*;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineNode;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
-import utils.ClassReflectionUtils;
 import utils.HasLogging;
 
 public final class PdfUtils {
@@ -120,99 +116,6 @@ public final class PdfUtils {
         }
 
         return pdfInfo;
-    }
-
-    static void printBookmark(List<COSObject> indentation, PrintStream out) {
-        Map<String, Object> hashSet = new HashMap<>();
-        Set<String> names = new HashSet<>();
-
-        for (COSObject object : indentation) {
-            if (out != null) {
-                out.println(ClassReflectionUtils.getDescription(object));
-            }
-            COSBase object2 = object.getObject();
-            if (object2 instanceof COSDictionary) {
-                COSDictionary a = (COSDictionary) object2;
-                a.entrySet().stream().filter(e -> !hashSet.containsKey(e.getKey().getName()))
-                    .forEach(e -> hashSet.put(e.getKey().getName(), extractObj(e)));
-                String collect = a.keySet().stream().map(COSName::getName).collect(Collectors.joining(","));
-                names.add(collect);
-
-            }
-        }
-        if (out != null) {
-            hashSet.entrySet().forEach(out::println);
-            names.forEach(out::println);
-        }
-    }
-
-    static void printBookmark(PDOutlineNode bookmark, String indentation, PrintStream out) throws IOException {
-        PDOutlineItem current = bookmark.getFirstChild();
-        while (current != null) {
-            if (current.getDestination() instanceof PDPageDestination) {
-                PDPageDestination pd = (PDPageDestination) current.getDestination();
-                out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
-            }
-            if (current.getAction() instanceof PDActionGoTo) {
-                PDActionGoTo gta = (PDActionGoTo) current.getAction();
-                if (gta.getDestination() instanceof PDPageDestination) {
-                    PDPageDestination pd = (PDPageDestination) gta.getDestination();
-                    out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
-                }
-            }
-            out.println(indentation + current.getTitle());
-            printBookmark(current, indentation + " - ", out);
-            current = current.getNextSibling();
-        }
-    }
-
-    private static Object extractObj(Entry<COSName, COSBase> obj) {
-        COSBase value = obj.getValue();
-        return extractValue(value);
-    }
-
-    private static Object extractValue(COSBase value) {
-        return extractValue(value, 0);
-    }
-
-    private static Object extractValue(COSBase value, int i) {
-        if (i > 2) {
-            return value;
-        }
-        if (value instanceof COSString) {
-            COSString name = (COSString) value;
-            return name.getASCII();
-        }
-        if (value instanceof COSFloat) {
-            COSFloat name = (COSFloat) value;
-            return name.floatValue();
-        }
-        if (value instanceof COSInteger) {
-            COSInteger name = (COSInteger) value;
-            return name.intValue();
-        }
-        if (value instanceof COSArray) {
-            COSArray name = (COSArray) value;
-            return name.toList().stream().map(e -> extractValue(e, i + 1)).collect(Collectors.toList());
-        }
-        if (value instanceof COSName) {
-            COSName name = (COSName) value;
-            return name.getName();
-        }
-        if (value instanceof COSObject) {
-            COSObject name = (COSObject) value;
-            return extractValue(name.getObject(), i + 1);
-        }
-        if (value instanceof COSDictionary) {
-            COSDictionary name = (COSDictionary) value;
-            Map<Object, Object> hashMap = new HashMap<>();
-            for (Entry<COSName, COSBase> entry : name.entrySet()) {
-                hashMap.put(extractValue(entry.getKey(), i + 1), extractValue(entry.getValue(), i + 1));
-            }
-            return hashMap;
-        }
-
-        return value;
     }
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
