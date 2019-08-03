@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,10 +14,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
+import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -40,11 +43,12 @@ public class MusicOrganizer extends Application implements HasLogging {
         musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
         TextField filterField = new TextField();
         Button buttonMusic = loadMusic(primaryStage, chooser, musicasTable, filterField);
+        Button fixMusic = fixMusic(primaryStage, musicasTable, filterField);
         ObservableList<Music> musics = FXCollections.observableArrayList();
         configurarFiltroRapido(filterField, musicasTable, musics);
         Button buttonVideos = loadVideos(primaryStage, chooser, musicasTable, filterField);
-        root.getChildren()
-            .add(new VBox(new Label("Lista Músicas"), new HBox(buttonMusic, buttonVideos, filterField), musicasTable));
+        root.getChildren().add(new VBox(new Label("Lista Músicas"),
+            new HBox(buttonMusic, buttonVideos, fixMusic, filterField), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -60,6 +64,45 @@ public class MusicOrganizer extends Application implements HasLogging {
 
     private void convertToImage(Music music, TableCell<Music, Object> cell) {
         cell.setGraphic(view(music.getImage() != null ? music.getImage() : DEFAULT_VIEW));
+    }
+
+    private Button fixMusic(Stage primaryStage, TableView<Music> musicasTable, TextField filterField) {
+
+        return CommonsFX.newButton("Consertar Musicas", e -> {
+            ObservableList<Music> items = musicasTable.getItems();
+            items.stream().filter(m -> StringUtils.isBlank(m.getArtista())).findFirst().ifPresent(m -> {
+                VBox vBox = new VBox(10);
+                List<String> fields = ClassReflectionUtils.getFields(Music.class);
+                for (String name : fields) {
+                    Object fieldValue = ClassReflectionUtils.getFieldValue(m, name);
+                    if (fieldValue instanceof StringProperty) {
+                        StringProperty a = (StringProperty) fieldValue;
+                        Text text = new Text(name);
+                        TextField textField = new TextField();
+                        textField.textProperty().bindBidirectional(a);
+                        vBox.getChildren().add(new VBox(text, textField));
+                    }
+                }
+
+                Image imageData = m.getImage();
+                if (imageData != null) {
+                    ImageView imageView = new ImageView(imageData);
+                    imageView.setFitWidth(50);
+                    imageView.setPreserveRatio(true);
+                    vBox.getChildren().addAll(imageView);
+                }
+                Stage stage = new Stage();
+                vBox.getChildren().add(CommonsFX.newButton("Fix", f -> {
+                    MusicReader.saveMetadata(m);
+                    stage.close();
+                }));
+
+                stage.setScene(new Scene(vBox));
+                stage.show();
+
+            });
+
+        });
     }
 
     private Button loadMusic(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,

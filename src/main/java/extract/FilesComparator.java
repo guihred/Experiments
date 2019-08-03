@@ -1,8 +1,9 @@
 package extract;
 
 import static java.util.Comparator.comparing;
-import static utils.ClassReflectionUtils.getFieldValue;
-import static utils.ClassReflectionUtils.mapProperty;
+import static javafx.collections.FXCollections.observableArrayList;
+import static javafx.collections.FXCollections.synchronizedObservableList;
+import static utils.ResourceFXUtils.toExternalForm;
 
 import audio.mp3.Music;
 import audio.mp3.MusicHandler;
@@ -20,9 +21,9 @@ import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
@@ -33,7 +34,10 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.HasLogging;
+import utils.PredicateEx;
+import utils.ResourceFXUtils;
 
 public class FilesComparator extends Application {
 
@@ -52,20 +56,21 @@ public class FilesComparator extends Application {
         List<Path> find = ResourceFXUtils.getPathByExtension(file, ".mp3");
         find.stream().map(Path::toFile).forEach(musicas::add);
         musicas.sort(comparing(FilesComparator::toFileString));
-        new Thread(() -> musicas.forEach(this::getFromMap)).start();
+        musicas.forEach(this::getFromMap);
         return musicas;
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         HBox root = new HBox();
-        ObservableList<File> items1 = FXCollections.observableArrayList();
-        ObservableList<File> items2 = FXCollections.observableArrayList();
+
+        ObservableList<File> items1 = synchronizedObservableList(observableArrayList());
+        ObservableList<File> items2 = synchronizedObservableList(observableArrayList());
 
         addTable(root, "File 1", ">", items1, items2, directory1, primaryStage);
         addTable(root, "File 2", "<", items2, items1, directory2, primaryStage);
         Scene value = new Scene(root);
-        value.getStylesheets().add(ResourceFXUtils.toExternalForm("filesComparator.css"));
+        value.getStylesheets().add(toExternalForm("filesComparator.css"));
         primaryStage.setScene(value);
         primaryStage.setTitle("Files Comparator");
         primaryStage.show();
@@ -75,14 +80,9 @@ public class FilesComparator extends Application {
         ObservableList<File> items2, ObjectProperty<File> dir, Stage primaryStage) {
 
         TableView<File> table1 = new SimpleTableViewBuilder<File>().items(items1).addColumn(nome, (s, c) -> {
-            String str = toFileString(s);
-            c.setText(str);
-
-            ObservableList<String> styleClass = c.getStyleClass();
-            if (styleClass.size() == 4) {
-                String itemClass = getItemClass(items2, s);
-                c.getStyleClass().add(itemClass);
-            }
+            c.setText(toFileString(s));
+            String itemClass = getItemClass(items2, s, c.getStyleClass());
+            c.getStyleClass().add(itemClass);
         }).onDoubleClick(e -> musicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
         table1.setId(nome);
 //        new 
@@ -126,9 +126,15 @@ public class FilesComparator extends Application {
             if (!file2.getParentFile().exists()) {
                 file2.getParentFile().mkdir();
             }
+            boolean exists = file2.exists();
             Files.deleteIfExists(file2.toPath());
             Files.copy(selectedItem.toPath(), file2.toPath());
-            items2.add(file2);
+            if (!exists) {
+                items2.add(file2);
+            } else {
+                fileMap.put(file2, MusicReader.readTags(file2));
+                fileMap.put(selectedItem, MusicReader.readTags(selectedItem));
+            }
         } catch (Exception e1) {
             LOG.error("", e1);
         }
@@ -152,27 +158,19 @@ public class FilesComparator extends Application {
         return fileMap.computeIfAbsent(m, MusicReader::readTags);
     }
 
-    private String getItemClass(ObservableList<File> items2, File s) {
+    private String getItemClass(ObservableList<File> items2, File s, ObservableList<String> classes) {
         String fileString = toFileString(s);
+        classes.removeAll("", "vermelho", "amarelo");
         Optional<File> findFirst = items2.stream().filter(m -> toFileString(m).equals(fileString)).findFirst();
         if (!findFirst.isPresent()) {
             return "vermelho";
-        } else if (!isEqualSong(s, findFirst.get())) {
-            List<String> fields = ClassReflectionUtils.getFields(Music.class);
-            Music music = getFromMap(s);
-            Music music2 = getFromMap(findFirst.get());
-            for (String f : fields) {
-                Object fieldValue = mapProperty(getFieldValue(music, f));
-                Object fieldValue2 = mapProperty(getFieldValue(music2, f));
-                if (!Objects.equals(fieldValue, fieldValue2)) {
-                    LOG.info("{} {} {}!={}", s, f, fieldValue, fieldValue2);
-                }
-            }
+        }
 
-            return "amarelo";
-        } else {
+        if (isEqualSong(s, findFirst.get())) {
             return "";
         }
+        return "amarelo";
+
     }
 
     private boolean isEqualSong(File s, File m) {
@@ -192,9 +190,18 @@ public class FilesComparator extends Application {
         return s.getParentFile().getName() + "/" + s.getName();
     }
 
-    private static void updateCells(Node table1) {
-        for (Node cell : table1.getScene().getRoot().lookupAll(".cell")) {
+    @SuppressWarnings("unchecked")
+    private static void updateCells(TableView<File> table1) {
+        Parent root = table1.getScene().getRoot();
+        for (Node cell : root.lookupAll(".cell")) {
             cell.getStyleClass().removeAll("", "vermelho", "amarelo");
+        }
+        for (Node cell : root.lookupAll(".table-view")) {
+            TableView<File> tables = (TableView<File>) cell;
+            int selectedIndex = tables.getSelectionModel().getSelectedIndex();
+            tables.getItems().sort(comparing(FilesComparator::toFileString));
+            tables.scrollTo(0);
+            tables.scrollTo(selectedIndex);
         }
     }
 }

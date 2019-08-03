@@ -76,6 +76,11 @@ public class ImageCrackerApp extends Application {
         stage.show();
     }
 
+    private boolean isValid(String crackImage) {
+        
+        return crackImage.matches("\\d{4}");
+    }
+
     private void runInPlatform(String setValue) {
 
         Platform.runLater(make(() -> engine.executeScript(setValue)));
@@ -99,21 +104,21 @@ public class ImageCrackerApp extends Application {
         runInPlatform(setValue("j_password", CrawlerTask.getHTTPPassword()));
         JSObject o = (JSObject) runInPlatformAndWait("$('#dtpCaptcha img').offset()");
 
-        Integer width = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').width()")) * 6 / 5;
-        Integer height = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').innerHeight()")) * 3 / 2;
-        Integer top = toInteger(runInPlatformAndWait(() -> o.getMember("top")));
-        Integer left = toInteger(runInPlatformAndWait(() -> o.getMember("left")));
-        LOG.info("{},{},{},{}", left, top, width, height);
-        Rectangle2D viewport = new Rectangle2D(left, top, width, height);
         for (int i = 0; i < 5 && !successfull.get(); i++) {
             waitABit();
+            Integer width = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').width()")) * 6 / 5;
+            Integer height = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').innerHeight()")) * 2;
+            Integer top = toInteger(runInPlatformAndWait(() -> o.getMember("top")));
+            Integer left = toInteger(runInPlatformAndWait(() -> o.getMember("left")));
+            LOG.info("{},{},{},{}", left, top, width, height);
+            Rectangle2D viewport = new Rectangle2D(left, top, width, height);
             Image take = runInPlatformAndWait(() -> take(browser, viewport));
             WritableImage createSelectedImage = ImageCracker.createSelectedImage(take);
             imageView.setImage(createSelectedImage);
             String cracked = ImageCracker.crackImage(createSelectedImage);
             LOG.info("cracked Image = {} tries={}", cracked, i + 1);
             String crackImage = cracked.replaceAll("\\D", "");
-            if (crackImage.matches("\\d{4}")) {
+            if (isValid(crackImage)) {
                 runInPlatform(setValue("captchaId", crackImage));
                 runInPlatform("$('#btnRegistrar').click()");
                 successfull.set(true);
