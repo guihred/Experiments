@@ -59,9 +59,7 @@ public class Music {
         }
         Music other = (Music) obj;
         return Objects.equals(album.get(), other.album.get()) && Objects.equals(artista.get(), other.artista.get())
-            && Objects.equals(image != null, other.image != null)
-            && Objects.equals(titulo.get(), other.titulo.get())
-        ;
+            && Objects.equals(image != null, other.image != null) && Objects.equals(titulo.get(), other.titulo.get());
     }
 
     public StringProperty generoProperty() {
@@ -114,6 +112,10 @@ public class Music {
     @Override
     public int hashCode() {
         return Objects.hash(album, ano, arquivo, artista, genero, image, pasta, titulo, trilha);
+    }
+
+    public boolean isNotMP3() {
+        return getTitulo().matches(".+\\.(mp4|wma)");
     }
 
     public StringProperty pastaProperty() {

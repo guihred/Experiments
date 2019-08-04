@@ -52,9 +52,15 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
     }
 
     public void handleMousePressed(Music selectedItem) {
-        if (selectedItem.getTitulo().matches(".+\\.(mp4|wma)")) {
-            CommonsFX.displayDialog("Convert", "_Convert to Mp3",
-                () -> SongUtils.convertToAudio(selectedItem.getArquivo()));
+        if (!selectedItem.getArquivo().exists()) {
+            return;
+        }
+
+        if (selectedItem.isNotMP3()) {
+            CommonsFX.displayDialog(String.format("Convert%n%s", selectedItem.getArquivo().getName()),
+                "_Convert to Mp3",
+                () -> SongUtils.convertToAudio(selectedItem.getArquivo()), 
+                () -> Files.deleteIfExists(selectedItem.getArquivo().toPath()));
             return;
         }
         Stage stage = new Stage();

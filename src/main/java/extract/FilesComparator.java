@@ -12,12 +12,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -26,6 +24,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -50,13 +50,24 @@ public class FilesComparator extends Application {
 
     private Map<File, Music> fileMap = new ConcurrentHashMap<>();
 
-    public ObservableList<File> getSongs(File file, ObservableList<File> musicas) {
+    private ProgressIndicator progress;
+
+    public ObservableList<File> getSongs(File file, ObservableList<File> musicas, TableView<File> table1) {
         musicas.clear();
 
-        List<Path> find = ResourceFXUtils.getPathByExtension(file, ".mp3");
-        find.stream().map(Path::toFile).forEach(musicas::add);
-        musicas.sort(comparing(FilesComparator::toFileString));
-        musicas.forEach(this::getFromMap);
+        new Thread(() -> {
+            List<Path> find = ResourceFXUtils.getPathByExtension(file, ".mp3");
+            find.stream().map(Path::toFile).forEach(musicas::add);
+            musicas.sort(comparing(FilesComparator::toFileString));
+            double d = 1.0 / find.size();
+            Platform.runLater(() -> progress.setProgress(0));
+            musicas.forEach(t -> {
+                Platform.runLater(() -> progress.setProgress(progress.getProgress() + d));
+                getFromMap(t);
+            });
+            Platform.runLater(() -> progress.setProgress(1));
+            updateCells(table1);
+        }).start();
         return musicas;
     }
 
@@ -68,6 +79,8 @@ public class FilesComparator extends Application {
         ObservableList<File> items2 = synchronizedObservableList(observableArrayList());
 
         addTable(root, "File 1", ">", items1, items2, directory1, primaryStage);
+        progress = new ProgressIndicator();
+        root.getChildren().add(new VBox(10, progress));
         addTable(root, "File 2", "<", items2, items1, directory2, primaryStage);
         Scene value = new Scene(root);
         value.getStylesheets().add(toExternalForm("filesComparator.css"));
@@ -79,31 +92,31 @@ public class FilesComparator extends Application {
     private ObservableValue<File> addTable(HBox root, String nome, String title, ObservableList<File> items1,
         ObservableList<File> items2, ObjectProperty<File> dir, Stage primaryStage) {
 
-        TableView<File> table1 = new SimpleTableViewBuilder<File>().items(items1).addColumn(nome, (s, c) -> {
-            c.setText(toFileString(s));
-            String itemClass = getItemClass(items2, s, c.getStyleClass());
-            c.getStyleClass().add(itemClass);
-        }).onDoubleClick(e -> musicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
+        TableView<File> table1 = new SimpleTableViewBuilder<File>().items(items1).selectionMode(SelectionMode.MULTIPLE)
+            .addColumn(nome, (s, c) -> {
+                c.setText(toFileString(s));
+                String itemClass = getItemClass(items2, s, c.getStyleClass());
+                c.getStyleClass().add(itemClass);
+            }).onDoubleClick(e -> musicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
         table1.setId(nome);
 //        new 
+
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Carregar Pasta de Músicas");
         Button files1 = CommonsFX.newButton(nome, e -> {
             File selectedFile = chooser.showDialog(primaryStage);
             if (selectedFile != null) {
-                getSongs(selectedFile, items1);
+                getSongs(selectedFile, items1, table1);
                 dir.setValue(selectedFile);
                 updateCells(table1);
             }
 
         });
-        Text text = new Text("");
-        text.textProperty().bind(dir.asString());
-        root.getChildren().add(new VBox(new HBox(files1, text), table1));
-
         Button copyButton = CommonsFX.newButton(title, e -> copy(dir, table1, items2));
         Button deleteButton = CommonsFX.newButton("X", e -> delete(table1));
-        root.getChildren().add(new VBox(copyButton, deleteButton));
+        Text text = new Text("");
+        text.textProperty().bind(dir.asString());
+        root.getChildren().add(new VBox(new HBox(files1, copyButton, deleteButton, text), table1));
 
         return table1.getSelectionModel().selectedItemProperty();
     }
@@ -113,42 +126,51 @@ public class FilesComparator extends Application {
     }
 
     private void copy(ObjectProperty<File> dir, TableView<File> table1, ObservableList<File> items2) {
-        File selectedItem = table1.getSelectionModel().getSelectedItem();
-        if (selectedItem == null || !notRepeated(items2, selectedItem) && contentEqual(items2, selectedItem)) {
-            return;
-        }
-
-        File file = dir.get();
-        ObjectProperty<File> dir2 = dir == directory1 ? directory2 : directory1;
-        String newFile = selectedItem.getAbsolutePath().replace(file.getAbsolutePath(), "");
-        try {
-            File file2 = new File(dir2.get(), newFile);
-            if (!file2.getParentFile().exists()) {
-                file2.getParentFile().mkdir();
+        progress.setProgress(0);
+        List<File> selectedItems = new ArrayList<>(table1.getSelectionModel().getSelectedItems());
+        new Thread(() -> {
+            for (File selectedItem : selectedItems) {
+                if (selectedItem == null || !notRepeated(items2, selectedItem) && contentEqual(items2, selectedItem)) {
+                    continue;
+                }
+                File file = dir.get();
+                ObjectProperty<File> dir2 = dir == directory1 ? directory2 : directory1;
+                String newFile = selectedItem.getAbsolutePath().replace(file.getAbsolutePath(), "");
+                try {
+                    File file2 = new File(dir2.get(), newFile);
+                    if (!file2.getParentFile().exists()) {
+                        file2.getParentFile().mkdir();
+                    }
+                    boolean exists = file2.exists();
+                    Files.deleteIfExists(file2.toPath());
+                    Files.copy(selectedItem.toPath(), file2.toPath());
+                    if (!exists) {
+                        items2.add(file2);
+                    } else {
+                        fileMap.put(file2, MusicReader.readTags(file2));
+                        fileMap.put(selectedItem, MusicReader.readTags(selectedItem));
+                    }
+                    double d = 1.0 / selectedItems.size();
+                    progress.setProgress(progress.getProgress() + d);
+                    updateCells(table1);
+                } catch (Exception e1) {
+                    LOG.error("", e1);
+                }
             }
-            boolean exists = file2.exists();
-            Files.deleteIfExists(file2.toPath());
-            Files.copy(selectedItem.toPath(), file2.toPath());
-            if (!exists) {
-                items2.add(file2);
-            } else {
-                fileMap.put(file2, MusicReader.readTags(file2));
-                fileMap.put(selectedItem, MusicReader.readTags(selectedItem));
-            }
-        } catch (Exception e1) {
-            LOG.error("", e1);
-        }
-        updateCells(table1);
+        }, "Copy Thread").start();
     }
 
     private void delete(TableView<File> table1) {
-        File selectedItem = table1.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            try {
-                Files.delete(selectedItem.toPath());
-                table1.getItems().remove(selectedItem);
-            } catch (IOException e1) {
-                LOG.error("", e1);
+        ObservableList<File> selectedItems = table1.getSelectionModel().getSelectedItems();
+        for (File file : selectedItems) {
+            File selectedItem = file;
+            if (selectedItem != null) {
+                try {
+                    Files.delete(selectedItem.toPath());
+                    table1.getItems().remove(selectedItem);
+                } catch (IOException e1) {
+                    LOG.error("", e1);
+                }
             }
         }
         updateCells(table1);
@@ -192,16 +214,27 @@ public class FilesComparator extends Application {
 
     @SuppressWarnings("unchecked")
     private static void updateCells(TableView<File> table1) {
-        Parent root = table1.getScene().getRoot();
-        for (Node cell : root.lookupAll(".cell")) {
-            cell.getStyleClass().removeAll("", "vermelho", "amarelo");
-        }
-        for (Node cell : root.lookupAll(".table-view")) {
-            TableView<File> tables = (TableView<File>) cell;
-            int selectedIndex = tables.getSelectionModel().getSelectedIndex();
-            tables.getItems().sort(comparing(FilesComparator::toFileString));
-            tables.scrollTo(0);
-            tables.scrollTo(selectedIndex);
-        }
+        Platform.runLater(() -> {
+            Parent root = table1.getScene().getRoot();
+            for (Node cell : root.lookupAll(".cell")) {
+                cell.getStyleClass().removeAll("", "vermelho", "amarelo");
+            }
+            File selectedItem = table1.getSelectionModel().getSelectedItem();
+
+            String fileString = selectedItem == null ? "" : toFileString(selectedItem);
+
+            for (Node cell : root.lookupAll(".table-view")) {
+                TableView<File> tables = (TableView<File>) cell;
+                Optional<File> findFirst = tables.getItems().stream().filter(e -> toFileString(e).equals(fileString))
+                    .findFirst();
+                if (findFirst.isPresent()) {
+                    tables.getSelectionModel().select(findFirst.get());
+                }
+                int selectedIndex = tables.getSelectionModel().getSelectedIndex();
+                tables.getItems().sort(comparing(FilesComparator::toFileString));
+                tables.scrollTo(0);
+                tables.scrollTo(selectedIndex);
+            }
+        });
     }
 }

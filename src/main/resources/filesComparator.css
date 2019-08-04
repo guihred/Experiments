@@ -21,3 +21,7 @@
 	-fx-progress-color: green;
 
 }
+.progress-indicator:indeterminate {
+	-fx-progress-color: red;
+    -fx-scale-x:0;
+}
