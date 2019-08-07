@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
 import utils.HasLogging;
@@ -25,12 +26,12 @@ public final class SimplePixelReader implements PixelReader {
 
     }
 
-	@Override
+    @Override
     public Color getColor(int x, int y) {
         return onlyColor;
     }
 
-    @Override
+	@Override
     public WritablePixelFormat<IntBuffer> getPixelFormat() {
         return PixelFormat.getIntArgbInstance();
     }
@@ -88,5 +89,10 @@ public final class SimplePixelReader implements PixelReader {
 
     public void setColor(Color color) {
         onlyColor = color;
+    }
+
+    public static void paintColor(WritableImage image, Color backColor) {
+        PixelReader reader = new SimplePixelReader(backColor);
+        image.getPixelWriter().setPixels(0, 0, (int) image.getWidth(), (int) image.getHeight(), reader, 0, 0);
     }
 }

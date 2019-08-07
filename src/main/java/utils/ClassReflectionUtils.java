@@ -1,28 +1,16 @@
 package utils;
 
-import com.google.common.io.Files;
 import japstudy.db.BaseEntity;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.*;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -36,40 +24,7 @@ public final class ClassReflectionUtils {
 
     public static void displayCSSStyler(Scene scene, String pathname) {
         ClassReflectionUtils.displayStyleClass(scene.getRoot());
-        Stage stage2 = new Stage();
-        File file = new File("src/main/resources/" + pathname);
-        TextArea textArea = new TextArea(getText(file));
-        if (file.exists()) {
-            try {
-                scene.getStylesheets().add(file.toURI().toURL().toString());
-            } catch (MalformedURLException e2) {
-                LOG.error("", e2);
-            }
-        }
-        stage2.setScene(new Scene(new VBox(textArea, CommonsFX.newButton("_Save", e -> {
-            try (PrintStream fileOutputStream = new PrintStream(file, StandardCharsets.UTF_8.name())) {
-                fileOutputStream.print(textArea.getText());
-                fileOutputStream.flush();
-                scene.getStylesheets().clear();
-                scene.getStylesheets().add(file.toURI().toURL().toString());
-                textArea.requestFocus();
-            } catch (Exception e1) {
-                LOG.error("", e1);
-            }
-        }))));
-        textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));
-        stage2.setHeight(500);
-        stage2.show();
-
-        if (scene.getWindow() != null) {
-            Window window = scene.getWindow();
-            final EventHandler<WindowEvent> closeRequest = scene.getWindow().getOnCloseRequest();
-            window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
-        }
-        scene.windowProperty().addListener((ob, o, n) -> {
-            final EventHandler<WindowEvent> closeRequest = n.getOnCloseRequest();
-            n.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
-        });
+        StageHelper.displayCSSStyler(scene, pathname);
     }
 
     public static void displayStyleClass(Node node) {
@@ -164,9 +119,30 @@ public final class ClassReflectionUtils {
         return t.getName().replaceAll(METHOD_REGEX, "$1$2");
     }
 
+    public static String getFieldNameCase(Member t) {
+        String fieldName = getFieldName(t);
+        return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+    }
+
     public static List<String> getFields(Class<?> class1) {
         return Stream.of(class1.getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
             .map(Field::getName).collect(Collectors.toList());
+    }
+
+    public static List<String> getFieldsRecursive(Class<?> class1) {
+        Class<?> a = class1;
+
+        List<String> fields = getFields(a);
+
+        for (int i = 0; i < 4; i++) {
+            fields.addAll(getFields(a.getSuperclass()));
+            a = a.getSuperclass();
+            if (a == Object.class) {
+                break;
+            }
+        }
+
+        return fields;
     }
 
     public static Object getFieldValue(Object ob, String name) {
@@ -207,12 +183,6 @@ public final class ClassReflectionUtils {
         return e;
     }
 
-    private static void closeBoth(Stage stage2, EventHandler<WindowEvent> onCloseRequest, WindowEvent e) {
-        if (onCloseRequest != null) {
-            onCloseRequest.handle(e);
-        }
-        stage2.close();
-    }
 
     private static void displayStyleClass(String n, Node node) {
         String arg1 = n + node.getClass().getSimpleName();
@@ -275,17 +245,6 @@ public final class ClassReflectionUtils {
         return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
             .filter(m -> m.getName().matches(METHOD_REGEX)).filter(m -> m.getParameterCount() == 0)
             .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
-    }
-
-    private static String getText(File file) {
-        try {
-            if (file.exists()) {
-                return Files.toString(file, StandardCharsets.UTF_8);
-            }
-        } catch (IOException e2) {
-            LOG.error("", e2);
-        }
-        return "";
     }
 
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {

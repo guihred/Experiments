@@ -22,9 +22,9 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import utils.CommonsFX;
 import utils.MouseInScreenHandler;
 import utils.ResourceFXUtils;
+import utils.StageHelper;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
     private static final Color lightColor = Color.grayRgb(125);
@@ -73,7 +73,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
             ballsCount.set(ballsCount.get() - 1);
             if (ballsCount.get() == 0) {
                 movimentacao.stop();
-                CommonsFX.displayDialog("Você Venceu", "Ok", () -> {
+                StageHelper.displayDialog("Você Venceu", "Ok", () -> {
                     camera.setTranslateY(0);
                     camera.setTranslateZ(0);
                     camera.setTranslateX(0);

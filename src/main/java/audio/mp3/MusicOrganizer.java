@@ -1,6 +1,5 @@
 package audio.mp3;
 
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,14 +17,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.ClassReflectionUtils;
-import utils.CommonsFX;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
+import utils.*;
 
 public class MusicOrganizer extends Application implements HasLogging {
 
@@ -37,19 +32,15 @@ public class MusicOrganizer extends Application implements HasLogging {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Organizador de Músicas");
         VBox root = new VBox();
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Carregar Pasta de Músicas");
         final TableView<Music> musicasTable = tabelaMusicas();
-        File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
-        chooser.setInitialDirectory(musicsDirectory.getParentFile());
 
         musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
         TextField filterField = new TextField();
-        Button buttonMusic = loadMusic(primaryStage, chooser, musicasTable, filterField);
+        Button buttonMusic = loadMusic(musicasTable, filterField);
         Button fixMusic = fixMusic(musicasTable);
         ObservableList<Music> musics = FXCollections.observableArrayList();
         configurarFiltroRapido(filterField, musicasTable, musics);
-        Button buttonVideos = loadVideos(primaryStage, chooser, musicasTable, filterField);
+        Button buttonVideos = loadVideos(musicasTable, filterField);
         root.getChildren().add(new VBox(new Label("Lista Músicas"),
             new HBox(buttonMusic, buttonVideos, fixMusic, filterField), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);
@@ -61,8 +52,8 @@ public class MusicOrganizer extends Application implements HasLogging {
         ObservableList<Music> musicas) {
         FilteredList<Music> filteredData = new FilteredList<>(musicas, p -> true);
         musicasEstoqueTable.setItems(filteredData);
-        filterField.textProperty().addListener((o, old, newV) -> filteredData.setPredicate(
-            musica -> musica.getArquivo().exists()
+        filterField.textProperty()
+            .addListener((o, old, newV) -> filteredData.setPredicate(musica -> musica.getArquivo().exists()
                 && (StringUtils.isEmpty(newV) || StringUtils.containsIgnoreCase(musica.toString(), newV))));
     }
 
@@ -73,8 +64,7 @@ public class MusicOrganizer extends Application implements HasLogging {
     private Button fixMusic(TableView<Music> musicasTable) {
         Button newButton = CommonsFX.newButton("_Consertar Musicas", e -> fixSongs(musicasTable));
         newButton.disableProperty().bind(Bindings.createBooleanBinding(
-            () -> musicasTable.getItems().stream().anyMatch(e -> e.isNotMP3()), musicasTable.getItems()));
-
+            () -> musicasTable.getItems().stream().anyMatch(Music::isNotMP3), musicasTable.getItems()));
         return newButton;
     }
 
@@ -109,38 +99,27 @@ public class MusicOrganizer extends Application implements HasLogging {
             imageView.setPreserveRatio(true);
             vBox.getChildren().addAll(imageView);
         }
-        Stage stage = new Stage();
+        Stage dialog = StageHelper.displayDialog("Fix Fields", vBox);
         vBox.getChildren().add(CommonsFX.newButton("_Fix", f -> {
             MusicReader.saveMetadata(music);
-            stage.close();
+            dialog.close();
         }));
-
-        stage.setScene(new Scene(vBox));
-        stage.show();
 
     }
 
-    private Button loadMusic(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
-        TextField filterField) {
-        return CommonsFX.newButton("Carregar _Musicas", e -> {
-            File selectedFile = chooser.showDialog(primaryStage);
-            if (selectedFile != null) {
-                ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
-                musicasTable.setItems(musicas);
-                configurarFiltroRapido(filterField, musicasTable, musicas);
-            }
+    private Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
+        return StageHelper.selectDirectory("Carregar _Musicas", "Carregar Pasta de Músicas", selectedFile -> {
+            ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
+            musicasTable.setItems(musicas);
+            configurarFiltroRapido(filterField, musicasTable, musicas);
         });
     }
 
-    private Button loadVideos(Stage primaryStage, DirectoryChooser chooser, final TableView<Music> musicasTable,
-        TextField filterField) {
-        return CommonsFX.newButton("Carregar _Vídeos", e -> {
-            File selectedFile = chooser.showDialog(primaryStage);
-            if (selectedFile != null) {
-                List<Music> videos = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma").parallelStream()
-                    .map(v -> new Music(v.toFile())).collect(Collectors.toList());
-                configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(videos));
-            }
+    private Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {
+        return StageHelper.selectDirectory("Carregar _Vídeos", "Carregar Pasta de Músicas", selectedFile -> {
+            List<Music> videos = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma").parallelStream()
+                .map(v -> new Music(v.toFile())).collect(Collectors.toList());
+            configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(videos));
         });
     }
 

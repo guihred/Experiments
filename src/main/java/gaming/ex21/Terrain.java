@@ -1,6 +1,7 @@
 package gaming.ex21;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -56,10 +58,9 @@ public class Terrain extends Group {
 		}
 	}
 
-	public Terrain fadeIn() {
+    public Terrain fadeIn() {
 		return toggleFade(1);
 	}
-
 	public Terrain fadeOut() {
 		return toggleFade(-1);
 	}
@@ -157,6 +158,41 @@ public class Terrain extends Group {
 		polygon.setFill(CatanResource.newPattern(type.getTerrain()));
 		return polygon;
 	}
+
+    public static List<EdgeCatan> addTerrains(Pane root, List<SettlePoint> settlePoints, Collection<Terrain> terrains,
+        List<Port> ports) {
+        List<Integer> numbers = Terrain.getNumbers();
+        List<ResourceType> cells = ResourceType.createResources();
+        final double radius = Terrain.RADIUS * Math.sqrt(3);
+        for (int i = 3, j = 0, l = 0; j < cells.size(); j += i, i += j > 11 ? -1 : 1, l++) {
+            List<ResourceType> resources = cells.subList(j, j + i);
+            for (int k = 0; k < resources.size(); k++) {
+                Terrain terrain = new Terrain(resources.get(k));
+                double f = -radius / 2 * (i - 3);
+                double x = radius * k + f + radius * 3 / 2;
+                double y = radius * l * Math.sqrt(3) / 2 + radius / 3;
+                terrain.relocate(x, y);
+                if (resources.get(k) != ResourceType.DESERT) {
+                    terrain.setNumber(numbers.remove(0));
+                }
+                terrain.createSettlePoints(x, y, settlePoints);
+                terrains.add(terrain);
+                root.getChildren().add(terrain);
+            }
+        }
+
+        List<EdgeCatan> catanEdges = settlePoints.stream()
+            .flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
+            .collect(Collectors.toList());
+        catanEdges.forEach(e -> e.getPoints().forEach(p -> p.getEdges().add(e)));
+        Collections.shuffle(ports);
+        Port.relocatePorts(settlePoints, ports);
+        root.getChildren().addAll(catanEdges);
+        root.getChildren().addAll(ports);
+        root.getChildren().addAll(settlePoints);
+        return catanEdges;
+
+    }
 
 	public static List<Integer> getNumbers() {
         List<Integer> numbers = IntStream.rangeClosed(2, 12)

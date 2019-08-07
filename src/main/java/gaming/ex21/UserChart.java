@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import simplebuilder.SimpleTextBuilder;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 public class UserChart extends VBox {
     private static final String USER_PNG = "user.png";
@@ -129,11 +129,11 @@ public class UserChart extends VBox {
                 userPoints.setText(points + " Points");
             }
             if (points >= 10) {
-                CommonsFX.displayDialog("Player " + playerColor + " Won", "Reset", () -> {
+                StageHelper.displayDialog("Player " + playerColor + " Won", "Reset", () -> {
                     BorderPane root = (BorderPane) availablePorts.getScene().getRoot();
                     Pane center = (Pane) root.getCenter();
                     center.getChildren().clear();
-					Pane right = (Pane) root.getLeft();
+                	Pane right = (Pane) root.getLeft();
                     right.getChildren().clear();
                     CatanModel.create(center, right);
                 });

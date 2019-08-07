@@ -8,7 +8,6 @@ package fxpro.ch08;
 import static utils.SongUtils.seekAndUpdatePosition;
 import static utils.SongUtils.updatePositionSlider;
 
-import java.io.File;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -30,10 +29,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
-import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import simplebuilder.SimpleSliderBuilder;
 import utils.SongUtils;
+import utils.StageHelper;
 
 public class PlayerControlView extends BaseSongView {
 
@@ -143,17 +142,12 @@ public class PlayerControlView extends BaseSongView {
     }
 
     private Button createOpenButton() {
-        final Button openButton = new Button();
-        openButton.setId("openButton");
-        openButton.setOnAction((ActionEvent event) -> {
-            FileChooser fc = new FileChooser();
-            fc.setTitle("Pick a Sound File");
-            File song = fc.showOpenDialog(viewNode.getScene().getWindow());
-            if (song != null) {
-                songModel.setURL(song.toURI().toString());
-                songModel.getMediaPlayer().play();
-            }
+
+        Button openButton = StageHelper.chooseFile(null, "Pick a Sound File", song -> {
+            songModel.setURL(song.toURI().toString());
+            songModel.getMediaPlayer().play();
         });
+        openButton.setId("openButton");
         final int prefSize = 32;
         openButton.setPrefWidth(prefSize);
         openButton.setPrefHeight(prefSize);
@@ -163,9 +157,8 @@ public class PlayerControlView extends BaseSongView {
     private Button createPlayPauseButton() {
         pauseImg = new Image(
             "https://cdn1.iconfinder.com/data/icons/material-audio-video/20/pause-circle-outline-128.png");
-        playImg = new Image(
-            "https://cdn3.iconfinder.com/data/icons/google-material-design-icons/"
-                + "48/ic_play_circle_outline_48px-128.png");
+        playImg = new Image("https://cdn3.iconfinder.com/data/icons/google-material-design-icons/"
+            + "48/ic_play_circle_outline_48px-128.png");
         playPauseIcon = new ImageView(playImg);
         playPauseIcon.setScaleX(0.5);
         playPauseIcon.setScaleY(0.5);

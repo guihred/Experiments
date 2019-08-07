@@ -17,7 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 /**
  *
@@ -235,7 +235,7 @@ public class SolitaireModel {
 
     private void verifyEnd() {
         if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
-            CommonsFX.displayDialog("You Win", "Reset", this::reset);
+            StageHelper.displayDialog("You Win", "Reset", this::reset);
         }
     }
 

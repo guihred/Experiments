@@ -11,14 +11,14 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 	@Test
 	public void splitAudio() {
         show(MusicOrganizer.class);
-        clickOn("Carregar Vídeos");
+        clickOn("Carregar _Vídeos");
         typeIfLinux();
         sleep(1000);
         lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
         lookup("_Convert to Mp3").queryAll().forEach(this::clickOn);
         ConsoleUtils.waitAllProcesses();
 
-		clickOn("Carregar Musicas");
+        clickOn("Carregar _Musicas");
 		typeIfLinux();
 		lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
         lookup("_Play/Pause").queryAll().forEach(this::clickOn);

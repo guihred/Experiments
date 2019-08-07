@@ -11,7 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 public class SnakeLauncher extends Application {
     public static final int UPDATE_MILLIS = 200;
@@ -55,7 +55,7 @@ public class SnakeLauncher extends Application {
         }
         if (newGameModel.updateMap()) {
             timeline.stop();
-            CommonsFX.displayDialog("You Got " + newGameModel.getSnake().size() + " points", "Reset", () -> {
+            StageHelper.displayDialog("You Got " + newGameModel.getSnake().size() + " points", "Reset", () -> {
                 newGameModel.reset();
                 timeline.play();
             });

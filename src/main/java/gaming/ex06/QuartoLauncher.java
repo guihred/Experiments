@@ -21,8 +21,8 @@ import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import simplebuilder.SimpleCircleBuilder;
-import utils.CommonsFX;
 import utils.HasLogging;
+import utils.StageHelper;
 import utils.Xform;
 
 public class QuartoLauncher extends Application implements HasLogging{
@@ -161,7 +161,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 				setQuartoPiece(target, p);
 		        if (model.checkEnd()) {
                     getLogger().info("{}", "ACABOU");
-                    CommonsFX.displayDialog("You Got " + 0 + " points", "Reset", model::reset);
+                    StageHelper.displayDialog("You Got " + 0 + " points", "Reset", model::reset);
 
 		        }
 			}

@@ -13,7 +13,7 @@ import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 /**
  *
@@ -83,7 +83,7 @@ public class SudokuModel {
         }
         numberBoard.setVisible(false);
         if (isFullyFilled()) {
-            CommonsFX.displayDialog("You Won", "Reset", this::reset);
+            StageHelper.displayDialog("You Won", "Reset", this::reset);
         }
     }
 

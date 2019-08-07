@@ -10,7 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 public class TronLauncher extends Application {
     private static final int UPDATE_MILLIS = 40;
@@ -33,9 +33,10 @@ public class TronLauncher extends Application {
             if (newGameModel.updateMap()) {
                 timeline.stop();
                 String text2 = "You Got " + newGameModel.getSnake().size() + " points";
-				CommonsFX.displayDialog(text2, "Reset", () -> {
-					newGameModel.reset();
-					timeline.play();
+                final String text = text2;
+				StageHelper.displayDialog(text, "Reset", () -> {
+                	newGameModel.reset();
+                	timeline.play();
                 });
             }
         }).cycleCount(Animation.INDEFINITE).build();

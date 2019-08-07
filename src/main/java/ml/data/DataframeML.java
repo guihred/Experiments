@@ -110,10 +110,7 @@ public class DataframeML implements HasLogging {
 
 	public void describe() {
 		if (stats == null) {
-			stats = dataframe.entrySet().stream().collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
-					e -> e.getValue().stream().collect(() -> new DataframeStatisticAccumulator(this, e.getKey()),
-							DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
-					(m1, m2) -> m1, LinkedHashMap::new));
+            stats = DataframeUtils.makeStats(this);
 		}
         displayStats(stats);
 	}
@@ -179,15 +176,7 @@ public class DataframeML implements HasLogging {
 	}
 
 	public Map<Double, Long> histogram(String header, int bins) {
-		List<Object> list = dataframe.get(header);
-		List<Double> columnList = list.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).boxed()
-				.collect(Collectors.toList());
-		DoubleSummaryStatistics summaryStatistics = columnList.stream().mapToDouble(e -> e).summaryStatistics();
-		double min = summaryStatistics.getMin();
-		double max = summaryStatistics.getMax();
-		double binSize = (max - min) / bins;
-		return columnList.parallelStream()
-				.collect(Collectors.groupingBy(e -> Math.ceil(e / binSize) * binSize, Collectors.counting()));
+        return DataframeUtils.histogram(this, header, bins);
 	}
 
 	public List<Object> list(String header) {

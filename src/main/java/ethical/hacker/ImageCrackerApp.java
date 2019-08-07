@@ -76,11 +76,6 @@ public class ImageCrackerApp extends Application {
         stage.show();
     }
 
-    private boolean isValid(String crackImage) {
-        
-        return crackImage.matches("\\d{4}");
-    }
-
     private void runInPlatform(String setValue) {
 
         Platform.runLater(make(() -> engine.executeScript(setValue)));
@@ -151,6 +146,11 @@ public class ImageCrackerApp extends Application {
         } catch (Exception e) {
             LOG.error("NOT SUPPOSED TO HAPPEN", e);
         }
+    }
+
+    private static boolean isValid(String crackImage) {
+        
+        return crackImage.matches("\\d{4}");
     }
 
     private static String setValue(String id, String httpUsername) {

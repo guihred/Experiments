@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import javafx.geometry.Bounds;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.shape.Sphere;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 public interface CommomLabyrinth {
     default boolean checkColision(Bounds boundsInParent) {
@@ -15,7 +15,7 @@ public interface CommomLabyrinth {
     }
 
     default void displayEndOfGame(Runnable run) {
-        CommonsFX.displayDialog("Você Morreu", "Ok.", () -> {
+        StageHelper.displayDialog("Você Morreu", "Ok.", () -> {
             getCamera().setTranslateX(0);
             getCamera().setTranslateY(0);
             getCamera().setTranslateZ(0);

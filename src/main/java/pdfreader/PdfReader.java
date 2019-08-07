@@ -62,8 +62,8 @@ public class PdfReader extends Application implements HasLogging {
         final Button startButton = CommonsFX.newButton("_Start/Stop", e -> toggleTimelineStatus());
         final Button nextButton = CommonsFX.newButton("_Next Line", e -> displayNextLine());
         final Button pageButton = CommonsFX.newButton("_Next Page", e -> displayNextPage());
-        final Button newPDF = CommonsFX.newButton("New _PDF",
-            e -> PdfUtils.readFile(pdfInfo, displayDialog(primaryStage)));
+        final Button newPDF = StageHelper.chooseFile("New _PDF", "Selecione Arquivo PDF",
+            file-> PdfUtils.readFile(pdfInfo, file),"File","*.pdf");
         currentWord.setFont(Font.font(60));
         Property<Number> rate = timeline.rateProperty();
         final double min = 0.01;
@@ -90,8 +90,7 @@ public class PdfReader extends Application implements HasLogging {
 
     private TableView<HasImage> createImagesTable() {
         return new SimpleTableViewBuilder<HasImage>().scaleShape(false)
-            .addColumn("Image", "image", s -> new ImageTableCell<>())
-            .items(currentImages).equalColumns().build();
+            .addColumn("Image", "image", s -> new ImageTableCell<>()).items(currentImages).equalColumns().build();
     }
 
     private File displayDialog(Stage primaryStage) {

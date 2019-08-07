@@ -14,7 +14,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -61,10 +60,7 @@ public class PaintMain extends Application {
             .addMenu("_Colors")
             .addMenu("_Help")
             .build());
-
-        PixelReader reader = new SimplePixelReader(paintModel.getBackColor());
-        paintModel.getImage().getPixelWriter().setPixels(0, 0, (int) paintModel.getImage().getWidth(),
-            (int) paintModel.getImage().getHeight(), reader, 0, 0);
+        SimplePixelReader.paintColor(paintModel.getImage(), paintModel.getBackColor());
         paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);
         paintModel.createImageVersion();
         root.setCenter(paintModel.getScrollPane());
@@ -111,6 +107,7 @@ public class PaintMain extends Application {
 
         root.setRight(displayImageVersions(paintModel));
     }
+
 
     protected TableView<WritableImage> displayImageVersions(final PaintModel paintModel) {
         final int tablePrefWidth = 100;

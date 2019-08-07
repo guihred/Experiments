@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javafx.animation.Timeline;
 import javafx.scene.layout.GridPane;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 public class TetrisModel {
 
@@ -115,7 +115,7 @@ public class TetrisModel {
             setCurrentI(MAP_WIDTH / 2);
             if (checkCollision(getCurrentI(), getCurrentJ())) {
                 timeline.stop();
-                CommonsFX.displayDialog("You Got " + 0 + " points", "Reset", () -> {
+                StageHelper.displayDialog("You Got " + 0 + " points", "Reset", () -> {
                     reset();
                     timeline.play();
                 });

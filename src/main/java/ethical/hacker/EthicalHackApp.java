@@ -2,7 +2,6 @@ package ethical.hacker;
 
 import static utils.ResourceFXUtils.toExternalForm;
 
-import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,13 +21,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.ConsoleUtils;
 import utils.HasLogging;
+import utils.StageHelper;
 
 public class EthicalHackApp extends Application {
 
@@ -85,7 +84,6 @@ public class EthicalHackApp extends Application {
 
         ObservableList<Integer> portsSelected = FXCollections.observableArrayList();
         TextField networkAddress = new TextField(TracerouteScanner.NETWORK_ADDRESS);
-        FileChooser chooser = new FileChooser();
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
         progressIndicator.setVisible(false);
@@ -111,12 +109,10 @@ public class EthicalHackApp extends Application {
             }).start();
 
         });
-        vBox.getChildren().addAll(new Text("Network Adress"), new HBox(networkAddress, CommonsFX.newButton("Ips", e -> {
-            File showOpenDialog = chooser.showOpenDialog(primaryStage);
-            if (showOpenDialog != null) {
-                networkAddress.setText(String.format("-iL \"%s\"", showOpenDialog));
-            }
-        })), new HBox(portScanner, progressIndicator));
+        Button newButton = StageHelper.chooseFile("Ips", "Select IP File",
+            file -> networkAddress.setText(String.format("-iL \"%s\"", file)));
+        vBox.getChildren().addAll(new Text("Network Adress"), new HBox(networkAddress, newButton),
+            new HBox(portScanner, progressIndicator));
         vBox.getChildren().addAll(portTable(portsSelected));
 
         HBox hBox = new HBox(vBox, commonTable);
@@ -142,8 +138,9 @@ public class EthicalHackApp extends Application {
         });
     }
 
+
     private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> checkbox, Entry<Integer, String> e) {
-        return checkbox.computeIfAbsent(e.getKey(), (i) -> newCheck(arrayList, e));
+        return checkbox.computeIfAbsent(e.getKey(), i -> newCheck(arrayList, e));
     }
 
     private CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {

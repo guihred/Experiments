@@ -50,7 +50,7 @@ public class CatanModel {
 
     public CatanModel(Pane center, Pane right) {
         this.center = center;
-        edges = addTerrains(center);
+        edges = Terrain.addTerrains(center, settlePoints, terrains, ports);
         center.setOnMousePressed(this::handleMousePressed);
         center.setOnMouseDragged(this::handleMouseDragged);
         center.setOnMouseReleased(this::handleMouseReleased);
@@ -108,40 +108,6 @@ public class CatanModel {
             }
         }
         return value;
-    }
-
-    private List<EdgeCatan> addTerrains(Pane root) {
-        List<Integer> numbers = Terrain.getNumbers();
-        List<ResourceType> cells = ResourceType.createResources();
-        final double radius = Terrain.RADIUS * Math.sqrt(3);
-        for (int i = 3, j = 0, l = 0; j < cells.size(); j += i, i += j > 11 ? -1 : 1, l++) {
-            List<ResourceType> resources = cells.subList(j, j + i);
-            for (int k = 0; k < resources.size(); k++) {
-                Terrain terrain = new Terrain(resources.get(k));
-                double f = -radius / 2 * (i - 3);
-                double x = radius * k + f + radius * 3 / 2;
-                double y = radius * l * Math.sqrt(3) / 2 + radius / 3;
-                terrain.relocate(x, y);
-                if (resources.get(k) != ResourceType.DESERT) {
-                    terrain.setNumber(numbers.remove(0));
-                }
-                terrain.createSettlePoints(x, y, settlePoints);
-                terrains.add(terrain);
-                root.getChildren().add(terrain);
-            }
-        }
-
-        List<EdgeCatan> catanEdges = settlePoints.stream()
-            .flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
-            .collect(Collectors.toList());
-        catanEdges.forEach(e -> e.getPoints().forEach(p -> p.getEdges().add(e)));
-        Collections.shuffle(ports);
-        Port.relocatePorts(settlePoints, ports);
-        root.getChildren().addAll(catanEdges);
-        root.getChildren().addAll(ports);
-        root.getChildren().addAll(settlePoints);
-        return catanEdges;
-
     }
 
     private boolean containsPort(List<ResourceType> distinct, long totalCards) {
@@ -226,7 +192,7 @@ public class CatanModel {
         }
     }
 
-	private void handleMousePressed(MouseEvent event) {
+    private void handleMousePressed(MouseEvent event) {
         Optional<Node> resourcePressed = center.getChildren().parallelStream()
             .filter(e -> e.getBoundsInParent().contains(event.getX(), event.getY())).findFirst();
         if (resourcePressed.isPresent()) {
@@ -240,7 +206,7 @@ public class CatanModel {
         }
     }
 
-    private void handleMouseReleased(MouseEvent event) {
+	private void handleMouseReleased(MouseEvent event) {
         if (dragContext.getElement() instanceof Village) {
             onReleaseVillage(event, (Village) dragContext.getElement());
         }
@@ -580,7 +546,7 @@ public class CatanModel {
         CatanLogger.log(this, CatanAction.THROW_DICE);
     }
 
-	private void updatePoints(PlayerColor newV) {
+    private void updatePoints(PlayerColor newV) {
         getUserChart().setPoints(newV, settlePoints, usedCards, edges);
         getUserChart().updatePorts(newV, ports, settlePoints, currentPlayer);
 		invalidateDice();
@@ -589,4 +555,5 @@ public class CatanModel {
 	public static CatanModel create(Pane root, Pane value) {
         return new CatanModel(root, value);
     }
+
 }

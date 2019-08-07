@@ -13,7 +13,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Rotate;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 /**
  *
@@ -61,7 +61,7 @@ public class RoundMazeModel {
             } else {
                 maze[x][y].setCenter(false);
                 draw();
-                CommonsFX.displayDialog("You Won", "_Reset", () -> {
+                final Runnable c = () -> {
                     initializeMaze();
                     angle.setAngle(90);
                     x = MAZE_WIDTH - 1;
@@ -69,7 +69,8 @@ public class RoundMazeModel {
                     maze[MAZE_WIDTH - 1][MAZE_HEIGHT - 1].setCenter(true);
                     RoundMazeHandler.createMaze(maze);
                     draw();
-                });
+                };
+                StageHelper.displayDialog("You Won", "_Reset", c);
             }
         }
     }

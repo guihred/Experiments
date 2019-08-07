@@ -117,7 +117,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 
 	public SimpleMenuBarBuilder addMenuItem(final String text, final String combination, final Runnable action) {
         MenuItem item = new MenuItem(text);
-        item.setOnAction(e->action.run());
+        item.setOnAction(e -> action.run());
         item.setAccelerator(KeyCombination.keyCombination(combination));
         if (subMenu != null) {
             subMenu.getItems().add(item);

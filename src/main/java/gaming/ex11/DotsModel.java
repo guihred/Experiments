@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.Timeline;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
@@ -32,7 +31,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 /**
  *
@@ -186,29 +185,17 @@ public class DotsModel {
         points.put("EU", FXCollections.observableSet());
         points.put("TU", FXCollections.observableSet());
         gridPane.getChildren().add(getLine());
-        initializeMaze(gridPane);
+        DotsHelper.initializeMaze(gridPane, maze);
         gridPane.setOnMousePressed(this::handleMousePressed);
         gridPane.setOnMouseDragged(this::handleMouseDragged);
         gridPane.setOnMouseReleased(this::handleMouseReleased);
         Text text = new Text("EU:");
-        Text text2 = new Text("0");
-        text2.textProperty()
-            .bind(Bindings.createStringBinding(() -> Integer.toString(points.get("EU").size()), points.get("EU")));
+        Text text2 = DotsHelper.pointsDisplay("EU", points);
         gridPane.getChildren().addAll(text, text2);
         Text tuText = new Text("TU:");
-        Text tuPoints = new Text("0");
-        tuPoints.textProperty()
-            .bind(Bindings.createStringBinding(() -> Integer.toString(points.get("TU").size()), points.get("TU")));
+        String key = "TU";
+        Text tuPoints = DotsHelper.pointsDisplay(key, points);
         borderPane.setTop(new HBox(text, text2, tuText, tuPoints));
-    }
-
-    private void initializeMaze(Group gridPane1) {
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
-                maze[i][j] = new DotsSquare(i, j);
-                gridPane1.getChildren().add(maze[i][j]);
-            }
-        }
     }
 
     private boolean isPointNeighborToCurrent(DotsSquare over) {
@@ -227,7 +214,7 @@ public class DotsModel {
             int size2 = points.get("EU").size();
             int size3 = points.get("TU").size();
 
-            CommonsFX.displayDialog(size3 > size2 ? "You Won" : "You Lose", "Reset", () -> {
+            StageHelper.displayDialog(size3 > size2 ? "You Won" : "You Lose", "Reset", () -> {
                 gridPane.getChildren().clear();
                 initialize((BorderPane) gridPane.getParent());
             });
@@ -239,4 +226,4 @@ public class DotsModel {
         return new DotsModel(borderPane);
     }
 
-}
+    }

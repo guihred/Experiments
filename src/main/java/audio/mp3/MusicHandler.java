@@ -26,10 +26,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.CommonsFX;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.SongUtils;
+import utils.*;
 
 public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging {
     private static final int IMAGE_MAX_WIDTH = 300;
@@ -57,9 +54,8 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         }
 
         if (selectedItem.isNotMP3()) {
-            CommonsFX.displayDialog(String.format("Convert%n%s", selectedItem.getArquivo().getName()),
-                "_Convert to Mp3",
-                () -> SongUtils.convertToAudio(selectedItem.getArquivo()), 
+            StageHelper.displayDialog(String.format("Convert%n%s", selectedItem.getArquivo().getName()),
+                "_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
                 () -> Files.deleteIfExists(selectedItem.getArquivo().toPath()));
             return;
         }
@@ -157,8 +153,9 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
         }).items(children).prefWidth(prefWidth).equalColumns()
 
             .build();
-        Stage dialog = CommonsFX.displayDialog(value, tableView);
-        tableBuilder.onDoubleClick((Node n) -> {
+        final String text = value;
+        Stage dialog = StageHelper.displayDialog(text, tableView);
+        tableBuilder.onDoubleClick(n -> {
             if (n instanceof ImageView) {
                 ImageView view = (ImageView) n;
                 Image image = view.getImage();

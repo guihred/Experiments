@@ -17,7 +17,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 /**
  *
@@ -92,14 +92,15 @@ public class MinesweeperModel {
                 if (nPlayed.get() == 0) {
                     reset();
                 }
-                CommonsFX.displayDialog("You exploded!", "Reset", this::reset);
+                StageHelper.displayDialog("You exploded!", "Reset", this::reset);
             }
             if (mem.getMinesweeperImage() == MinesweeperImage.BLANK) {
                 showNeighbours(mem.getI(), mem.getJ());
             }
             if (verifyEnd()) {
                 String text2 = "You won in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds! ";
-                CommonsFX.displayDialog(text2, "Reset", this::reset);
+                final String text = text2;
+                StageHelper.displayDialog(text, "Reset", this::reset);
             }
 
         }

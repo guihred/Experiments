@@ -1,6 +1,7 @@
 package ml;
 
 import static utils.CommonsFX.newSlider;
+import static utils.ResourceFXUtils.getOutFile;
 
 import java.io.File;
 import java.util.Objects;
@@ -13,11 +14,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import ml.data.CSVUtils;
 import ml.data.Country;
 import ml.data.DataframeML;
 import ml.graph.ColorPattern;
 import ml.graph.WorldMapGraph;
 import org.apache.commons.lang3.StringUtils;
+import others.UnZip;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
@@ -43,16 +46,16 @@ public class WorldMapExample extends Application implements HasLogging {
             .select(0)
             .build();
 
-        DataframeML x = DataframeML.builder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
-        canvas.valueHeaderProperty().set("2016");
-        canvas.setDataframe(x,
-            x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
-        File file = ResourceFXUtils.toFile("out");
-        String[] list = file.list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
+        String[] list = getDataframeCSVs();
         ComboBox<String> yearCombo = new SimpleComboBoxBuilder<String>().items("2016")
             .select(0)
             .onSelect(canvas.valueHeaderProperty()::set)
             .build();
+
+        DataframeML x = DataframeML.builder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
+        canvas.valueHeaderProperty().set("2016");
+        canvas.setDataframe(x,
+            x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
 
         ComboBox<String> statisticsCombo = new SimpleComboBoxBuilder<String>()
             .items(list).onSelect(s -> {
@@ -81,5 +84,20 @@ public class WorldMapExample extends Application implements HasLogging {
 
     public static void main(final String[] args) {
         launch(args);
+    }
+
+    private static String[] getDataframeCSVs() {
+        File file = getOutFile();
+        String[] list = file.list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
+        if (list.length == 0) {
+            File outFile = getOutFile("WDIData.csv");
+            if (!outFile.exists()) {
+                UnZip.extractZippedFiles(new File(UnZip.ZIPPED_FILE_FOLDER));
+            }
+            CSVUtils.splitFile(outFile.getAbsolutePath(), 3);
+            CSVUtils.splitFile(getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3);
+            return file.list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
+        }
+        return list;
     }
 }

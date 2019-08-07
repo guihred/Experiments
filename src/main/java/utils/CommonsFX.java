@@ -3,75 +3,22 @@ package utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleSliderBuilder;
 
 public final class CommonsFX {
 
     private CommonsFX() {
-    }
-
-    public static Stage displayDialog(final String text, Node button) {
-        final Stage stage1 = new Stage();
-        final VBox group = new VBox(new Text(text), button);
-        group.setAlignment(Pos.CENTER);
-        stage1.setScene(new Scene(group));
-        stage1.show();
-        return stage1;
-    }
-
-    public static void displayDialog(final String text, final String buttonMsg, final Runnable c) {
-        final Stage stage1 = new Stage();
-        final Button button = CommonsFX.newButton(buttonMsg, a -> {
-            c.run();
-            stage1.close();
-        });
-        final VBox group = new VBox(new Text(text), button);
-        group.setAlignment(Pos.CENTER);
-        stage1.setScene(new Scene(group));
-        stage1.show();
-    }
-
-    public static void displayDialog(String text, String buttonMsg, Supplier<DoubleProperty> c, RunnableEx run) {
-        final Stage stage1 = new Stage();
-        ProgressIndicator progressIndicator = new ProgressIndicator(0);
-
-        final Button button = CommonsFX.newButton(buttonMsg, a -> {
-            DoubleProperty progress = c.get();
-            progressIndicator.progressProperty().bind(progress);
-            progress.addListener((v, o, n) -> {
-                if (n.intValue() == 1) {
-                    Platform.runLater(stage1::close);
-                    RunnableEx.make(() -> {
-                        Thread.sleep(3000);
-                        run.run();
-                    }).run();
-                }
-            });
-        });
-        Text text2 = new Text(text);
-        text2.setTextAlignment(TextAlignment.CENTER);
-        final VBox group = new VBox(text2, progressIndicator, button);
-        group.setAlignment(Pos.CENTER);
-        stage1.setScene(new Scene(group));
-        stage1.show();
     }
 
     public static List<Color> generateRandomColors(final int size) {

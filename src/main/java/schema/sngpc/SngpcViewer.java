@@ -15,15 +15,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.w3c.dom.Node;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.CommonsFX;
 import utils.ResourceFXUtils;
+import utils.StageHelper;
 
 public class SngpcViewer extends Application {
 
@@ -31,7 +28,7 @@ public class SngpcViewer extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("SNGPC Viewer");
-        primaryStage.setScene(new Scene(createSplitTreeListDemoNode(primaryStage)));
+        primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();
     }
 
@@ -46,7 +43,7 @@ public class SngpcViewer extends Application {
         });
     }
 
-    private Parent createSplitTreeListDemoNode(Window ownerWindow) {
+    private Parent createSplitTreeListDemoNode() {
         ObservableList<Map<String, String>> list = FXCollections.observableArrayList();
         TableView<Map<String, String>> sideTable = new SimpleTableViewBuilder<Map<String, String>>().items(list)
             .build();
@@ -58,14 +55,8 @@ public class SngpcViewer extends Application {
         File file = ResourceFXUtils.toFile("FL94_REL758_20181031061530.xml");
         readXMLFile(tree, allItems, file);
 
-        Button importXMLButton = CommonsFX.newButton("Import XML", e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(new ExtensionFilter("Xml", "*.xml"));
-            File newFile = fileChooser.showOpenDialog(ownerWindow);
-            if (newFile != null) {
-                readXMLFile(tree, allItems, newFile);
-            }
-        });
+        Button importXMLButton = StageHelper.chooseFile("Import XML", "Import XML",
+            newFile -> readXMLFile(tree, allItems, newFile), "Xml", "*.xml");
         return new VBox(importXMLButton, new SplitPane(tree, sideTable));
     }
 

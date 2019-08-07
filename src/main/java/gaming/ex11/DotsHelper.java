@@ -6,7 +6,12 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
+import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
 
 public final class DotsHelper {
     private DotsHelper() {
@@ -103,9 +108,25 @@ public final class DotsHelper {
         return sum;
     }
 
+    public static void initializeMaze(Group gridPane1, DotsSquare[][] maze) {
+        for (int i = 0; i < MAZE_SIZE; i++) {
+            for (int j = 0; j < MAZE_SIZE; j++) {
+                maze[i][j] = new DotsSquare(i, j);
+                gridPane1.getChildren().add(maze[i][j]);
+            }
+        }
+    }
+
     public static List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilities,
         List<Entry<DotsSquare, DotsSquare>> bestPossibilities2) {
         return possibilities.isEmpty() ? bestPossibilities2 : possibilities;
+    }
+
+    public static Text pointsDisplay(String key,ObservableMap<String, ObservableSet<Set<DotsSquare>>> points) {
+        Text tuPoints = new Text("0");
+        tuPoints.textProperty().bind(
+            Bindings.createStringBinding(() -> Integer.toString(points.get(key).size()), points.get("TU"), points));
+        return tuPoints;
     }
 
     static int getCountMap(DotsSquare a, DotsSquare b, DotsSquare[][] maze) {

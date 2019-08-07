@@ -10,7 +10,7 @@ import java.util.Objects;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import utils.CommonsFX;
+import utils.StageHelper;
 
 /**
  *
@@ -76,10 +76,12 @@ public class SlidingPuzzleModel {
                     swapEmptyNeighbor(i, j);
                     moves++;
                     if (verifyEnd()) {
-                        CommonsFX.displayDialog("You ended in " + moves + " moves", "Reset", () -> {
+                        final String text = "You ended in " + moves + " moves";
+                        final Runnable c = () -> {
                             reset();
                             moves = 0;
-                        });
+                        };
+                        StageHelper.displayDialog(text, "Reset", c);
                     }
                     return;
                 }

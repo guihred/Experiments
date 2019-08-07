@@ -1,5 +1,6 @@
 package fxsamples;
 
+import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -10,6 +11,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import schema.sngpc.FXMLCreator;
 import simplebuilder.SimpleMenuBarBuilder;
 import utils.ResourceFXUtils;
 
@@ -46,7 +48,11 @@ public class LookNFeelChooser extends Application {
         root.setTop(menuBar);
 		primaryStage.setTitle("Look N Feel Chooser");
 		primaryStage.setScene(scene);
-		primaryStage.show();
+        primaryStage.show();
+
+        File outFile = ResourceFXUtils.getOutFile("first.fxml");
+        FXMLCreator.createXMLFile(root, outFile);
+        FXMLCreator.duplicateStage(outFile);
 	}
 
 	public static void main(String[] args) {

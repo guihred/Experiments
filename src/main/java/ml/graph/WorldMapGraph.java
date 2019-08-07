@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
@@ -51,15 +50,14 @@ public class WorldMapGraph extends Canvas implements HasLogging {
     public WorldMapGraph() {
         super(WIDTH, HEIGHT);
         gc = getGraphicsContext2D();
-        InvalidationListener listener = observable -> drawGraph();
         valueHeader.addListener(s -> {
             summary = null;
             categoryMap.clear();
             drawGraph();
         });
-        bins.addListener(listener);
-        fontSize.addListener(listener);
-        pattern.addListener(listener);
+        bins.addListener(ob -> drawGraph());
+        fontSize.addListener(ob -> drawGraph());
+        pattern.addListener(ob -> drawGraph());
         drawGraph();
         scale = RotateUtils.setZoomable(this);
         scale.setX(0.5);
@@ -79,7 +77,6 @@ public class WorldMapGraph extends Canvas implements HasLogging {
     public void drawGraph() {
 
         gc.clearRect(0, 0, getWidth(), getHeight());
-        Country[] values = Country.values();
         gc.setStroke(Color.BLACK);
         gc.setFill(Color.BLACK);
         if (dataframeML != null) {
@@ -96,6 +93,7 @@ public class WorldMapGraph extends Canvas implements HasLogging {
             drawTitle();
         }
         gc.setTextAlign(TextAlignment.LEFT);
+        Country[] values = Country.values();
         for (int i = 0; i < values.length; i++) {
             drawCountry(values[i]);
         }
