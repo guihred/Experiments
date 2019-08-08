@@ -5,7 +5,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.property.Property;
+import javafx.beans.value.WritableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 public final class ClassReflectionUtils {
     private static final Logger LOG = HasLogging.log();
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
+    private static final String METHOD_REGEX_SETTER = "set(\\w+)";
 
     private ClassReflectionUtils() {
         LOG.error("");
@@ -116,7 +117,7 @@ public final class ClassReflectionUtils {
     }
 
     public static String getFieldName(Member t) {
-        return t.getName().replaceAll(METHOD_REGEX, "$1$2");
+        return t.getName().replaceAll(METHOD_REGEX_SETTER + "|" + METHOD_REGEX, "$1$2$3");
     }
 
     public static String getFieldNameCase(Member t) {
@@ -155,6 +156,31 @@ public final class ClassReflectionUtils {
         return getGetterMethods(targetClass, new HashMap<>());
     }
 
+    public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
+        Class<?> a = targetClass;
+        List<Method> getters = new ArrayList<>();
+        for (int i = 0; a != Object.class && i < 4; i++, a = a.getSuperclass()) {
+            getters.addAll(getters(a));
+        }
+        return getters;
+    }
+
+    public static boolean hasSetterMethods(Class<?> targetClass, String field) {
+        Class<?> a = targetClass;
+
+        for (int i = 0; a != Object.class && i < 4; i++) {
+            List<Method> gett = setters(a);
+            if (gett.stream().anyMatch(m -> {
+                String fieldName = getFieldNameCase(m);
+                return fieldName.equals(field);
+            })) {
+                return true;
+            }
+            a = a.getSuperclass();
+        }
+        return false;
+    }
+
     public static Object invoke(Object ob, Method method) {
         try {
             return method.invoke(ob);
@@ -177,8 +203,8 @@ public final class ClassReflectionUtils {
     }
 
     public static Object mapProperty(Object e) {
-        if (e instanceof Property<?>) {
-            return ((Property<?>) e).getValue();
+        if (e instanceof WritableValue<?>) {
+            return ((WritableValue<?>) e).getValue();
         }
         return e;
     }
@@ -250,5 +276,11 @@ public final class ClassReflectionUtils {
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
         return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
             && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(class1.getName());
+    }
+
+    private static List<Method> setters(Class<?> c) {
+        return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
+            .filter(m -> m.getName().matches(METHOD_REGEX_SETTER)).filter(m -> m.getParameterCount() == 1)
+            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
     }
 }

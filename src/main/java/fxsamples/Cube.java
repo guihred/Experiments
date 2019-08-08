@@ -12,6 +12,9 @@ public class Cube extends Group {
 	protected final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
 	protected final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
+    public Cube() {
+        this(50, Color.BLACK, 1);
+    }
     public Cube(double size, Color color, double shade) {
         getTransforms().addAll(rz, ry, rx);
         // back face

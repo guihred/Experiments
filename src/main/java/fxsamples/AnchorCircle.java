@@ -9,6 +9,9 @@ import utils.Delta;
 
 // a draggable anchor displayed around a point.
 public class AnchorCircle extends Circle {
+    public AnchorCircle() {
+        enableDrag();
+    }
 
     public AnchorCircle(Color color, DoubleProperty x, DoubleProperty y) {
         super(x.get(), y.get(), 10);
