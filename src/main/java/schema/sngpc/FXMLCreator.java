@@ -279,7 +279,7 @@ public final class FXMLCreator {
                     LOG.info("{} is not an attribute of {}", s, node2.getClass());
                 }
             } else {
-                LOG.info("attribute {} not in ", fieldValue.getClass());
+                LOG.info("attribute {}-{} not in ", s, fieldValue.getClass());
             }
 
         }
