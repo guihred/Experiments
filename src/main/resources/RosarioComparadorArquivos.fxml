@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="rosario.RosarioExperiment">
+<center>
+	<FlowPane hgap="10.0" vgap="10.0">
+		<children>
+			<VBox>
+				<children>
+					<Label text="Pesquisar medicamento" textFill="0x333333ff"/>
+					<TextField fx:id="searchText" >
+						<padding>
+							<Insets bottom="4.0" left="7.0" right="7.0" top="4.0"/>
+						</padding>
+					</TextField>
+					<Button alignment="CENTER" text="Exportar Excel" textFill="0x333333ff" onAction="#exportar"/>
+				</children>
+			</VBox>
+			<VBox>
+				<children>
+					<Label text="Estoque Loja" textFill="0x333333ff"/>
+					<Button alignment="CENTER" text="Carregar Arquivo Loja" textFill="0x333333ff" onAction="#carregarEstoqueLoja" />
+					<TableView prefWidth="250.0" scaleShape="false" fx:id="medicamentosEstoqueTable">
+						<columns>
+							<TableColumn prefWidth="83.33333333333333" text="Nome">
+								<cellValueFactory>
+									<PropertyValueFactory property="nome"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="83.33333333333333" text="Quantidade">
+								<cellValueFactory>
+									<PropertyValueFactory property="quantidade"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="83.33333333333333" text="Codigo">
+								<cellValueFactory>
+									<PropertyValueFactory property="codigo"/>
+								</cellValueFactory>
+							</TableColumn>
+						</columns>
+						<visibleLeafColumns/>
+						<padding>
+							<Insets bottom="1.0" left="1.0" right="1.0" top="1.0"/>
+						</padding>
+					</TableView>
+				</children>
+			</VBox>
+			<VBox>
+				<children>
+					<Label text="Estoque SNGPC" textFill="0x333333ff"/>
+					<Button alignment="CENTER" text="Carregar Arquivo SNGPC" textFill="0x333333ff" onAction="#carregarSNGPC"/>
+					<TableView prefWidth="250.0" scaleShape="false" fx:id="medicamentosEstoqueSNGPCTable">
+						<columns>
+							<TableColumn prefWidth="50.0" text="Registro">
+								<cellValueFactory>
+									<PropertyValueFactory property="registro"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="50.0" text="Nome">
+								<cellValueFactory>
+									<PropertyValueFactory property="nome"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="50.0" text="Lote">
+								<cellValueFactory>
+									<PropertyValueFactory property="lote"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="50.0" text="Quantidade">
+								<cellValueFactory>
+									<PropertyValueFactory property="quantidade"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="50.0" text="Codigo">
+								<cellValueFactory>
+									<PropertyValueFactory property="codigo"/>
+								</cellValueFactory>
+							</TableColumn>
+						</columns>
+						<visibleLeafColumns/>
+					</TableView>
+				</children>
+			</VBox>
+			<VBox>
+				<children>
+					<Label text="Estoque Anvisa" textFill="0x333333ff"/>
+					<Button alignment="CENTER" text="Carregar Arquivo Anvisa" textFill="0x333333ff"  onAction="#carregarEstoqueAnvisa"/>
+					<TableView prefWidth="250.0" scaleShape="false" fx:id="medicamentosAnvisaTable">
+						<columns>
+							<TableColumn prefWidth="50.0" text="Registro">
+								<cellValueFactory>
+									<PropertyValueFactory property="registro"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="50.0" text="Nome">
+								<cellValueFactory>
+									<PropertyValueFactory property="nome"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="50.0" text="Lote">
+								<cellValueFactory>
+									<PropertyValueFactory property="lote"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="50.0" text="Quantidade">
+								<cellValueFactory>
+									<PropertyValueFactory property="quantidade"/>
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn prefWidth="50.0" text="Codigo">
+								<cellValueFactory>
+									<PropertyValueFactory property="codigo"/>
+								</cellValueFactory>
+							</TableColumn>
+						</columns>
+						<visibleLeafColumns/>
+					</TableView>
+				</children>
+			</VBox>
+		</children>
+		<padding>
+			<Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+		</padding>
+	</FlowPane>
+</center>
+<children/>
+</BorderPane>
