@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.MultiLineGraph;
-import simplebuilder.SimpleButtonBuilder;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public class MultilineExample extends Application {
@@ -54,7 +54,7 @@ public class MultilineExample extends Application {
                 list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
 
         left.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
+            .add(CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas)));
         root.setCenter(new HBox(canvas, itensList));
 		theStage.show();
 	}

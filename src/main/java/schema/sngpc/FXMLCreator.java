@@ -1,16 +1,26 @@
 package schema.sngpc;
 
+import static utils.ClassReflectionUtils.hasField;
 import static utils.ClassReflectionUtils.mapProperty;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventTarget;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.ConstraintsBase;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javax.xml.parsers.DocumentBuilder;
@@ -20,13 +30,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import ml.HeatGraphExample;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import rosario.RosarioComparadorArquivos;
 import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -35,11 +45,17 @@ import utils.RunnableEx;
 public final class FXMLCreator {
     private static final Logger LOG = HasLogging.log();
     private static final List<String> IGNORE = Arrays.asList("baselineOffset", "localToParentTransform",
-        "localToSceneTransform", "parentPopup", "boundsInParent", "boundsInLocal", "scene", "childrenUnmodifiable",
-        "styleableParent", "parent", "labelPadding");
+        "localToSceneTransform", "parentPopup", "cssMetaData", "classCssMetaData", "boundsInParent", "boundsInLocal",
+        "scene",
+        "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
     private static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
-        Integer.class, Boolean.class);
-    private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(EventTarget.class);
+        Integer.class, Boolean.class, Pos.class, Orientation.class);
+    private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class);
+    private static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class,
+        PropertyValueFactory.class);
+    private static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
+        .<String, Function<Collection<?>, String>>builder()
+        .put("styleClass", l -> l.stream().map(Object::toString).collect(Collectors.joining(" "))).build();
 
     private FXMLCreator() {
     }
@@ -83,8 +99,8 @@ public final class FXMLCreator {
             DOMSource domSource = new DOMSource(document);
             StreamResult streamResult = new StreamResult(file);
             transformer.transform(domSource, streamResult);
-            String data = FileUtils.readFileToString(file).replaceAll("><", ">\n<");
-            FileUtils.writeStringToFile(file, data);
+
+            identFile(file);
         } catch (Exception e) {
             LOG.error("", e);
         }
@@ -102,14 +118,29 @@ public final class FXMLCreator {
                 Object fieldValue2 = ClassReflectionUtils.invoke(ob2, f);
                 if (!Objects.equals(fieldValue, fieldValue2)) {
                     String fieldName = ClassReflectionUtils.getFieldNameCase(f);
-                    LOG.info("{} {}!={} ", fieldName, fieldValue, fieldValue2);
+                    LOG.trace("{} {}!={} ", fieldName, fieldValue, fieldValue2);
                     diffFields.put(fieldName, fieldValue);
                 }
             }
         } catch (Exception e) {
-            LOG.error("", e);
+            LOG.trace("", e);
+            List<Method> fields = ClassReflectionUtils.getGetterMethodsRecursive(cl);
+            Map<String, Object> collect = fields.stream().filter(m -> ClassReflectionUtils.invoke(ob1, m) != null)
+                .collect(
+                Collectors.toMap(ClassReflectionUtils::getFieldNameCase, m -> ClassReflectionUtils.invoke(ob1, m),
+                    (a, b) -> a == null ? b : a));
+            diffFields.putAll(collect);
         }
         return diffFields;
+    }
+
+    public static void duplicate(String out) {
+        if (Platform.isFxApplicationThread()) {
+            duplicateStage(ResourceFXUtils.getOutFile(out));
+        } else {
+            ResourceFXUtils.initializeFX();
+            Platform.runLater(() -> duplicateStage(ResourceFXUtils.getOutFile(out)));
+        }
     }
 
     public static void duplicateStage(File file) {
@@ -130,10 +161,12 @@ public final class FXMLCreator {
     }
 
     public static void main(String argv[]) {
-        List<Class<? extends Application>> asList = Arrays.asList(RosarioComparadorArquivos.class);
-        testApplications(asList);
+        List<Class<? extends Application>> asList = Arrays.asList(HeatGraphExample.class);
+//        testApplications(asList);
 
-//        duplicate("TableVisualizationExampleApp.fxml");
+        for (Class<? extends Application> class1 : asList) {
+            duplicate(class1.getSimpleName() + ".fxml");
+        }
 
     }
 
@@ -226,61 +259,92 @@ public final class FXMLCreator {
         }
     }
 
-    static void duplicate(String out) {
-        if (Platform.isFxApplicationThread()) {
-            duplicateStage(ResourceFXUtils.getOutFile(out));
-        } else {
-            ResourceFXUtils.initializeFX();
-            Platform.runLater(() -> duplicateStage(ResourceFXUtils.getOutFile(out)));
-        }
-    }
-
     private static Object getInstance(Class<?> cl) throws Exception {
         try {
             return cl.newInstance();
         } catch (Exception e) {
-            return cl.getConstructors()[0].newInstance(100);
+            LOG.trace("", e);
         }
+        try {
+            return cl.getConstructors()[0].newInstance(100);
+        } catch (Exception e) {
+            LOG.trace("", e);
+        }
+        try {
+            return cl.getConstructors()[0].newInstance("");
+        } catch (Exception e) {
+            LOG.trace("", e);
+        }
+        return cl.getConstructors()[0].newInstance(null);
     }
 
-    private static boolean hasClass(Class<? extends Object> class1) {
-        return NEW_TAG_CLASSES.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
+    private static boolean hasClass(List<Class<?>> newTagClasses, Class<? extends Object> class1) {
+        return newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
+    }
+
+    private static String ident(String string, int level) {
+        String s = string;
+        for (int i = 0; i < level; i++) {
+            s = "\t" + s;
+        }
+        return s;
+    }
+
+    private static void identFile(File file) throws IOException {
+        String[] data = FileUtils.readFileToString(file).split("(?<=[>])(?=[<])");
+        int level = 0;
+        for (int i = 0; i < data.length; i++) {
+            String string = data[i];
+            if (string.startsWith("</")) {
+                level--;
+            }
+            data[i] = ident(string, level);
+            if (string.matches("^<[^/?]*>$")) {
+                level++;
+            }
+        }
+        FileUtils.writeLines(file, Arrays.asList(data));
     }
 
     private static void processField(Document document, Map<Object, org.w3c.dom.Node> nodeMap, List<Object> allNode,
-        Element createElement, String s, Object fieldValue, Object node2) {
-        if (IGNORE.contains(s) || allNode.contains(fieldValue)) {
+        Element element, String fieldName, Object fieldValue, Object parent) {
+        if (IGNORE.contains(fieldName) || allNode.contains(fieldValue)) {
             return;
         }
-        if (hasClass(fieldValue.getClass())) {
-            Element createElement2 = document.createElement(s);
-            createElement.appendChild(createElement2);
+        if (hasClass(NEW_TAG_CLASSES, fieldValue.getClass())
+            || hasClass(CONDITIONAL_TAG_CLASSES, fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
+            Element createElement2 = document.createElement(fieldName);
+            element.appendChild(createElement2);
             nodeMap.put(fieldValue, createElement2);
             allNode.add(fieldValue);
         } else if (fieldValue instanceof Collection) {
             Collection<?> list = (Collection<?>) fieldValue;
-            if (list.stream().anyMatch(o -> hasClass(o.getClass()))) {
-                Element createElement2 = document.createElement(s);
-                createElement.appendChild(createElement2);
+            if (list.isEmpty()) {
+                return;
+            }
+            if (FORMAT_LIST.containsKey(fieldName)) {
+                String apply = FORMAT_LIST.get(fieldName).apply(list);
+                element.setAttribute(fieldName, apply);
+            } else if (list.stream().anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
+                Element createElement2 = document.createElement(fieldName);
+                element.appendChild(createElement2);
                 for (Object object : list) {
                     if (!allNode.contains(object)) {
                         nodeMap.put(object, createElement2);
                         allNode.add(object);
                     }
                 }
-            }
-        } else {
-
-            if (ATTRIBUTE_CLASSES.contains(fieldValue.getClass())) {
-                if (ClassReflectionUtils.hasSetterMethods(node2.getClass(), s)) {
-                    Object mapProperty2 = mapProperty(fieldValue);
-                    createElement.setAttribute(s, mapProperty2 + "");
-                } else {
-                    LOG.info("{} is not an attribute of {}", s, node2.getClass());
-                }
             } else {
-                LOG.info("attribute {}-{} not in ", s, fieldValue.getClass());
+                LOG.info("attribute {} type {} of {} not set", fieldName,
+                    list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse(""), parent.getClass());
+                LOG.info("value {}", list);
             }
+        } else if (ATTRIBUTE_CLASSES.contains(fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
+            Object mapProperty2 = mapProperty(fieldValue);
+            element.setAttribute(fieldName, mapProperty2 + "");
+        } else {
+//            LOG.info(" {} not in ATTRIBUTE_CLASSES OR {} does not have {}", fieldValue.getClass(), parent.getClass(),
+//                fieldName);
 
         }
     }

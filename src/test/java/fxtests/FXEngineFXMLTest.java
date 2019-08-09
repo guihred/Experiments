@@ -26,13 +26,14 @@ import ml.HistogramExample;
 import ml.PieGraphExample;
 import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
+import rosario.RosarioComparadorArquivos;
 import schema.sngpc.FXMLCreator;
 
 public final class FXEngineFXMLTest {
 
     @Test
     public void test() throws Throwable {
-        FXMLCreator.testApplications(BackgroundProcesses.class, PieGraphExample.class,
+        FXMLCreator.testApplications(RosarioComparadorArquivos.class, BackgroundProcesses.class, PieGraphExample.class,
             BoundsPlayground.class, CenterUsingBind.class, CenterUsingStack.class, ChangingTextFonts.class,
             Chart3dSampleApp.class, ContestQuestionEditingDisplay.class, CSSStylingExample.class, Cubes3D.class,
             DeathStar.class, DotsLauncher.class, DrawingColors.class, DrawingLines.class, DrawingShape.class,

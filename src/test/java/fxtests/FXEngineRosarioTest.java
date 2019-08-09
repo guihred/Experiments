@@ -5,6 +5,7 @@ import java.util.Objects;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.Test;
+import rosario.RosarioCommons;
 import rosario.RosarioComparadorArquivos;
 import utils.ResourceFXUtils;
 
@@ -20,10 +21,10 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 		stage.setMaximized(true);
 		RosarioComparadorArquivos rosarioComparadorArquivos = new RosarioComparadorArquivos();
 		rosarioComparadorArquivos.start(stage);
-		rosarioComparadorArquivos.setOpenAtExport(false);
-		rosarioComparadorArquivos.getFileChoose().get("Carregar Arquivo SNGPC")
+        RosarioCommons.setOpenAtExport(false);
+        RosarioCommons.getFileChoose().get("Carregar Arquivo SNGPC")
             .setInitialDirectory(value.getParentFile());
-        rosarioComparadorArquivos.getFileChoose().get("Carregar Arquivo Anvisa")
+        RosarioCommons.getFileChoose().get("Carregar Arquivo Anvisa")
             .setInitialDirectory(value.getParentFile());
 		getLogger().info("FXEngineRosarioTest STARTED");
 	}

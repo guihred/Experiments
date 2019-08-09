@@ -154,6 +154,6 @@ public class ImageCrackerApp extends Application {
     }
 
     private static String setValue(String id, String httpUsername) {
-        return String.format("document.getElementById(\"%s\").value = \"%s\";", id, httpUsername);
+        return String.format("document.getElementById(\"%s\").value = \"%s\";\"%s\"", id, httpUsername, httpUsername);
     }
 }

@@ -1,10 +1,12 @@
 package utils;
 
 import japstudy.db.BaseEntity;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.NamedArg;
 import javafx.beans.value.WritableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -160,9 +162,33 @@ public final class ClassReflectionUtils {
         Class<?> a = targetClass;
         List<Method> getters = new ArrayList<>();
         for (int i = 0; a != Object.class && i < 4; i++, a = a.getSuperclass()) {
-            getters.addAll(getters(a));
+            List<Method> getters2 = getters(a);
+            getters.addAll(getters2);
         }
         return getters;
+    }
+
+    public static boolean hasBuiltArg(Class<?> targetClass, String field) {
+        Constructor<?>[] constructors = targetClass.getConstructors();
+        for (Constructor<?> constructor : constructors) {
+            Annotation[][] annotations = constructor.getParameterAnnotations();
+            for (Annotation[] annotation : annotations) {
+                for (Annotation annotation2 : annotation) {
+                    if (annotation2 instanceof NamedArg) {
+                        NamedArg a = (NamedArg) annotation2;
+                        if (a.value().equals(field)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            
+        }
+        return false;
+    }
+
+    public static boolean hasField(Class<?> targetClass, String field) {
+        return hasSetterMethods(targetClass, field) || hasBuiltArg(targetClass, field);
     }
 
     public static boolean hasSetterMethods(Class<?> targetClass, String field) {

@@ -1,6 +1,7 @@
 package graphs.entities;
 
 import java.util.Objects;
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -19,15 +20,16 @@ public class Edge extends Group implements Comparable<Edge> {
 	private Line line;
 	private final Integer valor;
 
-	public Edge(final Cell source, final Cell target) {
+    public Edge(@NamedArg("source") Cell source, @NamedArg("target") Cell target) {
 		this(source, target, 1);
 	}
 
-	public Edge(final Cell source, final Cell target, final Integer valor) {
+    public Edge(@NamedArg("source") Cell source, @NamedArg("target") Cell target, @NamedArg("valor") Integer valor) {
 		this(source, target, valor, true);
 	}
 
-	public Edge(final Cell source, final Cell target, final Integer valor, final boolean directed) {
+    public Edge(@NamedArg("source") Cell source, @NamedArg("target") Cell target, @NamedArg("valor") Integer valor,
+        @NamedArg("directed") boolean directed) {
 
 		this.source = source;
 		this.target = target;

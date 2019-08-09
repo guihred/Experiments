@@ -1,5 +1,6 @@
 package graphs.entities;
 
+import javafx.beans.NamedArg;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -12,7 +13,7 @@ public class ZoomableScrollPane extends ScrollPane {
     private Scale scaleTransform;
     protected double scaleValue = 1.0;
 
-    public ZoomableScrollPane(Node content) {
+    public ZoomableScrollPane(@NamedArg("content") Node content) {
         Group contentGroup = new Group();
         zoomGroup = new Group();
         contentGroup.getChildren().add(zoomGroup);
