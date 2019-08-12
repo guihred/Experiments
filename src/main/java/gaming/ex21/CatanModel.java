@@ -1,5 +1,7 @@
 package gaming.ex21;
 
+import static gaming.ex21.CatanCard.inArea;
+import static gaming.ex21.CatanResource.newImage;
 import static gaming.ex21.ResourceType.containsEnough;
 
 import java.util.*;
@@ -16,7 +18,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -31,7 +32,7 @@ public class CatanModel {
     protected final Map<PlayerColor, List<CatanCard>> cards = PlayerColor.newMapList();
     protected final Map<PlayerColor, List<DevelopmentType>> usedCards = PlayerColor.newMapList();
     protected final ObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
-	protected final ObservableList<CatanResource> elements = FXCollections.observableArrayList();
+    protected final ObservableList<CatanResource> elements = FXCollections.observableArrayList();
     private final DragContext dragContext = new DragContext();
     protected final BooleanProperty diceThrown = new SimpleBooleanProperty(false);
     private final Pane center;
@@ -58,11 +59,12 @@ public class CatanModel {
         currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
         right.getChildren().add(userChart);
         Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
-        skipButton.disableProperty().bind(Bindings.createBooleanBinding(this::isSkippable, diceThrown,
+        skipButton.disableProperty().bind(Bindings.createBooleanBinding(() -> isSkippable(), diceThrown,
             resourceChoices.visibleProperty(), currentPlayer, elements));
         Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
         throwButton.disableProperty().bind(diceThrown);
-        VBox dealsBox = ListHelper.newDeal(deals, this::isDealUnfeasible, this::onMakeDeal, currentPlayer, diceThrown);
+        VBox dealsBox = ListHelper.newDeal(deals, t -> Deal.isDealUnfeasible(t, currentPlayer, cards), this::onMakeDeal,
+            currentPlayer, diceThrown);
         right.getChildren().add(new HBox(new VBox(skipButton, throwButton, exchangeButton, makeDeal), dealsBox));
 
         makeDeal.setDisable(true);
@@ -73,22 +75,19 @@ public class CatanModel {
     }
 
     public PlayerColor getCurrentPlayer() {
-		return currentPlayer.get();
-	}
+        return currentPlayer.get();
+    }
 
-	public ObservableList<CatanResource> getElements() {
-		return elements;
-	}
+    public ObservableList<CatanResource> getElements() {
+        return elements;
+    }
 
     public UserChart getUserChart() {
-		return userChart;
-	}
+        return userChart;
+    }
 
-    public Boolean isDealUnfeasible(Deal deal) {
-        PlayerColor proposer = deal.getProposer();
-        return currentPlayer.get() == proposer
-            || cards.get(currentPlayer.get()).stream().noneMatch(e -> e.getResource() == deal.getWantedType())
-            || !containsEnough(cards.get(proposer), deal.getDealTypes());
+    public boolean isDealUnfeasible(Deal deal) {
+        return Deal.isDealUnfeasible(deal, currentPlayer, cards);
     }
 
     private Node addCombinations() {
@@ -97,28 +96,16 @@ public class CatanModel {
         for (int i = 0; i < combinations.length; i++) {
             Combination combination = combinations[i];
             List<ResourceType> resources = combination.getResources();
-            ImageView el = CatanResource.newImage(combination.getElement(), 30, 30);
-            Button button = CommonsFX.newButton(el, "" + combination, e -> onCombinationClicked(combination));
+            Button button = CommonsFX.newButton(newImage(combination.getElement(), 30, 30), "" + combination,
+                e -> onCombinationClicked(combination));
             button.disableProperty()
                 .bind(Bindings.createBooleanBinding(() -> disableCombination(combination), currentPlayer, diceThrown));
             value.addRow(i, button);
             for (ResourceType resourceType : resources) {
-                ImageView e2 = CatanResource.newImage(resourceType.getPure(), 20);
-                value.addRow(i, e2);
+                value.addRow(i, newImage(resourceType.getPure(), 20));
             }
         }
         return value;
-    }
-
-    private boolean containsPort(List<ResourceType> distinct, long totalCards) {
-        long differentTypesNumber = distinct.size();
-        if (differentTypesNumber != 1) {
-            return false;
-        }
-        return ports.stream()
-            .anyMatch(p -> p.getNumber() == totalCards
-                && (p.getType() == distinct.get(0) || p.getType() == ResourceType.DESERT) && p.getPoints().stream()
-                    .anyMatch(s -> s.getElement() != null && s.getElement().getPlayer() == currentPlayer.get()));
     }
 
     private boolean disableCombination(Combination combination) {
@@ -206,7 +193,7 @@ public class CatanModel {
         }
     }
 
-	private void handleMouseReleased(MouseEvent event) {
+    private void handleMouseReleased(MouseEvent event) {
         if (dragContext.getElement() instanceof Village) {
             onReleaseVillage(event, (Village) dragContext.getElement());
         }
@@ -222,10 +209,6 @@ public class CatanModel {
         updatePoints(currentPlayer.get());
     }
 
-    private boolean inArea(MouseEvent event, Node e) {
-        return e.getBoundsInParent().contains(event.getX(), event.getY());
-    }
-
     private void invalidateDice() {
         diceThrown.set(!diceThrown.get());
         diceThrown.set(!diceThrown.get());
@@ -235,16 +218,13 @@ public class CatanModel {
         return turnCount <= 8;
     }
 
-    private Boolean isSkippable() {
-        return !diceThrown.get() || resourceChoices.isVisible()
-            || elements.stream().anyMatch(e -> e.getPlayer() == currentPlayer.get());
+    private boolean isSkippable() {
+        return PlayerColor.isSkippable(diceThrown, resourceChoices, elements, currentPlayer);
     }
 
     private void makeDealButton(ResourceType selectedType) {
         List<ResourceType> dealTypes = cards.get(currentPlayer.get()).stream().filter(e -> e.getResource() != null)
-            .filter(CatanCard::isSelected)
-            .filter(e -> e.getResource() != selectedType)
-            .map(CatanCard::getResource)
+            .filter(CatanCard::isSelected).filter(e -> e.getResource() != selectedType).map(CatanCard::getResource)
             .collect(Collectors.toList());
         if (!dealTypes.isEmpty()) {
             PlayerColor proposer = currentPlayer.get();
@@ -332,7 +312,7 @@ public class CatanModel {
 
     private void onReleaseCity(MouseEvent event, City element) {
         Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> inArea(event, e))
-				.filter(e -> e.isSuitableForCity(element)).findFirst();
+            .filter(e -> e.isSuitableForCity(element)).findFirst();
         if (findFirst.isPresent()) {
             findFirst.get().setElement(element);
             CatanLogger.log(this, CatanAction.PLACE_CITY);
@@ -374,8 +354,7 @@ public class CatanModel {
 
     private void onReleaseVillage(MouseEvent event, Village village) {
         Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> inArea(event, e))
-				.filter(t -> !t.isPointDisabled())
-				.filter(t -> isPositioningPhase() || t.pointAcceptVillage(village))
+            .filter(t -> !t.isPointDisabled()).filter(t -> isPositioningPhase() || t.pointAcceptVillage(village))
             .findFirst();
         if (findFirst.isPresent()) {
             findFirst.get().setElement(village);
@@ -396,7 +375,7 @@ public class CatanModel {
         long totalCards = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected).count();
         List<ResourceType> distinct = cards.get(currentPlayer.get()).stream().filter(CatanCard::isSelected)
             .filter(e -> e.getResource() != null).map(CatanCard::getResource).distinct().collect(Collectors.toList());
-        boolean containsPort = containsPort(distinct, totalCards);
+        boolean containsPort = Port.containsPort(distinct, totalCards, ports, currentPlayer);
         long distinctCount = distinct.size();
         exchangeButton.setDisable((totalCards != 4 || distinctCount != 1) && !containsPort);
         DevelopmentType development = catanCard.getDevelopment();
@@ -515,12 +494,12 @@ public class CatanModel {
         if (!playersToSteal.isEmpty()) {
             Collections.shuffle(playersToSteal);
             List<CatanCard> list = cards.get(playersToSteal.get(0));
-			Collections.shuffle(list);
-			Optional<CatanCard> catanCard = list.parallelStream().filter(e -> e.getResource() != null).findFirst();
-			if (catanCard.isPresent()) {
-				CatanCard o = catanCard.get();
-				list.remove(o);
-				cards.get(currentPlayer.get()).add(o);
+            Collections.shuffle(list);
+            Optional<CatanCard> catanCard = list.parallelStream().filter(e -> e.getResource() != null).findFirst();
+            if (catanCard.isPresent()) {
+                CatanCard o = catanCard.get();
+                list.remove(o);
+                cards.get(currentPlayer.get()).add(o);
             }
         }
         onChangePlayer(currentPlayer.get());
@@ -549,11 +528,13 @@ public class CatanModel {
     private void updatePoints(PlayerColor newV) {
         getUserChart().setPoints(newV, settlePoints, usedCards, edges);
         getUserChart().updatePorts(newV, ports, settlePoints, currentPlayer);
-		invalidateDice();
+        invalidateDice();
     }
 
-	public static CatanModel create(Pane root, Pane value) {
+    public static CatanModel create(Pane root, Pane value) {
         return new CatanModel(root, value);
     }
+
+
 
 }

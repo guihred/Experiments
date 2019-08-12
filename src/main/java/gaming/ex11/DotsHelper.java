@@ -117,6 +117,11 @@ public final class DotsHelper {
         }
     }
 
+    public static boolean isPointNeighborToCurrent(DotsSquare over,DotsSquare selected2) {
+        return Math.abs(over.getI() - selected2.getI()) + Math.abs(over.getJ() - selected2.getJ()) == 1
+            && !over.contains(selected2);
+    }
+
     public static List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilities,
         List<Entry<DotsSquare, DotsSquare>> bestPossibilities2) {
         return possibilities.isEmpty() ? bestPossibilities2 : possibilities;

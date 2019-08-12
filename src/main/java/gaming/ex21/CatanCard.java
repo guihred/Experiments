@@ -5,7 +5,9 @@ import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Node;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import utils.HasLogging;
@@ -71,4 +73,7 @@ public class CatanCard extends Rectangle implements HasLogging {
         effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
     }
 
+    public static boolean inArea(MouseEvent event, Node e) {
+        return e.getBoundsInParent().contains(event.getX(), event.getY());
+    }
 }

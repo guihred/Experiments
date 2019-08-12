@@ -24,11 +24,14 @@ import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 
-public class RosarioCommons {
+public final class RosarioCommons {
     static final Logger LOG = HasLogging.log();
     static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
     static boolean openAtExport = true;
     static final Map<String, FileChooser> FILE_CHOOSE = new HashMap<>();
+
+    private RosarioCommons() {
+    }
 
     @SuppressWarnings("unchecked")
     public static void atualizar(ObservableList<Medicamento> medicamentos,

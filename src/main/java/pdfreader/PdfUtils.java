@@ -24,7 +24,6 @@ public final class PdfUtils {
     private static final Logger LOG = HasLogging.log();
 
     private PdfUtils() {
-
     }
 
     public static void extractImages(File file) {

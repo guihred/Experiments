@@ -1,7 +1,11 @@
 package gaming.ex21;
 
+import static gaming.ex21.ResourceType.containsEnough;
+
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -36,10 +40,16 @@ public class Deal extends HBox {
 				Port.SIZE / 4.);
 	}
 
-	private static ImageView newResource(final ResourceType type) {
+    public static boolean isDealUnfeasible(Deal deal, ObjectProperty<PlayerColor> currentPlayer2,
+        Map<PlayerColor, List<CatanCard>> cards2) {
+        PlayerColor proposer = deal.getProposer();
+        return currentPlayer2.get() == proposer
+            || cards2.get(currentPlayer2.get()).stream().noneMatch(e -> e.getResource() == deal.getWantedType())
+            || !containsEnough(cards2.get(proposer), deal.getDealTypes());
+    }
+
+    private static ImageView newResource(final ResourceType type) {
 		String pure = type.getPure();
 		return CatanResource.newImage(pure, Port.SIZE / 4.);
 	}
-
-
 }

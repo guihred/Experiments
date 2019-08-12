@@ -19,7 +19,6 @@ import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventTarget;
 import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -85,7 +84,7 @@ public class DotsModel {
             selected = a;
             return;
         }
-        EventTarget b = e.getTarget();
+        Object b = e.getTarget();
         if (b instanceof Circle && ((Circle) b).getParent() instanceof DotsSquare) {
             Circle a = (Circle) b;
             selected = (DotsSquare) a.getParent();
@@ -103,7 +102,7 @@ public class DotsModel {
             return;
         }
 
-        if (isPointNeighborToCurrent(over)) {
+        if (isPointNeighborToCurrent(over, selected)) {
             Line line1 = new Line(selected.getCenter()[0], selected.getCenter()[1], over.getCenter()[0],
                 over.getCenter()[1]);
             gridPane.getChildren().add(line1);
@@ -198,10 +197,6 @@ public class DotsModel {
         borderPane.setTop(new HBox(text, text2, tuText, tuPoints));
     }
 
-    private boolean isPointNeighborToCurrent(DotsSquare over) {
-        return Math.abs(over.getI() - selected.getI()) + Math.abs(over.getJ() - selected.getJ()) == 1
-            && !over.contains(selected);
-    }
 
     private boolean squareOverNotSuitable(DotsSquare over) {
         return selected == null || over == null || Objects.equals(selected, over);
@@ -226,4 +221,4 @@ public class DotsModel {
         return new DotsModel(borderPane);
     }
 
-    }
+}

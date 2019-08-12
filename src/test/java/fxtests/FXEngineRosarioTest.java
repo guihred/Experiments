@@ -22,9 +22,9 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 		RosarioComparadorArquivos rosarioComparadorArquivos = new RosarioComparadorArquivos();
 		rosarioComparadorArquivos.start(stage);
         RosarioCommons.setOpenAtExport(false);
-        RosarioCommons.getFileChoose().get("Carregar Arquivo SNGPC")
+        RosarioCommons.choseFile("Carregar Arquivo SNGPC")
             .setInitialDirectory(value.getParentFile());
-        RosarioCommons.getFileChoose().get("Carregar Arquivo Anvisa")
+        RosarioCommons.choseFile("Carregar Arquivo Anvisa")
             .setInitialDirectory(value.getParentFile());
 		getLogger().info("FXEngineRosarioTest STARTED");
 	}

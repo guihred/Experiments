@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -111,13 +112,23 @@ public class Port extends Group {
         }
     }
 
+    public  static boolean containsPort(List<ResourceType> distinct, long totalCards, List<Port> ports2,
+        ObjectProperty<PlayerColor> currentPlayer2) {
+        long differentTypesNumber = distinct.size();
+        if (differentTypesNumber != 1) {
+            return false;
+        }
+        return ports2.stream()
+            .anyMatch(p -> p.getNumber() == totalCards
+                && (p.getType() == distinct.get(0) || p.getType() == ResourceType.DESERT) && p.getPoints().stream()
+                    .anyMatch(s -> s.getElement() != null && s.getElement().getPlayer() == currentPlayer2.get()));
+    }
+
     public static List<Port> getPorts() {
         return Stream.of(ResourceType.values())
             .flatMap(t -> Stream.generate(() -> t).limit(t == ResourceType.DESERT ? 4 : 1)).map(Port::new)
             .collect(Collectors.toList());
-    }
-
-    public static void relocatePorts(Collection<SettlePoint> settlePoints2, List<Port> ports2) {
+    }public static void relocatePorts(Collection<SettlePoint> settlePoints2, List<Port> ports2) {
         List<SettlePoint> s = settlePoints2.stream().collect(Collectors.toList());
         Collections.shuffle(s);
         List<List<SettlePoint>> portLocations = s.stream().filter(p -> p.getNeighbors().size() == 2)

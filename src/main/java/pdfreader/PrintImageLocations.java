@@ -31,7 +31,7 @@ import utils.ResourceFXUtils;
  * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
-    public static final String OUT_FOLDER = "pdfResult";
+    public static final String OUT_FOLDER = "pdf";
     private static final Logger LOG = HasLogging.log();
     private List<PdfImage> images = new ArrayList<>();
     private int num;

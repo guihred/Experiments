@@ -9,7 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 
-class PdfInfo {
+public class PdfInfo {
     private File file;
     private final IntegerProperty numberOfPages = new SimpleIntegerProperty(0);
     private ObservableList<List<String>> pages = FXCollections.observableArrayList();
@@ -21,6 +21,14 @@ class PdfInfo {
     private final ObservableList<String> words = FXCollections.observableArrayList();
 
     private final IntegerProperty pageIndex = new SimpleIntegerProperty(0);
+
+    public PdfInfo() {
+    }
+
+    public PdfInfo(String pdfFile) {
+        file = new File(pdfFile);
+    }
+
     public File getFile() {
         return file;
     }

@@ -5,7 +5,6 @@ import static utils.ClassReflectionUtils.mapProperty;
 
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
@@ -22,21 +21,23 @@ import javafx.scene.Scene;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ConstraintsBase;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import ml.HeatGraphExample;
-import org.apache.commons.io.FileUtils;
+import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import pdfreader.PdfReader;
 import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -46,12 +47,11 @@ public final class FXMLCreator {
     private static final Logger LOG = HasLogging.log();
     private static final List<String> IGNORE = Arrays.asList("baselineOffset", "localToParentTransform",
         "localToSceneTransform", "parentPopup", "cssMetaData", "classCssMetaData", "boundsInParent", "boundsInLocal",
-        "scene",
-        "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
+        "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
     private static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
-        Integer.class, Boolean.class, Pos.class, Orientation.class);
+        Integer.class, Boolean.class, Pos.class, Orientation.class, TextAlignment.class);
     private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class);
-    private static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class,
+    private static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class, Font.class,
         PropertyValueFactory.class);
     private static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
         .<String, Function<Collection<?>, String>>builder()
@@ -62,6 +62,7 @@ public final class FXMLCreator {
 
     public static void createXMLFile(Parent node, File file) {
         try {
+            System.setProperty(XMLConstants.FEATURE_SECURE_PROCESSING, "true");
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
@@ -95,12 +96,15 @@ public final class FXMLCreator {
             document.appendChild(firstChild);
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
             Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource domSource = new DOMSource(document);
             StreamResult streamResult = new StreamResult(file);
             transformer.transform(domSource, streamResult);
 
-            identFile(file);
         } catch (Exception e) {
             LOG.error("", e);
         }
@@ -126,9 +130,8 @@ public final class FXMLCreator {
             LOG.trace("", e);
             List<Method> fields = ClassReflectionUtils.getGetterMethodsRecursive(cl);
             Map<String, Object> collect = fields.stream().filter(m -> ClassReflectionUtils.invoke(ob1, m) != null)
-                .collect(
-                Collectors.toMap(ClassReflectionUtils::getFieldNameCase, m -> ClassReflectionUtils.invoke(ob1, m),
-                    (a, b) -> a == null ? b : a));
+                .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase,
+                    m -> ClassReflectionUtils.invoke(ob1, m), (a, b) -> a == null ? b : a));
             diffFields.putAll(collect);
         }
         return diffFields;
@@ -147,9 +150,9 @@ public final class FXMLCreator {
         duplicateStage(file, file.getName());
     }
 
-    public static void duplicateStage(File file, String title) {
+    public static Stage duplicateStage(File file, String title) {
+        Stage primaryStage = new Stage();
         try {
-            Stage primaryStage = new Stage();
             Parent content = FXMLLoader.load(file.toURI().toURL());
             Scene scene = new Scene(content);
             primaryStage.setTitle(title);
@@ -158,16 +161,15 @@ public final class FXMLCreator {
         } catch (Exception e) {
             LOG.error("", e);
         }
+        return primaryStage;
     }
 
     public static void main(String argv[]) {
-        List<Class<? extends Application>> asList = Arrays.asList(HeatGraphExample.class);
-//        testApplications(asList);
-
+        List<Class<? extends Application>> asList = Arrays.asList(PdfReader.class);
+//        testApplications(asList, false);
         for (Class<? extends Application> class1 : asList) {
             duplicate(class1.getSimpleName() + ".fxml");
         }
-
     }
 
     @SafeVarargs
@@ -176,6 +178,11 @@ public final class FXMLCreator {
     }
 
     public static void testApplications(List<Class<? extends Application>> asList) {
+        testApplications(asList, true);
+
+    }
+
+    public static void testApplications(List<Class<? extends Application>> asList, boolean close) {
         ResourceFXUtils.initializeFX();
         for (Class<? extends Application> class1 : asList) {
             Platform.runLater(RunnableEx.make(() -> {
@@ -183,83 +190,20 @@ public final class FXMLCreator {
                 Stage primaryStage = new Stage();
                 primaryStage.setTitle(class1.getSimpleName());
                 a.start(primaryStage);
-//                primaryStage.close();
                 File outFile = ResourceFXUtils.getOutFile(class1.getSimpleName() + ".fxml");
                 createXMLFile(primaryStage.getScene().getRoot(), outFile);
-                duplicateStage(outFile, primaryStage.getTitle());
+                Stage duplicateStage = duplicateStage(outFile, primaryStage.getTitle());
+                if (close) {
+                    primaryStage.close();
+                    duplicateStage.close();
+                }
                 LOG.info("{} successfull", class1.getSimpleName());
             }));
 
         }
     }
 
-    public static void xmlExample() throws TransformerFactoryConfigurationError {
-        try {
-
-            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-
-            DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-
-            Document document = documentBuilder.newDocument();
-
-            // root element
-            Element root = document.createElement("company");
-            document.appendChild(root);
-
-            // employee element
-            Element employee = document.createElement("employee");
-
-            root.appendChild(employee);
-
-            // set an attribute to staff element
-            Attr attr = document.createAttribute("id");
-            attr.setValue("10");
-            employee.setAttributeNode(attr);
-
-            // you can also use staff.setAttribute("id", "1") for this
-
-            // firstname element
-            Element firstName = document.createElement("firstname");
-            firstName.appendChild(document.createTextNode("James"));
-            employee.appendChild(firstName);
-
-            // lastname element
-            Element lastname = document.createElement("lastname");
-            lastname.appendChild(document.createTextNode("Harley"));
-            employee.appendChild(lastname);
-
-            // email element
-            Element email = document.createElement("email");
-            email.appendChild(document.createTextNode("james@example.org"));
-            employee.appendChild(email);
-
-            // department elements
-            Element department = document.createElement("department");
-            department.appendChild(document.createTextNode("Human Resources"));
-            employee.appendChild(department);
-
-            // create the xml file
-            // transform the DOM Object to an XML File
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource domSource = new DOMSource(document);
-            StreamResult streamResult = new StreamResult(System.out);
-
-            // If you use
-            // StreamResult result = new StreamResult(System.out);
-            // the output will be pushed to the standard output ...
-            // You can use that for debugging
-
-            transformer.transform(domSource, streamResult);
-
-            System.out.println("Done creating XML File");
-
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
-    }
-
-    private static Object getInstance(Class<?> cl) throws Exception {
+    private static Object getInstance(Class<?> cl) {
         try {
             return cl.newInstance();
         } catch (Exception e) {
@@ -275,35 +219,16 @@ public final class FXMLCreator {
         } catch (Exception e) {
             LOG.trace("", e);
         }
-        return cl.getConstructors()[0].newInstance(null);
+        try {
+            return cl.getConstructors()[0].newInstance(null);
+        } catch (Exception e) {
+            LOG.trace("", e);
+            throw new RuntimeIOException("ERROR IN INSTANTIATION", e);
+        }
     }
 
     private static boolean hasClass(List<Class<?>> newTagClasses, Class<? extends Object> class1) {
         return newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
-    }
-
-    private static String ident(String string, int level) {
-        String s = string;
-        for (int i = 0; i < level; i++) {
-            s = "\t" + s;
-        }
-        return s;
-    }
-
-    private static void identFile(File file) throws IOException {
-        String[] data = FileUtils.readFileToString(file).split("(?<=[>])(?=[<])");
-        int level = 0;
-        for (int i = 0; i < data.length; i++) {
-            String string = data[i];
-            if (string.startsWith("</")) {
-                level--;
-            }
-            data[i] = ident(string, level);
-            if (string.matches("^<[^/?]*>$")) {
-                level++;
-            }
-        }
-        FileUtils.writeLines(file, Arrays.asList(data));
     }
 
     private static void processField(Document document, Map<Object, org.w3c.dom.Node> nodeMap, List<Object> allNode,
@@ -335,16 +260,26 @@ public final class FXMLCreator {
                     }
                 }
             } else {
-                LOG.info("attribute {} type {} of {} not set", fieldName,
-                    list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse(""), parent.getClass());
+                String classes = list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("");
+                Class<? extends Object> parentClass = parent.getClass();
+                LOG.info("attribute {} type {} of {} not set", fieldName, classes, parentClass);
                 LOG.info("value {}", list);
             }
         } else if (ATTRIBUTE_CLASSES.contains(fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
             Object mapProperty2 = mapProperty(fieldValue);
             element.setAttribute(fieldName, mapProperty2 + "");
         } else {
-//            LOG.info(" {} not in ATTRIBUTE_CLASSES OR {} does not have {}", fieldValue.getClass(), parent.getClass(),
-//                fieldName);
+            if (!ATTRIBUTE_CLASSES.contains(fieldValue.getClass())) {
+                Class<? extends Object> class1 = fieldValue.getClass();
+                List<Class<?>> allClasses = ClassReflectionUtils.allClasses(class1);
+                LOG.info(" {} not in ATTRIBUTE_CLASSES", allClasses, parent.getClass());
+            }
+            if (hasField(parent.getClass(), fieldName)) {
+                LOG.info("{} does have {}", parent.getClass(), fieldName);
+            } else {
+                LOG.info("{} does not have {}", parent.getClass(), fieldName);
+            }
+
 
         }
     }

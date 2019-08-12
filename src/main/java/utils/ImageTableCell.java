@@ -30,8 +30,21 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
         }
     }
 
+    private String getImageLink(String image) {
+        if (image.startsWith("http")) {
+            return image;
+        } else {
+            try {
+                return ResourceFXUtils.toExternalForm("out/" + image);
+            } catch (Exception e) {
+                HasLogging.log(1).trace("", e);
+            }
+            return ResourceFXUtils.toExternalForm("out/pdf/" + image);
+        }
+    }
+
     private ImageView getImageView(String image) {
-        String imageUrl = image.startsWith("http") ? image : ResourceFXUtils.toExternalForm("out/" + image);
+        String imageUrl = getImageLink(image);
         ImageView imageView = new ImageView(imageUrl);
         imageView.fitWidthProperty().bind(super.widthProperty());
         imageView.setPreserveRatio(true);

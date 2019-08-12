@@ -25,6 +25,20 @@ public final class ClassReflectionUtils {
         LOG.error("");
     }
 
+    public static List<Class<?>> allClasses(Class<?> targetClass) {
+
+        List<Class<?>> classes = new ArrayList<>();
+
+        Class<?> a = targetClass;
+        for (int i = 0; i < 10 && a != Object.class; i++, a = a.getSuperclass()) {
+            classes.add(a);
+            Class<?>[] interfaces = a.getInterfaces();
+            classes.addAll(Arrays.asList(interfaces));
+        }
+
+        return classes.parallelStream().distinct().collect(Collectors.toList());
+    }
+
     public static void displayCSSStyler(Scene scene, String pathname) {
         ClassReflectionUtils.displayStyleClass(scene.getRoot());
         StageHelper.displayCSSStyler(scene, pathname);

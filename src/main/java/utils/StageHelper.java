@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -131,6 +132,21 @@ public final class StageHelper {
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
+    }
+
+    public static EventHandler<ActionEvent> fileAction(String title, ConsumerEx<File> onSelect, String filter,
+        String... extensions) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(title);
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
+        EventHandler<ActionEvent> onAction = e -> {
+            Node target = (Node) e.getTarget();
+            File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
+            if (showOpenDialog != null) {
+                ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
+            }
+        };
+        return onAction;
     }
 
     public static Button selectDirectory(String nome, String title, ConsumerEx<File> onSelect) {
