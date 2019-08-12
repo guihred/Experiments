@@ -18,11 +18,11 @@ public class RosarioComparadorArquivos extends Application implements HasLogging
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        primaryStage.setTitle("Comparação Estoque e ANVISA");
         URL file = ResourceFXUtils.toURL("RosarioComparadorArquivos.fxml");
         Parent content = FXMLLoader.load(file);
         Scene scene = new Scene(content, 1000, 500, Color.WHITE);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("Comparação Estoque e ANVISA");
         primaryStage.show();
     }
 
