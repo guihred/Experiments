@@ -8,13 +8,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class RosarioComparadorArquivos extends Application implements HasLogging {
-
-    static final Logger LOG = HasLogging.log();
 
     @Override
     public void start(Stage primaryStage) throws IOException {
