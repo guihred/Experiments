@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -31,6 +33,11 @@ public final class PdfUtils {
     }
 
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages) {
+        return extractImages(file, start, nPages, new SimpleDoubleProperty(0));
+    }
+
+    public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
+        DoubleProperty progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
         new Thread(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -43,6 +50,7 @@ public final class PdfUtils {
                     PDPage page = pdDoc.getPage(i);
                     List<PdfImage> pageImages = getPageImages(printImageLocations, i, page);
                     images.put(i, pageImages);
+                    progress.set((double) i / (nPag - start));
                 }
             } catch (Exception e) {
                 LOG.error("", e);
@@ -72,6 +80,7 @@ public final class PdfUtils {
         if (file1 == null) {
             return pdfInfo;
         }
+        pdfInfo.setProgress(0);
         pdfInfo.setIndex(0);
         pdfInfo.setLineIndex(0);
         pdfInfo.getLines().clear();
@@ -106,12 +115,12 @@ public final class PdfUtils {
                 LOG.trace("READING PAGE {}", i);
             }
             pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages());
-            pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages()));
+            pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages(), pdfInfo.getProgress()));
 
             pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
 
         } catch (Exception e) {
-            LOG.info("", e);
+            LOG.error("", e);
         }
 
         return pdfInfo;

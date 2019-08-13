@@ -3,7 +3,9 @@ package pdfreader;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +14,7 @@ import javafx.collections.ObservableSet;
 public class PdfInfo {
     private File file;
     private final IntegerProperty numberOfPages = new SimpleIntegerProperty(0);
+    private final DoubleProperty progress = new SimpleDoubleProperty(0);
     private ObservableList<List<String>> pages = FXCollections.observableArrayList();
     private Map<Integer, List<PdfImage>> images;
     private int index;
@@ -69,6 +72,10 @@ public class PdfInfo {
         return pages;
     }
 
+    public DoubleProperty getProgress() {
+        return progress;
+    }
+
     public ObservableSet<String> getSkipLines() {
         return skipLines;
     }
@@ -120,6 +127,10 @@ public class PdfInfo {
         this.pages = pages;
     }
 
+
+    public void setProgress(double value ) {
+        progress.set(value);
+    }
 
     public void setWords(ObservableList<String> words) {
         this.words.setAll(words);

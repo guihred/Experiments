@@ -21,6 +21,11 @@
 					onAction="#displayNextPage" />
 				<Button alignment="CENTER" text="New _PDF"
 					onAction="#openNewPDF" />
+                <ProgressIndicator fx:id="progress">
+	                <padding>
+		                <Insets topRightBottomLeft="10" />
+		            </padding>
+                </ProgressIndicator>
 				<VBox>
 					<children>
 						<Text text="Rate" />

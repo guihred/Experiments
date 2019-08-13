@@ -15,7 +15,7 @@ public class PdfReader extends Application implements HasLogging {
     public void start(Stage primaryStage) throws Exception {
         final int width = 500;
         Parent root = FXMLLoader.load(ResourceFXUtils.toURL("PdfReader.fxml"));
-        Scene scene = new Scene(root, width, width / 2, Color.WHITE);
+        Scene scene = new Scene(root, width, width, Color.WHITE);
         primaryStage.setTitle("PDF Read Helper");
         primaryStage.setScene(scene);
         primaryStage.show();

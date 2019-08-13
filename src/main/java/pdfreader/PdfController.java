@@ -10,8 +10,8 @@ import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -28,6 +28,8 @@ public class PdfController {
     private static final String PDF_FILE = ResourceFXUtils.toFullPath("sngpc2808.pdf");
     @FXML
     private TableView<HasImage> imageTable;
+    @FXML
+    private ProgressIndicator progress;
     @FXML
     private Text currentWord;
     @FXML
@@ -107,20 +109,20 @@ public class PdfController {
     }
     @SuppressWarnings("unchecked")
     public void initialize() {
-        PdfUtils.readFile(pdfInfo, pdfInfo.getFile());
         Property<Number> rate = timeline.rateProperty();
         slider.valueProperty().bindBidirectional(rate);
+        progress.progressProperty().bind(pdfInfo.getProgress());
         currentPage.textProperty()
             .bind(pdfInfo.pageIndexProperty().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));
         imageTable.setItems(currentImages);
         TableColumn<HasImage, String> tableColumn = (TableColumn<HasImage, String>) imageTable.getColumns().get(0);
         tableColumn.setCellFactory(s -> new ImageTableCell<>());
+        PdfUtils.readFile(pdfInfo, pdfInfo.getFile());
     }
 
     public void openNewPDF(ActionEvent event) {
-        EventHandler<ActionEvent> fileAction = StageHelper.fileAction("Selecione Arquivo PDF",
-            file -> PdfUtils.readFile(pdfInfo, file), "File", "*.pdf");
-        fileAction.handle(event);
+        StageHelper.fileAction("Selecione Arquivo PDF",
+            file -> PdfUtils.readFile(pdfInfo, file), "File", "*.pdf").handle(event);
     }
 
     public void toggleTimelineStatus() {
