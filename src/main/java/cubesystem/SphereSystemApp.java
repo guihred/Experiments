@@ -10,12 +10,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -53,7 +48,7 @@ public class SphereSystemApp extends Application {
         Xsphere cube19 = new Xsphere(++i, Color.KHAKI);
         sceneRoot.getChildren().add(cube1X);
         cube1X.getChildren().addAll(cube1, cube11X, cube12X, cube13X, cube14X, cube15X, cube16X, cube17X, cube18X,
-                cube19X);
+            cube19X);
         cube11X.getChildren().addAll(cube11);
         cube12X.getChildren().add(cube12);
         cube13X.getChildren().add(cube13);
@@ -83,18 +78,18 @@ public class SphereSystemApp extends Application {
         cube17X.getRz().setAngle(rndPartialAngle());
         cube18X.getRz().setAngle(rndPartialAngle());
         cube19X.getRz().setAngle(rndPartialAngle());
-		// Animate
-		animation = new Timeline();
+        // Animate
+        animation = new Timeline();
 
         List<CubeXForm> cubesX = Arrays.asList(cube1X, cube11X, cube12X, cube13X, cube14X, cube15X, cube16X, cube17X,
-                cube18X, cube19X);
+            cube18X, cube19X);
         List<Xsphere> cubes = Arrays.asList(cube11, cube12, cube13, cube14, cube15, cube16, cube17, cube18, cube19);
         KeyFrame keyFrame = new KeyFrame(Duration.ZERO, valuesAtZero(cubesX, cubes));
         KeyFrame keyFrame2 = new KeyFrame(Duration.seconds(4), valuesAt42(cubesX, cubes));
-		animation.getKeyFrames().addAll(keyFrame, keyFrame2);
-		animation.setCycleCount(Animation.INDEFINITE);
-		animation.setAutoReverse(false);
-		PerspectiveCamera camera = new PerspectiveCamera(true);
+        animation.getKeyFrames().addAll(keyFrame, keyFrame2);
+        animation.setCycleCount(Animation.INDEFINITE);
+        animation.setAutoReverse(false);
+        PerspectiveCamera camera = new PerspectiveCamera(true);
         final int farClip = 1500;
         camera.setFarClip(farClip);
         final int pos = 900;
@@ -102,14 +97,15 @@ public class SphereSystemApp extends Application {
         final int width = 640;
         final int height = 480;
         SubScene subScene = new SubScene(sceneRoot, width, height, true, SceneAntialiasing.BALANCED);
-		subScene.setCamera(camera);
-		return new Group(subScene);
-	}
+        subScene.setCamera(camera);
+        return new Group(subScene);
+    }
+
     public void play() {
         animation.play();
     }
 
-	@Override
+    @Override
     public void start(Stage primaryStage) throws Exception {
         final int width = 640;
         final int height = 480;
@@ -118,17 +114,15 @@ public class SphereSystemApp extends Application {
         play();
     }
 
-	@Override
+    @Override
     public void stop() {
         animation.pause();
     }
 
     public KeyValue[] valuesAtZero(List<CubeXForm> cube19X, List<Xsphere> cube11) {
-        return Stream
-                .concat(cube19X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), 0.0)),
-                        cube11.stream().map(e -> new KeyValue(e.getRx().angleProperty(), 0.0)))
-                .toArray(KeyValue[]::new);
-	}
+        return Stream.concat(cube19X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), 0.0)),
+            cube11.stream().map(e -> new KeyValue(e.getRx().angleProperty(), 0.0))).toArray(KeyValue[]::new);
+    }
 
     private double rndAngle() {
         return r.nextInt(8) * 360.0 * (r.nextBoolean() ? 1 : -1);
@@ -143,10 +137,11 @@ public class SphereSystemApp extends Application {
         Stream<KeyValue> array = spheres.stream().map(c -> new KeyValue(c.getRx().angleProperty(), 20 * 360));
         Stream<KeyValue> collect = cube1X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), rndAngle()));
         return Stream.concat(array, collect).toArray(KeyValue[]::new);
-	}
+    }
 
     /**
      * Java main for when running without JavaFX launcher
+     * 
      * @param args command line arguments
      */
     public static void main(String[] args) {

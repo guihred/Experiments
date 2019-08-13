@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.function.Consumer;
+
 @FunctionalInterface
 public
 interface RunnableEx extends HasLogging {
@@ -19,6 +21,17 @@ interface RunnableEx extends HasLogging {
                 run.run();
             } catch (Exception e) {
 				HasLogging.log(1).error("", e);
+            }
+        };
+    }
+
+    static Runnable make(RunnableEx run, Consumer<Exception> onError) {
+        return () -> {
+            try {
+                run.run();
+            } catch (Exception e) {
+                HasLogging.log(1).trace("", e);
+                onError.accept(e);
             }
         };
     }

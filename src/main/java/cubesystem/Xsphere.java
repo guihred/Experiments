@@ -42,6 +42,9 @@ public class Xsphere extends Sphere {
     private final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
     private final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
+    public Xsphere() {
+        this(10, Color.WHITE);
+    }
     public Xsphere(double size, Color color) {
         super(size);
         setMaterial(new PhongMaterial(color));
@@ -59,4 +62,26 @@ public class Xsphere extends Sphere {
 	public Rotate getRz() {
 		return rz;
 	}
+
+    public void setRx(Rotate value) {
+        copy(rx, value);
+    }
+
+    public void setRy(Rotate value) {
+        copy(ry, value);
+    }
+
+    public void setRz(Rotate value) {
+        copy(rz, value);
+    }
+
+    private void copy(Rotate rz2, Rotate value) {
+        rz2.setAngle(value.getAngle());
+        rz2.setAxis(value.getAxis());
+        rz2.setOnTransformChanged(value.getOnTransformChanged());
+        rz2.setPivotX(value.getPivotX());
+        rz2.setPivotY(value.getPivotY());
+        rz2.setPivotZ(value.getPivotZ());
+    }
+
 }

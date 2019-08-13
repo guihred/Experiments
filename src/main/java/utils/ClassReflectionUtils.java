@@ -308,9 +308,10 @@ public final class ClassReflectionUtils {
     }
 
     private static List<Method> getters(Class<?> c) {
-        return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
-            .filter(m -> m.getName().matches(METHOD_REGEX)).filter(m -> m.getParameterCount() == 0)
-            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
+        return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(METHOD_REGEX))
+            .filter(m -> m.getParameterCount() == 0).sorted(Comparator.comparing(ClassReflectionUtils::getFieldName))
+            .collect(Collectors.toList());
     }
 
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {

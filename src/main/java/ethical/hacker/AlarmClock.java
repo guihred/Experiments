@@ -59,6 +59,7 @@ public final class AlarmClock {
         SCHEDULED_TASKS.add(time);
         long initialDelay = calculateDelay(time);
         if (initialDelay < 0) {
+            log(time + " skipped");
             return;
         }
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(NUM_THREADS);

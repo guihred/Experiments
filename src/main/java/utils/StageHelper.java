@@ -2,7 +2,6 @@ package utils;
 
 import com.google.common.io.Files;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
@@ -43,16 +42,7 @@ public final class StageHelper {
 
     public static Button chooseFile(String nome, String title, ConsumerEx<File> onSelect, String filter,
         String... extensions) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(title);
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
-        return CommonsFX.newButton(nome, e -> {
-            Node target = (Node) e.getTarget();
-            File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
-            if (showOpenDialog != null) {
-                ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
-            }
-        });
+        return CommonsFX.newButton(nome, fileAction(title, onSelect, filter, extensions));
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {
@@ -139,14 +129,13 @@ public final class StageHelper {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(title);
         chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
-        EventHandler<ActionEvent> onAction = e -> {
+        return e -> {
             Node target = (Node) e.getTarget();
             File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
             if (showOpenDialog != null) {
                 ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
             }
         };
-        return onAction;
     }
 
     public static Button selectDirectory(String nome, String title, ConsumerEx<File> onSelect) {
@@ -176,7 +165,7 @@ public final class StageHelper {
             if (file.exists()) {
                 return Files.toString(file, StandardCharsets.UTF_8);
             }
-        } catch (IOException e2) {
+        } catch (Exception e2) {
             LOG.error("", e2);
         }
         return "";

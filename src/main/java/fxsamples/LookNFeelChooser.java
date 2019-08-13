@@ -1,5 +1,7 @@
 package fxsamples;
 
+import static utils.ResourceFXUtils.toExternalForm;
+
 import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
@@ -19,8 +21,8 @@ public class LookNFeelChooser extends Application {
 
 	@Override
 	public void init() {
-		Font.loadFont(ResourceFXUtils.toExternalForm("Roboto-Thin.ttf"), 10).getName();
-		Font.loadFont(ResourceFXUtils.toExternalForm("Roboto-Light.ttf"), 10).getName();
+        Font.loadFont(toExternalForm("Roboto-Thin.ttf"), 10).getName();
+        Font.loadFont(toExternalForm("Roboto-Light.ttf"), 10).getName();
 	}
 
 	@Override

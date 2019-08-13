@@ -21,22 +21,17 @@ public class SnakeSquare extends Region {
     private final int i;
     private final int j;
 
-	private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
+    private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
 
     public SnakeSquare(int i, int j) {
         setPrefSize(10, 10);
-        styleProperty().bind(
-				Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;")
-						.otherwise(Bindings.when(state.isEqualTo(SnakeState.SNAKE))
-                        .then("-fx-background-color:green;")
-                        .otherwise("-fx-background-color:gray;"
-                        )));
+        styleProperty().bind(Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;")
+            .otherwise(Bindings.when(state.isEqualTo(SnakeState.SNAKE)).then("-fx-background-color:green;")
+                .otherwise("-fx-background-color:gray;")));
 
         this.i = i;
         this.j = j;
     }
-
-    
 
     @Override
     public boolean equals(Object obj) {
@@ -48,28 +43,24 @@ public class SnakeSquare extends Region {
     }
 
     public int getI() {
-		return i;
-	}
+        return i;
+    }
 
+    public int getJ() {
+        return j;
+    }
 
+    public SnakeState getState() {
+        return state.get();
+    }
 
-	public int getJ() {
-		return j;
-	}
-
-
-
-	public SnakeState getState() {
-		return state.get();
-	}
-
-	@Override
+    @Override
     public int hashCode() {
         return i * MAP_SIZE + getJ();
     }
 
-	public void setState(SnakeState state) {
-		this.state.set(state);
-	}
+    public void setState(SnakeState state) {
+        this.state.set(state);
+    }
 
 }

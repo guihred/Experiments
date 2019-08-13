@@ -21,22 +21,17 @@ public class TronSquare extends Region {
     private final int i;
     private final int j;
 
-	private final ObjectProperty<TronState> state = new SimpleObjectProperty<>(TronState.NONE);
+    private final ObjectProperty<TronState> state = new SimpleObjectProperty<>(TronState.NONE);
 
     public TronSquare(int i, int j) {
-		this.i = i;
-		this.j = j;
+        this.i = i;
+        this.j = j;
         setPrefSize(10, 10);
-        styleProperty().bind(
-                Bindings.when(state.isEqualTo(TronState.FOOD)).then("-fx-background-color:black;").otherwise(
-                        Bindings.when(state.isEqualTo(TronState.SNAKE))
-                        .then("-fx-background-color:green;")
-                        .otherwise("-fx-background-color:gray;"
-                        )));
+        styleProperty().bind(Bindings.when(state.isEqualTo(TronState.FOOD)).then("-fx-background-color:black;")
+            .otherwise(Bindings.when(state.isEqualTo(TronState.SNAKE)).then("-fx-background-color:green;")
+                .otherwise("-fx-background-color:gray;")));
 
     }
-
-    
 
     @Override
     public boolean equals(Object obj) {
@@ -48,30 +43,24 @@ public class TronSquare extends Region {
     }
 
     public int getI() {
-		return i;
-	}
+        return i;
+    }
 
+    public int getJ() {
+        return j;
+    }
 
+    public TronState getState() {
+        return state.get();
+    }
 
-	public int getJ() {
-		return j;
-	}
-
-
-
-	public TronState getState() {
-		return state.get();
-	}
-
-
-
-	@Override
+    @Override
     public int hashCode() {
         return getI() * MAP_SIZE + getJ();
     }
 
-	public void setState(TronState value) {
-		state.set(value);
-	}
+    public void setState(TronState value) {
+        state.set(value);
+    }
 
 }

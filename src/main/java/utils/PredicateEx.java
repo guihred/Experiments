@@ -10,7 +10,7 @@ public interface PredicateEx<B> {
         return (B a) -> {
             try {
                 return run.test(a);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 HasLogging.log(1).trace("", e);
                 return false;
             }
