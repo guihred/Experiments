@@ -273,6 +273,15 @@ public final class FXMLCreator {
                         allNode.add(object);
                     }
                 }
+//            } else if (list.stream().anyMatch(o -> hasClass(ATTRIBUTE_CLASSES, o.getClass()))) {
+//                Element createElement2 = document.createElement(fieldName);
+//                element.appendChild(createElement2);
+//                for (Object object : list) {
+//                    Text textNode = document.createTextNode(mapProperty(object) + "");
+//                    Element createElement3 = document.createElement(object.getClass().getName());
+//                    createElement3.appendChild(textNode);
+//                    createElement2.appendChild(createElement3);
+//                }
             } else {
                 String classes = list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("");
                 Class<? extends Object> parentClass = parent.getClass();
