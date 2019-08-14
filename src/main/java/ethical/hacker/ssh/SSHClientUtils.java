@@ -46,8 +46,11 @@ public class SSHClientUtils extends BaseTestSupport {
         }
     }
 
-    private static void runClient(String msg, String host, int port, String username, String password, OutputStream out)
+	private static void runClient(String message, String host, int port, String username, String password,
+			OutputStream out)
         throws IOException {
+
+		String msg = message;
         final int windowSize = 1024 * 8;
         int maxPacketSize = 2 * windowSize;
         try (SshClient client = setupTestClient()) {

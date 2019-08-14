@@ -1,5 +1,6 @@
 package fxtests;
 
+import ethical.hacker.ssh.BaseTestSupport;
 import ethical.hacker.ssh.SSHClientUtils;
 import org.apache.sshd.server.SshServer;
 import org.junit.After;
@@ -13,7 +14,7 @@ public class SSHTest {
     @Before
     public void setUp() throws Exception {
         CrawlerTask.insertProxyConfig();
-        sshd = SSHClientUtils.setupTestServer();
+		sshd = BaseTestSupport.setupTestServer();
         sshd.start();
     }
 
@@ -24,8 +25,8 @@ public class SSHTest {
 
     @Test
     public void testMessages() throws Exception {
-        String name = SSHClientUtils.getCurrentTestName();
-        SSHClientUtils.sendMessage("ipconfig", SSHClientUtils.TEST_LOCALHOST, sshd.getPort(),
+		String name = BaseTestSupport.getCurrentTestName();
+		SSHClientUtils.sendMessage("ipconfig", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(),
             name, name, System.out);
     }
 

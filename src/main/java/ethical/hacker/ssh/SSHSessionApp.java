@@ -44,13 +44,13 @@ public class SSHSessionApp extends Application {
         TextField userField = new TextField();
         PasswordField passwordField = new PasswordField();
         serverButton = CommonsFX.newButton("Start Server", e -> {
-            server = SSHClientUtils.setupTestServer();
+			server = BaseTestSupport.setupTestServer();
             try {
                 server.start();
                 portField.setText("" + server.getPort());
-                hostField.setText(SSHClientUtils.TEST_LOCALHOST);
-                userField.setText(SSHClientUtils.getCurrentTestName());
-                passwordField.setText(SSHClientUtils.getCurrentTestName());
+				hostField.setText(BaseTestSupport.TEST_LOCALHOST);
+				userField.setText(BaseTestSupport.getCurrentTestName());
+				passwordField.setText(BaseTestSupport.getCurrentTestName());
             } catch (IOException e1) {
                 LOG.error("", e1);
             }

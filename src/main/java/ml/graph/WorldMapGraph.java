@@ -134,8 +134,8 @@ public class WorldMapGraph extends Canvas implements HasLogging {
         return valueHeader;
     }
 
-    protected void createCategoryLabels(double x, double y, double step) {
-
+	protected void createCategoryLabels(double x, double y0, double step) {
+		double y = y0;
         gc.setFill(Color.GRAY);
         gc.setStroke(Color.BLACK);
         int size = fontSize.get();
@@ -246,8 +246,8 @@ public class WorldMapGraph extends Canvas implements HasLogging {
     protected void drawLabels() {
         gc.setFill(Color.GRAY);
         double x = 50;
-        double y = getHeight() / 2;
-        double step = fontSize.get() + 2;
+		double y = getHeight() / 2;
+		double step = fontSize.get() + 2.;
         if (summary != null) {
             createNumberLabels(x, y, step);
         } else {
