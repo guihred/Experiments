@@ -17,17 +17,17 @@ class EchoShell extends CommandExecutionHelper {
     }
 
     @Override
-    protected boolean handleCommandLine(String command) throws Exception {
-        COMMANDS.add(command);
+	protected boolean handleCommandLine(String command1) throws Exception {
+		COMMANDS.add(command1);
 
-        List<String> executeInConsoleInfo = ConsoleUtils.executeInConsoleInfo(command);
-        OutputStream out = getOutputStream();
+		List<String> executeInConsoleInfo = ConsoleUtils.executeInConsoleInfo(command1);
+		OutputStream out1 = getOutputStream();
         for (String string : executeInConsoleInfo) {
             String string2 = StringSigaUtils.fixEncoding(string + "\n");
-            out.write(string2.getBytes(StandardCharsets.UTF_8));
+			out1.write(string2.getBytes(StandardCharsets.UTF_8));
         }
-        out.flush();
-        return !"exit".equals(command);
+		out1.flush();
+		return !"exit".equals(command1);
 
     }
 }

@@ -202,22 +202,22 @@ public abstract class PaintTool extends Group {
 	}
 
     protected ImageView getIconByURL(String src) {
-        ImageView icon = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
-		icon.setPreserveRatio(true);
-		icon.setFitWidth(10);
-		icon.maxWidth(10);
-		icon.maxHeight(10);
-		return icon;
+		ImageView icon1 = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
+		icon1.setPreserveRatio(true);
+		icon1.setFitWidth(10);
+		icon1.maxWidth(10);
+		icon1.maxHeight(10);
+		return icon1;
 
 	}
 
     protected ImageView getIconByURL(String src, double width) {
-        ImageView icon = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
-		icon.setPreserveRatio(true);
-		icon.setFitWidth(width);
-		icon.maxWidth(width);
-		icon.maxHeight(width);
-		return icon;
+		ImageView icon1 = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
+		icon1.setPreserveRatio(true);
+		icon1.setFitWidth(width);
+		icon1.maxWidth(width);
+		icon1.maxHeight(width);
+		return icon1;
 
 	}
 

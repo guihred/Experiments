@@ -78,9 +78,8 @@ final class CommonTestSupportUtils {
         KeyPairProvider prev = KEYPAIR_PROVIDER_HOLDER.getAndSet(provider);
         if (prev != null) { // check if somebody else beat us to it
             return prev;
-        } else {
-            return provider;
         }
+		return provider;
     }
 
     /**

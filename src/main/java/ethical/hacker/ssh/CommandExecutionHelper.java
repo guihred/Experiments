@@ -18,31 +18,30 @@ abstract class CommandExecutionHelper extends AbstractCommandSupport {
 
     @Override
     public void run() {
-        String command = getCommand();
+		String command1 = getCommand();
         try {
-            if (command == null) {
+			if (command1 == null) {
                 try (BufferedReader r = new BufferedReader(
                     new InputStreamReader(getInputStream(), StandardCharsets.UTF_8))) {
                     for (;;) {
-                        command = r.readLine();
-                        if (command == null) {
+						command1 = r.readLine();
+						if (command1 == null) {
                             return;
                         }
 
-                        if (!handleCommandLine(command)) {
+						if (!handleCommandLine(command1)) {
                             return;
                         }
                     }
                 }
-            } else {
-                handleCommandLine(command);
             }
+			handleCommandLine(command1);
         } catch (InterruptedIOException e) {
             log.trace("IGNORED Exception", e);
             // Ignore - signaled end
         } catch (Exception e) {
             log.trace("Exception", e);
-            String message = "Failed (" + e.getClass().getSimpleName() + ") to handle '" + command + "': "
+			String message = "Failed (" + e.getClass().getSimpleName() + ") to handle '" + command1 + "': "
                 + e.getMessage();
             try {
                 OutputStream stderr = getErrorStream();
@@ -60,9 +59,11 @@ abstract class CommandExecutionHelper extends AbstractCommandSupport {
     }
 
     /**
-     * @param command The command line
-     * @return {@code true} if continue accepting command
-     * @throws Exception If failed to handle the command line
-     */
-    protected abstract boolean handleCommandLine(String command) throws Exception;
+	 * @param command1
+	 *            The command line
+	 * @return {@code true} if continue accepting command
+	 * @throws Exception
+	 *             If failed to handle the command line
+	 */
+	protected abstract boolean handleCommandLine(String command1) throws Exception;
 }

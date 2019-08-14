@@ -29,7 +29,6 @@ import javafx.scene.paint.Material;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -72,7 +71,6 @@ public final class FXMLCreator {
     public static void createXMLFile(Parent node, File file) {
         try {
 
-            System.setProperty(XMLConstants.FEATURE_SECURE_PROCESSING, "true");
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
@@ -107,9 +105,9 @@ public final class FXMLCreator {
             document.appendChild(firstChild);
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+			transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
+			transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
+			transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalStylesheet", "");
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource domSource = new DOMSource(document);
@@ -177,7 +175,7 @@ public final class FXMLCreator {
         return primaryStage;
     }
 
-    public static void main(String argv[]) {
+	public static void main(String[] argv) {
         List<Class<? extends Application>> asList = Arrays.asList(PaintMain.class);
         testApplications(asList, true);
         for (Class<? extends Application> class1 : asList) {
@@ -239,7 +237,7 @@ public final class FXMLCreator {
             LOG.trace("", e);
         }
         try {
-            return cl.getConstructors()[0].newInstance(null);
+			return cl.getConstructors()[0].newInstance((Object[]) null);
         } catch (Exception e) {
             LOG.trace("", e);
             throw new RuntimeIOException("ERROR IN INSTANTIATION", e);
@@ -273,15 +271,14 @@ public final class FXMLCreator {
                         allNode.add(object);
                     }
                 }
-//            } else if (list.stream().anyMatch(o -> hasClass(ATTRIBUTE_CLASSES, o.getClass()))) {
-//                Element createElement2 = document.createElement(fieldName);
-//                element.appendChild(createElement2);
-//                for (Object object : list) {
-//                    Text textNode = document.createTextNode(mapProperty(object) + "");
-//                    Element createElement3 = document.createElement(object.getClass().getName());
-//                    createElement3.appendChild(textNode);
-//                    createElement2.appendChild(createElement3);
-//                }
+			} else if (list.stream().anyMatch(o -> hasClass(ATTRIBUTE_CLASSES, o.getClass()))) {
+				Element createElement2 = document.createElement(fieldName);
+				element.appendChild(createElement2);
+				for (Object object : list) {
+					Element createElement3 = document.createElement(object.getClass().getName());
+					createElement3.setAttribute("fx:value", object + "");
+					createElement2.appendChild(createElement3);
+				}
             } else {
                 String classes = list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("");
                 Class<? extends Object> parentClass = parent.getClass();

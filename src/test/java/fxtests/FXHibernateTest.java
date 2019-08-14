@@ -15,6 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import utils.CrawlerTask;
 
+
 public class FXHibernateTest extends AbstractTestExecution {
 
     private static final int WAIT_TIME = 5000;

@@ -33,14 +33,13 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
     private String getImageLink(String image) {
         if (image.startsWith("http")) {
             return image;
-        } else {
-            try {
-                return ResourceFXUtils.toExternalForm("out/" + image);
-            } catch (Exception e) {
-                HasLogging.log(1).trace("", e);
-            }
-            return ResourceFXUtils.toExternalForm("out/pdf/" + image);
         }
+		try {
+			return ResourceFXUtils.toExternalForm("out/" + image);
+		} catch (Exception e) {
+			HasLogging.log(1).trace("", e);
+		}
+		return ResourceFXUtils.toExternalForm("out/pdf/" + image);
     }
 
     private ImageView getImageView(String image) {

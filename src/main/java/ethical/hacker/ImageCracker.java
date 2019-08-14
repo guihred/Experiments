@@ -83,9 +83,8 @@ public final class ImageCracker {
         int limit = 2;
         if (Math.abs(blacks) > limit) {
             return blacks > 0 ? black : white;
-        } else {
-            return brightness > 0.5 ? white : black;
         }
+		return brightness > 0.5 ? white : black;
     }
 
     private static Tesseract getInstance() {
