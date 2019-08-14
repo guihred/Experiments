@@ -22,106 +22,97 @@ import simplebuilder.SimpleToggleGroupBuilder;
 
 public class PolygonTool extends PaintTool {
 
-    private Polyline icon;
     private Polygon area;
-	private Line line;
+    private Line line;
     private FillOption option = FillOption.STROKE;
 
-	public Polygon getArea() {
-		if (area == null) {
-			area = new Polygon();
-			area.setFill(Color.TRANSPARENT);
-			area.setStroke(Color.BLACK);
-			area.setManaged(false);
-		}
-		return area;
-	}
+    @Override
+    public Polyline createIcon() {
+        int pontas = 5;
+        int radius = 5;
+        double[] points = iterate(0, i -> i + 1).limit(pontas)
+            .flatMap(i -> of(radius * cos(i * 2 % 5 * 2 * PI / pontas), radius * sin(i * 2 % 5 * 2 * PI / pontas)))
+            .toArray();
+        Polyline icon = new Polyline(points);
+        icon.setStroke(Color.BLACK);
+        return icon;
+    }
 
-	@Override
-    public Polyline getIcon() {
-		if (icon == null) {
-			int pontas = 5;
-			int radius = 5;
-			double[] points = iterate(0, i -> i + 1).limit(pontas)
-					.flatMap(i -> of(radius * cos(i * 2 % 5 * 2 * PI / pontas), radius * sin(i * 2 % 5 * 2 * PI / pontas)))
-					.toArray();
-            icon = new Polyline(points);
-            icon.setStroke(Color.BLACK);
-		}
-		return icon;
-	}
+    public Polygon getArea() {
+        if (area == null) {
+            area = new Polygon();
+            area.setFill(Color.TRANSPARENT);
+            area.setStroke(Color.BLACK);
+            area.setManaged(false);
+        }
+        return area;
+    }
 
-	public Line getLine() {
-		if (line == null) {
-			line = new Line();
-			line.setStroke(Color.BLACK);
-			line.setManaged(false);
-		}
-		return line;
-	}
+    public Line getLine() {
+        if (line == null) {
+            line = new Line();
+            line.setStroke(Color.BLACK);
+            line.setManaged(false);
+        }
+        return line;
+    }
 
-	@Override
-	public Cursor getMouseCursor() {
-		return Cursor.DISAPPEAR;
-	}
+    @Override
+    public Cursor getMouseCursor() {
+        return Cursor.DISAPPEAR;
+    }
 
-	@Override
-	public void handleEvent(final MouseEvent e, final PaintModel model) {
-		EventType<? extends MouseEvent> eventType = e.getEventType();
-		if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-			onMousePressed(e, model);
-		}
-		if (MouseEvent.MOUSE_MOVED.equals(eventType)) {
-			onMouseMoved(e);
-		}
-		if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
-			onMouseExited(model);
+    @Override
+    public void handleEvent(final MouseEvent e, final PaintModel model) {
+        EventType<? extends MouseEvent> eventType = e.getEventType();
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+            onMousePressed(e, model);
+        }
+        if (MouseEvent.MOUSE_MOVED.equals(eventType)) {
+            onMouseMoved(e);
+        }
+        if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
+            onMouseExited(model);
 
-		}
-	}
+        }
+    }
 
-	@Override
-	public void onSelected(final PaintModel model) {
-        icon = null;
-        Shape icon2 = getIcon();
+    @Override
+    public void onSelected(final PaintModel model) {
+        Shape icon2 = createIcon();
         icon2.strokeProperty().bind(model.frontColorProperty());
         icon2.setFill(Color.TRANSPARENT);
-        icon = null;
-        Shape icon3 = getIcon();
+        Shape icon3 = createIcon();
         icon3.setStroke(Color.TRANSPARENT);
         icon3.fillProperty().bind(model.backColorProperty());
-        icon = null;
-        Shape icon4 = getIcon();
+        Shape icon4 = createIcon();
         icon4.strokeProperty().bind(model.frontColorProperty());
         icon4.fillProperty().bind(model.backColorProperty());
-		icon = null;
-        List<Node> togglesAs = new SimpleToggleGroupBuilder()
-                .addToggle(icon2, FillOption.STROKE).addToggle(icon3, FillOption.FILL)
-                .addToggle(icon4, FillOption.STROKE_FILL)
-                .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
-                .select(option)
-                .getTogglesAs(Node.class);
+        List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
+            .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
+            .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
+            .select(option).getTogglesAs(Node.class);
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren().addAll(togglesAs);
-	}
+    }
 
-	@Override
-    protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
+    @Override
+    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
-		if (!children.contains(getArea())) {
-			children.add(getArea());
+        if (!children.contains(getArea())) {
+            children.add(getArea());
 
-		}
-		if (!children.contains(getLine())) {
-			children.add(getLine());
-		}
-		double x = e.getX();
-		double y = e.getY();
-		getLine().setStartX(x);
-		getLine().setStartY(y);
-		getLine().setEndX(x);
-		getLine().setEndY(y);
-		getArea().getPoints().addAll(x, y);
+        }
+        if (!children.contains(getLine())) {
+            children.add(getLine());
+        }
+        double x = e.getX();
+        double y = e.getY();
+        getLine().setStartX(x);
+        getLine().setStartY(y);
+        getLine().setEndX(x);
+        getLine().setEndY(y);
+        getArea().getPoints().addAll(x, y);
         getArea().setStroke(Color.TRANSPARENT);
         getArea().setFill(Color.TRANSPARENT);
         if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
@@ -130,37 +121,35 @@ public class PolygonTool extends PaintTool {
         if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
             getArea().setFill(model.getBackColor());
         }
-	}
+    }
 
-	private void onMouseExited(final PaintModel model) {
+    private void onMouseExited(final PaintModel model) {
         double hvalue = model.getScrollPane().getHvalue();
         double vvalue = model.getScrollPane().getVvalue();
 
-		ObservableList<Node> children = model.getImageStack().getChildren();
-		if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
             takeSnapshotFill(model, area);
             model.createImageVersion();
-		}
-		children.remove(getArea());
-		children.remove(getLine());
-		getArea().getPoints().clear();
+        }
+        children.remove(getArea());
+        children.remove(getLine());
+        getArea().getPoints().clear();
         model.getScrollPane().setHvalue(hvalue);
         model.getScrollPane().setVvalue(vvalue);
 
-	}
+    }
 
     private void onMouseMoved(final MouseEvent e) {
-		ObservableList<Double> points = getArea().getPoints();
-		if (points.size() > 1) {
-			Double x = points.get(points.size() - 2);
-			Double y = points.get(points.size() - 1);
-			getLine().setStartX(x);
-			getLine().setStartY(y);
-			getLine().setEndX(e.getX());
-			getLine().setEndY(e.getY());
-		}
-	}
-
-
+        ObservableList<Double> points = getArea().getPoints();
+        if (points.size() > 1) {
+            Double x = points.get(points.size() - 2);
+            Double y = points.get(points.size() - 1);
+            getLine().setStartX(x);
+            getLine().setStartY(y);
+            getLine().setEndX(e.getX());
+            getLine().setEndY(e.getY());
+        }
+    }
 
 }

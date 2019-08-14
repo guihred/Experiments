@@ -1,501 +1,665 @@
-[INFO] Scanning for projects...
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building Experiments 0.0.1
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] >>> javafx-maven-plugin:8.7.0:native (default-cli) > :jar @ Experiments >>>
-[INFO] 
-[INFO] >>> javafx-maven-plugin:8.7.0:jar (jar) > [jfxjar]package @ Experiments >>>
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ Experiments ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] Copying 18 resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ Experiments ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 337 source files to C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\classes
-[WARNING] /C:/Users/Note/Documents/Sistemas/Workspace/Experiments/src/main/java/crypt/VigenereXORCipher.java: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\src\main\java\crypt\VigenereXORCipher.java uses unchecked or unsafe operations.
-[WARNING] /C:/Users/Note/Documents/Sistemas/Workspace/Experiments/src/main/java/crypt/VigenereXORCipher.java: Recompile with -Xlint:unchecked for details.
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ Experiments ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory C:\Users\Note\Documents\Sistemas\Workspace\Experiments\src\test\resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ Experiments ---
-[INFO] No sources to compile
-[INFO] 
-[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ Experiments ---
-[INFO] No tests to run.
-[INFO] 
-[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ Experiments ---
-[INFO] Building jar: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\Experiments-0.0.1.jar
-[INFO] 
-[INFO] <<< javafx-maven-plugin:8.7.0:jar (jar) < [jfxjar]package @ Experiments <<<
-[INFO] 
-[INFO] --- javafx-maven-plugin:8.7.0:jar (jar) @ Experiments ---
-[INFO] Building JavaFX JAR for application
-[INFO] Adding 'deploy' directory to Mojo classpath: C:\Users\Note\Documents\Sistemas\Workspace\Experiments/src/main/deploy
-[INFO] 
-[INFO] <<< javafx-maven-plugin:8.7.0:native (default-cli) < :jar @ Experiments <<<
-[INFO] 
-[INFO] --- javafx-maven-plugin:8.7.0:native (default-cli) @ Experiments ---
-[INFO] Building Native Installers
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\earth-d.jpg file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\earth-l.jpg file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\earth-n.jpg file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\earth-s.jpg file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\earth.png file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\Experiments-0.0.1-jfx.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\ghost2.STL file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\Labyrinth.ico file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\assertj-core-3.5.2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\classworlds-1.1-alpha-2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\commons-codec-1.9.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\commons-io-1.2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\commons-lang3-3.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\commons-logging-1.2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\commons-logging-api-1.1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\commons-math3-3.2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\commons-vfs2-2.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\diffutils-1.2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\dom4j-1.6.1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\ews-java-api-2.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\fontbox-2.0.3.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\google-api-client-1.22.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\google-api-services-customsearch-v1-rev53-1.22.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\google-collections-1.0-rc2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\google-http-client-1.22.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\google-http-client-jackson2-1.22.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\google-oauth-client-1.22.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\guava-16.0.1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\guava-jdk5-17.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\hamcrest-core-1.3.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\httpclient-4.4.1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\httpcore-4.4.1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\jackson-core-2.1.3.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\jackson-core-asl-1.9.13.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\jbox2d-0.0.1-SNAPSHOT.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\jflex-1.4.3.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\JID3-0.46.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\jim-1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\joda-time-2.8.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\jsoup-1.7.2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\jsr305-1.3.9.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\junit-4.12.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\junrar-0.7.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\log4j-1.2.17.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-artifact-2.0.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-artifact-manager-2.0.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-jflex-plugin-1.4.3.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-model-2.0.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-plugin-api-2.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-profile-2.0.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-project-2.0.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-repository-metadata-2.0.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-scm-api-1.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-scm-provider-svn-commons-1.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-scm-provider-svnexe-1.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\maven-settings-2.0.4.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\pdfbox-2.0.3.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\plexus-container-default-1.0-alpha-9.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\plexus-utils-1.1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\poi-3.9.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\poi-ooxml-3.9.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\poi-ooxml-schemas-3.9.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\regexp-1.3.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\rxjava-1.2.1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\slf4j-api-1.7.5.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\slf4j-log4j12-1.7.5.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\stax-api-1.0.1.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\wagon-provider-api-1.0-alpha-6.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\xml-apis-1.0.b2.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lib\xmlbeans-2.3.0.jar file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\lnf_demo.fxml file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\log4j.xml file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\Minotaur.stl file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\ooze.jpg file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\Roboto-Light.ttf file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\Roboto-Thin.ttf file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\space.jpg file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\sun.png file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\The_Horse_in_Motion.jpg file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\wall.jpg file to application resources.
-[INFO] Add C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\app\wall2.jpg file to application resources.
-The jar lib\JID3-0.46.jar has a main class org.blinkenlights.jid3.exe.JID3Tagger that does not match the declared main labyrinth.Labyrinth3DMouseControl
-The jar lib\jflex-1.4.3.jar has a main class JFlex.Main that does not match the declared main labyrinth.Labyrinth3DMouseControl
-The jar lib\junrar-0.7.jar has a main class de.innosystec.unrar.testutil.JUnRarTestUtil that does not match the declared main labyrinth.Labyrinth3DMouseControl
-Running [C:\Program Files\Java\jdk1.8.0_51\jre\bin\java, -version]
-Creating app bundle: Labyrinth in C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native
-  Using custom package resource [application icon]  (loaded from package/windows/Labyrinth.ico)
-Running [C:\Users\Note\AppData\Local\Temp\iconswap559327608978860939.exe, C:\Users\Note\AppData\Local\Temp\fxbundler3898525344162288575\windows\Labyrinth.ico, C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native\Labyrinth\Labyrinth.exe]
-Icon File Name: C:\Users\Note\AppData\Local\Temp\fxbundler3898525344162288575\windows\Labyrinth.ico
-Executable File Name: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native\Labyrinth\Labyrinth.exe
-Result application bundle: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native
-  Config files are saved to C:\Users\Note\AppData\Local\Temp\fxbundler3898525344162288575\windows. Use them to customize package.
-The jar lib\JID3-0.46.jar has a main class org.blinkenlights.jid3.exe.JID3Tagger that does not match the declared main labyrinth.Labyrinth3DMouseControl
-The jar lib\jflex-1.4.3.jar has a main class JFlex.Main that does not match the declared main labyrinth.Labyrinth3DMouseControl
-The jar lib\junrar-0.7.jar has a main class de.innosystec.unrar.testutil.JUnRarTestUtil that does not match the declared main labyrinth.Labyrinth3DMouseControl
-Running [C:\Program Files\Java\jdk1.8.0_51\jre\bin\java, -version]
-Running [C:\Program Files (x86)\Inno Setup 5\iscc.exe, /?]
-  Detected [C:\Program Files (x86)\Inno Setup 5\iscc.exe] version [5]
-At least one type of shortcut is required. Enabling menu shortcut.
-  Using custom package resource [application icon]  (loaded from package/windows/Labyrinth.ico)
-Running [C:\Users\Note\AppData\Local\Temp\iconswap6421520575599886310.exe, C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\windows\Labyrinth.ico, C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\Labyrinth.exe]
-Icon File Name: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\windows\Labyrinth.ico
-Executable File Name: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\Labyrinth.exe
-  Config files are saved to C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\windows. Use them to customize package.
-  Using default package resource [Inno Setup project file]  (add package/windows/Labyrinth.iss to the class path to customize)
-  Using default package resource [setup dialog icon]  (add package/windows/Labyrinth-setup-icon.bmp to the class path to customize)
-Using default package resource [script to run after application image is populated]  (add package/windows/Labyrinth-post-image.wsf to the class path to customize)
-Generating EXE for installer to: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native
-Running [C:\Program Files (x86)\Inno Setup 5\iscc.exe, /oC:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native, C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth.iss] in C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image
-Inno Setup 5 Command-Line Compiler
-Copyright (C) 1997-2016 Jordan Russell. All rights reserved.
-Portions Copyright (C) 2000-2016 Martijn Laan
-Inno Setup Preprocessor
-Copyright (C) 2001-2004 Alex Yackimoff. All rights reserved.
-
-Compiler engine version: Inno Setup 5.5.9 (a)
-
-[ISPP] Preprocessing.
-[ISPP] Preprocessed.
-
-Parsing [Setup] section, line 4
-Parsing [Setup] section, line 5
-Parsing [Setup] section, line 6
-Parsing [Setup] section, line 7
-Parsing [Setup] section, line 8
-Parsing [Setup] section, line 9
-Parsing [Setup] section, line 10
-Parsing [Setup] section, line 14
-Parsing [Setup] section, line 15
-Parsing [Setup] section, line 16
-Parsing [Setup] section, line 17
-Parsing [Setup] section, line 18
-Parsing [Setup] section, line 19
-Parsing [Setup] section, line 20
-Parsing [Setup] section, line 21
-Parsing [Setup] section, line 23
-Parsing [Setup] section, line 25
-Parsing [Setup] section, line 26
-Parsing [Setup] section, line 27
-Parsing [Setup] section, line 28
-Parsing [Setup] section, line 29
-Parsing [Setup] section, line 30
-Parsing [Setup] section, line 31
-Parsing [Setup] section, line 32
-Parsing [Setup] section, line 33
-Parsing [Setup] section, line 34
-Parsing [Setup] section, line 35
-Reading file (WizardImageFile)
-   File: C:\Program Files (x86)\Inno Setup 5\WIZMODERNIMAGE.BMP
-Reading file (WizardSmallImageFile)
-   File: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth-setup-icon.bmp
-Preparing Setup program executable
-   Updating icons (SETUP.E32)
-Reading default messages from Default.isl
-Parsing [Languages] section, line 39
-   File: C:\Program Files (x86)\Inno Setup 5\Default.isl
-Parsing [LangOptions], [Messages], and [CustomMessages] sections
-   Messages in script file
-Reading [Code] section
-Parsing [Icons] section, line 46
-Parsing [Icons] section, line 47
-Parsing [Run] section, line 51
-Parsing [Run] section, line 52
-Parsing [UninstallRun] section, line 55
-Parsing [Files] section, line 42
-Parsing [Files] section, line 43
-Compiling [Code] section
-Deleting Labyrinth-1.0.exe from output directory
-Creating setup files
-   Updating icons (SETUP.EXE)
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\Labyrinth.exe
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\Labyrinth.ico
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\msvcp100.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\msvcr100.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\packager.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\earth-d.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\earth-l.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\earth-n.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\earth-s.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\earth.png
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\Experiments-0.0.1-jfx.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\ghost2.STL
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\Labyrinth.cfg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\Labyrinth.ico
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lnf_demo.fxml
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\log4j.xml
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\Minotaur.stl
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\ooze.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\Roboto-Light.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\Roboto-Thin.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\space.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\sun.png
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\The_Horse_in_Motion.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\wall.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\wall2.jpg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\assertj-core-3.5.2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\classworlds-1.1-alpha-2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\commons-codec-1.9.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\commons-io-1.2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\commons-lang3-3.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\commons-logging-1.2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\commons-logging-api-1.1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\commons-math3-3.2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\commons-vfs2-2.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\diffutils-1.2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\dom4j-1.6.1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\ews-java-api-2.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\fontbox-2.0.3.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\google-api-client-1.22.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\google-api-services-customsearch-v1-rev53-1.22.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\google-collections-1.0-rc2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\google-http-client-1.22.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\google-http-client-jackson2-1.22.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\google-oauth-client-1.22.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\guava-16.0.1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\guava-jdk5-17.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\hamcrest-core-1.3.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\httpclient-4.4.1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\httpcore-4.4.1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\jackson-core-2.1.3.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\jackson-core-asl-1.9.13.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\jbox2d-0.0.1-SNAPSHOT.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\jflex-1.4.3.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\JID3-0.46.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\jim-1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\joda-time-2.8.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\jsoup-1.7.2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\jsr305-1.3.9.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\junit-4.12.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\junrar-0.7.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\log4j-1.2.17.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-artifact-2.0.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-artifact-manager-2.0.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-jflex-plugin-1.4.3.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-model-2.0.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-plugin-api-2.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-profile-2.0.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-project-2.0.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-repository-metadata-2.0.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-scm-api-1.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-scm-provider-svn-commons-1.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-scm-provider-svnexe-1.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\maven-settings-2.0.4.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\pdfbox-2.0.3.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\plexus-container-default-1.0-alpha-9.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\plexus-utils-1.1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\poi-3.9.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\poi-ooxml-3.9.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\poi-ooxml-schemas-3.9.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\regexp-1.3.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\rxjava-1.2.1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\slf4j-api-1.7.5.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\slf4j-log4j12-1.7.5.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\stax-api-1.0.1.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\wagon-provider-api-1.0-alpha-6.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\xml-apis-1.0.b2.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\app\lib\xmlbeans-2.3.0.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\COPYRIGHT
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\LICENSE
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\README.txt
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\THIRDPARTYLICENSEREADME-JAVAFX.txt
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\THIRDPARTYLICENSEREADME.txt
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\Welcome.html
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\attach.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\awt.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\bci.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\dcpr.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\decora_sse.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\deploy.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\dt_shmem.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\dt_socket.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\fontmanager.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\fxplugins.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\glass.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\glib-lite.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\gstreamer-lite.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\hprof.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\instrument.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\j2pcsc.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\j2pkcs11.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jaas_nt.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\java.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\JavaAccessBridge-64.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\javafx_font.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\javafx_font_t2k.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\javafx_iio.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\java_crw_demo.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jawt.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\JAWTAccessBridge-64.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jdwp.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jfr.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jfxmedia.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jfxwebkit.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jli.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jpeg.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jsdt.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jsound.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\jsoundds.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\kcms.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\lcms.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\management.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\mlib_image.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\msvcr100.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\net.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\nio.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\npt.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\prism_common.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\prism_d3d.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\prism_es2.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\prism_sw.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\resource.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\sawindbg.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\splashscreen.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\sunec.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\sunmscapi.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\t2k.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\tcnative-1.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\unpack.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\verify.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\w2k_lsa_auth.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\WindowsAccessBridge-64.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\zip.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\dcevm\jvm.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\plugin2\msvcr100.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\plugin2\npjp2.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\server\classes.jsa
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\server\jvm.dll
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\bin\server\Xusage.txt
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\accessibility.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\calendars.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\charsets.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\classlist
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\content-types.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\currency.data
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\flavormap.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fontconfig.bfc
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fontconfig.properties.src
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\hijrah-config-umalqura.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\javafx.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\javaws.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\jce.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\jfr.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\jfxswt.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\jsse.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\jvm.hprof.txt
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\logging.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\management-agent.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\meta-index
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\net.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\plugin.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\psfont.properties.ja
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\psfontj2d.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\resources.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\rt.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\sound.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\tzdb.dat
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\tzmappings
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\amd64\jvm.cfg
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\cmm\CIEXYZ.pf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\cmm\GRAY.pf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\cmm\LINEAR_RGB.pf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\cmm\PYCC.pf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\cmm\sRGB.pf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\access-bridge-64.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\cldrdata.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\dnsns.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\jaccess.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\jfxrt.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\localedata.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\meta-index
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\nashorn.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\sunec.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\sunjce_provider.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\sunmscapi.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\sunpkcs11.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\ext\zipfs.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fonts\LucidaBrightDemiBold.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fonts\LucidaBrightDemiItalic.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fonts\LucidaBrightItalic.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fonts\LucidaBrightRegular.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fonts\LucidaSansDemiBold.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fonts\LucidaSansRegular.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fonts\LucidaTypewriterBold.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\fonts\LucidaTypewriterRegular.ttf
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\images\cursors\cursors.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\images\cursors\invalid32x32.gif
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\images\cursors\win32_CopyDrop32x32.gif
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\images\cursors\win32_CopyNoDrop32x32.gif
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\images\cursors\win32_LinkDrop32x32.gif
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\images\cursors\win32_LinkNoDrop32x32.gif
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\images\cursors\win32_MoveDrop32x32.gif
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\images\cursors\win32_MoveNoDrop32x32.gif
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\jfr\default.jfc
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\jfr\profile.jfc
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\management\jmxremote.access
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\management\jmxremote.password.template
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\management\management.properties
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\management\snmp.acl.template
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\blacklist
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\blacklisted.certs
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\cacerts
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\java.policy
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\java.security
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\javaws.policy
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\local_policy.jar
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\trusted.libraries
-   Compressing: C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\images\win-exe.image\Labyrinth\runtime\lib\security\US_export_policy.jar
-   Compressing Setup program executable
-   Updating version info
-
-
-Successful compile (96,143 sec). Resulting Setup program filename is:
-C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native\Labyrinth-1.0.exe
-Installer (.exe) saved to: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native
-  Config files are saved to C:\Users\Note\AppData\Local\Temp\fxbundler3203759944361426745\windows. Use them to customize package.
-The jar lib\JID3-0.46.jar has a main class org.blinkenlights.jid3.exe.JID3Tagger that does not match the declared main labyrinth.Labyrinth3DMouseControl
-The jar lib\jflex-1.4.3.jar has a main class JFlex.Main that does not match the declared main labyrinth.Labyrinth3DMouseControl
-The jar lib\junrar-0.7.jar has a main class de.innosystec.unrar.testutil.JUnRarTestUtil that does not match the declared main labyrinth.Labyrinth3DMouseControl
-Running [C:\Program Files\Java\jdk1.8.0_51\jre\bin\java, -version]
-Running [C:\Program Files (x86)\WiX Toolset v3.10\bin\candle.exe, /?]
-  Detected [C:\Program Files (x86)\WiX Toolset v3.10\bin\candle.exe] version [3,1]
-Running [C:\Program Files (x86)\WiX Toolset v3.10\bin\light.exe, /?]
-  Detected [C:\Program Files (x86)\WiX Toolset v3.10\bin\light.exe] version [3,1]
-At least one type of shortcut is required. Enabling menu shortcut.
-  Using custom package resource [application icon]  (loaded from package/windows/Labyrinth.ico)
-Running [C:\Users\Note\AppData\Local\Temp\iconswap4893392210003342441.exe, C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\Labyrinth.ico, C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\images\win-msi.image\Labyrinth\Labyrinth.exe]
-Icon File Name: C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\Labyrinth.ico
-Executable File Name: C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\images\win-msi.image\Labyrinth\Labyrinth.exe
-  Config files are saved to C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows. Use them to customize package.
-Generated product GUID: 62a44a92-7802-4ebd-8f53-4f62d76aa42d
-  Using default package resource [WiX config file]  (add package/windows/Labyrinth.wxs to the class path to customize)
-Using default package resource [script to run after application image is populated]  (add package/windows/Labyrinth-post-image.wsf to the class path to customize)
-Preparing MSI config: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native\Labyrinth-1.0.msi
-Running [C:\Program Files (x86)\WiX Toolset v3.10\bin\candle.exe, -nologo, C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\Labyrinth.wxs, -ext, WixUtilExtension, -out, C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\tmp\Labyrinth.wixobj] in C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\images\win-msi.image\Labyrinth
-Labyrinth.wxs
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(9) : warning CNDL1138 : The RegistryKey/@Action attribute has been deprecated.  In most cases, you can simply omit @Action.  If you need to force Windows Installer to create an empty key or recursively delete the key, use the ForceCreateOnInstall or ForceDeleteOnUninstall attributes instead.
-Generating MSI: C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native\Labyrinth-1.0.msi
-Running [C:\Program Files (x86)\WiX Toolset v3.10\bin\light.exe, -nologo, -spdb, -sice:60, C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\tmp\Labyrinth.wixobj, -ext, WixUtilExtension, -out, C:\Users\Note\Documents\Sistemas\Workspace\Experiments\target\jfx\native\Labyrinth-1.0.msi] in C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\images\win-msi.image\Labyrinth
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\Labyrinth.wxs(43) : warning LGHT1076 : ICE36: Icon Bloat. Icon DesktopIcon.exe is not used in the Class, Shortcut, or ProgID table and also not used for ARPPRODUCTICON property.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(6) : warning LGHT1076 : ICE57: Component 'comp0' has both per-user and per-machine data with an HKCU Registry KeyPath.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(494) : warning LGHT1076 : ICE60: The file FileId230 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(54) : warning LGHT1076 : ICE60: The file FileId20 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(56) : warning LGHT1076 : ICE60: The file FileId21 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(496) : warning LGHT1076 : ICE60: The file FileId231 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(498) : warning LGHT1076 : ICE60: The file FileId232 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(500) : warning LGHT1076 : ICE60: The file FileId233 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(502) : warning LGHT1076 : ICE60: The file FileId234 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(504) : warning LGHT1076 : ICE60: The file FileId235 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(506) : warning LGHT1076 : ICE60: The file FileId236 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows\bundle.wxi(508) : warning LGHT1076 : ICE60: The file FileId237 is not a Font, and its version is not a companion file reference. It should have a language specified in the Language column.
-  Config files are saved to C:\Users\Note\AppData\Local\Temp\fxbundler2905162369759636237\windows. Use them to customize package.
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 03:09 min
-[INFO] Finished at: 2017-02-20T14:27:12-03:00
-[INFO] Final Memory: 30M/371M
-[INFO] ------------------------------------------------------------------------
+ INFO: FXMLCreator:285 -  [class javafx.scene.AccessibleRole, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.SubScene does have accessibleRole 
+ INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have typeSelector 
+ INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have pressed 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.NodeOrientation, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have effectiveNodeOrientation 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.SubScene does have rotationAxis 
+ INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have focused 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.NodeOrientation, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.SubScene does have nodeOrientation 
+ INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have hover 
+ INFO: FXMLCreator:285 -  [class javafx.scene.CacheHint, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.SubScene does have cacheHint 
+ INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have disabled 
+ INFO: FXMLCreator:285 -  [class javafx.scene.SceneAntialiasing] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.SubScene does have antiAliasing 
+ INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have resizable 
+ INFO: FXMLCreator:285 -  [class javafx.scene.DepthTest, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.SubScene does have depthTest 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have properties 
+ INFO: FXMLCreator:290 - class javafx.scene.PerspectiveCamera does not have fixedEyeAtCameraZero 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Translate does not have tz 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Translate does not have identity 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Translate does not have type2D 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myz 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mzy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mzz 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have type2D 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
+ INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
+ INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
+ INFO: FXMLCreator:205 - SphereSystemApp successfull 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.BorderPane does not have height 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.BorderPane does not have width 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.VBox does not have height 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.VBox does not have width 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have insets 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.BoundingBox, class javafx.geometry.Bounds] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class graphs.entities.ZoomableScrollPane does have viewportBounds 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ScrollPane$ScrollBarPolicy, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class graphs.entities.ZoomableScrollPane does have hbarPolicy 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ScrollPane$ScrollBarPolicy, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class graphs.entities.ZoomableScrollPane does have vbarPolicy 
+ INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have height 
+ INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have resizable 
+ INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have scaleValue 
+ INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have width 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.GridPane does not have height 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.GridPane does not have width 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.TableView$TableViewFocusModel, class javafx.scene.control.TableFocusModel, class javafx.scene.control.FocusModel] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.TableView does have focusModel 
+ INFO: FXMLCreator:268 - attribute items type javafx.scene.image.WritableImage of class javafx.scene.control.TableView not set 
+ INFO: FXMLCreator:269 - value [javafx.scene.image.WritableImage@170f73bf] 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.TableView$TableViewArrayListSelectionModel, class javafx.scene.control.TableView$TableViewSelectionModel, class javafx.scene.control.TableSelectionModel, class javafx.scene.control.MultipleSelectionModelBase, class javafx.scene.control.MultipleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.TableView does have selectionModel 
+ INFO: FXMLCreator:290 - class javafx.scene.control.MenuBar does not have height 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.control.MenuBar does not have insets 
+ INFO: FXMLCreator:290 - class javafx.scene.control.MenuBar does not have width 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuBar does have impl_traversalEngine 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.HBox does not have height 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.HBox does not have width 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.HBox does not have height 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.HBox does not have width 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.StackPane does not have height 
+ INFO: FXMLCreator:285 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.StackPane does not have insets 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.StackPane does not have width 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleTableViewBuilder$$Lambda$340/89579584, interface javafx.util.Callback] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.TableColumn does have cellFactory 
+ INFO: FXMLCreator:285 -  [class javafx.scene.control.TableColumn$$Lambda$337/167453371, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.TableColumn does have onEditCommit 
+ INFO: FXMLCreator:290 - class javafx.scene.control.TableColumn does not have width 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.StackPane does not have height 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.GridPane does not have height 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.GridPane does not have width 
+ INFO: FXMLCreator:285 -  [class graphs.entities.ZoomableScrollPane$$Lambda$180/182269298, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.Group does have onScroll 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.SelectFreeTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Polygon, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.SelectFreeTool does not have polygon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.SelectFreeTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.EraserTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.EraserTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.BucketTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.EyedropTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.EyedropTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.ImageCursor, class javafx.scene.Cursor] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.EyedropTool does not have mouseCursor 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.WandTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.WandTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.PencilTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.BrushTool does not have icon 
+ INFO: FXMLCreator:285 -  [class java.util.EnumMap, interface java.io.Serializable, interface java.lang.Cloneable, class java.util.AbstractMap, interface java.util.Map] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.BrushTool does not have mouseCursorMap 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.SprayTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.SelectRectTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.SelectRectTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.RotateTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.RotateTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.TextTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.text.Text, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.TextTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.text.Text, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.TextTool does not have text 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Line, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.LineTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Line, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.LineTool does not have line 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.CubicCurve, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.CurveTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.CubicCurve, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.CurveTool does not have line 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.RectangleTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.RectangleTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Polygon, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.PolygonTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Polyline, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.PolygonTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Line, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.PolygonTool does not have line 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Ellipse, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.EllipseTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Ellipse, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.EllipseTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.PictureTool does not have area 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.PictureTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.BlurTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.BorderTool does not have icon 
+ INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class paintexp.tool.BorderTool does not have area 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.VBox does not have height 
+ INFO: FXMLCreator:290 - class javafx.scene.layout.VBox does not have width 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintMain$$Lambda$154/1147866048, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintMain$$Lambda$170/7697414, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintMain$$Lambda$174/1715633826, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
+ INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
+ INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
+ INFO: FXMLCreator:268 - attribute strokeDashArray type java.lang.Double of class javafx.scene.shape.SVGPath not set 
+ INFO: FXMLCreator:269 - value [1.0, 2.0, 1.0, 2.0] 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:268 - attribute strokeDashArray type java.lang.Double of class javafx.scene.shape.Rectangle not set 
+ INFO: FXMLCreator:269 - value [1.0, 2.0, 1.0, 2.0] 
+ INFO: FXMLCreator:268 - attribute points type java.lang.Double of class javafx.scene.shape.Polyline not set 
+ INFO: FXMLCreator:269 - value [5.0, 0.0, -4.045084971874736, 2.9389262614623664, 1.5450849718747361, -4.755282581475768, 1.5450849718747373, 4.755282581475767, -4.045084971874737, -2.938926261462365] 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:285 -  [class javafx.scene.paint.ImagePattern, class javafx.scene.paint.Paint] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have fill 
+ INFO: FXMLCreator:285 -  [class javafx.scene.image.WritableImage, class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
+ INFO: FXMLCreator:290 - class javafx.scene.text.Font does not have style 
+ INFO: FXMLCreator:290 - class javafx.scene.text.Font does not have family 
+ INFO: FXMLCreator:205 - PaintMain successfull 
+ INFO: FXEngineFXMLTest:49 - All classes successfull 
+java.util.concurrent.RejectedExecutionException: Task com.sun.javafx.tk.quantum.PaintRenderJob@5163737d rejected from com.sun.javafx.tk.quantum.QuantumRenderer@66a0ac9f[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 8]
+	at java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2063)
+	at java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:830)
+	at java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1379)
+	at java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:112)
+	at com.sun.javafx.tk.quantum.QuantumRenderer.submitRenderJob(QuantumRenderer.java:218)
+	at com.sun.javafx.tk.quantum.QuantumToolkit.addRenderJob(QuantumToolkit.java:452)
+	at com.sun.javafx.tk.quantum.ViewScene.repaint(ViewScene.java:140)
+	at com.sun.javafx.tk.quantum.PaintCollector.renderAll(PaintCollector.java:435)
+	at com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:519)
+	at com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:498)
+	at com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:491)
+	at com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$403(QuantumToolkit.java:319)
+	at com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at com.sun.glass.ui.win.WinApplication.lambda$null$147(WinApplication.java:177)
+	at java.lang.Thread.run(Thread.java:748)

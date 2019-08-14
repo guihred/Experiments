@@ -7,7 +7,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -20,7 +19,6 @@ import utils.PixelHelper;
 public class SprayTool extends PaintTool {
 
     private static final Logger LOG = HasLogging.log();
-    private ImageView icon;
     private int centerX;
     private int centerY;
     private IntegerProperty length = new SimpleIntegerProperty(10);
@@ -37,11 +35,8 @@ public class SprayTool extends PaintTool {
     private Slider lengthSlider;
 
     @Override
-    public Node getIcon() {
-        if (icon == null) {
-            icon = getIconByURL("spray.png");
-        }
-        return icon;
+    public Node createIcon() {
+        return getIconByURL("spray.png");
     }
 
     @Override

@@ -17,7 +17,6 @@ import utils.PixelHelper;
 
 public class BlurTool extends PaintTool {
 
-	private Node icon;
 	private int y;
 	private int x;
 	private IntegerProperty length = new SimpleIntegerProperty(10);
@@ -25,12 +24,9 @@ public class BlurTool extends PaintTool {
 	private Slider lengthSlider;
 
 	@Override
-	public Node getIcon() {
-		if (icon == null) {
-			icon = new SimpleSvgPathBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
+	public Node createIcon() {
+        return new SimpleSvgPathBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.content("M6,0 l -4,6 a5,5 0 1,0 8,0 l -4,-6 z").build();
-		}
-		return icon;
 	}
 
 	@Override

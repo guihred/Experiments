@@ -14,7 +14,6 @@ import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -30,8 +29,6 @@ import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CommonsFX;
 
 public class BrushTool extends PaintTool {
-
-    private ImageView icon;
 
     private boolean pressed;
 
@@ -50,11 +47,8 @@ public class BrushTool extends PaintTool {
     private DoubleProperty opacity = new SimpleDoubleProperty(1);
 
     @Override
-    public Node getIcon() {
-        if (icon == null) {
-            icon = getIconByURL("brush.png");
-        }
-        return icon;
+    public Node createIcon() {
+        return getIconByURL("brush.png");
     }
 
     @Override

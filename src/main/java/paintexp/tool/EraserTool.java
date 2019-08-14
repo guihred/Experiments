@@ -7,7 +7,6 @@ import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -19,12 +18,16 @@ import utils.PixelHelper;
 
 public class EraserTool extends PaintTool {
 
-    private ImageView icon;
     private Rectangle area;
     private IntegerProperty length = new SimpleIntegerProperty(10);
     private int lastX;
     private int lastY;
     private Slider lengthSlider;
+
+    @Override
+    public Node createIcon() {
+        return getIconByURL("eraser.png");
+    }
 
     public Rectangle getArea() {
         if (area == null) {
@@ -35,14 +38,6 @@ public class EraserTool extends PaintTool {
             area.setStroke(Color.BLACK);
         }
         return area;
-    }
-
-    @Override
-    public Node getIcon() {
-        if (icon == null) {
-            icon = getIconByURL("eraser.png");
-        }
-        return icon;
     }
 
     @Override

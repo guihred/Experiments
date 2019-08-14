@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableMap;
 import javafx.event.EventTarget;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -22,6 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.ConstraintsBase;
 import javafx.scene.paint.Color;
@@ -56,13 +56,15 @@ public final class FXMLCreator {
         "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
     private static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
         Integer.class, Boolean.class, Pos.class, Orientation.class, TextAlignment.class, KeyCode.class,
-        KeyCombination.class);
+        KeyCombination.class, KeyCodeCombination.class);
     private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class);
     private static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class, Font.class, Point3D.class,
-        Material.class, PropertyValueFactory.class);
+        Material.class, PropertyValueFactory.class, ConstraintsBase.class, EventTarget.class);
     private static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
         .<String, Function<Collection<?>, String>>builder()
         .put("styleClass", l -> l.stream().map(Object::toString).collect(Collectors.joining(" "))).build();
+    private static final Map<String, String> PROPERTY_REMAP = ImmutableMap.<String, String>builder()
+        .put("gridpane-column", "GridPane.columnIndex").put("gridpane-row", "GridPane.rowIndex").build();
 
     private FXMLCreator() {
     }
@@ -88,6 +90,7 @@ public final class FXMLCreator {
                 }
                 Element createElement = document.createElement(name);
                 parent.appendChild(createElement);
+
                 Map<String, Object> fields = differences(node2);
                 fields.forEach((s, fieldValue) -> {
                     if (fieldValue != null) {
@@ -252,17 +255,6 @@ public final class FXMLCreator {
         if (IGNORE.contains(fieldName) || allNode.stream().anyMatch(ob -> ob == fieldValue)) {
             return;
         }
-        if (fieldValue instanceof javafx.scene.Node) {
-            ObservableMap<Object, Object> properties = ((javafx.scene.Node) fieldValue).getProperties();
-            properties.forEach((k, v) -> {
-
-                String key = Objects.toString(k);
-                String value = Objects.toString(v);
-
-                element.setAttribute(key, value);
-            });
-
-        }
 
         if (fieldValue instanceof Collection) {
             Collection<?> list = (Collection<?>) fieldValue;
@@ -287,19 +279,25 @@ public final class FXMLCreator {
                 LOG.info("attribute {} type {} of {} not set", fieldName, classes, parentClass);
                 LOG.info("value {}", list);
             }
-        } else if (hasClass(NEW_TAG_CLASSES, fieldValue.getClass())
-            && (parent instanceof Collection || hasField(parent.getClass(), fieldName))
-            || hasClass(CONDITIONAL_TAG_CLASSES, fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
+        } else if (hasClass(CONDITIONAL_TAG_CLASSES, fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
             Element createElement2 = document.createElement(fieldName);
             element.appendChild(createElement2);
             nodeMap.put(fieldValue, createElement2);
             allNode.add(fieldValue);
-        } else if (ATTRIBUTE_CLASSES.contains(fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
+        } else if (hasClass(ATTRIBUTE_CLASSES, fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
             Object mapProperty2 = mapProperty(fieldValue);
             element.setAttribute(fieldName, mapProperty2 + "");
+        } else if (fieldValue instanceof Map) {
+            Map<?, ?> properties = (Map<?, ?>) fieldValue;
+            properties.forEach((k, v) -> {
+                String string = Objects.toString(k);
+                if (PROPERTY_REMAP.containsKey(string)) {
+                    String key = PROPERTY_REMAP.get(string);
+                    String value = Objects.toString(v);
+                    element.setAttribute(key, value);
+                }
+            });
         } else {
-//            if(fieldValue.getProperties())
-
             if (!ATTRIBUTE_CLASSES.contains(fieldValue.getClass())) {
                 Class<? extends Object> class1 = fieldValue.getClass();
                 List<Class<?>> allClasses = ClassReflectionUtils.allClasses(class1);
@@ -311,7 +309,8 @@ public final class FXMLCreator {
                 LOG.info("{} does not have {}", parent.getClass(), fieldName);
             }
 
-
         }
+
     }
+
 }

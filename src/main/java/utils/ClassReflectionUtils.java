@@ -175,7 +175,7 @@ public final class ClassReflectionUtils {
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
         Class<?> a = targetClass;
         List<Method> getters = new ArrayList<>();
-        for (int i = 0; a != Object.class && i < 4; i++, a = a.getSuperclass()) {
+        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
             List<Method> getters2 = getters(a);
             getters.addAll(getters2);
         }

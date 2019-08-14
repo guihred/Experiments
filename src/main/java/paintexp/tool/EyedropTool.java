@@ -4,7 +4,6 @@ import static utils.DrawOnPoint.withinRange;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -15,9 +14,13 @@ import utils.ResourceFXUtils;
 
 public class EyedropTool extends PaintTool {
 
-    private ImageView icon;
 
     private Rectangle area;
+
+    @Override
+    public Node createIcon() {
+        return getIconByURL("eyedrop.png");
+    }
 
     public Rectangle getArea() {
         if (area == null) {
@@ -25,14 +28,6 @@ public class EyedropTool extends PaintTool {
             area.setStroke(Color.GRAY);
         }
         return area;
-    }
-
-    @Override
-    public Node getIcon() {
-        if (icon == null) {
-            icon = getIconByURL("eyedrop.png");
-        }
-        return icon;
     }
 
     @Override

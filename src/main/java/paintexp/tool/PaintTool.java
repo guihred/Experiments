@@ -25,22 +25,27 @@ import utils.ResourceFXUtils;
 @SuppressWarnings({ "unused" })
 public abstract class PaintTool extends Group {
     private static final int N_POINTS_MULTIPLIER = 16;
+    private Node icon;
 
 	public PaintTool() {
 		setId(getClass().getSimpleName());
-		Node icon = getIcon();
+        icon = createIcon();
 		if (icon != null) {
 			getChildren().add(icon);
 		}
 	}
 
-	public abstract Node getIcon();
+	public abstract Node createIcon();
 
-	public Cursor getMouseCursor() {
-		return Cursor.DEFAULT;
-	}
+    public Node getIcon() {
+        return icon;
+    }
 
-    public void handleEvent(MouseEvent e, PaintModel model) {
+    public Cursor getMouseCursor() {
+        return Cursor.DEFAULT;
+    }
+
+	public void handleEvent(MouseEvent e, PaintModel model) {
 		simpleHandleEvent(e, model);
 		EventType<? extends MouseEvent> eventType = e.getEventType();
 		if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
@@ -60,6 +65,10 @@ public abstract class PaintTool extends Group {
     public void onSelected(PaintModel model) {
 		// DOES NOTHING
 	}
+
+    public void setIcon(Node icon) {
+        this.icon = icon;
+    }
 
     protected boolean containsPoint(Node area2, double localX, double localY) {
 		Bounds bounds = area2.getBoundsInParent();

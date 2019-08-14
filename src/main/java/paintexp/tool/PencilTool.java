@@ -3,15 +3,12 @@ import static utils.DrawOnPoint.withinRange;
 
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import paintexp.PaintModel;
 
 public class PencilTool extends PaintTool {
-
-    private ImageView icon;
 
     private boolean pressed;
 
@@ -21,11 +18,8 @@ public class PencilTool extends PaintTool {
 
 
 	@Override
-	public Node getIcon() {
-		if (icon == null) {
-            icon = getIconByURL("Pencil.png");
-		}
-		return icon;
+	public Node createIcon() {
+	    return getIconByURL("Pencil.png");
 	}
 
     @Override

@@ -142,7 +142,7 @@ public class RectBuilder extends PaintTool {
     }
 
     @Override
-    public Node getIcon() {
+    public Node createIcon() {
         return null;
     }
 

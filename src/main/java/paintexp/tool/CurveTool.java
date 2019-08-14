@@ -12,14 +12,12 @@ import paintexp.PaintModel;
 
 public class CurveTool extends PaintTool {
 
-    private CubicCurve icon;
     private CubicCurve line;
     private int stage;
 
     @Override
-	public Node getIcon() {
-		if (icon == null) {
-            icon = new CubicCurve();
+	public Node createIcon() {
+        CubicCurve icon = new CubicCurve();
             icon.setStroke(Color.BLACK);
             icon.setFill(Color.TRANSPARENT);
             icon.setStartX(0);
@@ -31,7 +29,6 @@ public class CurveTool extends PaintTool {
             icon.setStartY(0);
             icon.setEndX(10);
             icon.setEndY(10);
-		}
 		return icon;
 	}
 

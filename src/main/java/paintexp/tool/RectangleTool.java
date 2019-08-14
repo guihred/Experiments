@@ -18,27 +18,23 @@ import simplebuilder.SimpleToggleGroupBuilder;
 
 public class RectangleTool extends PaintTool {
 
-	private Rectangle icon;
 	private Rectangle area;
 	private double initialX;
 	private double initialY;
 	private FillOption option = FillOption.STROKE;
 	private Slider arcWidthSlider;
 
+	@Override
+	public Node createIcon() {
+        return new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLACK)
+					.build();
+	}
+
 	public Rectangle getArea() {
 		if (area == null) {
 			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).build();
 		}
 		return area;
-	}
-
-	@Override
-	public Node getIcon() {
-		if (icon == null) {
-			icon = new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLACK)
-					.build();
-		}
-		return icon;
 	}
 
 	@Override
@@ -62,19 +58,15 @@ public class RectangleTool extends PaintTool {
 		rectangle.arcWidthProperty().bind(getArea().arcWidthProperty());
 		rectangle.arcHeightProperty().bind(getArea().arcWidthProperty());
 		model.getToolOptions().getChildren().add(rectangle);
-		icon = null;
-		Shape icon2 = (Shape) getIcon();
+		Shape icon2 = (Shape) createIcon();
 		icon2.strokeProperty().bind(model.frontColorProperty());
 		icon2.setFill(Color.TRANSPARENT);
-		icon = null;
-		Shape icon3 = (Shape) getIcon();
+		Shape icon3 = (Shape) createIcon();
 		icon3.setStroke(Color.TRANSPARENT);
 		icon3.fillProperty().bind(model.backColorProperty());
-		icon = null;
-		Shape icon4 = (Shape) getIcon();
+		Shape icon4 = (Shape) createIcon();
 		icon4.strokeProperty().bind(model.frontColorProperty());
 		icon4.fillProperty().bind(model.backColorProperty());
-		icon = null;
 		List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
 				.addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
 				.onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())

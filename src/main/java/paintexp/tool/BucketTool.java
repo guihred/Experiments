@@ -6,7 +6,6 @@ import java.util.List;
 import javafx.application.Platform;
 import javafx.event.EventType;
 import javafx.scene.Node;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -15,17 +14,13 @@ import utils.PixelHelper;
 
 public class BucketTool extends PaintTool {
 
-	private ImageView icon;
 	private int width;
 	private int height;
 
 
 	@Override
-	public Node getIcon() {
-		if (icon == null) {
-            icon = getIconByURL("Bucket.png");
-		}
-		return icon;
+	public Node createIcon() {
+        return getIconByURL("Bucket.png");
 	}
 
 	@Override

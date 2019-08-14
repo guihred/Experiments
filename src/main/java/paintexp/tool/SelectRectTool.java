@@ -28,7 +28,6 @@ import utils.HasLogging;
 public class SelectRectTool extends PaintTool {
 
     private static final Logger LOG = HasLogging.log();
-    private Rectangle icon;
     private Rectangle area;
     protected WritableImage imageSelected;
     protected double initialX;
@@ -68,6 +67,13 @@ public class SelectRectTool extends PaintTool {
         Clipboard.getSystemClipboard().setContent(content);
     }
 
+    @Override
+    public Node createIcon() {
+        return 
+            new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLUE)
+                .strokeDashArray(1, 2, 1, 2).build();
+    }
+
     public WritableImage createSelectedImage(PaintModel model) {
         WritableImage srcImage = model.getImage();
         return createSelectedImage(model, srcImage);
@@ -79,15 +85,6 @@ public class SelectRectTool extends PaintTool {
                 .managed(false).strokeDashArray(1, 2, 1, 2).build();
         }
         return area;
-    }
-
-    @Override
-    public Node getIcon() {
-        if (icon == null) {
-            icon = new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLUE)
-                .strokeDashArray(1, 2, 1, 2).build();
-        }
-        return icon;
     }
 
     @Override

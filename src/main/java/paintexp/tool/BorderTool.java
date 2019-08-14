@@ -20,17 +20,13 @@ import utils.PixelHelper;
 
 public class BorderTool extends RectangleTool {
 
-    private ImageView icon;
     private IntegerProperty length = new SimpleIntegerProperty(1);
     private Slider lengthSlider;
 
     @Override
-    public ImageView getIcon() {
-        if (icon == null) {
-            icon = getIconByURL("Border.png");
+    public ImageView createIcon() {
+        return getIconByURL("Border.png");
 
-        }
-        return icon;
     }
 
     @Override

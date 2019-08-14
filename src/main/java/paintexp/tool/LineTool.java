@@ -11,15 +11,11 @@ import simplebuilder.SimpleLineBuilder;
 
 public class LineTool extends PaintTool {
 
-    private Node icon;
     private Line line;
 
     @Override
-	public Node getIcon() {
-		if (icon == null) {
-            icon = new SimpleLineBuilder().startX(0).startY(0).endX(10).endY(6).stroke(Color.BLACK).build();
-		}
-		return icon;
+	public Node createIcon() {
+        return new SimpleLineBuilder().startX(0).startY(0).endX(10).endY(6).stroke(Color.BLACK).build();
 	}
 
 	public Line getLine() {
