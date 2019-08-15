@@ -21,25 +21,11 @@ public final class FXEngineFXMLTest {
 
     private static final Logger LOG = HasLogging.log();
 
-    @Test
+//    @Test
     public void test() {
         List<Class<? extends Application>> classes = Arrays.asList(
             cubesystem.SphereSystemApp.class,
-//            fxpro.ch04.ReversiMain.class, fxpro.ch04.ReversiPieceTest.class, fxpro.ch07.Chart3dDemo.class,
-//            fxpro.ch08.MediaPlayerExample.class, fxsamples.bounds.BoundsPlayground.class,
-//            gaming.ex03.SlidingPuzzleLauncher.class, gaming.ex06.QuartoLauncher.class, gaming.ex07.MazeLauncher.class,
-//            gaming.ex10.MinesweeperLauncher.class, gaming.ex11.DotsLauncher.class, gaming.ex13.SolitaireLauncher.class,
-//            gaming.ex14.PacmanLauncher.class, gaming.ex15.NumberDisplayLauncher.class,
-//            gaming.ex15.RubiksCubeLauncher.class, gaming.ex17.PuzzleLauncher.class, gaming.ex19.SudokuLauncher.class,
-//            gaming.ex21.CatanApp.class, graphs.app.GraphModelLauncher.class, labyrinth.Labyrinth3D.class,
-//            labyrinth.Labyrinth3DAntiAliasing.class, labyrinth.Labyrinth3DCollisions.class,
-//            labyrinth.Labyrinth3DGhosts.class, labyrinth.Labyrinth3DKillerGhosts.class,
-//            labyrinth.Labyrinth3DKillerGhostsAndBalls.class, labyrinth.Labyrinth3DMouseControl.class,
-//            labyrinth.Labyrinth3DWallTexture.class, ml.PopulacionalPyramidExample.class, ml.TimelineExample.class,
-//            ml.WordSearchApp.class, ml.WordSuggetionApp.class, ml.WorldMapExample.class, ml.WorldMapExample2.class,
-//            ml.WorldMapExample3.class, ml.graph.Chart3dGraph.class,
             paintexp.PaintMain.class
-//            ,paintexp.svgcreator.SVGCreator.class
         );
         List<Class<?>> testApplications = FXMLCreator.testApplications(classes, false);
         WaitForAsyncUtils.waitForFxEvents();
@@ -50,7 +36,7 @@ public final class FXEngineFXMLTest {
         }
     }
 
-//    @Test
+    @Test
     public void testAllClasses() {
         List<Class<? extends Application>> classes = getClasses();
         classes.remove(SnakeLauncher.class);

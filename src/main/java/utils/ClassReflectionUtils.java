@@ -48,6 +48,16 @@ public final class ClassReflectionUtils {
         displayStyleClass("", node);
     }
 
+    public static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
+        Class<?> a = targetClass;
+        List<Method> getters = new ArrayList<>();
+        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
+            List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
+            getters.addAll(getters2);
+        }
+        return getters;
+    }
+
     public static String getDescription(Object i) {
         if (i == null) {
             return null;
@@ -221,23 +231,23 @@ public final class ClassReflectionUtils {
         return false;
     }
 
-    public static Object invoke(Object ob, Method method) {
+    public static Object invoke(Object ob, Method method, Object... args) {
         try {
-            return method.invoke(ob);
+            return method.invoke(ob, args);
         } catch (Exception e) {
             LOG.trace("", e);
             return null;
         }
     }
 
-    public static Object invoke(Object ob, String method) {
+    public static Object invoke(Object ob, String method, Object... args) {
         try {
 
-            return getGetterMethods(ob.getClass()).stream()
-                .filter(e -> StringUtils.containsIgnoreCase(e.getName(), method)).findFirst()
-                .map(FunctionEx.makeFunction(m -> m.invoke(ob))).orElse(null);
+            return getAllMethodsRecursive(ob.getClass()).stream()
+                .filter(e -> StringUtils.containsIgnoreCase(e.getName(), method))
+                .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(e -> e != null).findFirst().orElse(null);
         } catch (Exception e) {
-            LOG.trace("", e);
+            LOG.info("", e);
             return null;
         }
     }
