@@ -2,14 +2,15 @@ package graphs.entities;
 
 import static javafx.beans.binding.Bindings.when;
 
+import javafx.beans.NamedArg;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class CircleCell extends Cell {
 
-    public CircleCell(String id) {
-        super(id);
+    public CircleCell(@NamedArg("cellId") String cellId) {
+        super(cellId);
         Circle circle = new Circle(20);
         circle.setStroke(Color.BLACK);
         circle.fillProperty().bind(

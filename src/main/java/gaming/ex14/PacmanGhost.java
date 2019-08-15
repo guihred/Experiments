@@ -33,6 +33,9 @@ public class PacmanGhost extends Group implements HasLogging {
     private GhostColor color;
     private SecureRandom random = new SecureRandom();
 
+    public PacmanGhost() {
+        this(GhostColor.BLUE);
+    }
     public PacmanGhost(GhostColor color) {
         this.color = color;
         Polygon polygon = new Polygon();
@@ -75,6 +78,10 @@ public class PacmanGhost extends Group implements HasLogging {
 
     public final Circle getCircle() {
         return circle;
+    }
+
+    public GhostColor getColor() {
+        return color;
     }
 
     public GhostDirection getDirection() {
@@ -333,7 +340,6 @@ public class PacmanGhost extends Group implements HasLogging {
             return color;
         }
     }
-
     public enum GhostDirection {
         EAST(1, 0),
         NORTH(0, 1),

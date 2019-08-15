@@ -13,7 +13,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 public final class ClassReflectionUtils {
@@ -38,7 +37,6 @@ public final class ClassReflectionUtils {
 
         return classes.parallelStream().distinct().collect(Collectors.toList());
     }
-
     public static void displayCSSStyler(Scene scene, String pathname) {
         ClassReflectionUtils.displayStyleClass(scene.getRoot());
         StageHelper.displayCSSStyler(scene, pathname);
@@ -192,6 +190,27 @@ public final class ClassReflectionUtils {
         return getters;
     }
 
+    public static List<String> getNamedArgs(Class<?> targetClass) {
+        List<String> args = new ArrayList<>();
+        Constructor<?>[] constructors = targetClass.getConstructors();
+        for (Constructor<?> constructor : constructors) {
+            Annotation[][] annotations = constructor.getParameterAnnotations();
+            for (Annotation[] annotation : annotations) {
+                for (Annotation annotation2 : annotation) {
+                    if (annotation2 instanceof NamedArg) {
+                        NamedArg a = (NamedArg) annotation2;
+                        String value = a.value();
+                        if (!args.contains(value)) {
+                            args.add(value);
+                        }
+                    }
+                }
+            }
+            
+        }
+        return args;
+    }
+
     public static boolean hasBuiltArg(Class<?> targetClass, String field) {
         Constructor<?>[] constructors = targetClass.getConstructors();
         for (Constructor<?> constructor : constructors) {
@@ -211,6 +230,11 @@ public final class ClassReflectionUtils {
         return false;
     }
 
+    public static boolean hasClass(List<Class<?>> newTagClasses, Class<? extends Object> class1) {
+        return Modifier.isPublic(class1.getModifiers()) && class1.getEnclosingClass() == null
+            && newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
+    }
+
     public static boolean hasField(Class<?> targetClass, String field) {
         return hasSetterMethods(targetClass, field) || hasBuiltArg(targetClass, field);
     }
@@ -218,15 +242,11 @@ public final class ClassReflectionUtils {
     public static boolean hasSetterMethods(Class<?> targetClass, String field) {
         Class<?> a = targetClass;
 
-        for (int i = 0; a != Object.class && i < 4; i++) {
+        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
             List<Method> gett = setters(a);
-            if (gett.stream().anyMatch(m -> {
-                String fieldName = getFieldNameCase(m);
-                return fieldName.equals(field);
-            })) {
+            if (gett.stream().anyMatch(m -> getFieldNameCase(m).equals(field))) {
                 return true;
             }
-            a = a.getSuperclass();
         }
         return false;
     }
@@ -244,7 +264,7 @@ public final class ClassReflectionUtils {
         try {
 
             return getAllMethodsRecursive(ob.getClass()).stream()
-                .filter(e -> StringUtils.containsIgnoreCase(e.getName(), method))
+                .filter(e -> getFieldNameCase(e).equals(method))
                 .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(e -> e != null).findFirst().orElse(null);
         } catch (Exception e) {
             LOG.info("", e);

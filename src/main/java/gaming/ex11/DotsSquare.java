@@ -3,6 +3,7 @@ package gaming.ex11;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -16,7 +17,7 @@ public class DotsSquare extends Region {
     private final int j;
     private final Set<DotsSquare> adjacencies = new HashSet<>();
 
-    public DotsSquare(int i, int j) {
+    public DotsSquare(@NamedArg("i") int i, @NamedArg("j") int j) {
         setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
         this.i = i;
         this.j = j;

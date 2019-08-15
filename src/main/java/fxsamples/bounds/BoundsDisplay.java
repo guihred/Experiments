@@ -10,7 +10,7 @@ import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
 
 // a translucent overlay display rectangle to show the bounds of a Shape.
-class BoundsDisplay extends Rectangle {
+public class BoundsDisplay extends Rectangle {
     /**
      * 
      */
@@ -19,7 +19,7 @@ class BoundsDisplay extends Rectangle {
     private final Shape monitoredShape;
     private ChangeListener<Bounds> boundsChangeListener;
 
-    BoundsDisplay(BoundsPlayground boundsPlayground, final Shape shape) {
+    public BoundsDisplay(BoundsPlayground boundsPlayground, final Shape shape) {
         this.boundsPlayground = boundsPlayground;
         setFill(Color.LIGHTGRAY.deriveColor(1, 1, 1, 7. / 20));
         setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));

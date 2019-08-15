@@ -1,3 +1,4 @@
+
 package labyrinth;
 
 import javafx.scene.Group;
@@ -15,6 +16,9 @@ public class LabyrinthWall extends Group {
 	private final Rotate ry = new Rotate(0, Rotate.Y_AXIS);
 	private final Rotate rz = new Rotate(0, Rotate.Z_AXIS);
 
+	public LabyrinthWall() {
+	    this(SIZE,Color.LIGHTBLUE);
+	}
 	public LabyrinthWall(double size, Color color) {
 		PhongMaterial value = new PhongMaterial(color);
 		create(size, value);

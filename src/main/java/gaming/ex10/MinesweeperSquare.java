@@ -5,6 +5,7 @@
  */
 package gaming.ex10;
 
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,7 +33,11 @@ public class MinesweeperSquare extends Region {
 	private Shape flag = MinesweeperImage.FLAG.getShape(0);
 	private ObjectProperty<State> state = new SimpleObjectProperty<>(State.HIDDEN);
 
-	public MinesweeperSquare(int i, int j) {
+    public MinesweeperSquare() {
+        this(0, 0);
+    }
+
+    public MinesweeperSquare(@NamedArg("i") int i, @NamedArg("j") int j) {
 		this.i = i;
 		this.j = j;
 		setPadding(new Insets(10));

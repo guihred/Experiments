@@ -5,6 +5,7 @@
  */
 package gaming.ex06;
 
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -21,7 +22,7 @@ public class QuartoPiece extends Group {
 	private final BooleanProperty selected = new SimpleBooleanProperty(false);
 	private final PhongMaterial material;
 
-    public QuartoPiece(int number) {
+    public QuartoPiece(@NamedArg("number") int number) {
         this.number = number;
 
         material = new PhongMaterial();

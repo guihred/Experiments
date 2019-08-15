@@ -13,6 +13,9 @@ public class Axis extends Pane {
 
     private Rectangle wall;
 
+    public Axis() {
+        this(400);
+    }
     public Axis(double size) {
         // wall
         // first the wall, then the lines => overlapping of lines over walls

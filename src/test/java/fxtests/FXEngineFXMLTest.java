@@ -21,12 +21,12 @@ public final class FXEngineFXMLTest {
 
     private static final Logger LOG = HasLogging.log();
 
-//    @Test
+    @Test
     public void test() {
-        List<Class<? extends Application>> classes = Arrays.asList(
-            cubesystem.SphereSystemApp.class,
-            paintexp.PaintMain.class
-        );
+        List<Class<? extends Application>> classes = Arrays.asList(fxpro.ch04.ReversiMain.class,
+            fxpro.ch04.ReversiPieceTest.class,
+            fxsamples.bounds.BoundsPlayground.class, gaming.ex21.CatanApp.class, graphs.app.GraphModelLauncher.class,
+            ml.WordSearchApp.class, ml.WordSuggetionApp.class, paintexp.svgcreator.SVGCreator.class);
         List<Class<?>> testApplications = FXMLCreator.testApplications(classes, false);
         WaitForAsyncUtils.waitForFxEvents();
         if (!testApplications.isEmpty()) {
@@ -36,7 +36,7 @@ public final class FXEngineFXMLTest {
         }
     }
 
-    @Test
+//    @Test
     public void testAllClasses() {
         List<Class<? extends Application>> classes = getClasses();
         classes.remove(SnakeLauncher.class);
@@ -57,12 +57,9 @@ public final class FXEngineFXMLTest {
             List<String> asList = Arrays.asList("javafx.", "org.", "com.");
             ClassPath from = ClassPath.from(FXEngineFXMLTest.class.getClassLoader());
             ImmutableSet<ClassInfo> topLevelClasses = from.getTopLevelClasses();
-            topLevelClasses.stream()
-                .filter(e -> asList.stream().noneMatch(p -> e.getName().contains(p)))
-                .filter(makeTest(e -> Application.class.isAssignableFrom(e.load())))
-                .map(ClassInfo::load)
-                .map(e -> (Class<? extends Application>) e)
-                .forEach(appClass::add);
+            topLevelClasses.stream().filter(e -> asList.stream().noneMatch(p -> e.getName().contains(p)))
+                .filter(makeTest(e -> Application.class.isAssignableFrom(e.load()))).map(ClassInfo::load)
+                .map(e -> (Class<? extends Application>) e).forEach(appClass::add);
         } catch (Exception e) {
             LOG.error("", e);
         }

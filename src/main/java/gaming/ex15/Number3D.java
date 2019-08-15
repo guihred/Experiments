@@ -1,5 +1,6 @@
 package gaming.ex15;
 
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.IntegerBinding;
@@ -18,7 +19,7 @@ public class Number3D extends Group {
 //	 _ 	   _  _     _  _ _  _  _
 //	| | |  _| _||_||_ |_  ||_||_| 
 //	|_| | |_  _|  | _||_| ||_| _|
-	public Number3D(int number) {
+    public Number3D(@NamedArg("number") int number) {
 		phongMaterial.diffuseColorProperty().bind(color);
 		num.set(number);
 		Box rec1 = horizontal();
@@ -52,7 +53,11 @@ public class Number3D extends Group {
 		getChildren().addAll(rec1, rec2, rec3, rec4, rec5, rec6, rec7);
 	}
 
-	public IntegerProperty numProperty() {
+	public int getNumber() {
+        return num.get();
+    }
+
+    public IntegerProperty numProperty() {
 		return num;
 	}
 

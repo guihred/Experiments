@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.animation.FillTransition;
+import javafx.beans.NamedArg;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.VPos;
@@ -33,7 +34,7 @@ public class Terrain extends Group {
 	private final Circle circle;
 	private final FillTransition highlightTransition;
 
-	public Terrain(final ResourceType type) {
+    public Terrain(@NamedArg("type") final ResourceType type) {
 		this.type = type;
 		circle = new SimpleCircleBuilder().radius(RADIUS / 5.).fill(Color.BEIGE).visible(type != ResourceType.DESERT)
 				.stroke(Color.BLACK).build();
@@ -155,7 +156,9 @@ public class Terrain extends Group {
 			double y = Math.sin(off + d * i) * RADIUS;
 			polygon.getPoints().addAll(x, y);
 		}
-		polygon.setFill(CatanResource.newPattern(type.getTerrain()));
+        if (type != null) {
+            polygon.setFill(CatanResource.newPattern(type.getTerrain()));
+        }
 		return polygon;
 	}
 

@@ -2,6 +2,7 @@ package gaming.ex14;
 
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
+import javafx.beans.NamedArg;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
@@ -16,7 +17,7 @@ public class PacmanBall extends Circle {
         .addKeyFrame(Duration.seconds(1. / 10), radiusProperty(), 15).autoReverse(true).cycleCount(Animation.INDEFINITE)
         .build();
 
-    public PacmanBall(Double x, Double y) {
+    public PacmanBall(@NamedArg("centerX") double x, @NamedArg("centerY") double y) {
         super(x, y, 5, Color.WHITE);
         special.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -25,6 +26,12 @@ public class PacmanBall extends Circle {
                 timeline.stop();
             }
         });
+    }
+
+    public PacmanBall(@NamedArg("centerX") double x, @NamedArg("centerY") double y,
+        @NamedArg("special") boolean special) {
+        this(x, y);
+        setSpecial(special);
     }
 
     public final boolean isSpecial() {

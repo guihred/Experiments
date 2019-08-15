@@ -2,7 +2,6 @@ package fxsamples.bounds;
 
 import java.util.stream.Stream;
 import javafx.application.Application;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -16,7 +15,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -56,10 +58,8 @@ public class BoundsPlayground extends Application {
         Circle[] circles = { greenCircle, redCircle, anchor1, anchor2 };
         for (Circle circle : circles) {
             enableDrag(circle);
-            circle.centerXProperty()
-                .addListener((ob, oldValue, newValue) -> testIntersections());
-            circle.centerYProperty()
-                .addListener((ob, oldValue, newValue) -> testIntersections());
+            circle.centerXProperty().addListener((ob, oldValue, newValue) -> testIntersections());
+            circle.centerYProperty().addListener((ob, oldValue, newValue) -> testIntersections());
         }
         // define an overlay to show the layout bounds of the scene's shapes.
         Group layoutBoundsOverlay = new Group();
@@ -227,21 +227,6 @@ public class BoundsPlayground extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    // an anchor displayed around a point.
-    class Anchor extends Circle {
-        Anchor(String id, DoubleProperty x, DoubleProperty y) {
-            super(x.get(), y.get(), 10);
-            setId(id);
-            setFill(Color.GOLD.deriveColor(1, 1, 1, 0.5));
-            setStroke(Color.GOLD);
-            setStrokeWidth(2);
-            setStrokeType(StrokeType.OUTSIDE);
-
-            x.bind(centerXProperty());
-            y.bind(centerYProperty());
-        }
     }
 
     // a helper enumeration of the various types of bounds we can work with.

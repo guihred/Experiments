@@ -40,27 +40,27 @@ public class Cell extends Pane {
 		text.setText(cellId + "\n" + s);
 	}
 
-	public String getText() {
-		return text.getText();
-	}
-
-    public ObjectProperty<Color> colorProperty() {
+	public ObjectProperty<Color> colorProperty() {
         return color;
     }
-	public List<Cell> getCellChildren() {
+
+    public List<Cell> getCellChildren() {
 		return children;
 	}
 
-	public String getCellId() {
+    public String getCellId() {
 		return cellId;
 	}
-
 	public List<Cell> getCellParents() {
 		return parents;
 	}
 
 	public Color getColor() {
 		return color.get();
+	}
+
+	public String getText() {
+		return text.getText();
 	}
 
 	public CellType getType() {
@@ -85,6 +85,10 @@ public class Cell extends Pane {
 
 	public void setSelected(boolean articulation) {
 		selected.set(articulation);
+	}
+
+	public void setText(String s) {
+	    addText(s);
 	}
 
 	public void setView(Node view) {

@@ -3,6 +3,7 @@ package gaming.ex19;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -35,7 +36,10 @@ public final class SudokuSquare extends Region {
     private boolean permanent = true;
     private BooleanProperty wrong = new SimpleBooleanProperty(false);
 
-	public SudokuSquare(int i, int j) {
+    public SudokuSquare() {
+        this(-1, -1);
+    }
+    public SudokuSquare(@NamedArg("row") int i, @NamedArg("col") int j) {
 		row = i;
 		col = j;
 		setPadding(new Insets(10));

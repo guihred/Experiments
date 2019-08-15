@@ -33,9 +33,10 @@ public class PacmanModel implements HasLogging {
     public static final int MAZE_SIZE = 5;
     public static final double SQUARE_SIZE = 60;
     private final List<PacmanBall> balls = DoubleStream.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE)
-        .limit(MAZE_SIZE * 2L).mapToObj(Double::valueOf)
-        .flatMap(d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE).limit(MAZE_SIZE * 2L)
-            .mapToObj((double e) -> new PacmanBall(d, e)))
+        .limit(MAZE_SIZE * 2L)
+        .mapToObj(d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE).limit(MAZE_SIZE * 2L)
+            .mapToObj(e -> new PacmanBall(d, e)))
+        .flatMap(e -> e)
         .collect(Collectors.toList());
 
     private final List<PacmanGhost> ghosts = Stream

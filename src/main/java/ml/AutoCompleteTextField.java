@@ -15,9 +15,9 @@ import javafx.scene.text.TextFlow;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 
 public class AutoCompleteTextField extends TextField {
-    private final SortedSet<String> entries;
+    private SortedSet<String> entries = new TreeSet<>();
     private ObservableList<String> filteredEntries = FXCollections.observableArrayList();
-    private ContextMenu entriesPopup;
+    private ContextMenu entriesPopup = new ContextMenu();
     private boolean caseSensitive;
     private boolean popupHidden;
     private String textOccurenceStyle = "-fx-font-weight: bold; -fx-fill: red;";
@@ -27,7 +27,6 @@ public class AutoCompleteTextField extends TextField {
         super();
         entries = entrySet == null ? new TreeSet<>() : entrySet;
         filteredEntries.addAll(entries);
-        entriesPopup = new ContextMenu();
         textProperty().addListener((obs, ds, sb2) -> onTextChange(word2Vec));
         focusedProperty().addListener((obs, a, a2) -> entriesPopup.hide());
     }

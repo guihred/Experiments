@@ -1,5 +1,6 @@
 package gaming.ex03;
 
+import javafx.beans.NamedArg;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
@@ -14,7 +15,7 @@ public class SlidingPuzzleSquare extends Region {
 	private StackPane stackPane;
 	private Text text = new Text();
 
-	public SlidingPuzzleSquare(int number) {
+    public SlidingPuzzleSquare(@NamedArg("number") int number) {
         this.number = new SimpleIntegerProperty(number);
         setPadding(new Insets(10));
         if (isEmpty()) {
@@ -54,5 +55,9 @@ public class SlidingPuzzleSquare extends Region {
 
     public final boolean isEmpty() {
         return number.get() == SlidingPuzzleModel.MAP_SIZE * SlidingPuzzleModel.MAP_SIZE;
+    }
+
+    public void setNumber(int value) {
+        number.set(value);
     }
 }

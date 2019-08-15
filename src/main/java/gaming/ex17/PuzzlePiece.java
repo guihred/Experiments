@@ -1,5 +1,6 @@
 package gaming.ex17;
 
+import javafx.beans.NamedArg;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -20,17 +21,24 @@ public class PuzzlePiece extends Group {
     private double height = 50;
     private int x;
     private int y;
-    public PuzzlePiece(int x, int y, double width, double height) {
+
+    public PuzzlePiece() {
+    }
+
+    public PuzzlePiece(@NamedArg("x") int x, @NamedArg("y") int y, @NamedArg("width") double width,
+        @NamedArg("height") double height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-
-
     }
 
     public PuzzlePath getDown() {
         return down;
+    }
+
+    public double getHeight() {
+        return height;
     }
 
     public ImagePattern getImagePattern() {
@@ -43,7 +51,7 @@ public class PuzzlePiece extends Group {
         return left;
     }
 
-	public Path getPath() {
+    public Path getPath() {
         if (path == null) {
             path = new Path();
 
@@ -53,10 +61,10 @@ public class PuzzlePiece extends Group {
             path.getElements().addAll(down.getPath(-width, 0));
             path.getElements().addAll(left.getPath(0, -height));
 
-			ImagePattern imagePattern1 = getImagePattern();
+            ImagePattern imagePattern1 = getImagePattern();
             path.prefWidth(width);
             path.prefHeight(height);
-			path.setFill(imagePattern1);
+            path.setFill(imagePattern1);
         }
         return path;
     }
@@ -69,6 +77,10 @@ public class PuzzlePiece extends Group {
         return up;
     }
 
+    public double getWidth() {
+        return width;
+    }
+
     public int getX() {
         return x;
     }
@@ -78,8 +90,8 @@ public class PuzzlePiece extends Group {
     }
 
     public void move(double x1, double y1) {
-		setLayoutX(getLayoutX() + x1);
-		setLayoutY(getLayoutY() + y1);
+        setLayoutX(getLayoutX() + x1);
+        setLayoutY(getLayoutY() + y1);
     }
 
     public void move(Point3D subtract) {

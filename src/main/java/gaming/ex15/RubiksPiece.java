@@ -19,7 +19,11 @@ public class RubiksPiece extends Group {
 	private final int id;
     private Map<Point3D, Rotate> rotations = new HashMap<>();
 
-	public RubiksPiece(double size) {
+    public RubiksPiece() {
+        this(50);
+    }
+
+    public RubiksPiece(double size) {
 		id = ++count;
 
 		// back face

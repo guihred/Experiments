@@ -2,6 +2,7 @@ package gaming.ex07;
 
 import java.util.*;
 import java.util.Map.Entry;
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -24,7 +25,7 @@ public class MazeSquare extends BorderPane implements HasLogging {
 	private List<BoundingBox> bounds;
 	private List<MazeSquare> adjacents;
 
-	public MazeSquare(int i, int j) {
+    public MazeSquare(@NamedArg("i") int i, @NamedArg("j") int j) {
 		this.i = i;
 		this.j = j;
 		setStyle("-fx-background-color:green;");
@@ -99,11 +100,19 @@ public class MazeSquare extends BorderPane implements HasLogging {
 		return east;
 	}
 
-	public final boolean isEast() {
+	public int getI() {
+        return i;
+    }
+
+	public int getJ() {
+        return j;
+    }
+
+    public final boolean isEast() {
 		return east.get();
 	}
 
-	public boolean isInBounds(double x, double y) {
+    public boolean isInBounds(double x, double y) {
 		if (bounds == null) {
 
             double layoutX = i * MazeSquare.SQUARE_SIZE;
@@ -124,15 +133,15 @@ public class MazeSquare extends BorderPane implements HasLogging {
 
 	}
 
-    public final boolean isNorth() {
+	public final boolean isNorth() {
 		return north.get();
 	}
 
-    public boolean isSouth() {
+	public boolean isSouth() {
         return south.get();
     }
 
-	public final boolean isVisited() {
+    public final boolean isVisited() {
         return visited.get();
     }
 
@@ -140,7 +149,7 @@ public class MazeSquare extends BorderPane implements HasLogging {
 		return west.get();
 	}
 
-    public BooleanProperty northProperty() {
+	public BooleanProperty northProperty() {
 		return north;
 	}
 
@@ -148,7 +157,7 @@ public class MazeSquare extends BorderPane implements HasLogging {
 		this.east.set(east);
 	}
 
-	public final void setNorth(final boolean north) {
+    public final void setNorth(final boolean north) {
 		this.north.set(north);
 	}
 
@@ -156,7 +165,7 @@ public class MazeSquare extends BorderPane implements HasLogging {
 		south.set(v);
 	}
 
-    public final void setVisited(final boolean visited) {
+	public final void setVisited(final boolean visited) {
 		this.visited.set(visited);
 	}
 
@@ -164,14 +173,14 @@ public class MazeSquare extends BorderPane implements HasLogging {
 		this.west.set(west);
 	}
 
-	public BooleanProperty southProperty() {
+    public BooleanProperty southProperty() {
 		return south;
 	}
 
-	@Override
-	public String toString() {
-		return "(" + i + ", " + j + ")";
-	}
+    @Override
+    public String toString() {
+        return "(" + i + ", " + j + ")";
+    }
 
     public BooleanProperty westProperty() {
 		return west;
