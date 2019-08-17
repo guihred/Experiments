@@ -6,7 +6,6 @@ import static utils.ClassReflectionUtils.hasField;
 import static utils.ClassReflectionUtils.mapProperty;
 
 import com.google.common.collect.ImmutableMap;
-import gaming.ex21.CatanApp;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -17,24 +16,19 @@ import javafx.application.Platform;
 import javafx.event.EventTarget;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Point3D;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.SelectionModel;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.Effect;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.ConstraintsBase;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
-import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javax.xml.parsers.DocumentBuilder;
@@ -49,6 +43,8 @@ import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import paintexp.svgcreator.SVGCreator;
 import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -61,27 +57,34 @@ public final class FXMLCreator {
         "localToSceneTransform", "parentPopup", "cssMetaData", "classCssMetaData", "boundsInParent", "boundsInLocal",
         "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
     private static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
-        Integer.class, Boolean.class, Pos.class, Orientation.class, TextAlignment.class, KeyCode.class, Enum.class,
-        StrokeLineJoin.class, KeyCombination.class, KeyCodeCombination.class);
+        Long.class,
+        Integer.class, Boolean.class, Enum.class, KeyCombination.class);
     private static final List<Class<?>> REFERENCE_CLASSES = Arrays.asList(ToggleGroup.class);
     private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class);
     private static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class, Font.class, Point3D.class,
-        Material.class, PropertyValueFactory.class, ConstraintsBase.class, EventTarget.class, Effect.class,
+        Material.class, PropertyValueFactory.class, ConstraintsBase.class, EventTarget.class, Effect.class, Path.class,
         StringConverter.class, SelectionModel.class);
     private static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
         .<String, Function<Collection<?>, String>>builder()
         .put("styleClass", l -> l.stream().map(Object::toString).collect(Collectors.joining(" "))).build();
     private static final Map<String, String> PROPERTY_REMAP = ImmutableMap.<String, String>builder()
-        .put("gridpane-column", "GridPane.columnIndex").put("gridpane-row", "GridPane.rowIndex").build();
+        .put("gridpane-column", "GridPane.columnIndex").put("gridpane-row", "GridPane.rowIndex")
+        .put("hbox-hgrow", "HBox.hgrow").put("vbox-vgrow", "VBox.vgrow").put("tilepane-alignment", "TilePane.alignment")
+        .put("stackpane-alignment", "StackPane.alignment").put("pane-bottom-anchor", "AnchorPane.bottomAnchor")
+        .put("pane-right-anchor", "AnchorPane.rightAnchor").put("pane-left-anchor", "AnchorPane.leftAnchor")
+        .put("pane-top-anchor", "AnchorPane.topAnchor").put("borderpane-alignment", "BorderPane.alignment")
+        .put("gridpane-halignment", "GridPane.halignment").put("gridpane-valignment", "GridPane.valignment")
+        .put("gridpane-column-span", "GridPane.columnSpan").put("gridpane-row-span", "GridPane.rowSpan").build();
 
     private FXMLCreator() {
     }
 
     public static void createXMLFile(Parent node, File file) {
         try {
-
-            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setAttribute("http://javax.xml.XMLConstants/feature/secure-processing", true);
+            DocumentBuilder documentBuilder = factory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
             Map<Object, org.w3c.dom.Node> nodeMap = new LinkedHashMap<>();
             Set<String> packages = new LinkedHashSet<>();
@@ -107,6 +110,7 @@ public final class FXMLCreator {
                             referencedNodes);
                     }
                 });
+                referencedNodes.computeIfAbsent(node2, (f) -> newName(referencedNodes, f));
                 if (referencedNodes.containsKey(node2)) {
                     createElement.setAttribute("fx:id", referencedNodes.get(node2));
                 }
@@ -130,7 +134,6 @@ public final class FXMLCreator {
             transformer.transform(domSource, streamResult);
 
         } catch (Exception e) {
-            LOG.error("", e);
             throw new RuntimeIOException("ERROR in file " + file.getName(), e);
         }
     }
@@ -153,6 +156,8 @@ public final class FXMLCreator {
         } catch (Exception e) {
             LOG.trace("", e);
             List<String> fields = ClassReflectionUtils.getNamedArgs(cl);
+            ClassReflectionUtils.getGetterMethodsRecursive(cl, 1).stream().map(ClassReflectionUtils::getFieldNameCase)
+                .filter(t -> !fields.contains(t)).forEach(fields::add);
             Map<String, Object> collect = fields.stream().filter(m -> ClassReflectionUtils.invoke(ob1, m) != null)
                 .collect(toMap(m -> m, m -> ClassReflectionUtils.invoke(ob1, m), (a, b) -> a != null ? a : b));
             diffFields.putAll(collect);
@@ -182,15 +187,14 @@ public final class FXMLCreator {
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
-            LOG.error("", e);
             throw new RuntimeIOException("ERROR in file " + file, e);
         }
         return primaryStage;
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> asList = Arrays.asList(CatanApp.class);
-        testApplications(asList, true);
+        List<Class<? extends Application>> asList = Arrays.asList(SVGCreator.class);
+//        testApplications(asList, false);
         for (Class<? extends Application> class1 : asList) {
             duplicate(class1.getSimpleName() + ".fxml");
         }
@@ -210,51 +214,53 @@ public final class FXMLCreator {
         ResourceFXUtils.initializeFX();
         List<Class<?>> errorClasses = new ArrayList<>();
         for (Class<? extends Application> class1 : asList) {
+            List<Stage> stages = new ArrayList<>();
+
             Platform.runLater(RunnableEx.make(() -> {
+                LOG.info("INITIALIZING {}", class1.getSimpleName());
                 Application a = class1.newInstance();
                 Stage primaryStage = new Stage();
+                stages.add(primaryStage);
                 primaryStage.setTitle(class1.getSimpleName());
                 a.start(primaryStage);
                 primaryStage.toBack();
                 File outFile = ResourceFXUtils.getOutFile(class1.getSimpleName() + ".fxml");
-                createXMLFile(primaryStage.getScene().getRoot(), outFile);
+                Parent root = primaryStage.getScene().getRoot();
+                root.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+                createXMLFile(root, outFile);
                 Stage duplicateStage = duplicateStage(outFile, primaryStage.getTitle());
+                stages.add(duplicateStage);
                 if (close) {
-                    primaryStage.close();
-                    duplicateStage.close();
+                    stages.forEach(Stage::close);
                 }
                 LOG.info("{} successfull", class1.getSimpleName());
             }, error -> {
-                LOG.error("ERROR IN " + class1, error);
+                LOG.error("ERROR IN {} ", class1);
+                LOG.error("", error);
                 errorClasses.add(class1);
+                if (close) {
+                    stages.forEach(Stage::close);
+                }
             }));
 
         }
         return errorClasses;
     }
 
+    private static boolean containsSame(List<Object> allNode, Object fieldValue) {
+        return allNode.stream().anyMatch(ob -> ob == fieldValue);
+    }
+
     private static Object getInstance(Class<?> cl) {
         try {
             return cl.newInstance();
         } catch (Exception e) {
-            LOG.trace("", e);
-        }
-        try {
-            return cl.getConstructors()[0].newInstance(100);
-        } catch (Exception e) {
-            LOG.trace("", e);
-        }
-        try {
-            return cl.getConstructors()[0].newInstance("");
-        } catch (Exception e) {
-            LOG.trace("", e);
-        }
-        try {
-            return cl.getConstructors()[0].newInstance((Object[]) null);
-        } catch (Exception e) {
-            LOG.trace("", e);
             throw new RuntimeIOException("ERROR IN INSTANTIATION", e);
         }
+    }
+
+    private static String newName(Map<Object, String> referencedNodes, Object f) {
+        return f.getClass().getSimpleName() + referencedNodes.size();
     }
 
     private static void processField(Document document, Map<Object, org.w3c.dom.Node> nodeMap, List<Object> allNode,
@@ -263,16 +269,36 @@ public final class FXMLCreator {
 
         if (IGNORE.contains(fieldName)) {
             return;
-        } else if (allNode.stream().anyMatch(ob -> ob == fieldValue)) {
+        } else if (containsSame(allNode, fieldValue)) {
             List<String> namedArgs = ClassReflectionUtils.getNamedArgs(parent.getClass());
             if (namedArgs.contains(fieldName)) {
-                Node node = nodeMap.get(fieldValue);
-                List<Object> collect = nodeMap.entrySet().stream().filter(e -> e.getValue() == node)
-                    .map(e -> e.getKey()).collect(Collectors.toList());
-                if (!referencedNodes.containsKey(fieldValue)) {
-                    for (int i = 0; i < collect.size(); i++) {
-                        Object object = collect.get(i);
-                        referencedNodes.put(object, object.getClass().getSimpleName() + referencedNodes.size());
+                String newFieldId = referencedNodes.computeIfAbsent(fieldValue,
+                    (f) -> newName(referencedNodes, f));
+                element.setAttribute(fieldName, "$" + newFieldId);
+                if (allNode.indexOf(parent) < allNode.indexOf(fieldValue)) {
+                    NodeList elementsByTagName = document.getElementsByTagName("fx:define");
+                    if (elementsByTagName.getLength() == 0) {
+                        Element firstChild = (Element) document.getFirstChild();
+                        Element createElement = document.createElement("fx:define");
+                        NodeList childNodes = firstChild.getChildNodes();
+                        List<Node> arrayList = new ArrayList<>();
+                        for (int i = 0; i < childNodes.getLength(); i++) {
+                            Node item = childNodes.item(i);
+                            arrayList.add(item);
+                            firstChild.removeChild(item);
+                        }
+                        firstChild.appendChild(createElement);
+                        for (int i = 0; i < arrayList.size(); i++) {
+                            Node item = arrayList.get(i);
+                            firstChild.appendChild(item);
+                        }
+                    }
+                    Node node = nodeMap.get(fieldValue);
+                    if (!node.getNodeName().equals("fx:define")) {
+                        Element referenceTag = document.createElement("fx:reference");
+                        referenceTag.setAttribute("source", newFieldId);
+                        node.appendChild(referenceTag);
+                        nodeMap.put(fieldValue, document.getElementsByTagName("fx:define").item(0));
                     }
                 }
             }
@@ -287,17 +313,6 @@ public final class FXMLCreator {
             if (FORMAT_LIST.containsKey(fieldName)) {
                 String apply = FORMAT_LIST.get(fieldName).apply(list);
                 element.setAttribute(fieldName, apply);
-            } else if (list.stream().filter(e -> e != null).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
-                if (list.stream().anyMatch(o -> !allNode.contains(o))) {
-                    Element createElement2 = document.createElement(fieldName);
-                    element.appendChild(createElement2);
-                    for (Object object : list) {
-                        if (object != null && !allNode.contains(object)) {
-                            nodeMap.put(object, createElement2);
-                            allNode.add(object);
-                        }
-                    }
-                }
             } else if (list.stream().filter(e -> e != null).anyMatch(o -> hasClass(ATTRIBUTE_CLASSES, o.getClass()))) {
                 Element createElement2 = document.createElement(fieldName);
                 element.appendChild(createElement2);
@@ -308,13 +323,30 @@ public final class FXMLCreator {
                     createElement.setAttribute("fx:factory", "observableArrayList");
                     createElement2 = createElement;
                 }
-
                 for (Object object : list) {
                     if (object != null) {
                         packages.add(object.getClass().getPackage().getName());
                         Element createElement3 = document.createElement(object.getClass().getSimpleName());
                         createElement3.setAttribute("fx:value", object + "");
                         createElement2.appendChild(createElement3);
+                    }
+                }
+            } else if (list.stream().filter(e -> e != null).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
+                if (list.stream().anyMatch(o -> !containsSame(allNode, o))) {
+                    Element createElement2 = document.createElement(fieldName);
+                    element.appendChild(createElement2);
+                    if (hasField(parent.getClass(), fieldName)) {
+                        Element createElement = document.createElement("FXCollections");
+                        packages.add("javafx.collections");
+                        createElement2.appendChild(createElement);
+                        createElement.setAttribute("fx:factory", "observableArrayList");
+                        createElement2 = createElement;
+                    }
+                    for (Object object : list) {
+                        if (object != null && !containsSame(allNode, object)) {
+                            nodeMap.put(object, createElement2);
+                            allNode.add(object);
+                        }
                     }
                 }
             } else {
@@ -339,6 +371,8 @@ public final class FXMLCreator {
                     String key = PROPERTY_REMAP.get(string);
                     String value = Objects.toString(v);
                     element.setAttribute(key, value);
+                } else {
+                    LOG.info("property {} value {} NOT IN PROPERTY_REMAP", k, v);
                 }
             });
         } else if (hasClass(REFERENCE_CLASSES, fieldValue.getClass())) {
@@ -365,12 +399,10 @@ public final class FXMLCreator {
             if (!hasClass(ATTRIBUTE_CLASSES, fieldValue.getClass())) {
                 Class<? extends Object> class1 = fieldValue.getClass();
                 List<Class<?>> allClasses = ClassReflectionUtils.allClasses(class1);
-                LOG.info(" {} not in ATTRIBUTE_CLASSES", allClasses, parent.getClass());
+                LOG.info(" {} not in ATTRIBUTE_CLASSES", allClasses);
             }
             if (hasField(parent.getClass(), fieldName)) {
                 LOG.info("{} does have {}", parent.getClass(), fieldName);
-            } else {
-                LOG.info("{} does not have {}", parent.getClass(), fieldName);
             }
 
         }

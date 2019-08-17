@@ -7,6 +7,7 @@ package gaming.ex01;
 
 import static gaming.ex01.SnakeModel.MAP_SIZE;
 
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,7 +24,8 @@ public class SnakeSquare extends Region {
 
     private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
 
-    public SnakeSquare(int i, int j) {
+    public SnakeSquare(@NamedArg("i") int i, @NamedArg("j") int j) {
+
         setPrefSize(10, 10);
         styleProperty().bind(Bindings.when(state.isEqualTo(SnakeState.FOOD)).then("-fx-background-color:black;")
             .otherwise(Bindings.when(state.isEqualTo(SnakeState.SNAKE)).then("-fx-background-color:green;")

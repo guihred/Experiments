@@ -4,6 +4,7 @@ import graphs.entities.Edge;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.NamedArg;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -29,7 +30,7 @@ public class Port extends Group {
 
     private HBox status;
 
-    public Port(final ResourceType type) {
+    public Port(@NamedArg("type") ResourceType type) {
         this.type = type;
         Group e = new Group();
         e.getChildren().add(newBoat());

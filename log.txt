@@ -1,665 +1,190 @@
- INFO: FXMLCreator:285 -  [class javafx.scene.AccessibleRole, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.SubScene does have accessibleRole 
- INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have typeSelector 
- INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have pressed 
- INFO: FXMLCreator:285 -  [class javafx.geometry.NodeOrientation, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have effectiveNodeOrientation 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.SubScene does have rotationAxis 
- INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have focused 
- INFO: FXMLCreator:285 -  [class javafx.geometry.NodeOrientation, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.SubScene does have nodeOrientation 
- INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have hover 
- INFO: FXMLCreator:285 -  [class javafx.scene.CacheHint, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.SubScene does have cacheHint 
- INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have disabled 
- INFO: FXMLCreator:285 -  [class javafx.scene.SceneAntialiasing] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.SubScene does have antiAliasing 
- INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have resizable 
- INFO: FXMLCreator:285 -  [class javafx.scene.DepthTest, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.SubScene does have depthTest 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.SubScene does not have properties 
- INFO: FXMLCreator:290 - class javafx.scene.PerspectiveCamera does not have fixedEyeAtCameraZero 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Translate does not have tz 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Translate does not have identity 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Translate does not have type2D 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myz 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mzy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mzz 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have type2D 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myx 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have myy 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have identity 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rx 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have ry 
- INFO: FXMLCreator:285 -  [class javafx.scene.transform.Rotate, class javafx.scene.transform.Transform, interface java.lang.Cloneable, interface javafx.event.EventTarget] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class cubesystem.Xsphere does not have rz 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.PhongMaterial, class javafx.scene.paint.Material] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class cubesystem.Xsphere does have material 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Point3D] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.transform.Rotate does have axis 
- INFO: FXMLCreator:290 - class javafx.scene.transform.Rotate does not have mxy 
- INFO: FXMLCreator:205 - SphereSystemApp successfull 
- INFO: FXMLCreator:290 - class javafx.scene.layout.BorderPane does not have height 
- INFO: FXMLCreator:290 - class javafx.scene.layout.BorderPane does not have width 
- INFO: FXMLCreator:290 - class javafx.scene.layout.VBox does not have height 
- INFO: FXMLCreator:290 - class javafx.scene.layout.VBox does not have width 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have insets 
- INFO: FXMLCreator:285 -  [class javafx.geometry.BoundingBox, class javafx.geometry.Bounds] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class graphs.entities.ZoomableScrollPane does have viewportBounds 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ScrollPane$ScrollBarPolicy, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class graphs.entities.ZoomableScrollPane does have hbarPolicy 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ScrollPane$ScrollBarPolicy, class java.lang.Enum, interface java.lang.Comparable, interface java.io.Serializable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class graphs.entities.ZoomableScrollPane does have vbarPolicy 
- INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have height 
- INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have resizable 
- INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have scaleValue 
- INFO: FXMLCreator:290 - class graphs.entities.ZoomableScrollPane does not have width 
- INFO: FXMLCreator:290 - class javafx.scene.layout.GridPane does not have height 
- INFO: FXMLCreator:290 - class javafx.scene.layout.GridPane does not have width 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.TableView$TableViewFocusModel, class javafx.scene.control.TableFocusModel, class javafx.scene.control.FocusModel] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.TableView does have focusModel 
- INFO: FXMLCreator:268 - attribute items type javafx.scene.image.WritableImage of class javafx.scene.control.TableView not set 
- INFO: FXMLCreator:269 - value [javafx.scene.image.WritableImage@170f73bf] 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.TableView$TableViewArrayListSelectionModel, class javafx.scene.control.TableView$TableViewSelectionModel, class javafx.scene.control.TableSelectionModel, class javafx.scene.control.MultipleSelectionModelBase, class javafx.scene.control.MultipleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.TableView does have selectionModel 
- INFO: FXMLCreator:290 - class javafx.scene.control.MenuBar does not have height 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.control.MenuBar does not have insets 
- INFO: FXMLCreator:290 - class javafx.scene.control.MenuBar does not have width 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuBar does have impl_traversalEngine 
- INFO: FXMLCreator:290 - class javafx.scene.layout.HBox does not have height 
- INFO: FXMLCreator:290 - class javafx.scene.layout.HBox does not have width 
- INFO: FXMLCreator:290 - class javafx.scene.layout.HBox does not have height 
- INFO: FXMLCreator:290 - class javafx.scene.layout.HBox does not have width 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.ToggleGroup] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.ToggleButton does have toggleGroup 
- INFO: FXMLCreator:290 - class javafx.scene.layout.StackPane does not have height 
- INFO: FXMLCreator:285 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.layout.StackPane does not have insets 
- INFO: FXMLCreator:290 - class javafx.scene.layout.StackPane does not have width 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleTableViewBuilder$$Lambda$340/89579584, interface javafx.util.Callback] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.TableColumn does have cellFactory 
- INFO: FXMLCreator:285 -  [class javafx.scene.control.TableColumn$$Lambda$337/167453371, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.TableColumn does have onEditCommit 
- INFO: FXMLCreator:290 - class javafx.scene.control.TableColumn does not have width 
- INFO: FXMLCreator:290 - class javafx.scene.layout.StackPane does not have height 
- INFO: FXMLCreator:290 - class javafx.scene.layout.GridPane does not have height 
- INFO: FXMLCreator:290 - class javafx.scene.layout.GridPane does not have width 
- INFO: FXMLCreator:285 -  [class graphs.entities.ZoomableScrollPane$$Lambda$180/182269298, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.Group does have onScroll 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.SelectFreeTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Polygon, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.SelectFreeTool does not have polygon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.SelectFreeTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.EraserTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.EraserTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.BucketTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.EyedropTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.EyedropTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.ImageCursor, class javafx.scene.Cursor] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.EyedropTool does not have mouseCursor 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.WandTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.WandTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.PencilTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.BrushTool does not have icon 
- INFO: FXMLCreator:285 -  [class java.util.EnumMap, interface java.io.Serializable, interface java.lang.Cloneable, class java.util.AbstractMap, interface java.util.Map] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.BrushTool does not have mouseCursorMap 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.SprayTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.SelectRectTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.SelectRectTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.RotateTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.RotateTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.TextTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.text.Text, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.TextTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.text.Text, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.TextTool does not have text 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Line, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.LineTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Line, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.LineTool does not have line 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.CubicCurve, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.CurveTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.CubicCurve, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.CurveTool does not have line 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.RectangleTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.RectangleTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Polygon, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.PolygonTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Polyline, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.PolygonTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Line, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.PolygonTool does not have line 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Ellipse, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.EllipseTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Ellipse, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.EllipseTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.PictureTool does not have area 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.PictureTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.SVGPath, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.BlurTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.ImageView, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.BorderTool does not have icon 
- INFO: FXMLCreator:285 -  [class javafx.scene.shape.Rectangle, class javafx.scene.shape.Shape, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class paintexp.tool.BorderTool does not have area 
- INFO: FXMLCreator:290 - class javafx.scene.layout.VBox does not have height 
- INFO: FXMLCreator:290 - class javafx.scene.layout.VBox does not have width 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class paintexp.PaintMain$$Lambda$154/1147866048, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class paintexp.PaintMain$$Lambda$170/7697414, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class paintexp.PaintMain$$Lambda$174/1715633826, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class javafx.scene.input.KeyCodeCombination, class javafx.scene.input.KeyCombination] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have accelerator 
- INFO: FXMLCreator:285 -  [class simplebuilder.SimpleMenuBarBuilder$$Lambda$149/2093340989, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.control.MenuItem does have onAction 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:285 -  [class paintexp.PaintController$$Lambda$188/598961353, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have onMouseClicked 
- INFO: FXMLCreator:285 -  [class com.sun.javafx.collections.ObservableMapWrapper, interface javafx.collections.ObservableMap] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:290 - class javafx.scene.shape.Rectangle does not have properties 
- INFO: FXMLCreator:268 - attribute strokeDashArray type java.lang.Double of class javafx.scene.shape.SVGPath not set 
- INFO: FXMLCreator:269 - value [1.0, 2.0, 1.0, 2.0] 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:268 - attribute strokeDashArray type java.lang.Double of class javafx.scene.shape.Rectangle not set 
- INFO: FXMLCreator:269 - value [1.0, 2.0, 1.0, 2.0] 
- INFO: FXMLCreator:268 - attribute points type java.lang.Double of class javafx.scene.shape.Polyline not set 
- INFO: FXMLCreator:269 - value [5.0, 0.0, -4.045084971874736, 2.9389262614623664, 1.5450849718747361, -4.755282581475768, 1.5450849718747373, 4.755282581475767, -4.045084971874737, -2.938926261462365] 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:285 -  [class javafx.scene.paint.ImagePattern, class javafx.scene.paint.Paint] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.shape.Rectangle does have fill 
- INFO: FXMLCreator:285 -  [class javafx.scene.image.WritableImage, class javafx.scene.image.Image] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:288 - class javafx.scene.image.ImageView does have image 
- INFO: FXMLCreator:290 - class javafx.scene.text.Font does not have style 
- INFO: FXMLCreator:290 - class javafx.scene.text.Font does not have family 
- INFO: FXMLCreator:205 - PaintMain successfull 
- INFO: FXEngineFXMLTest:49 - All classes successfull 
-java.util.concurrent.RejectedExecutionException: Task com.sun.javafx.tk.quantum.PaintRenderJob@5163737d rejected from com.sun.javafx.tk.quantum.QuantumRenderer@66a0ac9f[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 8]
-	at java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2063)
-	at java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:830)
-	at java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1379)
-	at java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:112)
-	at com.sun.javafx.tk.quantum.QuantumRenderer.submitRenderJob(QuantumRenderer.java:218)
-	at com.sun.javafx.tk.quantum.QuantumToolkit.addRenderJob(QuantumToolkit.java:452)
-	at com.sun.javafx.tk.quantum.ViewScene.repaint(ViewScene.java:140)
-	at com.sun.javafx.tk.quantum.PaintCollector.renderAll(PaintCollector.java:435)
-	at com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:519)
-	at com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:498)
-	at com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:491)
-	at com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$403(QuantumToolkit.java:319)
+ INFO: FXMLCreator:220 - INITIALIZING MediaPlayerExample 
+ERROR: FXMLCreator:238 - ERROR IN class fxpro.ch08.MediaPlayerExample  
+ERROR: FXMLCreator:239 -  
+java.lang.NullPointerException: null
+	at schema.sngpc.FXMLCreator.lambda$13(FXMLCreator.java:228)
+	at utils.RunnableEx.lambda$make$1(RunnableEx.java:31)
+	at com.sun.javafx.application.PlatformImpl.lambda$null$172(PlatformImpl.java:295)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at com.sun.javafx.application.PlatformImpl.lambda$runLater$173(PlatformImpl.java:294)
 	at com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
 	at com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
 	at com.sun.glass.ui.win.WinApplication.lambda$null$147(WinApplication.java:177)
 	at java.lang.Thread.run(Thread.java:748)
+ INFO: FXMLCreator:220 - INITIALIZING BoundsPlayground 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$89/1178389064, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseDragged 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$90/2069080692, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseEntered 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$91/85109727, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseExited 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$87/2034089467, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMousePressed 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$88/1587490871, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseReleased 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$89/1178389064, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseDragged 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$90/2069080692, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseEntered 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$91/85109727, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseExited 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$87/2034089467, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMousePressed 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$88/1587490871, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseReleased 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$89/1178389064, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseDragged 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$90/2069080692, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseEntered 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$91/85109727, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseExited 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$87/2034089467, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMousePressed 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$88/1587490871, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseReleased 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$89/1178389064, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseDragged 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$90/2069080692, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseEntered 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$91/85109727, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseExited 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$87/2034089467, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMousePressed 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$88/1587490871, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseReleased 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground, class javafx.application.Application] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.BoundsDisplay does have boundsPlayground 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground, class javafx.application.Application] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.BoundsDisplay does have boundsPlayground 
+ INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground, class javafx.application.Application] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class fxsamples.bounds.BoundsDisplay does have boundsPlayground 
+ INFO: FXMLCreator:236 - BoundsPlayground successfull 
+ INFO: FXMLCreator:220 - INITIALIZING SVGCreator 
+ INFO: FXMLCreator:402 -  [class java.lang.StringBuilder, interface java.io.Serializable, interface java.lang.CharSequence, class java.lang.AbstractStringBuilder, interface java.lang.Appendable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:402 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:402 -  [class javafx.scene.Cursor$StandardCursor, class javafx.scene.Cursor] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.TextField does have cursor 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.TextInputControlSkin$11, interface com.sun.javafx.scene.input.ExtendedInputMethodRequests] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.TextField does have inputMethodRequests 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.TextInputControlSkin$$Lambda$406/776917041, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.TextField does have onInputMethodTextChanged 
+ INFO: FXMLCreator:402 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Move To NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@2995b4b8 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Close Path NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@7e157f29 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Horizontal Line To NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@62ec0de1 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Vertical Line To NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@7940135e NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Line To NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@4f67b82 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Smooth Quadratic Bezier Curve To NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@34b915d1 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Quadratic Bezier Curve To NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@67fb2ff1 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Smooth Curve To NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@1652e844 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Curve To NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@33138c56 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Elliptical Arc NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@2873bd24 NOT IN PROPERTY_REMAP 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ColorPicker does have impl_traversalEngine 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.ComboBoxPopupControl$$Lambda$384/1454831252, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ColorPicker does have onInputMethodTextChanged 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ColorPicker does have impl_traversalEngine 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.ComboBoxPopupControl$$Lambda$384/1454831252, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ColorPicker does have onInputMethodTextChanged 
+ INFO: FXMLCreator:402 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ComboBox does have converter 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.ComboBoxPopupControl$FakeFocusTextField, class javafx.scene.control.TextField, class javafx.scene.control.TextInputControl, class javafx.scene.control.Control, interface javafx.scene.control.Skinnable, class javafx.scene.layout.Region, class javafx.scene.Parent, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:402 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
+ INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.ComboBoxPopupControl$$Lambda$384/1454831252, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.ComboBox does have onInputMethodTextChanged 
+ INFO: FXMLCreator:402 -  [class paintexp.svgcreator.SVGModel$$Lambda$374/1245446945, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
+ INFO: FXMLCreator:405 - class javafx.scene.control.Button does have onAction 
+ INFO: FXMLCreator:402 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
+ERROR: FXMLCreator:238 - ERROR IN class paintexp.svgcreator.SVGCreator  
+ERROR: FXMLCreator:239 -  
+org.assertj.core.api.exception.RuntimeIOException: ERROR in file C:\Users\guilherme.hmedeiros\Documents\Dev\FXperiments\target\classes\out\SVGCreator.fxml
+	at schema.sngpc.FXMLCreator.duplicateStage(FXMLCreator.java:190)
+	at schema.sngpc.FXMLCreator.lambda$13(FXMLCreator.java:231)
+	at utils.RunnableEx.lambda$make$1(RunnableEx.java:31)
+	at com.sun.javafx.application.PlatformImpl.lambda$null$172(PlatformImpl.java:295)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at com.sun.javafx.application.PlatformImpl.lambda$runLater$173(PlatformImpl.java:294)
+	at com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at com.sun.glass.ui.win.WinApplication.lambda$null$147(WinApplication.java:177)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassCastException: java.lang.String cannot be cast to javafx.scene.paint.Paint
+	at com.sun.javafx.scene.control.skin.ColorPickerSkin.updateColor(ColorPickerSkin.java:492)
+	at com.sun.javafx.scene.control.skin.ColorPickerSkin.<init>(ColorPickerSkin.java:199)
+	at javafx.scene.control.ColorPicker.createDefaultSkin(ColorPicker.java:127)
+	at javafx.scene.control.Control.impl_processCSS(Control.java:872)
+	at javafx.scene.Parent.impl_processCSS(Parent.java:1280)
+	at javafx.scene.Parent.impl_processCSS(Parent.java:1280)
+	at javafx.scene.Node.processCSS(Node.java:9056)
+	at javafx.scene.Scene.doCSSPass(Scene.java:545)
+	at javafx.scene.Scene.preferredSize(Scene.java:1643)
+	at javafx.scene.Scene.impl_preferredSize(Scene.java:1720)
+	at javafx.stage.Window$9.invalidated(Window.java:864)
+	at javafx.beans.property.BooleanPropertyBase.markInvalid(BooleanPropertyBase.java:109)
+	at javafx.beans.property.BooleanPropertyBase.set(BooleanPropertyBase.java:144)
+	at javafx.stage.Window.setShowing(Window.java:940)
+	at javafx.stage.Window.show(Window.java:955)
+	at javafx.stage.Stage.show(Stage.java:259)
+	at schema.sngpc.FXMLCreator.duplicateStage(FXMLCreator.java:188)
+	... 9 common frames omitted
+--- Exception in Async Thread ---
+java.lang.ClassCastException: java.lang.String cannot be cast to javafx.scene.paint.Paint
+	com.sun.javafx.scene.control.skin.ColorPickerSkin.updateColor(ColorPickerSkin.java:492)
+	com.sun.javafx.scene.control.skin.ColorPickerSkin.<init>(ColorPickerSkin.java:199)
+	javafx.scene.control.ColorPicker.createDefaultSkin(ColorPicker.java:127)
+	javafx.scene.control.Control.impl_processCSS(Control.java:872)
+	javafx.scene.Node.processCSS(Node.java:9056)
+	javafx.scene.Node.processCSS(Node.java:9049)
+	javafx.scene.Node.processCSS(Node.java:9049)
+	javafx.scene.Scene.doCSSPass(Scene.java:545)
+	javafx.scene.Scene.access$3600(Scene.java:159)
+	javafx.scene.Scene$ScenePulseListener.pulse(Scene.java:2392)
+	com.sun.javafx.tk.Toolkit.lambda$runPulse$29(Toolkit.java:398)
+	java.security.AccessController.doPrivileged(Native Method)
+	com.sun.javafx.tk.Toolkit.runPulse(Toolkit.java:397)
+	com.sun.javafx.tk.Toolkit.firePulse(Toolkit.java:424)
+	com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:518)
+	com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:498)
+	com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:491)
+	com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$403(QuantumToolkit.java:319)
+	com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	com.sun.glass.ui.win.WinApplication.lambda$null$147(WinApplication.java:177)
+	java.lang.Thread.run(Thread.java:748)
+
+ERROR: FXEngineFXMLTest:29 - classes fxpro.ch08.MediaPlayerExample.class,paintexp.svgcreator.SVGCreator.class with errors 

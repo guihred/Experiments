@@ -11,10 +11,11 @@ import javafx.scene.shape.Rectangle;
  */
 public class Axis extends Pane {
 
+    private static final int DEFAULT_SIZE = 400;
     private Rectangle wall;
 
     public Axis() {
-        this(400);
+        this(DEFAULT_SIZE);
     }
     public Axis(double size) {
         // wall

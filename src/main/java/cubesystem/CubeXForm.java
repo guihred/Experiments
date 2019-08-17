@@ -69,7 +69,7 @@ public class CubeXForm extends Group {
         copy(rz, value);
     }
 
-    private void copy(Rotate rz2, Rotate value) {
+    public static void copy(Rotate rz2, Rotate value) {
         rz2.setAngle(value.getAngle());
         rz2.setAxis(value.getAxis());
         rz2.setOnTransformChanged(value.getOnTransformChanged());

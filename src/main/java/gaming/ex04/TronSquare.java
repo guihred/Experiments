@@ -7,6 +7,7 @@ package gaming.ex04;
 
 import static gaming.ex04.TronModel.MAP_SIZE;
 
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,7 +24,7 @@ public class TronSquare extends Region {
 
     private final ObjectProperty<TronState> state = new SimpleObjectProperty<>(TronState.NONE);
 
-    public TronSquare(int i, int j) {
+    public TronSquare(@NamedArg("i") int i, @NamedArg("j") int j) {
         this.i = i;
         this.j = j;
         setPrefSize(10, 10);

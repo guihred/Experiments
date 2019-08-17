@@ -1,8 +1,9 @@
 package simplebuilder;
 
+import static utils.FunctionEx.makeFunction;
+
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import javafx.collections.ObservableList;
 import javafx.scene.control.SelectionMode;
@@ -11,6 +12,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import utils.FunctionEx;
 
 public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>, SimpleTableViewBuilder<T>> {
 
@@ -38,7 +40,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 		return this;
 	}
 
-	public <S> SimpleTableViewBuilder<T> addColumn(final String columnName, Function<S, String> func,
+    public <S> SimpleTableViewBuilder<T> addColumn(final String columnName, FunctionEx<S, String> func,
 			final String propertyName) {
 		final TableColumn<T, S> column = new TableColumn<>(columnName);
 		column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
@@ -46,7 +48,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 			@Override
 			protected void updateItem(final S item, final boolean empty) {
 				super.updateItem(item, empty);
-				setText(func.apply(item));
+                setText(makeFunction(func).apply(item));
 			}
 		});
 		

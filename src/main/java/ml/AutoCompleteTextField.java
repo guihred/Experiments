@@ -12,7 +12,10 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.assertj.core.api.exception.RuntimeIOException;
+import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.Word2Vec;
+import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
 
 public class AutoCompleteTextField extends TextField {
     private SortedSet<String> entries = new TreeSet<>();
@@ -23,8 +26,21 @@ public class AutoCompleteTextField extends TextField {
     private String textOccurenceStyle = "-fx-font-weight: bold; -fx-fill: red;";
     private int maxEntries = 10;
 
+    public AutoCompleteTextField() {
+        try {
+            Word2Vec word2Vec = Word2VecExample.createWord2Vec();
+            VocabCache<VocabWord> vocab = word2Vec.getVocab();
+            Collection<String> words = vocab.words();
+            entries = new TreeSet<>(words);
+            filteredEntries.addAll(entries);
+            textProperty().addListener((obs, ds, sb2) -> onTextChange(word2Vec));
+            focusedProperty().addListener((obs, a, a2) -> entriesPopup.hide());
+        } catch (Exception e) {
+            throw new RuntimeIOException("File Not Found", e);
+        }
+    }
+
     public AutoCompleteTextField(SortedSet<String> entrySet, Word2Vec word2Vec) {
-        super();
         entries = entrySet == null ? new TreeSet<>() : entrySet;
         filteredEntries.addAll(entries);
         textProperty().addListener((obs, ds, sb2) -> onTextChange(word2Vec));
@@ -99,13 +115,13 @@ public class AutoCompleteTextField extends TextField {
             return;
         }
         LinkedList<String> searchResult = new LinkedList<>();
-        //Check if the entered Text is part of some entry
+        // Check if the entered Text is part of some entry
         String text = getText();
         addSearches(searchResult, text);
         if (!searchResult.isEmpty()) {
             filteredEntries.clear();
             filteredEntries.addAll(searchResult);
-            //Only show popup if not in filter mode
+            // Only show popup if not in filter mode
             if (!isPopupHidden()) {
                 populatePopup(searchResult, text);
                 if (!entriesPopup.isShowing()) {
@@ -122,7 +138,7 @@ public class AutoCompleteTextField extends TextField {
                 if (word2Vec.hasWord(s)) {
                     Collection<String> wordsNearestSum = word2Vec.wordsNearestSum(s, maxEntries + 1);
                     searchResult.addAll(wordsNearestSum.stream().filter(e -> !s.equals(e)).map(e -> text + " " + e)
-                            .collect(Collectors.toList()));
+                        .collect(Collectors.toList()));
                 }
                 filteredEntries.clear();
                 filteredEntries.addAll(searchResult);
@@ -150,12 +166,12 @@ public class AutoCompleteTextField extends TextField {
             TextFlow entryFlow;
             if (occurence >= 0) {
 
-                //Part before occurence (might be empty)
+                // Part before occurence (might be empty)
                 Text pre = new Text(result.substring(0, occurence));
-                //Part of (first) occurence
+                // Part of (first) occurence
                 Text in = new Text(result.substring(occurence, occurence + text.length()));
                 in.setStyle(getTextOccurenceStyle());
-                //Part after occurence
+                // Part after occurence
                 Text post = new Text(result.substring(occurence + text.length(), result.length()));
                 entryFlow = new TextFlow(pre, in, post);
             } else {

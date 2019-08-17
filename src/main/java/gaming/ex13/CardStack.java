@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Background;
@@ -26,9 +26,9 @@ public class CardStack extends Pane {
         setManaged(false);
         getStyleClass().add("cardstack");
         addRegion();
-        styleProperty()
-                .bind(Bindings.createStringBinding(() -> cards.isEmpty() ? "-fx-background-color:green;" : "", cards));
-
+        cards.addListener(
+            (Change<? extends SolitaireCard> r) -> setStyle(
+                cards.isEmpty() ? "-fx-background-color:green;" : ""));
 	}
 
     public void addCards(List<SolitaireCard> cards1) {
@@ -70,7 +70,7 @@ public class CardStack extends Pane {
 		return cards;
 	}
 
-	public SolitaireCard getLastCards() {
+    public SolitaireCard getLastCards() {
 		if (cards.isEmpty()) {
 			return null;
 		}
@@ -118,6 +118,10 @@ public class CardStack extends Pane {
 			lastCards.add(solitaireCard);
 		}
 		return lastCards;
+	}
+
+	public void  setCards(ObservableList<SolitaireCard> value) {
+        addCards(value);
 	}
 
 	private void addRegion() {

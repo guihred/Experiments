@@ -9,8 +9,11 @@ public class SimpleConverter<T> extends StringConverter<T> {
 	private Function<T, String> func;
 	private Map<String, T> mapaLayout = new HashMap<>();
 
+    public SimpleConverter() {
+        this.func = f -> f.toString();
+    }
 	public SimpleConverter(Function<T, String> func) {
-		this.func = func;
+        this.func = func;
 	}
 
 	@Override

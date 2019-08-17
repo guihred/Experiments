@@ -31,6 +31,8 @@
  */
 package cubesystem;
 
+import static cubesystem.CubeXForm.copy;
+
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -75,13 +77,5 @@ public class Xsphere extends Sphere {
         copy(rz, value);
     }
 
-    private void copy(Rotate rz2, Rotate value) {
-        rz2.setAngle(value.getAngle());
-        rz2.setAxis(value.getAxis());
-        rz2.setOnTransformChanged(value.getOnTransformChanged());
-        rz2.setPivotX(value.getPivotX());
-        rz2.setPivotY(value.getPivotY());
-        rz2.setPivotZ(value.getPivotZ());
-    }
 
 }

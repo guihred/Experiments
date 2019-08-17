@@ -1,6 +1,7 @@
 package fxsamples.bounds;
 
 import fxsamples.bounds.BoundsPlayground.BoundsType;
+import javafx.beans.NamedArg;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
@@ -19,8 +20,10 @@ public class BoundsDisplay extends Rectangle {
     private final Shape monitoredShape;
     private ChangeListener<Bounds> boundsChangeListener;
 
-    public BoundsDisplay(BoundsPlayground boundsPlayground, final Shape shape) {
+    public BoundsDisplay(@NamedArg("boundsPlayground") BoundsPlayground boundsPlayground,
+        @NamedArg("monitoredShape") final Shape shape) {
         this.boundsPlayground = boundsPlayground;
+
         setFill(Color.LIGHTGRAY.deriveColor(1, 1, 1, 7. / 20));
         setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
         setStrokeType(StrokeType.INSIDE);
@@ -29,6 +32,14 @@ public class BoundsDisplay extends Rectangle {
         monitoredShape = shape;
 
         monitorBounds(BoundsType.LAYOUT_BOUNDS);
+    }
+
+    public BoundsPlayground getBoundsPlayground() {
+        return boundsPlayground;
+    }
+
+    public Shape getMonitoredShape() {
+        return monitoredShape;
     }
 
     // set the type of the shape's bounds to monitor for the bounds display.

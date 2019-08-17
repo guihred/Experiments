@@ -4,7 +4,6 @@ package gaming.ex14;
 import gaming.ex07.CreateMazeHandler;
 import gaming.ex07.MazeSquare;
 import gaming.ex14.Pacman.PacmanDirection;
-import gaming.ex14.PacmanGhost.GhostColor;
 import gaming.ex14.PacmanGhost.GhostStatus;
 import java.util.Collections;
 import java.util.List;

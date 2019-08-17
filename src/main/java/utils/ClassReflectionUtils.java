@@ -181,9 +181,13 @@ public final class ClassReflectionUtils {
     }
 
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
+        return getGetterMethodsRecursive(targetClass, 10);
+    }
+
+    public static List<Method> getGetterMethodsRecursive(Class<?> targetClass, int parent) {
         Class<?> a = targetClass;
         List<Method> getters = new ArrayList<>();
-        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
+        for (int i = 0; a != Object.class && i < parent; i++, a = a.getSuperclass()) {
             List<Method> getters2 = getters(a);
             getters.addAll(getters2);
         }
@@ -265,7 +269,8 @@ public final class ClassReflectionUtils {
 
             return getAllMethodsRecursive(ob.getClass()).stream()
                 .filter(e -> getFieldNameCase(e).equals(method))
-                .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(e -> e != null).findFirst().orElse(null);
+                .map(FunctionEx.makeFunction(m -> m.invoke(ob, args)))
+                .filter(e -> e != null).findFirst().orElse(null);
         } catch (Exception e) {
             LOG.info("", e);
             return null;

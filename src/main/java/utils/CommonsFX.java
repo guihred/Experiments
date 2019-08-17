@@ -9,7 +9,10 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -93,7 +96,8 @@ public final class CommonsFX {
 
     public static VBox newSlider(final String string, final double min, final double max,
         final Property<Number> radius) {
-        return new VBox(new Text(string), new SimpleSliderBuilder().min(min).bindBidirectional(radius).max(max).build());
+        return new VBox(new Text(string),
+            new SimpleSliderBuilder().min(min).bindBidirectional(radius).max(max).build());
     }
 
     public static TextField newTextField(final String text, final int prefColumnCount) {

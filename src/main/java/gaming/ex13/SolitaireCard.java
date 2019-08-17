@@ -20,10 +20,6 @@ public class SolitaireCard extends Region {
     private final SolitaireSuit suit;
     private final BooleanProperty shown = new SimpleBooleanProperty(false);
 
-    public SolitaireCard() {
-        this(null, null);
-    }
-
     public SolitaireCard(@NamedArg("number") SolitaireNumber number, @NamedArg("suit") SolitaireSuit suit) {
         this.number = number;
         this.suit = suit;
