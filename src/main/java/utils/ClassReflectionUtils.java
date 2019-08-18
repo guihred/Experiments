@@ -215,6 +215,26 @@ public final class ClassReflectionUtils {
         return args;
     }
 
+    public static Map<String, Class<?>> getNamedArgsMap(Class<?> targetClass) {
+        Map<String, Class<?>> args = new HashMap<>();
+        Constructor<?>[] constructors = targetClass.getConstructors();
+        for (Constructor<?> constructor : constructors) {
+            Parameter[] parameters = constructor.getParameters();
+            for (Parameter parameter : parameters) {
+                Class<?> type = parameter.getType();
+                Annotation[] annotations = parameter.getAnnotations();
+                for (Annotation annotation : annotations) {
+                    if (annotation instanceof NamedArg) {
+                        NamedArg a = (NamedArg) annotation;
+                        String value = a.value();
+                        args.put(value, type);
+                    }
+                }
+            }
+        }
+        return args;
+    }
+
     public static boolean hasBuiltArg(Class<?> targetClass, String field) {
         Constructor<?>[] constructors = targetClass.getConstructors();
         for (Constructor<?> constructor : constructors) {
