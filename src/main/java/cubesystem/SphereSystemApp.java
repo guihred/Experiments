@@ -119,11 +119,6 @@ public class SphereSystemApp extends Application {
         animation.pause();
     }
 
-    public KeyValue[] valuesAtZero(List<CubeXForm> cube19X, List<Xsphere> cube11) {
-        return Stream.concat(cube19X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), 0.0)),
-            cube11.stream().map(e -> new KeyValue(e.getRx().angleProperty(), 0.0))).toArray(KeyValue[]::new);
-    }
-
     private double rndAngle() {
         return r.nextInt(8) * 360.0 * (r.nextBoolean() ? 1 : -1);
     }
@@ -146,5 +141,10 @@ public class SphereSystemApp extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static KeyValue[] valuesAtZero(List<CubeXForm> cube19X, List<Xsphere> cube11) {
+        return Stream.concat(cube19X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), 0.0)),
+            cube11.stream().map(e -> new KeyValue(e.getRx().angleProperty(), 0.0))).toArray(KeyValue[]::new);
     }
 }

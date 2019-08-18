@@ -154,12 +154,6 @@ public class PacmanGhost extends Group implements HasLogging {
         leftEye.setLayoutX(leftEye.getLayoutX() + mul * direction.x);
     }
 
-    private boolean checkColision(Bounds boundsInParent, ObservableList<Node> observableList) {
-        Stream<Bounds> walls = observableList.stream().filter(Rectangle.class::isInstance).map(Node::getBoundsInParent);
-        return walls.anyMatch(b -> b.intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
-                boundsInParent.getWidth(), boundsInParent.getHeight()));
-    }
-
     private void getBestSquare(Pacman pacman, MazeSquare[][] maze) {
         int hxg = adjustedX(getLayoutX());
         int hyg = adjustedY(getLayoutY());
@@ -292,6 +286,12 @@ public class PacmanGhost extends Group implements HasLogging {
             return hy < 0 ? GhostDirection.NORTH : GhostDirection.SOUTH;
         }
         return hx < 0 ? GhostDirection.WEST : GhostDirection.EAST;
+    }
+
+    private static boolean checkColision(Bounds boundsInParent, ObservableList<Node> observableList) {
+        Stream<Bounds> walls = observableList.stream().filter(Rectangle.class::isInstance).map(Node::getBoundsInParent);
+        return walls.anyMatch(b -> b.intersects(boundsInParent.getMinX(), boundsInParent.getMinY(),
+                boundsInParent.getWidth(), boundsInParent.getHeight()));
     }
 
     private static MazeSquare getBestMaze(MazeSquare[][] maze, int x, int y, int xg, int yg) {

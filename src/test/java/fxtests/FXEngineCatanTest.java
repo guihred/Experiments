@@ -108,23 +108,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         }
     }
 
-    private CatanAction chooseAction(DecisionNode buildTree, CatanModel model) {
-        Map<String, Object> row = CatanLogger.row(model);
-        if (model.getElements().stream().anyMatch(Village.class::isInstance)) {
-            return CatanAction.PLACE_VILLAGE;
-        }
-        if (model.getElements().stream().anyMatch(City.class::isInstance)) {
-            return CatanAction.PLACE_CITY;
-        }
-        if (model.getElements().stream().anyMatch(Thief.class::isInstance)) {
-            return CatanAction.PLACE_THIEF;
-        }
-        if (model.getElements().stream().anyMatch(Road.class::isInstance)) {
-            return CatanAction.PLACE_ROAD;
-        }
-        return CatanAction.valueOf(Objects.toString(buildTree.predict(row)));
-    }
-
     private void clickButton(List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
         clickButton(null, allButtons, clickedButtons);
     }
@@ -244,17 +227,9 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         return true;
     }
 
-    private String getCardClass(CatanAction predict) {
-        return predict.toString().replaceAll("SELECT_", "").replaceAll("_", " ").toLowerCase();
-    }
-
     private List<CatanCard> getCards() {
         return lookup(CatanCard.class::isInstance).queryAllAs(CatanCard.class).stream()
             .collect(Collectors.toList());
-    }
-
-    private EdgeCatan getEdge(final Road road, final List<EdgeCatan> allEdge) {
-        return allEdge.parallelStream().filter(e -> e.edgeAcceptRoad(road)).findFirst().orElse(allEdge.get(0));
     }
 
     private CatanAction getRandomAction() {
@@ -309,7 +284,41 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         return false;
     }
 
-    private boolean matches(String btn, ButtonBase c) {
+    private void tryToClick(final ButtonBase t) {
+        try {
+            clickOn(t);
+        } catch (Exception e1) {
+            getLogger().trace("{} not clicked", t, e1);
+            getLogger().error("{} not clicked", t);
+        }
+    }
+
+    private static CatanAction chooseAction(DecisionNode buildTree, CatanModel model) {
+        Map<String, Object> row = CatanLogger.row(model);
+        if (model.getElements().stream().anyMatch(Village.class::isInstance)) {
+            return CatanAction.PLACE_VILLAGE;
+        }
+        if (model.getElements().stream().anyMatch(City.class::isInstance)) {
+            return CatanAction.PLACE_CITY;
+        }
+        if (model.getElements().stream().anyMatch(Thief.class::isInstance)) {
+            return CatanAction.PLACE_THIEF;
+        }
+        if (model.getElements().stream().anyMatch(Road.class::isInstance)) {
+            return CatanAction.PLACE_ROAD;
+        }
+        return CatanAction.valueOf(Objects.toString(buildTree.predict(row)));
+    }
+
+    private static String getCardClass(CatanAction predict) {
+        return predict.toString().replaceAll("SELECT_", "").replaceAll("_", " ").toLowerCase();
+    }
+
+    private static EdgeCatan getEdge(final Road road, final List<EdgeCatan> allEdge) {
+        return allEdge.parallelStream().filter(e -> e.edgeAcceptRoad(road)).findFirst().orElse(allEdge.get(0));
+    }
+
+    private static boolean matches(String btn, ButtonBase c) {
         if (btn == null) {
             return false;
         }
@@ -319,7 +328,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             && !Objects.toString(c.getText(), "").toLowerCase().contains(btn);
     }
 
-    private boolean matches(String btn, CatanCard c) {
+    private static boolean matches(String btn, CatanCard c) {
         if (btn == null) {
             return false;
         }
@@ -327,17 +336,8 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         return !Objects.toString(c.getStyleClass(), "").contains(s) && !Objects.toString(c.getId(), "").contains(s);
     }
 
-    private Long orderByResources(List<CatanCard> cardsToSelect, final CatanCard c) {
+    private static Long orderByResources(List<CatanCard> cardsToSelect, final CatanCard c) {
         return -cardsToSelect.stream().filter(e -> e.getResource() == c.getResource()).filter(CatanCard::isSelected)
             .count();
-    }
-
-    private void tryToClick(final ButtonBase t) {
-        try {
-            clickOn(t);
-        } catch (Exception e1) {
-            getLogger().trace("{} not clicked", t, e1);
-            getLogger().error("{} not clicked", t);
-        }
     }
 }

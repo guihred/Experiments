@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+@SuppressWarnings("static-method")
 public class AnagramTest {
     @Test
     public void testAnagramsAreCaseInsensitive() {

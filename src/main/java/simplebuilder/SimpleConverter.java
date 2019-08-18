@@ -2,6 +2,7 @@ package simplebuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import javafx.util.StringConverter;
 
@@ -10,7 +11,7 @@ public class SimpleConverter<T> extends StringConverter<T> {
 	private Map<String, T> mapaLayout = new HashMap<>();
 
     public SimpleConverter() {
-        this.func = f -> f.toString();
+        this.func = f -> Objects.toString(f, "");
     }
 	public SimpleConverter(Function<T, String> func) {
         this.func = func;

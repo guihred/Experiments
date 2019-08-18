@@ -183,8 +183,28 @@ public class BoundsPlayground extends Application {
         stage.setOnCloseRequest(windowEvent -> reportingStage.close());
     }
 
+    // update the list of intersections.
+    private void testIntersections() {
+        intersections.clear();
+
+        // for each shape test it's intersection with all other shapes.
+        for (Shape src : shapes) {
+            for (Shape dest : shapes) {
+                ShapePair pair = new ShapePair(src, dest);
+                if (!(pair.a instanceof Anchor) && !(pair.b instanceof Anchor) && !intersections.contains(pair)
+                    && pair.intersects(getSelectedBoundsType().get())) {
+                    intersections.add(pair);
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     // make a node movable by dragging it around with the mouse.
-    private void enableDrag(final Circle circle) {
+    private static void enableDrag(final Circle circle) {
         final Delta dragDelta = new Delta();
         circle.setOnMousePressed(mouseEvent -> {
             // record a delta distance for the drag and drop operation.
@@ -207,26 +227,6 @@ public class BoundsPlayground extends Application {
                 circle.getScene().setCursor(Cursor.DEFAULT);
             }
         });
-    }
-
-    // update the list of intersections.
-    private void testIntersections() {
-        intersections.clear();
-
-        // for each shape test it's intersection with all other shapes.
-        for (Shape src : shapes) {
-            for (Shape dest : shapes) {
-                ShapePair pair = new ShapePair(src, dest);
-                if (!(pair.a instanceof Anchor) && !(pair.b instanceof Anchor) && !intersections.contains(pair)
-                    && pair.intersects(getSelectedBoundsType().get())) {
-                    intersections.add(pair);
-                }
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
     // a helper enumeration of the various types of bounds we can work with.

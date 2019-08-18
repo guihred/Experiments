@@ -73,7 +73,7 @@ public class PaintMain extends Application {
         GridPane gridPane = new GridPane();
         StackPane st = new StackPane(pickedColor(paintModel.backColorProperty(), 20),
             pickedColor(paintModel.frontColorProperty(), 10));
-        List<Color> colors = controller.getColors();
+        List<Color> colors = PaintController.getColors();
         int maxSize = colors.size() / 2;
         gridPane.addRow(0, colors.stream().limit(maxSize).map(controller::newRectangle).toArray(Rectangle[]::new));
         gridPane.addRow(1,
@@ -109,7 +109,13 @@ public class PaintMain extends Application {
     }
 
 
-    protected TableView<WritableImage> displayImageVersions(final PaintModel paintModel) {
+    public static void main(final String[] args) {
+        CrawlerTask.insertProxyConfig();
+        System.setProperty("prism.lcdtext", "false");
+        launch(args);
+    }
+
+    protected static TableView<WritableImage> displayImageVersions(final PaintModel paintModel) {
         final int tablePrefWidth = 100;
         ObservableList<WritableImage> imageVersions = paintModel.getImageVersions();
 
@@ -122,24 +128,18 @@ public class PaintMain extends Application {
         return tableView;
     }
 
-    private ImageView imageView(final int tablePrefWidth, WritableImage p) {
+    private static ImageView imageView(final int tablePrefWidth, WritableImage p) {
         ImageView value = new ImageView(p);
         value.setPreserveRatio(true);
         value.setFitWidth(tablePrefWidth);
         return value;
     }
 
-    private Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
+    private static Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
 
         return new SimpleRectangleBuilder()
             .layoutX(value).layoutY(value)
             .managed(false).width(20).height(20)
             .stroke(Color.GRAY).fill(objectProperty).build();
-    }
-
-    public static void main(final String[] args) {
-        CrawlerTask.insertProxyConfig();
-        System.setProperty("prism.lcdtext", "false");
-        launch(args);
     }
 }

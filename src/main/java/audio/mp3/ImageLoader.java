@@ -39,19 +39,7 @@ public class ImageLoader {
         }
     }
 
-    private void addImageView(ObservableList<Node> children, List<? extends String> addedSubList, int j) {
-        try {
-            String url = addedSubList.get(j);
-            LOG.trace("NEW IMAGE {}", url);
-            ImageView imageView = WikiImagesUtils.convertToImage(url);
-            int i = getIndex(children, imageView);
-            children.add(i, imageView);
-        } catch (Exception e) {
-            LOG.trace("ERROR {}", e);
-        }
-    }
-
-	private void addImageViews(ObservableList<Node> children, String text1, List<? extends String> addedSubList) {
+    private void addImageViews(ObservableList<Node> children, String text1, List<? extends String> addedSubList) {
         try {
             int size = addedSubList.size();
             for (int j = 0; j < size; j++) {
@@ -65,7 +53,7 @@ public class ImageLoader {
         }
     }
 
-    private void addThread(ObservableList<Node> root, String value) {
+	private void addThread(ObservableList<Node> root, String value) {
         try {
             if (thread != null && thread.isAlive()) {
                 thread.interrupt();
@@ -77,20 +65,6 @@ public class ImageLoader {
         thread.start();
     }
 
-    private double byArea(Node e) {
-        return e.getBoundsInLocal().getWidth() * e.getBoundsInLocal().getHeight();
-    }
-
-    private int getIndex(ObservableList<Node> children, ImageView imageView) {
-        int i = 1;
-        for (; i < children.size(); i++) {
-            if (byArea(children.get(i)) < byArea(imageView)) {
-                return i;
-            }
-        }
-        return i;
-    }
-
     public static void loadImages(ObservableList<Node> root, String... value) {
         Set<String> keywords = Stream.of(value).filter(StringUtils::isNotBlank).map(String::trim)
             .flatMap(e -> Stream.of(e.split("\\s+-\\s+")))
@@ -98,6 +72,32 @@ public class ImageLoader {
         for (String string : keywords) {
             new ImageLoader().addThread(root, string);
         }
+    }
+
+    private static void addImageView(ObservableList<Node> children, List<? extends String> addedSubList, int j) {
+        try {
+            String url = addedSubList.get(j);
+            LOG.trace("NEW IMAGE {}", url);
+            ImageView imageView = WikiImagesUtils.convertToImage(url);
+            int i = getIndex(children, imageView);
+            children.add(i, imageView);
+        } catch (Exception e) {
+            LOG.trace("ERROR {}", e);
+        }
+    }
+
+    private static double byArea(Node e) {
+        return e.getBoundsInLocal().getWidth() * e.getBoundsInLocal().getHeight();
+    }
+
+    private static int getIndex(ObservableList<Node> children, ImageView imageView) {
+        int i = 1;
+        for (; i < children.size(); i++) {
+            if (byArea(children.get(i)) < byArea(imageView)) {
+                return i;
+            }
+        }
+        return i;
     }
 
 }

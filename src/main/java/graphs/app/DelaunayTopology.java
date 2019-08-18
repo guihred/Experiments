@@ -12,12 +12,6 @@ public class DelaunayTopology extends BaseTopology {
         super(graph, "Delaunay", size);
     }
 
-    public double distance(double x1, double x2, double y1, double y2) {
-        double a = x1 - x2;
-        double b = y1 - y2;
-        return Math.sqrt(a * a + b * b);
-    }
-
     @Override
     public void execute() {
         List<Cell> allCells = graph.getModel().getAllCells();
@@ -38,6 +32,12 @@ public class DelaunayTopology extends BaseTopology {
         GraphModelAlgorithms.triangulate(graph, graph.getModel().getAddedCells());
 
         graph.endUpdate();
+    }
+
+    public static double distance(double x1, double x2, double y1, double y2) {
+        double a = x1 - x2;
+        double b = y1 - y2;
+        return Math.sqrt(a * a + b * b);
     }
 
 }

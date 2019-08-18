@@ -11,6 +11,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -19,7 +20,7 @@ import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PopulacionalGraph;
 import simplebuilder.SimpleComboBoxBuilder;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 
 public class PopulacionalPyramidExample extends Application {
 
@@ -62,7 +63,8 @@ public class PopulacionalPyramidExample extends Application {
         left.getChildren().add(countryBox);
         left.getChildren().add(new Text("Year"));
         left.getChildren().add(year);
-        left.getChildren().add(newButton("Export", e -> ResourceFXUtils.take(canvas)));
+        final Canvas canvas1 = canvas;
+        left.getChildren().add(newButton("Export", e -> ImageFXUtils.take(canvas1)));
         double ratio = 3. / 4;
         final int width = 800;
         Scene theScene = new Scene(root, width, width * ratio);

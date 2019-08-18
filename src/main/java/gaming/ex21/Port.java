@@ -75,14 +75,6 @@ public class Port extends Group {
         return number;
     }
 
-    private Text newInterrogation() {
-        Text e = new Text("?");
-        e.setFont(Font.font(15));
-        e.setLayoutX(SIZE / 2);
-        e.setLayoutY(SIZE * 5 / 12.);
-        return e;
-    }
-
     private Text newNumberText() {
         final double layoutY = SIZE * 13. / 20;
         return new SimpleTextBuilder().size(12).textAlignment(TextAlignment.CENTER).text(number.asString().concat(":1"))
@@ -113,7 +105,7 @@ public class Port extends Group {
         }
     }
 
-    public  static boolean containsPort(List<ResourceType> distinct, long totalCards, List<Port> ports2,
+    public static boolean containsPort(List<ResourceType> distinct, long totalCards, Collection<Port> ports2,
         ObjectProperty<PlayerColor> currentPlayer2) {
         long differentTypesNumber = distinct.size();
         if (differentTypesNumber != 1) {
@@ -129,7 +121,9 @@ public class Port extends Group {
         return Stream.of(ResourceType.values())
             .flatMap(t -> Stream.generate(() -> t).limit(t == ResourceType.DESERT ? 4 : 1)).map(Port::new)
             .collect(Collectors.toList());
-    }public static void relocatePorts(Collection<SettlePoint> settlePoints2, List<Port> ports2) {
+    }
+
+    public static void relocatePorts(Collection<SettlePoint> settlePoints2, List<Port> ports2) {
         List<SettlePoint> s = settlePoints2.stream().collect(Collectors.toList());
         Collections.shuffle(s);
         List<List<SettlePoint>> portLocations = s.stream().filter(p -> p.getNeighbors().size() == 2)
@@ -157,10 +151,16 @@ public class Port extends Group {
                 port.relocate(x + m - Terrain.RADIUS / 2., y + n - Terrain.RADIUS / 2.);
             }
         }
+    }private static ImageView newBoat() {
+        return CatanResource.newImage("boat.png", SIZE);
     }
 
-    private static ImageView newBoat() {
-        return CatanResource.newImage("boat.png", SIZE);
+    private static Text newInterrogation() {
+        Text e = new Text("?");
+        e.setFont(Font.font(15));
+        e.setLayoutX(SIZE / 2);
+        e.setLayoutY(SIZE * 5 / 12.);
+        return e;
     }
 
 }

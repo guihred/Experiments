@@ -225,14 +225,6 @@ public class SolitaireModel {
         }
     }
 
-    private boolean isDoubleClicked(MouseEvent event) {
-        return event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2;
-    }
-
-    private boolean isStackAllHidden(CardStack stack) {
-        return !stack.getCards().isEmpty() && stack.getCards().stream().noneMatch(SolitaireCard::isShown);
-    }
-
     private void verifyEnd() {
         if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
             StageHelper.displayDialog("You Win", "Reset", this::reset);
@@ -253,6 +245,10 @@ public class SolitaireModel {
                 || solitaireCard.getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1);
     }
 
+    private static boolean isDoubleClicked(MouseEvent event) {
+        return event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2;
+    }
+
     private static boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {
         return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard) || isNotNextCardInStack(cardStack, solitaireCard);
     }
@@ -264,6 +260,10 @@ public class SolitaireModel {
 
     private static boolean isNullOrEmpty(List<?> cards) {
         return cards == null || cards.isEmpty();
+    }
+
+    private static boolean isStackAllHidden(CardStack stack) {
+        return !stack.getCards().isEmpty() && stack.getCards().stream().noneMatch(SolitaireCard::isShown);
     }
 
     private static boolean isStackEmptyAndCardIsNotAce(CardStack cardStack, SolitaireCard solitaireCard) {

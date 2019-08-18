@@ -57,20 +57,6 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
         return task();
     }
 
-    protected Integer convertNumerico(final String eleitores) {
-        String replaceAll = eleitores.replaceAll("\\D", "");
-        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
-    }
-
-    protected LocalDate extractDate(final String children) {
-        try {
-            return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        } catch (Exception e) {
-            LOG.trace("", e);
-            return null;
-        }
-    }
-
     protected Document getDocument(final String url) throws IOException {
         return getDocument(url, encoded);
     }
@@ -137,6 +123,20 @@ public abstract class CrawlerTask extends Task<String> implements HasLogging {
 
     public static boolean isNotProxied() {
         return !IS_PROXIED;
+    }
+
+    protected static Integer convertNumerico(final String eleitores) {
+        String replaceAll = eleitores.replaceAll("\\D", "");
+        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
+    }
+
+    protected static LocalDate extractDate(final String children) {
+        try {
+            return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        } catch (Exception e) {
+            LOG.trace("", e);
+            return null;
+        }
     }
 
     private static Predicate<Integer> isProxied() {

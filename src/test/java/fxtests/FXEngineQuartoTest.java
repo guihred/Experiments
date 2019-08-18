@@ -72,7 +72,7 @@ public class FXEngineQuartoTest extends AbstractTestExecution {
 		clickOn(x, y, MouseButton.PRIMARY);
 	}
 
-	private double randDistance(double height) {
+    private static double randDistance(double height) {
 		return (Math.random() - .5) * height / 40;
 	}
 

@@ -1,7 +1,8 @@
 package fxtests;
 
+import static exercism.Etl.transform;
+
 import com.google.common.collect.ImmutableMap;
-import exercism.Etl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -9,35 +10,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 
+@SuppressWarnings("static-method")
 public class EtlTest {
-	private final Etl etl = new Etl();
 
-	@Test
-	public void testTransformOneValue() {
-		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A"));
-		Map<String, Integer> expected = ImmutableMap.of("a", 1);
-
-        Assert.assertEquals("", etl.transform(old), expected);
-
-	}
-
-	@Test
-	public void testTransformMoreValues() {
-		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A", "E", "I", "O", "U"));
-		Map<String, Integer> expected = ImmutableMap.of("a", 1, "e", 1, "i", 1, "o", 1, "u", 1);
-
-        Assert.assertEquals("", etl.transform(old), expected);
-	}
-
-	@Test
-	public void testMoreKeys() {
-		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A", "E"), 2, Arrays.asList("D", "G"));
-		Map<String, Integer> expected = ImmutableMap.of("a", 1, "e", 1, "d", 2, "g", 2);
-
-        Assert.assertEquals("", etl.transform(old), expected);
-	}
-
-	@Test
+    @Test
 	public void testFullDataset() {
 		Map<Integer, List<String>> old = ImmutableMap.<Integer, List<String>> builder()
 				.put(1, Arrays.asList("A", "E", "I", "O", "U", "L", "N", "R", "S", "T")).put(2, Arrays.asList("D", "G"))
@@ -47,6 +23,31 @@ public class EtlTest {
 				.put("f", 4).put("g", 2).put("h", 4).put("i", 1).put("j", 8).put("k", 5).put("l", 1).put("m", 3).put("n", 1).put("o", 1).put("p", 3)
 				.put("q", 10).put("r", 1).put("s", 1).put("t", 1).put("u", 1).put("v", 4).put("w", 4).put("x", 8).put("y", 4).put("z", 10).build();
 
-        Assert.assertEquals("", etl.transform(old), expected);
+        Assert.assertEquals("", transform(old), expected);
+	}
+
+	@Test
+	public void testMoreKeys() {
+		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A", "E"), 2, Arrays.asList("D", "G"));
+		Map<String, Integer> expected = ImmutableMap.of("a", 1, "e", 1, "d", 2, "g", 2);
+
+        Assert.assertEquals("", transform(old), expected);
+	}
+
+	@Test
+	public void testTransformMoreValues() {
+		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A", "E", "I", "O", "U"));
+		Map<String, Integer> expected = ImmutableMap.of("a", 1, "e", 1, "i", 1, "o", 1, "u", 1);
+
+        Assert.assertEquals("", transform(old), expected);
+	}
+
+	@Test
+	public void testTransformOneValue() {
+		Map<Integer, List<String>> old = ImmutableMap.of(1, Arrays.asList("A"));
+		Map<String, Integer> expected = ImmutableMap.of("a", 1);
+
+        Assert.assertEquals("", transform(old), expected);
+
 	}
 }

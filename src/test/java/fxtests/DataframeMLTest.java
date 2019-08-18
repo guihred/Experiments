@@ -9,6 +9,7 @@ import org.junit.Test;
 import utils.HasLogging;
 
 
+@SuppressWarnings("static-method")
 public class DataframeMLTest implements HasLogging {
 
     @Test

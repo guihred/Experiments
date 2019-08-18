@@ -43,13 +43,6 @@ public class WorldMapGraph2 extends WorldMapGraph {
     }
 
     @Override
-    public List<Country> anyAdjacents(Country c) {
-        Country[] values = Country.values();
-        return Stream.of(values).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
-            .filter(e -> e != c).distinct().collect(Collectors.toList());
-    }
-
-    @Override
     public IntegerProperty binsProperty() {
         return bins;
     }
@@ -205,5 +198,11 @@ public class WorldMapGraph2 extends WorldMapGraph {
             }
         });
         return enumMap;
+    }
+
+    public static List<Country> anyAdjacents(Country c) {
+        Country[] values = Country.values();
+        return Stream.of(values).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
+            .filter(e -> e != c).distinct().collect(Collectors.toList());
     }
 }

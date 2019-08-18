@@ -11,7 +11,6 @@ import javafx.beans.value.WritableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
 import org.slf4j.Logger;
 
@@ -36,10 +35,6 @@ public final class ClassReflectionUtils {
         }
 
         return classes.parallelStream().distinct().collect(Collectors.toList());
-    }
-    public static void displayCSSStyler(Scene scene, String pathname) {
-        ClassReflectionUtils.displayStyleClass(scene.getRoot());
-        StageHelper.displayCSSStyler(scene, pathname);
     }
 
     public static void displayStyleClass(Node node) {
@@ -72,11 +67,10 @@ public final class ClassReflectionUtils {
     public static <T> String getDescription(T obj, Class<?> class1,
         Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
         Map<Class<?>, List<Method>> getterMethods) {
-        if (!invokedObjects.contains(obj)) {
-            invokedObjects.add(obj);
-        } else {
+        if (invokedObjects.contains(obj)) {
             return "";
         }
+        invokedObjects.add(obj);
         List<Method> infoMethod = getGetterMethods(class1, getterMethods);
         StringBuilder description = new StringBuilder("\n");
         infoMethod.forEach(ConsumerEx.makeConsumer((Method method) -> {
@@ -172,8 +166,8 @@ public final class ClassReflectionUtils {
 
     public static Object getFieldValue(Object ob, String name) {
         return Stream.of(ob.getClass().getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
-            .filter(e -> e.getName().equals(name)).findFirst()
-            .map(field -> BaseEntity.getFieldValue(ob, field)).orElse(null);
+            .filter(e -> e.getName().equals(name)).findFirst().map(field -> BaseEntity.getFieldValue(ob, field))
+            .orElse(null);
     }
 
     public static List<Method> getGetterMethods(Class<?> targetClass) {
@@ -210,7 +204,7 @@ public final class ClassReflectionUtils {
                     }
                 }
             }
-            
+
         }
         return args;
     }
@@ -236,25 +230,10 @@ public final class ClassReflectionUtils {
     }
 
     public static boolean hasBuiltArg(Class<?> targetClass, String field) {
-        Constructor<?>[] constructors = targetClass.getConstructors();
-        for (Constructor<?> constructor : constructors) {
-            Annotation[][] annotations = constructor.getParameterAnnotations();
-            for (Annotation[] annotation : annotations) {
-                for (Annotation annotation2 : annotation) {
-                    if (annotation2 instanceof NamedArg) {
-                        NamedArg a = (NamedArg) annotation2;
-                        if (a.value().equals(field)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            
-        }
-        return false;
+        return getNamedArgs(targetClass).contains(field);
     }
 
-    public static boolean hasClass(List<Class<?>> newTagClasses, Class<? extends Object> class1) {
+    public static boolean hasClass(Collection<Class<?>> newTagClasses, Class<? extends Object> class1) {
         return Modifier.isPublic(class1.getModifiers()) && class1.getEnclosingClass() == null
             && newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
     }
@@ -286,15 +265,24 @@ public final class ClassReflectionUtils {
 
     public static Object invoke(Object ob, String method, Object... args) {
         try {
-
-            return getAllMethodsRecursive(ob.getClass()).stream()
-                .filter(e -> getFieldNameCase(e).equals(method))
-                .map(FunctionEx.makeFunction(m -> m.invoke(ob, args)))
-                .filter(e -> e != null).findFirst().orElse(null);
+            return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
+                .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(Objects::nonNull).findFirst()
+                .orElse(null);
         } catch (Exception e) {
             LOG.info("", e);
             return null;
         }
+    }
+
+    public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
+        Map<String, Class<?>> namedArgsMap = ClassReflectionUtils.getNamedArgsMap(parent.getClass());
+        if (namedArgsMap.containsKey(fieldName)) {
+            return typesFit(fieldValue, namedArgsMap.get(fieldName));
+        }
+        String makeSet = fieldName;
+        return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
+            .stream().filter(m -> m.getParameterCount() == 1)
+            .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(makeSet);
     }
 
     public static Object mapProperty(Object e) {
@@ -304,9 +292,23 @@ public final class ClassReflectionUtils {
         return e;
     }
 
+    public static boolean parameterTypesMatch(Object fieldValue, Method m) {
+        Parameter[] parameters = m.getParameters();
+        Class<?> type = parameters[0].getType();
+        if (type == Object.class) {
+            return m.getDeclaringClass().getTypeParameters().length == 0;
+        }
+        return typesFit(fieldValue, type);
+    }
 
-    private static void displayStyleClass(String n, Node node) {
-        String arg1 = n + node.getClass().getSimpleName();
+    public static boolean typesFit(Object fieldValue, Class<?> type) {
+        return type.isAssignableFrom(fieldValue.getClass())
+            || type.getSimpleName().equalsIgnoreCase(fieldValue.getClass().getSimpleName())
+            || type == int.class && fieldValue.getClass() == Integer.class;
+    }
+
+    private static void displayStyleClass(String left, Node node) {
+        String arg1 = left + node.getClass().getSimpleName();
         if (node instanceof Labeled) {
             HasLogging.log(1).info("{} = {} = \"{}\"", arg1, node.getStyleClass(), ((Labeled) node).getText());
         }
@@ -319,7 +321,7 @@ public final class ClassReflectionUtils {
         }
         if (node instanceof Parent) {
             ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
-            childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(n + "-", t));
+            childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(left + "-", t));
         }
     }
 

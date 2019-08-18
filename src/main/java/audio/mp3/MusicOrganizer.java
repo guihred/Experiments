@@ -48,7 +48,24 @@ public class MusicOrganizer extends Application implements HasLogging {
         primaryStage.show();
     }
 
-    private void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
+    private void convertToImage(Music music, TableCell<Music, Object> cell) {
+        cell.setGraphic(view(music.getImage() != null ? music.getImage() : DEFAULT_VIEW));
+    }
+
+    private TableView<Music> tabelaMusicas() {
+        TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>().prefWidth(WIDTH).scaleShape(false)
+            .addColumn("Image", this::convertToImage).addColumn("Título", "titulo").addColumn("Artista", "artista")
+            .addColumn("Álbum", "album").addColumn("Pasta", "pasta").addColumn("Gênero", "genero")
+            .addColumn("Ano", "ano").sortable(true).equalColumns().build();
+        musicaTable.setOnMousePressed(new MusicHandler(musicaTable));
+        return musicaTable;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
         ObservableList<Music> musicas) {
         FilteredList<Music> filteredData = new FilteredList<>(musicas, p -> true);
         musicasEstoqueTable.setItems(filteredData);
@@ -57,18 +74,18 @@ public class MusicOrganizer extends Application implements HasLogging {
                 && (StringUtils.isEmpty(newV) || StringUtils.containsIgnoreCase(musica.toString(), newV))));
     }
 
-    private void convertToImage(Music music, TableCell<Music, Object> cell) {
-        cell.setGraphic(view(music.getImage() != null ? music.getImage() : DEFAULT_VIEW));
+    private static Image defaultView() {
+        return new Image(ResourceFXUtils.toExternalForm("fb.jpg"));
     }
 
-    private Button fixMusic(TableView<Music> musicasTable) {
+    private static Button fixMusic(TableView<Music> musicasTable) {
         Button newButton = CommonsFX.newButton("_Consertar Musicas", e -> fixSongs(musicasTable));
         newButton.disableProperty().bind(Bindings.createBooleanBinding(
             () -> musicasTable.getItems().stream().anyMatch(Music::isNotMP3), musicasTable.getItems()));
         return newButton;
     }
 
-    private void fixSongs(TableView<Music> musicasTable) {
+    private static void fixSongs(TableView<Music> musicasTable) {
         ObservableList<Music> items = musicasTable.getItems();
         Optional<Music> findFirst = items.stream().filter(m -> StringUtils.isBlank(m.getArtista())
             || StringUtils.isBlank(m.getAlbum()) || m.getTitulo().contains("-")).findFirst();
@@ -107,7 +124,7 @@ public class MusicOrganizer extends Application implements HasLogging {
 
     }
 
-    private Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
+    private static Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
         return StageHelper.selectDirectory("Carregar _Musicas", "Carregar Pasta de Músicas", selectedFile -> {
             ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
             musicasTable.setItems(musicas);
@@ -115,7 +132,7 @@ public class MusicOrganizer extends Application implements HasLogging {
         });
     }
 
-    private Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {
+    private static Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {
         return StageHelper.selectDirectory("Carregar _Vídeos", "Carregar Pasta de Músicas", selectedFile -> {
             List<Music> videos = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma").parallelStream()
                 .map(v -> new Music(v.toFile())).collect(Collectors.toList());
@@ -123,28 +140,11 @@ public class MusicOrganizer extends Application implements HasLogging {
         });
     }
 
-    private TableView<Music> tabelaMusicas() {
-        TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>().prefWidth(WIDTH).scaleShape(false)
-            .addColumn("Image", this::convertToImage).addColumn("Título", "titulo").addColumn("Artista", "artista")
-            .addColumn("Álbum", "album").addColumn("Pasta", "pasta").addColumn("Gênero", "genero")
-            .addColumn("Ano", "ano").sortable(true).equalColumns().build();
-        musicaTable.setOnMousePressed(new MusicHandler(musicaTable));
-        return musicaTable;
-    }
-
-    private ImageView view(Image music) {
+    private static ImageView view(Image music) {
         ImageView imageView = new ImageView(music);
         imageView.setFitWidth(50);
         imageView.setPreserveRatio(true);
         return imageView;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    private static Image defaultView() {
-        return new Image(ResourceFXUtils.toExternalForm("fb.jpg"));
     }
 
 }

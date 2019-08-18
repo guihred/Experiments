@@ -164,13 +164,6 @@ public class ColorChooser extends Application {
             .build();
     }
 
-    private void changeIfDifferent(final Slider slider, final double saturation) {
-        if (Math.abs(slider.getValue() - saturation) > 0) {
-            slider.setValue(saturation);
-        }
-        slider.setValueChanging(true);
-    }
-
     private void drawImage() {
         for (int x = 0; x < 256; x++) {
             for (int y = 0; y < 256; y++) {
@@ -188,36 +181,12 @@ public class ColorChooser extends Application {
         return vBox;
     }
 
-    private WritableImage newSliderBackground(final Slider slider) {
-        double height = slider.getPrefHeight();
-        WritableImage image = new WritableImage(20, (int) height);
-
-        for (int x = 0; x < 20; x++) {
-            for (int y = 0; y < height; y++) {
-                image.getPixelWriter().setColor(x, y, Color.hsb((360 - y * 360 / height) % 360, 1, 1));
-            }
-        }
-        return image;
-    }
-
     private VBox rgbSliders() {
         VBox vBox = new VBox();
         vBox.getChildren().add(sliderOptions("Red", redSlider, PERCENT_FORMAT, 100));
         vBox.getChildren().add(sliderOptions("Green", greenSlider, PERCENT_FORMAT, 100));
         vBox.getChildren().add(sliderOptions("Blue", blueSlider, PERCENT_FORMAT, 100));
         return vBox;
-    }
-
-    private HBox sliderOptions(final String field, final Slider slider, final String format, final int multiplier) {
-        Text text = new Text();
-        text.textProperty().bind(slider.valueProperty().multiply(multiplier).asString(format));
-        return new HBox(new Text(field), slider, text);
-    }
-
-    private Rectangle transparentBackground(final int height) {
-        Rectangle rectangle2 = new Rectangle(height, height);
-        rectangle2.setFill(new ImagePattern(drawTransparentPattern(height)));
-        return rectangle2;
     }
 
     private void updateColor(final WritableImage writableImage, final MouseEvent e) {
@@ -243,5 +212,36 @@ public class ColorChooser extends Application {
 
     public static void main(final String[] args) {
         launch(args);
+    }
+
+    private static void changeIfDifferent(final Slider slider, final double saturation) {
+        if (Math.abs(slider.getValue() - saturation) > 0) {
+            slider.setValue(saturation);
+        }
+        slider.setValueChanging(true);
+    }
+
+    private static WritableImage newSliderBackground(final Slider slider) {
+        double height = slider.getPrefHeight();
+        WritableImage image = new WritableImage(20, (int) height);
+
+        for (int x = 0; x < 20; x++) {
+            for (int y = 0; y < height; y++) {
+                image.getPixelWriter().setColor(x, y, Color.hsb((360 - y * 360 / height) % 360, 1, 1));
+            }
+        }
+        return image;
+    }
+
+    private static HBox sliderOptions(final String field, final Slider slider, final String format, final int multiplier) {
+        Text text = new Text();
+        text.textProperty().bind(slider.valueProperty().multiply(multiplier).asString(format));
+        return new HBox(new Text(field), slider, text);
+    }
+
+    private static Rectangle transparentBackground(final int height) {
+        Rectangle rectangle2 = new Rectangle(height, height);
+        rectangle2.setFill(new ImagePattern(drawTransparentPattern(height)));
+        return rectangle2;
     }
 }

@@ -12,9 +12,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker.State;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -29,6 +27,7 @@ import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HasLogging;
+import utils.ImageFXUtils;
 
 public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -85,15 +84,6 @@ public class ImageCrackerApp extends Application {
         return runInPlatformAndWait(() -> engine.executeScript(setValue));
     }
 
-    private <T> T runInPlatformAndWait(Supplier<T> expression) {
-        ObjectProperty<T> obj = new SimpleObjectProperty<>();
-        Platform.runLater(make(() -> obj.set(expression.get())));
-        while (obj.get() == null) {
-            // DO NOTHING
-        }
-        return obj.get();
-    }
-
     private void tryToLog(WebView browser, ImageView imageView) {
         runInPlatform(setValue("j_username", CrawlerTask.getHTTPUsername()));
         runInPlatform(setValue("j_password", CrawlerTask.getHTTPPassword()));
@@ -107,7 +97,7 @@ public class ImageCrackerApp extends Application {
             Integer left = toInteger(runInPlatformAndWait(() -> o.getMember("left")));
             LOG.info("{},{},{},{}", left, top, width, height);
             Rectangle2D viewport = new Rectangle2D(left, top, width, height);
-            Image take = runInPlatformAndWait(() -> take(browser, viewport));
+            Image take = runInPlatformAndWait(() -> ImageFXUtils.take(browser, viewport));
             WritableImage createSelectedImage = ImageCracker.createSelectedImage(take);
             imageView.setImage(createSelectedImage);
             String cracked = ImageCracker.crackImage(createSelectedImage);
@@ -128,17 +118,7 @@ public class ImageCrackerApp extends Application {
         launch(args);
     }
 
-    public static WritableImage take(Node canvas, Rectangle2D viewport) {
-        try {
-            WritableImage writableImage = new WritableImage((int) viewport.getWidth(), (int) viewport.getHeight());
-            SnapshotParameters params = new SnapshotParameters();
-            params.setViewport(viewport);
-            return canvas.snapshot(params, writableImage);
-        } catch (Exception e) {
-            LOG.error("ERROR ", e);
-            return null;
-        }
-    }
+
 
     public static void waitABit() {
         try {
@@ -151,6 +131,15 @@ public class ImageCrackerApp extends Application {
     private static boolean isValid(String crackImage) {
         
         return crackImage.matches("\\d{4}");
+    }
+
+    private static <T> T runInPlatformAndWait(Supplier<T> expression) {
+        ObjectProperty<T> obj = new SimpleObjectProperty<>();
+        Platform.runLater(make(() -> obj.set(expression.get())));
+        while (obj.get() == null) {
+            // DO NOTHING
+        }
+        return obj.get();
     }
 
     private static String setValue(String id, String httpUsername) {

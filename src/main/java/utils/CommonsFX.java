@@ -5,14 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -22,6 +20,12 @@ import simplebuilder.SimpleSliderBuilder;
 public final class CommonsFX {
 
     private CommonsFX() {
+    }
+
+    public static Node[] createField(String nome, StringProperty propriedade) {
+        TextField textField = new TextField();
+        textField.textProperty().bindBidirectional(propriedade);
+        return new Node[] { new Label(nome), textField };
     }
 
     public static List<Color> generateRandomColors(final int size) {
@@ -39,28 +43,17 @@ public final class CommonsFX {
         Collections.shuffle(availableColors);
         return availableColors;
     }
-
     public static Button newButton(final double layoutX, final double layoutY, final String nome,
         final EventHandler<ActionEvent> onAction) {
-        Button button = new Button(nome);
-        button.setLayoutX(layoutX);
-        button.setLayoutY(layoutY);
-        button.setOnAction(onAction);
-        return button;
+        return newButton(layoutX, layoutY, nome, onAction);
     }
 
     public static Button newButton(final Node graphic, final String id, final EventHandler<ActionEvent> onAction) {
-        Button button = new Button(null, graphic);
-        button.setId(id);
-        button.setOnAction(onAction);
-        return button;
+        return newButton(graphic, id, onAction);
     }
 
     public static Button newButton(final String nome, final EventHandler<ActionEvent> onAction) {
-        Button button = new Button(nome);
-        button.setId(nome);
-        button.setOnAction(onAction);
-        return button;
+        return newButton(nome, onAction);
     }
 
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {

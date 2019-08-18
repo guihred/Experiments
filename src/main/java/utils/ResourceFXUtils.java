@@ -1,7 +1,6 @@
 package utils;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,15 +20,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Mesh;
-import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
@@ -153,25 +148,6 @@ public final class ResourceFXUtils {
 			s.forEach(ConsumerEx.makeConsumer(e -> run.accept(e.toFile())));
 		} catch (Exception e) {
 			LOGGER.error("", e);
-		}
-	}
-
-	public static String take(final Canvas canvas) {
-		return take(canvas, canvas.getWidth(), canvas.getHeight());
-
-	}
-
-	public static String take(final Canvas canvas, final double w, final double h) {
-		try {
-			final WritableImage writableImage = new WritableImage((int) w, (int) h);
-			final WritableImage snapshot = canvas.snapshot(new SnapshotParameters(), writableImage);
-			File destination = File.createTempFile("snapshot", ".png");
-			ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "PNG", destination);
-			Desktop.getDesktop().open(destination);
-			return destination.getAbsolutePath();
-		} catch (final IOException e) {
-			HasLogging.log(1).error("ERROR ", e);
-			return null;
 		}
 	}
 

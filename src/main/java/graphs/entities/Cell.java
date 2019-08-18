@@ -63,7 +63,8 @@ public class Cell extends Pane {
 		return text.getText();
 	}
 
-	public CellType getType() {
+    @SuppressWarnings("static-method")
+    public CellType getType() {
 		return null;
 	}
 

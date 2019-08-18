@@ -7,6 +7,8 @@ package fxpro.ch08;
 
 import java.net.MalformedURLException;
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -22,6 +24,7 @@ public class MediaPlayerExample extends Application {
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setVolume(0);
         mediaPlayer.play();
+        primaryStage.setScene(new Scene(new VBox()));
         primaryStage.setTitle("Media Player");
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(WIDTH);

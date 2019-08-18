@@ -234,7 +234,7 @@ public class FXEngineTest extends AbstractTestExecution {
         }));
     }
 
-    private Node getLastCard(CardStack cardStack) {
+    private static Node getLastCard(CardStack cardStack) {
 
         ObservableList<Node> children = cardStack.getChildren();
         Optional<Node> findFirst = children.stream().filter(e -> e instanceof SolitaireCard)

@@ -97,12 +97,6 @@ public class ArkanoidModel {
         circle.setCenterY(circle.getCenterY() + y);
     }
 
-    private Rectangle newRect(int cols, final int spacing, int i) {
-        Rectangle rectangle2 = new Rectangle(i % cols * spacing + 10, i / cols * cols + 50, 20, 10);
-        rectangle2.setFill(Color.AQUA);
-        return rectangle2;
-    }
-
     private void removeIfBlock(Node orElse) {
         if (orElse instanceof Rectangle && ((Rectangle) orElse).getFill() == Color.AQUA) {
             group.getChildren().remove(orElse);
@@ -111,6 +105,12 @@ public class ArkanoidModel {
 
     public static ArkanoidModel create(Group group, Scene scene) {
         return new ArkanoidModel(group, scene);
+    }
+
+    private static Rectangle newRect(int cols, final int spacing, int i) {
+        Rectangle rectangle2 = new Rectangle(i % cols * spacing + 10, i / cols * cols + 50, 20, 10);
+        rectangle2.setFill(Color.AQUA);
+        return rectangle2;
     }
 
 }

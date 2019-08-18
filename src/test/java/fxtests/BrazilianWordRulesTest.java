@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
+@SuppressWarnings("static-method")
 public class BrazilianWordRulesTest {
 
     private static final Logger LOG = HasLogging.log();

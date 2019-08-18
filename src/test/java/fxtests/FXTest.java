@@ -73,6 +73,7 @@ import rosario.RosarioComparadorArquivos;
 import schema.sngpc.SngpcViewer;
 import xylophone.XylophoneApp;
 
+@SuppressWarnings("static-method")
 public final class FXTest {
     @Test
     public void test() throws Throwable {

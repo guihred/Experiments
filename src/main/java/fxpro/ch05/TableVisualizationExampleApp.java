@@ -52,37 +52,6 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
         stage.show();
     }
 
-    private Node createAccordionTitledDemoNode() {
-        TitledPane firstPane = new TitledPane("TitledPane A", new TextArea("TitledPane A content"));
-        TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
-        TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
-        Accordion accordion = new Accordion();
-        accordion.getPanes().addAll(firstPane, secondPane, thirdPane);
-        accordion.setExpandedPane(firstPane);
-        return accordion;
-    }
-
-    private Popup createAlertPopup(String text) {
-
-        Popup alertPopup = new Popup();
-
-        Button okButton = CommonsFX.newButton("OK", e -> alertPopup.hide());
-        final Label htmlLabel = new Label(text);
-        htmlLabel.setWrapText(true);
-        final int MAX_WIDTH = 280;
-        htmlLabel.setMaxWidth(MAX_WIDTH);
-        final int MAX_HEIGHT = 140;
-        htmlLabel.setMaxHeight(MAX_HEIGHT);
-        final BorderPane borderPane = new BorderPane(htmlLabel, null, null, okButton, null);
-
-        StackPane pane = new StackPane(borderPane);
-        alertPopup.getContent().add(pane);
-        pane.getStyleClass().add("cool-popup");
-        BorderPane.setAlignment(okButton, Pos.CENTER);
-        BorderPane.setMargin(okButton, new Insets(10, 0, 10, 0));
-        return alertPopup;
-    }
-
     private Node createHtmlEditorDemoNode() {
         final HTMLEditor htmlEditor = new HTMLEditor();
         htmlEditor.setHtmlText("<p>Replace this text</p>");
@@ -97,7 +66,6 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
     }
 
     private MenuBar createMenus() {
-
         return new SimpleMenuBarBuilder().addMenu("File")
             .addMenuItem("New...",
                 new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "Ctrl+N",
@@ -193,16 +161,6 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
         return scrollPane;
     }
 
-    private Node createSplitTreeListDemoNode() {
-        return new SplitPane(new SimpleTreeViewBuilder<String>().root("Root").addItem("Animal", "Lion", "Tiger", "Bear")
-            .addItem("Vegetable", "Arugula", "Broccoli", "Cabbage").addItem("Mineral", "Copper", "Diamond", "Quartz")
-            .editable(false).showRoot(false).onSelect(newValue -> {
-                if (newValue != null && newValue.isLeaf()) {
-                    updateList(newValue.getValue());
-                }
-            }).build(), new ListView<>(LIST_VIEW_ITEMS));
-    }
-
     private Node createTableDemoNode() {
         return new SimpleTableViewBuilder<Person>().items(getTeamMembers()).addColumn("First Name", "firstName")
             .addColumn("Last Name", "lastName").addColumn("Phone Number", "phone")
@@ -267,5 +225,46 @@ public class TableVisualizationExampleApp extends Application implements HasLogg
     public static void main(String[] args) {
         CrawlerTask.insertProxyConfig();
         launch(args);
+    }
+
+    private static Node createAccordionTitledDemoNode() {
+        TitledPane firstPane = new TitledPane("TitledPane A", new TextArea("TitledPane A content"));
+        TitledPane secondPane = new TitledPane("TitledPane B", new TextArea("TitledPane B content"));
+        TitledPane thirdPane = new TitledPane("TitledPane C", new TextArea("TitledPane C content"));
+        Accordion accordion = new Accordion();
+        accordion.getPanes().addAll(firstPane, secondPane, thirdPane);
+        accordion.setExpandedPane(firstPane);
+        return accordion;
+    }
+
+    private static Popup createAlertPopup(String text) {
+
+        Popup alertPopup = new Popup();
+
+        Button okButton = CommonsFX.newButton("OK", e -> alertPopup.hide());
+        final Label htmlLabel = new Label(text);
+        htmlLabel.setWrapText(true);
+        final int MAX_WIDTH = 280;
+        htmlLabel.setMaxWidth(MAX_WIDTH);
+        final int MAX_HEIGHT = 140;
+        htmlLabel.setMaxHeight(MAX_HEIGHT);
+        final BorderPane borderPane = new BorderPane(htmlLabel, null, null, okButton, null);
+
+        StackPane pane = new StackPane(borderPane);
+        alertPopup.getContent().add(pane);
+        pane.getStyleClass().add("cool-popup");
+        BorderPane.setAlignment(okButton, Pos.CENTER);
+        BorderPane.setMargin(okButton, new Insets(10, 0, 10, 0));
+        return alertPopup;
+    }
+
+    private static Node createSplitTreeListDemoNode() {
+        return new SplitPane(new SimpleTreeViewBuilder<String>().root("Root").addItem("Animal", "Lion", "Tiger", "Bear")
+            .addItem("Vegetable", "Arugula", "Broccoli", "Cabbage").addItem("Mineral", "Copper", "Diamond", "Quartz")
+            .editable(false).showRoot(false).onSelect(newValue -> {
+                if (newValue != null && newValue.isLeaf()) {
+                    updateList(newValue.getValue());
+                }
+            }).build(), new ListView<>(LIST_VIEW_ITEMS));
     }
 }

@@ -170,12 +170,6 @@ public class Vertex implements HasLogging {
         return edges.get(v);
     }
 
-    private Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
-        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
-            .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
-            .orElseThrow(() -> new Exception("There should be something")).getKey();
-    }
-
     public static void chain(String nome1, String nome2, List<Vertex> vertices) {
         Vertex v1 = vertices.stream().filter(v -> v.name.equals(nome1)).findFirst()
             .orElseThrow(() -> new Exception("There should be some vertex called " + nome1));
@@ -335,5 +329,11 @@ public class Vertex implements HasLogging {
             }
         }
         return distance;
+    }
+
+    private static Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
+        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
+            .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
+            .orElseThrow(() -> new Exception("There should be something")).getKey();
     }
 }

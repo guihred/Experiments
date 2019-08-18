@@ -59,7 +59,7 @@ public class CatanModel {
         currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
         right.getChildren().add(userChart);
         Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
-        skipButton.disableProperty().bind(Bindings.createBooleanBinding(() -> isSkippable(), diceThrown,
+        skipButton.disableProperty().bind(Bindings.createBooleanBinding(this::isSkippable, diceThrown,
             resourceChoices.visibleProperty(), currentPlayer, elements));
         Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
         throwButton.disableProperty().bind(diceThrown);
@@ -519,7 +519,7 @@ public class CatanModel {
         diceThrown.set(true);
         if (diceValue == 7) {
             replaceThief();
-            thief.removeHalfOfCards(cards);
+            Thief.removeHalfOfCards(cards);
         }
         onChangePlayer(currentPlayer.get());
         CatanLogger.log(this, CatanAction.THROW_DICE);

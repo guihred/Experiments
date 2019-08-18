@@ -77,7 +77,11 @@ public class ContestApplication extends Application implements HasLogging {
         primaryStage.show();
     }
 
-    private TableView<ContestQuestion> createContestQuestionsTable(Region root) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static TableView<ContestQuestion> createContestQuestionsTable(Region root) {
         return new SimpleTableViewBuilder<ContestQuestion>()
                 .prefWidth(root.widthProperty().add(-10).divide(3))
                 .prefHeight(root.heightProperty().add(-30))
@@ -90,7 +94,7 @@ public class ContestApplication extends Application implements HasLogging {
                 .build();
     }
 
-    private TableView<HasImage> createImagesTable(Region root) {
+    private static TableView<HasImage> createImagesTable(Region root) {
 
         return new SimpleTableViewBuilder<HasImage>()
                 .prefWidth(root.widthProperty().add(-10).divide(3))
@@ -101,7 +105,7 @@ public class ContestApplication extends Application implements HasLogging {
                 .build();
     }
 
-    private TableView<ContestText> createTextsTable(Region root) {
+    private static TableView<ContestText> createTextsTable(Region root) {
         return new SimpleTableViewBuilder<ContestText>()
                 .prefWidth(root.widthProperty().add(-10).divide(3))
                 .prefHeight(root.heightProperty().add(-30))
@@ -111,13 +115,9 @@ public class ContestApplication extends Application implements HasLogging {
                 .build();
     }
 
-    private VBox createVbox(String text, final Node medicamentosEstoqueTable) {
+    private static VBox createVbox(String text, final Node medicamentosEstoqueTable) {
         Label estoqueRosario = new Label(text);
         GridPane.setHalignment(estoqueRosario, HPos.CENTER);
         return new VBox(estoqueRosario, medicamentosEstoqueTable);
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

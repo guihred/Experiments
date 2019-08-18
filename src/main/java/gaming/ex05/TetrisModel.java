@@ -140,18 +140,6 @@ public class TetrisModel {
         this.currentJ = currentJ;
     }
 
-    final int[][] rotateMap(int[][] pieceMap) {
-        int width = pieceMap.length;
-        int height = pieceMap[0].length;
-        int[][] left = new int[height][width];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                left[j][i] = pieceMap[i][height - j - 1];
-            }
-        }
-        return left;
-    }
-
     private void drawPiece(TetrisPieceState state) {
         final int[][] get = pieceDirection.get(piece).get(direction);
         for (int i = 0; i < get.length; i++) {
@@ -191,6 +179,18 @@ public class TetrisModel {
                 map[i][j].setState(TetrisPieceState.EMPTY);
             }
         }
+    }
+
+    final static int[][] rotateMap(int[][] pieceMap) {
+        int width = pieceMap.length;
+        int height = pieceMap[0].length;
+        int[][] left = new int[height][width];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                left[j][i] = pieceMap[i][height - j - 1];
+            }
+        }
+        return left;
     }
 
 }

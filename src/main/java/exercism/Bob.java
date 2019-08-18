@@ -15,7 +15,7 @@ package exercism;
  */
 public class Bob {
 
-	public String hey(String s) {
+    public static String hey(String s) {
 		if (s.matches("[\\s]*")) {
 			return "Fine. Be that way!";
 		}

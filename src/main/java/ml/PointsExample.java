@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.cell.ComboBoxListCell;
@@ -19,7 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PointGraph;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 public class PointsExample extends Application {
 
 
@@ -39,8 +40,9 @@ public class PointsExample extends Application {
         vBox.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
         vBox.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
         vBox.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        final Canvas canvas1 = canvas;
         vBox.getChildren()
-				.add(newButton("Export", e -> ResourceFXUtils.take(canvas)));
+				.add(newButton("Export", e -> ImageFXUtils.take(canvas1)));
         root.setLeft(vBox);
         ObservableList<String> itens = FXCollections.observableArrayList();
         canvas.statsProperty().addListener((Observable o) -> itens.setAll(canvas.statsProperty().keySet()));
@@ -55,7 +57,12 @@ public class PointsExample extends Application {
 		theStage.show();
 	}
 
-    private ListView<String> createSelection(final ObservableList<String> itens, final StringProperty xHeader) {
+    public static void main(final String[] args) {
+        launch(args);
+    }
+
+
+    private static ListView<String> createSelection(final ObservableList<String> itens, final StringProperty xHeader) {
         ListView<String> ySelected = new ListView<>(itens);
         ySelected.setCellFactory(ComboBoxListCell.forListView(itens));
         ySelected.selectionModelProperty().get().setSelectionMode(SelectionMode.SINGLE);
@@ -67,11 +74,6 @@ public class PointsExample extends Application {
         });
         ySelected.selectionModelProperty().get().select(0);
         return ySelected;
-    }
-
-
-    public static void main(final String[] args) {
-        launch(args);
     }
 }
 

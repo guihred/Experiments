@@ -25,9 +25,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleSequentialTransitionBuilder;
-import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.StageHelper;
 
 public class PhotoViewer extends Application {
     private static final int DURATION_MILLIS = 500;
@@ -65,7 +65,7 @@ public class PhotoViewer extends Application {
         final int rightPadding = 80;
         root.getChildren().add(createTickerControl(primaryStage, rightPadding));
         primaryStage.show();
-        ClassReflectionUtils.displayCSSStyler(scene, "photo-viewer.css");
+        StageHelper.displayCSSStyler(scene, "photo-viewer.css");
         addPicturesFromImagesFolder();
     }
 
@@ -152,40 +152,6 @@ public class PhotoViewer extends Application {
                 .play());
 
         return buttonGroup;
-    }
-
-    /*
-     * A factory function returning an ImageView instance to preserve the aspect
-     * ratio and bind the instance to the width of the scene for resizing the image.
-     * 
-     * @param widthProperty is the Scene's read only width property.
-     * 
-     * @return ImageView newly created image view for current display.
-     */
-    private ImageView createImageView(ReadOnlyDoubleProperty widthProperty) {
-        // maintain aspect ratio
-        ImageView imageView = new ImageView();
-        // set aspect ratio
-        imageView.setPreserveRatio(true);
-        // resize based on the scene
-        imageView.fitWidthProperty().bind(widthProperty);
-        return imageView;
-    }
-
-    /*
-     * Create a progress indicator control to be centered.
-     * 
-     * @param scene The primary application scene.
-     * 
-     * @return ProgressIndicator a new progress indicator centered.
-     */
-    private ProgressIndicator createProgressIndicator(Scene scene) {
-        ProgressIndicator progress = new ProgressIndicator(0);
-        progress.setVisible(false);
-        progress.layoutXProperty().bind(scene.widthProperty().subtract(progress.widthProperty()).divide(2));
-
-        progress.layoutYProperty().bind(scene.heightProperty().subtract(progress.heightProperty()).divide(2));
-        return progress;
     }
 
     private Group createTickerControl(Stage stage, double rightPadding) {
@@ -322,17 +288,6 @@ public class PhotoViewer extends Application {
         });
     }
 
-    private void transitionByFading(Image nextImage, ImageView imageView) {
-
-        new SimpleSequentialTransitionBuilder()
-            // fade out image view node
-            .addFadeTransition(DURATION_MILLIS, imageView, 1, 0, e -> imageView.setImage(nextImage))
-            // fade out image view, swap image and fade in image view
-            .addFadeTransition(DURATION_MILLIS, imageView, 0, 1)
-            .build()
-            .play();
-    }
-
     private void tryAddImage(File file) {
         try {
             addImage(file.toURI().toURL().toString());
@@ -347,6 +302,40 @@ public class PhotoViewer extends Application {
     }
 
     /*
+     * A factory function returning an ImageView instance to preserve the aspect
+     * ratio and bind the instance to the width of the scene for resizing the image.
+     * 
+     * @param widthProperty is the Scene's read only width property.
+     * 
+     * @return ImageView newly created image view for current display.
+     */
+    private static ImageView createImageView(ReadOnlyDoubleProperty widthProperty) {
+        // maintain aspect ratio
+        ImageView imageView = new ImageView();
+        // set aspect ratio
+        imageView.setPreserveRatio(true);
+        // resize based on the scene
+        imageView.fitWidthProperty().bind(widthProperty);
+        return imageView;
+    }
+
+    /*
+     * Create a progress indicator control to be centered.
+     * 
+     * @param scene The primary application scene.
+     * 
+     * @return ProgressIndicator a new progress indicator centered.
+     */
+    private static ProgressIndicator createProgressIndicator(Scene scene) {
+        ProgressIndicator progress = new ProgressIndicator(0);
+        progress.setVisible(false);
+        progress.layoutXProperty().bind(scene.widthProperty().subtract(progress.widthProperty()).divide(2));
+
+        progress.layoutYProperty().bind(scene.heightProperty().subtract(progress.heightProperty()).divide(2));
+        return progress;
+    }
+
+    /*
      * Returns true if URL's file extensions match jpg, jpeg, png and gif.
      * 
      * @param url standard URL path to image file.
@@ -357,6 +346,17 @@ public class PhotoViewer extends Application {
     private static boolean isValidImageFile(String url) {
         List<String> imgTypes = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".bmp");
         return imgTypes.stream().anyMatch(url::endsWith);
+    }
+
+    private static void transitionByFading(Image nextImage, ImageView imageView) {
+
+        new SimpleSequentialTransitionBuilder()
+            // fade out image view node
+            .addFadeTransition(DURATION_MILLIS, imageView, 1, 0, e -> imageView.setImage(nextImage))
+            // fade out image view, swap image and fade in image view
+            .addFadeTransition(DURATION_MILLIS, imageView, 0, 1)
+            .build()
+            .play();
     }
 
     // Enumeration of next and previous button directions

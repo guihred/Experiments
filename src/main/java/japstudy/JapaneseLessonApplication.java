@@ -57,7 +57,11 @@ public class JapaneseLessonApplication extends Application {
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
     }
 
-    private void editItem(final TableView<JapaneseLesson> lessonsTable) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static void editItem(final TableView<JapaneseLesson> lessonsTable) {
         TableViewSelectionModel<JapaneseLesson> selectionModel = lessonsTable.getSelectionModel();
         if (!selectionModel.isEmpty()) {
             JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
@@ -68,7 +72,11 @@ public class JapaneseLessonApplication extends Application {
         }
     }
 
-    private TableView<JapaneseLesson> tabelaJapaneseLessons() {
+    private static ObservableList<JapaneseLesson> getLessons() {
+        return JapaneseLessonReader.getLessonsWait();
+    }
+
+    private static TableView<JapaneseLesson> tabelaJapaneseLessons() {
 
         return new SimpleTableViewBuilder<JapaneseLesson>().scaleShape(false).addColumn(LESSON, "lesson")
             .addColumn("Number", "exercise").addColumn("English", "english").addColumn("Japanese", "japanese")
@@ -77,13 +85,5 @@ public class JapaneseLessonApplication extends Application {
                 japaneseLessonEditingDisplay.start(new Stage());
                 japaneseLessonEditingDisplay.setCurrent(selectedItem);
             }).build();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    private static ObservableList<JapaneseLesson> getLessons() {
-        return JapaneseLessonReader.getLessonsWait();
     }
 }

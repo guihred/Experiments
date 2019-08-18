@@ -56,12 +56,12 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
     @Override
     public void start(Stage primaryStage) {
 
-        TextField number = newText();
-        TextArea question = newTextArea();
+        TextField number = new TextField();
+        TextArea question = new TextArea();
         ListView<ContestQuestionAnswer> optionsListView = newOptionListView();
-        TextField subject = newText();
-        TextField image = newText();
-        VBox newImage = newImage();
+        TextField subject = new TextField();
+        TextField image = new TextField();
+        VBox newImage = new VBox();
         current.addListener((observable, oldValue, newValue) -> {
             if (newValue != null && lessons.size() > newValue.intValue() && newValue.intValue() >= 0) {
                 ContestQuestion contestQuestion = lessons.get(newValue.intValue());
@@ -115,10 +115,6 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         primaryStage.show();
     }
 
-    private VBox newImage() {
-        return new VBox();
-    }
-
     private ListView<ContestQuestionAnswer> newOptionListView() {
         ListView<ContestQuestionAnswer> listView = new ListView<>();
         listView.setItems(options);
@@ -150,22 +146,7 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         return listView;
     }
 
-    private TextField newText() {
-        return new TextField();
-    }
-
-    private TextArea newTextArea() {
-        return new TextArea();
-    }
-
-    private VBox newVBox(String text, Node... e) {
-        VBox vBox = new VBox(new Text(text));
-        vBox.getChildren().addAll(e);
-        return vBox;
-    }
-
     private void nextLesson() {
-
         current.set((current.get() + 1) % lessons.size());
     }
 
@@ -227,6 +208,12 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static VBox newVBox(String text, Node... e) {
+        VBox vBox = new VBox(new Text(text));
+        vBox.getChildren().addAll(e);
+        return vBox;
     }
 
 }

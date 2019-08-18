@@ -207,10 +207,6 @@ public class TextTool extends PaintTool {
         getArea().setHeight(Math.abs(y - initialY));
     }
 
-    private VBox field(final String text2, final Node node) {
-        return new VBox(new Text(text2), node);
-    }
-
     private ToggleButton getBoldOption() {
         if (bold == null) {
             Text graphic = new Text("B");
@@ -303,6 +299,10 @@ public class TextTool extends PaintTool {
         model.getImageStack().getChildren().add(imageView);
         textArea.setText("");
         model.createImageVersion();
+    }
+
+    private static VBox field(final String text2, final Node node) {
+        return new VBox(new Text(text2), node);
     }
 
 }

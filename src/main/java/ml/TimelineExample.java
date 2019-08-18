@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
+import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
 
 public class TimelineExample extends Application {
@@ -76,20 +78,21 @@ public class TimelineExample extends Application {
             }).build();
 
         left.getChildren().add(indicators);
-        left.getChildren().add(CommonsFX.newButton("Export", d -> ResourceFXUtils.take(canvas)));
+        final Canvas canvas1 = canvas;
+        left.getChildren().add(CommonsFX.newButton("Export", d -> ImageFXUtils.take(canvas1)));
         root.setCenter(new HBox(canvas, listVies));
 
 		theStage.show();
 	}
 
 
-    private List<Entry<String, Color>> sortedLabels(final ObservableMap<String, Color> colorsProperty) {
-        return colorsProperty.entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
-                .collect(Collectors.toList());
-    }
-
     public static void main(final String[] args) {
         launch(args);
+    }
+
+    private static List<Entry<String, Color>> sortedLabels(final ObservableMap<String, Color> colorsProperty) {
+        return colorsProperty.entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
+                .collect(Collectors.toList());
     }
 }
 

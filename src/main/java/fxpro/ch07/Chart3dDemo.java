@@ -123,13 +123,17 @@ public class Chart3dDemo extends Application {
     }
 
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     /**
      * Create axis walls
      * 
      * @param size1
      * @return
      */
-    private Group createCube(double size1) {
+    private static Group createCube(double size1) {
 
         Group cube = new Group();
 
@@ -172,10 +176,6 @@ public class Chart3dDemo extends Application {
         cube.getChildren().addAll(cubeFaces);
 
         return cube;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
 

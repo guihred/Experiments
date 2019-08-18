@@ -164,7 +164,7 @@ public class RegressionModel {
         return initial + e + slope * c++;
     }
 
-    private Data<Number, Number> toData(double e1, double e2) {
+    private static Data<Number, Number> toData(double e1, double e2) {
         return new Data<>(e1, e2);
     }
 

@@ -41,7 +41,7 @@ public class ReversiPiece extends Region {
         this.owner.set(owner);
     }
 
-    private String getFinaleStyle(Owner owner2) {
+    private static String getFinaleStyle(Owner owner2) {
         String style = "";
         switch (owner2) {
             case BLACK:

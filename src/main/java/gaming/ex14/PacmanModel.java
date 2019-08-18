@@ -89,23 +89,8 @@ public class PacmanModel implements HasLogging {
 
     }
 
-    public void addRectangle(Group group, double value, double value2, int width, int height, Color blue) {
-        Rectangle rectangle = new Rectangle(width, height, blue);
-        rectangle.setLayoutX(value);
-        rectangle.setLayoutY(value2);
-        group.getChildren().add(rectangle);
-    }
-
     public IntegerProperty getPoints() {
         return points;
-    }
-
-    private void addRectangle(Group group, double value, double value2, double width, double height) {
-        Rectangle rectangle = new Rectangle(width, height, Color.BLUE);
-        rectangle.setLayoutX(value);
-        rectangle.setLayoutY(value2);
-
-        group.getChildren().add(rectangle);
     }
 
     private MazeSquare[][] createLabyrinth(MazeSquare[][] maze, Group group) {
@@ -207,8 +192,23 @@ public class PacmanModel implements HasLogging {
         }
     }
 
+    public static void addRectangle(Group group, double value, double value2, int width, int height, Color blue) {
+        Rectangle rectangle = new Rectangle(width, height, blue);
+        rectangle.setLayoutX(value);
+        rectangle.setLayoutY(value2);
+        group.getChildren().add(rectangle);
+    }
+
     public static PacmanModel create(Group group, Scene scene) {
         return new PacmanModel(group, scene);
+    }
+
+    private static void addRectangle(Group group, double value, double value2, double width, double height) {
+        Rectangle rectangle = new Rectangle(width, height, Color.BLUE);
+        rectangle.setLayoutX(value);
+        rectangle.setLayoutY(value2);
+
+        group.getChildren().add(rectangle);
     }
 
     private static MazeSquare[][] initializeMaze() {

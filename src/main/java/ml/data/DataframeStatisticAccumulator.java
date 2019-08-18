@@ -192,7 +192,7 @@ public class DataframeStatisticAccumulator {
         max = countMap.values().stream().mapToDouble(e -> e).max().orElse(max);
     }
 
-    private Comparator<Entry<String, Integer>> comparator() {
+    private static Comparator<Entry<String, Integer>> comparator() {
         return Comparator.comparing(Entry<String, Integer>::getValue);
     }
 

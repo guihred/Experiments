@@ -112,13 +112,31 @@ public class Chart3dGraph extends Application {
         primaryStage.show();
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    /**
+     * Create an array of the given size with values of perlin noise
+     * 
+     * @param size1
+     * @return
+     * @return
+     */
+
+    /* T(°C) = (T(°F) - minF) × (size)/(maxF-minF) */
+
+    private static double convert(double f, double size1, double maxF, double minF) {
+        return (f - minF) * size1 / (maxF - minF);
+    }
+
     /**
      * Create axis walls
      * 
      * @param length
      * @return
      */
-    private Group createCube(double length) {
+    private static Group createCube(double length) {
         Group cube = new Group();
         // size of the cube
         Color color = Color.DARKCYAN;
@@ -153,7 +171,7 @@ public class Chart3dGraph extends Application {
         return cube;
     }
 
-    private void createFaces(TriangleMesh mesh, int length) {
+    private static void createFaces(TriangleMesh mesh, int length) {
         for (int x = 0; x < length - 1; x++) {
             for (int z = 0; z < length - 1; z++) {
                 int tl = x * length + z; // top-left
@@ -166,45 +184,6 @@ public class Chart3dGraph extends Application {
                 mesh.getFaces().addAll(tr, offset + 2, br, offset + 3, bl, offset + 1);
             }
         }
-    }
-
-    private int createTexture(TriangleMesh mesh, int size1) {
-        int length = size1;
-        float total = length;
-        for (float x = 0; x < length - 1; x++) {
-            for (float y = 0; y < length - 1; y++) {
-                float x0 = x / total;
-                float y0 = y / total;
-                float x1 = (x + 1) / total;
-                float y1 = (y + 1) / total;
-                mesh.getTexCoords().addAll( //
-                    x0, y0, // 0, top-left
-                    x0, y1, // 1, bottom-left
-                    x1, y1, // 2, top-right
-                    x1, y1 // 3, bottom-right
-                );
-
-            }
-        }
-        return length;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    /**
-     * Create an array of the given size with values of perlin noise
-     * 
-     * @param size1
-     * @return
-     * @return
-     */
-
-    /* T(°C) = (T(°F) - minF) × (size)/(maxF-minF) */
-
-    private static double convert(double f, double size1, double maxF, double minF) {
-        return (f - minF) * size1 / (maxF - minF);
     }
 
     private static float[][] createPlane(int size1) {
@@ -232,6 +211,27 @@ public class Chart3dGraph extends Application {
         }
         return noiseArray;
 
+    }
+
+    private static int createTexture(TriangleMesh mesh, int size1) {
+        int length = size1;
+        float total = length;
+        for (float x = 0; x < length - 1; x++) {
+            for (float y = 0; y < length - 1; y++) {
+                float x0 = x / total;
+                float y0 = y / total;
+                float x1 = (x + 1) / total;
+                float y1 = (y + 1) / total;
+                mesh.getTexCoords().addAll( //
+                    x0, y0, // 0, top-left
+                    x0, y1, // 1, bottom-left
+                    x1, y1, // 2, top-right
+                    x1, y1 // 3, bottom-right
+                );
+
+            }
+        }
+        return length;
     }
 
 }

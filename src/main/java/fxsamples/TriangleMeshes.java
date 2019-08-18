@@ -85,9 +85,14 @@ public class TriangleMeshes extends Application implements HasLogging {
         primaryStage.show();
     }
 
+    // End Step 1
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     // Step 2a: Create a general Pyramid TriangleMesh building method with
     // height and hypotenuse
-    private Group buildPyramid(float height, float hypotenuse, Color color, boolean ambient, boolean fill) {
+    private static Group buildPyramid(float height, float hypotenuse, Color color, boolean ambient, boolean fill) {
         final TriangleMesh mesh = new TriangleMesh();
         // End Step 2a
         // Step 2b: Add 5 points, later we will build our faces from these
@@ -162,10 +167,5 @@ public class TriangleMeshes extends Application implements HasLogging {
         }
         // End Step 2g
         return pyramidGroup;
-    }
-
-    // End Step 1
-    public static void main(String[] args) {
-        launch(args);
     }
 }

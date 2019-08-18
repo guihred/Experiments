@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
+@SuppressWarnings("static-method")
 public class GraphAlgorithmsTest {
 
     @Test

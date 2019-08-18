@@ -27,7 +27,31 @@ public class VigenereCCipher implements HasLogging {
         0.06966, 0.00153, 0.00772, 0.04025, 0.02406, 0.06749, 0.07507, 0.01929, 0.00095, 0.05987, 0.06327, 0.09056,
         0.02758, 0.00978, 0.02360, 0.00150, 0.01974, 0.00074 };
 
-    public int bestMatch(final double[] a, final double[] b) {
+    public int inicio() {
+        int len = 0;
+        char[] key = new char[100];
+        double bestFit = 1e100;
+
+        int[] txt = new int[ENCODED.length()];
+        for (int j = 0; j < ENCODED.length(); j++) {
+            if (Character.isUpperCase(ENCODED.charAt(j))) {
+                txt[len++] = ENCODED.charAt(j) - 'A';
+            }
+        }
+
+        for (int j = 1; j < 30; j++) {
+            double fit = freqEveryNth(txt, len, j, key);
+            getLogger().trace("{}, key length: {}, {}", fit, j, key);
+            if (fit < bestFit) {
+                bestFit = fit;
+                LOGGER.info("{} <--- best key length so far", j);
+            }
+        }
+
+        return 0;
+    }
+
+    public static int bestMatch(final double[] a, final double[] b) {
         double sum = 0;
         for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
             sum += a[i];
@@ -53,7 +77,7 @@ public class VigenereCCipher implements HasLogging {
         return bestRotate;
     }
 
-    public double freqEveryNth(final int[] msg, int len, int interval, char[] key) {
+    public static double freqEveryNth(final int[] msg, int len, int interval, char[] key) {
         double[] out = new double[NUMBER_OF_LETTERS];
         double[] accu = new double[NUMBER_OF_LETTERS];
         for (int j = 0; j < interval; j++) {
@@ -85,30 +109,6 @@ public class VigenereCCipher implements HasLogging {
 
         key[interval] = '\0';
         return ret;
-    }
-
-    public int inicio() {
-        int len = 0;
-        char[] key = new char[100];
-        double bestFit = 1e100;
-
-        int[] txt = new int[ENCODED.length()];
-        for (int j = 0; j < ENCODED.length(); j++) {
-            if (Character.isUpperCase(ENCODED.charAt(j))) {
-                txt[len++] = ENCODED.charAt(j) - 'A';
-            }
-        }
-
-        for (int j = 1; j < 30; j++) {
-            double fit = freqEveryNth(txt, len, j, key);
-            getLogger().trace("{}, key length: {}, {}", fit, j, key);
-            if (fit < bestFit) {
-                bestFit = fit;
-                LOGGER.info("{} <--- best key length so far", j);
-            }
-        }
-
-        return 0;
     }
 
 }

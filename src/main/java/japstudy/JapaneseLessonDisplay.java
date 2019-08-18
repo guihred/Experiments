@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 
 public class JapaneseLessonDisplay extends Application {
     private SecureRandom random = new SecureRandom();
@@ -43,8 +44,7 @@ public class JapaneseLessonDisplay extends Application {
         });
         japanese.visibleProperty().bind(tested);
         TextField answer = new TextField();
-        Button next = new Button("Next");
-        next.setOnAction(e -> nextLesson(answer));
+        Button next = CommonsFX.newButton("Next", e -> nextLesson(answer));
         final int stageWidth = 600;
         primaryStage.setWidth(stageWidth);
         if (!lessons.isEmpty()) {
@@ -70,13 +70,6 @@ public class JapaneseLessonDisplay extends Application {
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
     }
 
-    private Text newText() {
-        Text romaji = new Text();
-        romaji.setTextAlignment(TextAlignment.CENTER);
-        romaji.setWrappingWidth(500);
-        return romaji;
-    }
-
     private void nextLesson(TextField answer) {
         if (!tested.get()) {
             tested.set(true);
@@ -98,6 +91,13 @@ public class JapaneseLessonDisplay extends Application {
 
     private static ObservableList<JapaneseLesson> getLessons() {
         return JapaneseLessonReader.getLessonsWait();
+    }
+
+    private static Text newText() {
+        Text romaji = new Text();
+        romaji.setTextAlignment(TextAlignment.CENTER);
+        romaji.setWrappingWidth(500);
+        return romaji;
     }
 
 }

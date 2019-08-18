@@ -42,7 +42,11 @@ public class CenterUsingBind extends Application {
         primaryStage.show();
     }
 
-    private StackPane createScore(Owner owner) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static StackPane createScore(Owner owner) {
         Region background;
 
         Ellipse piece = new SimpleEllipseBuilder().radiusX(30).radiusY(20).fill(owner.getColor())
@@ -72,9 +76,5 @@ public class CenterUsingBind extends Application {
         score.textProperty().bind(model.getScore(owner).asString());
         remaining.textProperty().bind(model.getTurnsRemaining(owner).asString().concat(" turns remaining"));
         return stack;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

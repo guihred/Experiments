@@ -47,7 +47,7 @@ public class Terrain extends Group {
 
 	public void createSettlePoints(final double x, final double y, List<SettlePoint> settlePoints2) {
 		Terrain cell = this;
-		for (SettlePoint p : cell.getSettlePoints(x, y)) {
+        for (SettlePoint p : Terrain.getSettlePoints(x, y)) {
 			if (settlePoints2.stream().noneMatch(e -> intersects(p, e))) {
 				settlePoints2.add(p);
 				p.addTerrain(cell);
@@ -70,28 +70,7 @@ public class Terrain extends Group {
 		return number.get();
 	}
 
-	public List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
-		List<SettlePoint> points = new ArrayList<>();
-		double off = Math.PI / 6;
-		for (int i = 0; i < 6; i++) {
-			double d = Math.PI / 3;
-			double x = Math.cos(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
-			double y = Math.sin(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
-			double centerX = xOff + x - Terrain.RADIUS / 10.;
-			double centerY = yOff + y;
-			SettlePoint e = new SettlePoint(centerX, centerY);
-			points.add(e);
-			if (points.size() > 1) {
-				e.addNeighbor(points.get(i - 1));
-			}
-			if (points.size() == 6) {
-				e.addNeighbor(points.get(0));
-			}
-		}
-		return points;
-	}
-
-	public Thief getThief() {
+    public Thief getThief() {
 		return thief;
 	}
 
@@ -162,7 +141,7 @@ public class Terrain extends Group {
 		return polygon;
 	}
 
-    public static List<EdgeCatan> addTerrains(Pane root, List<SettlePoint> settlePoints, Collection<Terrain> terrains,
+	public static List<EdgeCatan> addTerrains(Pane root, List<SettlePoint> settlePoints, Collection<Terrain> terrains,
         List<Port> ports) {
         List<Integer> numbers = Terrain.getNumbers();
         List<ResourceType> cells = ResourceType.createResources();
@@ -197,12 +176,33 @@ public class Terrain extends Group {
 
     }
 
-	public static List<Integer> getNumbers() {
+    public static List<Integer> getNumbers() {
         List<Integer> numbers = IntStream.rangeClosed(2, 12)
             .flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e)))
 				.boxed().collect(Collectors.toList());
 		Collections.shuffle(numbers);
 		return numbers;
+	}
+
+	public static List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
+		List<SettlePoint> points = new ArrayList<>();
+		double off = Math.PI / 6;
+		for (int i = 0; i < 6; i++) {
+			double d = Math.PI / 3;
+			double x = Math.cos(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
+			double y = Math.sin(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
+			double centerX = xOff + x - Terrain.RADIUS / 10.;
+			double centerY = yOff + y;
+			SettlePoint e = new SettlePoint(centerX, centerY);
+			points.add(e);
+			if (points.size() > 1) {
+				e.addNeighbor(points.get(i - 1));
+			}
+			if (points.size() == 6) {
+				e.addNeighbor(points.get(0));
+			}
+		}
+		return points;
 	}
 
 	private static int getLimit(final int e) {

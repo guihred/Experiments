@@ -3,6 +3,7 @@ import static utils.CommonsFX.newSlider;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
@@ -10,7 +11,7 @@ import ml.data.DataframeML;
 import ml.graph.WorldMapGraph;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 
 public class WorldMapExample3 extends Application {
 
@@ -33,7 +34,8 @@ public class WorldMapExample3 extends Application {
         ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(x.cols()).select("Currency Unit")
                 .onSelect(canvas.valueHeaderProperty()::set).build();
         root.getChildren().add(build);
-        root.getChildren().add(CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas)));
+        final Canvas canvas1 = canvas;
+        root.getChildren().add(CommonsFX.newButton("Export", e -> ImageFXUtils.take(canvas1)));
         root.getChildren().add(canvas);
 		theStage.show();
 	}

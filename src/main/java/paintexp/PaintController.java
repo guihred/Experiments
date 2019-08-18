@@ -48,28 +48,6 @@ public class PaintController {
         PaintViewUtils.flipRotate(paintModel, paintModel.getSelectedImage());
     }
 
-    public List<Color> getColors() {
-        List<Color> availableColors = new ArrayList<>();
-        final double step = 30;
-        final int colorDiff = 64;
-        for (int i = 0; i < 2; i++) {
-            availableColors.add(Color.grayRgb(i * colorDiff));
-        }
-        for (int i = 0; i < 12; i++) {
-            availableColors.add(Color.hsb(i * step, 1, 1));
-        }
-        availableColors.add(Color.WHITE);
-        availableColors.add(Color.grayRgb(colorDiff * 2));
-        for (int i = 0; i < 6; i++) {
-            availableColors.add(Color.hsb(i * step, 1, 0.5));
-        }
-        for (int i = 6; i < 11; i++) {
-            availableColors.add(Color.hsb(i * step, .5, 1));
-        }
-        availableColors.add(Color.TRANSPARENT.invert());
-        return availableColors;
-    }
-
     public PaintModel getPaintModel() {
 		return paintModel;
 	}
@@ -81,7 +59,7 @@ public class PaintController {
 		}
 	}
 
-	public void handleMouse(final MouseEvent e) {
+    public void handleMouse(final MouseEvent e) {
 		double x = e.getX();
 		double y = e.getY();
 		paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
@@ -120,19 +98,19 @@ public class PaintController {
 		return rectangle;
 	}
 
-    public void openFile(final Window ownerWindow) {
+	public void openFile(final Window ownerWindow) {
         PaintFileUtils.openFile(ownerWindow, paintModel);
     }
 
-	public void paste() {
+    public void paste() {
         PaintEditUtils.paste(paintModel, paintModel.getCurrentSelectTool());
 	}
 
-    public void resize() {
+	public void resize() {
         PaintViewUtils.resize(paintModel, paintModel.getSelectedImage());
     }
 
-	public void saveAsFile(final Stage primaryStage) {
+    public void saveAsFile(final Stage primaryStage) {
         PaintFileUtils.saveAsFile(primaryStage, paintModel);
     }
 
@@ -140,16 +118,15 @@ public class PaintController {
         PaintFileUtils.saveFile(primaryStage, paintModel);
 	}
 
-    public void selectAll() {
+	public void selectAll() {
         PaintEditUtils.selectAll(paintModel, paintModel.getCurrentSelectTool());
 	}
 
-	public void undo() {
+    public void undo() {
         PaintEditUtils.undo(paintModel);
     }
 
-
-    private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
+	private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
         if (e.getClickCount() > 1) {
 			ColorChooser dialog = new ColorChooser();
             dialog.setCurrentColor(color);
@@ -168,5 +145,28 @@ public class PaintController {
         } else {
             paintModel.setBackColor((Color) rectangle.getFill());
         }
+    }
+
+
+    public static List<Color> getColors() {
+        List<Color> availableColors = new ArrayList<>();
+        final double step = 30;
+        final int colorDiff = 64;
+        for (int i = 0; i < 2; i++) {
+            availableColors.add(Color.grayRgb(i * colorDiff));
+        }
+        for (int i = 0; i < 12; i++) {
+            availableColors.add(Color.hsb(i * step, 1, 1));
+        }
+        availableColors.add(Color.WHITE);
+        availableColors.add(Color.grayRgb(colorDiff * 2));
+        for (int i = 0; i < 6; i++) {
+            availableColors.add(Color.hsb(i * step, 1, 0.5));
+        }
+        for (int i = 6; i < 11; i++) {
+            availableColors.add(Color.hsb(i * step, .5, 1));
+        }
+        availableColors.add(Color.TRANSPARENT.invert());
+        return availableColors;
     }
 }

@@ -34,7 +34,7 @@ public class Etl {
      * @param old the old
      * @return the map
      */
-    public Map<String, Integer> transform(Map<Integer, List<String>> old) {
+    public static Map<String, Integer> transform(Map<Integer, List<String>> old) {
         return old.entrySet().stream()
             .flatMap(e -> e.getValue().stream().collect(Collectors.toMap(String::toLowerCase, a -> e.getKey()))
                 .entrySet().stream())

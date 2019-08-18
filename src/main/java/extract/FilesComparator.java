@@ -155,7 +155,11 @@ public class FilesComparator extends Application {
         }
     }
 
-    private void delete(TableView<File> table1) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static void delete(TableView<File> table1) {
         ObservableList<File> selectedItems = table1.getSelectionModel().getSelectedItems();
         for (File file : selectedItems) {
             File selectedItem = file;
@@ -169,10 +173,6 @@ public class FilesComparator extends Application {
             }
         }
         updateCells(table1);
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
 }

@@ -47,7 +47,7 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 		getLogger().info("VERIFIED FXEngineRosarioTest ");
 	}
 
-    private KeyCode[] typeName(String name) {
+    private static KeyCode[] typeName(String name) {
         return name.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
 				.map(s -> ".".equals(s) ? "Period" : s).map(KeyCode::getKeyCode)
 				.toArray(KeyCode[]::new);

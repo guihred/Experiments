@@ -49,7 +49,7 @@ class MovimentacaoAleatoria extends AnimationTimer {
                 || notWithinRange(enemy.getTranslateX(), Labyrinth3DWallTexture.mapa.length * LabyrinthWall.SIZE);
     }
 
-    private void goToDirection(int dir, MeshView enemy, final int step) {
+    private static void goToDirection(int dir, MeshView enemy, final int step) {
         // NORTH
         if (dir == 3) {
         	enemy.setTranslateZ(enemy.getTranslateZ() + step);

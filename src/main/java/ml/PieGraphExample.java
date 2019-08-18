@@ -3,6 +3,7 @@ import static utils.CommonsFX.newSlider;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -11,7 +12,7 @@ import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PieGraph;
 import utils.CommonsFX;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 public class PieGraphExample extends Application {
 
     private static final int SIZE = 650;
@@ -25,7 +26,8 @@ public class PieGraphExample extends Application {
         PieGraph canvas = new PieGraph();
         DataframeML x = DataframeML.builder("WDICountry.csv").build();
         canvas.setDataframe(x, "Region");
-        Button exportButton = CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas));
+        final Canvas canvas1 = canvas;
+        Button exportButton = CommonsFX.newButton("Export", e -> ImageFXUtils.take(canvas1));
         VBox radiusSlider = newSlider("Radius", 1, 500, canvas.radiusProperty());
         VBox binsSlider = newSlider("Bins", 1, 50, canvas.binsProperty());
         VBox xSlider = newSlider("X", 1, SIZE, canvas.xOffsetProperty());

@@ -12,7 +12,7 @@ class MyListenerMapExamples implements MapChangeListener<String, Integer>, HasLo
         getLogger().trace(prettyPrint);
 	}
 	
-	private String prettyPrint(Change<? extends String, ? extends Integer> change) {
+    private static String prettyPrint(Change<? extends String, ? extends Integer> change) {
 		StringBuilder sb = new StringBuilder("\tChange event data:\n");
 		sb.append("\t\tWas added: ").append(change.wasAdded()).append("\n");
 		sb.append("\t\tWas removed: ").append(change.wasRemoved()).append("\n");

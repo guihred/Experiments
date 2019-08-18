@@ -32,6 +32,7 @@ import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
+@SuppressWarnings("static-method")
 public final class JavaExercisesTest implements HasLogging {
     @Test
     public void testChapter1() {

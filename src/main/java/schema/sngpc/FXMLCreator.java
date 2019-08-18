@@ -1,15 +1,11 @@
 package schema.sngpc;
 
 import static java.util.stream.Collectors.toMap;
-import static utils.ClassReflectionUtils.getFieldNameCase;
-import static utils.ClassReflectionUtils.hasClass;
-import static utils.ClassReflectionUtils.hasField;
-import static utils.ClassReflectionUtils.mapProperty;
+import static utils.ClassReflectionUtils.*;
 
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,10 +43,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import paintexp.svgcreator.SVGCreator;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 public final class FXMLCreator {
-    private static final String DEFINE_TAG = "fx:define";
+    private static final String FX_REFERENCE = "fx:reference";
+    private static final String FX_FACTORY = "fx:factory";
+    private static final String FX_ID = "fx:id";
+    private static final String FX_VALUE = "fx:value";
+    private static final String FX_DEFINE = "fx:define";
     private static final Logger LOG = HasLogging.log();
     private static final List<String> IGNORE = Arrays.asList("needsLayout", "layoutBounds", "baselineOffset",
         "localToParentTransform", "eventDispatcher", "skin", "background", "controlCssMetaData", "pseudoClassStates",
@@ -108,7 +111,7 @@ public final class FXMLCreator {
 
                 Map<String, Object> fields = differences(node2);
                 if (hasClass(ATTRIBUTE_CLASSES, node2.getClass())) {
-                    createElement.setAttribute("fx:value", Objects.toString(node2, ""));
+                    createElement.setAttribute(FX_VALUE, Objects.toString(node2, ""));
                     fields.clear();
                 }
 
@@ -117,9 +120,9 @@ public final class FXMLCreator {
                         processField(createElement, s, fieldValue, node2);
                     }
                 });
-                referencedNodes.computeIfAbsent(node2, (f) -> newName(f));
+                referencedNodes.computeIfAbsent(node2, this::newName);
                 if (referencedNodes.containsKey(node2)) {
-                    createElement.setAttribute("fx:id", referencedNodes.get(node2));
+                    createElement.setAttribute(FX_ID, referencedNodes.get(node2));
                 }
                 if (parent == document) {
                     createElement.setAttribute("xmlns:fx", "http://javafx.com/fxml");
@@ -150,7 +153,7 @@ public final class FXMLCreator {
         String simpleName = fieldValue.getClass().getSimpleName();
         if (!referencedNodes.containsKey(fieldValue)) {
             Map<String, Object> differences = differences(fieldValue);
-            Element defineElement = document.createElement(DEFINE_TAG);
+            Element defineElement = document.createElement(FX_DEFINE);
             element.getParentNode().appendChild(defineElement);
             Element createElement = document.createElement(simpleName);
             defineElement.appendChild(createElement);
@@ -161,7 +164,7 @@ public final class FXMLCreator {
                 }
             });
             referencedNodes.put(fieldValue, simpleName + count);
-            createElement.setAttribute("fx:id", simpleName + count);
+            createElement.setAttribute(FX_ID, simpleName + count);
         }
 
         element.setAttribute(fieldName, "$" + referencedNodes.get(fieldValue));
@@ -207,11 +210,11 @@ public final class FXMLCreator {
         }
         if (!hasClass(ATTRIBUTE_CLASSES, fieldValue.getClass())) {
             Class<? extends Object> class1 = fieldValue.getClass();
-            List<Class<?>> allClasses = ClassReflectionUtils.allClasses(class1);
-            LOG.info(" {} not in ATTRIBUTE_CLASSES", allClasses);
+            List<Class<?>> allClasses = allClasses(class1);
+            LOG.trace(" {} not in ATTRIBUTE_CLASSES", allClasses);
         }
         if (hasField(parent.getClass(), fieldName)) {
-            LOG.info("{} does have {}", parent.getClass(), fieldName);
+            LOG.trace("{} does have {}", parent.getClass(), fieldName);
         }
 
     }
@@ -223,25 +226,25 @@ public final class FXMLCreator {
         if (FORMAT_LIST.containsKey(fieldName)) {
             String apply = FORMAT_LIST.get(fieldName).apply(list);
             element.setAttribute(fieldName, apply);
-        } else if (list.stream().filter(e -> e != null).anyMatch(o -> hasClass(ATTRIBUTE_CLASSES, o.getClass()))) {
+        } else if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(ATTRIBUTE_CLASSES, o.getClass()))) {
             Element createElement2 = document.createElement(fieldName);
             element.appendChild(createElement2);
             if (hasField(parent.getClass(), fieldName)) {
                 Element createElement = document.createElement("FXCollections");
                 packages.add("javafx.collections");
                 createElement2.appendChild(createElement);
-                createElement.setAttribute("fx:factory", "observableArrayList");
+                createElement.setAttribute(FX_FACTORY, "observableArrayList");
                 createElement2 = createElement;
             }
             for (Object object : list) {
                 if (object != null) {
                     packages.add(object.getClass().getPackage().getName());
                     Element createElement3 = document.createElement(object.getClass().getSimpleName());
-                    createElement3.setAttribute("fx:value", object + "");
+                    createElement3.setAttribute(FX_VALUE, object + "");
                     createElement2.appendChild(createElement3);
                 }
             }
-        } else if (list.stream().filter(e -> e != null).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
+        } else if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
             if (list.stream().anyMatch(o -> !containsSame(allNode, o))) {
                 Element createElement2 = document.createElement(fieldName);
                 element.appendChild(createElement2);
@@ -249,7 +252,7 @@ public final class FXMLCreator {
                     Element createElement = document.createElement("FXCollections");
                     packages.add("javafx.collections");
                     createElement2.appendChild(createElement);
-                    createElement.setAttribute("fx:factory", "observableArrayList");
+                    createElement.setAttribute(FX_FACTORY, "observableArrayList");
                     createElement2 = createElement;
                 }
                 for (Object object : list) {
@@ -262,21 +265,21 @@ public final class FXMLCreator {
         } else {
             String classes = list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("");
             Class<? extends Object> parentClass = parent.getClass();
-            LOG.info("attribute {} type {} of {} not set", fieldName, classes, parentClass);
-            LOG.info("value {}", list);
+            LOG.trace("attribute {} type {} of {} not set", fieldName, classes, parentClass);
+            LOG.trace("value {}", list);
         }
     }
 
     private void processNamedArgs(Element element, String fieldName, Object fieldValue, Object parent) {
-        List<String> namedArgs = ClassReflectionUtils.getNamedArgs(parent.getClass());
+        List<String> namedArgs = getNamedArgs(parent.getClass());
         if (namedArgs.contains(fieldName)) {
-            String newFieldId = referencedNodes.computeIfAbsent(fieldValue, (f) -> newName(f));
+            String newFieldId = referencedNodes.computeIfAbsent(fieldValue, this::newName);
             element.setAttribute(fieldName, "$" + newFieldId);
             if (allNode.indexOf(parent) < allNode.indexOf(fieldValue)) {
-                NodeList elementsByTagName = document.getElementsByTagName(DEFINE_TAG);
+                NodeList elementsByTagName = document.getElementsByTagName(FX_DEFINE);
                 if (elementsByTagName.getLength() == 0) {
                     Element firstChild = (Element) document.getFirstChild();
-                    Element createElement = document.createElement(DEFINE_TAG);
+                    Element createElement = document.createElement(FX_DEFINE);
                     NodeList childNodes = firstChild.getChildNodes();
                     List<Node> removedElements = new ArrayList<>();
                     for (int i = 0; i < childNodes.getLength(); i++) {
@@ -291,11 +294,11 @@ public final class FXMLCreator {
                     }
                 }
                 Node node = nodeMap.get(fieldValue);
-                if (!node.getNodeName().equals(DEFINE_TAG)) {
-                    Element referenceTag = document.createElement("fx:reference");
+                if (!node.getNodeName().equals(FX_DEFINE)) {
+                    Element referenceTag = document.createElement(FX_REFERENCE);
                     referenceTag.setAttribute("source", newFieldId);
                     node.appendChild(referenceTag);
-                    nodeMap.put(fieldValue, document.getElementsByTagName(DEFINE_TAG).item(0));
+                    nodeMap.put(fieldValue, document.getElementsByTagName(FX_DEFINE).item(0));
                 }
             }
         }
@@ -309,24 +312,24 @@ public final class FXMLCreator {
         Map<String, Object> diffFields = new LinkedHashMap<>();
         Class<?> cl = ob1.getClass();
         try {
-            List<Method> fields = ClassReflectionUtils.getGetterMethodsRecursive(cl);
+            List<Method> fields = getGetterMethodsRecursive(cl);
             Object ob2 = getInstance(cl);
             for (Method f : fields) {
-                Object fieldValue = ClassReflectionUtils.invoke(ob1, f);
-                Object fieldValue2 = ClassReflectionUtils.invoke(ob2, f);
+                Object fieldValue = invoke(ob1, f);
+                Object fieldValue2 = invoke(ob2, f);
                 if (!Objects.equals(fieldValue, fieldValue2)) {
-                    String fieldName = ClassReflectionUtils.getFieldNameCase(f);
+                    String fieldName = getFieldNameCase(f);
                     LOG.trace("{} {}!={} ", fieldName, fieldValue, fieldValue2);
                     diffFields.put(fieldName, fieldValue);
                 }
             }
         } catch (Exception e) {
             LOG.trace("", e);
-            List<String> fields = ClassReflectionUtils.getNamedArgs(cl);
-            ClassReflectionUtils.getGetterMethodsRecursive(cl, 1).stream().map(ClassReflectionUtils::getFieldNameCase)
+            List<String> fields = getNamedArgs(cl);
+            getGetterMethodsRecursive(cl, 1).stream().map(ClassReflectionUtils::getFieldNameCase)
                 .filter(t -> !fields.contains(t)).forEach(fields::add);
-            Map<String, Object> collect = fields.stream().filter(m -> ClassReflectionUtils.invoke(ob1, m) != null)
-                .collect(toMap(m -> m, m -> ClassReflectionUtils.invoke(ob1, m), (a, b) -> a != null ? a : b));
+            Map<String, Object> collect = fields.stream().filter(m -> invoke(ob1, m) != null)
+                .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b));
             diffFields.putAll(collect);
         }
         return diffFields;
@@ -384,7 +387,7 @@ public final class FXMLCreator {
             List<Stage> stages = new ArrayList<>();
 
             Platform.runLater(RunnableEx.make(() -> {
-                LOG.info("INITIALIZING {}", class1.getSimpleName());
+                LOG.trace("INITIALIZING {}", class1.getSimpleName());
                 Application a = class1.newInstance();
                 Stage primaryStage = new Stage();
                 stages.add(primaryStage);
@@ -400,7 +403,7 @@ public final class FXMLCreator {
                 if (close) {
                     stages.forEach(Stage::close);
                 }
-                LOG.info("{} successfull", class1.getSimpleName());
+                LOG.trace("{} successfull", class1.getSimpleName());
             }, error -> {
                 LOG.error("ERROR IN {} ", class1);
                 LOG.error("", error);
@@ -426,33 +429,6 @@ public final class FXMLCreator {
         }
     }
 
-    private static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
-
-        Map<String, Class<?>> namedArgsMap = ClassReflectionUtils.getNamedArgsMap(parent.getClass());
-        if (namedArgsMap.containsKey(fieldName)) {
-            return typesFit(fieldValue, namedArgsMap.get(fieldName));
-        }
-
-        String makeSet = fieldName;
-        return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
-            .stream().filter(m -> m.getParameterCount() == 1).anyMatch(m -> getFieldNameCase(m).equals(f)
-                && parameterTypesMatch(fieldValue, m)))
-            .test(makeSet);
-    }
-
-    private static boolean parameterTypesMatch(Object fieldValue, Method m) {
-
-        Parameter[] parameters = m.getParameters();
-        Class<?> type = parameters[0].getType();
-
-        if (type == Object.class) {
-            return m.getDeclaringClass().getTypeParameters().length == 0;
-        }
-        return typesFit(fieldValue, type)
-            
-            ;
-    }
-
     private static void processMap(Element element, Object fieldValue) {
         Map<?, ?> properties = (Map<?, ?>) fieldValue;
         properties.forEach((k, v) -> {
@@ -462,14 +438,9 @@ public final class FXMLCreator {
                 String value = Objects.toString(v);
                 element.setAttribute(key, value);
             } else {
-                LOG.info("property {} value {} NOT IN PROPERTY_REMAP", k, v);
+                LOG.trace("property {} value {} NOT IN PROPERTY_REMAP", k, v);
             }
         });
-    }
-
-    private static boolean typesFit(Object fieldValue, Class<?> type) {
-        return type.isAssignableFrom(fieldValue.getClass())
-            ||type.getSimpleName().equalsIgnoreCase(fieldValue.getClass().getSimpleName());
     }
 
 }

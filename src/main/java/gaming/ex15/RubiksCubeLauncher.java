@@ -36,14 +36,7 @@ public class RubiksCubeLauncher extends Application {
 					new KeyFrame(Duration.seconds(1), new KeyValue(angle, 90)))
 			.onFinished(e -> unbindAll()).build();
 
-	public int rotateAntiClockWise(int i) {
-		return 6 - i % 3 * 3 + i / 3;
-	}
-
-	public int rotateClockWise(int j) {
-		return j % 3 * 3 + 2 - j / 3;
-	}
-	public void rotateCube(RubiksCubeFaces face, boolean clockwise) {
+    public void rotateCube(RubiksCubeFaces face, boolean clockwise) {
         List<RubiksPiece> piecesInFace = getFacePieces(face);
         for (RubiksPiece e : piecesInFace) {
             e.rotate(face, angle, clockwise);
@@ -62,7 +55,7 @@ public class RubiksCubeLauncher extends Application {
 		}
 	}
 
-	@Override
+    @Override
 	public void start(Stage stage) throws Exception {
 		Group root = new Group();
 		for (int i = 0; i < CUBE_COMPLEXITY; i++) {
@@ -116,7 +109,6 @@ public class RubiksCubeLauncher extends Application {
 	private void setPivot() {
 		Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(p -> p.setPivot(pieces[1][1][1]));
 	}
-
 	private void unbindAll() {
         Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(RubiksPiece::unbindAngle);
         if (RubiksCubeLauncher.DEBUG && LOGGER.isInfoEnabled()) {
@@ -136,5 +128,13 @@ public class RubiksCubeLauncher extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	public static int rotateAntiClockWise(int i) {
+		return 6 - i % 3 * 3 + i / 3;
+	}
+
+	public static int rotateClockWise(int j) {
+		return j % 3 * 3 + 2 - j / 3;
 	}
 }

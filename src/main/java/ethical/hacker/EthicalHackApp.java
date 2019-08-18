@@ -126,54 +126,6 @@ public class EthicalHackApp extends Application {
 
     }
 
-    private void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
-        final Collection<String> keySet) {
-        simpleTableViewBuilder.getColumns().clear();
-        keySet.forEach(key -> {
-            final TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
-            column.setCellValueFactory(
-                param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
-            column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));
-            simpleTableViewBuilder.getColumns().add(column);
-        });
-    }
-
-
-    private CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> checkbox, Entry<Integer, String> e) {
-        return checkbox.computeIfAbsent(e.getKey(), i -> newCheck(arrayList, e));
-    }
-
-    private CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
-        CheckBox check = new CheckBox();
-        check.selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
-        return check;
-    }
-
-    private VBox portTable(ObservableList<Integer> selectedPorts) {
-
-        Map<Integer, String> tcpServices = PortServices.getTcpServices();
-        ObservableList<Entry<Integer, String>> items = FXCollections
-            .synchronizedObservableList(FXCollections.observableArrayList(
-                tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
-
-        FilteredList<Entry<Integer, String>> filt = items.filtered(e -> true);
-
-        Map<Integer, CheckBox> portChecks = new HashMap<>();
-
-        TableView<Entry<Integer, String>> commonTable = new SimpleTableViewBuilder<Entry<Integer, String>>()
-            .addColumn("Service", (e, v) -> v.setText(e.getValue()))
-            .addColumn("Port", (e, v) -> {
-                v.setGraphic(getCheckBox(selectedPorts, portChecks, e));
-                v.setText(Objects.toString(e.getKey()));
-            }).items(filt).prefWidthColumns(2, 1).build();
-
-        TextField filtro = CommonsFX.newFastFilter(filt);
-        Text text = new Text("Port Services");
-        text.textProperty()
-            .bind(Bindings.createStringBinding(() -> String.format("Port Services %s", selectedPorts), selectedPorts));
-        return new VBox(text, filtro, commonTable);
-    }
-
     private void updateItem(final ObservableList<Map<String, String>> items, final String primaryKey,
         final String targetKey, Change<? extends String, ? extends List<String>> change) {
         synchronized (count) {
@@ -197,6 +149,7 @@ public class EthicalHackApp extends Application {
         }
     }
 
+
     private MapChangeListener<String, List<String>> updateItemOnChange(final ObservableList<Map<String, String>> items,
         final String primaryKey, final String targetKey) {
         count.clear();
@@ -207,12 +160,59 @@ public class EthicalHackApp extends Application {
         launch(args);
     }
 
+    private static void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
+        final Collection<String> keySet) {
+        simpleTableViewBuilder.getColumns().clear();
+        keySet.forEach(key -> {
+            final TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
+            column.setCellValueFactory(
+                param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
+            column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));
+            simpleTableViewBuilder.getColumns().add(column);
+        });
+    }
+
     private static void addIfChecked(List<Integer> list, Entry<Integer, String> e, Boolean val) {
         if (!val) {
             list.remove(e.getKey());
         } else if (!list.contains(e.getKey())) {
             list.add(e.getKey());
         }
+    }
+
+    private static CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> checkbox, Entry<Integer, String> e) {
+        return checkbox.computeIfAbsent(e.getKey(), i -> newCheck(arrayList, e));
+    }
+
+    private static CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
+        CheckBox check = new CheckBox();
+        check.selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
+        return check;
+    }
+
+    private static VBox portTable(ObservableList<Integer> selectedPorts) {
+
+        Map<Integer, String> tcpServices = PortServices.getTcpServices();
+        ObservableList<Entry<Integer, String>> items = FXCollections
+            .synchronizedObservableList(FXCollections.observableArrayList(
+                tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
+
+        FilteredList<Entry<Integer, String>> filt = items.filtered(e -> true);
+
+        Map<Integer, CheckBox> portChecks = new HashMap<>();
+
+        TableView<Entry<Integer, String>> commonTable = new SimpleTableViewBuilder<Entry<Integer, String>>()
+            .addColumn("Service", (e, v) -> v.setText(e.getValue()))
+            .addColumn("Port", (e, v) -> {
+                v.setGraphic(getCheckBox(selectedPorts, portChecks, e));
+                v.setText(Objects.toString(e.getKey()));
+            }).items(filt).prefWidthColumns(2, 1).build();
+
+        TextField filtro = CommonsFX.newFastFilter(filt);
+        Text text = new Text("Port Services");
+        text.textProperty()
+            .bind(Bindings.createStringBinding(() -> String.format("Port Services %s", selectedPorts), selectedPorts));
+        return new VBox(text, filtro, commonTable);
     }
 
 }

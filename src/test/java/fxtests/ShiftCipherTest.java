@@ -9,6 +9,7 @@ import org.junit.Test;
 import utils.HasLogging;
 import utils.RunnableEx;
 
+@SuppressWarnings("static-method")
 public final class ShiftCipherTest implements HasLogging {
     @Test
     public void testShiftCipher() {

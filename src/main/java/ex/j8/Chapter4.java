@@ -156,8 +156,8 @@ public final class Chapter4 {
             TextField textField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
             WebView browser = new WebView();
             WebEngine engine = browser.getEngine();
-            Button backButton = new Button("Back");
-            backButton.setOnAction(event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
+            Button backButton = CommonsFX.newButton("Back",
+                event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
             Button loadButton = new Button("Go");
             loadButton.setOnAction(event -> engine.load(textField.getText()));
 

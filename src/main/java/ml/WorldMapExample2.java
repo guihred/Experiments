@@ -3,13 +3,14 @@ import static utils.CommonsFX.newSlider;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.WorldMapGraph;
 import ml.graph.WorldMapGraph2;
 import utils.CommonsFX;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 
 public class WorldMapExample2 extends Application {
 
@@ -35,8 +36,9 @@ public class WorldMapExample2 extends Application {
         canvas.valueHeaderProperty().set("Time");
         canvas.setDataframe(points, "Country");
         canvas.setPoints(latDegree, lonDegree);
+        final Canvas canvas1 = canvas;
         root.getChildren()
-            .add(CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas)));
+            .add(CommonsFX.newButton("Export", e -> ImageFXUtils.take(canvas1)));
         root.getChildren().add(canvas);
         theStage.show();
 	}

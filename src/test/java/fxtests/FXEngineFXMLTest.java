@@ -15,23 +15,10 @@ import org.testfx.util.WaitForAsyncUtils;
 import schema.sngpc.FXMLCreator;
 import utils.HasLogging;
 
+@SuppressWarnings("static-method")
 public final class FXEngineFXMLTest {
 
     private static final Logger LOG = HasLogging.log();
-
-    @Test
-    public void test() {
-        List<Class<? extends Application>> classes = Arrays.asList(fxpro.ch08.MediaPlayerExample.class,
-            fxsamples.bounds.BoundsPlayground.class, paintexp.svgcreator.SVGCreator.class);
-        List<Class<?>> testApplications = FXMLCreator.testApplications(classes);
-        WaitForAsyncUtils.waitForFxEvents();
-        if (!testApplications.isEmpty()) {
-            LOG.error("classes {} with errors", classNames(testApplications));
-        } else {
-            LOG.info("All classes successfull");
-        }
-    }
-
     @Test
     public void testAllClasses() {
         List<Class<? extends Application>> classes = getClasses(Application.class);
@@ -44,7 +31,7 @@ public final class FXEngineFXMLTest {
         }
     }
 
-    private String classNames(List<Class<?>> testApplications) {
+    private static String classNames(List<Class<?>> testApplications) {
         return testApplications.stream().map(e -> e.getName() + ".class").collect(Collectors.joining(","));
     }
 

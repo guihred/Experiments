@@ -14,7 +14,15 @@ public class Simple3DBoxApp extends Application {
 
     private static final int SIZE = 300;
 
-    public Parent createContent() {
+    @Override
+	public void start(Stage primaryStage) throws Exception {
+		primaryStage.setResizable(false);
+		Scene scene = new Scene(createContent());
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
+	public static Parent createContent() {
 
 		// Box
         Box testBox = new Box(5, 5, 5);
@@ -39,14 +47,6 @@ public class Simple3DBoxApp extends Application {
 		subScene.setCamera(camera);
 
 		return new Group(subScene);
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setResizable(false);
-		Scene scene = new Scene(createContent());
-		primaryStage.setScene(scene);
-		primaryStage.show();
 	}
 
 	public static void main(String[] args) {

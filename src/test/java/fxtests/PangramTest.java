@@ -6,17 +6,12 @@ import static org.junit.Assert.assertTrue;
 import exercism.Pangram;
 import org.junit.Test;
 
+@SuppressWarnings("static-method")
 public class PangramTest {
 
-	@Test
+    @Test
 	public void emptySentence() {
         assertFalse("", Pangram.isPangram(""));
-	}
-
-
-	@Test
-	public void testLowercasePangram() {
-        assertTrue("", Pangram.isPangram("the quick brown fox jumps over the lazy dog"));
 	}
 
 
@@ -35,6 +30,12 @@ public class PangramTest {
 	@Test
 	public void nonAsciiCharacters() {
         assertTrue("", Pangram.isPangram("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich."));
+	}
+
+
+	@Test
+	public void testLowercasePangram() {
+        assertTrue("", Pangram.isPangram("the quick brown fox jumps over the lazy dog"));
 	}
 
 }

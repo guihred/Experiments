@@ -3,7 +3,6 @@ package fxsamples;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 
 public class WorkingListsViews extends Application {
     @Override
@@ -50,8 +50,7 @@ public class WorkingListsViews extends Application {
         final ListView<String> heroListView = new ListView<>(heroes);
         gridpane.add(heroListView, 2, 1);
         // select heroes
-        Button sendRightButton = new Button(" > ");
-        sendRightButton.setOnAction((ActionEvent event) -> {
+        Button sendRightButton = CommonsFX.newButton(" > ", event -> {
             String potential = candidatesListView.getSelectionModel().getSelectedItem();
             if (potential != null) {
                 candidatesListView.getSelectionModel().clearSelection();
@@ -60,8 +59,7 @@ public class WorkingListsViews extends Application {
             }
         });
         // deselect heroes
-        Button sendLeftButton = new Button(" < ");
-        sendLeftButton.setOnAction((ActionEvent event) -> {
+        Button sendLeftButton = CommonsFX.newButton(" < ", e -> {
             String notHero = heroListView.getSelectionModel().getSelectedItem();
             if (notHero != null) {
                 heroListView.getSelectionModel().clearSelection();

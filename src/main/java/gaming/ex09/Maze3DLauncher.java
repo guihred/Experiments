@@ -41,7 +41,11 @@ public class Maze3DLauncher extends Application {
 
     }
 
-	private void handleKeyboard(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static void handleKeyboard(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera) {
 
         scene.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
 			private double mouseYold;
@@ -63,7 +67,7 @@ public class Maze3DLauncher extends Application {
 		scene.setOnKeyPressed((KeyEvent event) -> handleKeyPressed(scene, translate, rotate, camera, event));
     }
 
-    private void handleKeyPressed(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera,
+    private static void handleKeyPressed(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera,
 			KeyEvent event) {
 		int change = 1;
 		KeyCode keycode = event.getCode();
@@ -116,8 +120,4 @@ public class Maze3DLauncher extends Application {
 		    camera.setFieldOfView(camera.getFieldOfView() - change);
 		}
 	}
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 }

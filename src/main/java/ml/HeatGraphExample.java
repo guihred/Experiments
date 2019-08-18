@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.cell.ComboBoxListCell;
@@ -17,7 +18,7 @@ import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.HeatGraph;
 import simplebuilder.SimpleButtonBuilder;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 public class HeatGraphExample extends Application {
 
 
@@ -45,8 +46,9 @@ public class HeatGraphExample extends Application {
 
 		ListView<String> xSelected = createSelection(itens, canvas.xHeaderProperty());
 		ListView<String> ySelected = createSelection(itens, canvas.yHeaderProperty());
+        final Canvas canvas1 = canvas;
         root.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ResourceFXUtils.take(canvas)).build());
+                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ImageFXUtils.take(canvas1)).build());
 
         root.getChildren().add(canvas);
         root.getChildren().add(xSelected);
@@ -56,7 +58,12 @@ public class HeatGraphExample extends Application {
 		theStage.show();
 	}
 
-    private ListView<String> createSelection(final ObservableList<String> itens, final StringProperty xHeader) {
+    public static void main(final String[] args) {
+        launch(args);
+    }
+
+
+    private static ListView<String> createSelection(final ObservableList<String> itens, final StringProperty xHeader) {
         ListView<String> ySelected = new ListView<>(itens);
         ySelected.setCellFactory(ComboBoxListCell.forListView(itens));
         ySelected.selectionModelProperty().get().setSelectionMode(SelectionMode.SINGLE);
@@ -70,11 +77,6 @@ public class HeatGraphExample extends Application {
         });
         ySelected.selectionModelProperty().get().select(0);
         return ySelected;
-    }
-
-
-    public static void main(final String[] args) {
-        launch(args);
     }
 }
 

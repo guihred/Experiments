@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -24,7 +25,7 @@ import others.UnZip;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 
 public class WorldMapExample extends Application implements HasLogging {
 
@@ -76,7 +77,8 @@ public class WorldMapExample extends Application implements HasLogging {
         left.getChildren().add(statisticsCombo);
         left.getChildren().add(yearCombo);
         left.getChildren().add(patternCombo);
-        left.getChildren().add(CommonsFX.newButton("Export", e -> ResourceFXUtils.take(canvas)));
+        final Canvas canvas1 = canvas;
+        left.getChildren().add(CommonsFX.newButton("Export", e -> ImageFXUtils.take(canvas1)));
 
         root.setCenter(canvas);
         theStage.show();

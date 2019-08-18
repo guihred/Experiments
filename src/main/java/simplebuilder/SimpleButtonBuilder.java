@@ -2,6 +2,7 @@ package simplebuilder;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 
 public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonBuilder> {
@@ -10,7 +11,7 @@ public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonB
 
 	public SimpleButtonBuilder() {
         super(new Button());
-        button = this.node;
+        button = node;
 	}
 
 	public SimpleButtonBuilder onAction(EventHandler<ActionEvent> value) {
@@ -22,4 +23,27 @@ public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonB
         button.setText(string);
 		return this;
 	}
+
+    public static Button newButton(final double layoutX, final double layoutY, final String nome,
+        final EventHandler<ActionEvent> onAction) {
+        Button button = new Button(nome);
+        button.setLayoutX(layoutX);
+        button.setLayoutY(layoutY);
+        button.setOnAction(onAction);
+        return button;
+    }
+
+    public static Button newButton(final Node graphic, final String id, final EventHandler<ActionEvent> onAction) {
+        Button button = new Button(null, graphic);
+        button.setId(id);
+        button.setOnAction(onAction);
+        return button;
+    }
+
+    public static Button newButton(final String nome, final EventHandler<ActionEvent> onAction) {
+        Button button = new Button(nome);
+        button.setId(nome);
+        button.setOnAction(onAction);
+        return button;
+    }
 }

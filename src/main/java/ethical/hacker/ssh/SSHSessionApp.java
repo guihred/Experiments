@@ -92,8 +92,12 @@ public class SSHSessionApp extends Application {
         primaryStage.show();
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @SuppressWarnings("deprecation")
-    private void addRow(GridPane gridPane, String text3, Node hostField) {
+    private static void addRow(GridPane gridPane, String text3, Node hostField) {
         Text text = new Text(text3);
         text.setId(text3.replaceAll(":", ""));
         text.setTextAlignment(TextAlignment.RIGHT);
@@ -101,26 +105,20 @@ public class SSHSessionApp extends Application {
         GridPane.setHalignment(text, HPos.RIGHT);
     }
 
-    private PrintStream newPrintStream(Text text2) {
+    private static PrintStream newPrintStream(Text text2) {
         try {
             return new PrintStream(new FileOutputStream(ResourceFXUtils.getOutFile("log.txt")), true,
                 StandardCharsets.UTF_8.displayName()) {
-
                 @Override
                 public void write(byte[] b, int off, int len) {
                     super.write(b, off, len);
                     text2.setText(text2.getText() + new String(b, off, len, StandardCharsets.UTF_8));
                 }
-
             };
         } catch (Exception e) {
             LOG.error("", e);
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
 }

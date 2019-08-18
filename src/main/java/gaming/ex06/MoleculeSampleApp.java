@@ -186,16 +186,6 @@ public class MoleculeSampleApp extends Application {
         world.getChildren().addAll(moleculeGroup);
     }
 
-    private double getModifier(MouseEvent me) {
-        if (me.isShiftDown()) {
-            return 10;
-        }
-        if (me.isControlDown()) {
-            return CONTROL_MULTIPLIER;
-        }
-        return 1;
-    }
-
     private void handleKeyEvent(KeyEvent event) {
         switch (event.getCode()) {
             case Z:
@@ -319,5 +309,15 @@ public class MoleculeSampleApp extends Application {
     public static void main(String[] args) {
         System.setProperty("prism.dirtyopts", "false");
         launch(args);
+    }
+
+    private static double getModifier(MouseEvent me) {
+        if (me.isShiftDown()) {
+            return 10;
+        }
+        if (me.isControlDown()) {
+            return CONTROL_MULTIPLIER;
+        }
+        return 1;
     }
 }

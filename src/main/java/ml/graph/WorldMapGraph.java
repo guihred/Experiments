@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.property.*;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
@@ -19,10 +18,7 @@ import ml.data.Country;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.apache.commons.lang3.StringUtils;
-import utils.CommonsFX;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RotateUtils;
+import utils.*;
 
 public class WorldMapGraph extends Canvas implements HasLogging {
     public static final int HEIGHT = 1200;
@@ -65,10 +61,6 @@ public class WorldMapGraph extends Canvas implements HasLogging {
 
     }
 
-    public List<Country> anyAdjacents(Country c) {
-        return Stream.of(Country.values()).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
-            .filter(e -> e != c).distinct().collect(Collectors.toList());
-    }
 
     public IntegerProperty binsProperty() {
         return bins;
@@ -127,7 +119,7 @@ public class WorldMapGraph extends Canvas implements HasLogging {
     }
 
     public void takeSnapshot() {
-        ResourceFXUtils.take(this, getScale().getX() * getWidth(), getScale().getY() * getHeight());
+        ImageFXUtils.take(this, getScale().getX() * getWidth(), getScale().getY() * getHeight());
     }
 
     public StringProperty valueHeaderProperty() {

@@ -181,10 +181,6 @@ public class RaspiCycle extends Application implements HasLogging {
         gc.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX(), bounds.getMaxY());
     }
 
-    private Line getLine(double x1, double y1, double x2, double y2) {
-        return new Line(Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2), Math.max(y1, y2));
-    }
-
     private void runLightCycle() {
         calculateDestination();
         gc.setStroke(Color.YELLOW);
@@ -204,6 +200,10 @@ public class RaspiCycle extends Application implements HasLogging {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static Line getLine(double x1, double y1, double x2, double y2) {
+        return new Line(Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2), Math.max(y1, y2));
     }
 
     public enum Direction {

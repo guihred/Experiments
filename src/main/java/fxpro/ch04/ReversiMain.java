@@ -94,24 +94,6 @@ public class ReversiMain extends Application {
         return tiles;
     }
 
-    private Node createTitle() {
-        StackPane left = new StackPane();
-        Text text = new Text("JavaFX");
-        StackPane.setAlignment(text, Pos.CENTER_RIGHT);
-        left.getChildren().add(text);
-        Text right = new Text("Reversi");
-        TilePane tiles = new TilePane();
-        tiles.setSnapToPixel(false);
-        TilePane.setAlignment(right, Pos.CENTER_LEFT);
-        tiles.getChildren().addAll(left, right);
-        tiles.getStyleClass().add("title");
-        final int prefHeight = 40;
-        tiles.setPrefTileHeight(prefHeight);
-        tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(), "width").divide(2));
-
-        return tiles;
-    }
-
     private Node restart() {
         return newButton("Restart", t -> model.restart());
     }
@@ -136,6 +118,24 @@ public class ReversiMain extends Application {
     private static Region createBackground() {
         return SimpleRegionBuilder.create().style("-fx-background-color: radial-gradient(radius 100%, white, gray);")
             .build();
+    }
+
+    private static Node createTitle() {
+        StackPane left = new StackPane();
+        Text text = new Text("JavaFX");
+        StackPane.setAlignment(text, Pos.CENTER_RIGHT);
+        left.getChildren().add(text);
+        Text right = new Text("Reversi");
+        TilePane tiles = new TilePane();
+        tiles.setSnapToPixel(false);
+        TilePane.setAlignment(right, Pos.CENTER_LEFT);
+        tiles.getChildren().addAll(left, right);
+        tiles.getStyleClass().add("title");
+        final int prefHeight = 40;
+        tiles.setPrefTileHeight(prefHeight);
+        tiles.prefTileWidthProperty().bind(Bindings.selectDouble(tiles.parentProperty(), "width").divide(2));
+
+        return tiles;
     }
 
 }

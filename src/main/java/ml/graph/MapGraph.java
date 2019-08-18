@@ -108,14 +108,14 @@ public class MapGraph extends Application {
         return svgPath;
     }
 
-    private void updateLayout(Country country, Text text) {
-        text.setLayoutX(country.getCenterX() - text.getBoundsInParent().getWidth() / 2);
-        text.setLayoutY(country.getCenterY() - text.getBoundsInParent().getHeight());
+    public static void main(String[] args) {
+        launch(args);
     }
 
 
-    public static void main(String[] args) {
-        launch(args);
+    private static void updateLayout(Country country, Text text) {
+        text.setLayoutX(country.getCenterX() - text.getBoundsInParent().getWidth() / 2);
+        text.setLayoutY(country.getCenterY() - text.getBoundsInParent().getHeight());
     }
 
 }

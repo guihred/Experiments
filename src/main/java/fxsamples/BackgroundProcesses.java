@@ -70,7 +70,20 @@ public class BackgroundProcesses extends Application {
         primaryStage.show();
     }
 
-    private Task<Boolean> createWorker(final int numFiles) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static void copyFile(String src, String dest) throws InterruptedException, IOException {
+        // simulate a long time
+        IOUtils.copy(new FileInputStream(src), new FileOutputStream(dest));
+
+        SecureRandom rnd = new SecureRandom();
+        long millis = rnd.nextInt(1000);
+        Thread.sleep(millis);
+    }
+
+    private static Task<Boolean> createWorker(final int numFiles) {
         return new Task<Boolean>() {
             @Override
             public Boolean call() throws Exception {
@@ -86,18 +99,5 @@ public class BackgroundProcesses extends Application {
                 return true;
             }
         };
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    private static void copyFile(String src, String dest) throws InterruptedException, IOException {
-        // simulate a long time
-        IOUtils.copy(new FileInputStream(src), new FileOutputStream(dest));
-
-        SecureRandom rnd = new SecureRandom();
-        long millis = rnd.nextInt(1000);
-        Thread.sleep(millis);
     }
 }

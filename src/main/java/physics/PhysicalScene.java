@@ -21,7 +21,7 @@ public class PhysicalScene extends Scene {
         super(parent, d, d1);
     }
 
-    public Body createBody(BodyDef bd) {
+    public static Body createBody(BodyDef bd) {
         return world.createBody(bd);
     }
 

@@ -75,7 +75,11 @@ public class WorkingWithTableView extends Application {
         primaryStage.show();
     }
 
-    private ObservableList<Person> getPeople() {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static ObservableList<Person> getPeople() {
         ObservableList<Person> people = FXCollections.<Person>observableArrayList();
         Person docX = new Person("Professor X", "Charles", "Xavier");
         docX.employeesProperty().add(new Person("Wolverine", "James", "Howlett"));
@@ -87,9 +91,5 @@ public class WorkingWithTableView extends Application {
         // ...code to add employees
         people.addAll(docX, magneto, biker);
         return people;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

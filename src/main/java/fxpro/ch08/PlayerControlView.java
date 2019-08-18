@@ -135,12 +135,6 @@ public class PlayerControlView extends BaseSongView {
         return hbox;
     }
 
-    private Label createLabel(String text, String styleClass) {
-        final Label label = new Label(text);
-        label.getStyleClass().add(styleClass);
-        return label;
-    }
-
     private Button createOpenButton() {
 
         Button openButton = StageHelper.chooseFile(null, "Pick a Sound File", song -> {
@@ -192,6 +186,12 @@ public class PlayerControlView extends BaseSongView {
                 playPauseIcon.setImage(playImg);
             }
         }
+    }
+
+    private static Label createLabel(String text, String styleClass) {
+        final Label label = new Label(text);
+        label.getStyleClass().add(styleClass);
+        return label;
     }
 
     private class CurrentTimeListener implements InvalidationListener {

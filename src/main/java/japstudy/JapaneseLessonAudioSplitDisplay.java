@@ -31,11 +31,11 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Japanese Lesson Audio Split Display");
 
-        TextField english = newText();
-        TextField japanese = newText();
-        TextField romaji = newText();
-        TextField start = newText();
-        TextField end = newText();
+        TextField english = new TextField();
+        TextField japanese = new TextField();
+        TextField romaji = new TextField();
+        TextField start = new TextField();
+        TextField end = new TextField();
         Text lesson = new Text("Lesson");
         current.addListener((observable, oldValue, newValue) -> updateCurrentLesson(english, japanese, romaji, start,
             end, lesson, newValue));

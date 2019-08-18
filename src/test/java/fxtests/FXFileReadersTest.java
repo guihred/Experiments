@@ -45,6 +45,7 @@ import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
+@SuppressWarnings("static-method")
 public class FXFileReadersTest extends ApplicationTest {
     private static final Logger LOG = HasLogging.log();
 
@@ -116,7 +117,7 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     @Test
-    public void testLeitorArquivosPDF() throws IOException {
+    public void testLeitorArquivosPDF() {
         measureTime("LeitorArquivos.getMedicamentosSNGPCPDF", () -> {
             File file = ResourceFXUtils.toFile("sngpc2808.pdf");
             ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosSNGPCPDF(file);

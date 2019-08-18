@@ -10,13 +10,17 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 import org.slf4j.Logger;
+import simplebuilder.SimpleSliderBuilder;
 
 public final class SongUtils {
 
@@ -34,6 +38,21 @@ public final class SongUtils {
     private static final String FFMPEG = ResourceFXUtils.getUserFolder("Downloads").getAbsolutePath()
             + "\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";
     private SongUtils() {
+    }
+
+    public static Slider addSlider(VBox flow, MediaPlayer mediaPlayer2) {
+        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(100_000).build();
+        Label label = new Label("00:00");
+
+        label.textProperty()
+            .bind(Bindings.createStringBinding(
+                () -> mediaPlayer2.getTotalDuration() == null ? "00:00"
+                    : SongUtils.formatFullDuration(mediaPlayer2.getTotalDuration().multiply(slider.getValue())),
+                slider.valueProperty(), mediaPlayer2.totalDurationProperty()));
+
+        flow.getChildren().add(label);
+        flow.getChildren().add(slider);
+        return slider;
     }
 
     public static DoubleProperty convertToAudio(File mp4File) {
@@ -125,6 +144,19 @@ public final class SongUtils {
 				.executeInConsoleAsync(cmd.toString(), responses);
         return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync,
                 s -> Math.abs(end.subtract(start).toMillis()), SongUtils::convertTimeToMillis);
+    }
+    public static void updateCurrentSlider(MediaPlayer mediaPlayer2 ,Slider currentSlider) {
+        if (!currentSlider.isValueChanging()) {
+            currentSlider.setValue(mediaPlayer2.getCurrentTime().toMillis() / mediaPlayer2.getTotalDuration().toMillis());
+        }
+    }
+
+    public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, boolean valueChanging) {
+        if (!valueChanging) {
+            double pos = currentSlider.getValue();
+            final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
+            SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);
+        }
     }
 
 

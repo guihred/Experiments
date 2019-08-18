@@ -193,18 +193,6 @@ public class HeatGraph extends Canvas {
         return y1 - radius.doubleValue() / 2;
     }
 
-    private Color getColorForValue(double value, int min, int max) {
-        if (value < min || value > max) {
-            return Color.TRANSPARENT;
-        }
-        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - min) / (max - min);
-        return Color.hsb(hue, 0.5, 1);
-        // double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin())
-        // return Color.hsb(RED_HUE, 1.0, brightness)
-        // double saturation = (value - min) / (max - min)
-        // return Color.hsb(RED_HUE, saturation, 1.0)
-    }
-
     private List<double[]> triangles() {
         List<double[]> arrayList = new ArrayList<>();
 
@@ -223,6 +211,18 @@ public class HeatGraph extends Canvas {
             arrayList.add(new double[] { x, y });
         }
         return arrayList;
+    }
+
+    private static Color getColorForValue(double value, int min, int max) {
+        if (value < min || value > max) {
+            return Color.TRANSPARENT;
+        }
+        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - min) / (max - min);
+        return Color.hsb(hue, 0.5, 1);
+        // double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin())
+        // return Color.hsb(RED_HUE, 1.0, brightness)
+        // double saturation = (value - min) / (max - min)
+        // return Color.hsb(RED_HUE, saturation, 1.0)
     }
 
 }

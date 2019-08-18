@@ -36,16 +36,16 @@ public class RegressionChartExample extends Application {
         primaryStage.show();
     }
 
-    private LineChart<Number, Number> lineChart(ObservableList<Series<Number, Number>> data, String value) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static LineChart<Number, Number> lineChart(ObservableList<Series<Number, Number>> data, String value) {
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
         LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setData(data);
         lineChart.setTitle(value);
         return lineChart;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

@@ -48,11 +48,11 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
     public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Japanese Lesson Editing Display");
-        TextField japanese = newText();
-        TextField english = newText();
-        TextField start = newText();
-        TextField end = newText();
-        TextField romaji = newText();
+        TextField japanese = new TextField();
+        TextField english = new TextField();
+        TextField start = new TextField();
+        TextField end = new TextField();
+        TextField romaji = new TextField();
         Text lesson = new Text("Lesson");
         current.addListener((observable, oldValue, newValue) -> updateCurrentLesson(english, japanese, romaji, start,
             end, lesson, newValue));
@@ -109,14 +109,6 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
         primaryStage.show();
     }
 
-    protected Duration convertDuration(LocalTime start) {
-        return Duration.valueOf(toMilli(start) + "ms");
-    }
-
-    protected TextField newText() {
-        return new TextField();
-    }
-
     protected void nextLesson() {
         JapaneseLesson japaneseLesson = lessons.get(current.get());
         JapaneseLessonReader.update(japaneseLesson);
@@ -150,14 +142,14 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 
     }
 
-    /*	
-    		*/
-
     protected void previousLesson() {
         JapaneseLesson japaneseLesson = lessons.get(current.get());
         JapaneseLessonReader.update(japaneseLesson);
         current.set((lessons.size() + current.get() - 1) % lessons.size());
     }
+
+    /*	
+    		*/
 
     protected void saveAndClose(Stage primaryStage) {
         int index = current.get();
@@ -233,6 +225,10 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    protected static Duration convertDuration(LocalTime start) {
+        return Duration.valueOf(toMilli(start) + "ms");
     }
 
     protected static ObservableList<JapaneseLesson> getLessons() {

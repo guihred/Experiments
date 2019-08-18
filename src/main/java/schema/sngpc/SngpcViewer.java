@@ -32,7 +32,11 @@ public class SngpcViewer extends Application {
         primaryStage.show();
     }
 
-    private void addColumns(TableView<Map<String, String>> tableView, Collection<String> keySet) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static void addColumns(TableView<Map<String, String>> tableView, Collection<String> keySet) {
 
         keySet.forEach(key -> {
             final TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
@@ -43,7 +47,7 @@ public class SngpcViewer extends Application {
         });
     }
 
-    private Parent createSplitTreeListDemoNode() {
+    private static Parent createSplitTreeListDemoNode() {
         ObservableList<Map<String, String>> list = FXCollections.observableArrayList();
         TableView<Map<String, String>> sideTable = new SimpleTableViewBuilder<Map<String, String>>().items(list)
             .build();
@@ -60,7 +64,7 @@ public class SngpcViewer extends Application {
         return new VBox(importXMLButton, new SplitPane(tree, sideTable));
     }
 
-    private void onSelectTreeItem(ObservableList<Map<String, String>> list, TableView<Map<String, String>> sideTable,
+    private static void onSelectTreeItem(ObservableList<Map<String, String>> list, TableView<Map<String, String>> sideTable,
         TreeItem<Map<String, String>> newValue) {
         list.clear();
         sideTable.getColumns().clear();
@@ -82,10 +86,6 @@ public class SngpcViewer extends Application {
                 newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue).forEach(list::add);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
 

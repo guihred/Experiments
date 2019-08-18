@@ -111,7 +111,17 @@ public class XylophoneApp extends Application {
 		animation2.pause();
 	}
 
-	private void addBars(Color[] colors, AudioClip[] audios, Group rectangleGroup) {
+    /**
+	 * Java main for when running without JavaFX launcher
+	 * 
+	 * @param args
+	 *            command line arguments
+	 */
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	private static void addBars(Color[] colors, AudioClip[] audios, Group rectangleGroup) {
         for (int i = 0; i < colors.length; i++) {
             AudioClip audioClip = audios[i];
             Box barCube = new Box(BAR_WIDTH, BAR_DEPTH, 100 - i * 5);
@@ -122,14 +132,4 @@ public class XylophoneApp extends Application {
             rectangleGroup.getChildren().add(barCube);
         }
     }
-
-	/**
-	 * Java main for when running without JavaFX launcher
-	 * 
-	 * @param args
-	 *            command line arguments
-	 */
-	public static void main(String[] args) {
-		launch(args);
-	}
 }

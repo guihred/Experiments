@@ -67,7 +67,11 @@ public class Labyrinth2D extends Application {
 		}
 	}
 
-	private void initializeLabyrinth(Group root) {
+    public static void main(String[] args) {
+		launch(args);
+	}
+
+	private static void initializeLabyrinth(Group root) {
 		for (int k = 0; k < mapa.length; k++) {
 			for (int l = 0; l < mapa[k].length; l++) {
 				String string = mapa[k][l];
@@ -82,10 +86,6 @@ public class Labyrinth2D extends Application {
 				}
 			}
 		}
-	}
-
-	public static void main(String[] args) {
-		launch(args);
 	}
 
 }

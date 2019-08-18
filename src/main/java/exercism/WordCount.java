@@ -19,7 +19,7 @@ public class WordCount {
      *            the string
      * @return the map
      */
-    public Map<String, Integer> phrase(String phrase) {
+    public static Map<String, Integer> phrase(String phrase) {
 
         Map<String, Long> splitWords = Stream.of(phrase.split("[^a-zA-Z0-9]+"))
 				.collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting()));

@@ -6,11 +6,12 @@ import static org.junit.Assert.assertThat;
 import exercism.Hamming;
 import org.junit.Test;
 
+@SuppressWarnings("static-method")
 public class HammingTest {
 
-	@Test
-	public void testNoDifferenceBetweenIdenticalStrands() {
-        assertThat("", Hamming.compute("A", "A"), is(0));
+    @Test
+	public void testCompleteHammingDistanceForSmallStrand() {
+        assertThat("", Hamming.compute("AG", "CT"), is(2));
 	}
 
 
@@ -21,8 +22,20 @@ public class HammingTest {
 
 
 	@Test
-	public void testCompleteHammingDistanceForSmallStrand() {
-        assertThat("", Hamming.compute("AG", "CT"), is(2));
+	public void testHammingDistanceInVeryLongStrand() {
+        assertThat("", Hamming.compute("GGACGGATTCTG", "AGGACGGATTCT"), is(9));
+	}
+
+
+	@Test
+	public void testLargeHammingDistance() {
+        assertThat("", Hamming.compute("GATACA", "GCATAA"), is(4));
+	}
+
+
+	@Test
+	public void testNoDifferenceBetweenIdenticalStrands() {
+        assertThat("", Hamming.compute("A", "A"), is(0));
 	}
 
 
@@ -47,18 +60,6 @@ public class HammingTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testValidatesOtherStrandNotLonger() {
 		Hamming.compute("AAA", "AAAG");
-	}
-
-
-	@Test
-	public void testLargeHammingDistance() {
-        assertThat("", Hamming.compute("GATACA", "GCATAA"), is(4));
-	}
-
-
-	@Test
-	public void testHammingDistanceInVeryLongStrand() {
-        assertThat("", Hamming.compute("GGACGGATTCTG", "AGGACGGATTCT"), is(9));
 	}
 
 }

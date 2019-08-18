@@ -91,7 +91,11 @@ public class InlineModelViewer extends Application {
         return controls;
     }
 
-    private SubScene createScene3D(Group group) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static SubScene createScene3D(Group group) {
         SubScene scene3d = new SubScene(group, VIEWPORT_SIZE, VIEWPORT_SIZE * 9.0 / 16, true,
             SceneAntialiasing.BALANCED);
         scene3d.setFill(DARK_BLUE);
@@ -99,7 +103,7 @@ public class InlineModelViewer extends Application {
         return scene3d;
     }
 
-    private MeshView loadMeshView() {
+    private static MeshView loadMeshView() {
         float[] points = { -5, 5, 0, -5, -5, 0, 5, 5, 0, 5, -5, 0 };
         float[] texCoords = { 1, 1, 1, 0, 0, 1, 0, 0 };
         int[] faces = { 2, 2, 1, 1, 0, 0, 2, 2, 3, 3, 1, 1 };
@@ -112,7 +116,7 @@ public class InlineModelViewer extends Application {
         return new MeshView(mesh);
     }
 
-    private RotateTransition rotate3dGroup(Group group) {
+    private static RotateTransition rotate3dGroup(Group group) {
         RotateTransition rotate = new RotateTransition(Duration.seconds(10), group);
         rotate.setAxis(Rotate.Y_AXIS);
         rotate.setFromAngle(0);
@@ -121,10 +125,6 @@ public class InlineModelViewer extends Application {
         rotate.setCycleCount(Animation.INDEFINITE);
 
         return rotate;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
 }

@@ -12,7 +12,7 @@ public class Thief extends CatanResource {
         view.setFitWidth(Terrain.RADIUS / 2.);
     }
 
-    public void removeHalfOfCards(Map<PlayerColor, List<CatanCard>> cards) {
+    public static void removeHalfOfCards(Map<PlayerColor, List<CatanCard>> cards) {
         for (List<CatanCard> list : cards.values()) {
             List<CatanCard> cardss = list.parallelStream().filter(e -> e.getDevelopment() == null)
                 .collect(Collectors.toList());
