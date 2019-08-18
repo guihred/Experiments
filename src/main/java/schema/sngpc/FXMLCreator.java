@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toMap;
 import static utils.ClassReflectionUtils.*;
 
 import com.google.common.collect.ImmutableMap;
+import gaming.ex19.SudokuLauncher;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -42,7 +43,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import paintexp.svgcreator.SVGCreator;
 import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -363,7 +363,7 @@ public final class FXMLCreator {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> asList = Arrays.asList(SVGCreator.class);
+        List<Class<? extends Application>> asList = Arrays.asList(SudokuLauncher.class);
         testApplications(asList, false);
 //        for (Class<? extends Application> class1 : asList) {
 //            duplicate(class1.getSimpleName() + ".fxml");
@@ -387,7 +387,7 @@ public final class FXMLCreator {
             List<Stage> stages = new ArrayList<>();
 
             Platform.runLater(RunnableEx.make(() -> {
-                LOG.trace("INITIALIZING {}", class1.getSimpleName());
+                LOG.info("INITIALIZING {}", class1.getSimpleName());
                 Application a = class1.newInstance();
                 Stage primaryStage = new Stage();
                 stages.add(primaryStage);
@@ -397,13 +397,14 @@ public final class FXMLCreator {
                 File outFile = ResourceFXUtils.getOutFile(class1.getSimpleName() + ".fxml");
                 Parent root = primaryStage.getScene().getRoot();
                 root.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+                LOG.info("CREATING {}.fxml", class1.getSimpleName());
                 createXMLFile(root, outFile);
                 Stage duplicateStage = duplicateStage(outFile, primaryStage.getTitle());
                 stages.add(duplicateStage);
                 if (close) {
                     stages.forEach(Stage::close);
                 }
-                LOG.trace("{} successfull", class1.getSimpleName());
+                LOG.info("{} successfull", class1.getSimpleName());
             }, error -> {
                 LOG.error("ERROR IN {} ", class1);
                 LOG.error("", error);

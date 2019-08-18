@@ -16,7 +16,7 @@ import schema.sngpc.FXMLCreator;
 import utils.HasLogging;
 
 @SuppressWarnings("static-method")
-public final class FXEngineFXMLTest {
+public final class FXMLCreatorTest {
 
     private static final Logger LOG = HasLogging.log();
     @Test
@@ -40,7 +40,7 @@ public final class FXEngineFXMLTest {
         List<Class<? extends T>> appClass = new ArrayList<>();
         try {
             List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
-            ClassPath.from(FXEngineFXMLTest.class.getClassLoader()).getTopLevelClasses().stream()
+            ClassPath.from(FXMLCreatorTest.class.getClassLoader()).getTopLevelClasses().stream()
                 .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
                 .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
                 .map(e -> (Class<? extends T>) e).forEach(appClass::add);

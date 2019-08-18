@@ -36,7 +36,7 @@ public class Ramp extends BasePhysicalObject {
 		fudgeX = (float) Math.cos(angle) * Physics.toPixelWidth(1.0F)
 				+ (float) Math.sin(angle) * Physics.toPixelHeight(1.0F);
 		fudgeY = (float) Math.sin(angle) * Physics.toPixelHeight(1.0F);
-        LOGGER.info("ramp angle={}fudgeX={};fudgeY={}", Math.toDegrees(angle), fudgeX, fudgeY);
+        LOGGER.trace("ramp angle={}fudgeX={};fudgeY={}", Math.toDegrees(angle), fudgeX, fudgeY);
         build();
     }
 

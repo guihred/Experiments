@@ -2,6 +2,7 @@ package contest.db;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -58,8 +59,11 @@ public class ContestApplication extends Application implements HasLogging {
 
         ListChangeListener<? super HasImage> listener = c -> {
             while (c.next()) {
-                observableArrayList.addAll(
-                        c.getAddedSubList());
+                List<? extends HasImage> addedSubList = c.getAddedSubList();
+                if (addedSubList != null) {
+                    observableArrayList.addAll(
+                            addedSubList);
+                }
             }
         };
         questions.addListener(listener);

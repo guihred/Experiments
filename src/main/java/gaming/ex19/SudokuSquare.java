@@ -165,8 +165,12 @@ public final class SudokuSquare extends Region {
     }
 
     private String displayPossibilities() {
-        return possibilities.stream().map(Objects::toString).collect(Collectors.joining(" ", " ", " "))
-                .replaceAll("(\\d \\d \\d)", "$1\n")
+        ObservableList<Integer> possibilities2 = possibilities;
+        System.out.println("displayPossibilities " + possibilities2);
+        String collect = possibilities2.stream().map(Integer.class::cast).map(Objects::toString)
+            .collect(Collectors.joining(" ", " ", " "));
+        System.out.println("displayPossibilities " + collect);
+        return collect.replaceAll("(\\d \\d \\d)", "$1\n")
                 ;
     }
 
