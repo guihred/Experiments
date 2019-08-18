@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 
 public final class CommonsFX {
@@ -45,15 +46,15 @@ public final class CommonsFX {
     }
     public static Button newButton(final double layoutX, final double layoutY, final String nome,
         final EventHandler<ActionEvent> onAction) {
-        return newButton(layoutX, layoutY, nome, onAction);
+        return SimpleButtonBuilder.newButton(layoutX, layoutY, nome, onAction);
     }
 
     public static Button newButton(final Node graphic, final String id, final EventHandler<ActionEvent> onAction) {
-        return newButton(graphic, id, onAction);
+        return SimpleButtonBuilder.newButton(graphic, id, onAction);
     }
 
     public static Button newButton(final String nome, final EventHandler<ActionEvent> onAction) {
-        return newButton(nome, onAction);
+        return SimpleButtonBuilder.newButton(nome, onAction);
     }
 
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
