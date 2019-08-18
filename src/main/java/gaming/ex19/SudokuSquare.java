@@ -1,5 +1,6 @@
 package gaming.ex19;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -150,10 +151,10 @@ public final class SudokuSquare extends Region {
     }
 
 	public void setPossibilities(List<Integer> possibilities) {
-		this.possibilities.setAll(possibilities);
+        this.possibilities.setAll(possibilities);
 	}
 
-	public void setWrong(boolean wrong) {
+    public void setWrong(boolean wrong) {
         this.wrong.set(wrong);
     }
 
@@ -164,13 +165,9 @@ public final class SudokuSquare extends Region {
                 + ") "+number.get();
     }
 
-    private String displayPossibilities() {
-        ObservableList<Integer> possibilities2 = possibilities;
-        System.out.println("displayPossibilities " + possibilities2);
-        String collect = possibilities2.stream().map(Integer.class::cast).map(Objects::toString)
-            .collect(Collectors.joining(" ", " ", " "));
-        System.out.println("displayPossibilities " + collect);
-        return collect.replaceAll("(\\d \\d \\d)", "$1\n")
+	private String displayPossibilities() {
+        return extracted(possibilities).stream().map(Objects::toString).collect(Collectors.joining(" ", " ", " "))
+            .replaceAll("(\\d \\d \\d)", "$1\n")
                 ;
     }
 
@@ -193,5 +190,14 @@ public final class SudokuSquare extends Region {
 
         style.append(";");
         setStyle(style.toString());
+    }
+
+    private static List<Integer> extracted(List<?> possibilities) {
+        if (possibilities.stream().anyMatch(e -> Collection.class.isInstance(e))) {
+            return possibilities.stream().map(Object.class::cast).map(Collection.class::cast)
+                .flatMap(Collection<Integer>::stream)
+                .collect(Collectors.toList());
+        }
+        return possibilities.stream().map(Integer.class::cast).collect(Collectors.toList());
     }
 }
