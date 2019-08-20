@@ -105,20 +105,22 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
         }
         String extension = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
         File file = new File(outFile, pageNumber + "-" + number + "." + extension);
+        File file2 = file;
         try {
 
             ImageIO.write(image, extension, file); // ignore returned boolean
             Optional<File> findFirst = Stream.of(outFile.listFiles()).filter(e -> e.getName().endsWith(extension))
                 .filter(e -> !e.equals(file)).filter(makeTest(f -> contentEquals(file, f))).findFirst();
             if (findFirst.isPresent()) {
+                file2 = findFirst.get();
                 Files.deleteIfExists(file.toPath());
                 return findFirst.get();
             }
 
         } catch (Exception e) {
-            LOG.error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
+            LOG.trace("Write error for " + file.getPath() + ": " + e.getMessage(), e);
         }
-        return file;
+        return file2;
     }
 
 }
