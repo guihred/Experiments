@@ -457,9 +457,7 @@ public final class FXMLCreator {
             .replaceFirst(" " + root.getStyleClass(), "");
         if (!original.equals(generated)) {
             LOG.info("{} has different tree", appClass.getSimpleName());
-            LOG.info("{} != {}", original, generated);
         }
-
         LOG.info("{} successfull", appClass.getSimpleName());
     }
 
