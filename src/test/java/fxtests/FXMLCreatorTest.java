@@ -15,14 +15,25 @@ import org.testfx.util.WaitForAsyncUtils;
 import schema.sngpc.FXMLCreator;
 import utils.HasLogging;
 
-@SuppressWarnings("static-method")
 public final class FXMLCreatorTest {
 
     private static final Logger LOG = HasLogging.log();
-    @Test
+
+	@Test
     public void testAllClasses() {
         List<Class<? extends Application>> classes = getClasses(Application.class);
-        List<Class<?>> testApplications = FXMLCreator.testApplications(classes);
+		testApplications(classes);
+    }
+
+	@Test
+	public void testErrorClasses() {
+		List<Class<? extends Application>> classes = Arrays.asList(election.HibernateCrawler.class,
+				pdfreader.PdfReader.class);
+		testApplications(classes);
+	}
+
+	private void testApplications(List<Class<? extends Application>> classes) {
+		List<Class<?>> testApplications = FXMLCreator.testApplications(classes);
         WaitForAsyncUtils.waitForFxEvents();
         if (!testApplications.isEmpty()) {
 			LOG.error("classes {} /{} got errors", testApplications.size(), classes.size());
@@ -30,7 +41,7 @@ public final class FXMLCreatorTest {
         } else {
             LOG.info("All classes successfull");
         }
-    }
+	}
 
     private static String classNames(List<Class<?>> testApplications) {
         return testApplications.stream().map(e -> e.getName() + ".class").collect(Collectors.joining(","));
