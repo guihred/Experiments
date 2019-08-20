@@ -181,7 +181,7 @@ public class TetrisModel {
         }
     }
 
-    final static int[][] rotateMap(int[][] pieceMap) {
+    private static final int[][] rotateMap(int[][] pieceMap) {
         int width = pieceMap.length;
         int height = pieceMap[0].length;
         int[][] left = new int[height][width];

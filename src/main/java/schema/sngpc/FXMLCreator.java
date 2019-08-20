@@ -1,10 +1,11 @@
 package schema.sngpc;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static utils.ClassReflectionUtils.*;
 
 import com.google.common.collect.ImmutableMap;
-import gaming.ex19.SudokuLauncher;
+import contest.db.ContestApplication;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -50,6 +51,7 @@ import utils.RunnableEx;
 
 public final class FXMLCreator {
     private static final String FX_REFERENCE = "fx:reference";
+
     private static final String FX_FACTORY = "fx:factory";
     private static final String FX_ID = "fx:id";
     private static final String FX_VALUE = "fx:value";
@@ -78,14 +80,13 @@ public final class FXMLCreator {
         .put("gridpane-halignment", "GridPane.halignment").put("gridpane-valignment", "GridPane.valignment")
         .put("gridpane-column-span", "GridPane.columnSpan").put("gridpane-row-span", "GridPane.rowSpan").build();
     private Document document;
-
-    private Map<Object, org.w3c.dom.Node> nodeMap = new LinkedHashMap<>();
+    private Map<Object, org.w3c.dom.Node> nodeMap = new IdentityHashMap<>();
 
     private List<Object> allNode = new ArrayList<>();
 
     private Set<String> packages = new LinkedHashSet<>();
-    private Map<Object, String> referencedNodes = new HashMap<>();
 
+    private Map<Object, String> referencedNodes = new IdentityHashMap<>();
     private FXMLCreator() {
     }
 
@@ -211,10 +212,10 @@ public final class FXMLCreator {
         if (!hasClass(ATTRIBUTE_CLASSES, fieldValue.getClass())) {
             Class<? extends Object> class1 = fieldValue.getClass();
             List<Class<?>> allClasses = allClasses(class1);
-            LOG.trace(" {} not in ATTRIBUTE_CLASSES", allClasses);
+            LOG.info(" {} not in ATTRIBUTE_CLASSES", allClasses);
         }
         if (hasField(parent.getClass(), fieldName)) {
-            LOG.trace("{} does have {}", parent.getClass(), fieldName);
+            LOG.info("{} does have {}", parent.getClass(), fieldName);
         }
 
     }
@@ -226,25 +227,28 @@ public final class FXMLCreator {
         if (FORMAT_LIST.containsKey(fieldName)) {
             String apply = FORMAT_LIST.get(fieldName).apply(list);
             element.setAttribute(fieldName, apply);
-        } else if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(ATTRIBUTE_CLASSES, o.getClass()))) {
-            Element createElement2 = document.createElement(fieldName);
-            element.appendChild(createElement2);
-            if (hasField(parent.getClass(), fieldName)) {
-                Element createElement = document.createElement("FXCollections");
+            return;
+        }
+        if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(ATTRIBUTE_CLASSES, o.getClass()))) {
+            Element originalElement = document.createElement(fieldName);
+            element.appendChild(originalElement);
+            if (hasField(parent.getClass(), fieldName) && isSetterMatches(fieldName, list, parent)) {
+                Element collectionsElement = document.createElement("FXCollections");
                 packages.add("javafx.collections");
-                createElement2.appendChild(createElement);
-                createElement.setAttribute(FX_FACTORY, "observableArrayList");
-                createElement2 = createElement;
+                originalElement.appendChild(collectionsElement);
+                collectionsElement.setAttribute(FX_FACTORY, "observableArrayList");
+                originalElement = collectionsElement;
             }
-            for (Object object : list) {
-                if (object != null) {
-                    packages.add(object.getClass().getPackage().getName());
-                    Element createElement3 = document.createElement(object.getClass().getSimpleName());
-                    createElement3.setAttribute(FX_VALUE, object + "");
-                    createElement2.appendChild(createElement3);
-                }
-            }
-        } else if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
+            Element appendTo = originalElement;
+            list.stream().filter(Objects::nonNull).forEach(object -> {
+                packages.add(object.getClass().getPackage().getName());
+                Element inlineEl = document.createElement(object.getClass().getSimpleName());
+                inlineEl.setAttribute(FX_VALUE, object + "");
+                appendTo.appendChild(inlineEl);
+            });
+            return;
+        }
+        if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
             if (list.stream().anyMatch(o -> !containsSame(allNode, o))) {
                 Element createElement2 = document.createElement(fieldName);
                 element.appendChild(createElement2);
@@ -262,12 +266,12 @@ public final class FXMLCreator {
                     }
                 }
             }
-        } else {
-            String classes = list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("");
-            Class<? extends Object> parentClass = parent.getClass();
-            LOG.trace("attribute {} type {} of {} not set", fieldName, classes, parentClass);
-            LOG.trace("value {}", list);
+            return;
         }
+        String classes = list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("");
+        Class<? extends Object> parentClass = parent.getClass();
+        LOG.info("attribute {} type {} of {} not set", fieldName, classes, parentClass);
+        LOG.info("value {}", list);
     }
 
     private void processNamedArgs(Element element, String fieldName, Object fieldValue, Object parent) {
@@ -326,8 +330,8 @@ public final class FXMLCreator {
         } catch (Exception e) {
             LOG.trace("", e);
             List<String> fields = getNamedArgs(cl);
-            getGetterMethodsRecursive(cl, 1).stream().map(ClassReflectionUtils::getFieldNameCase)
-                .filter(t -> !fields.contains(t)).forEach(fields::add);
+            fields.addAll(getGetterMethodsRecursive(cl, 1).stream().map(ClassReflectionUtils::getFieldNameCase)
+                .filter(t -> !fields.contains(t)).collect(toList()));
             Map<String, Object> collect = fields.stream().filter(m -> invoke(ob1, m) != null)
                 .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b));
             diffFields.putAll(collect);
@@ -363,7 +367,7 @@ public final class FXMLCreator {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> asList = Arrays.asList(SudokuLauncher.class);
+        List<Class<? extends Application>> asList = Arrays.asList(ContestApplication.class);
         testApplications(asList, false);
 //        for (Class<? extends Application> class1 : asList) {
 //            duplicate(class1.getSimpleName() + ".fxml");
@@ -387,24 +391,7 @@ public final class FXMLCreator {
             List<Stage> stages = new ArrayList<>();
 
             Platform.runLater(RunnableEx.make(() -> {
-                LOG.info("INITIALIZING {}", class1.getSimpleName());
-                Application a = class1.newInstance();
-                Stage primaryStage = new Stage();
-                stages.add(primaryStage);
-                primaryStage.setTitle(class1.getSimpleName());
-                a.start(primaryStage);
-                primaryStage.toBack();
-                File outFile = ResourceFXUtils.getOutFile(class1.getSimpleName() + ".fxml");
-                Parent root = primaryStage.getScene().getRoot();
-                root.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-                LOG.info("CREATING {}.fxml", class1.getSimpleName());
-                createXMLFile(root, outFile);
-                Stage duplicateStage = duplicateStage(outFile, primaryStage.getTitle());
-                stages.add(duplicateStage);
-                if (close) {
-                    stages.forEach(Stage::close);
-                }
-                LOG.info("{} successfull", class1.getSimpleName());
+                testSingleApp(class1, stages, close);
             }, error -> {
                 LOG.error("ERROR IN {} ", class1);
                 LOG.error("", error);
@@ -439,9 +426,42 @@ public final class FXMLCreator {
                 String value = Objects.toString(v);
                 element.setAttribute(key, value);
             } else {
-                LOG.trace("property {} value {} NOT IN PROPERTY_REMAP", k, v);
+                LOG.info("property {} value {} NOT IN PROPERTY_REMAP", k, v);
             }
         });
     }
+
+    private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close)
+        throws Exception {
+        LOG.info("INITIALIZING {}", appClass.getSimpleName());
+        Application a = appClass.newInstance();
+        Stage primaryStage = new Stage();
+        stages.add(primaryStage);
+        primaryStage.setTitle(appClass.getSimpleName());
+        a.start(primaryStage);
+        primaryStage.toBack();
+        File outFile = ResourceFXUtils.getOutFile(appClass.getSimpleName() + ".fxml");
+        Parent root = primaryStage.getScene().getRoot();
+        root.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+        LOG.info("CREATING {}.fxml", appClass.getSimpleName());
+        createXMLFile(root, outFile);
+        Stage duplicateStage = duplicateStage(outFile, primaryStage.getTitle());
+        duplicateStage.toBack();
+        stages.add(duplicateStage);
+        if (close) {
+            stages.forEach(Stage::close);
+        }
+        String original = ClassReflectionUtils.displayStyleClass(root).replaceAll("#\\w+", "");
+        Parent root2 = duplicateStage.getScene().getRoot();
+        String generated = ClassReflectionUtils.displayStyleClass(root2).replaceAll("#\\w+", "")
+            .replaceFirst(" " + root.getStyleClass(), "");
+        if (!original.equals(generated)) {
+            LOG.info("{} has different tree", appClass.getSimpleName());
+            LOG.info("{} != {}", original, generated);
+        }
+
+        LOG.info("{} successfull", appClass.getSimpleName());
+    }
+
 
 }

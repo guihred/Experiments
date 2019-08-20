@@ -26,7 +26,9 @@ import java.util.stream.Collectors;
  * Your mission, should you choose to accept it, is to transform the legacy data
  * format to the shiny new format.
  */
-public class Etl {
+public final class Etl {
+    private Etl() {
+    }
 
     /**
      * Transform.
@@ -34,6 +36,7 @@ public class Etl {
      * @param old the old
      * @return the map
      */
+
     public static Map<String, Integer> transform(Map<Integer, List<String>> old) {
         return old.entrySet().stream()
             .flatMap(e -> e.getValue().stream().collect(Collectors.toMap(String::toLowerCase, a -> e.getKey()))

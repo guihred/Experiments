@@ -145,9 +145,13 @@ public final class SongUtils {
         return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync,
                 s -> Math.abs(end.subtract(start).toMillis()), SongUtils::convertTimeToMillis);
     }
-    public static void updateCurrentSlider(MediaPlayer mediaPlayer2 ,Slider currentSlider) {
+
+    public static void updateCurrentSlider(MediaPlayer mediaPlayer2, Slider currentSlider) {
         if (!currentSlider.isValueChanging()) {
-            currentSlider.setValue(mediaPlayer2.getCurrentTime().toMillis() / mediaPlayer2.getTotalDuration().toMillis());
+            Duration currentTime = mediaPlayer2.getCurrentTime();
+            Duration totalDuration = mediaPlayer2.getTotalDuration();
+            double value = currentTime.toMillis() / totalDuration.toMillis();
+            currentSlider.setValue(value);
         }
     }
 

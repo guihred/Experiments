@@ -193,7 +193,7 @@ public final class SudokuSquare extends Region {
     }
 
     private static List<Integer> extracted(List<?> possibilities) {
-        if (possibilities.stream().anyMatch(e -> Collection.class.isInstance(e))) {
+        if (possibilities.stream().anyMatch(Collection.class::isInstance)) {
             return possibilities.stream().map(Object.class::cast).map(Collection.class::cast)
                 .flatMap(Collection<Integer>::stream)
                 .collect(Collectors.toList());

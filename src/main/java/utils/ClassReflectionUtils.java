@@ -37,18 +37,10 @@ public final class ClassReflectionUtils {
         return classes.parallelStream().distinct().collect(Collectors.toList());
     }
 
-    public static void displayStyleClass(Node node) {
-        displayStyleClass("", node);
-    }
-
-    public static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
-        Class<?> a = targetClass;
-        List<Method> getters = new ArrayList<>();
-        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
-            List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
-            getters.addAll(getters2);
-        }
-        return getters;
+    public static String displayStyleClass(Node node) {
+        StringBuilder str = new StringBuilder("\n");
+        displayStyleClass("", node, str);
+        return str.toString();
     }
 
     public static String getDescription(Object i) {
@@ -61,10 +53,123 @@ public final class ClassReflectionUtils {
 
     public static String getDescription(Object obj, Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
         return getDescription(obj, obj.getClass(), toStringMap, new HashSet<>(), new HashMap<>());
+    }
+
+    public static Map<String, String> getDescriptionMap(Object obj,
+        Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
+        return getDescriptionMap(obj, obj.getClass(), toStringMap, new HashSet<>(), new HashMap<>(), new HashMap<>());
 
     }
 
-    public static <T> String getDescription(T obj, Class<?> class1,
+    public static String getFieldNameCase(Member t) {
+        String fieldName = getFieldName(t);
+        return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+    }
+
+    public static List<String> getFields(Class<?> class1) {
+        return Stream.of(class1.getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .map(Field::getName).collect(Collectors.toList());
+    }
+
+    public static Object getFieldValue(Object ob, String name) {
+        return Stream.of(ob.getClass().getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .filter(e -> e.getName().equals(name)).findFirst().map(field -> BaseEntity.getFieldValue(ob, field))
+            .orElse(null);
+    }
+
+    public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
+        return getGetterMethodsRecursive(targetClass, 10);
+    }
+
+    public static List<Method> getGetterMethodsRecursive(Class<?> targetClass, int parent) {
+        Class<?> a = targetClass;
+        List<Method> getters = new ArrayList<>();
+        for (int i = 0; a != Object.class && i < parent; i++, a = a.getSuperclass()) {
+            List<Method> getters2 = getters(a);
+            getters.addAll(getters2);
+        }
+        return getters;
+    }
+
+    public static List<String> getNamedArgs(Class<?> targetClass) {
+        return getNamedArgsMap(targetClass).keySet().stream().collect(Collectors.toList());
+    }
+
+    public static boolean hasClass(Collection<Class<?>> newTagClasses, Class<? extends Object> class1) {
+        return Modifier.isPublic(class1.getModifiers()) && class1.getEnclosingClass() == null
+            && newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
+    }
+
+    public static boolean hasField(Class<?> targetClass, String field) {
+        return hasSetterMethods(targetClass, field) || hasBuiltArg(targetClass, field);
+    }
+
+    public static Object invoke(Object ob, Method method, Object... args) {
+        try {
+            return method.invoke(ob, args);
+        } catch (Exception e) {
+            LOG.trace("", e);
+            return null;
+        }
+    }
+
+    public static Object invoke(Object ob, String method, Object... args) {
+        try {
+            return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
+                .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(Objects::nonNull).findFirst()
+                .orElse(null);
+        } catch (Exception e) {
+            LOG.info("", e);
+            return null;
+        }
+    }
+
+    public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
+        Map<String, Class<?>> namedArgsMap = ClassReflectionUtils.getNamedArgsMap(parent.getClass());
+        if (namedArgsMap.containsKey(fieldName)) {
+            return typesFit(fieldValue, namedArgsMap.get(fieldName));
+        }
+        return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
+            .stream().filter(m -> m.getParameterCount() == 1)
+            .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(fieldName);
+    }
+
+    public static Object mapProperty(Object e) {
+        if (e instanceof WritableValue<?>) {
+            return ((WritableValue<?>) e).getValue();
+        }
+        return e;
+    }
+
+    private static void displayStyleClass(String left, Node node, StringBuilder str) {
+        String arg1 = left + node.getClass().getSimpleName();
+        if (node instanceof Labeled) {
+            str.append(String.format("%s = %s = \"%s\"%n", arg1, node.getStyleClass(), ((Labeled) node).getText()));
+        }
+
+        String id = node.getId();
+        if (id != null) {
+            str.append(String.format("%s = #%s.%s%n", arg1, id, node.getStyleClass()));
+        } else {
+            str.append(String.format("%s = .%s%n", arg1, node.getStyleClass()));
+        }
+        if (node instanceof Parent) {
+            ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
+            childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(left + "-", t, str));
+        }
+    }
+
+    private static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
+        Class<?> a = targetClass;
+        List<Method> getters = new ArrayList<>();
+        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
+            List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
+            getters.addAll(getters2);
+        }
+        return getters;
+    }
+
+    private static <T> String getDescription(T obj, Class<?> class1,
         Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
         Map<Class<?>, List<Method>> getterMethods) {
         if (invokedObjects.contains(obj)) {
@@ -97,13 +202,7 @@ public final class ClassReflectionUtils {
         return description.toString();
     }
 
-    public static Map<String, String> getDescriptionMap(Object obj,
-        Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
-        return getDescriptionMap(obj, obj.getClass(), toStringMap, new HashSet<>(), new HashMap<>(), new HashMap<>());
-
-    }
-
-    public static <T> Map<String, String> getDescriptionMap(T obj, Class<?> objClass,
+    private static <T> Map<String, String> getDescriptionMap(T obj, Class<?> objClass,
         Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
         Map<Class<?>, List<Method>> getterMethods, Map<String, String> descriptionMap) {
         if (invokedObjects.contains(obj)) {
@@ -132,197 +231,6 @@ public final class ClassReflectionUtils {
             descriptionMap.put(fieldName, description.toString());
         }));
         return descriptionMap;
-    }
-
-    public static String getFieldName(Member t) {
-        return t.getName().replaceAll(METHOD_REGEX_SETTER + "|" + METHOD_REGEX, "$1$2$3");
-    }
-
-    public static String getFieldNameCase(Member t) {
-        String fieldName = getFieldName(t);
-        return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
-    }
-
-    public static List<String> getFields(Class<?> class1) {
-        return Stream.of(class1.getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
-            .map(Field::getName).collect(Collectors.toList());
-    }
-
-    public static List<String> getFieldsRecursive(Class<?> class1) {
-        Class<?> a = class1;
-
-        List<String> fields = getFields(a);
-
-        for (int i = 0; i < 4; i++) {
-            fields.addAll(getFields(a.getSuperclass()));
-            a = a.getSuperclass();
-            if (a == Object.class) {
-                break;
-            }
-        }
-
-        return fields;
-    }
-
-    public static Object getFieldValue(Object ob, String name) {
-        return Stream.of(ob.getClass().getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
-            .filter(e -> e.getName().equals(name)).findFirst().map(field -> BaseEntity.getFieldValue(ob, field))
-            .orElse(null);
-    }
-
-    public static List<Method> getGetterMethods(Class<?> targetClass) {
-        return getGetterMethods(targetClass, new HashMap<>());
-    }
-
-    public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
-        return getGetterMethodsRecursive(targetClass, 10);
-    }
-
-    public static List<Method> getGetterMethodsRecursive(Class<?> targetClass, int parent) {
-        Class<?> a = targetClass;
-        List<Method> getters = new ArrayList<>();
-        for (int i = 0; a != Object.class && i < parent; i++, a = a.getSuperclass()) {
-            List<Method> getters2 = getters(a);
-            getters.addAll(getters2);
-        }
-        return getters;
-    }
-
-    public static List<String> getNamedArgs(Class<?> targetClass) {
-        List<String> args = new ArrayList<>();
-        Constructor<?>[] constructors = targetClass.getConstructors();
-        for (Constructor<?> constructor : constructors) {
-            Annotation[][] annotations = constructor.getParameterAnnotations();
-            for (Annotation[] annotation : annotations) {
-                for (Annotation annotation2 : annotation) {
-                    if (annotation2 instanceof NamedArg) {
-                        NamedArg a = (NamedArg) annotation2;
-                        String value = a.value();
-                        if (!args.contains(value)) {
-                            args.add(value);
-                        }
-                    }
-                }
-            }
-
-        }
-        return args;
-    }
-
-    public static Map<String, Class<?>> getNamedArgsMap(Class<?> targetClass) {
-        Map<String, Class<?>> args = new HashMap<>();
-        Constructor<?>[] constructors = targetClass.getConstructors();
-        for (Constructor<?> constructor : constructors) {
-            Parameter[] parameters = constructor.getParameters();
-            for (Parameter parameter : parameters) {
-                Class<?> type = parameter.getType();
-                Annotation[] annotations = parameter.getAnnotations();
-                for (Annotation annotation : annotations) {
-                    if (annotation instanceof NamedArg) {
-                        NamedArg a = (NamedArg) annotation;
-                        String value = a.value();
-                        args.put(value, type);
-                    }
-                }
-            }
-        }
-        return args;
-    }
-
-    public static boolean hasBuiltArg(Class<?> targetClass, String field) {
-        return getNamedArgs(targetClass).contains(field);
-    }
-
-    public static boolean hasClass(Collection<Class<?>> newTagClasses, Class<? extends Object> class1) {
-        return Modifier.isPublic(class1.getModifiers()) && class1.getEnclosingClass() == null
-            && newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
-    }
-
-    public static boolean hasField(Class<?> targetClass, String field) {
-        return hasSetterMethods(targetClass, field) || hasBuiltArg(targetClass, field);
-    }
-
-    public static boolean hasSetterMethods(Class<?> targetClass, String field) {
-        Class<?> a = targetClass;
-
-        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
-            List<Method> gett = setters(a);
-            if (gett.stream().anyMatch(m -> getFieldNameCase(m).equals(field))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static Object invoke(Object ob, Method method, Object... args) {
-        try {
-            return method.invoke(ob, args);
-        } catch (Exception e) {
-            LOG.trace("", e);
-            return null;
-        }
-    }
-
-    public static Object invoke(Object ob, String method, Object... args) {
-        try {
-            return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
-                .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(Objects::nonNull).findFirst()
-                .orElse(null);
-        } catch (Exception e) {
-            LOG.info("", e);
-            return null;
-        }
-    }
-
-    public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
-        Map<String, Class<?>> namedArgsMap = ClassReflectionUtils.getNamedArgsMap(parent.getClass());
-        if (namedArgsMap.containsKey(fieldName)) {
-            return typesFit(fieldValue, namedArgsMap.get(fieldName));
-        }
-        String makeSet = fieldName;
-        return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
-            .stream().filter(m -> m.getParameterCount() == 1)
-            .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(makeSet);
-    }
-
-    public static Object mapProperty(Object e) {
-        if (e instanceof WritableValue<?>) {
-            return ((WritableValue<?>) e).getValue();
-        }
-        return e;
-    }
-
-    public static boolean parameterTypesMatch(Object fieldValue, Method m) {
-        Parameter[] parameters = m.getParameters();
-        Class<?> type = parameters[0].getType();
-        if (type == Object.class) {
-            return m.getDeclaringClass().getTypeParameters().length == 0;
-        }
-        return typesFit(fieldValue, type);
-    }
-
-    public static boolean typesFit(Object fieldValue, Class<?> type) {
-        return type.isAssignableFrom(fieldValue.getClass())
-            || type.getSimpleName().equalsIgnoreCase(fieldValue.getClass().getSimpleName())
-            || type == int.class && fieldValue.getClass() == Integer.class;
-    }
-
-    private static void displayStyleClass(String left, Node node) {
-        String arg1 = left + node.getClass().getSimpleName();
-        if (node instanceof Labeled) {
-            HasLogging.log(1).info("{} = {} = \"{}\"", arg1, node.getStyleClass(), ((Labeled) node).getText());
-        }
-
-        String id = node.getId();
-        if (id != null) {
-            HasLogging.log(1).info("{} = #{}.{}", arg1, id, node.getStyleClass());
-        } else {
-            HasLogging.log(1).info("{} = .{}", arg1, node.getStyleClass());
-        }
-        if (node instanceof Parent) {
-            ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
-            childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(left + "-", t));
-        }
     }
 
     private static <T> String getEnumerationDescription(String fieldName, Enumeration<T> enumeration,
@@ -359,9 +267,33 @@ public final class ClassReflectionUtils {
         return descriptionBuilder.toString();
     }
 
+    private static String getFieldName(Member t) {
+        return t.getName().replaceAll(METHOD_REGEX_SETTER + "|" + METHOD_REGEX, "$1$2$3");
+    }
+
     private static List<Method> getGetterMethods(Class<?> class1, Map<Class<?>, List<Method>> getterMethods) {
         return getterMethods.computeIfAbsent(class1, ClassReflectionUtils::getters);
 
+    }
+
+    private static Map<String, Class<?>> getNamedArgsMap(Class<?> targetClass) {
+        Map<String, Class<?>> args = new HashMap<>();
+        Constructor<?>[] constructors = targetClass.getConstructors();
+        for (Constructor<?> constructor : constructors) {
+            Parameter[] parameters = constructor.getParameters();
+            for (Parameter parameter : parameters) {
+                Class<?> type = parameter.getType();
+                Annotation[] annotations = parameter.getAnnotations();
+                for (Annotation annotation : annotations) {
+                    if (annotation instanceof NamedArg) {
+                        NamedArg a = (NamedArg) annotation;
+                        String value = a.value();
+                        args.put(value, type);
+                    }
+                }
+            }
+        }
+        return args;
     }
 
     private static List<Method> getters(Class<?> c) {
@@ -371,14 +303,45 @@ public final class ClassReflectionUtils {
             .collect(Collectors.toList());
     }
 
+    private static boolean hasBuiltArg(Class<?> targetClass, String field) {
+        return getNamedArgs(targetClass).contains(field);
+    }
+
+    private static boolean hasSetterMethods(Class<?> targetClass, String field) {
+        Class<?> a = targetClass;
+
+        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
+            List<Method> gett = setters(a);
+            if (gett.stream().anyMatch(m -> getFieldNameCase(m).equals(field))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
         return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
             && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(class1.getName());
+    }
+
+    private static boolean parameterTypesMatch(Object fieldValue, Executable m) {
+        Parameter[] parameters = m.getParameters();
+        Class<?> type = parameters[0].getType();
+        if (type == Object.class) {
+            return m.getDeclaringClass().getTypeParameters().length == 0;
+        }
+        return typesFit(fieldValue, type);
     }
 
     private static List<Method> setters(Class<?> c) {
         return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
             .filter(m -> m.getName().matches(METHOD_REGEX_SETTER)).filter(m -> m.getParameterCount() == 1)
             .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
+    }
+
+    private static boolean typesFit(Object fieldValue, Class<?> type) {
+        return type.isAssignableFrom(fieldValue.getClass())
+            || type.getSimpleName().equalsIgnoreCase(fieldValue.getClass().getSimpleName())
+            || type == int.class && fieldValue.getClass() == Integer.class;
     }
 }

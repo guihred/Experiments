@@ -64,8 +64,8 @@ public class SngpcViewer extends Application {
         return new VBox(importXMLButton, new SplitPane(tree, sideTable));
     }
 
-    private static void onSelectTreeItem(ObservableList<Map<String, String>> list, TableView<Map<String, String>> sideTable,
-        TreeItem<Map<String, String>> newValue) {
+    private static void onSelectTreeItem(ObservableList<Map<String, String>> list,
+        TableView<Map<String, String>> sideTable, TreeItem<Map<String, String>> newValue) {
         list.clear();
         sideTable.getColumns().clear();
         if (newValue != null && newValue.isLeaf()) {

@@ -87,11 +87,11 @@ public class ImageCrackerApp extends Application {
     private void tryToLog(WebView browser, ImageView imageView) {
         runInPlatform(setValue("j_username", CrawlerTask.getHTTPUsername()));
         runInPlatform(setValue("j_password", CrawlerTask.getHTTPPassword()));
-        JSObject o = (JSObject) runInPlatformAndWait("$('#dtpCaptcha img').offset()");
 
         for (int i = 0; i < 5 && !successfull.get(); i++) {
             waitABit();
-            Integer width = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').width()")) * 6 / 5;
+            JSObject o = (JSObject) runInPlatformAndWait("$('#dtpCaptcha img').offset()");
+            int width = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').width()")) * 6 / 5;
             Integer height = toInteger(runInPlatformAndWait("$('#dtpCaptcha img').innerHeight()")) * 2;
             Integer top = toInteger(runInPlatformAndWait(() -> o.getMember("top")));
             Integer left = toInteger(runInPlatformAndWait(() -> o.getMember("left")));

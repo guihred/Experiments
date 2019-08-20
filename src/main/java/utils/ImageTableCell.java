@@ -1,5 +1,8 @@
 package utils;
 
+import static utils.FunctionEx.makeFunction;
+
+import java.io.File;
 import java.util.stream.Stream;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -47,6 +50,10 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
 		} catch (Exception e) {
 			HasLogging.log(1).trace("", e);
 		}
+        if (image.startsWith("C:")) {
+            return makeFunction((String e) -> new File(e).toURI().toURL().toString()).apply(image);
+        }
+
 		return ResourceFXUtils.toExternalForm("out/pdf/" + image);
     }
 }

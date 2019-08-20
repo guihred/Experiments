@@ -10,8 +10,9 @@ import java.util.stream.Stream;
  * 
  * Given a phrase, count the occurrences of each word in that phrase.
  */
-public class WordCount {
-
+public final class WordCount {
+    private WordCount() {
+    }
 	/**
      * Phrase.
      *

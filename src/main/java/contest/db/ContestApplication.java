@@ -28,7 +28,6 @@ import utils.ResourceFXUtils;
 
 public class ContestApplication extends Application implements HasLogging {
 
-
     @Override
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setTitle("Contest Questions");
@@ -41,14 +40,11 @@ public class ContestApplication extends Application implements HasLogging {
 
         String arquivo = "102 - Analista de Tecnologia da Informacao - Tipo D.pdf";
         File file = ResourceFXUtils.toFile(arquivo);
-        getLogger().info("File exists={}", file.exists());
         ObservableList<HasImage> observableArrayList = FXCollections.observableArrayList();
         FilteredList<HasImage> li = observableArrayList.filtered(e -> true);
         ObservableList<ContestQuestion> questions = ContestReader.getContestQuestions(file,
-                () -> li.setPredicate(e -> e.getImage() != null));
+            () -> li.setPredicate(e -> e.getImage() != null));
         ObservableList<ContestText> texts = ContestReader.getContestTexts();
-
-
 
         final TableView<ContestQuestion> questionsTable = createContestQuestionsTable(root);
         questionsTable.setItems(questions);
@@ -61,8 +57,7 @@ public class ContestApplication extends Application implements HasLogging {
             while (c.next()) {
                 List<? extends HasImage> addedSubList = c.getAddedSubList();
                 if (addedSubList != null) {
-                    observableArrayList.addAll(
-                            addedSubList);
+                    observableArrayList.addAll(addedSubList);
                 }
             }
         };
@@ -86,37 +81,23 @@ public class ContestApplication extends Application implements HasLogging {
     }
 
     private static TableView<ContestQuestion> createContestQuestionsTable(Region root) {
-        return new SimpleTableViewBuilder<ContestQuestion>()
-                .prefWidth(root.widthProperty().add(-10).divide(3))
-                .prefHeight(root.heightProperty().add(-30))
-                .scaleShape(false)
-                .addColumn("Number", "number")
-                .addColumn("Question", "exercise")
-                .addColumn("Options", "formattedOptions")
-                .addColumn("Subject", "subject")
-                .equalColumns()
-                .build();
+        return new SimpleTableViewBuilder<ContestQuestion>().prefWidth(root.widthProperty().add(-10).divide(3))
+            .prefHeight(root.heightProperty().add(-30)).scaleShape(false).addColumn("Number", "number")
+            .addColumn("Question", "exercise").addColumn("Options", "formattedOptions").addColumn("Subject", "subject")
+            .equalColumns().build();
     }
 
     private static TableView<HasImage> createImagesTable(Region root) {
 
-        return new SimpleTableViewBuilder<HasImage>()
-                .prefWidth(root.widthProperty().add(-10).divide(3))
-                .prefHeight(root.heightProperty().add(-30))
-                .scaleShape(false)
-            .addColumn("Image", "image", s -> new ImageTableCell<>())
-                .equalColumns()
-                .build();
+        return new SimpleTableViewBuilder<HasImage>().prefWidth(root.widthProperty().add(-10).divide(3))
+            .prefHeight(root.heightProperty().add(-30)).scaleShape(false)
+            .addColumn("Image", "image", s -> new ImageTableCell<>()).equalColumns().build();
     }
 
     private static TableView<ContestText> createTextsTable(Region root) {
-        return new SimpleTableViewBuilder<ContestText>()
-                .prefWidth(root.widthProperty().add(-10).divide(3))
-                .prefHeight(root.heightProperty().add(-30))
-                .scaleShape(false)
-                .addColumn("Text", "text")
-                .equalColumns()
-                .build();
+        return new SimpleTableViewBuilder<ContestText>().prefWidth(root.widthProperty().add(-10).divide(3))
+            .prefHeight(root.heightProperty().add(-30)).scaleShape(false).addColumn("Text", "text").equalColumns()
+            .build();
     }
 
     private static VBox createVbox(String text, final Node medicamentosEstoqueTable) {

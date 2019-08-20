@@ -233,7 +233,8 @@ public class ColorChooser extends Application {
         return image;
     }
 
-    private static HBox sliderOptions(final String field, final Slider slider, final String format, final int multiplier) {
+    private static HBox sliderOptions(final String field, final Slider slider, final String format,
+        final int multiplier) {
         Text text = new Text();
         text.textProperty().bind(slider.valueProperty().multiply(multiplier).asString(format));
         return new HBox(new Text(field), slider, text);

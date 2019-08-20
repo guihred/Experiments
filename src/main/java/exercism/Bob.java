@@ -13,7 +13,10 @@ package exercism;
  * 
  * He answers 'Whatever.' to anything else.
  */
-public class Bob {
+public final class Bob {
+
+    private Bob() {
+    }
 
     public static String hey(String s) {
 		if (s.matches("[\\s]*")) {

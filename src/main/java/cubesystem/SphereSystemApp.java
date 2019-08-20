@@ -2,6 +2,7 @@ package cubesystem;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -143,7 +144,7 @@ public class SphereSystemApp extends Application {
         launch(args);
     }
 
-    public static KeyValue[] valuesAtZero(List<CubeXForm> cube19X, List<Xsphere> cube11) {
+    public static KeyValue[] valuesAtZero(Collection<CubeXForm> cube19X, Collection<Xsphere> cube11) {
         return Stream.concat(cube19X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), 0.0)),
             cube11.stream().map(e -> new KeyValue(e.getRx().angleProperty(), 0.0))).toArray(KeyValue[]::new);
     }

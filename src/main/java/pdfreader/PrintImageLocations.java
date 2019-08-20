@@ -115,7 +115,7 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
                 return findFirst.get();
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("Write error for " + file.getPath() + ": " + e.getMessage(), e);
         }
         return file;

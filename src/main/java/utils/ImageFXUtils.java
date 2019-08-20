@@ -12,8 +12,11 @@ import javafx.scene.image.WritableImage;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 
-public class ImageFXUtils {
+public final class ImageFXUtils {
     private static final Logger LOG = HasLogging.log();
+
+    private ImageFXUtils() {
+    }
 
     public static String take(final Canvas canvas) {
         return ImageFXUtils.take(canvas, canvas.getWidth(), canvas.getHeight());

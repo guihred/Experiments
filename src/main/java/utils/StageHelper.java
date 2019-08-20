@@ -46,7 +46,8 @@ public final class StageHelper {
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {
-        ClassReflectionUtils.displayStyleClass(scene.getRoot());
+        String str = ClassReflectionUtils.displayStyleClass(scene.getRoot());
+        HasLogging.log(1).info("{}", str);
         Stage stage2 = new Stage();
         File file = new File("src/main/resources/" + pathname);
         TextArea textArea = new TextArea(getText(file));

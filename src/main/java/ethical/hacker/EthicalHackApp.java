@@ -180,8 +180,9 @@ public class EthicalHackApp extends Application {
         }
     }
 
-    private static CheckBox getCheckBox(List<Integer> arrayList, Map<Integer, CheckBox> checkbox, Entry<Integer, String> e) {
-        return checkbox.computeIfAbsent(e.getKey(), i -> newCheck(arrayList, e));
+    private static CheckBox getCheckBox(List<Integer> checkedPorts, Map<Integer, CheckBox> checkbox,
+        Entry<Integer, String> e) {
+        return checkbox.computeIfAbsent(e.getKey(), i -> newCheck(checkedPorts, e));
     }
 
     private static CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
