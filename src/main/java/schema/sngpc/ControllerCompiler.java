@@ -15,82 +15,90 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.tools.*;
+import org.slf4j.Logger;
 import sun.misc.Unsafe;
+import utils.HasLogging;
 
+@SuppressWarnings("restriction")
 public class ControllerCompiler {
 
-    public static List<String> compileClass(File customRwa) {
-        final List<String> diagnosticMsg = new ArrayList<>();
-        try {
-            Class<ControllerCompiler> class1 = ControllerCompiler.class;
-            String packageName = class1.getPackage().getName();
-            final String source = Files.toString(customRwa, StandardCharsets.UTF_8);
 
-            String className = customRwa.getName().replaceAll(".java", "");
-            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	public static List<String> compileClass(File customRwa) {
+		setJavaHomeProperty();
+		final List<String> diagnosticMsg = new ArrayList<>();
+		String className = customRwa.getName().replaceAll(".java", "");
+		try {
+			Class<ControllerCompiler> class1 = ControllerCompiler.class;
+			String packageName = class1.getPackage().getName();
+			final String source = Files.toString(customRwa, StandardCharsets.UTF_8);
 
-            final SimpleJavaFileObject simpleJavaFileObject = new SimpleJavaFileObject(customRwa.toURI(),
-                SOURCE) {
-                @Override
-                public CharSequence getCharContent(boolean ignoreEncodingErrors) {
-                    return source.toString();
-                }
+			final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-                @Override
-                public OutputStream openOutputStream() throws IOException {
-                    return byteArrayOutputStream;
-                }
-            };
+			final SimpleJavaFileObject simpleJavaFileObject = new SimpleJavaFileObject(customRwa.toURI(), SOURCE) {
+				@Override
+				public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+					return source.toString();
+				}
 
-            String property = new File(System.getProperty("java.home")).getParent();
-            System.setProperty("java.home", property);
+				@Override
+				public OutputStream openOutputStream() throws IOException {
+					return byteArrayOutputStream;
+				}
+			};
 
-            final Locale pt = new Locale("pt");
-            DiagnosticListener<JavaFileObject> diagnosticListener = diagnostic -> {
-                String message = diagnostic.toString();
-                diagnosticMsg.add(message);
-            };
+			final Locale pt = new Locale("pt");
+			DiagnosticListener<JavaFileObject> diagnosticListener = diagnostic -> {
+				String message = diagnostic.toString();
+				diagnosticMsg.add(message);
+			};
 
-            StandardJavaFileManager standardFileManager = ToolProvider.getSystemJavaCompiler()
-                .getStandardFileManager(diagnosticListener, pt, Charset.defaultCharset());
-            final JavaFileManager javaFileManager = new ForwardingJavaFileManager<StandardJavaFileManager>(
-                standardFileManager) {
+			StandardJavaFileManager standardFileManager = ToolProvider.getSystemJavaCompiler()
+					.getStandardFileManager(diagnosticListener, pt, Charset.defaultCharset());
+			final JavaFileManager javaFileManager = new ForwardingJavaFileManager<StandardJavaFileManager>(
+					standardFileManager) {
 
-                @Override
-                public JavaFileObject getJavaFileForOutput(Location location, String className1,
-                    JavaFileObject.Kind kind, FileObject sibling) throws IOException {
-                    return simpleJavaFileObject;
-                }
-            };
+				@Override
+				public JavaFileObject getJavaFileForOutput(Location location, String className1,
+						JavaFileObject.Kind kind, FileObject sibling) throws IOException {
+					return simpleJavaFileObject;
+				}
+			};
 
-            ToolProvider.getSystemJavaCompiler()
-                .getTask(null, javaFileManager, diagnosticListener, null, null, singletonList(simpleJavaFileObject))
-                .call();
+			ToolProvider.getSystemJavaCompiler()
+					.getTask(null, javaFileManager, diagnosticListener, null, null, singletonList(simpleJavaFileObject))
+					.call();
 
-            final byte[] bytes = byteArrayOutputStream.toByteArray();
+			final byte[] bytes = byteArrayOutputStream.toByteArray();
 
-            // use the unsafe class to load in the
-            // class bytes
-            Class<?> aClass = null;
-            final Field f = Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            final Unsafe unsafe = (Unsafe) f.get(null);
-//            aClass = unsafe.defineAnonymousClass(ControllerCompiler.class, bytes, null);
-            String fullClassName = packageName + "." + className;
-            aClass = unsafe.defineClass(fullClassName, bytes, 0, bytes.length,
-                ClassLoader.getSystemClassLoader(),
-                class1.getProtectionDomain());
-            Class.forName(fullClassName);
-            aClass.newInstance();
-            diagnosticMsg.add("Classe Adicionada com sucesso");
-        } catch (Throwable e) {
-            if (e instanceof LinkageError) {
-                diagnosticMsg.add("Classe já adicionada");
-            } else {
-                diagnosticMsg.add(e.getLocalizedMessage());
-            }
-        }
-        return diagnosticMsg;
-    }
+			// use the unsafe class to load in the
+			// class bytes
+			Class<?> aClass = null;
+			final Field f = Unsafe.class.getDeclaredField("theUnsafe");
+			f.setAccessible(true);
+			final Unsafe unsafe = (Unsafe) f.get(null);
+			String fullClassName = packageName + "." + className;
+			aClass = unsafe.defineClass(fullClassName, bytes, 0, bytes.length, ClassLoader.getSystemClassLoader(),
+					class1.getProtectionDomain());
+			Class.forName(fullClassName);
+			aClass.newInstance();
+			diagnosticMsg.add("Classe Adicionada com sucesso");
+		} catch (LinkageError e) {
+			diagnosticMsg.add("Classe já adicionada");
+		} catch (Throwable e) {
+			String localizedMessage = e.getLocalizedMessage();
+			diagnosticMsg.add(localizedMessage != null ? localizedMessage : e.getMessage());
+			Logger log = HasLogging.log();
+			log.info("ERROR IN {}", className);
+			log.error("ERROR IN {}", e);
+		}
+		return diagnosticMsg;
+	}
+
+	private static void setJavaHomeProperty() {
+		String property = new File(System.getProperty("java.home")).getParent();
+		if (property.contains("jdk")) {
+			System.setProperty("java.home", property);
+		}
+	}
 
 }

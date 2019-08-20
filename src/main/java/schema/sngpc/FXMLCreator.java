@@ -168,7 +168,8 @@ public final class FXMLCreator {
                 lines.addAll(packages.stream().map(e -> "import " + e + ".*;").collect(toList()));
                 lines.add("public class " + name + "{");
                 lines.addAll(referencedNodes.entrySet().stream()
-                    .map(e -> String.format("\t@FXML\n\t%s %s;", e.getKey().getClass().getSimpleName(), e.getValue()))
+						.map(e -> String.format("\t@FXML%n\t%s %s;", e.getKey().getClass().getSimpleName(),
+								e.getValue()))
                     .collect(toList()));
                 lines.addAll(referencedMethod.values().stream().map(e -> String.format("\tpublic void %s(){}", e))
                     .collect(toList()));
@@ -247,12 +248,12 @@ public final class FXMLCreator {
             createReferenceNode(element, fieldName, fieldValue);
             return;
         }
-        if (defineController && METHOD_CLASSES.stream().anyMatch(c -> c.isAssignableFrom(fieldValue.getClass()))) {
+		if (defineController && METHOD_CLASSES.stream().anyMatch(c -> c.isInstance(fieldValue))) {
             String computeIfAbsent = referencedNodes.computeIfAbsent(parent, this::newName);
             String nameMethod = referencedMethod.computeIfAbsent(fieldValue.getClass().getName(),
                 e -> fieldName + computeIfAbsent);
             element.setAttribute(fieldName, "#" + nameMethod);
-
+			return;
         }
         if (!hasClass(ATTRIBUTE_CLASSES, fieldValue.getClass())) {
             Class<? extends Object> class1 = fieldValue.getClass();
@@ -435,9 +436,7 @@ public final class FXMLCreator {
         for (Class<? extends Application> class1 : asList) {
             List<Stage> stages = new ArrayList<>();
 
-            Platform.runLater(RunnableEx.make(() -> {
-                testSingleApp(class1, stages, close);
-            }, error -> {
+			Platform.runLater(RunnableEx.make(() -> testSingleApp(class1, stages, close), error -> {
                 LOG.error("ERROR IN {} ", class1);
                 LOG.error("", error);
                 errorClasses.add(class1);

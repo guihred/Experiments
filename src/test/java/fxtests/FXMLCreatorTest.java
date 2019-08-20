@@ -25,6 +25,7 @@ public final class FXMLCreatorTest {
         List<Class<?>> testApplications = FXMLCreator.testApplications(classes);
         WaitForAsyncUtils.waitForFxEvents();
         if (!testApplications.isEmpty()) {
+			LOG.error("classes {} /{} got errors", testApplications.size(), classes.size());
             LOG.error("classes {} with errors", classNames(testApplications));
         } else {
             LOG.info("All classes successfull");

@@ -25,11 +25,11 @@ interface RunnableEx extends HasLogging {
         };
     }
 
-    static Runnable make(RunnableEx run, Consumer<Exception> onError) {
+	static Runnable make(RunnableEx run, Consumer<Throwable> onError) {
         return () -> {
             try {
                 run.run();
-            } catch (Exception e) {
+			} catch (Throwable e) {
                 HasLogging.log(1).trace("", e);
                 onError.accept(e);
             }
