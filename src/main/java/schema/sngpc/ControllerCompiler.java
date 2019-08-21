@@ -23,10 +23,11 @@ import utils.HasLogging;
 public class ControllerCompiler {
 
 
+	private static final String JAVA_HOME = "java.home";
 	private static final Logger LOG = HasLogging.log();
 
     public static List<String> compileClass(File customRwa) {
-		setJavaHomeProperty();
+		String property = setJavaHomeProperty();
 		final List<String> diagnosticMsg = new ArrayList<>();
 		String className = customRwa.getName().replaceAll(".java", "");
 		try {
@@ -74,18 +75,18 @@ public class ControllerCompiler {
 
 			// use the unsafe class to load in the
 			// class bytes
-			Class<?> aClass = null;
 			final Field f = Unsafe.class.getDeclaredField("theUnsafe");
 			f.setAccessible(true);
 			final Unsafe unsafe = (Unsafe) f.get(null);
 			String fullClassName = packageName + "." + className;
-			aClass = unsafe.defineClass(fullClassName, bytes, 0, bytes.length, ClassLoader.getSystemClassLoader(),
+			Class<?> aClass = unsafe.defineClass(fullClassName, bytes, 0, bytes.length,
+					ClassLoader.getSystemClassLoader(),
 					class1.getProtectionDomain());
 			Class.forName(fullClassName);
 			aClass.newInstance();
 			diagnosticMsg.add("Classe Adicionada com sucesso");
 		} catch (LinkageError e) {
-		    LOG.error("ERROR IN {}", e);
+			LOG.error("ERROR IN " + className, e);
 			diagnosticMsg.add("Classe já adicionada");
 		} catch (Throwable e) {
 			String localizedMessage = e.getLocalizedMessage();
@@ -93,14 +94,17 @@ public class ControllerCompiler {
 			LOG.info("ERROR IN {}", className);
 			LOG.error("ERROR IN {}", e);
 		}
+		System.setProperty(JAVA_HOME, property);
 		return diagnosticMsg;
 	}
 
-	private static void setJavaHomeProperty() {
-		String property = new File(System.getProperty("java.home")).getParent();
+	private static String setJavaHomeProperty() {
+		String property2 = System.getProperty(JAVA_HOME);
+		String property = new File(property2).getParent();
 		if (property.contains("jdk")) {
-			System.setProperty("java.home", property);
+			System.setProperty(JAVA_HOME, property);
 		}
+		return property2;
 	}
 
 }

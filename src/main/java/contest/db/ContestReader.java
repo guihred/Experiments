@@ -240,7 +240,7 @@ public enum ContestReader implements HasLogging {
                 }
                 // concat.forEach(action)
             }
-        } catch (Exception e) {
+		} catch (Throwable e) {
             getLogger().error("", e);
         }
     }

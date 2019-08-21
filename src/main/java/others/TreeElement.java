@@ -43,7 +43,7 @@ public class TreeElement<T> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(children, element);
+		return Objects.hash(children, element.getClass());
     }
 
     public static <E> TreeElement<E> buildTree(E first, FunctionEx<E, Collection<E>> func) {

@@ -52,7 +52,7 @@ public final class PdfUtils {
                     images.put(i, pageImages);
                     progress.set((double) i / (nPag - start));
                 }
-            } catch (Exception e) {
+			} catch (Throwable e) {
                 LOG.error("", e);
             }
         }).start();

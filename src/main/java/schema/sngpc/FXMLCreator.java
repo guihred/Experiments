@@ -47,6 +47,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
@@ -196,7 +197,11 @@ public final class FXMLCreator {
         if (ClassReflectionUtils.hasField(f.getClass(), "id")) {
             Object fieldValue = ClassReflectionUtils.getFieldValue(f, "id");
             if (fieldValue != null) {
-                return Objects.toString(fieldValue);
+				String string = Objects.toString(fieldValue);
+				if (StringUtils.isNumeric(string)) {
+					return changeCase(f.getClass().getSimpleName()) + string;
+				}
+				return string;
             }
         }
         String simpleName = f.getClass().getSimpleName();
@@ -301,7 +306,6 @@ public final class FXMLCreator {
                     allNode.add(object);
                 }
             }
-
             return;
         }
         String classes = list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("");
@@ -542,7 +546,9 @@ public final class FXMLCreator {
             stages.forEach(Stage::close);
         }
         if (!compareTree(root, duplicateStage.getScene().getRoot())) {
-            LOG.info("{} has different tree", appClass.getSimpleName());
+			String format = String.format("%s has different tree", appClass.getSimpleName());
+			LOG.info(format);
+			throw new RuntimeIOException(format);
         }
         LOG.info("{} successfull", appClass.getSimpleName());
     }
