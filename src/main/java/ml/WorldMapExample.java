@@ -3,6 +3,7 @@ package ml;
 import static utils.CommonsFX.newSlider;
 import static utils.ResourceFXUtils.getOutFile;
 
+import extract.UnZip;
 import java.io.File;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -21,7 +22,6 @@ import ml.data.DataframeML;
 import ml.graph.ColorPattern;
 import ml.graph.WorldMapGraph;
 import org.apache.commons.lang3.StringUtils;
-import others.UnZip;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;

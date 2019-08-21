@@ -1,4 +1,4 @@
-package others;
+package extract;
 
 import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;

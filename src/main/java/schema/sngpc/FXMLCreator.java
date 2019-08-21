@@ -541,11 +541,7 @@ public final class FXMLCreator {
         if (close) {
             stages.forEach(Stage::close);
         }
-        String original = ClassReflectionUtils.displayStyleClass(root).replaceAll("#\\w+", "");
-        Parent root2 = duplicateStage.getScene().getRoot();
-        String generated = ClassReflectionUtils.displayStyleClass(root2).replaceAll("#\\w+", "")
-            .replaceFirst(" " + root.getStyleClass(), "");
-        if (!original.equals(generated)) {
+        if (!compareTree(root, duplicateStage.getScene().getRoot())) {
             LOG.info("{} has different tree", appClass.getSimpleName());
         }
         LOG.info("{} successfull", appClass.getSimpleName());

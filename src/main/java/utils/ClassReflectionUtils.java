@@ -15,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
 import org.slf4j.Logger;
+import others.TreeElement;
 
 public final class ClassReflectionUtils {
     private static final Logger LOG = HasLogging.log();
@@ -37,6 +38,14 @@ public final class ClassReflectionUtils {
         }
 
         return classes.parallelStream().distinct().collect(Collectors.toList());
+    }
+
+    public static boolean compareTree(Parent root, Parent root2) {
+        FunctionEx<Node, Collection<Node>> f = e -> !(e instanceof Parent) ? null
+            : ((Parent) e).getChildrenUnmodifiable();
+        TreeElement<Node> original = TreeElement.buildTree(root, f);
+        TreeElement<Node> generated = TreeElement.buildTree(root2, f);
+        return Objects.equals(original, generated);
     }
 
     public static String displayStyleClass(Node node) {

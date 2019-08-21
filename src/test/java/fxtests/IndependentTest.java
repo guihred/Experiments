@@ -19,6 +19,8 @@ import ex.j9.ch4.Ch4;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.Line;
 import ex.j9.ch4.Point;
+import extract.UnRar;
+import extract.UnZip;
 import image.ImageCreating;
 import image.ImageLoading;
 import japstudy.HiraganaMaker;
