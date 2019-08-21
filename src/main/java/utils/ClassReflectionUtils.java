@@ -1,5 +1,7 @@
 package utils;
 
+import static utils.StringSigaUtils.changeCase;
+
 import japstudy.db.BaseEntity;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -62,8 +64,7 @@ public final class ClassReflectionUtils {
     }
 
     public static String getFieldNameCase(Member t) {
-        String fieldName = getFieldName(t);
-        return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+        return changeCase(getFieldName(t));
     }
 
     public static List<String> getFields(Class<?> class1) {
@@ -93,6 +94,12 @@ public final class ClassReflectionUtils {
 
     public static List<String> getNamedArgs(Class<?> targetClass) {
         return getNamedArgsMap(targetClass).keySet().stream().collect(Collectors.toList());
+    }
+
+    public static Method getSetter(Class<?> cl,String f) {
+        return ClassReflectionUtils.getAllMethodsRecursive(cl)
+        .stream().filter(m -> m.getParameterCount() == 1).filter(m -> getFieldNameCase(m).equals(f))
+        .findFirst().orElse(null);
     }
 
     public static boolean hasClass(Collection<Class<?>> newTagClasses, Class<? extends Object> class1) {

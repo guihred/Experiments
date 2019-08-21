@@ -23,7 +23,9 @@ import utils.HasLogging;
 public class ControllerCompiler {
 
 
-	public static List<String> compileClass(File customRwa) {
+	private static final Logger LOG = HasLogging.log();
+
+    public static List<String> compileClass(File customRwa) {
 		setJavaHomeProperty();
 		final List<String> diagnosticMsg = new ArrayList<>();
 		String className = customRwa.getName().replaceAll(".java", "");
@@ -83,13 +85,13 @@ public class ControllerCompiler {
 			aClass.newInstance();
 			diagnosticMsg.add("Classe Adicionada com sucesso");
 		} catch (LinkageError e) {
+		    LOG.error("ERROR IN {}", e);
 			diagnosticMsg.add("Classe já adicionada");
 		} catch (Throwable e) {
 			String localizedMessage = e.getLocalizedMessage();
 			diagnosticMsg.add(localizedMessage != null ? localizedMessage : e.getMessage());
-			Logger log = HasLogging.log();
-			log.info("ERROR IN {}", className);
-			log.error("ERROR IN {}", e);
+			LOG.info("ERROR IN {}", className);
+			LOG.error("ERROR IN {}", e);
 		}
 		return diagnosticMsg;
 	}

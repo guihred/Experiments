@@ -3,16 +3,21 @@ package schema.sngpc;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static utils.ClassReflectionUtils.*;
+import static utils.StringSigaUtils.changeCase;
 
 import com.google.common.collect.ImmutableMap;
-import contest.db.ContestApplication;
+import fxpro.ch05.TableVisualizationExampleApp;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -22,6 +27,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.SelectionModel;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -69,6 +75,7 @@ public final class FXMLCreator {
     private static final List<Class<?>> METHOD_CLASSES = Arrays.asList(EventHandler.class);
     private static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
         Long.class, Integer.class, Boolean.class, Enum.class, KeyCombination.class);
+    private static final List<Class<?>> NECESSARY_REFERENCE = Arrays.asList(Control.class);
     private static final List<Class<?>> REFERENCE_CLASSES = Arrays.asList(ToggleGroup.class);
     private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class);
     private static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class, Font.class, Point3D.class,
@@ -131,7 +138,10 @@ public final class FXMLCreator {
                         processField(createElement, s, fieldValue, node2);
                     }
                 });
-                referencedNodes.computeIfAbsent(node2, this::newName);
+                if (hasClass(NECESSARY_REFERENCE, node2.getClass())) {
+                    referencedNodes.computeIfAbsent(node2, this::newName);
+                }
+
                 if (referencedNodes.containsKey(node2)) {
                     createElement.setAttribute(FX_ID, referencedNodes.get(node2));
                 }
@@ -161,17 +171,16 @@ public final class FXMLCreator {
 
             if (defineController) {
                 String name = file.getName().replaceAll("\\.fxml", "") + "Controller";
-                File outFile = ResourceFXUtils.getOutFile(name+".java");
+                File outFile = ResourceFXUtils.getOutFile(name + ".java");
                 List<String> lines = new ArrayList<>();
                 lines.add("package " + packageName + ";");
                 lines.add("import javafx.fxml.*;");
                 lines.addAll(packages.stream().map(e -> "import " + e + ".*;").collect(toList()));
                 lines.add("public class " + name + "{");
                 lines.addAll(referencedNodes.entrySet().stream()
-						.map(e -> String.format("\t@FXML%n\t%s %s;", e.getKey().getClass().getSimpleName(),
-								e.getValue()))
+                    .map(e -> String.format("\t@FXML%n\t%s %s;", e.getKey().getClass().getSimpleName(), e.getValue()))
                     .collect(toList()));
-                lines.addAll(referencedMethod.values().stream().map(e -> String.format("\tpublic void %s(){}", e))
+                lines.addAll(referencedMethod.values().stream().map(e -> String.format("\tpublic void %s{%n\t}", e))
                     .collect(toList()));
                 lines.add("}");
                 Files.write(outFile.toPath(), lines, StandardCharsets.UTF_8);
@@ -186,8 +195,41 @@ public final class FXMLCreator {
         }
     }
 
-    private void createReferenceNode(Element element, String fieldName, Object fieldValue) {
-        int count = referencedNodes.size();
+    private String computeMethod(Object parent, String fieldName, Object fieldValue, String nodeId) {
+        String signature = "()";
+        Class<?> class1 = fieldValue.getClass().getInterfaces()[0];
+        TypeVariable<?>[] typeParameters = class1.getTypeParameters();
+        if (typeParameters.length > 0) {
+            TypeVariable<?> typeVariable = typeParameters[0];
+            Type[] bounds = typeVariable.getBounds();
+            for (Type type : bounds) {
+                String typeName = type.getTypeName();
+                String[] split2 = typeName.split("\\.");
+                String packageName = Stream.of(split2).limit(split2.length - 1).collect(Collectors.joining("."));
+                packages.add(packageName);
+                signature = "(" + split2[split2.length - 1] + " e)";
+            }
+        }
+        Method setter = ClassReflectionUtils.getSetter(parent.getClass(), fieldName);
+        Parameter[] parameterTypes = setter.getParameters();
+        for (Parameter class2 : parameterTypes) {
+            String[] methodSignature = class2.toString().split("[^\\w\\.]");
+            String eventType = methodSignature[methodSignature.length - 3];
+            String[] split2 = eventType.split("\\.");
+            String packageName = Stream.of(split2).limit(split2.length - 1).collect(Collectors.joining("."));
+            if (!packageName.isEmpty()) {
+                packages.add(packageName);
+                signature = "(" + split2[split2.length - 1] + " e)";
+            } else {
+                LOG.info("Field not set parent={} field={} value={} id={}", parent, fieldName, fieldValue, nodeId);
+            }
+        }
+        Character.isLowerCase(nodeId.charAt(0));
+        String nodeId2 = changeCase(nodeId);
+        return fieldName + nodeId2 + signature;
+    }
+
+    private void processReferenceNode(Element element, String fieldName, Object fieldValue) {
         String simpleName = fieldValue.getClass().getSimpleName();
         if (!referencedNodes.containsKey(fieldValue)) {
             Map<String, Object> differences = differences(fieldValue);
@@ -201,16 +243,22 @@ public final class FXMLCreator {
                     createElement.setAttribute(k, mapProperty2 + "");
                 }
             });
-            referencedNodes.put(fieldValue, simpleName + count);
-            createElement.setAttribute(FX_ID, simpleName + count);
+            String name = referencedNodes.computeIfAbsent(fieldValue, this::newName);
+            createElement.setAttribute(FX_ID, name);
         }
 
         element.setAttribute(fieldName, "$" + referencedNodes.get(fieldValue));
     }
 
     private String newName(Object f) {
+        if (ClassReflectionUtils.hasField(f.getClass(), "id")) {
+            Object fieldValue = ClassReflectionUtils.getFieldValue(f, "id");
+            if (fieldValue != null) {
+                return Objects.toString(fieldValue);
+            }
+        }
         String simpleName = f.getClass().getSimpleName();
-        String simple = simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
+        String simple = changeCase(simpleName);
         return simple + referencedNodes.size();
     }
 
@@ -245,15 +293,15 @@ public final class FXMLCreator {
             return;
         }
         if (hasClass(REFERENCE_CLASSES, fieldValue.getClass())) {
-            createReferenceNode(element, fieldName, fieldValue);
+            processReferenceNode(element, fieldName, fieldValue);
             return;
         }
-		if (defineController && METHOD_CLASSES.stream().anyMatch(c -> c.isInstance(fieldValue))) {
-            String computeIfAbsent = referencedNodes.computeIfAbsent(parent, this::newName);
+        if (defineController && METHOD_CLASSES.stream().anyMatch(c -> c.isInstance(fieldValue))) {
+            String nodeName = referencedNodes.computeIfAbsent(parent, this::newName);
             String nameMethod = referencedMethod.computeIfAbsent(fieldValue.getClass().getName(),
-                e -> fieldName + computeIfAbsent);
-            element.setAttribute(fieldName, "#" + nameMethod);
-			return;
+                e -> computeMethod(parent, fieldName, fieldValue, nodeName));
+            element.setAttribute(fieldName, "#" + nameMethod.replaceAll("\\(.+\\)", ""));
+            return;
         }
         if (!hasClass(ATTRIBUTE_CLASSES, fieldValue.getClass())) {
             Class<? extends Object> class1 = fieldValue.getClass();
@@ -413,7 +461,7 @@ public final class FXMLCreator {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> asList = Arrays.asList(ContestApplication.class);
+        List<Class<? extends Application>> asList = Arrays.asList(TableVisualizationExampleApp.class);
         testApplications(asList, false);
 //        for (Class<? extends Application> class1 : asList) {
 //            duplicate(class1.getSimpleName() + ".fxml");
@@ -436,7 +484,7 @@ public final class FXMLCreator {
         for (Class<? extends Application> class1 : asList) {
             List<Stage> stages = new ArrayList<>();
 
-			Platform.runLater(RunnableEx.make(() -> testSingleApp(class1, stages, close), error -> {
+            Platform.runLater(RunnableEx.make(() -> testSingleApp(class1, stages, close), error -> {
                 LOG.error("ERROR IN {} ", class1);
                 LOG.error("", error);
                 errorClasses.add(class1);
@@ -448,6 +496,7 @@ public final class FXMLCreator {
         }
         return errorClasses;
     }
+
 
     private static boolean containsSame(List<Object> allNode, Object fieldValue) {
         return allNode.stream().anyMatch(ob -> ob == fieldValue);

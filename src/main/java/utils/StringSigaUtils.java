@@ -24,6 +24,13 @@ public class StringSigaUtils extends StringUtils {
     private static final int TAMANHO_PAP = 9;
     private static final Logger LOGGER = HasLogging.log();
 
+    public static String changeCase(String simpleName) {
+        if (Character.isLowerCase(simpleName.charAt(0))) {
+            return simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);
+        }
+        return simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
+    }
+
     public static String codificar(String nome) {
         try {
             return URLEncoder.encode(nome, "UTF-8");
