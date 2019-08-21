@@ -106,7 +106,41 @@ public final class FXMLCreator {
     private FXMLCreator() {
     }
 
-    public void createFXMLFile(Parent node, File file) {
+    private String computeMethod(Object parent, String fieldName, Object fieldValue, String nodeId) {
+        String signature = "()";
+        Class<?> class1 = fieldValue.getClass().getInterfaces()[0];
+        TypeVariable<?>[] typeParameters = class1.getTypeParameters();
+        if (typeParameters.length > 0) {
+            TypeVariable<?> typeVariable = typeParameters[0];
+            Type[] bounds = typeVariable.getBounds();
+            for (Type type : bounds) {
+                String typeName = type.getTypeName();
+                String[] split2 = typeName.split("\\.");
+                String packageName = Stream.of(split2).limit(split2.length - 1).collect(Collectors.joining("."));
+                packages.add(packageName);
+                signature = "(" + split2[split2.length - 1] + " e)";
+            }
+        }
+        Method setter = ClassReflectionUtils.getSetter(parent.getClass(), fieldName);
+        Parameter[] parameterTypes = setter.getParameters();
+        for (Parameter class2 : parameterTypes) {
+            String[] methodSignature = class2.toString().split("[^\\w\\.]");
+            String eventType = methodSignature[methodSignature.length - 3];
+            String[] split2 = eventType.split("\\.");
+            String packageName = Stream.of(split2).limit(split2.length - 1).collect(Collectors.joining("."));
+            if (!packageName.isEmpty()) {
+                packages.add(packageName);
+                signature = "(" + split2[split2.length - 1] + " e)";
+            } else {
+                LOG.info("Field not set parent={} field={} value={} id={}", parent, fieldName, fieldValue, nodeId);
+            }
+        }
+        Character.isLowerCase(nodeId.charAt(0));
+        String nodeId2 = changeCase(nodeId);
+        return fieldName + nodeId2 + signature;
+    }
+
+    private void createFXMLFile(Parent node, File file) {
         String packageName = FXMLCreator.class.getPackage().getName();
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -115,44 +149,7 @@ public final class FXMLCreator {
             DocumentBuilder documentBuilder = factory.newDocumentBuilder();
             document = documentBuilder.newDocument();
             allNode.add(node);
-            for (int i = 0; i < allNode.size(); i++) {
-                Object node2 = allNode.get(i);
-                org.w3c.dom.Node parent = nodeMap.getOrDefault(node2, document);
-                String name = node2.getClass().getSimpleName().replaceAll("\\$", "_");
-                String name2 = node2.getClass().getPackage().getName();
-                if (node2.getClass().getEnclosingClass() != null) {
-                    name2 = node2.getClass().getEnclosingClass().getName();
-                }
-                packages.add(name2);
-                Element createElement = document.createElement(name);
-                parent.appendChild(createElement);
-
-                Map<String, Object> fields = differences(node2);
-                if (hasClass(ATTRIBUTE_CLASSES, node2.getClass())) {
-                    createElement.setAttribute(FX_VALUE, Objects.toString(node2, ""));
-                    fields.clear();
-                }
-
-                fields.forEach((s, fieldValue) -> {
-                    if (fieldValue != null) {
-                        processField(createElement, s, fieldValue, node2);
-                    }
-                });
-                if (hasClass(NECESSARY_REFERENCE, node2.getClass())) {
-                    referencedNodes.computeIfAbsent(node2, this::newName);
-                }
-
-                if (referencedNodes.containsKey(node2)) {
-                    createElement.setAttribute(FX_ID, referencedNodes.get(node2));
-                }
-                if (parent == document) {
-                    createElement.setAttribute("xmlns:fx", "http://javafx.com/fxml");
-                    if (defineController) {
-                        String replaceAll = file.getName().replaceAll("\\.fxml", "");
-                        createElement.setAttribute("fx:controller", packageName + "." + replaceAll + "Controller");
-                    }
-                }
-            }
+            processNodes(file, packageName);
 
             Node firstChild = document.getFirstChild();
             document.removeChild(firstChild);
@@ -193,61 +190,6 @@ public final class FXMLCreator {
         } catch (Exception e) {
             throw new RuntimeIOException("ERROR in file " + file.getName(), e);
         }
-    }
-
-    private String computeMethod(Object parent, String fieldName, Object fieldValue, String nodeId) {
-        String signature = "()";
-        Class<?> class1 = fieldValue.getClass().getInterfaces()[0];
-        TypeVariable<?>[] typeParameters = class1.getTypeParameters();
-        if (typeParameters.length > 0) {
-            TypeVariable<?> typeVariable = typeParameters[0];
-            Type[] bounds = typeVariable.getBounds();
-            for (Type type : bounds) {
-                String typeName = type.getTypeName();
-                String[] split2 = typeName.split("\\.");
-                String packageName = Stream.of(split2).limit(split2.length - 1).collect(Collectors.joining("."));
-                packages.add(packageName);
-                signature = "(" + split2[split2.length - 1] + " e)";
-            }
-        }
-        Method setter = ClassReflectionUtils.getSetter(parent.getClass(), fieldName);
-        Parameter[] parameterTypes = setter.getParameters();
-        for (Parameter class2 : parameterTypes) {
-            String[] methodSignature = class2.toString().split("[^\\w\\.]");
-            String eventType = methodSignature[methodSignature.length - 3];
-            String[] split2 = eventType.split("\\.");
-            String packageName = Stream.of(split2).limit(split2.length - 1).collect(Collectors.joining("."));
-            if (!packageName.isEmpty()) {
-                packages.add(packageName);
-                signature = "(" + split2[split2.length - 1] + " e)";
-            } else {
-                LOG.info("Field not set parent={} field={} value={} id={}", parent, fieldName, fieldValue, nodeId);
-            }
-        }
-        Character.isLowerCase(nodeId.charAt(0));
-        String nodeId2 = changeCase(nodeId);
-        return fieldName + nodeId2 + signature;
-    }
-
-    private void processReferenceNode(Element element, String fieldName, Object fieldValue) {
-        String simpleName = fieldValue.getClass().getSimpleName();
-        if (!referencedNodes.containsKey(fieldValue)) {
-            Map<String, Object> differences = differences(fieldValue);
-            Element defineElement = document.createElement(FX_DEFINE);
-            element.getParentNode().appendChild(defineElement);
-            Element createElement = document.createElement(simpleName);
-            defineElement.appendChild(createElement);
-            differences.forEach((k, v) -> {
-                if (hasClass(ATTRIBUTE_CLASSES, v.getClass())) {
-                    Object mapProperty2 = mapProperty(v);
-                    createElement.setAttribute(k, mapProperty2 + "");
-                }
-            });
-            String name = referencedNodes.computeIfAbsent(fieldValue, this::newName);
-            createElement.setAttribute(FX_ID, name);
-        }
-
-        element.setAttribute(fieldName, "$" + referencedNodes.get(fieldValue));
     }
 
     private String newName(Object f) {
@@ -402,11 +344,121 @@ public final class FXMLCreator {
         }
     }
 
+    private void processNodes(File file, String packageName) {
+        for (int i = 0; i < allNode.size(); i++) {
+            Object node2 = allNode.get(i);
+            org.w3c.dom.Node parent = nodeMap.getOrDefault(node2, document);
+            String name = node2.getClass().getSimpleName().replaceAll("\\$", "_");
+            String name2 = node2.getClass().getPackage().getName();
+            if (node2.getClass().getEnclosingClass() != null) {
+                name2 = node2.getClass().getEnclosingClass().getName();
+            }
+            packages.add(name2);
+            Element createElement = document.createElement(name);
+            parent.appendChild(createElement);
+
+            Map<String, Object> fields = differences(node2);
+            if (hasClass(ATTRIBUTE_CLASSES, node2.getClass())) {
+                createElement.setAttribute(FX_VALUE, Objects.toString(node2, ""));
+                fields.clear();
+            }
+
+            fields.forEach((s, fieldValue) -> {
+                if (fieldValue != null) {
+                    processField(createElement, s, fieldValue, node2);
+                }
+            });
+            if (hasClass(NECESSARY_REFERENCE, node2.getClass())) {
+                referencedNodes.computeIfAbsent(node2, this::newName);
+            }
+
+            if (referencedNodes.containsKey(node2)) {
+                createElement.setAttribute(FX_ID, referencedNodes.get(node2));
+            }
+            if (parent == document) {
+                createElement.setAttribute("xmlns:fx", "http://javafx.com/fxml");
+                if (defineController) {
+                    String replaceAll = file.getName().replaceAll("\\.fxml", "");
+                    createElement.setAttribute("fx:controller", packageName + "." + replaceAll + "Controller");
+                }
+            }
+        }
+    }
+
+    private void processReferenceNode(Element element, String fieldName, Object fieldValue) {
+        String simpleName = fieldValue.getClass().getSimpleName();
+        if (!referencedNodes.containsKey(fieldValue)) {
+            Map<String, Object> differences = differences(fieldValue);
+            Element defineElement = document.createElement(FX_DEFINE);
+            element.getParentNode().appendChild(defineElement);
+            Element createElement = document.createElement(simpleName);
+            defineElement.appendChild(createElement);
+            differences.forEach((k, v) -> {
+                if (hasClass(ATTRIBUTE_CLASSES, v.getClass())) {
+                    Object mapProperty2 = mapProperty(v);
+                    createElement.setAttribute(k, mapProperty2 + "");
+                }
+            });
+            String name = referencedNodes.computeIfAbsent(fieldValue, this::newName);
+            createElement.setAttribute(FX_ID, name);
+        }
+
+        element.setAttribute(fieldName, "$" + referencedNodes.get(fieldValue));
+    }
+
     public static void createXMLFile(Parent node, File file) {
         new FXMLCreator().createFXMLFile(node, file);
     }
 
-    public static Map<String, Object> differences(Object ob1) {
+    public static void duplicate(String out) {
+        if (Platform.isFxApplicationThread()) {
+            duplicateStage(ResourceFXUtils.getOutFile(out));
+        } else {
+            ResourceFXUtils.initializeFX();
+            Platform.runLater(() -> duplicateStage(ResourceFXUtils.getOutFile(out)));
+        }
+    }
+
+    public static void duplicateStage(File file) {
+        duplicateStage(file, file.getName());
+    }
+
+    public static void main(String[] argv) {
+        List<Class<? extends Application>> asList = Arrays.asList(TableVisualizationExampleApp.class);
+        testApplications(asList, false);
+//        for (Class<? extends Application> class1 : asList) {
+//            duplicate(class1.getSimpleName() + ".fxml");
+//        }
+    }
+
+    public static List<Class<?>> testApplications(List<Class<? extends Application>> asList) {
+        return testApplications(asList, true);
+    }
+
+    public static List<Class<?>> testApplications(List<Class<? extends Application>> asList, boolean close) {
+        ResourceFXUtils.initializeFX();
+        List<Class<?>> errorClasses = new ArrayList<>();
+        for (Class<? extends Application> class1 : asList) {
+            List<Stage> stages = new ArrayList<>();
+
+            Platform.runLater(RunnableEx.make(() -> testSingleApp(class1, stages, close), error -> {
+                LOG.error("ERROR IN {} ", class1);
+                LOG.error("", error);
+                errorClasses.add(class1);
+                if (close) {
+                    stages.forEach(Stage::close);
+                }
+            }));
+
+        }
+        return errorClasses;
+    }
+
+    private static boolean containsSame(List<Object> allNode, Object fieldValue) {
+        return allNode.stream().anyMatch(ob -> ob == fieldValue);
+    }
+
+    private static Map<String, Object> differences(Object ob1) {
         Map<String, Object> diffFields = new LinkedHashMap<>();
         Class<?> cl = ob1.getClass();
         try {
@@ -433,20 +485,7 @@ public final class FXMLCreator {
         return diffFields;
     }
 
-    public static void duplicate(String out) {
-        if (Platform.isFxApplicationThread()) {
-            duplicateStage(ResourceFXUtils.getOutFile(out));
-        } else {
-            ResourceFXUtils.initializeFX();
-            Platform.runLater(() -> duplicateStage(ResourceFXUtils.getOutFile(out)));
-        }
-    }
-
-    public static void duplicateStage(File file) {
-        duplicateStage(file, file.getName());
-    }
-
-    public static Stage duplicateStage(File file, String title) {
+    private static Stage duplicateStage(File file, String title) {
         Stage primaryStage = new Stage();
         try {
             Parent content = FXMLLoader.load(file.toURI().toURL());
@@ -458,48 +497,6 @@ public final class FXMLCreator {
             throw new RuntimeIOException("ERROR in file " + file, e);
         }
         return primaryStage;
-    }
-
-    public static void main(String[] argv) {
-        List<Class<? extends Application>> asList = Arrays.asList(TableVisualizationExampleApp.class);
-        testApplications(asList, false);
-//        for (Class<? extends Application> class1 : asList) {
-//            duplicate(class1.getSimpleName() + ".fxml");
-//        }
-    }
-
-    @SafeVarargs
-    public static List<Class<?>> testApplications(Class<? extends Application>... asList) {
-        return testApplications(Arrays.asList(asList));
-    }
-
-    public static List<Class<?>> testApplications(List<Class<? extends Application>> asList) {
-        return testApplications(asList, true);
-
-    }
-
-    public static List<Class<?>> testApplications(List<Class<? extends Application>> asList, boolean close) {
-        ResourceFXUtils.initializeFX();
-        List<Class<?>> errorClasses = new ArrayList<>();
-        for (Class<? extends Application> class1 : asList) {
-            List<Stage> stages = new ArrayList<>();
-
-            Platform.runLater(RunnableEx.make(() -> testSingleApp(class1, stages, close), error -> {
-                LOG.error("ERROR IN {} ", class1);
-                LOG.error("", error);
-                errorClasses.add(class1);
-                if (close) {
-                    stages.forEach(Stage::close);
-                }
-            }));
-
-        }
-        return errorClasses;
-    }
-
-
-    private static boolean containsSame(List<Object> allNode, Object fieldValue) {
-        return allNode.stream().anyMatch(ob -> ob == fieldValue);
     }
 
     private static Object getInstance(Class<?> cl) {
@@ -553,5 +550,4 @@ public final class FXMLCreator {
         }
         LOG.info("{} successfull", appClass.getSimpleName());
     }
-
 }
