@@ -45,7 +45,12 @@ public final class ClassReflectionUtils {
             : ((Parent) e).getChildrenUnmodifiable();
         TreeElement<Node> original = TreeElement.buildTree(root, f);
         TreeElement<Node> generated = TreeElement.buildTree(root2, f);
-        return Objects.equals(original, generated);
+        boolean equals = Objects.equals(original, generated);
+        if (!equals) {
+            original.getMissingItem(generated);
+        }
+
+        return equals;
     }
 
     public static String displayStyleClass(Node node) {
@@ -105,14 +110,13 @@ public final class ClassReflectionUtils {
         return getNamedArgsMap(targetClass).keySet().stream().collect(Collectors.toList());
     }
 
-    public static Method getSetter(Class<?> cl,String f) {
-        return ClassReflectionUtils.getAllMethodsRecursive(cl)
-        .stream().filter(m -> m.getParameterCount() == 1).filter(m -> getFieldNameCase(m).equals(f))
-        .findFirst().orElse(null);
+    public static Method getSetter(Class<?> cl, String f) {
+        return ClassReflectionUtils.getAllMethodsRecursive(cl).stream().filter(m -> m.getParameterCount() == 1)
+            .filter(m -> getFieldNameCase(m).equals(f)).findFirst().orElse(null);
     }
 
     public static boolean hasClass(Collection<Class<?>> newTagClasses, Class<? extends Object> class1) {
-        return Modifier.isPublic(class1.getModifiers()) && class1.getEnclosingClass() == null
+        return Modifier.isPublic(class1.getModifiers())
             && newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
     }
 
@@ -138,6 +142,11 @@ public final class ClassReflectionUtils {
             LOG.info("", e);
             return null;
         }
+    }
+
+    public static boolean isClassPublic(Class<? extends Object> class1) {
+        return Modifier.isPublic(class1.getModifiers()) && Stream.of(class1.getConstructors())
+            .anyMatch(e -> e.getParameterCount() == 0 && Modifier.isPublic(e.getModifiers()));
     }
 
     public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
@@ -344,7 +353,9 @@ public final class ClassReflectionUtils {
         Parameter[] parameters = m.getParameters();
         Class<?> type = parameters[0].getType();
         if (type == Object.class) {
-            return m.getDeclaringClass().getTypeParameters().length == 0;
+            Type type2 = parameters[0].getParameterizedType();
+            String typeName = type2.getTypeName();
+            return typeName.matches("[TXY]");
         }
         return typesFit(fieldValue, type);
     }

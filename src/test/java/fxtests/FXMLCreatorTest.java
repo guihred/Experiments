@@ -27,29 +27,13 @@ public final class FXMLCreatorTest {
 	}
 
 	@Test
-	public void testErrorClasses() {
-
-		List<Class<? extends Application>> classes = Arrays.asList(election.HibernateCrawler.class,
-				fxsamples.bounds.BoundsPlayground.class);
-		testApplications(classes);
-	}
-
-	@Test
 	public void testErrorClasses2() {
 
-		List<Class<? extends Application>> classes = Arrays.asList(election.HibernateCrawler.class,
-				ethical.hacker.EthicalHackApp.class, fxpro.ch01.AudioConfigLauncher.class, fxpro.ch04.ReversiMain.class,
-				fxpro.ch05.TableVisualizationExampleApp.class, fxpro.ch07.AreaChartExample.class,
-				fxpro.ch07.BarChartExample.class, fxpro.ch07.BubbleChartExample.class,
-				fxpro.ch07.LineChartExample.class, fxpro.ch07.PieChartExample.class,
-				fxpro.ch07.ScatterChartExample.class, fxpro.ch07.ScatterChartWithFillExample.class,
-				fxpro.ch08.BasicAudioPlayerWithControlLauncher.class, fxsamples.PlayingAudio.class,
-				fxsamples.bounds.BoundsPlayground.class, fxsamples.person.PersonTableController.class,
-				fxsamples.person.WorkingWithTableView.class, gaming.ex07.MazeLauncher.class, gaming.ex21.CatanApp.class,
-				graphs.app.GraphModelLauncher.class, japstudy.JapaneseLessonApplication.class,
-				ml.HeatGraphExample.class, ml.HistogramExample.class, ml.MultilineExample.class, ml.PointsExample.class,
-				ml.RegressionChartExample.class, ml.TimelineExample.class, paintexp.PaintMain.class,
-				pdfreader.PdfReader.class, schema.sngpc.SngpcViewer.class);
+        List<Class<? extends Application>> classes = Arrays.asList(fxpro.ch07.AreaChartExample.class,
+            fxpro.ch07.BarChartExample.class, fxpro.ch07.BubbleChartExample.class, fxpro.ch07.LineChartExample.class,
+            fxpro.ch07.ScatterChartExample.class, fxpro.ch07.ScatterChartWithFillExample.class,
+            fxsamples.bounds.BoundsPlayground.class, ml.RegressionChartExample.class,
+            paintexp.svgcreator.SVGCreator.class);
 		testApplications(classes);
 	}
 

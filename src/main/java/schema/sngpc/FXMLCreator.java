@@ -6,8 +6,9 @@ import static utils.ClassReflectionUtils.*;
 import static utils.StringSigaUtils.changeCase;
 
 import com.google.common.collect.ImmutableMap;
-import fxpro.ch05.TableVisualizationExampleApp;
+import fxpro.ch07.AreaChartExample;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
@@ -66,7 +67,6 @@ public final class FXMLCreator {
     private static final String FX_ID = "fx:id";
     private static final String FX_VALUE = "fx:value";
     private static final String FX_DEFINE = "fx:define";
-    private static final boolean defineController = true;
 
     private static final Logger LOG = HasLogging.log();
     private static final List<String> IGNORE = Arrays.asList("needsLayout", "layoutBounds", "baselineOffset",
@@ -141,6 +141,27 @@ public final class FXMLCreator {
         return fieldName + nodeId2 + signature;
     }
 
+    private void createController(File file, String packageName) throws IOException {
+        String name = file.getName().replaceAll("\\.fxml", "") + "Controller";
+        File outFile = ResourceFXUtils.getOutFile(name + ".java");
+        List<String> lines = new ArrayList<>();
+        lines.add("package " + packageName + ";");
+        lines.add("import javafx.fxml.*;");
+        lines.addAll(packages.stream().map(e -> "import " + e + ".*;").collect(toList()));
+        lines.add("public class " + name + "{");
+        lines.addAll(referencedNodes.entrySet().stream()
+            .map(e -> String.format("\t@FXML%n\t%s %s;", e.getKey().getClass().getSimpleName(), e.getValue()))
+            .collect(toList()));
+        lines.addAll(
+            referencedMethod.values().stream().map(e -> String.format("\tpublic void %s{%n\t}", e)).collect(toList()));
+        lines.add("}");
+        Files.write(outFile.toPath(), lines, StandardCharsets.UTF_8);
+        List<String> compileClass = ControllerCompiler.compileClass(outFile);
+        if (!compileClass.contains("Classe Adicionada com sucesso")) {
+            LOG.info("{}", compileClass);
+        }
+    }
+
     private void createFXMLFile(Parent node, File file) {
         String packageName = FXMLCreator.class.getPackage().getName();
         try {
@@ -167,26 +188,7 @@ public final class FXMLCreator {
             StreamResult streamResult = new StreamResult(file);
             transformer.transform(domSource, streamResult);
 
-            if (defineController) {
-                String name = file.getName().replaceAll("\\.fxml", "") + "Controller";
-                File outFile = ResourceFXUtils.getOutFile(name + ".java");
-                List<String> lines = new ArrayList<>();
-                lines.add("package " + packageName + ";");
-                lines.add("import javafx.fxml.*;");
-                lines.addAll(packages.stream().map(e -> "import " + e + ".*;").collect(toList()));
-                lines.add("public class " + name + "{");
-                lines.addAll(referencedNodes.entrySet().stream()
-                    .map(e -> String.format("\t@FXML%n\t%s %s;", e.getKey().getClass().getSimpleName(), e.getValue()))
-                    .collect(toList()));
-                lines.addAll(referencedMethod.values().stream().map(e -> String.format("\tpublic void %s{%n\t}", e))
-                    .collect(toList()));
-                lines.add("}");
-                Files.write(outFile.toPath(), lines, StandardCharsets.UTF_8);
-                List<String> compileClass = ControllerCompiler.compileClass(outFile);
-                if (!compileClass.contains("Classe Adicionada com sucesso")) {
-                    LOG.info("{}", compileClass);
-                }
-            }
+            createController(file, packageName);
 
         } catch (Exception e) {
             throw new RuntimeIOException("ERROR in file " + file.getName(), e);
@@ -197,11 +199,11 @@ public final class FXMLCreator {
         if (ClassReflectionUtils.hasField(f.getClass(), "id")) {
             Object fieldValue = ClassReflectionUtils.getFieldValue(f, "id");
             if (fieldValue != null) {
-				String string = Objects.toString(fieldValue);
-				if (StringUtils.isNumeric(string)) {
-					return changeCase(f.getClass().getSimpleName()) + string;
-				}
-				return string;
+                String string = Objects.toString(fieldValue);
+                if (StringUtils.isNumeric(string)) {
+                    return changeCase(f.getClass().getSimpleName()) + string;
+                }
+                return string;
             }
         }
         String simpleName = f.getClass().getSimpleName();
@@ -236,18 +238,21 @@ public final class FXMLCreator {
             return;
         }
         if (fieldValue instanceof Map) {
-            processMap(element, fieldValue);
+            processMap(element, fieldValue, fieldName);
             return;
         }
         if (hasClass(REFERENCE_CLASSES, fieldValue.getClass())) {
             processReferenceNode(element, fieldName, fieldValue);
             return;
         }
-        if (defineController && METHOD_CLASSES.stream().anyMatch(c -> c.isInstance(fieldValue))) {
+        if (METHOD_CLASSES.stream().anyMatch(c -> c.isInstance(fieldValue))) {
             String nodeName = referencedNodes.computeIfAbsent(parent, this::newName);
             String nameMethod = referencedMethod.computeIfAbsent(fieldValue.getClass().getName(),
                 e -> computeMethod(parent, fieldName, fieldValue, nodeName));
             element.setAttribute(fieldName, "#" + nameMethod.replaceAll("\\(.+\\)", ""));
+            return;
+        }
+        if (!hasField(parent.getClass(), fieldName)) {
             return;
         }
         if (!hasClass(ATTRIBUTE_CLASSES, fieldValue.getClass())) {
@@ -255,9 +260,7 @@ public final class FXMLCreator {
             List<Class<?>> allClasses = allClasses(class1);
             LOG.info(" {} not in ATTRIBUTE_CLASSES", allClasses);
         }
-        if (hasField(parent.getClass(), fieldName)) {
-            LOG.info("{} does have {}", parent.getClass(), fieldName);
-        }
+        LOG.info("{} does have {}", parent.getClass(), fieldName);
 
     }
 
@@ -289,11 +292,32 @@ public final class FXMLCreator {
             });
             return;
         }
-        if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))
-            && list.stream().anyMatch(o -> !containsSame(allNode, o))) {
+        if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
+            if (list.stream().anyMatch(o -> !containsSame(allNode, o))) {
+                Element createElement2 = document.createElement(fieldName);
+                element.appendChild(createElement2);
+                if (hasField(parent.getClass(), fieldName) && isSetterMatches(fieldName, list, parent)) {
+                    Element createElement = document.createElement("FXCollections");
+                    packages.add("javafx.collections");
+                    createElement2.appendChild(createElement);
+                    createElement.setAttribute(FX_FACTORY, "observableArrayList");
+                    createElement2 = createElement;
+                }
+                for (Object object : list) {
+                    if (object != null && !containsSame(allNode, object)) {
+                        nodeMap.put(object, createElement2);
+                        allNode.add(object);
+                    }
+                }
+            }
+            return;
+        }
+
+        if (list.stream().filter(Objects::nonNull).allMatch(o -> isClassPublic(o.getClass()))
+            && hasField(parent.getClass(), fieldName)) {
             Element createElement2 = document.createElement(fieldName);
             element.appendChild(createElement2);
-            if (hasField(parent.getClass(), fieldName)) {
+            if (isSetterMatches(fieldName, list, parent)) {
                 Element createElement = document.createElement("FXCollections");
                 packages.add("javafx.collections");
                 createElement2.appendChild(createElement);
@@ -301,17 +325,48 @@ public final class FXMLCreator {
                 createElement2 = createElement;
             }
             for (Object object : list) {
-                if (object != null && !containsSame(allNode, object)) {
+                if (object != null) {
                     nodeMap.put(object, createElement2);
                     allNode.add(object);
                 }
             }
             return;
         }
+
         String classes = list.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("");
         Class<? extends Object> parentClass = parent.getClass();
         LOG.info("attribute {} type {} of {} not set", fieldName, classes, parentClass);
         LOG.info("value {}", list);
+    }
+
+    private void processMap(Element element, Object fieldValue, String fieldName) {
+        Map<?, ?> properties = (Map<?, ?>) fieldValue;
+        if (isClassPublic(fieldValue.getClass())) {
+            Element createElement2 = document.createElement(fieldName);
+            element.appendChild(createElement2);
+            Class<? extends Object> class1 = fieldValue.getClass();
+            packages.add(class1.getPackage().getName());
+            Element mapElement = document.createElement(class1.getSimpleName());
+            createElement2.appendChild(mapElement);
+            properties.forEach((k, v) -> {
+                String string = Objects.toString(k).replaceAll("([#])", "");
+                String key = PROPERTY_REMAP.getOrDefault(string, string);
+                String value = Objects.toString(v, "");
+                RunnableEx.make(() -> mapElement.setAttribute(key, value),
+                    e -> LOG.error("error setting attribute {}={}", k, v));
+
+            });
+        } else {
+            properties.forEach((k, v) -> {
+                String string = Objects.toString(k);
+                if (PROPERTY_REMAP.containsKey(string)) {
+                    String key = PROPERTY_REMAP.getOrDefault(string, string);
+                    String value = Objects.toString(v);
+                    RunnableEx.make(() -> element.setAttribute(key, value),
+                        e -> LOG.error("error setting attribute {}={}", k, v)).run();
+                }
+            });
+        }
     }
 
     private void processNamedArgs(Element element, String fieldName, Object fieldValue, Object parent) {
@@ -352,10 +407,10 @@ public final class FXMLCreator {
         for (int i = 0; i < allNode.size(); i++) {
             Object node2 = allNode.get(i);
             org.w3c.dom.Node parent = nodeMap.getOrDefault(node2, document);
-            String name = node2.getClass().getSimpleName().replaceAll("\\$", "_");
+            String name = node2.getClass().getSimpleName().replaceAll("\\$", ".");
             String name2 = node2.getClass().getPackage().getName();
             if (node2.getClass().getEnclosingClass() != null) {
-                name2 = node2.getClass().getEnclosingClass().getName();
+                name = node2.getClass().getEnclosingClass().getSimpleName() + "." + node2.getClass().getSimpleName();
             }
             packages.add(name2);
             Element createElement = document.createElement(name);
@@ -363,7 +418,10 @@ public final class FXMLCreator {
 
             Map<String, Object> fields = differences(node2);
             if (hasClass(ATTRIBUTE_CLASSES, node2.getClass())) {
-                createElement.setAttribute(FX_VALUE, Objects.toString(node2, ""));
+
+                String nodeString = nodeValue(node2);
+
+                createElement.setAttribute(FX_VALUE, nodeString);
                 fields.clear();
             }
 
@@ -381,10 +439,8 @@ public final class FXMLCreator {
             }
             if (parent == document) {
                 createElement.setAttribute("xmlns:fx", "http://javafx.com/fxml");
-                if (defineController) {
-                    String replaceAll = file.getName().replaceAll("\\.fxml", "");
-                    createElement.setAttribute("fx:controller", packageName + "." + replaceAll + "Controller");
-                }
+                String replaceAll = file.getName().replaceAll("\\.fxml", "");
+                createElement.setAttribute("fx:controller", packageName + "." + replaceAll + "Controller");
             }
         }
     }
@@ -428,8 +484,9 @@ public final class FXMLCreator {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> asList = Arrays.asList(TableVisualizationExampleApp.class);
-        testApplications(asList, false);
+        List<Class<? extends Application>> classes = Arrays.asList(AreaChartExample.class);
+
+        testApplications(classes, false);
 //        for (Class<? extends Application> class1 : asList) {
 //            duplicate(class1.getSimpleName() + ".fxml");
 //        }
@@ -511,18 +568,12 @@ public final class FXMLCreator {
         }
     }
 
-    private static void processMap(Element element, Object fieldValue) {
-        Map<?, ?> properties = (Map<?, ?>) fieldValue;
-        properties.forEach((k, v) -> {
-            String string = Objects.toString(k);
-            if (PROPERTY_REMAP.containsKey(string)) {
-                String key = PROPERTY_REMAP.get(string);
-                String value = Objects.toString(v);
-                element.setAttribute(key, value);
-            } else {
-                LOG.info("property {} value {} NOT IN PROPERTY_REMAP", k, v);
-            }
-        });
+    private static String nodeValue(Object node2) {
+        String nodeString = Objects.toString(node2, "");
+        if (node2.getClass().isEnum()) {
+            return ((Enum<?>) node2).name();
+        }
+        return nodeString;
     }
 
     private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close)
@@ -546,9 +597,7 @@ public final class FXMLCreator {
             stages.forEach(Stage::close);
         }
         if (!compareTree(root, duplicateStage.getScene().getRoot())) {
-			String format = String.format("%s has different tree", appClass.getSimpleName());
-			LOG.info(format);
-			throw new RuntimeIOException(format);
+            LOG.info(String.format("%s has different tree", appClass.getSimpleName()));
         }
         LOG.info("{} successfull", appClass.getSimpleName());
     }

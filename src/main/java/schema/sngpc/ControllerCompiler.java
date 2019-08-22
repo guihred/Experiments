@@ -30,10 +30,17 @@ public class ControllerCompiler {
 		String property = setJavaHomeProperty();
 		final List<String> diagnosticMsg = new ArrayList<>();
 		String className = customRwa.getName().replaceAll(".java", "");
+        Class<ControllerCompiler> class1 = ControllerCompiler.class;
+        String packageName = class1.getPackage().getName();
+        String fullClassName = packageName + "." + className;
 		try {
-			Class<ControllerCompiler> class1 = ControllerCompiler.class;
-			String packageName = class1.getPackage().getName();
-			final String source = Files.toString(customRwa, StandardCharsets.UTF_8);
+            if (isClassExistent(fullClassName)) {
+                diagnosticMsg.add("Classe já adicionada");
+                System.setProperty(JAVA_HOME, property);
+                return diagnosticMsg;
+            }
+
+            final String source = Files.toString(customRwa, StandardCharsets.UTF_8);
 
 			final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -78,7 +85,6 @@ public class ControllerCompiler {
 			final Field f = Unsafe.class.getDeclaredField("theUnsafe");
 			f.setAccessible(true);
 			final Unsafe unsafe = (Unsafe) f.get(null);
-			String fullClassName = packageName + "." + className;
 			Class<?> aClass = unsafe.defineClass(fullClassName, bytes, 0, bytes.length,
 					ClassLoader.getSystemClassLoader(),
 					class1.getProtectionDomain());
@@ -98,13 +104,23 @@ public class ControllerCompiler {
 		return diagnosticMsg;
 	}
 
-	private static String setJavaHomeProperty() {
-		String property2 = System.getProperty(JAVA_HOME);
-		String property = new File(property2).getParent();
-		if (property.contains("jdk")) {
-			System.setProperty(JAVA_HOME, property);
-		}
-		return property2;
-	}
+	private static boolean isClassExistent(String fullClassName) {
+	    try {
+            Class.forName(fullClassName);
+            return true;
+        } catch (ClassNotFoundException e) {
+            LOG.trace("CLASS NOT FOUND", e);
+            return false;
+        }
+    }
+
+    private static String setJavaHomeProperty() {
+        String property2 = System.getProperty(JAVA_HOME);
+        String property = new File(property2).getParent();
+        if (property.contains("jdk")) {
+            System.setProperty(JAVA_HOME, property);
+        }
+        return property2;
+    }
 
 }

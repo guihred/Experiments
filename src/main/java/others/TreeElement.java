@@ -1,9 +1,9 @@
 package others;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 import utils.FunctionEx;
+import utils.HasLogging;
 
 public class TreeElement<T> {
 
@@ -41,13 +41,46 @@ public class TreeElement<T> {
         return Objects.equals(element.getClass(), other.element.getClass());
     }
 
+    public List<TreeElement<T>> getMissingItem(String left,TreeElement<T> otherElement) {
+        TreeElement<T> other = otherElement;
+        Collection<TreeElement<T>> children2 = other.children;
+        List<TreeElement<T>> collect = extracted(children, children2);
+        for (TreeElement<T> treeElement : collect) {
+            if (children2.stream().noneMatch(e -> e.hashCode() == treeElement.hashCode())) {
+                HasLogging.log(1).info("MISSING {}", left + treeElement);
+            }
+            Optional<TreeElement<T>> findFirst = children2.stream()
+                .filter(e -> e.element.getClass() == treeElement.element.getClass()).findFirst();
+            if (findFirst.isPresent()) {
+                treeElement.getMissingItem(left + "-", findFirst.get());
+            }
+        }
+        return collect;
+
+    }
+
+    public List<TreeElement<T>> getMissingItem(TreeElement<T> otherElement) {
+        return getMissingItem("",otherElement);
+    }
+
     @Override
     public int hashCode() {
-		return Objects.hash(children, element.getClass());
+        return Objects.hash(children, element.getClass());
+    }
+
+    @Override
+    public String toString() {
+        return element.getClass().getName();
+    }
+
+    private List<TreeElement<T>> extracted(Collection<TreeElement<T>> children1, Collection<TreeElement<T>> children2) {
+        return children1.stream()
+            .filter(e -> children2 == null || !children2.contains(e))
+            .sorted(Comparator.comparing(TreeElement<T>::hashCode))
+            .collect(Collectors.toList());
     }
 
     public static <E> TreeElement<E> buildTree(E first, FunctionEx<E, Collection<E>> func) {
         return new TreeElement<>(first, func);
     }
-
 }

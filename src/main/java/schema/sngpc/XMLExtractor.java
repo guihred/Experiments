@@ -1,8 +1,8 @@
 package schema.sngpc;
 
 import java.io.File;
+import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.scene.control.TreeItem;
@@ -24,6 +24,7 @@ public final class XMLExtractor {
 
     private XMLExtractor() {
     }
+
     public static void addValue(Node item, TreeItem<Map<String, String>> e) {
         try {
             NamedNodeMap attributes = item.getAttributes();
@@ -44,15 +45,12 @@ public final class XMLExtractor {
         }
     }
 
+    public static Map.Entry<String, String> newEntry(String key, String value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
+    }
+
     public static Map<String, String> newMap(String key, String value) {
-        Map<String, String> hashMap = new HashMap<String, String>() {
-            @Override
-            public String toString() {
-                return value;
-            }
-        };
-        hashMap.put(key, value);
-        return hashMap;
+        return new SimpleMap(key, value);
     }
 
     public static Text newText(Node item) {
