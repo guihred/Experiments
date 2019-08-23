@@ -20,13 +20,13 @@ public final class FXMLCreatorTest {
 
 	private static final Logger LOG = HasLogging.log();
 
-//    @Test
+    @Test
 	public void testAllClasses() {
 		List<Class<? extends Application>> classes = getClasses(Application.class);
 		testApplications(classes);
 	}
 
-    @Test
+//    @Test
 	public void testErrorClasses2() {
 
         List<Class<? extends Application>> classes = Arrays.asList(election.HibernateCrawler.class,

@@ -19,10 +19,13 @@ import javafx.scene.layout.Region;
  */
 public class TronSquare extends Region {
 
-    private final int i;
-    private final int j;
+    private int i;
+    private int j;
 
     private final ObjectProperty<TronState> state = new SimpleObjectProperty<>(TronState.NONE);
+
+    public TronSquare() {
+    }
 
     public TronSquare(@NamedArg("i") int i, @NamedArg("j") int j) {
         this.i = i;
@@ -58,6 +61,14 @@ public class TronSquare extends Region {
     @Override
     public int hashCode() {
         return getI() * MAP_SIZE + getJ();
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
+
+    public void setJ(int j) {
+        this.j = j;
     }
 
     public void setState(TronState value) {

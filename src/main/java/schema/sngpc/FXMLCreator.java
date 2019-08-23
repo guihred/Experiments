@@ -2,11 +2,14 @@ package schema.sngpc;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static others.TreeElement.compareTree;
+import static others.TreeElement.displayMissingElement;
 import static utils.ClassReflectionUtils.*;
 import static utils.StringSigaUtils.changeCase;
 
 import com.google.common.collect.ImmutableMap;
-import gaming.ex21.CatanApp;
+import gaming.ex01.SnakeLauncher;
+import gaming.ex04.TronLauncher;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -104,6 +107,8 @@ public final class FXMLCreator {
     private Map<String, String> referencedMethod = new LinkedHashMap<>();
     private Map<Object, String> referencedNodes = new IdentityHashMap<>();
 
+    private LinkedHashMap<Class<?>, List<String>> differencesMap = new LinkedHashMap<>();
+
     private FXMLCreator() {
     }
 
@@ -195,6 +200,30 @@ public final class FXMLCreator {
         }
     }
 
+    @SuppressWarnings("deprecation")
+    private Map<String, Object> differences(Object ob1) {
+        Map<String, Object> diffFields = new LinkedHashMap<>();
+        Class<?> cl = ob1.getClass();
+        if (ob1 instanceof Image) {
+            diffFields.put("url", ((Image) ob1).impl_getUrl());
+        }
+        try {
+            Object ob2 = getInstance(cl);
+            addDifferences(cl, diffFields, ob1, ob2);
+        } catch (Exception e) {
+            LOG.trace("", e);
+            List<String> fields = getNamedArgs(cl);
+            List<String> mappedDifferences = differencesMap.computeIfAbsent(cl,
+                c -> allNode.stream().filter(ob -> ob.getClass() == cl && ob != ob1)
+                    .flatMap(ob2 -> getDifferences(c, ob1, ob2).stream()).distinct().collect(Collectors.toList()));
+            fields.addAll(mappedDifferences);
+            Map<String, Object> collect = fields.stream().distinct().filter(m -> invoke(ob1, m) != null)
+                .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b));
+            diffFields.putAll(collect);
+        }
+        return diffFields;
+    }
+
     private String newName(Object f) {
         if (ClassReflectionUtils.hasField(f.getClass(), "id")) {
             Object fieldValue = ClassReflectionUtils.getFieldValue(f, "id");
@@ -249,8 +278,6 @@ public final class FXMLCreator {
             processMethod(element, fieldName, fieldValue, parent);
             return;
         }
-
-
         if (!hasField(parent.getClass(), fieldName)) {
             return;
         }
@@ -499,7 +526,7 @@ public final class FXMLCreator {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> classes = Arrays.asList(CatanApp.class);
+        List<Class<? extends Application>> classes = Arrays.asList(TronLauncher.class, SnakeLauncher.class);
 
         testApplications(classes, false);
 //        for (Class<? extends Application> class1 : asList) {
@@ -542,7 +569,7 @@ public final class FXMLCreator {
 
         List<Method> fields = getGetterMethodsRecursive(cl);
         if (ob1 instanceof Parent && ob2 instanceof Parent) {
-            if (ClassReflectionUtils.compareTree((Parent) ob1, (Parent) ob2)) {
+            if (compareTree((Parent) ob1, (Parent) ob2)) {
                 fields.removeIf(e -> getFieldNameCase(e).equals("children"));
             }
         }
@@ -551,7 +578,7 @@ public final class FXMLCreator {
             Object fieldValue2 = invoke(ob2, f);
             if (fieldValue != null && !Objects.equals(fieldValue, fieldValue2)) {
                 if (fieldValue instanceof Parent && fieldValue2 instanceof Parent) {
-                    if (ClassReflectionUtils.compareTree((Parent) fieldValue, (Parent) fieldValue2)) {
+                    if (compareTree((Parent) fieldValue, (Parent) fieldValue2)) {
                         continue;
                     }
                 }
@@ -566,30 +593,6 @@ public final class FXMLCreator {
         return allNode.stream().anyMatch(ob -> ob == fieldValue);
     }
 
-    @SuppressWarnings("deprecation")
-    private static Map<String, Object> differences(Object ob1) {
-        Map<String, Object> diffFields = new LinkedHashMap<>();
-        Class<?> cl = ob1.getClass();
-        if (ob1 instanceof Image) {
-            diffFields.put("url", ((Image) ob1).impl_getUrl());
-        }
-        try {
-            Object ob2 = getInstance(cl);
-            addDifferences(cl, diffFields, ob1, ob2);
-        } catch (Exception e) {
-            LOG.trace("", e);
-            List<String> fields = getNamedArgs(cl);
-            addDifferences(cl, diffFields, ob1, ClassReflectionUtils.getInstanceRecursive(cl));
-            fields.addAll(getGetterMethodsRecursive(cl, 1).stream().map(ClassReflectionUtils::getFieldNameCase)
-                .filter(t -> !fields.contains(t)).collect(toList()));
-            Map<String, Object> collect = fields.stream().filter(m -> invoke(ob1, m) != null)
-                .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b));
-            diffFields.putAll(collect);
-            LOG.info("{}", diffFields);
-        }
-        return diffFields;
-    }
-
     private static Stage duplicateStage(File file, String title) {
         Stage primaryStage = new Stage();
         try {
@@ -602,6 +605,34 @@ public final class FXMLCreator {
             throw new RuntimeIOException("ERROR in file " + file, e);
         }
         return primaryStage;
+    }
+
+    private static List<String> getDifferences(Class<?> cl, Object ob1, Object ob2) {
+        List<String> diffFields = new ArrayList<>();
+        if (ob2 == null) {
+            return diffFields;
+        }
+
+        List<Method> fields = getGetterMethodsRecursive(cl);
+        if (ob1 instanceof Parent && ob2 instanceof Parent) {
+            if (compareTree((Parent) ob1, (Parent) ob2)) {
+                fields.removeIf(e -> getFieldNameCase(e).equals("children"));
+            }
+        }
+        for (Method f : fields) {
+            Object fieldValue = invoke(ob1, f);
+            Object fieldValue2 = invoke(ob2, f);
+            if (fieldValue != null && !Objects.equals(fieldValue, fieldValue2)) {
+                if (fieldValue instanceof Parent && fieldValue2 instanceof Parent) {
+                    if (compareTree((Parent) fieldValue, (Parent) fieldValue2)) {
+                        continue;
+                    }
+                }
+                String fieldName = getFieldNameCase(f);
+                diffFields.add(fieldName);
+            }
+        }
+        return diffFields;
     }
 
     private static Object getInstance(Class<?> cl) {
@@ -621,8 +652,7 @@ public final class FXMLCreator {
     }
 
     private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close,
-        List<Class<? extends Application>> differentTree)
-        throws Exception {
+        List<Class<? extends Application>> differentTree) throws Exception {
         CrawlerTask.insertProxyConfig();
         LOG.info("INITIALIZING {}", appClass.getSimpleName());
         Application a = appClass.newInstance();
@@ -642,8 +672,10 @@ public final class FXMLCreator {
         if (close) {
             stages.forEach(Stage::close);
         }
-        if (!compareTree(root, duplicateStage.getScene().getRoot())) {
+        Parent root2 = duplicateStage.getScene().getRoot();
+        if (!compareTree(root, root2)) {
             LOG.info(String.format("%s has different tree", appClass.getSimpleName()));
+            displayMissingElement(root, root2);
             differentTree.add(appClass);
         }
         LOG.info("{} successfull", appClass.getSimpleName());

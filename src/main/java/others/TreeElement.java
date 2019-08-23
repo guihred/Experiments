@@ -2,6 +2,8 @@ package others;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import utils.FunctionEx;
 import utils.HasLogging;
 
@@ -83,4 +85,21 @@ public class TreeElement<T> {
     public static <E> TreeElement<E> buildTree(E first, FunctionEx<E, Collection<E>> func) {
         return new TreeElement<>(first, func);
     }
+
+    public static boolean compareTree(Parent root, Parent root2) {
+        FunctionEx<Node, Collection<Node>> f = e -> !(e instanceof Parent) ? null
+            : ((Parent) e).getChildrenUnmodifiable();
+        TreeElement<Node> original = TreeElement.buildTree(root, f);
+        TreeElement<Node> generated = TreeElement.buildTree(root2, f);
+        return Objects.equals(original, generated);
+    }
+
+    public static void displayMissingElement(Parent root, Parent root2) {
+        FunctionEx<Node, Collection<Node>> f = e -> !(e instanceof Parent) ? null
+            : ((Parent) e).getChildrenUnmodifiable();
+        TreeElement<Node> original = TreeElement.buildTree(root, f);
+        TreeElement<Node> generated = TreeElement.buildTree(root2, f);
+        original.getMissingItem(generated);
+    }
+
 }
