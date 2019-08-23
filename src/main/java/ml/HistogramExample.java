@@ -1,4 +1,6 @@
 package ml;
+
+import static simplebuilder.SimpleButtonBuilder.newButton;
 import static utils.CommonsFX.newSlider;
 
 import java.util.Map.Entry;
@@ -9,7 +11,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -19,7 +20,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.HistogramGraph;
-import simplebuilder.SimpleButtonBuilder;
 import utils.ImageFXUtils;
 
 public class HistogramExample extends Application {
@@ -56,9 +56,7 @@ public class HistogramExample extends Application {
                 canvas.colorsProperty());
         itensList.setCellFactory(
                 list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
-        final Canvas canvas1 = canvas;
-        left.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ImageFXUtils.take(canvas1)).build());
+        left.getChildren().add(newButton("Export", e -> ImageFXUtils.take(canvas)));
 
         root.setCenter(new HBox(canvas, itensList));
 		theStage.show();

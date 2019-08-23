@@ -20,24 +20,26 @@ public final class FXMLCreatorTest {
 
 	private static final Logger LOG = HasLogging.log();
 
-	@Test
+//    @Test
 	public void testAllClasses() {
 		List<Class<? extends Application>> classes = getClasses(Application.class);
 		testApplications(classes);
 	}
 
-	@Test
+    @Test
 	public void testErrorClasses2() {
 
-        List<Class<? extends Application>> classes = Arrays.asList(fxpro.ch07.AreaChartExample.class,
-            fxpro.ch07.BarChartExample.class, fxpro.ch07.BubbleChartExample.class, fxpro.ch07.LineChartExample.class,
-            fxpro.ch07.ScatterChartExample.class, fxpro.ch07.ScatterChartWithFillExample.class,
-            fxsamples.bounds.BoundsPlayground.class, ml.RegressionChartExample.class,
-            paintexp.svgcreator.SVGCreator.class);
+        List<Class<? extends Application>> classes = Arrays.asList(election.HibernateCrawler.class,
+            ethical.hacker.EthicalHackApp.class, fxpro.ch01.AudioConfigLauncher.class, fxpro.ch04.ReversiMain.class,
+            fxpro.ch05.TableVisualizationExampleApp.class, fxpro.ch07.PieChartExample.class,
+            fxpro.ch08.BasicAudioPlayerWithControlLauncher.class, fxsamples.PlayingAudio.class,
+            fxsamples.person.WorkingWithTableView.class, gaming.ex07.MazeLauncher.class, gaming.ex21.CatanApp.class,
+            graphs.app.GraphModelLauncher.class, ml.HeatGraphExample.class, ml.HistogramExample.class,
+            ml.MultilineExample.class, ml.PointsExample.class, ml.TimelineExample.class, paintexp.PaintMain.class);
 		testApplications(classes);
 	}
 
-	private static String classNames(List<Class<?>> testApplications) {
+    private static <T> String classNames(List<Class<? extends T>> testApplications) {
 		return testApplications.stream().map(e -> e.getName() + ".class").collect(Collectors.joining(","));
 	}
 
@@ -57,11 +59,14 @@ public final class FXMLCreatorTest {
 	}
 
 	private static void testApplications(List<Class<? extends Application>> classes) {
-		List<Class<?>> testApplications = FXMLCreator.testApplications(classes);
+        List<Class<? extends Application>> differentTree = new ArrayList<>();
+        List<Class<?>> testApplications = FXMLCreator.testApplications(classes, true, differentTree);
 		WaitForAsyncUtils.waitForFxEvents();
 		if (!testApplications.isEmpty()) {
 			LOG.error("classes {}/{} got errors", testApplications.size(), classes.size());
 			LOG.error("classes {} with errors", classNames(testApplications));
+            LOG.error("classes {}/{} with different trees", differentTree.size(), classes.size());
+            LOG.error("classes {} with different trees", classNames(differentTree));
 		} else {
 			LOG.info("All classes successfull");
 		}

@@ -1,14 +1,16 @@
 package gaming.ex21;
 
-public class Village extends CatanResource {
-    public Village() {
-        super("village.png");
-		view.setFitWidth(Terrain.RADIUS);
-    }
+import javafx.beans.NamedArg;
 
-    public Village(final PlayerColor color) {
+public class Village extends CatanResource {
+    public Village(@NamedArg("player") final PlayerColor color) {
         this();
         setPlayer(color);
+    }
+
+    private Village() {
+        super("village.png");
+		view.setFitWidth(Terrain.RADIUS);
     }
 
 }

@@ -6,7 +6,7 @@ import static utils.ClassReflectionUtils.*;
 import static utils.StringSigaUtils.changeCase;
 
 import com.google.common.collect.ImmutableMap;
-import fxpro.ch07.AreaChartExample;
+import gaming.ex21.CatanApp;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -33,11 +33,12 @@ import javafx.scene.control.SelectionModel;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.Effect;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.ConstraintsBase;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
+import javafx.scene.paint.*;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -55,10 +56,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import utils.ClassReflectionUtils;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 public final class FXMLCreator {
     private static final String FX_REFERENCE = "fx:reference";
@@ -75,13 +73,15 @@ public final class FXMLCreator {
         "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
     private static final List<Class<?>> METHOD_CLASSES = Arrays.asList(EventHandler.class);
     private static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
-        Long.class, Integer.class, Boolean.class, Enum.class, KeyCombination.class);
+        LinearGradient.class, RadialGradient.class, Long.class, Integer.class, Boolean.class, Enum.class,
+        KeyCombination.class);
     private static final List<Class<?>> NECESSARY_REFERENCE = Arrays.asList(Control.class);
-    private static final List<Class<?>> REFERENCE_CLASSES = Arrays.asList(ToggleGroup.class);
-    private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class);
+    private static final List<Class<?>> REFERENCE_CLASSES = Arrays.asList(ToggleGroup.class, Image.class);
+    private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class,
+        PathElement.class);
     private static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class, Font.class, Point3D.class,
         Material.class, PropertyValueFactory.class, ConstraintsBase.class, EventTarget.class, Effect.class, Path.class,
-        StringConverter.class, SelectionModel.class, Color.class, Enum.class);
+        StringConverter.class, SelectionModel.class, Paint.class, Enum.class, Number.class);
     private static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
         .<String, Function<Collection<?>, String>>builder()
         .put("styleClass", l -> l.stream().map(Object::toString).collect(Collectors.joining(" "))).build();
@@ -225,7 +225,7 @@ public final class FXMLCreator {
             return;
         }
         if (hasClass(ATTRIBUTE_CLASSES, fieldValue.getClass()) && hasField(parent.getClass(), fieldName)
-            && isSetterMatches(fieldName, fieldValue, parent)) {
+            && (fieldValue instanceof String || isSetterMatches(fieldName, fieldValue, parent))) {
             Object mapProperty2 = mapProperty(fieldValue);
             element.setAttribute(fieldName, mapProperty2 + "");
             return;
@@ -246,12 +246,11 @@ public final class FXMLCreator {
             return;
         }
         if (METHOD_CLASSES.stream().anyMatch(c -> c.isInstance(fieldValue))) {
-            String nodeName = referencedNodes.computeIfAbsent(parent, this::newName);
-            String nameMethod = referencedMethod.computeIfAbsent(fieldValue.getClass().getName(),
-                e -> computeMethod(parent, fieldName, fieldValue, nodeName));
-            element.setAttribute(fieldName, "#" + nameMethod.replaceAll("\\(.+\\)", ""));
+            processMethod(element, fieldName, fieldValue, parent);
             return;
         }
+
+
         if (!hasField(parent.getClass(), fieldName)) {
             return;
         }
@@ -369,6 +368,13 @@ public final class FXMLCreator {
         }
     }
 
+    private void processMethod(Element element, String fieldName, Object fieldValue, Object parent) {
+        String nodeName = referencedNodes.computeIfAbsent(parent, this::newName);
+        String nameMethod = referencedMethod.computeIfAbsent(fieldValue.getClass().getName(),
+            e -> computeMethod(parent, fieldName, fieldValue, nodeName));
+        element.setAttribute(fieldName, "#" + nameMethod.replaceAll("\\(.+\\)", ""));
+    }
+
     private void processNamedArgs(Element element, String fieldName, Object fieldValue, Object parent) {
         List<String> namedArgs = getNamedArgs(parent.getClass());
         if (namedArgs.contains(fieldName)) {
@@ -418,16 +424,14 @@ public final class FXMLCreator {
 
             Map<String, Object> fields = differences(node2);
             if (hasClass(ATTRIBUTE_CLASSES, node2.getClass())) {
-
                 String nodeString = nodeValue(node2);
-
                 createElement.setAttribute(FX_VALUE, nodeString);
                 fields.clear();
             }
 
-            fields.forEach((s, fieldValue) -> {
+            fields.forEach((fieldName, fieldValue) -> {
                 if (fieldValue != null) {
-                    processField(createElement, s, fieldValue, node2);
+                    processField(createElement, fieldName, fieldValue, node2);
                 }
             });
             if (hasClass(NECESSARY_REFERENCE, node2.getClass())) {
@@ -446,19 +450,30 @@ public final class FXMLCreator {
     }
 
     private void processReferenceNode(Element element, String fieldName, Object fieldValue) {
-        String simpleName = fieldValue.getClass().getSimpleName();
+        Class<? extends Object> targetClass = fieldValue.getClass();
+        String simpleName = targetClass.getSimpleName();
         if (!referencedNodes.containsKey(fieldValue)) {
             Map<String, Object> differences = differences(fieldValue);
-            Element defineElement = document.createElement(FX_DEFINE);
-            element.getParentNode().appendChild(defineElement);
+            Element defineElement;
+            Node firstChild = document.getFirstChild().getFirstChild();
+            if (!firstChild.getNodeName().equals(FX_DEFINE)) {
+                defineElement = document.createElement(FX_DEFINE);
+                Node firstChild2 = document.getFirstChild();
+                firstChild2.appendChild(defineElement);
+                firstChild2.insertBefore(defineElement, firstChild);
+            } else {
+                defineElement = (Element) firstChild;
+            }
             Element createElement = document.createElement(simpleName);
             defineElement.appendChild(createElement);
             differences.forEach((k, v) -> {
-                if (hasClass(ATTRIBUTE_CLASSES, v.getClass())) {
+                if (v != null && hasClass(ATTRIBUTE_CLASSES, v.getClass()) && hasField(targetClass, k)) {
                     Object mapProperty2 = mapProperty(v);
-                    createElement.setAttribute(k, mapProperty2 + "");
+                    String value = mapProperty2 + "";
+                    createElement.setAttribute(k, value.replaceAll("\\.0$", ""));
                 }
             });
+            packages.add(targetClass.getPackage().getName());
             String name = referencedNodes.computeIfAbsent(fieldValue, this::newName);
             createElement.setAttribute(FX_ID, name);
         }
@@ -484,7 +499,7 @@ public final class FXMLCreator {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> classes = Arrays.asList(AreaChartExample.class);
+        List<Class<? extends Application>> classes = Arrays.asList(CatanApp.class);
 
         testApplications(classes, false);
 //        for (Class<? extends Application> class1 : asList) {
@@ -497,12 +512,17 @@ public final class FXMLCreator {
     }
 
     public static List<Class<?>> testApplications(List<Class<? extends Application>> asList, boolean close) {
+        return testApplications(asList, close, new ArrayList<>());
+    }
+
+    public static List<Class<?>> testApplications(List<Class<? extends Application>> asList, boolean close,
+        List<Class<? extends Application>> differentTree) {
         ResourceFXUtils.initializeFX();
         List<Class<?>> errorClasses = new ArrayList<>();
         for (Class<? extends Application> class1 : asList) {
             List<Stage> stages = new ArrayList<>();
 
-            Platform.runLater(RunnableEx.make(() -> testSingleApp(class1, stages, close), error -> {
+            Platform.runLater(RunnableEx.make(() -> testSingleApp(class1, stages, close, differentTree), error -> {
                 LOG.error("ERROR IN {} ", class1);
                 LOG.error("", error);
                 errorClasses.add(class1);
@@ -515,33 +535,57 @@ public final class FXMLCreator {
         return errorClasses;
     }
 
+    private static void addDifferences(Class<?> cl, Map<String, Object> diffFields, Object ob1, Object ob2) {
+        if (ob2 == null) {
+            return;
+        }
+
+        List<Method> fields = getGetterMethodsRecursive(cl);
+        if (ob1 instanceof Parent && ob2 instanceof Parent) {
+            if (ClassReflectionUtils.compareTree((Parent) ob1, (Parent) ob2)) {
+                fields.removeIf(e -> getFieldNameCase(e).equals("children"));
+            }
+        }
+        for (Method f : fields) {
+            Object fieldValue = invoke(ob1, f);
+            Object fieldValue2 = invoke(ob2, f);
+            if (fieldValue != null && !Objects.equals(fieldValue, fieldValue2)) {
+                if (fieldValue instanceof Parent && fieldValue2 instanceof Parent) {
+                    if (ClassReflectionUtils.compareTree((Parent) fieldValue, (Parent) fieldValue2)) {
+                        continue;
+                    }
+                }
+                String fieldName = getFieldNameCase(f);
+                LOG.trace("{} {}!={} ", fieldName, fieldValue, fieldValue2);
+                diffFields.put(fieldName, fieldValue);
+            }
+        }
+    }
+
     private static boolean containsSame(List<Object> allNode, Object fieldValue) {
         return allNode.stream().anyMatch(ob -> ob == fieldValue);
     }
 
+    @SuppressWarnings("deprecation")
     private static Map<String, Object> differences(Object ob1) {
         Map<String, Object> diffFields = new LinkedHashMap<>();
         Class<?> cl = ob1.getClass();
+        if (ob1 instanceof Image) {
+            diffFields.put("url", ((Image) ob1).impl_getUrl());
+        }
         try {
-            List<Method> fields = getGetterMethodsRecursive(cl);
             Object ob2 = getInstance(cl);
-            for (Method f : fields) {
-                Object fieldValue = invoke(ob1, f);
-                Object fieldValue2 = invoke(ob2, f);
-                if (!Objects.equals(fieldValue, fieldValue2)) {
-                    String fieldName = getFieldNameCase(f);
-                    LOG.trace("{} {}!={} ", fieldName, fieldValue, fieldValue2);
-                    diffFields.put(fieldName, fieldValue);
-                }
-            }
+            addDifferences(cl, diffFields, ob1, ob2);
         } catch (Exception e) {
             LOG.trace("", e);
             List<String> fields = getNamedArgs(cl);
+            addDifferences(cl, diffFields, ob1, ClassReflectionUtils.getInstanceRecursive(cl));
             fields.addAll(getGetterMethodsRecursive(cl, 1).stream().map(ClassReflectionUtils::getFieldNameCase)
                 .filter(t -> !fields.contains(t)).collect(toList()));
             Map<String, Object> collect = fields.stream().filter(m -> invoke(ob1, m) != null)
                 .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b));
             diffFields.putAll(collect);
+            LOG.info("{}", diffFields);
         }
         return diffFields;
     }
@@ -576,8 +620,10 @@ public final class FXMLCreator {
         return nodeString;
     }
 
-    private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close)
+    private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close,
+        List<Class<? extends Application>> differentTree)
         throws Exception {
+        CrawlerTask.insertProxyConfig();
         LOG.info("INITIALIZING {}", appClass.getSimpleName());
         Application a = appClass.newInstance();
         Stage primaryStage = new Stage();
@@ -598,6 +644,7 @@ public final class FXMLCreator {
         }
         if (!compareTree(root, duplicateStage.getScene().getRoot())) {
             LOG.info(String.format("%s has different tree", appClass.getSimpleName()));
+            differentTree.add(appClass);
         }
         LOG.info("{} successfull", appClass.getSimpleName());
     }

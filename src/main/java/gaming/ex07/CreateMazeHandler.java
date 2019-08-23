@@ -34,8 +34,7 @@ public class CreateMazeHandler implements EventHandler<ActionEvent> {
 				final String direction = check.get(random.nextInt(check.size()));
                 setSidesByDirection(direction);
 			} else {
-                boolean backIn = goBack(history);
-				if (backIn) {
+                if (goBack(history)) {
 					return;
 				}
 			}

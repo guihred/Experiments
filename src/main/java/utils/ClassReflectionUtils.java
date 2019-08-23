@@ -45,12 +45,7 @@ public final class ClassReflectionUtils {
             : ((Parent) e).getChildrenUnmodifiable();
         TreeElement<Node> original = TreeElement.buildTree(root, f);
         TreeElement<Node> generated = TreeElement.buildTree(root2, f);
-        boolean equals = Objects.equals(original, generated);
-        if (!equals) {
-            original.getMissingItem(generated);
-        }
-
-        return equals;
+        return Objects.equals(original, generated);
     }
 
     public static String displayStyleClass(Node node) {
@@ -104,6 +99,19 @@ public final class ClassReflectionUtils {
             getters.addAll(getters2);
         }
         return getters;
+    }
+
+    public static Object getInstanceRecursive(Class<?> cl) {
+        Class<?> a = cl;
+        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
+            try {
+                return cl.newInstance();
+            } catch (Exception e) {
+//                throw new RuntimeIOException("ERROR IN INSTANTIATION", e);
+                LOG.trace("", e);
+            }
+        }
+        return null;
     }
 
     public static List<String> getNamedArgs(Class<?> targetClass) {
@@ -353,9 +361,7 @@ public final class ClassReflectionUtils {
         Parameter[] parameters = m.getParameters();
         Class<?> type = parameters[0].getType();
         if (type == Object.class) {
-            Type type2 = parameters[0].getParameterizedType();
-            String typeName = type2.getTypeName();
-            return typeName.matches("[TXY]");
+            return false;
         }
         return typesFit(fieldValue, type);
     }
