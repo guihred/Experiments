@@ -5,12 +5,13 @@ import graphs.entities.CellType;
 import graphs.entities.EdgeDistancePack;
 import graphs.entities.Graph;
 import java.util.List;
+import javafx.beans.NamedArg;
 import utils.MatrixSolver;
 
 public class GabrielTopology extends BaseTopology {
 
 
-    public GabrielTopology(int size, Graph graph) {
+    public GabrielTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
         super(graph, "Gabriel", size);
     }
 

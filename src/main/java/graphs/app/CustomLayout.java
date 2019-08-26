@@ -4,12 +4,13 @@ import graphs.entities.*;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.beans.NamedArg;
 
 public class CustomLayout implements Layout {
 
-	private Graph graph;
+    private final Graph graph;
 
-	public CustomLayout(Graph graph) {
+    public CustomLayout(@NamedArg("graph") Graph graph) {
 		this.graph = graph;
 	}
 
@@ -20,7 +21,11 @@ public class CustomLayout implements Layout {
 		List<Cell> cells = model.getAllCells();
 		layoutInCustom(cells, model.getAllEdges());
 	}
-	public static void layoutInCustom(List<Cell> cells, List<Edge> allEdges) {
+	public Graph getGraph() {
+        return graph;
+    }
+
+    public static void layoutInCustom(List<Cell> cells, List<Edge> allEdges) {
 		cells.get(0).relocate(50, 50);
 		Set<Cell> cellSet = cells.stream().collect(Collectors.toSet());
         final double bound = 150.;

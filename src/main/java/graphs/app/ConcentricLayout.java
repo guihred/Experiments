@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import javafx.beans.NamedArg;
 import javafx.scene.paint.Color;
 
 public class ConcentricLayout implements Layout {
 
 	private final Graph graph;
 
-	public ConcentricLayout(Graph graph) {
+    public ConcentricLayout(@NamedArg("graph") Graph graph) {
 		this.graph = graph;
 	}
 
@@ -38,6 +39,10 @@ public class ConcentricLayout implements Layout {
             list.forEach(e -> e.setColor(null));
             CircleLayout.generateCircle(list, allEdges, center, center, 180.0 / list.size() * i, i + 1);
         }
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 
 

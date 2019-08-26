@@ -3,12 +3,17 @@ package graphs.app;
 import graphs.entities.CellType;
 import graphs.entities.Graph;
 import java.security.SecureRandom;
+import javafx.beans.NamedArg;
 
 public class CircleTopology extends BaseTopology {
 
     private final SecureRandom random = new SecureRandom();
 
-	public CircleTopology(int size, Graph graph) {
+    public CircleTopology(@NamedArg("graph") Graph graph) {
+        super(graph, "Circle", 50);
+    }
+
+    public CircleTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
 		super(graph, "Circle", size);
 	}
 	@Override

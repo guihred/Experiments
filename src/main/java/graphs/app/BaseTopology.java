@@ -2,9 +2,11 @@ package graphs.app;
 
 import graphs.entities.Graph;
 import java.util.Objects;
+import javafx.event.EventDispatchChain;
+import javafx.event.EventTarget;
 import utils.HasLogging;
 
-public abstract class BaseTopology implements HasLogging {
+public abstract class BaseTopology implements HasLogging, EventTarget {
 
     private static final int N_LETTERS = 26;
     private static final char[] DIGITS = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -23,11 +25,20 @@ public abstract class BaseTopology implements HasLogging {
 		this.size = size;
 	}
 
-	public BaseTopology(String name) {
+    public BaseTopology(String name) {
 		this.name = name;
 	}
 
+	@Override
+    public EventDispatchChain buildEventDispatchChain(EventDispatchChain tail) {
+        return null;
+    }
+
 	public abstract void execute();
+
+	public Graph getGraph() {
+        return graph;
+    }
 
 	public String getName() {
 		return name;
@@ -37,10 +48,14 @@ public abstract class BaseTopology implements HasLogging {
         return size;
     }
 
-	public void setSize(int size) {
+    public void setSize(int size) {
         this.size = size;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
     public static String cellIdentifier(int n) {
 		int i = -n;
 		/* Use the faster version */
@@ -62,6 +77,7 @@ public abstract class BaseTopology implements HasLogging {
 		return Objects.toString((char) ('A' + i));
 
 	}
+
     public static double rnd(double bound) {
         return Math.random() * bound - bound / 2;
     }

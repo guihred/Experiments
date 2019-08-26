@@ -6,6 +6,7 @@ import graphs.entities.Graph;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.beans.NamedArg;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -13,8 +14,9 @@ public class ConvergeLayout implements Layout {
 
 	private final EventHandler<ActionEvent> eventHandler;
 
-    private Graph graph;
-	public ConvergeLayout(Graph graph) {
+    private final Graph graph;
+
+    public ConvergeLayout(@NamedArg("graph") Graph graph) {
         this.graph = graph;
         eventHandler = t1 -> convergeLayoutLoop(this.graph);
 	}
@@ -31,7 +33,11 @@ public class ConvergeLayout implements Layout {
 		return eventHandler;
 	}
 
-    private static double calculateXSum(double bound, double media, Edge e1) {
+    public Graph getGraph() {
+        return graph;
+    }
+
+	private static double calculateXSum(double bound, double media, Edge e1) {
         double angulo1 = e1.getAngulo();
         Integer valor = 1;
         e1.getValor();
@@ -44,7 +50,7 @@ public class ConvergeLayout implements Layout {
 		return Math.sin(angulo2) * bound * valor / media - Math.sin(angulo2) * e2.getModulo() * valor / media;
 	}
 
-	private static void convergeLayoutLoop(Graph graph1) {
+    private static void convergeLayoutLoop(Graph graph1) {
         List<Cell> allCells = graph1.getModel().getAllCells();
 		if (allCells.size() > 100) {
 			return;

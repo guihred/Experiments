@@ -2,10 +2,11 @@ package graphs.app;
 
 import graphs.entities.*;
 import java.util.List;
+import javafx.beans.NamedArg;
 
 public class TreeTopology extends BaseTopology {
 
-    public TreeTopology(int size, Graph graph) {
+    public TreeTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
         super(graph, "Tree", size);
     }
 

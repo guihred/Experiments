@@ -1,15 +1,21 @@
 package others;
 
+import static utils.ClassReflectionUtils.getFieldNameCase;
+import static utils.ClassReflectionUtils.getGetterMethodsRecursive;
+import static utils.ClassReflectionUtils.invoke;
+
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import utils.FunctionEx;
-import utils.HasLogging;
 
 public class TreeElement<T> {
 
+    private static final String CHILDREN_FIELD = "children";
     private Collection<TreeElement<T>> children;
+
     private T element;
 
     public TreeElement(T e, FunctionEx<T, Collection<T>> func) {
@@ -43,26 +49,8 @@ public class TreeElement<T> {
         return Objects.equals(element.getClass(), other.element.getClass());
     }
 
-    public List<TreeElement<T>> getMissingItem(String left,TreeElement<T> otherElement) {
-        TreeElement<T> other = otherElement;
-        Collection<TreeElement<T>> children2 = other.children;
-        List<TreeElement<T>> collect = extracted(children, children2);
-        for (TreeElement<T> treeElement : collect) {
-            if (children2.stream().noneMatch(e -> e.hashCode() == treeElement.hashCode())) {
-                HasLogging.log(1).info("MISSING {}", left + treeElement);
-            }
-            Optional<TreeElement<T>> findFirst = children2.stream()
-                .filter(e -> e.element.getClass() == treeElement.element.getClass()).findFirst();
-            if (findFirst.isPresent()) {
-                treeElement.getMissingItem(left + "-", findFirst.get());
-            }
-        }
-        return collect;
-
-    }
-
-    public List<TreeElement<T>> getMissingItem(TreeElement<T> otherElement) {
-        return getMissingItem("",otherElement);
+    public List<String> getMissingItem(TreeElement<T> otherElement) {
+        return getMissingItem("", otherElement);
     }
 
     @Override
@@ -76,10 +64,28 @@ public class TreeElement<T> {
     }
 
     private List<TreeElement<T>> extracted(Collection<TreeElement<T>> children1, Collection<TreeElement<T>> children2) {
-        return children1.stream()
-            .filter(e -> children2 == null || !children2.contains(e))
-            .sorted(Comparator.comparing(TreeElement<T>::hashCode))
-            .collect(Collectors.toList());
+        return children1.stream().filter(e -> children2 == null || !children2.contains(e))
+            .sorted(Comparator.comparing(TreeElement<T>::hashCode)).collect(Collectors.toList());
+    }
+
+    private List<String> getMissingItem(String left, TreeElement<T> otherElement) {
+        TreeElement<T> other = otherElement;
+        Collection<TreeElement<T>> children2 = other.children;
+        List<TreeElement<T>> collect = extracted(children, children2);
+        List<String> missing = new ArrayList<>();
+        for (TreeElement<T> treeElement : collect) {
+            if (children2.stream().noneMatch(e -> e.hashCode() == treeElement.hashCode())) {
+                missing.add(left + treeElement);
+            }
+            Optional<TreeElement<T>> findFirst = children2.stream()
+                .filter(e -> e.element.getClass() == treeElement.element.getClass()).findFirst();
+            if (findFirst.isPresent()) {
+                List<String> missingItem = treeElement.getMissingItem(left + "-", findFirst.get());
+                missing.addAll(missingItem);
+            }
+        }
+        return missing;
+
     }
 
     public static <E> TreeElement<E> buildTree(E first, FunctionEx<E, Collection<E>> func) {
@@ -94,12 +100,37 @@ public class TreeElement<T> {
         return Objects.equals(original, generated);
     }
 
-    public static void displayMissingElement(Parent root, Parent root2) {
+    public static List<String> displayMissingElement(Parent root, Parent root2) {
         FunctionEx<Node, Collection<Node>> f = e -> !(e instanceof Parent) ? null
             : ((Parent) e).getChildrenUnmodifiable();
         TreeElement<Node> original = TreeElement.buildTree(root, f);
         TreeElement<Node> generated = TreeElement.buildTree(root2, f);
-        original.getMissingItem(generated);
+        return original.getMissingItem(generated);
     }
 
+    public static List<String> getDifferences(Class<?> cl, Object ob1, Object ob2) {
+        List<String> diffFields = new ArrayList<>();
+        if (ob2 == null) {
+            return diffFields;
+        }
+
+        List<Method> fields = getGetterMethodsRecursive(cl);
+        if (ob1 instanceof Parent && ob2 instanceof Parent && compareTree((Parent) ob1, (Parent) ob2)) {
+            fields.removeIf(e -> CHILDREN_FIELD.equals(getFieldNameCase(e)));
+        }
+        for (Method f : fields) {
+            Object fieldValue = invoke(ob1, f);
+            Object fieldValue2 = invoke(ob2, f);
+            if (fieldValue != null && !Objects.equals(fieldValue, fieldValue2)) {
+                if (fieldValue instanceof Parent && fieldValue2 instanceof Parent
+                    && compareTree((Parent) fieldValue, (Parent) fieldValue2)) {
+                    continue;
+                }
+                String fieldName = getFieldNameCase(f);
+                diffFields.add(fieldName);
+            }
+        }
+
+        return diffFields;
+    }
 }

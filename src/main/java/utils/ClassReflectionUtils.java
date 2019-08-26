@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
+import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 
 public final class ClassReflectionUtils {
@@ -73,7 +74,7 @@ public final class ClassReflectionUtils {
     }
 
     public static Object getFieldValue(Object ob, String name) {
-        return Stream.of(ob.getClass().getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+        return getFieldsRecursive(ob.getClass()).stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
             .filter(e -> e.getName().equals(name)).findFirst().map(field -> BaseEntity.getFieldValue(ob, field))
             .orElse(null);
     }
@@ -92,17 +93,12 @@ public final class ClassReflectionUtils {
         return getters;
     }
 
-    public static Object getInstanceRecursive(Class<?> cl) {
-        Class<?> a = cl;
-        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
-            try {
-                return cl.newInstance();
-            } catch (Exception e) {
-//                throw new RuntimeIOException("ERROR IN INSTANTIATION", e);
-                LOG.trace("", e);
-            }
+    public static Object getInstance(Class<?> cl) {
+        try {
+            return cl.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeIOException("ERROR IN INSTANTIATION", e);
         }
-        return null;
     }
 
     public static List<String> getNamedArgs(Class<?> targetClass) {
@@ -123,6 +119,11 @@ public final class ClassReflectionUtils {
         return hasSetterMethods(targetClass, field) || hasBuiltArg(targetClass, field);
     }
 
+    public static boolean hasPublicConstructor(Class<? extends Object> class1) {
+        return Modifier.isPublic(class1.getModifiers())
+            && Stream.of(class1.getConstructors()).anyMatch(e1 -> Modifier.isPublic(e1.getModifiers()));
+    }
+
     public static Object invoke(Object ob, Method method, Object... args) {
         try {
             return method.invoke(ob, args);
@@ -133,14 +134,8 @@ public final class ClassReflectionUtils {
     }
 
     public static Object invoke(Object ob, String method, Object... args) {
-        try {
-            return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
-                .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(Objects::nonNull).findFirst()
-                .orElse(null);
-        } catch (Exception e) {
-            LOG.info("", e);
-            return null;
-        }
+        return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
+            .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     public static boolean isClassPublic(Class<? extends Object> class1) {
@@ -189,6 +184,11 @@ public final class ClassReflectionUtils {
         for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
             List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
             getters.addAll(getters2);
+            Class<?>[] interfaces = a.getInterfaces();
+            for (Class<?> class1 : interfaces) {
+                getters.addAll(Arrays.asList(class1.getDeclaredMethods()));
+            }
+
         }
         return getters;
     }
@@ -293,6 +293,20 @@ public final class ClassReflectionUtils {
 
     private static String getFieldName(Member t) {
         return t.getName().replaceAll(METHOD_REGEX_SETTER + "|" + METHOD_REGEX, "$1$2$3");
+    }
+
+    private static List<Field> getFieldsRecursive(Class<?> class1) {
+        Class<?> a = class1;
+        List<Field> fields = new ArrayList<>();
+        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
+            Field[] declaredFields = a.getDeclaredFields();
+            for (Field m : declaredFields) {
+                if (!Modifier.isStatic(m.getModifiers())) {
+                    fields.add(m);
+                }
+            }
+        }
+        return fields;
     }
 
     private static List<Method> getGetterMethods(Class<?> class1, Map<Class<?>, List<Method>> getterMethods) {

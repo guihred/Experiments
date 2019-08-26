@@ -13,7 +13,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import schema.sngpc.FXMLCreator;
+import schema.sngpc.FXMLCreatorHelper;
 import simplebuilder.SimpleMenuBarBuilder;
 import utils.ResourceFXUtils;
 
@@ -53,8 +53,8 @@ public class LookNFeelChooser extends Application {
         primaryStage.show();
 
         File outFile = ResourceFXUtils.getOutFile("first.fxml");
-        FXMLCreator.createXMLFile(root, outFile);
-        FXMLCreator.duplicateStage(outFile);
+        FXMLCreatorHelper.createXMLFile(root, outFile);
+        FXMLCreatorHelper.duplicateStage(outFile);
 	}
 
 	public static void main(String[] args) {

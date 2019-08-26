@@ -5,12 +5,13 @@ import graphs.entities.Graph;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.stream.Stream;
+import javafx.beans.NamedArg;
 import utils.ResourceFXUtils;
 
 public class WordTopology extends BaseTopology {
 
 
-    public WordTopology(int size, Graph graph) {
+    public WordTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
         super(graph, "Word", size);
 	}
 

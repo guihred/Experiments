@@ -33,6 +33,11 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
+    public SimpleComboBoxBuilder<T> converter(String func) {
+        comboBox.setConverter(new SimpleConverter<>(func));
+        return this;
+    }
+
     public SimpleComboBoxBuilder<T> converter(StringConverter<T> value) {
         comboBox.setConverter(value);
         return this;

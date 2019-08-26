@@ -5,12 +5,13 @@ import graphs.entities.Cell;
 import graphs.entities.CellType;
 import graphs.entities.Graph;
 import java.security.SecureRandom;
+import javafx.beans.NamedArg;
 
 public class RandomTopology extends BaseTopology {
 
     private final SecureRandom random = new SecureRandom();
 
-	public RandomTopology(int size, Graph graph) {
+    public RandomTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
 		super(graph, "Random", size);
 	}
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
+import javafx.beans.NamedArg;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -22,7 +23,7 @@ public class NetworkTopology extends BaseTopology {
 
     private final StringProperty networkAddress = new SimpleStringProperty(TracerouteScanner.NETWORK_ADDRESS);
 
-    public NetworkTopology(final Graph graph) {
+    public NetworkTopology(@NamedArg("graph") Graph graph) {
         super(graph, "Network");
         networkAddress.addListener(o -> scanNetworkRoutes = null);
     }

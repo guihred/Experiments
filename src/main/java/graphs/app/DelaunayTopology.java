@@ -5,10 +5,11 @@ import graphs.entities.CellType;
 import graphs.entities.Graph;
 import graphs.entities.GraphModelAlgorithms;
 import java.util.List;
+import javafx.beans.NamedArg;
 
 public class DelaunayTopology extends BaseTopology {
 
-    public DelaunayTopology(int size, Graph graph) {
+    public DelaunayTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
         super(graph, "Delaunay", size);
     }
 

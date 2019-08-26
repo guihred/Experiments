@@ -8,13 +8,14 @@ import graphs.entities.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import javafx.beans.NamedArg;
 import javafx.scene.paint.Color;
 
 public class LayerLayout implements Layout {
 
-	private Graph graph;
+    private final Graph graph;
 
-	public LayerLayout(Graph graph) {
+    public LayerLayout(@NamedArg("graph") Graph graph) {
 		this.graph = graph;
 	}
 
@@ -27,6 +28,10 @@ public class LayerLayout implements Layout {
 
         displayInLayers(cells, model.getAllEdges());
 
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 
     public static void displayInLayers(Iterable<Cell> cells, List<Edge> allEdges) {
@@ -84,7 +89,7 @@ public class LayerLayout implements Layout {
     }
 
     public static long numberOfEdges(Entry<Color, List<Cell>> e, List<Edge> allEdges) {
-		return e.getValue().stream().mapToLong(c -> GraphModelAlgorithms.edgesNumber(c, allEdges)).sum();
+        return e.getValue().stream().mapToLong(c -> GraphModelAlgorithms.edgesNumber(c, allEdges)).sum();
     }
 
 }

@@ -6,14 +6,15 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
+import javafx.beans.NamedArg;
 
 public class GridLayout implements Layout {
 
     private static final SecureRandom RND = new SecureRandom();
 
-    private Graph graph;
+    private final Graph graph;
 
-    public GridLayout(Graph graph) {
+    public GridLayout(@NamedArg("graph") Graph graph) {
         this.graph = graph;
     }
 
@@ -23,6 +24,10 @@ public class GridLayout implements Layout {
         Cell[] cells = graph.getModel().getAllCells().stream().toArray(Cell[]::new);
         graph.clean();
         layoutInGrid(cells, graph);
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 
     public static int radius(int size2) {

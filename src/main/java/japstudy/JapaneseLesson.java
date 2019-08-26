@@ -27,9 +27,6 @@ public class JapaneseLesson extends BaseEntity {
 	@Column(length = 2000)
 	private String romaji;
 
-	public JapaneseLesson() {
-	}
-
 	public void addEnglish(String english1) {
 		english = Objects.toString(english, "") + english1;
 	}

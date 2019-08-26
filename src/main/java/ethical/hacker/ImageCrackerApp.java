@@ -77,7 +77,9 @@ public class ImageCrackerApp extends Application {
 
     private void runInPlatform(String setValue) {
 
-        Platform.runLater(make(() -> engine.executeScript(setValue)));
+        Platform.runLater(make(() -> engine.executeScript(setValue), e -> {
+//            DOES NOTHING
+        }));
     }
 
     private Object runInPlatformAndWait(String setValue) {

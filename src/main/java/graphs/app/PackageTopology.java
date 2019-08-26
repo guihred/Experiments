@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.NamedArg;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ public class PackageTopology extends BaseTopology {
     private ObservableList<String> packages = getJavaFileDependencies(null).stream().map(JavaFileDependecy::getPackage)
         .distinct().collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-    public PackageTopology(Graph graph) {
+    public PackageTopology(@NamedArg("graph") Graph graph) {
         super(graph, "Package");
     }
 

@@ -35,7 +35,7 @@ public class GraphModelLauncher extends Application {
         .sorted(Comparator.comparing(Layout::getName));
 
     private ComboBox<Layout> selectLayout = new SimpleComboBoxBuilder<Layout>().items(layouts).tooltip("Select Layout")
-        .converter(Layout::getName).select(0).build();
+        .converter("name").select(0).build();
     private Timeline timeline = new SimpleTimelineBuilder().addKeyFrame(50.0, convergeLayout.getEventHandler())
         .cycleCount(Animation.INDEFINITE).build();
 

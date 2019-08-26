@@ -3,12 +3,13 @@ package graphs.app;
 import graphs.entities.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import javafx.beans.NamedArg;
 
 public class CircleLayout implements Layout {
 
-	private Graph graph;
+    private final Graph graph;
 
-	public CircleLayout(Graph graph) {
+    public CircleLayout(@NamedArg("graph") Graph graph) {
 		this.graph = graph;
 	}
 
@@ -21,7 +22,11 @@ public class CircleLayout implements Layout {
         generateCircle(cells, model.getAllEdges());
 	}
 
-	public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges) {
+	public Graph getGraph() {
+        return graph;
+    }
+
+    public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges) {
         generateCircle(cells, allEdges, 0, 0, 0, 1);
     }
 

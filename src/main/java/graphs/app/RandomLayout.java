@@ -5,12 +5,13 @@ import graphs.entities.Edge;
 import graphs.entities.Graph;
 import graphs.entities.GraphModelAlgorithms;
 import java.util.List;
+import javafx.beans.NamedArg;
 
 public class RandomLayout implements Layout {
 
-    private Graph graph;
+    private final Graph graph;
 
-    public RandomLayout(Graph graph) {
+    public RandomLayout(@NamedArg("graph") Graph graph) {
         this.graph = graph;
     }
 
@@ -20,6 +21,10 @@ public class RandomLayout implements Layout {
         List<Edge> allEdges = graph.getModel().getAllEdges();
         graph.clean();
         layoutRandom(cells, allEdges, graph.getScrollPane().getWidth());
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 
     public static void layoutRandom(List<Cell> cells, List<Edge> allEdges, double width) {
