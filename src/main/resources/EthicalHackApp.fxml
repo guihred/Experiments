@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<HBox xmlns:fx="http://javafx.com/fxml"
+	fx:controller="ethical.hacker.EthicalHackController" styleClass="root">
+	<children>
+		<VBox>
+			<children>
+				<Text text="Filter Results" />
+				<TextField fx:id="resultsFilter" />
+				<Button fx:id="_NetworkInformation" id="_Network Information"
+					onAction="#onActionNetworkInformation" text="_Network Information" />
+				<Button fx:id="process_Scan" id="Process _Scan"
+					onAction="#onActionProcessScan" text="Process _Scan" />
+				<Text text="DNS" />
+				<TextField fx:id="dns" text="google.com" />
+				<Button fx:id="dNS_Lookup" id="DNS _Lookup"
+					onAction="#onActionDNSLookup" text="DNS _Lookup" />
+				<Text text="Ping Adress" />
+				<TextField fx:id="address" text="10.69.64.31" />
+				<Button fx:id="ping_Trace" id="Ping _Trace"
+					onAction="#onActionPingTrace" text="Ping _Trace" />
+				<Text text="Network Adress" />
+				<HBox>
+					<children>
+						<TextField fx:id="networkAddress" text="10.69.64.31/28" />
+						<Button fx:id="ips" id="Ips" onAction="#onActionIps"
+							text="Ips" />
+					</children>
+				</HBox>
+				<HBox>
+					<children>
+						<Button fx:id="_PortScan" id="_Port Scan"
+							onAction="#onActionPortScan" text="_Port Scan" />
+						<ProgressIndicator fx:id="progressIndicator"
+							managed="false" minHeight="40.0" minWidth="40.0" progress="0.0"
+							visible="false" />
+					</children>
+				</HBox>
+				<VBox>
+					<children>
+						<Text fx:id="ports"  text="Port Services []" />
+						<TextField fx:id="filterField" />
+						<TableView fx:id="servicesTable">
+							<columns>
+								<TableColumn fx:id="tableColumn14"
+									prefWidth="122.66666666666666" text="Service">
+									<cellValueFactory>
+										<PropertyValueFactory property="value" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn fx:id="portColumn"
+									prefWidth="61.33333333333333" text="Port" />
+							</columns>
+						</TableView>
+					</children>
+				</VBox>
+			</children>
+		</VBox>
+		<TableView fx:id="commonTable" />
+	</children>
+	<stylesheets>
+		<String
+			fx:value="file:/C:/Users/guilherme.hmedeiros/Documents/Dev/FXperiments/target/classes/filesComparator.css" />
+	</stylesheets>
+</HBox>

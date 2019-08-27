@@ -64,6 +64,7 @@ public class FXEngineTest extends AbstractTestExecution {
             .forEach(ConsumerEx.ignore(this::clickOn));
         ConsoleUtils.waitAllProcesses();
     }
+
     @Test
     public void verifyButtons() throws Exception {
         measureTime("Test.testButtons",
@@ -74,6 +75,7 @@ public class FXEngineTest extends AbstractTestExecution {
             }), Chapter4.Ex9.class, PdfReader.class));
 
     }
+
     @Test
     public void verifyDots() throws Exception {
         show(DotsLauncher.class);
@@ -168,7 +170,7 @@ public class FXEngineTest extends AbstractTestExecution {
                 scroll(2, VerticalDirection.DOWN);
                 scroll(2, VerticalDirection.UP);
             }), WorldMapExample.class, WorldMapExample2.class));
-        
+
     }
 
     @Test
@@ -206,14 +208,12 @@ public class FXEngineTest extends AbstractTestExecution {
                 moveTo(stack);
                 drop();
                 if (!cardStack.getChildren().contains(card)) {
-                    if (cardStack.getChildren().size() > 1) {
-                        card = getLastCard(cardStack);
-                        clickOn(cardStack);
-                    } else {
+                    if (cardStack.getChildren().size() <= 1) {
                         continue;
                     }
+                    card = getLastCard(cardStack);
+                    clickOn(cardStack);
                 }
-
             }
         }
         targetPos(Pos.CENTER);

@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.joining;
 import static others.TreeElement.compareTree;
 import static others.TreeElement.displayMissingElement;
 
+import ethical.hacker.EthicalHackApp;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,20 +48,24 @@ public final class FXMLCreatorHelper {
 
     public static Stage duplicateStage(File file, String title) {
         Stage primaryStage = new Stage();
+        loadFXML(file, title, primaryStage);
+        return primaryStage;
+    }
+
+    public static void loadFXML(File file, String title, Stage primaryStage, double... size) {
         try {
             Parent content = FXMLLoader.load(file.toURI().toURL());
-            Scene scene = new Scene(content);
+            Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
             primaryStage.setTitle(title);
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
             throw new RuntimeIOException("ERROR in file " + file, e);
         }
-        return primaryStage;
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> classes = Arrays.asList(fxsamples.bounds.BoundsPlayground.class);
+        List<Class<? extends Application>> classes = Arrays.asList(EthicalHackApp.class);
         testApplications(classes, false);
 //        for (Class<? extends Application> class1 : asList) 
 //            duplicate(class1.getSimpleName() + ".fxml");

@@ -24,17 +24,10 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table = node;
     }
 
-    @SuppressWarnings("unchecked")
     public <V extends TableCell<T, Object>> SimpleTableViewBuilder<T> addColumn(final String columnName,
         final BiConsumer<T, V> value) {
         final TableColumn<T, Object> column = new TableColumn<>(columnName);
-        column.setCellFactory(p -> new CustomableTableCell<T, Object>() {
-            @Override
-            protected void setStyleable(final T auxMed) {
-                value.accept(auxMed, (V) this);
-            }
-
-        });
+        column.setCellFactory(newCellFactory(value));
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         table.getColumns().add(column);
         return this;
@@ -147,7 +140,19 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    private abstract class CustomableTableCell<M, X> extends TableCell<M, X> {
+    public static <C, V extends TableCell<C, Object>> Callback<TableColumn<C, Object>, TableCell<C, Object>> newCellFactory(
+        final BiConsumer<C, V> value) {
+        return p -> new CustomableTableCell<C, Object>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void setStyleable(final C auxMed) {
+                value.accept(auxMed, (V) this);
+            }
+
+        };
+    }
+
+    public static abstract class CustomableTableCell<M, X> extends TableCell<M, X> {
 
         protected abstract void setStyleable(M auxMed);
 
