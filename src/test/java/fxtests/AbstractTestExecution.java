@@ -11,36 +11,37 @@ import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
-	protected Stage currentStage;
-	protected boolean isLinux = SystemUtils.IS_OS_LINUX;
+    protected Stage currentStage;
+    protected boolean isLinux = SystemUtils.IS_OS_LINUX;
 
-	@Override
-	public void start(Stage stage) throws Exception {
-		ResourceFXUtils.initializeFX();
-		currentStage = stage;
-		currentStage.setX(0);
-		currentStage.setY(0);
-	}
+    @Override
+    public void start(Stage stage) throws Exception {
+        ResourceFXUtils.initializeFX();
+        currentStage = stage;
+        currentStage.setX(0);
+        currentStage.setY(0);
+    }
 
-	protected <T extends Application> T show(Class<T> c) {
-		try {
-			T newInstance = c.newInstance();
-			interactNoWait(RunnableEx.make(() -> newInstance.start(currentStage)));
+    protected <T extends Application> T show(Class<T> c) {
+        try {
+            HasLogging.log(1).info("SHOWING {}", c.getSimpleName());
+            T newInstance = c.newInstance();
+            interactNoWait(RunnableEx.make(() -> newInstance.start(currentStage)));
             return newInstance;
-		} catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
-		}
-	}
-    protected <T extends Application> void show(T application) {
-		try {
-			interactNoWait(RunnableEx.make(() -> application.start(currentStage)));
-		} catch (Exception e) {
-			getLogger().error(String.format("ERRO IN %s", application), e);
-		}
-	}
+        }
+    }
 
-	protected void tryClickButtons() {
+    protected <T extends Application> void show(T application) {
+        interactNoWait(RunnableEx.make(() -> {
+            HasLogging.log(1).info("SHOWING {}", application.getClass().getSimpleName());
+            application.start(currentStage);
+        }, e -> getLogger().error(String.format("ERRO IN %s", application), e)));
+    }
+
+    protected void tryClickButtons() {
         lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
-	}
+    }
 
 }

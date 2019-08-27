@@ -24,16 +24,18 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
-import utils.CommonsFX;
-import utils.CrawlerTask;
-import utils.HasLogging;
-import utils.ImageFXUtils;
+import utils.*;
 
 public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
     private static final String URL = "https://www-sisgf/SisGF/faces/pages/index.xhtml";
     private BooleanProperty successfull = new SimpleBooleanProperty();
     private WebEngine engine;
+    private boolean clickable = true;
+
+    public boolean isClickable() {
+        return clickable;
+    }
 
     public BooleanProperty loadURL() {
         successfull.set(false);
@@ -46,6 +48,10 @@ public class ImageCrackerApp extends Application {
         return successfull;
     }
 
+    public void setClickable(boolean clickable) {
+        this.clickable = clickable;
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
         WebView browser = new WebView();
@@ -56,11 +62,7 @@ public class ImageCrackerApp extends Application {
         engine.getLoadWorker().stateProperty().addListener((ob, oldValue, newState) -> {
             stage.setTitle(engine.getLocation() + " " + newState);
             if (newState == State.SUCCEEDED) {
-                try {
-                    new Thread(() -> tryToLog(browser, imageView)).start();
-                } catch (Exception e1) {
-                    LOG.error("", e1);
-                }
+                new Thread(RunnableEx.make(() -> tryToLog(browser, imageView))).start();
             }
         });
 
@@ -76,7 +78,6 @@ public class ImageCrackerApp extends Application {
     }
 
     private void runInPlatform(String setValue) {
-
         Platform.runLater(make(() -> engine.executeScript(setValue), e -> {
 //            DOES NOTHING
         }));
@@ -85,6 +86,8 @@ public class ImageCrackerApp extends Application {
     private Object runInPlatformAndWait(String setValue) {
         return runInPlatformAndWait(() -> engine.executeScript(setValue));
     }
+
+
 
     private void tryToLog(WebView browser, ImageView imageView) {
         runInPlatform(setValue("j_username", CrawlerTask.getHTTPUsername()));
@@ -107,7 +110,9 @@ public class ImageCrackerApp extends Application {
             String crackImage = cracked.replaceAll("\\D", "");
             if (isValid(crackImage)) {
                 runInPlatform(setValue("captchaId", crackImage));
-                runInPlatform("$('#btnRegistrar').click()");
+                if(isClickable()) {
+                    runInPlatform("$('#btnRegistrar').click()");
+                }
                 successfull.set(true);
             } else {
                 runInPlatform("$('#dtpCaptcha a').get(1).click()");
@@ -120,14 +125,8 @@ public class ImageCrackerApp extends Application {
         launch(args);
     }
 
-
-
     public static void waitABit() {
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            LOG.error("NOT SUPPOSED TO HAPPEN", e);
-        }
+        RunnableEx.ignore(() -> Thread.sleep(2000));
     }
 
     private static boolean isValid(String crackImage) {

@@ -1,9 +1,6 @@
 package japstudy;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.function.BiConsumer;
 import javafx.application.Application;
@@ -24,13 +21,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.CommonsFX;
 import utils.HasLogging;
+import utils.SongUtils;
 
 public class JapaneseLessonEditingDisplay extends Application implements HasLogging {
     public static final long NANO_IN_A_MILLI_SECOND = 1_000_000;
-    protected static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder()
-        .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-        .optionalStart().appendLiteral(':').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
-        .optionalStart().appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
     protected SimpleIntegerProperty current = new SimpleIntegerProperty(1);
     protected ObservableList<JapaneseLesson> lessons = getLessons();
     protected Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
@@ -90,7 +84,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
                 long millis = (long) currentTimeProperty.toMillis();
                 LocalTime ofNanoOfDay = LocalTime
                     .ofNanoOfDay(millis * JapaneseLessonEditingDisplay.NANO_IN_A_MILLI_SECOND);
-                return TIME_FORMAT.format(ofNanoOfDay);
+                return SongUtils.format(ofNanoOfDay);
             }, newO.currentTimeProperty()));
         });
         Button play = CommonsFX.newButton("_Play", e -> playLesson());
@@ -162,7 +156,7 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
 
     protected void setDateField(String newV, BiConsumer<JapaneseLesson, LocalTime> a) {
         if (newV != null) {
-            LocalTime from = LocalTime.from(TIME_FORMAT.parse(newV));
+            LocalTime from = LocalTime.from(SongUtils.parse(newV));
             JapaneseLesson japaneseLesson = lessons.get(current.intValue());
             a.accept(japaneseLesson, from);
         }
@@ -218,8 +212,8 @@ public class JapaneseLessonEditingDisplay extends Application implements HasLogg
             english.setText(japaneseLesson.getEnglish());
             japanese.setText(japaneseLesson.getJapanese());
             setStartEnd(japaneseLesson);
-            start.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getStart()));
-            end.setText(TIME_FORMAT.format(lessons.get(current.intValue()).getEnd()));
+            start.setText(SongUtils.format(lessons.get(current.intValue()).getStart()));
+            end.setText(SongUtils.format(lessons.get(current.intValue()).getEnd()));
         }
     }
 

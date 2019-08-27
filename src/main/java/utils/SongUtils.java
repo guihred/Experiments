@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.binding.Bindings;
@@ -28,15 +29,14 @@ public final class SongUtils {
 
     private static final Logger LOG = HasLogging.log();
 
-	private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
-            .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':')
-            .appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendLiteral(':')
-			.appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
-			.appendValue(ChronoField.MILLI_OF_SECOND, 2)
-			.toFormatter();
+    private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
+        .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+        .appendLiteral(':').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
+        .appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
 
     private static final String FFMPEG = ResourceFXUtils.getUserFolder("Downloads").getAbsolutePath()
-            + "\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";
+        + "\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";
+
     private SongUtils() {
     }
 
@@ -78,14 +78,15 @@ public final class SongUtils {
         String key2 = "\\s*Duration: ([\\.:\\d]+),.+";
         responses.put(key2, "$1");
         // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
-        Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils
-                .executeInConsoleAsync(cmd.toString(), responses);
-        
+        Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils.executeInConsoleAsync(cmd.toString(),
+            responses);
+
         return ConsoleUtils.defineProgress(key2, key, executeInConsoleAsync, SongUtils::convertTimeToMillis);
     }
 
-
-
+    public static String format(TemporalAccessor text) {
+        return TIME_OF_SECONDS_FORMAT.format(text);
+    }
 
     public static String formatDuration(Duration duration) {
         double millis = duration.toMillis();
@@ -93,7 +94,6 @@ public final class SongUtils {
         int minutes = (int) (millis / (1000 * SECONDS_IN_A_MINUTE));
         return String.format("%02d:%02d", minutes, seconds);
     }
-
 
     public static String formatFullDuration(Duration duration) {
         long millis = (long) duration.toMillis();
@@ -103,7 +103,11 @@ public final class SongUtils {
         return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis % 1000);
     }
 
-	public static void seekAndUpdatePosition(Duration duration, Slider slider, MediaPlayer mediaPlayer) {
+    public static TemporalAccessor parse(CharSequence text) {
+        return TIME_OF_SECONDS_FORMAT.parse(text);
+    }
+
+    public static void seekAndUpdatePosition(Duration duration, Slider slider, MediaPlayer mediaPlayer) {
         if (mediaPlayer.getStatus() == Status.STOPPED) {
             mediaPlayer.pause();
         }
@@ -134,16 +138,16 @@ public final class SongUtils {
 
         cmd.append(outFile);
         cmd.append("\"");
-		Map<String, String> responses = new HashMap<>();
-		String duration = "\\s*Duration: ([^,]+),.+";
-		String key = "size=\\s.+ time=(.+) bitrate=.+";
-		responses.put(duration, "$1");
-		responses.put(key, "$1");
-		// ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
-        Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils
-				.executeInConsoleAsync(cmd.toString(), responses);
+        Map<String, String> responses = new HashMap<>();
+        String duration = "\\s*Duration: ([^,]+),.+";
+        String key = "size=\\s.+ time=(.+) bitrate=.+";
+        responses.put(duration, "$1");
+        responses.put(key, "$1");
+        // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
+        Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils.executeInConsoleAsync(cmd.toString(),
+            responses);
         return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync,
-                s -> Math.abs(end.subtract(start).toMillis()), SongUtils::convertTimeToMillis);
+            s -> Math.abs(end.subtract(start).toMillis()), SongUtils::convertTimeToMillis);
     }
 
     public static void updateCurrentSlider(MediaPlayer mediaPlayer2, Slider currentSlider) {
@@ -163,9 +167,8 @@ public final class SongUtils {
         }
     }
 
-
     public static void updatePositionSlider(Duration currentTime, Slider positionSlider,
-            final MediaPlayer mediaPlayer) {
+        final MediaPlayer mediaPlayer) {
         if (positionSlider.isValueChanging()) {
             return;
         }
@@ -178,7 +181,7 @@ public final class SongUtils {
     }
 
     private static long convertTimeToMillis(String text) {
-		return ChronoUnit.MILLIS.between(LocalTime.MIN, TIME_OF_SECONDS_FORMAT.parse(text, LocalTime::from));
-	}
+        return ChronoUnit.MILLIS.between(LocalTime.MIN, TIME_OF_SECONDS_FORMAT.parse(text, LocalTime::from));
+    }
 
 }

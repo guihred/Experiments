@@ -71,7 +71,8 @@ public class FXFileReadersTest extends ApplicationTest {
         campos.put("Lote", Medicamento::getLote);
         campos.put("Quantidade", Medicamento::getQuantidade);
         campos.put("Codigo", Medicamento::getCodigo);
-        ExcelService.getExcel(medicamentosSNGPCPDF, campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx"));
+        measureTime("ExcelService.getExcel",
+            () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
 
     }
 
@@ -86,8 +87,9 @@ public class FXFileReadersTest extends ApplicationTest {
         campos.put("Quantidade", Medicamento::getQuantidade);
         campos.put("Codigo", Medicamento::getCodigo);
         int maxI = medicamentos.size() - 1;
-        ExcelService.getExcel((i, s) -> medicamentos.subList(Integer.min(i, maxI), Integer.min(i + s, maxI)), campos,
-            ResourceFXUtils.getOutFile("sngpcMeds.xlsx"));
+        measureTime("ExcelService.getExcel",
+            () -> ExcelService.getExcel((i, s) -> medicamentos.subList(Integer.min(i, maxI), Integer.min(i + s, maxI)),
+                campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
 
     }
 
@@ -101,6 +103,7 @@ public class FXFileReadersTest extends ApplicationTest {
 
     @Test
     public void testLeitorArquivos() {
+
         File file = ResourceFXUtils.toFile("anvisa2208.xlsx");
         ObservableList<String> sheetsExcel = measureTime("LeitorArquivos.getSheetsExcel",
             () -> LeitorArquivos.getSheetsExcel(file));

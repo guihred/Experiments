@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import org.apache.pdfbox.cos.COSDocument;
@@ -50,7 +51,8 @@ public final class PdfUtils {
                     PDPage page = pdDoc.getPage(i);
                     List<PdfImage> pageImages = getPageImages(printImageLocations, i, page);
                     images.put(i, pageImages);
-                    progress.set((double) i / (nPag - start));
+                    double current = i;
+                    Platform.runLater(() -> progress.set(current / (nPag - start)));
                 }
 			} catch (Throwable e) {
                 LOG.error("", e);

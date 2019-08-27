@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javafx.application.Application;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Bounds;
 import javafx.scene.*;
@@ -48,7 +47,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 
     private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 
-    private final IntegerProperty ballsCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
+    private final SimpleIntegerProperty ballsCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
 
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
 

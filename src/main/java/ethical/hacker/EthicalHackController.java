@@ -2,18 +2,15 @@ package ethical.hacker;
 
 import static ethical.hacker.EthicalHackApp.addColumns;
 import static ethical.hacker.EthicalHackApp.getCheckBox;
+import static ethical.hacker.EthicalHackApp.updateItemOnChange;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
-import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
@@ -22,16 +19,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import schema.sngpc.FXMLCreatorHelper;
 import utils.ConsoleUtils;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
 import utils.StageHelper;
 
 public class EthicalHackController {
 
-    private static final Logger LOG = HasLogging.log();
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -121,12 +113,12 @@ public class EthicalHackController {
             progressIndicator.setVisible(true);
             ObservableMap<String, List<String>> scanNetworkOpenPorts = PortScanner
                 .scanNetworkOpenPorts(networkAddress.getText(), portsSelected);
-            scanNetworkOpenPorts.addListener(updateItemOnChange("Host", "Ports"));
+            scanNetworkOpenPorts.addListener(updateItemOnChange("Host", "Ports", count, items));
             ObservableMap<String, List<String>> oses = PortScanner.scanPossibleOSes(networkAddress.getText());
-            oses.addListener(updateItemOnChange("Host", "OS"));
+            oses.addListener(updateItemOnChange("Host", "OS", count, items));
             ObservableMap<String, List<String>> networkRoutes = TracerouteScanner
                 .scanNetworkRoutes(networkAddress.getText());
-            networkRoutes.addListener(updateItemOnChange("Host", "Route"));
+            networkRoutes.addListener(updateItemOnChange("Host", "Route", count, items));
             DoubleProperty defineProgress = ConsoleUtils.defineProgress(3);
             progressIndicator.progressProperty().unbind();
             progressIndicator.progressProperty().bind(defineProgress);
@@ -141,41 +133,6 @@ public class EthicalHackController {
         Set<String> keySet = items.stream().flatMap(m -> m.keySet().stream())
             .collect(Collectors.toCollection(LinkedHashSet::new));
         addColumns(commonTable, keySet);
-
-    }
-
-    private void updateItem(String primaryKey, String targetKey,
-        Change<? extends String, ? extends List<String>> change) {
-        synchronized (count) {
-            if (!change.wasAdded()) {
-                return;
-            }
-            HasLogging.log();
-            String key = change.getKey();
-            List<String> valueAdded = change.getValueAdded();
-            Map<String, String> e2 = items.stream().filter(c -> key.equals(c.get(primaryKey))).findAny()
-                .orElseGet(ConcurrentHashMap::new);
-            e2.put(primaryKey, key);
-            e2.put(targetKey, valueAdded.stream().collect(Collectors.joining("\n")));
-            if (!items.contains(e2)) {
-                items.add(e2);
-            }
-            items.add(0, items.remove(0));
-            Set<String> orDefault = count.getOrDefault(primaryKey, new HashSet<>());
-            orDefault.add(key);
-            count.put(targetKey, orDefault);
-            LOG.trace("{} of {} = {}", targetKey, key, valueAdded);
-        }
-    }
-
-    private MapChangeListener<String, List<String>> updateItemOnChange(String primaryKey, String targetKey) {
-        count.clear();
-        return change -> updateItem(primaryKey, targetKey, change);
-    }
-
-    public static void main(String[] args) {
-        ResourceFXUtils.initializeFX();
-        Platform.runLater(() -> FXMLCreatorHelper.duplicateStage(ResourceFXUtils.toFile("EthicalHackApp.fxml")));
     }
 
 }

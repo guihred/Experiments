@@ -38,13 +38,12 @@
 						<Button fx:id="_PortScan" id="_Port Scan"
 							onAction="#onActionPortScan" text="_Port Scan" />
 						<ProgressIndicator fx:id="progressIndicator"
-							managed="false" minHeight="40.0" minWidth="40.0" progress="0.0"
-							visible="false" />
+							minHeight="40.0" minWidth="40.0" progress="0.0" />
 					</children>
 				</HBox>
 				<VBox>
 					<children>
-						<Text fx:id="ports"  text="Port Services []" />
+						<Text fx:id="ports" text="Port Services []" />
 						<TextField fx:id="filterField" />
 						<TableView fx:id="servicesTable">
 							<columns>

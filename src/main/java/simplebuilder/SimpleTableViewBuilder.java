@@ -140,10 +140,10 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public static <C, V extends TableCell<C, Object>> Callback<TableColumn<C, Object>, TableCell<C, Object>> newCellFactory(
-        final BiConsumer<C, V> value) {
+    @SuppressWarnings("unchecked")
+    public static <C, V extends TableCell<C, Object>>
+        Callback<TableColumn<C, Object>, TableCell<C, Object>> newCellFactory(final BiConsumer<C, V> value) {
         return p -> new CustomableTableCell<C, Object>() {
-            @SuppressWarnings("unchecked")
             @Override
             protected void setStyleable(final C auxMed) {
                 value.accept(auxMed, (V) this);
@@ -152,7 +152,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         };
     }
 
-    public static abstract class CustomableTableCell<M, X> extends TableCell<M, X> {
+    public abstract static class CustomableTableCell<M, X> extends TableCell<M, X> {
 
         protected abstract void setStyleable(M auxMed);
 

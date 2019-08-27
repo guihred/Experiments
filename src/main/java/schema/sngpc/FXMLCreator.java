@@ -3,10 +3,10 @@ package schema.sngpc;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static schema.sngpc.FXMLCreatorHelper.*;
 import static utils.ClassReflectionUtils.*;
 import static utils.StringSigaUtils.changeCase;
 
-import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -16,27 +16,9 @@ import java.lang.reflect.TypeVariable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.event.EventHandler;
-import javafx.event.EventTarget;
-import javafx.geometry.Insets;
-import javafx.geometry.Point3D;
-import javafx.scene.Parent;
-import javafx.scene.control.Control;
-import javafx.scene.control.SelectionModel;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.ConstraintsBase;
-import javafx.scene.paint.*;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.PathElement;
-import javafx.scene.text.Font;
-import javafx.util.StringConverter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -63,34 +45,7 @@ public final class FXMLCreator {
     private static final String FX_ID = "fx:id";
     private static final String FX_VALUE = "fx:value";
     private static final String FX_DEFINE = "fx:define";
-
     private static final Logger LOG = HasLogging.log();
-    private static final List<String> IGNORE = Arrays.asList("needsLayout", "layoutBounds", "baselineOffset",
-        "localToParentTransform", "eventDispatcher", "skin", "background", "controlCssMetaData", "pseudoClassStates",
-        "localToSceneTransform", "parentPopup", "cssMetaData", "classCssMetaData", "boundsInParent", "boundsInLocal",
-        "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
-    private static final List<Class<?>> METHOD_CLASSES = Arrays.asList(EventHandler.class);
-    private static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
-        LinearGradient.class, RadialGradient.class, Long.class, Integer.class, Boolean.class, Enum.class,
-        KeyCombination.class);
-    private static final List<Class<?>> NECESSARY_REFERENCE = Arrays.asList(Control.class);
-    private static final List<Class<?>> REFERENCE_CLASSES = Arrays.asList(ToggleGroup.class, Image.class);
-    private static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class,
-        PathElement.class);
-    private static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class, Font.class, Point3D.class,
-        Material.class, PropertyValueFactory.class, ConstraintsBase.class, EventTarget.class, Effect.class, Path.class,
-        StringConverter.class, SelectionModel.class, Paint.class, Enum.class, Number.class);
-    private static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
-        .<String, Function<Collection<?>, String>>builder()
-        .put("styleClass", l -> l.stream().map(Object::toString).collect(joining(" "))).build();
-    private static final Map<String, String> PROPERTY_REMAP = ImmutableMap.<String, String>builder()
-        .put("gridpane-column", "GridPane.columnIndex").put("gridpane-row", "GridPane.rowIndex")
-        .put("hbox-hgrow", "HBox.hgrow").put("vbox-vgrow", "VBox.vgrow").put("tilepane-alignment", "TilePane.alignment")
-        .put("stackpane-alignment", "StackPane.alignment").put("pane-bottom-anchor", "AnchorPane.bottomAnchor")
-        .put("pane-right-anchor", "AnchorPane.rightAnchor").put("pane-left-anchor", "AnchorPane.leftAnchor")
-        .put("pane-top-anchor", "AnchorPane.topAnchor").put("borderpane-alignment", "BorderPane.alignment")
-        .put("gridpane-halignment", "GridPane.halignment").put("gridpane-valignment", "GridPane.valignment")
-        .put("gridpane-column-span", "GridPane.columnSpan").put("gridpane-row-span", "GridPane.rowSpan").build();
 
     private Collection<Class<?>> referenceClasses = new HashSet<>(REFERENCE_CLASSES);
     private Document document;
@@ -102,7 +57,7 @@ public final class FXMLCreator {
     private Map<Object, String> referencedNodes = new IdentityHashMap<>();
     private LinkedHashMap<Class<?>, List<String>> differencesMap = new LinkedHashMap<>();
 
-    public void createFXMLFile(Parent node, File file) {
+    public void createFXMLFile(Object node, File file) {
         String packageName = FXMLCreator.class.getPackage().getName();
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -230,7 +185,7 @@ public final class FXMLCreator {
     private String newName(Object f) {
         if (hasField(f.getClass(), "id")) {
             Object fieldValue = mapProperty(getFieldValue(f, "id"));
-            String id = Objects.toString(fieldValue, "").replaceAll("\\W", "");
+            String id = Objects.toString(fieldValue, "").replaceAll("[\\W_]", "");
             if (StringUtils.isNotBlank(id)) {
                 String string = changeCase(id);
                 if (StringUtils.isNumeric(string)) {
@@ -473,13 +428,13 @@ public final class FXMLCreator {
             Map<String, Object> differences = differences(fieldValue);
             Element defineElement;
             Node firstChild = document.getFirstChild().getFirstChild();
-            if (!firstChild.getNodeName().equals(FX_DEFINE)) {
+            if (FX_DEFINE.equals(firstChild.getNodeName())) {
+                defineElement = (Element) firstChild;
+            } else {
                 defineElement = document.createElement(FX_DEFINE);
                 Node firstChild2 = document.getFirstChild();
                 firstChild2.appendChild(defineElement);
                 firstChild2.insertBefore(defineElement, firstChild);
-            } else {
-                defineElement = (Element) firstChild;
             }
             Element createElement = document.createElement(simpleName);
             defineElement.appendChild(createElement);

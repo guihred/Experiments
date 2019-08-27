@@ -2,10 +2,13 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 import static javafx.scene.input.KeyCode.*;
+import static utils.RunnableEx.ignore;
 
 import cubesystem.DeathStar;
 import ethical.hacker.EthicalHackApp;
+import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
+import extract.FilesComparator;
 import fxpro.ch02.PongLauncher;
 import fxpro.ch07.Chart3dSampleApp;
 import fxsamples.JewelViewer;
@@ -31,13 +34,16 @@ import gaming.ex17.PuzzleLauncher;
 import gaming.ex17.PuzzlePiece;
 import gaming.ex18.Square2048Launcher;
 import gaming.ex20.RoundMazeLauncher;
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -95,6 +101,21 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
+    public void verifyFileComparator() throws Exception {
+        FilesComparator application = show(FilesComparator.class);
+        TableView<File> query = lookup(e -> e instanceof TableView).query();
+        File[] listFiles = ResourceFXUtils.getUserFolder("Music").listFiles(File::isDirectory);
+        application.addSongsToTable(query, listFiles[0]);
+    }
+
+    @Test
+    public void verifyImageCracker() throws Exception {
+        ImageCrackerApp show = show(ImageCrackerApp.class);
+        show.setClickable(false);
+        Platform.runLater(show::loadURL);
+    }
+
+    @Test
     public void verifyMinesweeper() throws Exception {
         show(MinesweeperLauncher.class);
         List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll().parallelStream()
@@ -102,7 +123,7 @@ public class FXEngineTest extends AbstractTestExecution {
         Collections.shuffle(queryAll);
         for (int i = 0; i < 30; i++) {
             Node next = queryAll.get(i);
-            clickOn(next);
+            ignore(() -> clickOn(next));
             tryClickButtons();
         }
     }

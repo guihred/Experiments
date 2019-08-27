@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,29 +42,39 @@ public class FilesComparator extends Application {
     private static final Logger LOG = HasLogging.log();
 
     private final ObjectProperty<File> directory1 = new SimpleObjectProperty<>();
-
     private final ObjectProperty<File> directory2 = new SimpleObjectProperty<>();
     private final MusicHandler musicHandler = new MusicHandler(null);
+    private Map<String, ObjectProperty<File>> directoryMap = new HashMap<>();
 
     private final Map<File, Music> fileMap = new ConcurrentHashMap<>();
 
     private ProgressIndicator progress;
 
+    public void addSongsToTable(TableView<File> table1, File selectedFile) {
+        ObservableList<File> items = table1.getItems();
+        ObjectProperty<File> dir1 = directoryMap.get(table1.getId());
+        getSongs(selectedFile, items, table1);
+        dir1.setValue(selectedFile);
+//        updateCells(table1);
+    }
+
     public ObservableList<File> getSongs(File file, ObservableList<File> musicas, TableView<File> table1) {
         musicas.clear();
 
         new Thread(() -> {
+            LOG.info("Scanning {}", file);
             List<Path> find = ResourceFXUtils.getPathByExtension(file, ".mp3");
             find.stream().map(Path::toFile).forEach(musicas::add);
             musicas.sort(comparing(FilesComparatorHelper::toFileString));
             double d = 1.0 / find.size();
-            Platform.runLater(() -> progress.setProgress(0));
+            updateProgress(0);
             musicas.forEach(t -> {
-                Platform.runLater(() -> progress.setProgress(progress.getProgress() + d));
+                updateProgress(progress.getProgress() + d);
                 getFromMap(t, fileMap);
             });
-            Platform.runLater(() -> progress.setProgress(1));
+            updateProgress(1);
             updateCells(table1);
+            LOG.info("{} Songs from {}", musicas.size(), file);
         }).start();
         return musicas;
     }
@@ -79,7 +90,7 @@ public class FilesComparator extends Application {
         progress = new ProgressIndicator();
         root.getChildren().add(new VBox(10, progress));
         addTable(root, "File 2", "<", items2, items1, directory2);
-        Scene value = new Scene(root);
+        Scene value = new Scene(root, 550, 400);
         value.getStylesheets().add(toExternalForm("filesComparator.css"));
         primaryStage.setScene(value);
         primaryStage.setTitle("Files Comparator");
@@ -89,8 +100,7 @@ public class FilesComparator extends Application {
     private ObservableValue<File> addTable(HBox root, String nome, String title, ObservableList<File> items1,
         ObservableList<File> items2, ObjectProperty<File> dir) {
 
-		TableView<File> table1 = new SimpleTableViewBuilder<File>().items(items1)
-				.selectionMode(SelectionMode.MULTIPLE)
+        TableView<File> table1 = new SimpleTableViewBuilder<File>().items(items1).selectionMode(SelectionMode.MULTIPLE)
             .addColumn(nome, (s, c) -> {
                 c.setText(toFileString(s));
                 String itemClass = getItemClass(items2, s, c.getStyleClass(), fileMap);
@@ -98,12 +108,9 @@ public class FilesComparator extends Application {
             }).onDoubleClick(e -> musicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
         table1.setId(nome);
 //        new 
-
-        Button files1 = StageHelper.selectDirectory(nome, "Carregar Pasta de Músicas", selectedFile -> {
-            getSongs(selectedFile, items1, table1);
-            dir.setValue(selectedFile);
-            updateCells(table1);
-        });
+        directoryMap.put(nome, dir);
+        Button files1 = StageHelper.selectDirectory(nome, "Carregar Pasta de Músicas",
+            selectedFile -> addSongsToTable(table1, selectedFile));
         Button copyButton = CommonsFX.newButton(title, e -> copy(dir, table1, items2));
         Button deleteButton = CommonsFX.newButton("X", e -> delete(table1));
         Text text = new Text("");
@@ -153,6 +160,10 @@ public class FilesComparator extends Application {
                 LOG.error("", e1);
             }
         }
+    }
+
+    private void updateProgress(double a) {
+        Platform.runLater(() -> progress.setProgress(a));
     }
 
     public static void main(String[] args) {
