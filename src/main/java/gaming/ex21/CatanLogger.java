@@ -107,72 +107,75 @@ public final class CatanLogger {
 	}
 
 	private static CatanAction action(Combination combination) {
-		switch (combination) {
-			case CITY:
-				return CatanAction.BUY_CITY;
-			case DEVELOPMENT:
-				return CatanAction.BUY_DELEVOPMENT;
-			case ROAD:
-				return CatanAction.BUY_ROAD;
-			case VILLAGE:
-				return CatanAction.BUY_VILLAGE;
-			default:
-				break;
-		}
-		return null;
+//		switch (combination) {
+//			case CITY:
+//				return CatanAction.BUY_CITY;
+//			case DEVELOPMENT:
+//				return CatanAction.BUY_DELEVOPMENT;
+//			case ROAD:
+//				return CatanAction.BUY_ROAD;
+//			case VILLAGE:
+//				return CatanAction.BUY_VILLAGE;
+//			default:
+//				break;
+//		}
+        return CatanAction.getAction("BUY_", combination);
 	}
 
 	private static CatanAction action(DevelopmentType development) {
-		switch (development) {
-			case KNIGHT:
-				return CatanAction.SELECT_KNIGHT;
-			case MONOPOLY:
-				return CatanAction.SELECT_MONOPOLY;
-			case ROAD_BUILDING:
-				return CatanAction.SELECT_ROAD_BUILDING;
-			case UNIVERSITY:
-				return CatanAction.SELECT_UNIVERSITY;
-			case YEAR_OF_PLENTY:
-				return CatanAction.SELECT_YEAR_OF_PLENTY;
-			default:
-				return null;
-		}
+        return CatanAction.getAction("SELECT_", development);
+//		switch (development) {
+//			case KNIGHT:
+//				return CatanAction.SELECT_KNIGHT;
+//			case MONOPOLY:
+//				return CatanAction.SELECT_MONOPOLY;
+//			case ROAD_BUILDING:
+//				return CatanAction.SELECT_ROAD_BUILDING;
+//			case UNIVERSITY:
+//				return CatanAction.SELECT_UNIVERSITY;
+//			case YEAR_OF_PLENTY:
+//				return CatanAction.SELECT_YEAR_OF_PLENTY;
+//			default:
+//				return null;
+//		}
 	}
 
     private static CatanAction action(ResourceType resource) {
-		switch (resource) {
-			case BRICK:
-				return CatanAction.SELECT_BRICK;
-			case ROCK:
-				return CatanAction.SELECT_ROCK;
-			case SHEEP:
-				return CatanAction.SELECT_SHEEP;
-			case WHEAT:
-				return CatanAction.SELECT_WHEAT;
-			case WOOD:
-				return CatanAction.SELECT_WOOD;
-			default:
-				break;
-		}
-		return null;
+        return CatanAction.getAction("SELECT_", resource);
+//		switch (resource) {
+//			case BRICK:
+//				return CatanAction.SELECT_BRICK;
+//			case ROCK:
+//				return CatanAction.SELECT_ROCK;
+//			case SHEEP:
+//				return CatanAction.SELECT_SHEEP;
+//			case WHEAT:
+//				return CatanAction.SELECT_WHEAT;
+//			case WOOD:
+//				return CatanAction.SELECT_WOOD;
+//			default:
+//				break;
+//		}
+//		return null;
 	}
 
 	private static CatanAction actionResource(ResourceType resource) {
-        switch (resource) {
-            case BRICK:
-                return CatanAction.RESOURCE_BRICK;
-            case ROCK:
-                return CatanAction.RESOURCE_ROCK;
-            case SHEEP:
-                return CatanAction.RESOURCE_SHEEP;
-            case WHEAT:
-                return CatanAction.RESOURCE_WHEAT;
-            case WOOD:
-                return CatanAction.RESOURCE_WOOD;
-            default:
-                break;
-        }
-        return null;
+        return CatanAction.getAction("RESOURCE_", resource);
+//        switch (resource) {
+//            case BRICK:
+//                return CatanAction.RESOURCE_BRICK;
+//            case ROCK:
+//                return CatanAction.RESOURCE_ROCK;
+//            case SHEEP:
+//                return CatanAction.RESOURCE_SHEEP;
+//            case WHEAT:
+//                return CatanAction.RESOURCE_WHEAT;
+//            case WOOD:
+//                return CatanAction.RESOURCE_WOOD;
+//            default:
+//                break;
+//        }
+//        return null;
     }
 
 	private static void appendLine(Map<String, Object> rowMap) {
