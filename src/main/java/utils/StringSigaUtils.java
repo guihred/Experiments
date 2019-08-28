@@ -1,19 +1,18 @@
 package utils;
 
-import java.io.UnsupportedEncodingException;
+import static utils.SupplierEx.get;
+
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.swing.text.MaskFormatter;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 
 public class StringSigaUtils extends StringUtils {
 
@@ -22,7 +21,6 @@ public class StringSigaUtils extends StringUtils {
     private static final int TAMANHO_CNPJ = 14;
     private static final int TAMANHO_MATRICULA = 7;
     private static final int TAMANHO_PAP = 9;
-    private static final Logger LOGGER = HasLogging.log();
 
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
@@ -32,12 +30,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String codificar(String nome) {
-        try {
-            return URLEncoder.encode(nome, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("IGNORAR EXCEPTION", e);
-        }
-        return "";
+        return get(() -> URLEncoder.encode(nome, "UTF-8"), nome);
     }
 
     public static String corrigirProblemaEncoding(String nomeEncoding) {
@@ -49,12 +42,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String decodificar(String nome) {
-        try {
-            return URLDecoder.decode(nome, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("IGNORAR EXCEPTION", e);
-        }
-        return "";
+        return get(() -> URLDecoder.decode(nome, "UTF-8"), nome);
     }
 
     public static String fixEncoding(String latin1) {
@@ -201,13 +189,10 @@ public class StringSigaUtils extends StringUtils {
         if (numero instanceof Number) {
             return ((Number) numero).intValue();
         }
-        try {
-            return toInteger(Objects.toString(numero, ""));
-        } catch (Exception e) {
-            LOGGER.trace("", e);
-            return 0;
-        }
+
+        return get(() -> toInteger(Objects.toString(numero, "")), 0);
     }
+
     public static Integer toInteger(String numero) {
         String replaceAll = numero.replaceAll("\\D", "");
         return Integer.valueOf(replaceAll);
@@ -255,14 +240,11 @@ public class StringSigaUtils extends StringUtils {
     }
 
     private static String formatar(String pattern, String valor) {
-        try {
+        return get(() -> {
             MaskFormatter mask = new MaskFormatter(pattern);
             mask.setValueContainsLiteralCharacters(false);
             return mask.valueToString(valor);
-        } catch (ParseException e) {
-            LOGGER.error("ERRO AO FORMATAR pattern=" + pattern + " valor=" + valor, e);
-        }
-        return valor;
+        }, valor);
     }
 
 }

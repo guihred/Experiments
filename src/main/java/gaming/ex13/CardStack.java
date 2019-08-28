@@ -5,30 +5,30 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import simplebuilder.SimpleRegionBuilder;
+import javafx.scene.shape.Rectangle;
+import simplebuilder.SimpleRectangleBuilder;
 
-public class CardStack extends Pane {
+public class CardStack extends Region {
 
 	private ObservableList<SolitaireCard> cards = FXCollections.observableArrayList();
 
 	public CardStack() {
         setPrefSize(SolitaireCard.PREF_WIDTH, SolitaireCard.PREF_HEIGHT);
+        setMinSize(SolitaireCard.PREF_WIDTH, SolitaireCard.PREF_HEIGHT);
 		setPadding(new Insets(10));
-		setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), new Insets(1))));
+        setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), new Insets(1))));
         setManaged(false);
         getStyleClass().add("cardstack");
-        addRegion();
-        cards.addListener(
-            (Change<? extends SolitaireCard> r) -> setStyle(
-                cards.isEmpty() ? "-fx-background-color:green;" : ""));
+        setWidth(SolitaireCard.PREF_WIDTH);
+        setHeight(SolitaireCard.PREF_HEIGHT);
+        prefHeight(SolitaireCard.PREF_HEIGHT);
+        setBorder(new Border(
+            new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT)));
+        setShape(addRegion());
 	}
 
     public void addCards(List<SolitaireCard> cards1) {
@@ -79,7 +79,6 @@ public class CardStack extends Pane {
 
 	public List<SolitaireCard> removeAllCards() {
 		getChildren().clear();
-		addRegion();
         List<SolitaireCard> cardsCopy = cards.stream().collect(Collectors.toList());
 		cards.clear();
         return cardsCopy;
@@ -124,11 +123,9 @@ public class CardStack extends Pane {
         addCards(value);
 	}
 
-	private void addRegion() {
-        getChildren().add(SimpleRegionBuilder.create()
-                .styleClass("cardStack")
-                .minWidth(SolitaireCard.PREF_WIDTH)
-                .prefHeight(SolitaireCard.PREF_HEIGHT)
-                .build());
+    private static Rectangle addRegion() {
+        return new SimpleRectangleBuilder().styleClass("cardStack").width(SolitaireCard.PREF_WIDTH)
+            .arcHeight(10).arcWidth(10)
+            .height(SolitaireCard.PREF_HEIGHT).build();
     }
 }

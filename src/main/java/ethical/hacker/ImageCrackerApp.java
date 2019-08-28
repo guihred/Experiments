@@ -71,7 +71,7 @@ public class ImageCrackerApp extends Application {
         BorderPane pane = new BorderPane();
         pane.setTop(top);
         pane.setCenter(browser);
-        pane.setLeft(imageView);
+        pane.setBottom(imageView);
         stage.setScene(new Scene(pane));
         stage.setTitle("Image Cracker");
         stage.show();
@@ -126,7 +126,8 @@ public class ImageCrackerApp extends Application {
     }
 
     public static void waitABit() {
-        RunnableEx.ignore(() -> Thread.sleep(2000));
+        final int twoSeconds = 2000;
+        RunnableEx.ignore(() -> Thread.sleep(twoSeconds));
     }
 
     private static boolean isValid(String crackImage) {

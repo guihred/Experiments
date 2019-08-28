@@ -41,7 +41,10 @@ import org.apache.commons.math3.complex.Complex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
-import others.*;
+import others.OthersTests;
+import others.RandomHelloWorld;
+import others.TermFrequency;
+import others.TermFrequencyIndex;
 import pdfreader.PdfUtils;
 import pdfreader.Speaker;
 import utils.HasLogging;
@@ -66,6 +69,8 @@ public class IndependentTest implements HasLogging {
     public void testAlarmClock() {
         measureTime("AlarmClock.activateAlarmThenStop", () -> AlarmClock
             .scheduleToRun(LocalTime.now().plusMinutes(1), () -> LOGGER.info("RUN AT {}", LocalTime.now())));
+        measureTime("AlarmClock.activateAlarmThenStop", () -> AlarmClock.scheduleToRun(LocalTime.now().minusMinutes(1),
+            () -> LOGGER.info("RUN AT {}", LocalTime.now())));
     }
 
     @Test

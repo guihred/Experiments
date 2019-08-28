@@ -1,6 +1,7 @@
 package audio.mp3;
 
 import static utils.CommonsFX.createField;
+import static utils.RunnableEx.run;
 import static utils.SongUtils.updateCurrentSlider;
 import static utils.SongUtils.updateMediaPlayer;
 
@@ -172,11 +173,7 @@ public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging 
                     mediaPlayer.stop();
                     mediaPlayer.dispose();
                     MusicReader.saveMetadata(selectedItem, outFile);
-                    try {
-                        Files.copy(outFile.toPath(), new FileOutputStream(selectedItem.getArquivo()));
-                    } catch (Exception e1) {
-                        getLogger().error("", e1);
-                    }
+                    run(() -> Files.copy(outFile.toPath(), new FileOutputStream(selectedItem.getArquivo())));
                     stage.close();
                 });
             }

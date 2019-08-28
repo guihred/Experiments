@@ -7,7 +7,7 @@ public enum CatanAction {
     SKIP_TURN,
     ACCEPT_DEAL,
 
-    PLACE_THIEF,
+    PLACE_THIEF(),
     PLACE_VILLAGE,
     PLACE_ROAD,
     PLACE_CITY,
@@ -33,6 +33,20 @@ public enum CatanAction {
     RESOURCE_ROCK,
     RESOURCE_SHEEP,
     RESOURCE_WHEAT,
-    RESOURCE_WOOD,
+    RESOURCE_WOOD;
+
+    private CatanAction() {
+    }
+
+
+    public static CatanAction getAction(String prefix, Enum<?> type) {
+        CatanAction[] values = values();
+        for (CatanAction action : values) {
+            if (action.name().contains(prefix) && action.name().contains(type.name())) {
+                return action;
+            }
+        }
+        return null;
+    }
 
 }

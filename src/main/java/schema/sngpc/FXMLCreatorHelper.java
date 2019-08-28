@@ -3,9 +3,10 @@ package schema.sngpc;
 import static java.util.stream.Collectors.joining;
 import static others.TreeElement.compareTree;
 import static others.TreeElement.displayMissingElement;
+import static utils.RunnableEx.make;
 
 import com.google.common.collect.ImmutableMap;
-import ethical.hacker.EthicalHackApp;
+import gaming.ex21.CatanApp;
 import java.io.File;
 import java.util.*;
 import java.util.function.Function;
@@ -33,10 +34,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
-import utils.CrawlerTask;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 public final class FXMLCreatorHelper {
     private static final Logger LOG = HasLogging.log();
@@ -107,7 +105,7 @@ public final class FXMLCreatorHelper {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> classes = Arrays.asList(EthicalHackApp.class);
+        List<Class<? extends Application>> classes = Arrays.asList(CatanApp.class);
         testApplications(classes, false);
 //        for (Class<? extends Application> class1 : asList) 
 //            duplicate(class1.getSimpleName() + ".fxml");
@@ -142,15 +140,15 @@ public final class FXMLCreatorHelper {
         return errorClasses;
     }
 
-    public static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close,
-        Collection<Class<? extends Application>> differentTree) throws Exception {
+    private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close,
+        Collection<Class<? extends Application>> differentTree) {
         CrawlerTask.insertProxyConfig();
         LOG.info("INITIALIZING {}", appClass.getSimpleName());
-        Application a = appClass.newInstance();
+        Application a = ClassReflectionUtils.getInstance(appClass);
         Stage primaryStage = new Stage();
         stages.add(primaryStage);
         primaryStage.setTitle(appClass.getSimpleName());
-        a.start(primaryStage);
+        make(() -> a.start(primaryStage), e -> throwException(appClass, e)).run();
         primaryStage.toBack();
         File outFile = ResourceFXUtils.getOutFile(appClass.getSimpleName() + ".fxml");
         Parent root = primaryStage.getScene().getRoot();
@@ -172,5 +170,9 @@ public final class FXMLCreatorHelper {
             differentTree.add(appClass);
         }
         LOG.info("{} successfull", appClass.getSimpleName());
+    }
+
+    private static void throwException(Class<? extends Application> appClass, Throwable e) {
+        throw new RuntimeIOException("ERROR IN " + appClass, e);
     }
 }

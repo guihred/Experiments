@@ -219,7 +219,7 @@ public class FXEngineTest extends AbstractTestExecution {
         Collections.shuffle(cardStacks);
         targetPos(Pos.TOP_CENTER);
         for (CardStack cardStack : cardStacks) {
-            if (cardStack.getChildren().size() <= 1) {
+            if (cardStack.getCards().isEmpty()) {
                 continue;
             }
             Node card = getLastCard(cardStack);
@@ -228,8 +228,8 @@ public class FXEngineTest extends AbstractTestExecution {
                 drag(card, MouseButton.PRIMARY);
                 moveTo(stack);
                 drop();
-                if (!cardStack.getChildren().contains(card)) {
-                    if (cardStack.getChildren().size() <= 1) {
+                if (!cardStack.getCards().contains(card)) {
+                    if (cardStack.getCards().size() <= 1) {
                         continue;
                     }
                     card = getLastCard(cardStack);
@@ -257,14 +257,9 @@ public class FXEngineTest extends AbstractTestExecution {
 
     private static Node getLastCard(CardStack cardStack) {
 
-        ObservableList<Node> children = cardStack.getChildren();
-        Optional<Node> findFirst = children.stream().filter(e -> e instanceof SolitaireCard)
-            .filter(e -> ((SolitaireCard) e).isShown()).findFirst();
-        if (findFirst.isPresent()) {
-            return findFirst.get();
-        }
-
-        return children.get(children.size() - 1);
+        ObservableList<SolitaireCard> children = cardStack.getCards();
+        Optional<SolitaireCard> findFirst = children.stream().filter(e -> e.isShown()).findFirst();
+        return findFirst.orElseGet(() -> children.get(children.size() - 1));
     }
 
 }

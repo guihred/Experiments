@@ -1,5 +1,7 @@
 package audio.mp3;
 
+import static utils.RunnableEx.run;
+
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.ID3v24Tag;
@@ -67,13 +69,11 @@ public final class MusicReader {
 
     public static void main(String[] args) {
 
-        try {
+        run(() -> {
             File file = ResourceFXUtils.getUserFolder("Music");
             ObservableList<Music> musicas = getMusicas(file);
             musicas.forEach(s -> LOGGER.info("{}", s));
-        } catch (Exception e) {
-            LOGGER.trace("", e);
-        }
+        });
     }
 
     public static Music readTags(File sourceFile) {

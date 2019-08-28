@@ -1,5 +1,7 @@
 package utils;
 
+import static utils.RunnableEx.ignore;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -119,11 +121,7 @@ public final class SongUtils {
 
     public static DoubleProperty splitAudio(File inFile, File outFile, Duration start, Duration end) {
         if (outFile.exists()) {
-            try {
-                Files.delete(outFile.toPath());
-            } catch (IOException e) {
-                LOG.error("ERRO AO DELETAR", e);
-            }
+            ignore(() -> Files.delete(outFile.toPath()));
         }
 
         StringBuilder cmd = new StringBuilder();

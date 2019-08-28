@@ -266,7 +266,7 @@ public final class FXMLCreator {
     }
 
     private void processList(Element element, String fieldName, Object parent, Collection<?> list) {
-        if (list.isEmpty()) {
+        if (list.isEmpty() || list.stream().allMatch(Objects::isNull)) {
             return;
         }
         if (FORMAT_LIST.containsKey(fieldName)) {
@@ -285,14 +285,30 @@ public final class FXMLCreator {
             return;
         }
         if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
-            if (list.stream().anyMatch(o -> !containsSame(allNode, o))) {
+            if (list.stream().filter(Objects::nonNull).anyMatch(o -> !containsSame(allNode, o))
+                || !"children".equals(fieldName)) {
                 Element originalElement = createListElement(element, fieldName, parent, list);
                 for (Object object : list) {
-                    if (object != null && !containsSame(allNode, object)) {
-                        nodeMap.put(object, originalElement);
-                        allNode.add(object);
+                    if (object != null) {
+                        if (!containsSame(allNode, object)) {
+                            nodeMap.put(object, originalElement);
+                            allNode.add(object);
+                        } else if (!Objects.equals(nodeMap.get(object), originalElement)) {
+                            if (allNode.indexOf(object) < allNode.indexOf(parent)) {
+                                Node node = nodeMap.get(object);
+                                nodeMap.put(object, originalElement);
+                                originalMap.put(object, node);
+                            } else {
+                                originalMap.put(object, originalElement);
+                            }
+                        }
                     }
                 }
+                return;
+            }
+            if (!"children".equals(fieldName)) {
+                Class<? extends Object> parentClass = parent.getClass();
+                LOG.info("{} of {} not set", fieldName, parentClass);
             }
             return;
         }

@@ -93,7 +93,7 @@ public final class ClassReflectionUtils {
         return getters;
     }
 
-    public static Object getInstance(Class<?> cl) {
+    public static <T> T getInstance(Class<T> cl) {
         try {
             return cl.newInstance();
         } catch (Exception e) {

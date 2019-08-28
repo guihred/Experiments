@@ -21,6 +21,7 @@ public class EdgeCatan extends Group {
         .duration(Duration.millis(200)).fromValue(1).toValue(0).build();
     private CatanResource element;
 
+
     public EdgeCatan(@NamedArg("a") final SettlePoint a, @NamedArg("b") final SettlePoint b) {
         double x = a.getLayoutX() + b.getLayoutX();
         double y = a.getLayoutY() + b.getLayoutY();
@@ -39,7 +40,6 @@ public class EdgeCatan extends Group {
         points.add(b);
         setManaged(false);
     }
-
     public boolean edgeAcceptRoad(final Road road) {
         return getElement() == null && (matchColor(road.getPlayer()) || getPoints().stream().anyMatch(p -> p.getEdges()
             .stream().anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == road.getPlayer())));

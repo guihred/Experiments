@@ -90,7 +90,9 @@ public class FilesComparator extends Application {
         progress = new ProgressIndicator();
         root.getChildren().add(new VBox(10, progress));
         addTable(root, "File 2", "<", items2, items1, directory2);
-        Scene value = new Scene(root, 550, 400);
+        final int width = 550;
+        final int height = 400;
+        Scene value = new Scene(root, width, height);
         value.getStylesheets().add(toExternalForm("filesComparator.css"));
         primaryStage.setScene(value);
         primaryStage.setTitle("Files Comparator");
