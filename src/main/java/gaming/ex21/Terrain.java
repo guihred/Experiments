@@ -193,7 +193,8 @@ public class Terrain extends Group {
 			double y = Math.sin(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
 			double centerX = xOff + x - Terrain.RADIUS / 10.;
 			double centerY = yOff + y;
-			SettlePoint e = new SettlePoint(centerX, centerY);
+            SettlePoint e = new SettlePoint();
+            e.relocate(centerX, centerY);
 			points.add(e);
 			if (points.size() > 1) {
 				e.addNeighbor(points.get(i - 1));

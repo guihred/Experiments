@@ -27,15 +27,10 @@ public final class FXMLCreatorTest {
     }
 
 //    @Test
-    public void testErrorClasses2() {
+    public void testErrorClasses() {
 
-        List<Class<? extends Application>> classes = Arrays.asList(election.HibernateCrawler.class,
-            ethical.hacker.EthicalHackApp.class, fxpro.ch01.AudioConfigLauncher.class, fxpro.ch04.ReversiMain.class,
-            fxpro.ch05.TableVisualizationExampleApp.class, fxpro.ch07.PieChartExample.class,
-            fxpro.ch08.BasicAudioPlayerWithControlLauncher.class, fxsamples.PlayingAudio.class,
-            fxsamples.person.WorkingWithTableView.class, gaming.ex21.CatanApp.class,
-            graphs.app.GraphModelLauncher.class, ml.HeatGraphExample.class, ml.HistogramExample.class,
-            ml.MultilineExample.class, ml.PointsExample.class, ml.TimelineExample.class, paintexp.PaintMain.class);
+        List<Class<? extends Application>> classes = Arrays.asList(gaming.ex21.CatanApp.class,
+            graphs.app.GraphModelLauncher.class);
         testApplications(classes);
     }
 

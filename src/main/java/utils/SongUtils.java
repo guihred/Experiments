@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
@@ -34,7 +35,7 @@ public final class SongUtils {
     private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
         .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
         .appendLiteral(':').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
-        .appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
+        .appendValue(ChronoField.MILLI_OF_SECOND, 2, 3, SignStyle.NEVER).toFormatter();
 
     private static final String FFMPEG = ResourceFXUtils.getUserFolder("Downloads").getAbsolutePath()
         + "\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";

@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import org.junit.Ignore;
 
 public class Cell extends Pane {
 
@@ -44,6 +45,7 @@ public class Cell extends Pane {
         return color;
     }
 
+    @Ignore
     public List<Cell> getCellChildren() {
 		return children;
 	}
@@ -51,6 +53,8 @@ public class Cell extends Pane {
     public String getCellId() {
 		return cellId;
 	}
+
+    @Ignore
 	public List<Cell> getCellParents() {
 		return parents;
 	}

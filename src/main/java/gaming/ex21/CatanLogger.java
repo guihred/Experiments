@@ -29,23 +29,6 @@ public final class CatanLogger {
 	private CatanLogger() {
 	}
 
-    public static void addCount(String string, Collection<EdgeCatan> edges, Class<Road> a) {
-		Map<PlayerColor, Long> roadCount = edges.stream().filter(e -> a.isInstance(e.getElement()))
-				.map(e -> e.getElement().getPlayer()).collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-		for (PlayerColor r : PlayerColor.values()) {
-			DATAFRAME_ML.add(string + r.toString(), roadCount.getOrDefault(r, 0L));
-		}
-	}
-
-    public static <T extends CatanResource> void addCount2(String string, Collection<SettlePoint> edges,
-			Class<T> catanResourceType) {
-		Map<PlayerColor, Long> roadCount = edges.stream().filter(e -> catanResourceType.isInstance(e.getElement()))
-				.collect(Collectors.groupingBy(e -> e.getElement().getPlayer(), Collectors.counting()));
-		for (PlayerColor r : PlayerColor.values()) {
-			DATAFRAME_ML.add(string + r.toString(), roadCount.getOrDefault(r, 0L));
-		}
-	}
-
 	public static void log(CatanModel model, CatanAction action) {
         Map<String, Object> row = row(model);
         row.put(ACTION, action);
@@ -97,7 +80,6 @@ public final class CatanLogger {
 			currentState.put("HAS_" + class1.getSimpleName().toUpperCase(),
 					Objects.toString(model.elements.stream().anyMatch(class1::isInstance)));
 		}
-		
 		return currentState;
 	}
 
@@ -107,75 +89,19 @@ public final class CatanLogger {
 	}
 
 	private static CatanAction action(Combination combination) {
-//		switch (combination) {
-//			case CITY:
-//				return CatanAction.BUY_CITY;
-//			case DEVELOPMENT:
-//				return CatanAction.BUY_DELEVOPMENT;
-//			case ROAD:
-//				return CatanAction.BUY_ROAD;
-//			case VILLAGE:
-//				return CatanAction.BUY_VILLAGE;
-//			default:
-//				break;
-//		}
         return CatanAction.getAction("BUY_", combination);
 	}
 
 	private static CatanAction action(DevelopmentType development) {
         return CatanAction.getAction("SELECT_", development);
-//		switch (development) {
-//			case KNIGHT:
-//				return CatanAction.SELECT_KNIGHT;
-//			case MONOPOLY:
-//				return CatanAction.SELECT_MONOPOLY;
-//			case ROAD_BUILDING:
-//				return CatanAction.SELECT_ROAD_BUILDING;
-//			case UNIVERSITY:
-//				return CatanAction.SELECT_UNIVERSITY;
-//			case YEAR_OF_PLENTY:
-//				return CatanAction.SELECT_YEAR_OF_PLENTY;
-//			default:
-//				return null;
-//		}
 	}
 
     private static CatanAction action(ResourceType resource) {
         return CatanAction.getAction("SELECT_", resource);
-//		switch (resource) {
-//			case BRICK:
-//				return CatanAction.SELECT_BRICK;
-//			case ROCK:
-//				return CatanAction.SELECT_ROCK;
-//			case SHEEP:
-//				return CatanAction.SELECT_SHEEP;
-//			case WHEAT:
-//				return CatanAction.SELECT_WHEAT;
-//			case WOOD:
-//				return CatanAction.SELECT_WOOD;
-//			default:
-//				break;
-//		}
-//		return null;
 	}
 
 	private static CatanAction actionResource(ResourceType resource) {
         return CatanAction.getAction("RESOURCE_", resource);
-//        switch (resource) {
-//            case BRICK:
-//                return CatanAction.RESOURCE_BRICK;
-//            case ROCK:
-//                return CatanAction.RESOURCE_ROCK;
-//            case SHEEP:
-//                return CatanAction.RESOURCE_SHEEP;
-//            case WHEAT:
-//                return CatanAction.RESOURCE_WHEAT;
-//            case WOOD:
-//                return CatanAction.RESOURCE_WOOD;
-//            default:
-//                break;
-//        }
-//        return null;
     }
 
 	private static void appendLine(Map<String, Object> rowMap) {

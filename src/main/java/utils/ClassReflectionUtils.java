@@ -15,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
 import org.assertj.core.api.exception.RuntimeIOException;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 
 public final class ClassReflectionUtils {
@@ -337,7 +338,8 @@ public final class ClassReflectionUtils {
     private static List<Method> getters(Class<?> c) {
         return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
             .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(METHOD_REGEX))
-            .filter(m -> m.getParameterCount() == 0).sorted(Comparator.comparing(ClassReflectionUtils::getFieldName))
+            .filter(m -> m.getParameterCount() == 0).filter(m -> m.getAnnotationsByType(Ignore.class).length == 0)
+            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName))
             .collect(Collectors.toList());
     }
 

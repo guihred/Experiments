@@ -3,7 +3,6 @@ package gaming.ex21;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.animation.FadeTransition;
-import javafx.beans.NamedArg;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
@@ -11,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import org.junit.Ignore;
 import simplebuilder.SimpleFadeTransitionBuilder;
 
 public class SettlePoint extends Group {
@@ -24,14 +24,11 @@ public class SettlePoint extends Group {
     private final int id;
     private final FadeTransition highlightTransition = new SimpleFadeTransitionBuilder().node(circle)
         .duration(Duration.millis(200)).fromValue(1).toValue(0).build();
-    private double x;
-    private double y;
-    public SettlePoint(@NamedArg("x") final double x, @NamedArg("y") final double y) {
-        this.x = x;
-        this.y = y;
+
+    public SettlePoint() {
         highlightTransition.play();
 
-        relocate(x, y);
+//        relocate(x, y);
         getChildren().add(circle);
         id = i++;
         setManaged(false);
@@ -98,21 +95,22 @@ public class SettlePoint extends Group {
         return id;
     }
 
-    public ObservableList<SettlePoint> getNeighbors() {
-        return neighbors;
-    }
+    @Ignore
+       public ObservableList<SettlePoint> getNeighbors() {
+            return neighbors;
+        }
 
     public ObservableList<Terrain> getTerrains() {
         return terrains;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
+//    public double getX() {
+//        return x;
+//    }
+//
+//    public double getY() {
+//        return y;
+//    }
 
     @Override
     public int hashCode() {

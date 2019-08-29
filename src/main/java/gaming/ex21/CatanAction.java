@@ -1,5 +1,7 @@
 package gaming.ex21;
 
+import utils.HasLogging;
+
 public enum CatanAction {
     EXCHANGE,
     MAKE_DEAL,
@@ -7,7 +9,7 @@ public enum CatanAction {
     SKIP_TURN,
     ACCEPT_DEAL,
 
-    PLACE_THIEF(),
+    PLACE_THIEF,
     PLACE_VILLAGE,
     PLACE_ROAD,
     PLACE_CITY,
@@ -15,7 +17,7 @@ public enum CatanAction {
     BUY_VILLAGE,
     BUY_ROAD,
     BUY_CITY,
-    BUY_DELEVOPMENT,
+    BUY_DEVELOPMENT,
 
     SELECT_KNIGHT,
     SELECT_MONOPOLY,
@@ -46,6 +48,7 @@ public enum CatanAction {
                 return action;
             }
         }
+        HasLogging.log(1).error("Action does not exist {}{}", prefix, type);
         return null;
     }
 

@@ -58,7 +58,9 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             boolean makeDecision = makeDecision(action, allEdge, allVillages, cities, settlePoints, allRoads,
                 allTerrains, allButtons, clickedButtons);
             if (makeDecision) {
-                getLogger().info("{}/{}", i + 1, j);
+                if (i % 10 == 0) {
+                    getLogger().info("{}/{}", i + 1, j);
+                }
             } else {
                 CatanAction randomAction = getRandomAction();
                 boolean decision = makeDecision(randomAction, allEdge, allVillages, cities, settlePoints, allRoads,
@@ -252,7 +254,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
                 return clickVillages(allVillages, settlePoints);
             case ACCEPT_DEAL:
             case BUY_CITY:
-            case BUY_DELEVOPMENT:
+            case BUY_DEVELOPMENT:
             case BUY_ROAD:
             case BUY_VILLAGE:
             case SKIP_TURN:

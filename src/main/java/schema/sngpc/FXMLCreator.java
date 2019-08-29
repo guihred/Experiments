@@ -19,13 +19,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.scene.image.Image;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
@@ -50,7 +43,7 @@ public final class FXMLCreator {
     private Collection<Class<?>> referenceClasses = new HashSet<>(REFERENCE_CLASSES);
     private Document document;
     private Map<Object, org.w3c.dom.Node> nodeMap = new IdentityHashMap<>();
-    private Map<Object, org.w3c.dom.Node> originalMap = new IdentityHashMap<>();
+    private Map<Object, List<org.w3c.dom.Node>> originalMap = new IdentityHashMap<>();
     private List<Object> allNode = new ArrayList<>();
     private Set<String> packages = new LinkedHashSet<>();
     private Map<String, String> referencedMethod = new LinkedHashMap<>();
@@ -60,11 +53,7 @@ public final class FXMLCreator {
     public void createFXMLFile(Object node, File file) {
         String packageName = FXMLCreator.class.getPackage().getName();
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            factory.setAttribute("http://javax.xml.XMLConstants/feature/secure-processing", true);
-            DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-            document = documentBuilder.newDocument();
+            document = XMLExtractor.newDocument();
             allNode.add(node);
             processNodes(file, packageName);
 
@@ -72,22 +61,16 @@ public final class FXMLCreator {
             document.removeChild(firstChild);
             packages.forEach(p -> document.appendChild(document.createProcessingInstruction("import", p + ".*")));
             document.appendChild(firstChild);
-
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-            transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
-            transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalStylesheet", "");
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            DOMSource domSource = new DOMSource(document);
-            StreamResult streamResult = new StreamResult(file);
-            transformer.transform(domSource, streamResult);
-
+            XMLExtractor.saveToFile(document, file);
             createController(file, packageName);
-
         } catch (Exception e) {
             throw new RuntimeIOException("ERROR in file " + file.getName(), e);
         }
+    }
+
+    private void addToAllNode(Object fieldValue, Element createElement2) {
+        nodeMap.put(fieldValue, createElement2);
+        allNode.add(fieldValue);
     }
 
     private String computeMethod(Object parent, String fieldName, Object fieldValue, String nodeId) {
@@ -169,13 +152,12 @@ public final class FXMLCreator {
             addDifferences(cl, diffFields, ob1, ob2);
         } catch (Exception e) {
             LOG.trace("", e);
-            List<String> fields = getNamedArgs(cl);
             List<String> mappedDifferences = differencesMap.computeIfAbsent(cl,
                 c -> allNode.stream().filter(ob -> ob.getClass() == cl && ob != ob1).limit(100)
                     .flatMap(ob2 -> TreeElement.getDifferences(c, ob1, ob2).stream()).distinct()
                     .collect(Collectors.toList()));
-            fields.addAll(mappedDifferences);
-            Map<String, Object> collect = fields.stream().distinct().filter(m -> invoke(ob1, m) != null)
+            mappedDifferences.addAll(getNamedArgs(cl));
+            Map<String, Object> collect = mappedDifferences.stream().distinct().filter(m -> invoke(ob1, m) != null)
                 .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b, LinkedHashMap::new));
             diffFields.putAll(collect);
         }
@@ -224,8 +206,7 @@ public final class FXMLCreator {
         if (hasClass(CONDITIONAL_TAG_CLASSES, fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
             Element createElement2 = document.createElement(fieldName);
             element.appendChild(createElement2);
-            nodeMap.put(fieldValue, createElement2);
-            allNode.add(fieldValue);
+            addToAllNode(fieldValue, createElement2);
             return;
         }
         if (fieldValue instanceof Map) {
@@ -286,21 +267,14 @@ public final class FXMLCreator {
         }
         if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
             if (list.stream().filter(Objects::nonNull).anyMatch(o -> !containsSame(allNode, o))
-                || !"children".equals(fieldName)) {
+                || !"children".equals(fieldName) && !list.getClass().getSimpleName().contains("Unmodifiable")) {
                 Element originalElement = createListElement(element, fieldName, parent, list);
                 for (Object object : list) {
                     if (object != null) {
                         if (!containsSame(allNode, object)) {
-                            nodeMap.put(object, originalElement);
-                            allNode.add(object);
+                            addToAllNode(object, originalElement);
                         } else if (!Objects.equals(nodeMap.get(object), originalElement)) {
-                            if (allNode.indexOf(object) < allNode.indexOf(parent)) {
-                                Node node = nodeMap.get(object);
-                                nodeMap.put(object, originalElement);
-                                originalMap.put(object, node);
-                            } else {
-                                originalMap.put(object, originalElement);
-                            }
+                            originalMap.computeIfAbsent(object, o -> new ArrayList<>()).add(originalElement);
                         }
                     }
                 }
@@ -318,8 +292,7 @@ public final class FXMLCreator {
             Element createElement2 = createListElement(element, fieldName, parent, list);
             for (Object object : list) {
                 if (object != null) {
-                    nodeMap.put(object, createElement2);
-                    allNode.add(object);
+                    addToAllNode(object, createElement2);
                 }
             }
             return;
@@ -380,7 +353,7 @@ public final class FXMLCreator {
             }
             Node node = nodeMap.get(fieldValue);
             if (!node.getNodeName().equals(FX_DEFINE)) {
-                originalMap.put(fieldValue, node);
+                originalMap.computeIfAbsent(fieldValue, o -> new ArrayList<>()).add(node);
                 nodeMap.put(fieldValue, document.getElementsByTagName(FX_DEFINE).item(0));
             }
         }
@@ -419,7 +392,8 @@ public final class FXMLCreator {
                 String newFieldId = referencedNodes.computeIfAbsent(node2, this::newName);
                 Element referenceTag = document.createElement(FX_REFERENCE);
                 referenceTag.setAttribute("source", newFieldId);
-                originalMap.get(node2).appendChild(referenceTag);
+                List<Node> list = originalMap.get(node2);
+                list.forEach(l -> l.appendChild(referenceTag.cloneNode(false)));
             }
 
             if (hasClass(NECESSARY_REFERENCE, node2.getClass())) {

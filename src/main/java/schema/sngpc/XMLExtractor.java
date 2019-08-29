@@ -10,10 +10,20 @@ import javafx.scene.control.TreeView;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlbeans.XmlObject;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,6 +53,14 @@ public final class XMLExtractor {
         } catch (Exception e2) {
             LOG.trace("", e2);
         }
+    }
+
+    public static Document newDocument() throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setAttribute("http://javax.xml.XMLConstants/feature/secure-processing", true);
+        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+        return documentBuilder.newDocument();
     }
 
     public static Map.Entry<String, String> newEntry(String key, String value) {
@@ -87,10 +105,20 @@ public final class XMLExtractor {
                     }
                 }
             }
-
         } catch (Exception e) {
             throw new RuntimeIOException("ERROR READING", e);
         }
     }
 
+    public static void saveToFile(Document document, File file) throws TransformerException {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
+        transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
+        transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalStylesheet", "");
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        DOMSource domSource = new DOMSource(document);
+        StreamResult streamResult = new StreamResult(file);
+        transformer.transform(domSource, streamResult);
+    }
 }

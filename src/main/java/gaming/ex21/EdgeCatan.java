@@ -76,10 +76,6 @@ public class EdgeCatan extends Group {
         return element;
     }
 
-    public Set<SettlePoint> getPoints() {
-        return points;
-    }
-
     @Override
     public int hashCode() {
         return points.hashCode();
@@ -104,6 +100,10 @@ public class EdgeCatan extends Group {
     @Override
     public String toString() {
         return "(" + points + ")";
+    }
+
+    Set<SettlePoint> getPoints() {
+        return points;
     }
 
     private EdgeCatan toggleFade(final int r, final boolean enable) {
