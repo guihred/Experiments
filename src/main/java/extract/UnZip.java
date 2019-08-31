@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
@@ -29,7 +30,18 @@ public final class UnZip {
 					extractZip(output, file);
 				}
 			}
+            return;
 		}
+        if (jap.exists()) {
+            if (jap.getName().endsWith("zip")) {
+                File output = new File(jap.getParentFile(), "out");
+                if (!output.exists()) {
+                    output.mkdir();
+                }
+                extractZip(output, jap);
+            }
+        }
+
 	}
 
 	public static void extractZippedFiles(String jap) {
@@ -43,27 +55,38 @@ public final class UnZip {
 
 	}
 
-	private static void extractZip(File saida, File file) {
+	private static void extractFiles(File saida, ZipInputStream zipInputStream) throws IOException {
+        final int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+        for (ZipEntry ze = zipInputStream.getNextEntry(); ze != null; ze = zipInputStream.getNextEntry()) {
+        	String fileName = ze.getName().replaceAll(" ", "");
+        	File newFile = new File(saida, fileName);
+        	LOGGER.info("file unzip : {}", newFile.getAbsoluteFile());
+        	// create all non exists folders
+        	// else you will hit FileNotFoundException for compressed folder
+        	// new File(newFile.getParent()).mkdirs()
+        	if (ze.isDirectory()) {
+        		newFile.mkdirs();
+        	} else {
+        		writeNewFile(zipInputStream, buffer, newFile);
+        	}
+        }
+        zipInputStream.closeEntry();
+    }
+
+    private static void extractZip(File saida, File file) {
 
 		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
-			final int bufferSize = 1024;
-			byte[] buffer = new byte[bufferSize];
-            for (ZipEntry ze = zipInputStream.getNextEntry(); ze != null; ze = zipInputStream.getNextEntry()) {
-				String fileName = ze.getName().replaceAll(" ", "");
-				File newFile = new File(saida, fileName);
-				LOGGER.info("file unzip : {}", newFile.getAbsoluteFile());
-				// create all non exists folders
-				// else you will hit FileNotFoundException for compressed folder
-				// new File(newFile.getParent()).mkdirs()
-				if (ze.isDirectory()) {
-					newFile.mkdirs();
-				} else {
-					writeNewFile(zipInputStream, buffer, newFile);
-				}
-			}
-			zipInputStream.closeEntry();
+			extractFiles(saida, zipInputStream);
+			return;
 		} catch (IOException e) {
-			LOGGER.error("", e);
+			LOGGER.trace("ERROR IN CHARSET", e);
+		}
+		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file),StandardCharsets.ISO_8859_1)) {
+		    extractFiles(saida, zipInputStream);
+		    return;
+		} catch (IOException e) {
+		    LOGGER.error("", e);
 		}
 	}
 
