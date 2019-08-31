@@ -33,6 +33,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     @OneToMany(mappedBy = "exercise")
     private List<ContestQuestionAnswer> options;
 
+	@Column(length = 5000)
     private String image;
 
     public void addOption(ContestQuestionAnswer e) {

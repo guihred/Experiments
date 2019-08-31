@@ -33,7 +33,6 @@ import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import utils.CommonsFX;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class ContestQuestionEditingDisplay extends Application implements HasLogging {
     private IntegerProperty current = new SimpleIntegerProperty(-1);
@@ -41,8 +40,8 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
     private ObservableList<ContestQuestionAnswer> options = FXCollections.observableArrayList();
 
     public ContestQuestionEditingDisplay() {
-        lessons = ContestReader.getContestQuestions(
-            ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), () -> current.set(0));
+		lessons = ContestReader.getContestQuestions();
+
     }
 
     public IntegerProperty currentProperty() {
@@ -112,7 +111,8 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         });
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 
-        primaryStage.show();
+		primaryStage.show();
+		current.set(0);
     }
 
     private ListView<ContestQuestionAnswer> newOptionListView() {

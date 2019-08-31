@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import sun.misc.Unsafe;
 import utils.HasLogging;
 
+@SuppressWarnings("restriction")
 public final class ControllerCompiler {
 
     private static final String JAVA_HOME = "java.home";
@@ -27,7 +28,7 @@ public final class ControllerCompiler {
     private ControllerCompiler() {
     }
 
-    public static List<String> compileClass(File customRwa) {
+	public static List<String> compileClass(File customRwa) {
         String property = setJavaHomeProperty();
         final List<String> diagnosticMsg = new ArrayList<>();
         String className = customRwa.getName().replaceAll(".java", "");

@@ -3,6 +3,8 @@ package contest.db;
 import japstudy.db.BaseDAO;
 import japstudy.db.BaseEntity;
 import java.util.List;
+import java.util.stream.Collectors;
+import utils.ClassReflectionUtils;
 
 public class ContestQuestionDAO extends BaseDAO {
 
@@ -12,7 +14,12 @@ public class ContestQuestionDAO extends BaseDAO {
             hql.append("SELECT l ");
             hql.append("FROM ContestQuestion l ");
             hql.append("ORDER BY number");
-            return session.createQuery(hql.toString(), ContestQuestion.class).list();
+			return session.createQuery(hql.toString(), ContestQuestion.class).list().stream().map(e -> {
+				ClassReflectionUtils.getGetterMethodsRecursive(ContestQuestion.class)
+						.forEach(m -> ClassReflectionUtils.invoke(e, m));
+				return e;
+			}).collect(Collectors.toList())
+			;
         });
 	}
 
