@@ -1,6 +1,7 @@
 
 package contest.db;
 
+import extract.UnRar;
 import extract.UnZip;
 import japstudy.db.HibernateUtil;
 import java.io.File;
@@ -14,6 +15,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -71,10 +73,15 @@ public class IadesCrawler extends Application {
 
 				LOG.info("{}", Arrays.toString(listFiles));
 				File file2 = listFiles[0];
-				ObservableList<ContestQuestion> contestQuestions = ContestReader.getContestQuestions(file2, () -> {
-					ContestReader.INSTANCE.getContest().setName(concurso.getValue().getNome());
-					ContestReader.saveAll();
-				});
+				ObservableList<ContestQuestion> contestQuestions = ContestReader
+						.getContestQuestions(file2, instance -> {
+							instance.getContest().setName(concurso.getValue().getNome());
+							instance.saveAll();
+							Platform.runLater(() -> {
+								ContestQuestionEditingDisplay display = new ContestQuestionEditingDisplay(instance);
+								display.start(new Stage());
+							});
+						}).getListQuestions();
 				LOG.info("{}", contestQuestions);
 			}
 		});
@@ -100,6 +107,9 @@ public class IadesCrawler extends Application {
 			}
 			if (url.endsWith(".zip")) {
 				UnZip.extractZippedFiles(outFile);
+			}
+			if (url.endsWith(".rar")) {
+				UnRar.extractRarFiles(outFile);
 			}
 			LOG.info("FILE {} SAVED", out);
 			return outFile;

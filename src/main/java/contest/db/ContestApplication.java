@@ -42,9 +42,10 @@ public class ContestApplication extends Application implements HasLogging {
         File file = ResourceFXUtils.toFile(arquivo);
         ObservableList<HasImage> observableArrayList = FXCollections.observableArrayList();
         FilteredList<HasImage> li = observableArrayList.filtered(e -> true);
-        ObservableList<ContestQuestion> questions = ContestReader.getContestQuestions(file,
+		ContestReader contestQuestions = ContestReader.getContestQuestions(file,
             () -> li.setPredicate(e -> e != null && e.getImage() != null));
-        ObservableList<ContestText> texts = ContestReader.getContestTexts();
+		ObservableList<ContestQuestion> questions = contestQuestions.getListQuestions();
+		ObservableList<ContestText> texts = contestQuestions.getContestTexts();
 
         final TableView<ContestQuestion> questionsTable = createContestQuestionsTable(root);
         questionsTable.setItems(questions);

@@ -33,16 +33,24 @@ import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import utils.CommonsFX;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public class ContestQuestionEditingDisplay extends Application implements HasLogging {
     private IntegerProperty current = new SimpleIntegerProperty(-1);
     private final ObservableList<ContestQuestion> lessons;
+	private final ContestReader instance;
     private ObservableList<ContestQuestionAnswer> options = FXCollections.observableArrayList();
 
     public ContestQuestionEditingDisplay() {
-		lessons = ContestReader.getContestQuestions();
-
+		instance = ContestReader.getContestQuestions(
+            ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), () -> current.set(0));
+		lessons = instance.getListQuestions();
     }
+
+	public ContestQuestionEditingDisplay(ContestReader instance) {
+		this.instance = instance;
+		lessons = instance.getListQuestions();
+	}
 
     public IntegerProperty currentProperty() {
         return current;
@@ -159,7 +167,7 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         ContestQuestion contestQuestion = lessons.get(index);
         lessons.set(index, contestQuestion);
         if (getLogger().isInfoEnabled()) {
-            getLogger().trace(ContestReader.getInstance().getContest().toSQL());
+            getLogger().trace(instance.getContest().toSQL());
             getLogger().trace(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
             getLogger().trace(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
                 .collect(Collectors.joining("\n")));
@@ -167,7 +175,7 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
                 .trace(ContestReader.getInstance().getTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
                     .map(ContestText::toSQL).collect(Collectors.joining("\n")));
         }
-        ContestReader.saveAll();
+        instance.saveAll();
 
         primaryStage.close();
     }

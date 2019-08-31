@@ -3,6 +3,7 @@ package contest.db;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
@@ -20,8 +21,7 @@ import pdfreader.PrintImageLocations;
 import utils.HasImage;
 import utils.HasLogging;
 
-public enum ContestReader implements HasLogging {
-    INSTANCE;
+public class ContestReader implements HasLogging {
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
     public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     public static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
@@ -53,8 +53,20 @@ public enum ContestReader implements HasLogging {
         return contest;
     }
 
+    public  ObservableList<ContestText> getContestTexts() {
+        return getTexts();
+    }
+
+	public ObservableList<ContestQuestion> getListQuestions() {
+		return listQuestions;
+	}
+
     public ObservableList<ContestText> getTexts() {
         return texts;
+    }
+
+    public void saveAll() {
+        saveAllEntities();
     }
 
     public void saveAllEntities() {
@@ -245,7 +257,7 @@ public enum ContestReader implements HasLogging {
         }
     }
 
-    private ContestQuestion tryReadQuestionFromLines(String[] lines) {
+	private ContestQuestion tryReadQuestionFromLines(String[] lines) {
 
         try {
             state = ReaderState.STATE_IGNORE;
@@ -261,35 +273,40 @@ public enum ContestReader implements HasLogging {
         return null;
     }
 
-    public static ObservableList<ContestQuestion> getContestQuestions() {
-        return FXCollections.observableArrayList(getInstance().contestQuestionDAO.list());
+	public static ObservableList<ContestQuestion> getContestQuestions() {
+		ContestReader instance = new ContestReader();
+		return FXCollections.observableArrayList(instance.contestQuestionDAO.list());
     }
 
-    public static ObservableList<ContestQuestion> getContestQuestions(File file, Runnable... r) {
-        new Thread(() -> {
-            INSTANCE.readFile(file);
+	@SafeVarargs
+	public static ContestReader getContestQuestions(File file, Consumer<ContestReader>... r) {
+		ContestReader instance = new ContestReader();
+		new Thread(() -> {
+			instance.readFile(file);
+			Stream.of(r).forEach(e->e.accept(instance));
+		}).start();
+		return instance;
+	}
+
+	public static ContestReader getContestQuestions(File file, Runnable... r) {
+		ContestReader instance = new ContestReader();
+
+		new Thread(() -> {
+			instance.readFile(file);
             Stream.of(r).forEach(Runnable::run);
         }).start();
-        return INSTANCE.listQuestions;
+		return instance;
     }
 
-    public static ObservableList<ContestText> getContestTexts() {
-        return INSTANCE.getTexts();
-    }
-
-    public static ContestReader getInstance() {
-        return INSTANCE;
-    }
-
-    public static void saveAll() {
-        INSTANCE.saveAllEntities();
+	public static ContestReader getInstance() {
+        return new ContestReader();
     }
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
         return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
     }
 
-    enum ReaderState {
+	enum ReaderState {
         STATE_IGNORE,
         STATE_OPTION,
         STATE_QUESTION,
