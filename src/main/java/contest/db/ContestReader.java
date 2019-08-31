@@ -64,9 +64,9 @@ public enum ContestReader implements HasLogging {
             .saveOrUpdate(listQuestions.stream().flatMap(e -> e.getOptions().stream()).collect(Collectors.toList()));
         List<ContestText> nonNullTexts = getTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
             .collect(Collectors.toList());
+		contestQuestionDAO.saveOrUpdate(nonNullTexts);
         getLogger().info("Text max size {}", nonNullTexts.stream().map(ContestText::getText).filter(Objects::nonNull)
             .mapToInt(String::length).max().orElse(0));
-        contestQuestionDAO.saveOrUpdate(nonNullTexts);
     }
 
     private void addAnswer(String[] linhas, int i, String s) {

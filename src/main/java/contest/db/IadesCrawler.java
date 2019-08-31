@@ -2,6 +2,7 @@
 package contest.db;
 
 import extract.UnZip;
+import japstudy.db.HibernateUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -20,10 +21,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -48,6 +46,7 @@ public class IadesCrawler extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("IADES Crawler");
 		primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
+		primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 		primaryStage.show();
 	}
 
@@ -58,37 +57,33 @@ public class IadesCrawler extends Application {
 		Set<String> arrayList = new HashSet<>();
 		Property<Concurso> concurso = new SimpleObjectProperty<>();
 		root.onSelect(t -> getNewLinks(t, arrayList, build));
-		TableView<String> vagasView = new SimpleTableViewBuilder<String>().items(FXCollections.observableArrayList())
-				.addColumn("vagas", (e, s) -> s.setText(e)).onSelect((old, value) -> {
-					ObservableList<Entry<String, String>> linksFound = concurso.getValue().getLinksFound();
-					String number = value.replaceAll("\\D", "");
-					Entry<String, String> orElse = linksFound.stream().filter(e -> e.getKey().contains("Provas"))
-							.sorted(Comparator.comparing(e -> !e.getKey().contains(number))).findFirst().orElse(null);
-					if (orElse != null) {
-						File file = extractURL(orElse.getValue());
-						File[] listFiles = new File(file.getParentFile(), "out")
-								.listFiles(f -> f.getName().contains(number) && f.getName().endsWith(".pdf"));
+		ListView<String> vagasView = new ListView<>();
+		vagasView.setItems(FXCollections.observableArrayList());
+		vagasView.getSelectionModel().selectedItemProperty().addListener((ob, old, value) -> {
+			ObservableList<Entry<String, String>> linksFound = concurso.getValue().getLinksFound();
+			String number = Objects.toString(value).replaceAll("\\D", "");
+			Entry<String, String> orElse = linksFound.stream().filter(e -> e.getKey().contains("Provas"))
+					.sorted(Comparator.comparing(e -> !e.getKey().contains(number))).findFirst().orElse(null);
+			if (orElse != null) {
+				File file = extractURL(orElse.getValue());
+				File[] listFiles = new File(file.getParentFile(), "out")
+						.listFiles(f -> f.getName().contains(number) && f.getName().endsWith(".pdf"));
 
-						LOG.info("{}", Arrays.toString(listFiles));
-						File file2 = listFiles[0];
-						ObservableList<ContestQuestion> contestQuestions = ContestReader.getContestQuestions(file2,
-								() -> {
-									ContestReader.INSTANCE.getContest().setName(concurso.getValue().getNome());
-									ContestReader.saveAll();
-								});
-						LOG.info("{}", contestQuestions);
-
-					}
-
-				}).prefWidthColumns(1).build();
+				LOG.info("{}", Arrays.toString(listFiles));
+				File file2 = listFiles[0];
+				ObservableList<ContestQuestion> contestQuestions = ContestReader.getContestQuestions(file2, () -> {
+					ContestReader.INSTANCE.getContest().setName(concurso.getValue().getNome());
+					ContestReader.saveAll();
+				});
+				LOG.info("{}", contestQuestions);
+			}
+		});
 
 		TableView<Concurso> tableView = new SimpleTableViewBuilder<Concurso>().items(concursos).addColumns("nome")
 				.onSelect((old, value) -> {
 					concurso.setValue(value);
 					vagasView.setItems(value.getVagas());
-				})
-
-				.prefWidthColumns(1).build();
+				}).prefWidthColumns(1).build();
 
 		return new VBox(new SplitPane(build, tableView, vagasView));
 	}
