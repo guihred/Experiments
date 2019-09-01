@@ -2,6 +2,7 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import contest.db.ContestApplication;
 import contest.db.ContestQuestionEditingDisplay;
 import election.*;
 import furigana.FuriganaCrawlerApp;
@@ -47,6 +48,7 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
         show(new JapaneseLessonDisplay());
         clickAllButtons();
+        show(new ContestApplication());
         CrawlerTask.insertProxyConfig();
         show(new HibernateCrawler());
         sleep(WAIT_TIME * 2);

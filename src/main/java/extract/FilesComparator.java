@@ -55,7 +55,6 @@ public class FilesComparator extends Application {
         ObjectProperty<File> dir1 = directoryMap.get(table1.getId());
         getSongs(selectedFile, items, table1);
         dir1.setValue(selectedFile);
-//        updateCells(table1);
     }
 
     public ObservableList<File> getSongs(File file, ObservableList<File> musicas, TableView<File> table1) {

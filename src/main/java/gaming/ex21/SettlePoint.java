@@ -28,7 +28,6 @@ public class SettlePoint extends Group {
     public SettlePoint() {
         highlightTransition.play();
 
-//        relocate(x, y);
         getChildren().add(circle);
         id = i++;
         setManaged(false);
@@ -96,21 +95,13 @@ public class SettlePoint extends Group {
     }
 
     @Ignore
-       public ObservableList<SettlePoint> getNeighbors() {
-            return neighbors;
-        }
+    public ObservableList<SettlePoint> getNeighbors() {
+        return neighbors;
+    }
 
     public ObservableList<Terrain> getTerrains() {
         return terrains;
     }
-
-//    public double getX() {
-//        return x;
-//    }
-//
-//    public double getY() {
-//        return y;
-//    }
 
     @Override
     public int hashCode() {

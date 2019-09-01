@@ -82,7 +82,6 @@ public final class UnZip {
 		}
 		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file),StandardCharsets.ISO_8859_1)) {
 		    extractFiles(saida, zipInputStream);
-		    return;
 		} catch (IOException e) {
 		    LOGGER.error("", e);
 		}

@@ -107,9 +107,6 @@ public final class FXMLCreatorHelper {
     public static void main(String[] argv) {
         List<Class<? extends Application>> classes = Arrays.asList(CatanApp.class);
         testApplications(classes, false);
-//        for (Class<? extends Application> class1 : asList) 
-//            duplicate(class1.getSimpleName() + ".fxml");
-//        }
     }
 
     public static List<Class<?>> testApplications(List<Class<? extends Application>> asList) {

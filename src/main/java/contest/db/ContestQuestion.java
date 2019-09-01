@@ -11,7 +11,6 @@ import utils.HasImage;
 @Entity
 @Table
 public class ContestQuestion extends BaseEntity implements HasImage {
-//    private static int keyCounter;
     @ManyToOne
     @JoinColumn
     private Contest contest;

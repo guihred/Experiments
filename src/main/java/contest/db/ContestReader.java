@@ -90,6 +90,9 @@ public class ContestReader implements HasLogging {
     }
 
     private void addQuestion() {
+        if (!contestQuestion.getOptions().isEmpty() && contestQuestion.getOptions().size() < OPTIONS_PER_QUESTION) {
+            contestQuestion.addOption(answer);
+        }
         answer = new ContestQuestionAnswer();
         answer.setExercise(contestQuestion);
         listQuestions.add(contestQuestion);
@@ -154,9 +157,7 @@ public class ContestReader implements HasLogging {
         }
         if (s.matches(QUESTION_PATTERN)) {
             if (option == OPTIONS_PER_QUESTION && state == ReaderState.STATE_OPTION) {
-                if (contestQuestion.getOptions().size() < OPTIONS_PER_QUESTION) {
-                    contestQuestion.addOption(answer);
-                }
+
                 addQuestion();
             }
             if (state == ReaderState.STATE_TEXT) {
@@ -187,9 +188,6 @@ public class ContestReader implements HasLogging {
         if (state == ReaderState.STATE_OPTION && StringUtils.isBlank(s)) {
             contestQuestion.addOption(answer);
             if (option == OPTIONS_PER_QUESTION) {
-                if (contestQuestion.getOptions().size() < OPTIONS_PER_QUESTION) {
-                    contestQuestion.addOption(answer);
-                }
                 addQuestion();
             }
 

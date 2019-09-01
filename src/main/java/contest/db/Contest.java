@@ -6,7 +6,6 @@ import javax.persistence.*;
 @Table
 @Entity
 public class Contest extends BaseEntity {
-//    private static int keyCounter;
 	@Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

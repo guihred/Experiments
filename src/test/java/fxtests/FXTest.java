@@ -3,7 +3,6 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 
 import audio.mp3.MusicOrganizer;
-import contest.db.ContestApplication;
 import contest.db.ContestQuestionEditingDisplay;
 import cubesystem.DeathStar;
 import cubesystem.GolfBall;
@@ -104,7 +103,7 @@ public final class FXTest {
 
     @Test
     public void test3() throws Throwable {
-        FXTesting.testApps(ContestApplication.class, AnimationExample.class, XylophoneApp.class,
+        FXTesting.testApps(AnimationExample.class, XylophoneApp.class,
             ScatterChartWithFillExample.class, Shapes3DTexture.class, Simple3DBoxApp.class, PdfReader.class,
             SimpleScene3D.class, SnakeLauncher.class, SlidingPuzzleLauncher.class, SudokuLauncher.class,
             RoundMazeLauncher.class, ColorChooser.class, SolitaireLauncher.class, SphereSystemApp.class,

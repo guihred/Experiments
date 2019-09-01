@@ -37,9 +37,6 @@ public enum CatanAction {
     RESOURCE_WHEAT,
     RESOURCE_WOOD;
 
-    private CatanAction() {
-    }
-
 
     public static CatanAction getAction(String prefix, Enum<?> type) {
         CatanAction[] values = values();

@@ -62,9 +62,8 @@ public class IadesCrawler extends Application {
         root.onSelect(t -> getNewLinks(t, arrayList, build));
         ListView<String> vagasView = new ListView<>();
         vagasView.setItems(FXCollections.observableArrayList());
-        vagasView.getSelectionModel().selectedItemProperty().addListener((ob, old, value) -> {
-            saveContestValues(concurso, value);
-        });
+        vagasView.getSelectionModel().selectedItemProperty()
+            .addListener((ob, old, value) -> saveContestValues(concurso, value));
 
         TableView<Concurso> tableView = new SimpleTableViewBuilder<Concurso>().items(concursos).addColumns("nome")
             .onSelect((old, value) -> {
@@ -187,7 +186,7 @@ public class IadesCrawler extends Application {
             return;
         }
         File gabaritoFile = extractURL(gabarito.getValue());
-        List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(e -> e.stream())
+        List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
             .collect(Collectors.toList());
         String[] split = Objects.toString(vaga).split("\\s*-\\s*");
         String cargo = split[split.length - 1].trim();
