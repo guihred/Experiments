@@ -7,10 +7,11 @@ import javax.persistence.*;
 @Table
 @Entity
 public class Contest extends BaseEntity {
-    private static int keyCounter;
+//    private static int keyCounter;
 	@Id
     @Column(name = "id")
-    private Integer key = keyCounter++;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Integer key;
     @Column
     private String name;
     @Column

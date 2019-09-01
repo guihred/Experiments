@@ -32,14 +32,12 @@ public final class UnZip {
 			}
             return;
 		}
-        if (jap.exists()) {
-            if (jap.getName().endsWith("zip")) {
-                File output = new File(jap.getParentFile(), "out");
-                if (!output.exists()) {
-                    output.mkdir();
-                }
-                extractZip(output, jap);
+        if (jap.exists() && jap.getName().endsWith("zip")) {
+            File output = new File(jap.getParentFile(), jap.getName().replaceAll("\\.zip", ""));
+            if (!output.exists()) {
+                output.mkdir();
             }
+            extractZip(output, jap);
         }
 
 	}

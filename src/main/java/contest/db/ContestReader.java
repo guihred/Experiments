@@ -24,7 +24,7 @@ import utils.HasLogging;
 public class ContestReader implements HasLogging {
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
     public static final String TEXT_PATTERN = "Texto \\d+\\s*";
-    public static final String TEXTS_PATTERN = "Textos .+ para responder às questões de (\\d+) a (\\d+)\\.\\s*";
+    public static final String TEXTS_PATTERN = "Textos* .+ para responder às questões de (\\d+) [ae] (\\d+)\\.\\s*";
     private static final String LINE_PATTERN = "^\\d+\\s+$";
 
     private static final String OPTION_PATTERN = "\\([A-E]\\).+";
@@ -54,7 +54,7 @@ public class ContestReader implements HasLogging {
     }
 
     public  ObservableList<ContestText> getContestTexts() {
-        return getTexts();
+        return texts;
     }
 
 	public ObservableList<ContestQuestion> getListQuestions() {
@@ -74,7 +74,7 @@ public class ContestReader implements HasLogging {
         contestQuestionDAO.saveOrUpdate(listQuestions);
         contestQuestionDAO
             .saveOrUpdate(listQuestions.stream().flatMap(e -> e.getOptions().stream()).collect(Collectors.toList()));
-        List<ContestText> nonNullTexts = getTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
+        List<ContestText> nonNullTexts = texts.stream().filter(e -> StringUtils.isNotBlank(e.getText()))
             .collect(Collectors.toList());
 		contestQuestionDAO.saveOrUpdate(nonNullTexts);
         getLogger().info("Text max size {}", nonNullTexts.stream().map(ContestText::getText).filter(Objects::nonNull)
@@ -92,7 +92,7 @@ public class ContestReader implements HasLogging {
 
     private void addNewText() {
         text.setContest(contest);
-        getTexts().add(text);
+        texts.add(text);
         text = new ContestText(contest);
     }
 
@@ -100,6 +100,7 @@ public class ContestReader implements HasLogging {
         answer = new ContestQuestionAnswer();
         answer.setExercise(contestQuestion);
         listQuestions.add(contestQuestion);
+        getLogger().info("QUESTION {}", listQuestions.size());
         contestQuestion = new ContestQuestion();
         contestQuestion.setContest(contest);
         contestQuestion.setSubject(subject);
@@ -160,6 +161,9 @@ public class ContestReader implements HasLogging {
         }
         if (s.matches(QUESTION_PATTERN)) {
             if (option == 5 && state == ReaderState.STATE_OPTION) {
+                if (contestQuestion.getOptions().size() < 5) {
+                    contestQuestion.addOption(answer);
+                }
                 addQuestion();
             }
             if (state == ReaderState.STATE_TEXT) {
@@ -190,6 +194,9 @@ public class ContestReader implements HasLogging {
         if (state == ReaderState.STATE_OPTION && StringUtils.isBlank(s)) {
             contestQuestion.addOption(answer);
             if (option == 5) {
+                if (contestQuestion.getOptions().size() < 5) {
+                    contestQuestion.addOption(answer);
+                }
                 addQuestion();
             }
 
@@ -199,7 +206,7 @@ public class ContestReader implements HasLogging {
         executeAppending(linhas, i, s);
 
         if (StringUtils.isNotBlank(s) && state != ReaderState.STATE_IGNORE) {
-            getLogger().trace(s);
+            getLogger().info("{} - {}", state, s);
         }
     }
 
@@ -231,7 +238,7 @@ public class ContestReader implements HasLogging {
             int numberOfPages = pdDoc.getNumberOfPages();
             contest = new Contest(Organization.IADES);
             PrintImageLocations printImageLocations = new PrintImageLocations();
-            for (int i = 2; i < numberOfPages; i++) {
+            for (int i = 2; i <= numberOfPages; i++) {
                 PDPage page = pdDoc.getPage(i - 1);
                 pageNumber = i;
                 pdfStripper.setStartPage(i);
@@ -240,7 +247,7 @@ public class ContestReader implements HasLogging {
                 String parsedText = pdfStripper.getText(pdDoc);
                 String[] lines = parsedText.split("\r\n");
                 tryReadQuestionFromLines(lines);
-                List<HasImage> imageElements = Stream.concat(getTexts().stream(), listQuestions.stream())
+                List<HasImage> imageElements = Stream.concat(texts.stream(), listQuestions.stream())
                     .collect(Collectors.toList());
                 final int j = i;
                 for (PdfImage pdfImage : images) {
@@ -278,6 +285,12 @@ public class ContestReader implements HasLogging {
 		return FXCollections.observableArrayList(instance.contestQuestionDAO.list());
     }
 
+	public static ContestReader getContestQuestions(File file) {
+        ContestReader instance = new ContestReader();
+        new Thread(() -> instance.readFile(file)).start();
+        return instance;
+    }
+
 	@SafeVarargs
 	public static ContestReader getContestQuestions(File file, Consumer<ContestReader>... r) {
 		ContestReader instance = new ContestReader();
@@ -288,9 +301,8 @@ public class ContestReader implements HasLogging {
 		return instance;
 	}
 
-	public static ContestReader getContestQuestions(File file, Runnable... r) {
+    public static ContestReader getContestQuestions(File file, Runnable... r) {
 		ContestReader instance = new ContestReader();
-
 		new Thread(() -> {
 			instance.readFile(file);
             Stream.of(r).forEach(Runnable::run);
@@ -298,15 +310,12 @@ public class ContestReader implements HasLogging {
 		return instance;
     }
 
-	public static ContestReader getInstance() {
-        return new ContestReader();
-    }
 
-    private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
+	private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
         return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
     }
 
-	enum ReaderState {
+    enum ReaderState {
         STATE_IGNORE,
         STATE_OPTION,
         STATE_QUESTION,

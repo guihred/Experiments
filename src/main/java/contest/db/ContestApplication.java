@@ -1,7 +1,5 @@
 package contest.db;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -28,8 +26,20 @@ import utils.ResourceFXUtils;
 
 public class ContestApplication extends Application implements HasLogging {
 
+    private final ContestReader contestQuestions;
+
+    public ContestApplication() {
+        contestQuestions = ContestReader.getContestQuestions(
+            ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"),
+            () -> getLogger().info("Questions Read"));
+    }
+
+    public ContestApplication(ContestReader contestQuestions) {
+        this.contestQuestions = contestQuestions;
+    }
+
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("Contest Questions");
         HBox root = new HBox(20);
         root.setPrefWidth(1000);
@@ -38,14 +48,10 @@ public class ContestApplication extends Application implements HasLogging {
         // create a grid pane
         root.setPadding(new Insets(5));
 
-        String arquivo = "102 - Analista de Tecnologia da Informacao - Tipo D.pdf";
-        File file = ResourceFXUtils.toFile(arquivo);
         ObservableList<HasImage> observableArrayList = FXCollections.observableArrayList();
-        FilteredList<HasImage> li = observableArrayList.filtered(e -> true);
-		ContestReader contestQuestions = ContestReader.getContestQuestions(file,
-            () -> li.setPredicate(e -> e != null && e.getImage() != null));
-		ObservableList<ContestQuestion> questions = contestQuestions.getListQuestions();
-		ObservableList<ContestText> texts = contestQuestions.getContestTexts();
+        FilteredList<HasImage> li = observableArrayList.filtered(e -> e != null && e.getImage() != null);
+        ObservableList<ContestQuestion> questions = contestQuestions.getListQuestions();
+        ObservableList<ContestText> texts = contestQuestions.getContestTexts();
 
         final TableView<ContestQuestion> questionsTable = createContestQuestionsTable(root);
         questionsTable.setItems(questions);

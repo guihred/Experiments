@@ -11,7 +11,7 @@ import utils.HasImage;
 @Entity
 @Table
 public class ContestQuestion extends BaseEntity implements HasImage {
-    private static int keyCounter;
+//    private static int keyCounter;
     @ManyToOne
     @JoinColumn
     private Contest contest;
@@ -22,7 +22,8 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     @Column(length = 5000)
     private String subject;
     @Id
-    private Integer key = keyCounter++;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Integer key;
 
     @Column
     private Integer number;
@@ -121,6 +122,15 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         return split.equals(number + "");
     }
 
+    public void setAnswer(char charAt) {
+        int index = charAt-'A';
+        if(index<options.size()) {
+            options.get(index).setCorrect(true);
+        } else {
+            getLogger().error("ANSWER not SET {} {}", this, charAt);
+        }
+    }
+
     public void setContest(Contest contest) {
         this.contest = contest;
     }
@@ -145,10 +155,10 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     public void setOptions(List<ContestQuestionAnswer> options) {
         this.options = options;
     }
-
     public void setSubject(String subject) {
         this.subject = subject;
     }
+
     public void setType(QuestionType type) {
         this.type = type;
     }

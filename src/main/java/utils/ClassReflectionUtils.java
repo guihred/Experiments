@@ -111,6 +111,14 @@ public final class ClassReflectionUtils {
             .filter(m -> getFieldNameCase(m).equals(f)).findFirst().orElse(null);
     }
 
+    public static List<Method> getters(Class<?> c) {
+        return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(METHOD_REGEX))
+            .filter(m -> m.getParameterCount() == 0).filter(m -> m.getAnnotationsByType(Ignore.class).length == 0)
+            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName))
+            .collect(Collectors.toList());
+    }
+
     public static boolean hasClass(Collection<Class<?>> newTagClasses, Class<? extends Object> class1) {
         return Modifier.isPublic(class1.getModifiers())
             && newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
@@ -333,14 +341,6 @@ public final class ClassReflectionUtils {
             }
         }
         return args;
-    }
-
-    private static List<Method> getters(Class<?> c) {
-        return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
-            .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(METHOD_REGEX))
-            .filter(m -> m.getParameterCount() == 0).filter(m -> m.getAnnotationsByType(Ignore.class).length == 0)
-            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName))
-            .collect(Collectors.toList());
     }
 
     private static boolean hasBuiltArg(Class<?> targetClass, String field) {

@@ -172,7 +172,7 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
             getLogger().trace(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
                 .collect(Collectors.joining("\n")));
             getLogger()
-                .trace(ContestReader.getInstance().getTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
+                .trace(instance.getTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
                     .map(ContestText::toSQL).collect(Collectors.joining("\n")));
         }
         instance.saveAll();

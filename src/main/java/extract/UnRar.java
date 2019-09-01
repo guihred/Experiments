@@ -13,7 +13,6 @@ import java.util.List;
 import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public final class UnRar {
 	public static final String SRC_DIRECTORY = new File("").getAbsolutePath();
@@ -28,8 +27,12 @@ public final class UnRar {
 	}
 
 	public static void extractRarFiles(File file) {
-		File output = ResourceFXUtils.getOutFile();
+        File output = new File(file.getParentFile(), file.getName().replaceAll("\\.rar", ""));
+
 		if (file.exists()) {
+            if (!output.exists()) {
+                output.mkdir();
+            }
 			if (file.isDirectory()) {
 				recurseDirectory(file, output);
 			} else {
