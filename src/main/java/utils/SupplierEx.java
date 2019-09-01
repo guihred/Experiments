@@ -19,7 +19,7 @@ public interface SupplierEx<T> {
         try {
             return run.get();
         } catch (Exception e) {
-            HasLogging.log(1).error("", e);
+            HasLogging.log(1).trace("", e);
             return orElse;
         }
     }

@@ -1,8 +1,6 @@
 package contest.db;
 
 import static java.util.stream.Collectors.toList;
-import static utils.ClassReflectionUtils.getters;
-import static utils.ClassReflectionUtils.invoke;
 
 import japstudy.db.BaseDAO;
 import japstudy.db.BaseEntity;
@@ -10,16 +8,35 @@ import java.util.List;
 
 public class ContestQuestionDAO extends BaseDAO {
 
-    public List<ContestQuestion> list() {
+    public List<ContestQuestion> list(Contest c) {
         return execute(session -> {
             StringBuilder hql = new StringBuilder();
             hql.append("SELECT l ");
             hql.append("FROM ContestQuestion l ");
+            hql.append("WHERE l.contest=:c ");
             hql.append("ORDER BY number");
-            return session.createQuery(hql.toString(), ContestQuestion.class).list().stream().map(e -> {
-                getters(ContestQuestion.class).forEach(m -> invoke(e, m));
-                return e;
-            }).collect(toList());
+            return session.createQuery(hql.toString(), ContestQuestion.class).setParameter("c", c).list().stream()
+                .map(BaseDAO::initialize).collect(toList());
+        });
+    }
+
+    public List<Contest> listContests() {
+        return execute(session -> {
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT l ");
+            hql.append("FROM Contest l ");
+            hql.append("ORDER BY key");
+            return session.createQuery(hql.toString(), Contest.class).list();
+        });
+    }
+
+    public List<ContestText> listTexts() {
+        return execute(session -> {
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT c ");
+            hql.append("FROM ContestText c ");
+            return session.createQuery(hql.toString(), ContestText.class).list().stream()
+                .map(BaseDAO::initialize).collect(toList());
         });
     }
 

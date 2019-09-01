@@ -1,7 +1,6 @@
 package contest.db;
 
 import japstudy.db.BaseEntity;
-import java.util.Objects;
 import javax.persistence.*;
 
 @Table
@@ -15,6 +14,8 @@ public class Contest extends BaseEntity {
     @Column
     private String name;
     @Column
+    private String job;
+    @Column
     @Enumerated(EnumType.STRING)
     private Organization organization;
 
@@ -25,9 +26,9 @@ public class Contest extends BaseEntity {
         this.organization = organization;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null && super.equals(obj) && ((Contest) obj).key == key;
+
+    public String getJob() {
+        return job;
     }
 
     @Override
@@ -43,9 +44,9 @@ public class Contest extends BaseEntity {
         return organization;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(key);
+
+    public void setJob(String job) {
+        this.job = job;
     }
 
     public void setKey(Integer id) {

@@ -19,6 +19,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.RunnableEx;
+import utils.SupplierEx;
 
 public final class PdfUtils {
 
@@ -40,12 +42,11 @@ public final class PdfUtils {
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
         DoubleProperty progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
-        new Thread(() -> {
+        new Thread(() -> RunnableEx.ignore(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
                 int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
-
                 for (int i = start; i < nPag; i++) {
                     PrintImageLocations printImageLocations = new PrintImageLocations();
                     PDPage page = pdDoc.getPage(i);
@@ -54,10 +55,8 @@ public final class PdfUtils {
                     double current = i;
                     Platform.runLater(() -> progress.set(current / (nPag - start)));
                 }
-			} catch (Throwable e) {
-                LOG.error("", e);
             }
-        }).start();
+        })).start();
         return images;
     }
 
@@ -74,6 +73,7 @@ public final class PdfUtils {
     public static PdfInfo readFile(File file1, PrintStream out) {
         return readFile(new PdfInfo(), file1, out);
     }
+
     public static PdfInfo readFile(PdfInfo pdfInfo, File file1) {
         return readFile(pdfInfo, file1, null);
     }
@@ -129,14 +129,8 @@ public final class PdfUtils {
     }
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
-        try {
-            List<PdfImage> images1 = printImageLocations.processPage(page, i);
-            LOG.trace("images extracted {}", images1);
-            return images1;
-        } catch (Exception e) {
-            LOG.trace("", e);
-            return Collections.emptyList();
-        }
+        return SupplierEx.get(() -> printImageLocations.processPage(page, i), Collections.emptyList());
+
     }
 
 }

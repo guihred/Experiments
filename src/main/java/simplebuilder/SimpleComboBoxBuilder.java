@@ -1,5 +1,7 @@
 package simplebuilder;
 
+import static simplebuilder.SimpleListViewBuilder.newCellFactory;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiConsumer;
@@ -9,7 +11,6 @@ import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
 import javafx.util.StringConverter;
 
@@ -110,18 +111,10 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
     }
 
     public SimpleComboBoxBuilder<T> styleFunction(Function<T, String> func) {
-
-        comboBox.setCellFactory(param -> new ListCell<T>() {
-            @Override
-            protected void updateItem(T item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null) {
-                    T t = param.getItems().get(getIndex());
-                    setText(comboBox.getConverter().toString(t));
-                    setStyle(func.apply(t));
-                }
-            }
-        });
+        comboBox.setCellFactory(newCellFactory((item, cell) -> {
+            cell.setText(comboBox.getConverter().toString(item));
+            cell.setStyle(func.apply(item));
+        }));
         return this;
     }
 

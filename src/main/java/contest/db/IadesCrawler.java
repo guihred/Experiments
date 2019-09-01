@@ -26,7 +26,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
 import org.jsoup.nodes.Document;
@@ -119,7 +118,7 @@ public class IadesCrawler extends Application {
         })).thenApply(doc -> getLinks(doc, entry, domain, links, level)).thenAccept(l -> {
             LOG.info("Links {}", l);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
-            l.forEach(m -> newValue.getChildren().add(new TreeItem<>(m, new Text(m.getKey()))));
+            l.forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
         });
         ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
     }
@@ -179,6 +178,7 @@ public class IadesCrawler extends Application {
     private static void saveQuestions(Property<Concurso> concurso, String vaga,
         ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities) {
         entities.getContest().setName(concurso.getValue().getNome());
+        entities.getContest().setJob(vaga);
         entities.saveAll();
         Entry<String, String> gabarito = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
             .sorted(Comparator.comparing(e -> !e.getKey().contains(number))).findFirst().orElse(null);
@@ -187,19 +187,19 @@ public class IadesCrawler extends Application {
             return;
         }
         File gabaritoFile = extractURL(gabarito.getValue());
-        List<String> readFile = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(e -> e.stream())
+        List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(e -> e.stream())
             .collect(Collectors.toList());
-        String cargo = Objects.toString(vaga).split("-")[1].trim();
-        Optional<String> findFirst = readFile.stream()
+        String[] split = Objects.toString(vaga).split("\\s*-\\s*");
+        String cargo = split[split.length - 1].trim();
+        Optional<String> findFirst = linesRead.stream()
             .filter(e -> e.contains(vaga) || e.contains(number) && e.contains(cargo)).findFirst();
         if (!findFirst.isPresent()) {
-            LOG.info("COULDN'T FIND {}", vaga);
+            LOG.info("COULDN'T FIND {} {}", vaga, linesRead);
             return;
         }
-        String string = findFirst.get();
-        int indexOf = readFile.indexOf(string);
-        List<String> subList = readFile.subList(indexOf + 4, indexOf + 9);
-        String answers = subList.stream().flatMap(e -> Stream.of(e.split(""))).filter(s -> s.matches("[A-E]"))
+        int indexOf = linesRead.indexOf(findFirst.get());
+        List<String> subList = linesRead.subList(indexOf + 4, indexOf + 9);
+        String answers = subList.stream().flatMap(e -> Stream.of(e.split(""))).filter(s -> s.matches("[A-E#]"))
             .collect(Collectors.joining());
         if (answers.length() != entities.getListQuestions().size()) {
             LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
@@ -212,46 +212,6 @@ public class IadesCrawler extends Application {
         }
         entities.saveAll();
         Platform.runLater(() -> new ContestApplication(entities).start(new Stage()));
-    }
-
-    public static class Concurso {
-        private String url;
-        private String nome;
-        private ObservableList<String> vagas = FXCollections.observableArrayList();
-        private ObservableList<Map.Entry<String, String>> linksFound = FXCollections.observableArrayList();
-
-        public ObservableList<Map.Entry<String, String>> getLinksFound() {
-            return linksFound;
-        }
-
-        public String getNome() {
-            return nome;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public ObservableList<String> getVagas() {
-            return vagas;
-        }
-
-        public void setLinksFound(List<Map.Entry<String, String>> linksFound) {
-            this.linksFound.clear();
-            this.linksFound.addAll(linksFound);
-        }
-
-        public void setNome(String nome) {
-            this.nome = nome;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public void setVagas(ObservableList<String> vagas) {
-            this.vagas = vagas;
-        }
     }
 
 }

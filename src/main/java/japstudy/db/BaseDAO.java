@@ -1,5 +1,8 @@
 package japstudy.db;
 
+import static utils.ClassReflectionUtils.getters;
+import static utils.ClassReflectionUtils.invoke;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.hibernate.HibernateException;
@@ -33,6 +36,10 @@ public class BaseDAO implements HasLogging {
 			getLogger().error("", e);
 		}
 	}
+    protected static <T> T initialize(T e) {
+        getters(e.getClass()).forEach(m -> invoke(e, m));
+        return e;
+    }
 
 	private static Transaction getTransaction(Session session) {
 		Transaction beginTransaction = session.getTransaction();

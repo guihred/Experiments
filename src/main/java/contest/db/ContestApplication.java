@@ -1,6 +1,10 @@
 package contest.db;
 
+import static simplebuilder.SimpleListViewBuilder.newCellFactory;
+
+import japstudy.db.HibernateUtil;
 import java.util.List;
+import java.util.Objects;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -11,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -26,12 +31,23 @@ import utils.ResourceFXUtils;
 
 public class ContestApplication extends Application implements HasLogging {
 
-    private final ContestReader contestQuestions;
+    private ContestReader contestQuestions;
+    private ObservableList<ContestReader> allContests;
 
     public ContestApplication() {
-        contestQuestions = ContestReader.getContestQuestions(
-            ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"),
-            () -> getLogger().info("Questions Read"));
+        allContests = ContestReader.getAllContests();
+        if (allContests.isEmpty()) {
+            contestQuestions = ContestReader.getContestQuestions(
+                ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), reader -> {
+                    reader.getContest().setJob("Analista de Tecnologia da Informacao");
+                    reader.getContest().setName("CFM Conselho Federal de Medicina");
+                    reader.saveAll();
+                    getLogger().info("Questions Read");
+                });
+            allContests.add(contestQuestions);
+            return;
+        }
+        contestQuestions = allContests.get(0);
     }
 
     public ContestApplication(ContestReader contestQuestions) {
@@ -74,12 +90,19 @@ public class ContestApplication extends Application implements HasLogging {
         imagesTable.setItems(li);
 
         root.getChildren().add(createVbox("Images", imagesTable));
+        if (allContests != null) {
+            ListView<ContestReader> e = new ListView<>(allContests);
+            e.setCellFactory(newCellFactory((item, cell) -> cell
+                .setText(Objects.toString(item.getContest().getJob(), "") + "\n" + item.getContest().getName())));
+            root.getChildren().add(0, e);
+        }
 
         TableView<ContestText> textsTable = createTextsTable(root);
         textsTable.setItems(texts);
         root.getChildren().add(createVbox("Texts", textsTable));
         // selection listening
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
         primaryStage.show();
     }
 

@@ -124,7 +124,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
 
     public void setAnswer(char charAt) {
         int index = charAt-'A';
-        if(index<options.size()) {
+        if (index >= 0 && index < options.size()) {
             options.get(index).setCorrect(true);
         } else {
             getLogger().error("ANSWER not SET {} {}", this, charAt);
@@ -155,12 +155,17 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     public void setOptions(List<ContestQuestionAnswer> options) {
         this.options = options;
     }
+
     public void setSubject(String subject) {
         this.subject = subject;
     }
-
     public void setType(QuestionType type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Question(subject=%s, key=%s, number=%s, type=%s)", subject, key, number, type);
     }
 
 }
