@@ -182,38 +182,36 @@ public class IadesCrawler extends Application {
         entities.saveAll();
         Entry<String, String> gabarito = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
             .sorted(Comparator.comparing(e -> !e.getKey().contains(number))).findFirst().orElse(null);
-        if (gabarito != null) {
-            File gabaritoFile = extractURL(gabarito.getValue());
-            List<String> readFile = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(e -> e.stream())
-                .collect(Collectors.toList());
-            String cargo = Objects.toString(vaga).split("-")[1].trim();
-            Optional<String> findFirst = readFile.stream()
-                .filter(e -> e.contains(vaga) || e.contains(number) && e.contains(cargo)).findFirst();
-            if (findFirst.isPresent()) {
-                String string = findFirst.get();
-                int indexOf = readFile.indexOf(string);
-                List<String> subList = readFile.subList(indexOf + 4, indexOf + 9);
-                String collect = subList.stream().flatMap(e -> Stream.of(e.split(""))).filter(s -> s.matches("[A-E]"))
-                    .collect(Collectors.joining());
-                LOG.info("{}", subList);
-                LOG.info("{}", collect);
-                if (collect.length() == entities.getListQuestions().size()) {
-                    ObservableList<ContestQuestion> listQuestions = entities.getListQuestions();
-                    for (int i = 0; i < listQuestions.size(); i++) {
-                        ContestQuestion contestQuestion = listQuestions.get(i);
-                        contestQuestion.setAnswer(collect.charAt(i));
-                    }
-                    entities.saveAll();
-                    Platform.runLater(() -> {
-                        ContestApplication display = new ContestApplication(entities);
-                        display.start(new Stage());
-                    });
-                } else {
-                    LOG.info("QUESTIONS DON'T MATCH {} {}", collect.length(), entities.getListQuestions().size());
-                }
-            }
-
+        if (gabarito == null) {
+            LOG.info("SEM gabarito {}", linksFound);
+            return;
         }
+        File gabaritoFile = extractURL(gabarito.getValue());
+        List<String> readFile = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(e -> e.stream())
+            .collect(Collectors.toList());
+        String cargo = Objects.toString(vaga).split("-")[1].trim();
+        Optional<String> findFirst = readFile.stream()
+            .filter(e -> e.contains(vaga) || e.contains(number) && e.contains(cargo)).findFirst();
+        if (!findFirst.isPresent()) {
+            LOG.info("COULDN'T FIND {}", vaga);
+            return;
+        }
+        String string = findFirst.get();
+        int indexOf = readFile.indexOf(string);
+        List<String> subList = readFile.subList(indexOf + 4, indexOf + 9);
+        String answers = subList.stream().flatMap(e -> Stream.of(e.split(""))).filter(s -> s.matches("[A-E]"))
+            .collect(Collectors.joining());
+        if (answers.length() != entities.getListQuestions().size()) {
+            LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
+            return;
+        }
+        ObservableList<ContestQuestion> listQuestions = entities.getListQuestions();
+        for (int i = 0; i < listQuestions.size(); i++) {
+            ContestQuestion contestQuestion = listQuestions.get(i);
+            contestQuestion.setAnswer(answers.charAt(i));
+        }
+        entities.saveAll();
+        Platform.runLater(() -> new ContestApplication(entities).start(new Stage()));
     }
 
     public static class Concurso {

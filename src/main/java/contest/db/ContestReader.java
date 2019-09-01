@@ -23,7 +23,6 @@ import utils.HasLogging;
 
 public class ContestReader implements HasLogging {
     public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
-    public static final String TEXT_PATTERN = "Texto \\d+\\s*";
     public static final String TEXTS_PATTERN = "Textos* .+ para responder às questões de (\\d+) [ae] (\\d+)\\.\\s*";
     private static final String LINE_PATTERN = "^\\d+\\s+$";
 
