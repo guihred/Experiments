@@ -113,6 +113,7 @@ public class FXEngineTest extends AbstractTestExecution {
         ImageCrackerApp show = show(ImageCrackerApp.class);
         show.setClickable(false);
         Platform.runLater(show::loadURL);
+        ImageCrackerApp.waitABit();
     }
 
     @Test

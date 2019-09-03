@@ -89,7 +89,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public SimpleTableViewBuilder<T> equalColumns() {
         ObservableList<TableColumn<T, ?>> columns = table.getColumns();
-        columns.forEach(c -> c.prefWidthProperty().bind(table.prefWidthProperty().divide(columns.size())));
+        columns.forEach(c -> c.prefWidthProperty().bind(table.widthProperty().divide(columns.size())));
         return this;
     }
 

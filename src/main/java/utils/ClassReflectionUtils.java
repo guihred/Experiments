@@ -172,7 +172,7 @@ public final class ClassReflectionUtils {
     private static void displayStyleClass(String left, Node node, StringBuilder str) {
         String arg1 = left + node.getClass().getSimpleName();
         if (node instanceof Labeled) {
-            str.append(String.format("%s = %s = \"%s\"%n", arg1, node.getStyleClass(), ((Labeled) node).getText()));
+            str.append(String.format("%s = .%s = \"%s\"%n", arg1, node.getStyleClass(), ((Labeled) node).getText()));
         }
 
         String id = node.getId();

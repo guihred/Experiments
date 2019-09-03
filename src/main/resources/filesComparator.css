@@ -1,9 +1,9 @@
-.vermelho{
-	-fx-background-color:lightcoral;
-}
-.amarelo{
-	-fx-background-color: lightyellow;
-}
+/* .vermelho{ */
+/* 	-fx-background-color:lightcoral; */
+/* } */
+/* .amarelo{ */
+/* 	-fx-background-color: lightyellow; */
+/* } */
 
 .cell:selected > .amarelo{
 	-fx-background-color: yellow;

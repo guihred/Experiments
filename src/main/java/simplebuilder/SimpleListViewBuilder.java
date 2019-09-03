@@ -18,6 +18,11 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     }
 
 
+    public SimpleListViewBuilder<T> cellFactory(BiConsumer<T, ListCell<T>> value) {
+        table.setCellFactory(newCellFactory(value));
+        return this;
+    }
+
     public SimpleListViewBuilder<T> items(final ObservableList<T> value) {
         table.setItems(value);
         return this;
@@ -44,6 +49,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         table.scrollTo(value);
         return this;
     }
+
 
     public SimpleListViewBuilder<T> selectionMode(SelectionMode value) {
         table.getSelectionModel().setSelectionMode(value);

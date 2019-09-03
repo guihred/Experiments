@@ -77,7 +77,7 @@ public final class UnZip {
 		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
 			extractFiles(saida, zipInputStream);
 			return;
-		} catch (IOException e) {
+        } catch (Exception e) {
 			LOGGER.trace("ERROR IN CHARSET", e);
 		}
 		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file),StandardCharsets.ISO_8859_1)) {
@@ -88,6 +88,10 @@ public final class UnZip {
 	}
 
 	private static void writeNewFile(ZipInputStream zipInputStream, byte[] buffer, File newFile) {
+        if (!newFile.getParentFile().exists()) {
+            newFile.getParentFile().mkdir();
+        }
+
 		try (FileOutputStream fos = new FileOutputStream(newFile)) {
 
 			int len;

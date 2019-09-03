@@ -43,4 +43,9 @@ public class Concurso {
     public void setVagas(ObservableList<String> vagas) {
         this.vagas = vagas;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Concurso [url=%s, nome=%s, vagas=%s, linksFound=%s]", url, nome, vagas, linksFound);
+    }
 }

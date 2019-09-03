@@ -1,13 +1,18 @@
 
 package contest.db;
 
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+
 import extract.UnRar;
 import extract.UnZip;
 import japstudy.db.HibernateUtil;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
@@ -28,6 +33,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import pdfreader.PdfUtils;
@@ -131,6 +137,10 @@ public class IadesCrawler extends Application {
         return l.startsWith("/") ? domain.get() + l : l;
     }
 
+    private static boolean extracted(String number, Path path) {
+        return path.toFile().getName().contains(number) && path.toFile().getName().endsWith(".pdf");
+    }
+
     private static File extractURL(String url) {
         return SupplierEx.get(() -> {
             String file = new URL(url).getFile();
@@ -152,26 +162,58 @@ public class IadesCrawler extends Application {
         });
     }
 
+    private static String getAnswers(ContestReader entities, List<String> linesRead, Optional<String> findFirst) {
+        int indexOf = linesRead.indexOf(findFirst.get());
+        List<String> subList = linesRead.subList(indexOf , linesRead.size()-1);
+        List<String> answersList = subList.stream().filter(StringUtils::isNotBlank).filter(s -> s.matches("[\\sA-E#]+"))
+            .collect(Collectors.toList());
+        String answers = "";
+        for (String string : answersList) {
+            String split = Stream.of(string.split("")).filter(s -> s.matches("[A-E#]")).collect(Collectors.joining());
+            answers += split;
+            if (answers.length() >= entities.getListQuestions().size()) {
+                return answers;
+            }
+        }
+        return answers;
+    }
+
+    private static Path getFirstPDF(File file, String number) throws IOException {
+        try (Stream<Path> find = Files.find(file.toPath(), 3,
+            (path, info) -> extracted(number, path));) {
+            return find.findFirst().orElse(null);
+        }
+    }
+
     private static void saveContestValues(Property<Concurso> concurso, String vaga) {
         if (vaga == null) {
             return;
         }
 
-        ObservableList<Entry<String, String>> linksFound = concurso.getValue().getLinksFound();
+        Concurso value = concurso.getValue();
+        ObservableList<Entry<String, String>> linksFound = value.getLinksFound();
         String number = Objects.toString(vaga).replaceAll("\\D", "");
         Entry<String, String> orElse = linksFound.stream().filter(e -> e.getKey().contains("Provas"))
             .sorted(Comparator.comparing(e -> !e.getKey().contains(number))).findFirst().orElse(null);
-        if (orElse != null) {
-            File file = extractURL(orElse.getValue());
-            File[] listFiles = new File(file.getParentFile(), file.getName().replaceAll("\\.\\w+", ""))
-                .listFiles(f -> f.getName().contains(number) && f.getName().endsWith(".pdf"));
-
-            if (listFiles.length > 0) {
-                File file2 = listFiles[0];
-                ContestReader.getContestQuestions(file2,
-                    entities -> saveQuestions(concurso, vaga, linksFound, number, entities));
-            }
+        if (orElse == null) {
+            LOG.info("NO LINK FOR Provas found {} - {}", vaga, value);
+            return;
         }
+        File file = extractURL(orElse.getValue());
+        if (file == null) {
+            LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
+            return;
+        }
+        File file3 = new File(file.getParentFile(), file.getName().replaceAll("\\.\\w+", ""));
+        
+        Path path = SupplierEx.get(() -> getFirstPDF(file3, number));
+        if (path== null ) {
+            LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
+            return;
+        }
+        File file2 = path.toFile();
+        ContestReader.getContestQuestions(file2,
+            entities -> saveQuestions(concurso, vaga, linksFound, number, entities));
     }
 
     private static void saveQuestions(Property<Concurso> concurso, String vaga,
@@ -191,15 +233,12 @@ public class IadesCrawler extends Application {
         String[] split = Objects.toString(vaga).split("\\s*-\\s*");
         String cargo = split[split.length - 1].trim();
         Optional<String> findFirst = linesRead.stream()
-            .filter(e -> e.contains(vaga) || e.contains(number) && e.contains(cargo)).findFirst();
+            .filter(e -> e.contains(vaga) || e.contains(number) && containsIgnoreCase(e, cargo)).findFirst();
         if (!findFirst.isPresent()) {
             LOG.info("COULDN'T FIND {} {}", vaga, linesRead);
             return;
         }
-        int indexOf = linesRead.indexOf(findFirst.get());
-        List<String> subList = linesRead.subList(indexOf + 4, indexOf + 9);
-        String answers = subList.stream().flatMap(e -> Stream.of(e.split(""))).filter(s -> s.matches("[A-E#]"))
-            .collect(Collectors.joining());
+        String answers = getAnswers(entities, linesRead, findFirst);
         if (answers.length() != entities.getListQuestions().size()) {
             LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
             return;

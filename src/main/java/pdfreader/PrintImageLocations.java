@@ -24,6 +24,7 @@ import org.apache.pdfbox.util.Matrix;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 /**
  * This is an example on how to get the x/y coordinates of image locations.
@@ -66,34 +67,37 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
         }
 
         COSName objectName = (COSName) operands.get(0);
-        PDXObject xobject = getResources().getXObject(objectName);
-        if (xobject instanceof PDFormXObject) {
-            PDFormXObject form = (PDFormXObject) xobject;
-            showForm(form);
-            return;
-        }
-        if (xobject instanceof PDImageXObject) {
-            PDImageXObject image = (PDImageXObject) xobject;
-            BufferedImage image2 = image.getImage();
-            File save = save(pageNumber, num++, image2, image.getSuffix());
+        RunnableEx.ignore(() -> {
 
-            Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
+            PDXObject xobject = getResources().getXObject(objectName);
+            if (xobject instanceof PDFormXObject) {
+                PDFormXObject form = (PDFormXObject) xobject;
+                showForm(form);
+                return;
+            }
+            if (xobject instanceof PDImageXObject) {
+                PDImageXObject image = (PDImageXObject) xobject;
+                BufferedImage image2 = image.getImage();
+                File save = save(pageNumber, num++, image2, image.getSuffix());
 
-            // position in user space units. 1 unit = 1/72 inch at 72 dpi
-            float translateX = ctmNew.getTranslateX();
-            float translateY = ctmNew.getTranslateY();
-            // raw size in pixels
+                Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
 
-            PdfImage pdfImage = new PdfImage();
-            pdfImage.setFile(save);
-            pdfImage.setX(translateX);
-            pdfImage.setY(translateY - ctmNew.getScalingFactorY());
-            pdfImage.setPageN(pageNumber);
-            images.add(pdfImage);
-            getLogger().trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(),
-                pageNumber);
+                // position in user space units. 1 unit = 1/72 inch at 72 dpi
+                float translateX = ctmNew.getTranslateX();
+                float translateY = ctmNew.getTranslateY();
+                // raw size in pixels
 
-        }
+                PdfImage pdfImage = new PdfImage();
+                pdfImage.setFile(save);
+                pdfImage.setX(translateX);
+                pdfImage.setY(translateY - ctmNew.getScalingFactorY());
+                pdfImage.setPageN(pageNumber);
+                images.add(pdfImage);
+                getLogger().trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(),
+                    pageNumber);
+
+            }
+        });
     }
 
     public static File save(int pageNumber, Object number, BufferedImage image, String ext) {

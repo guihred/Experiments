@@ -94,12 +94,12 @@ public class ContestReader implements HasLogging {
             contestQuestion.addOption(answer);
         }
         answer = new ContestQuestionAnswer();
-        answer.setExercise(contestQuestion);
         listQuestions.add(contestQuestion);
         getLogger().trace("QUESTION {}", listQuestions.size());
         contestQuestion = new ContestQuestion();
         contestQuestion.setContest(contest);
         contestQuestion.setSubject(subject);
+        answer.setExercise(contestQuestion);
         option = 0;
     }
 
@@ -163,7 +163,7 @@ public class ContestReader implements HasLogging {
             if (state == ReaderState.STATE_TEXT) {
                 addNewText();
             }
-            getLogger().trace(s);
+            getLogger().info(s);
             contestQuestion.setNumber(intValue(s));
             state = ReaderState.STATE_QUESTION;
             return;
@@ -171,7 +171,6 @@ public class ContestReader implements HasLogging {
         if (s.matches(OPTION_PATTERN)) {
             if (state == ReaderState.STATE_OPTION) {
                 contestQuestion.addOption(answer);
-
                 answer = new ContestQuestionAnswer();
                 answer.setExercise(contestQuestion);
             }
@@ -190,14 +189,13 @@ public class ContestReader implements HasLogging {
             if (option == OPTIONS_PER_QUESTION) {
                 addQuestion();
             }
-
             state = ReaderState.STATE_IGNORE;
         }
 
         executeAppending(linhas, i, s);
 
         if (StringUtils.isNotBlank(s) && state != ReaderState.STATE_IGNORE) {
-            getLogger().trace("{} - {}", state, s);
+            getLogger().info("{} - {}", state, s);
         }
     }
 
@@ -261,7 +259,7 @@ public class ContestReader implements HasLogging {
             state = ReaderState.STATE_IGNORE;
             option = 0;
             text = new ContestText(contest);
-            answer.setExercise(contestQuestion);
+//            answer.setExercise(contestQuestion);
             for (int i = 0; i < lines.length; i++) {
                 processQuestion(lines, i);
             }
