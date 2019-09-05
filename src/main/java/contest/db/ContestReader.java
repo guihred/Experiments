@@ -65,7 +65,15 @@ public class ContestReader implements HasLogging {
         CONTEST_DAO.saveOrUpdate(getContest());
         CONTEST_DAO.saveOrUpdate(listQuestions);
         CONTEST_DAO
-            .saveOrUpdate(listQuestions.stream().flatMap(e -> e.getOptions().stream()).collect(Collectors.toList()));
+            .saveOrUpdate(listQuestions.stream().flatMap(e -> {
+                e.getOptions().forEach(o -> o.setExercise(e));
+                return e.getOptions().stream();
+            }).collect(Collectors.toList()));
+        if (listQuestions.stream().anyMatch(q -> q.getOptions().size() != OPTIONS_PER_QUESTION)) {
+            List<Integer> invalid = listQuestions.stream().map(ContestQuestion::getNumber).collect(Collectors.toList());
+            getLogger().error("Invalid Questions {}", invalid);
+        }
+
         List<ContestText> nonNullTexts = texts.stream().filter(e -> StringUtils.isNotBlank(e.getText()))
             .collect(Collectors.toList());
         CONTEST_DAO.saveOrUpdate(nonNullTexts);
@@ -194,7 +202,7 @@ public class ContestReader implements HasLogging {
 
         executeAppending(linhas, i, s);
 
-        if (StringUtils.isNotBlank(s) && state != ReaderState.STATE_IGNORE) {
+        if (StringUtils.isNotBlank(s)) {
             getLogger().info("{} - {}", state, s);
         }
     }
@@ -244,7 +252,8 @@ public class ContestReader implements HasLogging {
                         .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())))
                         .ifPresent(
                             position -> imageElements.stream().filter(p -> p.matches(position.getLine())).forEach(p -> p
-                                .appendImage(pdfImage.getFile().getParent() + "/" + pdfImage.getFile().getName())));
+                                .appendImage(pdfImage.getFile().getParentFile().getName() + "/"
+                                    + pdfImage.getFile().getName())));
                 }
                 // concat.forEach(action)
             }

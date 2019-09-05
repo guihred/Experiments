@@ -137,8 +137,20 @@ public class IadesCrawler extends Application {
         return l.startsWith("/") ? domain.get() + l : l;
     }
 
-    private static boolean extracted(String number, Path path) {
-        return path.toFile().getName().contains(number) && path.toFile().getName().endsWith(".pdf");
+    private static int containsNumber(String number, Entry<String, String> e) {
+        if (e.getKey().contains(number)) {
+            return 0;
+        }
+        if (number.startsWith("2") && StringUtils.containsIgnoreCase(e.getKey(), "médio")) {
+            return 1;
+        }
+        if (number.startsWith("1") && StringUtils.containsIgnoreCase(e.getKey(), "superior")) {
+            return 1;
+        }
+        if (StringUtils.containsIgnoreCase(e.getKey(), "definitivo")) {
+            return 2;
+        }
+        return 5;
     }
 
     private static File extractURL(String url) {
@@ -162,9 +174,9 @@ public class IadesCrawler extends Application {
         });
     }
 
-    private static String getAnswers(ContestReader entities, List<String> linesRead, Optional<String> findFirst) {
-        int indexOf = linesRead.indexOf(findFirst.get());
-        List<String> subList = linesRead.subList(indexOf , linesRead.size()-1);
+    private static String getAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
+        int indexOf = linesRead.indexOf(findFirst);
+        List<String> subList = linesRead.subList(indexOf, linesRead.size() - 1);
         List<String> answersList = subList.stream().filter(StringUtils::isNotBlank).filter(s -> s.matches("[\\sA-E#]+"))
             .collect(Collectors.toList());
         String answers = "";
@@ -179,10 +191,28 @@ public class IadesCrawler extends Application {
     }
 
     private static Path getFirstPDF(File file, String number) throws IOException {
-        try (Stream<Path> find = Files.find(file.toPath(), 3,
-            (path, info) -> extracted(number, path));) {
-            return find.findFirst().orElse(null);
+        try (Stream<Path> find = Files.find(file.toPath(), 3, (path, info) -> nameMatches(number, path));) {
+            Optional<Path> findFirst = find.findFirst();
+            if (findFirst.isPresent()) {
+                return findFirst.get();
+
+            }
+            LOG.info("NO PDF found {} {}- {}", file, Arrays.asList(file.list()), number);
+            return null;
         }
+    }
+
+    private static File getPDF(String number, File file) {
+        if (file.getName().endsWith(".pdf")) {
+            return file;
+        }
+        File file3 = new File(file.getParentFile(), file.getName().replaceAll("\\.\\w+", ""));
+
+        return SupplierEx.get(() -> getFirstPDF(file3, number).toFile());
+    }
+
+    private static boolean nameMatches(String number, Path path) {
+        return path.toFile().getName().contains(number) && path.toFile().getName().endsWith(".pdf");
     }
 
     private static void saveContestValues(Property<Concurso> concurso, String vaga) {
@@ -194,7 +224,8 @@ public class IadesCrawler extends Application {
         ObservableList<Entry<String, String>> linksFound = value.getLinksFound();
         String number = Objects.toString(vaga).replaceAll("\\D", "");
         Entry<String, String> orElse = linksFound.stream().filter(e -> e.getKey().contains("Provas"))
-            .sorted(Comparator.comparing(e -> !e.getKey().contains(number))).findFirst().orElse(null);
+            .sorted(Comparator.comparing(e -> containsNumber(number, e)))
+            .findFirst().orElse(null);
         if (orElse == null) {
             LOG.info("NO LINK FOR Provas found {} - {}", vaga, value);
             return;
@@ -204,14 +235,7 @@ public class IadesCrawler extends Application {
             LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
             return;
         }
-        File file3 = new File(file.getParentFile(), file.getName().replaceAll("\\.\\w+", ""));
-        
-        Path path = SupplierEx.get(() -> getFirstPDF(file3, number));
-        if (path== null ) {
-            LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
-            return;
-        }
-        File file2 = path.toFile();
+        File file2 = getPDF(number, file);
         ContestReader.getContestQuestions(file2,
             entities -> saveQuestions(concurso, vaga, linksFound, number, entities));
     }
@@ -222,7 +246,7 @@ public class IadesCrawler extends Application {
         entities.getContest().setJob(vaga);
         entities.saveAll();
         Entry<String, String> gabarito = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
-            .sorted(Comparator.comparing(e -> !e.getKey().contains(number))).findFirst().orElse(null);
+            .sorted(Comparator.comparing(e -> containsNumber(number, e))).findFirst().orElse(null);
         if (gabarito == null) {
             LOG.info("SEM gabarito {}", linksFound);
             return;
@@ -230,15 +254,15 @@ public class IadesCrawler extends Application {
         File gabaritoFile = extractURL(gabarito.getValue());
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
             .collect(Collectors.toList());
-        String[] split = Objects.toString(vaga).split("\\s*-\\s*");
+        String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
         String cargo = split[split.length - 1].trim();
         Optional<String> findFirst = linesRead.stream()
-            .filter(e -> e.contains(vaga) || e.contains(number) && containsIgnoreCase(e, cargo)).findFirst();
+            .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
         if (!findFirst.isPresent()) {
-            LOG.info("COULDN'T FIND {} {}", vaga, linesRead);
+            LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabarito.getKey(), linesRead);
             return;
         }
-        String answers = getAnswers(entities, linesRead, findFirst);
+        String answers = getAnswers(entities, linesRead, findFirst.get());
         if (answers.length() != entities.getListQuestions().size()) {
             LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
             return;
