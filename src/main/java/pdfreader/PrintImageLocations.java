@@ -21,10 +21,10 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
-import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
+import utils.SupplierEx;
 
 /**
  * This is an example on how to get the x/y coordinates of image locations.
@@ -33,7 +33,6 @@ import utils.RunnableEx;
  */
 public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
     public static final String OUT_FOLDER = "pdf";
-    private static final Logger LOG = HasLogging.log();
     private List<PdfImage> images = new ArrayList<>();
     private int num;
 
@@ -107,22 +106,16 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
         }
         String extension = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
         File file = new File(outFile, pageNumber + "-" + number + "." + extension);
-        File file2 = file;
-        try {
-
+        return SupplierEx.get(() -> {
             ImageIO.write(image, extension, file); // ignore returned boolean
             Optional<File> findFirst = Stream.of(outFile.listFiles()).filter(e -> e.getName().endsWith(extension))
                 .filter(e -> !e.equals(file)).filter(makeTest(f -> contentEquals(file, f))).findFirst();
             if (findFirst.isPresent()) {
-                file2 = findFirst.get();
-                Files.deleteIfExists(file.toPath());
+                RunnableEx.ignore(() -> Files.deleteIfExists(file.toPath()));
                 return findFirst.get();
             }
-
-        } catch (Exception e) {
-            LOG.trace("Write error for " + file.getPath() + ": " + e.getMessage(), e);
-        }
-        return file2;
+            return null;
+        }, file);
     }
 
 }

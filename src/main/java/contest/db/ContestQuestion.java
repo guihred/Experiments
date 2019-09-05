@@ -41,7 +41,9 @@ public class ContestQuestion extends BaseEntity implements HasImage {
             options= new ArrayList<>();
         }
         options.add(e);
-        
+        if (options.size() > 5) {
+            getLogger().error("__________________ERRROR HERE _____________________________________");
+        }
     }
 
     public void appendExercise(String english) {

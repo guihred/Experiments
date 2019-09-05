@@ -17,8 +17,12 @@ public interface SupplierEx<T> {
 
     static <A> A get(SupplierEx<A> run, A orElse) {
         try {
-            return run.get();
-        } catch (Exception e) {
+            A a = run.get();
+            if (a == null) {
+                return orElse;
+            }
+            return a;
+        } catch (Throwable e) {
             HasLogging.log(1).trace("", e);
             return orElse;
         }

@@ -154,6 +154,21 @@ public class StringSigaUtils extends StringUtils {
         return partUrl;
     }
 
+    public static Integer intValue(String v) {
+        try {
+            return Integer.valueOf(v.replaceAll("\\D", ""));
+        } catch (NumberFormatException e) {
+            HasLogging.log(1).error("NUMBER NOT PARSED", e);
+            return null;
+        }
+    }
+
+    public static boolean isValidUTF8(String latin1) {
+        byte[] bytes = latin1.getBytes(StandardCharsets.ISO_8859_1);
+        return !validUTF8(bytes);
+
+    }
+
     public static String juntar(List<String> palavras) {
         if (palavras == null || palavras.isEmpty()) {
             return "";
@@ -165,6 +180,14 @@ public class StringSigaUtils extends StringUtils {
             return collect.substring(0, lastIndexOf) + " e" + collect.substring(lastIndexOf + 1);
         }
         return collect;
+    }
+
+    public static void main(String[] args) {
+        String latin1 = "";
+
+        System.out.println(Character.getNumericValue(latin1.charAt(0)));
+
+        System.out.println(fixEncoding(latin1));
     }
 
     public static String removerDiacritico(String string) {
