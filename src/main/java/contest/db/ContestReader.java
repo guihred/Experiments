@@ -11,6 +11,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
@@ -28,14 +30,15 @@ import utils.HasLogging;
 import utils.StringSigaUtils;
 
 public class ContestReader implements HasLogging {
+    private static final String DISCURSIVA_PATTERN = "P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
     private static final int OPTIONS_PER_QUESTION = 5;
-    public static final String QUESTION_PATTERN = "QUESTÃO +(\\d+)\\s*___+\\s+";
+    public static final String QUESTION_PATTERN = " *QUESTÃO +(\\d+)\\s*___+\\s+";
     public static final String TEXTS_PATTERN = ".+ para \\w* *[aà l]*s quest[õion]+es [de ]*(\\d+) [ae] (\\d+)\\.*\\s*";
-    private static final String LINE_PATTERN = "^\\d+\\s+$";
+    private static final String LINE_PATTERN = "^\\s*\\d+\\s*$";
 
     private static final String OPTION_PATTERN = "[\\. ]*[ \\(][A-E]\\).+";
     private static final String SUBJECT_PATTERN = "Questões de \\d+ a \\d+\\s*";
-    private static final String SUBJECT_2_PATTERN = "(?i)(.+)[-–]\\s*\\(*Quest.es .*\\d+ . \\d+\\)*\\s*";
+    private static final String SUBJECT_2_PATTERN = "(?i)(.+)[-–]*\\s*\\(*Quest.es .*\\d+ . \\d+\\)*\\s*";
 
     private static final ContestQuestionDAO CONTEST_DAO = new ContestQuestionDAO();
 
@@ -50,11 +53,15 @@ public class ContestReader implements HasLogging {
     private int pageNumber;
     private final List<QuestionPosition> questionPosition = new ArrayList<>();
 
-    private ReaderState state = ReaderState.STATE_IGNORE;
+    private final ObjectProperty<ReaderState> state = new SimpleObjectProperty<>(ReaderState.IGNORE);
 
     private String subject;
     private ContestText text = new ContestText();
     private final ObservableList<ContestText> texts = FXCollections.observableArrayList();
+
+    public ContestReader() {
+        state.addListener((ob, old, value) -> getLogger().info("{}->{} {}", old, value, getCurrentLine(7)));
+    }
 
     public Contest getContest() {
         return contest;
@@ -68,8 +75,14 @@ public class ContestReader implements HasLogging {
         return listQuestions;
     }
 
+    public ReaderState getState() {
+        return state.get();
+    }
+
     public void saveAll() {
-        validate();
+        if (!validate()) {
+            return;
+        }
         CONTEST_DAO.saveOrUpdate(getContest());
         CONTEST_DAO.saveOrUpdate(listQuestions);
         CONTEST_DAO.saveOrUpdate(listQuestions.stream().flatMap(e -> {
@@ -80,9 +93,10 @@ public class ContestReader implements HasLogging {
         List<ContestText> nonNullTexts = texts.stream().filter(e -> StringUtils.isNotBlank(e.getText()))
             .collect(Collectors.toList());
         CONTEST_DAO.saveOrUpdate(nonNullTexts);
-        int maxSize = nonNullTexts.stream().map(ContestText::getText).filter(Objects::nonNull).mapToInt(String::length)
-            .max().orElse(0);
-        getLogger().info("Text max size {}", maxSize);
+    }
+
+    public void setState(ReaderState state) {
+        this.state.set(state);
     }
 
     public boolean validate() {
@@ -106,8 +120,37 @@ public class ContestReader implements HasLogging {
 
     private void addAnswer(String[] linhas, int i, String s) {
         answer.appendAnswer(s.trim() + " ");
-        if (option == OPTIONS_PER_QUESTION && i == linhas.length - 1) {
-            addQuestion();
+        if (option == OPTIONS_PER_QUESTION) {
+            if (i == linhas.length - 1) {
+                addQuestion();
+                return;
+            }
+            if (Stream.of(linhas).skip(i + 1).allMatch(str -> str.matches(LINE_PATTERN))) {
+                addQuestion();
+                setState(ReaderState.IGNORE);
+                return;
+            }
+            String string = linhas[i + 1];
+            if (string.matches(TEXTS_PATTERN)) {
+                addQuestion();
+                setState(ReaderState.TEXT);
+                return;
+            }
+            if (string.matches(SUBJECT_2_PATTERN)) {
+                addQuestion();
+                setState(ReaderState.IGNORE);
+                return;
+            }
+            if (string.matches(QUESTION_PATTERN) || string.startsWith("QUESTÃO")) {
+                addQuestion();
+                setState(ReaderState.QUESTION);
+                return;
+            }
+            if (StringUtils.containsIgnoreCase(string, "Questões") && s.matches(".+\\.\\s*")) {
+                addQuestion();
+                setState(ReaderState.IGNORE);
+                return;
+            }
         }
     }
 
@@ -123,7 +166,6 @@ public class ContestReader implements HasLogging {
         }
         answer = new ContestQuestionAnswer();
         listQuestions.add(contestQuestion);
-        getLogger().trace("QUESTION {}", listQuestions.size());
         contestQuestion = new ContestQuestion();
         contestQuestion.setContest(contest);
         contestQuestion.setSubject(subject);
@@ -131,23 +173,23 @@ public class ContestReader implements HasLogging {
         option = 0;
     }
 
-    private void executeAppending(String[] linhas, int i, String str) {
+    private void executeAppending(String str, String[] linhas, int i) {
         String s = str;
-        if (state == ReaderState.STATE_IGNORE) {
+        if (getState() == ReaderState.IGNORE) {
             contestQuestion.setContest(contest);
             contestQuestion.setSubject(subject);
             return;
         }
 
         if (StringUtils.isNotBlank(s)) {
-            switch (state) {
-                case STATE_TEXT:
+            switch (getState()) {
+                case TEXT:
                     text.appendText(s + "\n");
                     break;
-                case STATE_QUESTION:
+                case QUESTION:
                     contestQuestion.appendExercise(s + "\n");
                     break;
-                case STATE_OPTION:
+                case OPTION:
                     addAnswer(linhas, i, s);
                     break;
                 default:
@@ -159,24 +201,29 @@ public class ContestReader implements HasLogging {
 
     private int getIndicative(int i) {
 
-        if (state == ReaderState.STATE_OPTION) {
+        if (getState() == ReaderState.OPTION) {
             int a = contestQuestion != null && contestQuestion.getOptions() != null
                 ? contestQuestion.getOptions().size() + 1
                 : 1;
             return a;
         }
-        if (state == ReaderState.STATE_QUESTION) {
+        if (getState() == ReaderState.QUESTION) {
             Integer number = contestQuestion.getNumber();
             int j = listQuestions.size() + 1;
             if (number != null && j != number) {
-                getLogger().error("ERROR HERE-----------------------------------");
+                getLogger().error("ERROR HERE--- Question {}!={}", number, j);
             }
             return j;
         }
-        if (state == ReaderState.STATE_TEXT) {
+        if (getState() == ReaderState.TEXT) {
             return texts.size();
         }
         return i;
+    }
+
+    private boolean isBetween() {
+        return text.getMin() != null && text.getMin() <= listQuestions.size() + 1 && text.getMax() != null
+            && text.getMax() >= listQuestions.size() + 1;
     }
 
     private void processQuestion(String[] linhas, int i) {
@@ -187,52 +234,48 @@ public class ContestReader implements HasLogging {
         }
 
         if (s.matches(TEXTS_PATTERN)) {
-            if (state == ReaderState.STATE_OPTION) {
-                addQuestion();
-            }
-            state = ReaderState.STATE_TEXT;
+            setState(ReaderState.TEXT);
             String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
             IntSummaryStatistics stats = Stream.of(split).mapToInt(StringSigaUtils::intValue).summaryStatistics();
             text.setMin(stats.getMin());
             text.setMax(stats.getMax());
             return;
         }
-        if (s.matches(SUBJECT_2_PATTERN) && i > 0) {
-            subject = linhas[i].split("[-–]")[0].toUpperCase();
+        if (s.matches(SUBJECT_2_PATTERN)) {
+            subject = linhas[i].split("[-–\\(]")[0].toUpperCase();
             return;
         }
-        if (StringUtils.containsIgnoreCase(s, "Questões") && state != ReaderState.STATE_QUESTION
-            && state != ReaderState.STATE_OPTION && i < linhas.length - 1) {
+        if (StringUtils.containsIgnoreCase(s, "Questões") && getState() == ReaderState.IGNORE
+            && i < linhas.length - 1) {
             String[] split = linhas[i + 1].split("\\D+");
-            if (split.length <= 1 || !Stream.of(split).allMatch(StringUtils::isNumeric)) {
-                return;
+            if (split.length > 1 && Stream.of(split).allMatch(StringUtils::isNumeric)) {
+                setState(ReaderState.TEXT);
+                text.setMin(intValue(split[0]));
+                text.setMax(intValue(split[1]));
             }
-            state = ReaderState.STATE_TEXT;
-            text.setMin(intValue(split[0]));
-            text.setMax(intValue(split[1]));
         }
         if (s.matches(LINE_PATTERN)) {
             return;
         }
         if (s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO")) {
-            if (option == OPTIONS_PER_QUESTION && state == ReaderState.STATE_OPTION) {
-                addQuestion();
-            }
-            if (state == ReaderState.STATE_TEXT) {
+            if (getState() == ReaderState.TEXT) {
                 addNewText();
             }
-            getLogger().info(s);
             contestQuestion.setNumber(intValue(s));
-            state = ReaderState.STATE_QUESTION;
+            setState(ReaderState.QUESTION);
+            getLogger().info(s);
             return;
         }
         if (s.matches(OPTION_PATTERN)) {
-            if (state == ReaderState.STATE_OPTION) {
+            if (getState() == ReaderState.OPTION) {
                 contestQuestion.addOption(answer);
                 answer = new ContestQuestionAnswer();
                 answer.setExercise(contestQuestion);
             }
             if (s.contains("(A)") && s.contains("(B)") && s.contains("(C)") && s.contains("(D)") && s.contains("(E)")) {
+                if (contestQuestion.getOptions() != null && !contestQuestion.getOptions().isEmpty()) {
+                    contestQuestion.getOptions().clear();
+                }
                 String[] split = s.split("(?=\\()");
                 for (int j = 0; j < split.length; j++) {
                     String string = split[j];
@@ -243,32 +286,35 @@ public class ContestReader implements HasLogging {
                     contestQuestion.addOption(answer);
                 }
                 addQuestion();
+                setState(ReaderState.IGNORE);
+                getLogger().info(s);
                 return;
             }
 
             answer.setNumber(option);
             option++;
-            state = ReaderState.STATE_OPTION;
+            setState(ReaderState.OPTION);
 
         }
-        if (StringUtils.isBlank(s) && state == ReaderState.STATE_TEXT && !listQuestions.isEmpty()
-            && StringUtils.isNotBlank(text.getText())) {
+        if (StringUtils.isBlank(s) && getState() == ReaderState.TEXT && !listQuestions.isEmpty()
+            && StringUtils.isNotBlank(text.getText()) && !isBetween()) {
             addNewText();
 
-            state = ReaderState.STATE_IGNORE;
+            setState(ReaderState.IGNORE);
         }
-        if (state == ReaderState.STATE_OPTION && StringUtils.isBlank(s)) {
+        if (getState() == ReaderState.OPTION && StringUtils.isBlank(s)) {
             contestQuestion.addOption(answer);
             if (option == OPTIONS_PER_QUESTION) {
                 addQuestion();
             }
-            state = ReaderState.STATE_IGNORE;
+            setState(ReaderState.IGNORE);
         }
 
-        executeAppending(linhas, i, s);
+        executeAppending(s, linhas, i);
+
         if (StringUtils.isNotBlank(s)) {
             int size = getIndicative(i);
-            getLogger().info("{} {} - {}", state, size, s);
+            getLogger().info("{} {} - {}", getState(), size, s);
         }
     }
 
@@ -328,14 +374,14 @@ public class ContestReader implements HasLogging {
     private ContestQuestion tryReadQuestionFromLines(String[] lines) {
 
         try {
-            state = ReaderState.STATE_IGNORE;
+            setState(ReaderState.IGNORE);
             option = 0;
             text = new ContestText(contest);
             texts.add(text);
 //            answer.setExercise(contestQuestion);
             for (int i = 0; i < lines.length; i++) {
                 processQuestion(lines, i);
-                if (lines[i].contains("PROVA DISCURSIVA ")) {
+                if (lines[i].matches(DISCURSIVA_PATTERN)) {
                     break;
                 }
             }
@@ -369,6 +415,7 @@ public class ContestReader implements HasLogging {
     public static ContestReader getContestQuestions(File file, Consumer<ContestReader>... r) {
         ContestReader instance = new ContestReader();
 //        new Thread(() -> {
+        HasLogging.log().info("READING {}", file);
         instance.readFile(file);
         Stream.of(r).forEach(e -> e.accept(instance));
 //        }).start();
@@ -387,8 +434,7 @@ public class ContestReader implements HasLogging {
     private static String extractErrors(String s) {
         if (s.codePoints().mapToObj(UnicodeBlock::of).distinct().collect(Collectors.toList())
             .contains(UnicodeBlock.MATHEMATICAL_OPERATORS)) {
-            String fixEncoding = StringSigaUtils.fixEncoding(s, StandardCharsets.UTF_8, Charset.forName("CESU-8"));
-            return fixEncoding.replaceAll("[\u2200-\u22FF]", "?");
+            return s.replaceAll("[\u2200-\u22FF]", "?");
         }
         return s;
     }
@@ -398,7 +444,8 @@ public class ContestReader implements HasLogging {
     }
 
     private static String removeNotPrintable(String s) {
-        String fixEncoding = StringSigaUtils.fixEncoding(s, StandardCharsets.UTF_8, Charset.forName("CESU-8"));
+        String fixEncoding = StringSigaUtils.fixEncoding(s.replaceAll("\t", " "), StandardCharsets.UTF_8,
+            Charset.forName("CESU-8"));
         String replace = fixEncoding.replaceAll("[\u0000-\u0010]", "?");
         if (!replace.equals(s)) {
             return replace;
@@ -407,10 +454,10 @@ public class ContestReader implements HasLogging {
     }
 
     enum ReaderState {
-        STATE_IGNORE,
-        STATE_OPTION,
-        STATE_QUESTION,
-        STATE_TEXT;
+        IGNORE,
+        OPTION,
+        QUESTION,
+        TEXT;
     }
 
 }

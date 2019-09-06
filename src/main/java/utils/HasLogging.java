@@ -5,7 +5,14 @@ import org.slf4j.LoggerFactory;
 
 public interface HasLogging {
 
-	default Logger getLogger() {
+    default String getCurrentLine(int i) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int index = indexOf(stackTrace) + i;
+        StackTraceElement stackTraceElement = stackTrace[Integer.min(index + 1, stackTrace.length - 1)];
+        return stackTraceElement.getClassName() + ":" + stackTraceElement.getLineNumber();
+    }
+
+    default Logger getLogger() {
 		return LoggerFactory.getLogger(getClass());
 	}
 
@@ -19,6 +26,7 @@ public interface HasLogging {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		int index = indexOf(stackTrace) + i;
 		StackTraceElement stackTraceElement = stackTrace[Integer.min(index + 1, stackTrace.length - 1)];
+
         return stackTraceElement.getClassName();
     }
 
