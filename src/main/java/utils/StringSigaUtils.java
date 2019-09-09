@@ -182,14 +182,6 @@ public class StringSigaUtils extends StringUtils {
         return collect;
     }
 
-    public static void main(String[] args) {
-        String latin1 = "";
-
-        System.out.println(Character.getNumericValue(latin1.charAt(0)));
-
-        System.out.println(fixEncoding(latin1));
-    }
-
     public static String removerDiacritico(String string) {
         return Normalizer.normalize(string, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }

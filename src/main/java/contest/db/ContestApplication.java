@@ -142,7 +142,7 @@ public class ContestApplication extends Application implements HasLogging {
     private String getText(int cur) {
         List<String> map = contestQuestions.getContestTexts().stream().filter(t -> isBetween(t, cur))
             .map(ContestText::getText).filter(StringUtils::isNotBlank).flatMap(s -> Stream.of(s.split("\n")))
-            .map(e -> e.trim())
+            .map(String::trim)
             .collect(Collectors.toList());
 
         int orElse = map.stream().mapToInt(String::length).max().orElse(0);
@@ -188,6 +188,9 @@ public class ContestApplication extends Application implements HasLogging {
     }
 
     private static boolean isBetween(ContestText tex, int j) {
+        if (tex.getMin() == null || tex.getMax() == null) {
+            return false;
+        }
         int i = j + 1;
         return tex.getMin() <= i && tex.getMax() >= i;
     }

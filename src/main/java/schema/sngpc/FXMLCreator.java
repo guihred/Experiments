@@ -3,8 +3,11 @@ package schema.sngpc;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static others.TreeElement.getDifferences;
 import static schema.sngpc.FXMLCreatorHelper.*;
 import static utils.ClassReflectionUtils.*;
+import static utils.ResourceFXUtils.getOutFile;
+import static utils.RunnableEx.make;
 import static utils.StringSigaUtils.changeCase;
 
 import java.io.File;
@@ -16,7 +19,6 @@ import java.lang.reflect.TypeVariable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
@@ -26,11 +28,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import others.TreeElement;
-import utils.ClassReflectionUtils;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
 
 public final class FXMLCreator {
     private static final String FX_REFERENCE = "fx:reference";
@@ -68,6 +66,19 @@ public final class FXMLCreator {
         }
     }
 
+    private void addReferenceList(Element element, String fieldName, Object parent, Collection<?> list) {
+        Element originalElement = createListElement(element, fieldName, parent, list);
+        for (Object object : list) {
+            if (object != null) {
+                if (!containsSame(allNode, object)) {
+                    addToAllNode(object, originalElement);
+                } else if (!Objects.equals(nodeMap.get(object), originalElement)) {
+                    originalMap.computeIfAbsent(object, o -> new ArrayList<>()).add(originalElement);
+                }
+            }
+        }
+    }
+
     private void addToAllNode(Object fieldValue, Element createElement2) {
         nodeMap.put(fieldValue, createElement2);
         allNode.add(fieldValue);
@@ -88,7 +99,7 @@ public final class FXMLCreator {
                 signature = "(" + split2[split2.length - 1] + " e)";
             }
         }
-        Method setter = ClassReflectionUtils.getSetter(parent.getClass(), fieldName);
+        Method setter = getSetter(parent.getClass(), fieldName);
         Parameter[] parameterTypes = setter.getParameters();
         for (Parameter class2 : parameterTypes) {
             String[] methodSignature = class2.toString().split("[^\\w\\.]");
@@ -108,7 +119,7 @@ public final class FXMLCreator {
 
     private void createController(File file, String packageName) throws IOException {
         String name = file.getName().replaceAll("\\.fxml", "") + "Controller";
-        File outFile = ResourceFXUtils.getOutFile(name + ".java");
+        File outFile = getOutFile(name + ".java");
         List<String> lines = new ArrayList<>();
         lines.add("package " + packageName + ";");
         lines.add("import javafx.fxml.*;");
@@ -154,14 +165,19 @@ public final class FXMLCreator {
             LOG.trace("", e);
             List<String> mappedDifferences = differencesMap.computeIfAbsent(cl,
                 c -> allNode.stream().filter(ob -> ob.getClass() == cl && ob != ob1).limit(100)
-                    .flatMap(ob2 -> TreeElement.getDifferences(c, ob1, ob2).stream()).distinct()
-                    .collect(Collectors.toList()));
+                    .flatMap(ob2 -> getDifferences(c, ob1, ob2).stream()).distinct()
+                    .collect(toList()));
             mappedDifferences.addAll(getNamedArgs(cl));
             Map<String, Object> collect = mappedDifferences.stream().distinct().filter(m -> invoke(ob1, m) != null)
                 .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b, LinkedHashMap::new));
             diffFields.putAll(collect);
         }
         return diffFields;
+    }
+
+    private boolean isReferenceableList(String fieldName, Collection<?> list) {
+        return list.stream().filter(Objects::nonNull).anyMatch(o -> !containsSame(allNode, o))
+            || !"children".equals(fieldName) && !list.getClass().getSimpleName().contains("Unmodifiable");
     }
 
     private String newName(Object f) {
@@ -266,18 +282,8 @@ public final class FXMLCreator {
             return;
         }
         if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(NEW_TAG_CLASSES, o.getClass()))) {
-            if (list.stream().filter(Objects::nonNull).anyMatch(o -> !containsSame(allNode, o))
-                || !"children".equals(fieldName) && !list.getClass().getSimpleName().contains("Unmodifiable")) {
-                Element originalElement = createListElement(element, fieldName, parent, list);
-                for (Object object : list) {
-                    if (object != null) {
-                        if (!containsSame(allNode, object)) {
-                            addToAllNode(object, originalElement);
-                        } else if (!Objects.equals(nodeMap.get(object), originalElement)) {
-                            originalMap.computeIfAbsent(object, o -> new ArrayList<>()).add(originalElement);
-                        }
-                    }
-                }
+            if (isReferenceableList(fieldName, list)) {
+                addReferenceList(element, fieldName, parent, list);
                 return;
             }
             if (!"children".equals(fieldName)) {
@@ -317,7 +323,7 @@ public final class FXMLCreator {
                 String string = Objects.toString(k).replaceAll("([#])", "");
                 String key = PROPERTY_REMAP.getOrDefault(string, string);
                 String value = Objects.toString(v, "");
-                RunnableEx.make(() -> mapElement.setAttribute(key, value),
+                make(() -> mapElement.setAttribute(key, value),
                     e -> LOG.error("error setting attribute {}={}", k, v));
 
             });
@@ -327,7 +333,7 @@ public final class FXMLCreator {
                 if (PROPERTY_REMAP.containsKey(string)) {
                     String key = PROPERTY_REMAP.getOrDefault(string, string);
                     String value = Objects.toString(v);
-                    RunnableEx.make(() -> element.setAttribute(key, value),
+                    make(() -> element.setAttribute(key, value),
                         e -> LOG.error("error setting attribute {}={}", k, v)).run();
                 }
             });
@@ -447,7 +453,7 @@ public final class FXMLCreator {
         if (ob2 == null) {
             return;
         }
-        List<String> differences = TreeElement.getDifferences(cl, ob1, ob2);
+        List<String> differences = getDifferences(cl, ob1, ob2);
         for (String f : differences) {
             diffFields.put(f, invoke(ob1, f));
         }

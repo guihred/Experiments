@@ -118,6 +118,24 @@ public class ContestReader implements HasLogging {
         return true;
     }
 
+    private void addAllOptions(String s) {
+        if (contestQuestion.getOptions() != null && !contestQuestion.getOptions().isEmpty()) {
+            contestQuestion.getOptions().clear();
+        }
+        String[] split = s.split("(?=\\()");
+        for (int j = 0; j < split.length; j++) {
+            String string = split[j];
+            answer = new ContestQuestionAnswer();
+            answer.setExercise(contestQuestion);
+            answer.appendAnswer(string);
+            answer.setNumber(j);
+            contestQuestion.addOption(answer);
+        }
+        addQuestion();
+        setState(ReaderState.IGNORE);
+        getLogger().info(s);
+    }
+
     private void addAnswer(String[] linhas, int i, String s) {
         answer.appendAnswer(s.trim() + " ");
         if (option == OPTIONS_PER_QUESTION) {
@@ -125,7 +143,7 @@ public class ContestReader implements HasLogging {
                 addQuestion();
                 return;
             }
-            if (Stream.of(linhas).skip(i + 1).allMatch(str -> str.matches(LINE_PATTERN))) {
+            if (Stream.of(linhas).skip(i + 1L).allMatch(str -> str.matches(LINE_PATTERN))) {
                 addQuestion();
                 setState(ReaderState.IGNORE);
                 return;
@@ -149,7 +167,6 @@ public class ContestReader implements HasLogging {
             if (StringUtils.containsIgnoreCase(string, "Questões") && s.matches(".+\\.\\s*")) {
                 addQuestion();
                 setState(ReaderState.IGNORE);
-                return;
             }
         }
     }
@@ -174,23 +191,22 @@ public class ContestReader implements HasLogging {
     }
 
     private void executeAppending(String str, String[] linhas, int i) {
-        String s = str;
         if (getState() == ReaderState.IGNORE) {
             contestQuestion.setContest(contest);
             contestQuestion.setSubject(subject);
             return;
         }
 
-        if (StringUtils.isNotBlank(s)) {
+        if (StringUtils.isNotBlank(str)) {
             switch (getState()) {
                 case TEXT:
-                    text.appendText(s + "\n");
+                    text.appendText(str + "\n");
                     break;
                 case QUESTION:
-                    contestQuestion.appendExercise(s + "\n");
+                    contestQuestion.appendExercise(str + "\n");
                     break;
                 case OPTION:
-                    addAnswer(linhas, i, s);
+                    addAnswer(linhas, i, str);
                     break;
                 default:
                     break;
@@ -202,10 +218,9 @@ public class ContestReader implements HasLogging {
     private int getIndicative(int i) {
 
         if (getState() == ReaderState.OPTION) {
-            int a = contestQuestion != null && contestQuestion.getOptions() != null
+            return contestQuestion != null && contestQuestion.getOptions() != null
                 ? contestQuestion.getOptions().size() + 1
                 : 1;
-            return a;
         }
         if (getState() == ReaderState.QUESTION) {
             Integer number = contestQuestion.getNumber();
@@ -224,6 +239,11 @@ public class ContestReader implements HasLogging {
     private boolean isBetween() {
         return text.getMin() != null && text.getMin() <= listQuestions.size() + 1 && text.getMax() != null
             && text.getMax() >= listQuestions.size() + 1;
+    }
+
+    private boolean isTextToBeAdded(String s) {
+        return StringUtils.isBlank(s) && getState() == ReaderState.TEXT && !listQuestions.isEmpty()
+            && StringUtils.isNotBlank(text.getText()) && !isBetween();
     }
 
     private void processQuestion(String[] linhas, int i) {
@@ -272,22 +292,8 @@ public class ContestReader implements HasLogging {
                 answer = new ContestQuestionAnswer();
                 answer.setExercise(contestQuestion);
             }
-            if (s.contains("(A)") && s.contains("(B)") && s.contains("(C)") && s.contains("(D)") && s.contains("(E)")) {
-                if (contestQuestion.getOptions() != null && !contestQuestion.getOptions().isEmpty()) {
-                    contestQuestion.getOptions().clear();
-                }
-                String[] split = s.split("(?=\\()");
-                for (int j = 0; j < split.length; j++) {
-                    String string = split[j];
-                    answer = new ContestQuestionAnswer();
-                    answer.setExercise(contestQuestion);
-                    answer.appendAnswer(string);
-                    answer.setNumber(j);
-                    contestQuestion.addOption(answer);
-                }
-                addQuestion();
-                setState(ReaderState.IGNORE);
-                getLogger().info(s);
+            if (containsAllOptions(s)) {
+                addAllOptions(s);
                 return;
             }
 
@@ -296,8 +302,7 @@ public class ContestReader implements HasLogging {
             setState(ReaderState.OPTION);
 
         }
-        if (StringUtils.isBlank(s) && getState() == ReaderState.TEXT && !listQuestions.isEmpty()
-            && StringUtils.isNotBlank(text.getText()) && !isBetween()) {
+        if (isTextToBeAdded(s)) {
             addNewText();
 
             setState(ReaderState.IGNORE);
@@ -378,7 +383,6 @@ public class ContestReader implements HasLogging {
             option = 0;
             text = new ContestText(contest);
             texts.add(text);
-//            answer.setExercise(contestQuestion);
             for (int i = 0; i < lines.length; i++) {
                 processQuestion(lines, i);
                 if (lines[i].matches(DISCURSIVA_PATTERN)) {
@@ -414,11 +418,9 @@ public class ContestReader implements HasLogging {
     @SafeVarargs
     public static ContestReader getContestQuestions(File file, Consumer<ContestReader>... r) {
         ContestReader instance = new ContestReader();
-//        new Thread(() -> {
         HasLogging.log().info("READING {}", file);
         instance.readFile(file);
         Stream.of(r).forEach(e -> e.accept(instance));
-//        }).start();
         return instance;
     }
 
@@ -429,6 +431,10 @@ public class ContestReader implements HasLogging {
             Stream.of(r).forEach(Runnable::run);
         }).start();
         return instance;
+    }
+
+    private static boolean containsAllOptions(String s) {
+        return s.contains("(A)") && s.contains("(B)") && s.contains("(C)") && s.contains("(D)") && s.contains("(E)");
     }
 
     private static String extractErrors(String s) {
@@ -450,7 +456,7 @@ public class ContestReader implements HasLogging {
         if (!replace.equals(s)) {
             return replace;
         }
-        return replace;
+        return s;
     }
 
     enum ReaderState {

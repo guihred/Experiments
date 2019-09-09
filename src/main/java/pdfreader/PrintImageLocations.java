@@ -65,38 +65,40 @@ public class PrintImageLocations extends PDFStreamEngine implements HasLogging {
             return;
         }
 
+        RunnableEx.ignore(() -> getImage(operands));
+    }
+
+    private void getImage(List<COSBase> operands) throws IOException {
         COSName objectName = (COSName) operands.get(0);
-        RunnableEx.ignore(() -> {
 
-            PDXObject xobject = getResources().getXObject(objectName);
-            if (xobject instanceof PDFormXObject) {
-                PDFormXObject form = (PDFormXObject) xobject;
-                showForm(form);
-                return;
-            }
-            if (xobject instanceof PDImageXObject) {
-                PDImageXObject image = (PDImageXObject) xobject;
-                BufferedImage image2 = image.getImage();
-                File save = save(pageNumber, num++, image2, image.getSuffix());
+        PDXObject xobject = getResources().getXObject(objectName);
+        if (xobject instanceof PDFormXObject) {
+            PDFormXObject form = (PDFormXObject) xobject;
+            showForm(form);
+            return;
+        }
+        if (xobject instanceof PDImageXObject) {
+            PDImageXObject image = (PDImageXObject) xobject;
+            BufferedImage image2 = image.getImage();
+            File save = save(pageNumber, num++, image2, image.getSuffix());
 
-                Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
+            Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
 
-                // position in user space units. 1 unit = 1/72 inch at 72 dpi
-                float translateX = ctmNew.getTranslateX();
-                float translateY = ctmNew.getTranslateY();
-                // raw size in pixels
+            // position in user space units. 1 unit = 1/72 inch at 72 dpi
+            float translateX = ctmNew.getTranslateX();
+            float translateY = ctmNew.getTranslateY();
+            // raw size in pixels
 
-                PdfImage pdfImage = new PdfImage();
-                pdfImage.setFile(save);
-                pdfImage.setX(translateX);
-                pdfImage.setY(translateY - ctmNew.getScalingFactorY());
-                pdfImage.setPageN(pageNumber);
-                images.add(pdfImage);
-                getLogger().trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(),
-                    pageNumber);
+            PdfImage pdfImage = new PdfImage();
+            pdfImage.setFile(save);
+            pdfImage.setX(translateX);
+            pdfImage.setY(translateY - ctmNew.getScalingFactorY());
+            pdfImage.setPageN(pageNumber);
+            images.add(pdfImage);
+            getLogger().trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(),
+                pageNumber);
 
-            }
-        });
+        }
     }
 
     public static File save(int pageNumber, Object number, BufferedImage image, String ext) {

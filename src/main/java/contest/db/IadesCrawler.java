@@ -53,6 +53,7 @@ public class IadesCrawler extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        CrawlerTask.insertProxyConfig();
         primaryStage.setTitle("IADES Crawler");
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
@@ -84,6 +85,7 @@ public class IadesCrawler extends Application {
         SimpleStringProperty domain, Set<String> links, int level) {
         List<Map.Entry<String, String>> linksFound = doc.select("a").stream()
             .map(l -> new AbstractMap.SimpleEntry<>(l.text(), addDomain(domain, l.attr("href"))))
+            .filter(t -> !"#".equals(t.getValue()))
             .filter(t -> level < 2 || t.getKey().contains("Provas") || t.getKey().contains("Gabarito"))
             .filter(t -> links.add(t.getValue())).distinct().collect(Collectors.toList());
         if (level == 2 && !linksFound.isEmpty()) {
@@ -129,7 +131,7 @@ public class IadesCrawler extends Application {
     }
 
     public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
+
         launch(args);
     }
 
@@ -179,15 +181,15 @@ public class IadesCrawler extends Application {
         List<String> subList = linesRead.subList(indexOf, linesRead.size() - 1);
         List<String> answersList = subList.stream().filter(StringUtils::isNotBlank).filter(s -> s.matches("[\\sA-E#]+"))
             .collect(Collectors.toList());
-        String answers = "";
+        StringBuilder answers = new StringBuilder();
         for (String string : answersList) {
             String split = Stream.of(string.split("")).filter(s -> s.matches("[A-E#]")).collect(Collectors.joining());
-            answers += split;
+            answers.append(split);
             if (answers.length() >= entities.getListQuestions().size()) {
-                return answers;
+                return answers.toString();
             }
         }
-        return answers;
+        return answers.toString();
     }
 
     private static Path getFirstPDF(File file, String number) throws IOException {
