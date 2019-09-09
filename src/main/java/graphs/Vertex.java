@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import utils.DisjSets;
 import utils.HasLogging;
 
-public class Vertex implements HasLogging {
+public class Vertex {
     private static final Logger LOG = HasLogging.log();
 
     public static final boolean NAMED = true;
@@ -48,7 +48,7 @@ public class Vertex implements HasLogging {
             if (num.get(w) > num.get(v)) {
                 w.assignLow(num, low);
                 if (low.get(w) >= num.get(v)) {
-                    getLogger().info("{} is an articulation point", v.getName());
+                    LOG.info("{} is an articulation point", v.getName());
                 }
                 low.put(v, Integer.min(low.get(v), low.get(w)));
 
@@ -58,7 +58,6 @@ public class Vertex implements HasLogging {
 
         }
     }
-
     public void assignNum(Map<Vertex, Integer> num, int c) {
         int counter = c;
 

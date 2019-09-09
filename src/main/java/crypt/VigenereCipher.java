@@ -2,10 +2,10 @@ package crypt;
 
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import utils.HasLogging;
 
 public class VigenereCipher {
-	private static final Logger LOGGER = LoggerFactory.getLogger(VigenereCipher.class);
+    private static final Logger LOGGER = HasLogging.log();
 	private static final int NUMBER_OF_LETTERS = 26;
 	private int current;
 

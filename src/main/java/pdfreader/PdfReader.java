@@ -6,10 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class PdfReader extends Application implements HasLogging {
+public class PdfReader extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {

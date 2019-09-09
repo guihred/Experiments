@@ -32,7 +32,7 @@ import utils.HasLogging;
 
 public final class WikiImagesUtils {
 
-    private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     private WikiImagesUtils() {
 
@@ -60,9 +60,9 @@ public final class WikiImagesUtils {
             Map<String, Long> collect = find.collect(Collectors
                 .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
             collect.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-                .forEach(ex -> LOGGER.info("{}={}", ex.getKey(), ex.getValue()));
+                .forEach(ex -> LOG.info("{}={}", ex.getKey(), ex.getValue()));
         } catch (Exception e) {
-            LOGGER.error("", e);
+            LOG.error("", e);
         }
     }
 
@@ -70,7 +70,7 @@ public final class WikiImagesUtils {
 
     public static List<String> getImagens(String artista) {
         CrawlerTask.insertProxyConfig();
-        LOGGER.info("SEARCHING FOR {}", artista);
+        LOG.info("SEARCHING FOR {}", artista);
         String encode = encode(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;
         List<String> images = new ArrayList<>();
@@ -81,7 +81,7 @@ public final class WikiImagesUtils {
 
     public static ObservableList<String> getImagensForked(String artista, ObservableList<String> images) {
         CrawlerTask.insertProxyConfig();
-        LOGGER.info("SEARCHING FOR {}", artista);
+        LOG.info("SEARCHING FOR {}", artista);
         String encode = encode(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;
         String url2 = "https://pt.wikipedia.org/wiki/" + encode;
@@ -100,8 +100,8 @@ public final class WikiImagesUtils {
             next.setInput(new ByteArrayImageInputStream(imageByte));
             return next.read(0);
         } catch (Exception e) {
-            LOGGER.info("ERROR LOADING {}", imageString);
-            LOGGER.info("ERROR", e);
+            LOG.info("ERROR LOADING {}", imageString);
+            LOG.info("ERROR", e);
             return null;
         }
     }
@@ -127,7 +127,7 @@ public final class WikiImagesUtils {
     private static List<String> readPage(String urlString) {
         try {
             Document parse = getDocument(urlString);
-            LOGGER.info("READING PAGE {}", urlString);
+            LOG.info("READING PAGE {}", urlString);
             Elements kun = parse.select("img");
             return kun.stream().map(e -> e.attr("src"))
                 .filter(StringUtils::isNotBlank).collect(Collectors.toList());

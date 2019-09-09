@@ -25,14 +25,14 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.CrawlerTask;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class Chapter6 {
     private static final String ALICE_TXT = "alice.txt";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Chapter6.class);
+    private static final Logger LOGGER = HasLogging.log();
 
     /**
      * How large does an array have to be for Arrays.parallelSort to be faster than

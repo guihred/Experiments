@@ -8,10 +8,10 @@ import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
 import microsoft.exchange.webservices.data.property.complex.MessageBody;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import utils.HasLogging;
 
 public final class EWSTest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(EWSTest.class);
+    private static final Logger LOGGER = HasLogging.log();
 
 	private EWSTest() {
 	}

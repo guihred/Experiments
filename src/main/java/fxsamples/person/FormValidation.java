@@ -20,15 +20,18 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class FormValidation extends Application implements HasLogging {
+public class FormValidation extends Application {
     private static final int WIDTH = 320;
     private static final int HEIGHT = 112;
     private static final String MY_PASS = "senha";
     private static final BooleanProperty GRANTED_ACCESS = new SimpleBooleanProperty(false);
     private static final int MAX_ATTEMPTS = 3;
+    private static final Logger LOG = HasLogging.log();
+
     private final IntegerProperty attempts = new SimpleIntegerProperty(0);
 
     @Override
@@ -93,14 +96,14 @@ public class FormValidation extends Application implements HasLogging {
         // user hits the enter key
         passwordField.setOnAction(actionEvent -> {
             if (GRANTED_ACCESS.get()) {
-                getLogger().info("User {} is granted access.%n", user.getUserName());
-                getLogger().info("User {} entered the password: {}%n", user.getUserName(), user.getPassword());
+                LOG.info("User {} is granted access.%n", user.getUserName());
+                LOG.info("User {} entered the password: {}%n", user.getUserName(), user.getPassword());
                 Platform.exit();
             } else {
                 deniedIcon.setVisible(true);
             }
             attempts.set(attempts.add(1).get());
-            getLogger().info("Attempts: {}", attempts.get());
+            LOG.info("Attempts: {}", attempts.get());
         });
         // listener when the user types into the password field
         passwordField.textProperty().addListener((obs, ov, nv) -> {
@@ -114,7 +117,7 @@ public class FormValidation extends Application implements HasLogging {
         attempts.addListener((obs, ov, nv) -> {
             if (MAX_ATTEMPTS == nv.intValue()) {
                 // failed attemps
-                getLogger().info("User {} is denied access.%n", user.getUserName());
+                LOG.info("User {} is denied access.%n", user.getUserName());
                 Platform.exit();
             }
         });

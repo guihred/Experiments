@@ -6,10 +6,9 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collectors;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class DataframeML implements HasLogging {
+public class DataframeML {
 
 	private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
 	protected int maxSize = FRAME_MAX_SIZE;

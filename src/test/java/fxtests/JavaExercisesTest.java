@@ -29,11 +29,10 @@ import org.junit.Test;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
 import utils.FunctionEx;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
-public final class JavaExercisesTest implements HasLogging {
+public final class JavaExercisesTest {
     @Test
     public void testChapter1() {
         String threadName = measureTime("Chapter1.ex5", () -> Chapter1.ex1(new Integer[] { 1, 2, 3, 4, 5, 6, 7 }));

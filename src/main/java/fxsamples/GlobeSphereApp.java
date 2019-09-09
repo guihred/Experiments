@@ -16,12 +16,14 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class GlobeSphereApp extends Application implements HasLogging {
+public class GlobeSphereApp extends Application {
 
     private static final int ROTATION_PERIOD_SECONDS = 24;
+    private static final Logger LOG = HasLogging.log();
     private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
     private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
     private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
@@ -53,19 +55,19 @@ public class GlobeSphereApp extends Application implements HasLogging {
         material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
         Image siImage = new Image(ResourceFXUtils.toExternalForm("earth-l.jpg"));
         material.selfIlluminationMapProperty()
-                .bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
+            .bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
         Sphere earth = new Sphere(5);
         earth.setMaterial(material);
         earth.setRotationAxis(Rotate.Y_AXIS);
 
-        material.specularColorProperty().addListener((ov, t, t1) -> getLogger().info("specularColor = {}", t1));
-        material.specularPowerProperty().addListener((ov, t, t1) -> getLogger().info("specularPower = {}", t1));
+        material.specularColorProperty().addListener((ov, t, t1) -> LOG.info("specularColor = {}", t1));
+        material.specularPowerProperty().addListener((ov, t, t1) -> LOG.info("specularPower = {}", t1));
 
         // Create and position camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll(new Rotate(-20, Rotate.Y_AXIS), new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -20));
+            new Translate(0, 0, -20));
 
         PointLight sunObj = new PointLight(Color.WHITE);
         final double sunMultiplier = -0.41;
@@ -111,8 +113,7 @@ public class GlobeSphereApp extends Application implements HasLogging {
     /**
      * Java main for when running without JavaFX launcher
      * 
-     * @param args
-     *            command line arguments
+     * @param args command line arguments
      */
     public static void main(String[] args) {
         launch(args);

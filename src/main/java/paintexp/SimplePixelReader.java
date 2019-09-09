@@ -10,10 +10,12 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.PixelHelper;
 
 public final class SimplePixelReader implements PixelReader {
+    private static final Logger LOG = HasLogging.log();
     private Color onlyColor;
 
     public SimplePixelReader(Color white) {
@@ -22,7 +24,7 @@ public final class SimplePixelReader implements PixelReader {
 
     @Override
     public int getArgb(int x, int y) {
-		return PixelHelper.toArgb(onlyColor);
+        return PixelHelper.toArgb(onlyColor);
 
     }
 
@@ -31,46 +33,45 @@ public final class SimplePixelReader implements PixelReader {
         return onlyColor;
     }
 
-	@Override
+    @Override
     public WritablePixelFormat<IntBuffer> getPixelFormat() {
         return PixelFormat.getIntArgbInstance();
     }
 
     @Override
     public void getPixels(int x, int y, int w, int h, WritablePixelFormat<ByteBuffer> pixelformat, byte[] buffer,
-            int offset, int scanlineStride) {
-        HasLogging.log().error("getPixels({}, {}, {}, {}, {},{}, {},{})", x, y, w, h, pixelformat, buffer, offset,
-                scanlineStride);
+        int offset, int scanlineStride) {
+        LOG.error("getPixels({}, {}, {}, {}, {},{}, {},{})", x, y, w, h, pixelformat, buffer, offset, scanlineStride);
 
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++) {
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
                 byte b = (byte) (onlyColor.getBlue() * MAX_BYTE);
                 byte r = (byte) (onlyColor.getRed() * MAX_BYTE);
                 byte g = (byte) (onlyColor.getGreen() * MAX_BYTE);
                 byte a = (byte) (onlyColor.getOpacity() * MAX_BYTE);
-				int k = i * scanlineStride + j * 4;
-				buffer[k++] = b;
-				buffer[k++] = g;
-				buffer[k++] = r;
-				buffer[k] = a;
-			}
-		}
+                int k = i * scanlineStride + j * 4;
+                buffer[k++] = b;
+                buffer[k++] = g;
+                buffer[k++] = r;
+                buffer[k] = a;
+            }
+        }
     }
 
     @Override
     public void getPixels(int x, int y, int w, int h, WritablePixelFormat<IntBuffer> pixelformat, int[] buffer,
-            int offset, int scanlineStride) {
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++) {
-				int k = i * scanlineStride + j;
-				buffer[k] = getArgb(i, j);
-			}
-		}
+        int offset, int scanlineStride) {
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                int k = i * scanlineStride + j;
+                buffer[k] = getArgb(i, j);
+            }
+        }
     }
 
     @Override
     public <T extends Buffer> void getPixels(final int x, final int y, final int w, final int h,
-            final WritablePixelFormat<T> pixelformat, final T buffer, final int scanlineStride) {
+        final WritablePixelFormat<T> pixelformat, final T buffer, final int scanlineStride) {
         ByteBuffer buffer2 = (ByteBuffer) buffer;
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {

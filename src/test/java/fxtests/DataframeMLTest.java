@@ -6,11 +6,10 @@ import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.junit.Test;
-import utils.HasLogging;
 
 
 @SuppressWarnings("static-method")
-public class DataframeMLTest implements HasLogging {
+public class DataframeMLTest {
 
     @Test
     public void testTransformOneValue() {

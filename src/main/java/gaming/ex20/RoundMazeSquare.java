@@ -1,8 +1,6 @@
 package gaming.ex20;
 
-import utils.HasLogging;
-
-public class RoundMazeSquare implements HasLogging {
+public class RoundMazeSquare {
     public final int i;
     public final int j;
     private boolean center;

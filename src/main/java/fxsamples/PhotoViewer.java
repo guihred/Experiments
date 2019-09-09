@@ -1,5 +1,7 @@
 package fxsamples;
 
+import static utils.ResourceFXUtils.convertToURL;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -290,7 +292,7 @@ public class PhotoViewer extends Application {
 
     private void tryAddImage(File file) {
         try {
-            addImage(file.toURI().toURL().toString());
+            addImage(convertToURL(file).toString());
             LOGGER.trace("{}", imageFiles);
         } catch (Exception ex) {
             LOGGER.error("", ex);

@@ -51,7 +51,7 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
 			HasLogging.log(1).trace("", e);
 		}
         if (image.startsWith("C:")) {
-            return makeFunction((String e) -> new File(e).toURI().toURL().toString()).apply(image);
+            return makeFunction((String e) -> ResourceFXUtils.convertToURL(new File(e)).toString()).apply(image);
         }
 
 		return ResourceFXUtils.toExternalForm("out/pdf/" + image);

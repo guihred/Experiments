@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.NamedArg;
-import javafx.beans.value.WritableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -160,13 +159,6 @@ public final class ClassReflectionUtils {
         return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
             .stream().filter(m -> m.getParameterCount() == 1)
             .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(fieldName);
-    }
-
-    public static Object mapProperty(Object e) {
-        if (e instanceof WritableValue<?>) {
-            return ((WritableValue<?>) e).getValue();
-        }
-        return e;
     }
 
     private static void displayStyleClass(String left, Node node, StringBuilder str) {

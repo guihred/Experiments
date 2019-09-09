@@ -1,6 +1,5 @@
 package fxsamples;
 
-import java.net.MalformedURLException;
 import java.security.SecureRandom;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -331,9 +330,9 @@ public class PlayingAudio extends Application {
 
     private void tryPlayMedia(Dragboard db) {
         try {
-            String filePath = db.getFiles().get(0).toURI().toURL().toString();
+            String filePath = ResourceFXUtils.convertToURL(db.getFiles().get(0)).toString();
             playMedia(filePath);
-        } catch (MalformedURLException ex) {
+        } catch (Exception ex) {
             LOGGER.error("", ex);
         }
     }

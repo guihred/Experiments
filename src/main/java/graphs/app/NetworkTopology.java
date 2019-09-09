@@ -15,10 +15,14 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
+import org.slf4j.Logger;
+import utils.HasLogging;
 
 public class NetworkTopology extends BaseTopology {
 
+    private static final Logger LOG = HasLogging.log();
     private ObservableMap<String, List<String>> scanNetworkRoutes;
+
     private ObservableMap<String, List<String>> scanPossibleOSes = FXCollections.observableHashMap();
 
     private final StringProperty networkAddress = new SimpleStringProperty(TracerouteScanner.NETWORK_ADDRESS);
@@ -86,7 +90,7 @@ public class NetworkTopology extends BaseTopology {
             return scanNetworkRoutes.values().stream().flatMap(List<String>::stream).distinct()
                 .collect(Collectors.toList());
         } catch (Exception e) {
-            getLogger().trace(" CONCURRENCY ISSUE", e);
+            LOG.trace(" CONCURRENCY ISSUE", e);
             return scanNetworkRoutes.values().stream().flatMap(List<String>::stream).distinct()
                 .collect(Collectors.toList());
         }

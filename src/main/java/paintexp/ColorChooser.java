@@ -19,6 +19,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTabPaneBuilder;
 import utils.CommonsFX;
@@ -27,6 +28,7 @@ import utils.PixelHelper;
 import utils.ResourceFXUtils;
 
 public class ColorChooser extends Application {
+    private static final Logger LOG = HasLogging.log();
     private static final int MAX_ANGLE = 359;
     private static final int CURRENT_COLOR_SIZE = 64;
     private static final String PERCENT_FORMAT = "%.0f%%";
@@ -90,7 +92,7 @@ public class ColorChooser extends Application {
         try {
             start(new Stage());
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.error("", e);
         }
     }
 

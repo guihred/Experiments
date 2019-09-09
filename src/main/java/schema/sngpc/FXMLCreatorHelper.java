@@ -3,6 +3,7 @@ package schema.sngpc;
 import static java.util.stream.Collectors.joining;
 import static others.TreeElement.compareTree;
 import static others.TreeElement.displayMissingElement;
+import static utils.ResourceFXUtils.convertToURL;
 import static utils.RunnableEx.make;
 
 import com.google.common.collect.ImmutableMap;
@@ -94,7 +95,7 @@ public final class FXMLCreatorHelper {
 
     public static void loadFXML(File file, String title, Stage primaryStage, double... size) {
         try {
-            Parent content = FXMLLoader.load(file.toURI().toURL());
+            Parent content = FXMLLoader.load(convertToURL(file));
             Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
             primaryStage.setTitle(title);
             primaryStage.setScene(scene);

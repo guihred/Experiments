@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import org.slf4j.Logger;
 import utils.ConsumerEx;
 import utils.HasLogging;
 
@@ -24,6 +25,8 @@ enum PictureOption {
     STAR_6("M10,0 l3,5 6,0 -3,5 3,5 -6,0 -3,5 -3,-5 -6,0 3,-5 -3,-5 6,0z"),
     HEART("M15.53 1A5.52 5.52 0 0 0 11 6 5.52 5.52 0 0 0 0 6C0 12.37 11 20 11 20s11-7.63 11-13.42"
         + "A5.53 5.53 0 0 0 15.53 1z"),;
+
+    private static final Logger LOG = HasLogging.log();
 
     private static final int PREF_WIDTH = 20;
 
@@ -116,9 +119,9 @@ enum PictureOption {
 
     public static void main(final String[] args) {
         Stream.of(PictureOption.values()).filter(e -> e.path != null).forEach(ConsumerEx.makeConsumer(e -> {
-            HasLogging.log().info("{}", e);
-            HasLogging.log().info("{}", e.path);
-			HasLogging.log().info("{}", correctPath(e.path, PREF_WIDTH));
+            LOG.info("{}", e);
+            LOG.info("{}", e.path);
+			LOG.info("{}", correctPath(e.path, PREF_WIDTH));
         }));
     }
 

@@ -12,9 +12,8 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import utils.HasLogging;
 
-public class TriangleMeshes extends Application implements HasLogging {
+public class TriangleMeshes extends Application {
     private static final double SCENE_WIDTH = 600;
     private static final double SCENE_HEIGHT = 600;
     private double anchorAngleX;

@@ -8,7 +8,7 @@ import javafx.scene.input.KeyEvent;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
-public class RubiksKeyboard implements EventHandler<KeyEvent> , HasLogging{
+public class RubiksKeyboard implements EventHandler<KeyEvent> {
 	private static final Logger LOGGER = HasLogging.log();
 	private static final double CAMERA_MODIFIER = 50.0;
 	private static final double CAMERA_QUANTITY = 5.0;

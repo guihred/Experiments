@@ -16,26 +16,29 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
-public class PacmanGhost extends Group implements HasLogging {
+public class PacmanGhost extends Group {
+    private static final Logger LOG = HasLogging.log();
+
     private ObjectProperty<GhostStatus> status = new SimpleObjectProperty<>(GhostStatus.ALIVE);
 
     private GhostDirection direction = GhostDirection.NORTH;
 
     private Circle leftEye = new Circle(2);
-
     private Circle rightEye = new Circle(2);
     private double startX;
     private double startY;
     private MazeSquare mazeSquare;
     private final Circle circle = new Circle(2);
     private GhostColor color;
-    private SecureRandom random = new SecureRandom();
 
+    private SecureRandom random = new SecureRandom();
     public PacmanGhost() {
         this(GhostColor.BLUE);
     }
+
     public PacmanGhost(GhostColor color) {
         this.color = color;
         Polygon polygon = new Polygon();
@@ -117,14 +120,13 @@ public class PacmanGhost extends Group implements HasLogging {
 
     public void setDirection(GhostDirection direction) {
         if (color == GhostColor.RED) {
-            getLogger().trace("{} -> {}", color, direction);
+            LOG.trace("{} -> {}", color, direction);
         }
         adjustEyes(-1);
         this.direction = direction;
         adjustEyes(1);
 
     }
-
     public void setStartPosition(double startX, double startY) {
         setLayoutX(startX);
         setLayoutY(startY);
@@ -305,7 +307,7 @@ public class PacmanGhost extends Group implements HasLogging {
         if (map == null) {
             return null;
         }
-        // getLogger().info("f " + maze[hxg][hyg] + " t" + maze[hx][hy] + " b " +
+        // LOG.info("f " + maze[hxg][hyg] + " t" + maze[hx][hy] + " b " +
         // mazeSquare)
         int hx = Integer.max(x, 0);
         int hy = Integer.max(y, 0);

@@ -4,8 +4,12 @@ import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import utils.HasLogging;
 
 public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
+
+    private static final Logger LOG = HasLogging.log();
 
     private CidadeDAO cidadeDAO = new CidadeDAO();
 
@@ -43,8 +47,8 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
                 }
                 i++;
             } catch (Exception e) {
-                getLogger().trace("ERRO cidade {}", cidade);
-                getLogger().trace("ERRO cidade " + cidade, e);
+                LOG.trace("ERRO cidade {}", cidade);
+                LOG.trace("ERRO cidade " + cidade, e);
             }
         }
 

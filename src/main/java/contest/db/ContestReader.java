@@ -159,7 +159,7 @@ public class ContestReader implements HasLogging {
                 setState(ReaderState.IGNORE);
                 return;
             }
-            if (string.matches(QUESTION_PATTERN) || string.startsWith("QUESTÃO")) {
+            if (isQuestionPattern(string)) {
                 addQuestion();
                 setState(ReaderState.QUESTION);
                 return;
@@ -277,7 +277,7 @@ public class ContestReader implements HasLogging {
         if (s.matches(LINE_PATTERN)) {
             return;
         }
-        if (s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO")) {
+        if (isQuestionPattern(s)) {
             if (getState() == ReaderState.TEXT) {
                 addNewText();
             }
@@ -443,6 +443,10 @@ public class ContestReader implements HasLogging {
             return s.replaceAll("[\u2200-\u22FF]", "?");
         }
         return s;
+    }
+
+    private static boolean isQuestionPattern(String s) {
+        return s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO");
     }
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {

@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 @FunctionalInterface
 public
-interface RunnableEx extends HasLogging {
+interface RunnableEx {
 	void run() throws Exception;
 
     static void ignore(RunnableEx run) {

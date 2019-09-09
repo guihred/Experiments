@@ -11,14 +11,14 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import utils.HasLogging;
 
 /**
  *
  * @author Note
  */
 public class HelloWorldApp extends Application {
-	private static final Logger LOGGER = LoggerFactory.getLogger(HelloWorldApp.class);
+    private static final Logger LOGGER = HasLogging.log();
     
     @Override
     public void start(Stage primaryStage) {

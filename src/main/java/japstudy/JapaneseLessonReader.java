@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public final class JapaneseLessonReader implements HasLogging {
+public final class JapaneseLessonReader {
     private static final String JAP_REGEX = ".*([\u2E80-\u6FFF]+.*)$";
     private static final Logger LOGGER = HasLogging.log();
 	private static LessonDAO lessonDAO = new LessonDAO();

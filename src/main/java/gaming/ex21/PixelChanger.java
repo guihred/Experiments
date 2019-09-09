@@ -9,11 +9,13 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.PixelHelper;
 
 public class PixelChanger implements PixelReader {
 
+    private static final Logger LOG = HasLogging.log();
     private PixelReader reader;
     private Map<Integer, Integer> replace = new HashMap<>();
 
@@ -70,7 +72,7 @@ public class PixelChanger implements PixelReader {
                     buffer2.put(k++, r);
                     buffer2.put(k, a);
                 } catch (Exception e) {
-                    HasLogging.log().error("ERROR GETTING PIXELS", e);
+                    LOG.error("ERROR GETTING PIXELS", e);
                 }
             }
         }

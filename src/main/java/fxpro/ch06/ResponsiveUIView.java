@@ -11,10 +11,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-import utils.HasLogging;
 import utils.RunnableEx;
 
-final class ResponsiveUIView implements HasLogging {
+final class ResponsiveUIView {
 
     private static final int WAIT_TIME_MILLIS = 3000;
     private static final int SIZE = 200;

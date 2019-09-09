@@ -10,17 +10,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
-public class JavaFileDependecy implements HasLogging {
+public class JavaFileDependecy {
     private static final String IMPORT_REGEX = "import ([\\w\\.]+)\\.[\\w\\*]+;"
         + "|import static ([\\w\\.]+)\\.\\w+\\.\\w+;";
     private static final String CLASS_REGEX = "\\W+([A-Z]\\w+)\\W";
     private static final String PACKAGE_REGEX = "package ([\\w\\.]+);";
+    private static final Logger LOG = HasLogging.log();
     private Path javaPath;
     private List<String> dependencies;
     private List<String> classes;
     private String name;
+
     private String packageName;
 
     public JavaFileDependecy(Path javaPath) {
@@ -37,7 +40,7 @@ public class JavaFileDependecy implements HasLogging {
                         .collect(Collectors.toList());
 
             } catch (IOException e) {
-                getLogger().error("", e);
+                LOG.error("", e);
             }
         }
         return classes;
@@ -50,7 +53,7 @@ public class JavaFileDependecy implements HasLogging {
                         .distinct()
                         .collect(Collectors.toList());
             } catch (IOException e) {
-                getLogger().error("", e);
+                LOG.error("", e);
             }
         }
         return dependencies;
@@ -69,7 +72,7 @@ public class JavaFileDependecy implements HasLogging {
                 packageName = lines.filter(e -> e.matches(PACKAGE_REGEX))
                         .map(e -> e.replaceAll(PACKAGE_REGEX, "$1")).findFirst().orElse("");
             } catch (IOException e) {
-                getLogger().error("", e);
+                LOG.error("", e);
             }
         }
         return packageName;

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -14,7 +15,7 @@ import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public final class ExcelService implements HasLogging {
+public final class ExcelService {
 
     private static final int DEFAULT_ROW_SIZE = 500;
     private static final Logger LOG = HasLogging.log();
@@ -62,7 +63,7 @@ public final class ExcelService implements HasLogging {
 		} catch (IOException e) {
             LOG.error("ERRO ", e);
 		}
-	}
+    }
 
     public static <T> void getExcel(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, File file) {
 
@@ -166,6 +167,15 @@ public final class ExcelService implements HasLogging {
 		}
 
 	}
+
+    public static Workbook getWorkbook(File selectedFile, FileInputStream fileInputStream) throws IOException {
+        return selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
+            : new XSSFWorkbook(fileInputStream);
+    }
+
+    public static boolean isExcel(File file) {
+        return file.getName().endsWith("xlsx") || file.getName().endsWith("xls");
+    }
 
 
     public static void printDebug(Object value) {

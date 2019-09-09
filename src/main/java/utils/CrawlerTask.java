@@ -22,7 +22,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 
-public abstract class CrawlerTask extends Task<String> implements HasLogging {
+public abstract class CrawlerTask extends Task<String> {
 
     private static final Logger LOG = HasLogging.log();
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");

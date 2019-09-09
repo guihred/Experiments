@@ -25,14 +25,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import simplebuilder.*;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class CSSStylingExample extends Application {
     private static final String EMPHASIZED_TEXT_CLASS = "emphasized-text";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CSSStylingExample.class);
+    private static final Logger LOGGER = HasLogging.log();
 
     private ObservableList<Cursor> cursors = FXCollections.observableArrayList(Cursor.DEFAULT, Cursor.CROSSHAIR,
         Cursor.WAIT, Cursor.TEXT, Cursor.HAND, Cursor.MOVE, Cursor.N_RESIZE, Cursor.NE_RESIZE, Cursor.E_RESIZE,

@@ -5,13 +5,16 @@ import java.util.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import utils.HasLogging;
 
 public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
 
     private static final String ELEICOES_2018_URL = "https://www.todapolitica.com";
 
-    private CandidatoDAO candidatoDAO = new CandidatoDAO();
+    private static final Logger LOG = HasLogging.log();
 
+    private CandidatoDAO candidatoDAO = new CandidatoDAO();
     private List<String> estados = Arrays.asList("acre", "alagoas", "amazonas", "amapa", "bahia", "ceara",
         "distrito-federal", "espirito-santo", "goias", "maranhao", "minas-gerais", "mato-grosso-sul", "mato-grosso",
         "para", "paraiba", "pernambuco", "piaui", "parana", "rio-janeiro", "rio-grande-norte", "rondonia", "roraima",
@@ -23,6 +26,7 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
         .put("paraiba", "PB").put("pernambuco", "PE").put("piaui", "PI").put("parana", "PR").put("rio-janeiro", "RJ")
         .put("rio-grande-norte", "RN").put("rondonia", "RO").put("roraima", "RR").put("rio-grande-sul", "RS")
         .put("santa-catarina", "SC").put("sergipe", "SE").put("sao-paulo", "SP").put("tocantins", "TO").build();
+
     private List<String> cargos = Arrays.asList("senador", "governador", "deputado-federal", "deputado-estadual");
 
     @Override
@@ -100,22 +104,21 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
                 }
                 if (select.isEmpty()) {
                     if (i == 1) {
-                        getLogger().error("NOT FOUND {}", estado);
+                        LOG.error("NOT FOUND {}", estado);
                     }
                     break;
                 }
                 if (!umEleito) {
-                    getLogger().error("ERRO in {}", estado);
+                    LOG.error("ERRO in {}", estado);
                 }
                 i++;
             } catch (Exception e) {
-                getLogger().error("ERRO cidade {}", estado);
-                getLogger().trace("ERRO cidade " + estado, e);
+                LOG.error("ERRO cidade {}", estado);
+                LOG.trace("ERRO cidade " + estado, e);
                 return;
             }
         }
     }
-
     private static String getUrl(String estado, int i) {
         if (i == 1) {
             return ELEICOES_2018_URL + "/eleicoes-2018/" + estado + "/";

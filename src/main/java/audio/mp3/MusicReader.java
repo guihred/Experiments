@@ -25,7 +25,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class MusicReader {
-    private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     private MusicReader() {
     }
@@ -43,7 +43,7 @@ public final class MusicReader {
             }
 
         } catch (Exception e) {
-            LOGGER.trace("", e);
+            LOG.trace("", e);
         }
         return null;
     }
@@ -62,7 +62,7 @@ public final class MusicReader {
         try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
             find.forEach(path -> musicas.add(readTags(path.toFile())));
         } catch (Exception e) {
-            LOGGER.trace("", e);
+            LOG.trace("", e);
         }
         return musicas;
     }
@@ -72,7 +72,7 @@ public final class MusicReader {
         run(() -> {
             File file = ResourceFXUtils.getUserFolder("Music");
             ObservableList<Music> musicas = getMusicas(file);
-            musicas.forEach(s -> LOGGER.info("{}", s));
+            musicas.forEach(s -> LOG.info("{}", s));
         });
     }
 
@@ -108,8 +108,8 @@ public final class MusicReader {
                 genre2 = notNull(leTag.getGenreDescription(), genre2);
             }
         } catch (Exception e) {
-            LOGGER.error("ERROR FILE {}", sourceFile);
-            LOGGER.trace("ERROR FILE {}", sourceFile, e);
+            LOG.error("ERROR FILE {}", sourceFile);
+            LOG.trace("ERROR FILE {}", sourceFile, e);
         }
 
         if (genre2 == null || genre2.indexOf('(') == 0 || "".equals(genre2)) {
@@ -157,11 +157,11 @@ public final class MusicReader {
                 copyFileBack(file, file2);
             }
             Files.deleteIfExists(file2.toPath());
-            LOGGER.info("Saving {} in {}", a, file);
+            LOG.info("Saving {} in {}", a, file);
         } catch (Exception e) {
             copyFileBack(file, file2);
 
-            LOGGER.error("", e);
+            LOG.error("", e);
         }
     }
 
@@ -170,7 +170,7 @@ public final class MusicReader {
             Files.copy(file2.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Files.deleteIfExists(file2.toPath());
         } catch (IOException e1) {
-            LOGGER.error("ERROR COPYING", e1);
+            LOG.error("ERROR COPYING", e1);
         }
     }
 

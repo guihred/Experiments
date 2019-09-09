@@ -1,5 +1,9 @@
 package rosario;
 
+import static extract.ExcelService.getWorkbook;
+import static extract.ExcelService.isExcel;
+import static utils.StringSigaUtils.intValue;
+
 import java.awt.Color;
 import java.io.*;
 import java.util.*;
@@ -11,11 +15,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -92,7 +91,7 @@ public final class LeitorArquivos {
         return list;
     }
 
-    public static ObservableList<Medicamento> getMedicamentosAnvisa(File selectedFile) throws IOException {
+    public static ObservableList<Medicamento> getMedicamentosAnvisa(File selectedFile) {
         if (isPDF(selectedFile)) {
             return getMedicamentosSNGPCPDF(selectedFile);
         }
@@ -116,20 +115,14 @@ public final class LeitorArquivos {
         }
     }
 
-    public static ObservableList<Medicamento> getMedicamentosRosario(File file) throws IOException {
+    public static ObservableList<Medicamento> getMedicamentosRosario(File file) {
         if (isExcel(file)) {
             return getMedicamentosRosarioExcel(file);
         }
 
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        try (RandomAccessFile source = new RandomAccessFile(file, "r");
-            COSDocument cosDoc = PdfUtils.parseAndGet(source);
-            PDDocument pdDoc = new PDDocument(cosDoc)) {
-            pdfStripper.setStartPage(1);
-            String parsedText = pdfStripper.getText(pdDoc);
-            String[] linhas = parsedText.split("\r\n");
+        try {
+            String[] linhas = PdfUtils.getAllLines(file);
             Map<String, IntUnaryOperator> hashMap = new HashMap<>();
-
             ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
             for (int i = 0; i < linhas.length; i++) {
                 Medicamento medicamento = tryReadRosarioLine(hashMap, linhas, i);
@@ -148,21 +141,13 @@ public final class LeitorArquivos {
 
     }
 
-    public static ObservableList<Medicamento> getMedicamentosSNGPCPDF(File file) throws IOException {
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-
-        try (RandomAccessFile source = new RandomAccessFile(file, "r");
-            COSDocument cosDoc = PdfUtils.parseAndGet(source);
-            PDDocument pdDoc = new PDDocument(cosDoc)) {
-            pdfStripper.setStartPage(1);
-            String parsedText = pdfStripper.getText(pdDoc);
-            cosDoc.close();
-            String[] linhas = parsedText.split("\r\n");
+    public static ObservableList<Medicamento> getMedicamentosSNGPCPDF(File file) {
+        try {
+            String[] linhas = PdfUtils.getAllLines(file);
             Medicamento medicamento = new Medicamento();
             ObservableList<Medicamento> listaMedicamentos = FXCollections.observableArrayList();
             for (int i = 0; i < linhas.length; i++) {
                 medicamento = tryReadSNGPCLine(linhas, medicamento, listaMedicamentos, i);
-
             }
             return listaMedicamentos;
         } catch (Exception e) {
@@ -187,17 +172,12 @@ public final class LeitorArquivos {
         return list;
     }
 
-    public static boolean isExcel(File file) {
-        return file.getName().endsWith("xlsx") || file.getName().endsWith("xls");
-    }
-
     public static void main(String[] args) {
         File file = ResourceFXUtils.toFile("sngpc.pdf");
         try {
-            ObservableList<Medicamento> medicamentosSNGPCPDF;
-            medicamentosSNGPCPDF = getMedicamentosSNGPCPDF(file);
+            ObservableList<Medicamento> medicamentosSNGPCPDF = getMedicamentosSNGPCPDF(file);
             medicamentosSNGPCPDF.forEach(s -> LOGGER.info("{}", s));
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("", e);
         }
     }
@@ -324,20 +304,6 @@ public final class LeitorArquivos {
             return Long.toString((long) numericCellValue);
         }
         return cell0.getStringCellValue();
-    }
-
-    private static Workbook getWorkbook(File selectedFile, FileInputStream fileInputStream) throws IOException {
-        return selectedFile.getName().endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
-            : new XSSFWorkbook(fileInputStream);
-    }
-
-    private static Integer intValue(String s) {
-        try {
-            return Integer.valueOf(s.replaceAll("\\D+", ""));
-        } catch (NumberFormatException e) {
-            LOGGER.trace("", e);
-            return null;
-        }
     }
 
     private static boolean isPDF(File selectedFile) {
@@ -468,10 +434,7 @@ public final class LeitorArquivos {
         int i) {
         Medicamento medicamento = m;
         try {
-
-            String s = linhas[i];
-            String[] split = s.trim().split("\\s+");
-
+            String[] split = linhas[i].trim().split("\\s+");
             if ("Página:".equals(split[0]) || !StringUtil.isNumeric(split[split.length - 1])) {
                 return medicamento;
             }

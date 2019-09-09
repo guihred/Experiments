@@ -6,17 +6,21 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 import javafx.beans.NamedArg;
+import org.slf4j.Logger;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class WordTopology extends BaseTopology {
 
 
-    public WordTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
+    private static final Logger LOG = HasLogging.log();
+
+
+	public WordTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
         super(graph, "Word", size);
 	}
 
-
-	@Override
+    @Override
     public void execute() {
         graph.getModel().clearSelected();
         graph.clean();
@@ -42,13 +46,13 @@ public class WordTopology extends BaseTopology {
     private String[] getWords() {
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"))) {
             return lines.flatMap((String e) -> Stream.of(e.split("[^a-zA-Z]"))).filter(s -> s.length() == 4)
-                    .map(String::toLowerCase).distinct().sorted().limit(getSize()).toArray(String[]::new);
+                .map(String::toLowerCase).distinct().sorted().limit(getSize()).toArray(String[]::new);
         } catch (IOException e) {
-            getLogger().error("", e);
+            LOG.error("", e);
         }
 
         return new String[] { "fine", "line", "mine", "nine", "pine", "vine", "wine", "wide", "wife", "wipe", "wire",
-                "wind", "wing", "wink", "wins", "none", "gone", "note", "vote", "site", "nite", "bite" };
+            "wind", "wing", "wink", "wins", "none", "gone", "note", "vote", "site", "nite", "bite" };
     }
 
     public static boolean oneCharOff(String word1, String word2) {

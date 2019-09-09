@@ -3,7 +3,7 @@ package utils;
 import java.util.function.Consumer;
 
 @FunctionalInterface
-public interface ConsumerEx<T> extends HasLogging {
+public interface ConsumerEx<T> {
     void accept(T t) throws Exception;
 
     static <M> Consumer<M> ignore(ConsumerEx<M> run) {

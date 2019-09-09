@@ -24,10 +24,9 @@ import ml.graph.WorldMapGraph;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
-import utils.HasLogging;
 import utils.ImageFXUtils;
 
-public class WorldMapExample extends Application implements HasLogging {
+public class WorldMapExample extends Application {
 
     @Override
     public void start(final Stage theStage) {

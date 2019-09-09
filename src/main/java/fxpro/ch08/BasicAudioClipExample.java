@@ -14,15 +14,15 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.CommonsFX;
+import utils.HasLogging;
 
 /**
  *
  * @author Note
  */
 public class BasicAudioClipExample extends Application {
-	private static final Logger LOGGER = LoggerFactory.getLogger(BasicAudioClipExample.class);
+    private static final Logger LOGGER = HasLogging.log();
     @Override
     public void start(Stage primaryStage) {
         try {

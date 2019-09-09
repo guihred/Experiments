@@ -22,7 +22,6 @@ import graphs.entities.Linha;
 import graphs.entities.Ponto;
 import japstudy.LessonPK;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,7 +61,7 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     @Test
-    public void testExcelService() throws IOException {
+    public void testExcelService() {
         ObservableList<Medicamento> medicamentosSNGPCPDF = LeitorArquivos
             .getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf"));
         Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
@@ -77,7 +76,7 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     @Test
-    public void testExcelService2() throws IOException {
+    public void testExcelService2() {
         ObservableList<Medicamento> medicamentos = LeitorArquivos
             .getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf"));
         Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();

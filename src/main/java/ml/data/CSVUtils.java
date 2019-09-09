@@ -13,12 +13,12 @@ import java.util.*;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class CSVUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CSVUtils.class);
+    private static final Logger LOGGER = HasLogging.log();
     private static final char DEFAULT_SEPARATOR = ',';
     private static final char DEFAULT_QUOTE = '"';
 

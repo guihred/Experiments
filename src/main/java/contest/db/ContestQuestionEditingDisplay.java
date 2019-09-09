@@ -1,5 +1,8 @@
 package contest.db;
 
+import static utils.ResourceFXUtils.convertToURL;
+import static utils.StringSigaUtils.intValue;
+
 import japstudy.db.HibernateUtil;
 import java.io.File;
 import java.util.List;
@@ -31,11 +34,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class ContestQuestionEditingDisplay extends Application implements HasLogging {
+public class ContestQuestionEditingDisplay extends Application {
+    private static final Logger LOG = HasLogging.log();
     private IntegerProperty current = new SimpleIntegerProperty(-1);
     private final ObservableList<ContestQuestion> lessons;
 	private final ContestReader instance;
@@ -166,12 +171,12 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         int index = current.get();
         ContestQuestion contestQuestion = lessons.get(index);
         lessons.set(index, contestQuestion);
-        if (getLogger().isInfoEnabled()) {
-            getLogger().trace(instance.getContest().toSQL());
-            getLogger().trace(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
-            getLogger().trace(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
+        if (LOG.isInfoEnabled()) {
+            LOG.trace(instance.getContest().toSQL());
+            LOG.trace(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
+            LOG.trace(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
                 .collect(Collectors.joining("\n")));
-            getLogger()
+            LOG
                 .trace(instance.getContestTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
                     .map(ContestText::toSQL).collect(Collectors.joining("\n")));
         }
@@ -180,21 +185,10 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         primaryStage.close();
     }
 
-    private void setImage(VBox newImage, String image) {
-        if (image != null) {
-            List<ImageView> images = Stream.of(image.split(";")).map(i -> new ImageView(toURL(i)))
-                .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
-            newImage.getChildren().setAll(images);
-        } else if (!newImage.getChildren().isEmpty()) {
-            newImage.getChildren().clear();
-
-        }
-    }
-
     private void setNumberField(String newV, ObjIntConsumer<ContestQuestion> a) {
         if (newV != null) {
             ContestQuestion contestQuestion = lessons.get(current.intValue());
-            a.accept(contestQuestion, Integer.parseInt(newV));
+            a.accept(contestQuestion, intValue(newV));
         }
     }
 
@@ -202,15 +196,6 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         if (newV != null) {
             ContestQuestion contestQuestion = lessons.get(current.intValue());
             a.accept(contestQuestion, newV);
-        }
-    }
-
-    private String toURL(String i) {
-        try {
-            return new File(i).toURI().toURL().toString();
-        } catch (Exception e) {
-            getLogger().error("", e);
-            return null;
         }
     }
 
@@ -222,6 +207,18 @@ public class ContestQuestionEditingDisplay extends Application implements HasLog
         VBox vBox = new VBox(new Text(text));
         vBox.getChildren().addAll(e);
         return vBox;
+    }
+
+    private static void setImage(VBox newImage, String image) {
+        if (image != null) {
+            List<ImageView> images = Stream.of(image.split(";"))
+                .map(i -> new ImageView(convertToURL(new File(i)).toString()))
+                .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
+            newImage.getChildren().setAll(images);
+        } else if (!newImage.getChildren().isEmpty()) {
+            newImage.getChildren().clear();
+
+        }
     }
 
 }

@@ -50,7 +50,7 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
         show(new ContestApplication());
         CrawlerTask.insertProxyConfig();
-        show(new HibernateCrawler());
+        show(new CandidatoApp());
         sleep(WAIT_TIME * 2);
     }
 

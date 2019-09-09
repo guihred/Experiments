@@ -5,11 +5,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import utils.HasLogging;
 
 public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Integer> {
 
     private static final int STEP = 50;
+    private static final Logger LOG = HasLogging.log();
     private CandidatoDAO candidatoDAO = new CandidatoDAO();
+
     @Override
     public void performTask(Integer j) {
         List<Candidato> candidatos = candidatoDAO.list(j, STEP);
@@ -40,13 +44,11 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
                 candidatoDAO.saveOrUpdate(candidato);
                 break;
             } catch (Exception e) {
-                getLogger().trace("ERRO candidato {}", candidato);
-                getLogger().trace("ERRO candidato " + candidato, e);
+                LOG.trace("ERRO candidato {}", candidato);
+                LOG.trace("ERRO candidato " + candidato, e);
             }
         }
     }
-
-
 
 
 }

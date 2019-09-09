@@ -3,8 +3,7 @@ package crypt;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
-public class VigenereCCipher implements HasLogging {
-    private static final Logger LOGGER = HasLogging.log();
+public class VigenereCCipher {
     private static final int NUMBER_OF_LETTERS = 26;
     private static final String ENCODED = "MOMUD EKAPV TQEFM OEVHP AJMII CDCTI FGYAG JSPXY ALUYM NSMYH"
         + "VUXJE LEPXJ FXGCM JHKDZ RYICU HYPUS PGIGM OIYHF WHTCQ KMLRD"
@@ -27,29 +26,7 @@ public class VigenereCCipher implements HasLogging {
         0.06966, 0.00153, 0.00772, 0.04025, 0.02406, 0.06749, 0.07507, 0.01929, 0.00095, 0.05987, 0.06327, 0.09056,
         0.02758, 0.00978, 0.02360, 0.00150, 0.01974, 0.00074 };
 
-    public int inicio() {
-        int len = 0;
-        char[] key = new char[100];
-        double bestFit = 1e100;
-
-        int[] txt = new int[ENCODED.length()];
-        for (int j = 0; j < ENCODED.length(); j++) {
-            if (Character.isUpperCase(ENCODED.charAt(j))) {
-                txt[len++] = ENCODED.charAt(j) - 'A';
-            }
-        }
-
-        for (int j = 1; j < 30; j++) {
-            double fit = freqEveryNth(txt, len, j, key);
-            getLogger().trace("{}, key length: {}, {}", fit, j, key);
-            if (fit < bestFit) {
-                bestFit = fit;
-                LOGGER.info("{} <--- best key length so far", j);
-            }
-        }
-
-        return 0;
-    }
+    private static final Logger LOG = HasLogging.log();
 
     public static int bestMatch(final double[] a, final double[] b) {
         double sum = 0;
@@ -109,6 +86,30 @@ public class VigenereCCipher implements HasLogging {
 
         key[interval] = '\0';
         return ret;
+    }
+
+    public static int inicio() {
+        int len = 0;
+        char[] key = new char[100];
+        double bestFit = 1e100;
+
+        int[] txt = new int[ENCODED.length()];
+        for (int j = 0; j < ENCODED.length(); j++) {
+            if (Character.isUpperCase(ENCODED.charAt(j))) {
+                txt[len++] = ENCODED.charAt(j) - 'A';
+            }
+        }
+
+        for (int j = 1; j < 30; j++) {
+            double fit = freqEveryNth(txt, len, j, key);
+            LOG.trace("{}, key length: {}, {}", fit, j, key);
+            if (fit < bestFit) {
+                bestFit = fit;
+                LOG.info("{} <--- best key length so far", j);
+            }
+        }
+
+        return 0;
     }
 
 }

@@ -5,8 +5,12 @@ import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import utils.HasLogging;
 
 public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
+
+    private static final Logger LOG = HasLogging.log();
 
     private CidadeDAO cidadeDAO = new CidadeDAO();
 
@@ -16,7 +20,6 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
         return Arrays.asList("ac", "al", "am", "ap", "ba", "ce", "es", "go", "ma", "mg", "ms", "mt",
                 "pa", "pb", "pe", "pi", "pr", "rj", "rn", "ro", "rr", "rs", "sc", "se", "sp", "to");
     }
-
     @Override
     protected void performTask(String estado) {
         String alphabet = "abcdefghijklmnopqrstuvwxyz";
@@ -25,6 +28,7 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
         }
 
     }
+
     private void crawlThroughSite(String estado, String letter) {
         try {
             Document parse = getDocument("https://www.todapolitica.com/eleicoes-2016/" + estado + "/" + letter + "/");
@@ -42,9 +46,8 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
                 cidadeDAO.saveOrUpdate(cidade);
             }
         } catch (Exception e) {
-            getLogger().trace("ERRO cidade " + estado + " " + letter, e);
+            LOG.trace("ERRO cidade " + estado + " " + letter, e);
         }
     }
-
 
 }

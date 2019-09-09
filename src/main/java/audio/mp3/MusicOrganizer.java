@@ -20,9 +20,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.CommonsFX;
+import utils.ResourceFXUtils;
+import utils.StageHelper;
 
-public class MusicOrganizer extends Application implements HasLogging {
+public class MusicOrganizer extends Application {
 
     private static final int HEIGHT = 250;
     private static final int WIDTH = 600;

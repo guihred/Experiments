@@ -16,15 +16,14 @@ import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.HasLogging;
 
-public final class SongModel implements HasLogging {
+public final class SongModel {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SongModel.class);
 
     private static final Image DEFAULT_ALBUM_COVER
 			= new Image(MetadataView.DEFAULT_PICTURE);
+    private static final Logger LOG = HasLogging.log();
     private final StringProperty album
             = new SimpleStringProperty(this, "album");
     private final StringProperty artist
@@ -35,16 +34,16 @@ public final class SongModel implements HasLogging {
             = new SimpleStringProperty(this, "year");
     private final ObjectProperty<Image> albumCover
             = new SimpleObjectProperty<>(this, "albumCover");
+
     private final ReadOnlyObjectWrapper<MediaPlayer> mediaPlayer
             = new ReadOnlyObjectWrapper<>(this, "mediaPlayer");
-
     public SongModel() {
         resetProperties();
     }
+
     public ObjectProperty<Image> albumCoverProperty() {
         return albumCover;
     }
-
     public StringProperty albumProperty() {
         return album;
     }
@@ -54,6 +53,7 @@ public final class SongModel implements HasLogging {
     public String getAlbum() {
         return album.get();
     }
+
     public Image getAlbumCover() {
         return albumCover.get();
     }
@@ -70,11 +70,11 @@ public final class SongModel implements HasLogging {
         return mediaPlayer.get();
     }
 
-    public String getTitle() {
+	public String getTitle() {
         return title.get();
     }
 
-	public ObjectProperty<MediaPlayer> mediaPlayerProperty() {
+    public ObjectProperty<MediaPlayer> mediaPlayerProperty() {
 		return mediaPlayer;
     }
 
@@ -82,14 +82,14 @@ public final class SongModel implements HasLogging {
         album.set(value);
     }
 
-    public void setURL(String url) {
+	public void setURL(String url) {
         if (mediaPlayer.get() != null) {
             mediaPlayer.get().stop();
         }
         initializeMedia(url);
     }
 
-	public StringProperty titleProperty() {
+    public StringProperty titleProperty() {
         return title;
     }
 
@@ -98,7 +98,7 @@ public final class SongModel implements HasLogging {
     }
 
     private void handleMetadata(String key, Object value) {
-        getLogger().trace("Key={},Value={}", key, value);
+        LOG.trace("Key={},Value={}", key, value);
 		if ("album".equals(key)) {
             setAlbum(value.toString());
 		} else if ("artist".equals(key)) {
@@ -128,11 +128,11 @@ public final class SongModel implements HasLogging {
             mediaPlayer.getValue().volumeProperty().set(0);
             mediaPlayer.get().setOnError(() -> {
                 String errorMessage = mediaPlayer.get().getError().getMessage();
-                getLogger().trace("MediaPlayer Error: {}", errorMessage);
+                LOG.trace("MediaPlayer Error: {}", errorMessage);
             });
         } catch (RuntimeException re) {
-			LOGGER.error("", re);
-            getLogger().trace("Caught Exception: {}", re.getMessage());
+            LOG.error("", re);
+            LOG.trace("Caught Exception: {}", re.getMessage());
         }
     }
     private void resetProperties() {
@@ -166,7 +166,7 @@ public final class SongModel implements HasLogging {
                     .extractEmbeddedImage(new File(new URL(URLDecoder.decode(url, "UTF-8")).getFile()));
             setAlbumCover(extractEmbeddedImageData);
 		} catch (Exception e) {
-			LOGGER.error("", e);
+            LOG.error("", e);
 		}
 	}
 }

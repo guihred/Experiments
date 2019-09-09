@@ -21,7 +21,6 @@ import java.util.stream.StreamSupport;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.CrawlerTask;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -29,7 +28,7 @@ import utils.ResourceFXUtils;
 public final class Chapter8 {
     private static final Logger LOG = HasLogging.log();
     private static final String ALICE_TXT = "alice.txt";
-    private static final Logger LOGGER = LoggerFactory.getLogger(Chapter8.class);
+    private static final Logger LOGGER = HasLogging.log();
 
     /*
      * Using only methods of the Comparator class, define a comparator for Point2D

@@ -29,13 +29,15 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import simplebuilder.SimpleListViewBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class ContestApplication extends Application implements HasLogging {
+public class ContestApplication extends Application {
 
+    private static final Logger LOG = HasLogging.log();
     private ContestReader contestQuestions;
     private ObservableList<ContestReader> allContests;
     private IntegerProperty current = new SimpleIntegerProperty(-1);
@@ -48,7 +50,7 @@ public class ContestApplication extends Application implements HasLogging {
                     reader.getContest().setJob("Analista de Tecnologia da Informacao");
                     reader.getContest().setName("CFM Conselho Federal de Medicina");
                     reader.saveAll();
-                    getLogger().info("Questions Read");
+                    LOG.info("Questions Read");
                 });
             allContests.add(contestQuestions);
 
@@ -99,7 +101,7 @@ public class ContestApplication extends Application implements HasLogging {
                 Boolean correct = value.getCorrect();
                 ObservableList<ContestQuestion> contestTexts = contestQuestions.getListQuestions();
                 Integer number = contestTexts.get(current.get()).getNumber();
-                getLogger().info("Question {} Answer {}", number, correct);
+                LOG.info("Question {} Answer {}", number, correct);
                 root.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
                     if (e.contains("certo0")) {
                         e.add("certo");

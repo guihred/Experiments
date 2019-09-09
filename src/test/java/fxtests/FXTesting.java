@@ -19,7 +19,6 @@ public final class FXTesting implements HasLogging {
 
     private static final String TIME_FORMAT = "HHH:mm:ss.SSS";
 
-    private static final Logger LOGGER = HasLogging.log();
 
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 
@@ -75,29 +74,31 @@ public final class FXTesting implements HasLogging {
 
     public static void measureTime(String name, RunnableEx runnable) {
         long currentTimeMillis = System.currentTimeMillis();
+        Logger log = HasLogging.log(1);
         try {
             runnable.run();
         } catch (Exception e) {
-            LOGGER.error("Exception in " + name, e);
+            log.error("Exception in " + name, e);
         }
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
-        HasLogging.log(1).info(TIME_TOOK_FORMAT, name, formatDuration);
+        log.info(TIME_TOOK_FORMAT, name, formatDuration);
     }
 
     public static <T> T measureTime(String name, SupplierEx<T> runnable) {
         long currentTimeMillis = System.currentTimeMillis();
+        Logger log = HasLogging.log(1);
         T t = null;
         try {
             t = runnable.get();
         } catch (Exception e) {
-            LOGGER.error("Exception in " + name, e);
+            log.error("Exception in " + name, e);
         }
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
-        HasLogging.log(1).info(TIME_TOOK_FORMAT, name, formatDuration);
+        log.info(TIME_TOOK_FORMAT, name, formatDuration);
         return t;
     }
 
@@ -109,8 +110,9 @@ public final class FXTesting implements HasLogging {
             long currentTimeMillis2 = System.currentTimeMillis();
             long arg2 = currentTimeMillis2 - currentTimeMillis;
             String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
-            HasLogging.log(1).info(TIME_TOOK_FORMAT, name, formatDuration);
-            LOGGER.trace("Exception in " + name, e);
+            Logger log = HasLogging.log(1);
+            log.info(TIME_TOOK_FORMAT, name, formatDuration);
+            log.trace("Exception in " + name, e);
         }
     }
 
@@ -122,9 +124,10 @@ public final class FXTesting implements HasLogging {
     @SafeVarargs
     public static void verifyAndRun(ApplicationTest app, Stage currentStage, Runnable consumer,
         Class<? extends Application>... applicationClasses) {
+        Logger log = HasLogging.log(1);
         for (int i = 0; i < applicationClasses.length; i++) {
             Class<? extends Application> class1 = applicationClasses[i];
-            LOGGER.info(" RUN {}", class1.getSimpleName());
+            log.info(" RUN {}", class1.getSimpleName());
             app.interactNoWait(RunnableEx.make(() -> class1.newInstance().start(currentStage)));
             consumer.run();
         }

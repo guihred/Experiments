@@ -18,9 +18,11 @@ import ml.data.Country;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.apache.commons.lang3.StringUtils;
-import utils.*;
+import utils.CommonsFX;
+import utils.ImageFXUtils;
+import utils.RotateUtils;
 
-public class WorldMapGraph extends Canvas implements HasLogging {
+public class WorldMapGraph extends Canvas {
     public static final int HEIGHT = 1200;
     public static final int WIDTH = 2000;
     protected static final String NO_INFO = "No info";

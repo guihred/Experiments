@@ -17,21 +17,24 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
 /**
  *
  * @author Mark Heckler, @MkHeck
  */
-public class RaspiCycle extends Application implements HasLogging {
+public class RaspiCycle extends Application {
     private static final Color DARK_BLUE = Color.rgb(2, 2, 47);
     private static final double SCREEN_HEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
     private static final double SCREEN_WIDTH = Screen.getPrimary().getVisualBounds().getWidth();
+    private static final Logger LOG = HasLogging.log();
     private int speed = 1;
     private GraphicsContext gc;
     private Point2D startPos;
     private Point2D curPos;
     private Point2D newPos;
+
     private final List<Line> walls = new ArrayList<>();
 
     private Direction curDir = Direction.UP;
@@ -140,14 +143,13 @@ public class RaspiCycle extends Application implements HasLogging {
     }
 
     private void checkCollision() {
-        getLogger().trace("Current Position: ({}, {})", curPos.getX(), curPos.getY());
+        LOG.trace("Current Position: ({}, {})", curPos.getX(), curPos.getY());
         walls.stream().filter(line -> line.getStartX() <= curPos.getX() && curPos.getX() <= line.getEndX()
             && line.getStartY() <= curPos.getY() && curPos.getY() <= line.getEndY()).forEach(line -> {
                 animTimer.stop();
-                getLogger().info("COLLISION!");
+                LOG.info("COLLISION!");
             });
     }
-
     private void drawGameGrid() {
         int boxSize = (int) (Math.min(SCREEN_WIDTH, SCREEN_HEIGHT) / 10);
         int i;

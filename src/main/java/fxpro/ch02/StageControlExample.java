@@ -23,13 +23,15 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.slf4j.Logger;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class StageControlExample extends Application implements HasLogging {
+public class StageControlExample extends Application {
 
+    private static final Logger LOG = HasLogging.log();
     private StringProperty title = new SimpleStringProperty();
     private Text textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
     private Text textStageY = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
@@ -38,6 +40,7 @@ public class StageControlExample extends Application implements HasLogging {
     private Text textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
     private CheckBox checkBoxFullScreen = new CheckBox("fullScreen");
     private double dragAnchorX;
+
     private double dragAnchorY;
 
     @Override
@@ -98,7 +101,7 @@ public class StageControlExample extends Application implements HasLogging {
         stage.setScene(scene);
         stage.titleProperty().bind(title);
         stage.initStyle(stageStyle);
-        stage.setOnCloseRequest(we -> getLogger().info("Stage is closing"));
+        stage.setOnCloseRequest(we -> LOG.info("Stage is closing"));
         stage.show();
         Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);

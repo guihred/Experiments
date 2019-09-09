@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 /**
@@ -25,7 +25,7 @@ import utils.ResourceFXUtils;
  * will return null if the verb does not end in 'ar','er','ir' or 'or'.
  */
 public class BrazilianVerbsConjugator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BrazilianVerbsConjugator.class);
+    private static final Logger LOGGER = HasLogging.log();
 
     private static final boolean DEBUG = false;
 

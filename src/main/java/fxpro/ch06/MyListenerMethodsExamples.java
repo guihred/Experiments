@@ -3,18 +3,21 @@ package fxpro.ch06;
 import java.util.stream.Stream;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
-class MyListenerMethodsExamples implements ListChangeListener<String>, HasLogging {
+class MyListenerMethodsExamples implements ListChangeListener<String> {
 
     private static final String REPLACED = "replaced";
+
+    private static final Logger LOG = HasLogging.log();
 
     @Override
     public void onChanged(Change<? extends String> change) {
         ObservableList<? extends String> list = change.getList();
-        getLogger().trace("\tList = {}", list);
+        LOG.trace("\tList = {}", list);
         String prettyPrint = prettyPrint(change);
-        getLogger().trace(prettyPrint);
+        LOG.trace(prettyPrint);
     }
 
     public static void appendKindOfChange(Change<? extends String> change, StringBuilder sb, final String kind) {

@@ -1,5 +1,6 @@
 package schema.sngpc;
 
+import static japstudy.db.BaseEntity.mapProperty;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -16,7 +17,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
@@ -131,7 +131,7 @@ public final class FXMLCreator {
         lines.addAll(
             referencedMethod.values().stream().map(e -> String.format("\tpublic void %s{%n\t}", e)).collect(toList()));
         lines.add("}");
-        Files.write(outFile.toPath(), lines, StandardCharsets.UTF_8);
+        Files.write(outFile.toPath(), lines);
         List<String> compileClass = ControllerCompiler.compileClass(outFile);
         if (!compileClass.contains("Classe Adicionada com sucesso")) {
             LOG.info("{}", compileClass);

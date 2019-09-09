@@ -17,6 +17,7 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.RunnableEx;
@@ -58,6 +59,19 @@ public final class PdfUtils {
             }
         })).start();
         return images;
+    }
+
+    public static String[] getAllLines(File file) {
+        try (RandomAccessFile source = new RandomAccessFile(file, "r");
+            COSDocument cosDoc = PdfUtils.parseAndGet(source);
+            PDDocument pdDoc = new PDDocument(cosDoc)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            pdfStripper.setStartPage(1);
+            String parsedText = pdfStripper.getText(pdDoc);
+            return parsedText.split("\r\n");
+        } catch (Exception e) {
+            throw new RuntimeIOException("ERROR IN FILE " + file, e);
+        }
     }
 
     public static COSDocument parseAndGet(RandomAccessFile source) throws IOException {

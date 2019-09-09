@@ -32,9 +32,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.ResourceFXUtils;
+import utils.SongUtils;
+import utils.StageHelper;
 
-public final class MusicHandler implements EventHandler<MouseEvent>, HasLogging {
+public final class MusicHandler implements EventHandler<MouseEvent> {
     private static final int IMAGE_MAX_WIDTH = 300;
     /**
      * 

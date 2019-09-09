@@ -52,7 +52,7 @@ import utils.MatrixSolver;
 import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
-public class IndependentTest implements HasLogging {
+public class IndependentTest {
     private static final Logger LOGGER = HasLogging.log();
 
     @Test

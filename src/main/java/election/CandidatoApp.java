@@ -1,11 +1,15 @@
 package election;
 
+import static election.CandidatoHelper.getRelevantFields;
+import static election.CandidatoHelper.treeView;
+import static election.CandidatoHelper.updateTable;
 import static utils.CommonsFX.newSlider;
 
 import japstudy.db.HibernateUtil;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -14,12 +18,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -28,15 +34,12 @@ import javafx.stage.Stage;
 import ml.graph.PieGraph;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import simplebuilder.SimpleTreeViewBuilder;
-import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.ImageTableCell;
 
-public class HibernateCrawler extends Application {
-    private static final int RELEVANT_FIELD_THRESHOLD = 410;
-    private CandidatoDAO candidatoDAO = new CandidatoDAO();
+public class CandidatoApp extends Application {
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -52,7 +55,7 @@ public class HibernateCrawler extends Application {
         TableView<Object> build = new SimpleTableViewBuilder<>().addColumn("fotoUrl", "fotoUrl", ImageTableCell::new)
             .addColumns("nome", "numero", "partido", "grauInstrucao", "cargo", "naturalidade", "ocupacao",
                 "nomeCompleto", "votos")
-            .addColumn("cidade", Cidade::getCity, "cidade").addColumn("eleito", HibernateCrawler::simNao, "eleito")
+            .addColumn("cidade", Cidade::getCity, "cidade").addColumn("eleito", CandidatoHelper::simNao, "eleito")
             .addColumn("nascimento", dateFormat::format, "nascimento").prefWidth(500).equalColumns()
             .items(candidatesFiltered).build();
 
@@ -87,66 +90,10 @@ public class HibernateCrawler extends Application {
         primaryStage.show();
     }
 
-    private List<String> getRelevantFields() {
-        return ClassReflectionUtils.getFields(Candidato.class).stream()
-            .filter(e -> candidatoDAO.distinctNumber(e) < RELEVANT_FIELD_THRESHOLD).collect(Collectors.toList());
-    }
-
-    private TreeView<String> treeView(ObservableMap<String, Set<String>> fieldMap, IntegerProperty first,
-        IntegerProperty maxResult, StringProperty column, PieGraph pieGraph, ObservableList<Object> candidates) {
-        Map<String, CheckBox> portChecks = new HashMap<>();
-        SimpleTreeViewBuilder<String> treeView = new SimpleTreeViewBuilder<String>().root("Root").editable(false)
-            .showRoot(false).onSelect(newValue -> {
-                if (newValue != null && newValue.isLeaf()) {
-                    String value = newValue.getValue();
-                    String parent = newValue.getParent().getValue();
-                    if (!portChecks.containsKey(value)) {
-                        portChecks.put(value, new CheckBox());
-
-                        portChecks.get(value).selectedProperty()
-                            .addListener((ob, o, val) -> addIfChecked(parent, fieldMap, value, val));
-                    }
-
-                    newValue.setGraphic(portChecks.get(value));
-                }
-            });
-        for (String field : getRelevantFields()) {
-            List<String> distinct = candidatoDAO.distinct(field);
-            fieldMap.put(field, FXCollections.observableSet());
-            treeView.addItem(field, distinct);
-
-        }
-
-        fieldMap.addListener((MapChangeListener<String, Set<String>>) e -> updateTable(first, maxResult.get(),
-            column.get(), pieGraph, candidates, fieldMap));
-
-        return treeView.build();
-    }
-
-    private void updateTable(IntegerProperty first, int maxResult, String column, PieGraph pieGraph,
-        ObservableList<Object> observableArrayList, Map<String, Set<String>> fieldMap) {
-        List<Candidato> list = candidatoDAO.list(first.get(), maxResult, fieldMap);
-        observableArrayList.setAll(list);
-        Map<String, Long> histogram = candidatoDAO.histogram(column, fieldMap);
-        pieGraph.setHistogram(histogram);
-    }
-
     public static void main(String[] args) {
         CrawlerTask.insertProxyConfig();
         launch(args);
     }
 
-    private static void addIfChecked(String parent, Map<String, Set<String>> fieldMap, String value, Boolean val) {
-        Set<String> set = fieldMap.remove(parent);
-        if (!val) {
-            set.remove(value);
-        } else {
-            set.add(value);
-        }
-        fieldMap.put(parent, set);
-    }
 
-    private static String simNao(Boolean a) {
-        return a ? "Sim" : "Não";
-    }
 }

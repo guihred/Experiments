@@ -1,5 +1,6 @@
 package rosario;
 
+import static extract.ExcelService.isExcel;
 import static rosario.LeitorArquivos.*;
 
 import java.awt.Desktop;
@@ -25,7 +26,7 @@ import utils.CommonsFX;
 import utils.HasLogging;
 
 public final class RosarioCommons {
-    static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
     static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
     static boolean openAtExport = true;
     static final Map<String, FileChooser> FILE_CHOOSE = new HashMap<>();
@@ -245,7 +246,7 @@ public final class RosarioCommons {
         Window primaryStage = filterField.getScene().getWindow();
         File selectedFile = fileChooser2.showOpenDialog(primaryStage);
         if (selectedFile != null) {
-            if (LeitorArquivos.isExcel(selectedFile)) {
+            if (isExcel(selectedFile)) {
                 showImportDialog(selectedFile, FXCollections.observableArrayList(REGISTRO, NOME, LOTE, QUANTIDADE, ""),
                     meds -> {
                         configurarFiltroRapido(filterField, medicamentosAnvisaTable, meds);
@@ -267,7 +268,7 @@ public final class RosarioCommons {
 
         File selectedFile = fileChooserRosario.showOpenDialog(primaryStage);
         if (selectedFile != null) {
-            if (LeitorArquivos.isExcel(selectedFile)) {
+            if (isExcel(selectedFile)) {
                 showImportDialog(selectedFile, FXCollections.observableArrayList(CODIGO, NOME, QUANTIDADE, ""),
                     meds -> configurarFiltroRapido(filterField, medicamentosEstoqueTable, meds));
                 return;
@@ -283,7 +284,7 @@ public final class RosarioCommons {
 
         File selectedFile = fileChooserSNGPC.showOpenDialog(primaryStage);
         if (selectedFile != null) {
-            if (LeitorArquivos.isExcel(selectedFile)) {
+            if (isExcel(selectedFile)) {
                 showImportDialog(selectedFile,
                     FXCollections.observableArrayList(REGISTRO, NOME, LOTE, QUANTIDADE, CODIGO, ""), meds -> {
                         configurarFiltroRapido(filterField, medicamentosEstoqueSNGPCTable, meds);

@@ -15,14 +15,18 @@ import javafx.scene.paint.Color;
 import ml.data.Country;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
+import org.slf4j.Logger;
+import utils.HasLogging;
 import utils.RotateUtils;
 
 public class WorldMapGraph2 extends WorldMapGraph {
+    private static final Logger LOG = HasLogging.log();
     private DoubleProperty radius = new SimpleDoubleProperty(1);
     private DoubleProperty xScale = new SimpleDoubleProperty(0);
     private DoubleProperty yScale = new SimpleDoubleProperty(0);
     private String cityHeader = "City";
     private String latHeader;
+
     private String lonHeader;
 
     public WorldMapGraph2() {
@@ -165,8 +169,8 @@ public class WorldMapGraph2 extends WorldMapGraph {
         List<Double> lis2t = dataframeML.list(latHeader, Double.class);
         List<String> citu = dataframeML.list(cityHeader, String.class);
         for (int i = 0; i < dataframeML.getSize(); i++) {
-            getLogger().trace("X={}", xScale.get());
-            getLogger().trace("Y={}", yScale.get());
+            LOG.trace("X={}", xScale.get());
+            LOG.trace("Y={}", yScale.get());
             double latitudeInDegrees = list.get(i).doubleValue();
             double longitudeInDegrees = lis2t.get(i).doubleValue();
             double[] screenLocation = mercatorMap.getScreenLocation(latitudeInDegrees, longitudeInDegrees);

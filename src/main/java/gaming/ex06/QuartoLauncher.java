@@ -20,12 +20,13 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
 import utils.HasLogging;
 import utils.StageHelper;
 import utils.Xform;
 
-public class QuartoLauncher extends Application implements HasLogging{
+public class QuartoLauncher extends Application {
 
     private static final int HEIGHT = 700;
     private static final int WIDTH = 1000;
@@ -33,15 +34,17 @@ public class QuartoLauncher extends Application implements HasLogging{
 	private static final double CONTROL_MULTIPLIER = 0.1;
 	private static final double SHIFT_MULTIPLIER = 0.1;
 	private static final double CAMERA_DISTANCE = 550;
-	private final PerspectiveCamera camera = new PerspectiveCamera(true);
+	private static final Logger LOG = HasLogging.log();
+    private final PerspectiveCamera camera = new PerspectiveCamera(true);
     private final Xform cameraXform = new Xform();
     private final Xform cameraXform2 = new Xform();
     private final Xform cameraXform3 = new Xform();
-    private final QuartoModel model = new QuartoModel();
+	private final QuartoModel model = new QuartoModel();
 	private final Group root = new Group();
+
 	private final Xform world = new Xform();
 
-	@Override
+    @Override
     public void start(Stage primaryStage) {
         cameraXform.toString();
         root.getChildren().add(world);
@@ -100,7 +103,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 		world.getChildren().addAll(group);
 	}
 
-    private void buildCamera() {
+	private void buildCamera() {
         root.getChildren().add(cameraXform);
         cameraXform.getChildren().add(cameraXform2);
         cameraXform2.getChildren().add(cameraXform3);
@@ -140,7 +143,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 		}
 	}
 
-	private void handleMouseClick(MouseEvent event) {
+    private void handleMouseClick(MouseEvent event) {
 		final EventTarget target = event.getTarget();
 		if (target instanceof Shape3D) {
 		    final Parent parent = ((Shape3D) target).getParent();
@@ -160,7 +163,7 @@ public class QuartoLauncher extends Application implements HasLogging{
 				p.setSelected(false);
 				setQuartoPiece(target, p);
 		        if (model.checkEnd()) {
-                    getLogger().info("{}", "ACABOU");
+                    LOG.info("{}", "ACABOU");
                     StageHelper.displayDialog("You Got " + 0 + " points", "Reset", model::reset);
 
 		        }
@@ -168,7 +171,6 @@ public class QuartoLauncher extends Application implements HasLogging{
 
 		}
 	}
-
     private void moveSideways(KeyEvent event, int multiplier) {
 		if (event.isControlDown() && event.isShiftDown()) {
             cameraXform2.setTx(cameraXform2.getTx() + multiplier * 10 * CONTROL_MULTIPLIER);

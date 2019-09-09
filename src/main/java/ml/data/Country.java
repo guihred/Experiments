@@ -12,7 +12,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public enum Country {
-	// ASIA
+    // ASIA
     YE(ASIA, "Yemen", "YE"),
     HK(ASIA, "Hong Kong|Hong Kong SAR, China", "HK"),
     SG(ASIA, "Singapore", "SG"),
@@ -58,7 +58,7 @@ public enum Country {
     UZ(ASIA, "Uzbekistan", "UZ"),
     IQ(ASIA, "Iraq", "IQ"),
     CN(ASIA, "China|China[\\(People's Republic of\\)]*", "CN"),
-	// AFRICA
+    // AFRICA
     TN(AFRICA, "Tunisia", "TN"),
     UG(AFRICA, "Uganda", "UG"),
     DZ(AFRICA, "Algeria", "DZ"),
@@ -103,7 +103,7 @@ public enum Country {
     ST(AFRICA, "São Tomé and Principe|Sao Tome and Principe", "ST"),
     CD(AFRICA, "Dem. Rep. Congo|Congo, Dem. Rep.", "CD"),
     ET(AFRICA, "Ethiopia", "ET"),
-	// EUROPE
+    // EUROPE
     LT(EUROPE, "Lithuania", "LT"),
     LU(EUROPE, "Luxembourg", "LU"),
     LV(EUROPE, "Latvia", "LV"),
@@ -142,7 +142,7 @@ public enum Country {
     DK(EUROPE, "Denmark", "DK"),
     FI(EUROPE, "Finland", "FI"),
     DE(EUROPE, "Germany", "DE"),
-	// NORTH_AMERICA
+    // NORTH_AMERICA
     MX(NORTH_AMERICA, "Mexico", "MX"),
     GL(NORTH_AMERICA, "Greenland", "GL"),
     CU(NORTH_AMERICA, "Cuba", "CU"),
@@ -163,7 +163,7 @@ public enum Country {
     GT(NORTH_AMERICA, "Guatemala", "GT"),
     JM(NORTH_AMERICA, "Jamaica", "JM"),
     SV(NORTH_AMERICA, "El Salvador", "SV"),
-	// SOUTH_AMERICA
+    // SOUTH_AMERICA
     AR(SOUTH_AMERICA, "Argentina", "AR"),
     CO(SOUTH_AMERICA, "Colombia", "CO"),
     BO(SOUTH_AMERICA, "Bolivia", "BO"),
@@ -179,7 +179,7 @@ public enum Country {
     FO(SOUTH_AMERICA, "Faeroe Is.|Faroe Islands", "FO"),
     FK(SOUTH_AMERICA, "Falkland Is.", "FK"),
     PE(SOUTH_AMERICA, "Peru", "PE"),
-	// OCEANIA
+    // OCEANIA
     AU(OCEANIA, "Australia", "AU"),
     ID(OCEANIA, "Indonesia", "ID"),
     NZ(OCEANIA, "New Zealand", "NZ"),
@@ -188,7 +188,7 @@ public enum Country {
     TL(OCEANIA, "Timor-Leste", "TL"),
     BN(OCEANIA, "Brunei|Brunei Darussalam", "BN"),
     PF(OCEANIA, "Fr. Polynesia|French Polynesia", "PF"),
-	// ANTARCTICA
+    // ANTARCTICA
     MW(AFRICA, "Malawi", "MW"),
     TG(AFRICA, "Togo", "TG"),
     KY(NORTH_AMERICA, "Cayman Is.|Cayman Islands", "KY"),
@@ -230,180 +230,182 @@ public enum Country {
     GP(NORTH_AMERICA, "Guadeloupe", "GP"),
     CW(NORTH_AMERICA, "Curaco|Curacao", "CW"),
     IC(AFRICA, "Canary Islands", "IC");
-	static {
+    static {
         loadPaths();
     }
 
+    private static final Logger LOG = HasLogging.log();
     private final String countryName;
-	private final String code;
 
-	private String path;
+    private final String code;
+    private String path;
     private final Continent continent;
-	private double[] center;
 
-	private List<double[]> points = new ArrayList<>();
+    private double[] center;
 
-	private DoubleSummaryStatistics xStats;
+    private List<double[]> points = new ArrayList<>();
 
-	private DoubleSummaryStatistics yStats;
+    private DoubleSummaryStatistics xStats;
 
-	private Set<Country> neighbors;
+    private DoubleSummaryStatistics yStats;
+
+    private Set<Country> neighbors;
 
     Country(Continent continent, String name, String code) {
-		this.continent = continent;
-		countryName = name;
-		this.code = code;
-	}
+        this.continent = continent;
+        countryName = name;
+        this.code = code;
+    }
 
-	public double getCenterX() {
-		if (center == null) {
-			center = computeCentroid();
-		}
-		return center[0];
-	}
+    public double getCenterX() {
+        if (center == null) {
+            center = computeCentroid();
+        }
+        return center[0];
+    }
 
-	public double getCenterY() {
-		if (center == null) {
-			center = computeCentroid();
-		}
+    public double getCenterY() {
+        if (center == null) {
+            center = computeCentroid();
+        }
 
-		return center[1];
-	}
-	public String getCode() {
-		return code;
-	}
-	public Continent getContinent() {
-		return continent;
-	}
+        return center[1];
+    }
 
-	public String getCountryName() {
-		return countryName.replaceAll("\\|.+", "");
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public Continent getContinent() {
+        return continent;
+    }
 
-	public List<double[]> getPoints() {
-		if (points.isEmpty()) {
-			String[] regions = Stream.of(path.split("[mz]")).filter(StringUtils::isNotBlank).toArray(String[]::new);
-			double x = 0;
-			double y = 0;
-			for (int i = 0; i < regions.length; i++) {
-				String[] pointPairs = regions[i].split(" ");
-				for (int j = 0; j < pointPairs.length; j++) {
-					String[] xYCoord = pointPairs[j].split(",");
-					if (xYCoord.length == 2) {
-						x += Double.parseDouble(xYCoord[0]);
-						y += Double.parseDouble(xYCoord[1]);
-						points.add(new double[] { x, y });
-					}
-				}
-			}
-			xStats = points.stream().mapToDouble(e -> e[0]).summaryStatistics();
-			yStats = points.stream().mapToDouble(e -> e[1]).summaryStatistics();
-		}
-		return points;
-	}
+    public String getCountryName() {
+        return countryName.replaceAll("\\|.+", "");
+    }
 
-	public DoubleSummaryStatistics getxStats() {
-		getPoints();
-		return xStats;
-	}
+    public String getPath() {
+        return path;
+    }
 
+    public List<double[]> getPoints() {
+        if (points.isEmpty()) {
+            String[] regions = Stream.of(path.split("[mz]")).filter(StringUtils::isNotBlank).toArray(String[]::new);
+            double x = 0;
+            double y = 0;
+            for (int i = 0; i < regions.length; i++) {
+                String[] pointPairs = regions[i].split(" ");
+                for (int j = 0; j < pointPairs.length; j++) {
+                    String[] xYCoord = pointPairs[j].split(",");
+                    if (xYCoord.length == 2) {
+                        x += Double.parseDouble(xYCoord[0]);
+                        y += Double.parseDouble(xYCoord[1]);
+                        points.add(new double[] { x, y });
+                    }
+                }
+            }
+            xStats = points.stream().mapToDouble(e -> e[0]).summaryStatistics();
+            yStats = points.stream().mapToDouble(e -> e[1]).summaryStatistics();
+        }
+        return points;
+    }
 
-	public DoubleSummaryStatistics getyStats() {
-		getPoints();
-		return yStats;
-	}
+    public DoubleSummaryStatistics getxStats() {
+        getPoints();
+        return xStats;
+    }
 
-	public boolean matches(String name) {
-		return name.matches(countryName);
-	}
+    public DoubleSummaryStatistics getyStats() {
+        getPoints();
+        return yStats;
+    }
 
-	public Set<Country> neighbors() {
+    public boolean matches(String name) {
+        return name.matches(countryName);
+    }
 
-		if (neighbors == null) {
-			neighbors = new LinkedHashSet<>();
-			Country[] values = values();
-			for (int i = 0; i < values.length; i++) {
-				Country country = values[i];
-				if (country != this) {
-					DoubleSummaryStatistics countryX = country.getxStats();
-					DoubleSummaryStatistics countryY = country.getyStats();
-					if (intersect(countryX.getMin(), countryY.getMin(), countryX.getMax() - countryX.getMin(),
-							countryY.getMax() - countryY.getMin())) {
+    public Set<Country> neighbors() {
 
-						neighbors.add(country);
-						country.addNeighbor(this);
-					}
-				}
-			}
+        if (neighbors == null) {
+            neighbors = new LinkedHashSet<>();
+            Country[] values = values();
+            for (int i = 0; i < values.length; i++) {
+                Country country = values[i];
+                if (country != this) {
+                    DoubleSummaryStatistics countryX = country.getxStats();
+                    DoubleSummaryStatistics countryY = country.getyStats();
+                    if (intersect(countryX.getMin(), countryY.getMin(), countryX.getMax() - countryX.getMin(),
+                        countryY.getMax() - countryY.getMin())) {
 
-		}
-		return neighbors;
-	}
+                        neighbors.add(country);
+                        country.addNeighbor(this);
+                    }
+                }
+            }
 
-	private void addNeighbor(Country country) {
-		if (neighbors != null) {
-			neighbors.add(country);
-		}
-	}
+        }
+        return neighbors;
+    }
 
-	private double[] computeCentroid() {
-		List<double[]> points1 = getPoints();
-		double[] centroid = { 0, 0 };
-		double signedArea = 0.0;
-		double x0; // Current vertex X
-		double y0; // Current vertex Y
-		double x1; // Next vertex X
-		double y1; // Next vertex Y
-		double a; // Partial signed area
+    private void addNeighbor(Country country) {
+        if (neighbors != null) {
+            neighbors.add(country);
+        }
+    }
 
-		// For all vertices except last
-		int i = 0;
-		for (i = 0; i < points1.size() - 1; ++i) {
-			x0 = points1.get(i)[0];
-			y0 = points1.get(i)[1];
-			x1 = points1.get(i + 1)[0];
-			y1 = points1.get(i + 1)[1];
-			a = x0 * y1 - x1 * y0;
-			signedArea += a;
-			centroid[0] += (x0 + x1) * a;
-			centroid[1] += (y0 + y1) * a;
-		}
+    private double[] computeCentroid() {
+        List<double[]> points1 = getPoints();
+        double[] centroid = { 0, 0 };
+        double signedArea = 0.0;
+        double x0; // Current vertex X
+        double y0; // Current vertex Y
+        double x1; // Next vertex X
+        double y1; // Next vertex Y
+        double a; // Partial signed area
 
-		// Do last vertex separately to avoid performing an expensive
-		// modulus operation in each iteration.
-		x0 = points1.get(i)[0];
-		y0 = points1.get(i)[1];
-		x1 = points1.get(0)[0];
-		y1 = points1.get(0)[1];
-		a = x0 * y1 - x1 * y0;
-		signedArea += a;
-		centroid[0] += (x0 + x1) * a;
-		centroid[1] += (y0 + y1) * a;
+        // For all vertices except last
+        int i = 0;
+        for (i = 0; i < points1.size() - 1; ++i) {
+            x0 = points1.get(i)[0];
+            y0 = points1.get(i)[1];
+            x1 = points1.get(i + 1)[0];
+            y1 = points1.get(i + 1)[1];
+            a = x0 * y1 - x1 * y0;
+            signedArea += a;
+            centroid[0] += (x0 + x1) * a;
+            centroid[1] += (y0 + y1) * a;
+        }
 
-		signedArea /= 2;
-		centroid[0] /= 6.0 * signedArea;
-		centroid[1] /= 6.0 * signedArea;
+        // Do last vertex separately to avoid performing an expensive
+        // modulus operation in each iteration.
+        x0 = points1.get(i)[0];
+        y0 = points1.get(i)[1];
+        x1 = points1.get(0)[0];
+        y1 = points1.get(0)[1];
+        a = x0 * y1 - x1 * y0;
+        signedArea += a;
+        centroid[0] += (x0 + x1) * a;
+        centroid[1] += (y0 + y1) * a;
 
-		return centroid;
-	}
+        signedArea /= 2;
+        centroid[0] /= 6.0 * signedArea;
+        centroid[1] /= 6.0 * signedArea;
 
-	private boolean intersect(double x, double y, double width, double height) {
-		getPoints();
-		return x + width >= xStats.getMin() && y + height >= yStats.getMin() && x <= xStats.getMax()
-				&& y <= yStats.getMax();
+        return centroid;
+    }
 
-	}
+    private boolean intersect(double x, double y, double width, double height) {
+        getPoints();
+        return x + width >= xStats.getMin() && y + height >= yStats.getMin() && x <= xStats.getMax()
+            && y <= yStats.getMax();
 
-	public static boolean hasName(String name) {
-		return Stream.of(values()).anyMatch(e -> name.matches(e.countryName));
-	}
+    }
+
+    public static boolean hasName(String name) {
+        return Stream.of(values()).anyMatch(e -> name.matches(e.countryName));
+    }
 
     public static void loadPaths() {
-        Logger log = HasLogging.log();
         File file = ResourceFXUtils.toFile("countries.csv");
 
         try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
@@ -413,7 +415,7 @@ public enum Country {
                 Country.valueOf(split[0]).path = split[1];
             }
         } catch (Exception e) {
-            log.error("ERROR ", e);
+            LOG.error("ERROR ", e);
         }
     }
 

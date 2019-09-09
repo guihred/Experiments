@@ -2,6 +2,7 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.getWithinRange;
 import static utils.PixelHelper.replaceColor;
+import static utils.ResourceFXUtils.convertToURL;
 
 import java.io.File;
 import java.util.HashMap;
@@ -273,7 +274,7 @@ public class SelectRectTool extends PaintTool {
         if (!files.isEmpty()) {
             File file = files.get(0);
             try {
-                Image image2 = new Image(file.toURI().toURL().toExternalForm());
+                Image image2 = new Image(convertToURL(file).toExternalForm());
                 copyImage(model, image2, imageSelected);
             } catch (Exception e1) {
                 LOG.error("", e1);

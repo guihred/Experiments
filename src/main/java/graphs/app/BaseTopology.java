@@ -4,9 +4,8 @@ import graphs.entities.Graph;
 import java.util.Objects;
 import javafx.event.EventDispatchChain;
 import javafx.event.EventTarget;
-import utils.HasLogging;
 
-public abstract class BaseTopology implements HasLogging, EventTarget {
+public abstract class BaseTopology implements EventTarget {
 
     private static final int N_LETTERS = 26;
     private static final char[] DIGITS = { ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',

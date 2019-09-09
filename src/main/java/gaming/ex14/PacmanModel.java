@@ -25,22 +25,25 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 import utils.HasLogging;
 
-public class PacmanModel implements HasLogging {
+public class PacmanModel {
 
     public static final int MAZE_SIZE = 5;
     public static final double SQUARE_SIZE = 60;
+    private static final Logger LOG = HasLogging.log();
+
     private final List<PacmanBall> balls = DoubleStream.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE)
         .limit(MAZE_SIZE * 2L)
         .mapToObj(d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE).limit(MAZE_SIZE * 2L)
             .mapToObj(e -> new PacmanBall(d, e)))
         .flatMap(e -> e)
         .collect(Collectors.toList());
-
     private final List<PacmanGhost> ghosts = Stream
         .of(GhostColor.RED, GhostColor.BLUE, GhostColor.ORANGE, GhostColor.GREEN).map(PacmanGhost::new)
         .collect(Collectors.toList());
+
     private final Pacman pacman = new Pacman();
 
     private final IntegerProperty points = new SimpleIntegerProperty(0);
@@ -93,47 +96,6 @@ public class PacmanModel implements HasLogging {
         return points;
     }
 
-    private MazeSquare[][] createLabyrinth(MazeSquare[][] maze, Group group) {
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
-                double layoutX = i * SQUARE_SIZE;
-                double layoutX2 = MAZE_SIZE * 2 * SQUARE_SIZE - i * SQUARE_SIZE - SQUARE_SIZE;
-                double layoutY = j * SQUARE_SIZE;
-                double layoutY2 = MAZE_SIZE * 2 * SQUARE_SIZE - j * SQUARE_SIZE - SQUARE_SIZE;
-
-                if (!maze[i][j].isWest()) {
-                    addRectangle(group, layoutX, layoutY, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX2, layoutY, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX, layoutY2 + SQUARE_SIZE, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX2, layoutY2 + SQUARE_SIZE, SQUARE_SIZE, 2);
-                }
-                if (!maze[i][j].isNorth()) {
-                    addRectangle(group, layoutX, layoutY, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX2 + SQUARE_SIZE, layoutY, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX, layoutY2, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX2 + SQUARE_SIZE, layoutY2, 2, SQUARE_SIZE);
-                }
-                if (!maze[i][j].isEast()) {
-                    addRectangle(group, layoutX, layoutY + SQUARE_SIZE, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX2, layoutY + SQUARE_SIZE, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX, layoutY2, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX2, layoutY2, SQUARE_SIZE, 2);
-                }
-                if (!maze[i][j].isSouth()) {
-                    addRectangle(group, layoutX + SQUARE_SIZE, layoutY, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX2, layoutY, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX + SQUARE_SIZE, layoutY2, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX2, layoutY2, 2, SQUARE_SIZE);
-                }
-                maze[i][j].dijkstra(maze);
-            }
-        }
-        MazeSquare.getPaths()
-            .forEach((from, map) -> map.forEach((to, by) -> getLogger().trace("from {} to {} by {}", from, to, by)));
-
-        return maze;
-    }
-
     private void gameLoop(Group group, long now, MazeSquare[][] maze) {
         ghosts.forEach(g -> g.move(now, pacman, group.getChildren(), maze));
         pacman.move(group.getChildren());
@@ -167,7 +129,6 @@ public class PacmanModel implements HasLogging {
             }
         }
     }
-
     private void handleKeyPressed(KeyEvent e) {
         KeyCode code = e.getCode();
         switch (code) {
@@ -209,6 +170,47 @@ public class PacmanModel implements HasLogging {
         rectangle.setLayoutY(value2);
 
         group.getChildren().add(rectangle);
+    }
+
+    private static MazeSquare[][] createLabyrinth(MazeSquare[][] maze, Group group) {
+        for (int i = 0; i < MAZE_SIZE; i++) {
+            for (int j = 0; j < MAZE_SIZE; j++) {
+                double layoutX = i * SQUARE_SIZE;
+                double layoutX2 = MAZE_SIZE * 2 * SQUARE_SIZE - i * SQUARE_SIZE - SQUARE_SIZE;
+                double layoutY = j * SQUARE_SIZE;
+                double layoutY2 = MAZE_SIZE * 2 * SQUARE_SIZE - j * SQUARE_SIZE - SQUARE_SIZE;
+
+                if (!maze[i][j].isWest()) {
+                    addRectangle(group, layoutX, layoutY, SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX2, layoutY, SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX, layoutY2 + SQUARE_SIZE, SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX2, layoutY2 + SQUARE_SIZE, SQUARE_SIZE, 2);
+                }
+                if (!maze[i][j].isNorth()) {
+                    addRectangle(group, layoutX, layoutY, 2, SQUARE_SIZE);
+                    addRectangle(group, layoutX2 + SQUARE_SIZE, layoutY, 2, SQUARE_SIZE);
+                    addRectangle(group, layoutX, layoutY2, 2, SQUARE_SIZE);
+                    addRectangle(group, layoutX2 + SQUARE_SIZE, layoutY2, 2, SQUARE_SIZE);
+                }
+                if (!maze[i][j].isEast()) {
+                    addRectangle(group, layoutX, layoutY + SQUARE_SIZE, SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX2, layoutY + SQUARE_SIZE, SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX, layoutY2, SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX2, layoutY2, SQUARE_SIZE, 2);
+                }
+                if (!maze[i][j].isSouth()) {
+                    addRectangle(group, layoutX + SQUARE_SIZE, layoutY, 2, SQUARE_SIZE);
+                    addRectangle(group, layoutX2, layoutY, 2, SQUARE_SIZE);
+                    addRectangle(group, layoutX + SQUARE_SIZE, layoutY2, 2, SQUARE_SIZE);
+                    addRectangle(group, layoutX2, layoutY2, 2, SQUARE_SIZE);
+                }
+                maze[i][j].dijkstra(maze);
+            }
+        }
+        MazeSquare.getPaths()
+            .forEach((from, map) -> map.forEach((to, by) -> LOG.trace("from {} to {} by {}", from, to, by)));
+
+        return maze;
     }
 
     private static MazeSquare[][] initializeMaze() {

@@ -10,9 +10,8 @@ import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import utils.HasLogging;
 
-public class CatanCard extends Rectangle implements HasLogging {
+public class CatanCard extends Rectangle {
     public static final int PREF_HEIGHT = 75;
 
     public static final int PREF_WIDTH = 50;

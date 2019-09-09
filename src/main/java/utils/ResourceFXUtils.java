@@ -54,6 +54,10 @@ public final class ResourceFXUtils {
 	}
 
 
+	public static URL convertToURL(File arquivo) {
+	    return SupplierEx.get(()->arquivo.toURI().toURL());
+	}
+
 	public static Image createImage(final double size1, final float[][] noise) {
 		int width = (int) size1;
 		int height = (int) size1;
@@ -76,7 +80,7 @@ public final class ResourceFXUtils {
 		return getPathByExtension(dir, other).stream().findFirst().orElse(null);
 	}
 
-	public static File getOutFile() {
+    public static File getOutFile() {
 		File parentFile = toFile("alice.txt").getParentFile();
 		File file = new File(parentFile, "out");
 		if (!file.exists()) {
@@ -85,7 +89,7 @@ public final class ResourceFXUtils {
 		return file;
 	}
 
-    public static File getOutFile(String out) {
+	public static File getOutFile(String out) {
         File parentFile = toFile("alice.txt").getParentFile();
         File file = new File(parentFile, "out");
         if (!file.exists()) {
@@ -158,10 +162,10 @@ public final class ResourceFXUtils {
 			throw new RuntimeIOException("ERRO FILE \"" + arquivo + "\"", e);
 		}
 	}
-
 	public static File toFile(final String arquivo) {
 		return new File(toFullPath(arquivo));
 	}
+
 	public static String toFullPath(final String arquivo) {
 		try {
             return URLDecoder.decode(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile(),
@@ -181,16 +185,16 @@ public final class ResourceFXUtils {
         return new File(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile()).toPath();
 	}
 
+
 	public static InputStream toStream(final String arquivo) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(arquivo);
 	}
 
-
-	public static URI toURI(final String arquivo) {
+    public static URI toURI(final String arquivo) {
         return new File(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile()).toURI();
 	}
 
-	public static URL toURL(final String arquivo) {
+    public static URL toURL(final String arquivo) {
         return Thread.currentThread().getContextClassLoader().getResource(arquivo);
 	}
 

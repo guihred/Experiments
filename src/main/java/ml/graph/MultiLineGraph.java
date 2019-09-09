@@ -21,7 +21,8 @@ import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.HasLogging;
 
-public class MultiLineGraph extends Canvas implements HasLogging {
+public class MultiLineGraph extends Canvas {
+    private static final Logger LOG = HasLogging.log();
     private static final int SIZE = 550;
     private final DoubleProperty layout = new SimpleDoubleProperty(30);
     private final DoubleProperty maxLayout = new SimpleDoubleProperty(480);
@@ -142,16 +143,15 @@ public class MultiLineGraph extends Canvas implements HasLogging {
         xProportion = (max - min) / bins.get();
 
         double max2 = stats.entrySet().stream().filter(e -> colors.containsKey(e.getKey()))
-                .map(Entry<String, DoubleSummaryStatistics>::getValue)
+            .map(Entry<String, DoubleSummaryStatistics>::getValue)
 
-                .mapToDouble(DoubleSummaryStatistics::getMax).max().orElse(0);
+            .mapToDouble(DoubleSummaryStatistics::getMax).max().orElse(0);
         yProportion = max2 / ybins.get();
 
         stats.forEach((col, yStats) -> drawLines(col));
         drawAxis();
-        Logger logger = getLogger();
-        if (logger.isTraceEnabled()) {
-            logger.trace(dataframe.toString());
+        if (LOG.isTraceEnabled()) {
+            LOG.trace(dataframe.toString());
         }
     }
 
@@ -161,7 +161,7 @@ public class MultiLineGraph extends Canvas implements HasLogging {
             return;
         }
         List<Double> entrySet = dataframe.list(col).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
-                .sorted().boxed().collect(Collectors.toList());
+            .sorted().boxed().collect(Collectors.toList());
         double d = layout.get();
         double j = (maxLayout.get() - d) / bins.doubleValue();
         double j2 = (maxLayout.get() - d) / ybins.get();

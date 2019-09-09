@@ -47,7 +47,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                     }
                     if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() != 0) {
                         String w = currentWord.toString();
-                        getLogger().trace("{}={}", w, getReading(w, currentLetter));
+                        LOG.trace("{}={}", w, getReading(w, currentLetter));
                         currentWord.delete(0, currentWord.length());
                     }
                     currentBlock = of;
@@ -57,13 +57,12 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             LOG.error("", e);
         }
     }
-
     public String getReading(String currentWord, char currentLetter) {
 		String key = currentWord + currentLetter;
 		boolean notContains = !mapReading.containsKey(key);
         String reading = getReading(currentWord, currentLetter, 0);
 		if (notContains) {
-			getLogger().info("{}={}", key, reading);
+            LOG.info("{}={}", key, reading);
 		}
 		return reading;
     }
@@ -136,7 +135,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             }
 
         } catch (Exception e) {
-            getLogger().error("ERRO " + currentWord, e);
+            LOG.error("ERRO " + currentWord, e);
             if (recursive < 2) {
                 return getReading(currentWord, currentLetter, recursive + 1);
             }
@@ -161,7 +160,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             Thread thread = new Thread(() -> {
                 String line = lines.get(k);
                 StringBuilder currentLine = placeFurigana(line);
-                getLogger().trace("{}", currentLine);
+                LOG.trace("{}", currentLine);
                 lines.set(k, currentLine.toString());
 
             });
@@ -188,22 +187,12 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 printStream.println(s);
             }
         } catch (Exception e) {
-            getLogger().error("ERROR ", e);
+            LOG.error("ERROR ", e);
         }
 
         updateAll(total, total);
 
         return "Completed at " + LocalTime.now();
-    }
-
-    private List<String> getLines() {
-        List<String> lines = new ArrayList<>();
-        try (Stream<String> lines2 = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
-            lines.addAll(lines2.collect(Collectors.toList()));
-        } catch (IOException e) {
-            getLogger().error("ERROR ", e);
-        }
-        return lines;
     }
 
     private StringBuilder placeFurigana(String line) {
@@ -224,7 +213,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 } else {
                     currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
                 }
-                getLogger().trace("{}={}", currentWord, reading);
+                LOG.trace("{}={}", currentWord, reading);
                 currentWord.delete(0, currentWord.length());
             }
             if (!KANJI_BLOCK.contains(of)) {
@@ -237,6 +226,16 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     public static void main(String[] args) {
         new CrawlerFuriganaTask().addFuriganaReading();
+    }
+
+    private static List<String> getLines() {
+        List<String> lines = new ArrayList<>();
+        try (Stream<String> lines2 = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
+            lines.addAll(lines2.collect(Collectors.toList()));
+        } catch (IOException e) {
+            LOG.error("ERROR ", e);
+        }
+        return lines;
     }
 
     private static boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {

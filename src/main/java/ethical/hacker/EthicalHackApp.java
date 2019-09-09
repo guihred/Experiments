@@ -55,7 +55,6 @@ public class EthicalHackApp extends Application {
         if (!change.wasAdded()) {
             return;
         }
-        HasLogging.log();
         String key = change.getKey();
         List<String> valueAdded = change.getValueAdded();
         Map<String, String> e2 = items.stream().filter(c -> key.equals(c.get(primaryKey))).findAny()

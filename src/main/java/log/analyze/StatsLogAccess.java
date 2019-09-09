@@ -96,7 +96,7 @@ public class StatsLogAccess {
                 printSummary(path);
             }
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOGGER.error("", e);
         }
 
 	}

@@ -52,14 +52,14 @@ public final class StageHelper {
         File file = new File("src/main/resources/" + pathname);
         TextArea textArea = new TextArea(getText(file));
         if (file.exists()) {
-            RunnableEx.ignore(() -> scene.getStylesheets().add(file.toURI().toURL().toString()));
+            RunnableEx.ignore(() -> scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString()));
         }
         stage2.setScene(new Scene(new VBox(textArea, CommonsFX.newButton("_Save", e -> {
             try (PrintStream fileOutputStream = new PrintStream(file, StandardCharsets.UTF_8.name())) {
                 fileOutputStream.print(textArea.getText());
                 fileOutputStream.flush();
                 scene.getStylesheets().clear();
-                scene.getStylesheets().add(file.toURI().toURL().toString());
+                scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString());
                 textArea.requestFocus();
             } catch (Exception e1) {
                 LOG.error("", e1);
