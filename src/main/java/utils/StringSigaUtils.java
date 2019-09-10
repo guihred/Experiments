@@ -2,6 +2,7 @@ package utils;
 
 import static utils.SupplierEx.get;
 
+import java.lang.Character.UnicodeBlock;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -158,7 +159,9 @@ public class StringSigaUtils extends StringUtils {
         try {
             return Integer.valueOf(v.replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
-            HasLogging.log(1).error("NUMBER NOT PARSED", e);
+            HasLogging.log(1).trace("NUMBER NOT PARSED", e);
+            HasLogging.log(1).error("NUMBER NOT PARSED {} {}", v, HasLogging.getCurrentLine(1));
+
             return null;
         }
     }
@@ -180,6 +183,27 @@ public class StringSigaUtils extends StringUtils {
             return collect.substring(0, lastIndexOf) + " e" + collect.substring(lastIndexOf + 1);
         }
         return collect;
+    }
+
+    public static String removeMathematicalOperators(String s) {
+        if (s.codePoints().mapToObj(UnicodeBlock::of).distinct().collect(Collectors.toList())
+            .contains(UnicodeBlock.MATHEMATICAL_OPERATORS)) {
+            return s.replaceAll("[\u2200-\u22FF]", "?");
+        }
+        return s;
+    }
+
+    public static String removeNotPrintable(String s) {
+        String fixEncoding = fixEncoding(s.replaceAll("\t", " "), Charset.forName("UTF-8"),
+            Charset.forName("CESU-8"));
+        if (fixEncoding == null) {
+            return null;
+        }
+        String replace = fixEncoding.replaceAll("[\u0000-\u0010]", "?");
+        if (!replace.equals(s)) {
+            return replace;
+        }
+        return s;
     }
 
     public static String removerDiacritico(String string) {
@@ -212,7 +236,6 @@ public class StringSigaUtils extends StringUtils {
         String replaceAll = numero.replaceAll("\\D", "");
         return Integer.valueOf(replaceAll);
     }
-
     public static boolean validUTF8(byte[] input) {
         int i = 0;
         // Check for BOM
@@ -253,7 +276,6 @@ public class StringSigaUtils extends StringUtils {
         }
         return true;
     }
-
     private static String formatar(String pattern, String valor) {
         return get(() -> {
             MaskFormatter mask = new MaskFormatter(pattern);

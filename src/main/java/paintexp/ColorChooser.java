@@ -40,31 +40,31 @@ public class ColorChooser extends Application {
     private Runnable onSave;
     private Circle circle = new Circle(2, Color.BLACK);
 
-    private final Slider hueSlider = new SimpleSliderBuilder(0, MAX_ANGLE, 0)
+    private final Slider hueSlider = new SimpleSliderBuilder(0, MAX_ANGLE, 0).id("hueSlider")
         .onChange((o, old, newV) -> currentColor.set(Color.hsb(newV.doubleValue(), currentColor.get().getSaturation(),
             currentColor.get().getBrightness(), currentColor.get().getOpacity())))
         .build();
-    private final Slider saturationSlider = new SimpleSliderBuilder(0, 1, 0)
+    private final Slider saturationSlider = new SimpleSliderBuilder(0, 1, 0).id("saturationSlider")
         .onChange((o, old, newV) -> currentColor.set(Color.hsb(currentColor.get().getHue(), newV.doubleValue(),
             currentColor.get().getBrightness(), currentColor.get().getOpacity())))
         .build();
-    private final Slider brightnessSlider = new SimpleSliderBuilder(0, 1, 0)
+    private final Slider brightnessSlider = new SimpleSliderBuilder(0, 1, 0).id("brightnessSlider")
         .onChange((o, old, newV) -> currentColor.set(Color.hsb(currentColor.get().getHue(),
             currentColor.get().getSaturation(), newV.doubleValue(), currentColor.get().getOpacity())))
         .build();
-    private final Slider redSlider = new SimpleSliderBuilder(0, 1, 0)
+    private final Slider redSlider = new SimpleSliderBuilder(0, 1, 0).id("redSlider")
         .onChange((o, old, newV) -> currentColor.set(Color.color(newV.doubleValue(), currentColor.get().getGreen(),
             currentColor.get().getBlue(), currentColor.get().getOpacity())))
         .build();
-    private final Slider greenSlider = new SimpleSliderBuilder(0, 1, 0)
+    private final Slider greenSlider = new SimpleSliderBuilder(0, 1, 0).id("greenSlider")
         .onChange((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(), newV.doubleValue(),
             currentColor.get().getBlue(), currentColor.get().getOpacity())))
         .build();
-    private final Slider blueSlider = new SimpleSliderBuilder(0, 1, 0)
+    private final Slider blueSlider = new SimpleSliderBuilder(0, 1, 0).id("blueSlider").id("blueSlider")
         .onChange((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
             currentColor.get().getGreen(), newV.doubleValue(), currentColor.get().getOpacity())))
         .build();
-    private final Slider opacitySlider = new SimpleSliderBuilder(0, 1, 1)
+    private final Slider opacitySlider = new SimpleSliderBuilder(0, 1, 1).id("opacitySlider")
         .onChange((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
             currentColor.get().getGreen(), currentColor.get().getBlue(), newV.doubleValue())))
         .onChange((o, old, v) -> drawImage()).build();

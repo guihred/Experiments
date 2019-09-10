@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import contest.db.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.*?>
+<SplitPane xmlns:fx="http://javafx.com/fxml"
+	fx:controller="contest.db.ContestApplicationController"
+	fx:id="splitPane0" styleClass="root split-pane" stylesheets="@/filesComparator.css">
+	<items>
+		<ListView fx:id="allContests"
+			onMouseClicked="#onMouseClickedListView1">
+		</ListView>
+		<ScrollPane fx:id="scrollPane2">
+			<content>
+				<Text layoutY="12.94921875"  fx:id="text"
+					wrappingWidth="500.0" />
+			</content>
+		</ScrollPane>
+		<ScrollPane fx:id="scrollPane3">
+			<content>
+				<VBox>
+					<children>
+						<Text layoutY="12.94921875" fx:id="question" />
+						<Button fx:id="next" id="Next" layoutY="16.0"
+							onAction="#onActionNext" text="Next" />
+						<ListView fx:id="options" layoutY="41.0"
+							 prefWidth="200.0">
+						</ListView>
+					</children>
+				</VBox>
+			</content>
+		</ScrollPane>
+	</items>
+</SplitPane>

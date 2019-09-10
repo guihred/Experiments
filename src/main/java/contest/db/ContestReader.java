@@ -1,17 +1,15 @@
 package contest.db;
 
 import static utils.StringSigaUtils.intValue;
+import static utils.StringSigaUtils.removeMathematicalOperators;
+import static utils.StringSigaUtils.removeNotPrintable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.Character.UnicodeBlock;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,7 +28,7 @@ import utils.HasLogging;
 import utils.StringSigaUtils;
 
 public class ContestReader implements HasLogging {
-    private static final String DISCURSIVA_PATTERN = "P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
+    private static final String DISCURSIVA_PATTERN = " *P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
     private static final int OPTIONS_PER_QUESTION = 5;
     public static final String QUESTION_PATTERN = " *QUESTÃO +(\\d+)\\s*___+\\s+";
     public static final String TEXTS_PATTERN = ".+ para \\w* *[aà l]*s quest[õion]+es [de ]*(\\d+) [ae] (\\d+)\\.*\\s*";
@@ -53,14 +51,14 @@ public class ContestReader implements HasLogging {
     private int pageNumber;
     private final List<QuestionPosition> questionPosition = new ArrayList<>();
 
-    private final ObjectProperty<ReaderState> state = new SimpleObjectProperty<>(ReaderState.IGNORE);
+    private final SimpleObjectProperty<ReaderState> state = new SimpleObjectProperty<>(ReaderState.IGNORE);
 
     private String subject;
     private ContestText text = new ContestText();
     private final ObservableList<ContestText> texts = FXCollections.observableArrayList();
 
     public ContestReader() {
-        state.addListener((ob, old, value) -> getLogger().info("{}->{} {}", old, value, getCurrentLine(7)));
+        state.addListener((ob, old, value) -> getLogger().info("{}->{} {}", old, value, HasLogging.getCurrentLine(7)));
     }
 
     public Contest getContest() {
@@ -357,7 +355,7 @@ public class ContestReader implements HasLogging {
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
                 List<PdfImage> images = printImageLocations.processPage(page, i);
-                String parsedText = extractErrors(pdfStripper.getText(pdDoc));
+                String parsedText = removeMathematicalOperators(pdfStripper.getText(pdDoc));
                 String[] lines = parsedText.split("\r\n");
                 tryReadQuestionFromLines(lines);
                 List<HasImage> imageElements = Stream.concat(texts.stream(), listQuestions.stream())
@@ -437,14 +435,6 @@ public class ContestReader implements HasLogging {
         return s.contains("(A)") && s.contains("(B)") && s.contains("(C)") && s.contains("(D)") && s.contains("(E)");
     }
 
-    private static String extractErrors(String s) {
-        if (s.codePoints().mapToObj(UnicodeBlock::of).distinct().collect(Collectors.toList())
-            .contains(UnicodeBlock.MATHEMATICAL_OPERATORS)) {
-            return s.replaceAll("[\u2200-\u22FF]", "?");
-        }
-        return s;
-    }
-
     private static boolean isQuestionPattern(String s) {
         return s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO");
     }
@@ -453,15 +443,7 @@ public class ContestReader implements HasLogging {
         return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
     }
 
-    private static String removeNotPrintable(String s) {
-        String fixEncoding = StringSigaUtils.fixEncoding(s.replaceAll("\t", " "), StandardCharsets.UTF_8,
-            Charset.forName("CESU-8"));
-        String replace = fixEncoding.replaceAll("[\u0000-\u0010]", "?");
-        if (!replace.equals(s)) {
-            return replace;
-        }
-        return s;
-    }
+
 
     enum ReaderState {
         IGNORE,

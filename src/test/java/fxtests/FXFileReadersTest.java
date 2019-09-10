@@ -3,6 +3,7 @@ package fxtests;
 import static ethical.hacker.ImageCracker.crackImage;
 import static ethical.hacker.ImageCracker.createSelectedImage;
 import static fxtests.FXTesting.measureTime;
+import static utils.ResourceFXUtils.getOutFile;
 import static utils.ResourceFXUtils.toExternalForm;
 import static utils.ResourceFXUtils.toFile;
 
@@ -57,7 +58,10 @@ public class FXFileReadersTest extends ApplicationTest {
     @Test
     public void testCSVUtils() {
         measureTime("CSVUtils.splitFile",
-            () -> CSVUtils.splitFile(ResourceFXUtils.getOutFile("WDIData.csv").getAbsolutePath(), 3));
+            () -> CSVUtils.splitFile(getOutFile("WDIData.csv").getAbsolutePath(), 3));
+
+        measureTime("CSVUtils.splitFile",
+            () -> CSVUtils.splitFile(getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3));
     }
 
     @Test

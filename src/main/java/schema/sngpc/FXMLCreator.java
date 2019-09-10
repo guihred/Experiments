@@ -126,7 +126,7 @@ public final class FXMLCreator {
         lines.addAll(packages.stream().map(e -> "import " + e + ".*;").collect(toList()));
         lines.add("public class " + name + "{");
         lines.addAll(referencedNodes.entrySet().stream()
-            .map(e -> String.format("\t@FXML%n\t%s %s;", e.getKey().getClass().getSimpleName(), e.getValue()))
+            .map(e -> String.format("\t@FXML%n\tprivate %s %s;", e.getKey().getClass().getSimpleName(), e.getValue()))
             .collect(toList()));
         lines.addAll(
             referencedMethod.values().stream().map(e -> String.format("\tpublic void %s{%n\t}", e)).collect(toList()));
@@ -156,7 +156,11 @@ public final class FXMLCreator {
         Map<String, Object> diffFields = new LinkedHashMap<>();
         Class<?> cl = ob1.getClass();
         if (ob1 instanceof Image) {
-            diffFields.put("url", ((Image) ob1).impl_getUrl());
+            String url = ((Image) ob1).impl_getUrl();
+            if (url != null) {
+                String mapUrl = mapUrl(url);
+                diffFields.put("url", mapUrl);
+            }
         }
         try {
             Object ob2 = getInstance(cl);
@@ -165,8 +169,7 @@ public final class FXMLCreator {
             LOG.trace("", e);
             List<String> mappedDifferences = differencesMap.computeIfAbsent(cl,
                 c -> allNode.stream().filter(ob -> ob.getClass() == cl && ob != ob1).limit(100)
-                    .flatMap(ob2 -> getDifferences(c, ob1, ob2).stream()).distinct()
-                    .collect(toList()));
+                    .flatMap(ob2 -> getDifferences(c, ob1, ob2).stream()).distinct().collect(toList()));
             mappedDifferences.addAll(getNamedArgs(cl));
             Map<String, Object> collect = mappedDifferences.stream().distinct().filter(m -> invoke(ob1, m) != null)
                 .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b, LinkedHashMap::new));
@@ -323,9 +326,8 @@ public final class FXMLCreator {
                 String string = Objects.toString(k).replaceAll("([#])", "");
                 String key = PROPERTY_REMAP.getOrDefault(string, string);
                 String value = Objects.toString(v, "");
-                make(() -> mapElement.setAttribute(key, value),
-                    e -> LOG.error("error setting attribute {}={}", k, v));
-
+                make(() -> mapElement.setAttribute(key, value), e -> LOG.error("error setting attribute {}={}", k, v))
+                    .run();
             });
         } else {
             properties.forEach((k, v) -> {
@@ -333,8 +335,8 @@ public final class FXMLCreator {
                 if (PROPERTY_REMAP.containsKey(string)) {
                     String key = PROPERTY_REMAP.getOrDefault(string, string);
                     String value = Objects.toString(v);
-                    make(() -> element.setAttribute(key, value),
-                        e -> LOG.error("error setting attribute {}={}", k, v)).run();
+                    make(() -> element.setAttribute(key, value), e -> LOG.error("error setting attribute {}={}", k, v))
+                        .run();
                 }
             });
         }
@@ -449,6 +451,12 @@ public final class FXMLCreator {
         element.setAttribute(fieldName, "$" + referencedNodes.get(fieldValue));
     }
 
+    static String mapStylesheet(Collection<?> l) {
+        String s = "file:/" + getOutFile().getParentFile().toString().replaceAll("\\\\", "/");
+        String sd = "file:/" + new File("src/main/resources/").getAbsolutePath().replaceAll("\\\\", "/");
+        return l.stream().map(st -> st.toString().replaceAll(s + "|" + sd, "@")).distinct().collect(joining(", "));
+    }
+
     private static void addDifferences(Class<?> cl, Map<String, Object> diffFields, Object ob1, Object ob2) {
         if (ob2 == null) {
             return;
@@ -461,6 +469,11 @@ public final class FXMLCreator {
 
     private static boolean containsSame(List<Object> allNode, Object fieldValue) {
         return allNode.stream().anyMatch(ob -> ob == fieldValue);
+    }
+
+    private static String mapUrl(String st) {
+        String s = "file:/" + getOutFile().getParentFile().toString().replaceAll("\\\\", "/");
+        return st.replace(s, "@");
     }
 
     private static String nodeValue(Object node2) {

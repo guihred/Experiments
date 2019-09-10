@@ -31,7 +31,7 @@ import utils.SupplierEx;
 public final class IadesHelper {
     private static final Logger LOG = HasLogging.log();
 
-    public IadesHelper() {
+    private IadesHelper() {
     }
 
     public static String addDomain(SimpleStringProperty domain, String l) {

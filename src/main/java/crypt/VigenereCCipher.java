@@ -3,7 +3,7 @@ package crypt;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
-public class VigenereCCipher {
+public final class VigenereCCipher {
     private static final int NUMBER_OF_LETTERS = 26;
     private static final String ENCODED = "MOMUD EKAPV TQEFM OEVHP AJMII CDCTI FGYAG JSPXY ALUYM NSMYH"
         + "VUXJE LEPXJ FXGCM JHKDZ RYICU HYPUS PGIGM OIYHF WHTCQ KMLRD"
@@ -27,6 +27,9 @@ public class VigenereCCipher {
         0.02758, 0.00978, 0.02360, 0.00150, 0.01974, 0.00074 };
 
     private static final Logger LOG = HasLogging.log();
+
+    private VigenereCCipher() {
+    }
 
     public static int bestMatch(final double[] a, final double[] b) {
         double sum = 0;

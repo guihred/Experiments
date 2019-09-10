@@ -7,12 +7,13 @@ import static utils.ResourceFXUtils.convertToURL;
 import static utils.RunnableEx.make;
 
 import com.google.common.collect.ImmutableMap;
-import gaming.ex21.CatanApp;
+import contest.db.ContestApplication;
 import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.fxml.FXMLLoader;
@@ -57,7 +58,10 @@ public final class FXMLCreatorHelper {
         StringConverter.class, SelectionModel.class, Paint.class, Enum.class, Number.class);
     static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
         .<String, Function<Collection<?>, String>>builder()
-        .put("styleClass", l -> l.stream().map(Object::toString).collect(joining(" "))).build();
+        .put("styleClass", l -> l.stream().map(Object::toString).collect(joining(" ")))
+        .put("stylesheets", FXMLCreator::mapStylesheet)
+        .build();
+
     static final Map<String, String> PROPERTY_REMAP = ImmutableMap.<String, String>builder()
         .put("gridpane-column", "GridPane.columnIndex").put("gridpane-row", "GridPane.rowIndex")
         .put("hbox-hgrow", "HBox.hgrow").put("vbox-vgrow", "VBox.vgrow").put("tilepane-alignment", "TilePane.alignment")
@@ -66,12 +70,25 @@ public final class FXMLCreatorHelper {
         .put("pane-top-anchor", "AnchorPane.topAnchor").put("borderpane-alignment", "BorderPane.alignment")
         .put("gridpane-halignment", "GridPane.halignment").put("gridpane-valignment", "GridPane.valignment")
         .put("gridpane-column-span", "GridPane.columnSpan").put("gridpane-row-span", "GridPane.rowSpan").build();
-
     private FXMLCreatorHelper() {
     }
 
     public static void createXMLFile(Parent node, File file) {
         new FXMLCreator().createFXMLFile(node, file);
+    }
+
+    public static Stage duplicate(File file, String title) {
+        if (Platform.isFxApplicationThread()) {
+            return duplicateStage(file, title);
+        }
+        ResourceFXUtils.initializeFX();
+        SimpleObjectProperty<Stage> stage = new SimpleObjectProperty<>();
+        Platform.runLater(() -> stage.set(duplicateStage(file, title)));
+        while (stage.get() == null) {
+//            DOES NOTHING
+        }
+
+        return stage.get();
     }
 
     public static void duplicate(String out) {
@@ -84,7 +101,7 @@ public final class FXMLCreatorHelper {
     }
 
     public static void duplicateStage(File file) {
-        duplicateStage(file, file.getName());
+        duplicate(file, file.getName());
     }
 
     public static Stage duplicateStage(File file, String title) {
@@ -106,7 +123,7 @@ public final class FXMLCreatorHelper {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> classes = Arrays.asList(CatanApp.class);
+        List<Class<? extends Application>> classes = Arrays.asList(ContestApplication.class);
         testApplications(classes, false);
     }
 
@@ -137,6 +154,7 @@ public final class FXMLCreatorHelper {
         }
         return errorClasses;
     }
+
 
     private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close,
         Collection<Class<? extends Application>> differentTree) {
