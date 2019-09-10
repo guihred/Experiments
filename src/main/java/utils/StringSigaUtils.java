@@ -194,7 +194,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String removeNotPrintable(String s) {
-        String fixEncoding = fixEncoding(s.replaceAll("\t", " "), Charset.forName("UTF-8"),
+        String fixEncoding = fixEncoding(s.replaceAll("\t", " "), StandardCharsets.UTF_8,
             Charset.forName("CESU-8"));
         if (fixEncoding == null) {
             return null;

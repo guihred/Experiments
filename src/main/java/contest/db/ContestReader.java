@@ -239,6 +239,11 @@ public class ContestReader implements HasLogging {
             && text.getMax() >= listQuestions.size() + 1;
     }
 
+    private boolean isTextPattern(String[] linhas, int i, String s) {
+        return StringUtils.containsIgnoreCase(s, "Questões") && getState() == ReaderState.IGNORE
+            && i < linhas.length - 1;
+    }
+
     private boolean isTextToBeAdded(String s) {
         return StringUtils.isBlank(s) && getState() == ReaderState.TEXT && !listQuestions.isEmpty()
             && StringUtils.isNotBlank(text.getText()) && !isBetween();
@@ -263,8 +268,7 @@ public class ContestReader implements HasLogging {
             subject = linhas[i].split("[-–\\(]")[0].toUpperCase();
             return;
         }
-        if (StringUtils.containsIgnoreCase(s, "Questões") && getState() == ReaderState.IGNORE
-            && i < linhas.length - 1) {
+        if (isTextPattern(linhas, i, s)) {
             String[] split = linhas[i + 1].split("\\D+");
             if (split.length > 1 && Stream.of(split).allMatch(StringUtils::isNumeric)) {
                 setState(ReaderState.TEXT);
