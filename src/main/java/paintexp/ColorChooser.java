@@ -24,7 +24,6 @@ import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTabPaneBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
-import utils.PixelHelper;
 import utils.ResourceFXUtils;
 
 public class ColorChooser extends Application {
@@ -40,7 +39,7 @@ public class ColorChooser extends Application {
     private Runnable onSave;
     private Circle circle = new Circle(2, Color.BLACK);
 
-    private final Slider hueSlider = new SimpleSliderBuilder(0, MAX_ANGLE, 0).id("hueSlider")
+    private final Slider hueSlider = new SimpleSliderBuilder(0, MAX_ANGLE, 0).id("hueSlider2")
         .onChange((o, old, newV) -> currentColor.set(Color.hsb(newV.doubleValue(), currentColor.get().getSaturation(),
             currentColor.get().getBrightness(), currentColor.get().getOpacity())))
         .build();
@@ -60,11 +59,11 @@ public class ColorChooser extends Application {
         .onChange((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(), newV.doubleValue(),
             currentColor.get().getBlue(), currentColor.get().getOpacity())))
         .build();
-    private final Slider blueSlider = new SimpleSliderBuilder(0, 1, 0).id("blueSlider").id("blueSlider")
+    private final Slider blueSlider = new SimpleSliderBuilder(0, 1, 0).id("blueSlider")
         .onChange((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
             currentColor.get().getGreen(), newV.doubleValue(), currentColor.get().getOpacity())))
         .build();
-    private final Slider opacitySlider = new SimpleSliderBuilder(0, 1, 1).id("opacitySlider")
+    private final Slider opacitySlider = new SimpleSliderBuilder(0, 1, 1)
         .onChange((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
             currentColor.get().getGreen(), currentColor.get().getBlue(), newV.doubleValue())))
         .onChange((o, old, v) -> drawImage()).build();
@@ -75,16 +74,16 @@ public class ColorChooser extends Application {
         return currentColor.get();
     }
 
-    public void setCurrentColor(final Color color) {
+    public void setCurrentColor(Color color) {
         currentColor.set(color);
         initialColor.set(color);
     }
 
-    public void setOnSave(final Runnable object) {
+    public void setOnSave(Runnable object) {
         onSave = object;
     }
 
-    public void setOnUse(final Runnable object) {
+    public void setOnUse(Runnable object) {
         onUse = object;
     }
 
@@ -97,7 +96,7 @@ public class ColorChooser extends Application {
     }
 
     @Override
-    public void start(final Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws Exception {
         FlowPane root = new FlowPane();
         SimpleSliderBuilder simpleSliderBuilder = new SimpleSliderBuilder(0, MAX_ANGLE, 0);
         mainHueslider = simpleSliderBuilder.build();
@@ -115,7 +114,6 @@ public class ColorChooser extends Application {
         pane.setOnMouseDragged(e -> updateColor(colorsImage, e));
         root.getChildren().add(pane);
         root.getChildren().addAll(mainHueslider);
-        PixelHelper.asColor(1);
         root.getChildren().addAll(new VBox(
             new HBox(20, new StackPane(transparentBackground(CURRENT_COLOR_SIZE), finalColor),
                 new StackPane(transparentBackground(CURRENT_COLOR_SIZE), initialColorRect)),
@@ -191,7 +189,7 @@ public class ColorChooser extends Application {
         return vBox;
     }
 
-    private void updateColor(final WritableImage writableImage, final MouseEvent e) {
+    private void updateColor(WritableImage writableImage, MouseEvent e) {
         double x = getWithinRange(e.getX(), 0, MAX_BYTE);
         circle.setCenterX(x);
         double y = getWithinRange(e.getY(), 0, MAX_BYTE);
@@ -200,7 +198,7 @@ public class ColorChooser extends Application {
         currentColor.set(color);
     }
 
-    public static WritableImage drawTransparentPattern(final int size) {
+    public static WritableImage drawTransparentPattern(int size) {
         WritableImage transparentPattern = new WritableImage(size, size);
         int squareSize = size / 16;
         for (int x = 0; x < transparentPattern.getWidth(); x++) {
@@ -212,18 +210,18 @@ public class ColorChooser extends Application {
         return transparentPattern;
     }
 
-    public static void main(final String[] args) {
+    public static void main(String[] args) {
         launch(args);
     }
 
-    private static void changeIfDifferent(final Slider slider, final double saturation) {
+    private static void changeIfDifferent(Slider slider, double saturation) {
         if (Math.abs(slider.getValue() - saturation) > 0) {
             slider.setValue(saturation);
         }
         slider.setValueChanging(true);
     }
 
-    private static WritableImage newSliderBackground(final Slider slider) {
+    private static WritableImage newSliderBackground(Slider slider) {
         double height = slider.getPrefHeight();
         WritableImage image = new WritableImage(20, (int) height);
 
@@ -235,14 +233,13 @@ public class ColorChooser extends Application {
         return image;
     }
 
-    private static HBox sliderOptions(final String field, final Slider slider, final String format,
-        final int multiplier) {
+    private static HBox sliderOptions(String field, Slider slider, String format, int multiplier) {
         Text text = new Text();
         text.textProperty().bind(slider.valueProperty().multiply(multiplier).asString(format));
         return new HBox(new Text(field), slider, text);
     }
 
-    private static Rectangle transparentBackground(final int height) {
+    private static Rectangle transparentBackground(int height) {
         Rectangle rectangle2 = new Rectangle(height, height);
         rectangle2.setFill(new ImagePattern(drawTransparentPattern(height)));
         return rectangle2;

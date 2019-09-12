@@ -2,6 +2,7 @@ package ml.data;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -192,8 +193,41 @@ public class DataframeStatisticAccumulator {
         max = countMap.values().stream().mapToDouble(e -> e).max().orElse(max);
     }
 
+    public static List<Entry<Number, Number>> createNumberEntries(DataframeML dataframe, String feature,
+        String target) {
+        List<Object> list = dataframe.dataframe.get(feature);
+        List<Object> list2 = dataframe.dataframe.get(target);
+        List<Entry<Number, Number>> data = new ArrayList<>();
+        IntStream.range(0, dataframe.size).filter(i -> i < list.size() && i < list2.size())
+            .filter(i -> list.get(i) != null && list2.get(i) != null)
+            .forEach(i -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
+        return data;
+    }
+
+    public static Map<Double, Long> histogram(DataframeML dataframeML, String header, int bins) {
+        List<Object> list = dataframeML.dataframe.get(header);
+        List<Double> columnList = list.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).boxed()
+            .collect(Collectors.toList());
+        DoubleSummaryStatistics summaryStatistics = columnList.stream().mapToDouble(e -> e).summaryStatistics();
+        double min = summaryStatistics.getMin();
+        double max = summaryStatistics.getMax();
+        double binSize = (max - min) / bins;
+        return columnList.parallelStream()
+            .collect(Collectors.groupingBy(e -> Math.ceil(e / binSize) * binSize, Collectors.counting()));
+    }
+
+    public static Map<String, Object> rowMap(Map<String, List<Object>> dataframe2,int i) {
+        return dataframe2.entrySet().stream().filter(e -> e.getValue().get(i) != null)
+            .collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i),
+                DataframeStatisticAccumulator.throwError(), LinkedHashMap<String, Object>::new));
+    }
+
+    public static BinaryOperator<Object> throwError() {
+        return (u, v) -> {
+            throw new IllegalStateException(String.format("Duplicate key %s", u));
+        };
+    }
     private static Comparator<Entry<String, Integer>> comparator() {
         return Comparator.comparing(Entry<String, Integer>::getValue);
     }
-
 }

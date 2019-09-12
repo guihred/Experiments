@@ -13,10 +13,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -44,9 +42,9 @@ public class CandidatoApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        IntegerProperty maxResult = new SimpleIntegerProperty(50);
-        StringProperty column = new SimpleStringProperty("Partido");
-        IntegerProperty first = new SimpleIntegerProperty(0);
+        SimpleIntegerProperty maxResult = new SimpleIntegerProperty(50);
+        SimpleStringProperty column = new SimpleStringProperty("Partido");
+        SimpleIntegerProperty first = new SimpleIntegerProperty(0);
 
         VBox root = new VBox();
         ObservableList<Object> candidates = FXCollections.observableArrayList();

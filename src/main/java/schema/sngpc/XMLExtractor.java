@@ -1,6 +1,9 @@
 package schema.sngpc;
 
+import static utils.RunnableEx.remap;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +23,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -80,34 +83,7 @@ public final class XMLExtractor {
 
     public static void readXMLFile(TreeView<Map<String, String>> build,
         Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
-        try {
-            XmlObject parse = XmlObject.Factory.parse(file);
-            Node domNode = parse.getDomNode();
-            List<Node> currentNodes = new ArrayList<>();
-            currentNodes.add(domNode);
-            TreeItem<Map<String, String>> value = new TreeItem<>(newMap(domNode.getNodeName(), domNode.getNodeValue()));
-            value.setGraphic(newText(domNode));
-            build.setRoot(value);
-            allItems.put(domNode, value);
-            while (!currentNodes.isEmpty()) {
-                domNode = currentNodes.remove(0);
-                NodeList childNodes = domNode.getChildNodes();
-                for (int i = 0; i < childNodes.getLength(); i++) {
-                    Node item = childNodes.item(i);
-                    if (item.getNodeType() != Node.TEXT_NODE) {
-                        currentNodes.add(0, item);
-                        TreeItem<Map<String, String>> e = new TreeItem<>(
-                            newMap(item.getNodeName(), item.getNodeValue()));
-                        allItems.get(domNode).getChildren().add(e);
-                        allItems.put(item, e);
-                        e.setGraphic(newText(item));
-                        addValue(item, e);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR READING", e);
-        }
+        remap(() -> tryToRead(build, allItems, file), "ERROR READING");
     }
 
     public static void saveToFile(Document document, File file) throws TransformerException {
@@ -120,5 +96,33 @@ public final class XMLExtractor {
         DOMSource domSource = new DOMSource(document);
         StreamResult streamResult = new StreamResult(file);
         transformer.transform(domSource, streamResult);
+    }
+
+    private static void tryToRead(TreeView<Map<String, String>> build,
+        Map<Node, TreeItem<Map<String, String>>> allItems, File file) throws XmlException, IOException {
+        XmlObject parse = XmlObject.Factory.parse(file);
+        Node domNode = parse.getDomNode();
+        List<Node> currentNodes = new ArrayList<>();
+        currentNodes.add(domNode);
+        TreeItem<Map<String, String>> value = new TreeItem<>(newMap(domNode.getNodeName(), domNode.getNodeValue()));
+        value.setGraphic(newText(domNode));
+        build.setRoot(value);
+        allItems.put(domNode, value);
+        while (!currentNodes.isEmpty()) {
+            domNode = currentNodes.remove(0);
+            NodeList childNodes = domNode.getChildNodes();
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node item = childNodes.item(i);
+                if (item.getNodeType() != Node.TEXT_NODE) {
+                    currentNodes.add(0, item);
+                    TreeItem<Map<String, String>> e = new TreeItem<>(
+                        newMap(item.getNodeName(), item.getNodeValue()));
+                    allItems.get(domNode).getChildren().add(e);
+                    allItems.put(item, e);
+                    e.setGraphic(newText(item));
+                    addValue(item, e);
+                }
+            }
+        }
     }
 }

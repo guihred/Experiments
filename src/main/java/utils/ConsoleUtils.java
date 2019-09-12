@@ -18,7 +18,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 
 public final class ConsoleUtils {
@@ -158,6 +157,10 @@ public final class ConsoleUtils {
         return execution;
     }
 
+    public static Process newUnmappedProcess(final String cmd) {
+        return SupplierEx.remap(() -> Runtime.getRuntime().exec(cmd), "ERROR CREATING PROCESS");
+    }
+
     public static void waitAllProcesses() {
         long currentTimeMillis = System.currentTimeMillis();
         while (PROCESSES.values().stream().anyMatch(e -> !e)) {
@@ -178,15 +181,12 @@ public final class ConsoleUtils {
         }
     }
 
-
     private static Process newProcess(final String cmd) {
-        try {
+        return SupplierEx.remap(() -> {
             Process p = Runtime.getRuntime().exec(cmd);
             PROCESSES.put(cmd, false);
             return p;
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR CREATING PROCESS", e);
-        }
+        }, "ERROR CREATING PROCESS");
     }
 
     private static void updateRegexMapValues(final String cmd, final Map<String, String> responses,

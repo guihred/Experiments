@@ -1,6 +1,7 @@
 package utils;
 
 import java.util.function.Supplier;
+import org.assertj.core.api.exception.RuntimeIOException;
 
 @FunctionalInterface
 public interface SupplierEx<T> {
@@ -37,6 +38,14 @@ public interface SupplierEx<T> {
                 return null;
             }
         };
+    }
+
+    static <A> A remap(SupplierEx<A> run,  String message) {
+        try {
+            return run.get();
+        } catch (Throwable e) {
+            throw new RuntimeIOException(message,e);
+        }
     }
 
 }

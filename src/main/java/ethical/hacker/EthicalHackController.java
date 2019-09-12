@@ -14,6 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -85,9 +86,9 @@ public class EthicalHackController {
         addColumns(commonTable, keySet);
     }
 
-    public void onActionIps() {
+    public void onActionIps(ActionEvent event) {
         StageHelper.fileAction("Select IP File", file -> networkAddress.setText(String.format("-iL \"%s\"", file)),
-            "Any", "*.*");
+            "Any", "*.*").handle(event);
     }
 
     public void onActionNetworkInformation() {

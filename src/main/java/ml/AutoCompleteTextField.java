@@ -12,10 +12,10 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
+import utils.RunnableEx;
 
 public class AutoCompleteTextField extends TextField {
     private SortedSet<String> entries = new TreeSet<>();
@@ -27,7 +27,7 @@ public class AutoCompleteTextField extends TextField {
     private int maxEntries = 10;
 
     public AutoCompleteTextField() {
-        try {
+        RunnableEx.remap(() -> {
             Word2Vec word2Vec = Word2VecExample.createWord2Vec();
             VocabCache<VocabWord> vocab = word2Vec.getVocab();
             Collection<String> words = vocab.words();
@@ -35,9 +35,7 @@ public class AutoCompleteTextField extends TextField {
             filteredEntries.addAll(entries);
             textProperty().addListener((obs, ds, sb2) -> onTextChange(word2Vec));
             focusedProperty().addListener((obs, a, a2) -> entriesPopup.hide());
-        } catch (Exception e) {
-            throw new RuntimeIOException("File Not Found", e);
-        }
+        }, "File Not Found");
     }
 
     public AutoCompleteTextField(SortedSet<String> entrySet, Word2Vec word2Vec) {

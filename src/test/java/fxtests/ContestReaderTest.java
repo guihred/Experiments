@@ -1,9 +1,8 @@
 package fxtests;
 
-import static contest.db.ContestReader.getContestQuestions;
-
 import contest.db.ContestReader;
 import contest.db.IadesCrawler;
+import contest.db.IadesHelper;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +25,7 @@ public class ContestReaderTest extends AbstractTestExecution {
             .asList(ResourceFXUtils.getOutFile().listFiles(f -> f.isDirectory() && f.getName().matches("\\d+")));
         for (File file : listFiles) {
             File firstPdf = ResourceFXUtils.getFirstPathByExtension(file, "pdf").toFile();
-            getContestQuestions(firstPdf, reader -> addToInvalidFiles(invalidFiles, firstPdf, reader));
+            IadesHelper.getContestQuestions(firstPdf, reader -> addToInvalidFiles(invalidFiles, firstPdf, reader));
         }
         displayResults(listFiles, invalidFiles);
     }
@@ -37,7 +36,7 @@ public class ContestReaderTest extends AbstractTestExecution {
             .map(ResourceFXUtils::getOutFile).collect(Collectors.toList());
         List<String> invalidFiles2 = new ArrayList<>();
         for (File file : listFiles) {
-            getContestQuestions(file, reader -> addToInvalidFiles(invalidFiles2, file, reader));
+            IadesHelper.getContestQuestions(file, reader -> addToInvalidFiles(invalidFiles2, file, reader));
         }
         displayResults(listFiles, invalidFiles2);
     }

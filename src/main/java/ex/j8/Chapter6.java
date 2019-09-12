@@ -23,11 +23,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import utils.CrawlerTask;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.SupplierEx;
 
 public final class Chapter6 {
     private static final String ALICE_TXT = "alice.txt";
@@ -258,13 +258,11 @@ public final class Chapter6 {
     }
 
     public static String readPage(String urlString) {
-        try {
+        return SupplierEx.remap(() -> {
             URL url = new URL(urlString);
             URLConnection conn = url.openConnection();
             return IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR Reading Page", e);
-        }
+        }, "ERROR Reading Page");
     }
 
     private static Stream<String> getWords(URI txtFile) throws IOException {

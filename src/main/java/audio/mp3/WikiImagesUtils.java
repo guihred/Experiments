@@ -1,10 +1,11 @@
 package audio.mp3;
 
+import static utils.StringSigaUtils.codificar;
+
 import com.twelvemonkeys.imageio.stream.ByteArrayImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -21,7 +22,6 @@ import javafx.scene.image.ImageView;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,6 +29,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.CrawlerTask;
 import utils.HasLogging;
+import utils.SupplierEx;
 
 public final class WikiImagesUtils {
 
@@ -71,7 +72,7 @@ public final class WikiImagesUtils {
     public static List<String> getImagens(String artista) {
         CrawlerTask.insertProxyConfig();
         LOG.info("SEARCHING FOR {}", artista);
-        String encode = encode(artista.replace(' ', '_'));
+        String encode = codificar(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;
         List<String> images = new ArrayList<>();
         CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(images::addAll);
@@ -82,7 +83,7 @@ public final class WikiImagesUtils {
     public static ObservableList<String> getImagensForked(String artista, ObservableList<String> images) {
         CrawlerTask.insertProxyConfig();
         LOG.info("SEARCHING FOR {}", artista);
-        String encode = encode(artista.replace(' ', '_'));
+        String encode = codificar(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;
         String url2 = "https://pt.wikipedia.org/wiki/" + encode;
 
@@ -106,14 +107,6 @@ public final class WikiImagesUtils {
         }
     }
 
-    private static String encode(String artista) {
-        try {
-            return URLEncoder.encode(artista, "utf-8");
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR Reading Page", e);
-        }
-    }
-
     private static Document getDocument(final String url) throws IOException {
         Connection connect = Jsoup.connect(url);
 
@@ -125,15 +118,13 @@ public final class WikiImagesUtils {
     }
 
     private static List<String> readPage(String urlString) {
-        try {
+        return SupplierEx.remap(() -> {
             Document parse = getDocument(urlString);
             LOG.info("READING PAGE {}", urlString);
             Elements kun = parse.select("img");
             return kun.stream().map(e -> e.attr("src"))
                 .filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR Reading Page", e);
-        }
+        }, "ERROR Reading Page");
     }
 
 }

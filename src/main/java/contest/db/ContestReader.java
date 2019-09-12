@@ -7,7 +7,6 @@ import static utils.StringSigaUtils.removeNotPrintable;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
@@ -75,6 +74,59 @@ public class ContestReader implements HasLogging {
 
     public ReaderState getState() {
         return state.get();
+    }
+
+    public void readFile(File file) {
+        PdfUtils.extractImages(file);
+
+        try (RandomAccessFile source = new RandomAccessFile(file, "r");
+            COSDocument cosDoc = PdfUtils.parseAndGet(source);
+            PDDocument pdDoc = new PDDocument(cosDoc)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper() {
+                @Override
+                protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
+                    super.writeString(text1, textPositions);
+                    if (matchesQuestionPattern(text1, textPositions)) {
+                        TextPosition textPosition = textPositions.get(0);
+                        float x = textPosition.getXDirAdj();
+                        float y = textPosition.getYDirAdj();
+                        QuestionPosition qp = new QuestionPosition();
+                        qp.setLine(text1);
+                        qp.setX(x);
+                        qp.setY(y);
+                        qp.setPage(pageNumber);
+                        getLogger().trace("{} at ({},{}) page {}", qp.getLine(), qp.getX(), qp.getY(), pageNumber);
+                        questionPosition.add(qp);
+                    }
+                }
+
+            };
+            int numberOfPages = pdDoc.getNumberOfPages();
+            contest = new Contest(Organization.IADES);
+            PrintImageLocations printImageLocations = new PrintImageLocations();
+            for (int i = 2; i <= numberOfPages; i++) {
+                PDPage page = pdDoc.getPage(i - 1);
+                pageNumber = i;
+                pdfStripper.setStartPage(i);
+                pdfStripper.setEndPage(i);
+                List<PdfImage> images = printImageLocations.processPage(page, i);
+                String parsedText = removeMathematicalOperators(pdfStripper.getText(pdDoc));
+                String[] lines = parsedText.split("\r\n");
+                tryReadQuestionFromLines(lines);
+                List<HasImage> imageElements = Stream.concat(texts.stream(), listQuestions.stream())
+                    .collect(Collectors.toList());
+                final int j = i;
+                for (PdfImage pdfImage : images) {
+                    questionPosition.stream().filter(e -> e.getPage() == j)
+                        .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())))
+                        .ifPresent(position -> imageElements.stream().filter(p -> p.matches(position.getLine()))
+                            .forEach(p -> p.appendImage(
+                                pdfImage.getFile().getParentFile().getName() + "/" + pdfImage.getFile().getName())));
+                }
+            }
+        } catch (Throwable e) {
+            getLogger().error("", e);
+        }
     }
 
     public void saveAll() {
@@ -325,59 +377,6 @@ public class ContestReader implements HasLogging {
         }
     }
 
-    private void readFile(File file) {
-        PdfUtils.extractImages(file);
-
-        try (RandomAccessFile source = new RandomAccessFile(file, "r");
-            COSDocument cosDoc = PdfUtils.parseAndGet(source);
-            PDDocument pdDoc = new PDDocument(cosDoc)) {
-            PDFTextStripper pdfStripper = new PDFTextStripper() {
-                @Override
-                protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
-                    super.writeString(text1, textPositions);
-                    if (matchesQuestionPattern(text1, textPositions)) {
-                        TextPosition textPosition = textPositions.get(0);
-                        float x = textPosition.getXDirAdj();
-                        float y = textPosition.getYDirAdj();
-                        QuestionPosition qp = new QuestionPosition();
-                        qp.setLine(text1);
-                        qp.setX(x);
-                        qp.setY(y);
-                        qp.setPage(pageNumber);
-                        getLogger().trace("{} at ({},{}) page {}", qp.getLine(), qp.getX(), qp.getY(), pageNumber);
-                        questionPosition.add(qp);
-                    }
-                }
-
-            };
-            int numberOfPages = pdDoc.getNumberOfPages();
-            contest = new Contest(Organization.IADES);
-            PrintImageLocations printImageLocations = new PrintImageLocations();
-            for (int i = 2; i <= numberOfPages; i++) {
-                PDPage page = pdDoc.getPage(i - 1);
-                pageNumber = i;
-                pdfStripper.setStartPage(i);
-                pdfStripper.setEndPage(i);
-                List<PdfImage> images = printImageLocations.processPage(page, i);
-                String parsedText = removeMathematicalOperators(pdfStripper.getText(pdDoc));
-                String[] lines = parsedText.split("\r\n");
-                tryReadQuestionFromLines(lines);
-                List<HasImage> imageElements = Stream.concat(texts.stream(), listQuestions.stream())
-                    .collect(Collectors.toList());
-                final int j = i;
-                for (PdfImage pdfImage : images) {
-                    questionPosition.stream().filter(e -> e.getPage() == j)
-                        .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())))
-                        .ifPresent(position -> imageElements.stream().filter(p -> p.matches(position.getLine()))
-                            .forEach(p -> p.appendImage(
-                                pdfImage.getFile().getParentFile().getName() + "/" + pdfImage.getFile().getName())));
-                }
-            }
-        } catch (Throwable e) {
-            getLogger().error("", e);
-        }
-    }
-
     private ContestQuestion tryReadQuestionFromLines(String[] lines) {
 
         try {
@@ -411,29 +410,6 @@ public class ContestReader implements HasLogging {
         }).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
-    public static ContestReader getContestQuestions(File file) {
-        ContestReader instance = new ContestReader();
-        new Thread(() -> instance.readFile(file)).start();
-        return instance;
-    }
-
-    @SafeVarargs
-    public static ContestReader getContestQuestions(File file, Consumer<ContestReader>... r) {
-        ContestReader instance = new ContestReader();
-        HasLogging.log().info("READING {}", file);
-        instance.readFile(file);
-        Stream.of(r).forEach(e -> e.accept(instance));
-        return instance;
-    }
-
-    public static ContestReader getContestQuestions(File file, Runnable... r) {
-        ContestReader instance = new ContestReader();
-        new Thread(() -> {
-            instance.readFile(file);
-            Stream.of(r).forEach(Runnable::run);
-        }).start();
-        return instance;
-    }
 
     private static boolean containsAllOptions(String s) {
         return s.contains("(A)") && s.contains("(B)") && s.contains("(C)") && s.contains("(D)") && s.contains("(E)");

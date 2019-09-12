@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import pdfreader.PdfUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.SupplierEx;
 
 public final class LeitorArquivos {
     private static final Color RED_COLOR = new Color(1.0F, 0.2F, 0.2F);
@@ -142,7 +143,7 @@ public final class LeitorArquivos {
     }
 
     public static ObservableList<Medicamento> getMedicamentosSNGPCPDF(File file) {
-        try {
+        return SupplierEx.remap(() -> {
             String[] linhas = PdfUtils.getAllLines(file);
             Medicamento medicamento = new Medicamento();
             ObservableList<Medicamento> listaMedicamentos = FXCollections.observableArrayList();
@@ -150,10 +151,7 @@ public final class LeitorArquivos {
                 medicamento = tryReadSNGPCLine(linhas, medicamento, listaMedicamentos, i);
             }
             return listaMedicamentos;
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR READING FILE", e);
-        }
-
+        }, "ERROR READING FILE");
     }
 
     public static ObservableList<String> getSheetsExcel(File selectedFile) {

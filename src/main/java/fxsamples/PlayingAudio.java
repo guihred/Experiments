@@ -341,12 +341,14 @@ public class PlayingAudio extends Application {
         Scene scene = mainStage.getScene();
         ToggleButton toggle = (ToggleButton) scene.lookup(".toggle-button");
         // hide or show buttons
-        if (playVisible) {
-            // show play button
-            toggle.setGraphic(playButton);
-        } else {
-            toggle.setGraphic(pauseButton);
-            // show pause button
+        if (toggle != null) {
+            if (playVisible) {
+                // show play button
+                toggle.setGraphic(playButton);
+            } else {
+                toggle.setGraphic(pauseButton);
+                // show pause button
+            }
         }
     }
 

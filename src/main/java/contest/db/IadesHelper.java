@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
@@ -91,6 +92,24 @@ public final class IadesHelper {
         return answers.toString();
     }
 
+    @SafeVarargs
+    public static ContestReader getContestQuestions(File file, Consumer<ContestReader>... r) {
+        ContestReader instance = new ContestReader();
+        HasLogging.log().info("READING {}", file);
+        instance.readFile(file);
+        Stream.of(r).forEach(e -> e.accept(instance));
+        return instance;
+    }
+
+    public static ContestReader getContestQuestions(File file, Runnable... r) {
+        ContestReader instance = new ContestReader();
+        new Thread(() -> {
+            instance.readFile(file);
+            Stream.of(r).forEach(Runnable::run);
+        }).start();
+        return instance;
+    }
+
     public static Path getFirstPDF(File file, String number) throws IOException {
         try (Stream<Path> find = Files.find(file.toPath(), 3, (path, info) -> nameMatches(number, path));) {
             Optional<Path> findFirst = find.findFirst();
@@ -144,8 +163,7 @@ public final class IadesHelper {
             return;
         }
         File file2 = getPDF(number, file);
-        ContestReader.getContestQuestions(file2,
-            entities -> saveQuestions(concurso, vaga, linksFound, number, entities));
+        getContestQuestions(file2, entities -> saveQuestions(concurso, vaga, linksFound, number, entities));
     }
 
     public static void saveQuestions(Property<Concurso> concurso, String vaga,

@@ -13,7 +13,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 
@@ -94,11 +93,7 @@ public final class ClassReflectionUtils {
     }
 
     public static <T> T getInstance(Class<T> cl) {
-        try {
-            return cl.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR IN INSTANTIATION", e);
-        }
+        return SupplierEx.remap(cl::newInstance, "ERROR IN INSTANTIATION");
     }
 
     public static List<String> getNamedArgs(Class<?> targetClass) {

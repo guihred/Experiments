@@ -9,8 +9,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.text.MaskFormatter;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +25,9 @@ public class StringSigaUtils extends StringUtils {
     private static final int TAMANHO_CNPJ = 14;
     private static final int TAMANHO_MATRICULA = 7;
     private static final int TAMANHO_PAP = 9;
+
+    private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
+        Double.class);
 
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
@@ -64,6 +70,25 @@ public class StringSigaUtils extends StringUtils {
         }
         byte[] bytes = latin1.getBytes(initial);
         return new String(bytes, finalCharset);
+    }
+
+    public static String floatFormating(int length) {
+        return "\t%" + length + ".1f";
+    }
+
+    public static String format(int length, Object mean) {
+        if (!(mean instanceof Double)) {
+            String format = "\t%" + length + "s";
+            return String.format(format, mean);
+        }
+        return String.format(floatFormating(length), mean);
+    }
+
+    public static String formating(String s) {
+        if (StringUtils.isBlank(s)) {
+            return "%s\t";
+        }
+        return "%" + s.length() + "s\t";
     }
 
     public static String getApenasNumeros(String texto) {
@@ -155,6 +180,10 @@ public class StringSigaUtils extends StringUtils {
         return partUrl;
     }
 
+    public  static String intFormating(int length) {
+        return "\t%" + length + "d";
+    }
+
     public static Integer intValue(String v) {
         try {
             return Integer.valueOf(v.replaceAll("\\D", ""));
@@ -194,16 +223,11 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String removeNotPrintable(String s) {
-        String fixEncoding = fixEncoding(s.replaceAll("\t", " "), StandardCharsets.UTF_8,
-            Charset.forName("CESU-8"));
+        String fixEncoding = fixEncoding(s.replaceAll("\t", " "), StandardCharsets.UTF_8, Charset.forName("CESU-8"));
         if (fixEncoding == null) {
             return null;
         }
-        String replace = fixEncoding.replaceAll("[\u0000-\u0010]", "?");
-        if (!replace.equals(s)) {
-            return replace;
-        }
-        return s;
+        return fixEncoding.replaceAll("[\u0000-\u0010]", "?");
     }
 
     public static String removerDiacritico(String string) {
@@ -235,6 +259,19 @@ public class StringSigaUtils extends StringUtils {
     public static Integer toInteger(String numero) {
         String replaceAll = numero.replaceAll("\\D", "");
         return Integer.valueOf(replaceAll);
+    }
+
+    public static <T extends Comparable<?>> Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,
+        Class<T> class1, Class<?> currentFormat, String number, String header, Function<String, T> func) {
+        if (FORMAT_HIERARCHY.indexOf(currentFormat) <= FORMAT_HIERARCHY.indexOf(class1)) {
+            T valueOf = func.apply(number);
+            if (currentFormat != class1) {
+                formatMap.put(header, class1);
+            }
+            return valueOf;
+        }
+        throw new NumberFormatException("Not");
+
     }
     public static boolean validUTF8(byte[] input) {
         int i = 0;
@@ -276,6 +313,7 @@ public class StringSigaUtils extends StringUtils {
         }
         return true;
     }
+
     private static String formatar(String pattern, String valor) {
         return get(() -> {
             MaskFormatter mask = new MaskFormatter(pattern);

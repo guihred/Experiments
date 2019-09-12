@@ -1,7 +1,6 @@
 package schema.sngpc;
 
 import static java.util.Collections.singletonList;
-import static javax.tools.JavaFileObject.Kind.SOURCE;
 
 import com.google.common.io.Files;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +44,8 @@ public final class ControllerCompiler {
 
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            final SimpleJavaFileObject simpleJavaFileObject = new SimpleJavaFileObject(customRwa.toURI(), SOURCE) {
+            final SimpleJavaFileObject simpleJavaFileObject = new SimpleJavaFileObject(customRwa.toURI(),
+                JavaFileObject.Kind.SOURCE) {
                 @Override
                 public CharSequence getCharContent(boolean ignoreEncodingErrors) {
                     return source;

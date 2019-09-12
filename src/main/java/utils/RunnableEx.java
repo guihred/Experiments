@@ -1,6 +1,7 @@
 package utils;
 
 import java.util.function.Consumer;
+import org.assertj.core.api.exception.RuntimeIOException;
 
 @FunctionalInterface
 public
@@ -34,6 +35,11 @@ interface RunnableEx {
                 onError.accept(e);
             }
         };
+    }
+    static void remap(RunnableEx run, String onError) {
+        make(run, e -> {
+            throw new RuntimeIOException(onError, e);
+        }).run();
     }
 
 	static void run(RunnableEx run) {

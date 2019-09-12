@@ -11,10 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.SupplierEx;
 
 public class CSVUtils {
 
@@ -77,7 +77,7 @@ public class CSVUtils {
     }
 
     private static Writer createWriter(String csvFile) {
-        try {
+        return SupplierEx.remap(() -> {
             File file = new File(csvFile);
             if (file.exists()) {
                 Files.delete(file.toPath());
@@ -85,9 +85,7 @@ public class CSVUtils {
             boolean created = file.createNewFile();
             LOGGER.trace("file {} created {}", csvFile, created);
             return new BufferedWriter(new FileWriterWithEncoding(csvFile, StandardCharsets.UTF_8, true));
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR CREATING WRITER", e);
-        }
+        }, "ERROR CREATING WRITER");
     }
 
     private static StringBuilder getField(String cvsLine, List<String> result, char separators, char customQuote) {

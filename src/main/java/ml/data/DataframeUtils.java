@@ -1,36 +1,32 @@
 package ml.data;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static utils.StringSigaUtils.floatFormating;
+import static utils.StringSigaUtils.format;
+import static utils.StringSigaUtils.formating;
+import static utils.StringSigaUtils.intFormating;
+
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.StringSigaUtils;
 
 public final class DataframeUtils extends DataframeML {
 
     private static final Logger LOG = HasLogging.log();
-    private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
-        Double.class);
 
     private DataframeUtils() {
     }
 
     public static List<Entry<Number, Number>> createNumberEntries(DataframeML dataframe, String feature,
         String target) {
-        List<Object> list = dataframe.dataframe.get(feature);
-        List<Object> list2 = dataframe.dataframe.get(target);
-        List<Entry<Number, Number>> data = new ArrayList<>();
-        IntStream.range(0, dataframe.size).filter(i -> i < list.size() && i < list2.size())
-            .filter(i -> list.get(i) != null && list2.get(i) != null)
-            .forEach(i -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
-        return data;
+        return DataframeStatisticAccumulator.createNumberEntries(dataframe, feature, target);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -79,8 +75,7 @@ public final class DataframeUtils extends DataframeML {
     }
 
     public static void displayStats(DataframeML dataframe) {
-        Map<String, DataframeStatisticAccumulator> stats = makeStats(dataframe);
-        displayStats(stats);
+        displayStats(makeStats(dataframe));
     }
 
     public static void displayStats(Map<String, DataframeStatisticAccumulator> stats) {
@@ -113,15 +108,7 @@ public final class DataframeUtils extends DataframeML {
     }
 
     public static Map<Double, Long> histogram(DataframeML dataframeML, String header, int bins) {
-        List<Object> list = dataframeML.dataframe.get(header);
-        List<Double> columnList = list.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).boxed()
-            .collect(Collectors.toList());
-        DoubleSummaryStatistics summaryStatistics = columnList.stream().mapToDouble(e -> e).summaryStatistics();
-        double min = summaryStatistics.getMin();
-        double max = summaryStatistics.getMax();
-        double binSize = (max - min) / bins;
-        return columnList.parallelStream()
-            .collect(Collectors.groupingBy(e -> Math.ceil(e / binSize) * binSize, Collectors.counting()));
+        return DataframeStatisticAccumulator.histogram(dataframeML, header, bins);
     }
 
     public static Map<String, DataframeStatisticAccumulator> makeStats(DataframeML dataframe) {
@@ -145,40 +132,6 @@ public final class DataframeUtils extends DataframeML {
         } catch (Exception e) {
             LOG.error("FILE NOT FOUND " + csvFile, e);
         }
-    }
-
-    public static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
-        while (scanner.hasNext()) {
-            dataframe.size++;
-            List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
-            if (header.size() != line2.size()) {
-                LOG.error("ERROR FIELDS COUNT");
-                createNullRow(header, line2);
-            }
-
-            for (int i = 0; i < header.size(); i++) {
-                String key = header.get(i);
-                String field = getFromList(i, line2);
-                Object tryNumber = tryNumber(dataframe, key, field);
-                if (dataframe.filters.containsKey(key) && !dataframe.filters.get(key).test(tryNumber)) {
-                    removeRow(dataframe, header, i);
-                    break;
-                }
-                categorizeIfCategorizable(dataframe, key, tryNumber);
-                tryNumber = mapIfMappable(dataframe, key, tryNumber);
-
-                dataframe.list(key).add(tryNumber);
-            }
-            if (dataframe.size > dataframe.maxSize) {
-                break;
-            }
-        }
-    }
-
-    public static BinaryOperator<Object> throwError() {
-        return (u, v) -> {
-            throw new IllegalStateException(String.format("Duplicate key %s", u));
-        };
     }
 
     public static String toString(DataframeML dataframe) {
@@ -255,29 +208,6 @@ public final class DataframeUtils extends DataframeML {
         }
     }
 
-    private static String floatFormating(int length) {
-        return "\t%" + length + ".1f";
-    }
-
-    private static String format(int length, Object mean) {
-        if (!(mean instanceof Double)) {
-            String format = "\t%" + length + "s";
-            return String.format(format, mean);
-        }
-        return String.format(floatFormating(length), mean);
-    }
-
-    private static String formating(String s) {
-        if (StringUtils.isBlank(s)) {
-            return "%s\t";
-        }
-        return "%" + s.length() + "s\t";
-    }
-
-    private static String intFormating(int length) {
-        return "\t%" + length + "d";
-    }
-
     private static int len(String k, Class<? extends Comparable<?>> class1) {
         return class1 == String.class ? k.length() * 2 : k.length();
     }
@@ -287,6 +217,34 @@ public final class DataframeUtils extends DataframeML {
             return dataframe.mapping.get(key).apply(tryNumber);
         }
         return tryNumber;
+    }
+
+    private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
+        while (scanner.hasNext()) {
+            dataframe.size++;
+            List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
+            if (header.size() != line2.size()) {
+                LOG.error("ERROR FIELDS COUNT");
+                createNullRow(header, line2);
+            }
+
+            for (int i = 0; i < header.size(); i++) {
+                String key = header.get(i);
+                String field = getFromList(i, line2);
+                Object tryNumber = tryNumber(dataframe, key, field);
+                if (dataframe.filters.containsKey(key) && !dataframe.filters.get(key).test(tryNumber)) {
+                    removeRow(dataframe, header, i);
+                    break;
+                }
+                categorizeIfCategorizable(dataframe, key, tryNumber);
+                tryNumber = mapIfMappable(dataframe, key, tryNumber);
+
+                dataframe.list(key).add(tryNumber);
+            }
+            if (dataframe.size > dataframe.maxSize) {
+                break;
+            }
+        }
     }
 
     private static void removeRow(DataframeML dataframe, List<String> header, int i) {
@@ -317,21 +275,8 @@ public final class DataframeUtils extends DataframeML {
         return d;
     }
 
-    private static <T extends Comparable<?>> Object tryNumber(DataframeML dataframeML, Class<T> class1,
-        Class<?> currentFormat, String number, String header, Function<String, T> func) {
-        if (FORMAT_HIERARCHY.indexOf(currentFormat) <= FORMAT_HIERARCHY.indexOf(class1)) {
-            T valueOf = func.apply(number);
-            if (currentFormat != class1) {
-                dataframeML.formatMap.put(header, class1);
-            }
-            return valueOf;
-        }
-        throw new NumberFormatException("Not");
-
-    }
-
     private static Object tryNumber(DataframeML dataframeML, String header, String field) {
-        if (StringUtils.isBlank(field)) {
+        if (isBlank(field)) {
             return null;
         }
         Class<?> currentFormat = dataframeML.getFormat(header);
@@ -346,18 +291,21 @@ public final class DataframeUtils extends DataframeML {
         }
 
         try {
-            return tryNumber(dataframeML, Integer.class, currentFormat, number, header, Integer::valueOf);
-        } catch (NumberFormatException e) {
+            return StringSigaUtils.tryNumber(dataframeML.formatMap, Integer.class, currentFormat, number, header,
+                Integer::valueOf);
+        } catch (Exception e) {
             LOG.trace("FORMAT ERROR ", e);
         }
         try {
-            return tryNumber(dataframeML, Long.class, currentFormat, number, header, Long::valueOf);
-        } catch (NumberFormatException e) {
+            return StringSigaUtils.tryNumber(dataframeML.formatMap, Long.class, currentFormat, number, header,
+                Long::valueOf);
+        } catch (Exception e) {
             LOG.trace("FORMAT ERROR", e);
         }
         try {
-            return tryNumber(dataframeML, Double.class, currentFormat, number, header, Double::valueOf);
-        } catch (NumberFormatException e) {
+            return StringSigaUtils.tryNumber(dataframeML.formatMap, Double.class, currentFormat, number, header,
+                Double::valueOf);
+        } catch (Exception e) {
             LOG.trace("FORMAT ERROR", e);
         }
         if (Number.class.isAssignableFrom(dataframeML.getFormat(header))) {

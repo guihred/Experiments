@@ -22,13 +22,13 @@ import java.util.*;
 import java.util.stream.Stream;
 import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import utils.HasLogging;
+import utils.RunnableEx;
 
 public final class FXMLCreator {
     private static final String FX_REFERENCE = "fx:reference";
@@ -50,7 +50,7 @@ public final class FXMLCreator {
 
     public void createFXMLFile(Object node, File file) {
         String packageName = FXMLCreator.class.getPackage().getName();
-        try {
+        RunnableEx.remap(() -> {
             document = XMLExtractor.newDocument();
             allNode.add(node);
             processNodes(file, packageName);
@@ -61,9 +61,7 @@ public final class FXMLCreator {
             document.appendChild(firstChild);
             XMLExtractor.saveToFile(document, file);
             createController(file, packageName);
-        } catch (Exception e) {
-            throw new RuntimeIOException("ERROR in file " + file.getName(), e);
-        }
+        }, "ERROR in file " + file.getName());
     }
 
     private void addReferenceList(Element element, String fieldName, Object parent, Collection<?> list) {
@@ -86,7 +84,8 @@ public final class FXMLCreator {
 
     private String computeMethod(Object parent, String fieldName, Object fieldValue, String nodeId) {
         String signature = "()";
-        Class<?> class1 = fieldValue.getClass().getInterfaces()[0];
+        Class<? extends Object> valueClass = fieldValue.getClass();
+        Class<?> class1 = valueClass.getInterfaces()[0];
         TypeVariable<?>[] typeParameters = class1.getTypeParameters();
         if (typeParameters.length > 0) {
             TypeVariable<?> typeVariable = typeParameters[0];
@@ -188,7 +187,7 @@ public final class FXMLCreator {
             Object fieldValue = mapProperty(getFieldValue(f, "id"));
             String id = Objects.toString(fieldValue, "").replaceAll("[\\W_]", "");
             if (StringUtils.isNotBlank(id)) {
-                String string = changeCase(id);
+                String string = Character.isLowerCase(id.charAt(0)) ? id : changeCase(id);
                 if (StringUtils.isNumeric(string)) {
                     return changeCase(f.getClass().getSimpleName()) + string;
                 }

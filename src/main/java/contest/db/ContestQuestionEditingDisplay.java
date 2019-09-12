@@ -47,7 +47,7 @@ public class ContestQuestionEditingDisplay extends Application {
     private ObservableList<ContestQuestionAnswer> options = FXCollections.observableArrayList();
 
     public ContestQuestionEditingDisplay() {
-		instance = ContestReader.getContestQuestions(
+        instance = IadesHelper.getContestQuestions(
             ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), () -> current.set(0));
 		lessons = instance.getListQuestions();
     }
