@@ -237,7 +237,6 @@ public class IndependentTest {
         measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
         measureTime("StringSigaUtils.getMatriculaFormatado", () -> getMatriculaFormatado(nome));
         measureTime("StringSigaUtils.getPAPFormatado", () -> getPAPFormatado(nome));
-        measureTime("StringSigaUtils.getURLSiga", () -> getURLSiga(nome));
         measureTime("StringSigaUtils.removerDiacritico", () -> removerDiacritico(nome));
         measureTime("StringSigaUtils.retirarMascara", () -> retirarMascara(nome));
         measureTime("StringSigaUtils.substituirNaoNumeros", () -> substituirNaoNumeros(nome));

@@ -130,7 +130,8 @@ public final class DotsHelper {
     public static Text pointsDisplay(String key,ObservableMap<String, ObservableSet<Set<DotsSquare>>> points) {
         Text tuPoints = new Text("0");
         tuPoints.textProperty().bind(
-            Bindings.createStringBinding(() -> Integer.toString(points.get(key).size()), points.get("TU"), points));
+            Bindings.createStringBinding(() -> String.format("%s:%d", key, points.get(key).size()), points.get(key),
+                points));
         return tuPoints;
     }
 

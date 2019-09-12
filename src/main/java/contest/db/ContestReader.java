@@ -391,8 +391,6 @@ public class ContestReader implements HasLogging {
         return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
     }
 
-
-
     enum ReaderState {
         IGNORE,
         OPTION,

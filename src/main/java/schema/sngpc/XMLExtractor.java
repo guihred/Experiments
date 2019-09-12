@@ -1,5 +1,6 @@
 package schema.sngpc;
 
+import static simplebuilder.SimpleTextBuilder.newBoldText;
 import static utils.RunnableEx.remap;
 
 import java.io.File;
@@ -10,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -74,12 +72,6 @@ public final class XMLExtractor {
         return new SimpleMap(key, value);
     }
 
-    public static Text newText(Node item) {
-        Text text = new Text(item.getNodeName());
-        Font font = Font.getDefault();
-        text.setFont(Font.font(font.getFamily(), FontWeight.BOLD, font.getSize()));
-        return text;
-    }
 
     public static void readXMLFile(TreeView<Map<String, String>> build,
         Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
@@ -105,7 +97,7 @@ public final class XMLExtractor {
         List<Node> currentNodes = new ArrayList<>();
         currentNodes.add(domNode);
         TreeItem<Map<String, String>> value = new TreeItem<>(newMap(domNode.getNodeName(), domNode.getNodeValue()));
-        value.setGraphic(newText(domNode));
+        value.setGraphic(newBoldText(domNode));
         build.setRoot(value);
         allItems.put(domNode, value);
         while (!currentNodes.isEmpty()) {
@@ -119,7 +111,7 @@ public final class XMLExtractor {
                         newMap(item.getNodeName(), item.getNodeValue()));
                     allItems.get(domNode).getChildren().add(e);
                     allItems.put(item, e);
-                    e.setGraphic(newText(item));
+                    e.setGraphic(newBoldText(item));
                     addValue(item, e);
                 }
             }

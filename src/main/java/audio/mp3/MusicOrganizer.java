@@ -1,5 +1,7 @@
 package audio.mp3;
 
+import static simplebuilder.SimpleVBoxBuilder.newVBox;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,7 +18,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
@@ -103,10 +104,9 @@ public class MusicOrganizer extends Application {
             Object fieldValue = ClassReflectionUtils.getFieldValue(music, name);
             if (fieldValue instanceof StringProperty) {
                 StringProperty a = (StringProperty) fieldValue;
-                Text text = new Text(name);
                 TextField textField = new TextField();
                 textField.textProperty().bindBidirectional(a);
-                vBox.getChildren().add(new VBox(text, textField));
+                vBox.getChildren().add(newVBox(name, textField));
             }
         }
         if (StringUtils.isBlank(music.getAlbum())) {

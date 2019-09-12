@@ -12,10 +12,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.IntConsumer;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -42,7 +40,7 @@ public final class PdfUtils {
     }
 
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages) {
-        return extractImages(file, start, nPages, new SimpleDoubleProperty(0));
+        return extractImages(file, start, nPages, null);
     }
 
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
@@ -59,7 +57,9 @@ public final class PdfUtils {
                     List<PdfImage> pageImages = getPageImages(printImageLocations, i, page);
                     images.put(i, pageImages);
                     double current = i;
-                    Platform.runLater(() -> progress.set(current / (nPag - start)));
+                    if (progress != null) {
+                        Platform.runLater(() -> progress.set(current / (nPag - start)));
+                    }
                 }
             }
         })).start();
@@ -147,7 +147,8 @@ public final class PdfUtils {
         return pdfInfo;
     }
 
-    public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition, IntConsumer onPage,
+    public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition,
+        Consumer<Integer> onPage,
         Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
         PdfUtils.extractImages(file);
         try (RandomAccessFile source = new RandomAccessFile(file, "r");

@@ -2,7 +2,9 @@ package simplebuilder;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import org.w3c.dom.Node;
 
 public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilder> {
 
@@ -73,10 +75,16 @@ public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilde
 
         return this;
     }
-
     public SimpleTextBuilder y(final double x) {
         shape.setY(x);
         return this;
+    }
+
+    public static Text newBoldText(Node item) {
+        Text text = new Text(item.getNodeName());
+        Font font = Font.getDefault();
+        text.setFont(Font.font(font.getFamily(), FontWeight.BOLD, font.getSize()));
+        return text;
     }
 
 }

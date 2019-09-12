@@ -1,5 +1,7 @@
 package graphs.app;
 
+import static simplebuilder.SimpleVBoxBuilder.newVBox;
+
 import graphs.entities.CellType;
 import graphs.entities.Edge;
 import graphs.entities.Graph;
@@ -20,10 +22,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTimelineBuilder;
+import simplebuilder.SimpleVBoxBuilder;
 import utils.CommonsFX;
 
 public class GraphModelLauncher extends Application {
@@ -110,7 +112,7 @@ public class GraphModelLauncher extends Application {
     }
 
     private VBox getLayoutOptions() {
-        return new VBox(new Text("Layout"), new HBox(selectLayout, CommonsFX.newButton("Go", e -> {
+        return SimpleVBoxBuilder.newVBox("Layout", new HBox(selectLayout, CommonsFX.newButton("Go", e -> {
             Layout selectedItem = selectLayout.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
                 selectedItem.execute();
@@ -141,8 +143,8 @@ public class GraphModelLauncher extends Application {
             }
         });
 
-        VBox source = new VBox(new Text("Source"), c1);
-        VBox target = new VBox(new Text("Target"), c2);
+        VBox source = SimpleVBoxBuilder.newVBox("Source", c1);
+        VBox target = SimpleVBoxBuilder.newVBox("Target", c2);
         Button button = CommonsFX.newButton("_Path", event -> {
             graph.getModel().clearSelected();
             if (c1.getValue() != null && c2.getValue() != null) {
@@ -155,7 +157,7 @@ public class GraphModelLauncher extends Application {
             }
         });
 
-        FlowPane flowPane = new FlowPane(source, target, new VBox(new Text(""), button));
+        FlowPane flowPane = new FlowPane(source, target, newVBox("", button));
         final int maxWidth = 160;
         flowPane.setMaxWidth(maxWidth);
         return flowPane;
@@ -193,7 +195,7 @@ public class GraphModelLauncher extends Application {
                 selectedItem.execute();
             }
         }));
-        return new VBox(new Text("Topology"), topologyOptions, packageSelect, networkField);
+        return SimpleVBoxBuilder.newVBox("Topology", topologyOptions, packageSelect, networkField);
     }
 
     private Button getTriangulateOption() {

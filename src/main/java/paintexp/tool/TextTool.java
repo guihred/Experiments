@@ -1,5 +1,6 @@
 package paintexp.tool;
 
+import static simplebuilder.SimpleVBoxBuilder.newVBox;
 import static utils.DrawOnPoint.getWithinRange;
 
 import fxsamples.DraggingRectangle;
@@ -17,7 +18,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -194,10 +194,11 @@ public class TextTool extends PaintTool {
         ToggleButton strikeThrough2 = getStrikeThroughOption();
         SimpleComboBoxBuilder<Integer> fontSize2 = getFontSizeOption();
         SimpleComboBoxBuilder<String> fontFamily2 = getFontFamilyOption();
+        final Node node = textArea2;
 
-        model.getToolOptions().getChildren().addAll(field("Font", fontFamily2.build()),
-            field("Size", fontSize2.build()), new HBox(bold2, italic2, undeline2, strikeThrough2),
-            new HBox(alignments2.getTogglesAs(Node.class).toArray(new Node[0])), field("Text", textArea2));
+        model.getToolOptions().getChildren().addAll(newVBox("Font", fontFamily2.build()),
+            newVBox("Size", fontSize2.build()), new HBox(bold2, italic2, undeline2, strikeThrough2),
+            new HBox(alignments2.getTogglesAs(Node.class).toArray(new Node[0])), newVBox("Text", node));
     }
 
     private void dragTo(final double x, final double y) {
@@ -299,10 +300,6 @@ public class TextTool extends PaintTool {
         model.getImageStack().getChildren().add(imageView);
         textArea.setText("");
         model.createImageVersion();
-    }
-
-    private static VBox field(final String text2, final Node node) {
-        return new VBox(new Text(text2), node);
     }
 
 }

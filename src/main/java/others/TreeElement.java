@@ -7,8 +7,10 @@ import static utils.ClassReflectionUtils.invoke;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Labeled;
 import utils.FunctionEx;
 
 public class TreeElement<T> {
@@ -108,6 +110,12 @@ public class TreeElement<T> {
         return original.getMissingItem(generated);
     }
 
+    public static String displayStyleClass(Node node) {
+        StringBuilder str = new StringBuilder("\n");
+        displayStyleClass("", node, str);
+        return str.toString();
+    }
+
     public static List<String> getDifferences(Class<?> cl, Object ob1, Object ob2) {
         List<String> diffFields = new ArrayList<>();
         if (ob2 == null) {
@@ -133,4 +141,23 @@ public class TreeElement<T> {
 
         return diffFields;
     }
+
+    private static void displayStyleClass(String left, Node node, StringBuilder str) {
+        String arg1 = left + node.getClass().getSimpleName();
+        if (node instanceof Labeled) {
+            str.append(String.format("%s = .%s = \"%s\"%n", arg1, node.getStyleClass(), ((Labeled) node).getText()));
+        }
+
+        String id = node.getId();
+        if (id != null) {
+            str.append(String.format("%s = #%s.%s%n", arg1, id, node.getStyleClass()));
+        } else {
+            str.append(String.format("%s = .%s%n", arg1, node.getStyleClass()));
+        }
+        if (node instanceof Parent) {
+            ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
+            childrenUnmodifiable.forEach(t -> displayStyleClass(left + "-", t, str));
+        }
+    }
+
 }

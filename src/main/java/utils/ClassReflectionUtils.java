@@ -1,5 +1,6 @@
 package utils;
 
+import static java.util.stream.Collectors.joining;
 import static utils.StringSigaUtils.changeCase;
 
 import japstudy.db.BaseEntity;
@@ -9,10 +10,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.NamedArg;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.Labeled;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 
@@ -37,12 +34,6 @@ public final class ClassReflectionUtils {
         }
 
         return classes.parallelStream().distinct().collect(Collectors.toList());
-    }
-
-    public static String displayStyleClass(Node node) {
-        StringBuilder str = new StringBuilder("\n");
-        displayStyleClass("", node, str);
-        return str.toString();
     }
 
     public static String getDescription(Object i) {
@@ -100,17 +91,43 @@ public final class ClassReflectionUtils {
         return getNamedArgsMap(targetClass).keySet().stream().collect(Collectors.toList());
     }
 
-    public static Method getSetter(Class<?> cl, String f) {
-        return ClassReflectionUtils.getAllMethodsRecursive(cl).stream().filter(m -> m.getParameterCount() == 1)
-            .filter(m -> getFieldNameCase(m).equals(f)).findFirst().orElse(null);
+    public static String getSignature(Object parent, String fieldName, Object fieldValue, Collection<String> packages) {
+        String signature = "()";
+        Class<? extends Object> valueClass = fieldValue.getClass();
+        Class<?> class1 = valueClass.getInterfaces()[0];
+        TypeVariable<?>[] typeParameters = class1.getTypeParameters();
+        if (typeParameters.length > 0) {
+            TypeVariable<?> typeVariable = typeParameters[0];
+            Type[] bounds = typeVariable.getBounds();
+            for (Type type : bounds) {
+                String typeName = type.getTypeName();
+                String[] split2 = typeName.split("\\.");
+                String packageName = Stream.of(split2).limit(split2.length - 1L).collect(joining("."));
+                packages.add(packageName);
+                signature = "(" + split2[split2.length - 1] + " e)";
+            }
+        }
+        Method setter = getSetter(parent.getClass(), fieldName);
+        if (setter != null) {
+            for (Parameter class2 : setter.getParameters()) {
+                String[] methodSignature = class2.toString().split("[^\\w\\.]");
+                String eventType = methodSignature[methodSignature.length - 3];
+                String[] split2 = eventType.split("\\.");
+                String packageName = Stream.of(split2).limit(split2.length - 1L).collect(joining("."));
+                if (!packageName.isEmpty()) {
+                    packages.add(packageName);
+                    signature = "(" + split2[split2.length - 1] + " e)";
+                }
+            }
+        }
+        return signature;
     }
 
     public static List<Method> getters(Class<?> c) {
         return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
             .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(METHOD_REGEX))
             .filter(m -> m.getParameterCount() == 0).filter(m -> m.getAnnotationsByType(Ignore.class).length == 0)
-            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName))
-            .collect(Collectors.toList());
+            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
     }
 
     public static boolean hasClass(Collection<Class<?>> newTagClasses, Class<? extends Object> class1) {
@@ -154,24 +171,6 @@ public final class ClassReflectionUtils {
         return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
             .stream().filter(m -> m.getParameterCount() == 1)
             .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(fieldName);
-    }
-
-    private static void displayStyleClass(String left, Node node, StringBuilder str) {
-        String arg1 = left + node.getClass().getSimpleName();
-        if (node instanceof Labeled) {
-            str.append(String.format("%s = .%s = \"%s\"%n", arg1, node.getStyleClass(), ((Labeled) node).getText()));
-        }
-
-        String id = node.getId();
-        if (id != null) {
-            str.append(String.format("%s = #%s.%s%n", arg1, id, node.getStyleClass()));
-        } else {
-            str.append(String.format("%s = .%s%n", arg1, node.getStyleClass()));
-        }
-        if (node instanceof Parent) {
-            ObservableList<Node> childrenUnmodifiable = ((Parent) node).getChildrenUnmodifiable();
-            childrenUnmodifiable.forEach(t -> ClassReflectionUtils.displayStyleClass(left + "-", t, str));
-        }
     }
 
     private static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
@@ -328,6 +327,11 @@ public final class ClassReflectionUtils {
             }
         }
         return args;
+    }
+
+    private static Method getSetter(Class<?> cl, String f) {
+        return ClassReflectionUtils.getAllMethodsRecursive(cl).stream().filter(m -> m.getParameterCount() == 1)
+            .filter(m -> getFieldNameCase(m).equals(f)).findFirst().orElse(null);
     }
 
     private static boolean hasBuiltArg(Class<?> targetClass, String field) {

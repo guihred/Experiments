@@ -188,13 +188,9 @@ public class DotsModel {
         gridPane.setOnMousePressed(this::handleMousePressed);
         gridPane.setOnMouseDragged(this::handleMouseDragged);
         gridPane.setOnMouseReleased(this::handleMouseReleased);
-        Text text = new Text("EU:");
         Text text2 = DotsHelper.pointsDisplay("EU", points);
-        gridPane.getChildren().addAll(text, text2);
-        Text tuText = new Text("TU:");
-        String key = "TU";
-        Text tuPoints = DotsHelper.pointsDisplay(key, points);
-        borderPane.setTop(new HBox(text, text2, tuText, tuPoints));
+        Text tuPoints = DotsHelper.pointsDisplay("TU", points);
+        borderPane.setTop(new HBox(text2, tuPoints));
     }
 
 

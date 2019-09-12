@@ -13,13 +13,8 @@ import static utils.StringSigaUtils.changeCase;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Stream;
 import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,6 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.RunnableEx;
 
@@ -83,35 +79,7 @@ public final class FXMLCreator {
     }
 
     private String computeMethod(Object parent, String fieldName, Object fieldValue, String nodeId) {
-        String signature = "()";
-        Class<? extends Object> valueClass = fieldValue.getClass();
-        Class<?> class1 = valueClass.getInterfaces()[0];
-        TypeVariable<?>[] typeParameters = class1.getTypeParameters();
-        if (typeParameters.length > 0) {
-            TypeVariable<?> typeVariable = typeParameters[0];
-            Type[] bounds = typeVariable.getBounds();
-            for (Type type : bounds) {
-                String typeName = type.getTypeName();
-                String[] split2 = typeName.split("\\.");
-                String packageName = Stream.of(split2).limit(split2.length - 1L).collect(joining("."));
-                packages.add(packageName);
-                signature = "(" + split2[split2.length - 1] + " e)";
-            }
-        }
-        Method setter = getSetter(parent.getClass(), fieldName);
-        Parameter[] parameterTypes = setter.getParameters();
-        for (Parameter class2 : parameterTypes) {
-            String[] methodSignature = class2.toString().split("[^\\w\\.]");
-            String eventType = methodSignature[methodSignature.length - 3];
-            String[] split2 = eventType.split("\\.");
-            String packageName = Stream.of(split2).limit(split2.length - 1L).collect(joining("."));
-            if (!packageName.isEmpty()) {
-                packages.add(packageName);
-                signature = "(" + split2[split2.length - 1] + " e)";
-            } else {
-                LOG.info("Field not set parent={} field={} value={} id={}", parent, fieldName, fieldValue, nodeId);
-            }
-        }
+        String signature = ClassReflectionUtils.getSignature(parent, fieldName, fieldValue, packages);
         String nodeId2 = Character.isLowerCase(nodeId.charAt(0)) ? changeCase(nodeId) : nodeId;
         return fieldName + nodeId2 + signature;
     }
@@ -176,6 +144,7 @@ public final class FXMLCreator {
         }
         return diffFields;
     }
+
 
     private boolean isReferenceableList(String fieldName, Collection<?> list) {
         return list.stream().filter(Objects::nonNull).anyMatch(o -> !containsSame(allNode, o))

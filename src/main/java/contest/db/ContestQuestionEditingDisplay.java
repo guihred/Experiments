@@ -1,5 +1,6 @@
 package contest.db;
 
+import static simplebuilder.SimpleVBoxBuilder.newVBox;
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.StringSigaUtils.intValue;
 
@@ -18,7 +19,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -30,11 +30,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import simplebuilder.SimpleConverter;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -43,19 +42,19 @@ public class ContestQuestionEditingDisplay extends Application {
     private static final Logger LOG = HasLogging.log();
     private IntegerProperty current = new SimpleIntegerProperty(-1);
     private final ObservableList<ContestQuestion> lessons;
-	private final ContestReader instance;
+    private final ContestReader instance;
     private ObservableList<ContestQuestionAnswer> options = FXCollections.observableArrayList();
 
     public ContestQuestionEditingDisplay() {
         instance = IadesHelper.getContestQuestions(
             ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), () -> current.set(0));
-		lessons = instance.getListQuestions();
+        lessons = instance.getListQuestions();
     }
 
-	public ContestQuestionEditingDisplay(ContestReader instance) {
-		this.instance = instance;
-		lessons = instance.getListQuestions();
-	}
+    public ContestQuestionEditingDisplay(ContestReader instance) {
+        this.instance = instance;
+        lessons = instance.getListQuestions();
+    }
 
     public IntegerProperty currentProperty() {
         return current;
@@ -124,25 +123,16 @@ public class ContestQuestionEditingDisplay extends Application {
         });
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
 
-		primaryStage.show();
-		current.set(0);
+        primaryStage.show();
+        current.set(0);
     }
 
     private ListView<ContestQuestionAnswer> newOptionListView() {
         ListView<ContestQuestionAnswer> listView = new ListView<>();
         listView.setItems(options);
         listView.setFixedCellSize(Region.USE_COMPUTED_SIZE);
-        listView.setCellFactory(ChoiceBoxListCell.forListView(new StringConverter<ContestQuestionAnswer>() {
-            @Override
-            public ContestQuestionAnswer fromString(String string) {
-                return options.stream().filter(e -> e.getAnswer().equals(string)).findFirst().orElse(null);
-            }
-
-            @Override
-            public String toString(ContestQuestionAnswer object) {
-                return object.getAnswer();
-            }
-        }, options));
+        listView.setCellFactory(
+            ChoiceBoxListCell.forListView(new SimpleConverter<ContestQuestionAnswer>("answer"), options));
 
         listView.selectionModelProperty().get().selectedItemProperty().addListener((o, v, n) -> {
             if (n != null) {
@@ -176,9 +166,8 @@ public class ContestQuestionEditingDisplay extends Application {
             LOG.trace(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
             LOG.trace(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
                 .collect(Collectors.joining("\n")));
-            LOG
-                .trace(instance.getContestTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
-                    .map(ContestText::toSQL).collect(Collectors.joining("\n")));
+            LOG.trace(instance.getContestTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
+                .map(ContestText::toSQL).collect(Collectors.joining("\n")));
         }
         instance.saveAll();
 
@@ -201,12 +190,6 @@ public class ContestQuestionEditingDisplay extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private static VBox newVBox(String text, Node... e) {
-        VBox vBox = new VBox(new Text(text));
-        vBox.getChildren().addAll(e);
-        return vBox;
     }
 
     private static void setImage(VBox newImage, String image) {

@@ -16,10 +16,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.*;
 import org.slf4j.Logger;
+import others.TreeElement;
+import simplebuilder.SimpleVBoxBuilder;
 
 public final class StageHelper {
 
@@ -46,7 +46,7 @@ public final class StageHelper {
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {
-        String str = ClassReflectionUtils.displayStyleClass(scene.getRoot());
+        String str = TreeElement.displayStyleClass(scene.getRoot());
         HasLogging.log(1).info("{}", str);
         Stage stage2 = new Stage();
         File file = new File("src/main/resources/" + pathname);
@@ -82,7 +82,7 @@ public final class StageHelper {
 
     public static Stage displayDialog(final String text, Node button) {
         final Stage stage1 = new Stage();
-        final VBox group = new VBox(new Text(text), button);
+        final VBox group = SimpleVBoxBuilder.newVBox(text, button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -95,7 +95,7 @@ public final class StageHelper {
             c.run();
             stage1.close();
         });
-        final VBox group = new VBox(new Text(text), button);
+        final VBox group = SimpleVBoxBuilder.newVBox(text, button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -118,9 +118,7 @@ public final class StageHelper {
                 }
             });
         });
-        Text text2 = new Text(text);
-        text2.setTextAlignment(TextAlignment.CENTER);
-        final VBox group = new VBox(text2, progressIndicator, button);
+        final VBox group = SimpleVBoxBuilder.newVBox(text, progressIndicator, button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.swing.text.MaskFormatter;
 import org.apache.commons.lang3.StringUtils;
@@ -163,10 +165,6 @@ public class StringSigaUtils extends StringUtils {
         return matricula;
     }
 
-    public static String getNafFormatada(Integer naf) { // getSEIFormatado...
-        final int i = 10000;
-        return String.format("%04d/%d", naf / i, naf % i);
-    }
 
     public static String getPAPFormatado(String pap) {
         if (StringUtils.isNotBlank(pap)) {
@@ -176,11 +174,7 @@ public class StringSigaUtils extends StringUtils {
         return pap;
     }
 
-    public static String getURLSiga(String partUrl) {
-        return partUrl;
-    }
-
-    public  static String intFormating(int length) {
+    public static String intFormating(int length) {
         return "\t%" + length + "d";
     }
 
@@ -195,23 +189,17 @@ public class StringSigaUtils extends StringUtils {
         }
     }
 
-    public static boolean isValidUTF8(String latin1) {
-        byte[] bytes = latin1.getBytes(StandardCharsets.ISO_8859_1);
-        return !validUTF8(bytes);
-
-    }
-
-    public static String juntar(List<String> palavras) {
-        if (palavras == null || palavras.isEmpty()) {
-            return "";
+    public static String justified(List<String> map, int maxLetters, int i) {
+        String str = map.get(i);
+        int diff = maxLetters - str.length();
+        if (i == 0 || paragraphEnd(map.get(i - 1))) {
+            return leftPad(addSpaces(str, Math.max(diff - 8, 0)), maxLetters, "");
         }
-        String collect = palavras.stream().distinct().collect(Collectors.joining(", "));
-
-        int lastIndexOf = collect.lastIndexOf(',');
-        if (lastIndexOf > 0) {
-            return collect.substring(0, lastIndexOf) + " e" + collect.substring(lastIndexOf + 1);
+        if (diff >= maxLetters / 2 || paragraphEnd(str)) {
+            return rightPad(str, maxLetters, "");
         }
-        return collect;
+        String sb = addSpaces(str, diff);
+        return rightPad(sb, maxLetters, "");
     }
 
     public static String removeMathematicalOperators(String s) {
@@ -273,7 +261,40 @@ public class StringSigaUtils extends StringUtils {
         throw new NumberFormatException("Not");
 
     }
-    public static boolean validUTF8(byte[] input) {
+
+    private static String addSpaces(String str, int diff) {
+
+        Pattern compile = Pattern.compile(" +");
+        Matcher matcher = compile.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        for (int j = 0; j < diff; j++) {
+            if (!matcher.find()) {
+                matcher.appendTail(sb);
+                matcher = compile.matcher(sb.toString().trim());
+                sb.delete(0, sb.length());
+                j--;
+            } else {
+                String group = matcher.group(0);
+                matcher.appendReplacement(sb, group + " ");
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static String formatar(String pattern, String valor) {
+        return get(() -> {
+            MaskFormatter mask = new MaskFormatter(pattern);
+            mask.setValueContainsLiteralCharacters(false);
+            return mask.valueToString(valor);
+        }, valor);
+    }
+
+    private static boolean paragraphEnd(String str) {
+        return str.endsWith(".") || str.endsWith(".”") || str.matches("Texto \\d+");
+    }
+
+    private static boolean validUTF8(byte[] input) {
         int i = 0;
         // Check for BOM
         if (input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF) {
@@ -312,14 +333,6 @@ public class StringSigaUtils extends StringUtils {
             }
         }
         return true;
-    }
-
-    private static String formatar(String pattern, String valor) {
-        return get(() -> {
-            MaskFormatter mask = new MaskFormatter(pattern);
-            mask.setValueContainsLiteralCharacters(false);
-            return mask.valueToString(valor);
-        }, valor);
     }
 
 }

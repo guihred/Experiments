@@ -3,6 +3,7 @@ package simplebuilder;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 public class SimpleVBoxBuilder extends SimplePaneBuilder<VBox, SimpleVBoxBuilder> {
 
@@ -32,5 +33,11 @@ public class SimpleVBoxBuilder extends SimplePaneBuilder<VBox, SimpleVBoxBuilder
 		vbox.setSpacing(left);
 		return this;
 	}
+
+    public static VBox newVBox(String text, Node... e) {
+        VBox vBox = new VBox(new Text(text));
+        vBox.getChildren().addAll(e);
+        return vBox;
+    }
 
 }

@@ -20,6 +20,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
+import simplebuilder.SimpleVBoxBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.SongUtils;
@@ -93,7 +94,8 @@ public class JapaneseLessonEditingDisplay extends Application {
         Button play = CommonsFX.newButton("_Play", e -> playLesson());
         Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
         Scene scene = new Scene(new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"),
-            japanese, new HBox(new VBox(new Text("Start"), start), currentText, new VBox(new Text("End"), end)),
+            japanese,
+            new HBox(SimpleVBoxBuilder.newVBox("Start", start), currentText, SimpleVBoxBuilder.newVBox("End", end)),
             new HBox(previous, play, next, save)));
         primaryStage.setScene(scene);
         scene.setOnKeyPressed(e -> {

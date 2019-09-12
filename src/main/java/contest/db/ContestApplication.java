@@ -1,15 +1,11 @@
 package contest.db;
 
-import static org.apache.commons.lang3.StringUtils.leftPad;
-import static org.apache.commons.lang3.StringUtils.rightPad;
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.SupplierEx.get;
 
 import japstudy.db.HibernateUtil;
 import java.io.File;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -21,6 +17,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 
 public class ContestApplication extends Application {
 
@@ -79,27 +76,6 @@ public class ContestApplication extends Application {
             .mapToObj(i -> mapLines(map, orElse, i))
             .collect(Collectors.joining("\n"));
     }
-
-    private static String addSpaces(String str, int diff) {
-
-        Pattern compile = Pattern.compile(" +");
-        Matcher matcher = compile.matcher(str);
-        StringBuffer sb = new StringBuffer();
-        for (int j = 0; j < diff; j++) {
-            if (!matcher.find()) {
-                matcher.appendTail(sb);
-                matcher = compile.matcher(sb.toString().trim());
-                sb.delete(0, sb.length());
-                j--;
-            } else {
-                String group = matcher.group(0);
-                matcher.appendReplacement(sb, group + " ");
-            }
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
-    }
-
     private static boolean isBetween(ContestText tex, int j) {
         if (tex.getMin() == null || tex.getMax() == null) {
             return false;
@@ -107,27 +83,10 @@ public class ContestApplication extends Application {
         int i = j + 1;
         return tex.getMin() <= i && tex.getMax() >= i;
     }
-
-    private static String justified(List<String> map, int maxLetters, int i) {
-        String str = map.get(i);
-        int diff = maxLetters - str.length();
-        if (i == 0 || paragraphEnd(map.get(i - 1))) {
-            return leftPad(addSpaces(str, Math.max(diff - 8, 0)), maxLetters, "");
-        }
-        if (diff >= maxLetters / 2 || paragraphEnd(str)) {
-            return rightPad(str, maxLetters, "");
-        }
-        String sb = addSpaces(str, diff);
-        return rightPad(sb, maxLetters, "");
-    }
-
     private static String mapLines(List<String> map, int orElse, int i) {
 
-        String object = justified(map, orElse, i);
+        String object = StringSigaUtils.justified(map, orElse, i);
         return String.format("(%02d)    %s", i + 1, object);
     }
 
-    private static boolean paragraphEnd(String str) {
-        return str.endsWith(".") || str.endsWith(".”")||str.matches("Texto \\d+");
-    }
 }

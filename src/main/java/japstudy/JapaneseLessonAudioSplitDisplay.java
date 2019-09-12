@@ -1,5 +1,7 @@
 package japstudy;
 
+import static simplebuilder.SimpleVBoxBuilder.newVBox;
+
 import japstudy.db.HibernateUtil;
 import java.io.File;
 import javafx.beans.binding.Bindings;
@@ -65,7 +67,8 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
         });
         Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
         Scene value = new Scene(new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"),
-            japanese, new HBox(new VBox(new Text("Start"), start), currentText, new VBox(new Text("End"), end)),
+            japanese,
+            new HBox(newVBox("Start", start), currentText, newVBox("End", end)),
             new HBox(previous, splay, stop, split, next, save)));
         primaryStage.setScene(value);
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());

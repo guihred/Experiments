@@ -13,10 +13,10 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.SimpleVBoxBuilder;
 
 public final class CommonsFX {
 
@@ -84,13 +84,13 @@ public final class CommonsFX {
 
     public static VBox newSlider(final String string, final double min, final double max, int block,
         final Property<Number> radius) {
-        return new VBox(new Text(string),
+        return SimpleVBoxBuilder.newVBox(string,
             new SimpleSliderBuilder().min(min).max(max).blocks(block).bindBidirectional(radius).build());
     }
 
     public static VBox newSlider(final String string, final double min, final double max,
         final Property<Number> radius) {
-        return new VBox(new Text(string),
+        return SimpleVBoxBuilder.newVBox(string,
             new SimpleSliderBuilder().min(min).bindBidirectional(radius).max(max).build());
     }
 
