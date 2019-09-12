@@ -45,7 +45,8 @@ public final class HibernateUtil {
             LOG.info("ERROR CONNECTING TO DATABASE");
             Process newUnmappedProcess = ConsoleUtils.newUnmappedProcess(".\\runHibernate.bat");
             try {
-                Thread.sleep(5000);
+                final int millis = 5000;
+                Thread.sleep(millis);
                 return new Configuration().configure().buildSessionFactory();
             } catch (Exception ex2) {
                 newUnmappedProcess.destroy();

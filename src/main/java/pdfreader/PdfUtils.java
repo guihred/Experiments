@@ -1,5 +1,7 @@
 package pdfreader;
 
+import static utils.StringSigaUtils.removeMathematicalOperators;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -8,6 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -17,6 +22,7 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.text.TextPosition;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.RunnableEx;
@@ -139,6 +145,37 @@ public final class PdfUtils {
         }
 
         return pdfInfo;
+    }
+
+    public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition, IntConsumer onPage,
+        Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
+        PdfUtils.extractImages(file);
+        try (RandomAccessFile source = new RandomAccessFile(file, "r");
+            COSDocument cosDoc = PdfUtils.parseAndGet(source);
+            PDDocument pdDoc = new PDDocument(cosDoc)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper() {
+                @Override
+                protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
+                    super.writeString(text1, textPositions);
+                    onTextPosition.accept(text1, textPositions);
+                }
+            };
+            int numberOfPages = pdDoc.getNumberOfPages();
+            PrintImageLocations printImageLocations = new PrintImageLocations();
+            for (int i = 2; i <= numberOfPages; i++) {
+                PDPage page = pdDoc.getPage(i - 1);
+                onPage.accept(i);
+                pdfStripper.setStartPage(i);
+                pdfStripper.setEndPage(i);
+                List<PdfImage> images = printImageLocations.processPage(page, i);
+                String parsedText = removeMathematicalOperators(pdfStripper.getText(pdDoc));
+                String[] lines = parsedText.split("\r\n");
+                onLines.accept(lines);
+                onImages.accept(i, images);
+            }
+        } catch (Throwable e) {
+            LOG.error("", e);
+        }
     }
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
