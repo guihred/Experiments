@@ -17,10 +17,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -31,7 +28,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.SimpleTableViewBuilder;
+import simplebuilder.SimpleListViewBuilder;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
 import utils.SongUtils;
@@ -137,16 +134,11 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         ObservableList<Node> children = FXCollections.observableArrayList();
         children.add(new Text(value));
 
-        SimpleTableViewBuilder<Node> tableBuilder = new SimpleTableViewBuilder<>();
         final int prefWidth = 300;
-        TableView<Node> tableView = tableBuilder.addColumn("Image", (p, cell) -> {
-            cell.setAlignment(Pos.CENTER);
-            cell.setGraphic(p);
-        }).items(children).prefWidth(prefWidth).equalColumns()
+        SimpleListViewBuilder<Node> tableBuilder = new SimpleListViewBuilder<>();
+        ListView<Node> builder = tableBuilder.items(children).prefWidth(prefWidth).build();
 
-            .build();
-        final String text = value;
-        Stage dialog = StageHelper.displayDialog(text, tableView);
+        Stage dialog = StageHelper.displayDialog(value, builder);
         tableBuilder.onDoubleClick(n -> {
             if (n instanceof ImageView) {
                 ImageView view = (ImageView) n;
