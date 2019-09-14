@@ -159,10 +159,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 
     private void typeInParallel() {
         sleep(500);
-        String name = TEST_FILE;
-        KeyCode[] array = name.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
-            .map(s -> ".".equals(s) ? "Period" : s).map(KeyCode::getKeyCode).toArray(KeyCode[]::new);
-        type(array);
+		type(typeText(TEST_FILE));
         type(KeyCode.ENTER);
     }
+
 }

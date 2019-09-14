@@ -1,7 +1,6 @@
 package fxtests;
 
 import java.io.File;
-import java.util.Objects;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.Test;
@@ -33,24 +32,18 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 	public void verify() throws Exception {
 		getLogger().info("VERIFYING FXEngineRosarioTest ");
 		clickOn("#SNGPC");
-		type(typeName(value.getName()));
+		type(typeText(value.getName()));
 		type(KeyCode.ENTER);
         clickOn("#anvisa");
-        type(typeName("anvisa2208.xlsx"));
+		type(typeText("anvisa2208.xlsx"));
         type(KeyCode.ENTER);
         clickOn("Importar Arquivo");
 		clickOn(".text-field");
 		String text = "asdsd";
-        type(typeName(text));
+		type(typeText(text));
 		eraseText(text.length());
 		clickOn("Exportar Excel");
 		getLogger().info("VERIFIED FXEngineRosarioTest ");
 	}
-
-    private static KeyCode[] typeName(String name) {
-        return name.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
-				.map(s -> ".".equals(s) ? "Period" : s).map(KeyCode::getKeyCode)
-				.toArray(KeyCode[]::new);
-    }
 
 }

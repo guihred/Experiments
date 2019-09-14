@@ -1,6 +1,9 @@
 package fxtests;
 
+import java.util.Objects;
+import java.util.stream.Stream;
 import javafx.application.Application;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.apache.commons.lang.SystemUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
@@ -33,15 +36,21 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
-    protected <T extends Application> void show(T application) {
+	protected <T extends Application> void show(T application) {
         interactNoWait(RunnableEx.make(() -> {
             HasLogging.log(1).info("SHOWING {}", application.getClass().getSimpleName());
             application.start(currentStage);
         }, e -> getLogger().error(String.format("ERRO IN %s", application), e)));
     }
-
     protected void tryClickButtons() {
         lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
     }
+
+	@SuppressWarnings("deprecation")
+	protected KeyCode[] typeText(String txt) {
+		KeyCode[] values = KeyCode.values();
+		return txt.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
+				.flatMap(s -> Stream.of(values).filter(v -> v.impl_getChar().equals(s))).toArray(KeyCode[]::new);
+	}
 
 }
