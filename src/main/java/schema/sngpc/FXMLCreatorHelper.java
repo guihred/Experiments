@@ -77,13 +77,13 @@ public final class FXMLCreatorHelper {
         new FXMLCreator().createFXMLFile(node, file);
     }
 
-    public static Stage duplicate(File file, String title) {
+    public static Stage duplicate(File file, String title, double... size) {
         if (Platform.isFxApplicationThread()) {
-            return duplicateStage(file, title);
+            return duplicateStage(file, title, size);
         }
         ResourceFXUtils.initializeFX();
         SimpleObjectProperty<Stage> stage = new SimpleObjectProperty<>();
-        Platform.runLater(() -> stage.set(duplicateStage(file, title)));
+        Platform.runLater(() -> stage.set(duplicateStage(file, title, size)));
         while (stage.get() == null) {
 //            DOES NOTHING
         }
@@ -104,9 +104,9 @@ public final class FXMLCreatorHelper {
         duplicate(file, file.getName());
     }
 
-    public static Stage duplicateStage(File file, String title) {
+    public static Stage duplicateStage(File file, String title, double... size) {
         Stage primaryStage = new Stage();
-        loadFXML(file, title, primaryStage);
+        loadFXML(file, title, primaryStage, size);
         return primaryStage;
     }
 
@@ -164,11 +164,12 @@ public final class FXMLCreatorHelper {
         remap(() -> a.start(primaryStage), "ERROR IN " + appClass);
         primaryStage.toBack();
         File outFile = ResourceFXUtils.getOutFile(appClass.getSimpleName() + ".fxml");
-        Parent root = primaryStage.getScene().getRoot();
+        Scene scene = primaryStage.getScene();
+        Parent root = scene.getRoot();
         root.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
         LOG.info("CREATING {}.fxml", appClass.getSimpleName());
         createXMLFile(root, outFile);
-        Stage duplicateStage = duplicateStage(outFile, primaryStage.getTitle());
+        Stage duplicateStage = duplicateStage(outFile, primaryStage.getTitle(), scene.getWidth(), scene.getHeight());
         duplicateStage.toBack();
         stages.add(duplicateStage);
         if (close) {

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<FlowPane xmlns:fx="http://javafx.com/fxml"
+	fx:controller="paintexp.ColorChooserController" styleClass="root"
+	stylesheets="@/colorChooser.css">
+	<fx:define>
+		<WritableImage fx:id="transparentImage" height="256"
+			width="256" />
+		<WritableImage fx:id="colorsImage" height="256"
+			width="256" />
+		<WritableImage fx:id="sliderImage" height="256"
+			width="20" />
+		<WritableImage fx:id="smallImage" height="64" width="64" />
+	</fx:define>
+	<children>
+		<StackPane fx:id="stackPane0"
+			onMouseDragged="#onMouseDraggedStackPane0"
+			onMousePressed="#onMousePressedStackPane0">
+			<children>
+				<Rectangle height="256.0" width="256.0">
+					<fill>
+						<ImagePattern height="1.0" image="$transparentImage"
+							proportional="true" width="1.0" x="0.0" y="0.0" />
+					</fill>
+				</Rectangle>
+				<Rectangle height="256.0" width="256.0">
+					<fill>
+						<ImagePattern height="1.0" image="$colorsImage"
+							proportional="true" width="1.0" x="0.0" y="0.0" />
+					</fill>
+				</Rectangle>
+				<Circle fx:id="circle" managed="false" radius="2.0"
+					stroke="0xffffffff" />
+			</children>
+		</StackPane>
+		<Slider blockIncrement="3.59" fx:id="hueSlider" id="hueSlider"
+			max="359.0" prefHeight="256.0">
+		</Slider>
+		<VBox>
+			<children>
+				<HBox spacing="20.0">
+					<children>
+						<StackPane>
+							<children>
+								<Rectangle height="64.0" width="64.0">
+									<fill>
+										<ImagePattern height="1.0"
+											image="$transparentImage" proportional="true" width="1.0"
+											x="0.0" y="0.0" />
+									</fill>
+								</Rectangle>
+								<Rectangle fill="0xffffffff" height="64.0"
+									fx:id="finalColor" width="64.0" />
+							</children>
+						</StackPane>
+						<StackPane>
+							<children>
+								<Rectangle height="64.0" width="64.0">
+									<fill>
+										<ImagePattern height="1.0" image="$smallImage"
+											proportional="true" width="1.0" x="0.0" y="0.0" />
+									</fill>
+								</Rectangle>
+								<Rectangle fx:id="initialColorRect" fill="0xffffffff"
+									height="64.0" width="64.0" />
+							</children>
+						</StackPane>
+					</children>
+				</HBox>
+				<TabPane fx:id="tabPane2">
+					<tabs>
+						<Tab closable="false" text="HSB">
+							<content>
+								<VBox>
+									<children>
+										<HBox>
+											<children>
+												<Text text="Hue" />
+												<Slider blockIncrement="3.59" fx:id="hueSlider2"
+													id="hueSlider2" max="359.0" />
+												<Text fx:id="hueText" text="0°" />
+											</children>
+										</HBox>
+										<HBox>
+											<children>
+												<Text text="Saturation" />
+												<Slider blockIncrement="0.01"
+													fx:id="saturationSlider" id="saturationSlider" max="1.0" />
+												<Text fx:id="saturationText" text="0%" />
+											</children>
+										</HBox>
+										<HBox>
+											<children>
+												<Text text="Brightness" />
+												<Slider blockIncrement="0.01"
+													fx:id="brightnessSlider" id="brightnessSlider" max="1.0" />
+												<Text fx:id="brightnessText" text="0%" />
+											</children>
+										</HBox>
+									</children>
+								</VBox>
+							</content>
+						</Tab>
+						<Tab closable="false" text="RGB">
+							<content>
+								<VBox>
+									<children>
+										<HBox>
+											<children>
+												<Text text="Red" />
+												<Slider blockIncrement="0.01" fx:id="redSlider"
+													id="redSlider" max="1.0" />
+												<Text fx:id="redText" text="0%" />
+											</children>
+										</HBox>
+										<HBox>
+											<children>
+												<Text text="Green" />
+												<Slider blockIncrement="0.01" fx:id="greenSlider"
+													id="greenSlider" max="1.0" />
+												<Text fx:id="greenText" text="0%" />
+											</children>
+										</HBox>
+										<HBox>
+											<children>
+												<Text text="Blue" />
+												<Slider blockIncrement="0.01" fx:id="blueSlider"
+													id="blueSlider" max="1.0" />
+												<Text fx:id="blueText" text="0%" />
+											</children>
+										</HBox>
+									</children>
+								</VBox>
+							</content>
+						</Tab>
+					</tabs>
+					<clip>
+						<Rectangle height="77.0" width="213.0" />
+					</clip>
+				</TabPane>
+				<HBox>
+					<children>
+						<Text text="Opacity" />
+						<Slider blockIncrement="0.01" fx:id="opacitySlider"
+							max="1.0" value="1.0" />
+						<Text fx:id="opacityText" text="100%" />
+					</children>
+				</HBox>
+				<HBox>
+					<children>
+						<Button fx:id="save" id="Save" onAction="#onActionSave"
+							text="Save" />
+						<Button fx:id="use" id="Use" onAction="#onActionUse"
+							text="Use" />
+					</children>
+				</HBox>
+			</children>
+		</VBox>
+	</children>
+</FlowPane>
