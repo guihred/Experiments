@@ -54,6 +54,7 @@ import ml.WordSuggetionApp;
 import ml.WorldMapExample;
 import ml.WorldMapExample2;
 import org.junit.Test;
+import paintexp.ColorChooser;
 import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
 import utils.ConsoleUtils;
@@ -64,14 +65,6 @@ import utils.RunnableEx;
 public class FXEngineTest extends AbstractTestExecution {
 
     @Test
-    public void verify() throws Exception {
-        show(EthicalHackApp.class);
-        lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
-            .forEach(ConsumerEx.ignore(this::clickOn));
-        ConsoleUtils.waitAllProcesses();
-    }
-
-    @Test
     public void verifyButtons() throws Exception {
         measureTime("Test.testButtons",
             () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
@@ -80,6 +73,23 @@ public class FXEngineTest extends AbstractTestExecution {
                 type(KeyCode.ESCAPE);
             }), Chapter4.Ex9.class, PdfReader.class));
 
+    }
+
+    @Test
+    public void verifyColorChooser() throws Exception {
+        show(ColorChooser.class);
+
+        List<Node> queryAll = lookup(".slider").queryAll().stream().collect(Collectors.toList());
+        for (int i = 0; i < queryAll.size(); i++) {
+            if (i == 3) {
+                lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
+            }
+            Node m = queryAll.get(i);
+            drag(m, MouseButton.PRIMARY);
+            moveBy(Math.random() * 10 - 5, 0);
+            drop();
+        }
+        tryClickButtons();
     }
 
     @Test
@@ -98,6 +108,14 @@ public class FXEngineTest extends AbstractTestExecution {
             }
             drop();
         }
+    }
+
+    @Test
+    public void verifyEthicalHack() throws Exception { 
+        show(EthicalHackApp.class);
+        lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
+            .forEach(ConsumerEx.ignore(this::clickOn));
+        ConsoleUtils.waitAllProcesses();
     }
 
     @Test

@@ -29,6 +29,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleListViewBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
 import utils.SongUtils;
@@ -86,8 +87,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         mediaPlayer = new MediaPlayer(media);
 
         Slider currentSlider = SongUtils.addSlider(root, mediaPlayer);
-        currentSlider.valueChangingProperty()
-            .addListener((observable, oldValue, newValue) -> updateMediaPlayer(mediaPlayer, currentSlider, newValue));
+        SimpleSliderBuilder.onChange(currentSlider,
+            (observable, oldValue, newValue) -> updateMediaPlayer(mediaPlayer, currentSlider, newValue.doubleValue()));
         mediaPlayer.currentTimeProperty().addListener(e -> updateCurrentSlider(mediaPlayer, currentSlider));
         Slider initialSlider = SongUtils.addSlider(root, mediaPlayer);
         initialSlider.setValue(0);
@@ -213,9 +214,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
                     mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
                     mediaPlayer.totalDurationProperty().addListener(b -> {
                         SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer);
-                        currentSlider.valueChangingProperty()
-                            .addListener(
-                                (o, oldValue, newValue) -> updateMediaPlayer(mediaPlayer, currentSlider, newValue));
+                        SimpleSliderBuilder.onChange(currentSlider, (o, oldValue,
+                            newValue) -> updateMediaPlayer(mediaPlayer, currentSlider, newValue.doubleValue()));
                         mediaPlayer.currentTimeProperty()
                             .addListener(c -> updateCurrentSlider(mediaPlayer, currentSlider));
                         mediaPlayer.play();
@@ -226,6 +226,5 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         });
         startTime = currentTime;
     }
-
 
 }

@@ -107,8 +107,7 @@ public final class PaintImageUtils {
         Text e = new Text(text);
         root.getChildren().add(e);
         Slider saturation = new SimpleSliderBuilder(-max, max, value.get()).build();
-        saturation.valueChangingProperty().addListener((ob, old, v) -> updateImage(saturation, image, original, func));
-        saturation.valueProperty().addListener((ob, old, v) -> updateImage(saturation, image, original, func));
+        SimpleSliderBuilder.onChange(saturation, (ob, old, v) -> updateImage(image, original, func));
         value.bind(saturation.valueProperty());
         e.textProperty().bind(saturation.valueProperty().divide(max).multiply(100).asString(text + " %.1f%%"));
         root.getChildren().add(saturation);
@@ -120,13 +119,6 @@ public final class PaintImageUtils {
             getWithinRange(color.getSaturation() + saturate.get(), 0, 1),
             getWithinRange(color.getBrightness() + bright.get(), 0, 1),
             getWithinRange(color.getOpacity() + opacity.get(), 0, 1));
-    }
-
-    private static void updateImage(final Slider saturation, final WritableImage image, WritableImage original,
-        final Function<Color, Color> func) {
-        if (!saturation.isValueChanging()) {
-            updateImage(image, original, func);
-        }
     }
 
     private static void updateImage(final WritableImage image, WritableImage original,

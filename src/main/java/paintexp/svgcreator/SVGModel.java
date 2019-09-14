@@ -17,6 +17,7 @@ import javafx.scene.shape.FillRule;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleComboBoxBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.CommonsFX;
 
@@ -74,7 +75,7 @@ public class SVGModel {
 
         VBox newSlider = CommonsFX.newSlider("Scale", 0.5, 2, svgChanger.scaleProperty());
         slider = (Slider) newSlider.lookup(".slider");
-        slider.valueChangingProperty().addListener(o -> rescale());
+        SimpleSliderBuilder.onChange(slider, (a, b, c) -> rescale());
         slider.valueProperty().addListener(o -> rescale());
         commands.add(newSlider, 0, commandList.size() + 4, 2, 1);
         commands.add(width, 0, commandList.size() + 5, 2, 1);

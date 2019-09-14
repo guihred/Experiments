@@ -20,6 +20,8 @@ public class ColorChooser extends Application {
 
     private ColorChooserController controller;
 
+    private Stage primaryStage;
+
     public Color getCurrentColor() {
         return controller.getCurrentColor();
     }
@@ -29,11 +31,18 @@ public class ColorChooser extends Application {
     }
 
     public void setOnSave(Runnable object) {
-        controller.setOnSave(object);
+        controller.setOnSave(() -> {
+            object.run();
+
+            primaryStage.close();
+        });
     }
 
     public void setOnUse(Runnable object) {
-        controller.setOnUse(object);
+        controller.setOnUse(() -> {
+            object.run();
+            primaryStage.close();
+        });
     }
 
     public void show() {
@@ -45,23 +54,22 @@ public class ColorChooser extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage1) throws Exception {
+        primaryStage = primaryStage1;
         File file = ResourceFXUtils.toFile("ColorChooser.fxml");
         RunnableEx.remap(() -> {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(convertToURL(file));
             Parent content = fxmlLoader.load();
             controller = fxmlLoader.getController();
-            Scene scene = new Scene(content, 600, 300);
-            primaryStage.setTitle("Color Chooser");
-            primaryStage.setScene(scene);
-            primaryStage.show();
+            final int width = 600;
+            Scene scene = new Scene(content, width, width / 2);
+            primaryStage1.setTitle("Color Chooser");
+            primaryStage1.setScene(scene);
+            primaryStage1.show();
         }, "ERROR in file " + file);
 
     }
-
-
-
 
     public static WritableImage drawTransparentPattern(int size) {
         WritableImage transparentPattern = new WritableImage(size, size);

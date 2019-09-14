@@ -86,7 +86,7 @@
 												<Text text="Hue" />
 												<Slider blockIncrement="3.59" fx:id="hueSlider2"
 													id="hueSlider2" max="359.0" />
-												<Text fx:id="hueText" text="0°" />
+												<Text fx:id="hueText" text="${(hueSlider2.value-(hueSlider2.value%1))+'°'}"  />
 											</children>
 										</HBox>
 										<HBox>
@@ -94,7 +94,7 @@
 												<Text text="Saturation" />
 												<Slider blockIncrement="0.01"
 													fx:id="saturationSlider" id="saturationSlider" max="1.0" />
-												<Text fx:id="saturationText" text="0%" />
+												<Text fx:id="saturationText" text="${(saturationSlider.value*100-(saturationSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 										<HBox>
@@ -102,7 +102,7 @@
 												<Text text="Brightness" />
 												<Slider blockIncrement="0.01"
 													fx:id="brightnessSlider" id="brightnessSlider" max="1.0" />
-												<Text fx:id="brightnessText" text="0%" />
+												<Text fx:id="brightnessText" text="${(brightnessSlider.value*100-(brightnessSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 									</children>
@@ -118,7 +118,7 @@
 												<Text text="Red" />
 												<Slider blockIncrement="0.01" fx:id="redSlider"
 													id="redSlider" max="1.0" />
-												<Text fx:id="redText" text="0%" />
+												<Text fx:id="redText" text="${(redSlider.value*100-(redSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 										<HBox>
@@ -126,7 +126,7 @@
 												<Text text="Green" />
 												<Slider blockIncrement="0.01" fx:id="greenSlider"
 													id="greenSlider" max="1.0" />
-												<Text fx:id="greenText" text="0%" />
+												<Text fx:id="greenText" text="${(greenSlider.value*100-(greenSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 										<HBox>
@@ -134,7 +134,7 @@
 												<Text text="Blue" />
 												<Slider blockIncrement="0.01" fx:id="blueSlider"
 													id="blueSlider" max="1.0" />
-												<Text fx:id="blueText" text="0%" />
+												<Text fx:id="blueText" text="${(blueSlider.value*100-(blueSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 									</children>
@@ -151,7 +151,7 @@
 						<Text text="Opacity" />
 						<Slider blockIncrement="0.01" fx:id="opacitySlider"
 							max="1.0" value="1.0" />
-						<Text fx:id="opacityText" text="100%" />
+						<Text fx:id="opacityText" text="${(opacitySlider.value*100-(opacitySlider.value*100%1))+'%'}" />
 					</children>
 				</HBox>
 				<HBox>

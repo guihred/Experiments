@@ -11,7 +11,6 @@ import static utils.SongUtils.updatePositionSlider;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -55,23 +54,16 @@ public class PlayerControlView extends BaseSongView {
         Slider volumeSlider = new SimpleSliderBuilder(0.0, 1.0, 1. / 10).id("volumeSlider").value(0).build();
         statusLabel = createLabel("Buffering", "statusDisplay");
         positionSlider = new SimpleSliderBuilder(0.0, 1.0, 1. / 10).id("positionSlider").value(0).build();
-        volumeSlider.valueChangingProperty()
-            .addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-                if (oldValue && !newValue) {
-                    double pos = volumeSlider.getValue();
-                    final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
-                    mediaPlayer.setVolume(pos);
-                }
-            });
-        positionSlider.valueChangingProperty()
-            .addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-                if (oldValue && !newValue) {
-                    double pos = positionSlider.getValue();
-                    final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
-                    final Duration seekTo = mediaPlayer.getTotalDuration().multiply(pos);
-                    seekAndUpdatePosition(seekTo, positionSlider, mediaPlayer);
-                }
-            });
+
+        SimpleSliderBuilder.onChange(volumeSlider, (ob, old, pos) -> {
+            MediaPlayer mediaPlayer = songModel.getMediaPlayer();
+            mediaPlayer.setVolume(pos.doubleValue());
+        });
+        SimpleSliderBuilder.onChange(positionSlider, (ob, old, pos) -> {
+            MediaPlayer mediaPlayer = songModel.getMediaPlayer();
+            Duration seekTo = mediaPlayer.getTotalDuration().multiply(pos.doubleValue());
+            seekAndUpdatePosition(seekTo, positionSlider, mediaPlayer);
+        });
         songModel.getMediaPlayer().setOnEndOfMedia(songModel.getMediaPlayer()::stop);
         songModel.getMediaPlayer().statusProperty().addListener(new StatusListener());
         songModel.getMediaPlayer().currentTimeProperty().addListener(new CurrentTimeListener());

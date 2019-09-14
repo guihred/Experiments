@@ -1,34 +1,33 @@
 package paintexp;
 
+import static simplebuilder.SimpleSliderBuilder.onChange;
 import static utils.DrawOnPoint.getWithinRange;
 import static utils.PixelHelper.MAX_BYTE;
 
 import java.util.Objects;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 public class ColorChooserController {
-    public static final String PERCENT_FORMAT = "%.0f%%";
-    @FXML
-    private WritableImage colorsImage;
+    private static final int SQUARE_SIZE = 64;
     @FXML
     private Slider hueSlider2;
     @FXML
-    private WritableImage transparentImage;
-    @FXML
     private Slider hueSlider;
+    @FXML
+    private Slider brightnessSlider;
+    @FXML
+    private Slider greenSlider;
     @FXML
     private Slider redSlider;
     @FXML
@@ -38,66 +37,47 @@ public class ColorChooserController {
     @FXML
     private Slider saturationSlider;
     @FXML
+    private WritableImage transparentImage;
+    @FXML
+    private WritableImage colorsImage;
+    @FXML
     private WritableImage sliderImage;
     @FXML
     private WritableImage smallImage;
     @FXML
-    private Slider brightnessSlider;
-    @FXML
-    private Text brightnessText;
-    @FXML
-    private Text opacityText;
-    @FXML
-    private Text blueText;
-    @FXML
-    private Text saturationText;
-
-    @FXML
-    private Text greenText;
-
-    @FXML
-    private Text hueText;
-    @FXML
-    private Text redText;
-
-    @FXML
-    private Slider greenSlider;
-    private ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
-    private final ObjectProperty<Color> initialColor = new SimpleObjectProperty<>(Color.WHITE);
-    @FXML
     private Rectangle initialColorRect;
     @FXML
     private Rectangle finalColor;
-    private Runnable onSave;
-    private Runnable onUse;
     @FXML
     private Circle circle;
+
+    private final ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
+    private final ObjectProperty<Color> initialColor = new SimpleObjectProperty<>(Color.WHITE);
+    private Runnable onSave;
+    private Runnable onUse;
+
     public Color getCurrentColor() {
         return currentColor.get();
     }
 
     public void initialize() {
-        hueSlider2.valueProperty().addListener((o, old, newV) -> currentColor.set(Color.hsb(newV.doubleValue(),
+        onChange(hueSlider2, (o, old, newV) -> currentColor.set(Color.hsb(newV.doubleValue(),
             currentColor.get().getSaturation(), currentColor.get().getBrightness(), currentColor.get().getOpacity())));
-        saturationSlider.valueProperty()
-            .addListener((o, old, newV) -> currentColor.set(Color.hsb(currentColor.get().getHue(), newV.doubleValue(),
-                currentColor.get().getBrightness(), currentColor.get().getOpacity())));
-        brightnessSlider.valueProperty()
-            .addListener((o, old, newV) -> currentColor.set(Color.hsb(currentColor.get().getHue(),
-                currentColor.get().getSaturation(), newV.doubleValue(), currentColor.get().getOpacity())));
-        redSlider.valueProperty().addListener((o, old, newV) -> currentColor.set(Color.color(newV.doubleValue(),
+        onChange(saturationSlider, (o, old, newV) -> currentColor.set(Color.hsb(currentColor.get().getHue(),
+            newV.doubleValue(), currentColor.get().getBrightness(), currentColor.get().getOpacity())));
+        onChange(brightnessSlider, (o, old, newV) -> currentColor.set(Color.hsb(currentColor.get().getHue(),
+            currentColor.get().getSaturation(), newV.doubleValue(), currentColor.get().getOpacity())));
+        onChange(redSlider, (o, old, newV) -> currentColor.set(Color.color(newV.doubleValue(),
             currentColor.get().getGreen(), currentColor.get().getBlue(), currentColor.get().getOpacity())));
-        greenSlider.valueProperty()
-            .addListener((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(), newV.doubleValue(),
-                currentColor.get().getBlue(), currentColor.get().getOpacity())));
+        onChange(greenSlider, (o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
+            newV.doubleValue(), currentColor.get().getBlue(), currentColor.get().getOpacity())));
+        hueSlider.valueProperty().bindBidirectional(hueSlider2.valueProperty());
         hueSlider.valueProperty().addListener(e -> drawImage());
-        blueSlider.valueProperty()
-            .addListener((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
-                currentColor.get().getGreen(), newV.doubleValue(), currentColor.get().getOpacity())));
-        opacitySlider.valueProperty()
-            .addListener((o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
-                currentColor.get().getGreen(), currentColor.get().getBlue(), newV.doubleValue())));
-        opacitySlider.valueProperty().addListener((o, old, v) -> drawImage());
+        onChange(blueSlider, (o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
+            currentColor.get().getGreen(), newV.doubleValue(), currentColor.get().getOpacity())));
+        onChange(opacitySlider, (o, old, newV) -> currentColor.set(Color.color(currentColor.get().getRed(),
+            currentColor.get().getGreen(), currentColor.get().getBlue(), newV.doubleValue())));
+        onChange(opacitySlider, (o, old, v) -> drawImage());
         finalColor.fillProperty().bind(currentColor);
         initialColorRect.fillProperty().bind(initialColor);
         currentColor.addListener((o, old, newV) -> {
@@ -116,34 +96,21 @@ public class ColorChooserController {
             circle.setCenterY(MAX_BYTE * (1 - newV.getBrightness()));
         });
         ColorChooser.transparentImage(256, transparentImage);
-        ColorChooser.transparentImage(64, smallImage);
-        bindText(brightnessText, brightnessSlider);
-        bindText(opacityText, opacitySlider);
-        bindText(blueText, blueSlider);
-        bindText(saturationText, saturationSlider);
-        bindText(greenText, greenSlider);
-        hueText.textProperty().bind(hueSlider.valueProperty().asString("%.0f°"));
-        bindText(redText, redSlider);
+        ColorChooser.transparentImage(SQUARE_SIZE, smallImage);
         setSliderImage();
         drawImage();
     }
 
-    public void onActionSave(ActionEvent e) {
+    public void onActionSave() {
         if (onSave != null) {
             onSave.run();
         }
-        Node target = (Node) e.getTarget();
-        Stage window = (Stage) target.getScene().getWindow();
-        window.close();
     }
 
-    public void onActionUse(ActionEvent e) {
+    public void onActionUse() {
         if (onUse != null) {
             onUse.run();
         }
-        Node target = (Node) e.getTarget();
-        Stage window = (Stage) target.getScene().getWindow();
-        window.close();
     }
 
     public void onMouseDraggedStackPane0(MouseEvent e) {
@@ -168,6 +135,9 @@ public class ColorChooserController {
     }
 
     private void drawImage() {
+        if (Thread.currentThread().getStackTrace().length > 60) {
+            return;
+        }
         for (int x = 0; x < 256; x++) {
             for (int y = 0; y < 256; y++) {
                 colorsImage.getPixelWriter().setColor(x, y, Color.hsb(hueSlider.getValue(), (double) x / MAX_BYTE,
@@ -177,6 +147,7 @@ public class ColorChooserController {
 
         currentColor.set(Color.hsb(hueSlider.getValue(), currentColor.get().getSaturation(),
             currentColor.get().getBrightness(), currentColor.get().getOpacity()));
+
         changeIfDifferent(hueSlider2, hueSlider.getValue());
     }
 
@@ -187,8 +158,8 @@ public class ColorChooserController {
                 sliderImage.getPixelWriter().setColor(x, y, Color.hsb((360 - y * 360 / height) % 360, 1, 1));
             }
         }
-        hueSlider.setBackground(new Background(new BackgroundImage(sliderImage, BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+        hueSlider.setBackground(new Background(
+            new BackgroundImage(sliderImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, null, null)));
     }
 
     private void updateColor(WritableImage writableImage, MouseEvent e) {
@@ -207,7 +178,6 @@ public class ColorChooserController {
         slider.setValueChanging(true);
     }
 
-    private static void bindText(Text text, Slider slider) {
-        text.textProperty().bind(slider.valueProperty().multiply(100).asString(PERCENT_FORMAT));
-    }
+
+
 }
