@@ -1,6 +1,5 @@
 package paintexp;
 
-import static paintexp.ColorChooser.changeIfDifferent;
 import static utils.DrawOnPoint.getWithinRange;
 import static utils.PixelHelper.MAX_BYTE;
 
@@ -48,20 +47,19 @@ public class ColorChooserController {
     private Text brightnessText;
     @FXML
     private Text opacityText;
-
     @FXML
     private Text blueText;
-
     @FXML
     private Text saturationText;
 
     @FXML
     private Text greenText;
-    @FXML
-    private Text hueText;
 
     @FXML
+    private Text hueText;
+    @FXML
     private Text redText;
+
     @FXML
     private Slider greenSlider;
     private ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
@@ -74,7 +72,6 @@ public class ColorChooserController {
     private Runnable onUse;
     @FXML
     private Circle circle;
-
     public Color getCurrentColor() {
         return currentColor.get();
     }
@@ -201,6 +198,13 @@ public class ColorChooserController {
         circle.setCenterY(y);
         Color color = writableImage.getPixelReader().getColor((int) x, (int) y);
         currentColor.set(color);
+    }
+
+    public static void changeIfDifferent(Slider slider, double saturation) {
+        if (Math.abs(slider.getValue() - saturation) > 0) {
+            slider.setValue(saturation);
+        }
+        slider.setValueChanging(true);
     }
 
     private static void bindText(Text text, Slider slider) {

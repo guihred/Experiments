@@ -7,7 +7,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Slider;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -62,12 +61,7 @@ public class ColorChooser extends Application {
     }
 
 
-    public static void changeIfDifferent(Slider slider, double saturation) {
-        if (Math.abs(slider.getValue() - saturation) > 0) {
-            slider.setValue(saturation);
-        }
-        slider.setValueChanging(true);
-    }
+
 
     public static WritableImage drawTransparentPattern(int size) {
         WritableImage transparentPattern = new WritableImage(size, size);
