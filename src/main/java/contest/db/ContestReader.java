@@ -86,8 +86,9 @@ public class ContestReader implements HasLogging {
         }).collect(Collectors.toList()));
 
         List<ContestText> nonNullTexts = texts.stream().filter(e -> StringUtils.isNotBlank(e.getText()))
-            .collect(Collectors.toList());
-        CONTEST_DAO.saveOrUpdate(nonNullTexts);
+				.collect(Collectors.groupingBy(ContestText::getText)).entrySet().stream().map(e -> e.getValue().get(0))
+				.collect(Collectors.toList());
+		CONTEST_DAO.saveOrUpdate(nonNullTexts);
     }
 
     public void setState(ReaderState state) {

@@ -183,7 +183,7 @@ public class StringSigaUtils extends StringUtils {
             return Integer.valueOf(v.replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
             HasLogging.log(1).trace("NUMBER NOT PARSED", e);
-            HasLogging.log(1).error("NUMBER NOT PARSED {} {}", v, HasLogging.getCurrentLine(1));
+			HasLogging.log(1).error("NUMBER NOT PARSED \"{}\" {}", v, HasLogging.getCurrentLine(1));
 
             return null;
         }

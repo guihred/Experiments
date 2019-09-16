@@ -7,7 +7,7 @@
 <?import javafx.event.*?>
 <?import javafx.scene.input.*?>
 <HBox xmlns:fx="http://javafx.com/fxml"
-	fx:controller="ethical.hacker.EthicalHackController" styleClass="root">
+	fx:controller="ethical.hacker.EthicalHackController" styleClass="root" stylesheets="@filesComparator.css">
 	<children>
 		<VBox>
 			<children>
@@ -63,8 +63,4 @@
 		</VBox>
 		<TableView fx:id="commonTable" />
 	</children>
-	<stylesheets>
-		<String
-			fx:value="file:/C:/Users/guilherme.hmedeiros/Documents/Dev/FXperiments/target/classes/filesComparator.css" />
-	</stylesheets>
 </HBox>
