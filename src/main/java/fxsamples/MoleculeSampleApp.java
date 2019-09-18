@@ -1,5 +1,5 @@
 
-package gaming.ex06;
+package fxsamples;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

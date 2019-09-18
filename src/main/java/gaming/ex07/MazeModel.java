@@ -5,6 +5,8 @@
  */
 package gaming.ex07;
 
+import static gaming.ex07.MazeSquare.MAZE_SIZE;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -24,9 +26,7 @@ import javafx.util.Duration;
  */
 public class MazeModel {
 
-	public static final int MAZE_SIZE = 24;
-
-	private MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
+    private MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
     private int x;
     private int y;
 	private Circle circle;
@@ -45,7 +45,7 @@ public class MazeModel {
 		scene.setOnKeyPressed(this::handleKey);
 	}
 	private void goDown() {
-        if (x < MazeModel.MAZE_SIZE - 1 && maze[x][y].isSouth()) {
+        if (x < MAZE_SIZE - 1 && maze[x][y].isSouth()) {
             x++;
         }
     }
@@ -57,7 +57,7 @@ public class MazeModel {
     }
 
     private void goRight() {
-        if (y < MazeModel.MAZE_SIZE - 1 && maze[x][y].isEast()) {
+        if (y < MAZE_SIZE - 1 && maze[x][y].isEast()) {
             y++;
         }
     }
@@ -96,8 +96,8 @@ public class MazeModel {
 	}
 
     private void initializeMaze(GridPane gridPane) {
-		for (int i = 0; i < MAZE_SIZE; i++) {
-			for (int j = 0; j < MAZE_SIZE; j++) {
+        for (int i = 0; i < MAZE_SIZE; i++) {
+            for (int j = 0; j < MAZE_SIZE; j++) {
 				maze[i][j] = new MazeSquare(i, j);
 				gridPane.add(maze[i][j], j, i);
 				if (i == 0) {
@@ -106,10 +106,10 @@ public class MazeModel {
 				if (j == 0) {
 					maze[i][j].setWest(false);
 				}
-				if (j == MAZE_SIZE - 1) {
+                if (j == MAZE_SIZE - 1) {
 					maze[i][j].setEast(false);
 				}
-				if (i == MAZE_SIZE - 1) {
+                if (i == MAZE_SIZE - 1) {
 					maze[i][j].setSouth(false);
 				}
 			}

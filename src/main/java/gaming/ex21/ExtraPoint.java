@@ -10,7 +10,7 @@ public class ExtraPoint extends CatanResource {
     public ExtraPoint(@NamedArg("url") String url) {
         super(url);
         this.url = url;
-        view.setFitWidth(Terrain.RADIUS);
+        view.setFitWidth(CatanResource.RADIUS);
         managedProperty().bind(visibleProperty());
     }
 

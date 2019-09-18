@@ -26,7 +26,6 @@ import simplebuilder.SimpleFillTransitionBuilder;
 
 public class Terrain extends Group {
 
-	public static final int RADIUS = 70;
 	private Thief thief;
 	private final ResourceType type;
 	private final IntegerProperty number = new SimpleIntegerProperty();
@@ -36,7 +35,7 @@ public class Terrain extends Group {
 
     public Terrain(@NamedArg("type") final ResourceType type) {
 		this.type = type;
-		circle = new SimpleCircleBuilder().radius(RADIUS / 5.).fill(Color.BEIGE).visible(type != ResourceType.DESERT)
+		circle = new SimpleCircleBuilder().radius(CatanResource.RADIUS / 5.).fill(Color.BEIGE).visible(type != ResourceType.DESERT)
 				.stroke(Color.BLACK).build();
 		stack = new StackPane(getPolygon(), getCircle(), getNumberText());
 		getChildren().add(stack);
@@ -93,8 +92,8 @@ public class Terrain extends Group {
 			StackPane parent = (StackPane) thief.getParent();
 			parent.getChildren().remove(thief);
 			getChildren().add(thief);
-			thief.setLayoutX(Terrain.RADIUS * Math.sqrt(3) / 2 - Terrain.RADIUS / 4.);
-			thief.setLayoutY(Terrain.RADIUS - Terrain.RADIUS / 4.);
+			thief.setLayoutX(CatanResource.RADIUS * Math.sqrt(3) / 2 - CatanResource.RADIUS / 4.);
+			thief.setLayoutY(CatanResource.RADIUS - CatanResource.RADIUS / 4.);
 			highlightTransition.setToValue(Color.RED);
 		} else {
 			if (Color.RED.equals(highlightTransition.getToValue())) {
@@ -131,8 +130,8 @@ public class Terrain extends Group {
 		double off = Math.PI / 6;
 		for (int i = 0; i < 6; i++) {
 			double d = Math.PI / 3;
-			double x = Math.cos(off + d * i) * RADIUS;
-			double y = Math.sin(off + d * i) * RADIUS;
+			double x = Math.cos(off + d * i) * CatanResource.RADIUS;
+			double y = Math.sin(off + d * i) * CatanResource.RADIUS;
 			polygon.getPoints().addAll(x, y);
 		}
         if (type != null) {
@@ -145,7 +144,7 @@ public class Terrain extends Group {
         List<Port> ports) {
         List<Integer> numbers = Terrain.getNumbers();
         List<ResourceType> cells = ResourceType.createResources();
-        final double radius = Terrain.RADIUS * Math.sqrt(3);
+        final double radius = CatanResource.RADIUS * Math.sqrt(3);
         for (int i = 3, j = 0, l = 0; j < cells.size(); j += i, i += j > 11 ? -1 : 1, l++) {
             List<ResourceType> resources = cells.subList(j, j + i);
             for (int k = 0; k < resources.size(); k++) {
@@ -189,9 +188,9 @@ public class Terrain extends Group {
 		double off = Math.PI / 6;
 		for (int i = 0; i < 6; i++) {
 			double d = Math.PI / 3;
-			double x = Math.cos(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
-			double y = Math.sin(off + d * i) * Terrain.RADIUS + Terrain.RADIUS;
-			double centerX = xOff + x - Terrain.RADIUS / 10.;
+			double x = Math.cos(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
+			double y = Math.sin(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
+			double centerX = xOff + x - CatanResource.RADIUS / 10.;
 			double centerY = yOff + y;
             SettlePoint e = new SettlePoint();
             e.relocate(centerX, centerY);

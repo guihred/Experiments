@@ -1,6 +1,5 @@
 package fxsamples.bounds;
 
-import fxsamples.bounds.BoundsPlayground.BoundsType;
 import javafx.scene.shape.Shape;
 
 // records a pair of (possibly) intersecting shapes.

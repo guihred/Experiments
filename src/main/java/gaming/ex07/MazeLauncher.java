@@ -20,8 +20,8 @@ public class MazeLauncher extends Application {
         final Scene scene = new Scene(gridPane);
 		MazeModel.create(gridPane, scene);
         stage.setScene(scene);
-        stage.setWidth(MazeModel.MAZE_SIZE * MazeSquare.SQUARE_SIZE + 30);
-        stage.setHeight(MazeModel.MAZE_SIZE * MazeSquare.SQUARE_SIZE + 60);
+        stage.setWidth(MazeSquare.MAZE_SIZE * MazeSquare.SQUARE_SIZE + 30);
+        stage.setHeight(MazeSquare.MAZE_SIZE * MazeSquare.SQUARE_SIZE + 60);
         stage.show();
     }
 

@@ -1,6 +1,10 @@
 package gaming.ex21;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
@@ -33,6 +37,7 @@ public class UserChart extends VBox {
     private final ExtraPoint largestArmy = new ExtraPoint("largestarmy.png");
     private final ExtraPoint longestRoad = new ExtraPoint("longestroad.png");
     private final Group cardGroup = new Group();
+    private BiConsumer<Pane, Pane> onWin;
 
     public UserChart() {
         VBox otherPlayers = new VBox();
@@ -54,13 +59,7 @@ public class UserChart extends VBox {
 
     }
 
-	public boolean anyPlayerPoints(int i, CatanModel model) {
-		return PlayerColor.vals().stream().mapToLong(e -> countPoints(e, model)).max().orElse(0) >= i;
-	}
 
-	public long countPoints(final PlayerColor newPlayer, CatanModel model) {
-    	return countPoints(newPlayer, model.settlePoints, model.usedCards, model.edges);
-    }
     public long countPoints(final PlayerColor newPlayer, List<SettlePoint> settlePoints,
         Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
         long pointsCount = settlePoints.stream().filter(s -> s.getElement() instanceof Village)
@@ -87,11 +86,10 @@ public class UserChart extends VBox {
         return pointsCount;
     }
 
-    public PlayerColor getPlayerWinner(CatanModel model) {
-		return PlayerColor.vals().stream().max(Comparator.comparing(
-				(PlayerColor e) -> model.getUserChart().countPoints(e, model.settlePoints, model.usedCards, model.edges))
-				.thenComparing((PlayerColor e) -> model.cards.get(e).size())).orElse(color.get());
-	}
+    public PlayerColor getColor() {
+        return color.get();
+    }
+
 
     public void setCards(List<CatanCard> currentCards) {
         cardGroup.getChildren().clear();
@@ -120,32 +118,36 @@ public class UserChart extends VBox {
         color.setValue(newV);
     }
 
-    public void setPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
-        Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
-        for (PlayerColor playerColor : PlayerColor.values()) {
-            long points = countPoints(playerColor, settlePoints, usedCards, edges);
-            playersPoints.get(playerColor).set(points);
-            if (playerColor == newPlayer) {
-                userPoints.setText(points + " Points");
-            }
-            if (points >= 10) {
-                StageHelper.displayDialog("Player " + playerColor + " Won", "Reset", () -> {
-                    BorderPane root = (BorderPane) availablePorts.getScene().getRoot();
-                    Pane center = (Pane) root.getCenter();
-                    center.getChildren().clear();
-                	Pane right = (Pane) root.getLeft();
-                    right.getChildren().clear();
-                    CatanModel.create(center, right);
-                });
-            }
+    public void setOnWin(BiConsumer<Pane, Pane> onWin) {
+        this.onWin = onWin;
+    
+    }
+public void setPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
+    Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
+    for (PlayerColor playerColor : PlayerColor.values()) {
+        long points = countPoints(playerColor, settlePoints, usedCards, edges);
+        playersPoints.get(playerColor).set(points);
+        if (playerColor == newPlayer) {
+            userPoints.setText(points + " Points");
+        }
+        if (points >= 10) {
+            StageHelper.displayDialog("Player " + playerColor + " Won", "Reset", () -> {
+                BorderPane root = (BorderPane) availablePorts.getScene().getRoot();
+                Pane center = (Pane) root.getCenter();
+                center.getChildren().clear();
+                Pane right = (Pane) root.getLeft();
+                right.getChildren().clear();
+                onWin.accept(center, right);
+            });
         }
     }
+}
 
     public int throwDice() {
         return dice1.throwDice() + dice2.throwDice();
     }
 
-	public void updatePorts(final PlayerColor newV, List<Port> ports, List<SettlePoint> settlePoints,
+    public void updatePorts(final PlayerColor newV, List<Port> ports, List<SettlePoint> settlePoints,
         ObjectProperty<PlayerColor> currentPlayer) {
         ports.stream().filter(p -> !availablePorts.getChildren().contains(p.getStatus()))
             .filter(p -> settlePoints.stream().filter(s -> s.getElement() != null)

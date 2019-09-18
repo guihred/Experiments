@@ -4,8 +4,8 @@ import java.util.Objects;
 
 /**
  * 3. Make the instance variables x and y of the Point class in Exercise 1
- * protected. Show that the LabeledPoint class can access these variables only
- * in LabeledPoint instances.
+ * protected. Show that the Labeled Point class can access these variables only
+ * in Labeled Point instances.
  */
 public class Point {
     protected double y;

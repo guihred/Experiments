@@ -28,8 +28,8 @@ public class Ball extends BasePhysicalObject {
 		return new SimpleCircleBuilder()
 				.radius(10)
 				.stroke(Color.RED)
-				.layoutX(Physics.toPixelX(centerX))
-				.layoutY(Physics.toPixelY(centerY))
+				.layoutX(BasePhysicalObject.toPixelX(centerX))
+				.layoutY(BasePhysicalObject.toPixelY(centerY))
 				.build();
     }
 

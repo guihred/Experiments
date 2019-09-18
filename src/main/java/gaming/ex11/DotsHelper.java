@@ -1,6 +1,5 @@
 package gaming.ex11;
 
-import static gaming.ex11.DotsModel.MAZE_SIZE;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -10,10 +9,11 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.scene.Group;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
 public final class DotsHelper {
+    public static final int MAZE_SIZE = 6;
+
     private DotsHelper() {
     }
 
@@ -25,9 +25,6 @@ public final class DotsHelper {
         return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
     }
 
-    public static DotsModel createModel(final BorderPane borderPane) {
-        return new DotsModel(borderPane);
-    }
 
     public static boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
         return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
@@ -35,8 +32,8 @@ public final class DotsHelper {
 
     public static List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities(DotsSquare[][] maze2) {
         List<Map.Entry<DotsSquare, DotsSquare>> melhor = new ArrayList<>();
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
+        for (int i = 0; i < DotsHelper.MAZE_SIZE; i++) {
+            for (int j = 0; j < DotsHelper.MAZE_SIZE; j++) {
                 final List<DotsSquare> checkMelhor = maze2[i][j].checkMelhor();
                 final DotsSquare maze1 = maze2[i][j];
                 melhor.addAll(checkMelhor.stream().map(e -> new AbstractMap.SimpleEntry<>(maze1, e))
@@ -76,12 +73,12 @@ public final class DotsHelper {
 
     public static List<Map.Entry<DotsSquare, DotsSquare>> getPossibilities(DotsSquare[][] maze2) {
         List<Map.Entry<DotsSquare, DotsSquare>> possibilities = new ArrayList<>();
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
-                if (i < MAZE_SIZE - 1 && !maze2[i][j].contains(maze2[i + 1][j])) {
+        for (int i = 0; i < DotsHelper.MAZE_SIZE; i++) {
+            for (int j = 0; j < DotsHelper.MAZE_SIZE; j++) {
+                if (i < DotsHelper.MAZE_SIZE - 1 && !maze2[i][j].contains(maze2[i + 1][j])) {
                     possibilities.add(new AbstractMap.SimpleEntry<>(maze2[i][j], maze2[i + 1][j]));
                 }
-                if (j < MAZE_SIZE - 1 && !maze2[i][j].contains(maze2[i][j + 1])) {
+                if (j < DotsHelper.MAZE_SIZE - 1 && !maze2[i][j].contains(maze2[i][j + 1])) {
                     possibilities.add(new AbstractMap.SimpleEntry<>(maze2[i][j], maze2[i][j + 1]));
                 }
             }
@@ -109,8 +106,8 @@ public final class DotsHelper {
     }
 
     public static void initializeMaze(Group gridPane1, DotsSquare[][] maze) {
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
+        for (int i = 0; i < DotsHelper.MAZE_SIZE; i++) {
+            for (int j = 0; j < DotsHelper.MAZE_SIZE; j++) {
                 maze[i][j] = new DotsSquare(i, j);
                 gridPane1.getChildren().add(maze[i][j]);
             }
@@ -146,7 +143,7 @@ public final class DotsHelper {
                 DotsSquare d = maze[i - 1][j + 1];
                 sum = getSumBySquare(a, b, sum, c, d, maze);
             }
-            if (i < MAZE_SIZE - 1) {
+            if (i < DotsHelper.MAZE_SIZE - 1) {
                 DotsSquare c = maze[i + 1][j];
                 DotsSquare d = maze[i + 1][j + 1];
                 sum = getSumBySquare(a, b, sum, c, d, maze);
@@ -157,7 +154,7 @@ public final class DotsHelper {
                 DotsSquare d = maze[i + 1][j - 1];
                 sum = getSumBySquare(a, b, sum, c, d, maze);
             }
-            if (j < MAZE_SIZE - 1) {
+            if (j < DotsHelper.MAZE_SIZE - 1) {
                 DotsSquare c = maze[i][j + 1];
                 DotsSquare d = maze[i + 1][j + 1];
                 sum = getSumBySquare(a, b, sum, c, d, maze);

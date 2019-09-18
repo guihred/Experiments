@@ -11,6 +11,8 @@ public class RoundMazeHandler {
 	private final List<RoundMazeSquare> history = new ArrayList<>();
 	private final List<String> check = new ArrayList<>();
 	private final RoundMazeSquare[][] createdMaze;
+    public static final int MAZE_WIDTH = 7;
+    public static final int MAZE_HEIGHT = 40;
 
     public RoundMazeHandler(RoundMazeSquare[][] maze) {
 		createdMaze = maze;
@@ -31,10 +33,10 @@ public class RoundMazeHandler {
                 goBackIn(history);
 			}
 		}
-        int cell = random.nextInt(RoundMazeModel.MAZE_WIDTH);
+        int cell = random.nextInt(RoundMazeHandler.MAZE_WIDTH);
 
-		for (int i = 0; i < RoundMazeModel.MAZE_HEIGHT / 8; i++) {
-			createdMaze[0][(cell + i) % RoundMazeModel.MAZE_HEIGHT].setNorth(true);
+		for (int i = 0; i < RoundMazeHandler.MAZE_HEIGHT / 8; i++) {
+			createdMaze[0][(cell + i) % RoundMazeHandler.MAZE_HEIGHT].setNorth(true);
 		}
     }
 
@@ -97,6 +99,6 @@ public class RoundMazeHandler {
     }
 
 	private static int w(int c1) {
-        return (c1 + RoundMazeModel.MAZE_HEIGHT) % RoundMazeModel.MAZE_HEIGHT;
+        return (c1 + RoundMazeHandler.MAZE_HEIGHT) % RoundMazeHandler.MAZE_HEIGHT;
     }
 }

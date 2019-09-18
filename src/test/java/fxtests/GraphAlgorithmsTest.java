@@ -20,8 +20,8 @@ public class GraphAlgorithmsTest {
         Map<Vertex, Integer> low = new HashMap<>();
         measureTime("Vertex.assignNum", () -> vertices.get(0).assignNum(num, 0));
         measureTime("Vertex.assignLow", () -> vertices.get(0).assignLow(num, low));
-        measureTime("Vertex.kruskal", () -> Vertex.kruskal(vertices));
-        measureTime("Vertex.prim", () -> Vertex.prim(vertices));
+        measureTime("Vertex.kruskal", () -> GraphAlgorithms.kruskal(vertices));
+        measureTime("Vertex.prim", () -> GraphAlgorithms.prim(vertices));
         measureTime("Vertex.sortTopology", () -> Vertex.sortTopology(vertices));
         measureTime("Vertex.chain", () -> Vertex.chain("A", "F", vertices));
         measureTime("Vertex.unweighted", () -> Vertex.unweighted(vertices));

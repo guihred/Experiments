@@ -23,8 +23,8 @@ public class PacmanLauncher extends Application {
 		borderPane.setTop(text);
 		borderPane.setStyle("-fx-background-color:black;");
 		stage.setScene(scene);
-		stage.setWidth(PacmanModel.MAZE_SIZE * 2 * PacmanModel.SQUARE_SIZE + PacmanModel.SQUARE_SIZE);
-		stage.setHeight(PacmanModel.MAZE_SIZE * 2 * PacmanModel.SQUARE_SIZE + PacmanModel.SQUARE_SIZE);
+		stage.setWidth(PacmanBall.MAZE_SIZE * 2 * PacmanBall.SQUARE_SIZE + PacmanBall.SQUARE_SIZE);
+		stage.setHeight(PacmanBall.MAZE_SIZE * 2 * PacmanBall.SQUARE_SIZE + PacmanBall.SQUARE_SIZE);
 		stage.setResizable(false);
 		stage.show();
 	}

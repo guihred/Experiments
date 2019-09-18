@@ -93,8 +93,8 @@ public class QuartoLauncher extends Application {
 			final QuartoPiece piece = new QuartoPiece(i);
 			int j = i % 4;
 			int k = i / 4;
-            piece.setTranslateX(getTranslate(j));
-            piece.setTranslateZ(getTranslate(k));
+            piece.setTranslateX(QuartoModel.getTranslate(j));
+            piece.setTranslateZ(QuartoModel.getTranslate(k));
 			world.getChildren().add(piece);
 			model.getPieces().add(piece);
 
@@ -224,22 +224,7 @@ public class QuartoLauncher extends Application {
 		}
 	}
 
-	public static int getTranslate(int j) {
-        final int border = 110;
-        switch (j) {
-            case 0:
-                return -border;
-            case 1:
-                return -90;
-            case 2:
-                return 90;
-            case 3:
-            default:
-                return border;
-
-        }
-    }
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         System.setProperty("prism.dirtyopts", "false");
         launch(args);
     }

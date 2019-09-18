@@ -61,7 +61,8 @@ public final class CatanLogger {
 				.map(e -> Objects.toString(e.getResource(), Objects.toString(e.getDevelopment())))
 				.collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 		currentState.put(PLAYER, playerColor.toString());
-        currentState.put(POINTS, model.getUserChart().countPoints(playerColor, model));
+        currentState.put(POINTS,
+            model.getUserChart().countPoints(playerColor, model.settlePoints, model.usedCards, model.edges));
 		for (ResourceType r : ResourceType.getResources()) {
 			currentState.put(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
 		}

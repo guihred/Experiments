@@ -21,12 +21,10 @@ import utils.StageHelper;
  */
 public class RoundMazeModel {
 
-    public static final int MAZE_HEIGHT = 40;
-    public static final int MAZE_WIDTH = 7;
     public static final double CANVAS_WIDTH = 500;
-    private RoundMazeSquare[][] maze = new RoundMazeSquare[MAZE_WIDTH][MAZE_HEIGHT];
-    private int x = MAZE_WIDTH - 1;
-    private int y = MAZE_HEIGHT - 1;
+    private RoundMazeSquare[][] maze = new RoundMazeSquare[RoundMazeHandler.MAZE_WIDTH][RoundMazeHandler.MAZE_HEIGHT];
+    private int x = RoundMazeHandler.MAZE_WIDTH - 1;
+    private int y = RoundMazeHandler.MAZE_HEIGHT - 1;
     private GraphicsContext gc;
     private Canvas canvas;
     private Rotate angle = new Rotate(90);
@@ -35,11 +33,11 @@ public class RoundMazeModel {
         this.canvas = canvas;
         initializeMaze();
         gc = canvas.getGraphicsContext2D();
-        maze[MAZE_WIDTH - 1][MAZE_HEIGHT - 1].setCenter(true);
+        maze[RoundMazeHandler.MAZE_WIDTH - 1][RoundMazeHandler.MAZE_HEIGHT - 1].setCenter(true);
         RoundMazeHandler.createMaze(maze);
         scene.setOnKeyPressed(this::handleKey);
         angle.setAxis(Rotate.Z_AXIS);
-        double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / MAZE_WIDTH / 2;
+        double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / RoundMazeHandler.MAZE_WIDTH / 2;
         angle.setPivotX(center);
         angle.setPivotY(center);
         canvas.getTransforms().add(angle);
@@ -47,8 +45,8 @@ public class RoundMazeModel {
 
     public void draw() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
+        for (int i = 0; i < RoundMazeHandler.MAZE_WIDTH; i++) {
+            for (int j = 0; j < RoundMazeHandler.MAZE_HEIGHT; j++) {
                 draw(maze[i][j], gc);
             }
         }
@@ -57,16 +55,16 @@ public class RoundMazeModel {
     private void goCenter() {
         if (maze[x][y].isNorth()) {
             if (x > 0) {
-                x = (x - 1 + RoundMazeModel.MAZE_WIDTH) % RoundMazeModel.MAZE_WIDTH;
+                x = (x - 1 + RoundMazeHandler.MAZE_WIDTH) % RoundMazeHandler.MAZE_WIDTH;
             } else {
                 maze[x][y].setCenter(false);
                 draw();
                 final Runnable c = () -> {
                     initializeMaze();
                     angle.setAngle(90);
-                    x = MAZE_WIDTH - 1;
-                    y = MAZE_HEIGHT - 1;
-                    maze[MAZE_WIDTH - 1][MAZE_HEIGHT - 1].setCenter(true);
+                    x = RoundMazeHandler.MAZE_WIDTH - 1;
+                    y = RoundMazeHandler.MAZE_HEIGHT - 1;
+                    maze[RoundMazeHandler.MAZE_WIDTH - 1][RoundMazeHandler.MAZE_HEIGHT - 1].setCenter(true);
                     RoundMazeHandler.createMaze(maze);
                     draw();
                 };
@@ -77,21 +75,21 @@ public class RoundMazeModel {
 
     private void goLeft() {
         if (maze[x][y].isWest()) {
-            y = (y - 1 + RoundMazeModel.MAZE_HEIGHT) % RoundMazeModel.MAZE_HEIGHT;
-            angle.setAngle(angle.getAngle() - 360. / MAZE_HEIGHT);
+            y = (y - 1 + RoundMazeHandler.MAZE_HEIGHT) % RoundMazeHandler.MAZE_HEIGHT;
+            angle.setAngle(angle.getAngle() - 360. / RoundMazeHandler.MAZE_HEIGHT);
         }
     }
 
     private void goOutter() {
-        if (x < RoundMazeModel.MAZE_WIDTH - 1 && maze[x][y].isSouth()) {
-            x = (x + 1) % RoundMazeModel.MAZE_WIDTH;
+        if (x < RoundMazeHandler.MAZE_WIDTH - 1 && maze[x][y].isSouth()) {
+            x = (x + 1) % RoundMazeHandler.MAZE_WIDTH;
         }
     }
 
     private void goRight() {
         if (maze[x][y].isEast()) {
-            y = (y + 1) % RoundMazeModel.MAZE_HEIGHT;
-            angle.setAngle(angle.getAngle() + 360. / MAZE_HEIGHT);
+            y = (y + 1) % RoundMazeHandler.MAZE_HEIGHT;
+            angle.setAngle(angle.getAngle() + 360. / RoundMazeHandler.MAZE_HEIGHT);
         }
     }
 
@@ -125,13 +123,13 @@ public class RoundMazeModel {
     }
 
     private void initializeMaze() {
-        for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
+        for (int i = 0; i < RoundMazeHandler.MAZE_WIDTH; i++) {
+            for (int j = 0; j < RoundMazeHandler.MAZE_HEIGHT; j++) {
                 maze[i][j] = new RoundMazeSquare(i, j);
                 if (i == 0) {
                     maze[i][j].setNorth(false);
                 }
-                if (i == MAZE_WIDTH - 1) {
+                if (i == RoundMazeHandler.MAZE_WIDTH - 1) {
                     maze[i][j].setSouth(false);
                 }
             }
@@ -143,11 +141,11 @@ public class RoundMazeModel {
     }
 
     public static void draw(RoundMazeSquare sq, GraphicsContext gc) {
-        double length = -360.0 / MAZE_HEIGHT;
-        double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / MAZE_WIDTH / 2;
+        double length = -360.0 / RoundMazeHandler.MAZE_HEIGHT;
+        double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / RoundMazeHandler.MAZE_WIDTH / 2;
         double angle = length * (sq.j + 1);
-        double m = (sq.i + 2) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
-        double b = (sq.i + 1) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
+        double m = (sq.i + 2) * CANVAS_WIDTH / 2 / RoundMazeHandler.MAZE_WIDTH;
+        double b = (sq.i + 1) * CANVAS_WIDTH / 2 / RoundMazeHandler.MAZE_WIDTH;
         if (!sq.isSouth()) {
             gc.strokeArc(center - m, center - m, m * 2, m * 2, -angle, length, ArcType.OPEN);
         }
@@ -163,7 +161,7 @@ public class RoundMazeModel {
             angle = length * sq.j;
             double sin = Math.sin(Math.toRadians(angle + length / 2));
             double cos = Math.cos(Math.toRadians(angle + length / 2));
-            m = (sq.i + 3. / 2) * CANVAS_WIDTH / 2 / MAZE_WIDTH;
+            m = (sq.i + 3. / 2) * CANVAS_WIDTH / 2 / RoundMazeHandler.MAZE_WIDTH;
             gc.setFill(Color.RED);
 
             gc.fillOval(center + cos * m, center + sin * m, 5, 5);

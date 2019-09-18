@@ -1,6 +1,5 @@
 package fxsamples.bounds;
 
-import fxsamples.bounds.BoundsPlayground.BoundsType;
 import javafx.beans.NamedArg;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;

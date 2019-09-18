@@ -21,9 +21,7 @@ import utils.StageHelper;
  */
 public class SudokuModel {
 
-    public static final int MAP_NUMBER = 3;
-
-    public static final int MAP_N_SQUARED = MAP_NUMBER * MAP_NUMBER;
+    public static final int MAP_N_SQUARED = SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER;
     private GridPane numberBoard = new GridPane();
     private List<NumberButton> numberOptions = new ArrayList<>();
     private List<SudokuSquare> sudokuSquares = new ArrayList<>();
@@ -179,13 +177,13 @@ public class SudokuModel {
 
     private List<SudokuSquare> getArea(int row) {
         return sudokuSquares.stream()
-                .filter(e -> e.isEmpty() && e.isInArea(row % MAP_NUMBER * MAP_NUMBER, row / MAP_NUMBER * MAP_NUMBER))
+                .filter(e -> e.isEmpty() && e.isInArea(row % SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER, row / SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER))
                 .collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getArea(int i, int number) {
         return sudokuSquares.stream()
-                .filter(e1 -> e1.isEmpty() && e1.isInArea(i % MAP_NUMBER * MAP_NUMBER, i / MAP_NUMBER * MAP_NUMBER))
+                .filter(e1 -> e1.isEmpty() && e1.isInArea(i % SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER, i / SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER))
                 .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
     }
 
@@ -216,9 +214,9 @@ public class SudokuModel {
                 sudokuSquares.add(sudokuSquare);
             }
         }
-        for (int i = 0; i < MAP_NUMBER; i++) {
-            for (int j = 0; j < MAP_NUMBER; j++) {
-                NumberButton child = new NumberButton(i * MAP_NUMBER + j + 1);
+        for (int i = 0; i < SudokuSquare.MAP_NUMBER; i++) {
+            for (int j = 0; j < SudokuSquare.MAP_NUMBER; j++) {
+                NumberButton child = new NumberButton(i * SudokuSquare.MAP_NUMBER + j + 1);
                 numberOptions.add(child);
                 numberBoard.add(child, j, i);
             }
@@ -271,13 +269,13 @@ public class SudokuModel {
     }
 
     private void removeFromArea(SudokuSquare sq, SudokuSquare sq2) {
-        if (sq.getRow() / MAP_NUMBER == sq2.getRow() / MAP_NUMBER
-                && sq.getCol() / MAP_NUMBER == sq2.getCol() / MAP_NUMBER) {
-            int row = sq.getRow() / MAP_NUMBER;
-            int col = sq.getCol() / MAP_NUMBER;
-            for (int i = 0; i < MAP_NUMBER; i++) {
-                for (int j = 0; j < MAP_NUMBER; j++) {
-                    SudokuSquare mapAt = getMapAt(row * MAP_NUMBER + i, col * MAP_NUMBER + j);
+        if (sq.getRow() / SudokuSquare.MAP_NUMBER == sq2.getRow() / SudokuSquare.MAP_NUMBER
+                && sq.getCol() / SudokuSquare.MAP_NUMBER == sq2.getCol() / SudokuSquare.MAP_NUMBER) {
+            int row = sq.getRow() / SudokuSquare.MAP_NUMBER;
+            int col = sq.getCol() / SudokuSquare.MAP_NUMBER;
+            for (int i = 0; i < SudokuSquare.MAP_NUMBER; i++) {
+                for (int j = 0; j < SudokuSquare.MAP_NUMBER; j++) {
+                    SudokuSquare mapAt = getMapAt(row * SudokuSquare.MAP_NUMBER + i, col * SudokuSquare.MAP_NUMBER + j);
                     if (!mapAt.equals(sq) && !mapAt.equals(sq2)) {
                         mapAt.getPossibilities().removeAll(sq.getPossibilities());
                     }

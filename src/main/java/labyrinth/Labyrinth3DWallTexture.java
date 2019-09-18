@@ -1,6 +1,7 @@
 package labyrinth;
 
 import static labyrinth.LabyrinthWall.SIZE;
+import static labyrinth.MovimentacaoAleatoria.mapa;
 import static utils.ResourceFXUtils.toExternalForm;
 import static utils.ResourceFXUtils.toFullPath;
 
@@ -28,15 +29,6 @@ import utils.StageHelper;
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
     private static final Color lightColor = Color.grayRgb(125);
 
-    protected static final String[][] mapa = { { "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "|" },
-        { "|", "|", "_", "|", "_", "|" }, { "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-        { "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" }, { "_", "|", "_", "_", "_", "|" },
-        { "_", "_", "|", "|", "|", "_" }, { "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "_", "|", "_" },
-        { "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" }, { "|", "|", "_", "|", "_", "|" },
-        { "|", "_", "|", "_", "_", "|" }, { "|", "_", "_", "_", "_", "|" }, { "_", "_", "_", "|", "_", "|" },
-        { "_", "_", "_", "_", "_", "_" },
-
-    };
     private static final String MESH_GHOST = toFullPath("ghost2.STL");
 
     public static final Image OOZE_IMAGE = new Image(toExternalForm("ooze.jpg"));

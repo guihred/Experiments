@@ -26,6 +26,8 @@ public class ContestText extends BaseEntity implements HasImage {
     @Transient
     private String image;
 
+    public static final String TEXTS_PATTERN = ".+ para \\w* *[aà l]*s quest[õion]+es [de ]*(\\d+) [ae] (\\d+)\\.*\\s*";
+
     public ContestText() {
     }
 
@@ -79,7 +81,7 @@ public class ContestText extends BaseEntity implements HasImage {
 
     @Override
     public boolean matches(String s0) {
-        return s0.matches(ContestReader.TEXTS_PATTERN);
+        return s0.matches(ContestText.TEXTS_PATTERN);
     }
 
     public void setContest(Contest contest) {

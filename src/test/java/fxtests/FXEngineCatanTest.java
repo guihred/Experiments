@@ -50,7 +50,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             // while (model.getCurrentPlayer() == PlayerColor.GREEN) {
             // sleep(1000);
             // }
-			if (model.getUserChart().anyPlayerPoints(9, model)) {
+            if (model.anyPlayerPoints(9, model)) {
                 break;
             }
 
@@ -72,7 +72,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
                 }
             }
         }
-		PlayerColor playerWinner = model.getUserChart().getPlayerWinner(model);
+        PlayerColor playerWinner = model.getPlayerWinner();
 		CatanLogger.winner(playerWinner);
 		getLogger().info("{}", decisionTree);
 

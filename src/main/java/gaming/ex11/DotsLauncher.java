@@ -16,8 +16,8 @@ public class DotsLauncher extends Application {
         DotsModel.createModel(borderPane);
 
         stage.setScene(scene);
-        stage.setWidth(DotsModel.MAZE_SIZE * DotsSquare.SQUARE_SIZE + 20);
-        stage.setHeight((DotsModel.MAZE_SIZE + 1) * DotsSquare.SQUARE_SIZE + 20);
+        stage.setWidth(DotsHelper.MAZE_SIZE * DotsSquare.SQUARE_SIZE + 20);
+        stage.setHeight((DotsHelper.MAZE_SIZE + 1) * DotsSquare.SQUARE_SIZE + 20);
         stage.show();
     }
 

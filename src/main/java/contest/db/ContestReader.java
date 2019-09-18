@@ -21,8 +21,6 @@ import utils.StringSigaUtils;
 public class ContestReader implements HasLogging {
     private static final String DISCURSIVA_PATTERN = " *P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
     private static final int OPTIONS_PER_QUESTION = 5;
-    public static final String QUESTION_PATTERN = " *QUESTÃO +(\\d+)\\s*___+\\s+";
-    public static final String TEXTS_PATTERN = ".+ para \\w* *[aà l]*s quest[õion]+es [de ]*(\\d+) [ae] (\\d+)\\.*\\s*";
     private static final String LINE_PATTERN = "^\\s*\\d+\\s*$";
 
     private static final String OPTION_PATTERN = "[\\. ]*[ \\(][A-E]\\).+";
@@ -145,7 +143,7 @@ public class ContestReader implements HasLogging {
                 return;
             }
             String string = linhas[i + 1];
-            if (string.matches(TEXTS_PATTERN)) {
+            if (string.matches(ContestText.TEXTS_PATTERN)) {
                 addQuestion();
                 setState(ReaderState.TEXT);
                 return;
@@ -281,9 +279,9 @@ public class ContestReader implements HasLogging {
             return;
         }
 
-        if (s.matches(TEXTS_PATTERN)) {
+        if (s.matches(ContestText.TEXTS_PATTERN)) {
             setState(ReaderState.TEXT);
-            String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
+            String[] split = s.replaceAll(ContestText.TEXTS_PATTERN, "$1,$2").split(",");
             IntSummaryStatistics stats = Stream.of(split).mapToInt(StringSigaUtils::intValue).summaryStatistics();
             text.setMin(stats.getMin());
             text.setMax(stats.getMax());
@@ -385,11 +383,11 @@ public class ContestReader implements HasLogging {
     }
 
     private static boolean isQuestionPattern(String s) {
-        return s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO");
+        return s.matches(ContestQuestion.QUESTION_PATTERN) || s.startsWith("QUESTÃO");
     }
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
-        return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
+        return text1 != null && text1.matches(ContestQuestion.QUESTION_PATTERN + "|" + ContestText.TEXTS_PATTERN) && !textPositions.isEmpty();
     }
 
     enum ReaderState {

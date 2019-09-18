@@ -1,6 +1,8 @@
 package utils;
 
 import javafx.beans.NamedArg;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -11,7 +13,7 @@ public class ZoomableScrollPane extends ScrollPane {
     protected static final double DELTA_ZOOM = 0.1;
     private Group zoomGroup;
     private Scale scaleTransform;
-    protected double scaleValue = 1.0;
+    private DoubleProperty scaleValue = new SimpleDoubleProperty(1);
 
     public ZoomableScrollPane(@NamedArg("content") Node content) {
         Group contentGroup = new Group();
@@ -19,62 +21,69 @@ public class ZoomableScrollPane extends ScrollPane {
         contentGroup.getChildren().add(zoomGroup);
         zoomGroup.getChildren().add(content);
         setContent(contentGroup);
-        scaleTransform = new Scale(scaleValue, scaleValue, 0, 0);
+        scaleTransform = new Scale(getScaleValue(), getScaleValue(), 0, 0);
         zoomGroup.getTransforms().add(scaleTransform);
 
         zoomGroup.setOnScroll(this::handle);
     }
 
     public double getScaleValue() {
-        return scaleValue;
+        return scaleValue.get();
     }
 
     public void handle(ScrollEvent scrollEvent) {
-        double s = scaleValue;
+        double s = getScaleValue();
         if (scrollEvent.getDeltaY() < 0) {
-            scaleValue -= DELTA_ZOOM;
+            setScaleValue(getScaleValue() - DELTA_ZOOM);
         } else {
-            scaleValue += DELTA_ZOOM;
+            setScaleValue(getScaleValue() + DELTA_ZOOM);
         }
-        if (scaleValue <= DELTA_ZOOM) {
-            scaleValue = s;
+        if (getScaleValue() <= DELTA_ZOOM) {
+            setScaleValue(s);
 
         }
-        zoomTo(scaleValue);
+        zoomTo(getScaleValue());
         scrollEvent.consume();
+    }
+    public DoubleProperty scaleValueProperty() {
+        return scaleValue;
+    }
+
+    public void setScaleValue(double scaleValue) {
+        this.scaleValue.set(scaleValue);
     }
 
     public void zoomActual() {
-        scaleValue = 1;
-        zoomTo(scaleValue);
+        setScaleValue(1);
+        zoomTo(getScaleValue());
 
     }
 
     public void zoomIn() {
 
-        scaleValue += DELTA_ZOOM;
+        setScaleValue(getScaleValue() + DELTA_ZOOM);
 
-        if (Double.compare(scaleValue, 10) > 0) {
-            scaleValue = 10;
+        if (Double.compare(getScaleValue(), 10) > 0) {
+            setScaleValue(10);
         }
 
-        zoomTo(scaleValue);
+        zoomTo(getScaleValue());
 
     }
 
     public void zoomOut() {
-        scaleValue -= DELTA_ZOOM;
+        setScaleValue(getScaleValue() - DELTA_ZOOM);
 
-        if (Double.compare(scaleValue, DELTA_ZOOM) < 0) {
-            scaleValue = DELTA_ZOOM;
+        if (Double.compare(getScaleValue(), DELTA_ZOOM) < 0) {
+            setScaleValue(DELTA_ZOOM);
         }
 
-        zoomTo(scaleValue);
+        zoomTo(getScaleValue());
     }
 
     public void zoomTo(double scaleValue1) {
 
-        scaleValue = scaleValue1;
+        setScaleValue(scaleValue1);
 
         scaleTransform.setX(scaleValue1);
         scaleTransform.setY(scaleValue1);
@@ -97,8 +106,8 @@ public class ZoomableScrollPane extends ScrollPane {
         double scaleY = getViewportBounds().getHeight() / getContent().getBoundsInLocal().getHeight();
 
         // consider current scale (in content calculation)
-        scaleX *= scaleValue;
-        scaleY *= scaleValue;
+        scaleX *= getScaleValue();
+        scaleY *= getScaleValue();
 
         // distorted zoom: we don't want it => we search the minimum scale
         // factor and apply it

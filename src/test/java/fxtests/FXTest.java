@@ -41,7 +41,6 @@ import gaming.ex02.MemoryLauncher;
 import gaming.ex03.SlidingPuzzleLauncher;
 import gaming.ex04.TronLauncher;
 import gaming.ex05.TetrisLauncher;
-import gaming.ex06.MoleculeSampleApp;
 import gaming.ex06.QuartoLauncher;
 import gaming.ex07.MazeLauncher;
 import gaming.ex08.ArkanoidLauncher;

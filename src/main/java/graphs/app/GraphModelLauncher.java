@@ -73,7 +73,7 @@ public class GraphModelLauncher extends Application {
         buttons.getChildren().add(getShortestPathOptions());
         buttons.getChildren().add(getTopologyOptions());
         buttons.getChildren().add(getPausePlayOption());
-        buttons.getChildren().add(CommonsFX.newCheck("Show Weight", Graph.SHOW_WEIGHT));
+        buttons.getChildren().add(CommonsFX.newCheck("Show Weight", Edge.SHOW_WEIGHT));
 
         root.setLeft(buttons);
         root.setCenter(graph.getScrollPane());

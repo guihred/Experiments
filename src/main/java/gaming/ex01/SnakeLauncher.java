@@ -25,8 +25,8 @@ public class SnakeLauncher extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         final GridPane gridPane = new GridPane();
-        for (int i = 0; i < SnakeModel.MAP_SIZE; i++) {
-            for (int j = 0; j < SnakeModel.MAP_SIZE; j++) {
+        for (int i = 0; i < SnakeSquare.MAP_SIZE; i++) {
+            for (int j = 0; j < SnakeSquare.MAP_SIZE; j++) {
                 gridPane.add(newGameModel.getMap()[i][j], i, j);
             }
         }

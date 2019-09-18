@@ -50,8 +50,8 @@ public class Pacman extends Arc {
                 new KeyFrame(Duration.seconds(2), new KeyValue(lengthProperty(), 0.0F)));
             timeline.play();
             timeline.setOnFinished(e -> {
-                setLayoutX(PacmanModel.SQUARE_SIZE / 2);
-                setLayoutY(PacmanModel.SQUARE_SIZE / 2);
+                setLayoutX(PacmanBall.SQUARE_SIZE / 2);
+                setLayoutY(PacmanBall.SQUARE_SIZE / 2);
                 eatingAnimation.play();
             });
         }

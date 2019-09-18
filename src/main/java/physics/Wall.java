@@ -30,10 +30,10 @@ public class Wall extends BasePhysicalObject {
 
     @Override
     public Node create() {
-        Rectangle rect = new Rectangle( Physics.toPixelX(worldX) /* left */,
-                                        Physics.toPixelHeight(worldY) /* right */,
-                                        Physics.toPixelWidth(worldWidth) /* width */,
-                                        Physics.toPixelHeight(worldHeight) /* height */);
+        Rectangle rect = new Rectangle( BasePhysicalObject.toPixelX(worldX) /* left */,
+                                        BasePhysicalObject.toPixelHeight(worldY) /* right */,
+                                        BasePhysicalObject.toPixelWidth(worldWidth) /* width */,
+                                        BasePhysicalObject.toPixelHeight(worldHeight) /* height */);
         
         rect.setFill(Color.BLACK);
         return rect;

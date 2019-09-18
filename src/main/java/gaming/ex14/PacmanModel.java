@@ -30,13 +30,11 @@ import utils.HasLogging;
 
 public class PacmanModel {
 
-    public static final int MAZE_SIZE = 5;
-    public static final double SQUARE_SIZE = 60;
     private static final Logger LOG = HasLogging.log();
 
-    private final List<PacmanBall> balls = DoubleStream.iterate(SQUARE_SIZE / 2, d -> d + SQUARE_SIZE)
-        .limit(MAZE_SIZE * 2L)
-        .mapToObj(d -> DoubleStream.iterate(SQUARE_SIZE / 2, e -> e + SQUARE_SIZE).limit(MAZE_SIZE * 2L)
+    private final List<PacmanBall> balls = DoubleStream.iterate(PacmanBall.SQUARE_SIZE / 2, d -> d + PacmanBall.SQUARE_SIZE)
+        .limit(PacmanBall.MAZE_SIZE * 2L)
+        .mapToObj(d -> DoubleStream.iterate(PacmanBall.SQUARE_SIZE / 2, e -> e + PacmanBall.SQUARE_SIZE).limit(PacmanBall.MAZE_SIZE * 2L)
             .mapToObj(e -> new PacmanBall(d, e)))
         .flatMap(e -> e)
         .collect(Collectors.toList());
@@ -85,7 +83,7 @@ public class PacmanModel {
             PacmanGhost ghost = ghosts.get(i);
             int location = i / 2;
             final int initialPos = 265;
-            ghost.setStartPosition(initialPos + i % 2 * SQUARE_SIZE, initialPos + location * SQUARE_SIZE);
+            ghost.setStartPosition(initialPos + i % 2 * PacmanBall.SQUARE_SIZE, initialPos + location * PacmanBall.SQUARE_SIZE);
             group.getChildren().add(ghost.getCircle());
         }
         scene.setOnKeyPressed(this::handleKeyPressed);
@@ -173,36 +171,36 @@ public class PacmanModel {
     }
 
     private static MazeSquare[][] createLabyrinth(MazeSquare[][] maze, Group group) {
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
-                double layoutX = i * SQUARE_SIZE;
-                double layoutX2 = MAZE_SIZE * 2 * SQUARE_SIZE - i * SQUARE_SIZE - SQUARE_SIZE;
-                double layoutY = j * SQUARE_SIZE;
-                double layoutY2 = MAZE_SIZE * 2 * SQUARE_SIZE - j * SQUARE_SIZE - SQUARE_SIZE;
+        for (int i = 0; i < PacmanBall.MAZE_SIZE; i++) {
+            for (int j = 0; j < PacmanBall.MAZE_SIZE; j++) {
+                double layoutX = i * PacmanBall.SQUARE_SIZE;
+                double layoutX2 = PacmanBall.MAZE_SIZE * 2 * PacmanBall.SQUARE_SIZE - i * PacmanBall.SQUARE_SIZE - PacmanBall.SQUARE_SIZE;
+                double layoutY = j * PacmanBall.SQUARE_SIZE;
+                double layoutY2 = PacmanBall.MAZE_SIZE * 2 * PacmanBall.SQUARE_SIZE - j * PacmanBall.SQUARE_SIZE - PacmanBall.SQUARE_SIZE;
 
                 if (!maze[i][j].isWest()) {
-                    addRectangle(group, layoutX, layoutY, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX2, layoutY, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX, layoutY2 + SQUARE_SIZE, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX2, layoutY2 + SQUARE_SIZE, SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX, layoutY, PacmanBall.SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX2, layoutY, PacmanBall.SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX, layoutY2 + PacmanBall.SQUARE_SIZE, PacmanBall.SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX2, layoutY2 + PacmanBall.SQUARE_SIZE, PacmanBall.SQUARE_SIZE, 2);
                 }
                 if (!maze[i][j].isNorth()) {
-                    addRectangle(group, layoutX, layoutY, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX2 + SQUARE_SIZE, layoutY, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX, layoutY2, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX2 + SQUARE_SIZE, layoutY2, 2, SQUARE_SIZE);
+                    addRectangle(group, layoutX, layoutY, 2, PacmanBall.SQUARE_SIZE);
+                    addRectangle(group, layoutX2 + PacmanBall.SQUARE_SIZE, layoutY, 2, PacmanBall.SQUARE_SIZE);
+                    addRectangle(group, layoutX, layoutY2, 2, PacmanBall.SQUARE_SIZE);
+                    addRectangle(group, layoutX2 + PacmanBall.SQUARE_SIZE, layoutY2, 2, PacmanBall.SQUARE_SIZE);
                 }
                 if (!maze[i][j].isEast()) {
-                    addRectangle(group, layoutX, layoutY + SQUARE_SIZE, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX2, layoutY + SQUARE_SIZE, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX, layoutY2, SQUARE_SIZE, 2);
-                    addRectangle(group, layoutX2, layoutY2, SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX, layoutY + PacmanBall.SQUARE_SIZE, PacmanBall.SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX2, layoutY + PacmanBall.SQUARE_SIZE, PacmanBall.SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX, layoutY2, PacmanBall.SQUARE_SIZE, 2);
+                    addRectangle(group, layoutX2, layoutY2, PacmanBall.SQUARE_SIZE, 2);
                 }
                 if (!maze[i][j].isSouth()) {
-                    addRectangle(group, layoutX + SQUARE_SIZE, layoutY, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX2, layoutY, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX + SQUARE_SIZE, layoutY2, 2, SQUARE_SIZE);
-                    addRectangle(group, layoutX2, layoutY2, 2, SQUARE_SIZE);
+                    addRectangle(group, layoutX + PacmanBall.SQUARE_SIZE, layoutY, 2, PacmanBall.SQUARE_SIZE);
+                    addRectangle(group, layoutX2, layoutY, 2, PacmanBall.SQUARE_SIZE);
+                    addRectangle(group, layoutX + PacmanBall.SQUARE_SIZE, layoutY2, 2, PacmanBall.SQUARE_SIZE);
+                    addRectangle(group, layoutX2, layoutY2, 2, PacmanBall.SQUARE_SIZE);
                 }
                 maze[i][j].dijkstra(maze);
             }
@@ -214,9 +212,9 @@ public class PacmanModel {
     }
 
     private static MazeSquare[][] initializeMaze() {
-        MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
+        MazeSquare[][] maze = new MazeSquare[PacmanBall.MAZE_SIZE][PacmanBall.MAZE_SIZE];
+        for (int i = 0; i < PacmanBall.MAZE_SIZE; i++) {
+            for (int j = 0; j < PacmanBall.MAZE_SIZE; j++) {
                 maze[i][j] = new MazeSquare(i, j);
                 if (i == 0) {
                     maze[i][j].setNorth(false);
@@ -224,10 +222,10 @@ public class PacmanModel {
                 if (j == 0) {
                     maze[i][j].setWest(false);
                 }
-                if (MAZE_SIZE - 1 == j && i % 3 == 0) {
+                if (PacmanBall.MAZE_SIZE - 1 == j && i % 3 == 0) {
                     maze[i][j].setEast(true);
                 }
-                if (MAZE_SIZE - 1 == i && j % 3 == 0) {
+                if (PacmanBall.MAZE_SIZE - 1 == i && j % 3 == 0) {
                     maze[i][j].setSouth(true);
                 }
             }

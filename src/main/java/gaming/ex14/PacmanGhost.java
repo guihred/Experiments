@@ -197,16 +197,16 @@ public class PacmanGhost extends Group {
 
     private double readjustedX(int i) {
 
-        return PacmanModel.SQUARE_SIZE / 2 + (getLayoutX() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
-                ? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
-                : i * PacmanModel.SQUARE_SIZE);
+        return PacmanBall.SQUARE_SIZE / 2 + (getLayoutX() > PacmanBall.SQUARE_SIZE * PacmanBall.MAZE_SIZE
+                ? (PacmanBall.MAZE_SIZE * 2 - i - 1) * PacmanBall.SQUARE_SIZE
+                : i * PacmanBall.SQUARE_SIZE);
     }
 
     private double readjustedY(int i) {
 
-        return PacmanModel.SQUARE_SIZE / 2 + (getLayoutY() > PacmanModel.SQUARE_SIZE * PacmanModel.MAZE_SIZE
-                ? (PacmanModel.MAZE_SIZE * 2 - i - 1) * PacmanModel.SQUARE_SIZE
-                : i * PacmanModel.SQUARE_SIZE);
+        return PacmanBall.SQUARE_SIZE / 2 + (getLayoutY() > PacmanBall.SQUARE_SIZE * PacmanBall.MAZE_SIZE
+                ? (PacmanBall.MAZE_SIZE * 2 - i - 1) * PacmanBall.SQUARE_SIZE
+                : i * PacmanBall.SQUARE_SIZE);
     }
 
     private GhostDirection rndValue(GhostDirection[] values) {
@@ -222,8 +222,8 @@ public class PacmanGhost extends Group {
         int hx = 0;
         int hy = 0;
 
-        if ((getLayoutY() + PacmanModel.SQUARE_SIZE / 2) % PacmanModel.SQUARE_SIZE / 2 == 0
-                || (getLayoutX() + PacmanModel.SQUARE_SIZE / 2) % PacmanModel.SQUARE_SIZE / 2 == 0) {
+        if ((getLayoutY() + PacmanBall.SQUARE_SIZE / 2) % PacmanBall.SQUARE_SIZE / 2 == 0
+                || (getLayoutX() + PacmanBall.SQUARE_SIZE / 2) % PacmanBall.SQUARE_SIZE / 2 == 0) {
             getBestSquare(pacman, maze);
             if (mazeSquare != null) {
                 hx = (int) (-getLayoutX() + readjustedX(mazeSquare.i));
@@ -251,19 +251,19 @@ public class PacmanGhost extends Group {
     }
 
     private static int adjustedX(double layoutX) {
-        double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
-        return (int) (paci > PacmanModel.MAZE_SIZE ? -paci + 2 * PacmanModel.MAZE_SIZE - 1 : paci)
-                % PacmanModel.MAZE_SIZE;
+        double paci = layoutX / PacmanBall.SQUARE_SIZE - 1;
+        return (int) (paci > PacmanBall.MAZE_SIZE ? -paci + 2 * PacmanBall.MAZE_SIZE - 1 : paci)
+                % PacmanBall.MAZE_SIZE;
     }
 
     private static int adjustedY(double layoutX) {
-        double paci = layoutX / PacmanModel.SQUARE_SIZE - 1;
-        return (int) (paci > PacmanModel.MAZE_SIZE ? -paci - 1 + 2 * PacmanModel.MAZE_SIZE : paci)
-                % PacmanModel.MAZE_SIZE;
+        double paci = layoutX / PacmanBall.SQUARE_SIZE - 1;
+        return (int) (paci > PacmanBall.MAZE_SIZE ? -paci - 1 + 2 * PacmanBall.MAZE_SIZE : paci)
+                % PacmanBall.MAZE_SIZE;
     }
 
     private static GhostDirection changeDirection(final double hx, final double hy) {
-        if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
+        if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanBall.SQUARE_SIZE / 2) {
             if (hx < 0) {
                 return hy < 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
             }
@@ -278,7 +278,7 @@ public class PacmanGhost extends Group {
     }
 
     private static GhostDirection changeDirection2(double hx, double hy) {
-        if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanModel.SQUARE_SIZE / 2) {
+        if (Math.abs(Math.abs(hx) - Math.abs(hy)) < PacmanBall.SQUARE_SIZE / 2) {
             if (hx > 0) {
                 return hy < 0 ? GhostDirection.NORTHEAST : GhostDirection.SOUTHEAST;
             }

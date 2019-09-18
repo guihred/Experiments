@@ -2,8 +2,6 @@ package graphs.entities;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -12,7 +10,6 @@ import javafx.scene.layout.Pane;
 import utils.ZoomableScrollPane;
 public class Graph {
 
-	public static final BooleanProperty SHOW_WEIGHT = new SimpleBooleanProperty(true);
 	private Group canvas;
 
 	private Pane cellLayer;
@@ -32,9 +29,9 @@ public class Graph {
 
 		canvas.getChildren().add(cellLayer);
 
-		mouseGestures = new MouseGestures(this);
 
 		scrollPane = new ZoomableScrollPane(canvas);
+        mouseGestures = new MouseGestures(scrollPane.scaleValueProperty());
 
 		scrollPane.setFitToWidth(true);
 		scrollPane.setFitToHeight(true);
@@ -78,11 +75,7 @@ public class Graph {
 		return model;
 	}
 
-	public double getScale() {
-		return scrollPane.getScaleValue();
-	}
-
-	public ScrollPane getScrollPane() {
+    public ScrollPane getScrollPane() {
 		return scrollPane;
 	}
 
@@ -96,7 +89,8 @@ public class Graph {
 	}
 
     public List<Triangle> triangulate() {
-        List<Triangle> triangulate = GraphModelAlgorithms.triangulate(this, getModel().getAllCells());
+        List<Triangle> triangulate = getModel().triangulate(getModel().getAllCells());
+        endUpdate();
         sortChildren();
         return triangulate;
     }

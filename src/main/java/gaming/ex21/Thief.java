@@ -9,7 +9,7 @@ public class Thief extends CatanResource {
 
     public Thief() {
         super("thief.png");
-        view.setFitWidth(Terrain.RADIUS / 2.);
+        view.setFitWidth(CatanResource.RADIUS / 2.);
     }
 
     public static void removeHalfOfCards(Map<PlayerColor, List<CatanCard>> cards) {

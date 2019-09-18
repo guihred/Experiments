@@ -17,6 +17,7 @@ public abstract class CatanResource extends Group {
     private final ObjectProperty<PlayerColor> player = new SimpleObjectProperty<>();
     private final Image image;
     protected final ImageView view;
+    public static final int RADIUS = 70;
 
     public CatanResource(final String url) {
         image = new Image(ResourceFXUtils.toExternalForm(CATAN + url));

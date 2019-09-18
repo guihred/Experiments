@@ -5,7 +5,6 @@
  */
 package gaming.ex01;
 
-import static gaming.ex01.SnakeModel.MAP_SIZE;
 
 import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
@@ -19,6 +18,7 @@ import javafx.scene.layout.Region;
  */
 public class SnakeSquare extends Region {
 
+    public static final int MAP_SIZE = 50;
     private int i;
     private int j;
     private final ObjectProperty<SnakeState> state = new SimpleObjectProperty<>(SnakeState.NONE);
@@ -57,7 +57,7 @@ public class SnakeSquare extends Region {
 
     @Override
     public int hashCode() {
-        return i * MAP_SIZE + getJ();
+        return i * SnakeSquare.MAP_SIZE + getJ();
     }
 
     public void setI(int i) {

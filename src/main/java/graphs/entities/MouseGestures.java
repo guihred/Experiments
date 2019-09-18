@@ -1,5 +1,6 @@
 package graphs.entities;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -8,7 +9,7 @@ public class MouseGestures {
 
     private final DragContext dragContext = new DragContext();
 
-    private Graph graph;
+    private DoubleProperty scale;
 
     private EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
 
@@ -20,10 +21,10 @@ public class MouseGestures {
             dragContext.dragged = true;
         }
         // adjust the offset in case we are zoomed
-        double scale = graph.getScale();
+        double scale1 = scale.get();
 
-        offsetX /= scale;
-        offsetY /= scale;
+        offsetX /= scale1;
+        offsetY /= scale1;
 
         node.relocate(offsetX, offsetY);
 
@@ -33,12 +34,12 @@ public class MouseGestures {
 
         Node node = (Node) event.getSource();
 
-        double scale = graph.getScale();
+        double scale1 = scale.get();
         if (node instanceof Cell) {
             dragContext.dragged = false;
         }
-        dragContext.x = node.getBoundsInParent().getMinX() * scale - event.getScreenX();
-        dragContext.y = node.getBoundsInParent().getMinY() * scale - event.getScreenY();
+        dragContext.x = node.getBoundsInParent().getMinX() * scale1 - event.getScreenX();
+        dragContext.y = node.getBoundsInParent().getMinY() * scale1 - event.getScreenY();
 
     };
 
@@ -50,8 +51,8 @@ public class MouseGestures {
         }
     };
 
-    public MouseGestures(Graph graph) {
-        this.graph = graph;
+    public MouseGestures(DoubleProperty graph) {
+        scale = graph;
     }
 
     public void makeDraggable(final Node node) {
@@ -61,6 +62,7 @@ public class MouseGestures {
         node.setOnMouseReleased(onMouseReleasedEventHandler);
 
     }
+
 
     private static class DragContext {
         protected boolean dragged;

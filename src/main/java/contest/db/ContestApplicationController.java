@@ -2,7 +2,11 @@ package contest.db;
 
 import static simplebuilder.SimpleListViewBuilder.newCellFactory;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
@@ -13,8 +17,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.StringSigaUtils;
 
 public class ContestApplicationController {
     private static final Logger LOG = HasLogging.log();
@@ -73,14 +79,14 @@ public class ContestApplicationController {
         current.addListener((ob, old, value) -> {
             int cur = value.intValue();
 
-            text.setText(ContestApplication.getText(contestQuestions, cur));
+            text.setText(ContestApplicationController.getText(contestQuestions, cur));
             if (cur == -1) {
                 question.setText("");
                 return;
             }
             ContestQuestion contestQuestion = contestQuestions.getListQuestions().get(cur);
             question.setText(contestQuestion.getExercise());
-            ContestApplication.extracted(options, contestQuestion);
+            ContestApplicationController.extracted(options, contestQuestion);
         });
         current.set(0);
     }
@@ -104,5 +110,40 @@ public class ContestApplicationController {
         current.set(0);
     }
 
+    static String mapLines(List<String> map, int orElse, int i) {
+    
+        String object = StringSigaUtils.justified(map, orElse, i);
+        return String.format("(%02d)    %s", i + 1, object);
+    }
+
+    static boolean isBetween(ContestText tex, int j) {
+        if (tex.getMin() == null || tex.getMax() == null) {
+            return false;
+        }
+        int i = j + 1;
+        return tex.getMin() <= i && tex.getMax() >= i;
+    }
+
+    static void extracted(ListView<ContestQuestionAnswer> options, ContestQuestion contestQuestion) {
+        ObservableList<ContestQuestionAnswer> items = options.getItems();
+        for (int i = 0; i < contestQuestion.getOptions().size(); i++) {
+            if (i < 0 || i >= items.size()) {
+                items.add(contestQuestion.getOptions().get(i));
+            } else {
+                items.set(i, contestQuestion.getOptions().get(i));
+            }
+        }
+    }
+
+    static String getText(ContestReader contestQuestions2, int cur) {
+        List<String> map = contestQuestions2.getContestTexts().stream()
+            .filter(t -> ContestApplicationController.isBetween(t, cur)).map(ContestText::getText).filter(StringUtils::isNotBlank)
+            .flatMap(s -> Stream.of(s.split("\n"))).map(String::trim).collect(Collectors.toList());
+
+        int orElse = map.stream().mapToInt(String::length).max().orElse(0);
+
+        return IntStream.range(0, map.size()).mapToObj(i -> ContestApplicationController.mapLines(map, orElse, i))
+            .collect(Collectors.joining("\n"));
+    }
 
 }

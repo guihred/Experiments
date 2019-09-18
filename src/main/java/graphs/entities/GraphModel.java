@@ -204,6 +204,20 @@ public class GraphModel {
         GraphModelAlgorithms.sortTopology(allCells, allEdges);
     }
 
+    public List<Triangle> triangulate(List<Cell> all) {
+        removeAllEdges();
+        List<Triangle> triangles = GraphModelAlgorithms.triangulate(all);
+        for (Triangle t : triangles) {
+            Cell cella = t.getA().getC();
+            Cell cellb = t.getB().getC();
+            Cell cellc = t.getC().getC();
+            addBiEdge(cella.getCellId(), cellb.getCellId(), (int) t.getA().sub(t.getB()).mag());
+            addBiEdge(cella.getCellId(), cellc.getCellId(), (int) t.getA().sub(t.getC()).mag());
+            addBiEdge(cellc.getCellId(), cellb.getCellId(), (int) t.getB().sub(t.getC()).mag());
+        }
+        return triangles;
+    }
+
     public Map<Cell, Integer> unweightedUndirected(String s) {
         return GraphModelAlgorithms.unweightedUndirected(s, cellMap, allCells, allEdges, paths);
 
@@ -237,7 +251,6 @@ public class GraphModel {
         cellMap = FXCollections.observableHashMap();
         bindCellsId();
     }
-
     private static boolean isEdgeExistent(String sourceId, String targetId, Edge e) {
         return e.source.getCellId().equals(sourceId) && e.target.getCellId().equals(targetId)
                 || e.target.getCellId().equals(sourceId) && e.source.getCellId().equals(targetId);

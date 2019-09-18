@@ -11,7 +11,7 @@ public class Road extends CatanResource {
     private  Road() {
         super("road.png");
 		view.setPreserveRatio(false);
-        view.setFitHeight(Terrain.RADIUS * 4. / 5);
+        view.setFitHeight(CatanResource.RADIUS * 4. / 5);
 		view.setFitWidth(10);
     }
 

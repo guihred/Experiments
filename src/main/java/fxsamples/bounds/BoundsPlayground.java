@@ -229,13 +229,6 @@ public class BoundsPlayground extends Application {
         });
     }
 
-    // a helper enumeration of the various types of bounds we can work with.
-    enum BoundsType {
-        LAYOUT_BOUNDS,
-        BOUNDS_IN_LOCAL,
-        BOUNDS_IN_PARENT
-    }
-
     // records relative x and y co-ordinates.
     private static class Delta {
         protected double x;

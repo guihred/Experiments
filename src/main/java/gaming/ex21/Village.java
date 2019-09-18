@@ -10,7 +10,7 @@ public class Village extends CatanResource {
 
     private Village() {
         super("village.png");
-		view.setFitWidth(Terrain.RADIUS);
+		view.setFitWidth(CatanResource.RADIUS);
     }
 
 }

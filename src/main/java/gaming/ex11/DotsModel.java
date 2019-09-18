@@ -38,14 +38,12 @@ import utils.StageHelper;
  */
 public class DotsModel {
 
-    public static final int MAZE_SIZE = 6;
-
     private Color[] colors = { Color.RED, Color.BLUE };
     private int currentPlayer = 1;
     private Group gridPane = new Group();
     private String[] jogadores = { "EU", "TU" };
     private final Line line = new Line(0, 0, 0, 0);
-    private DotsSquare[][] maze = new DotsSquare[MAZE_SIZE][MAZE_SIZE];
+    private DotsSquare[][] maze = new DotsSquare[DotsHelper.MAZE_SIZE][DotsHelper.MAZE_SIZE];
     private final ObservableMap<String, ObservableSet<Set<DotsSquare>>> points = FXCollections.observableHashMap();
     private DotsSquare selected;
 
@@ -199,7 +197,7 @@ public class DotsModel {
     }
 
     private void verifyEnd() {
-        int size = MAZE_SIZE - 1;
+        int size = DotsHelper.MAZE_SIZE - 1;
         if (gridPane.getChildren().stream().filter(e -> e instanceof Polygon).count() == size * size) {
 
             int size2 = points.get("EU").size();

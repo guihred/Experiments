@@ -33,20 +33,20 @@ public class Ramp extends BasePhysicalObject {
         this.endX = endX;
         this.endY = endY;
         angle = (float)Math.atan((this.endY - this.startY)/(this.endX - this.startX));
-		fudgeX = (float) Math.cos(angle) * Physics.toPixelWidth(1.0F)
-				+ (float) Math.sin(angle) * Physics.toPixelHeight(1.0F);
-		fudgeY = (float) Math.sin(angle) * Physics.toPixelHeight(1.0F);
+		fudgeX = (float) Math.cos(angle) * BasePhysicalObject.toPixelWidth(1.0F)
+				+ (float) Math.sin(angle) * BasePhysicalObject.toPixelHeight(1.0F);
+		fudgeY = (float) Math.sin(angle) * BasePhysicalObject.toPixelHeight(1.0F);
         LOGGER.trace("ramp angle={}fudgeX={};fudgeY={}", Math.toDegrees(angle), fudgeX, fudgeY);
         build();
     }
 
     @Override
     public Node create() {
-        Line rect = new Line(Physics.toPixelX(startX) + fudgeX, Physics.toPixelY(startY) - fudgeY,
-            Physics.toPixelWidth(endX) - fudgeX, Physics.toPixelY(endY) + fudgeY);
+        Line rect = new Line(BasePhysicalObject.toPixelX(startX) + fudgeX, BasePhysicalObject.toPixelY(startY) - fudgeY,
+            BasePhysicalObject.toPixelWidth(endX) - fudgeX, BasePhysicalObject.toPixelY(endY) + fudgeY);
         rect.setStrokeLineCap(StrokeLineCap.ROUND);
         rect.setFill(Color.BLACK);
-		rect.setStrokeWidth(Physics.toPixelHeight(1.0F));
+		rect.setStrokeWidth(BasePhysicalObject.toPixelHeight(1.0F));
         return rect;
     }
 

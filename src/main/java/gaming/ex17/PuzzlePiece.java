@@ -9,7 +9,6 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 
 public class PuzzlePiece extends Group {
-    public static final double SQRT_2 = Math.sqrt(0.5);
     private PuzzlePath down = PuzzlePath.STRAIGHT;
     private Image image;
     private ImagePattern imagePattern;

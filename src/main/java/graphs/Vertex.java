@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
-import utils.DisjSets;
 import utils.HasLogging;
 
 public class Vertex {
@@ -13,9 +12,9 @@ public class Vertex {
 
     public static final boolean NAMED = true;
 
-    private Map<Vertex, Integer> edges = new HashMap<>();
+    Map<Vertex, Integer> edges = new HashMap<>();
 
-    private final int id;
+    final int id;
 
     private String name;
 
@@ -192,52 +191,6 @@ public class Vertex {
 
         String chainString = chain.stream().map(Vertex::getName).sequential().collect(Collectors.joining("->"));
         LOG.info(chainString);
-    }
-
-    public static List<EdgeElement> kruskal(Collection<Vertex> totalVertices) {
-
-        int numVertices = totalVertices.size();
-        List<EdgeElement> totalEdges = totalVertices.stream().flatMap((Vertex v) -> v.edges.entrySet().stream()
-            .map((Entry<Vertex, Integer> e) -> new EdgeElement(v, e.getKey(), e.getValue()))).collect(Collectors.toList());
-        DisjSets ds = new DisjSets(numVertices);
-        PriorityQueue<EdgeElement> pq = new PriorityQueue<>(totalEdges);
-        List<EdgeElement> mst = new ArrayList<>();
-        while (mst.size() != numVertices - 1) {
-            EdgeElement e1 = pq.poll();
-            int uset = ds.find(e1.getU().id - 1);
-            int vset = ds.find(e1.getV().id - 1);
-            if (uset != vset) {
-                mst.add(e1);
-                ds.union(uset, vset);
-            }
-        }
-        return mst;
-    }
-
-    public static List<EdgeElement> prim(Iterable<Vertex> vertices) {
-        Map<Vertex, Integer> heap = new HashMap<>();
-        Map<Vertex, Vertex> mstHolder = new HashMap<>();
-        for (Vertex v : vertices) {
-            heap.put(v, Integer.MAX_VALUE);
-        }
-
-        while (!heap.isEmpty()) {
-            Entry<Vertex, Integer> minVertex = heap.entrySet().stream()
-                .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
-                .orElseThrow(() -> new Exception("There should be someone"));
-            heap.remove(minVertex.getKey());
-            Set<Entry<Vertex, Integer>> entrySet = minVertex.getKey().edges.entrySet();
-            for (Entry<Vertex, Integer> edge : entrySet) {
-                if (heap.containsKey(edge.getKey()) && heap.get(edge.getKey()) > edge.getValue()) {
-                    heap.put(edge.getKey(), edge.getValue());
-                    mstHolder.put(edge.getKey(), minVertex.getKey());
-                }
-            }
-
-        }
-        return mstHolder.entrySet().stream()
-            .map(e -> new EdgeElement(e.getValue(), e.getKey(), e.getValue().weight(e.getKey()))).collect(Collectors.toList());
-
     }
 
     public static void sortTopology(Collection<Vertex> vertices) {

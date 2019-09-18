@@ -1,13 +1,14 @@
 package graphs;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.aspose.imaging.internal.Exceptions.Exception;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
+import utils.DisjSets;
 import utils.HasLogging;
 
 public final class GraphAlgorithms {
@@ -15,7 +16,53 @@ public final class GraphAlgorithms {
 	private GraphAlgorithms() {
 	}
 
-	public static List<Vertex> createGraph1() {
+	public static List<EdgeElement> prim(Iterable<Vertex> vertices) {
+        Map<Vertex, Integer> heap = new HashMap<>();
+        Map<Vertex, Vertex> mstHolder = new HashMap<>();
+        for (Vertex v : vertices) {
+            heap.put(v, Integer.MAX_VALUE);
+        }
+    
+        while (!heap.isEmpty()) {
+            Entry<Vertex, Integer> minVertex = heap.entrySet().stream()
+                .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
+                .orElseThrow(() -> new Exception("There should be someone"));
+            heap.remove(minVertex.getKey());
+            Set<Entry<Vertex, Integer>> entrySet = minVertex.getKey().edges.entrySet();
+            for (Entry<Vertex, Integer> edge : entrySet) {
+                if (heap.containsKey(edge.getKey()) && heap.get(edge.getKey()) > edge.getValue()) {
+                    heap.put(edge.getKey(), edge.getValue());
+                    mstHolder.put(edge.getKey(), minVertex.getKey());
+                }
+            }
+    
+        }
+        return mstHolder.entrySet().stream()
+            .map(e -> new EdgeElement(e.getValue(), e.getKey(), e.getValue().weight(e.getKey()))).collect(Collectors.toList());
+    
+    }
+
+    public static List<EdgeElement> kruskal(Collection<Vertex> totalVertices) {
+    
+        int numVertices = totalVertices.size();
+        List<EdgeElement> totalEdges = totalVertices.stream().flatMap((Vertex v) -> v.edges.entrySet().stream()
+            .map((Entry<Vertex, Integer> e) -> new EdgeElement(v, e.getKey(), e.getValue()))).collect(Collectors.toList());
+        DisjSets ds = new DisjSets(numVertices);
+        PriorityQueue<EdgeElement> pq = new PriorityQueue<>(totalEdges);
+        List<EdgeElement> mst = new ArrayList<>();
+        while (mst.size() != numVertices - 1) {
+            EdgeElement e1 = pq.poll();
+            int uset = ds.find(e1.getU().id - 1);
+            int vset = ds.find(e1.getV().id - 1);
+            if (uset != vset) {
+                mst.add(e1);
+                ds.union(uset, vset);
+            }
+        }
+        return mst;
+    }
+
+    public static List<Vertex> createGraph1() {
 		List<Vertex> vertices = IntStream.range(1, 8).mapToObj(Vertex::new).collect(Collectors.toList());
 		int[][] adj = { { 2, 3, 4 }, { 4, 5 }, { 6 }, { 3, 6, 7 }, { 4, 7 }, {}, { 6 } };
 		for (int i = 0; i < adj.length; i++) {
@@ -178,8 +225,8 @@ public final class GraphAlgorithms {
 		vertices.get(0).assignLow(num, low);
         LOGGER.info("{}", num);
         LOGGER.info("{}", low);
-        LOGGER.info("{}", Vertex.kruskal(vertices));
-        LOGGER.info("{}", Vertex.prim(vertices));
+        LOGGER.info("{}", GraphAlgorithms.kruskal(vertices));
+        LOGGER.info("{}", GraphAlgorithms.prim(vertices));
 		Vertex.sortTopology(vertices);
 
 	}

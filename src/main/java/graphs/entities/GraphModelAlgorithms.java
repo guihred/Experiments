@@ -208,8 +208,7 @@ public final class GraphModelAlgorithms {
 
 
 
-	public static List<Triangle> triangulate(Graph graph, List<Cell> all) {
-		graph.getModel().removeAllEdges();
+    public static List<Triangle> triangulate(List<Cell> all) {
 		List<Triangle> triangleSoup = new ArrayList<>();
 		double maxOfAnyCoordinate = 0.0D;
 		List<Ponto> pointSet = getPointSet(all);
@@ -282,16 +281,6 @@ public final class GraphModelAlgorithms {
 		triangleSoup.removeIf(t2 -> t2.hasVertex(superTriangle.getB()));
 		triangleSoup.removeIf(t3 -> t3.hasVertex(superTriangle.getC()));
 
-		for (Triangle t : triangleSoup) {
-			Cell cella = t.getA().getC();
-			Cell cellb = t.getB().getC();
-			Cell cellc = t.getC().getC();
-
-			graph.getModel().addBiEdge(cella.getCellId(), cellb.getCellId(), (int) t.getA().sub(t.getB()).mag());
-			graph.getModel().addBiEdge(cella.getCellId(), cellc.getCellId(), (int) t.getA().sub(t.getC()).mag());
-			graph.getModel().addBiEdge(cellc.getCellId(), cellb.getCellId(), (int) t.getB().sub(t.getC()).mag());
-		}
-		graph.endUpdate();
 		return triangleSoup;
 	}
 

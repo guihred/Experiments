@@ -15,8 +15,8 @@ public enum PuzzlePath {
     ZIGZAGGED((x, y) -> {
         int i = x + y > 0 ? 1 : -1;
         return Arrays.asList(
-            new LineTo(nonZero(i * y * PuzzlePiece.SQRT_2, x / 2.0), nonZero(i * x * PuzzlePiece.SQRT_2, y / 2.0)),
-            new LineTo(nonZero(i * -y * PuzzlePiece.SQRT_2, x / 2.0), nonZero(i * -x * PuzzlePiece.SQRT_2, y / 2.0)));
+            new LineTo(nonZero(i * y * PuzzlePath.SQRT_2, x / 2.0), nonZero(i * x * PuzzlePath.SQRT_2, y / 2.0)),
+            new LineTo(nonZero(i * -y * PuzzlePath.SQRT_2, x / 2.0), nonZero(i * -x * PuzzlePath.SQRT_2, y / 2.0)));
     }),
     SQUARE((x, y) -> {
         int i = x + y > 0 ? 1 : -1;
@@ -45,6 +45,7 @@ public enum PuzzlePath {
     }),;
 
     private BiFunction<Double, Double, List<PathElement>> path;
+    public static final double SQRT_2 = Math.sqrt(0.5);
 
     PuzzlePath(BiFunction<Double, Double, List<PathElement>> path) {
         this.path = path;

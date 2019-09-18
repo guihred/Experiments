@@ -33,12 +33,14 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     @OneToMany(mappedBy = "exercise")
     private List<ContestQuestionAnswer> options;
 
-	@Column(length = 5000)
+    @Column(length = 5000)
     private String image;
 
+    public static final String QUESTION_PATTERN = " *QUESTÃO +(\\d+)\\s*___+\\s+";
+
     public void addOption(ContestQuestionAnswer e) {
-        if(options==null) {
-            options= new ArrayList<>();
+        if (options == null) {
+            options = new ArrayList<>();
         }
         options.add(e);
         if (options.size() > 5) {
@@ -51,11 +53,11 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     }
 
     @Override
-	public void appendImage(String image1) {
+    public void appendImage(String image1) {
         if (image == null) {
-			image = image1;
+            image = image1;
         } else {
-			image += ";" + image1;
+            image += ";" + image1;
         }
 
     }
@@ -74,12 +76,12 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     }
 
     public String getFormattedOptions() {
-        if(options==null) {
+        if (options == null) {
             return "";
         }
-        
+
         return options.stream().map(ContestQuestionAnswer::getAnswer).collect(Collectors.joining("\n\n"));
-        
+
     }
 
     @Override
@@ -115,16 +117,16 @@ public class ContestQuestion extends BaseEntity implements HasImage {
 
     @Override
     public boolean matches(String s0) {
-        boolean matches = s0.matches(ContestReader.QUESTION_PATTERN);
+        boolean matches = s0.matches(ContestQuestion.QUESTION_PATTERN);
         if (!matches) {
             return false;
         }
-        String split = s0.replaceAll(ContestReader.QUESTION_PATTERN, "$1");
+        String split = s0.replaceAll(ContestQuestion.QUESTION_PATTERN, "$1");
         return split.equals(number + "");
     }
 
     public void setAnswer(char charAt) {
-        int index = charAt-'A';
+        int index = charAt - 'A';
         if (index >= 0 && index < options.size()) {
             options.get(index).setCorrect(true);
         } else {
@@ -160,6 +162,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     public void setSubject(String subject) {
         this.subject = subject;
     }
+
     public void setType(QuestionType type) {
         this.type = type;
     }

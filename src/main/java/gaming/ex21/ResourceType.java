@@ -43,18 +43,6 @@ public enum ResourceType {
         return terrain;
     }
 
-    public static boolean containsEnough(Collection<CatanCard> list, Collection<ResourceType> resourcesNeeded) {
-        List<ResourceType> resources = list.stream().map(CatanCard::getResource).filter(Objects::nonNull)
-            .collect(Collectors.toList());
-        List<ResourceType> resourcesNecessary = resourcesNeeded.stream().collect(Collectors.toList());
-        for (int i = 0; i < resourcesNecessary.size(); i++) {
-            if (!resources.remove(resourcesNecessary.get(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static HBox createResourceChoices(Consumer<ResourceType> onSelect) {
         SimpleToggleGroupBuilder group = new SimpleToggleGroupBuilder();
         for (ResourceType type : ResourceType.values()) {

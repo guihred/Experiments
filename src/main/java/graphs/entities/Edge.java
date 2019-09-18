@@ -20,6 +20,7 @@ public class Edge extends Group implements Comparable<Edge> {
     private Line line;
     private Integer valor;
     private boolean directed;
+    public static final BooleanProperty SHOW_WEIGHT = new SimpleBooleanProperty(true);
 
     public Edge(@NamedArg("source") Cell source, @NamedArg("target") Cell target) {
         this(source, target, 1);
@@ -67,7 +68,7 @@ public class Edge extends Group implements Comparable<Edge> {
         }
 
         Text text = new Text(Integer.toString(valor));
-        text.visibleProperty().bind(Graph.SHOW_WEIGHT);
+        text.visibleProperty().bind(Edge.SHOW_WEIGHT);
         text.layoutXProperty().bind(line.startXProperty().add(line.endXProperty()).divide(2));
         text.layoutYProperty().bind(line.startYProperty().add(line.endYProperty()).divide(2));
         getChildren().addAll(text);

@@ -18,8 +18,6 @@ import javafx.util.Duration;
  */
 public class Physics extends Application {
 
-    public static final int WIDTH = 600;
-    public static final int HEIGHT = 600;
     public static final int PHYSICAL_WIDTH = 100;
     public static final int PHYSICAL_HEIGHT = 100;
     public static final int MAX_BALLS = 200;
@@ -28,7 +26,7 @@ public class Physics extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("JavaFX + Box2D");
         Group root = new Group();
-        PhysicalScene scene = new PhysicalScene(root, WIDTH, HEIGHT);
+        PhysicalScene scene = new PhysicalScene(root, BasePhysicalObject.WIDTH, BasePhysicalObject.HEIGHT);
 
         final Ball[] ball = new Ball[MAX_BALLS];
         SecureRandom r = new SecureRandom();
@@ -57,8 +55,8 @@ public class Physics extends Application {
         EventHandler<ActionEvent> onFinished = t -> {
             PhysicalScene.getWorld().step(1.0F / 60.F, 1, 1);
             for (int i = 0; i < MAX_BALLS; i++) {
-                float xpos = toPixelX(ball[i].body.getPosition().x);
-                float ypos = toPixelY(ball[i].body.getPosition().y);
+                float xpos = BasePhysicalObject.toPixelX(ball[i].body.getPosition().x);
+                float ypos = BasePhysicalObject.toPixelY(ball[i].body.getPosition().y);
                 ball[i].node.setLayoutX(xpos);
                 ball[i].node.setLayoutY(ypos);
             }
@@ -95,27 +93,5 @@ public class Physics extends Application {
 
     public static void main(String[] args) {
         Application.launch(args);
-    }
-
-    public static float toPixelHeight(float worldHeight) {
-        return HEIGHT * worldHeight / 100.0F;
-    }
-
-    public static float toPixelWidth(float worldWidth) {
-        return WIDTH * worldWidth / 100.0F;
-    }
-
-    /*
-     * JavaFX Coordinates: (0,0) --> (WIDTH,HEIGHT) in pixels World Coordinates:
-     * (0,100) --> (100, 0) in meters
-     */
-    public static int toPixelX(float worldX) {
-        float x = WIDTH * worldX / 100.0F;
-        return (int) x;
-    }
-
-    public static int toPixelY(float worldY) {
-        float y = HEIGHT - 1.0F * HEIGHT * worldY / 100.0F;
-        return (int) y;
     }
 }

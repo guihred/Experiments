@@ -23,7 +23,7 @@ import simplebuilder.SimpleTextBuilder;
 
 public class Port extends Group {
 
-    public static final double SIZE = Terrain.RADIUS * 0.9;
+    public static final double SIZE = CatanResource.RADIUS * 0.9;
     private final ResourceType type;
     private final ObservableList<SettlePoint> points = FXCollections.observableArrayList();
     private final IntegerProperty number = new SimpleIntegerProperty(2);
@@ -140,15 +140,15 @@ public class Port extends Group {
                     .filtered(p -> p.getNeighbors().size() == 2);
                 double x = neighbors.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
                 double y = neighbors.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
-                port.relocate(x - Terrain.RADIUS / 2., y - Terrain.RADIUS / 2.);
+                port.relocate(x - CatanResource.RADIUS / 2., y - CatanResource.RADIUS / 2.);
             } else {
-                final double radius = Terrain.RADIUS * Math.sqrt(3) / 4;
+                final double radius = CatanResource.RADIUS * Math.sqrt(3) / 4;
                 double x = points.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
                 double y = points.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
                 double angulo = Math.PI / 2 - Edge.getAngulo(radius * 3, radius * 3 * 9 / 10, x, y);
                 double m = Math.sin(angulo) * radius;
                 double n = Math.cos(angulo) * radius;
-                port.relocate(x + m - Terrain.RADIUS / 2., y + n - Terrain.RADIUS / 2.);
+                port.relocate(x + m - CatanResource.RADIUS / 2., y + n - CatanResource.RADIUS / 2.);
             }
         }
     }private static ImageView newBoat() {

@@ -18,9 +18,7 @@ import javafx.collections.ObservableList;
  * @author Note
  */
 public class TronModel {
-    public static final int MAP_SIZE = 50;
-
-	private final TronSquare[][] map = new TronSquare[MAP_SIZE][MAP_SIZE];
+    private final TronSquare[][] map = new TronSquare[TronSquare.MAP_SIZE][TronSquare.MAP_SIZE];
 
 	private final ObservableList<TronSquare> snake = FXCollections.observableArrayList();
 
@@ -28,18 +26,18 @@ public class TronModel {
     private final SecureRandom random = new SecureRandom();
 
     public TronModel() {
-        for (int i = 0; i < MAP_SIZE; i++) {
-            for (int j = 0; j < MAP_SIZE; j++) {
+        for (int i = 0; i < TronSquare.MAP_SIZE; i++) {
+            for (int j = 0; j < TronSquare.MAP_SIZE; j++) {
 				map[i][j] = new TronSquare(i, j);
             }
         }
 
-        int i = random.nextInt(MAP_SIZE);
-        int j = random.nextInt(MAP_SIZE);
+        int i = random.nextInt(TronSquare.MAP_SIZE);
+        int j = random.nextInt(TronSquare.MAP_SIZE);
 
 		snake.add(map[i][j]);
-        i = random.nextInt(MAP_SIZE);
-        j = random.nextInt(MAP_SIZE);
+        i = random.nextInt(TronSquare.MAP_SIZE);
+        j = random.nextInt(TronSquare.MAP_SIZE);
 		map[i][j].setState(TronState.FOOD);
         snake.addListener((ListChangeListener.Change<? extends TronSquare> c) -> {
             c.next();
@@ -62,17 +60,17 @@ public class TronModel {
 
 	public final void reset() {
         getSnake().clear();
-        for (int i = 0; i < MAP_SIZE; i++) {
-            for (int j = 0; j < MAP_SIZE; j++) {
+        for (int i = 0; i < TronSquare.MAP_SIZE; i++) {
+            for (int j = 0; j < TronSquare.MAP_SIZE; j++) {
 				map[i][j].setState(TronState.NONE);
             }
         }
-        int i = random.nextInt(MAP_SIZE);
-        int j = random.nextInt(MAP_SIZE);
+        int i = random.nextInt(TronSquare.MAP_SIZE);
+        int j = random.nextInt(TronSquare.MAP_SIZE);
 
 		getSnake().add(map[i][j]);
-        i = random.nextInt(MAP_SIZE);
-        j = random.nextInt(MAP_SIZE);
+        i = random.nextInt(TronSquare.MAP_SIZE);
+        j = random.nextInt(TronSquare.MAP_SIZE);
 		map[i][j].setState(TronState.FOOD);
 
     }
@@ -87,16 +85,16 @@ public class TronModel {
         int j = head.getJ();
         switch (getDirection()) {
             case LEFT:
-                i = (i - 1 + MAP_SIZE) % MAP_SIZE;
+                i = (i - 1 + TronSquare.MAP_SIZE) % TronSquare.MAP_SIZE;
                 break;
             case RIGHT:
-                i = (i + 1) % MAP_SIZE;
+                i = (i + 1) % TronSquare.MAP_SIZE;
                 break;
             case UP:
-                j = (j - 1 + MAP_SIZE) % MAP_SIZE;
+                j = (j - 1 + TronSquare.MAP_SIZE) % TronSquare.MAP_SIZE;
                 break;
             case DOWN:
-                j = (j + 1) % MAP_SIZE;
+                j = (j + 1) % TronSquare.MAP_SIZE;
                 break;
             default:
         }

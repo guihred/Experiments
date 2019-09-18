@@ -27,6 +27,7 @@ public class MazeSquare extends BorderPane {
     private List<BoundingBox> bounds;
 
     private List<MazeSquare> adjacents;
+    public static final int MAZE_SIZE = 24;
 
     public MazeSquare(@NamedArg("i") int i, @NamedArg("j") int j) {
         this.i = i;
@@ -119,10 +120,10 @@ public class MazeSquare extends BorderPane {
         if (bounds == null) {
 
             double layoutX = i * MazeSquare.SQUARE_SIZE;
-            double layoutX2 = MazeModel.MAZE_SIZE * 2 * MazeSquare.SQUARE_SIZE - i * MazeSquare.SQUARE_SIZE
+            double layoutX2 = MazeSquare.MAZE_SIZE * 2 * MazeSquare.SQUARE_SIZE - i * MazeSquare.SQUARE_SIZE
                 - MazeSquare.SQUARE_SIZE;
             double layoutY = j * MazeSquare.SQUARE_SIZE;
-            double layoutY2 = MazeModel.MAZE_SIZE * 2 * MazeSquare.SQUARE_SIZE - j * MazeSquare.SQUARE_SIZE
+            double layoutY2 = MazeSquare.MAZE_SIZE * 2 * MazeSquare.SQUARE_SIZE - j * MazeSquare.SQUARE_SIZE
                 - MazeSquare.SQUARE_SIZE;
             List<BoundingBox> arrayList = new ArrayList<>();
             arrayList.add(new BoundingBox(layoutX, layoutY, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));

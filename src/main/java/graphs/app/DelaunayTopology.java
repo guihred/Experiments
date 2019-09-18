@@ -3,7 +3,6 @@ package graphs.app;
 import graphs.entities.Cell;
 import graphs.entities.CellType;
 import graphs.entities.Graph;
-import graphs.entities.GraphModelAlgorithms;
 import java.util.List;
 import javafx.beans.NamedArg;
 
@@ -30,7 +29,7 @@ public class DelaunayTopology extends BaseTopology {
             cell.relocate(x, y);
         }
 
-        GraphModelAlgorithms.triangulate(graph, graph.getModel().getAddedCells());
+        graph.getModel().triangulate(graph.getModel().getAddedCells());
 
         graph.endUpdate();
     }

@@ -2,7 +2,6 @@ package gaming.ex21;
 
 import static gaming.ex21.CatanCard.inArea;
 import static gaming.ex21.CatanResource.newImage;
-import static gaming.ex21.ResourceType.containsEnough;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,6 +69,13 @@ public class CatanModel {
         right.getChildren().add(addCombinations());
         currentPlayer.set(PlayerColor.BLUE);
         onSkipTurn();
+        userChart.setOnWin(CatanModel::create);
+    }
+
+    public boolean anyPlayerPoints(int i, CatanModel model) {
+        return PlayerColor.vals().stream()
+            .mapToLong(e -> userChart.countPoints(e, model.settlePoints, model.usedCards, model.edges)).max()
+            .orElse(0) >= i;
     }
 
     public PlayerColor getCurrentPlayer() {
@@ -80,6 +86,13 @@ public class CatanModel {
         return elements;
     }
 
+    public PlayerColor getPlayerWinner() {
+        return PlayerColor.vals().stream()
+            .max(Comparator.comparing((PlayerColor e) -> getUserChart().countPoints(e, settlePoints, usedCards, edges))
+                .thenComparing((PlayerColor e) -> cards.get(e).size()))
+            .orElse(getUserChart().getColor());
+    }
+
     public UserChart getUserChart() {
         return userChart;
     }
@@ -87,7 +100,6 @@ public class CatanModel {
     public boolean isDealUnfeasible(Deal deal) {
         return Deal.isDealUnfeasible(deal, currentPlayer, cards);
     }
-
     private Node addCombinations() {
         GridPane value = new GridPane();
         Combination[] combinations = Combination.values();
@@ -111,7 +123,7 @@ public class CatanModel {
         if (list == null) {
             return true;
         }
-        if (!containsEnough(list, combination.getResources())) {
+        if (!CatanCard.containsEnough(list, combination.getResources())) {
             return true;
         }
         Map<Class<?>, Long> elementCount = settlePoints.stream()
@@ -256,7 +268,7 @@ public class CatanModel {
 
     private void onCombinationClicked(Combination combination) {
         List<CatanCard> currentCards = cards.get(currentPlayer.get());
-        if (containsEnough(currentCards, combination.getResources())) {
+        if (CatanCard.containsEnough(currentCards, combination.getResources())) {
             List<ResourceType> resources = combination.getResources().stream().collect(Collectors.toList());
             for (int i = 0; i < resources.size(); i++) {
                 ResourceType r = resources.get(i);
@@ -527,7 +539,6 @@ public class CatanModel {
         getUserChart().updatePorts(newV, ports, settlePoints, currentPlayer);
         invalidateDice();
     }
-
     public static CatanModel create(Pane root, Pane value) {
         return new CatanModel(root, value);
     }

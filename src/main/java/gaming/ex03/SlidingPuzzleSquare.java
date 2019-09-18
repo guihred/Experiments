@@ -14,6 +14,7 @@ public class SlidingPuzzleSquare extends Region {
 	private final IntegerProperty number;
 	private StackPane stackPane;
 	private Text text = new Text();
+    public static final int MAP_SIZE = 4;
 
     public SlidingPuzzleSquare(@NamedArg("number") int number) {
         this.number = new SimpleIntegerProperty(number);
@@ -54,7 +55,7 @@ public class SlidingPuzzleSquare extends Region {
     }
 
     public final boolean isEmpty() {
-        return number.get() == SlidingPuzzleModel.MAP_SIZE * SlidingPuzzleModel.MAP_SIZE;
+        return number.get() == SlidingPuzzleSquare.MAP_SIZE * SlidingPuzzleSquare.MAP_SIZE;
     }
 
     public void setNumber(int value) {
