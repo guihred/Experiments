@@ -1,4 +1,4 @@
-package log.analyze;
+package others;
 
 import java.io.File;
 import java.io.FileOutputStream;

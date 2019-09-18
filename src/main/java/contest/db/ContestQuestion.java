@@ -1,11 +1,11 @@
 package contest.db;
 
-import japstudy.db.BaseEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.*;
+import utils.BaseEntity;
 import utils.HasImage;
 
 @Entity

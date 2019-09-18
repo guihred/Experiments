@@ -225,7 +225,7 @@ public class TableVisualizationExampleApp extends Application {
     }
 
     private static Node createTableDemoNode() {
-        return new SimpleTableViewBuilder<Person>().items(getTeamMembers()).addColumn("First Name", "firstName")
+        return new SimpleTableViewBuilder<SimplePerson>().items(getTeamMembers()).addColumn("First Name", "firstName")
             .addColumn("Last Name", "lastName").addColumn("Phone Number", "phone")
             .onSelect((old, newValue) -> LOG.info("{} chosen in TableView", newValue)).build();
     }

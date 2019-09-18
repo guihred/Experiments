@@ -1,7 +1,7 @@
 package paintexp.tool;
 
 import static utils.DrawOnPoint.within;
-import static utils.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinImage;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
@@ -77,6 +77,11 @@ public class RectBuilder extends PaintTool {
         }
     }
 
+    @Override
+    public Node createIcon() {
+        return null;
+    }
+
     public void drawFill(final PaintModel model) {
         final double x = centerX1;
         final double y = startY;
@@ -99,7 +104,7 @@ public class RectBuilder extends PaintTool {
         int startY2 = (int) startY;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (withinRange(startX2 + i, startY2 + j, model)) {
+                if (withinImage(startX2 + i, startY2 + j, model.getImage())) {
                     model.getImage().getPixelWriter().setColor(startX2 + i, startY2 + j, backColor);
                 }
             }
@@ -111,7 +116,7 @@ public class RectBuilder extends PaintTool {
         int startY2 = (int) startY;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (withinRange(startX2 + i, startY2 + j, model)) {
+                if (withinImage(startX2 + i, startY2 + j, model.getImage())) {
                     PaintTool.drawPointTransparency(model, startX2 + i, startY2 + j, backColor, opacity);
                 }
             }
@@ -141,11 +146,6 @@ public class RectBuilder extends PaintTool {
         return this;
     }
 
-    @Override
-    public Node createIcon() {
-        return null;
-    }
-
     public RectBuilder height(double value) {
         height = value;
         update();
@@ -173,7 +173,7 @@ public class RectBuilder extends PaintTool {
     protected void drawRect(final PaintModel model, final int color) {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (withinRange(startX + i, startY + j, model)) {
+                if (withinImage(startX + i, startY + j, model.getImage())) {
                     int argb = model.getImage().getPixelReader().getArgb((int) startX + i, (int) startY + j);
                     if (argb == color) {
                         model.getImage().getPixelWriter().setColor((int) startX + i, (int) startY + j,

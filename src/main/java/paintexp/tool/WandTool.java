@@ -1,7 +1,7 @@
 package paintexp.tool;
 
 import static utils.DrawOnPoint.within;
-import static utils.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinImage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,9 @@ public class WandTool extends SelectRectTool {
             Integer next = toGo.remove(0);
             int x = x(next);
             int y = y(next);
-            if (withinRange(x, y, model)) {
+            final int x1 = x;
+            final int y1 = y;
+            if (withinImage(x1, y1, model.getImage())) {
                 int color = pixelReader.getArgb(x, y);
                 pixel.reset(originalColor);
                 if (closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0

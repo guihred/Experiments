@@ -3,8 +3,8 @@ package contest.db;
 import static java.util.stream.Collectors.toList;
 
 import japstudy.db.BaseDAO;
-import japstudy.db.BaseEntity;
 import java.util.List;
+import utils.BaseEntity;
 
 public class ContestQuestionDAO extends BaseDAO {
 

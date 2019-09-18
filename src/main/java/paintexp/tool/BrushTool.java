@@ -1,6 +1,6 @@
 package paintexp.tool;
 
-import static utils.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinImage;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -133,7 +133,9 @@ public class BrushTool extends PaintTool {
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
-        if (pressed && withinRange(x2, y2, model)) {
+        final int x1 = x2;
+        final int y1 = y2;
+        if (pressed && withinImage(x1, y1, model.getImage())) {
             drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(e, model, x3, y3, false));
 
             y = (int) e.getY();
@@ -180,7 +182,7 @@ public class BrushTool extends PaintTool {
     private void drawUponOption(final MouseEvent e, final PaintModel model, final int x2, final int y2,
         final boolean fill) {
 
-        if (withinRange(x2, y2, model)) {
+        if (withinImage(x2, y2, model.getImage())) {
             double r = length.getValue().doubleValue();
             Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
             double op = opacity.get();

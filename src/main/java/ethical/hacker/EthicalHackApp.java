@@ -1,6 +1,5 @@
 package ethical.hacker;
 
-import static schema.sngpc.FXMLCreatorHelper.loadFXML;
 import static utils.ResourceFXUtils.toFile;
 
 import java.util.*;
@@ -18,6 +17,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
+import utils.CommonsFX;
 import utils.HasLogging;
 
 public class EthicalHackApp extends Application {
@@ -26,7 +26,8 @@ public class EthicalHackApp extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        loadFXML(toFile("EthicalHackApp.fxml"), "Ethical Hack App", primaryStage, 500, 500);
+        double[] size = { 500, 500 };
+        CommonsFX.loadFXML(toFile("EthicalHackApp.fxml"), "Ethical Hack App", primaryStage, size);
     }
 
     public static void main(final String[] args) {

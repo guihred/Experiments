@@ -1,6 +1,6 @@
 package paintexp.tool;
 
-import static utils.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinImage;
 
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.IntegerProperty;
@@ -63,7 +63,8 @@ public class SprayTool extends PaintTool {
             double t = rnd(2 * Math.PI);
             int x = (int) Math.round(radius * Math.cos(t));
             int y = (int) Math.round(radius * Math.sin(t));
-            if (withinRange(x + centerX, y + centerY, paintModel)) {
+            final PaintModel model = paintModel;
+            if (withinImage(x + centerX, y + centerY, model.getImage())) {
                 argb = pixelReader.getArgb(x + centerX, y + centerY);
             }
             try {

@@ -18,7 +18,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.*;
 import org.slf4j.Logger;
-import others.TreeElement;
 import simplebuilder.SimpleVBoxBuilder;
 
 public final class StageHelper {

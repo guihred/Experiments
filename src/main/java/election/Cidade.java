@@ -1,9 +1,9 @@
 package election;
 
-import japstudy.db.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import utils.BaseEntity;
 
 
 @Entity

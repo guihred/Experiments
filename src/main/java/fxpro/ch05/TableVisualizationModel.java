@@ -41,10 +41,10 @@ public final class TableVisualizationModel {
         };
         return webSites[secureRandom.nextInt(webSites.length)];
     }
-	public static ObservableList<Person> getTeamMembers() {
-        ObservableList<Person> teamMembers = FXCollections.observableArrayList();
+	public static ObservableList<SimplePerson> getTeamMembers() {
+        ObservableList<SimplePerson> teamMembers = FXCollections.observableArrayList();
 		for (int i = 1; i <= 100; i++) {
-            teamMembers.add(new Person("FirstName" + i,
+            teamMembers.add(new SimplePerson("FirstName" + i,
                     "LastName" + i,
                     "Phone" + i));
         }

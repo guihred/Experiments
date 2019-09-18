@@ -1,10 +1,9 @@
 package schema.sngpc;
 
 import static java.util.stream.Collectors.joining;
-import static others.TreeElement.compareTree;
-import static others.TreeElement.displayMissingElement;
-import static utils.ResourceFXUtils.convertToURL;
 import static utils.RunnableEx.remap;
+import static utils.TreeElement.compareTree;
+import static utils.TreeElement.displayMissingElement;
 
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
@@ -15,7 +14,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
 import javafx.scene.Parent;
@@ -106,18 +104,8 @@ public final class FXMLCreatorHelper {
 
     public static Stage duplicateStage(File file, String title, double... size) {
         Stage primaryStage = new Stage();
-        loadFXML(file, title, primaryStage, size);
+        CommonsFX.loadFXML(file, title, primaryStage, size);
         return primaryStage;
-    }
-
-    public static void loadFXML(File file, String title, Stage primaryStage, double... size) {
-        RunnableEx.remap(() -> {
-            Parent content = FXMLLoader.load(convertToURL(file));
-            Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
-            primaryStage.setTitle(title);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        }, "ERROR in file " + file);
     }
 
     public static void main(String[] argv) {

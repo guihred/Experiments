@@ -1,7 +1,7 @@
 package paintexp.tool;
 
 import static utils.DrawOnPoint.getWithinRange;
-import static utils.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinImage;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
@@ -130,7 +130,9 @@ public class SelectFreeTool extends SelectRectTool {
             for (int j = 0; j < height; j++) {
                 int localX = i + minX;
                 int localY = j + minY;
-                if (withinRange(localX, localY, model)) {
+                final int x = localX;
+                final int y = localY;
+                if (withinImage(x, y, model.getImage())) {
                     if (getPolygon().contains(localX, localY)
                         && (option == SelectOption.OPAQUE || currentImageReader.getArgb(localX, localY) != backColor)) {
                         finalImage.setArgb(i, j, currentImageReader.getArgb(localX, localY));

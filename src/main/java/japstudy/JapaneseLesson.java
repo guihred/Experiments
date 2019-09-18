@@ -1,12 +1,12 @@
 package japstudy;
 
-import japstudy.db.BaseEntity;
 import java.time.LocalTime;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import utils.BaseEntity;
 
 @Entity
 @Table

@@ -1,15 +1,15 @@
 package schema.sngpc;
 
-import static japstudy.db.BaseEntity.mapProperty;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static others.TreeElement.getDifferences;
 import static schema.sngpc.FXMLCreatorHelper.*;
+import static utils.BaseEntity.mapProperty;
 import static utils.ClassReflectionUtils.*;
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.RunnableEx.make;
 import static utils.StringSigaUtils.changeCase;
+import static utils.TreeElement.getDifferences;
 
 import java.io.File;
 import java.io.IOException;

@@ -39,7 +39,7 @@ public class Physics extends Application {
         final Ramp leftNet = new Ramp(0, 90, 40, 85);
         final Ramp rightNet = new Ramp(60, 85, PHYSICAL_WIDTH, 90);
 
-        final Ground ground = new Ground();
+        final GroundObject ground = new GroundObject();
 
         final Wall leftWall = new Wall(0, 0, 1, PHYSICAL_HEIGHT);
         final Wall rightWall = new Wall(99, 0, 1, PHYSICAL_HEIGHT);

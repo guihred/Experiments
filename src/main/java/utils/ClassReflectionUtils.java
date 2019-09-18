@@ -3,7 +3,6 @@ package utils;
 import static java.util.stream.Collectors.joining;
 import static utils.StringSigaUtils.changeCase;
 
-import japstudy.db.BaseEntity;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;

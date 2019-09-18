@@ -1,7 +1,7 @@
 package contest.db;
 
-import japstudy.db.BaseEntity;
 import javax.persistence.*;
+import utils.BaseEntity;
 
 @Table
 @Entity

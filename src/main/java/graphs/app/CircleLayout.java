@@ -33,7 +33,7 @@ public class CircleLayout implements Layout {
     public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges, double centerX, double centerY,
             double startAngle, int mul) {
 		Set<Cell> visited = new HashSet<>();
-        int bound = radius(cells.size(), cells.size() == 1 ? 0 : mul,
+        int bound = radius(cells.size(), mul == 1 && cells.size() == 1 ? 0 : mul,
                 cells.stream().mapToDouble(Cell::getWidth).max().orElse(20));
 		int size = cells.size();
 		double step = 360.0 / size;

@@ -1,7 +1,7 @@
 package paintexp.tool;
 
 import static utils.DrawOnPoint.within;
-import static utils.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinImage;
 
 import javafx.beans.property.Property;
 import javafx.event.EventType;
@@ -179,14 +179,20 @@ public abstract class PaintTool extends Group {
         double maxY = Math.max(startY, endY);
         for (int x = (int) minX; x < maxX; x++) {
             int y = (int) (!Double.isNaN(a) ? Math.round(a * x + b) : endY);
-            if (withinRange(x, y, model) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
+            final int x1 = x;
+            final int y1 = y;
+            final PaintModel model1 = model;
+            if (withinImage(x1, y1, model1.getImage()) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
                 onPoint.draw(x, y);
             }
         }
         for (int y = (int) minY; y < maxY; y++) {
             if (a != 0) {
                 int x = (int) (Double.isNaN(a) ? startX : Math.round((y - b) / a));
-                if (withinRange(x, y, model) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
+                final int x1 = x;
+                final int y1 = y;
+                final PaintModel model1 = model;
+                if (withinImage(x1, y1, model1.getImage()) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
                     onPoint.draw(x, y);
                 }
             }
@@ -199,13 +205,19 @@ public abstract class PaintTool extends Group {
     }
 
     protected static void drawPoint(PaintModel model, int x2, int y2, Color frontColor) {
-        if (withinRange(x2, y2, model)) {
+        final int x = x2;
+        final int y = y2;
+        final PaintModel model1 = model;
+        if (withinImage(x, y, model1.getImage())) {
             model.getImage().getPixelWriter().setColor(x2, y2, frontColor);
         }
     }
 
     protected static void drawPointIf(PaintModel model, int x2, int y2, int color, Color backColor) {
-        if (withinRange(x2, y2, model)) {
+        final int x = x2;
+        final int y = y2;
+        final PaintModel model1 = model;
+        if (withinImage(x, y, model1.getImage())) {
             int argb = model.getImage().getPixelReader().getArgb(x2, y2);
             if (argb == color) {
                 model.getImage().getPixelWriter().setColor(x2, y2, backColor);
@@ -214,7 +226,10 @@ public abstract class PaintTool extends Group {
     }
 
     protected static void drawPointTransparency(PaintModel model, int x2, int y2, Color frontColor, double opacity) {
-        if (withinRange(x2, y2, model)) {
+        final int x = x2;
+        final int y = y2;
+        final PaintModel model1 = model;
+        if (withinImage(x, y, model1.getImage())) {
             int index = Math.max(model.getImageVersions().size() - 1, 0);
             Color color = model.getImageVersions().get(index).getPixelReader().getColor(x2, y2);
             Color color2 = color.interpolate(frontColor, opacity);

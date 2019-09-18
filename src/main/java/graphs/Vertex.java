@@ -194,16 +194,16 @@ public class Vertex {
         LOG.info(chainString);
     }
 
-    public static List<Edge> kruskal(Collection<Vertex> totalVertices) {
+    public static List<EdgeElement> kruskal(Collection<Vertex> totalVertices) {
 
         int numVertices = totalVertices.size();
-        List<Edge> totalEdges = totalVertices.stream().flatMap((Vertex v) -> v.edges.entrySet().stream()
-            .map((Entry<Vertex, Integer> e) -> new Edge(v, e.getKey(), e.getValue()))).collect(Collectors.toList());
+        List<EdgeElement> totalEdges = totalVertices.stream().flatMap((Vertex v) -> v.edges.entrySet().stream()
+            .map((Entry<Vertex, Integer> e) -> new EdgeElement(v, e.getKey(), e.getValue()))).collect(Collectors.toList());
         DisjSets ds = new DisjSets(numVertices);
-        PriorityQueue<Edge> pq = new PriorityQueue<>(totalEdges);
-        List<Edge> mst = new ArrayList<>();
+        PriorityQueue<EdgeElement> pq = new PriorityQueue<>(totalEdges);
+        List<EdgeElement> mst = new ArrayList<>();
         while (mst.size() != numVertices - 1) {
-            Edge e1 = pq.poll();
+            EdgeElement e1 = pq.poll();
             int uset = ds.find(e1.getU().id - 1);
             int vset = ds.find(e1.getV().id - 1);
             if (uset != vset) {
@@ -214,7 +214,7 @@ public class Vertex {
         return mst;
     }
 
-    public static List<Edge> prim(Iterable<Vertex> vertices) {
+    public static List<EdgeElement> prim(Iterable<Vertex> vertices) {
         Map<Vertex, Integer> heap = new HashMap<>();
         Map<Vertex, Vertex> mstHolder = new HashMap<>();
         for (Vertex v : vertices) {
@@ -236,7 +236,7 @@ public class Vertex {
 
         }
         return mstHolder.entrySet().stream()
-            .map(e -> new Edge(e.getValue(), e.getKey(), e.getValue().weight(e.getKey()))).collect(Collectors.toList());
+            .map(e -> new EdgeElement(e.getValue(), e.getKey(), e.getValue().weight(e.getKey()))).collect(Collectors.toList());
 
     }
 

@@ -1,4 +1,4 @@
-package japstudy.db;
+package utils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.value.WritableValue;
-import utils.HasLogging;
 
 public abstract class BaseEntity implements Serializable, HasLogging {
 

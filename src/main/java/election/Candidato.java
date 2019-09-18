@@ -1,8 +1,8 @@
 package election;
 
-import japstudy.db.BaseEntity;
 import java.time.LocalDate;
 import javax.persistence.*;
+import utils.BaseEntity;
 
 @Entity
 @Table

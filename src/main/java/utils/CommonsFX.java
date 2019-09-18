@@ -1,5 +1,8 @@
 package utils;
 
+import static utils.ResourceFXUtils.convertToURL;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,10 +12,14 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
@@ -43,6 +50,16 @@ public final class CommonsFX {
         }
         Collections.shuffle(availableColors);
         return availableColors;
+    }
+
+    public static void loadFXML(File file, String title, Stage primaryStage, double... size) {
+        RunnableEx.remap(() -> {
+            Parent content = FXMLLoader.load(convertToURL(file));
+            Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
+            primaryStage.setTitle(title);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        }, "ERROR in file " + file);
     }
     public static Button newButton(final double layoutX, final double layoutY, final String nome,
         final EventHandler<ActionEvent> onAction) {

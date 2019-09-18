@@ -2,22 +2,22 @@ package graphs;
 
 import java.util.Objects;
 
-public class Edge implements Comparable<Edge> {
+public class EdgeElement implements Comparable<EdgeElement> {
 	private Vertex u;
 	private Vertex v;
 	private Integer weight;
 
-	public Edge() {
+	public EdgeElement() {
 	}
 
-	public Edge(Vertex u, Vertex v, Integer weight) {
+	public EdgeElement(Vertex u, Vertex v, Integer weight) {
 		this.u = u;
 		this.v = v;
 		this.weight = weight;
 	}
 
 	@Override
-	public int compareTo(Edge o) {
+	public int compareTo(EdgeElement o) {
 		return Integer.compare(weight, o.weight);
 	}
 
@@ -26,7 +26,7 @@ public class Edge implements Comparable<Edge> {
         if (obj == null || !getClass().isInstance(obj)) {
             return false;
         }
-		Edge other = (Edge) obj;
+		EdgeElement other = (EdgeElement) obj;
 		if (Objects.equals(u, other.u) && Objects.equals(v, other.v)) {
 			return true;
 		}

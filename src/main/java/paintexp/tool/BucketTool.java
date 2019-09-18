@@ -1,5 +1,5 @@
 package paintexp.tool;
-import static utils.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinImage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,9 @@ public class BucketTool extends PaintTool {
 			Integer next = toGo.remove(0);
 			int x = x(next);
 			int y = y(next);
-			if (withinRange(x, y, model)) {
+            final int x1 = x;
+            final int y1 = y;
+			if (withinImage(x1, y1, model.getImage())) {
 				int color = pixelReader.getArgb(x, y);
 				if (color == originalColor) {
 					if (y != 0 && y != height - 1) {

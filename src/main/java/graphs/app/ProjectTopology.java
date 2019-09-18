@@ -2,7 +2,6 @@ package graphs.app;
 
 import graphs.entities.Cell;
 import graphs.entities.CellType;
-import graphs.entities.Edge;
 import graphs.entities.Graph;
 import java.io.File;
 import java.nio.file.Files;
@@ -43,9 +42,9 @@ public class ProjectTopology extends BaseTopology {
             Map<String, Long> map = packageDependencyMap.get(cellId);
             map.forEach((dep, weight) -> graph.getModel().addEdge(cellId, dep, weight.intValue()));
         }
-        List<Edge> addedEdges = graph.getModel().getAddedEdges();
-        LayerLayout.displayInLayers(cells, addedEdges);
         graph.endUpdate();
+        double w = graph.getScrollPane().getWidth() / 2;
+        ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges(), w);
 
     }
 

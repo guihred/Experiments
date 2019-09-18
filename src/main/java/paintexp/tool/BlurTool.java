@@ -1,6 +1,6 @@
 package paintexp.tool;
 import static utils.DrawOnPoint.getWithinRange;
-import static utils.DrawOnPoint.withinRange;
+import static utils.DrawOnPoint.withinImage;
 
 import java.util.Arrays;
 import javafx.beans.property.IntegerProperty;
@@ -49,7 +49,9 @@ public class BlurTool extends PaintTool {
 	protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		int y2 = (int) e.getY();
 		int x2 = (int) e.getX();
-		if (withinRange(x2, y2, model)) {
+        final int x1 = x2;
+        final int y1 = y2;
+		if (withinImage(x1, y1, model.getImage())) {
 			drawLine(model, x, y, x2, y2, (x3, y3) -> drawBlur(x3, y3, model));
 			y = (int) e.getY();
 			x = (int) e.getX();
@@ -77,7 +79,7 @@ public class BlurTool extends PaintTool {
 				int x2 = (int) Math.round(i * Math.cos(t));
 				int y2 = (int) Math.round(i * Math.sin(t));
 				pixel.reset();
-				if (withinRange(x2 + centerX, y2 + centerY, model)) {
+				if (withinImage(x2 + centerX, y2 + centerY, model.getImage())) {
 					int pix = model.getImage().getPixelReader().getArgb(x2 + centerX, y2 + centerY);
 					pixel.add(pix, 5);
 					for (int j = -1; j < 2; j += 2) {

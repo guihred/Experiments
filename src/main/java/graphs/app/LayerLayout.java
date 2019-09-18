@@ -5,9 +5,11 @@ import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
 import graphs.entities.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
 import javafx.scene.paint.Color;
 
@@ -26,7 +28,7 @@ public class LayerLayout implements Layout {
         graph.clean();
 		List<Cell> cells = model.getAllCells();
 
-        displayInLayers(cells, model.getAllEdges());
+        layoutInLayers(cells, model.getAllEdges());
 
     }
 
@@ -66,23 +68,23 @@ public class LayerLayout implements Layout {
     }
 
     public static void layoutInLayers(List<Cell> cells, List<Edge> addedEdges) {
-        GraphModelAlgorithms.coloring(cells, addedEdges);
-        Map<Color, List<Cell>> cellByColor = cells.stream().collect(Collectors.groupingBy(Cell::getColor));
 
-        List<List<Cell>> orderedCellGroups = cellByColor.entrySet().stream()
-                .sorted(Comparator.comparing(e -> numberOfEdges(e, addedEdges)))
-                .map(Entry<Color, List<Cell>>::getValue).collect(Collectors.toList());
-        final double bound = 800;
-        double layerHeight = bound / (orderedCellGroups.size() + 1);
+        List<List<Cell>> orderedCellGroups = LayerSplitter.getLayers(cells, addedEdges);
+        final double bound = orderedCellGroups.stream()
+            .mapToDouble(l -> l.stream().mapToDouble(e -> e.getHeight()).max().orElse(0)).sum();
+        double sum2 = orderedCellGroups.stream().mapToDouble(l -> l.stream().mapToDouble(e -> e.getWidth()).sum()).max()
+            .orElse(0) + 400;
+        double layerHeight = bound / (orderedCellGroups.size() + 1) + 50;
         double y = layerHeight;
         for (List<Cell> list : orderedCellGroups) {
-            double xStep = bound / (list.size() + 1);
-            double x = xStep;
+            double sum = list.stream().mapToDouble(e -> e.getWidth()).sum();
+            double xStep = 5;
+            double x = sum2 / 2 - sum / 2;
             for (int i = 0; i < list.size(); i++) {
                 Cell cell = list.get(i);
-                cell.setColor(null);
-                cell.relocate(x, y + i % 2 * layerHeight / 4.0);
-                x += xStep;
+                cell.relocate(x, y);
+
+                x += cell.getWidth() + xStep;
             }
             y += layerHeight;
         }

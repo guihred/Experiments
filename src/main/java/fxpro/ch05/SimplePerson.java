@@ -7,7 +7,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Note
  */
-public final class Person {
+public final class SimplePerson {
 
     private StringProperty firstName;
 
@@ -15,7 +15,7 @@ public final class Person {
 
     private StringProperty phone;
 
-    public Person(String firstName, String lastName, String phone) {
+    public SimplePerson(String firstName, String lastName, String phone) {
         setFirstName(firstName);
         setLastName(lastName);
         setPhone(phone);

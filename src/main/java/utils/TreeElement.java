@@ -1,4 +1,4 @@
-package others;
+package utils;
 
 import static utils.ClassReflectionUtils.getFieldNameCase;
 import static utils.ClassReflectionUtils.getGetterMethodsRecursive;
@@ -11,7 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
-import utils.FunctionEx;
 
 public class TreeElement<T> {
 

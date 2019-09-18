@@ -1,7 +1,6 @@
 package utils;
 
 import javafx.scene.image.WritableImage;
-import paintexp.PaintModel;
 
 @FunctionalInterface
 public interface DrawOnPoint {
@@ -29,15 +28,6 @@ public interface DrawOnPoint {
 
     static boolean withinImage(final int x, final int y, final WritableImage image) {
         return within(y, image.getHeight()) && within(x, image.getWidth());
-    }
-
-    static boolean withinRange(final double x, final double y, final PaintModel model) {
-        return withinImage(x, y, model.getImage());
-    }
-
-    static boolean withinRange(final int x, final int y, final PaintModel model) {
-        WritableImage image = model.getImage();
-        return withinImage(x, y, image);
     }
 
 }
