@@ -1,8 +1,8 @@
 package japstudy;
 
-import japstudy.db.BaseDAO;
 import java.time.LocalTime;
 import java.util.List;
+import utils.BaseDAO;
 
 public class LessonDAO extends BaseDAO {
 

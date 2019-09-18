@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -21,7 +23,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.apache.sshd.server.SshServer;
 import org.slf4j.Logger;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
@@ -43,7 +45,7 @@ public class SSHSessionApp extends Application {
         TextField hostField = new TextField();
         TextField userField = new TextField();
         PasswordField passwordField = new PasswordField();
-        serverButton = CommonsFX.newButton("Start Server", e -> {
+        final EventHandler<ActionEvent> onAction = e -> {
 			server = BaseTestSupport.setupTestServer();
             try {
                 server.start();
@@ -55,21 +57,22 @@ public class SSHSessionApp extends Application {
                 LOG.error("", e1);
             }
             serverButton.setDisable(true);
-        });
+        };
+        serverButton = SimpleButtonBuilder.newButton("Start Server", onAction);
 
 
         Text text2 = new Text();
-        Button clientButton = CommonsFX.newButton("Start Client", e -> {
+        Button clientButton = SimpleButtonBuilder.newButton("Start Client", e -> {
             try (PrintStream out = newPrintStream(text2);) {
                 String testLocalhost = hostField.getText();
                 SSHClientUtils.sendMessage(commandField.getText(), testLocalhost,
                     StringSigaUtils.toInteger(portField.getText()),
                     userField.getText(), passwordField.getText(), out);
-
+        
             } catch (Exception e1) {
                 LOG.error("", e1);
             }
-
+        
         });
 
         GridPane gridPane = new GridPane();

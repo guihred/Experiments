@@ -13,7 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
 
 public class WorkingListsViews extends Application {
     @Override
@@ -50,7 +50,7 @@ public class WorkingListsViews extends Application {
         final ListView<String> heroListView = new ListView<>(heroes);
         gridpane.add(heroListView, 2, 1);
         // select heroes
-        Button sendRightButton = CommonsFX.newButton(" > ", event -> {
+        Button sendRightButton = SimpleButtonBuilder.newButton(" > ", event -> {
             String potential = candidatesListView.getSelectionModel().getSelectedItem();
             if (potential != null) {
                 candidatesListView.getSelectionModel().clearSelection();
@@ -59,7 +59,7 @@ public class WorkingListsViews extends Application {
             }
         });
         // deselect heroes
-        Button sendLeftButton = CommonsFX.newButton(" < ", e -> {
+        Button sendLeftButton = SimpleButtonBuilder.newButton(" < ", e -> {
             String notHero = heroListView.getSelectionModel().getSelectedItem();
             if (notHero != null) {
                 heroListView.getSelectionModel().clearSelection();

@@ -9,12 +9,12 @@ import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;
 import fxsamples.BackgroundProcesses;
 import japstudy.*;
-import japstudy.db.HibernateUtil;
 import java.util.Set;
 import javafx.scene.Node;
 import org.junit.AfterClass;
 import org.junit.Test;
 import utils.CrawlerTask;
+import utils.HibernateUtil;
 
 
 public class FXHibernateTest extends AbstractTestExecution {

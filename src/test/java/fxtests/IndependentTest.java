@@ -8,7 +8,6 @@ import static utils.ResourceFXUtils.toURI;
 import static utils.StringSigaUtils.*;
 
 import audio.mp3.PageImage;
-import audio.mp3.WikiImagesUtils;
 import cubesystem.ElementWiseOp;
 import ethical.hacker.AlarmClock;
 import ethical.hacker.NetworkInformationScanner;
@@ -21,6 +20,7 @@ import ex.j9.ch4.Line;
 import ex.j9.ch4.Point;
 import extract.UnRar;
 import extract.UnZip;
+import extract.WikiImagesUtils;
 import image.ImageCreating;
 import image.ImageLoading;
 import japstudy.HiraganaMaker;

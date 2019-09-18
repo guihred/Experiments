@@ -1,4 +1,4 @@
-package utils;
+package extract;
 
 import static utils.RunnableEx.ignore;
 
@@ -25,6 +25,9 @@ import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleSliderBuilder;
+import utils.ConsoleUtils;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public final class SongUtils {
 

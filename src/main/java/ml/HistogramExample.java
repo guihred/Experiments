@@ -1,7 +1,6 @@
 package ml;
 
 import static simplebuilder.SimpleButtonBuilder.newButton;
-import static utils.CommonsFX.newSlider;
 
 import java.util.Map.Entry;
 import java.util.Set;
@@ -20,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.HistogramGraph;
+import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 
 public class HistogramExample extends Application {
@@ -40,10 +40,10 @@ public class HistogramExample extends Application {
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         HistogramGraph canvas = new HistogramGraph();
         canvas.setTitle("California Housing");
-        left.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
-        left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        left.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
 
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
         canvas.statsProperty().addListener((InvalidationListener) o -> {

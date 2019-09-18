@@ -5,7 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import utils.CommonsFX;
+import simplebuilder.SimpleSliderBuilder;
 
 public class SnowFractalApp extends Application {
 
@@ -15,11 +15,11 @@ public class SnowFractalApp extends Application {
         SnowflakeFractal snowFractal = new SnowflakeFractal();
         PolygonFractal polygonFractal = new PolygonFractal();
 
-        VBox limitSlider = CommonsFX.newSlider("Limit", 1, 360, shellFractal.limitProperty());
-        VBox angleSlider = CommonsFX.newSlider("Angle", 0, 360, shellFractal.deltaAngleProperty());
-        VBox spiralsSlider = CommonsFX.newSlider("Spirals", 2, 10, shellFractal.spiralsProperty());
+        VBox limitSlider = SimpleSliderBuilder.newSlider("Limit", 1, 360, shellFractal.limitProperty());
+        VBox angleSlider = SimpleSliderBuilder.newSlider("Angle", 0, 360, shellFractal.deltaAngleProperty());
+        VBox spiralsSlider = SimpleSliderBuilder.newSlider("Spirals", 2, 10, shellFractal.spiralsProperty());
         final double min = 1. / 100;
-        VBox ratioSlider = CommonsFX.newSlider("Ratio", min, 1 - min, polygonFractal.ratioProperty());
+        VBox ratioSlider = SimpleSliderBuilder.newSlider("Ratio", min, 1 - min, polygonFractal.ratioProperty());
         snowFractal.limitProperty().bind(shellFractal.spiralsProperty());
         snowFractal.sizeProperty().bind(shellFractal.deltaAngleProperty());
         polygonFractal.spiralsProperty().bind(shellFractal.spiralsProperty());

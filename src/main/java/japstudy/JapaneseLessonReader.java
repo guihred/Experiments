@@ -1,6 +1,5 @@
 package japstudy;
 
-import japstudy.db.HibernateUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +13,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 
 public final class JapaneseLessonReader {

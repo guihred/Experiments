@@ -4,7 +4,6 @@ import static simplebuilder.SimpleVBoxBuilder.newVBox;
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.StringSigaUtils.intValue;
 
-import japstudy.db.HibernateUtil;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
@@ -33,9 +32,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleConverter;
-import utils.CommonsFX;
 import utils.HasLogging;
+import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 
 public class ContestQuestionEditingDisplay extends Application {
@@ -98,11 +98,11 @@ public class ContestQuestionEditingDisplay extends Application {
 
         subject.textProperty().addListener((o, old, newV) -> setTextField(newV, ContestQuestion::setSubject));
         image.textProperty().addListener((o, old, newV) -> setTextField(newV, ContestQuestion::setImage));
-        Button previous = CommonsFX.newButton("P_revious", e -> previousLesson());
+        Button previous = SimpleButtonBuilder.newButton("P_revious", e -> previousLesson());
         previous.disableProperty().bind(current.lessThanOrEqualTo(0));
-        Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
+        Button save = SimpleButtonBuilder.newButton("_Save and Close", e -> saveAndClose(primaryStage));
         save.disableProperty().bind(current.lessThan(0));
-        Button next = CommonsFX.newButton("_Next", e -> nextLesson());
+        Button next = SimpleButtonBuilder.newButton("_Next", e -> nextLesson());
         next.disableProperty()
             .bind(current.greaterThanOrEqualTo(Bindings.createIntegerBinding(() -> lessons.size() - 1, lessons))
                 .or(current.lessThan(0)));

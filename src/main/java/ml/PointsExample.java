@@ -1,7 +1,5 @@
 package ml;
 
-import static utils.CommonsFX.newButton;
-import static utils.CommonsFX.newSlider;
 
 import javafx.application.Application;
 import javafx.beans.Observable;
@@ -20,6 +18,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PointGraph;
+import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 public class PointsExample extends Application {
 
@@ -36,13 +36,13 @@ public class PointsExample extends Application {
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         VBox vBox = new VBox();
-        vBox.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
-        vBox.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        vBox.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        vBox.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        vBox.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        vBox.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        vBox.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        vBox.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
         final Canvas canvas1 = canvas;
         vBox.getChildren()
-				.add(newButton("Export", e -> ImageFXUtils.take(canvas1)));
+				.add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));
         root.setLeft(vBox);
         ObservableList<String> itens = FXCollections.observableArrayList();
         canvas.statsProperty().addListener((Observable o) -> itens.setAll(canvas.statsProperty().keySet()));

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -17,13 +16,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleSliderBuilder;
-import simplebuilder.SimpleVBoxBuilder;
 
 public final class CommonsFX {
 
@@ -61,19 +56,6 @@ public final class CommonsFX {
             primaryStage.show();
         }, "ERROR in file " + file);
     }
-    public static Button newButton(final double layoutX, final double layoutY, final String nome,
-        final EventHandler<ActionEvent> onAction) {
-        return SimpleButtonBuilder.newButton(layoutX, layoutY, nome, onAction);
-    }
-
-    public static Button newButton(final Node graphic, final String id, final EventHandler<ActionEvent> onAction) {
-        return SimpleButtonBuilder.newButton(graphic, id, onAction);
-    }
-
-    public static Button newButton(final String nome, final EventHandler<ActionEvent> onAction) {
-        return SimpleButtonBuilder.newButton(nome, onAction);
-    }
-
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
         CheckBox checkBox = new CheckBox(name);
         checkBox.setSelected(showWeight.get());
@@ -97,18 +79,6 @@ public final class CommonsFX {
 
         }));
         return filterField;
-    }
-
-    public static VBox newSlider(final String string, final double min, final double max, int block,
-        final Property<Number> radius) {
-        return SimpleVBoxBuilder.newVBox(string,
-            new SimpleSliderBuilder().min(min).max(max).blocks(block).bindBidirectional(radius).build());
-    }
-
-    public static VBox newSlider(final String string, final double min, final double max,
-        final Property<Number> radius) {
-        return SimpleVBoxBuilder.newVBox(string,
-            new SimpleSliderBuilder().min(min).bindBidirectional(radius).max(max).build());
     }
 
     public static TextField newTextField(final String text, final int prefColumnCount) {

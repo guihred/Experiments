@@ -1,7 +1,7 @@
 package election;
 
-import japstudy.db.BaseDAO;
 import java.util.List;
+import utils.BaseDAO;
 
 public class CidadeDAO extends BaseDAO {
 

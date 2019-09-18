@@ -1,6 +1,5 @@
 package japstudy;
 
-import japstudy.db.HibernateUtil;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -18,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import simplebuilder.SimpleTableViewBuilder;
+import utils.HibernateUtil;
 
 public class JapaneseLessonApplication extends Application {
 

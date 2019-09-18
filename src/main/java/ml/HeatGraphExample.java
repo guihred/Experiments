@@ -1,5 +1,4 @@
 package ml;
-import static utils.CommonsFX.newSlider;
 
 import java.util.List;
 import javafx.application.Application;
@@ -18,6 +17,7 @@ import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.HeatGraph;
 import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 public class HeatGraphExample extends Application {
 
@@ -34,11 +34,11 @@ public class HeatGraphExample extends Application {
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         canvas.setTitle("California Housing");
-        root.getChildren().add(newSlider("Radius", 10, 50, canvas.radiusProperty()));
-        root.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
-		root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-		root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-		root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        root.getChildren().add(SimpleSliderBuilder.newSlider("Radius", 10, 50, canvas.radiusProperty()));
+        root.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+		root.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
+		root.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
+		root.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
 
         ObservableList<String> itens = FXCollections.observableArrayList();
 		canvas.statsProperty().addListener((InvalidationListener) o -> itens.setAll(canvas.statsProperty().keySet()));

@@ -5,10 +5,7 @@ import static utils.DrawOnPoint.withinImage;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
@@ -26,7 +23,6 @@ import javafx.scene.text.Text;
 import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.CommonsFX;
 
 public class BrushTool extends PaintTool {
 
@@ -116,7 +112,8 @@ public class BrushTool extends PaintTool {
         model.getToolOptions().setSpacing(5);
         model.getToolOptions().getChildren().add(new Text("Length"));
         model.getToolOptions().getChildren().add(getLengthSlider());
-        model.getToolOptions().getChildren().add(CommonsFX.newSlider("Opacity", 0, 1, opacity));
+        final Property<Number> radius = opacity;
+        model.getToolOptions().getChildren().add(SimpleSliderBuilder.newSlider("Opacity", 0, 1, radius));
         List<Node> togglesAs = new SimpleToggleGroupBuilder()
             .addToggle(new Circle(5), BrushOption.CIRCLE)
             .addToggle(new Rectangle(10, 10), BrushOption.SQUARE)

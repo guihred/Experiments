@@ -1,6 +1,4 @@
 package fxpro.ch02;
-import static utils.CommonsFX.newButton;
-
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
@@ -13,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleHBoxBuilder;
 import simplebuilder.SimpleLineBuilder;
 import simplebuilder.SimpleTimelineBuilder;
@@ -38,10 +37,10 @@ public class PendulumAnimationLauncher extends Application {
 				.stroke(Color.BLUE)
 				.strokeWidth(4)
 				.build();
-        Button stopButton = newButton("Stop", e -> anim.stop());
-        Button resumeButton = newButton("Resume", e -> anim.play());
-        Button pauseButton = newButton("Pause", e -> anim.pause());
-        Button startButton = newButton("Start", e -> anim.playFromStart());
+        Button stopButton = SimpleButtonBuilder.newButton("Stop", e -> anim.stop());
+        Button resumeButton = SimpleButtonBuilder.newButton("Resume", e -> anim.play());
+        Button pauseButton = SimpleButtonBuilder.newButton("Pause", e -> anim.pause());
+        Button startButton = SimpleButtonBuilder.newButton("Start", e -> anim.playFromStart());
 		HBox hbox = new SimpleHBoxBuilder()
 				.children(startButton, pauseButton, resumeButton, stopButton)
 				.layoutX(60)

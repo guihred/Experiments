@@ -57,7 +57,8 @@ public class LayerSplitter {
         stack.add(vertex);
         for (Edge edge : GraphModelAlgorithms.edges(vertex, edges)) {
             if (stack.contains(edge.getTarget())) {
-                edges.removeIf(e -> e.equals(edge));
+                edges.remove(edge);
+                edge.setSelected(true);
             } else if (!marked.contains(edge.getTarget())) {
                 dfsRemove(edge.getTarget());
             }
@@ -104,14 +105,14 @@ public class LayerSplitter {
                 for (Edge edge : outgoingMulti) {
                     Cell virtualVertex = new Cell("" + virtualIndex++);
                     nextLayer.add(virtualVertex);
-                    edges.removeIf(e -> e.equals(edge));
+                    edges.remove(edge);
                     edges.add(new Edge(edge.getSource(), virtualVertex, edge.getValor()));
                     edges.add(new Edge(virtualVertex, edge.getTarget(), edge.getValor()));
                 }
                 for (Edge edge : incomingMulti) {
                     Cell virtualVertex = new Cell("" + virtualIndex++);
                     nextLayer.add(virtualVertex);
-                    edges.removeIf(e -> e.equals(edge));
+                    edges.remove(edge);
                     edges.add(new Edge(virtualVertex, edge.getTarget(), edge.getValor()));
                     edges.add(new Edge(edge.getSource(), virtualVertex, edge.getValor()));
                 }

@@ -1,6 +1,5 @@
 package japstudy;
 
-import japstudy.db.HibernateUtil;
 import java.security.SecureRandom;
 import javafx.application.Application;
 import javafx.beans.property.*;
@@ -15,7 +14,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
+import utils.HibernateUtil;
 
 public class JapaneseLessonDisplay extends Application {
     private SecureRandom random = new SecureRandom();
@@ -44,7 +44,7 @@ public class JapaneseLessonDisplay extends Application {
         });
         japanese.visibleProperty().bind(tested);
         TextField answer = new TextField();
-        Button next = CommonsFX.newButton("Next", e -> nextLesson(answer));
+        Button next = SimpleButtonBuilder.newButton("Next", e -> nextLesson(answer));
         final int stageWidth = 600;
         primaryStage.setWidth(stageWidth);
         if (!lessons.isEmpty()) {

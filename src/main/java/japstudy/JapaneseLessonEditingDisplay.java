@@ -1,5 +1,6 @@
 package japstudy;
 
+import extract.SongUtils;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.function.BiConsumer;
@@ -20,10 +21,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleVBoxBuilder;
-import utils.CommonsFX;
 import utils.HasLogging;
-import utils.SongUtils;
 
 public class JapaneseLessonEditingDisplay extends Application {
     public static final long NANO_IN_A_MILLI_SECOND = 1_000_000;
@@ -56,10 +56,10 @@ public class JapaneseLessonEditingDisplay extends Application {
             end, lesson, newValue));
 
         setListeners(english, japanese, romaji, start, end);
-        Button previous = CommonsFX.newButton("P_revious", e -> previousLesson());
+        Button previous = SimpleButtonBuilder.newButton("P_revious", e -> previousLesson());
         previous.disableProperty().bind(current.isEqualTo(0));
 
-        Button next = CommonsFX.newButton("_Next", e -> nextLesson());
+        Button next = SimpleButtonBuilder.newButton("_Next", e -> nextLesson());
         next.disableProperty().bind(current.isEqualTo(lessons.size() - 1));
 
         final int stageWidth = 600;
@@ -91,8 +91,8 @@ public class JapaneseLessonEditingDisplay extends Application {
                 return SongUtils.format(ofNanoOfDay);
             }, newO.currentTimeProperty()));
         });
-        Button play = CommonsFX.newButton("_Play", e -> playLesson());
-        Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
+        Button play = SimpleButtonBuilder.newButton("_Play", e -> playLesson());
+        Button save = SimpleButtonBuilder.newButton("_Save and Close", e -> saveAndClose(primaryStage));
         Scene scene = new Scene(new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"),
             japanese,
             new HBox(SimpleVBoxBuilder.newVBox("Start", start), currentText, SimpleVBoxBuilder.newVBox("End", end)),

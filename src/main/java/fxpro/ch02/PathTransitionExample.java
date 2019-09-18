@@ -1,6 +1,5 @@
 package fxpro.ch02;
 
-import static utils.CommonsFX.newButton;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -15,10 +14,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.SimpleEllipseBuilder;
-import simplebuilder.SimpleHBoxBuilder;
-import simplebuilder.SimplePathBuilder;
-import simplebuilder.SimplePathTransitionBuilder;
+import simplebuilder.*;
 
 public class PathTransitionExample extends Application {
 
@@ -42,10 +38,10 @@ public class PathTransitionExample extends Application {
 
     @Override
     public void start(Stage stage) {
-        Button stopButton = newButton("Stop", e -> anim.stop());
-        Button resumeButton = newButton("Resume", e -> anim.play());
-        Button pauseButton = newButton("Pause", e -> anim.pause());
-        Button startButton = newButton("Start", e -> anim.playFromStart());
+        Button stopButton = SimpleButtonBuilder.newButton("Stop", e -> anim.stop());
+        Button resumeButton = SimpleButtonBuilder.newButton("Resume", e -> anim.play());
+        Button pauseButton = SimpleButtonBuilder.newButton("Pause", e -> anim.pause());
+        Button startButton = SimpleButtonBuilder.newButton("Start", e -> anim.playFromStart());
         final HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10)
                 .children(startButton, pauseButton, resumeButton, stopButton).build();
         final Scene scene = new Scene(new Group(ellipse, hbox), 400, 500);

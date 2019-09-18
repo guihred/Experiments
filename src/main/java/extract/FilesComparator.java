@@ -6,9 +6,6 @@ import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 import static utils.ResourceFXUtils.toExternalForm;
 
-import audio.mp3.Music;
-import audio.mp3.MusicHandler;
-import audio.mp3.MusicReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +31,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
 
@@ -112,8 +110,9 @@ public class FilesComparator extends Application {
         directoryMap.put(nome, dir);
         Button files1 = StageHelper.selectDirectory(nome, "Carregar Pasta de Músicas",
             selectedFile -> addSongsToTable(table1, selectedFile));
-        Button copyButton = CommonsFX.newButton(title, e -> copy(dir, table1, items2));
-        Button deleteButton = CommonsFX.newButton("X", e -> delete(table1));
+        final String nome1 = title;
+        Button copyButton = SimpleButtonBuilder.newButton(nome1, e -> copy(dir, table1, items2));
+        Button deleteButton = SimpleButtonBuilder.newButton("X", e -> delete(table1));
         Text text = new Text("");
         text.textProperty().bind(dir.asString());
         root.getChildren().add(new VBox(new HBox(files1, copyButton, deleteButton, text), table1));

@@ -1,6 +1,5 @@
 package paintexp;
 
-import graphs.entities.ZoomableScrollPane;
 import java.io.File;
 import java.util.stream.Stream;
 import javafx.beans.property.ObjectProperty;
@@ -18,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import paintexp.tool.PaintTool;
 import paintexp.tool.SelectRectTool;
+import utils.ZoomableScrollPane;
 
 public class PaintModel {
     private static final int MAX_VERSIONS = 50;

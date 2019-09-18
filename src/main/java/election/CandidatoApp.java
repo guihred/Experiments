@@ -3,9 +3,7 @@ package election;
 import static election.CandidatoHelper.getRelevantFields;
 import static election.CandidatoHelper.treeView;
 import static election.CandidatoHelper.updateTable;
-import static utils.CommonsFX.newSlider;
 
-import japstudy.db.HibernateUtil;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Objects;
@@ -31,9 +29,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.graph.PieGraph;
 import simplebuilder.SimpleComboBoxBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.CrawlerTask;
+import utils.HibernateUtil;
 import utils.ImageTableCell;
 
 public class CandidatoApp extends Application {
@@ -71,7 +71,7 @@ public class CandidatoApp extends Application {
             .onChange((old, n) -> updateTable(first, n.intValue(), column.get(), pieGraph, candidates, fieldMap))
             .bind(maxResult).select(0).build();
         Text text = new Text("");
-        VBox propSlider = newSlider("", 0, 1., pieGraph.legendsRadiusProperty());
+        VBox propSlider = SimpleSliderBuilder.newSlider("", 0, 1., pieGraph.legendsRadiusProperty());
 
         root.getChildren().add(new HBox(columnCombo, maxCombo, propSlider, text));
         root.getChildren().add(pieGraph);

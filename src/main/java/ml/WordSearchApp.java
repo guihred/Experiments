@@ -25,8 +25,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public class WordSearchApp extends Application {
@@ -51,7 +51,7 @@ public class WordSearchApp extends Application {
 
         root.setCenter(filters);
         root.setLeft(listView);
-        Button button = CommonsFX.newButton("Add", a -> search(wordMap, filters, lines));
+        Button button = SimpleButtonBuilder.newButton("Add", a -> search(wordMap, filters, lines));
         filters.getChildren().add(button);
         search(wordMap, filters, lines);
 

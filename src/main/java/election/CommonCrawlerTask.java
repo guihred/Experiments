@@ -1,10 +1,10 @@
 package election;
 
-import japstudy.db.HibernateUtil;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import utils.CrawlerTask;
+import utils.HibernateUtil;
 
 public abstract class CommonCrawlerTask<T> extends CrawlerTask {
     private static final int MAX_THREAD_COUNT = 10;

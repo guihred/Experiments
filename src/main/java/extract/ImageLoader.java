@@ -1,4 +1,4 @@
-package audio.mp3;
+package extract;
 
 import static utils.RunnableEx.ignore;
 
@@ -33,6 +33,7 @@ public class ImageLoader {
         });
         WikiImagesUtils.getImagensForked(text1, images);
     }
+
 
     private void addImages(ObservableList<Node> children, String text1, Change<? extends String> c) {
         LOG.trace("ADD IMAGE {}", text1);

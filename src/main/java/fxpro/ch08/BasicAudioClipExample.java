@@ -14,7 +14,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
 import utils.HasLogging;
 
 /**
@@ -28,7 +28,7 @@ public class BasicAudioClipExample extends Application {
         try {
 			Media sound = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
             MediaPlayer mediaPlayer = new MediaPlayer(sound);
-            final Button button = CommonsFX.newButton("Bing Zzzzt!", event -> mediaPlayer.play());
+            final Button button = SimpleButtonBuilder.newButton("Bing Zzzzt!", event -> mediaPlayer.play());
             final StackPane stackPane = new StackPane();
             stackPane.setPadding(new Insets(10));
             stackPane.getChildren().add(button);

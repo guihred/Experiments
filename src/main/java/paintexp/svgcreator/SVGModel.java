@@ -16,10 +16,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.CommonsFX;
 
 public class SVGModel {
 
@@ -71,9 +71,9 @@ public class SVGModel {
             .prefWidth(100).build();
         path.fillRuleProperty().bind(fillRule.getSelectionModel().selectedItemProperty());
         commands.add(fillRule, 0, commandList.size() + 2, 2, 1);
-        commands.add(CommonsFX.newButton("Relative", e -> makeRelative()), 0, commandList.size() + 3, 2, 1);
+        commands.add(SimpleButtonBuilder.newButton("Relative", e -> makeRelative()), 0, commandList.size() + 3, 2, 1);
 
-        VBox newSlider = CommonsFX.newSlider("Scale", 0.5, 2, svgChanger.scaleProperty());
+        VBox newSlider = SimpleSliderBuilder.newSlider("Scale", 0.5, 2, svgChanger.scaleProperty());
         slider = (Slider) newSlider.lookup(".slider");
         SimpleSliderBuilder.onChange(slider, (a, b, c) -> rescale());
         slider.valueProperty().addListener(o -> rescale());

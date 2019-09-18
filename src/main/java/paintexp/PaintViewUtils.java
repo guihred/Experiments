@@ -20,8 +20,8 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import paintexp.tool.SelectRectTool;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.CommonsFX;
 
 public final class PaintViewUtils {
     private static final String PERCENTAGE_FIELD = "Percentage";
@@ -86,7 +86,7 @@ public final class PaintViewUtils {
             .addListener(e -> onResizeOptionsChange(groupBuilder, keepProportion, widthField, heightField, 1 / ratio));
         heightField.textProperty()
             .addListener(e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, ratio));
-        root.getChildren().add(CommonsFX.newButton("Resize", e -> {
+        root.getChildren().add(SimpleButtonBuilder.newButton("Resize", e -> {
             finishResize(image, groupBuilder, widthField, heightField, paintModel);
             stage.close();
             paintModel.createImageVersion();

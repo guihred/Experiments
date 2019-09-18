@@ -11,8 +11,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.CommonsFX;
 
 public class LeafFractalApp extends Application {
     private double[][][] matrix = new double[][][] { FernFractal.MATRIX_X, FernFractal.MATRIX_Y };
@@ -23,9 +23,9 @@ public class LeafFractalApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         FernFractal treeFractal = new FernFractal();
         SimpleToggleGroupBuilder coefs = toggleBuilder(treeFractal);
-        VBox limitSlider = CommonsFX.newSlider("Limit", 100, 100_000, treeFractal.limitProperty());
-        VBox xScaleSlider = CommonsFX.newSlider("xScale", 100, 500, treeFractal.scaleProperty());
-        final VBox coefSlider = CommonsFX.newSlider("Coef", -1., 1., 200, treeFractal.coefProperty());
+        VBox limitSlider = SimpleSliderBuilder.newSlider("Limit", 100, 100_000, treeFractal.limitProperty());
+        VBox xScaleSlider = SimpleSliderBuilder.newSlider("xScale", 100, 500, treeFractal.scaleProperty());
+        final VBox coefSlider = SimpleSliderBuilder.newSlider("Coef", -1., 1., 200, treeFractal.coefProperty());
         primaryStage.setTitle("Tree Fractal");
 
         List<Node> togglesAs = coefs.getTogglesAs(Node.class);

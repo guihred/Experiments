@@ -59,8 +59,7 @@ public class TableVisualizationExampleApp extends Application {
         final HTMLEditor htmlEditor = new HTMLEditor();
         htmlEditor.setHtmlText("<p>Replace this text</p>");
 
-        Button viewHtmlButton = CommonsFX.newButton("View HTML",
-            e -> createAlertPopup(htmlEditor.getHtmlText()).show(stage));
+        Button viewHtmlButton = SimpleButtonBuilder.newButton("View HTML", e -> createAlertPopup(htmlEditor.getHtmlText()).show(stage));
 
         final BorderPane htmlEditorDemo = new BorderPane(htmlEditor, null, null, viewHtmlButton, null);
         BorderPane.setAlignment(viewHtmlButton, Pos.CENTER);
@@ -189,7 +188,7 @@ public class TableVisualizationExampleApp extends Application {
 
         Popup alertPopup = new Popup();
 
-        Button okButton = CommonsFX.newButton("OK", e -> alertPopup.hide());
+        Button okButton = SimpleButtonBuilder.newButton("OK", e -> alertPopup.hide());
         final Label htmlLabel = new Label(text);
         htmlLabel.setWrapText(true);
         final int MAX_WIDTH = 280;
@@ -231,14 +230,12 @@ public class TableVisualizationExampleApp extends Application {
     }
 
     private static ToolBar createToolBar() {
-        final Button newButton = CommonsFX.newButton(
-            new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "newButton",
-            e -> LOG.info("New toolbar button clicked"));
+        final Button newButton = SimpleButtonBuilder.newButton(new ImageView("https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png"), "newButton", e -> LOG.info("New toolbar button clicked"));
         newButton.setTooltip(new Tooltip("New Document... Ctrl+N"));
 
-        final Button editButton = CommonsFX.newButton(new Circle(8, Color.GREEN), "editButton", null);
+        final Button editButton = SimpleButtonBuilder.newButton(new Circle(8, Color.GREEN), "editButton", null);
 
-        final Button deleteButton = CommonsFX.newButton(new Circle(8, Color.BLUE), "deleteButton", null);
+        final Button deleteButton = SimpleButtonBuilder.newButton(new Circle(8, Color.BLUE), "deleteButton", null);
 
         final ToggleButton boldButton = newToggleButton("boldButton", Color.MAROON);
         final ToggleButton italicButton = newToggleButton("italicButton", Color.YELLOW);

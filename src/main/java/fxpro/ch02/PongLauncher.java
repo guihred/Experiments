@@ -5,7 +5,6 @@
  */
 package fxpro.ch02;
 
-import static utils.CommonsFX.newButton;
 
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
@@ -98,7 +97,7 @@ public class PongLauncher extends Application {
             centerX.setValue(centerX.getValue() + horzPixels);
             centerY.setValue(centerY.getValue() + vertPixels);
         }).build();
-    private Button startButton = newButton(WIDTH / 2, WIDTH * 2 / 3, "Start!", e -> {
+    private Button startButton = SimpleButtonBuilder.newButton(WIDTH / 2, WIDTH * 2 / 3, "Start!", e -> {
         startVisible.set(false);
         pongAnimation.playFromStart();
         pongComponents.requestFocus();

@@ -9,6 +9,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import utils.ZoomableScrollPane;
 public class Graph {
 
 	public static final BooleanProperty SHOW_WEIGHT = new SimpleBooleanProperty(true);

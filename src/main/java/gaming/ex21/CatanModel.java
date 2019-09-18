@@ -23,7 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
 
 public class CatanModel {
     protected final List<Terrain> terrains = new ArrayList<>();
@@ -39,10 +39,8 @@ public class CatanModel {
     protected SelectResourceType resourcesToSelect = SelectResourceType.DEFAULT;
     private int turnCount;
     private final HBox resourceChoices = ResourceType.createResourceChoices(this::onSelectResource);
-    private final Button exchangeButton = CommonsFX.newButton("Exchange",
-        e -> setResourceSelect(SelectResourceType.EXCHANGE));
-    private final Button makeDeal = CommonsFX.newButton("Make Deal",
-        e -> setResourceSelect(SelectResourceType.MAKE_DEAL));
+    private final Button exchangeButton = SimpleButtonBuilder.newButton("Exchange", e -> setResourceSelect(SelectResourceType.EXCHANGE));
+    private final Button makeDeal = SimpleButtonBuilder.newButton("Make Deal", e -> setResourceSelect(SelectResourceType.MAKE_DEAL));
     protected final ObservableList<Deal> deals = FXCollections.observableArrayList();
     protected final Thief thief = new Thief();
     protected final List<Port> ports = Port.getPorts();
@@ -58,10 +56,10 @@ public class CatanModel {
         elements.addListener(ListHelper.onChangeElement(center));
         currentPlayer.addListener((ob, old, newV) -> onChangePlayer(newV));
         right.getChildren().add(userChart);
-        Button skipButton = CommonsFX.newButton("Skip Turn", e -> onSkipTurn());
+        Button skipButton = SimpleButtonBuilder.newButton("Skip Turn", e -> onSkipTurn());
         skipButton.disableProperty().bind(Bindings.createBooleanBinding(this::isSkippable, diceThrown,
             resourceChoices.visibleProperty(), currentPlayer, elements));
-        Button throwButton = CommonsFX.newButton("Throw Dices", e -> throwDice());
+        Button throwButton = SimpleButtonBuilder.newButton("Throw Dices", e -> throwDice());
         throwButton.disableProperty().bind(diceThrown);
         VBox dealsBox = ListHelper.newDeal(deals, t -> Deal.isDealUnfeasible(t, currentPlayer, cards), this::onMakeDeal,
             currentPlayer, diceThrown);
@@ -96,8 +94,7 @@ public class CatanModel {
         for (int i = 0; i < combinations.length; i++) {
             Combination combination = combinations[i];
             List<ResourceType> resources = combination.getResources();
-            Button button = CommonsFX.newButton(newImage(combination.getElement(), 30, 30), "" + combination,
-                e -> onCombinationClicked(combination));
+            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), 30, 30), "" + combination, e -> onCombinationClicked(combination));
             button.disableProperty()
                 .bind(Bindings.createBooleanBinding(() -> disableCombination(combination), currentPlayer, diceThrown));
             value.addRow(i, button);

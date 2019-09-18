@@ -24,6 +24,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
+import simplebuilder.SimpleButtonBuilder;
 import utils.*;
 
 public class ImageCrackerApp extends Application {
@@ -58,7 +59,7 @@ public class ImageCrackerApp extends Application {
 
         ImageView imageView = new ImageView();
         engine = browser.getEngine();
-        Button loadButton = CommonsFX.newButton("Go", e -> loadURL());
+        Button loadButton = SimpleButtonBuilder.newButton("Go", e -> loadURL());
         engine.getLoadWorker().stateProperty().addListener((ob, oldValue, newState) -> {
             stage.setTitle(engine.getLocation() + " " + newState);
             if (newState == State.SUCCEEDED) {

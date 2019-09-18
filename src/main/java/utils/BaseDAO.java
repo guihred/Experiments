@@ -1,4 +1,4 @@
-package japstudy.db;
+package utils;
 
 import static utils.ClassReflectionUtils.getters;
 import static utils.ClassReflectionUtils.invoke;
@@ -8,7 +8,6 @@ import java.util.function.Function;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import utils.HasLogging;
 
 public class BaseDAO implements HasLogging {
 

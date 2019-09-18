@@ -1,5 +1,4 @@
 package ml;
-import static utils.CommonsFX.newSlider;
 
 import java.util.Map.Entry;
 import javafx.application.Application;
@@ -18,7 +17,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import ml.data.DataframeML;
 import ml.graph.MultiLineGraph;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 
 public class MultilineExample extends Application {
@@ -37,11 +37,11 @@ public class MultilineExample extends Application {
 
         DataframeML x = new DataframeML("california_housing_train.csv");
         x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
-        left.getChildren().add(newSlider("Radius", 1, 500, canvas.radiusProperty()));
-        left.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
-        left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        left.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Radius", 1, 500, canvas.radiusProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
 
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
         canvas.statsProperty()
@@ -56,7 +56,7 @@ public class MultilineExample extends Application {
         final Canvas canvas1 = canvas;
 
         left.getChildren()
-            .add(CommonsFX.newButton("Export", e -> ImageFXUtils.take(canvas1)));
+            .add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));
         root.setCenter(new HBox(canvas, itensList));
 		theStage.show();
 	}

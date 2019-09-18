@@ -28,11 +28,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.SimpleArcBuilder;
-import simplebuilder.SimpleCircleBuilder;
-import simplebuilder.SimplePathTransitionBuilder;
-import simplebuilder.SimpleScaleTransitionBuilder;
-import utils.CommonsFX;
+import simplebuilder.*;
 import utils.ResourceFXUtils;
 
 public final class Chapter4 {
@@ -156,8 +152,7 @@ public final class Chapter4 {
             TextField textField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
             WebView browser = new WebView();
             WebEngine engine = browser.getEngine();
-            Button backButton = CommonsFX.newButton("Back",
-                event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
+            Button backButton = SimpleButtonBuilder.newButton("Back", event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
             Button loadButton = new Button("Go");
             loadButton.setOnAction(event -> engine.load(textField.getText()));
 
@@ -291,10 +286,9 @@ public final class Chapter4 {
             pane.setRight(new HBox(radiusSlider, rotationSlider));
             pane.setCenter(center);
             BorderPane.setAlignment(pane.getCenter(), Pos.CENTER);
-            Button pulse = CommonsFX.newButton("Pulse", e -> createPulseAnimation(planet));
+            Button pulse = SimpleButtonBuilder.newButton("Pulse", e -> createPulseAnimation(planet));
             center.getChildren().add(buildArc(scene, rotationSlider, radiusSlider));
-            Button orbit = CommonsFX.newButton("Orbit",
-                e -> createOrbitAnimation(scene, planet, rotationSlider, radiusSlider));
+            Button orbit = SimpleButtonBuilder.newButton("Orbit", e -> createOrbitAnimation(scene, planet, rotationSlider, radiusSlider));
             pane.setBottom(new HBox(pulse, orbit));
             stage.setScene(scene);
             stage.setTitle("EX9");

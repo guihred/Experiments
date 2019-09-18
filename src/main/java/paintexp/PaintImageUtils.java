@@ -15,8 +15,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
-import utils.CommonsFX;
 
 public final class PaintImageUtils {
     private static final int PREF_WIDTH = 300;
@@ -46,7 +46,7 @@ public final class PaintImageUtils {
             color -> changeColor(saturate, bright, hue, opacity, color));
         addAdjustOption(root, image, original, 1, opacity, "Opacity",
             color -> changeColor(saturate, bright, hue, opacity, color));
-        root.getChildren().add(CommonsFX.newButton("Adjust", e -> {
+        root.getChildren().add(SimpleButtonBuilder.newButton("Adjust", e -> {
             final WritableImage writableImage = image;
             paintModel.setFinalImage(writableImage);
             paintModel.createImageVersion();

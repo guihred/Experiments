@@ -3,7 +3,6 @@ package contest.db;
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.SupplierEx.get;
 
-import japstudy.db.HibernateUtil;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 

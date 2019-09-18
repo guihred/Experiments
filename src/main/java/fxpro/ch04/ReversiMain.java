@@ -5,7 +5,6 @@
  */
 package fxpro.ch04;
 
-import static utils.CommonsFX.newButton;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -19,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleRegionBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
@@ -95,7 +95,7 @@ public class ReversiMain extends Application {
     }
 
     private Node restart() {
-        return newButton("Restart", t -> model.restart());
+        return SimpleButtonBuilder.newButton("Restart", t -> model.restart());
     }
 
     private Node tiles() {

@@ -11,7 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
 
 public final class ListHelper {
     private ListHelper() {
@@ -24,7 +24,8 @@ public final class ListHelper {
             while (c.next()) {
                 List<? extends Deal> addedSubList = c.getAddedSubList();
                 for (Deal deal1 : addedSubList) {
-                    Button dealButton = CommonsFX.newButton(deal1, "", e -> onAction.accept(deal1));
+                    final Node graphic = deal1;
+                    Button dealButton = SimpleButtonBuilder.newButton(graphic, "", e -> onAction.accept(deal1));
                     dealButton.getStyleClass().add("accept-deal");
                     dealButton.disableProperty().bind(Bindings.createBooleanBinding(() -> disableIf.test(deal1), a));
                     vBox.getChildren().add(dealButton);

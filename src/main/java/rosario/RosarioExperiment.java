@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import schema.sngpc.FXMLCreatorHelper;
 
 public class RosarioExperiment {
     @FXML
@@ -38,8 +37,5 @@ public class RosarioExperiment {
             medicamentosAnvisaTable);
     }
 
-    public static void main(String[] args) {
-        FXMLCreatorHelper.duplicate("RosarioComparadorArquivos.fxml");
-    }
 
 }

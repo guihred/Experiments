@@ -11,7 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
 
 public class SudokuLauncher extends Application {
 
@@ -34,9 +34,9 @@ public class SudokuLauncher extends Application {
         final StackPane borderPane = new StackPane(gridPane, numberBoard);
 		gridPane.minWidthProperty().bind(borderPane.widthProperty());
         BorderPane root = new BorderPane(borderPane);
-        root.setLeft(new VBox(CommonsFX.newButton("Blank", e -> sudokuModel.blank()),
-                CommonsFX.newButton("Reset", e -> sudokuModel.reset()),
-                CommonsFX.newButton("Solve", e -> sudokuModel.solve())));
+        root.setLeft(new VBox(SimpleButtonBuilder.newButton("Blank", e -> sudokuModel.blank()),
+                SimpleButtonBuilder.newButton("Reset", e -> sudokuModel.reset()),
+                SimpleButtonBuilder.newButton("Solve", e -> sudokuModel.solve())));
         final Scene scene = new Scene(root);
         stage.setResizable(false);
         stage.setScene(scene);

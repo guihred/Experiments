@@ -1,5 +1,4 @@
 package ml;
-import static utils.CommonsFX.newSlider;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -9,7 +8,8 @@ import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.WorldMapGraph;
 import ml.graph.WorldMapGraph2;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 
 public class WorldMapExample2 extends Application {
@@ -24,10 +24,10 @@ public class WorldMapExample2 extends Application {
 		theStage.setScene(theScene);
 
 		WorldMapGraph2 canvas = new WorldMapGraph2();
-        root.getChildren().add(newSlider("Labels", 1, 10, canvas.binsProperty()));
-		root.getChildren().add(newSlider("Radius", -2, 2, canvas.radiusProperty()));
-		root.getChildren().add(newSlider("X", -360, 360, canvas.yScaleProperty()));
-		root.getChildren().add(newSlider("Y", -360, 360, canvas.xScaleProperty()));
+        root.getChildren().add(SimpleSliderBuilder.newSlider("Labels", 1, 10, canvas.binsProperty()));
+		root.getChildren().add(SimpleSliderBuilder.newSlider("Radius", -2, 2, canvas.radiusProperty()));
+		root.getChildren().add(SimpleSliderBuilder.newSlider("X", -360, 360, canvas.yScaleProperty()));
+		root.getChildren().add(SimpleSliderBuilder.newSlider("Y", -360, 360, canvas.xScaleProperty()));
         DataframeML points = DataframeML.builder("cities.csv").build();
 		String latDegree = "Lat Degree";
         points.crossFeatureObject(latDegree, WorldMapExample2::convertToDegrees, latDegree, "Lat Minute");
@@ -38,7 +38,7 @@ public class WorldMapExample2 extends Application {
         canvas.setPoints(latDegree, lonDegree);
         final Canvas canvas1 = canvas;
         root.getChildren()
-            .add(CommonsFX.newButton("Export", e -> ImageFXUtils.take(canvas1)));
+            .add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));
         root.getChildren().add(canvas);
         theStage.show();
 	}

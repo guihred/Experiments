@@ -5,7 +5,7 @@
  */
 package fxpro.ch08;
 
-import audio.mp3.MusicReader;
+import extract.MusicReader;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;

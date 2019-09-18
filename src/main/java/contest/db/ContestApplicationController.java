@@ -2,7 +2,6 @@ package contest.db;
 
 import static simplebuilder.SimpleListViewBuilder.newCellFactory;
 
-import japstudy.db.HibernateUtil;
 import java.util.Objects;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,11 +13,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
-import schema.sngpc.FXMLCreatorHelper;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class ContestApplicationController {
     private static final Logger LOG = HasLogging.log();
@@ -108,9 +104,5 @@ public class ContestApplicationController {
         current.set(0);
     }
 
-    public static void main(String[] args) {
-        Stage duplicate = FXMLCreatorHelper.duplicate(ResourceFXUtils.toFile("ContestApplication.fxml"),
-            "Contest Application");
-        duplicate.setOnCloseRequest(e -> HibernateUtil.shutdown());
-    }
+
 }

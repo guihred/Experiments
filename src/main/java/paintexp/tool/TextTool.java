@@ -3,7 +3,6 @@ package paintexp.tool;
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
 import static utils.DrawOnPoint.getWithinRange;
 
-import fxsamples.DraggingRectangle;
 import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
@@ -26,6 +25,7 @@ import paintexp.PaintModel;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.RotateUtils;
 
 public class TextTool extends PaintTool {
 
@@ -132,7 +132,7 @@ public class TextTool extends PaintTool {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getArea())) {
             children.add(getArea());
-            helpers = DraggingRectangle.createDraggableRectangle(area);
+            helpers = RotateUtils.createDraggableRectangle(area);
             area.setStroke(Color.BLACK);
             getArea().setManaged(false);
             getArea().setFill(Color.TRANSPARENT);

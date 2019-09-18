@@ -1,6 +1,5 @@
 package japstudy;
 
-import japstudy.db.HibernateUtil;
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
@@ -10,6 +9,7 @@ import java.util.stream.Stream;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 
 public enum JapaneseAudio {

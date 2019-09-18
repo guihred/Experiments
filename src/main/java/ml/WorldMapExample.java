@@ -1,6 +1,5 @@
 package ml;
 
-import static utils.CommonsFX.newSlider;
 import static utils.ResourceFXUtils.getOutFile;
 
 import extract.UnZip;
@@ -22,8 +21,9 @@ import ml.data.DataframeML;
 import ml.graph.ColorPattern;
 import ml.graph.WorldMapGraph;
 import org.apache.commons.lang3.StringUtils;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import utils.CommonsFX;
+import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 
 public class WorldMapExample extends Application {
@@ -38,8 +38,8 @@ public class WorldMapExample extends Application {
         WorldMapGraph canvas = new WorldMapGraph();
         HBox left = new HBox();
         root.setTop(left);
-        left.getChildren().add(newSlider("Labels", 1, 10, canvas.binsProperty()));
-        left.getChildren().add(newSlider("Font Size", 1, 60, canvas.fontSizeProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Labels", 1, 10, canvas.binsProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Font Size", 1, 60, canvas.fontSizeProperty()));
         ComboBox<ColorPattern> patternCombo = new SimpleComboBoxBuilder<ColorPattern>()
             .items(ColorPattern.values())
             .onSelect(canvas.patternProperty()::set)
@@ -77,7 +77,7 @@ public class WorldMapExample extends Application {
         left.getChildren().add(yearCombo);
         left.getChildren().add(patternCombo);
         final Canvas canvas1 = canvas;
-        left.getChildren().add(CommonsFX.newButton("Export", e -> ImageFXUtils.take(canvas1)));
+        left.getChildren().add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));
 
         root.setCenter(canvas);
         theStage.show();

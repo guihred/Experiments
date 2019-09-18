@@ -1,7 +1,5 @@
 package ml;
 
-import static utils.CommonsFX.newButton;
-import static utils.CommonsFX.newSlider;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -19,7 +17,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PopulacionalGraph;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 
 public class PopulacionalPyramidExample extends Application {
@@ -43,10 +43,10 @@ public class PopulacionalPyramidExample extends Application {
         root.setCenter(canvas);
         VBox left = new VBox();
         root.setLeft(left);
-        left.getChildren().add(newSlider("Prop", 1. / 10, 2, canvas.lineSizeProperty()));
-        left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        left.getChildren().add(newSlider("MaxPadding", 10, 1000, canvas.maxLayoutProperty()));
-        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Prop", 1. / 10, 2, canvas.lineSizeProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("MaxPadding", 10, 1000, canvas.maxLayoutProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
         canvas.widthProperty().bind(root.widthProperty().add(-50));
 
         Set<String> categorize = x.categorize(countryHeader);
@@ -64,7 +64,7 @@ public class PopulacionalPyramidExample extends Application {
         left.getChildren().add(new Text("Year"));
         left.getChildren().add(year);
         final Canvas canvas1 = canvas;
-        left.getChildren().add(newButton("Export", e -> ImageFXUtils.take(canvas1)));
+        left.getChildren().add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));
         double ratio = 3. / 4;
         final int width = 800;
         Scene theScene = new Scene(root, width, width * ratio);

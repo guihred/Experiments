@@ -1,4 +1,4 @@
-package graphs.entities;
+package utils;
 
 import javafx.beans.NamedArg;
 import javafx.scene.Group;

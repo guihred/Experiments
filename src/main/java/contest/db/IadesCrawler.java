@@ -5,7 +5,6 @@ import static contest.db.IadesHelper.addDomain;
 import static contest.db.IadesHelper.extractURL;
 import static contest.db.IadesHelper.saveContestValues;
 
-import japstudy.db.HibernateUtil;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
@@ -30,6 +29,7 @@ import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.CrawlerTask;
 import utils.HasLogging;
+import utils.HibernateUtil;
 import utils.SupplierEx;
 
 public class IadesCrawler extends Application {

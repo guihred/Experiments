@@ -2,6 +2,9 @@ package audio.mp3;
 
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
 
+import extract.Music;
+import extract.MusicHandler;
+import extract.MusicReader;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,9 +23,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.ClassReflectionUtils;
-import utils.CommonsFX;
 import utils.ResourceFXUtils;
 import utils.StageHelper;
 
@@ -83,7 +86,7 @@ public class MusicOrganizer extends Application {
     }
 
     private static Button fixMusic(TableView<Music> musicasTable) {
-        Button newButton = CommonsFX.newButton("_Consertar Musicas", e -> fixSongs(musicasTable));
+        Button newButton = SimpleButtonBuilder.newButton("_Consertar Musicas", e -> fixSongs(musicasTable));
         newButton.disableProperty().bind(Bindings.createBooleanBinding(
             () -> musicasTable.getItems().stream().anyMatch(Music::isNotMP3), musicasTable.getItems()));
         return newButton;
@@ -120,7 +123,7 @@ public class MusicOrganizer extends Application {
             vBox.getChildren().addAll(imageView);
         }
         Stage dialog = StageHelper.displayDialog("Fix Fields", vBox);
-        vBox.getChildren().add(CommonsFX.newButton("_Fix", f -> {
+        vBox.getChildren().add(SimpleButtonBuilder.newButton("_Fix", f -> {
             MusicReader.saveMetadata(music);
             dialog.close();
         }));

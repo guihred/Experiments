@@ -16,9 +16,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.*;
 import org.slf4j.Logger;
-import simplebuilder.SimpleVBoxBuilder;
 
 public final class StageHelper {
 
@@ -30,7 +30,8 @@ public final class StageHelper {
     public static Button chooseFile(String nome, String title, ConsumerEx<File> onSelect) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(title);
-        return CommonsFX.newButton(nome, e -> {
+        final String nome1 = nome;
+        return newButton(nome1, e -> {
             Node target = (Node) e.getTarget();
             File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
             if (showOpenDialog != null) {
@@ -38,10 +39,10 @@ public final class StageHelper {
             }
         });
     }
-
     public static Button chooseFile(String nome, String title, ConsumerEx<File> onSelect, String filter,
         String... extensions) {
-        return CommonsFX.newButton(nome, fileAction(title, onSelect, filter, extensions));
+        final String nome1 = nome;
+        return newButton(nome1, fileAction(title, onSelect, filter, extensions));
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {
@@ -53,7 +54,7 @@ public final class StageHelper {
         if (file.exists()) {
             RunnableEx.ignore(() -> scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString()));
         }
-        stage2.setScene(new Scene(new VBox(textArea, CommonsFX.newButton("_Save", e -> {
+        stage2.setScene(new Scene(new VBox(textArea, newButton("_Save", e -> {
             try (PrintStream fileOutputStream = new PrintStream(file, StandardCharsets.UTF_8.name())) {
                 fileOutputStream.print(textArea.getText());
                 fileOutputStream.flush();
@@ -81,7 +82,7 @@ public final class StageHelper {
 
     public static Stage displayDialog(final String text, Node button) {
         final Stage stage1 = new Stage();
-        final VBox group = SimpleVBoxBuilder.newVBox(text, button);
+        final VBox group = new VBox(new Text(text), button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -90,11 +91,11 @@ public final class StageHelper {
 
     public static void displayDialog(final String text, final String buttonMsg, final Runnable c) {
         final Stage stage1 = new Stage();
-        final Button button = CommonsFX.newButton(buttonMsg, a -> {
+        final Button button = newButton(buttonMsg, a -> {
             c.run();
             stage1.close();
         });
-        final VBox group = SimpleVBoxBuilder.newVBox(text, button);
+        final VBox group = new VBox(new Text(text), button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -103,8 +104,9 @@ public final class StageHelper {
     public static void displayDialog(String text, String buttonMsg, Supplier<DoubleProperty> c, RunnableEx run) {
         final Stage stage1 = new Stage();
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
+        final String nome = buttonMsg;
 
-        final Button button = CommonsFX.newButton(buttonMsg, a -> {
+        final Button button = newButton(nome, a -> {
             DoubleProperty progress = c.get();
             progressIndicator.progressProperty().bind(progress);
             progress.addListener((v, o, n) -> {
@@ -117,7 +119,7 @@ public final class StageHelper {
                 }
             });
         });
-        final VBox group = SimpleVBoxBuilder.newVBox(text, progressIndicator, button);
+        final VBox group = new VBox(new Text(text), progressIndicator, button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -142,7 +144,8 @@ public final class StageHelper {
         chooser.setTitle(title);
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
         chooser.setInitialDirectory(musicsDirectory.getParentFile());
-        return CommonsFX.newButton(nome, e -> {
+        final String nome1 = nome;
+        return newButton(nome1, e -> {
             Node target = (Node) e.getTarget();
             Window window = target.getScene().getWindow();
             File selectedFile = chooser.showDialog(window);
@@ -168,5 +171,12 @@ public final class StageHelper {
             LOG.error("", e2);
         }
         return "";
+    }
+
+    private static Button newButton(final String nome, final EventHandler<ActionEvent> onAction) {
+        Button button = new Button(nome);
+        button.setId(nome);
+        button.setOnAction(onAction);
+        return button;
     }
 }

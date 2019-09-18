@@ -4,6 +4,7 @@ import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.VBox;
 
 public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSliderBuilder> {
 
@@ -30,7 +31,6 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
         node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
         return this;
     }
-
     @Override
     public Slider build() {
         node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
@@ -60,6 +60,18 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
     public SimpleSliderBuilder value(double i) {
         slider.setValue(i);
         return this;
+    }
+
+    public static VBox newSlider(final String string, final double min, final double max, int block,
+        final Property<Number> radius) {
+        return SimpleVBoxBuilder.newVBox(string,
+            new SimpleSliderBuilder().min(min).max(max).blocks(block).bindBidirectional(radius).build());
+    }
+
+    public static VBox newSlider(final String string, final double min, final double max,
+        final Property<Number> radius) {
+        return SimpleVBoxBuilder.newVBox(string,
+            new SimpleSliderBuilder().min(min).bindBidirectional(radius).max(max).build());
     }
 
     public static void onChange(Slider slider1, ChangeListener<? super Number> listener) {

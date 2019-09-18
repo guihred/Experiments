@@ -21,8 +21,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.CommonsFX;
 import utils.HasLogging;
 
 public final class RosarioCommons {
@@ -182,7 +182,7 @@ public final class RosarioCommons {
                 param.getValue() == null || j >= param.getValue().size() ? null : param.getValue().get(j), "")));
             medicamentosTable.getColumns().add(registroMedicamento);
         }
-        Button button = CommonsFX.newButton("Importar Arquivo", a -> {
+        Button button = SimpleButtonBuilder.newButton("Importar Arquivo", a -> {
             ObservableList<Medicamento> medicamentos = LeitorArquivos.converterMedicamentos(
                 medicamentosTable.getItems(),
                 colunas.stream().map(e -> e.getSelectionModel().getSelectedItem()).collect(Collectors.toList()));

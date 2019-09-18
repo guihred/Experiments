@@ -1,12 +1,12 @@
 package paintexp;
 
-import graphs.entities.ZoomableScrollPane;
 import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import paintexp.tool.RectBuilder;
 import paintexp.tool.SelectRectTool;
+import utils.ZoomableScrollPane;
 
 public final class PaintEditUtils {
     private PaintEditUtils() {

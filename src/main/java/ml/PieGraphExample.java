@@ -1,5 +1,4 @@
 package ml;
-import static utils.CommonsFX.newSlider;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -11,7 +10,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ml.data.DataframeML;
 import ml.graph.PieGraph;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 public class PieGraphExample extends Application {
 
@@ -27,11 +27,11 @@ public class PieGraphExample extends Application {
         DataframeML x = DataframeML.builder("WDICountry.csv").build();
         canvas.setDataframe(x, "Region");
         final Canvas canvas1 = canvas;
-        Button exportButton = CommonsFX.newButton("Export", e -> ImageFXUtils.take(canvas1));
-        VBox radiusSlider = newSlider("Radius", 1, 500, canvas.radiusProperty());
-        VBox binsSlider = newSlider("Bins", 1, 50, canvas.binsProperty());
-        VBox xSlider = newSlider("X", 1, SIZE, canvas.xOffsetProperty());
-        VBox propSlider = newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());
+        Button exportButton = SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1));
+        VBox radiusSlider = SimpleSliderBuilder.newSlider("Radius", 1, 500, canvas.radiusProperty());
+        VBox binsSlider = SimpleSliderBuilder.newSlider("Bins", 1, 50, canvas.binsProperty());
+        VBox xSlider = SimpleSliderBuilder.newSlider("X", 1, SIZE, canvas.xOffsetProperty());
+        VBox propSlider = SimpleSliderBuilder.newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());
         root.getChildren().add(new HBox(radiusSlider, binsSlider, xSlider, propSlider, exportButton));
         root.getChildren().add(new HBox(canvas));
 		theStage.show();

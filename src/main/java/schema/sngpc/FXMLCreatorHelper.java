@@ -33,7 +33,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.slf4j.Logger;
-import paintexp.ColorChooser;
 import utils.*;
 
 public final class FXMLCreatorHelper {
@@ -109,7 +108,7 @@ public final class FXMLCreatorHelper {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> classes = Arrays.asList(ColorChooser.class);
+        List<Class<? extends Application>> classes = Arrays.asList(SngpcViewer.class);
         testApplications(classes, false);
     }
 

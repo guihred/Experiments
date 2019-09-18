@@ -1,9 +1,9 @@
-package audio.mp3;
+package extract;
 
+import static extract.SongUtils.updateCurrentSlider;
+import static extract.SongUtils.updateMediaPlayer;
 import static utils.CommonsFX.createField;
 import static utils.RunnableEx.run;
-import static utils.SongUtils.updateCurrentSlider;
-import static utils.SongUtils.updateMediaPlayer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,11 +28,10 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleSliderBuilder;
-import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.SongUtils;
 import utils.StageHelper;
 
 public final class MusicHandler implements EventHandler<MouseEvent> {
@@ -99,7 +98,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
         progressIndicator.setVisible(false);
-        Button splitButton = CommonsFX.newButton("_Split", e -> {
+        Button splitButton = SimpleButtonBuilder.newButton("_Split", e -> {
             if (initialSlider.getValue() != 0 || finalSlider.getValue() != 1) {
                 splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator, stage);
                 return;
@@ -109,11 +108,10 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
             MusicReader.saveMetadata(selectedItem);
             stage.close();
         });
-        Button splitMultipleButton = CommonsFX.newButton("Split _Multiple",
-            e -> splitAudio(selectedItem.getArquivo(), currentSlider));
-        Button findImage = CommonsFX.newButton("_Find Image", e -> findImage(selectedItem, stage));
+        Button splitMultipleButton = SimpleButtonBuilder.newButton("Split _Multiple", e -> splitAudio(selectedItem.getArquivo(), currentSlider));
+        Button findImage = SimpleButtonBuilder.newButton("_Find Image", e -> findImage(selectedItem, stage));
 
-        Button stopButton = CommonsFX.newButton("_Play/Pause", e -> {
+        Button stopButton = SimpleButtonBuilder.newButton("_Play/Pause", e -> {
             if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
                 mediaPlayer.pause();
             } else {
@@ -189,8 +187,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         root.getChildren().addAll(progressIndicator);
 
         Stage stage = new Stage();
-        Button splitButton = CommonsFX.newButton("_Split",
-            a -> splitInFiles(file, currentSlider, currentTime, music, progressIndicator, stage));
+        Button splitButton = SimpleButtonBuilder.newButton("_Split", a -> splitInFiles(file, currentSlider, currentTime, music, progressIndicator, stage));
         root.getChildren().addAll(splitButton);
         stage.setScene(new Scene(root));
         stage.show();

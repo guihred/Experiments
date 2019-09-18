@@ -1,8 +1,8 @@
 package election;
 
-import japstudy.db.BaseDAO;
 import java.util.*;
 import java.util.stream.Collectors;
+import utils.BaseDAO;
 
 public class CandidatoDAO extends BaseDAO {
 

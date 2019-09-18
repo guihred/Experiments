@@ -2,7 +2,7 @@ package japstudy;
 
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
 
-import japstudy.db.HibernateUtil;
+import extract.SongUtils;
 import java.io.File;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
@@ -15,9 +15,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import utils.CommonsFX;
+import simplebuilder.SimpleButtonBuilder;
+import utils.HibernateUtil;
 import utils.ResourceFXUtils;
-import utils.SongUtils;
 
 public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDisplay {
 
@@ -43,18 +43,18 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
             end, lesson, newValue));
 
         setListeners(english, japanese, romaji, start, end);
-        Button previous = CommonsFX.newButton("P_revious", e -> previousLesson());
+        Button previous = SimpleButtonBuilder.newButton("P_revious", e -> previousLesson());
         previous.disableProperty().bind(current.isEqualTo(0));
 
-        Button next = CommonsFX.newButton("_Next", e -> nextLesson());
+        Button next = SimpleButtonBuilder.newButton("_Next", e -> nextLesson());
         next.disableProperty().bind(current.isEqualTo(lessons.size() - 1));
-        Button split = CommonsFX.newButton("Spli_t", e -> splitAudio());
-        Button stop = CommonsFX.newButton("St_op", e -> {
+        Button split = SimpleButtonBuilder.newButton("Spli_t", e -> splitAudio());
+        Button stop = SimpleButtonBuilder.newButton("St_op", e -> {
             if (mediaPlayer.get().getStatus() == MediaPlayer.Status.PLAYING) {
                 mediaPlayer.get().pause();
             }
         });
-        Button splay = CommonsFX.newButton("_Play", e -> playLesson());
+        Button splay = SimpleButtonBuilder.newButton("_Play", e -> playLesson());
         final int stageWidth = 600;
         primaryStage.setWidth(stageWidth);
         current.set(0);
@@ -65,7 +65,7 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
             currentText.textProperty().bind(Bindings.createStringBinding(
                 () -> SongUtils.formatFullDuration(newO.getCurrentTime()), newO.currentTimeProperty()));
         });
-        Button save = CommonsFX.newButton("_Save and Close", e -> saveAndClose(primaryStage));
+        Button save = SimpleButtonBuilder.newButton("_Save and Close", e -> saveAndClose(primaryStage));
         Scene value = new Scene(new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"),
             japanese,
             new HBox(newVBox("Start", start), currentText, newVBox("End", end)),

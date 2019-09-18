@@ -2,7 +2,6 @@ package fxtests;
 
 import static javafx.scene.input.KeyCode.*;
 
-import graphs.entities.ZoomableScrollPane;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,6 +20,7 @@ import paintexp.PaintMain;
 import paintexp.tool.SelectRectTool;
 import utils.ConsumerEx;
 import utils.ResourceFXUtils;
+import utils.ZoomableScrollPane;
 
 public class FXEnginePaintTest extends AbstractTestExecution {
 

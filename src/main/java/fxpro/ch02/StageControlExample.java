@@ -1,6 +1,5 @@
 package fxpro.ch02;
 
-import static utils.CommonsFX.newButton;
 import static utils.CommonsFX.newCheckBox;
 import static utils.CommonsFX.newTextField;
 
@@ -24,6 +23,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 import utils.HasLogging;
@@ -62,9 +62,9 @@ public class StageControlExample extends Application {
         }
         final Stage stageRef = stage;
         TextField titleTextField = newTextField("Stage Coach", 10);
-        final Button toFrontButton = newButton("toFront()", e -> stageRef.toFront());
-        final Button closeButton = newButton("close()", e -> stageRef.close());
-        final Button toBackButton = newButton("toBack()", e -> stageRef.toBack());
+        final Button toFrontButton = SimpleButtonBuilder.newButton("toFront()", e -> stageRef.toFront());
+        final Button closeButton = SimpleButtonBuilder.newButton("close()", e -> stageRef.close());
+        final Button toBackButton = SimpleButtonBuilder.newButton("toBack()", e -> stageRef.toBack());
         final VBox hbox = new VBox(new Label("title:"), titleTextField);
         CheckBox checkBoxResizable = newCheckBox("resizable",
             stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);
