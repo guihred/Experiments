@@ -9,7 +9,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import paintexp.PaintModel;
 import utils.ResourceFXUtils;
 
 public class EyedropTool extends PaintTool {

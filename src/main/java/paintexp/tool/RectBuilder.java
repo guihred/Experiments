@@ -13,7 +13,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import paintexp.PaintModel;
 import utils.PixelHelper;
 
 public class RectBuilder extends PaintTool {

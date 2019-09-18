@@ -12,7 +12,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import paintexp.PaintModel;
 import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 

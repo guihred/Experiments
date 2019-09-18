@@ -2,6 +2,7 @@ package contest.db;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
+import extract.PdfUtils;
 import extract.UnRar;
 import extract.UnZip;
 import java.io.File;
@@ -24,7 +25,6 @@ import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import pdfreader.PdfUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.SupplierEx;

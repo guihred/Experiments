@@ -16,7 +16,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.SVGPath;
-import paintexp.PaintModel;
 import simplebuilder.SimpleSvgPathBuilder;
 import utils.PixelHelper;
 

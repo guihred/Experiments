@@ -7,7 +7,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -71,23 +70,7 @@ public class ColorChooser extends Application {
 
     }
 
-    public static WritableImage drawTransparentPattern(int size) {
-        WritableImage transparentPattern = new WritableImage(size, size);
-        return transparentImage(size, transparentPattern);
-    }
-
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public static WritableImage transparentImage(int size, WritableImage transparentPattern) {
-        int squareSize = size / 16;
-        for (int x = 0; x < transparentPattern.getWidth(); x++) {
-            for (int y = 0; y < transparentPattern.getHeight(); y++) {
-                transparentPattern.getPixelWriter().setColor(x, y,
-                    x / squareSize % 2 == y / squareSize % 2 ? Color.WHITE : Color.GRAY);
-            }
-        }
-        return transparentPattern;
     }
 }

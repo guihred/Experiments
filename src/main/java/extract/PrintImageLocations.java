@@ -1,4 +1,4 @@
-package pdfreader;
+package extract;
 
 import static org.apache.commons.io.FileUtils.contentEquals;
 import static utils.PredicateEx.makeTest;

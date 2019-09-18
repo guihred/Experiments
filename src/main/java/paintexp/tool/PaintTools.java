@@ -1,7 +1,6 @@
-package paintexp;
+package paintexp.tool;
 
 import javafx.scene.Cursor;
-import paintexp.tool.*;
 
 public enum PaintTools {
     SELECT_FREE(new SelectFreeTool()),

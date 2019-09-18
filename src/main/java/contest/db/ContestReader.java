@@ -3,6 +3,8 @@ package contest.db;
 import static utils.StringSigaUtils.intValue;
 import static utils.StringSigaUtils.removeNotPrintable;
 
+import extract.PdfImage;
+import extract.PdfUtils;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,8 +14,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.text.TextPosition;
-import pdfreader.PdfImage;
-import pdfreader.PdfUtils;
 import utils.HasImage;
 import utils.HasLogging;
 import utils.StringSigaUtils;

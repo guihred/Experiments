@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
+import paintexp.tool.PaintModel;
 import utils.HasLogging;
 
 public final class PaintFileUtils {

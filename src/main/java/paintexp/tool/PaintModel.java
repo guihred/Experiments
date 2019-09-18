@@ -1,4 +1,4 @@
-package paintexp;
+package paintexp.tool;
 
 import java.io.File;
 import java.util.stream.Stream;
@@ -15,8 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import paintexp.tool.PaintTool;
-import paintexp.tool.SelectRectTool;
+import utils.DrawOnPoint;
 import utils.ZoomableScrollPane;
 
 public class PaintModel {
@@ -127,7 +126,7 @@ public class PaintModel {
 
     public Rectangle getRectangleBorder(final ImageView imageView) {
         if (rectangleBorder == null) {
-            rectangleBorder = new Rectangle(10, 10, new ImagePattern(ColorChooser.drawTransparentPattern(100)));
+            rectangleBorder = new Rectangle(10, 10, new ImagePattern(DrawOnPoint.drawTransparentPattern(100)));
             rectangleBorder.setStroke(Color.BLACK);
         }
         rectangleBorder.setManaged(false);

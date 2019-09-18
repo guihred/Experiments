@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import paintexp.tool.PaintModel;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 

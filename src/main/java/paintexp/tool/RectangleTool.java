@@ -11,7 +11,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import paintexp.PaintModel;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;

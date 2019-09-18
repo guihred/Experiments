@@ -1,4 +1,4 @@
-package pdfreader;
+package extract;
 
 import java.io.File;
 import java.util.List;

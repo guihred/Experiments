@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import paintexp.PaintModel;
 
 public class PencilTool extends PaintTool {
 

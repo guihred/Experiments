@@ -10,7 +10,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 import utils.PixelHelper;

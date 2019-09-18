@@ -21,7 +21,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import org.slf4j.Logger;
-import paintexp.PaintModel;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.HasLogging;

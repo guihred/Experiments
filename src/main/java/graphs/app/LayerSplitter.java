@@ -73,23 +73,7 @@ public class LayerSplitter {
         return edges;
     }
 
-    public static int getLayerNumber(Cell vertex, List<List<Cell>> layers2) {
-        for (int i = 0; i < layers2.size(); i++) {
-            List<Cell> list = layers2.get(i);
-            if (list.contains(vertex)) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    public static List<List<Cell>> getLayers(List<Cell> cells, List<Edge> edges) {
-        LayerSplitter cycleRemover = new LayerSplitter(cells, edges);
-        cycleRemover.removeCycles();
-        return cycleRemover.orderVertices(cycleRemover.assignLayers());
-    }
-
-    private static Object[] createVirtualVerticesAndEdges(List<List<Cell>> layers, List<Edge> ed) {
+    public static Object[] createVirtualVerticesAndEdges(List<List<Cell>> layers, List<Edge> ed) {
         int virtualIndex = 0;
         List<Edge> edges = new ArrayList<>(ed);
         for (int i = 0; i < layers.size() - 1; i++) {
@@ -119,6 +103,22 @@ public class LayerSplitter {
             }
         }
         return new Object[] { layers, edges };
+    }
+
+    public static int getLayerNumber(Cell vertex, List<List<Cell>> layers2) {
+        for (int i = 0; i < layers2.size(); i++) {
+            List<Cell> list = layers2.get(i);
+            if (list.contains(vertex)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public static List<List<Cell>> getLayers(List<Cell> cells, List<Edge> edges) {
+        LayerSplitter cycleRemover = new LayerSplitter(cells, edges);
+        cycleRemover.removeCycles();
+        return cycleRemover.orderVertices(cycleRemover.assignLayers());
     }
 
     private static List<Cell> getVerticesWithoutIncomingEdges(List<Edge> edges, List<Cell> vertices) {

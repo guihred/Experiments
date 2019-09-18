@@ -12,7 +12,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import paintexp.tool.PaintModel;
 import paintexp.tool.PaintTool;
+import paintexp.tool.PaintTools;
 import paintexp.tool.SelectRectTool;
 
 public class PaintController {

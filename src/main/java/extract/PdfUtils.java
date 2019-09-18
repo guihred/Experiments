@@ -1,4 +1,4 @@
-package pdfreader;
+package extract;
 
 import static utils.StringSigaUtils.removeMathematicalOperators;
 

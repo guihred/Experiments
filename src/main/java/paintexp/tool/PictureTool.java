@@ -14,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import paintexp.PaintModel;
 import simplebuilder.SimpleToggleGroupBuilder;
 
 public class PictureTool extends PaintTool {

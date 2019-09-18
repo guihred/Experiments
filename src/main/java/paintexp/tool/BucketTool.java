@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import paintexp.PaintModel;
 import utils.PixelHelper;
 
 public class BucketTool extends PaintTool {

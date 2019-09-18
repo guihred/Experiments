@@ -4,6 +4,7 @@ import static extract.ExcelService.getWorkbook;
 import static extract.ExcelService.isExcel;
 import static utils.StringSigaUtils.intValue;
 
+import extract.PdfUtils;
 import java.awt.Color;
 import java.io.*;
 import java.util.*;
@@ -22,7 +23,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
-import pdfreader.PdfUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.SupplierEx;

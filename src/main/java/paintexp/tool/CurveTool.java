@@ -8,7 +8,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
-import paintexp.PaintModel;
 
 public class CurveTool extends PaintTool {
 

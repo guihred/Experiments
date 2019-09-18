@@ -17,6 +17,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import utils.DrawOnPoint;
 
 public class ColorChooserController {
     private static final int SQUARE_SIZE = 64;
@@ -95,8 +96,8 @@ public class ColorChooserController {
             circle.setCenterX(newV.getSaturation() * MAX_BYTE);
             circle.setCenterY(MAX_BYTE * (1 - newV.getBrightness()));
         });
-        ColorChooser.transparentImage(256, transparentImage);
-        ColorChooser.transparentImage(SQUARE_SIZE, smallImage);
+        DrawOnPoint.transparentImage(256, transparentImage);
+        DrawOnPoint.transparentImage(SQUARE_SIZE, smallImage);
         setSliderImage();
         drawImage();
     }

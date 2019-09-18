@@ -7,7 +7,6 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
-import paintexp.PaintModel;
 import simplebuilder.SimpleToggleGroupBuilder;
 
 public class EllipseTool extends PaintTool {

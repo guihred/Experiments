@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import paintexp.tool.PaintModel;
 import paintexp.tool.SelectRectTool;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;

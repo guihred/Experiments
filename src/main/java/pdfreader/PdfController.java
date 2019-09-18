@@ -1,5 +1,8 @@
 package pdfreader;
 
+import extract.PdfImage;
+import extract.PdfInfo;
+import extract.PdfUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

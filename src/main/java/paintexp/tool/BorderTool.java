@@ -14,7 +14,6 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import paintexp.PaintModel;
 import simplebuilder.SimpleSliderBuilder;
 import utils.PixelHelper;
 

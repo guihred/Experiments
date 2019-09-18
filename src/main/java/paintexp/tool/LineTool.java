@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import paintexp.PaintModel;
 import simplebuilder.SimpleLineBuilder;
 
 public class LineTool extends PaintTool {
