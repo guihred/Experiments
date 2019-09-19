@@ -1,5 +1,7 @@
 package labyrinth;
 
+import static labyrinth.GhostGenerator.mapa;
+
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
@@ -8,10 +10,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Labyrinth3DCollisions extends Application implements CommomLabyrinth {
-	private static String[][] mapa = { { "_", "_", "_", "_", "_", "_" },
-			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "_", "|", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" }, };
 	private static final int SIZE = 50;
 
 	private PerspectiveCamera camera = new PerspectiveCamera(true);

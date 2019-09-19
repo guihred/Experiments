@@ -1,70 +1,51 @@
 package labyrinth;
 
-import java.security.SecureRandom;
+import static labyrinth.GhostGenerator.SIZE;
+import static labyrinth.GhostGenerator.generateGhost;
+import static labyrinth.GhostGenerator.mapa;
+
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
-import utils.ResourceFXUtils;
 
 public class Labyrinth3DKillerGhosts extends Application implements CommomLabyrinth {
 
-    private static final Color lightColor = Color.grayRgb(125);
-    private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" },
-			{ "_", "|", "_", "_", "_", "|" }, { "_", "_", "|", "|", "|", "_" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "_", "|", "_" },
-			{ "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" },
-			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "|", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "_", "_", "_", "|", "_", "|" },
-			{ "_", "_", "_", "_", "_", "_" },
+    private PerspectiveCamera camera;
+    private final List<LabyrinthWall> cubes = new ArrayList<>();
 
-	};
+    @Override
+    public PerspectiveCamera getCamera() {
+        return camera;
+    }
 
-	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
-    private static final int SIZE = 60;
+    @Override
+    public List<LabyrinthWall> getLabyrinthWalls() {
+        return cubes;
+    }
 
-	private PerspectiveCamera camera;
+    @Override
+    public void start(Stage primaryStage) throws Exception {
 
-	private final List<LabyrinthWall> cubes = new ArrayList<>();
-    private final SecureRandom random = new SecureRandom();
+        Group root = new Group();
 
-	@Override
-	public PerspectiveCamera getCamera() {
-		return camera;
-	}
-
-	@Override
-	public List<LabyrinthWall> getLabyrinthWalls() {
-		return cubes;
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-
-		Group root = new Group();
-
-		criarLabirinto(root);
+        criarLabirinto(root);
         SubScene subScene = new SubScene(root, 500, 500, true, SceneAntialiasing.BALANCED);
-		subScene.heightProperty().bind(primaryStage.heightProperty());
-		subScene.widthProperty().bind(primaryStage.widthProperty());
-		camera = new PerspectiveCamera(true);
+        subScene.heightProperty().bind(primaryStage.heightProperty());
+        subScene.widthProperty().bind(primaryStage.widthProperty());
+        camera = new PerspectiveCamera(true);
         camera.setNearClip(1. / 10);
-		camera.setFarClip(1000.0);
-		camera.setTranslateZ(-100);
-		subScene.setCamera(camera);
-        PointLight light = new PointLight(lightColor);
-		light.translateXProperty().bind(camera.translateXProperty());
-		light.translateYProperty().bind(camera.translateYProperty());
-		light.translateZProperty().bind(camera.translateZProperty());
-		root.getChildren().add(light);
+        camera.setFarClip(1000.0);
+        camera.setTranslateZ(-100);
+        subScene.setCamera(camera);
+        PointLight light = new PointLight(GhostGenerator.LIGHT_COLOR);
+        light.translateXProperty().bind(camera.translateXProperty());
+        light.translateYProperty().bind(camera.translateYProperty());
+        light.translateZProperty().bind(camera.translateZProperty());
+        root.getChildren().add(light);
 
         MeshView[] ghosts = createGhosts();
 
@@ -72,80 +53,46 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
 
         root.getChildren().addAll(ghosts);
 
-		// End Step 2a
-		// Step 2b: Add a Movement Keyboard Handler
+        // End Step 2a
+        // Step 2b: Add a Movement Keyboard Handler
         Scene sc = new Scene(new Group(subScene));
-		sc.setFill(Color.TRANSPARENT);
-		MovimentacaoTeclado value = new MovimentacaoTeclado(this);
-		sc.setOnKeyPressed(value);
-		sc.setOnKeyReleased(value::keyReleased);
+        sc.setFill(Color.TRANSPARENT);
+        MovimentacaoTeclado value = new MovimentacaoTeclado(this);
+        sc.setOnKeyPressed(value);
+        sc.setOnKeyReleased(value::keyReleased);
         primaryStage.setTitle("Labyrinth 3D With Killer Ghost");
-		primaryStage.setScene(sc);
-		primaryStage.show();
-	}
-
-	private MeshView[] createGhosts() {
-        return new MeshView[] { 
-				generateGhost(MESH_GHOST, Color.AQUAMARINE), generateGhost(MESH_GHOST, Color.BROWN),
-				generateGhost(MESH_GHOST, Color.CHARTREUSE), generateGhost(MESH_GHOST, Color.DODGERBLUE),
-				generateGhost(MESH_GHOST, Color.FUCHSIA), generateGhost(MESH_GHOST, Color.GREEN),
-				generateGhost(MESH_GHOST, Color.HOTPINK), generateGhost(MESH_GHOST, Color.INDIGO),
-				generateGhost(MESH_GHOST, Color.KHAKI), generateGhost(MESH_GHOST, Color.LIGHTSALMON),
-				generateGhost(MESH_GHOST, Color.MIDNIGHTBLUE), generateGhost(MESH_GHOST, Color.NAVY),
-				generateGhost(MESH_GHOST, Color.ORCHID), generateGhost(MESH_GHOST, Color.PURPLE),
-				generateGhost(MESH_GHOST, Color.RED), generateGhost(MESH_GHOST, Color.SLATEBLUE),
-				generateGhost(MESH_GHOST, Color.TRANSPARENT), generateGhost(MESH_GHOST, Color.VIOLET),
-				generateGhost(MESH_GHOST, Color.WHITESMOKE), generateGhost(MESH_GHOST, Color.YELLOWGREEN)
-		};
+        primaryStage.setScene(sc);
+        primaryStage.show();
     }
 
-	private void criarLabirinto(Group root) {
-		for (int i = mapa.length - 1; i >= 0; i--) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
-				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
+    private void criarLabirinto(Group root) {
+        for (int i = mapa.length - 1; i >= 0; i--) {
+            for (int j = mapa[i].length - 1; j >= 0; j--) {
+                String string = mapa[i][j];
+                LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
                 rectangle.setTranslateZ(j * (double) SIZE);
                 rectangle.setTranslateX(i * (double) SIZE);
-				if ("_".equals(string)) {
-					rectangle.getRy().setAngle(90);
-				}
-				cubes.add(rectangle);
-				root.getChildren().add(rectangle);
-			}
-		}
-	}
-
-    private MeshView generateGhost(String arquivo, Color animalColor) {
-        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
-        MeshView animal = new MeshView(mesh);
-        PhongMaterial sample = new PhongMaterial(animalColor);
-        sample.setSpecularColor(lightColor);
-        sample.setSpecularPower(16);
-        animal.setMaterial(sample);
-        animal.setTranslateY(15);
-
-        int posicaoInicialZ = rnd(mapa[0].length * SIZE);
-        animal.setTranslateZ(posicaoInicialZ);
-        int posicaoInicialX = rnd(mapa.length * SIZE);
-        animal.setTranslateX(posicaoInicialX);
-        while (checkColision(animal.getBoundsInParent())) {
-            animal.setTranslateZ(animal.getTranslateZ() + 1);
-            animal.setTranslateX(animal.getTranslateX() + 1);
+                if ("_".equals(string)) {
+                    rectangle.getRy().setAngle(90);
+                }
+                cubes.add(rectangle);
+                root.getChildren().add(rectangle);
+            }
         }
-
-        animal.setScaleX(4. / 10);
-        animal.setScaleZ(4. / 10);
-        animal.setScaleY(1);
-
-        return animal;
     }
 
-    private int rnd(int bound) {
-        return random.nextInt(bound);
+    public static void main(String[] args) {
+        launch(args);
     }
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    private static MeshView[] createGhosts() {
+        return new MeshView[] { generateGhost(Color.AQUAMARINE), generateGhost(Color.BROWN),
+            generateGhost(Color.CHARTREUSE), generateGhost(Color.DODGERBLUE), generateGhost(Color.FUCHSIA),
+            generateGhost(Color.GREEN), generateGhost(Color.HOTPINK), generateGhost(Color.INDIGO),
+            generateGhost(Color.KHAKI), generateGhost(Color.LIGHTSALMON), generateGhost(Color.MIDNIGHTBLUE),
+            generateGhost(Color.NAVY), generateGhost(Color.ORCHID), generateGhost(Color.PURPLE),
+            generateGhost(Color.RED), generateGhost(Color.SLATEBLUE), generateGhost(Color.TRANSPARENT),
+            generateGhost(Color.VIOLET), generateGhost(Color.WHITESMOKE), generateGhost(Color.YELLOWGREEN) };
+    }
 
 }

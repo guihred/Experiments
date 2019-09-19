@@ -1,6 +1,8 @@
 package labyrinth;
 
-import java.net.URL;
+import static labyrinth.GhostGenerator.generateGhost;
+import static labyrinth.GhostGenerator.mapa;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,8 +10,6 @@ import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
@@ -20,38 +20,16 @@ import utils.ResourceFXUtils;
 public class Labyrinth3DMouseControl extends Application implements CommomLabyrinth {
 
     private static final Color LIGHT_COLOR = Color.grayRgb(125);
-    private static final String[][] MAPA = {
-			{ "_", "_", "_", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, 
-			{ "|", "|", "_", "|", "_", "|" },
-			{ "_", "|", "_", "|", "_", "|" }, 
-			{ "|", "|", "_", "|", "_", "|" },
-			{ "|", "_", "_", "|", "_", "|" }, 
-			{ "|", "_", "_", "_", "|", "_" },
-			{ "_", "|", "_", "_", "_", "|" }, 
-			{ "_", "_", "|", "|", "|", "_" },
-			{ "_", "|", "_", "|", "_", "|" }, 
-			{ "|", "|", "_", "_", "|", "_" },
-			{ "_", "_", "_", "_", "_", "|" }, 
-			{ "|", "_", "_", "_", "_", "_" },
-			{ "|", "|", "_", "|", "_", "|" }, 
-			{ "|", "_", "|", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, 
-			{ "_", "_", "_", "|", "_", "|" },
-			{ "_", "_", "_", "_", "_", "_" },
-	};
 
-    private static final URL MESH_GHOST = ResourceFXUtils.toURL("ghost2.STL");
+    private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
 
 
-	private static final int SIZE = 60;
-
-    private Sphere[][] balls = new Sphere[MAPA.length][MAPA[0].length];
+    private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 
 	private PerspectiveCamera camera;
 
     private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(
-            MAPA.length * MAPA[0].length);
+        mapa.length * mapa[0].length);
 
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
 	private MovimentacaoAleatoria movimentacao;
@@ -75,7 +53,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-        Labyrinth3DKillerGhostsAndBalls.createLabyrinth(root, labyrinthWalls, balls, MAPA);
+        Labyrinth3DKillerGhostsAndBalls.createLabyrinth(root, labyrinthWalls, balls, mapa);
         SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
@@ -132,26 +110,6 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 		primaryStage.show();
 	}
 
-	private MeshView generateGhost(URL arquivo, Color enemyColor) {
-        MeshView enemy = new MeshView(ResourceFXUtils.importStlMesh(arquivo));
-		PhongMaterial sample = new PhongMaterial(enemyColor);
-		sample.setSpecularColor(LIGHT_COLOR);
-		enemy.setDrawMode(DrawMode.FILL);
-        enemy.setTranslateY(15);
-		enemy.setMaterial(sample);
-        double posicaoInicialZ = Math.random() * MAPA[0].length * SIZE;
-		enemy.setTranslateZ(posicaoInicialZ);
-        double posicaoInicialX = Math.random() * MAPA.length * SIZE;
-		enemy.setTranslateX(posicaoInicialX);
-		while (checkColision(enemy.getBoundsInParent())) {
-			enemy.setTranslateZ(enemy.getTranslateZ() + 1);
-			enemy.setTranslateX(enemy.getTranslateX() + 1);
-		}
-        enemy.setScaleX(4. / 10);
-		enemy.setScaleY(1);
-        enemy.setScaleZ(4. / 10);
-		return enemy;
-	}
 
 	public static void main(String[] args) {
 		launch(args);

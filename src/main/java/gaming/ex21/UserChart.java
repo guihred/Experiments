@@ -59,7 +59,6 @@ public class UserChart extends VBox {
 
     }
 
-
     public long countPoints(final PlayerColor newPlayer, List<SettlePoint> settlePoints,
         Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
         long pointsCount = settlePoints.stream().filter(s -> s.getElement() instanceof Village)
@@ -90,7 +89,6 @@ public class UserChart extends VBox {
         return color.get();
     }
 
-
     public void setCards(List<CatanCard> currentCards) {
         cardGroup.getChildren().clear();
         for (CatanCard type : currentCards) {
@@ -120,28 +118,29 @@ public class UserChart extends VBox {
 
     public void setOnWin(BiConsumer<Pane, Pane> onWin) {
         this.onWin = onWin;
-    
+
     }
-public void setPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
-    Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
-    for (PlayerColor playerColor : PlayerColor.values()) {
-        long points = countPoints(playerColor, settlePoints, usedCards, edges);
-        playersPoints.get(playerColor).set(points);
-        if (playerColor == newPlayer) {
-            userPoints.setText(points + " Points");
-        }
-        if (points >= 10) {
-            StageHelper.displayDialog("Player " + playerColor + " Won", "Reset", () -> {
-                BorderPane root = (BorderPane) availablePorts.getScene().getRoot();
-                Pane center = (Pane) root.getCenter();
-                center.getChildren().clear();
-                Pane right = (Pane) root.getLeft();
-                right.getChildren().clear();
-                onWin.accept(center, right);
-            });
+
+    public void setPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
+        Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
+        for (PlayerColor playerColor : PlayerColor.values()) {
+            long points = countPoints(playerColor, settlePoints, usedCards, edges);
+            playersPoints.get(playerColor).set(points);
+            if (playerColor == newPlayer) {
+                userPoints.setText(points + " Points");
+            }
+            if (points >= 10) {
+                StageHelper.displayDialog("Player " + playerColor + " Won", "Reset", () -> {
+                    BorderPane root = (BorderPane) availablePorts.getScene().getRoot();
+                    Pane center = (Pane) root.getCenter();
+                    center.getChildren().clear();
+                    Pane right = (Pane) root.getLeft();
+                    right.getChildren().clear();
+                    onWin.accept(center, right);
+                });
+            }
         }
     }
-}
 
     public int throwDice() {
         return dice1.throwDice() + dice2.throwDice();

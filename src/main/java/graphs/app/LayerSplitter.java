@@ -14,41 +14,50 @@ public class LayerSplitter {
 
     LayerSplitter(List<Cell> cells, List<Edge> edges) {
         this.cells = new ArrayList<>(cells);
-        this.edges = new ArrayList<>(edges);
+        this.edges = new LinkedList<>(edges);
     }
 
     // [String[][],Edge[]]
     public List<List<Cell>> orderVertices(List<List<Cell>> layers) {
 //        
-        List<List<Cell>> best = layers.stream().collect(Collectors.toList());
-        for (int i = 0; i < 24; i++) {
-            Collections.shuffle(layers);
-            if (crossings(layers) > crossings(best)) {
-                best = layers.stream().collect(Collectors.toList());
+
+        for (int i = 0; i < layers.size(); i++) {
+            List<Cell> list = layers.get(i);
+            if (list.size() > 1) {
+                int ceil = (int) Math.ceil(list.size() / 2.);
+                List<Cell> subList = new ArrayList<>(list.subList(0, ceil));
+                List<Cell> subList2 = new ArrayList<>(list.subList(ceil, list.size()));
+                subList.sort(Comparator.comparing((Cell t) -> GraphModelAlgorithms.edgesNumber(t, edges)));
+                subList2.sort(Comparator.comparing((Cell t) -> GraphModelAlgorithms.edgesNumber(t, edges)).reversed());
+                list.clear();
+                list.addAll(subList);
+                list.addAll(subList2);
             }
         }
-        return best;
+        return layers;
     }
 
     private List<List<Cell>> assignLayers() {
         List<List<Cell>> sorted = new ArrayList<>();
-        List<Edge> edges1 = edges;
-        List<Cell> vertices = cells;
+        List<Edge> edges1 = new ArrayList<>(edges);
+        List<Cell> vertices = new ArrayList<>(cells);
         List<Cell> start = getVerticesWithoutIncomingEdges(edges1, vertices);
-        while (start.size() > 0) {
+        while (!start.isEmpty()) {
             sorted.add(start);
             List<Cell> st = start;
             edges1.removeIf(e -> st.contains(e.getSource()));
-            vertices.removeIf(v -> st.contains(v));
+            vertices.removeIf(st::contains);
             start = getVerticesWithoutIncomingEdges(edges1, vertices);
         }
         return sorted;
     }
 
+    @SuppressWarnings("unused")
     private long crossings(List<List<Cell>> layers) {
         return edges.stream().filter(e -> getLayerNumber(e.getSource(), layers) > getLayerNumber(e.getTarget(), layers))
             .count();
     }
+
     private void dfsRemove(Cell vertex) {
         if (marked.contains(vertex)) {
             return;
@@ -122,7 +131,7 @@ public class LayerSplitter {
     }
 
     private static List<Cell> getVerticesWithoutIncomingEdges(List<Edge> edges, List<Cell> vertices) {
-        List<Cell> targets = edges.stream().map(e -> e.getTarget()).distinct().collect(Collectors.toList());
+        List<Cell> targets = edges.stream().map(Edge::getTarget).distinct().collect(Collectors.toList());
         return vertices.stream().filter(v -> !targets.contains(v)).collect(Collectors.toList());
     }
 }

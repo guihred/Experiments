@@ -181,7 +181,8 @@ public abstract class PaintTool extends Group {
             final int x1 = x;
             final int y1 = y;
             final PaintModel model1 = model;
-            if (withinImage(x1, y1, model1.getImage()) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
+            if (withinImage(x1, y1, model1.getImage()) && within(x, minX - 1, maxX + 1)
+                && within(y, minY - 1, maxY + 1)) {
                 onPoint.draw(x, y);
             }
         }
@@ -191,7 +192,8 @@ public abstract class PaintTool extends Group {
                 final int x1 = x;
                 final int y1 = y;
                 final PaintModel model1 = model;
-                if (withinImage(x1, y1, model1.getImage()) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
+                if (withinImage(x1, y1, model1.getImage()) && within(x, minX - 1, maxX + 1)
+                    && within(y, minY - 1, maxY + 1)) {
                     onPoint.draw(x, y);
                 }
             }

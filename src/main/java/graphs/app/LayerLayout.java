@@ -71,13 +71,14 @@ public class LayerLayout implements Layout {
 
         List<List<Cell>> orderedCellGroups = LayerSplitter.getLayers(cells, addedEdges);
         final double bound = orderedCellGroups.stream()
-            .mapToDouble(l -> l.stream().mapToDouble(e -> e.getHeight()).max().orElse(0)).sum();
-        double sum2 = orderedCellGroups.stream().mapToDouble(l -> l.stream().mapToDouble(e -> e.getWidth()).sum()).max()
-            .orElse(0) + 400;
+            .mapToDouble(l -> l.stream().mapToDouble(Cell::getHeight).max().orElse(0)).sum();
+        final int f = 400;
+        double sum2 = orderedCellGroups.stream().mapToDouble(l -> l.stream().mapToDouble(Cell::getWidth).sum()).max()
+            .orElse(0) + f;
         double layerHeight = bound / (orderedCellGroups.size() + 1) + 50;
         double y = layerHeight;
         for (List<Cell> list : orderedCellGroups) {
-            double sum = list.stream().mapToDouble(e -> e.getWidth()).sum();
+            double sum = list.stream().mapToDouble(Cell::getWidth).sum();
             double xStep = 5;
             double x = sum2 / 2 - sum / 2;
             for (int i = 0; i < list.size(); i++) {

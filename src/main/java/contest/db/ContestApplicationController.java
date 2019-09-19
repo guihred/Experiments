@@ -110,20 +110,6 @@ public class ContestApplicationController {
         current.set(0);
     }
 
-    static String mapLines(List<String> map, int orElse, int i) {
-    
-        String object = StringSigaUtils.justified(map, orElse, i);
-        return String.format("(%02d)    %s", i + 1, object);
-    }
-
-    static boolean isBetween(ContestText tex, int j) {
-        if (tex.getMin() == null || tex.getMax() == null) {
-            return false;
-        }
-        int i = j + 1;
-        return tex.getMin() <= i && tex.getMax() >= i;
-    }
-
     static void extracted(ListView<ContestQuestionAnswer> options, ContestQuestion contestQuestion) {
         ObservableList<ContestQuestionAnswer> items = options.getItems();
         for (int i = 0; i < contestQuestion.getOptions().size(); i++) {
@@ -137,13 +123,28 @@ public class ContestApplicationController {
 
     static String getText(ContestReader contestQuestions2, int cur) {
         List<String> map = contestQuestions2.getContestTexts().stream()
-            .filter(t -> ContestApplicationController.isBetween(t, cur)).map(ContestText::getText).filter(StringUtils::isNotBlank)
-            .flatMap(s -> Stream.of(s.split("\n"))).map(String::trim).collect(Collectors.toList());
+            .filter(t -> ContestApplicationController.isBetween(t, cur)).map(ContestText::getText)
+            .filter(StringUtils::isNotBlank).flatMap(s -> Stream.of(s.split("\n"))).map(String::trim)
+            .collect(Collectors.toList());
 
         int orElse = map.stream().mapToInt(String::length).max().orElse(0);
 
         return IntStream.range(0, map.size()).mapToObj(i -> ContestApplicationController.mapLines(map, orElse, i))
             .collect(Collectors.joining("\n"));
+    }
+
+    static boolean isBetween(ContestText tex, int j) {
+        if (tex.getMin() == null || tex.getMax() == null) {
+            return false;
+        }
+        int i = j + 1;
+        return tex.getMin() <= i && tex.getMax() >= i;
+    }
+
+    static String mapLines(List<String> map, int orElse, int i) {
+
+        String object = StringSigaUtils.justified(map, orElse, i);
+        return String.format("(%02d)    %s", i + 1, object);
     }
 
 }

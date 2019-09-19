@@ -34,7 +34,8 @@ public class ConcentricLayout implements Layout {
         List<List<Cell>> cellsGroups = LayerSplitter.getLayers(cells, allEdges);
         for (int i = 0; i < cellsGroups.size(); i++) {
             List<Cell> list = cellsGroups.get(i);
-            CircleLayout.generateCircle(list, allEdges, center, center, 135.0 / list.size() * i, i + 1);
+            final double d = 135.0;
+            CircleLayout.generateCircle(list, allEdges, center, center, d / list.size() * i, i + 1);
         }
     }
 

@@ -55,7 +55,7 @@ public class SudokuModel {
 
     public void handleMousePressed(MouseEvent ev) {
         Optional<SudokuSquare> pressed = sudokuSquares.stream().filter(e -> !e.isPermanent())
-                .filter(s -> s.getBoundsInParent().contains(ev.getX(), ev.getY())).findFirst();
+            .filter(s -> s.getBoundsInParent().contains(ev.getX(), ev.getY())).findFirst();
         if (!pressed.isPresent()) {
             pressedSquare = null;
             return;
@@ -72,7 +72,7 @@ public class SudokuModel {
 
     public void handleMouseReleased(MouseEvent s) {
         Optional<NumberButton> findFirst = numberOptions.stream()
-                .filter(e -> e.getBoundsInParent().contains(s.getX(), s.getY())).findFirst();
+            .filter(e -> e.getBoundsInParent().contains(s.getX(), s.getY())).findFirst();
         if (pressedSquare != null && findFirst.isPresent()) {
             NumberButton node = findFirst.get();
             pressedSquare.setNumber(node.getNumber());
@@ -177,14 +177,16 @@ public class SudokuModel {
 
     private List<SudokuSquare> getArea(int row) {
         return sudokuSquares.stream()
-                .filter(e -> e.isEmpty() && e.isInArea(row % SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER, row / SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER))
-                .collect(Collectors.toList());
+            .filter(e -> e.isEmpty() && e.isInArea(row % SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER,
+                row / SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER))
+            .collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getArea(int i, int number) {
         return sudokuSquares.stream()
-                .filter(e1 -> e1.isEmpty() && e1.isInArea(i % SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER, i / SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER))
-                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+            .filter(e1 -> e1.isEmpty() && e1.isInArea(i % SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER,
+                i / SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER))
+            .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getCol(int row) {
@@ -193,7 +195,7 @@ public class SudokuModel {
 
     private List<SudokuSquare> getCol(int i, int number) {
         return sudokuSquares.stream().filter(e1 -> e1.isEmpty() && e1.isInCol(i))
-                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+            .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getRow(int row) {
@@ -202,7 +204,7 @@ public class SudokuModel {
 
     private List<SudokuSquare> getRow(int i, int number) {
         return sudokuSquares.stream().filter(e1 -> e1.isEmpty() && e1.isInRow(i))
-                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+            .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
     }
 
     private void initialize() {
@@ -233,11 +235,11 @@ public class SudokuModel {
 
     private boolean isNumberFit(int n, int row, int col) {
         return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInRow(row))
+            .noneMatch(s -> s.getNumber() == n)
+            && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInArea(row, col))
                 .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInArea(row, col))
-                        .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInCol(col))
-                        .noneMatch(s -> s.getNumber() == n);
+            && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInCol(col))
+                .noneMatch(s -> s.getNumber() == n);
     }
 
     private boolean isNumberFit(SudokuSquare sudokuSquare, int n) {
@@ -270,7 +272,7 @@ public class SudokuModel {
 
     private void removeFromArea(SudokuSquare sq, SudokuSquare sq2) {
         if (sq.getRow() / SudokuSquare.MAP_NUMBER == sq2.getRow() / SudokuSquare.MAP_NUMBER
-                && sq.getCol() / SudokuSquare.MAP_NUMBER == sq2.getCol() / SudokuSquare.MAP_NUMBER) {
+            && sq.getCol() / SudokuSquare.MAP_NUMBER == sq2.getCol() / SudokuSquare.MAP_NUMBER) {
             int row = sq.getRow() / SudokuSquare.MAP_NUMBER;
             int col = sq.getCol() / SudokuSquare.MAP_NUMBER;
             for (int i = 0; i < SudokuSquare.MAP_NUMBER; i++) {
@@ -327,14 +329,14 @@ public class SudokuModel {
     private void setSquareWithOnePossibility() {
         while (sudokuSquares.stream().anyMatch(e -> e.isEmpty() && e.getPossibilities().size() == 1)) {
             sudokuSquares.stream().filter(e -> e.isEmpty() && e.getPossibilities().size() == 1)
-                    .forEach(sq -> sq.setNumber(sq.getPossibilities().get(0)));
+                .forEach(sq -> sq.setNumber(sq.getPossibilities().get(0)));
             updatePossibilities();
         }
     }
 
     private void updatePossibilities() {
         sudokuSquares.forEach(sq -> sq.setPossibilities(IntStream.rangeClosed(1, MAP_N_SQUARED)
-                .filter(n -> isNumberFit(sq, n)).boxed().collect(Collectors.toList())));
+            .filter(n -> isNumberFit(sq, n)).boxed().collect(Collectors.toList())));
         sudokuSquares.forEach(sq -> sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber())));
 
         removeDuplicatedPossibilities();

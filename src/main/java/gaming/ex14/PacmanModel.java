@@ -32,12 +32,11 @@ public class PacmanModel {
 
     private static final Logger LOG = HasLogging.log();
 
-    private final List<PacmanBall> balls = DoubleStream.iterate(PacmanBall.SQUARE_SIZE / 2, d -> d + PacmanBall.SQUARE_SIZE)
-        .limit(PacmanBall.MAZE_SIZE * 2L)
-        .mapToObj(d -> DoubleStream.iterate(PacmanBall.SQUARE_SIZE / 2, e -> e + PacmanBall.SQUARE_SIZE).limit(PacmanBall.MAZE_SIZE * 2L)
-            .mapToObj(e -> new PacmanBall(d, e)))
-        .flatMap(e -> e)
-        .collect(Collectors.toList());
+    private final List<PacmanBall> balls = DoubleStream
+        .iterate(PacmanBall.SQUARE_SIZE / 2, d -> d + PacmanBall.SQUARE_SIZE).limit(PacmanBall.MAZE_SIZE * 2L)
+        .mapToObj(d -> DoubleStream.iterate(PacmanBall.SQUARE_SIZE / 2, e -> e + PacmanBall.SQUARE_SIZE)
+            .limit(PacmanBall.MAZE_SIZE * 2L).mapToObj(e -> new PacmanBall(d, e)))
+        .flatMap(e -> e).collect(Collectors.toList());
     private final List<PacmanGhost> ghosts = Stream
         .of(GhostColor.RED, GhostColor.BLUE, GhostColor.ORANGE, GhostColor.GREEN).map(PacmanGhost::new)
         .collect(Collectors.toList());
@@ -83,7 +82,8 @@ public class PacmanModel {
             PacmanGhost ghost = ghosts.get(i);
             int location = i / 2;
             final int initialPos = 265;
-            ghost.setStartPosition(initialPos + i % 2 * PacmanBall.SQUARE_SIZE, initialPos + location * PacmanBall.SQUARE_SIZE);
+            ghost.setStartPosition(initialPos + i % 2 * PacmanBall.SQUARE_SIZE,
+                initialPos + location * PacmanBall.SQUARE_SIZE);
             group.getChildren().add(ghost.getCircle());
         }
         scene.setOnKeyPressed(this::handleKeyPressed);
@@ -127,6 +127,7 @@ public class PacmanModel {
             }
         }
     }
+
     private void handleKeyPressed(KeyEvent e) {
         KeyCode code = e.getCode();
         switch (code) {
@@ -174,9 +175,11 @@ public class PacmanModel {
         for (int i = 0; i < PacmanBall.MAZE_SIZE; i++) {
             for (int j = 0; j < PacmanBall.MAZE_SIZE; j++) {
                 double layoutX = i * PacmanBall.SQUARE_SIZE;
-                double layoutX2 = PacmanBall.MAZE_SIZE * 2 * PacmanBall.SQUARE_SIZE - i * PacmanBall.SQUARE_SIZE - PacmanBall.SQUARE_SIZE;
+                double layoutX2 = PacmanBall.MAZE_SIZE * 2 * PacmanBall.SQUARE_SIZE - i * PacmanBall.SQUARE_SIZE
+                    - PacmanBall.SQUARE_SIZE;
                 double layoutY = j * PacmanBall.SQUARE_SIZE;
-                double layoutY2 = PacmanBall.MAZE_SIZE * 2 * PacmanBall.SQUARE_SIZE - j * PacmanBall.SQUARE_SIZE - PacmanBall.SQUARE_SIZE;
+                double layoutY2 = PacmanBall.MAZE_SIZE * 2 * PacmanBall.SQUARE_SIZE - j * PacmanBall.SQUARE_SIZE
+                    - PacmanBall.SQUARE_SIZE;
 
                 if (!maze[i][j].isWest()) {
                     addRectangle(group, layoutX, layoutY, PacmanBall.SQUARE_SIZE, 2);

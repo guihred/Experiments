@@ -1,5 +1,8 @@
 package labyrinth;
 
+import static labyrinth.GhostGenerator.generateGhost;
+import static labyrinth.GhostGenerator.mapa;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,29 +20,16 @@ import utils.StageHelper;
 public class Labyrinth3DKillerGhostsAndBalls extends Application implements CommomLabyrinth {
 
 
-    private static final String[][] MAPA = { { "_", "_", "_", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" },
-			{ "_", "|", "_", "_", "_", "|" }, { "_", "_", "|", "|", "|", "_" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "_", "|", "_" },
-			{ "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" },
-			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "|", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "_", "_", "_", "|", "_", "|" },
-			{ "_", "_", "_", "_", "_", "_" },
-
-	};
 	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
 
     private static final double SIZE = 60;
 
-    private Sphere[][] balls = new Sphere[MAPA.length][MAPA[0].length];
+    private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
 
 	private PerspectiveCamera camera;
 
-    private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(MAPA.length * MAPA[0].length);
+    private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
-	private final Color lightColor = Color.rgb(125, 125, 125);
 	private MovimentacaoAleatoria movimentacao;
 	private Group root = new Group();
 
@@ -60,7 +50,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-        createLabyrinth(root, labyrinthWalls, balls, MAPA);
+        createLabyrinth(root, labyrinthWalls, balls, mapa);
         SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());
@@ -117,33 +107,12 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 		primaryStage.show();
 	}
 
-	private MeshView generateGhost(String arquivo, Color animalColor) {
-        MeshView animal = new MeshView(ResourceFXUtils.importStlMesh(arquivo));
-		PhongMaterial sample = new PhongMaterial(animalColor);
-		sample.setSpecularColor(lightColor);
-		sample.setSpecularPower(16);
-		animal.setMaterial(sample);
-        animal.setTranslateY(12);
-
-        double posicaoInicialZ = Math.random() * MAPA[0].length * SIZE;
-		animal.setTranslateZ(posicaoInicialZ);
-        double posicaoInicialX = Math.random() * MAPA.length * SIZE;
-		animal.setTranslateX(posicaoInicialX);
-		while (checkColision(animal.getBoundsInParent())) {
-			animal.setTranslateZ(animal.getTranslateZ() + 1);
-			animal.setTranslateX(animal.getTranslateX() + 1);
-		}
-        animal.setScaleX(4. / 10);
-		animal.setScaleY(1);
-        animal.setScaleZ(4. / 10);
-		return animal;
-	}
 
 	public static void createLabyrinth(Group root1, Collection<LabyrinthWall> labyrinthWalls, Sphere[][] balls,
-            String[][] mapa) {
-		for (int i = 0; i < mapa.length; i++) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
+        String[][] mapa1) {
+        for (int i = 0; i < mapa1.length; i++) {
+            for (int j = mapa1[i].length - 1; j >= 0; j--) {
+                String string = mapa1[i][j];
 				LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE);
 				wall.setTranslateX(i * SIZE);
 				wall.setTranslateZ(j * SIZE);

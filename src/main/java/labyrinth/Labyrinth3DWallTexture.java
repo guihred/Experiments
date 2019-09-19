@@ -1,9 +1,9 @@
 package labyrinth;
 
+import static labyrinth.GhostGenerator.generateGhost;
+import static labyrinth.GhostGenerator.mapa;
 import static labyrinth.LabyrinthWall.SIZE;
-import static labyrinth.MovimentacaoAleatoria.mapa;
 import static utils.ResourceFXUtils.toExternalForm;
-import static utils.ResourceFXUtils.toFullPath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +16,16 @@ import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import utils.MouseInScreenHandler;
-import utils.ResourceFXUtils;
 import utils.StageHelper;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
     private static final Color lightColor = Color.grayRgb(125);
 
-    private static final String MESH_GHOST = toFullPath("ghost2.STL");
 
     public static final Image OOZE_IMAGE = new Image(toExternalForm("ooze.jpg"));
 
@@ -106,16 +102,16 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
         light.translateZProperty().bind(camera.translateZProperty());
         root.getChildren().add(light);
 
-        MeshView[] ghosts = { generateGhost(MESH_GHOST, Color.AQUAMARINE), generateGhost(MESH_GHOST, Color.BROWN),
-            generateGhost(MESH_GHOST, Color.CHARTREUSE), generateGhost(MESH_GHOST, Color.DODGERBLUE),
-            generateGhost(MESH_GHOST, Color.FUCHSIA), generateGhost(MESH_GHOST, Color.GREEN),
-            generateGhost(MESH_GHOST, Color.HOTPINK), generateGhost(MESH_GHOST, Color.INDIGO),
-            generateGhost(MESH_GHOST, Color.KHAKI), generateGhost(MESH_GHOST, Color.LIGHTSALMON),
-            generateGhost(MESH_GHOST, Color.MIDNIGHTBLUE), generateGhost(MESH_GHOST, Color.NAVY),
-            generateGhost(MESH_GHOST, Color.ORCHID), generateGhost(MESH_GHOST, Color.PURPLE),
-            generateGhost(MESH_GHOST, Color.RED), generateGhost(MESH_GHOST, Color.SLATEBLUE),
-            generateGhost(MESH_GHOST, Color.TRANSPARENT), generateGhost(MESH_GHOST, Color.VIOLET),
-            generateGhost(MESH_GHOST, Color.WHITESMOKE), generateGhost(MESH_GHOST, Color.YELLOWGREEN), };
+        MeshView[] ghosts = { generateGhost( Color.AQUAMARINE), generateGhost( Color.BROWN),
+            generateGhost( Color.CHARTREUSE), generateGhost( Color.DODGERBLUE),
+            generateGhost( Color.FUCHSIA), generateGhost( Color.GREEN),
+            generateGhost( Color.HOTPINK), generateGhost( Color.INDIGO),
+            generateGhost( Color.KHAKI), generateGhost( Color.LIGHTSALMON),
+            generateGhost( Color.MIDNIGHTBLUE), generateGhost( Color.NAVY),
+            generateGhost( Color.ORCHID), generateGhost( Color.PURPLE),
+            generateGhost( Color.RED), generateGhost( Color.SLATEBLUE),
+            generateGhost( Color.TRANSPARENT), generateGhost( Color.VIOLET),
+            generateGhost( Color.WHITESMOKE), generateGhost( Color.YELLOWGREEN), };
 
         movimentacao = new MovimentacaoAleatoria(this, ghosts);
         movimentacao.start();
@@ -164,26 +160,6 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
         }
     }
 
-    private MeshView generateGhost(String arquivo, Color enemyColor) {
-        Mesh mesh = ResourceFXUtils.importStlMesh(arquivo);
-        MeshView enemy = new MeshView(mesh);
-
-        PhongMaterial sample = new PhongMaterial(enemyColor);
-        sample.setSpecularColor(lightColor);
-        enemy.setMaterial(sample);
-        enemy.setTranslateY(15);
-        enemy.setDrawMode(DrawMode.FILL);
-        enemy.setTranslateZ(Math.random() * mapa[0].length * SIZE);
-        enemy.setTranslateX(Math.random() * mapa.length * SIZE);
-        while (checkColision(enemy.getBoundsInParent())) {
-            enemy.setTranslateX(enemy.getTranslateX() + 1);
-            enemy.setTranslateZ(enemy.getTranslateZ() + 1);
-        }
-        enemy.setScaleZ(4. / 10);
-        enemy.setScaleY(1);
-        enemy.setScaleX(4. / 10);
-        return enemy;
-    }
 
     public static void main(String[] args) {
         launch(args);

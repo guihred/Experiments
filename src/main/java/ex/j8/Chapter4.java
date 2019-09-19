@@ -49,11 +49,13 @@ public final class Chapter4 {
                 u.addListener((o, old, value) -> listener.changed(this, f.apply(t.getValue(), old),
                     f.apply(t.getValue(), value)));
             }
+
             @Override
             public void addListener(InvalidationListener listener) {
                 t.addListener(listener);
                 u.addListener(listener);
             }
+
             @Override
             public R getValue() {
                 return f.apply(t.getValue(), u.getValue());
@@ -67,10 +69,12 @@ public final class Chapter4 {
             public void addListener(ChangeListener<? super R> listener) {
                 t.addListener((arg0, arg1, arg2) -> listener.changed(this, f.apply(arg1), f.apply(arg2)));
             }
+
             @Override
             public void addListener(InvalidationListener arg0) {
                 t.addListener(arg0);
             }
+
             @Override
             public R getValue() {
                 return f.apply(t.getValue());
@@ -105,17 +109,15 @@ public final class Chapter4 {
     }
 
     private static void createOrbitAnimation(Scene scene, Circle planet, Slider rotationSlider, Slider radiusSlider) {
-        new SimplePathTransitionBuilder().duration(Duration.millis(1000))
-            .interpolator(Interpolator.LINEAR).node(planet).cycleCount(Animation.INDEFINITE)
-            .path(buildArc(scene, rotationSlider, radiusSlider)).build()
-            .play();
+        new SimplePathTransitionBuilder().duration(Duration.millis(1000)).interpolator(Interpolator.LINEAR).node(planet)
+            .cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build().play();
     }
 
     private static void createPulseAnimation(Circle planet) {
         final double maxScale = 1.5;
         new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
-        .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet)
-        .build().play();
+            .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet).build()
+            .play();
     }
 
     /**
@@ -152,7 +154,8 @@ public final class Chapter4 {
             TextField textField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
             WebView browser = new WebView();
             WebEngine engine = browser.getEngine();
-            Button backButton = SimpleButtonBuilder.newButton("Back", event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
+            Button backButton = SimpleButtonBuilder.newButton("Back",
+                event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
             Button loadButton = new Button("Go");
             loadButton.setOnAction(event -> engine.load(textField.getText()));
 
@@ -288,7 +291,8 @@ public final class Chapter4 {
             BorderPane.setAlignment(pane.getCenter(), Pos.CENTER);
             Button pulse = SimpleButtonBuilder.newButton("Pulse", e -> createPulseAnimation(planet));
             center.getChildren().add(buildArc(scene, rotationSlider, radiusSlider));
-            Button orbit = SimpleButtonBuilder.newButton("Orbit", e -> createOrbitAnimation(scene, planet, rotationSlider, radiusSlider));
+            Button orbit = SimpleButtonBuilder.newButton("Orbit",
+                e -> createOrbitAnimation(scene, planet, rotationSlider, radiusSlider));
             pane.setBottom(new HBox(pulse, orbit));
             stage.setScene(scene);
             stage.setTitle("EX9");

@@ -108,7 +108,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
             MusicReader.saveMetadata(selectedItem);
             stage.close();
         });
-        Button splitMultipleButton = SimpleButtonBuilder.newButton("Split _Multiple", e -> splitAudio(selectedItem.getArquivo(), currentSlider));
+        Button splitMultipleButton = SimpleButtonBuilder.newButton("Split _Multiple",
+            e -> splitAudio(selectedItem.getArquivo(), currentSlider));
         Button findImage = SimpleButtonBuilder.newButton("_Find Image", e -> findImage(selectedItem, stage));
 
         Button stopButton = SimpleButtonBuilder.newButton("_Play/Pause", e -> {
@@ -187,7 +188,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         root.getChildren().addAll(progressIndicator);
 
         Stage stage = new Stage();
-        Button splitButton = SimpleButtonBuilder.newButton("_Split", a -> splitInFiles(file, currentSlider, currentTime, music, progressIndicator, stage));
+        Button splitButton = SimpleButtonBuilder.newButton("_Split",
+            a -> splitInFiles(file, currentSlider, currentTime, music, progressIndicator, stage));
         root.getChildren().addAll(splitButton);
         stage.setScene(new Scene(root));
         stage.show();

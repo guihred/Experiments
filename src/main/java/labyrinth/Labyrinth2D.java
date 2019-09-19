@@ -1,5 +1,7 @@
 package labyrinth;
 
+import static labyrinth.GhostGenerator.mapa;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -10,14 +12,6 @@ import javafx.stage.Stage;
 
 public class Labyrinth2D extends Application {
 
-	private static String[][] mapa = {
-			{ "_", "_", "_", "_", "_", "_" },
-			{ "|", "_", "_", "_", "_", "|" }, 
-			{ "|", "|", "_", "|", "_", "|" },
-			{ "|", "|", "_", "|", "_", "|" }, 
-			{ "|", "_", "_", "|", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, 
-			{ "|", "_", "_", "_", "_", "_" }, };
 
 	private static final int SIZE = 50;
 

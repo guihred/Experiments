@@ -5,6 +5,8 @@
  */
 package gaming.ex03;
 
+import static gaming.ex03.SlidingPuzzleSquare.MAP_SIZE;
+
 import java.security.SecureRandom;
 import java.util.Objects;
 import javafx.event.EventHandler;
@@ -19,7 +21,7 @@ import utils.StageHelper;
 public class SlidingPuzzleModel {
 
     private GridPane gridPane;
-    private SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[SlidingPuzzleSquare.MAP_SIZE][SlidingPuzzleSquare.MAP_SIZE];
+    private SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[MAP_SIZE][MAP_SIZE];
     private int moves;
 
     private final SecureRandom random = new SecureRandom();
@@ -28,7 +30,7 @@ public class SlidingPuzzleModel {
         this.gridPane = gridPane;
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
-                map[i][j] = new SlidingPuzzleSquare(i * SlidingPuzzleSquare.MAP_SIZE + j + 1);
+                map[i][j] = new SlidingPuzzleSquare(i * MAP_SIZE + j + 1);
                 map[i][j].setOnMouseClicked(createMouseClickedEvento(map[i][j]));
             }
         }
@@ -46,7 +48,7 @@ public class SlidingPuzzleModel {
     }
 
     private boolean isNeighborEmpty(int i, int j, int h, int v) {
-        if (i + h >= 0 && i + h < SlidingPuzzleSquare.MAP_SIZE && j + v >= 0 && j + v < SlidingPuzzleSquare.MAP_SIZE) {
+        if (i + h >= 0 && i + h < MAP_SIZE && j + v >= 0 && j + v < MAP_SIZE) {
             return map[i + h][j + v].isEmpty();
         }
         return false;
@@ -60,16 +62,16 @@ public class SlidingPuzzleModel {
     private final void reset() {
 
         for (int i = 0; i < 100; i++) {
-            int nextI = random.nextInt(SlidingPuzzleSquare.MAP_SIZE);
-            int nextJ = random.nextInt(SlidingPuzzleSquare.MAP_SIZE);
+            int nextI = random.nextInt(MAP_SIZE);
+            int nextJ = random.nextInt(MAP_SIZE);
             swapEmptyNeighbor(nextI, nextJ);
         }
 
     }
 
     private void slideIfPossible(SlidingPuzzleSquare mem) {
-        for (int i = 0; i < SlidingPuzzleSquare.MAP_SIZE; i++) {
-            for (int j = 0; j < SlidingPuzzleSquare.MAP_SIZE; j++) {
+        for (int i = 0; i < MAP_SIZE; i++) {
+            for (int j = 0; j < MAP_SIZE; j++) {
                 if (Objects.equals(map[i][j], mem) && neighborEmpty(i, j)) {
                     swapEmptyNeighbor(i, j);
                     moves++;
@@ -104,9 +106,9 @@ public class SlidingPuzzleModel {
     }
 
     private boolean verifyEnd() {
-        for (int i = 0; i < SlidingPuzzleSquare.MAP_SIZE; i++) {
-            for (int j = 0; j < SlidingPuzzleSquare.MAP_SIZE; j++) {
-                if (map[i][j].getNumber() != i * SlidingPuzzleSquare.MAP_SIZE + j + 1) {
+        for (int i = 0; i < MAP_SIZE; i++) {
+            for (int j = 0; j < MAP_SIZE; j++) {
+                if (map[i][j].getNumber() != i * MAP_SIZE + j + 1) {
                     return false;
                 }
             }

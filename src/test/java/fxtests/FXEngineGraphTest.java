@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import org.junit.Test;
 import utils.ConsoleUtils;
 import utils.ConsumerEx;
+import utils.ImageFXUtils;
 import utils.RunnableEx;
 
 
@@ -25,7 +26,9 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 	}
 	@Test
 	public void verify() throws Exception {
+        ImageFXUtils.setShowImage(false);
         lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
+        closeCurrentWindow();
 	}
 
 	@SuppressWarnings("rawtypes")

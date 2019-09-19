@@ -14,13 +14,13 @@ import javafx.scene.text.Text;
 public class Edge extends Group implements Comparable<Edge> {
 
     private static final int ARROW_SIZE = 5;
+    public static final BooleanProperty SHOW_WEIGHT = new SimpleBooleanProperty(true);
     protected Cell source;
     protected Cell target;
     protected BooleanProperty selected = new SimpleBooleanProperty(false);
     private Line line;
     private Integer valor;
     private boolean directed;
-    public static final BooleanProperty SHOW_WEIGHT = new SimpleBooleanProperty(true);
 
     public Edge(@NamedArg("source") Cell source, @NamedArg("target") Cell target) {
         this(source, target, 1);
@@ -55,12 +55,11 @@ public class Edge extends Group implements Comparable<Edge> {
                 Math.sqrt(3) * ARROW_SIZE / 2, -ARROW_SIZE);
             view1.strokeProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
             view1.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
-            double width = target.getBoundsInParent().getWidth() / 3 * 2;
             view1.layoutXProperty()
-                .bind(Bindings.createDoubleBinding(() -> line.getEndX() + Math.cos(getAngulo()) * width,
+                .bind(Bindings.createDoubleBinding(() -> line.getEndX() + Math.cos(getAngulo()) * getModulo() * 4 / 9,
                     line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
             view1.layoutYProperty()
-                .bind(Bindings.createDoubleBinding(() -> line.getEndY() + Math.sin(getAngulo()) * width,
+                .bind(Bindings.createDoubleBinding(() -> line.getEndY() + Math.sin(getAngulo()) * getModulo() * 4 / 9,
                     line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
             view1.rotateProperty().bind(Bindings.createDoubleBinding(() -> Math.toDegrees(getAngulo()),
                 line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));

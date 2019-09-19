@@ -28,8 +28,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
-public class FXMLConstants {
-
+public final class FXMLConstants {
     static final Map<String, String> PROPERTY_REMAP = ImmutableMap.<String, String>builder()
         .put("gridpane-column", "GridPane.columnIndex").put("gridpane-row", "GridPane.rowIndex")
         .put("hbox-hgrow", "HBox.hgrow").put("vbox-vgrow", "VBox.vgrow").put("tilepane-alignment", "TilePane.alignment")
@@ -57,6 +56,8 @@ public class FXMLConstants {
         "localToParentTransform", "eventDispatcher", "skin", "background", "controlCssMetaData", "pseudoClassStates",
         "localToSceneTransform", "parentPopup", "cssMetaData", "classCssMetaData", "boundsInParent", "boundsInLocal",
         "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
+    private FXMLConstants() {
+    }
     static String mapStylesheet(Collection<?> l) {
         String s = "file:/" + getOutFile().getParentFile().toString().replaceAll("\\\\", "/");
         String sd = "file:/" + new File("src/main/resources/").getAbsolutePath().replaceAll("\\\\", "/");

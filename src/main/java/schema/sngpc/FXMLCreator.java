@@ -143,7 +143,6 @@ public final class FXMLCreator {
         return diffFields;
     }
 
-
     private boolean isReferenceableList(String fieldName, Collection<?> list) {
         return list.stream().filter(Objects::nonNull).anyMatch(o -> !containsSame(allNode, o))
             || !"children".equals(fieldName) && !list.getClass().getSimpleName().contains("Unmodifiable");
@@ -188,7 +187,8 @@ public final class FXMLCreator {
             element.setAttribute(fieldName, mapProperty2 + "");
             return;
         }
-        if (hasClass(FXMLConstants.CONDITIONAL_TAG_CLASSES, fieldValue.getClass()) && hasField(parent.getClass(), fieldName)) {
+        if (hasClass(FXMLConstants.CONDITIONAL_TAG_CLASSES, fieldValue.getClass())
+            && hasField(parent.getClass(), fieldName)) {
             Element createElement2 = document.createElement(fieldName);
             element.appendChild(createElement2);
             addToAllNode(fieldValue, createElement2);
@@ -240,7 +240,8 @@ public final class FXMLCreator {
             element.setAttribute(fieldName, apply);
             return;
         }
-        if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(FXMLConstants.ATTRIBUTE_CLASSES, o.getClass()))) {
+        if (list.stream().filter(Objects::nonNull)
+            .anyMatch(o -> hasClass(FXMLConstants.ATTRIBUTE_CLASSES, o.getClass()))) {
             Element appendTo = createListElement(element, fieldName, parent, list);
             list.stream().filter(Objects::nonNull).forEach(object -> {
                 packages.add(object.getClass().getPackage().getName());
@@ -250,7 +251,8 @@ public final class FXMLCreator {
             });
             return;
         }
-        if (list.stream().filter(Objects::nonNull).anyMatch(o -> hasClass(FXMLConstants.NEW_TAG_CLASSES, o.getClass()))) {
+        if (list.stream().filter(Objects::nonNull)
+            .anyMatch(o -> hasClass(FXMLConstants.NEW_TAG_CLASSES, o.getClass()))) {
             if (isReferenceableList(fieldName, list)) {
                 addReferenceList(element, fieldName, parent, list);
                 return;

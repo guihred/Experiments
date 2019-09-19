@@ -1,5 +1,7 @@
 package labyrinth;
 
+import static labyrinth.GhostGenerator.mapa;
+
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
@@ -13,18 +15,6 @@ import utils.ResourceFXUtils;
 
 public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
     private static final Color lightColor = Color.grayRgb(125);
-	private static String[][] mapa = { { "_", "_", "_", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-			{ "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" },
-			{ "_", "|", "_", "_", "_", "|" }, { "_", "_", "|", "|", "|", "_" },
-			{ "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "_", "|", "_" },
-			{ "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" },
-			{ "|", "|", "_", "|", "_", "|" }, { "|", "_", "|", "_", "_", "|" },
-			{ "|", "_", "_", "_", "_", "|" }, { "_", "_", "_", "|", "_", "|" },
-			{ "_", "_", "_", "_", "_", "_" },
-
-	};
 	private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
 
 	private static final int SIZE = 60;

@@ -38,8 +38,10 @@ public class CatanModel {
     protected SelectResourceType resourcesToSelect = SelectResourceType.DEFAULT;
     private int turnCount;
     private final HBox resourceChoices = ResourceType.createResourceChoices(this::onSelectResource);
-    private final Button exchangeButton = SimpleButtonBuilder.newButton("Exchange", e -> setResourceSelect(SelectResourceType.EXCHANGE));
-    private final Button makeDeal = SimpleButtonBuilder.newButton("Make Deal", e -> setResourceSelect(SelectResourceType.MAKE_DEAL));
+    private final Button exchangeButton = SimpleButtonBuilder.newButton("Exchange",
+        e -> setResourceSelect(SelectResourceType.EXCHANGE));
+    private final Button makeDeal = SimpleButtonBuilder.newButton("Make Deal",
+        e -> setResourceSelect(SelectResourceType.MAKE_DEAL));
     protected final ObservableList<Deal> deals = FXCollections.observableArrayList();
     protected final Thief thief = new Thief();
     protected final List<Port> ports = Port.getPorts();
@@ -100,13 +102,15 @@ public class CatanModel {
     public boolean isDealUnfeasible(Deal deal) {
         return Deal.isDealUnfeasible(deal, currentPlayer, cards);
     }
+
     private Node addCombinations() {
         GridPane value = new GridPane();
         Combination[] combinations = Combination.values();
         for (int i = 0; i < combinations.length; i++) {
             Combination combination = combinations[i];
             List<ResourceType> resources = combination.getResources();
-            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), 30, 30), "" + combination, e -> onCombinationClicked(combination));
+            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), 30, 30), "" + combination,
+                e -> onCombinationClicked(combination));
             button.disableProperty()
                 .bind(Bindings.createBooleanBinding(() -> disableCombination(combination), currentPlayer, diceThrown));
             value.addRow(i, button);
@@ -539,10 +543,9 @@ public class CatanModel {
         getUserChart().updatePorts(newV, ports, settlePoints, currentPlayer);
         invalidateDice();
     }
+
     public static CatanModel create(Pane root, Pane value) {
         return new CatanModel(root, value);
     }
-
-
 
 }

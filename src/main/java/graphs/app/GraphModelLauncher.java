@@ -13,6 +13,7 @@ import javafx.application.Application;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -28,6 +29,7 @@ import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 import utils.CommonsFX;
+import utils.ImageFXUtils;
 
 public class GraphModelLauncher extends Application {
     private final Graph graph = new Graph();
@@ -67,6 +69,12 @@ public class GraphModelLauncher extends Application {
         buttons.getChildren().add(SimpleButtonBuilder.newButton("Page Rank", ev -> {
             graph.getModel().clearSelected();
             graph.getModel().pageRank();
+        }));
+        buttons.getChildren().add(SimpleButtonBuilder.newButton("Take Snap", ev -> {
+            double scaleValue = graph.getScrollPane().getScaleValue();
+            Bounds bounds = graph.getScrollPane().getContent().getBoundsInLocal();
+            ImageFXUtils.take(graph.getScrollPane().getContent(), bounds.getWidth(), bounds.getHeight(),
+                scaleValue);
         }));
 
         buttons.getChildren().add(getLayoutOptions());
@@ -179,7 +187,7 @@ public class GraphModelLauncher extends Application {
         ComboBox<String> packageSelect = new SimpleComboBoxBuilder<String>().items(packageTopology.getPackages())
             .tooltip("Package").onChange((old, newV) -> packageTopology.setChosenPackageName(newV)).select(0).build();
         ComboBox<BaseTopology> topologySelect = new SimpleComboBoxBuilder<BaseTopology>().items(topologies)
-            .tooltip("Select Topology").converter(BaseTopology::getName).build();
+            .tooltip("Select Topology").converter("name").build();
 
         networkField.visibleProperty()
             .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(networkTopology));
@@ -219,7 +227,7 @@ public class GraphModelLauncher extends Application {
                 timeline.stop();
             }
             graph.voronoi();
-        
+
         });
     }
 

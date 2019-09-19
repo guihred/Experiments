@@ -1,5 +1,7 @@
 package contest.db;
 
+import static contest.db.ContestQuestion.QUESTION_PATTERN;
+import static contest.db.ContestText.TEXTS_PATTERN;
 import static utils.StringSigaUtils.intValue;
 import static utils.StringSigaUtils.removeNotPrintable;
 
@@ -72,6 +74,7 @@ public class ContestReader implements HasLogging {
         PdfUtils.runOnFile(file, this::getQuestionPositions, i -> pageNumber = i, this::tryReadQuestionFromLines,
             this::mapImages);
     }
+
     public void saveAll() {
         if (!validate()) {
             return;
@@ -84,9 +87,9 @@ public class ContestReader implements HasLogging {
         }).collect(Collectors.toList()));
 
         List<ContestText> nonNullTexts = texts.stream().filter(e -> StringUtils.isNotBlank(e.getText()))
-				.collect(Collectors.groupingBy(ContestText::getText)).entrySet().stream().map(e -> e.getValue().get(0))
-				.collect(Collectors.toList());
-		CONTEST_DAO.saveOrUpdate(nonNullTexts);
+            .collect(Collectors.groupingBy(ContestText::getText)).entrySet().stream().map(e -> e.getValue().get(0))
+            .collect(Collectors.toList());
+        CONTEST_DAO.saveOrUpdate(nonNullTexts);
     }
 
     public void setState(ReaderState state) {
@@ -143,7 +146,7 @@ public class ContestReader implements HasLogging {
                 return;
             }
             String string = linhas[i + 1];
-            if (string.matches(ContestText.TEXTS_PATTERN)) {
+            if (string.matches(TEXTS_PATTERN)) {
                 addQuestion();
                 setState(ReaderState.TEXT);
                 return;
@@ -266,9 +269,8 @@ public class ContestReader implements HasLogging {
         for (PdfImage pdfImage : images) {
             questionPosition.stream().filter(e -> e.getPage() == currentPage)
                 .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())))
-                .ifPresent(position -> imageElements.stream().filter(p -> p.matches(position.getLine()))
-                    .forEach(p -> p.appendImage(
-                        pdfImage.getFile().getParentFile().getName() + "/" + pdfImage.getFile().getName())));
+                .ifPresent(position -> imageElements.stream().filter(p -> p.matches(position.getLine())).forEach(p -> p
+                    .appendImage(pdfImage.getFile().getParentFile().getName() + "/" + pdfImage.getFile().getName())));
         }
     }
 
@@ -279,9 +281,9 @@ public class ContestReader implements HasLogging {
             return;
         }
 
-        if (s.matches(ContestText.TEXTS_PATTERN)) {
+        if (s.matches(TEXTS_PATTERN)) {
             setState(ReaderState.TEXT);
-            String[] split = s.replaceAll(ContestText.TEXTS_PATTERN, "$1,$2").split(",");
+            String[] split = s.replaceAll(TEXTS_PATTERN, "$1,$2").split(",");
             IntSummaryStatistics stats = Stream.of(split).mapToInt(StringSigaUtils::intValue).summaryStatistics();
             text.setMin(stats.getMin());
             text.setMax(stats.getMax());
@@ -377,17 +379,16 @@ public class ContestReader implements HasLogging {
         }).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
-
     private static boolean containsAllOptions(String s) {
         return s.contains("(A)") && s.contains("(B)") && s.contains("(C)") && s.contains("(D)") && s.contains("(E)");
     }
 
     private static boolean isQuestionPattern(String s) {
-        return s.matches(ContestQuestion.QUESTION_PATTERN) || s.startsWith("QUESTÃO");
+        return s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO");
     }
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
-        return text1 != null && text1.matches(ContestQuestion.QUESTION_PATTERN + "|" + ContestText.TEXTS_PATTERN) && !textPositions.isEmpty();
+        return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
     }
 
     enum ReaderState {

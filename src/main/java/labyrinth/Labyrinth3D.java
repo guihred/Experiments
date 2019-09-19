@@ -1,5 +1,7 @@
 package labyrinth;
 
+import static labyrinth.GhostGenerator.mapa;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -10,14 +12,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Labyrinth3D extends Application implements CommomLabyrinth {
-	private static String[][] mapa = {
-		{ "_", "_", "_", "_", "_", "_" },
-		{ "|", "_", "_", "_", "_", "|" }, 
-		{ "|", "|", "_", "|", "_", "|" },
-		{ "|", "|", "_", "|", "_", "|" }, 
-		{ "|", "_", "_", "|", "_", "|" },
-		{ "|", "_", "_", "_", "_", "|" }, 
-		{ "|", "_", "_", "_", "_", "_" }, };
 	private static final int SIZE = 50;
 	private static final double CAMERA_QUANTITY = 10.0;
 

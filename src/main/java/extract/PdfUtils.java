@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import org.apache.pdfbox.cos.COSDocument;
@@ -148,7 +149,7 @@ public final class PdfUtils {
     }
 
     public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition,
-        Consumer<Integer> onPage,
+        IntConsumer onPage,
         Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
         PdfUtils.extractImages(file);
         try (RandomAccessFile source = new RandomAccessFile(file, "r");

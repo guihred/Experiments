@@ -1,5 +1,7 @@
 package labyrinth;
 
+import static labyrinth.GhostGenerator.mapa;
+
 import java.security.SecureRandom;
 import javafx.animation.AnimationTimer;
 import javafx.scene.shape.MeshView;
@@ -11,15 +13,6 @@ class MovimentacaoAleatoria extends AnimationTimer {
 	// EAST, WEST, NORTH, SOUTH
 	private int[] direction;
     private SecureRandom random = new SecureRandom();
-    protected static final String[][] mapa = { { "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "|" },
-        { "|", "|", "_", "|", "_", "|" }, { "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "|", "_", "|" },
-        { "|", "_", "_", "|", "_", "|" }, { "|", "_", "_", "_", "|", "_" }, { "_", "|", "_", "_", "_", "|" },
-        { "_", "_", "|", "|", "|", "_" }, { "_", "|", "_", "|", "_", "|" }, { "|", "|", "_", "_", "|", "_" },
-        { "_", "_", "_", "_", "_", "|" }, { "|", "_", "_", "_", "_", "_" }, { "|", "|", "_", "|", "_", "|" },
-        { "|", "_", "|", "_", "_", "|" }, { "|", "_", "_", "_", "_", "|" }, { "_", "_", "_", "|", "_", "|" },
-        { "_", "_", "_", "_", "_", "_" },
-    
-    };
 
 	public MovimentacaoAleatoria(CommomLabyrinth labyrinth3dWallTexture, MeshView... animais) {
 		this.labyrinth3dWallTexture = labyrinth3dWallTexture;
@@ -54,8 +47,8 @@ class MovimentacaoAleatoria extends AnimationTimer {
 
     private boolean checkCollision(MeshView enemy) {
         return labyrinth3dWallTexture.checkColision(enemy.getBoundsInParent())
-                || notWithinRange(enemy.getTranslateZ(), MovimentacaoAleatoria.mapa[0].length * LabyrinthWall.SIZE)
-                || notWithinRange(enemy.getTranslateX(), MovimentacaoAleatoria.mapa.length * LabyrinthWall.SIZE);
+            || notWithinRange(enemy.getTranslateZ(), mapa[0].length * LabyrinthWall.SIZE)
+            || notWithinRange(enemy.getTranslateX(), mapa.length * LabyrinthWall.SIZE);
     }
 
     private static void goToDirection(int dir, MeshView enemy, final int step) {

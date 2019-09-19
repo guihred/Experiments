@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import utils.ZoomableScrollPane;
 public class Graph {
@@ -75,7 +74,7 @@ public class Graph {
 		return model;
 	}
 
-    public ScrollPane getScrollPane() {
+    public ZoomableScrollPane getScrollPane() {
 		return scrollPane;
 	}
 
