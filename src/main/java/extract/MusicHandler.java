@@ -28,6 +28,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import schema.sngpc.FXMLCreatorHelper;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleSliderBuilder;
@@ -122,7 +123,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         HBox hbox = new HBox(stopButton, splitButton, splitMultipleButton, findImage);
         root.getChildren().add(progressIndicator);
         root.getChildren().add(hbox);
-
+        FXMLCreatorHelper.createXMLFile(root, ResourceFXUtils.getOutFile("MusicHandler.fxml"));
         stage.setScene(new Scene(root));
         stage.show();
         stage.setOnCloseRequest(e -> mediaPlayer.dispose());

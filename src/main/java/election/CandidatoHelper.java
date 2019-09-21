@@ -2,13 +2,17 @@ package election;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TreeItem;
+import javafx.scene.text.Text;
 import ml.graph.PieGraph;
 import utils.ClassReflectionUtils;
 
@@ -21,6 +25,9 @@ public final class CandidatoHelper {
 
     public static void addIfChecked(String parent, Map<String, Set<String>> fieldMap, String value, Boolean val) {
         Set<String> set = fieldMap.remove(parent);
+        if (set == null) {
+            set = FXCollections.observableSet();
+        }
         if (!val) {
             set.remove(value);
         } else {
@@ -28,6 +35,12 @@ public final class CandidatoHelper {
         }
         fieldMap.put(parent, set);
     }
+
+    public static void bindTextToMap(Text text18, ObservableMap<String, Set<String>> fieldMap) {
+        text18.textProperty().bind(Bindings.createStringBinding(() -> fieldMap.entrySet().stream()
+            .filter(e -> !e.getValue().isEmpty()).map(Objects::toString).collect(Collectors.joining(",")), fieldMap));
+    }
+
 
     public static List<String> distinct(String field) {
         return candidatoDAO.distinct(field);
@@ -51,12 +64,7 @@ public final class CandidatoHelper {
         }
     }
 
-    public static String simNao(Boolean a) {
-        return a ? "Sim" : "Não";
-    }
-
-
-//    @SuppressWarnings({ "unchecked", "rawtypes" })
+    //    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void updateTable(IntegerProperty first, int maxResult, String column, PieGraph pieGraph,
         ObservableList<Candidato> observableArrayList, Map<String, Set<String>> fieldMap) {
         List<Candidato> list = candidatoDAO.list(first.get(), maxResult, fieldMap);

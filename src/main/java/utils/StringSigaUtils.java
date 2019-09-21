@@ -9,6 +9,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,10 @@ public class StringSigaUtils extends StringUtils {
 
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
         Double.class);
+
+    public static String simNao(Boolean a) {
+        return a ? "Sim" : "Não";
+    }
 
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
@@ -84,6 +91,11 @@ public class StringSigaUtils extends StringUtils {
             return String.format(format, mean);
         }
         return String.format(floatFormating(length), mean);
+    }
+
+    public static String formatDate(TemporalAccessor temporal) {
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+        return dateFormat.format(temporal);
     }
 
     public static String formating(String s) {
@@ -165,7 +177,6 @@ public class StringSigaUtils extends StringUtils {
         return matricula;
     }
 
-
     public static String getPAPFormatado(String pap) {
         if (StringUtils.isNotBlank(pap)) {
             String formatado = StringUtils.leftPad(pap, TAMANHO_PAP, "0");
@@ -183,7 +194,7 @@ public class StringSigaUtils extends StringUtils {
             return Integer.valueOf(v.replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
             HasLogging.log(1).trace("NUMBER NOT PARSED", e);
-			HasLogging.log(1).error("NUMBER NOT PARSED \"{}\" {}", v, HasLogging.getCurrentLine(1));
+            HasLogging.log(1).error("NUMBER NOT PARSED \"{}\" {}", v, HasLogging.getCurrentLine(1));
 
             return null;
         }
@@ -334,5 +345,4 @@ public class StringSigaUtils extends StringUtils {
         }
         return true;
     }
-
 }

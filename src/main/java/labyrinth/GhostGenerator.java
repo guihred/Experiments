@@ -55,10 +55,6 @@ public final class GhostGenerator {
         animal.setTranslateZ(posicaoInicialZ);
         int posicaoInicialX = rnd(mapa.length * SIZE);
         animal.setTranslateX(posicaoInicialX);
-        // while (checkColision(animal.getBoundsInParent()))
-        // animal.setTranslateZ(animal.getTranslateZ() + 1)
-        // animal.setTranslateX(animal.getTranslateX() + 1)
-        //
 
         animal.setScaleX(4. / 10);
         animal.setScaleZ(4. / 10);

@@ -50,7 +50,7 @@ public final class CommonsFX {
         return availableColors;
     }
 
-    public static void loadFXML(File file, String title, Stage primaryStage, double... size) {
+    public static void loadFXML(String title, File file, Stage primaryStage, double... size) {
         RunnableEx.remap(() -> {
             Parent content = FXMLLoader.load(convertToURL(file));
             Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
@@ -60,7 +60,7 @@ public final class CommonsFX {
         }, "ERROR in file " + file);
     }
 
-    public static void loadFXML(Object controller, File file, String title, Stage primaryStage, double... size) {
+    public static void loadFXML(String title, File file, Object controller, Stage primaryStage, double... size) {
         RunnableEx.remap(() -> {
             FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
             fxmlLoader.setController(controller);
@@ -70,6 +70,9 @@ public final class CommonsFX {
             primaryStage.setScene(scene);
             primaryStage.show();
         }, "ERROR in file " + file);
+    }
+    public static void loadFXML(String title, String file, Object controller, Stage primaryStage, double... size) {
+        loadFXML(title, ResourceFXUtils.toFile(file), controller, primaryStage, size);
     }
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
         CheckBox checkBox = new CheckBox(name);
@@ -91,9 +94,10 @@ public final class CommonsFX {
         return filterField;
     }
 
-    public static void newFastFilter(TextField filterField, FilteredList<?> filteredData) {
+    public static <T> FilteredList<T> newFastFilter(TextField filterField, FilteredList<T> filteredData) {
         filterField.textProperty().addListener((o, old, value) -> filteredData
             .setPredicate(row -> StringUtils.isBlank(value) || StringUtils.containsIgnoreCase(row.toString(), value)));
+        return filteredData;
     }
 
     public static TextField newTextField(final String text, final int prefColumnCount) {

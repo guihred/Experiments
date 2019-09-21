@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -29,36 +28,9 @@ public final class FXMLCreatorHelper {
         new FXMLCreator().createFXMLFile(node, file);
     }
 
-    public static Stage duplicate(File file, String title, double... size) {
-        if (Platform.isFxApplicationThread()) {
-            return duplicateStage(file, title, size);
-        }
-        ResourceFXUtils.initializeFX();
-        SimpleObjectProperty<Stage> stage = new SimpleObjectProperty<>();
-        Platform.runLater(() -> stage.set(duplicateStage(file, title, size)));
-        while (stage.get() == null) {
-//            DOES NOTHING
-        }
-
-        return stage.get();
-    }
-
-    public static void duplicate(String out) {
-        if (Platform.isFxApplicationThread()) {
-            duplicateStage(ResourceFXUtils.getOutFile(out));
-        } else {
-            ResourceFXUtils.initializeFX();
-            Platform.runLater(() -> duplicateStage(ResourceFXUtils.getOutFile(out)));
-        }
-    }
-
-    public static void duplicateStage(File file) {
-        duplicate(file, file.getName());
-    }
-
     public static Stage duplicateStage(File file, String title, double... size) {
         Stage primaryStage = new Stage();
-        CommonsFX.loadFXML(file, title, primaryStage, size);
+        CommonsFX.loadFXML(title, file, primaryStage, size);
         return primaryStage;
     }
 

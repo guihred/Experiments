@@ -90,9 +90,6 @@ public class PackageTopology extends BaseTopology {
     public static void printDependencyMap(Map<String, Map<String, Long>> packageDependencyMap) {
         List<String> packNames = packageDependencyMap.keySet().stream()
             .sorted(Comparator.comparing(e -> packageDependencyMap.get(e).values().stream().mapToLong(l -> l).sum()))
-//            .filter(s -> s.matches(
-//                "EthicalHackApp|ImageCrackerApp|FilesComparatorHelper|Music|MusicHandler|MusicReader|QuartoModel|DotsModel|CatanModel|CommomLabyrinth|EWSTest|StatsLogAccess|PaintEditUtils|PaintFileUtils|PaintViewUtils|BlurTool|BrushTool|CurveTool|EllipseTool|EraserTool|EyedropTool|PaintTool|PencilTool|PolygonTool|RectBuilder|RotateTool|SelectFreeTool|SprayTool|WandTool|PdfController|LeitorArquivos|RosarioCommons|RosarioExperiment|ConsoleUtils|.*Test"))
-
             .collect(Collectors.toList());
         int maxLength = packNames.stream().mapToInt(String::length).max().orElse(0);
 

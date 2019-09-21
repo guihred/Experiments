@@ -137,8 +137,8 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     @SuppressWarnings("unchecked")
-    public static <C, V extends TableCell<C, Object>> Callback<TableColumn<C, Object>, TableCell<C, Object>> newCellFactory(
-        final BiConsumer<C, V> value) {
+    public static <C, V extends TableCell<C, Object>> Callback<TableColumn<C, Object>, TableCell<C, Object>> 
+        newCellFactory(final BiConsumer<C, V> value) {
         return p -> new CustomableTableCell<C, Object>() {
             @Override
             protected void setStyleable(final C auxMed) {

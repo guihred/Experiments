@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -71,7 +72,7 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         return this;
     }
 
-    public static <S>void addToRoot(TreeView<S> treeView,S value, List<S> children) {
+    public static <S> void addToRoot(TreeView<S> treeView, S value, Collection<S> children) {
         TreeItem<S> e = new TreeItem<>(value);
 	    e.getChildren().addAll(children.stream().map(TreeItem<S>::new).collect(Collectors.toList()));
 	    treeView.getRoot().getChildren().add(e);
