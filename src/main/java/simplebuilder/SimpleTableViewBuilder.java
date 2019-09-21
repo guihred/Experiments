@@ -37,13 +37,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         final String propertyName) {
         final TableColumn<T, S> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
-        column.setCellFactory(c -> new TableCell<T, S>() {
-            @Override
-            protected void updateItem(final S item, final boolean empty) {
-                super.updateItem(item, empty);
-                setText(makeFunction(func).apply(item));
-            }
-        });
+        column.setCellFactory(setFormat(func));
 
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         table.getColumns().add(column);
@@ -53,6 +47,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
+        column.setId(propertyName);
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         table.getColumns().add(column);
         return this;
@@ -61,6 +56,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> addColumn(String columnName, String property, boolean editable) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(property));
+        column.setId(property);
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         column.setEditable(editable);
         table.getColumns().add(column);
@@ -70,6 +66,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName,
         final Callback<TableColumn<T, String>, TableCell<T, String>> value) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
+        column.setId(propertyName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setCellFactory(value);
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
@@ -80,6 +77,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> addColumns(final String... columnName) {
         for (String columnProp : columnName) {
             TableColumn<T, String> column = new TableColumn<>(columnProp);
+            column.setId(columnProp);
             column.setCellValueFactory(new PropertyValueFactory<>(columnProp));
             column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
             table.getColumns().add(column);
@@ -88,8 +86,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> equalColumns() {
-        ObservableList<TableColumn<T, ?>> columns = table.getColumns();
-        columns.forEach(c -> c.prefWidthProperty().bind(table.widthProperty().divide(columns.size())));
+        equalColumns(table);
         return this;
     }
 
@@ -115,14 +112,8 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> prefWidthColumns(double... prefs) {
-        ObservableList<TableColumn<T, ?>> columns = table.getColumns();
-        double sum = DoubleStream.of(prefs).sum();
-        for (int i = 0; i < prefs.length; i++) {
-            double pref = prefs[i];
-            columns.get(i).prefWidthProperty().bind(table.widthProperty().multiply(pref / sum));
-        }
+        prefWidthColumns(table, prefs);
         return this;
-
     }
 
     public SimpleTableViewBuilder<T> scrollTo(int value) {
@@ -140,15 +131,39 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public static <S> void equalColumns(TableView<S> table) {
+        ObservableList<TableColumn<S, ?>> columns = table.getColumns();
+        prefWidthColumns(table,columns.stream().mapToDouble(e -> 1).toArray());
+    }
+
     @SuppressWarnings("unchecked")
-    public static <C, V extends TableCell<C, Object>>
-        Callback<TableColumn<C, Object>, TableCell<C, Object>> newCellFactory(final BiConsumer<C, V> value) {
+    public static <C, V extends TableCell<C, Object>> Callback<TableColumn<C, Object>, TableCell<C, Object>> newCellFactory(
+        final BiConsumer<C, V> value) {
         return p -> new CustomableTableCell<C, Object>() {
             @Override
             protected void setStyleable(final C auxMed) {
                 value.accept(auxMed, (V) this);
             }
 
+        };
+    }
+
+    public static <S> void prefWidthColumns(TableView<S> table1, double... prefs) {
+        ObservableList<TableColumn<S, ?>> columns = table1.getColumns();
+        double sum = DoubleStream.of(prefs).sum();
+        for (int i = 0; i < prefs.length; i++) {
+            double pref = prefs[i];
+            columns.get(i).prefWidthProperty().bind(table1.widthProperty().multiply(pref / sum));
+        }
+    }
+
+    public static <S, T> Callback<TableColumn<T, S>, TableCell<T, S>> setFormat(FunctionEx<S, String> func) {
+        return c -> new TableCell<T, S>() {
+            @Override
+            protected void updateItem(final S item, final boolean empty) {
+                super.updateItem(item, empty);
+                setText(makeFunction(func).apply(item));
+            }
         };
     }
 

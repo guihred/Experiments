@@ -15,7 +15,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +59,18 @@ public final class CommonsFX {
             primaryStage.show();
         }, "ERROR in file " + file);
     }
+
+    public static void loadFXML(Object controller, File file, String title, Stage primaryStage, double... size) {
+        RunnableEx.remap(() -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
+            fxmlLoader.setController(controller);
+            Parent content = fxmlLoader.load();
+            Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
+            primaryStage.setTitle(title);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        }, "ERROR in file " + file);
+    }
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
         CheckBox checkBox = new CheckBox(name);
         checkBox.setSelected(showWeight.get());
@@ -71,14 +86,14 @@ public final class CommonsFX {
 
     public static TextField newFastFilter(FilteredList<?> filteredData) {
         TextField filterField = new TextField();
-        filterField.textProperty().addListener((o, old, value) -> filteredData.setPredicate(row -> {
-            if (value == null) {
-                return true;
-            }
-            return StringUtils.containsIgnoreCase(row.toString(), value);
-
-        }));
+        filterField.textProperty().addListener((o, old, value) -> filteredData
+            .setPredicate(row -> StringUtils.isBlank(value) || StringUtils.containsIgnoreCase(row.toString(), value)));
         return filterField;
+    }
+
+    public static void newFastFilter(TextField filterField, FilteredList<?> filteredData) {
+        filterField.textProperty().addListener((o, old, value) -> filteredData
+            .setPredicate(row -> StringUtils.isBlank(value) || StringUtils.containsIgnoreCase(row.toString(), value)));
     }
 
     public static TextField newTextField(final String text, final int prefColumnCount) {

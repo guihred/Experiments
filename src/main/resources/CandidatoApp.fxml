@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.collections.*?>
+<?import ml.graph.*?>
+<?import javafx.geometry.*?>
+<?import election.*?>
+<?import java.lang.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.cell.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml">
+	<center>
+		<VBox>
+			<children>
+				<TextField fx:id="textField1">
+					<padding>
+						<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
+					</padding>
+				</TextField>
+				<TableView fx:id="tableView2" prefWidth="500.0">
+					<columns>
+						<TableColumn fx:id="fotoUrl" text="fotoUrl">
+							<cellValueFactory>
+								<PropertyValueFactory property="fotoUrl" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="nome" text="nome">
+							<cellValueFactory>
+								<PropertyValueFactory property="nome" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="numero" text="numero">
+							<cellValueFactory>
+								<PropertyValueFactory property="numero" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="partido" text="partido">
+							<cellValueFactory>
+								<PropertyValueFactory property="partido" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="grauInstrucao"
+							text="grauInstrucao">
+							<cellValueFactory>
+								<PropertyValueFactory
+									property="grauInstrucao" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="cargo" text="cargo">
+							<cellValueFactory>
+								<PropertyValueFactory property="cargo" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="naturalidade" text="naturalidade">
+							<cellValueFactory>
+								<PropertyValueFactory
+									property="naturalidade" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="ocupacao" text="ocupacao">
+							<cellValueFactory>
+								<PropertyValueFactory property="ocupacao" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="nomeCompleto" text="nomeCompleto">
+							<cellValueFactory>
+								<PropertyValueFactory
+									property="nomeCompleto" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="votos" text="votos">
+							<cellValueFactory>
+								<PropertyValueFactory property="votos" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="cidade" text="cidade">
+							<cellValueFactory>
+								<PropertyValueFactory property="cidade" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="eleito" text="eleito">
+							<cellValueFactory>
+								<PropertyValueFactory property="eleito" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="nascimento" text="nascimento">
+							<cellValueFactory>
+								<PropertyValueFactory property="nascimento" />
+							</cellValueFactory>
+						</TableColumn>
+					</columns>
+					<padding>
+						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+					</padding>
+				</TableView>
+				<HBox>
+					<children>
+						<ComboBox fx:id="comboBox16" value="cargo">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<String fx:value="cargo" />
+									<String fx:value="estado" />
+									<String fx:value="coligacao" />
+									<String fx:value="grauInstrucao" />
+									<String fx:value="ocupacao" />
+									<String fx:value="partido" />
+									<String fx:value="eleito" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+						<ComboBox fx:id="comboBox17">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<Integer fx:value="10" />
+									<Integer fx:value="50" />
+									<Integer fx:value="100" />
+									<Integer fx:value="200" />
+								</FXCollections>
+							</items>
+							<value>
+								<Integer fx:value="10" />
+							</value>
+						</ComboBox>
+						<VBox>
+							<children>
+								<Slider blockIncrement="0.01" fx:id="slider20" max="1.0"
+									value="0.75" />
+							</children>
+						</VBox>
+						<Text fx:id="text18" />
+					</children>
+				</HBox>
+				<PieGraph fx:id="pieGraph" />
+			</children>
+		</VBox>
+	</center>
+	<left>
+		<TreeView fx:id="treeView0" showRoot="false">
+			<root>
+				<TreeItem expanded="true" value="Root" />
+			</root>
+			<padding>
+				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+			</padding>
+		</TreeView>
+	</left>
+</BorderPane>

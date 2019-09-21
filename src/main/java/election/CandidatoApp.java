@@ -1,97 +1,107 @@
 package election;
 
+import static election.CandidatoHelper.distinct;
 import static election.CandidatoHelper.getRelevantFields;
-import static election.CandidatoHelper.treeView;
+import static election.CandidatoHelper.onChangeElement;
 import static election.CandidatoHelper.updateTable;
+import static simplebuilder.SimpleTableViewBuilder.setFormat;
 
+import java.io.File;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
-import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.graph.PieGraph;
-import simplebuilder.SimpleComboBoxBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.CommonsFX;
-import utils.CrawlerTask;
-import utils.HibernateUtil;
-import utils.ImageTableCell;
+import simplebuilder.SimpleTreeViewBuilder;
+import utils.*;
 
 public class CandidatoApp extends Application {
+    @FXML
+    private Text text18;
+    @FXML
+    private TableColumn<Candidato, String> fotoUrl;
+    @FXML
+    private TableColumn<Candidato, Boolean> eleito;
+    @FXML
+    private ComboBox<String> comboBox16;
+    @FXML
+    private Slider slider20;
+    @FXML
+    private TreeView<String> treeView0;
+    @FXML
+    private ComboBox<Number> comboBox17;
+    @FXML
+    private TextField textField1;
+    @FXML
+    private TableColumn<Candidato, LocalDate> nascimento;
+    @FXML
+    private TableView<Candidato> tableView2;
+    @FXML
+    private TableColumn<Candidato, Cidade> cidade;
+    @FXML
+    private PieGraph pieGraph;
+    private SimpleIntegerProperty maxResult = new SimpleIntegerProperty(50);
+    private SimpleStringProperty column = new SimpleStringProperty("partido");
+    private SimpleIntegerProperty first = new SimpleIntegerProperty(0);
+    private ObservableList<Candidato> candidates = FXCollections.observableArrayList();
+    private ObservableMap<String, Set<String>> fieldMap = FXCollections.observableHashMap();
 
+    public void initialize() {
+        for (String field : getRelevantFields()) {
+            List<String> distinct = distinct(field);
+            SimpleTreeViewBuilder.addToRoot(treeView0, field, distinct);
+        }
+
+        CrawlerTask.insertProxyConfig();
+        fotoUrl.setCellFactory(ImageTableCell::new);
+        cidade.setCellFactory(setFormat(Cidade::getCity));
+        eleito.setCellFactory(setFormat(CandidatoHelper::simNao));
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+        nascimento.setCellFactory(setFormat(dateFormat::format));
+        SimpleTableViewBuilder.equalColumns(tableView2);
+        FilteredList<Candidato> filtered = candidates.filtered(e -> true);
+        CommonsFX.newFastFilter(textField1, filtered);
+        column.bind(comboBox16.getSelectionModel().selectedItemProperty());
+        maxResult.bind(comboBox17.getSelectionModel().selectedItemProperty());
+        tableView2.setItems(filtered);
+        comboBox16.getSelectionModel().selectedItemProperty()
+            .addListener((ob, o, n) -> updateTable(first, maxResult.get(), n, pieGraph, candidates, fieldMap));
+        comboBox17.getSelectionModel().selectedItemProperty()
+            .addListener((ob, o, n) -> updateTable(first, n.intValue(), column.get(), pieGraph, candidates, fieldMap));
+        slider20.valueProperty().bindBidirectional(pieGraph.legendsRadiusProperty());
+        Map<String, CheckBox> portChecks = new HashMap<>();
+        treeView0.getSelectionModel().selectedItemProperty()
+            .addListener((ob, o, newValue) -> onChangeElement(fieldMap, portChecks, newValue));
+        text18.textProperty().bind(Bindings.createStringBinding(() -> fieldMap.entrySet().stream()
+            .filter(e -> !e.getValue().isEmpty()).map(Objects::toString).collect(Collectors.joining(",")), fieldMap));
+        fieldMap.addListener((MapChangeListener<String, Set<String>>) e -> updateTable(first, maxResult.get(),
+            column.get(), pieGraph, candidates, fieldMap));
+        fieldMap.put(getRelevantFields().get(0), FXCollections.observableSet());
+    }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-
-        SimpleIntegerProperty maxResult = new SimpleIntegerProperty(50);
-        SimpleStringProperty column = new SimpleStringProperty("Partido");
-        SimpleIntegerProperty first = new SimpleIntegerProperty(0);
-
-        VBox root = new VBox();
-        ObservableList<Object> candidates = FXCollections.observableArrayList();
-        FilteredList<Object> candidatesFiltered = candidates.filtered(e -> true);
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-        TableView<Object> build = new SimpleTableViewBuilder<>().addColumn("fotoUrl", "fotoUrl", ImageTableCell::new)
-            .addColumns("nome", "numero", "partido", "grauInstrucao", "cargo", "naturalidade", "ocupacao",
-                "nomeCompleto", "votos")
-            .addColumn("cidade", Cidade::getCity, "cidade").addColumn("eleito", CandidatoHelper::simNao, "eleito")
-            .addColumn("nascimento", dateFormat::format, "nascimento").prefWidth(500).equalColumns()
-            .items(candidatesFiltered).build();
-
-        TextField newFastFilter = CommonsFX.newFastFilter(candidatesFiltered);
-        root.getChildren().add(newFastFilter);
-        root.getChildren().add(build);
-        PieGraph pieGraph = new PieGraph();
-
-        ObservableMap<String, Set<String>> fieldMap = FXCollections.observableHashMap();
-        ComboBox<String> columnCombo = new SimpleComboBoxBuilder<String>().items(getRelevantFields())
-            .onChange((old, n) -> updateTable(first, maxResult.get(), n, pieGraph, candidates, fieldMap)).bind(column)
-            .select(0).build();
-        SimpleComboBoxBuilder<Number> maxBuilder = new SimpleComboBoxBuilder<>();
-        ComboBox<Number> maxCombo = maxBuilder.items(10, 50, 100, 200)
-            .onChange((old, n) -> updateTable(first, n.intValue(), column.get(), pieGraph, candidates, fieldMap))
-            .bind(maxResult).select(0).build();
-        Text text = new Text("");
-        VBox propSlider = SimpleSliderBuilder.newSlider("", 0, 1., pieGraph.legendsRadiusProperty());
-
-        root.getChildren().add(new HBox(columnCombo, maxCombo, propSlider, text));
-        root.getChildren().add(pieGraph);
-        text.textProperty().bind(Bindings.createStringBinding(() -> fieldMap.entrySet().stream()
-            .filter(e -> !e.getValue().isEmpty()).map(Objects::toString).collect(Collectors.joining(",")), fieldMap));
-
-        BorderPane borderPane = new BorderPane(root);
-        TreeView<String> treeView = treeView(fieldMap, first, maxResult, column, pieGraph, candidates);
-        borderPane.setLeft(treeView);
-        primaryStage.setTitle("Hibernate Entities");
-        primaryStage.setScene(new Scene(borderPane));
+    public void start(Stage primaryStage) {
+        File file = ResourceFXUtils.toFile("CandidatoApp.fxml");
+        CommonsFX.loadFXML(this, file, "Candidato App", primaryStage);
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
-        maxBuilder.select(0);
-        primaryStage.show();
     }
 
     public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
         launch(args);
     }
-
-
 }

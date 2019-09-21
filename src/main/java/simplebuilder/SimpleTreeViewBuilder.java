@@ -21,9 +21,7 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
     }
 
 	public SimpleTreeViewBuilder<T> addItem(T value, List<T> children) {
-	    TreeItem<T> e = new TreeItem<>(value);
-	    e.getChildren().addAll(children.stream().map(TreeItem<T>::new).collect(Collectors.toList()));
-	    treeView.getRoot().getChildren().add(e);
+        addToRoot(treeView, value, children);
 	    return this;
 	}
 
@@ -35,17 +33,17 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         return this;
     }
 
-	public TreeItem<T> addItemToLast(T value) {
+    public TreeItem<T> addItemToLast(T value) {
 		TreeItem<T> e = new TreeItem<>(value);
 		last.getChildren().add(e);
 		return e;
 	}
 
-
-    @Override
+	@Override
     public TreeView<T> build() {
         return treeView;
     }
+
 
     public SimpleTreeViewBuilder<T> editable(boolean value) {
         treeView.setEditable(value);
@@ -56,21 +54,27 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         treeView.getSelectionModel().selectedItemProperty().addListener((ob, old, n) -> consume.accept(n));
         return this;
     }
+
     public SimpleTreeViewBuilder<T> root(T value) {
         treeView.setRoot(new TreeItem<>(value));
 		last = treeView.getRoot();
         return this;
     }
-
-	public SimpleTreeViewBuilder<T> root(TreeItem<T> value) {
+    public SimpleTreeViewBuilder<T> root(TreeItem<T> value) {
 		treeView.setRoot(value);
 		last = treeView.getRoot();
 		return this;
 	}
 
-    public SimpleTreeViewBuilder<T> showRoot(boolean value) {
+	public SimpleTreeViewBuilder<T> showRoot(boolean value) {
         treeView.setShowRoot(value);
         return this;
+    }
+
+    public static <S>void addToRoot(TreeView<S> treeView,S value, List<S> children) {
+        TreeItem<S> e = new TreeItem<>(value);
+	    e.getChildren().addAll(children.stream().map(TreeItem<S>::new).collect(Collectors.toList()));
+	    treeView.getRoot().getChildren().add(e);
     }
 
 }
