@@ -33,7 +33,10 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.*;
+import utils.HasLogging;
+import utils.PredicateEx;
+import utils.ResourceFXUtils;
+import utils.StageHelper;
 
 public class FilesComparator extends Application {
 
@@ -41,7 +44,6 @@ public class FilesComparator extends Application {
 
     private final ObjectProperty<File> directory1 = new SimpleObjectProperty<>();
     private final ObjectProperty<File> directory2 = new SimpleObjectProperty<>();
-    private final MusicHandler musicHandler = new MusicHandler(null);
     private Map<String, ObjectProperty<File>> directoryMap = new HashMap<>();
 
     private final Map<File, Music> fileMap = new ConcurrentHashMap<>();
@@ -104,7 +106,7 @@ public class FilesComparator extends Application {
                 c.setText(toFileString(s));
                 String itemClass = getItemClass(items2, s, c.getStyleClass(), fileMap);
                 c.getStyleClass().add(itemClass);
-            }).onDoubleClick(e -> musicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
+            }).onDoubleClick(e -> MusicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
         table1.setId(nome);
 //        new 
         directoryMap.put(nome, dir);

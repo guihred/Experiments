@@ -5,12 +5,14 @@ import static extract.SongUtils.updateMediaPlayer;
 import static utils.CommonsFX.createField;
 import static utils.RunnableEx.run;
 
+import audio.mp3.EditSongController;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import javafx.application.Platform;
 import javafx.beans.NamedArg;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -21,28 +23,19 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import schema.sngpc.FXMLCreatorHelper;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleListViewBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import utils.ResourceFXUtils;
 import utils.StageHelper;
 
 public final class MusicHandler implements EventHandler<MouseEvent> {
-    private static final int IMAGE_MAX_WIDTH = 300;
-    /**
-     * 
-     */
     private final TableView<Music> musicaTable;
-    private Duration startTime = Duration.ZERO;
-    private MediaPlayer mediaPlayer;
 
     public MusicHandler(@NamedArg("musicaTable") TableView<Music> musicaTable) {
         this.musicaTable = musicaTable;
@@ -59,78 +52,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         }
     }
 
-    public void handleMousePressed(Music selectedItem) {
-        if (!selectedItem.getArquivo().exists()) {
-            return;
-        }
-
-        if (selectedItem.isNotMP3()) {
-            StageHelper.displayDialog(String.format("Convert%n%s", selectedItem.getArquivo().getName()),
-                "_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
-                () -> Files.deleteIfExists(selectedItem.getArquivo().toPath()));
-            return;
-        }
-        Stage stage = new Stage();
-        VBox root = new VBox();
-        root.getChildren().addAll(createField("Título", selectedItem.tituloProperty()));
-        root.getChildren().addAll(createField("Artista", selectedItem.artistaProperty()));
-        root.getChildren().addAll(createField("Álbum", selectedItem.albumProperty()));
-        root.setAlignment(Pos.CENTER);
-        Image imageData = MusicReader.extractEmbeddedImage(selectedItem.getArquivo());
-        if (imageData != null) {
-            ImageView imageView = new ImageView(imageData);
-            imageView.setFitWidth(IMAGE_MAX_WIDTH);
-            imageView.setPreserveRatio(true);
-            root.getChildren().addAll(imageView);
-        }
-        Media media = new Media(selectedItem.getArquivo().toURI().toString());
-        mediaPlayer = new MediaPlayer(media);
-
-        Slider currentSlider = SongUtils.addSlider(root, mediaPlayer);
-        SimpleSliderBuilder.onChange(currentSlider,
-            (observable, oldValue, newValue) -> updateMediaPlayer(mediaPlayer, currentSlider, newValue.doubleValue()));
-        mediaPlayer.currentTimeProperty().addListener(e -> updateCurrentSlider(mediaPlayer, currentSlider));
-        Slider initialSlider = SongUtils.addSlider(root, mediaPlayer);
-        initialSlider.setValue(0);
-        Slider finalSlider = SongUtils.addSlider(root, mediaPlayer);
-        finalSlider.setValue(1 - 1. / 1000);
-        mediaPlayer.totalDurationProperty().addListener(e -> finalSlider.setValue(1));
-        File outFile = ResourceFXUtils.getOutFile(selectedItem.getArquivo().getName());
-        ProgressIndicator progressIndicator = new ProgressIndicator(0);
-        progressIndicator.managedProperty().bind(progressIndicator.visibleProperty());
-        progressIndicator.setVisible(false);
-        Button splitButton = SimpleButtonBuilder.newButton("_Split", e -> {
-            if (initialSlider.getValue() != 0 || finalSlider.getValue() != 1) {
-                splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator, stage);
-                return;
-            }
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-            MusicReader.saveMetadata(selectedItem);
-            stage.close();
-        });
-        Button splitMultipleButton = SimpleButtonBuilder.newButton("Split _Multiple",
-            e -> splitAudio(selectedItem.getArquivo(), currentSlider));
-        Button findImage = SimpleButtonBuilder.newButton("_Find Image", e -> findImage(selectedItem, stage));
-
-        Button stopButton = SimpleButtonBuilder.newButton("_Play/Pause", e -> {
-            if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-                mediaPlayer.pause();
-            } else {
-                mediaPlayer.play();
-            }
-        });
-        HBox hbox = new HBox(stopButton, splitButton, splitMultipleButton, findImage);
-        root.getChildren().add(progressIndicator);
-        root.getChildren().add(hbox);
-        FXMLCreatorHelper.createXMLFile(root, ResourceFXUtils.getOutFile("MusicHandler.fxml"));
-        stage.setScene(new Scene(root));
-        stage.show();
-        stage.setOnCloseRequest(e -> mediaPlayer.dispose());
-        mediaPlayer.play();
-    }
-
-    private void findImage(Music selectedItem, Stage stage) {
+    public static void findImage(Music selectedItem, Stage stage, ObjectProperty<MediaPlayer> mediaPlayer) {
         String value = MusicReader.getDescription(selectedItem);
         ObservableList<Node> children = FXCollections.observableArrayList();
         children.add(new Text(value));
@@ -145,8 +67,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
                 ImageView view = (ImageView) n;
                 Image image = view.getImage();
                 selectedItem.setImage(image);
-                mediaPlayer.stop();
-                mediaPlayer.dispose();
+                mediaPlayer.get().stop();
+                mediaPlayer.get().dispose();
                 MusicReader.saveMetadata(selectedItem);
             }
             dialog.close();
@@ -156,18 +78,36 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
             selectedItem.getTitulo());
     }
 
-    private void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider, File outFile,
-        ProgressIndicator progressIndicator, Stage stage) {
+    public static void handleMousePressed(Music selectedItem) {
+        if (!selectedItem.getArquivo().exists()) {
+            return;
+        }
+
+        if (selectedItem.isNotMP3()) {
+            StageHelper.displayDialog(String.format("Convert%n%s", selectedItem.getArquivo().getName()),
+                "_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
+                () -> Files.deleteIfExists(selectedItem.getArquivo().toPath()));
+            return;
+        }
+        showEditSong(selectedItem);
+    }
+
+    public static void showEditSong(Music selectedItem) {
+        new EditSongController(selectedItem).show();
+    }
+
+    public static void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider, File outFile,
+        ProgressIndicator progressIndicator, Stage stage, ObjectProperty<MediaPlayer> mediaPlayer) {
         DoubleProperty progress = SongUtils.splitAudio(selectedItem.getArquivo(), outFile,
-            mediaPlayer.getTotalDuration().multiply(initialSlider.getValue()),
-            mediaPlayer.getTotalDuration().multiply(finalSlider.getValue()));
+            mediaPlayer.get().getTotalDuration().multiply(initialSlider.getValue()),
+            mediaPlayer.get().getTotalDuration().multiply(finalSlider.getValue()));
         progressIndicator.progressProperty().bind(progress);
         progressIndicator.setVisible(true);
         progress.addListener((v, o, n) -> {
             if (n.intValue() == 1) {
                 Platform.runLater(() -> {
-                    mediaPlayer.stop();
-                    mediaPlayer.dispose();
+                    mediaPlayer.get().stop();
+                    mediaPlayer.get().dispose();
                     MusicReader.saveMetadata(selectedItem, outFile);
                     run(() -> Files.copy(outFile.toPath(), new FileOutputStream(selectedItem.getArquivo())));
                     stage.close();
@@ -176,8 +116,9 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         });
     }
 
-    private void splitAudio(File file, Slider currentSlider) {
-        Duration currentTime = mediaPlayer.getTotalDuration().multiply(currentSlider.getValue());
+    public static void splitAudio(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
+        ObjectProperty<Duration> startTime) {
+        Duration currentTime = mediaPlayer.get().getTotalDuration().multiply(currentSlider.getValue());
         Music music = new Music(file);
         VBox root = new VBox();
         root.getChildren().addAll(createField("Título", music.tituloProperty()));
@@ -189,42 +130,43 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         root.getChildren().addAll(progressIndicator);
 
         Stage stage = new Stage();
-        Button splitButton = SimpleButtonBuilder.newButton("_Split",
-            a -> splitInFiles(file, currentSlider, currentTime, music, progressIndicator, stage));
+        Button splitButton = SimpleButtonBuilder.newButton("_Split", a -> splitInFiles(mediaPlayer, file, currentSlider,
+            currentTime, music, progressIndicator, stage, startTime));
         root.getChildren().addAll(splitButton);
         stage.setScene(new Scene(root));
         stage.show();
     }
 
-    private void splitInFiles(File file, Slider currentSlider, Duration currentTime, Music music,
-        ProgressIndicator progressIndicator, Stage stage) {
-        mediaPlayer.dispose();
+    public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
+        Duration currentTime, Music music, ProgressIndicator progressIndicator, Stage stage,
+        ObjectProperty<Duration> startTime) {
+        mediaPlayer.get().dispose();
         String format = music.getArtista().isEmpty()
             ? String.format("%s.mp3", music.getTitulo().replaceAll("\\..+", ""))
             : String.format("%s-%s.mp3", music.getTitulo().replaceAll("\\..+", ""), music.getArtista());
 
         File newFile = ResourceFXUtils.getOutFile(format);
-        DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime, currentTime);
+        DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime.get(), currentTime);
         progressIndicator.progressProperty().bind(splitAudio);
         progressIndicator.setVisible(true);
         splitAudio.addListener((ob, old, n) -> {
             progressIndicator.setVisible(true);
             if (n.intValue() == 1) {
                 Platform.runLater(() -> {
-                    mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
-                    mediaPlayer.totalDurationProperty().addListener(b -> {
-                        SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer);
-                        SimpleSliderBuilder.onChange(currentSlider, (o, oldValue,
-                            newValue) -> updateMediaPlayer(mediaPlayer, currentSlider, newValue.doubleValue()));
-                        mediaPlayer.currentTimeProperty()
-                            .addListener(c -> updateCurrentSlider(mediaPlayer, currentSlider));
-                        mediaPlayer.play();
+                    mediaPlayer.set(new MediaPlayer(new Media(file.toURI().toString())));
+                    mediaPlayer.get().totalDurationProperty().addListener(b -> {
+                        SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer.get());
+                        currentSlider.valueChangingProperty().addListener(
+                            (o, oldValue, newValue) -> updateMediaPlayer(mediaPlayer.get(), currentSlider, newValue));
+                        mediaPlayer.get().currentTimeProperty()
+                            .addListener(c -> updateCurrentSlider(mediaPlayer.get(), currentSlider));
+                        mediaPlayer.get().play();
                     });
                     stage.close();
                 });
             }
         });
-        startTime = currentTime;
+        startTime.set(currentTime);
     }
 
 }

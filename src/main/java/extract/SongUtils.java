@@ -50,15 +50,19 @@ public final class SongUtils {
         Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(100_000).build();
         Label label = new Label("00:00");
 
+        bindSlider(mediaPlayer2, slider, label);
+
+        flow.getChildren().add(label);
+        flow.getChildren().add(slider);
+        return slider;
+    }
+
+    public static void bindSlider(MediaPlayer mediaPlayer2, Slider slider, Label label) {
         label.textProperty()
             .bind(Bindings.createStringBinding(
                 () -> mediaPlayer2.getTotalDuration() == null ? "00:00"
                     : SongUtils.formatFullDuration(mediaPlayer2.getTotalDuration().multiply(slider.getValue())),
                 slider.valueProperty(), mediaPlayer2.totalDurationProperty()));
-
-        flow.getChildren().add(label);
-        flow.getChildren().add(slider);
-        return slider;
     }
 
     public static DoubleProperty convertToAudio(File mp4File) {
@@ -160,6 +164,13 @@ public final class SongUtils {
             currentSlider.setValue(value);
         }
     }
+
+    public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, boolean valueChanging) {
+        if (!valueChanging) {
+            double pos = currentSlider.getValue();
+            final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
+            SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);
+        }}
 
     public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, double pos) {
         final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);

@@ -13,13 +13,12 @@ import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import org.apache.commons.lang3.StringUtils;
+import utils.CommonsFX;
 import utils.ConsoleUtils;
 import utils.StageHelper;
 
@@ -56,20 +55,14 @@ public class EthicalHackController {
         commonTable.prefWidthProperty().bind(parent.widthProperty().add(-columnWidth));
         ports.textProperty()
             .bind(Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
-        FilteredList<Map<String, String>> filt = items.filtered(e -> true);
-        commonTable.setItems(filt);
-        resultsFilter.textProperty().addListener((ob, old, value) -> filt
-            .setPredicate(row -> StringUtils.isBlank(value) || StringUtils.containsIgnoreCase(row.toString(), value)));
+        commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
 
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> tcpItems = FXCollections
             .synchronizedObservableList(FXCollections.observableArrayList(
                 tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
 
-        FilteredList<Entry<Integer, String>> filtPorts = tcpItems.filtered(e -> true);
-        filterField.textProperty().addListener((ob, old, value) -> filtPorts
-            .setPredicate(row -> StringUtils.isBlank(value) || StringUtils.containsIgnoreCase(row.toString(), value)));
-        servicesTable.setItems(filtPorts);
+        servicesTable.setItems(CommonsFX.newFastFilter(filterField, tcpItems.filtered(e -> true)));
 
         Map<Integer, CheckBox> portChecks = new HashMap<>();
         portColumn.setCellFactory(newCellFactory((item, cell) -> {
