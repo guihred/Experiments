@@ -1,6 +1,5 @@
 package japstudy;
 
-import extract.SongUtils;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.function.BiConsumer;
@@ -23,6 +22,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleVBoxBuilder;
+import utils.DateFormatUtils;
 import utils.HasLogging;
 
 public class JapaneseLessonEditingDisplay extends Application {
@@ -88,7 +88,7 @@ public class JapaneseLessonEditingDisplay extends Application {
                 long millis = (long) currentTimeProperty.toMillis();
                 LocalTime ofNanoOfDay = LocalTime
                     .ofNanoOfDay(millis * JapaneseLessonEditingDisplay.NANO_IN_A_MILLI_SECOND);
-                return SongUtils.format(ofNanoOfDay);
+                return DateFormatUtils.format(ofNanoOfDay);
             }, newO.currentTimeProperty()));
         });
         Button play = SimpleButtonBuilder.newButton("_Play", e -> playLesson());
@@ -161,7 +161,7 @@ public class JapaneseLessonEditingDisplay extends Application {
 
     protected void setDateField(String newV, BiConsumer<JapaneseLesson, LocalTime> a) {
         if (newV != null) {
-            LocalTime from = LocalTime.from(SongUtils.parse(newV));
+            LocalTime from = LocalTime.from(DateFormatUtils.parse(newV));
             JapaneseLesson japaneseLesson = lessons.get(current.intValue());
             a.accept(japaneseLesson, from);
         }
@@ -217,8 +217,8 @@ public class JapaneseLessonEditingDisplay extends Application {
             english.setText(japaneseLesson.getEnglish());
             japanese.setText(japaneseLesson.getJapanese());
             setStartEnd(japaneseLesson);
-            start.setText(SongUtils.format(lessons.get(current.intValue()).getStart()));
-            end.setText(SongUtils.format(lessons.get(current.intValue()).getEnd()));
+            start.setText(DateFormatUtils.format(lessons.get(current.intValue()).getStart()));
+            end.setText(DateFormatUtils.format(lessons.get(current.intValue()).getEnd()));
         }
     }
 

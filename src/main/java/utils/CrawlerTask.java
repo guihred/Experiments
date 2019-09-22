@@ -6,8 +6,6 @@ import java.net.InetAddress;
 import java.net.PasswordAuthentication;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.function.Predicate;
@@ -24,7 +22,7 @@ import org.slf4j.Logger;
 
 public abstract class CrawlerTask extends Task<String> {
 
-    private static final Logger LOG = HasLogging.log();
+    static final Logger LOG = HasLogging.log();
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "14-juuYON";
@@ -128,15 +126,6 @@ public abstract class CrawlerTask extends Task<String> {
     protected static Integer convertNumerico(final String eleitores) {
         String replaceAll = eleitores.replaceAll("\\D", "");
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
-    }
-
-    protected static LocalDate extractDate(final String children) {
-        try {
-            return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        } catch (Exception e) {
-            LOG.trace("", e);
-            return null;
-        }
     }
 
     private static Predicate<Integer> isProxied() {

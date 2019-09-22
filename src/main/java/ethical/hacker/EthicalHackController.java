@@ -3,6 +3,9 @@ package ethical.hacker;
 import static ethical.hacker.EthicalHackApp.addColumns;
 import static ethical.hacker.EthicalHackApp.getCheckBox;
 import static ethical.hacker.EthicalHackApp.updateItemOnChange;
+import static javafx.collections.FXCollections.observableArrayList;
+import static javafx.collections.FXCollections.observableHashMap;
+import static javafx.collections.FXCollections.synchronizedObservableList;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
 
 import java.util.*;
@@ -10,7 +13,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
@@ -36,7 +38,7 @@ public class EthicalHackController {
     private TextField networkAddress;
     @FXML
     private TextField filterField;
-    private ObservableList<Integer> portsSelected = FXCollections.observableArrayList();
+
     @FXML
     private TableColumn<Entry<Integer, String>, Object> portColumn;
     @FXML
@@ -45,9 +47,10 @@ public class EthicalHackController {
     private Text ports;
     @FXML
     private TableView<Map<String, String>> commonTable;
-    private ObservableList<Map<String, String>> items = FXCollections
-        .synchronizedObservableList(FXCollections.observableArrayList());
-    private ObservableMap<String, Set<String>> count = FXCollections.observableHashMap();
+
+    private ObservableList<Integer> portsSelected = observableArrayList();
+    private ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
+    private ObservableMap<String, Set<String>> count = observableHashMap();
 
     public void initialize() {
         final int columnWidth = 120;
@@ -58,8 +61,7 @@ public class EthicalHackController {
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
 
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
-        ObservableList<Entry<Integer, String>> tcpItems = FXCollections
-            .synchronizedObservableList(FXCollections.observableArrayList(
+        ObservableList<Entry<Integer, String>> tcpItems = synchronizedObservableList(observableArrayList(
                 tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
 
         servicesTable.setItems(CommonsFX.newFastFilter(filterField, tcpItems.filtered(e -> true)));

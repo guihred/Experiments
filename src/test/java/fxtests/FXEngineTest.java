@@ -4,11 +4,11 @@ import static fxtests.FXTesting.measureTime;
 import static javafx.scene.input.KeyCode.*;
 import static utils.RunnableEx.ignore;
 
+import audio.mp3.FilesComparator;
 import cubesystem.DeathStar;
 import ethical.hacker.EthicalHackApp;
 import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
-import extract.FilesComparator;
 import fxpro.ch02.PongLauncher;
 import fxpro.ch07.Chart3dSampleApp;
 import fxsamples.*;

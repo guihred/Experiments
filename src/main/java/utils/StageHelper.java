@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -43,6 +44,11 @@ public final class StageHelper {
         String... extensions) {
         final String nome1 = nome;
         return newButton(nome1, fileAction(title, onSelect, filter, extensions));
+    }
+
+    public static void closeStage(EventTarget button) {
+        Node button2 = (Node) button;
+        ((Stage) button2.getScene().getWindow()).close();        
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {
@@ -99,6 +105,7 @@ public final class StageHelper {
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
+        LOG.info("DIALOG " + HasLogging.getCurrentLine(1));
     }
 
     public static void displayDialog(String text, String buttonMsg, Supplier<DoubleProperty> c, RunnableEx run) {

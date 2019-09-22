@@ -23,6 +23,7 @@ import paintexp.tool.PaintModel;
 import paintexp.tool.SelectRectTool;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.StageHelper;
 
 public final class PaintViewUtils {
     private static final String PERCENTAGE_FIELD = "Percentage";
@@ -59,7 +60,6 @@ public final class PaintViewUtils {
     }
 
     public static void resize(PaintModel paintModel, WritableImage image) {
-        Stage stage = new Stage();
         VBox root = new VBox();
         root.getChildren().add(new Text("Redimension"));
         SimpleToggleGroupBuilder groupBuilder = new SimpleToggleGroupBuilder();
@@ -89,9 +89,10 @@ public final class PaintViewUtils {
             .addListener(e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, ratio));
         root.getChildren().add(SimpleButtonBuilder.newButton("Resize", e -> {
             finishResize(image, groupBuilder, widthField, heightField, paintModel);
-            stage.close();
+            StageHelper.closeStage(root);
             paintModel.createImageVersion();
         }));
+        Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.show();
     }

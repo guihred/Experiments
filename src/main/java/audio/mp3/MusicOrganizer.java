@@ -3,7 +3,6 @@ package audio.mp3;
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
 
 import extract.Music;
-import extract.MusicHandler;
 import extract.MusicReader;
 import java.util.List;
 import java.util.Optional;
@@ -122,11 +121,11 @@ public class MusicOrganizer extends Application {
             imageView.setPreserveRatio(true);
             vBox.getChildren().addAll(imageView);
         }
-        Stage dialog = StageHelper.displayDialog("Fix Fields", vBox);
         vBox.getChildren().add(SimpleButtonBuilder.newButton("_Fix", f -> {
             MusicReader.saveMetadata(music);
-            dialog.close();
+            StageHelper.closeStage(vBox);
         }));
+        StageHelper.displayDialog("Fix Fields", vBox);
 
     }
 

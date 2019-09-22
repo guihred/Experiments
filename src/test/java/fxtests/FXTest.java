@@ -2,6 +2,7 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import audio.mp3.FilesComparator;
 import audio.mp3.MusicOrganizer;
 import contest.db.ContestQuestionEditingDisplay;
 import cubesystem.DeathStar;
@@ -11,7 +12,6 @@ import election.ElectionCrawlerApp;
 import ethical.hacker.ImageCrackerApp;
 import ethical.hacker.ssh.SSHSessionApp;
 import ex.j8.Chapter4;
-import extract.FilesComparator;
 import fractal.FractalApp;
 import fractal.LeafFractalApp;
 import fractal.SnowFractalApp;

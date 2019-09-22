@@ -3,15 +3,7 @@ package extract;
 import static utils.RunnableEx.ignore;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.SignStyle;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.binding.Bindings;
@@ -23,22 +15,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
-import org.slf4j.Logger;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ConsoleUtils;
-import utils.HasLogging;
+import utils.DateFormatUtils;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 public final class SongUtils {
 
     private static final int SECONDS_IN_A_MINUTE = 60;
 
-    private static final Logger LOG = HasLogging.log();
-
-    private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
-        .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-        .appendLiteral(':').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
-        .appendValue(ChronoField.MILLI_OF_SECOND, 2, 3, SignStyle.NEVER).toFormatter();
 
     private static final String FFMPEG = ResourceFXUtils.getUserFolder("Downloads").getAbsolutePath()
         + "\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";
@@ -73,11 +59,7 @@ public final class SongUtils {
         cmd.append("\" \"");
         File obj = new File(mp4File.getParent(), mp4File.getName().replaceAll("\\..+", ".mp3"));
         if (obj.exists()) {
-            try {
-                Files.delete(obj.toPath());
-            } catch (IOException e) {
-                LOG.error("", e);
-            }
+            RunnableEx.run(() -> Files.delete(obj.toPath()));
         }
         cmd.append(obj);
         cmd.append("\"");
@@ -91,11 +73,7 @@ public final class SongUtils {
         Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils.executeInConsoleAsync(cmd.toString(),
             responses);
 
-        return ConsoleUtils.defineProgress(key2, key, executeInConsoleAsync, SongUtils::convertTimeToMillis);
-    }
-
-    public static String format(TemporalAccessor text) {
-        return TIME_OF_SECONDS_FORMAT.format(text);
+        return ConsoleUtils.defineProgress(key2, key, executeInConsoleAsync, DateFormatUtils::convertTimeToMillis);
     }
 
     public static String formatDuration(Duration duration) {
@@ -111,10 +89,6 @@ public final class SongUtils {
         long minutes = millis / (1000 * SECONDS_IN_A_MINUTE) % SECONDS_IN_A_MINUTE;
         long hours = millis / (1000 * SECONDS_IN_A_MINUTE) / SECONDS_IN_A_MINUTE;
         return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis % 1000);
-    }
-
-    public static TemporalAccessor parse(CharSequence text) {
-        return TIME_OF_SECONDS_FORMAT.parse(text);
     }
 
     public static void seekAndUpdatePosition(Duration duration, Slider slider, MediaPlayer mediaPlayer) {
@@ -153,7 +127,7 @@ public final class SongUtils {
         Map<String, ObservableList<String>> executeInConsoleAsync = ConsoleUtils.executeInConsoleAsync(cmd.toString(),
             responses);
         return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync,
-            s -> Math.abs(end.subtract(start).toMillis()), SongUtils::convertTimeToMillis);
+            s -> Math.abs(end.subtract(start).toMillis()), DateFormatUtils::convertTimeToMillis);
     }
 
     public static void updateCurrentSlider(MediaPlayer mediaPlayer2, Slider currentSlider) {
@@ -188,10 +162,6 @@ public final class SongUtils {
         } else {
             positionSlider.setValue(currentTime.toMillis() / total.toMillis());
         }
-    }
-
-    private static long convertTimeToMillis(String text) {
-        return ChronoUnit.MILLIS.between(LocalTime.MIN, TIME_OF_SECONDS_FORMAT.parse(text, LocalTime::from));
     }
 
 }

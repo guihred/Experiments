@@ -37,7 +37,8 @@ public final class WordService {
     public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
 
         try (InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
-            XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
+            XWPFDocument document1 = new XWPFDocument(resourceAsStream);
+            FileOutputStream stream = new FileOutputStream(outStream);) {
             for (XWPFHeader p : document1.getHeaderList()) {
                 List<XWPFParagraph> paragraphs = p.getParagraphs();
                 for (XWPFParagraph paragraph : paragraphs) {
@@ -54,7 +55,7 @@ public final class WordService {
                 .forEach((IBodyElement element) -> substituirParagrafo(mapaSubstituicao, (XWPFParagraph) element));
             bodyElements.stream().filter(e -> e.getElementType() == BodyElementType.TABLE)
                 .forEach(tabela -> substituirTabela(tabela, mapaSubstituicao));
-            document1.write(new FileOutputStream(outStream));
+            document1.write(stream);
         } catch (Exception e) {
             LOG.error("", e);
         }

@@ -61,7 +61,7 @@ public class CandidatoApp extends Application {
         fotoUrl.setCellFactory(ImageTableCell::new);
         cidade.setCellFactory(setFormat(Cidade::getCity));
         eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
-        nascimento.setCellFactory(setFormat(StringSigaUtils::formatDate));
+        nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
         equalColumns(tableView2);
         column.bind(comboBox16.getSelectionModel().selectedItemProperty());
         maxResult.bind(comboBox17.getSelectionModel().selectedItemProperty());

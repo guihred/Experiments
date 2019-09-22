@@ -1,4 +1,4 @@
-package extract;
+package audio.mp3;
 
 import static extract.FilesComparatorHelper.*;
 import static java.util.Comparator.comparing;
@@ -6,6 +6,9 @@ import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 import static utils.ResourceFXUtils.toExternalForm;
 
+import extract.FilesComparatorHelper;
+import extract.Music;
+import extract.MusicReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

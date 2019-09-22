@@ -9,9 +9,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -91,11 +88,6 @@ public class StringSigaUtils extends StringUtils {
             return String.format(format, mean);
         }
         return String.format(floatFormating(length), mean);
-    }
-
-    public static String formatDate(TemporalAccessor temporal) {
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-        return dateFormat.format(temporal);
     }
 
     public static String formating(String s) {

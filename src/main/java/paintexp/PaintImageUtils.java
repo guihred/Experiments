@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.StageHelper;
 
 public final class PaintImageUtils {
     private static final int PREF_WIDTH = 300;
@@ -26,7 +27,6 @@ public final class PaintImageUtils {
     }
 
     public static void adjustColors(PaintModel paintModel) {
-        Stage stage = new Stage();
         VBox root = new VBox();
         WritableImage original = paintModel.getSelectedImage();
         PixelReader reader = original.getPixelReader();
@@ -51,9 +51,10 @@ public final class PaintImageUtils {
             final WritableImage writableImage = image;
             paintModel.setFinalImage(writableImage);
             paintModel.createImageVersion();
-            stage.close();
+            StageHelper.closeStage(root);
         }));
 
+        Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.show();
     }

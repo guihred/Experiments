@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
+import utils.DateFormatUtils;
 import utils.HasLogging;
 
 public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
@@ -86,7 +87,7 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
                     String nomeCompleto = children.get(0).child(1).text();
                     candidato.setFotoUrl(detailsDocument.select(".candidate-photo img").attr("src"));
                     candidato.setNomeCompleto(nomeCompleto);
-                    candidato.setNascimento(extractDate(children.get(2).child(1).text()));
+                    candidato.setNascimento(DateFormatUtils.extractDate(children.get(2).child(1).text()));
                     candidato.setNaturalidade(children.get(3).child(1).text());
                     candidato.setOcupacao(children.get(5).child(1).text());
                     candidato.setGrauInstrucao(children.get(6).child(1).text());
