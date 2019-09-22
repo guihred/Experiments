@@ -64,12 +64,12 @@ public final class CandidatoHelper {
         }
     }
 
-    //    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void updateTable(IntegerProperty first, int maxResult, String column, PieGraph pieGraph,
         ObservableList<Candidato> observableArrayList, Map<String, Set<String>> fieldMap) {
-        List<Candidato> list = candidatoDAO.list(first.get(), maxResult, fieldMap);
+        List<Candidato> list = candidatoDAO.list(first.get(), maxResult == 0 ? 10 : maxResult, fieldMap);
         observableArrayList.setAll(list);
-        Map<String, Long> histogram = candidatoDAO.histogram(column, fieldMap);
+        Map<String, Long> histogram = candidatoDAO.histogram(column == null ? getRelevantFields().get(0) : column,
+            fieldMap);
         pieGraph.setHistogram(histogram);
     }
 }

@@ -77,7 +77,7 @@ public final class StageHelper {
 
         if (scene.getWindow() != null) {
             Window window = scene.getWindow();
-            final EventHandler<WindowEvent> closeRequest = scene.getWindow().getOnCloseRequest();
+            final EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
             window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
         }
         scene.windowProperty().addListener((ob, o, n) -> {
@@ -92,6 +92,7 @@ public final class StageHelper {
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
+        LOG.info("DIALOG {}", HasLogging.getCurrentLine(1));
         return stage1;
     }
 
@@ -105,7 +106,7 @@ public final class StageHelper {
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
-        LOG.info("DIALOG " + HasLogging.getCurrentLine(1));
+        LOG.info("DIALOG {}", HasLogging.getCurrentLine(1));
     }
 
     public static void displayDialog(String text, String buttonMsg, Supplier<DoubleProperty> c, RunnableEx run) {

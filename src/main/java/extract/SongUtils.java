@@ -130,22 +130,6 @@ public final class SongUtils {
             s -> Math.abs(end.subtract(start).toMillis()), DateFormatUtils::convertTimeToMillis);
     }
 
-    public static void updateCurrentSlider(MediaPlayer mediaPlayer2, Slider currentSlider) {
-        if (!currentSlider.isValueChanging()) {
-            Duration currentTime = mediaPlayer2.getCurrentTime();
-            Duration totalDuration = mediaPlayer2.getTotalDuration();
-            double value = currentTime.toMillis() / totalDuration.toMillis();
-            currentSlider.setValue(value);
-        }
-    }
-
-    public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, boolean valueChanging) {
-        if (!valueChanging) {
-            double pos = currentSlider.getValue();
-            final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
-            SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);
-        }}
-
     public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, double pos) {
         final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
         SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);

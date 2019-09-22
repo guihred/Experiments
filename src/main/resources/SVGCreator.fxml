@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.scene.shape.*?><?import javafx.collections.*?><?import javafx.scene.text.*?><?import javafx.geometry.*?><?import paintexp.svgcreator.*?><?import javafx.scene.paint.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+	styleClass="root">
+	<fx:define>
+		<ToggleGroup fx:id="toggleGroup1"
+			onSelectedToggleChange="#onChangeCommand" />
+		<Insets bottom="4.0" fx:id="insets4" left="8.0" right="8.0"
+			top="4.0" />
+	</fx:define>
+	<center>
+		<StackPane fx:id="stack" alignment="TOP_LEFT"
+			prefHeight="500.0" prefWidth="500.0">
+			<children>
+				<SVGPath fx:id="path" content="M0,0" fill="${fillSelector.value}"
+					fillRule="${fillRule.selectionModel.selectedItem}" managed="false" stroke="${strokeSelector.value}" />
+			</children>
+		</StackPane>
+	</center>
+	<left>
+		<GridPane>
+			<children>
+				<ToggleButton GridPane.columnIndex="0"
+					GridPane.rowIndex="0" fx:id="toggleButton2" prefWidth="50.0"
+					selected="true" text="M" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Move To" />
+					</tooltip>
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+					<userData>
+						<SVGCommand fx:value="M" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="0"
+					GridPane.rowIndex="1" fx:id="toggleButton3" prefWidth="50.0"
+					text="Z" textFill="0x333333ff" toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Close Path" />
+					</tooltip>
+					<padding>
+						<fx:reference source="insets4" />
+					</padding>
+					<userData>
+						<SVGCommand fx:value="Z" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="0"
+					GridPane.rowIndex="2" fx:id="toggleButton5" padding="$insets4"
+					prefWidth="50.0" text="H" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Horizontal Line To" />
+					</tooltip>
+					<userData>
+						<SVGCommand fx:value="H" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="0"
+					GridPane.rowIndex="3" fx:id="toggleButton6" padding="$insets4"
+					prefWidth="50.0" text="V" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Vertical Line To" />
+					</tooltip>
+					<userData>
+						<SVGCommand fx:value="V" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="0"
+					GridPane.rowIndex="4" fx:id="toggleButton7" padding="$insets4"
+					prefWidth="50.0" text="L" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Line To" />
+					</tooltip>
+					<userData>
+						<SVGCommand fx:value="L" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="1"
+					GridPane.rowIndex="0" fx:id="toggleButton8" padding="$insets4"
+					prefWidth="50.0" text="T" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Smooth Quadratic Bezier Curve To" />
+					</tooltip>
+					<userData>
+						<SVGCommand fx:value="T" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="1"
+					GridPane.rowIndex="1" fx:id="toggleButton9" padding="$insets4"
+					prefWidth="50.0" text="Q" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Quadratic Bezier Curve To" />
+					</tooltip>
+					<userData>
+						<SVGCommand fx:value="Q" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="1"
+					GridPane.rowIndex="2" fx:id="toggleButton10" padding="$insets4"
+					prefWidth="50.0" text="S" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Smooth Curve To" />
+					</tooltip>
+					<userData>
+						<SVGCommand fx:value="S" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="1"
+					GridPane.rowIndex="3" fx:id="toggleButton11" padding="$insets4"
+					prefWidth="50.0" text="C" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Curve To" />
+					</tooltip>
+					<userData>
+						<SVGCommand fx:value="C" />
+					</userData>
+				</ToggleButton>
+				<ToggleButton GridPane.columnIndex="1"
+					GridPane.rowIndex="4" fx:id="toggleButton12" padding="$insets4"
+					prefWidth="50.0" text="A" textFill="0x333333ff"
+					toggleGroup="$toggleGroup1">
+					<tooltip>
+						<Tooltip text="Elliptical Arc" />
+					</tooltip>
+					<userData>
+						<SVGCommand fx:value="A" />
+					</userData>
+				</ToggleButton>
+				<ColorPicker GridPane.columnIndex="0"
+					GridPane.columnSpan="2" GridPane.rowIndex="10" GridPane.rowSpan="1"
+					fx:id="strokeSelector" prefWidth="100.0">
+					<value>
+						<Color fx:value="0x000000ff" />
+					</value>
+				</ColorPicker>
+				<ColorPicker GridPane.columnIndex="0"
+					GridPane.columnSpan="2" GridPane.rowIndex="11" GridPane.rowSpan="1"
+					fx:id="fillSelector" prefWidth="100.0">
+					<value>
+						<Color fx:value="0x00000000" />
+					</value>
+				</ColorPicker>
+				<ComboBox GridPane.columnIndex="0" GridPane.columnSpan="2"
+					GridPane.rowIndex="12" GridPane.rowSpan="1" fx:id="fillRule"
+					prefWidth="100.0">
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+							<FillRule fx:value="EVEN_ODD" />
+							<FillRule fx:value="NON_ZERO" />
+						</FXCollections>
+					</items>
+					<value>
+						<FillRule fx:value="EVEN_ODD" />
+					</value>
+				</ComboBox>
+				<Button GridPane.columnIndex="0" GridPane.columnSpan="2"
+					GridPane.rowIndex="13" GridPane.rowSpan="1" alignment="CENTER"
+					fx:id="relative" id="Relative" onAction="#onActionRelative"
+					text="Relative" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<VBox GridPane.columnIndex="0" GridPane.columnSpan="2"
+					GridPane.rowIndex="14" GridPane.rowSpan="1">
+					<children>
+						<Text fx:id="text19" text="Scale" />
+						<Slider blockIncrement="0.015" fx:id="slider" max="2.0"
+							min="0.5" value="1.0" />
+					</children>
+				</VBox>
+				<Text GridPane.columnIndex="0" GridPane.columnSpan="2"
+					GridPane.rowIndex="15" GridPane.rowSpan="1" fx:id="width" />
+				<Text GridPane.columnIndex="0" GridPane.columnSpan="2"
+					GridPane.rowIndex="16" GridPane.rowSpan="1" fx:id="height" />
+			</children>
+		</GridPane>
+	</left>
+	<top>
+		<TextField fx:id="contentField" text="M0,0">
+			<padding>
+				<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
+			</padding>
+		</TextField>
+	</top>
+</BorderPane>

@@ -5,6 +5,7 @@ import static simplebuilder.SimpleTableViewBuilder.equalColumns;
 import static simplebuilder.SimpleTableViewBuilder.setFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import javafx.application.Application;
 import javafx.beans.Observable;
@@ -29,15 +30,11 @@ public class CandidatoApp extends Application {
     @FXML
     private TableColumn<Candidato, Boolean> eleito;
     @FXML
-    private ComboBox<String> comboBox16;
-    @FXML
     private Slider slider20;
     @FXML
     private TreeView<String> treeView0;
     @FXML
-    private ComboBox<Number> comboBox17;
-    @FXML
-    private TextField textField1;
+    private TextField filter;
     @FXML
     private TableColumn<Candidato, LocalDate> nascimento;
     @FXML
@@ -46,40 +43,40 @@ public class CandidatoApp extends Application {
     private TableColumn<Candidato, Cidade> cidade;
     @FXML
     private PieGraph pieGraph;
-    private SimpleIntegerProperty maxResult = new SimpleIntegerProperty(50);
-    private SimpleStringProperty column = new SimpleStringProperty("partido");
+    @FXML
+    private SimpleIntegerProperty maxResult;
+    @FXML
+    private SimpleStringProperty column;
     private SimpleIntegerProperty first = new SimpleIntegerProperty(0);
-    private ObservableList<Candidato> candidates = FXCollections.observableArrayList();
-    private ObservableMap<String, Set<String>> fieldMap = FXCollections.observableHashMap();
-
+    @FXML
+    private ObservableList<Candidato> candidates;
+    @FXML
+    private ObservableMap<String, Set<String>> fieldMap;
+    @FXML
+    private ObservableMap<String, CheckBox> portChecks;
     public void initialize() {
-        for (String field : getRelevantFields()) {
+        CrawlerTask.insertProxyConfig();
+        List<String> relevantFields = getRelevantFields();
+        for (String field : relevantFields) {
             SimpleTreeViewBuilder.addToRoot(treeView0, field, distinct(field));
         }
-
-        CrawlerTask.insertProxyConfig();
         fotoUrl.setCellFactory(ImageTableCell::new);
         cidade.setCellFactory(setFormat(Cidade::getCity));
         eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
         nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
         equalColumns(tableView2);
-        column.bind(comboBox16.getSelectionModel().selectedItemProperty());
-        maxResult.bind(comboBox17.getSelectionModel().selectedItemProperty());
-        tableView2.setItems(CommonsFX.newFastFilter(textField1, candidates.filtered(e -> true)));
-        comboBox16.getSelectionModel().selectedItemProperty()
-            .addListener((ob, o, n) -> updateTable(first, maxResult.get(), n, pieGraph, candidates, fieldMap));
-        comboBox17.getSelectionModel().selectedItemProperty()
+        tableView2.setItems(CommonsFX.newFastFilter(filter, candidates.filtered(e -> true)));
+        column.addListener((ob, o, n) -> updateTable(first, maxResult.get(), n, pieGraph, candidates, fieldMap));
+        maxResult
             .addListener((ob, o, n) -> updateTable(first, n.intValue(), column.get(), pieGraph, candidates, fieldMap));
         slider20.valueProperty().bindBidirectional(pieGraph.legendsRadiusProperty());
-        ObservableMap<String, CheckBox> portChecks = FXCollections.observableHashMap();
         treeView0.getSelectionModel().selectedItemProperty()
             .addListener((ob, o, newValue) -> onChangeElement(fieldMap, portChecks, newValue));
         bindTextToMap(text18, fieldMap);
         fieldMap.addListener(
             (Observable e) -> updateTable(first, maxResult.get(), column.get(), pieGraph, candidates, fieldMap));
-        fieldMap.put(getRelevantFields().get(0), FXCollections.observableSet());
+        fieldMap.put(relevantFields.get(0), FXCollections.observableSet());
     }
-
 
     @Override
     public void start(Stage primaryStage) {

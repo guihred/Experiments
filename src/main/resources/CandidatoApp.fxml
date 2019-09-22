@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.event.*?>
 <?import javafx.scene.input.*?>
+<?import javafx.beans.property.*?>
 <?import javafx.collections.*?>
 <?import ml.graph.*?>
 <?import javafx.geometry.*?>
@@ -11,10 +12,12 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml">
+
+
 	<center>
 		<VBox>
 			<children>
-				<TextField fx:id="textField1">
+				<TextField fx:id="filter">
 					<padding>
 						<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
 					</padding>
@@ -97,7 +100,7 @@
 				</TableView>
 				<HBox>
 					<children>
-						<ComboBox fx:id="comboBox16" value="cargo">
+						<ComboBox fx:id="columnNumber" value="cargo">
 							<items>
 								<FXCollections fx:factory="observableArrayList">
 									<String fx:value="cargo" />
@@ -110,7 +113,7 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
-						<ComboBox fx:id="comboBox17">
+						<ComboBox fx:id="maxResultCombo">
 							<items>
 								<FXCollections fx:factory="observableArrayList">
 									<Integer fx:value="10" />
@@ -146,4 +149,16 @@
 			</padding>
 		</TreeView>
 	</left>
+	<fx:define>
+		<FXCollections fx:id="candidates"
+			fx:factory="observableArrayList" />
+		<FXCollections fx:id="fieldMap"
+			fx:factory="observableHashMap" />
+		<FXCollections fx:id="portChecks"
+			fx:factory="observableHashMap" />
+		<SimpleIntegerProperty fx:id="maxResult"
+			value="${maxResultCombo.value}" />
+		<SimpleStringProperty fx:id="column"
+			value="${columnNumber.value}" />
+	</fx:define>
 </BorderPane>

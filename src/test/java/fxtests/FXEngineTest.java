@@ -4,6 +4,7 @@ import static fxtests.FXTesting.measureTime;
 import static javafx.scene.input.KeyCode.*;
 import static utils.RunnableEx.ignore;
 
+import audio.mp3.EditSongController;
 import audio.mp3.FilesComparator;
 import cubesystem.DeathStar;
 import ethical.hacker.EthicalHackApp;
@@ -60,7 +61,7 @@ import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
-    // @Test
+    @Test
     public void verifyButtons() throws Exception {
         measureTime("Test.testButtons",
             () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
@@ -88,7 +89,7 @@ public class FXEngineTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-    // @Test
+    @Test
     public void verifyDots() throws Exception {
         show(DotsLauncher.class);
         Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
@@ -106,15 +107,27 @@ public class FXEngineTest extends AbstractTestExecution {
         }
     }
 
-    // @Test
-    public void verifyEthicalHack() throws Exception { 
+    @Test
+    public void verifyEditSong() throws Exception {
+        EditSongController show = show(EditSongController.class);
+        show.setClose(false);
+        List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
+        for (int i = 0; i < queryAll.size(); i++) {
+            Node node = queryAll.get(i);
+            RunnableEx.ignore(() -> clickOn(node));
+            RunnableEx.ignore(() -> sleep(1000));
+        }
+    }
+
+    @Test
+    public void verifyEthicalHack() throws Exception {
         show(EthicalHackApp.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(ConsumerEx.ignore(this::clickOn));
         ConsoleUtils.waitAllProcesses();
     }
 
-    // @Test
+    @Test
     public void verifyFileComparator() throws Exception {
         FilesComparator application = show(FilesComparator.class);
         TableView<File> query = lookup(e -> e instanceof TableView).query();
@@ -122,7 +135,7 @@ public class FXEngineTest extends AbstractTestExecution {
         application.addSongsToTable(query, listFiles[0]);
     }
 
-    // @Test
+    @Test
     public void verifyImageCracker() throws Exception {
         ImageCrackerApp show = show(ImageCrackerApp.class);
         show.setClickable(false);
@@ -130,7 +143,7 @@ public class FXEngineTest extends AbstractTestExecution {
         ImageCrackerApp.waitABit();
     }
 
-    // @Test
+    @Test
     public void verifyMinesweeper() throws Exception {
         show(MinesweeperLauncher.class);
         List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll().parallelStream()
@@ -143,7 +156,7 @@ public class FXEngineTest extends AbstractTestExecution {
         }
     }
 
-    // @Test
+    @Test
     public void verifyMouseMovements() throws Exception {
         FXTesting.verifyAndRun(this, currentStage, () -> {
             moveTo(200, 200);
@@ -164,14 +177,14 @@ public class FXEngineTest extends AbstractTestExecution {
         interactNoWait(currentStage::close);
     }
 
-    // @Test
+    @Test
     public void verifyPlayingAudio() throws Exception {
         PlayingAudio show = show(PlayingAudio.class);
         interactNoWait(() -> show.playMedia(ResourceFXUtils.toExternalForm("TeenTitans.mp3")));
         tryClickButtons();
     }
 
-    // @Test
+    @Test
     public void verifyPong() throws Exception {
         show(PongLauncher.class);
         tryClickButtons();
@@ -183,7 +196,7 @@ public class FXEngineTest extends AbstractTestExecution {
         }
     }
 
-    // @Test
+    @Test
     public void verifyPuzzle() throws Exception {
         show(PuzzleLauncher.class);
         interactNoWait(() -> currentStage.setMaximized(true));
@@ -199,7 +212,7 @@ public class FXEngineTest extends AbstractTestExecution {
         interactNoWait(() -> currentStage.setMaximized(false));
     }
 
-    // @Test
+    @Test
     public void verifyScroll() throws Exception {
         measureTime("Test.verifyScroll",
             () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
@@ -209,13 +222,13 @@ public class FXEngineTest extends AbstractTestExecution {
 
     }
 
-    // @Test
+    @Test
     public void verifySnake() throws Exception {
         show(SnakeLauncher.class);
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
     }
 
-    // @Test
+    @Test
     public void verifySngpcViewer() throws Exception {
         show(SngpcViewer.class);
         sleep(500);
@@ -226,7 +239,7 @@ public class FXEngineTest extends AbstractTestExecution {
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
     }
 
-    // @Test
+    @Test
     public void verifySolitaire() throws Exception {
         show(SolitaireLauncher.class);
         List<CardStack> cardStacks = lookup(".cardstack").queryAllAs(CardStack.class).stream()
@@ -255,13 +268,13 @@ public class FXEngineTest extends AbstractTestExecution {
         targetPos(Pos.CENTER);
     }
 
-    // @Test
+    @Test
     public void verifySquare() throws Exception {
         show(Square2048Launcher.class);
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
     }
 
-    // @Test
+    @Test
     public void verifyWordSuggetion() throws Exception {
         show(WordSuggetionApp.class);
         lookup(".text-field").queryAll().forEach(ConsumerEx.makeConsumer(t -> {
