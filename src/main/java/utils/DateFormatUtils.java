@@ -27,7 +27,7 @@ public final class DateFormatUtils {
         try {
             return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         } catch (Exception e) {
-            CrawlerTask.LOG.trace("", e);
+            HasLogging.log(1).trace("", e);
             return null;
         }
     }

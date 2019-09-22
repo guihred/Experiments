@@ -151,9 +151,9 @@ public class EditSongController extends Application {
         children.add(new Text(value));
     
         final int prefWidth = 300;
-        SimpleListViewBuilder<Node> tableBuilder = new SimpleListViewBuilder<>();
-        ListView<Node> builder = tableBuilder.items(children).prefWidth(prefWidth).build();
-        tableBuilder.onDoubleClick(n -> {
+        SimpleListViewBuilder<Node> listBuilder = new SimpleListViewBuilder<>();
+        ListView<Node> builder = listBuilder.items(children).prefWidth(prefWidth).build();
+        listBuilder.onDoubleClick(n -> {
             if (n instanceof ImageView) {
                 ImageView view = (ImageView) n;
                 Image image = view.getImage();

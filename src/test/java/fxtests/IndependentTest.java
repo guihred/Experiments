@@ -28,6 +28,8 @@ import japstudy.HiraganaMaker;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -47,6 +49,7 @@ import others.RandomHelloWorld;
 import others.TermFrequency;
 import others.TermFrequencyIndex;
 import pdfreader.Speaker;
+import utils.DateFormatUtils;
 import utils.HasLogging;
 import utils.MatrixSolver;
 import utils.ResourceFXUtils;
@@ -109,6 +112,15 @@ public class IndependentTest {
     }
 
     @Test
+    public void testDateUtils() {
+        measureTime("DateFormatUtils.convertTimeToMillis", () -> DateFormatUtils.convertTimeToMillis("00:00:00.000"));
+        measureTime("DateFormatUtils.extractDate", () -> DateFormatUtils.extractDate("21/02/2010"));
+        measureTime("DateFormatUtils.format", () -> DateFormatUtils.format(LocalDateTime.now()) );
+        measureTime("DateFormatUtils.formatDate", () -> DateFormatUtils. formatDate(LocalDate.now())); 
+        measureTime("DateFormatUtils.parse", () -> DateFormatUtils.parse("00:00:01.000"));
+    }
+
+    @Test
     public void testDecision() {
         measureTime("DecisionTree.executeSimpleTest", DecisionTree::executeSimpleTest);
         measureTime("DecisionTree.testCatanDecisionTree", DecisionTree::testCatanDecisionTree);
@@ -134,6 +146,7 @@ public class IndependentTest {
         }
     }
 
+
     @Test
     public void testGoogleImages() {
         measureTime("WikiImagesUtils.displayCountByExtension", () -> WikiImagesUtils.displayCountByExtension());
@@ -141,7 +154,6 @@ public class IndependentTest {
         measureTime("NetworkInformationScanner.displayNetworkInformation",
             () -> NetworkInformationScanner.displayNetworkInformation());
     }
-
 
     @Test
     public void testHiragana() {
