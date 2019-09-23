@@ -8,21 +8,17 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<FlowPane xmlns:fx="http://javafx.com/fxml"
-	fx:controller="paintexp.ColorChooserController" styleClass="root"
+<FlowPane xmlns:fx="http://javafx.com/fxml" styleClass="root"
 	stylesheets="@/colorChooser.css">
 	<fx:define>
 		<WritableImage fx:id="transparentImage" height="256"
 			width="256" />
-		<WritableImage fx:id="colorsImage" height="256"
-			width="256" />
-		<WritableImage fx:id="sliderImage" height="256"
-			width="20" />
+		<WritableImage fx:id="colorsImage" height="256" width="256" />
+		<WritableImage fx:id="sliderImage" height="256" width="20" />
 		<WritableImage fx:id="smallImage" height="64" width="64" />
 	</fx:define>
 	<children>
-		<StackPane fx:id="stackPane0"
-			onMouseDragged="#onMouseDraggedStackPane0"
+		<StackPane fx:id="stackPane0" onMouseDragged="#onMouseDraggedStackPane0"
 			onMousePressed="#onMousePressedStackPane0">
 			<children>
 				<Rectangle height="256.0" width="256.0">
@@ -37,8 +33,7 @@
 							proportional="true" width="1.0" x="0.0" y="0.0" />
 					</fill>
 				</Rectangle>
-				<Circle fx:id="circle" managed="false" radius="2.0"
-					stroke="0xffffffff" />
+				<Circle fx:id="circle" managed="false" radius="2.0" stroke="0xffffffff" />
 			</children>
 		</StackPane>
 		<Slider blockIncrement="3.59" fx:id="hueSlider" id="hueSlider"
@@ -52,13 +47,12 @@
 							<children>
 								<Rectangle height="64.0" width="64.0">
 									<fill>
-										<ImagePattern height="1.0"
-											image="$transparentImage" proportional="true" width="1.0"
-											x="0.0" y="0.0" />
+										<ImagePattern height="1.0" image="$transparentImage"
+											proportional="true" width="1.0" x="0.0" y="0.0" />
 									</fill>
 								</Rectangle>
-								<Rectangle fill="0xffffffff" height="64.0"
-									fx:id="finalColor" width="64.0" />
+								<Rectangle fill="0xffffffff" height="64.0" fx:id="finalColor"
+									width="64.0" />
 							</children>
 						</StackPane>
 						<StackPane>
@@ -84,25 +78,28 @@
 										<HBox>
 											<children>
 												<Text text="Hue" />
-												<Slider blockIncrement="3.59" fx:id="hueSlider2"
-													id="hueSlider2" max="359.0" />
-												<Text fx:id="hueText" text="${(hueSlider2.value-(hueSlider2.value%1))+'°'}"  />
+												<Slider blockIncrement="3.59" fx:id="hueSlider2" id="hueSlider2"
+													max="359.0" />
+												<Text fx:id="hueText"
+													text="${(hueSlider2.value-(hueSlider2.value%1))+'°'}" />
 											</children>
 										</HBox>
 										<HBox>
 											<children>
 												<Text text="Saturation" />
-												<Slider blockIncrement="0.01"
-													fx:id="saturationSlider" id="saturationSlider" max="1.0" />
-												<Text fx:id="saturationText" text="${(saturationSlider.value*100-(saturationSlider.value*100%1))+'%'}" />
+												<Slider blockIncrement="0.01" fx:id="saturationSlider"
+													id="saturationSlider" max="1.0" />
+												<Text fx:id="saturationText"
+													text="${(saturationSlider.value*100-(saturationSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 										<HBox>
 											<children>
 												<Text text="Brightness" />
-												<Slider blockIncrement="0.01"
-													fx:id="brightnessSlider" id="brightnessSlider" max="1.0" />
-												<Text fx:id="brightnessText" text="${(brightnessSlider.value*100-(brightnessSlider.value*100%1))+'%'}" />
+												<Slider blockIncrement="0.01" fx:id="brightnessSlider"
+													id="brightnessSlider" max="1.0" />
+												<Text fx:id="brightnessText"
+													text="${(brightnessSlider.value*100-(brightnessSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 									</children>
@@ -116,25 +113,28 @@
 										<HBox>
 											<children>
 												<Text text="Red" />
-												<Slider blockIncrement="0.01" fx:id="redSlider"
-													id="redSlider" max="1.0" />
-												<Text fx:id="redText" text="${(redSlider.value*100-(redSlider.value*100%1))+'%'}" />
+												<Slider blockIncrement="0.01" fx:id="redSlider" id="redSlider"
+													max="1.0" />
+												<Text fx:id="redText"
+													text="${(redSlider.value*100-(redSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 										<HBox>
 											<children>
 												<Text text="Green" />
-												<Slider blockIncrement="0.01" fx:id="greenSlider"
-													id="greenSlider" max="1.0" />
-												<Text fx:id="greenText" text="${(greenSlider.value*100-(greenSlider.value*100%1))+'%'}" />
+												<Slider blockIncrement="0.01" fx:id="greenSlider" id="greenSlider"
+													max="1.0" />
+												<Text fx:id="greenText"
+													text="${(greenSlider.value*100-(greenSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 										<HBox>
 											<children>
 												<Text text="Blue" />
-												<Slider blockIncrement="0.01" fx:id="blueSlider"
-													id="blueSlider" max="1.0" />
-												<Text fx:id="blueText" text="${(blueSlider.value*100-(blueSlider.value*100%1))+'%'}" />
+												<Slider blockIncrement="0.01" fx:id="blueSlider" id="blueSlider"
+													max="1.0" />
+												<Text fx:id="blueText"
+													text="${(blueSlider.value*100-(blueSlider.value*100%1))+'%'}" />
 											</children>
 										</HBox>
 									</children>
@@ -149,17 +149,17 @@
 				<HBox>
 					<children>
 						<Text text="Opacity" />
-						<Slider blockIncrement="0.01" fx:id="opacitySlider"
-							max="1.0" value="1.0" />
-						<Text fx:id="opacityText" text="${(opacitySlider.value*100-(opacitySlider.value*100%1))+'%'}" />
+						<Slider blockIncrement="0.01" fx:id="opacitySlider" max="1.0"
+							value="1.0" />
+						<Text fx:id="opacityText"
+							text="${(opacitySlider.value*100-(opacitySlider.value*100%1))+'%'}" />
 					</children>
 				</HBox>
 				<HBox>
 					<children>
 						<Button fx:id="save" id="Save" onAction="#onActionSave"
 							text="Save" />
-						<Button fx:id="use" id="Use" onAction="#onActionUse"
-							text="Use" />
+						<Button fx:id="use" id="Use" onAction="#onActionUse" text="Use" />
 					</children>
 				</HBox>
 			</children>

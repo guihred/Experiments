@@ -17,7 +17,7 @@ import utils.RunnableEx;
 public class ColorChooser extends Application {
     private static final Logger LOG = HasLogging.log();
 
-    private ColorChooserController controller;
+	private ColorChooserController controller = new ColorChooserController();
 
     private Stage primaryStage;
 
@@ -59,8 +59,8 @@ public class ColorChooser extends Application {
         RunnableEx.remap(() -> {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(convertToURL(file));
+			fxmlLoader.setController(controller);
             Parent content = fxmlLoader.load();
-            controller = fxmlLoader.getController();
             final int width = 600;
             Scene scene = new Scene(content, width, width / 2);
             primaryStage1.setTitle("Color Chooser");
