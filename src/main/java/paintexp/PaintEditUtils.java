@@ -4,11 +4,11 @@ import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import others.PixelatedImageView;
 import paintexp.tool.PaintModel;
 import paintexp.tool.PaintTools;
 import paintexp.tool.RectBuilder;
 import paintexp.tool.SelectRectTool;
+import utils.PixelatedImageView;
 import utils.ZoomableScrollPane;
 
 public final class PaintEditUtils {

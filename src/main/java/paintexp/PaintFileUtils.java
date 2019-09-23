@@ -12,9 +12,9 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
-import others.PixelatedImageView;
 import paintexp.tool.PaintModel;
 import utils.HasLogging;
+import utils.PixelatedImageView;
 
 public final class PaintFileUtils {
 	private static final Logger LOG = HasLogging.log();

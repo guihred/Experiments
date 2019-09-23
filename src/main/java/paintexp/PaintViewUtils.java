@@ -19,11 +19,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import others.PixelatedImageView;
 import paintexp.tool.PaintModel;
 import paintexp.tool.SelectRectTool;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.PixelatedImageView;
 import utils.StageHelper;
 
 public final class PaintViewUtils {
