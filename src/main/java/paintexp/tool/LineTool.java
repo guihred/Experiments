@@ -52,7 +52,7 @@ public class LineTool extends PaintTool {
     protected void onMouseReleased(final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (size() >= 2 || !children.contains(getLine())) {
-		    PaintToolHelper.drawLine(model, line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+		    RectBuilder.build().startX(line.getStartX()).startY(line.getStartY()).endX(line.getEndX()).endY(line.getEndY()).drawLine(model.getImage(), model.getFrontColor());
 		}
 		children.remove(getLine());
 	}

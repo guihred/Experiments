@@ -55,9 +55,7 @@ public class EyedropTool extends PaintTool {
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
         int y = (int) e.getY();
         int x = (int) e.getX();
-        final int x1 = x;
-        final int y1 = y;
-        if (withinImage(x1, y1, model.getImage())) {
+        if (withinImage(x, y, model.getImage())) {
             WritableImage image = model.getImage();
             Color color = image.getPixelReader().getColor(x, y);
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -71,9 +69,7 @@ public class EyedropTool extends PaintTool {
     private void onMouseMoved(final MouseEvent e, final PaintModel model) {
         int y = (int) e.getY();
         int x = (int) e.getX();
-        final int x1 = x;
-        final int y1 = y;
-        if (withinImage(x1, y1, model.getImage())) {
+        if (withinImage(x, y, model.getImage())) {
             WritableImage image = model.getImage();
             Color color = image.getPixelReader().getColor(x, y);
             getArea().setFill(color);

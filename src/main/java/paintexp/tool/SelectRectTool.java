@@ -60,7 +60,7 @@ public class SelectRectTool extends PaintTool {
 			int maxHeight = (int) image.getHeight();
 			BoundingBox bounds = new BoundingBox(Integer.min(Integer.max(layoutX, 0), maxWidth),
 					Integer.min(Integer.max(layoutY, 0), maxHeight), width, height);
-			PaintToolHelper.copyImagePart(image, imageSelected, bounds);
+			RectBuilder.copyImagePart(image, imageSelected, bounds);
 		}
 		Map<DataFormat, Object> content = new HashMap<>();
 		content.put(DataFormat.IMAGE, imageSelected);
@@ -192,7 +192,7 @@ public class SelectRectTool extends PaintTool {
 			imageSelected = new WritableImage((int) width, (int) height);
 		}
 		WritableImage writableImage = destImage != null ? destImage : imageSelected;
-		new RectBuilder().width(width).height(height).copyImagePart(srcImage, writableImage, backColor);
+		RectBuilder.build().width(width).height(height).copyImagePart(srcImage, writableImage, backColor);
 		if (option == SelectOption.TRANSPARENT) {
 			replaceColor(writableImage, backColor, Color.TRANSPARENT);
 		}
@@ -279,7 +279,7 @@ public class SelectRectTool extends PaintTool {
 		int y = (int) getArea().getLayoutY();
 		double width = getArea().getWidth();
 		double height = getArea().getHeight();
-		new RectBuilder().width(width).height(height).endX(x).endY(y).copyImagePart(imageSelected, model.getImage(),
+		RectBuilder.build().width(width).height(height).endX(x).endY(y).copyImagePart(imageSelected, model.getImage(),
 				Color.TRANSPARENT);
 		imageSelected = null;
 		model.getImageStack().getChildren().remove(getArea());
@@ -308,13 +308,14 @@ public class SelectRectTool extends PaintTool {
 			int layoutX = (int) area.getLayoutX();
 			int layoutY = (int) area.getLayoutY();
 			BoundingBox bounds = new BoundingBox(layoutX, layoutY, width, height);
-			PaintToolHelper.copyImagePart(srcImage, imageSelected, bounds);
+			RectBuilder.copyImagePart(srcImage, imageSelected, bounds);
 			if (option == SelectOption.TRANSPARENT) {
 				replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
 			}
 
 			getArea().setFill(new ImagePattern(imageSelected));
-			new RectBuilder().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model,
+			final PaintModel model1 = model;
+			RectBuilder.build().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model1.getImage(),
 					model.getBackColor());
 		}
 		return imageSelected;
@@ -322,15 +323,17 @@ public class SelectRectTool extends PaintTool {
 
 	private void cutImage(PaintModel model, Bounds bounds) {
 		copyToClipboard(model.getImage());
-		new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
-				.height(bounds.getHeight() - 1).drawRect(model, model.getBackColor());
+		final PaintModel model1 = model;
+		RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
+		.height(bounds.getHeight() - 1).drawRect(model1.getImage(), model.getBackColor());
 		model.createImageVersion();
 	}
 
 	private void deleteImage(PaintModel model, Bounds bounds) {
 		if (imageSelected == null) {
-			new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
-					.height(bounds.getHeight() - 1).drawRect(model, model.getBackColor());
+			final PaintModel model1 = model;
+			RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
+			.height(bounds.getHeight() - 1).drawRect(model1.getImage(), model.getBackColor());
 		}
 		imageSelected = null;
 		ObservableList<Node> children = model.getImageStack().getChildren();

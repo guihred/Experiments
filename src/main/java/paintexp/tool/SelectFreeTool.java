@@ -129,9 +129,7 @@ public class SelectFreeTool extends SelectRectTool {
             for (int j = 0; j < height; j++) {
                 int localX = i + minX;
                 int localY = j + minY;
-                final int x = localX;
-                final int y = localY;
-                if (withinImage(x, y, model.getImage())) {
+                if (withinImage(localX, localY, model.getImage())) {
                     if (getPolygon().contains(localX, localY)
                         && (option == SelectOption.OPAQUE || currentImageReader.getArgb(localX, localY) != backColor)) {
                         finalImage.setArgb(i, j, currentImageReader.getArgb(localX, localY));

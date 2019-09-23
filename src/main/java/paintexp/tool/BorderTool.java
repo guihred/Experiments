@@ -79,7 +79,7 @@ public class BorderTool extends RectangleTool {
         }
         for (int i = 0; i < color2.length; i++) {
             for (int j = 0; j < color2[i].length; j++) {
-                PaintToolHelper.drawPoint(model, i + layoutX, j + layoutY, color2[i][j]);
+                PaintToolHelper.drawPoint(model.getImage(), i + layoutX, j + layoutY, color2[i][j]);
             }
         }
     }

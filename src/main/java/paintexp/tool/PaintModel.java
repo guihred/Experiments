@@ -5,8 +5,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
@@ -232,8 +235,32 @@ public class PaintModel {
         this.toolSize = toolSize;
     }
 
-    public ObjectProperty<PaintTool> toolProperty() {
+    public void takeSnapshotFill(Node line2) {
+    	takeSnapshotFill(this, line2);
+    }
+
+	public ObjectProperty<PaintTool> toolProperty() {
         return tool;
     }
+
+	private static void takeSnapshotFill(PaintModel model, Node line2) {
+		WritableImage image = model.getImage();
+		Group imageStack = model.getImageStack();
+	
+		Bounds bounds = line2.getBoundsInParent();
+		int width = (int) bounds.getWidth() + 2;
+		int height = (int) bounds.getHeight() + 2;
+		SnapshotParameters params = new SnapshotParameters();
+		params.setFill(Color.TRANSPARENT);
+		WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
+		int x = (int) bounds.getMinX();
+		int y = (int) bounds.getMinY();
+		RectBuilder.build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePart(textImage,
+				image, Color.TRANSPARENT);
+		imageStack.getChildren().clear();
+		ImageView imageView = new PixelatedImageView(image);
+		imageStack.getChildren().add(model.getRectangleBorder(imageView));
+		imageStack.getChildren().add(imageView);
+	}
 
 }

@@ -1,4 +1,5 @@
 package paintexp.tool;
+
 import static utils.DrawOnPoint.getWithinRange;
 import static utils.DrawOnPoint.withinImage;
 
@@ -24,7 +25,7 @@ public class BlurTool extends PaintTool {
 
 	@Override
 	public Node createIcon() {
-        return new SimpleSvgPathBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
+		return new SimpleSvgPathBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
 				.content("m18 0 l-12 18 a15 15 0 1 0 24 0l-12 -18 z").build();
 	}
 
@@ -37,29 +38,25 @@ public class BlurTool extends PaintTool {
 	public void onSelected(final PaintModel model) {
 		model.getToolOptions().getChildren().clear();
 		model.getToolOptions().setSpacing(5);
-		model.getToolOptions().getChildren()
-		.add(getLengthSlider());
+		model.getToolOptions().getChildren().add(getLengthSlider());
 		length.addListener((o, old, value) -> colors = new Color[value.intValue() * value.intValue() * 4]);
 
 	}
 
-
 	@Override
-	protected  void onMouseDragged(final MouseEvent e, final PaintModel model) {
+	protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
 		int y2 = (int) e.getY();
 		int x2 = (int) e.getX();
-        final int x1 = x2;
-        final int y1 = y2;
-		if (withinImage(x1, y1, model.getImage())) {
-			PaintToolHelper.drawLine(model, x, y, x2, y2, (x3, y3) -> drawBlur(x3, y3, model));
+		if (withinImage(x2, y2, model.getImage())) {
+			RectBuilder.build().startX(x).startY(y).endX(x2).endY(y2).drawLine(model.getImage(),
+					(x3, y3) -> drawBlur(x3, y3, model));
 			y = (int) e.getY();
 			x = (int) e.getX();
 		}
 	}
 
-
 	@Override
-	protected  void onMousePressed(final MouseEvent e, final PaintModel model) {
+	protected void onMousePressed(final MouseEvent e, final PaintModel model) {
 		y = (int) e.getY();
 		x = (int) e.getX();
 		drawBlur(x, y, model);
@@ -97,14 +94,15 @@ public class BlurTool extends PaintTool {
 		}
 		for (int i = 0; i < colors.length; i++) {
 			if (colors[i] != null) {
-				PaintToolHelper.drawPoint(model, i / diameter - radius + centerX, i % diameter - radius + centerY, colors[i]);
+				PaintToolHelper.drawPoint(model.getImage(), i / diameter - radius + centerX,
+						i % diameter - radius + centerY, colors[i]);
 			}
 		}
 	}
 
-	private Slider getLengthSlider() { 
-		if(lengthSlider==null) {
-			lengthSlider=new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
+	private Slider getLengthSlider() {
+		if (lengthSlider == null) {
+			lengthSlider = new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
 		}
 		return lengthSlider;
 	}

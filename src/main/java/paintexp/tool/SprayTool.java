@@ -62,12 +62,11 @@ public class SprayTool extends PaintTool {
             double t = rnd(2 * Math.PI);
             int x = (int) Math.round(radius * Math.cos(t));
             int y = (int) Math.round(radius * Math.sin(t));
-            final PaintModel model = paintModel;
-            if (withinImage(x + centerX, y + centerY, model.getImage())) {
+            if (withinImage(x + centerX, y + centerY, paintModel.getImage())) {
                 argb = pixelReader.getArgb(x + centerX, y + centerY);
             }
             try {
-                PaintToolHelper.drawPoint(paintModel, x + centerX, y + centerY);
+                PaintToolHelper.drawPoint(paintModel.getImage(), x + centerX, y + centerY, paintModel.getFrontColor());
             } catch (Exception e) {
                 LOG.trace("", e);
             }

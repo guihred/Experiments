@@ -54,7 +54,7 @@ public class CurveTool extends PaintTool {
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
         KeyCode code = e.getCode();
         if (code == KeyCode.ESCAPE) {
-            PaintToolHelper.takeSnapshotFill(paintModel, getLine());
+			paintModel.takeSnapshotFill(getLine());
             paintModel.createImageVersion();
         }
     }
@@ -64,7 +64,7 @@ public class CurveTool extends PaintTool {
         double hvalue = model.getScrollPane().getHvalue();
         double vvalue = model.getScrollPane().getVvalue();
 
-        PaintToolHelper.takeSnapshotFill(model, getLine());
+		model.takeSnapshotFill(getLine());
         model.createImageVersion();
         model.getScrollPane().setHvalue(hvalue);
         model.getScrollPane().setVvalue(vvalue);
@@ -112,7 +112,7 @@ public class CurveTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if ((size() >= 2 || !children.contains(getLine())) && stage == 2) {
-            PaintToolHelper.takeSnapshotFill(model, line);
+			model.takeSnapshotFill(line);
             model.createImageVersion();
         }
         stage = ++stage % 3;

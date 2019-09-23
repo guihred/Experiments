@@ -86,8 +86,8 @@ public class WandTool extends SelectRectTool {
 		WritableImage writableImage = new WritableImage(width2, height2);
 		int x = (int) getArea().getLayoutX();
 		int y = (int) getArea().getLayoutY();
-		new RectBuilder().startX(x).startY(y).width(width2).height(height2).copyImagePart(selectedImage, writableImage,
-				Color.TRANSPARENT);
+		RectBuilder.build().startX(x).startY(y).width(width2).height(height2).copyImagePart(selectedImage,
+				writableImage, Color.TRANSPARENT);
 		return writableImage;
 	}
 

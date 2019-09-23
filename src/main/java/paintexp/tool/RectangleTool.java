@@ -128,13 +128,13 @@ public class RectangleTool extends PaintTool {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (getArea().getWidth() > 2 && children.contains(getArea())) {
 			Bounds boundsInLocal = getArea().getBoundsInParent();
-			RectBuilder rect = new RectBuilder();
+			RectBuilder rect = RectBuilder.build();
 			rect.bound(boundsInLocal).arc(getArea().getArcWidth() / 2);
 			if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
-				rect.drawFill(model);
+				rect.drawFill(model.getImage(), model.getBackColor());
 			}
 			if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
-				rect.drawStroke(model);
+				rect.drawStroke(model.getImage(), model.getFrontColor());
 			}
 
 		}

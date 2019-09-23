@@ -153,7 +153,7 @@ public class PictureTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (children.contains(getArea())) {
-            PaintToolHelper.takeSnapshotFill(model, area);
+			model.takeSnapshotFill(area);
         }
         children.remove(getArea());
         model.getScrollPane().setHvalue(hvalue);

@@ -38,9 +38,7 @@ public class BucketTool extends PaintTool {
 			Integer next = toGo.remove(0);
 			int x = x(next);
 			int y = y(next);
-            final int x1 = x;
-            final int y1 = y;
-			if (withinImage(x1, y1, model.getImage())) {
+            if (withinImage(x, y, model.getImage())) {
 				int color = pixelReader.getArgb(x, y);
 				if (color == originalColor) {
 					if (y != 0 && y != height - 1) {

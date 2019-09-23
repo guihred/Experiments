@@ -128,7 +128,7 @@ public class PolygonTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
-            PaintToolHelper.takeSnapshotFill(model, area);
+			model.takeSnapshotFill(area);
             model.createImageVersion();
         }
         children.remove(getArea());

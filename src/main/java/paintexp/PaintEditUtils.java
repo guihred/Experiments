@@ -19,8 +19,8 @@ public final class PaintEditUtils {
     public static void cut(PaintModel paintModel, SelectRectTool a) {
         a.copyToClipboard(paintModel.getImage());
         Bounds bounds = a.getArea().getBoundsInParent();
-        new RectBuilder().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth())
-            .height(bounds.getHeight()).drawRect(paintModel, paintModel.getBackColor());
+		RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth())
+		.height(bounds.getHeight()).drawRect(paintModel.getImage(), paintModel.getBackColor());
     }
 
     public static void paste(PaintModel paintModel, SelectRectTool a) {
