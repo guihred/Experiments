@@ -25,7 +25,7 @@ public class BlurTool extends PaintTool {
 	@Override
 	public Node createIcon() {
         return new SimpleSvgPathBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
-					.content("M6,0 l -4,6 a5,5 0 1,0 8,0 l -4,-6 z").build();
+				.content("m18 0 l-12 18 a15 15 0 1 0 24 0l-12 -18 z").build();
 	}
 
 	@Override

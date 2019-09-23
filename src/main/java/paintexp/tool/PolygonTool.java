@@ -28,7 +28,7 @@ public class PolygonTool extends PaintTool {
     @Override
     public Polyline createIcon() {
         int pontas = 5;
-        int radius = 5;
+		int radius = 15;
         double[] points = iterate(0, i -> i + 1).limit(pontas)
             .flatMap(i -> of(radius * cos(i * 2 % 5 * 2 * PI / pontas), radius * sin(i * 2 % 5 * 2 * PI / pontas)))
             .toArray();

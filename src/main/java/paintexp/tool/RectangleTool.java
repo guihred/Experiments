@@ -25,7 +25,7 @@ public class RectangleTool extends PaintTool {
 
 	@Override
 	public Node createIcon() {
-        return new SimpleRectangleBuilder().width(10).height(10).fill(Color.TRANSPARENT).stroke(Color.BLACK)
+		return new SimpleRectangleBuilder().width(30).height(30).fill(Color.TRANSPARENT).stroke(Color.BLACK)
 					.build();
 	}
 

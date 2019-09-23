@@ -26,7 +26,7 @@ public class SelectFreeTool extends SelectRectTool {
     @Override
     public SVGPath createIcon() {
         return new SimpleSvgPathBuilder()
-                .content("M 10,5 a 5,5 0 0 0 -3,5q 0,1 -2,2 a 4,3 1 1 0 7,0 c -3,-3 4,-4 0,-7z").stroke(Color.BLUE)
+				.content("m30 15 a15 15 0 0 0 -9 15q0 3 -6 6 a12 9 1 1 0 21 0c-9 -9 12 -12 0 -21 z").stroke(Color.BLUE)
                 .strokeDashArray(1, 2, 1, 2).fill(Color.TRANSPARENT).build();
     }
 

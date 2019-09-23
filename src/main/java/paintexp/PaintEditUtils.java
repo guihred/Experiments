@@ -50,6 +50,9 @@ public final class PaintEditUtils {
             double hvalue = scrollPane.getHvalue();
             double vvalue = scrollPane.getVvalue();
             WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
+			if (!imageVersions.isEmpty() && SimplePixelReader.isEqualImage(paintModel.getImage(), writableImage)) {
+				writableImage = imageVersions.remove(imageVersions.size() - 1);
+			}
             paintModel.getImageStack().getChildren().clear();
             ImageView imageView = new ImageView(writableImage);
             paintModel.setImage(writableImage);

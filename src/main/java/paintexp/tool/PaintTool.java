@@ -31,6 +31,8 @@ public abstract class PaintTool extends Group {
         icon = createIcon();
         if (icon != null) {
             getChildren().add(icon);
+			icon.setScaleX(1 / (icon.getBoundsInLocal().getWidth() / 30));
+			icon.setScaleY(1 / (icon.getBoundsInLocal().getHeight() / 30));
         }
     }
 
@@ -40,7 +42,6 @@ public abstract class PaintTool extends Group {
         return icon;
     }
 
-    @SuppressWarnings("static-method")
     public Cursor getMouseCursor() {
         return Cursor.DEFAULT;
     }
@@ -51,7 +52,6 @@ public abstract class PaintTool extends Group {
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             model.createImageVersion();
         }
-
     }
 
     public void handleKeyEvent(KeyEvent e, PaintModel paintModel) {
@@ -70,7 +70,6 @@ public abstract class PaintTool extends Group {
         this.icon = icon;
     }
 
-    @SuppressWarnings("static-method")
     protected boolean containsPoint(Node area2, double localX, double localY) {
         Bounds bounds = area2.getBoundsInParent();
         return area2.getLayoutX() < localX && localX < area2.getLayoutX() + bounds.getWidth()
@@ -267,12 +266,7 @@ public abstract class PaintTool extends Group {
     }
 
     protected static ImageView getIconByURL(String src) {
-        ImageView icon1 = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
-        icon1.setPreserveRatio(true);
-        icon1.setFitWidth(10);
-        icon1.maxWidth(10);
-        icon1.maxHeight(10);
-        return icon1;
+		return getIconByURL(src, 30);
 
     }
 
@@ -280,6 +274,7 @@ public abstract class PaintTool extends Group {
         ImageView icon1 = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
         icon1.setPreserveRatio(true);
         icon1.setFitWidth(width);
+		icon1.setFitHeight(width);
         icon1.maxWidth(width);
         icon1.maxHeight(width);
         return icon1;

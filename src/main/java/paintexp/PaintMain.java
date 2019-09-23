@@ -55,11 +55,11 @@ public class PaintMain extends Application {
             .addMenuItem("_Flip/Rotate", "Ctrl+R", controller::flipRotate)
             .addMenuItem("_Crop", e -> controller.crop(), controller.containsSelectedArea().not())
             .addMenu("_Image")
-            .addMenuItem("_Invert Colors", "Ctrl+I", controller::invertColors)
             .addMenuItem("_Adjust", "Ctrl+J", controller::adjustColors)
             .addMenuItem("Mirror _Horizontally", "Ctrl+H", controller::mirrorHorizontally)
             .addMenuItem("Mirror _Vertically", "Ctrl+M", controller::mirrorVertically)
             .addMenu("_Colors")
+            .addMenuItem("_Invert Colors", "Ctrl+I", controller::invertColors)
             .addMenu("_Help")
             .build());
         SimplePixelReader.paintColor(paintModel.getImage(), paintModel.getBackColor());
@@ -120,7 +120,6 @@ public class PaintMain extends Application {
     protected static TableView<WritableImage> displayImageVersions(final PaintModel paintModel) {
         final int tablePrefWidth = 100;
         ObservableList<WritableImage> imageVersions = paintModel.getImageVersions();
-
         TableView<WritableImage> tableView = new SimpleTableViewBuilder<WritableImage>()
             .addColumn("Image", (p, cell) -> cell.setGraphic(imageView(tablePrefWidth, p)))
             .items(imageVersions).prefWidth(tablePrefWidth)

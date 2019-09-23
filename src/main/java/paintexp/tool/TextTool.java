@@ -50,7 +50,7 @@ public class TextTool extends PaintTool {
     @Override
     public Text createIcon() {
         Text icon = new Text("A");
-        icon.setStyle("-fx-font: bold 18 \"" + TIMES_NEW_ROMAN + "\";");
+		icon.setStyle("-fx-font: bold 15 \"" + TIMES_NEW_ROMAN + "\";");
         return icon;
     }
 

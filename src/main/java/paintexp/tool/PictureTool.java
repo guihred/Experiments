@@ -31,8 +31,8 @@ public class PictureTool extends PaintTool {
         SVGPath icon = PictureOption.STAR_5.toSVG();
         icon.setContent(PictureOption.STAR_5.getCorrectedPath());
         icon.setFill(Color.TRANSPARENT);
-        icon.setScaleX(3. / 4);
-        icon.setScaleY(3. / 4);
+		icon.setScaleX(3. / 4);
+		icon.setScaleY(3. / 4);
         icon.setStroke(Color.BLACK);
         return icon;
     }

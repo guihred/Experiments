@@ -55,9 +55,7 @@ public class WandTool extends SelectRectTool {
             Integer next = toGo.remove(0);
             int x = x(next);
             int y = y(next);
-            final int x1 = x;
-            final int y1 = y;
-            if (withinImage(x1, y1, model.getImage())) {
+            if (withinImage(x, y, model.getImage())) {
                 int color = pixelReader.getArgb(x, y);
                 pixel.reset(originalColor);
                 if (closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0
@@ -103,9 +101,7 @@ public class WandTool extends SelectRectTool {
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
         super.handleKeyEvent(e, model);
-        IntegerProperty property = threshold;
-        Slider slider = thresholdSlider;
-        handleSlider(e, property, slider);
+        handleSlider(e, threshold, thresholdSlider);
     }
 
     @Override

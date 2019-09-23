@@ -19,7 +19,7 @@ public class EllipseTool extends PaintTool {
 
     @Override
     public Ellipse createIcon() {
-        Ellipse icon = new Ellipse(6, 4);
+		Ellipse icon = new Ellipse(18, 15);
         icon.setFill(Color.TRANSPARENT);
         icon.setStroke(Color.BLACK);
         return icon;
