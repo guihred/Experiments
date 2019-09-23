@@ -5,11 +5,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
@@ -27,7 +25,6 @@ public class PaintModel {
     private final ObjectProperty<Color> frontColor = new SimpleObjectProperty<>(Color.BLACK);
     private WritableImage image = new WritableImage(500, 500);
     private Group imageStack;
-    private final ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
     private Text imageSize = new Text();
     private Text toolSize = new Text();
     private Text mousePosition = new Text();
@@ -41,27 +38,6 @@ public class PaintModel {
         return backColor;
     }
 
-    public void changeTool(final PaintTool newValue) {
-        resetToolOptions();
-        ZoomableScrollPane parent = getScrollPane();
-        double hvalue = parent.getHvalue();
-        double vvalue = parent.getVvalue();
-        getImageStack().getChildren().clear();
-		ImageView imageView = new PixelatedImageView(getImage());
-        getImageStack().getChildren().add(getRectangleBorder(imageView));
-        getImageStack().getChildren().add(imageView);
-        parent.setHvalue(hvalue);
-        parent.setVvalue(vvalue);
-        if (newValue != null) {
-            PaintTool oldTool = getTool();
-            if (oldTool != null) {
-                oldTool.onDeselected(this);
-            }
-            setTool(newValue);
-            PaintTool paintTool = getTool();
-            paintTool.onSelected(this);
-        }
-    }
 
     public void createImageVersion() {
 
@@ -88,9 +64,7 @@ public class PaintModel {
         return currentFile;
     }
 
-    public SelectRectTool getCurrentSelectTool() {
-		return PaintTools.getSelectRectTool(getTool(), getImageStack());
-    }
+
 
 	public Color getFrontColor() {
         return frontColor.get();
@@ -150,17 +124,8 @@ public class PaintModel {
         return scrollPane;
     }
 
-    public WritableImage getSelectedImage() {
-        SelectRectTool selectTool = getCurrentSelectTool();
-        if (getImageStack().getChildren().contains(selectTool.getArea())) {
-            return selectTool.createSelectedImage(this);
-        }
-        return getImage();
-    }
 
-    public PaintTool getTool() {
-        return tool.get();
-    }
+
 
     public VBox getToolOptions() {
         if (toolOptions == null) {
@@ -195,21 +160,6 @@ public class PaintModel {
         this.currentFile = currentFile;
     }
 
-    public void setFinalImage(final WritableImage writableImage) {
-        SelectRectTool selectTool = getCurrentSelectTool();
-        if (getImageStack().getChildren().contains(selectTool.getArea())) {
-            selectTool.getArea().setWidth(writableImage.getWidth());
-            selectTool.getArea().setHeight(writableImage.getHeight());
-            selectTool.getArea().setFill(new ImagePattern(writableImage));
-            selectTool.setImageSelected(writableImage);
-        } else {
-            getImageStack().getChildren().clear();
-			ImageView imageView = new PixelatedImageView(writableImage);
-            setImage(writableImage);
-            getImageStack().getChildren().add(getRectangleBorder(imageView));
-            getImageStack().getChildren().add(imageView);
-        }
-    }
 
     public void setFrontColor(final Color frontColor) {
         this.frontColor.set(frontColor);
@@ -227,40 +177,17 @@ public class PaintModel {
         this.mousePosition = mousePosition;
     }
 
-    public void setTool(final PaintTool tool) {
-        this.tool.set(tool);
-    }
+
 
     public void setToolSize(final Text toolSize) {
         this.toolSize = toolSize;
     }
 
     public void takeSnapshotFill(Node line2) {
-    	takeSnapshotFill(this, line2);
-    }
-
-	public ObjectProperty<PaintTool> toolProperty() {
-        return tool;
-    }
-
-	private static void takeSnapshotFill(PaintModel model, Node line2) {
-		WritableImage image = model.getImage();
-		Group imageStack = model.getImageStack();
-	
-		Bounds bounds = line2.getBoundsInParent();
-		int width = (int) bounds.getWidth() + 2;
-		int height = (int) bounds.getHeight() + 2;
-		SnapshotParameters params = new SnapshotParameters();
-		params.setFill(Color.TRANSPARENT);
-		WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
-		int x = (int) bounds.getMinX();
-		int y = (int) bounds.getMinY();
-		RectBuilder.build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePart(textImage,
-				image, Color.TRANSPARENT);
-		imageStack.getChildren().clear();
 		ImageView imageView = new PixelatedImageView(image);
-		imageStack.getChildren().add(model.getRectangleBorder(imageView));
-		imageStack.getChildren().add(imageView);
-	}
+		RectBuilder.takeSnapshotFill(line2, image, getImageStack(), imageView, getRectangleBorder(imageView));
+    }
+
+
 
 }

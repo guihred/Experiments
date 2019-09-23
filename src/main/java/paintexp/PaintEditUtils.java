@@ -12,29 +12,29 @@ public final class PaintEditUtils {
     private PaintEditUtils() {
     }
 
-    public static void copy(PaintModel paintModel, SelectRectTool a) {
+	public static void copy(PaintModel paintModel, AreaTool a) {
         a.copyToClipboard(paintModel.getImage());
     }
 
-    public static void cut(PaintModel paintModel, SelectRectTool a) {
+	public static void cut(PaintModel paintModel, AreaTool a) {
         a.copyToClipboard(paintModel.getImage());
         Bounds bounds = a.getArea().getBoundsInParent();
 		RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth())
 		.height(bounds.getHeight()).drawRect(paintModel.getImage(), paintModel.getBackColor());
     }
 
-    public static void paste(PaintModel paintModel, SelectRectTool a) {
-        if (!(paintModel.getTool() instanceof SelectRectTool)) {
-            paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-            paintModel.changeTool(null);
+	public static void paste(PaintModel paintModel, AreaTool a, PaintController paintController) {
+		if (!(paintController.getTool() instanceof AreaTool)) {
+			paintController.setTool(PaintTools.SELECT_RECT.getTool());
+			paintController.changeTool(null);
         }
         a.copyFromClipboard(paintModel);
     }
 
-    public static void selectAll(PaintModel paintModel, SelectRectTool a) {
-        if (!(paintModel.getTool() instanceof SelectRectTool)) {
-            paintModel.setTool(PaintTools.SELECT_RECT.getTool());
-            paintModel.changeTool(null);
+	public static void selectAll(PaintModel paintModel, AreaTool a, PaintController paintController) {
+		if (!(paintController.getTool() instanceof AreaTool)) {
+			paintController.setTool(PaintTools.SELECT_RECT.getTool());
+			paintController.changeTool(null);
         }
 
         a.selectArea(0, 0, (int) paintModel.getImage().getWidth() - 1, (int) paintModel.getImage().getHeight() - 1,

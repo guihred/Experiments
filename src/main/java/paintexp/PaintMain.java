@@ -38,22 +38,39 @@ public class PaintMain extends Application {
 	public void start(final Stage stage) throws Exception {
 		PaintModel paintModel = controller.getPaintModel();
 		BorderPane root = new BorderPane();
-		root.setTop(new SimpleMenuBarBuilder().addMenu("_File").addMenuItem("_New", "Ctrl+N", controller::newFile)
-				.addMenuItem("_Open", "Ctrl+O", () -> controller.openFile(stage))
-				.addMenuItem("_Save", "Ctrl+S", () -> controller.saveFile(stage))
-				.addMenuItem("Save _As", "Ctrl+Shift+S", () -> controller.saveAsFile(stage)).addMenu("_Edit")
-				.addMenuItem("Select _All", "Ctrl+A", controller::selectAll)
-				.addMenuItem("C_opy", "Ctrl+C", e -> controller.copy(), controller.containsSelectedArea().not())
-				.addMenuItem("_Paste", "Ctrl+V", controller::paste)
-				.addMenuItem("_Cut", "Ctrl+X", e -> controller.cut(), controller.containsSelectedArea().not())
-				.addMenuItem("Undo", "Ctrl+Z", controller::undo).addMenu("_View")
-				.addMenuItem("Resize/Ske_w", "Ctrl+W", controller::resize)
-				.addMenuItem("_Flip/Rotate", "Ctrl+R", controller::flipRotate)
-				.addMenuItem("_Crop", e -> controller.crop(), controller.containsSelectedArea().not()).addMenu("_Image")
-				.addMenuItem("_Adjust", "Ctrl+J", controller::adjustColors)
-				.addMenuItem("Mirror _Horizontally", "Ctrl+H", controller::mirrorHorizontally)
-				.addMenuItem("Mirror _Vertically", "Ctrl+M", controller::mirrorVertically).addMenu("_Colors")
-				.addMenuItem("_Invert Colors", "Ctrl+I", controller::invertColors).addMenu("_Help").build());
+		root.setTop(new SimpleMenuBarBuilder()
+				.addMenu("_File")
+				.addMenuItem("_New", "Ctrl+N", () -> PaintFileUtils.newFile(paintModel))
+				.addMenuItem("_Open", "Ctrl+O", () -> PaintFileUtils.openFile(stage, paintModel))
+				.addMenuItem("_Save", "Ctrl+S", () -> PaintFileUtils.saveFile(stage, paintModel))
+				.addMenuItem("Save _As", "Ctrl+Shift+S", () -> PaintFileUtils.saveAsFile(stage, paintModel))
+				.addMenu("_Edit")
+				.addMenuItem("Select _All", "Ctrl+A",
+						() -> PaintEditUtils.selectAll(paintModel, controller.getCurrentSelectTool(), controller))
+				.addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(paintModel, controller.getCurrentSelectTool()),
+						controller.containsSelectedArea().not())
+				.addMenuItem("_Paste", "Ctrl+V",
+						() -> PaintEditUtils.paste(paintModel, controller.getCurrentSelectTool(), controller))
+				.addMenuItem("_Cut", "Ctrl+X", e -> PaintEditUtils.cut(paintModel, controller.getCurrentSelectTool()),
+						controller.containsSelectedArea().not())
+				.addMenuItem("Undo", "Ctrl+Z", () -> PaintEditUtils.undo(paintModel))
+				.addMenu("_View")
+				.addMenuItem("Resize/Ske_w", "Ctrl+W",
+						() -> PaintViewUtils.resize(paintModel, controller.getSelectedImage(), controller))
+				.addMenuItem("_Flip/Rotate", "Ctrl+R", () -> PaintViewUtils.flipRotate(paintModel, controller))
+				.addMenuItem("_Crop",
+						e -> PaintViewUtils.crop(paintModel, controller.getSelectedImage(),
+								controller.getCurrentSelectTool()),
+						controller.containsSelectedArea().not())
+				.addMenu("_Image")
+				.addMenuItem("_Adjust", "Ctrl+J", () -> PaintImageUtils.adjustColors(paintModel, controller))
+				.addMenuItem("Mirror _Horizontally", "Ctrl+H",
+						() -> PaintImageUtils.mirrorHorizontally(paintModel, controller))
+				.addMenuItem("Mirror _Vertically", "Ctrl+M",
+						() -> PaintImageUtils.mirrorVertically(paintModel, controller))
+				.addMenu("_Colors")
+				.addMenuItem("_Invert Colors", "Ctrl+I", () -> PaintImageUtils.invertColors(paintModel, controller))
+				.addMenu("_Help").build());
 		SimplePixelReader.paintColor(paintModel.getImage(), paintModel.getBackColor());
 		paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);
 		paintModel.createImageVersion();
@@ -62,7 +79,7 @@ public class PaintMain extends Application {
 		final int gap = 50;
 		HBox hBox = new HBox(gap, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());
 		hBox.getChildren().forEach(e -> e.prefHeight(hBox.getPrefWidth() / hBox.getChildren().size()));
-
+		BorderPane.setAlignment(hBox, Pos.CENTER);
 		hBox.setStyle("-fx-effect: innershadow(gaussian,gray,10,0.5,10,10);");
 		GridPane gridPane = new GridPane();
 		StackPane st = new StackPane(pickedColor(paintModel.backColorProperty(), 20),
@@ -74,15 +91,14 @@ public class PaintMain extends Application {
 				colors.stream().skip(maxSize).limit(maxSize).map(controller::newRectangle).toArray(Rectangle[]::new));
 		gridPane.setId("colorGrid");
 		root.setBottom(new VBox(30, new HBox(gap, st, gridPane), hBox));
-		BorderPane.setAlignment(hBox, Pos.CENTER);
 		SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
 		Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggleTooltip(e.getTool(), e.getTooltip()));
 		List<Node> paintTools = toolGroup
-				.onChange((ov, oldValue, newValue) -> paintModel
+				.onChange((ov, oldValue, newValue) -> controller
 						.changeTool(newValue == null ? null : (PaintTool) newValue.getUserData()))
 				.getTogglesAs(Node.class);
 		ToggleGroup toggleGroup = toolGroup.build();
-		paintModel.toolProperty().addListener((ob, old, newV) -> toggleGroup.selectToggle(
+		controller.toolProperty().addListener((ob, old, newV) -> toggleGroup.selectToggle(
 				toggleGroup.getToggles().stream().filter(e -> e.getUserData().equals(newV)).findFirst().orElse(null)));
 
 		GridPane toolbar = new GridPane();

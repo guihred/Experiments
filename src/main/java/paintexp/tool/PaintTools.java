@@ -47,11 +47,11 @@ public enum PaintTools {
                 .replaceAll("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+", " ");
     }
 
-	public static SelectRectTool getSelectRectTool(PaintTool tool2, Group imageStack2) {
-		return Stream.of(values()).map(PaintTools::getTool).filter(SelectRectTool.class::isInstance)
-	            .map(SelectRectTool.class::cast).filter(e -> imageStack2.getChildren().contains(e.getArea()))
-	            .findFirst().orElseGet(() -> tool2 instanceof SelectRectTool ? (SelectRectTool) tool2
-				        : (SelectRectTool) SELECT_RECT.getTool());
+	public static AreaTool getSelectRectTool(PaintTool tool2, Group imageStack2) {
+		return Stream.of(values()).map(PaintTools::getTool).filter(AreaTool.class::isInstance)
+				.map(AreaTool.class::cast).filter(e -> imageStack2.getChildren().contains(e.getArea())).findFirst()
+				.orElseGet(() -> tool2 instanceof AreaTool ? (AreaTool) tool2
+						: (AreaTool) SELECT_RECT.getTool());
 	}
 
 }

@@ -26,9 +26,9 @@ public final class PaintImageUtils {
     private PaintImageUtils() {
     }
 
-    public static void adjustColors(PaintModel paintModel) {
+	public static void adjustColors(PaintModel paintModel, PaintController paintController) {
         VBox root = new VBox();
-        WritableImage original = paintModel.getSelectedImage();
+		WritableImage original = paintController.getSelectedImage();
         PixelReader reader = original.getPixelReader();
         WritableImage image = new WritableImage(reader, (int) original.getWidth(), (int) original.getHeight());
         ImageView view = new ImageView(image);
@@ -49,7 +49,7 @@ public final class PaintImageUtils {
             color -> changeColor(saturate, bright, hue, opacity, color));
         root.getChildren().add(SimpleButtonBuilder.newButton("Adjust", e -> {
             final WritableImage writableImage = image;
-            paintModel.setFinalImage(writableImage);
+			paintController.setFinalImage(writableImage);
             paintModel.createImageVersion();
             StageHelper.closeStage(root);
         }));
@@ -59,19 +59,19 @@ public final class PaintImageUtils {
         stage.show();
     }
 
-    public static void invertColors(PaintModel paintModel) {
-        WritableImage image = paintModel.getSelectedImage();
+	public static void invertColors(PaintModel paintModel, PaintController paintController) {
+		WritableImage image = paintController.getSelectedImage();
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
         WritableImage writableImage = new WritableImage(width, height);
         updateImage(writableImage, image, Color::invert);
         final WritableImage writableImage1 = writableImage;
-        paintModel.setFinalImage(writableImage1);
+		paintController.setFinalImage(writableImage1);
         paintModel.createImageVersion();
     }
 
-    public static void mirrorHorizontally(PaintModel paintModel) {
-        WritableImage image = paintModel.getSelectedImage();
+	public static void mirrorHorizontally(PaintModel paintModel, PaintController paintController) {
+		WritableImage image = paintController.getSelectedImage();
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
         WritableImage writableImage = new WritableImage(width, height);
@@ -83,12 +83,12 @@ public final class PaintImageUtils {
             }
         }
         final WritableImage writableImage1 = writableImage;
-        paintModel.setFinalImage(writableImage1);
+		paintController.setFinalImage(writableImage1);
         paintModel.createImageVersion();
     }
 
-    public static void mirrorVertically(PaintModel paintModel) {
-        WritableImage image = paintModel.getSelectedImage();
+	public static void mirrorVertically(PaintModel paintModel, PaintController paintController) {
+		WritableImage image = paintController.getSelectedImage();
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
         WritableImage writableImage = new WritableImage(width, height);
@@ -99,8 +99,7 @@ public final class PaintImageUtils {
                 pixelWriter.setColor(i, height - j - 1, pixelReader.getColor(i, j));
             }
         }
-        final WritableImage writableImage1 = writableImage;
-        paintModel.setFinalImage(writableImage1);
+		paintController.setFinalImage(writableImage);
         paintModel.createImageVersion();
     }
 

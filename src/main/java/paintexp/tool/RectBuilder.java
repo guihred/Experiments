@@ -6,12 +6,13 @@ import static utils.DrawOnPoint.withinImage;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
-import javafx.scene.image.Image;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.*;
 import javafx.scene.image.PixelFormat.Type;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
 
@@ -133,7 +134,7 @@ public class RectBuilder {
 	}
 
 	public void drawLine(WritableImage image, ObservableList<WritableImage> imageVersions,  Color color, double opacity) {
-		RectBuilder.build().startX(startX).startY(startY).endX(endX).endY(endY).drawLine(image, (x, y) -> PaintToolHelper.drawPointTransparency(x, y, color, opacity, image, imageVersions));
+		drawLine(image, (x, y) -> PaintToolHelper.drawPointTransparency(x, y, color, opacity, image, imageVersions));
 	}
 
     public void drawRect(final Color backColor, final double opacity, WritableImage image,
@@ -228,6 +229,23 @@ public class RectBuilder {
         centerX2 = Math.max(endX - radiusX, endX - width / 2);
     }
 
+	public static void takeSnapshotFill(Node line2, WritableImage image, Group imageStack, ImageView imageView,
+			Rectangle rectangleBorder) {
+		Bounds bounds = line2.getBoundsInParent();
+		int width = (int) bounds.getWidth() + 2;
+		int height = (int) bounds.getHeight() + 2;
+		SnapshotParameters params = new SnapshotParameters();
+		params.setFill(Color.TRANSPARENT);
+		WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
+		int x = (int) bounds.getMinX();
+		int y = (int) bounds.getMinY();
+		build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePart(textImage,
+				image, Color.TRANSPARENT);
+		imageStack.getChildren().clear();
+		imageStack.getChildren().add(rectangleBorder);
+		imageStack.getChildren().add(imageView);
+	}
+
 	public static RectBuilder build() {
 		return new RectBuilder();
 	}
@@ -236,7 +254,7 @@ public class RectBuilder {
 		int y = (int) bounds.getMinY();
 		double width = bounds.getWidth();
 		double height = bounds.getHeight();
-		new RectBuilder().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,
+		RectBuilder.build().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,
 				Color.TRANSPARENT);
 	}
 }

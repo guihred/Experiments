@@ -19,8 +19,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import paintexp.tool.AreaTool;
 import paintexp.tool.PaintModel;
-import paintexp.tool.SelectRectTool;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.PixelatedImageView;
@@ -32,11 +32,10 @@ public final class PaintViewUtils {
     private PaintViewUtils() {
     }
 
-    public static void crop(PaintModel paintModel, WritableImage image) {
+	public static void crop(PaintModel paintModel, WritableImage image, AreaTool tool) {
 
         paintModel.getImageStack().getChildren().clear();
 		ImageView imageView = new PixelatedImageView(image);
-        SelectRectTool tool = paintModel.getCurrentSelectTool();
         tool.setImageSelected(null);
         paintModel.setImage(image);
         paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
@@ -44,23 +43,24 @@ public final class PaintViewUtils {
         paintModel.createImageVersion();
     }
 
-    public static void flipRotate(PaintModel paintModel, WritableImage image) {
-        int height = (int) image.getHeight();
-        int width = (int) image.getWidth();
+	public static void flipRotate(PaintModel paintModel, PaintController paintController) {
+		WritableImage selectedImage = paintController.getSelectedImage();
+		int height = (int) selectedImage.getHeight();
+		int width = (int) selectedImage.getWidth();
         WritableImage writableImage = new WritableImage(height, width);
         PixelWriter pixelWriter = writableImage.getPixelWriter();
-        PixelReader pixelReader = image.getPixelReader();
-        for (int i = 0; i < image.getWidth(); i++) {
-            for (int j = 0; j < image.getHeight(); j++) {
+		PixelReader pixelReader = selectedImage.getPixelReader();
+		for (int i = 0; i < selectedImage.getWidth(); i++) {
+			for (int j = 0; j < selectedImage.getHeight(); j++) {
                 pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
             }
         }
         final WritableImage writableImage1 = writableImage;
-        paintModel.setFinalImage(writableImage1);
+		paintController.setFinalImage(writableImage1);
         paintModel.createImageVersion();
     }
 
-    public static void resize(PaintModel paintModel, WritableImage image) {
+	public static void resize(PaintModel paintModel, WritableImage image, PaintController paintController) {
         VBox root = new VBox();
         root.getChildren().add(new Text("Redimension"));
         SimpleToggleGroupBuilder groupBuilder = new SimpleToggleGroupBuilder();
@@ -89,7 +89,7 @@ public final class PaintViewUtils {
         heightField.textProperty()
             .addListener(e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, ratio));
         root.getChildren().add(SimpleButtonBuilder.newButton("Resize", e -> {
-            finishResize(image, groupBuilder, widthField, heightField, paintModel);
+			finishResize(image, groupBuilder, widthField, heightField, paintController);
             StageHelper.closeStage(root);
             paintModel.createImageVersion();
         }));
@@ -105,7 +105,7 @@ public final class PaintViewUtils {
     }
 
     private static void finishResize(final WritableImage image, final SimpleToggleGroupBuilder groupBuilder,
-        final TextField widthField, final TextField heightField, PaintModel paintModel) {
+			final TextField widthField, final TextField heightField, PaintController paintController) {
         ToggleButton selectedItem = (ToggleButton) groupBuilder.selectedItem();
         double newWidth = PERCENTAGE_FIELD.equals(selectedItem.getText())
             ? tryParse(widthField) * image.getWidth() / 100
@@ -130,7 +130,7 @@ public final class PaintViewUtils {
                 setPixels(newImage, color, x, y, xRatio, yRatio);
             }
         }
-        paintModel.setFinalImage(newImage);
+		paintController.setFinalImage(newImage);
     }
 
     private static void onResizeOptionsChange(final SimpleToggleGroupBuilder groupBuilder,

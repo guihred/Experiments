@@ -24,7 +24,7 @@ import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
 import utils.PixelHelper;
 
-public class WandTool extends SelectRectTool {
+public class WandTool extends AreaTool {
 
 	private int width;
 	private int height;

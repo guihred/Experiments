@@ -19,7 +19,7 @@ import javafx.scene.shape.SVGPath;
 import simplebuilder.SimpleSvgPathBuilder;
 import utils.PixelHelper;
 
-public class SelectFreeTool extends SelectRectTool {
+public class SelectFreeTool extends AreaTool {
 
     private Polygon area;
 
@@ -96,7 +96,7 @@ public class SelectFreeTool extends SelectRectTool {
         int endX = width + minX;
         int endY = height + minY;
         WritableImage selectedImage = createSelectedImage(model, minX, minY, width, height);
-        model.changeTool(this);
+		// model.changeTool(this);
         setImageSelected(selectedImage);
         selectArea(minX, minY, endX, endY, model);
         getArea().setFill(new ImagePattern(selectedImage));

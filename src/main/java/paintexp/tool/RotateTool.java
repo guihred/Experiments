@@ -15,7 +15,7 @@ import javafx.scene.shape.Circle;
 import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 
-public class RotateTool extends SelectRectTool {
+public class RotateTool extends AreaTool {
 
     private List<Circle> circles;
     private double initialRotate;

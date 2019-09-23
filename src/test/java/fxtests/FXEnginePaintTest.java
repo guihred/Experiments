@@ -17,7 +17,7 @@ import javafx.scene.layout.GridPane;
 import org.junit.Test;
 import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
-import paintexp.tool.SelectRectTool;
+import paintexp.tool.AreaTool;
 import utils.ConsumerEx;
 import utils.ResourceFXUtils;
 import utils.ZoomableScrollPane;
@@ -64,7 +64,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             moveBy(randomMove(bound), randomMove(bound));
             drop();
 
-            if (userData instanceof SelectRectTool) {
+			if (userData instanceof AreaTool) {
                 if (random.nextBoolean()) {
                     press(KeyCode.CONTROL);
                 }
