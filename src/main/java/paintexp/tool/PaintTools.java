@@ -1,6 +1,8 @@
 package paintexp.tool;
 
+import java.util.stream.Stream;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 
 public enum PaintTools {
     SELECT_FREE(new SelectFreeTool()),
@@ -44,5 +46,12 @@ public enum PaintTools {
         return tool.getClass().getSimpleName().replaceAll("Tool", "")
                 .replaceAll("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+", " ");
     }
+
+	public static SelectRectTool getSelectRectTool(PaintTool tool2, Group imageStack2) {
+		return Stream.of(values()).map(PaintTools::getTool).filter(SelectRectTool.class::isInstance)
+	            .map(SelectRectTool.class::cast).filter(e -> imageStack2.getChildren().contains(e.getArea()))
+	            .findFirst().orElseGet(() -> tool2 instanceof SelectRectTool ? (SelectRectTool) tool2
+				        : (SelectRectTool) SELECT_RECT.getTool());
+	}
 
 }

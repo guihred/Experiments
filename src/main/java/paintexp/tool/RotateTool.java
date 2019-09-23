@@ -90,7 +90,7 @@ public class RotateTool extends SelectRectTool {
     @Override
     protected void setIntoImage(final PaintModel model) {
         getArea().setStroke(Color.TRANSPARENT);
-        takeSnapshotFill(model, getArea());
+        PaintToolHelper.takeSnapshotFill(model, getArea());
         imageSelected = null;
         dragged = false;
         model.createImageVersion();

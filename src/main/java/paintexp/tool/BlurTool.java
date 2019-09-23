@@ -30,7 +30,7 @@ public class BlurTool extends PaintTool {
 
 	@Override
 	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-		handleSlider(e, length, lengthSlider);
+		PaintToolHelper.handleSlider(e, length, lengthSlider);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class BlurTool extends PaintTool {
         final int x1 = x2;
         final int y1 = y2;
 		if (withinImage(x1, y1, model.getImage())) {
-			drawLine(model, x, y, x2, y2, (x3, y3) -> drawBlur(x3, y3, model));
+			PaintToolHelper.drawLine(model, x, y, x2, y2, (x3, y3) -> drawBlur(x3, y3, model));
 			y = (int) e.getY();
 			x = (int) e.getX();
 		}
@@ -97,7 +97,7 @@ public class BlurTool extends PaintTool {
 		}
 		for (int i = 0; i < colors.length; i++) {
 			if (colors[i] != null) {
-				drawPoint(model, i / diameter - radius + centerX, i % diameter - radius + centerY, colors[i]);
+				PaintToolHelper.drawPoint(model, i / diameter - radius + centerX, i % diameter - radius + centerY, colors[i]);
 			}
 		}
 	}

@@ -24,13 +24,13 @@ public class BorderTool extends RectangleTool {
 
     @Override
     public ImageView createIcon() {
-        return getIconByURL("Border.png");
+        return PaintToolHelper.getIconByURL("Border.png");
 
     }
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        handleSlider(e, length, lengthSlider);
+        PaintToolHelper.handleSlider(e, length, lengthSlider);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class BorderTool extends RectangleTool {
         }
         for (int i = 0; i < color2.length; i++) {
             for (int j = 0; j < color2[i].length; j++) {
-                drawPoint(model, i + layoutX, j + layoutY, color2[i][j]);
+                PaintToolHelper.drawPoint(model, i + layoutX, j + layoutY, color2[i][j]);
             }
         }
     }

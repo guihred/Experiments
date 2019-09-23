@@ -35,12 +35,12 @@ public class SprayTool extends PaintTool {
 
     @Override
     public Node createIcon() {
-        return getIconByURL("spray.png");
+        return PaintToolHelper.getIconByURL("spray.png");
     }
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
-        handleSlider(e, length, lengthSlider);
+        PaintToolHelper.handleSlider(e, length, lengthSlider);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SprayTool extends PaintTool {
                 argb = pixelReader.getArgb(x + centerX, y + centerY);
             }
             try {
-                drawPoint(paintModel, x + centerX, y + centerY);
+                PaintToolHelper.drawPoint(paintModel, x + centerX, y + centerY);
             } catch (Exception e) {
                 LOG.trace("", e);
             }

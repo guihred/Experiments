@@ -43,7 +43,7 @@ public class BrushTool extends PaintTool {
 
     @Override
     public Node createIcon() {
-        return getIconByURL("brush.png");
+        return PaintToolHelper.getIconByURL("brush.png");
     }
 
     @Override
@@ -102,7 +102,7 @@ public class BrushTool extends PaintTool {
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        handleSlider(e, length, lengthSlider);
+        PaintToolHelper.handleSlider(e, length, lengthSlider);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class BrushTool extends PaintTool {
         final int x1 = x2;
         final int y1 = y2;
         if (pressed && withinImage(x1, y1, model.getImage())) {
-            drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(e, model, x3, y3, false));
+            PaintToolHelper.drawLine(model, x, y, x2, y2, (x3, y3) -> drawUponOption(e, model, x3, y3, false));
 
             y = (int) e.getY();
             x = (int) e.getX();
@@ -165,12 +165,12 @@ public class BrushTool extends PaintTool {
 
     private void drawCircleOption(final PaintModel model, final int x2, final int y2, final double r, final Color color,
         final boolean fill) {
-        drawCircle(model, x2, y2, r, r, color, opacity.get());
-        drawCircle(model, x2, y2, r, r - 1, color, opacity.get());
+        PaintToolHelper.drawCircle(model, x2, y2, r, r, color, opacity.get());
+        PaintToolHelper.drawCircle(model, x2, y2, r, r - 1, color, opacity.get());
         if (fill) {
-            drawPointTransparency(model, x2, y2, color, opacity.get());
+            PaintToolHelper.drawPointTransparency(model, x2, y2, color, opacity.get());
             for (double i = 1; i < r; i++) {
-                drawCircle(model, x2, y2, i, i, color, opacity.get());
+                PaintToolHelper.drawCircle(model, x2, y2, i, i, color, opacity.get());
             }
         }
     }
@@ -187,16 +187,16 @@ public class BrushTool extends PaintTool {
                     drawCircleOption(model, x2, y2, r, color, fill);
                     break;
                 case SQUARE:
-                    drawSquareLine(model, x2, y2, (int) r, color, op);
+                    PaintToolHelper.drawSquareLine(model, x2, y2, (int) r, color, op);
                     if (fill) {
                         new RectBuilder().startX(x2).startY(y2).width(r).height(r).drawRect(model, color, op);
                     }
                     break;
                 case LINE_NW_SE:
-                    drawLine(model, x2, y2, x2 + r, y2 + r, color, op);
+                    PaintToolHelper.drawLine(model, x2, y2, x2 + r, y2 + r, color, op);
                     break;
                 case LINE_SW_NE:
-                    drawLine(model, x2, y2, x2 + r, y2 - r, color, op);
+                    PaintToolHelper.drawLine(model, x2, y2, x2 + r, y2 - r, color, op);
                     break;
                 default:
                     break;

@@ -19,7 +19,7 @@ public class BucketTool extends PaintTool {
 
 	@Override
 	public Node createIcon() {
-        return getIconByURL("Bucket.png");
+        return PaintToolHelper.getIconByURL("Bucket.png");
 	}
 
 	@Override

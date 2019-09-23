@@ -35,7 +35,7 @@ public class WandTool extends SelectRectTool {
 
 	@Override
 	public Node createIcon() {
-		return getIconByURL("wand.png");
+		return PaintToolHelper.getIconByURL("wand.png");
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class WandTool extends SelectRectTool {
 		if (!thresholdSlider.isFocused() || !exceptionKeys.contains(e.getCode())) {
 			super.handleKeyEvent(e, model);
 		}
-		handleSlider(e, threshold, thresholdSlider);
+		PaintToolHelper.handleSlider(e, threshold, thresholdSlider);
 	}
 
 	@Override

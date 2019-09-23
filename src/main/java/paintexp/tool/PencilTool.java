@@ -18,7 +18,7 @@ public class PencilTool extends PaintTool {
 
 	@Override
 	public Node createIcon() {
-	    return getIconByURL("Pencil.png");
+	    return PaintToolHelper.getIconByURL("Pencil.png");
 	}
 
     @Override
@@ -36,7 +36,7 @@ public class PencilTool extends PaintTool {
         if (pressed && withinImage(x1, y1, model.getImage())) {
 			Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
 			model.getImage().getPixelWriter().setColor(x2, y2, color);
-			drawLine(model, x, y, x2, y2, color);
+			PaintToolHelper.drawLine(model, x, y, x2, y2, color);
             y = (int) e.getY();
             x = (int) e.getX();
         }

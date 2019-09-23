@@ -25,7 +25,7 @@ public class EraserTool extends PaintTool {
 
     @Override
     public Node createIcon() {
-        return getIconByURL("eraser.png");
+        return PaintToolHelper.getIconByURL("eraser.png");
     }
 
     public Rectangle getArea() {
@@ -69,7 +69,7 @@ public class EraserTool extends PaintTool {
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        handleSlider(e, length, lengthSlider);
+        PaintToolHelper.handleSlider(e, length, lengthSlider);
     }
 
     @Override
@@ -83,11 +83,11 @@ public class EraserTool extends PaintTool {
     @Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int w = (int) getArea().getWidth();
-        drawLine(model, lastX, lastY, e.getX(), e.getY(), (x, y) -> {
+        PaintToolHelper.drawLine(model, lastX, lastY, e.getX(), e.getY(), (x, y) -> {
             if (e.getButton() == MouseButton.PRIMARY) {
-                drawSquareLine(model, x, y, w, model.getBackColor());
+                PaintToolHelper.drawSquareLine(model, x, y, w, model.getBackColor());
             } else {
-                drawSquareLine(model, x, y, w, PixelHelper.toArgb(model.getFrontColor()));
+                PaintToolHelper.drawSquareLine(model, x, y, w, PixelHelper.toArgb(model.getFrontColor()));
             }
         });
 

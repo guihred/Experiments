@@ -10,9 +10,7 @@ import javafx.scene.image.PixelFormat.Type;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import utils.PixelHelper;
 
 public class RectBuilder extends PaintTool {
@@ -91,10 +89,10 @@ public class RectBuilder extends PaintTool {
         new RectBuilder().startX(x1).startY(y1).width(endX - startX).height(centerY2 - centerY1).drawRect(model,
             model.getBackColor());
         for (int i = 0; i < radiusX; i++) {
-            drawCirclePart(model, centerX1, centerY1, i, radiusY, Math.PI, model.getBackColor());
-            drawCirclePart(model, centerX2, centerY1, i, radiusY, Math.PI * 3 / 2, model.getBackColor());
-            drawCirclePart(model, centerX1, centerY2, i, radiusY, Math.PI / 2, model.getBackColor());
-            drawCirclePart(model, centerX2, centerY2, i, radiusY, 0, model.getBackColor());
+            PaintToolHelper.drawCirclePart(model, centerX1, centerY1, i, radiusY, Math.PI, model.getBackColor());
+            PaintToolHelper.drawCirclePart(model, centerX2, centerY1, i, radiusY, Math.PI * 3 / 2, model.getBackColor());
+            PaintToolHelper.drawCirclePart(model, centerX1, centerY2, i, radiusY, Math.PI / 2, model.getBackColor());
+            PaintToolHelper.drawCirclePart(model, centerX2, centerY2, i, radiusY, 0, model.getBackColor());
         }
     }
 
@@ -116,21 +114,21 @@ public class RectBuilder extends PaintTool {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (withinImage(startX2 + i, startY2 + j, model.getImage())) {
-                    PaintTool.drawPointTransparency(model, startX2 + i, startY2 + j, backColor, opacity);
+                    PaintToolHelper.drawPointTransparency(model, startX2 + i, startY2 + j, backColor, opacity);
                 }
             }
         }
     }
 
     public void drawStroke(final PaintModel model) {
-        drawLine(model, startX, centerY1, startX, centerY2);//LEFT
-        drawLine(model, endX, centerY1, endX, centerY2);//RIGHT
-        drawLine(model, centerX1, startY - 1, centerX2, startY - 1);//TOP
-        drawLine(model, centerX1, endY, centerX2, endY);// BOTTOM
-        drawCircle(model, centerX1, centerY1, radiusX, radiusY, Math.PI);//TOP-LEFT
-        drawCircle(model, centerX2, centerY1, radiusX, radiusY, Math.PI * 3 / 2);//
-        drawCircle(model, centerX1, centerY2, radiusX, radiusY, Math.PI / 2);
-        drawCircle(model, centerX2, centerY2, radiusX, radiusY, 0);
+        PaintToolHelper.drawLine(model, startX, centerY1, startX, centerY2);//LEFT
+        PaintToolHelper.drawLine(model, endX, centerY1, endX, centerY2);//RIGHT
+        PaintToolHelper.drawLine(model, centerX1, startY - 1, centerX2, startY - 1);//TOP
+        PaintToolHelper.drawLine(model, centerX1, endY, centerX2, endY);// BOTTOM
+        PaintToolHelper.drawCircle(model, centerX1, centerY1, radiusX, radiusY, Math.PI);//TOP-LEFT
+        PaintToolHelper.drawCircle(model, centerX2, centerY1, radiusX, radiusY, Math.PI * 3 / 2);//
+        PaintToolHelper.drawCircle(model, centerX1, centerY2, radiusX, radiusY, Math.PI / 2);
+        PaintToolHelper.drawCircle(model, centerX2, centerY2, radiusX, radiusY, 0);
     }
 
     public RectBuilder endX(double value) {
@@ -190,24 +188,5 @@ public class RectBuilder extends PaintTool {
         centerY2 = Math.max(endY - radiusY, startY - height / 2);
         centerX1 = Math.min(startX + radiusX, startX + width / 2);
         centerX2 = Math.max(endX - radiusX, endX - width / 2);
-    }
-
-    public static void moveArea(KeyCode code, Rectangle area2) {
-        switch (code) {
-            case RIGHT:
-                area2.setLayoutX(area2.getLayoutX() + 1);
-                break;
-            case LEFT:
-                area2.setLayoutX(area2.getLayoutX() - 1);
-                break;
-            case DOWN:
-                area2.setLayoutY(area2.getLayoutY() + 1);
-                break;
-            case UP:
-                area2.setLayoutY(area2.getLayoutY() - 1);
-                break;
-            default:
-                break;
-        }
     }
 }

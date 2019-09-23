@@ -43,7 +43,7 @@ public class RectangleTool extends PaintTool {
 
 	@Override
 	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-		handleSlider(e, getArea().arcWidthProperty(), arcWidthSlider);
+		PaintToolHelper.handleSlider(e, getArea().arcWidthProperty(), arcWidthSlider);
 	}
 
 	@Override

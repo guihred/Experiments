@@ -60,7 +60,7 @@ public class SelectRectTool extends PaintTool {
 			int maxHeight = (int) image.getHeight();
 			BoundingBox bounds = new BoundingBox(Integer.min(Integer.max(layoutX, 0), maxWidth),
 					Integer.min(Integer.max(layoutY, 0), maxHeight), width, height);
-			copyImagePart(image, imageSelected, bounds);
+			PaintToolHelper.copyImagePart(image, imageSelected, bounds);
 		}
 		Map<DataFormat, Object> content = new HashMap<>();
 		content.put(DataFormat.IMAGE, imageSelected);
@@ -133,7 +133,7 @@ public class SelectRectTool extends PaintTool {
 			case LEFT:
 			case DOWN:
 			case UP:
-				RectBuilder.moveArea(code, getArea());
+				PaintToolHelper.moveArea(code, getArea());
 				break;
 			default:
 				break;
@@ -150,8 +150,8 @@ public class SelectRectTool extends PaintTool {
 		model.getToolOptions().getChildren().clear();
 		int size = 30;
 		List<Node> togglesAs = new SimpleToggleGroupBuilder()
-				.addToggle(getIconByURL("opaqueSelection.png", size), SelectOption.OPAQUE)
-				.addToggle(getIconByURL("transparentSelection.png", size), SelectOption.TRANSPARENT)
+				.addToggle(PaintToolHelper.getIconByURL("opaqueSelection.png", size), SelectOption.OPAQUE)
+				.addToggle(PaintToolHelper.getIconByURL("transparentSelection.png", size), SelectOption.TRANSPARENT)
 				.onChange((ob, old, newV) -> onChangeOption(newV, model)).select(option).getTogglesAs(Node.class);
 
 		model.getToolOptions().getChildren().addAll(togglesAs);
@@ -308,7 +308,7 @@ public class SelectRectTool extends PaintTool {
 			int layoutX = (int) area.getLayoutX();
 			int layoutY = (int) area.getLayoutY();
 			BoundingBox bounds = new BoundingBox(layoutX, layoutY, width, height);
-			copyImagePart(srcImage, imageSelected, bounds);
+			PaintToolHelper.copyImagePart(srcImage, imageSelected, bounds);
 			if (option == SelectOption.TRANSPARENT) {
 				replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
 			}

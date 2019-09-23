@@ -1,7 +1,6 @@
 package paintexp.tool;
 
 import java.io.File;
-import java.util.stream.Stream;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -65,7 +64,7 @@ public class PaintModel {
 
 		WritableImage e = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
 		if (imageVersions.isEmpty()
-				|| !PaintTool.isEqualImage(e, imageVersions.get(imageVersions.size() - 1))) {
+				|| !PaintToolHelper.isEqualImage(e, imageVersions.get(imageVersions.size() - 1))) {
 			imageVersions.add(e);
 		}
         if (imageVersions.size() > MAX_VERSIONS) {
@@ -87,13 +86,10 @@ public class PaintModel {
     }
 
     public SelectRectTool getCurrentSelectTool() {
-        return Stream.of(PaintTools.values()).map(PaintTools::getTool).filter(SelectRectTool.class::isInstance)
-                .map(SelectRectTool.class::cast).filter(e -> getImageStack().getChildren().contains(e.getArea()))
-                .findFirst().orElseGet(() -> getTool() instanceof SelectRectTool ? (SelectRectTool) getTool()
-                        : (SelectRectTool) PaintTools.SELECT_RECT.getTool());
+		return PaintTools.getSelectRectTool(getTool(), getImageStack());
     }
 
-    public Color getFrontColor() {
+	public Color getFrontColor() {
         return frontColor.get();
     }
 
