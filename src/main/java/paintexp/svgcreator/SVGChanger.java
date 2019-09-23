@@ -118,7 +118,7 @@ public class SVGChanger {
 			}
 			double[] radius = Stream.of(split).skip(1L + i - args).limit(2L).mapToDouble(Double::parseDouble).toArray();
 			String otherArgs = Stream.of(split).skip(3L + i - args).limit(3).collect(Collectors.joining(" "));
-			String format = String.format(Locale.ENGLISH, "%s%.2f %.2f %s %.2f %.2f", substring.toLowerCase(),
+			String format = String.format(Locale.ENGLISH, "%s %.2f %.2f %s %.2f %.2f", substring.toLowerCase(),
 					radius[0] * scale.get(), radius[1] * scale.get(), otherArgs, xCoord * scale.get(),
 					yCoord * scale.get());
 			cmd.append(format);

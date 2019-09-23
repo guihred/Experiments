@@ -18,11 +18,13 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.FillRule;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleRectangleBuilder;
+import simplebuilder.SimpleSvgPathBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.RotateUtils;
 
@@ -48,10 +50,10 @@ public class TextTool extends PaintTool {
     private SimpleComboBoxBuilder<String> fontFamily;
 
     @Override
-    public Text createIcon() {
-        Text icon = new Text("A");
-		icon.setStyle("-fx-font: bold 15 \"" + TIMES_NEW_ROMAN + "\";");
-        return icon;
+	public Node createIcon() {
+		return new SimpleSvgPathBuilder().content(
+				"M108 40  L 150.0 140.0  H 128.0  L 115.0 110.0  H 85.0  L 70.0 140.0  H 60.0 Z  M 100.0 75.0   L 112.0 103.0  H 87.0  Z")
+				.stroke(Color.BLACK).fillRule(FillRule.EVEN_ODD).fill(Color.BLACK).build();
     }
 
     public Rectangle getArea() {

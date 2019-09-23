@@ -23,7 +23,7 @@
 				<ImageView fx:id="image" managed="false" />
 				<SVGPath fx:id="path" content="M0,0" fill="${fillSelector.value}"
 					fillRule="${fillRule.selectionModel.selectedItem}" managed="false"
-					stroke="${strokeSelector.value}" />
+					stroke="${strokeSelector.value}" strokeWidth="${thickness.value}"/>
 			</children>
 		</StackPane>
 	</center>
@@ -185,6 +185,9 @@
 						<Text fx:id="text19" text="Scale" />
 						<Slider blockIncrement="0.005" fx:id="slider" max="2.0"
 							min="0.5" value="1.0" />
+						<Text text="Stroke" />
+						<Slider blockIncrement="0.5" fx:id="thickness" max="20"
+							min="0.5" value="1" />
 					</children>
 				</VBox>
 				<Text GridPane.columnIndex="0" GridPane.columnSpan="2"

@@ -110,8 +110,14 @@ public class SVGCreator extends Application {
     }
 
 	public void onActionRelative() {
-        String relative = svgChanger.convertToRelative();
-        contentField.setText(relative);
+
+		double scale = slider.getValue();
+		svgChanger.setScale(1 / lastScale);
+		contentField.setText(svgChanger.convertToRelative());
+		svgChanger.setScale(scale);
+		contentField.setText(svgChanger.convertToRelative());
+		lastScale = scale;
+		// M108 40  L 150.0 140.0  H 130.0  L 115.0 110.0  H 85.0  L 70.0 140.0  H 60.0 Z  M 100.0 75.0   L 112.0 103.0  H 87.0  Z 
     }
 
     @SuppressWarnings("unused")
@@ -128,6 +134,7 @@ public class SVGCreator extends Application {
         setContent(path.getContent());
         svgChanger.convertToRelative();
         width.setText(String.format("Width%n%.0f", svgChanger.getWidth()));
+
         height.setText(String.format("Height%n%.0f", svgChanger.getHeight()));
     }
 
@@ -161,7 +168,12 @@ public class SVGCreator extends Application {
         contentField.setText(svgChanger.convertToRelative());
         svgChanger.setScale(scale);
         contentField.setText(svgChanger.convertToRelative());
-        lastScale = scale;
+		Image image2 = image.getImage();
+		if (image2 != null) {
+			image.setFitWidth(image2.getWidth() * scale);
+			image.setFitHeight(image2.getHeight() * scale);
+		}
+		lastScale = scale;
     }
 
     public static void main(final String[] args) {
