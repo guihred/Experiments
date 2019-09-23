@@ -171,7 +171,6 @@ public class SVGCreator extends Application {
 		Image image2 = image.getImage();
 		if (image2 != null) {
 			image.setFitWidth(image2.getWidth() * scale);
-			image.setFitHeight(image2.getHeight() * scale);
 		}
 		lastScale = scale;
     }

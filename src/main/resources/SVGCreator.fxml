@@ -20,7 +20,7 @@
 		<StackPane fx:id="stack" alignment="TOP_LEFT" prefHeight="500.0"
 			prefWidth="500.0">
 			<children>
-				<ImageView fx:id="image" managed="false" />
+				<ImageView fx:id="image" managed="false" preserveRatio="true"/>
 				<SVGPath fx:id="path" content="M0,0" fill="${fillSelector.value}"
 					fillRule="${fillRule.selectionModel.selectedItem}" managed="false"
 					stroke="${strokeSelector.value}" strokeWidth="${thickness.value}"/>
