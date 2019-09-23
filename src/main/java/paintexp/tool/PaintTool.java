@@ -103,7 +103,18 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    protected static void copyImagePart(Image srcImage, WritableImage destImage, Bounds bounds) {
+    public static boolean isEqualImage(WritableImage image, WritableImage image2) {
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				if (image.getPixelReader().getArgb(i, j) != image2.getPixelReader().getArgb(i, j)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	protected static void copyImagePart(Image srcImage, WritableImage destImage, Bounds bounds) {
         int x = (int) bounds.getMinX();
         int y = (int) bounds.getMinY();
         double width = bounds.getWidth();

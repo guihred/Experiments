@@ -4,10 +4,7 @@ import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import paintexp.tool.PaintModel;
-import paintexp.tool.PaintTools;
-import paintexp.tool.RectBuilder;
-import paintexp.tool.SelectRectTool;
+import paintexp.tool.*;
 import utils.PixelatedImageView;
 import utils.ZoomableScrollPane;
 
@@ -51,7 +48,7 @@ public final class PaintEditUtils {
             double hvalue = scrollPane.getHvalue();
             double vvalue = scrollPane.getVvalue();
             WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
-			if (!imageVersions.isEmpty() && SimplePixelReader.isEqualImage(paintModel.getImage(), writableImage)) {
+			if (!imageVersions.isEmpty() && PaintTool.isEqualImage(paintModel.getImage(), writableImage)) {
 				writableImage = imageVersions.remove(imageVersions.size() - 1);
 			}
             paintModel.getImageStack().getChildren().clear();

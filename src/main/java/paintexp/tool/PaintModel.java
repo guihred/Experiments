@@ -15,7 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import paintexp.SimplePixelReader;
 import utils.DrawOnPoint;
 import utils.PixelatedImageView;
 import utils.ZoomableScrollPane;
@@ -66,7 +65,7 @@ public class PaintModel {
 
 		WritableImage e = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
 		if (imageVersions.isEmpty()
-				|| !SimplePixelReader.isEqualImage(e, imageVersions.get(imageVersions.size() - 1))) {
+				|| !PaintTool.isEqualImage(e, imageVersions.get(imageVersions.size() - 1))) {
 			imageVersions.add(e);
 		}
         if (imageVersions.size() > MAX_VERSIONS) {

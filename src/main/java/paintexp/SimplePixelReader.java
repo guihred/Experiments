@@ -92,17 +92,6 @@ public final class SimplePixelReader implements PixelReader {
 		onlyColor = color;
 	}
 
-	public static boolean isEqualImage(WritableImage image, WritableImage image2) {
-		for (int i = 0; i < image.getWidth(); i++) {
-			for (int j = 0; j < image.getHeight(); j++) {
-				if (image.getPixelReader().getArgb(i, j) != image2.getPixelReader().getArgb(i, j)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	public static void paintColor(WritableImage image, Color backColor) {
 		PixelReader reader = new SimplePixelReader(backColor);
 		image.getPixelWriter().setPixels(0, 0, (int) image.getWidth(), (int) image.getHeight(), reader, 0, 0);
