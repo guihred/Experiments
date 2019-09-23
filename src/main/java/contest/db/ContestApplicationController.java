@@ -86,7 +86,7 @@ public class ContestApplicationController {
             }
             ContestQuestion contestQuestion = contestQuestions.getListQuestions().get(cur);
             question.setText(contestQuestion.getExercise());
-            ContestApplicationController.extracted(options, contestQuestion);
+            ContestApplicationController.changeOptions(options, contestQuestion);
         });
         current.set(0);
     }
@@ -110,7 +110,7 @@ public class ContestApplicationController {
         current.set(0);
     }
 
-    static void extracted(ListView<ContestQuestionAnswer> options, ContestQuestion contestQuestion) {
+    static void changeOptions(ListView<ContestQuestionAnswer> options, ContestQuestion contestQuestion) {
         ObservableList<ContestQuestionAnswer> items = options.getItems();
         for (int i = 0; i < contestQuestion.getOptions().size(); i++) {
             if (i < 0 || i >= items.size()) {

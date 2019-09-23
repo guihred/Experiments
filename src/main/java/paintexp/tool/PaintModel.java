@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import others.PixelatedImageView;
 import paintexp.SimplePixelReader;
 import utils.DrawOnPoint;
 import utils.ZoomableScrollPane;
@@ -45,7 +46,7 @@ public class PaintModel {
         double hvalue = parent.getHvalue();
         double vvalue = parent.getVvalue();
         getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(getImage());
+		ImageView imageView = new PixelatedImageView(getImage());
         getImageStack().getChildren().add(getRectangleBorder(imageView));
         getImageStack().getChildren().add(imageView);
         parent.setHvalue(hvalue);
@@ -107,7 +108,7 @@ public class PaintModel {
 
     public Group getImageStack() {
         if (imageStack == null) {
-            ImageView imageView = new ImageView(getImage());
+			ImageView imageView = new PixelatedImageView(getImage());
             imageView.setLayoutX(0);
             imageView.setLayoutY(0);
             imageView.setManaged(false);
@@ -205,7 +206,7 @@ public class PaintModel {
             selectTool.setImageSelected(writableImage);
         } else {
             getImageStack().getChildren().clear();
-            ImageView imageView = new ImageView(writableImage);
+			ImageView imageView = new PixelatedImageView(writableImage);
             setImage(writableImage);
             getImageStack().getChildren().add(getRectangleBorder(imageView));
             getImageStack().getChildren().add(imageView);

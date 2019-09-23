@@ -20,6 +20,11 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 	public T build() {
 		return node;
 	}
+	public Z cache(final boolean value) {
+    	node.setCache(value);
+    	return (Z) this;
+    }
+
 	public Z cursor(final Cursor hand) {
 		node.setCursor(hand);
 		return (Z) this;
@@ -29,12 +34,12 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 		node.setEffect(value);
 		return (Z) this;
 	}
-
 	public Z id(final String id) {
 		node.setId(id);
 		return (Z) this;
 	}
-	public Z layoutX(final double value) {
+
+    public Z layoutX(final double value) {
 		node.setLayoutX(value);
 		return (Z) this;
 	}
@@ -44,7 +49,7 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
         return (Z) this;
     }
 
-    public Z managed(final boolean value) {
+	public Z managed(final boolean value) {
         node.setManaged(value);
         return (Z) this;
     }
@@ -59,12 +64,12 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 		return (Z) this;
 	}
 
-	public Z onMousePressed(final EventHandler<? super MouseEvent> object) {
+    public Z onMousePressed(final EventHandler<? super MouseEvent> object) {
 		node.setOnMousePressed(object);
 		return (Z) this;
 	}
 
-    public Z onMouseReleased(final EventHandler<? super MouseEvent> value) {
+	public Z onMouseReleased(final EventHandler<? super MouseEvent> value) {
 		node.setOnMouseReleased(value);
 		return (Z) this;
 	}
@@ -99,25 +104,26 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 		return (Z) this;
 	}
 
+
+
 	public Z translateX(final double value) {
 		node.setTranslateX(value);
 		return (Z) this;
 	}
-
-
 
 	public Z translateY(final double value) {
 		node.setTranslateY(value);
 		return (Z) this;
 	}
 
-	public Z translateZ(final double value) {
+    public Z translateZ(final double value) {
 		node.setTranslateZ(value);
 		return (Z) this;
 	}
 
-    public Z visible(final boolean value) {
-        node.setVisible(value);
-        return (Z) this;
-    }
+	public Z visible(final boolean value) {
+		node.setVisible(value);
+		return (Z) this;
+	}
+
 }

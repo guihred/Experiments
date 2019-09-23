@@ -200,6 +200,26 @@ public class SelectRectTool extends PaintTool {
 		selectArea(0, 0, (int) srcImage.getWidth(), (int) srcImage.getHeight(), model);
 	}
 
+	protected void dragTo(double x, double y) {
+		getArea().setLayoutX(Math.min(x, initialX));
+		getArea().setLayoutY(Math.min(y, initialY));
+		getArea().setWidth(Math.abs(x - initialX));
+		getArea().setHeight(Math.abs(y - initialY));
+	}
+
+	protected void escapeArea(PaintModel model) {
+		double hvalue = model.getScrollPane().getHvalue();
+		double vvalue = model.getScrollPane().getVvalue();
+		if (imageSelected != null) {
+			setIntoImage(model);
+		}
+		if (model.getImageStack().getChildren().contains(getArea())) {
+			model.getImageStack().getChildren().remove(getArea());
+		}
+		model.getScrollPane().setHvalue(hvalue);
+		model.getScrollPane().setVvalue(vvalue);
+	}
+
 	@Override
 	protected void onMouseDragged(MouseEvent e, PaintModel model) {
 		double x = e.getX();
@@ -318,26 +338,6 @@ public class SelectRectTool extends PaintTool {
 			children.remove(getArea());
 		}
 		model.createImageVersion();
-	}
-
-	private void dragTo(double x, double y) {
-		getArea().setLayoutX(Math.min(x, initialX));
-		getArea().setLayoutY(Math.min(y, initialY));
-		getArea().setWidth(Math.abs(x - initialX));
-		getArea().setHeight(Math.abs(y - initialY));
-	}
-
-	private void escapeArea(PaintModel model) {
-		double hvalue = model.getScrollPane().getHvalue();
-		double vvalue = model.getScrollPane().getVvalue();
-		if (imageSelected != null) {
-			setIntoImage(model);
-		}
-		if (model.getImageStack().getChildren().contains(getArea())) {
-			model.getImageStack().getChildren().remove(getArea());
-		}
-		model.getScrollPane().setHvalue(hvalue);
-		model.getScrollPane().setVvalue(vvalue);
 	}
 
 	private void onChangeOption(Toggle newV, PaintModel model) {

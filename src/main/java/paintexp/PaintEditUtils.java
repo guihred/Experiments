@@ -4,6 +4,7 @@ import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import others.PixelatedImageView;
 import paintexp.tool.PaintModel;
 import paintexp.tool.PaintTools;
 import paintexp.tool.RectBuilder;
@@ -54,7 +55,7 @@ public final class PaintEditUtils {
 				writableImage = imageVersions.remove(imageVersions.size() - 1);
 			}
             paintModel.getImageStack().getChildren().clear();
-            ImageView imageView = new ImageView(writableImage);
+			ImageView imageView = new PixelatedImageView(writableImage);
             paintModel.setImage(writableImage);
             paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
             paintModel.getImageStack().getChildren().add(imageView);

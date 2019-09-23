@@ -50,7 +50,7 @@
 			<VBox>
 				<children>
 					<Label text="Estoque SNGPC" textFill="0x333333ff"/>
-					<Button alignment="CENTER" fx:id="SNGPC" text="Carregar Arquivo SNGPC" textFill="0x333333ff" onAction="#carregarSNGPC"/>
+					<Button alignment="CENTER" text="Carregar Arquivo SNGPC" textFill="0x333333ff" onAction="#carregarSNGPC"/>
 					<TableView prefWidth="250.0" scaleShape="false" fx:id="medicamentosEstoqueSNGPCTable">
 						<columns>
 							<TableColumn prefWidth="50.0" text="Registro">
@@ -86,7 +86,7 @@
 			<VBox>
 				<children>
 					<Label text="Estoque Anvisa" textFill="0x333333ff"/>
-					<Button alignment="CENTER" fx:id="anvisa" text="Carregar Arquivo Anvisa" textFill="0x333333ff"  onAction="#carregarEstoqueAnvisa"/>
+					<Button alignment="CENTER" text="Carregar Arquivo Anvisa" textFill="0x333333ff"  onAction="#carregarEstoqueAnvisa"/>
 					<TableView prefWidth="250.0" scaleShape="false" fx:id="medicamentosAnvisaTable">
 						<columns>
 							<TableColumn prefWidth="50.0" text="Registro">

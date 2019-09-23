@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
+import others.PixelatedImageView;
 import paintexp.tool.PaintModel;
 import utils.HasLogging;
 
@@ -29,7 +30,7 @@ public final class PaintFileUtils {
 		paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(paintModel.getBackColor()),
 				0, 0);
 		paintModel.getImageStack().getChildren().clear();
-		ImageView imageView = new ImageView(paintModel.getImage());
+		ImageView imageView = new PixelatedImageView(paintModel.getImage());
 		paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
 		paintModel.getImageStack().getChildren().add(imageView);
 
@@ -48,7 +49,7 @@ public final class PaintFileUtils {
 				paintModel.setImage(new WritableImage(w, h));
 				paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
 				paintModel.getImageStack().getChildren().clear();
-				ImageView imageView = new ImageView(paintModel.getImage());
+				ImageView imageView = new PixelatedImageView(paintModel.getImage());
 				paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
 				paintModel.getImageStack().getChildren().add(imageView);
 				paintModel.createImageVersion();

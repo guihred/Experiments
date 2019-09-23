@@ -68,10 +68,8 @@ public class SVGCreator extends Application {
                 handleSimple(e);
             }
         }
-        if (MouseEvent.MOUSE_DRAGGED == e.getEventType() && pointStage == 0) {
-            handleSimple(e);
-        }
-        if (MouseEvent.MOUSE_MOVED == e.getEventType() && pointStage > 0) {
+		if (MouseEvent.MOUSE_DRAGGED == e.getEventType() && pointStage == 0
+				|| MouseEvent.MOUSE_MOVED == e.getEventType() && pointStage > 0) {
             handleSimple(e);
         }
         if (MouseEvent.MOUSE_RELEASED == e.getEventType()) {

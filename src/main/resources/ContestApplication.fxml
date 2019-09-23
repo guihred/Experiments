@@ -7,13 +7,10 @@
 <?import contest.db.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.layout.*?>
-<SplitPane xmlns:fx="http://javafx.com/fxml"
-	fx:controller="contest.db.ContestApplicationController"
-	fx:id="splitPane0" styleClass="root split-pane"
-	stylesheets="@/filesComparator.css">
+<SplitPane xmlns:fx="http://javafx.com/fxml" fx:controller="contest.db.ContestApplicationController"
+	fx:id="splitPane0" styleClass="root split-pane" stylesheets="@/filesComparator.css">
 	<items>
-		<ListView fx:id="allContests"
-			onMouseClicked="#onMouseClickedListView1">
+		<ListView fx:id="allContests" onMouseClicked="#onMouseClickedListView1">
 		</ListView>
 		<ScrollPane fx:id="scrollPane2">
 			<content>
@@ -25,8 +22,7 @@
 				<VBox>
 					<children>
 						<Text fx:id="question" />
-						<Button fx:id="next" id="Next" onAction="#onActionNext"
-							text="Next" />
+						<Button onAction="#onActionNext" text="Next" />
 						<ListView fx:id="options" prefWidth="200.0">
 						</ListView>
 					</children>

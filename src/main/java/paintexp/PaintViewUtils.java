@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import others.PixelatedImageView;
 import paintexp.tool.PaintModel;
 import paintexp.tool.SelectRectTool;
 import simplebuilder.SimpleButtonBuilder;
@@ -34,7 +35,7 @@ public final class PaintViewUtils {
     public static void crop(PaintModel paintModel, WritableImage image) {
 
         paintModel.getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(image);
+		ImageView imageView = new PixelatedImageView(image);
         SelectRectTool tool = paintModel.getCurrentSelectTool();
         tool.setImageSelected(null);
         paintModel.setImage(image);
