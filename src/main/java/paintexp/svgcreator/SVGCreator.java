@@ -4,12 +4,15 @@ import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -18,6 +21,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleSliderBuilder;
 import utils.CommonsFX;
+import utils.ResourceFXUtils;
+import utils.StageHelper;
 
 public class SVGCreator extends Application {
 
@@ -34,6 +39,8 @@ public class SVGCreator extends Application {
     @FXML
     private ToggleGroup toggleGroup1;
     @FXML
+	private ImageView image;
+	@FXML
     private StackPane stack;
 
     private int pointStage;
@@ -96,7 +103,13 @@ public class SVGCreator extends Application {
         }));
     }
 
-    public void onActionRelative() {
+    public void onActionBackground(ActionEvent event) {
+		StageHelper
+				.fileAction("Imagem", f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())),
+				"Imagens", "*.jpg", "*.png", "*.bmp", "*.jpg").handle(event);
+    }
+
+	public void onActionRelative() {
         String relative = svgChanger.convertToRelative();
         contentField.setText(relative);
     }

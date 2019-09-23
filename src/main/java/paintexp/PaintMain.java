@@ -99,6 +99,7 @@ public class PaintMain extends Application {
         toolbar.add(child, 0, paintTools.size(), 2, 2);
         toolbar.getChildren().forEach(e -> GridPane.setHalignment(e, HPos.CENTER));
         root.setLeft(toolbar);
+		root.setRight(displayImageVersions(paintModel));
         stage.setX(0);
         stage.setTitle("Paint");
         final int width = 800;
@@ -107,7 +108,6 @@ public class PaintMain extends Application {
         stage.setScene(scene);
         stage.show();
 
-        root.setRight(displayImageVersions(paintModel));
     }
 
 

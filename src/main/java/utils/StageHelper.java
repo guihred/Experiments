@@ -42,8 +42,7 @@ public final class StageHelper {
     }
     public static Button chooseFile(String nome, String title, ConsumerEx<File> onSelect, String filter,
         String... extensions) {
-        final String nome1 = nome;
-        return newButton(nome1, fileAction(title, onSelect, filter, extensions));
+        return newButton(nome, fileAction(title, onSelect, filter, extensions));
     }
 
     public static void closeStage(EventTarget button) {
