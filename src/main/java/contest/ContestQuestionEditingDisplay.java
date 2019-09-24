@@ -1,9 +1,12 @@
-package contest.db;
+package contest;
 
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.StringSigaUtils.intValue;
 
+import contest.db.ContestQuestion;
+import contest.db.ContestQuestionAnswer;
+import contest.db.ContestText;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package contest.db;
+package contest;
 
 import java.util.List;
 import java.util.Map;

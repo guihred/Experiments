@@ -1,8 +1,8 @@
 package fxtests;
 
-import contest.db.ContestReader;
-import contest.db.IadesCrawler;
-import contest.db.IadesHelper;
+import contest.ContestReader;
+import contest.IadesCrawler;
+import contest.IadesHelper;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;

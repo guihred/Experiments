@@ -1,7 +1,10 @@
-package contest.db;
+package contest;
 
 import static java.util.stream.Collectors.toList;
 
+import contest.db.Contest;
+import contest.db.ContestQuestion;
+import contest.db.ContestText;
 import java.util.List;
 import utils.BaseDAO;
 import utils.BaseEntity;

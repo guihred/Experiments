@@ -1,7 +1,10 @@
-package contest.db;
+package contest;
 
 import static simplebuilder.SimpleListViewBuilder.newCellFactory;
 
+import contest.db.ContestQuestion;
+import contest.db.ContestQuestionAnswer;
+import contest.db.ContestText;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

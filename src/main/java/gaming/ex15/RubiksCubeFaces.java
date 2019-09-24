@@ -1,5 +1,7 @@
 package gaming.ex15;
 
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Point3D;
 import javafx.scene.transform.Rotate;
 
@@ -14,8 +16,7 @@ enum RubiksCubeFaces {
 	private final Point3D axis;
 	private final RubiksSetFaceFunction set;
 
-
-    RubiksCubeFaces(RubiksGetFaceFunction get, RubiksSetFaceFunction set, Point3D axis) {
+	RubiksCubeFaces(RubiksGetFaceFunction get, RubiksSetFaceFunction set, Point3D axis) {
 		getFunc = get;
 		this.set = set;
 		this.axis = axis;
@@ -29,9 +30,18 @@ enum RubiksCubeFaces {
 		return axis;
 	}
 
-
 	public RubiksGetFaceFunction getFunc() {
 		return getFunc;
+	}
+
+	public void rotate(RubiksPiece e, DoubleProperty angle, boolean clockwise) {
+		Rotate rotate = e.getRotations().get(getAxis());
+		double angle2 = Math.ceil((rotate.getAngle() + 360) % 360 / 90) * 90;
+		DoubleBinding add = clockwise ^ (this == RubiksCubeFaces.BACK || this == RubiksCubeFaces.FRONT)
+				? angle.add(angle2)
+				: angle.multiply(-1).add(angle2);
+		rotate.angleProperty().bind(add);
+
 	}
 
 	public void set(RubiksPiece[][][] cube, int i, int j, RubiksPiece newPiece) {

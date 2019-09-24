@@ -1,5 +1,9 @@
 package fxtests;
 
+import static utils.PredicateEx.makeTest;
+
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -72,7 +76,22 @@ public final class FXTesting implements HasLogging {
         }
     }
 
-    public static void measureTime(String name, RunnableEx runnable) {
+    @SuppressWarnings("unchecked")
+	public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {
+	    List<Class<? extends T>> appClass = new ArrayList<>();
+	    List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
+	    try {
+	        ClassPath.from(FXMLCreatorTest.class.getClassLoader()).getTopLevelClasses().stream()
+	            .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
+	            .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
+	            .map(e -> (Class<? extends T>) e).forEach(appClass::add);
+	    } catch (Exception e) {
+	        FXMLCreatorTest.LOG.error("", e);
+	    }
+	    return appClass;
+	}
+
+	public static void measureTime(String name, RunnableEx runnable) {
         long currentTimeMillis = System.currentTimeMillis();
         Logger log = HasLogging.log(1);
         try {
@@ -120,6 +139,10 @@ public final class FXTesting implements HasLogging {
     public static void testApps(Class<? extends Application>... applicationClasses) {
         new FXTesting().testApplications(Arrays.asList(applicationClasses));
     }
+
+	public static void testApps(List<Class<? extends Application>> applicationClasses) {
+		new FXTesting().testApplications(applicationClasses);
+	}
 
     @SafeVarargs
     public static void verifyAndRun(ApplicationTest app, Stage currentStage, Runnable consumer,

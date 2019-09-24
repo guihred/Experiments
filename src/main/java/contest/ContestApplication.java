@@ -1,4 +1,4 @@
-package contest.db;
+package contest;
 
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.SupplierEx.get;

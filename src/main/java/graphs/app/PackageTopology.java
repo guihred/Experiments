@@ -57,7 +57,8 @@ public class PackageTopology extends BaseTopology {
             map.forEach((dep, weight) -> graph.getModel().addEdge(cellId, dep, weight.intValue()));
         }
         graph.endUpdate();
-        LayerLayout.layoutInLayers(graph.getModel().getAllCells(), graph.getModel().getAllEdges());
+		LayerLayout.layoutInLayers(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
+				graph.getScrollPane().getViewportBounds().getWidth());
         return javaFiles;
     }
 

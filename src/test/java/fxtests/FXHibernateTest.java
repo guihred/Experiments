@@ -2,8 +2,8 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
-import contest.db.ContestApplication;
-import contest.db.ContestQuestionEditingDisplay;
+import contest.ContestApplication;
+import contest.ContestQuestionEditingDisplay;
 import election.*;
 import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;

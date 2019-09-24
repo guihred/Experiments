@@ -1,9 +1,9 @@
 
-package contest.db;
+package contest;
 
-import static contest.db.IadesHelper.addDomain;
-import static contest.db.IadesHelper.extractURL;
-import static contest.db.IadesHelper.saveContestValues;
+import static contest.IadesHelper.addDomain;
+import static contest.IadesHelper.extractURL;
+import static contest.IadesHelper.saveContestValues;
 
 import java.net.URL;
 import java.util.*;

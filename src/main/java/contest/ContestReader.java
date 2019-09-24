@@ -1,10 +1,11 @@
-package contest.db;
+package contest;
 
 import static contest.db.ContestQuestion.QUESTION_PATTERN;
 import static contest.db.ContestText.TEXTS_PATTERN;
 import static utils.StringSigaUtils.intValue;
 import static utils.StringSigaUtils.removeNotPrintable;
 
+import contest.db.*;
 import extract.PdfImage;
 import extract.PdfUtils;
 import java.io.File;

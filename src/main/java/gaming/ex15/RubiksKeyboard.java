@@ -17,9 +17,9 @@ public class RubiksKeyboard implements EventHandler<KeyEvent> {
 	 */
 	private PerspectiveCamera camera;
 	private final EnumSet<KeyCode> enumSet = EnumSet.noneOf(KeyCode.class);
-	private RubiksCubeLauncher rubiksCubeLauncher;
+	private RubiksModel rubiksCubeLauncher;
 
-	public RubiksKeyboard(PerspectiveCamera camera, RubiksCubeLauncher rubiksCubeLauncher) {
+	public RubiksKeyboard(PerspectiveCamera camera, RubiksModel rubiksCubeLauncher) {
 		this.camera = camera;
 		this.rubiksCubeLauncher = rubiksCubeLauncher;
 	}

@@ -5,9 +5,12 @@ import graphs.entities.Edge;
 import graphs.entities.GraphModelAlgorithms;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import utils.HasLogging;
 
 public class LayerSplitter {
-    private final List<Cell> cells;
+	private static final Logger LOG = HasLogging.log();
+	private final List<Cell> cells;
     private final List<Edge> edges;
     private Set<Cell> stack = new LinkedHashSet<>();
     private Set<Cell> marked = new LinkedHashSet<>();
@@ -68,6 +71,7 @@ public class LayerSplitter {
             if (stack.contains(edge.getTarget())) {
                 edges.remove(edge);
                 edge.setSelected(true);
+				LOG.info("{} goes back", edge);
             } else if (!marked.contains(edge.getTarget())) {
                 dfsRemove(edge.getTarget());
             }

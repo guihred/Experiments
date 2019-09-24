@@ -21,7 +21,7 @@ public class CircleLayout extends Layout {
     }
 
     public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges) {
-        generateCircle(cells, allEdges, 0, 0, 0, 1);
+		generateCircle(cells, allEdges, 0, 0, 0, 2);
     }
 
     public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges, double centerX, double centerY,

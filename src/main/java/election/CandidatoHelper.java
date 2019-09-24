@@ -48,7 +48,8 @@ public final class CandidatoHelper {
 
     public static List<String> getRelevantFields() {
         return ClassReflectionUtils.getFields(Candidato.class).stream()
-            .filter(e -> candidatoDAO.distinctNumber(e) < RELEVANT_FIELD_THRESHOLD).collect(Collectors.toList());
+				.filter(e -> !e.equals("cidade")).filter(e -> candidatoDAO.distinctNumber(e) < RELEVANT_FIELD_THRESHOLD)
+				.collect(Collectors.toList());
     }
     public static void onChangeElement(ObservableMap<String, Set<String>> fieldMap, Map<String, CheckBox> portChecks,
         TreeItem<String> newValue) {

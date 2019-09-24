@@ -22,7 +22,7 @@ public class ConcentricLayout extends Layout {
         graph.clean();
         List<Cell> cells = model.getAllCells();
         List<Edge> allEdges = model.getAllEdges();
-        double w = graph.getScrollPane().getWidth() / 2;
+		double w = graph.getScrollPane().getViewportBounds().getWidth() / 2;
         layoutConcentric(cells, allEdges, w);
     }
 
@@ -36,20 +36,23 @@ public class ConcentricLayout extends Layout {
             .map(i -> cellsGroups.get(i).size() - cellsGroups.get(cellsGroups.size() - i - 1).size()).sum();
         boolean invert = count > 0;
 
-        double maxHeight = Math.max(center / cellsGroups.size(),
-            cellsGroups.stream().flatMap(List<Cell>::stream).mapToDouble(Cell::getHeight).max().orElse(20));
+        double orElse = cellsGroups.stream().flatMap(List<Cell>::stream).mapToDouble(Cell::getHeight).max().orElse(20);
+		int size = cellsGroups.stream().mapToInt(List<Cell>::size).max().orElse(cellsGroups.size());
+		int index = IntStream.range(0, cellsGroups.size()).filter(i -> cellsGroups.get(i).size() == size).findFirst()
+				.orElse(0)
+				+ 1;
+		double maxHeight = Math.max(center / cellsGroups.size(), orElse / index) / 2;
         for (int i = 0; i < cellsGroups.size(); i++) {
             List<Cell> list = cellsGroups.get(i);
             final double d = 180 - 180. / cells.size();
             int mul = invert ? cellsGroups.size() - i : i;
-            double bound = mul == 1 && list.size() == 1 ? 0
-                : getRadius(maxHeight, list, mul);
+			double bound = mul == 1 && list.size() == 1 ? 0 : getRadius(maxHeight, size, mul);
             CircleLayout.generateCircle(list, allEdges, center, center, d / list.size() * i, bound);
         }
     }
 
-    private static double getRadius(double orElse, List<Cell> list, int mul) {
-        return mul * orElse / (list.size() <= 2 ? 1 : Math.tan(Math.PI * 2 / list.size()));
+	private static double getRadius(double orElse, int size, int mul) {
+		return mul * orElse / (size <= 2 ? 1 : Math.tan(Math.PI * 2 / size));
     }
 
 }

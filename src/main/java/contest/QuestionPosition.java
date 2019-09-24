@@ -1,4 +1,4 @@
-package contest.db;
+package contest;
 
 import utils.HasImage;
 

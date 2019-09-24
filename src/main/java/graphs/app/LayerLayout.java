@@ -4,14 +4,16 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
-import graphs.entities.*;
+import graphs.entities.Cell;
+import graphs.entities.Edge;
+import graphs.entities.Graph;
+import graphs.entities.GraphModel;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javafx.beans.NamedArg;
-import javafx.scene.paint.Color;
 
 public class LayerLayout extends Layout {
 
@@ -26,8 +28,8 @@ public class LayerLayout extends Layout {
         GraphModel model = graph.getModel();
         graph.clean();
 		List<Cell> cells = model.getAllCells();
-
-        layoutInLayers(cells, model.getAllEdges());
+		double w = graph.getScrollPane().getViewportBounds().getWidth() / 2;
+		layoutInLayers(cells, model.getAllEdges(), w);
 
     }
 
@@ -62,32 +64,34 @@ public class LayerLayout extends Layout {
         });
     }
 
-    public static void layoutInLayers(List<Cell> cells, List<Edge> addedEdges) {
+	public static void layoutInLayers(List<Cell> cells, List<Edge> addedEdges, double center) {
 
         List<List<Cell>> orderedCellGroups = LayerSplitter.getLayers(cells, addedEdges);
         final double bound = orderedCellGroups.stream()
             .mapToDouble(l -> l.stream().mapToDouble(Cell::getHeight).max().orElse(0)).sum();
-        final int f = 400;
-        double sum2 = orderedCellGroups.stream().mapToDouble(l -> l.stream().mapToDouble(Cell::getWidth).sum()).max()
-            .orElse(0) + f;
+		double sumWidth = orderedCellGroups.stream().mapToDouble(l -> l.stream().mapToDouble(Cell::getWidth).sum())
+				.max()
+            .orElse(0);
+		double sum2 = Math.max(sumWidth, center);
         double layerHeight = bound / (orderedCellGroups.size() + 1) + 50;
         double y = layerHeight;
-        for (List<Cell> list : orderedCellGroups) {
-            double sum = list.stream().mapToDouble(Cell::getWidth).sum();
+		for (int j = 0; j < orderedCellGroups.size(); j++) {
+			List<Cell> list = orderedCellGroups.get(j);
+			double sum = list.stream().mapToDouble(Cell::getWidth).sum();
             double xStep = 5;
             double x = sum2 / 2 - sum / 2;
+
             for (int i = 0; i < list.size(); i++) {
                 Cell cell = list.get(i);
-                cell.relocate(x, y);
+				if (list.size() == 1) {
+					x += cell.getWidth() / 4 * (j % 2 == 0 ? 1 : -1);
+				}
+				cell.relocate(x, y);
 
                 x += cell.getWidth() + xStep;
             }
             y += layerHeight;
-        }
-    }
-
-    public static long numberOfEdges(Entry<Color, List<Cell>> e, List<Edge> allEdges) {
-        return e.getValue().stream().mapToLong(c -> GraphModelAlgorithms.edgesNumber(c, allEdges)).sum();
+		}
     }
 
 }
