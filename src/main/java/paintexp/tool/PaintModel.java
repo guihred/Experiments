@@ -177,8 +177,6 @@ public class PaintModel {
         this.mousePosition = mousePosition;
     }
 
-
-
     public void setToolSize(final Text toolSize) {
         this.toolSize = toolSize;
     }

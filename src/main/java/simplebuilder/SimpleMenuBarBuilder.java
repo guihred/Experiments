@@ -64,6 +64,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 	public SimpleMenuBarBuilder addMenuItem(final String text, final EventHandler<ActionEvent> action,
 			final ObservableValue<? extends Boolean> disabled) {
 		MenuItem item = new MenuItem(text);
+		item.setId(text);
 		item.setOnAction(action);
 		if (subMenu != null) {
 			subMenu.getItems().add(item);
@@ -91,6 +92,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
     public SimpleMenuBarBuilder addMenuItem(final String text, final String combination,
         final EventHandler<ActionEvent> action) {
         MenuItem item = new MenuItem(text);
+		item.setId(text);
         item.setOnAction(action);
         item.setAccelerator(KeyCombination.keyCombination(combination));
         if (subMenu != null) {
@@ -104,6 +106,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
     public SimpleMenuBarBuilder addMenuItem(final String text, final String combination,
 			final EventHandler<ActionEvent> action, final ObservableValue<? extends Boolean> disabled) {
 		MenuItem item = new MenuItem(text);
+		item.setId(text);
 		item.setOnAction(action);
 		item.setAccelerator(KeyCombination.keyCombination(combination));
 		if (subMenu != null) {
@@ -115,17 +118,6 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 		return this;
 	}
 
-	public SimpleMenuBarBuilder addMenuItem(final String text, final String combination, final Runnable action) {
-        MenuItem item = new MenuItem(text);
-        item.setOnAction(e -> action.run());
-        item.setAccelerator(KeyCombination.keyCombination(combination));
-        if (subMenu != null) {
-            subMenu.getItems().add(item);
-        } else {
-            menu.getItems().add(item);
-        }
-        return this;
-    }
 
     public SimpleMenuBarBuilder addRadioMenuItem(final String text) {
 
