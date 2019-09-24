@@ -10,7 +10,7 @@ public class DataframeStatisticAccumulator {
     /**
      * 
      */
-    private final DataframeML dataframe;
+	private final Map<String, List<Object>> dataframe;
     private int count;
     private double sum;
     private double min = Double.MAX_VALUE;
@@ -18,11 +18,15 @@ public class DataframeStatisticAccumulator {
     private String header;
     private Map<String, Integer> countMap = new LinkedHashMap<>();
     private Class<? extends Comparable<?>> format;
+	private Map<String, Class<? extends Comparable<?>>> formatMap;
 
-    public DataframeStatisticAccumulator(DataframeML dataframeML, String header) {
-        dataframe = dataframeML;
-        this.header = header;
-        format = dataframe.getFormat(header);
+
+	public DataframeStatisticAccumulator(Map<String, List<Object>> dataframe,
+			Map<String, Class<? extends Comparable<?>>> formatMap, String header) {
+		this.dataframe = dataframe;
+		this.formatMap = formatMap;
+		format = formatMap.get(header);
+		this.header = header;
     }
 
     public DataframeStatisticAccumulator accept(Object o) {
@@ -49,17 +53,17 @@ public class DataframeStatisticAccumulator {
     }
 
     public double getCorrelation(String other) {
-        if (format == String.class || dataframe.getFormat(other) == String.class) {
+		if (format == String.class || formatMap.get(other) == String.class) {
             return 0;
         }
 
         double mean = sum / count;
-        List<Object> variable = dataframe.list(header);
+		List<Object> variable = dataframe.get(header);
         double sum1 = variable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).map(e -> e - mean)
             .map(e -> e * e).sum();
         double st1 = Math.sqrt(sum1 / (count - 1));
 
-        List<Object> otherVariable = dataframe.list(other);
+		List<Object> otherVariable = dataframe.get(other);
         double mean2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).average()
             .getAsDouble();
         double sum2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
@@ -102,7 +106,7 @@ public class DataframeStatisticAccumulator {
             }
             return null;
         }
-        List<Double> sortedNumber = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
+		List<Double> sortedNumber = dataframe.get(header).stream().filter(Objects::nonNull).map(Number.class::cast)
             .map(Number::doubleValue).sorted().collect(Collectors.toList());
         if (sortedNumber.isEmpty()) {
             return 0;
@@ -119,7 +123,7 @@ public class DataframeStatisticAccumulator {
             }
             return null;
         }
-        List<Double> numbersList = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
+		List<Double> numbersList = dataframe.get(header).stream().filter(Objects::nonNull).map(Number.class::cast)
             .map(Number::doubleValue).sorted().collect(Collectors.toList());
         if (numbersList.isEmpty()) {
             return 0;
@@ -136,7 +140,7 @@ public class DataframeStatisticAccumulator {
             }
             return null;
         }
-        List<Double> numbers = dataframe.list(header).stream().filter(Objects::nonNull).map(Number.class::cast)
+		List<Double> numbers = dataframe.get(header).stream().filter(Objects::nonNull).map(Number.class::cast)
             .map(Number::doubleValue).sorted().collect(Collectors.toList());
         if (numbers.isEmpty()) {
             return 0;
@@ -160,7 +164,7 @@ public class DataframeStatisticAccumulator {
         }
 
         double mean = sum / count;
-        double sum2 = dataframe.list(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
+		double sum2 = dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
             .map(e -> e - mean).map(e -> e * e).sum();
         return Math.sqrt(sum2 / (count - 1));
     }
@@ -193,19 +197,20 @@ public class DataframeStatisticAccumulator {
         max = countMap.values().stream().mapToDouble(e -> e).max().orElse(max);
     }
 
-    public static List<Entry<Number, Number>> createNumberEntries(DataframeML dataframe, String feature,
-        String target) {
-        List<Object> list = dataframe.dataframe.get(feature);
-        List<Object> list2 = dataframe.dataframe.get(target);
+	public static List<Entry<Number, Number>> createNumberEntries(Map<String, List<Object>> dataframe2, int size,
+			String feature, String target) {
+
+		List<Object> list = dataframe2.get(feature);
+        List<Object> list2 = dataframe2.get(target);
         List<Entry<Number, Number>> data = new ArrayList<>();
-        IntStream.range(0, dataframe.size).filter(i -> i < list.size() && i < list2.size())
+		IntStream.range(0, size).filter(i -> i < list.size() && i < list2.size())
             .filter(i -> list.get(i) != null && list2.get(i) != null)
             .forEach(i -> data.add(new AbstractMap.SimpleEntry<>((Number) list.get(i), (Number) list2.get(i))));
         return data;
     }
 
-    public static Map<Double, Long> histogram(DataframeML dataframeML, String header, int bins) {
-        List<Object> list = dataframeML.dataframe.get(header);
+	public static Map<Double, Long> histogram(Map<String, List<Object>> dataframe, String header, int bins) {
+		List<Object> list = dataframe.get(header);
         List<Double> columnList = list.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).boxed()
             .collect(Collectors.toList());
         DoubleSummaryStatistics summaryStatistics = columnList.stream().mapToDouble(e -> e).summaryStatistics();

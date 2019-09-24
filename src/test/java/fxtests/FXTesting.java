@@ -81,12 +81,12 @@ public final class FXTesting implements HasLogging {
 	    List<Class<? extends T>> appClass = new ArrayList<>();
 	    List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
 	    try {
-	        ClassPath.from(FXMLCreatorTest.class.getClassLoader()).getTopLevelClasses().stream()
+			ClassPath.from(FXTesting.class.getClassLoader()).getTopLevelClasses().stream()
 	            .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
 	            .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
 	            .map(e -> (Class<? extends T>) e).forEach(appClass::add);
 	    } catch (Exception e) {
-	        FXMLCreatorTest.LOG.error("", e);
+			HasLogging.log().error("", e);
 	    }
 	    return appClass;
 	}

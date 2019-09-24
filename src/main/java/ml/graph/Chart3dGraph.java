@@ -18,7 +18,9 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
+import ml.data.DataframeUtils;
 import org.slf4j.Logger;
 import utils.Axis;
 import utils.HasLogging;
@@ -187,16 +189,17 @@ public class Chart3dGraph extends Application {
     }
 
     private static float[][] createPlane(int size1) {
-        DataframeML dataframeML = new DataframeML("california_housing_train.csv");
+		DataframeML dataframeML = DataframeBuilder.build("california_housing_train.csv");
         DoubleSummaryStatistics lat = dataframeML.summary("latitude");
         DoubleSummaryStatistics lon = dataframeML.summary("longitude");
         DoubleSummaryStatistics pop = dataframeML.summary("population");
         int total = dataframeML.getSize();
-        List<Double> xLatitude = dataframeML.crossFeature("x",
+		List<Double> xLatitude = DataframeUtils.crossFeature(dataframeML, "x",
             d -> convert(d[0], size1 - 1., lat.getMax(), lat.getMin()), "latitude");
-        List<Double> yLongitude = dataframeML.crossFeature("y",
+		List<Double> yLongitude = DataframeUtils.crossFeature(dataframeML, "y",
             d -> convert(d[0], size1 - 1., lon.getMax(), lon.getMin()), "longitude");
-        List<Double> z = dataframeML.crossFeature("z", d -> -convert(d[0], 5, pop.getMax(), 0), "population");
+		List<Double> z = DataframeUtils.crossFeature(dataframeML, "z", d -> -convert(d[0], 5, pop.getMax(), 0),
+				"population");
 
         float[][] noiseArray = new float[size1][size1];
         for (int i = 0; i < total; i++) {

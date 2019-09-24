@@ -16,7 +16,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
+import ml.data.DataframeUtils;
 import ml.graph.PointGraph;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
@@ -33,8 +35,8 @@ public class PointsExample extends Application {
 		theStage.setScene(theScene);
 
         PointGraph canvas = new PointGraph();
-        DataframeML x = new DataframeML("california_housing_train.csv");
-        x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
+		DataframeML x = DataframeBuilder.build("california_housing_train.csv");
+		DataframeUtils.crossFeature(x, "rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         VBox vBox = new VBox();
         vBox.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
         vBox.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));

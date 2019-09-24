@@ -8,12 +8,13 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 
 public class RegressionChartExample extends Application {
     @Override
     public void start(Stage primaryStage) {
-        DataframeML x = new DataframeML("california_housing_train.csv");
+		DataframeML x = DataframeBuilder.build("california_housing_train.csv");
         RegressionModel regressionModel = new RegressionModel();
 
         ObservableList<Series<Number, Number>> data = regressionModel

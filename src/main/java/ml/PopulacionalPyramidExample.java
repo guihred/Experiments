@@ -15,6 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.graph.PopulacionalGraph;
 import simplebuilder.SimpleButtonBuilder;
@@ -33,7 +34,7 @@ public class PopulacionalPyramidExample extends Application {
         BorderPane root = new BorderPane();
         Predicate<String> asPredicate = Pattern.compile("MA|FE").asPredicate();
         String countryHeader = "Country";
-        DataframeML x = DataframeML.builder("POPULACAO.csv").filter("Unit", "Persons"::equals)
+        DataframeML x = DataframeBuilder.builder("POPULACAO.csv").filter("Unit", "Persons"::equals)
             .filter("SEX", e -> asPredicate.test(e.toString()))
             .filter("Subject", e -> e.toString().matches("Population.+\\d+")).addCategory(countryHeader)
             .addCategory("TIME").addMapping("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))

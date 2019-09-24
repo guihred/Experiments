@@ -8,6 +8,7 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DecisionNode;
 import ml.data.DecisionTree;
@@ -22,7 +23,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     @Test
     public void testDecisions() throws Exception {
         CatanApp newInstance = show(CatanApp.class);
-        DataframeML build = DataframeML.builder("out/catan_log.txt").build();
+        DataframeML build = DataframeBuilder.builder("out/catan_log.txt").build();
         build.removeCol("WINNER", "PLAYER");
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));

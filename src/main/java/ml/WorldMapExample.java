@@ -17,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import ml.data.CSVUtils;
 import ml.data.Country;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.graph.ColorPattern;
 import ml.graph.WorldMapGraph;
@@ -52,14 +53,14 @@ public class WorldMapExample extends Application {
             .onSelect(canvas.valueHeaderProperty()::set)
             .build();
 
-        DataframeML x = DataframeML.builder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
+        DataframeML x = DataframeBuilder.builder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
         canvas.valueHeaderProperty().set("2016");
         canvas.setDataframe(x,
             x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
 
         ComboBox<String> statisticsCombo = new SimpleComboBoxBuilder<String>()
             .items(list).onSelect(s -> {
-                DataframeML x2 = DataframeML.builder("out/" + s).build();
+                DataframeML x2 = DataframeBuilder.builder("out/" + s).build();
                 ObservableList<String> itens = x2
                     .cols().stream().filter(StringUtils::isNumeric).sorted()
                     .filter(e -> x2.list(e).stream().anyMatch(Objects::nonNull))

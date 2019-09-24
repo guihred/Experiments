@@ -2,10 +2,10 @@ package ml;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.graph.WorldMapGraph;
 import simplebuilder.SimpleButtonBuilder;
@@ -27,15 +27,14 @@ public class WorldMapExample3 extends Application {
 
         root.getChildren().add(SimpleSliderBuilder.newSlider("Labels", 1, 10, canvas.binsProperty()));
         root.getChildren().add(SimpleSliderBuilder.newSlider("Font Size", 1, 60, canvas.fontSizeProperty()));
-        DataframeML x = new DataframeML("WDICountry.csv");
+		DataframeML x = DataframeBuilder.build("WDICountry.csv");
         canvas.valueHeaderProperty().set("Currency Unit");
         canvas.setDataframe(x,
                 x.cols().stream().filter(e -> e.contains("able N")).findFirst().orElse("﻿Table Name"));
         ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(x.cols()).select("Currency Unit")
                 .onSelect(canvas.valueHeaderProperty()::set).build();
         root.getChildren().add(build);
-        final Canvas canvas1 = canvas;
-        root.getChildren().add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));
+        root.getChildren().add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas)));
         root.getChildren().add(canvas);
 		theStage.show();
 	}

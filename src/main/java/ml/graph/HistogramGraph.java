@@ -12,6 +12,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
+import ml.data.DataframeUtils;
 import utils.CommonsFX;
 
 public class HistogramGraph extends Canvas {
@@ -112,7 +113,7 @@ public class HistogramGraph extends Canvas {
         yHistogram.forEach(entryS -> {
 
             String key = entryS.getKey();
-            Map<Double, Long> histogram = dataframe.histogram(key, bins.get());
+            Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, key, bins.get());
 
             List<Entry<Double, Long>> entrySet = histogram.entrySet().stream()
                 .sorted(Comparator.comparing(Entry<Double, Long>::getKey)).collect(Collectors.toList());
@@ -151,7 +152,7 @@ public class HistogramGraph extends Canvas {
             List<Color> generateColors = CommonsFX.generateRandomColors(stats.size());
             Iterator<Color> iterator = generateColors.iterator();
             colors.put(col, iterator.next());
-            Map<Double, Long> histogram = dataframe.histogram(col, bins.get());
+            Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, col, bins.get());
 
             stats.put(col, histogram.values().stream().mapToLong(e -> e).summaryStatistics());
             xstats.put(col, histogram.keySet().stream().mapToDouble(Number::doubleValue).summaryStatistics());

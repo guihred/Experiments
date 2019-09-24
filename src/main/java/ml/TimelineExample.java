@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.graph.TimelineGraph;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ public class TimelineExample extends Application {
         root.setLeft(left);
         TimelineGraph canvas = new TimelineGraph();
 
-        DataframeML x = DataframeML.builder("out/WDIDataGC.TAX.TOTL.GD.ZS.csv")
+        DataframeML x = DataframeBuilder.builder("out/WDIDataGC.TAX.TOTL.GD.ZS.csv")
                 .setMaxSize(MAX_ROWS)
                 .build();
         canvas.prefWidth(500);
@@ -71,7 +72,7 @@ public class TimelineExample extends Application {
         String[] list = ResourceFXUtils.toFile("out").list((dir, name) -> name.endsWith(".csv"));
         ComboBox<String> indicators = new SimpleComboBoxBuilder<String>().items(list)
             .select(0).onSelect(s -> {
-                DataframeML x2 = DataframeML.builder("out/" + s).setMaxSize(MAX_ROWS).build();
+                DataframeML x2 = DataframeBuilder.builder("out/" + s).setMaxSize(MAX_ROWS).build();
                 canvas.setTitle(x2.list("Indicator Name").get(0).toString());
                 canvas.setHistogram(x2, countryNameColumn);
                 itens.setAll(sortedLabels(canvas.colorsProperty()));

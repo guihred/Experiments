@@ -15,7 +15,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
+import ml.data.DataframeUtils;
 import ml.graph.MultiLineGraph;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
@@ -35,8 +37,8 @@ public class MultilineExample extends Application {
         root.setLeft(left);
 		MultiLineGraph canvas = new MultiLineGraph();
 
-        DataframeML x = new DataframeML("california_housing_train.csv");
-        x.crossFeature("rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
+		DataframeML x = DataframeBuilder.build("california_housing_train.csv");
+		DataframeUtils.crossFeature(x, "rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         left.getChildren().add(SimpleSliderBuilder.newSlider("Radius", 1, 500, canvas.radiusProperty()));
         left.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
         left.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));

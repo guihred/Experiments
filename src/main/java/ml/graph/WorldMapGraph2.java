@@ -165,9 +165,9 @@ public class WorldMapGraph2 extends WorldMapGraph {
     private void drawPoints() {
         getGc().setFill(Color.RED);
         MercatorMap mercatorMap = new MercatorMap(getWidth(), getHeight());
-        List<Double> list = dataframeML.list(lonHeader, Double.class);
-        List<Double> lis2t = dataframeML.list(latHeader, Double.class);
-        List<String> citu = dataframeML.list(cityHeader, String.class);
+		List<Double> list = dataframeML.list(lonHeader);
+		List<Double> lis2t = dataframeML.list(latHeader);
+		List<String> citu = dataframeML.list(cityHeader);
         for (int i = 0; i < dataframeML.getSize(); i++) {
             LOG.trace("X={}", xScale.get());
             LOG.trace("Y={}", yScale.get());

@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javafx.beans.NamedArg;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
@@ -58,7 +59,7 @@ public class PackageTopology extends BaseTopology {
         }
         graph.endUpdate();
 		LayerLayout.layoutInLayers(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
-				graph.getScrollPane().getViewportBounds().getWidth());
+				graph.getScrollPane().getViewportBounds().getWidth() / 2);
         return javaFiles;
     }
 
@@ -73,7 +74,8 @@ public class PackageTopology extends BaseTopology {
         File file = new File("src");
         try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
             return walk.filter(e -> e.toFile().getName().endsWith(".java")).map(JavaFileDependecy::new)
-                .filter(e -> packName == null || e.getPackage().equals(packName)).collect(Collectors.toList());
+					.filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
+					.collect(Collectors.toList());
         } catch (Exception e) {
             LOG.error("", e);
             return new ArrayList<>();

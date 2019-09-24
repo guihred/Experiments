@@ -111,10 +111,10 @@ public class PopulacionalGraph extends Canvas {
         gc.setFill(Color.BLUE);
         gc.scale(1, lineSize.doubleValue());
         DoubleSummaryStatistics peopleStats = new DoubleSummaryStatistics();
-        List<Number> values = dataframe.list(valueHeader, Number.class);
-        List<String> sexes = dataframe.list(sexHeader, String.class);
-        List<String> ages = dataframe.list(ageHeader, String.class);
-        List<Integer> years = dataframe.list(yearHeader, Integer.class);
+		List<Number> values = dataframe.list(valueHeader);
+		List<String> sexes = dataframe.list(sexHeader);
+		List<String> ages = dataframe.list(ageHeader);
+		List<Integer> years = dataframe.list(yearHeader);
         Map<String, Number> possibleAgesMA = new HashMap<>();
         Map<String, Number> possibleAgesFE = new HashMap<>();
 

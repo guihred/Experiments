@@ -1,5 +1,6 @@
 package ml.data;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -24,7 +25,7 @@ public class DataframeBuilder extends DataframeML {
 	}
 
 	public DataframeML build() {
-		dataframeML.readCSV(csvFile);
+		DataframeUtils.readCSV(csvFile, dataframeML);
 		return dataframeML;
 	}
 
@@ -37,6 +38,21 @@ public class DataframeBuilder extends DataframeML {
 	public DataframeBuilder setMaxSize(int maxSize) {
 		dataframeML.maxSize = maxSize;
 		return this;
+	}
+
+	public static DataframeML build(File csvFile) {
+		DataframeML dataframeML = new DataframeML();
+		DataframeUtils.readCSV(csvFile, dataframeML);
+		return dataframeML;
+	}
+	public static DataframeML build(String csvFile) {
+		DataframeML dataframeML = new DataframeML();
+		DataframeUtils.readCSV(csvFile, dataframeML);
+		return dataframeML;
+	}
+
+	public static DataframeBuilder builder(String csvFile) {
+	    return new DataframeBuilder(csvFile);
 	}
 
 

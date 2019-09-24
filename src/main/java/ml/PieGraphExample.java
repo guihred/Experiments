@@ -8,6 +8,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.graph.PieGraph;
 import simplebuilder.SimpleButtonBuilder;
@@ -24,7 +25,7 @@ public class PieGraphExample extends Application {
         Scene theScene = new Scene(root, SIZE, SIZE);
 		theStage.setScene(theScene);
         PieGraph canvas = new PieGraph();
-        DataframeML x = DataframeML.builder("WDICountry.csv").build();
+        DataframeML x = DataframeBuilder.builder("WDICountry.csv").build();
         canvas.setDataframe(x, "Region");
         final Canvas canvas1 = canvas;
         Button exportButton = SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1));

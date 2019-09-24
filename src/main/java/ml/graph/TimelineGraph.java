@@ -99,7 +99,7 @@ public class TimelineGraph extends Canvas {
 
         yProportion = (max2 - stats.getMin()) / ybins.get();
 
-        List<String> list = dataframe.list(countryNameColumn, String.class);
+		List<String> list = dataframe.list(countryNameColumn);
         double j = (MAX_LAYOUT - layout.get()) / bins.doubleValue();
         double j2 = (MAX_LAYOUT - layout.get()) / ybins.get();
         boolean colorEmpty = colors.isEmpty();

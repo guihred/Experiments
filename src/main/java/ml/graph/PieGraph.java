@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
+import ml.data.DataframeUtils;
 import utils.CommonsFX;
 
 public class PieGraph extends Canvas {
@@ -155,7 +156,7 @@ public class PieGraph extends Canvas {
         }
 
         if (dataframe.getFormat(column) != String.class) {
-            Map<Double, Long> dataframeHistogram = dataframe.histogram(column, bins.get());
+            Map<Double, Long> dataframeHistogram = DataframeUtils.histogram(dataframe, column, bins.get());
             return dataframeHistogram.entrySet().stream()
                     .collect(Collectors.toMap(t -> String.format("%.0f", t.getKey()),
                             Entry<Double, Long>::getValue, (a, b) -> a + b));

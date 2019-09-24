@@ -118,7 +118,7 @@ public class DecisionTree {
             return impurity;
         }
         Set<Object> categorize = dataframe.freeCategory(header);
-        Map<Double, Long> histogram = dataframe.histogram(header, categorize.size());
+		Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, header, categorize.size());
         double impurity = 1.;
         for (Object cat : categorize) {
             double prob = histogram.get(cat) / size;
@@ -147,7 +147,7 @@ public class DecisionTree {
 
     public static void testCatanDecisionTree() {
         File csvFile = ResourceFXUtils.getOutFile("catan_log.txt");
-		DataframeML build = new DataframeML(csvFile);
+		DataframeML build = DataframeBuilder.build(csvFile);
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));
         build.removeCol("WINNER", "PLAYER");
