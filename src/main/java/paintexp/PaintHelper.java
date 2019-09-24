@@ -27,12 +27,25 @@ public final class PaintHelper {
 	private PaintHelper() {
 	}
 
-	static Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
-		return new SimpleRectangleBuilder().layoutX(value).layoutY(value).managed(false).width(20).height(20)
-				.stroke(Color.GRAY).fill(objectProperty).build();
+	public static VBox buildColorGrid(PaintModel paintModel, PaintController controller2) {
+		final int gap = 50;
+		HBox hBox = new HBox(gap, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());
+		hBox.getChildren().forEach(e -> e.prefHeight(hBox.getPrefWidth() / hBox.getChildren().size()));
+		BorderPane.setAlignment(hBox, Pos.CENTER);
+		hBox.setStyle("-fx-effect: innershadow(gaussian,gray,10,0.5,10,10);");
+		GridPane gridPane = new GridPane();
+		StackPane st = new StackPane(PaintHelper.pickedColor(paintModel.backColorProperty(), 20),
+				PaintHelper.pickedColor(paintModel.frontColorProperty(), 10));
+		List<Color> colors = PaintController.getColors();
+		int maxSize = colors.size() / 2;
+		gridPane.addRow(0, colors.stream().limit(maxSize).map(controller2::newRectangle).toArray(Rectangle[]::new));
+		gridPane.addRow(1,
+				colors.stream().skip(maxSize).limit(maxSize).map(controller2::newRectangle).toArray(Rectangle[]::new));
+		gridPane.setId("colorGrid");
+		return new VBox(30, new HBox(gap, st, gridPane), hBox);
 	}
 
-	static GridPane buildToolBar(PaintModel paintModel, PaintController controller2) {
+	public static GridPane buildToolBar(PaintModel paintModel, PaintController controller2) {
 		SimpleToggleGroupBuilder toolGroup = new SimpleToggleGroupBuilder();
 		Stream.of(PaintTools.values()).forEach(e -> toolGroup.addToggleTooltip(e.getTool(), e.getTooltip()));
 		List<Node> paintTools = toolGroup
@@ -53,24 +66,6 @@ public final class PaintHelper {
 		return toolbar;
 	}
 
-	public static VBox buildColorGrid(PaintModel paintModel, PaintController controller2) {
-		final int gap = 50;
-		HBox hBox = new HBox(gap, paintModel.getToolSize(), paintModel.getMousePosition(), paintModel.getImageSize());
-		hBox.getChildren().forEach(e -> e.prefHeight(hBox.getPrefWidth() / hBox.getChildren().size()));
-		BorderPane.setAlignment(hBox, Pos.CENTER);
-		hBox.setStyle("-fx-effect: innershadow(gaussian,gray,10,0.5,10,10);");
-		GridPane gridPane = new GridPane();
-		StackPane st = new StackPane(PaintHelper.pickedColor(paintModel.backColorProperty(), 20),
-				PaintHelper.pickedColor(paintModel.frontColorProperty(), 10));
-		List<Color> colors = PaintController.getColors();
-		int maxSize = colors.size() / 2;
-		gridPane.addRow(0, colors.stream().limit(maxSize).map(controller2::newRectangle).toArray(Rectangle[]::new));
-		gridPane.addRow(1,
-				colors.stream().skip(maxSize).limit(maxSize).map(controller2::newRectangle).toArray(Rectangle[]::new));
-		gridPane.setId("colorGrid");
-		return new VBox(30, new HBox(gap, st, gridPane), hBox);
-	}
-
 	public static TableView<WritableImage> displayImageVersions(final PaintModel paintModel) {
 		final int tablePrefWidth = 100;
 		ObservableList<WritableImage> imageVersions = paintModel.getImageVersions();
@@ -81,10 +76,15 @@ public final class PaintHelper {
 		return tableView;
 	}
 
-	static ImageView imageView(final int tablePrefWidth, WritableImage p) {
+	public static ImageView imageView(final int tablePrefWidth, WritableImage p) {
 		ImageView value = new ImageView(p);
 		value.setPreserveRatio(true);
 		value.setFitWidth(tablePrefWidth);
 		return value;
+	}
+
+	public static Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
+		return new SimpleRectangleBuilder().layoutX(value).layoutY(value).managed(false).width(20).height(20)
+				.stroke(Color.GRAY).fill(objectProperty).build();
 	}
 }
