@@ -6,12 +6,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
 
-public class CustomLayout implements Layout {
+public class CustomLayout extends Layout {
 
-    private final Graph graph;
 
     public CustomLayout(@NamedArg("graph") Graph graph) {
-		this.graph = graph;
+        super(graph);
 	}
 
 	@Override
@@ -21,9 +20,6 @@ public class CustomLayout implements Layout {
 		List<Cell> cells = model.getAllCells();
 		layoutInCustom(cells, model.getAllEdges());
 	}
-	public Graph getGraph() {
-        return graph;
-    }
 
     public static void layoutInCustom(List<Cell> cells, List<Edge> allEdges) {
 		cells.get(0).relocate(50, 50);

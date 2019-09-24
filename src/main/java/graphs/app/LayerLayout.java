@@ -13,12 +13,11 @@ import java.util.Map.Entry;
 import javafx.beans.NamedArg;
 import javafx.scene.paint.Color;
 
-public class LayerLayout implements Layout {
+public class LayerLayout extends Layout {
 
-    private final Graph graph;
 
     public LayerLayout(@NamedArg("graph") Graph graph) {
-		this.graph = graph;
+        super(graph);
 	}
 
 	@Override
@@ -30,10 +29,6 @@ public class LayerLayout implements Layout {
 
         layoutInLayers(cells, model.getAllEdges());
 
-    }
-
-    public Graph getGraph() {
-        return graph;
     }
 
     public static void displayInLayers(Iterable<Cell> cells, List<Edge> allEdges) {

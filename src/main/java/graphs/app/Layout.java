@@ -1,18 +1,29 @@
 package graphs.app;
 
+import graphs.entities.Graph;
+import javafx.beans.NamedArg;
 import javafx.event.EventDispatchChain;
 import javafx.event.EventTarget;
 
-@FunctionalInterface
-public interface Layout extends EventTarget {
-	@Override
-    default EventDispatchChain buildEventDispatchChain(EventDispatchChain tail) {
+public abstract class Layout implements EventTarget {
+	protected final Graph graph;
+
+    public Layout(@NamedArg("graph") Graph graph) {
+        this.graph = graph;
+    }
+
+    @Override
+    public EventDispatchChain buildEventDispatchChain(EventDispatchChain tail) {
         return null;
     }
 
-	void execute();
+    public final Graph getGraph() {
+        return graph;
+    }
 
-    default String getName() {
-		return getClass().getSimpleName().replace("Layout", "");
-	}
+    public String getName() {
+        return getClass().getSimpleName().replace("Layout", "");
+    }
+
+    abstract void execute();
 }

@@ -5,20 +5,20 @@ import graphs.entities.Edge;
 import graphs.entities.Graph;
 import graphs.entities.GraphModel;
 import java.util.List;
+import java.util.stream.IntStream;
 import javafx.beans.NamedArg;
 
-public class ConcentricLayout implements Layout {
+public class ConcentricLayout extends Layout {
 
-	private final Graph graph;
 
     public ConcentricLayout(@NamedArg("graph") Graph graph) {
-		this.graph = graph;
-	}
+        super(graph);
+    }
 
-	@Override
-	public void execute() {
+    @Override
+    public void execute() {
 
-		GraphModel model = graph.getModel();
+        GraphModel model = graph.getModel();
         graph.clean();
         List<Cell> cells = model.getAllCells();
         List<Edge> allEdges = model.getAllEdges();
@@ -26,18 +26,26 @@ public class ConcentricLayout implements Layout {
         layoutConcentric(cells, allEdges, w);
     }
 
-    public Graph getGraph() { 
-        return graph;
-    }
 
     public static void layoutConcentric(List<Cell> cells, List<Edge> allEdges, double center) {
         List<List<Cell>> cellsGroups = LayerSplitter.getLayers(cells, allEdges);
+        if (cellsGroups.isEmpty()) {
+            return;
+        }
+        int count = IntStream.range(0, cellsGroups.size() / 2)
+            .map(i -> cellsGroups.get(i).size() - cellsGroups.get(cellsGroups.size() - i - 1).size()).sum();
+        boolean invert = count > 0;
+
+        double orElse = Math.max(center / cellsGroups.size(),
+            cellsGroups.stream().flatMap(List<Cell>::stream).mapToDouble(Cell::getHeight).max().orElse(20));
         for (int i = 0; i < cellsGroups.size(); i++) {
             List<Cell> list = cellsGroups.get(i);
-            final double d = 135.0;
-            CircleLayout.generateCircle(list, allEdges, center, center, d / list.size() * i, i + 1);
+            final double d = 180 - 180. / cells.size();
+            int mul = invert ? cellsGroups.size() - i : i;
+            double bound = mul == 1 && list.size() == 1 ? 0
+                : mul * orElse / (list.size() <= 2 ? 1 : Math.tan(Math.PI * 2 / list.size()));
+            CircleLayout.generateCircle(list, allEdges, center, center, d / list.size() * i, bound);
         }
     }
-
 
 }

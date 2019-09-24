@@ -7,12 +7,10 @@ import graphs.entities.GraphModelAlgorithms;
 import java.util.List;
 import javafx.beans.NamedArg;
 
-public class RandomLayout implements Layout {
-
-    private final Graph graph;
+public class RandomLayout extends Layout {
 
     public RandomLayout(@NamedArg("graph") Graph graph) {
-        this.graph = graph;
+        super(graph);
     }
 
     @Override
@@ -21,10 +19,6 @@ public class RandomLayout implements Layout {
         List<Edge> allEdges = graph.getModel().getAllEdges();
         graph.clean();
         layoutRandom(cells, allEdges, graph.getScrollPane().getWidth());
-    }
-
-    public Graph getGraph() {
-        return graph;
     }
 
     public static void layoutRandom(List<Cell> cells, List<Edge> allEdges, double width) {

@@ -3,6 +3,7 @@ package graphs.entities;
 import java.util.Objects;
 import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Group;
@@ -50,26 +51,36 @@ public class Edge extends Group implements Comparable<Edge> {
         line.endYProperty().bind(target.layoutYProperty().add(target.getBoundsInParent().getHeight() / 2.0));
 
         getChildren().add(line);
+        DoubleBinding halfWayX = Bindings.createDoubleBinding(
+            () -> line.getEndX() + Math.cos(getAngulo()) * getModulo() * 5 / 11, line.endYProperty(),
+            line.startYProperty(), line.endXProperty(), line.startXProperty());
+        DoubleBinding halfWayY = Bindings.createDoubleBinding(
+            () -> line.getEndY() + Math.sin(getAngulo()) * getModulo() * 5 / 11, line.endYProperty(),
+            line.startYProperty(), line.endXProperty(), line.startXProperty());
         if (directed) {
             Polygon view1 = new Polygon(-Math.sqrt(3) * ARROW_SIZE / 2, 0, Math.sqrt(3) * ARROW_SIZE / 2, ARROW_SIZE,
                 Math.sqrt(3) * ARROW_SIZE / 2, -ARROW_SIZE);
             view1.strokeProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
             view1.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
-            view1.layoutXProperty()
-                .bind(Bindings.createDoubleBinding(() -> line.getEndX() + Math.cos(getAngulo()) * getModulo() * 4 / 9,
-                    line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
-            view1.layoutYProperty()
-                .bind(Bindings.createDoubleBinding(() -> line.getEndY() + Math.sin(getAngulo()) * getModulo() * 4 / 9,
-                    line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
+            view1.layoutXProperty().bind(halfWayX);
+            view1.layoutYProperty().bind(halfWayY);
             view1.rotateProperty().bind(Bindings.createDoubleBinding(() -> Math.toDegrees(getAngulo()),
                 line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
             getChildren().addAll(view1);
         }
 
+        DoubleBinding yCoord = Bindings.createDoubleBinding(() -> Math.sin(getAngulo() + Math.PI / 2) * 10,
+            line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
+        DoubleBinding xCoord = Bindings.createDoubleBinding(() -> Math.cos(getAngulo() + Math.PI / 2) * 10,
+            line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
+
         Text text = new Text(Integer.toString(valor));
+        text.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
+        text.rotateProperty().bind(Bindings.createDoubleBinding(() -> Math.toDegrees(getAngulo() + Math.PI / 2),
+            line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
         text.visibleProperty().bind(Edge.SHOW_WEIGHT);
-        text.layoutXProperty().bind(line.startXProperty().add(line.endXProperty()).divide(2));
-        text.layoutYProperty().bind(line.startYProperty().add(line.endYProperty()).divide(2));
+        text.layoutXProperty().bind(halfWayX.add(xCoord));
+        text.layoutYProperty().bind(halfWayY.add(yCoord));
         getChildren().addAll(text);
 
     }

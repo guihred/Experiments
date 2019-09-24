@@ -8,14 +8,13 @@ import java.util.Comparator;
 import java.util.Map;
 import javafx.beans.NamedArg;
 
-public class GridLayout implements Layout {
+public class GridLayout extends Layout {
 
     private static final SecureRandom RND = new SecureRandom();
 
-    private final Graph graph;
 
     public GridLayout(@NamedArg("graph") Graph graph) {
-        this.graph = graph;
+        super(graph);
     }
 
     @Override
@@ -26,9 +25,6 @@ public class GridLayout implements Layout {
         layoutInGrid(cells, graph);
     }
 
-    public Graph getGraph() {
-        return graph;
-    }
 
     public static int radius(int size2) {
         return 100 * (size2 / 50 + 1);
