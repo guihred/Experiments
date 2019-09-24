@@ -32,8 +32,9 @@ public final class PaintViewUtils {
     private PaintViewUtils() {
     }
 
-	public static void crop(PaintModel paintModel, WritableImage image, AreaTool tool) {
-
+	public static void crop(PaintModel paintModel, PaintController controller) {
+		WritableImage image = controller.getSelectedImage();
+		AreaTool tool = controller.getCurrentSelectTool();
         paintModel.getImageStack().getChildren().clear();
 		ImageView imageView = new PixelatedImageView(image);
         tool.setImageSelected(null);
@@ -60,8 +61,9 @@ public final class PaintViewUtils {
         paintModel.createImageVersion();
     }
 
-	public static void resize(PaintModel paintModel, WritableImage image, PaintController paintController) {
-        VBox root = new VBox();
+	public static void resize(PaintModel paintModel, PaintController controller) {
+		WritableImage image = controller.getSelectedImage();
+		VBox root = new VBox();
         root.getChildren().add(new Text("Redimension"));
         SimpleToggleGroupBuilder groupBuilder = new SimpleToggleGroupBuilder();
         List<RadioButton> togglesAs = groupBuilder.addRadioToggle(PERCENTAGE_FIELD).addRadioToggle("Pixels").select(0)
@@ -89,7 +91,7 @@ public final class PaintViewUtils {
         heightField.textProperty()
             .addListener(e -> onResizeOptionsChange(groupBuilder, keepProportion, heightField, widthField, ratio));
         root.getChildren().add(SimpleButtonBuilder.newButton("Resize", e -> {
-			finishResize(image, groupBuilder, widthField, heightField, paintController);
+			finishResize(image, groupBuilder, widthField, heightField, controller);
             StageHelper.closeStage(root);
             paintModel.createImageVersion();
         }));

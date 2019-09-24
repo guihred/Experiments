@@ -42,6 +42,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 
     public SimpleMenuBarBuilder addMenuItem(final String text) {
         MenuItem item = new MenuItem(text);
+		item.setId(text);
         if (subMenu != null) {
             subMenu.getItems().add(item);
         } else {
@@ -52,6 +53,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 
     public SimpleMenuBarBuilder addMenuItem(final String text, final EventHandler<ActionEvent> action) {
         MenuItem item = new MenuItem(text);
+		item.setId(text);
         item.setOnAction(action);
         if (subMenu != null) {
             subMenu.getItems().add(item);
@@ -78,6 +80,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
     public SimpleMenuBarBuilder addMenuItem(final String text, final Node graphic, final String combination,
         final EventHandler<ActionEvent> action) {
         MenuItem item = new MenuItem(text);
+		item.setId(text);
         item.setOnAction(action);
         item.setGraphic(graphic);
         item.setAccelerator(KeyCombination.keyCombination(combination));
@@ -120,7 +123,6 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 
 
     public SimpleMenuBarBuilder addRadioMenuItem(final String text) {
-
         if (toggleGroup == null) {
             toggleGroup = new ToggleGroup();
         }

@@ -23,21 +23,23 @@ public final class PaintEditUtils {
 		.height(bounds.getHeight()).drawRect(paintModel.getImage(), paintModel.getBackColor());
     }
 
-	public static void paste(PaintModel paintModel, AreaTool a, PaintController paintController) {
+	public static void paste(PaintModel paintModel, PaintController paintController) {
 		if (!(paintController.getTool() instanceof AreaTool)) {
 			paintController.setTool(PaintTools.SELECT_RECT.getTool());
 			paintController.changeTool(null);
         }
-        a.copyFromClipboard(paintModel);
+
+		paintController.getCurrentSelectTool().copyFromClipboard(paintModel);
     }
 
-	public static void selectAll(PaintModel paintModel, AreaTool a, PaintController paintController) {
+	public static void selectAll(PaintModel paintModel, PaintController paintController) {
 		if (!(paintController.getTool() instanceof AreaTool)) {
 			paintController.setTool(PaintTools.SELECT_RECT.getTool());
 			paintController.changeTool(null);
         }
 
-        a.selectArea(0, 0, (int) paintModel.getImage().getWidth() - 1, (int) paintModel.getImage().getHeight() - 1,
+		paintController.getCurrentSelectTool().selectArea(0, 0, (int) paintModel.getImage().getWidth() - 1,
+				(int) paintModel.getImage().getHeight() - 1,
             paintModel);
     }
 

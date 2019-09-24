@@ -8,7 +8,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
@@ -23,6 +22,7 @@ public final class PaintFileUtils {
 
 	private PaintFileUtils() {
 	}
+
 	public static void newFile(PaintModel paintModel) {
 		paintModel.setImage(new WritableImage(DEFAULT_SIZE, DEFAULT_SIZE));
 		int w = (int) paintModel.getImage().getWidth();
@@ -59,11 +59,12 @@ public final class PaintFileUtils {
 		}
 	}
 
-	public static void saveAsFile(final Stage primaryStage, PaintModel paintModel) {
+	public static void saveAsFile(final Window primaryStage, PaintModel paintModel) {
 		paintModel.setCurrentFile(null);
 		saveFile(primaryStage, paintModel);
 	}
-	public static void saveFile(final Stage primaryStage, PaintModel paintModel) {
+
+	public static void saveFile(final Window primaryStage, PaintModel paintModel) {
 		try {
 			if (paintModel.getCurrentFile() == null) {
 				FileChooser fileChooser2 = new FileChooser();
@@ -71,7 +72,6 @@ public final class PaintFileUtils {
 				if (defaultFile != null) {
 					fileChooser2.setInitialDirectory(defaultFile);
 				}
-
 				fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
 				paintModel.setCurrentFile(fileChooser2.showSaveDialog(primaryStage));
 			}
@@ -87,7 +87,7 @@ public final class PaintFileUtils {
 
 	public static void setDefaultFile(File defaultFile) {
 		PaintFileUtils.defaultFile = defaultFile;
-        LOG.info("DEFAULT FILE SET TO {}", defaultFile);
+		LOG.info("DEFAULT FILE SET TO {}", defaultFile);
 	}
 
 }

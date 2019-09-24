@@ -12,6 +12,7 @@ import javafx.application.Application;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.testfx.util.WaitForAsyncUtils;
+import paintexp.PaintMain;
 import schema.sngpc.FXMLCreatorHelper;
 import utils.HasLogging;
 
@@ -20,19 +21,18 @@ public final class FXMLCreatorTest {
 
     private static final Logger LOG = HasLogging.log();
 
-    @Test
+	// @Test
     public void testAllClasses() {
         List<Class<? extends Application>> classes = getClasses(Application.class);
         testApplications(classes);
     }
 
-//    @Test
+	@Test
     public void testErrorClasses() {
 
-        List<Class<? extends Application>> classes = Arrays.asList(gaming.ex21.CatanApp.class,
-            graphs.app.GraphModelLauncher.class);
+		List<Class<? extends Application>> classes = Arrays.asList(PaintMain.class);
         testApplications(classes);
-    }
+	}
 
     private static <T> String classNames(List<Class<? extends T>> testApplications) {
         return testApplications.stream().map(e -> e.getName() + ".class").collect(Collectors.joining(","));
@@ -55,8 +55,8 @@ public final class FXMLCreatorTest {
 
     private static void testApplications(List<Class<? extends Application>> classes) {
         List<Class<? extends Application>> differentTree = new ArrayList<>();
-        List<Class<?>> testApplications = FXMLCreatorHelper.testApplications(classes, true, differentTree);
-        WaitForAsyncUtils.waitForFxEvents();
+		List<Class<?>> testApplications = FXMLCreatorHelper.testApplications(classes, true, differentTree);
+		WaitForAsyncUtils.waitForFxEvents();
         if (testApplications.isEmpty()) {
             LOG.info("All classes successfull");
         } else {
