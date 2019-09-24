@@ -179,14 +179,22 @@ public final class RectBuilder {
     }
 
     public void drawStroke(WritableImage image, Color frontColor) {
-        RectBuilder.build().startX(startX).startY(centerY1).endX(startX).endY(centerY2).drawLine(image, frontColor);// LEFT
-        RectBuilder.build().startX(endX).startY(centerY1).endX(endX).endY(centerY2).drawLine(image, frontColor);// RIGHT
+        // LEFT
+        RectBuilder.build().startX(startX).startY(centerY1).endX(startX).endY(centerY2).drawLine(image, frontColor);
+        // RIGHT
+        RectBuilder.build().startX(endX).startY(centerY1).endX(endX).endY(centerY2).drawLine(image, frontColor);
+        // TOP
         RectBuilder.build().startX(centerX1).startY(startY - 1).endX(centerX2).endY(startY - 1).drawLine(image,
-            frontColor);// TOP
-        RectBuilder.build().startX(centerX1).startY(endY).endX(centerX2).endY(endY).drawLine(image, frontColor);// BOTTOM
-        PaintToolHelper.drawCirclePart(image, centerX1, centerY1, radiusX, radiusY, Math.PI, frontColor);// TOP-LEFT
-        PaintToolHelper.drawCirclePart(image, centerX2, centerY1, radiusX, radiusY, Math.PI * 3 / 2, frontColor);//
+            frontColor);
+        // BOTTOM
+        RectBuilder.build().startX(centerX1).startY(endY).endX(centerX2).endY(endY).drawLine(image, frontColor);
+        // TOP-LEFT
+        PaintToolHelper.drawCirclePart(image, centerX1, centerY1, radiusX, radiusY, Math.PI, frontColor);
+        // BOTTOM-LEFT
+        PaintToolHelper.drawCirclePart(image, centerX2, centerY1, radiusX, radiusY, Math.PI * 3 / 2, frontColor);
+        // BOTTOM-RIGHT
         PaintToolHelper.drawCirclePart(image, centerX1, centerY2, radiusX, radiusY, Math.PI / 2, frontColor);
+        // TOP-RIGHT
         PaintToolHelper.drawCirclePart(image, centerX2, centerY2, radiusX, radiusY, 0, frontColor);
     }
 

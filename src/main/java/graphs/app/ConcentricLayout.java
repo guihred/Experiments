@@ -36,16 +36,20 @@ public class ConcentricLayout extends Layout {
             .map(i -> cellsGroups.get(i).size() - cellsGroups.get(cellsGroups.size() - i - 1).size()).sum();
         boolean invert = count > 0;
 
-        double orElse = Math.max(center / cellsGroups.size(),
+        double maxHeight = Math.max(center / cellsGroups.size(),
             cellsGroups.stream().flatMap(List<Cell>::stream).mapToDouble(Cell::getHeight).max().orElse(20));
         for (int i = 0; i < cellsGroups.size(); i++) {
             List<Cell> list = cellsGroups.get(i);
             final double d = 180 - 180. / cells.size();
             int mul = invert ? cellsGroups.size() - i : i;
             double bound = mul == 1 && list.size() == 1 ? 0
-                : mul * orElse / (list.size() <= 2 ? 1 : Math.tan(Math.PI * 2 / list.size()));
+                : getRadius(maxHeight, list, mul);
             CircleLayout.generateCircle(list, allEdges, center, center, d / list.size() * i, bound);
         }
+    }
+
+    private static double getRadius(double orElse, List<Cell> list, int mul) {
+        return mul * orElse / (list.size() <= 2 ? 1 : Math.tan(Math.PI * 2 / list.size()));
     }
 
 }
