@@ -96,7 +96,6 @@ public class SelectFreeTool extends AreaTool {
         int endX = width + minX;
         int endY = height + minY;
         WritableImage selectedImage = createSelectedImage(model, minX, minY, width, height);
-		// model.changeTool(this);
         setImageSelected(selectedImage);
         selectArea(minX, minY, endX, endY, model);
         getArea().setFill(new ImagePattern(selectedImage));

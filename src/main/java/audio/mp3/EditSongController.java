@@ -12,7 +12,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
@@ -100,7 +103,8 @@ public class EditSongController extends Application {
     public void onActionSplit(ActionEvent e) {
         File outFile = ResourceFXUtils.getOutFile(selectedItem.getArquivo().getName());
         if (initialSlider.getValue() != 0 || finalSlider.getValue() != 1) {
-            EditSongHelper.splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator12, mediaPlayer);
+            EditSongHelper.splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator12,
+                mediaPlayer);
             return;
         }
         mediaPlayer.get().stop();

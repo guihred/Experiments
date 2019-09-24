@@ -25,154 +25,154 @@ import utils.ZoomableScrollPane;
 
 public class PaintController {
 
-	private final PaintModel paintModel = new PaintModel();
+    private final PaintModel paintModel = new PaintModel();
 
-	private final ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
+    private final ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
 
-	public void changeTool(final PaintTool newValue) {
-		paintModel.resetToolOptions();
-		ZoomableScrollPane parent = paintModel.getScrollPane();
-		double hvalue = parent.getHvalue();
-		double vvalue = parent.getVvalue();
-		paintModel.getImageStack().getChildren().clear();
-		ImageView imageView = new PixelatedImageView(paintModel.getImage());
-		paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-		paintModel.getImageStack().getChildren().add(imageView);
-		parent.setHvalue(hvalue);
-		parent.setVvalue(vvalue);
-		if (newValue != null) {
-			PaintTool oldTool = getTool();
-			if (oldTool != null) {
-				oldTool.onDeselected(paintModel);
-			}
-			setTool(newValue);
-			PaintTool paintTool = getTool();
-			paintTool.onSelected(paintModel);
-		}
-	}
+    public void changeTool(final PaintTool newValue) {
+        paintModel.resetToolOptions();
+        ZoomableScrollPane parent = paintModel.getScrollPane();
+        double hvalue = parent.getHvalue();
+        double vvalue = parent.getVvalue();
+        paintModel.getImageStack().getChildren().clear();
+        ImageView imageView = new PixelatedImageView(paintModel.getImage());
+        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+        paintModel.getImageStack().getChildren().add(imageView);
+        parent.setHvalue(hvalue);
+        parent.setVvalue(vvalue);
+        if (newValue != null) {
+            PaintTool oldTool = getTool();
+            if (oldTool != null) {
+                oldTool.onDeselected(paintModel);
+            }
+            setTool(newValue);
+            PaintTool paintTool = getTool();
+            paintTool.onSelected(paintModel);
+        }
+    }
 
-	public BooleanBinding containsSelectedArea() {
-		return Bindings.createBooleanBinding(
-				() -> Stream.of(PaintTools.values()).map(PaintTools::getTool).filter(AreaTool.class::isInstance)
-						.map(AreaTool.class::cast)
-						.anyMatch(e -> paintModel.getImageStack().getChildren().contains(e.getArea())),
-				paintModel.getImageStack().getChildren());
-	}
+    public BooleanBinding containsSelectedArea() {
+        return Bindings.createBooleanBinding(
+            () -> Stream.of(PaintTools.values()).map(PaintTools::getTool).filter(AreaTool.class::isInstance)
+                .map(AreaTool.class::cast)
+                .anyMatch(e -> paintModel.getImageStack().getChildren().contains(e.getArea())),
+            paintModel.getImageStack().getChildren());
+    }
 
-	public AreaTool getCurrentSelectTool() {
-		return PaintTools.getSelectRectTool(getTool(), paintModel.getImageStack());
-	}
+    public AreaTool getCurrentSelectTool() {
+        return PaintTools.getSelectRectTool(getTool(), paintModel.getImageStack());
+    }
 
-	public PaintModel getPaintModel() {
-		return paintModel;
-	}
+    public PaintModel getPaintModel() {
+        return paintModel;
+    }
 
-	public WritableImage getSelectedImage() {
-		AreaTool selectTool = getCurrentSelectTool();
-		if (paintModel.getImageStack().getChildren().contains(selectTool.getArea())) {
-			return selectTool.createSelectedImage(paintModel);
-		}
-		return paintModel.getImage();
-	}
+    public WritableImage getSelectedImage() {
+        AreaTool selectTool = getCurrentSelectTool();
+        if (paintModel.getImageStack().getChildren().contains(selectTool.getArea())) {
+            return selectTool.createSelectedImage(paintModel);
+        }
+        return paintModel.getImage();
+    }
 
-	public PaintTool getTool() {
-		return tool.get();
-	}
+    public PaintTool getTool() {
+        return tool.get();
+    }
 
-	public void handleKeyBoard(final KeyEvent e) {
-		PaintTool paintTool = getTool();
-		if (paintTool != null) {
-			paintTool.handleKeyEvent(e, paintModel);
-		}
-	}
+    public void handleKeyBoard(final KeyEvent e) {
+        PaintTool paintTool = getTool();
+        if (paintTool != null) {
+            paintTool.handleKeyEvent(e, paintModel);
+        }
+    }
 
-	public void handleMouse(final MouseEvent e) {
-		double x = e.getX();
-		double y = e.getY();
-		paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
-		paintModel.getImageSize().setText(
-				String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
+    public void handleMouse(final MouseEvent e) {
+        double x = e.getX();
+        double y = e.getY();
+        paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
+        paintModel.getImageSize()
+            .setText(String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
 
-		PaintTool paintTool = getTool();
-		if (paintTool != null) {
-			paintModel.getImageStack().setCursor(paintTool.getMouseCursor());
-			paintTool.handleEvent(e, paintModel);
-		} else {
-			paintModel.getImageStack().setCursor(Cursor.DEFAULT);
-		}
-	}
+        PaintTool paintTool = getTool();
+        if (paintTool != null) {
+            paintModel.getImageStack().setCursor(paintTool.getMouseCursor());
+            paintTool.handleEvent(e, paintModel);
+        } else {
+            paintModel.getImageStack().setCursor(Cursor.DEFAULT);
+        }
+    }
 
-	public Rectangle newRectangle(final Color color) {
-		Rectangle rectangle = new Rectangle(20, 20, color);
-		rectangle.setStroke(Color.BLACK);
-		rectangle.setOnMouseClicked(e -> onColorClicked(color, rectangle, e));
-		return rectangle;
-	}
+    public Rectangle newRectangle(final Color color) {
+        Rectangle rectangle = new Rectangle(20, 20, color);
+        rectangle.setStroke(Color.BLACK);
+        rectangle.setOnMouseClicked(e -> onColorClicked(color, rectangle, e));
+        return rectangle;
+    }
 
-	public void setFinalImage(final WritableImage writableImage) {
-		AreaTool selectTool = getCurrentSelectTool();
-		if (paintModel.getImageStack().getChildren().contains(selectTool.getArea())) {
-			selectTool.getArea().setWidth(writableImage.getWidth());
-			selectTool.getArea().setHeight(writableImage.getHeight());
-			selectTool.getArea().setFill(new ImagePattern(writableImage));
-			selectTool.setImageSelected(writableImage);
-		} else {
-			paintModel.getImageStack().getChildren().clear();
-			ImageView imageView = new PixelatedImageView(writableImage);
-			paintModel.setImage(writableImage);
-			paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-			paintModel.getImageStack().getChildren().add(imageView);
-		}
-	}
+    public void setFinalImage(final WritableImage writableImage) {
+        AreaTool selectTool = getCurrentSelectTool();
+        if (paintModel.getImageStack().getChildren().contains(selectTool.getArea())) {
+            selectTool.getArea().setWidth(writableImage.getWidth());
+            selectTool.getArea().setHeight(writableImage.getHeight());
+            selectTool.getArea().setFill(new ImagePattern(writableImage));
+            selectTool.setImageSelected(writableImage);
+        } else {
+            paintModel.getImageStack().getChildren().clear();
+            ImageView imageView = new PixelatedImageView(writableImage);
+            paintModel.setImage(writableImage);
+            paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+            paintModel.getImageStack().getChildren().add(imageView);
+        }
+    }
 
-	public void setTool(final PaintTool tool) {
-		this.tool.set(tool);
-	}
+    public void setTool(final PaintTool tool) {
+        this.tool.set(tool);
+    }
 
-	public ObjectProperty<PaintTool> toolProperty() {
-		return tool;
-	}
+    public ObjectProperty<PaintTool> toolProperty() {
+        return tool;
+    }
 
-	private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
-		if (e.getClickCount() > 1) {
-			ColorChooser dialog = new ColorChooser();
-			dialog.setCurrentColor(color);
-			dialog.setOnUse(() -> {
-				Color customColor = dialog.getCurrentColor();
-				if (MouseButton.PRIMARY == e.getButton()) {
-					paintModel.setFrontColor(customColor);
-				} else {
-					paintModel.setBackColor(customColor);
-				}
-			});
-			dialog.setOnSave(() -> rectangle.setFill(dialog.getCurrentColor()));
-			dialog.show();
-		} else if (MouseButton.PRIMARY == e.getButton()) {
-			paintModel.setFrontColor((Color) rectangle.getFill());
-		} else {
-			paintModel.setBackColor((Color) rectangle.getFill());
-		}
-	}
+    private void onColorClicked(final Color color, final Rectangle rectangle, final MouseEvent e) {
+        if (e.getClickCount() > 1) {
+            ColorChooser dialog = new ColorChooser();
+            dialog.setCurrentColor(color);
+            dialog.setOnUse(() -> {
+                Color customColor = dialog.getCurrentColor();
+                if (MouseButton.PRIMARY == e.getButton()) {
+                    paintModel.setFrontColor(customColor);
+                } else {
+                    paintModel.setBackColor(customColor);
+                }
+            });
+            dialog.setOnSave(() -> rectangle.setFill(dialog.getCurrentColor()));
+            dialog.show();
+        } else if (MouseButton.PRIMARY == e.getButton()) {
+            paintModel.setFrontColor((Color) rectangle.getFill());
+        } else {
+            paintModel.setBackColor((Color) rectangle.getFill());
+        }
+    }
 
-	public static List<Color> getColors() {
-		List<Color> availableColors = new ArrayList<>();
-		final double step = 30;
-		final int colorDiff = 64;
-		for (int i = 0; i < 2; i++) {
-			availableColors.add(Color.grayRgb(i * colorDiff));
-		}
-		for (int i = 0; i < 12; i++) {
-			availableColors.add(Color.hsb(i * step, 1, 1));
-		}
-		availableColors.add(Color.WHITE);
-		availableColors.add(Color.grayRgb(colorDiff * 2));
-		for (int i = 0; i < 6; i++) {
-			availableColors.add(Color.hsb(i * step, 1, 0.5));
-		}
-		for (int i = 6; i < 11; i++) {
-			availableColors.add(Color.hsb(i * step, .5, 1));
-		}
-		availableColors.add(Color.TRANSPARENT.invert());
-		return availableColors;
-	}
+    public static List<Color> getColors() {
+        List<Color> availableColors = new ArrayList<>();
+        final double step = 30;
+        final int colorDiff = 64;
+        for (int i = 0; i < 2; i++) {
+            availableColors.add(Color.grayRgb(i * colorDiff));
+        }
+        for (int i = 0; i < 12; i++) {
+            availableColors.add(Color.hsb(i * step, 1, 1));
+        }
+        availableColors.add(Color.WHITE);
+        availableColors.add(Color.grayRgb(colorDiff * 2));
+        for (int i = 0; i < 6; i++) {
+            availableColors.add(Color.hsb(i * step, 1, 0.5));
+        }
+        for (int i = 6; i < 11; i++) {
+            availableColors.add(Color.hsb(i * step, .5, 1));
+        }
+        availableColors.add(Color.TRANSPARENT.invert());
+        return availableColors;
+    }
 }

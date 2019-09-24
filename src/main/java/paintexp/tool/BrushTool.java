@@ -113,8 +113,7 @@ public class BrushTool extends PaintTool {
         model.getToolOptions().getChildren().add(getLengthSlider());
         final Property<Number> radius = opacity;
         model.getToolOptions().getChildren().add(SimpleSliderBuilder.newSlider("Opacity", 0, 1, radius));
-        List<Node> togglesAs = new SimpleToggleGroupBuilder()
-            .addToggle(new Circle(5), BrushOption.CIRCLE)
+        List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(new Circle(5), BrushOption.CIRCLE)
             .addToggle(new Rectangle(10, 10), BrushOption.SQUARE)
             .addToggle(new Line(0, 0, 10, 10), BrushOption.LINE_NW_SE)
             .addToggle(new Line(0, 10, 10, 0), BrushOption.LINE_SW_NE)
@@ -130,8 +129,8 @@ public class BrushTool extends PaintTool {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
         if (pressed && withinImage(x2, y2, model.getImage())) {
-			RectBuilder.build().startX(x).startY(y).endX(x2).endY(y2).drawLine(model.getImage(),
-					(x3, y3) -> drawUponOption(e, model, x3, y3, false));
+            RectBuilder.build().startX(x).startY(y).endX(x2).endY(y2).drawLine(model.getImage(),
+                (x3, y3) -> drawUponOption(e, model, x3, y3, false));
 
             y = (int) e.getY();
             x = (int) e.getX();
@@ -164,12 +163,16 @@ public class BrushTool extends PaintTool {
 
     private void drawCircleOption(final PaintModel model, final int x2, final int y2, final double r, final Color color,
         final boolean fill) {
-        RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawCircle(model.getImage(), model.getImageVersions(), color, opacity.get());
-        RectBuilder.build().startX(x2).startY(y2).width(r).height(r - 1).drawCircle(model.getImage(), model.getImageVersions(), color, opacity.get());
+        RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawCircle(model.getImage(),
+            model.getImageVersions(), color, opacity.get());
+        RectBuilder.build().startX(x2).startY(y2).width(r).height(r - 1).drawCircle(model.getImage(),
+            model.getImageVersions(), color, opacity.get());
         if (fill) {
-            PaintToolHelper.drawPointTransparency(x2, y2, color, opacity.get(), model.getImage(), model.getImageVersions());
+            PaintToolHelper.drawPointTransparency(x2, y2, color, opacity.get(), model.getImage(),
+                model.getImageVersions());
             for (double i = 1; i < r; i++) {
-                RectBuilder.build().startX(x2).startY(y2).width(i).height(i).drawCircle(model.getImage(), model.getImageVersions(), color, opacity.get());
+                RectBuilder.build().startX(x2).startY(y2).width(i).height(i).drawCircle(model.getImage(),
+                    model.getImageVersions(), color, opacity.get());
             }
         }
     }
@@ -186,20 +189,15 @@ public class BrushTool extends PaintTool {
                     drawCircleOption(model, x2, y2, r, color, fill);
                     break;
                 case SQUARE:
-                    PaintToolHelper.drawSquareLine(model.getImage(), model.getImageVersions(), x2, y2, (int) r, color, op);
-                    if (fill) {
-						RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op,
-								model.getImage(), model.getImageVersions());
-                    }
+                    drawSquare(model, x2, y2, fill, r, color, op);
                     break;
                 case LINE_NW_SE:
-					RectBuilder.build().startX(x2).startY(y2).endX(x2 + r).endY(y2 + r).drawLine(model.getImage(),
-							model.getImageVersions(), color,
-					op);
+                    RectBuilder.build().startX(x2).startY(y2).endX(x2 + r).endY(y2 + r).drawLine(model.getImage(),
+                        model.getImageVersions(), color, op);
                     break;
                 case LINE_SW_NE:
-					RectBuilder.build().startX(x2).startY(y2).endX(x2 + r).endY(y2 - r).drawLine(model.getImage(),
-							model.getImageVersions(), color, op);
+                    RectBuilder.build().startX(x2).startY(y2).endX(x2 + r).endY(y2 - r).drawLine(model.getImage(),
+                        model.getImageVersions(), color, op);
                     break;
                 default:
                     break;
@@ -223,6 +221,15 @@ public class BrushTool extends PaintTool {
         getMouseCursorMap().get(option).setFill(model.getFrontColor());
         getMouseCursorMap().get(option).setStroke(model.getFrontColor());
         getMouseCursorMap().get(option).setOpacity(opacity.get());
+    }
+
+    private static void drawSquare(final PaintModel model, final int x2, final int y2, final boolean fill, double r,
+        Color color, double op) {
+        PaintToolHelper.drawSquareLine(model.getImage(), model.getImageVersions(), x2, y2, (int) r, color, op);
+        if (fill) {
+            RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op, model.getImage(),
+                model.getImageVersions());
+        }
     }
 
     enum BrushOption {

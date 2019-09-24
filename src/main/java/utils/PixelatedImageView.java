@@ -11,35 +11,43 @@ import javafx.scene.image.ImageView;
 @SuppressWarnings("restriction")
 public class PixelatedImageView extends ImageView {
 
-	public PixelatedImageView() {
-	}
-	public PixelatedImageView(javafx.scene.image.Image image) {
-		super(image);
-	}
+    public PixelatedImageView() {
+    }
 
-	public PixelatedImageView(String url) {
-		super(new javafx.scene.image.Image(url));
-	}
-	@Override
-	@Deprecated
-	protected NGNode impl_createPeer() {
-		return new NGImageView() {
-			private Image image;
+    public PixelatedImageView(javafx.scene.image.Image image) {
+        super(image);
+    }
 
-			@Override
-			public void setImage(Object img) {
-				super.setImage(img);
-				image = (Image) img;
-			}
+    public PixelatedImageView(String url) {
+        super(new javafx.scene.image.Image(url));
+    }
 
-			@Override
-			protected void renderContent(Graphics g) {
-				BaseResourceFactory factory = (BaseResourceFactory) g.getResourceFactory();
-				Texture tex = factory.getCachedTexture(image, Texture.WrapMode.CLAMP_TO_EDGE);
-				tex.setLinearFiltering(false);
-				tex.unlock();
-				super.renderContent(g);
-			}
-		};
-	}
+    /**
+     * 
+     * @deprecated because this is a work around
+     * 
+     */
+
+    @Override
+    @Deprecated
+    protected NGNode impl_createPeer() {
+        return new NGImageView() {
+            private Image image;
+
+            @Override
+            public void setImage(Object img) {
+                super.setImage(img);
+                image = (Image) img;
+            }
+
+            @Override
+            protected void renderContent(Graphics g) {
+                BaseResourceFactory factory = (BaseResourceFactory) g.getResourceFactory();
+                Texture tex = factory.getCachedTexture(image, Texture.WrapMode.CLAMP_TO_EDGE);
+                tex.setLinearFiltering(false);
+                tex.unlock();
+                super.renderContent(g);
+            }
+        };
+    }
 }

@@ -39,8 +39,8 @@ public class SVGCreator extends Application {
     @FXML
     private ToggleGroup toggleGroup1;
     @FXML
-	private ImageView image;
-	@FXML
+    private ImageView image;
+    @FXML
     private StackPane stack;
 
     private int pointStage;
@@ -68,8 +68,8 @@ public class SVGCreator extends Application {
                 handleSimple(e);
             }
         }
-		if (MouseEvent.MOUSE_DRAGGED == e.getEventType() && pointStage == 0
-				|| MouseEvent.MOUSE_MOVED == e.getEventType() && pointStage > 0) {
+        if (MouseEvent.MOUSE_DRAGGED == e.getEventType() && pointStage == 0
+            || MouseEvent.MOUSE_MOVED == e.getEventType() && pointStage > 0) {
             handleSimple(e);
         }
         if (MouseEvent.MOUSE_RELEASED == e.getEventType()) {
@@ -102,20 +102,22 @@ public class SVGCreator extends Application {
     }
 
     public void onActionBackground(ActionEvent event) {
-		StageHelper
-				.fileAction("Imagem", f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())),
-				"Imagens", "*.jpg", "*.png", "*.bmp", "*.jpg").handle(event);
+        StageHelper
+            .fileAction("Imagem", f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())),
+                "Imagens", "*.jpg", "*.png", "*.bmp", "*.jpg")
+            .handle(event);
     }
 
-	public void onActionRelative() {
+    public void onActionRelative() {
 
-		double scale = slider.getValue();
-		svgChanger.setScale(1 / lastScale);
-		contentField.setText(svgChanger.convertToRelative());
-		svgChanger.setScale(scale);
-		contentField.setText(svgChanger.convertToRelative());
-		lastScale = scale;
-		// M108 40  L 150.0 140.0  H 130.0  L 115.0 110.0  H 85.0  L 70.0 140.0  H 60.0 Z  M 100.0 75.0   L 112.0 103.0  H 87.0  Z 
+        double scale = slider.getValue();
+        svgChanger.setScale(1 / lastScale);
+        contentField.setText(svgChanger.convertToRelative());
+        svgChanger.setScale(scale);
+        contentField.setText(svgChanger.convertToRelative());
+        lastScale = scale;
+        // M108 40 L 150.0 140.0 H 130.0 L 115.0 110.0 H 85.0 L 70.0 140.0 H 60.0 Z M
+        // 100.0 75.0 L 112.0 103.0 H 87.0 Z
     }
 
     @SuppressWarnings("unused")
@@ -142,7 +144,7 @@ public class SVGCreator extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        CommonsFX.loadFXML("SVG Creator", "SVGCreator.fxml",this, stage);
+        CommonsFX.loadFXML("SVG Creator", "SVGCreator.fxml", this, stage);
     }
 
     public void undo() {
@@ -166,11 +168,11 @@ public class SVGCreator extends Application {
         contentField.setText(svgChanger.convertToRelative());
         svgChanger.setScale(scale);
         contentField.setText(svgChanger.convertToRelative());
-		Image image2 = image.getImage();
-		if (image2 != null) {
-			image.setFitWidth(image2.getWidth() * scale);
-		}
-		lastScale = scale;
+        Image image2 = image.getImage();
+        if (image2 != null) {
+            image.setFitWidth(image2.getWidth() * scale);
+        }
+        lastScale = scale;
     }
 
     public static void main(final String[] args) {

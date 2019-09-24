@@ -50,10 +50,11 @@ public class TextTool extends PaintTool {
     private SimpleComboBoxBuilder<String> fontFamily;
 
     @Override
-	public Node createIcon() {
-		return new SimpleSvgPathBuilder().content(
-				"M108 40  L 150.0 140.0  H 128.0  L 115.0 110.0  H 85.0  L 70.0 140.0  H 60.0 Z  M 100.0 75.0   L 112.0 103.0  H 87.0  Z")
-				.stroke(Color.BLACK).fillRule(FillRule.EVEN_ODD).fill(Color.BLACK).build();
+    public Node createIcon() {
+        return new SimpleSvgPathBuilder().content(
+            "M108 40 L 150.0 140.0 H 128.0 L 115.0 110.0 H 85.0 L 70.0 140.0 H 60.0"
+                + " Z  M 100.0 75.0 L 112.0 103.0 H 87.0 Z")
+            .stroke(Color.BLACK).fillRule(FillRule.EVEN_ODD).fill(Color.BLACK).build();
     }
 
     public Rectangle getArea() {
@@ -293,7 +294,7 @@ public class TextTool extends PaintTool {
             new WritableImage(Math.max(Math.abs(width), 1), Math.max(Math.abs(height), 1)));
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
-		RectBuilder.build().width(width).height(height).endX(x).endY(y).copyImagePart(textImage, model.getImage(),
+        RectBuilder.build().width(width).height(height).endX(x).endY(y).copyImagePart(textImage, model.getImage(),
             Color.TRANSPARENT);
         model.getImageStack().getChildren().clear();
         ImageView imageView = new ImageView(model.getImage());

@@ -83,14 +83,15 @@ public class EraserTool extends PaintTool {
     @Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int w = (int) getArea().getWidth();
-		RectBuilder.build().startX(lastX).startY(lastY).endX(e.getX()).endY(e.getY()).drawLine(model.getImage(),
-				(x, y) -> {
-		    if (e.getButton() == MouseButton.PRIMARY) {
-		        PaintToolHelper.drawSquareLine(model.getImage(), x, y, w, model.getBackColor());
-		    } else {
-		        PaintToolHelper.drawSquareLine(model.getImage(), model.getBackColor(), x, y, w, PixelHelper.toArgb(model.getFrontColor()));
-		    }
-		});
+        RectBuilder.build().startX(lastX).startY(lastY).endX(e.getX()).endY(e.getY()).drawLine(model.getImage(),
+            (x, y) -> {
+                if (e.getButton() == MouseButton.PRIMARY) {
+                    PaintToolHelper.drawSquareLine(model.getImage(), x, y, w, model.getBackColor());
+                } else {
+                    PaintToolHelper.drawSquareLine(model.getImage(), model.getBackColor(), x, y, w,
+                        PixelHelper.toArgb(model.getFrontColor()));
+                }
+            });
 
         getArea().setLayoutX(e.getX());
         getArea().setLayoutY(e.getY());
@@ -103,7 +104,7 @@ public class EraserTool extends PaintTool {
         int y = (int) e.getY();
         int x = (int) e.getX();
         int w = (int) getArea().getWidth();
-		RectBuilder builder = RectBuilder.build().startX(x).startY(y).width(w).height(w);
+        RectBuilder builder = RectBuilder.build().startX(x).startY(y).width(w).height(w);
         if (e.getButton() == MouseButton.PRIMARY) {
             builder.drawRect(model.getImage(), model.getBackColor());
         } else {

@@ -82,7 +82,7 @@ public class FXEngineTest extends AbstractTestExecution {
                 lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
             }
             Node m = queryAll.get(i);
-            drag(m, MouseButton.PRIMARY);
+            RunnableEx.ignore(() -> drag(m, MouseButton.PRIMARY));
             moveBy(Math.random() * 10 - 5, 0);
             drop();
         }

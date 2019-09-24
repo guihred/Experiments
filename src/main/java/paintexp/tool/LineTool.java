@@ -13,50 +13,50 @@ public class LineTool extends PaintTool {
     private Line line;
 
     @Override
-	public Node createIcon() {
-		return new SimpleLineBuilder().startX(0).startY(0).endX(30).endY(30).stroke(Color.BLACK).build();
-	}
+    public Node createIcon() {
+        return new SimpleLineBuilder().startX(0).startY(0).endX(30).endY(30).stroke(Color.BLACK).build();
+    }
 
-	public Line getLine() {
-		if (line == null) {
+    public Line getLine() {
+        if (line == null) {
             line = new SimpleLineBuilder().layoutX(0).layoutY(0).managed(false).build();
-		}
-		return line;
-	}
+        }
+        return line;
+    }
 
-	@Override
-	public Cursor getMouseCursor() {
-		return Cursor.CROSSHAIR;
-	}
+    @Override
+    public Cursor getMouseCursor() {
+        return Cursor.CROSSHAIR;
+    }
 
     @Override
     protected void onMouseDragged(final MouseEvent e, PaintModel model) {
-		getLine().setEndX(e.getX());
-		getLine().setEndY(e.getY());
-	}
+        getLine().setEndX(e.getX());
+        getLine().setEndY(e.getY());
+    }
 
     @Override
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
-		getLine().setStroke(model.getFrontColor());
-		ObservableList<Node> children = model.getImageStack().getChildren();
-		if (!children.contains(getLine())) {
-			children.add(getLine());
-		}
+        getLine().setStroke(model.getFrontColor());
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (!children.contains(getLine())) {
+            children.add(getLine());
+        }
 
-		getLine().setStartX(e.getX());
-		getLine().setStartY(e.getY());
-		onMouseDragged(e, model);
-	}
+        getLine().setStartX(e.getX());
+        getLine().setStartY(e.getY());
+        onMouseDragged(e, model);
+    }
 
     @Override
     protected void onMouseReleased(final PaintModel model) {
-		ObservableList<Node> children = model.getImageStack().getChildren();
-		if (size() >= 2 || !children.contains(getLine())) {
-		    RectBuilder.build().startX(line.getStartX()).startY(line.getStartY()).endX(line.getEndX()).endY(line.getEndY()).drawLine(model.getImage(), model.getFrontColor());
-		}
-		children.remove(getLine());
-	}
-
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (size() >= 2 || !children.contains(getLine())) {
+            RectBuilder.build().startX(line.getStartX()).startY(line.getStartY()).endX(line.getEndX())
+                .endY(line.getEndY()).drawLine(model.getImage(), model.getFrontColor());
+        }
+        children.remove(getLine());
+    }
 
     private double size() {
         double w = getLine().getLayoutBounds().getWidth();
