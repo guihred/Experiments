@@ -86,12 +86,19 @@ public class JavaFileDependecy {
         for(JavaFileDependecy d:getDependents()){
             if (d.getFullName().contains(name1)) {
                 path.add(d);
-//                return true;
             }
         }
+        if (!path.isEmpty()) {
+            path.add(this);
+            return true;
+        }
 
-        return !path.isEmpty()
-            || getDependents().stream().filter(t -> !visited.contains(t)).anyMatch(d -> d.search(name1, visited, path));
+        boolean anyMatch = getDependents().stream().filter(t -> !visited.contains(t))
+            .anyMatch(d -> d.search(name1, visited, path));
+        if (anyMatch) {
+            path.add(this);
+        }
+        return anyMatch;
     }
 
     public void setDependents(List<JavaFileDependecy> dependents) {
@@ -122,7 +129,8 @@ public class JavaFileDependecy {
             dependecy.setDependents(allFileDependencies);
         }
 
-        List<String> asList = Arrays.asList("EditSongHelper");
+        List<String> asList = Arrays.asList("IadesHelper", "Cidade", "CrawlerCandidates2018Task", "WordService",
+            "EWSTest", "StatsLogAccess", "LeitorArquivos");
         for (JavaFileDependecy dependecy : allFileDependencies) {
             if(asList.contains(dependecy.getName())) {
                 List<JavaFileDependecy> visited= new ArrayList<>();
