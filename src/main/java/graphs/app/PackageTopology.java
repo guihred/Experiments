@@ -25,7 +25,7 @@ public class PackageTopology extends BaseTopology {
 
     public PackageTopology(@NamedArg("graph") Graph graph) {
         super(graph, "Package");
-        packages.add(null);
+		packages.add("");
     }
 
     @Override
