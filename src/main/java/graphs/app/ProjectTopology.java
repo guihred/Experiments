@@ -3,22 +3,14 @@ package graphs.app;
 import graphs.entities.Cell;
 import graphs.entities.CellType;
 import graphs.entities.Graph;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.NamedArg;
-import org.slf4j.Logger;
-import utils.HasLogging;
 
 public class ProjectTopology extends BaseTopology {
-
-    private static final Logger LOG = HasLogging.log();
 
     public ProjectTopology(@NamedArg("graph") Graph graph) {
         super(graph, "Project");
@@ -54,24 +46,15 @@ public class ProjectTopology extends BaseTopology {
     }
 
     private static Map<String, Map<String, Long>> createProjectDependencyMap() {
-        File file = new File("src");
-        try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
-            List<JavaFileDependecy> javaFileDependencies = walk.filter(e -> e.toFile().getName().endsWith(".java"))
-                .map(JavaFileDependecy::new).collect(Collectors.toList());
+        List<JavaFileDependecy> javaFileDependencies = JavaFileDependecy.getAllFileDependencies();
+        Map<String, List<JavaFileDependecy>> filesByPackage = javaFileDependencies.stream()
+            .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
 
-            Map<String, List<JavaFileDependecy>> filesByPackage = javaFileDependencies.stream()
-                .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
-
-            Map<String, Map<String, Long>> packageDependencyMap = new HashMap<>();
-
-            filesByPackage.forEach((k, v) -> packageDependencyMap.put(k,
-                v.stream().flatMap(e -> e.getDependencies().stream()).filter(filesByPackage::containsKey)
-                    .collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
-            return packageDependencyMap;
-        } catch (Exception e) {
-            LOG.error("", e);
-            return new HashMap<>();
-        }
+        Map<String, Map<String, Long>> packageDependencyMap = new HashMap<>();
+        filesByPackage
+            .forEach((k, v) -> packageDependencyMap.put(k, v.stream().flatMap(e -> e.getDependencies().stream())
+                .filter(filesByPackage::containsKey).collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
+        return packageDependencyMap;
     }
 
 }

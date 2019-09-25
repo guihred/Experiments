@@ -14,6 +14,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +38,12 @@ import org.slf4j.Logger;
 public final class ResourceFXUtils {
 
     private static final Logger LOGGER = HasLogging.log();
+    public static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
+    "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
+    "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
+    "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
+    "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
+    "super", "while");
 
     private ResourceFXUtils() {
     }

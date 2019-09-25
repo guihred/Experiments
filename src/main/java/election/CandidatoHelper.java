@@ -41,16 +41,15 @@ public final class CandidatoHelper {
             .filter(e -> !e.getValue().isEmpty()).map(Objects::toString).collect(Collectors.joining(",")), fieldMap));
     }
 
-
     public static List<String> distinct(String field) {
         return candidatoDAO.distinct(field);
     }
 
     public static List<String> getRelevantFields() {
-        return ClassReflectionUtils.getFields(Candidato.class).stream()
-				.filter(e -> !e.equals("cidade")).filter(e -> candidatoDAO.distinctNumber(e) < RELEVANT_FIELD_THRESHOLD)
-				.collect(Collectors.toList());
+        return ClassReflectionUtils.getFields(Candidato.class).stream().filter(e -> !"cidade".equals(e))
+            .filter(e -> candidatoDAO.distinctNumber(e) < RELEVANT_FIELD_THRESHOLD).collect(Collectors.toList());
     }
+
     public static void onChangeElement(ObservableMap<String, Set<String>> fieldMap, Map<String, CheckBox> portChecks,
         TreeItem<String> newValue) {
         if (newValue != null && newValue.isLeaf()) {

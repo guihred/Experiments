@@ -8,7 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
-@SuppressWarnings({ "unused" })
+@SuppressWarnings({ "unused", "static-method" })
 public abstract class PaintTool extends Group {
     private Node icon;
 

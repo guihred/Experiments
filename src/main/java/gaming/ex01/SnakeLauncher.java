@@ -22,8 +22,11 @@ public class SnakeLauncher extends Application {
 
     private Timeline timeline;
 
+    private Stage primaryStage;
+
     @Override
     public void start(Stage stage) throws Exception {
+        primaryStage = stage;
         final GridPane gridPane = new GridPane();
         for (int i = 0; i < SnakeSquare.MAP_SIZE; i++) {
             for (int j = 0; j < SnakeSquare.MAP_SIZE; j++) {
@@ -55,10 +58,12 @@ public class SnakeLauncher extends Application {
         }
         if (newGameModel.updateMap()) {
             timeline.stop();
-            StageHelper.displayDialog("You Got " + newGameModel.getSnake().size() + " points", "Reset", () -> {
-                newGameModel.reset();
-                timeline.play();
-            });
+            if (primaryStage.isShowing()) {
+                StageHelper.displayDialog("You Got " + newGameModel.getSnake().size() + " points", "Reset", () -> {
+                    newGameModel.reset();
+                    timeline.play();
+                });
+            }
         }
     }
 

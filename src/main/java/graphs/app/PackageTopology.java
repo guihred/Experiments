@@ -3,12 +3,11 @@ package graphs.app;
 import graphs.entities.Cell;
 import graphs.entities.CellType;
 import graphs.entities.Graph;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.NamedArg;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -71,15 +70,9 @@ public class PackageTopology extends BaseTopology {
     }
 
     public static List<JavaFileDependecy> getJavaFileDependencies(String packName) {
-        File file = new File("src");
-        try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
-            return walk.filter(e -> e.toFile().getName().endsWith(".java")).map(JavaFileDependecy::new)
+        return JavaFileDependecy.getAllFileDependencies().stream()
 					.filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
 					.collect(Collectors.toList());
-        } catch (Exception e) {
-            LOG.error("", e);
-            return new ArrayList<>();
-        }
     }
 
     public static void main(String[] args) {

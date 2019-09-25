@@ -1,5 +1,6 @@
 package fxtests;
 
+import contest.ContestApplication;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +9,6 @@ import javafx.application.Application;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.testfx.util.WaitForAsyncUtils;
-import paintexp.PaintMain;
 import schema.sngpc.FXMLCreatorHelper;
 import utils.HasLogging;
 
@@ -17,7 +17,7 @@ public final class FXMLCreatorTest {
 
 	static final Logger LOG = HasLogging.log();
 
-	// @Test
+    @Test
     public void testAllClasses() {
 		List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
         testApplications(classes);
@@ -26,7 +26,7 @@ public final class FXMLCreatorTest {
 	@Test
     public void testErrorClasses() {
 
-		List<Class<? extends Application>> classes = Arrays.asList(PaintMain.class);
+        List<Class<? extends Application>> classes = Arrays.asList(ContestApplication.class);
         testApplications(classes);
 	}
 

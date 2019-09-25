@@ -3,10 +3,12 @@ package fxtests;
 import static ethical.hacker.ImageCracker.crackImage;
 import static ethical.hacker.ImageCracker.createSelectedImage;
 import static fxtests.FXTesting.measureTime;
+import static java.nio.file.Files.deleteIfExists;
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.ResourceFXUtils.toExternalForm;
 import static utils.ResourceFXUtils.toFile;
 
+import com.google.common.collect.ImmutableMap;
 import contest.db.Contest;
 import ethical.hacker.PortServices;
 import ex.j9.ch4.LabeledPoint;
@@ -23,17 +25,17 @@ import graphs.entities.Linha;
 import graphs.entities.Ponto;
 import japstudy.LessonPK;
 import java.io.File;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ml.Word2VecExample;
 import ml.data.CSVUtils;
-import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -57,8 +59,7 @@ public class FXFileReadersTest extends ApplicationTest {
 
     @Test
     public void testCSVUtils() {
-        measureTime("CSVUtils.splitFile",
-            () -> CSVUtils.splitFile(getOutFile("WDIData.csv").getAbsolutePath(), 3));
+        measureTime("CSVUtils.splitFile", () -> CSVUtils.splitFile(getOutFile("WDIData.csv").getAbsolutePath(), 3));
 
         measureTime("CSVUtils.splitFile",
             () -> CSVUtils.splitFile(getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3));
@@ -74,6 +75,7 @@ public class FXFileReadersTest extends ApplicationTest {
         campos.put("Lote", Medicamento::getLote);
         campos.put("Quantidade", Medicamento::getQuantidade);
         campos.put("Codigo", Medicamento::getCodigo);
+        campos.put("Valido", Medicamento::isRegistroValido);
         measureTime("ExcelService.getExcel",
             () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
 
@@ -93,6 +95,41 @@ public class FXFileReadersTest extends ApplicationTest {
         measureTime("ExcelService.getExcel",
             () -> ExcelService.getExcel((i, s) -> medicamentos.subList(Integer.min(i, maxI), Integer.min(i + s, maxI)),
                 campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
+
+    }
+
+    @Test
+    public void testExcelService3() {
+        String arquivo = "anvisa2208.xlsx";
+        Map<Object, Object> map = new HashMap<>();
+        map.put("AEBOL", "OUTRO");
+        map.put("norfloxacino", Arrays.asList("OUTRO"));
+        map.put("levofloxacino", Arrays.asList());
+        map.put(2.0, 3.0);
+        map.put(3.0, "3");
+        map.put(4.0, new BigDecimal(3));
+        measureTime("ExcelService.getExcel", () -> {
+            OutputStream outStream = new FileOutputStream(getOutFile("result.xlsx"));
+            ExcelService.getExcel(arquivo, map, outStream);
+        });
+
+    }
+
+    @Test
+    public void testExcelService4() {
+        String arquivo = "anvisa2208.xlsx";
+        Map<Object, Object> map = new HashMap<>();
+        map.put("AEBOL", "OUTRO");
+        map.put("norfloxacino", Arrays.asList("Outra Lista"));
+        List<String> abas = Arrays.asList("Página2", "Cópia");
+        map.put("ALGICOD", ImmutableMap.builder().put(abas.get(0), "TROCADO").build());
+        map.put(2.0, 3.0);
+        map.put(3.0, "3");
+        map.put(4.0, new BigDecimal(3));
+        measureTime("ExcelService.getExcel", () -> {
+            OutputStream outStream = new FileOutputStream(getOutFile("result.xlsx"));
+            ExcelService.getExcel(arquivo, map, abas, 0, outStream);
+        });
 
     }
 
@@ -163,11 +200,9 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     @Test
-    public void testWord2Vec() {
+    public void testWord2Vec() throws IOException {
         File file = Word2VecExample.getPathToSave();
-        if (file.exists()) {
-            Files.delete(file);
-        }
+        deleteIfExists(file.toPath());
         measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
     }
 

@@ -76,13 +76,6 @@ public final class TermFrequencyIndex {
 
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
 
-    private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
-        "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
-        "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
-        "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
-        "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
-        "super", "while");
-
     private TermFrequencyIndex() {
     }
 
@@ -159,7 +152,7 @@ public final class TermFrequencyIndex {
     }
 
     public static List<String> getJavaKeywords() {
-        return JAVA_KEYWORDS;
+        return ResourceFXUtils.JAVA_KEYWORDS;
     }
 
     public static void identifyKeyWordsInSourceFiles() {
@@ -207,7 +200,7 @@ public final class TermFrequencyIndex {
         try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
 
             entrySet.forEach(e -> {
-                if (!JAVA_KEYWORDS.contains(e.getKey())) {
+                if (!ResourceFXUtils.JAVA_KEYWORDS.contains(e.getKey())) {
                     out.println(e.getKey() + "={");
                     e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
                     out.println("}");

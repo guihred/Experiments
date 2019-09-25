@@ -3,6 +3,7 @@ package utils;
 import static java.util.stream.Collectors.joining;
 import static utils.StringSigaUtils.changeCase;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
@@ -125,7 +126,8 @@ public final class ClassReflectionUtils {
     public static List<Method> getters(Class<?> c) {
         return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
             .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(METHOD_REGEX))
-            .filter(m -> m.getParameterCount() == 0).filter(m -> m.getAnnotationsByType(Ignore.class).length == 0)
+            .filter(m -> m.getParameterCount() == 0)
+            .filter(m -> m.getReturnType() != Serializable.class && m.getAnnotationsByType(Ignore.class).length == 0)
             .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
     }
 

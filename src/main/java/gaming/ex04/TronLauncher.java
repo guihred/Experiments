@@ -33,11 +33,12 @@ public class TronLauncher extends Application {
             if (newGameModel.updateMap()) {
                 timeline.stop();
                 String text2 = "You Got " + newGameModel.getSnake().size() + " points";
-                final String text = text2;
-				StageHelper.displayDialog(text, "Reset", () -> {
-                	newGameModel.reset();
-                	timeline.play();
-                });
+                if (stage.isShowing()) {
+                    StageHelper.displayDialog(text2, "Reset", () -> {
+                    	newGameModel.reset();
+                    	timeline.play();
+                    });
+                }
             }
         }).cycleCount(Animation.INDEFINITE).build();
         timeline.play();

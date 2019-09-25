@@ -22,6 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import utils.ClassReflectionUtils;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public final class FXMLCreator {
@@ -157,7 +158,8 @@ public final class FXMLCreator {
                 if (StringUtils.isNumeric(string)) {
                     return changeCase(f.getClass().getSimpleName()) + string;
                 }
-                if (referencedNodes.values().stream().anyMatch(string::equals)) {
+                if (referencedNodes.values().stream().anyMatch(string::equals)
+                    || ResourceFXUtils.JAVA_KEYWORDS.contains(string)) {
                     return string + referencedNodes.size();
                 }
                 return string;

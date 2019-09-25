@@ -189,10 +189,6 @@ public class DataframeML {
 		return DataframeStatisticAccumulator.rowMap(dataframe, i);
 	}
 
-	public void setFormatMap(Map<String, Class<? extends Comparable<?>>> formatMap) {
-		this.formatMap = formatMap;
-	}
-
 	public DoubleSummaryStatistics summary(String header) {
 		if (!dataframe.containsKey(header)) {
 			return new DoubleSummaryStatistics();
