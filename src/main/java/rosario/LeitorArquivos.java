@@ -25,6 +25,7 @@ import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 import utils.SupplierEx;
 
 public final class LeitorArquivos {
@@ -156,17 +157,16 @@ public final class LeitorArquivos {
 
     public static ObservableList<String> getSheetsExcel(File selectedFile) {
         ObservableList<String> list = FXCollections.observableArrayList();
-        Platform.runLater(() -> {
+        Platform.runLater(RunnableEx.make(() -> {
             try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
                 Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
                 int numberOfSheets = workbook.getNumberOfSheets();
                 for (int i = 0; i < numberOfSheets; i++) {
                     list.add(workbook.getSheetAt(i).getSheetName());
                 }
-            } catch (IOException e) {
-                LOGGER.error("", e);
+
             }
-        });
+        }));
         return list;
     }
 

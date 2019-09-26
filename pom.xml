@@ -40,7 +40,7 @@
 					<runOrder>alphabetical</runOrder>
 					<append>true</append>
 					<includes>
-						<include>*Test</include>
+						<include>*FXEnginePaintTest</include>
 					</includes>
 				</configuration>
 			</plugin>

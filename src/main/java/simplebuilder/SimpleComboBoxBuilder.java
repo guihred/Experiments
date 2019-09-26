@@ -11,7 +11,10 @@ import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, SimpleComboBoxBuilder<T>> {
@@ -111,16 +114,20 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
     }
 
     public SimpleComboBoxBuilder<T> styleFunction(Function<T, String> func) {
-        comboBox.setCellFactory(newCellFactory((item, cell) -> {
-            cell.setText(comboBox.getConverter().toString(item));
-            cell.setStyle(func.apply(item));
-        }));
+        comboBox.setCellFactory(cellStyle(comboBox, func));
         return this;
     }
 
     public SimpleComboBoxBuilder<T> tooltip(String text) {
         comboBox.setTooltip(new Tooltip(text));
         return this;
+    }
+
+    public static <F> Callback<ListView<F>, ListCell<F>> cellStyle(ComboBox<F> comboBox, Function<F, String> func) {
+        return newCellFactory((item, cell) -> {
+            cell.setText(comboBox.getConverter().toString(item));
+            cell.setStyle(func.apply(item));
+        });
     }
 
 

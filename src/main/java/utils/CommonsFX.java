@@ -52,15 +52,14 @@ public final class CommonsFX {
 
     public static void loadFXML(String title, File file, Object controller, Stage primaryStage, double... size) {
         RunnableEx.remap(() -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
-            fxmlLoader.setController(controller);
-            Parent content = fxmlLoader.load();
+            Parent content = loadParent(file, controller);
             Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
             primaryStage.setTitle(title);
             primaryStage.setScene(scene);
             primaryStage.show();
         }, "ERROR in file " + file);
     }
+
     public static void loadFXML(String title, File file, Stage primaryStage, double... size) {
         RunnableEx.remap(() -> {
             Parent content = FXMLLoader.load(convertToURL(file));
@@ -70,12 +69,21 @@ public final class CommonsFX {
             primaryStage.show();
         }, "ERROR in file " + file);
     }
-
     public static void loadFXML(String title, String file, Object controller, Stage primaryStage, double... size) {
         loadFXML(title, ResourceFXUtils.toFile(file), controller, primaryStage, size);
     }
+
     public static void loadFXML(String title, String file, Stage primaryStage, double... size) {
         loadFXML(title, ResourceFXUtils.toFile(file), primaryStage, size);
+    }
+
+    public static Parent loadParent(File file, Object controller) {
+        return SupplierEx.remap(() -> {
+        FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
+        fxmlLoader.setController(controller);
+        Parent content = fxmlLoader.load();
+        return content;
+        }, "ERROR IN " + file);
     }
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
         CheckBox checkBox = new CheckBox(name);

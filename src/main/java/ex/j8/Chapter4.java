@@ -113,8 +113,9 @@ public final class Chapter4 {
     }
 
 	private static Circle buildPlanet(Scene scene) {
+        final int defaultRadius = 25;
         Circle planet = new SimpleCircleBuilder().centerX(scene.getWidth() / 4 + 100).centerY(scene.getWidth() / 4)
-				.fill(Color.BLUE).radius(25).build();
+            .fill(Color.BLUE).radius(defaultRadius).build();
         planet.centerXProperty().bind(divide(scene.widthProperty(), 2).add(100));
         planet.centerYProperty().bind(divide(scene.heightProperty(), 2));
         return planet;

@@ -1,58 +1,61 @@
 package paintexp.tool;
 
-import static simplebuilder.SimpleVBoxBuilder.newVBox;
 import static utils.DrawOnPoint.getWithinRange;
 
+import java.io.File;
 import java.util.List;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.FillRule;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
-import simplebuilder.SimpleToggleGroupBuilder;
+import utils.CommonsFX;
+import utils.ResourceFXUtils;
 import utils.RotateUtils;
 
 public class TextTool extends PaintTool {
 
-    private static final Integer[] FONT_SIZES = new Integer[] { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36,
-        48, 72 };
-    private static final String TIMES_NEW_ROMAN = "Times New Roman";
-    private List<String> families = Font.getFamilies();
     private Text text;
     private Rectangle area;
     private double initialX;
     private double initialY;
     private boolean pressed;
     private List<? extends Node> helpers;
+    @FXML
     private TextArea textArea;
+    @FXML
     private ToggleButton bold;
+    @FXML
     private ToggleButton italic;
+    @FXML
     private ToggleButton strikeThrough;
-    private ToggleButton undeline;
-    private SimpleToggleGroupBuilder alignments;
-    private SimpleComboBoxBuilder<Integer> fontSize;
-    private SimpleComboBoxBuilder<String> fontFamily;
+    @FXML
+    private ToggleButton underline;
+    @FXML
+    private ToggleGroup alignments;
+    @FXML
+    private ComboBox<Integer> fontSize;
+    @FXML
+    private ComboBox<String> fontFamily;
 
     @Override
     public Node createIcon() {
-        return new SimpleSvgPathBuilder().content(
-            "M108 40 L 150.0 140.0 H 128.0 L 115.0 110.0 H 85.0 L 70.0 140.0 H 60.0"
+        return new SimpleSvgPathBuilder()
+            .content("M108 40 L 150.0 140.0 H 128.0 L 115.0 110.0 H 85.0 L 70.0 140.0 H 60.0"
                 + " Z  M 100.0 75.0 L 112.0 103.0 H 87.0 Z")
             .stroke(Color.BLACK).fillRule(FillRule.EVEN_ODD).fill(Color.BLACK).build();
     }
@@ -78,10 +81,25 @@ public class TextTool extends PaintTool {
         simpleHandleEvent(e, model);
     }
 
+    @SuppressWarnings("unused")
+    public void onAlignmentChange(ObservableValue<? extends Toggle> ob, Toggle old, Toggle newV) {
+        getText().setTextAlignment(newV == null ? TextAlignment.LEFT : (TextAlignment) newV.getUserData());
+
+    }
+
     @Override
     public void onDeselected(final PaintModel model) {
         takeSnapshot(model);
         model.createImageVersion();
+    }
+
+    public void onOptionsChanged() {
+        FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
+        FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
+        double size = fontSize.getSelectionModel().getSelectedItem();
+        text.setFont(Font.font(fontFamily.getSelectionModel().getSelectedItem(), weight, posture, size));
+        getText().setUnderline(underline.isSelected());
+        getText().setStrikethrough(strikeThrough.isSelected());
     }
 
     @Override
@@ -152,55 +170,15 @@ public class TextTool extends PaintTool {
         }
     }
 
-    private SimpleToggleGroupBuilder createAlignments() {
-        if (alignments == null) {
-            alignments = new SimpleToggleGroupBuilder();
-            Group node = new Group();
-            int maxWidth = 8;
-            for (int i = 0; i < 4; i++) {
-                Line line = new Line(0, i * 3, maxWidth - i % 3, i * 3);
-                node.getChildren().add(line);
-            }
-            alignments.addToggle(node, TextAlignment.LEFT);
-            Group node2 = new Group();
-            for (int i = 0; i < 4; i++) {
-                Line line = new Line(0 + i % 3, i * 3, maxWidth, i * 3);
-                node2.getChildren().add(line);
-            }
-            alignments.addToggle(node2, TextAlignment.RIGHT);
-            Group node3 = new Group();
-            for (int i = 0; i < 4; i++) {
-                Line line = new Line(0, i * 3, maxWidth, i * 3);
-                node3.getChildren().add(line);
-            }
-            alignments.addToggle(node3, TextAlignment.JUSTIFY);
-            Group node4 = new Group();
-            for (int i = 0; i < 4; i++) {
-                Line line = new Line(0 + i % 3, i * 3, maxWidth - i % 3, i * 3);
-                node4.getChildren().add(line);
-            }
-            alignments.addToggle(node4, TextAlignment.CENTER);
-            alignments.onChange((ob, old, newV) -> getText()
-                .setTextAlignment(newV == null ? TextAlignment.LEFT : (TextAlignment) newV.getUserData()));
-        }
-        return alignments;
-    }
-
     private void displayTextOptions(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
-        TextArea textArea2 = getTextArea();
-        SimpleToggleGroupBuilder alignments2 = createAlignments();
-        ToggleButton bold2 = getBoldOption();
-        ToggleButton italic2 = getItalicOption();
-        ToggleButton undeline2 = getUnderlineOption();
-        ToggleButton strikeThrough2 = getStrikeThroughOption();
-        SimpleComboBoxBuilder<Integer> fontSize2 = getFontSizeOption();
-        SimpleComboBoxBuilder<String> fontFamily2 = getFontFamilyOption();
-        final Node node = textArea2;
-
-        model.getToolOptions().getChildren().addAll(newVBox("Font", fontFamily2.build()),
-            newVBox("Size", fontSize2.build()), new HBox(bold2, italic2, undeline2, strikeThrough2),
-            new HBox(alignments2.getTogglesAs(Node.class).toArray(new Node[0])), newVBox("Text", node));
+        File file = ResourceFXUtils.toFile("TextTool.fxml");
+        Parent parent2 = CommonsFX.loadParent(file, this);
+        fontFamily.setCellFactory(SimpleComboBoxBuilder.cellStyle(fontFamily, t -> "-fx-font-family:\"" + t + "\";"));
+        fontFamily.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
+        fontSize.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
+        getText().textProperty().bind(textArea.textProperty());
+        model.getToolOptions().getChildren().addAll(parent2);
     }
 
     private void dragTo(final double x, final double y) {
@@ -208,81 +186,6 @@ public class TextTool extends PaintTool {
         getArea().setLayoutY(Math.min(y, initialY));
         getArea().setWidth(Math.abs(x - initialX));
         getArea().setHeight(Math.abs(y - initialY));
-    }
-
-    private ToggleButton getBoldOption() {
-        if (bold == null) {
-            Text graphic = new Text("B");
-            graphic.setStyle("-fx-font-weight: bold;");
-            bold = new ToggleButton(null, graphic);
-            bold.setTooltip(new Tooltip("Bold"));
-            bold.setOnAction(e -> onOptionsChanged());
-        }
-        return bold;
-    }
-
-    private SimpleComboBoxBuilder<String> getFontFamilyOption() {
-        if (fontFamily == null) {
-            fontFamily = new SimpleComboBoxBuilder<String>().items(families)
-                .styleFunction(t -> "-fx-font-family:\"" + t + "\";").select(TIMES_NEW_ROMAN);
-            fontFamily.onChange((old, newV) -> onOptionsChanged());
-        }
-        return fontFamily;
-    }
-
-    private SimpleComboBoxBuilder<Integer> getFontSizeOption() {
-        if (fontSize == null) {
-            fontSize = new SimpleComboBoxBuilder<Integer>().items(FONT_SIZES);
-            fontSize.onChange((old, newV) -> onOptionsChanged()).select(5);
-
-        }
-        return fontSize;
-    }
-
-    private ToggleButton getItalicOption() {
-        if (italic == null) {
-            Text graphic2 = new Text("I");
-            graphic2.setStyle("-fx-font-style: italic;");
-            graphic2.setFont(Font.font(TIMES_NEW_ROMAN, FontWeight.NORMAL, FontPosture.ITALIC, 12));
-            italic = new ToggleButton(null, graphic2);
-            italic.setOnAction(e -> onOptionsChanged());
-        }
-        return italic;
-    }
-
-    private ToggleButton getStrikeThroughOption() {
-        if (strikeThrough == null) {
-            Text graphic4 = new Text("S");
-            graphic4.setStrikethrough(true);
-            strikeThrough = new ToggleButton(null, graphic4);
-            strikeThrough.setOnAction(e -> onOptionsChanged());
-        }
-        return strikeThrough;
-    }
-
-    private TextArea getTextArea() {
-        textArea = new TextArea();
-        getText().textProperty().bind(textArea.textProperty());
-        return textArea;
-    }
-
-    private ToggleButton getUnderlineOption() {
-        if (undeline == null) {
-            Text graphic3 = new Text("U");
-            graphic3.setUnderline(true);
-            undeline = new ToggleButton(null, graphic3);
-            undeline.setOnAction(e -> onOptionsChanged());
-        }
-        return undeline;
-    }
-
-    private void onOptionsChanged() {
-        FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
-        FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
-        double size = fontSize.selectedItem();
-        text.setFont(Font.font(getFontFamilyOption().selectedItem(), weight, posture, size));
-        getText().setUnderline(undeline.isSelected());
-        getText().setStrikethrough(strikeThrough.isSelected());
     }
 
     private void takeSnapshot(final PaintModel model) {

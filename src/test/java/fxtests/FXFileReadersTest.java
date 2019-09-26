@@ -141,6 +141,7 @@ public class FXFileReadersTest extends ApplicationTest {
             () -> crackImage(createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
     }
 
+
     @Test
     public void testLeitorArquivos() {
 
@@ -166,6 +167,12 @@ public class FXFileReadersTest extends ApplicationTest {
             ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosSNGPCPDF(file);
             WaitForAsyncUtils.waitForFxEvents();
             Assert.assertEquals("Size must be equal", 656, medicamentos.size());
+        });
+        measureTime("LeitorArquivos.getMedicamentosAnvisa", () -> {
+            File file2 = ResourceFXUtils.toFile("anvisa2208.xlsx");
+            ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosAnvisa(file2);
+            WaitForAsyncUtils.waitForFxEvents();
+            Assert.assertEquals("Size must be equal", 679, medicamentos.size());
         });
     }
 

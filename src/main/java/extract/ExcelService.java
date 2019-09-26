@@ -117,7 +117,7 @@ public final class ExcelService {
     }
 
     private static <T> void makeBigExcel(BiFunction<Integer, Integer, List<T>> lista,
-        Map<String, FunctionEx<T, Object>> fields, File file) throws IOException, FileNotFoundException {
+        Map<String, FunctionEx<T, Object>> fields, File file) throws IOException {
         try (FileOutputStream response = new FileOutputStream(file);
             SXSSFWorkbook xssfWorkbook = new SXSSFWorkbook(DEFAULT_ROW_SIZE)) {
             SXSSFSheet sheetAt = xssfWorkbook.createSheet();
@@ -156,7 +156,7 @@ public final class ExcelService {
     }
 
     private static <T> void makeExcelList(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, File file)
-        throws IOException, FileNotFoundException {
+        throws IOException {
         try (FileOutputStream response = new FileOutputStream(file); Workbook workbook = new XSSFWorkbook()) {
             Sheet sheetAt = workbook.createSheet();
             Row row2 = sheetAt.createRow(0);
@@ -192,8 +192,8 @@ public final class ExcelService {
         }
     }
 
-    private static void makeExcelWithClonedSheets(String documento, Map<Object, Object> map, List<String> abas, int sheetClonada,
-        OutputStream response) throws IOException {
+    private static void makeExcelWithClonedSheets(String documento, Map<Object, Object> map, List<String> abas,
+        int sheetClonada, OutputStream response) throws IOException {
         try (InputStream file = ResourceFXUtils.toStream(documento);
             Workbook workbookXLSX = getWorkbook(documento, file)) {
             List<String> abasPresentes = new ArrayList<>();
@@ -226,7 +226,8 @@ public final class ExcelService {
         }
     }
 
-    private static void makeExcelWithSubstitutions(String arquivo, Map<Object, Object> map, OutputStream outStream) throws IOException {
+    private static void makeExcelWithSubstitutions(String arquivo, Map<Object, Object> map, OutputStream outStream)
+        throws IOException {
         try (InputStream file = ResourceFXUtils.toStream(arquivo);
             // Get the workbook instance for XLS file
             Workbook workbookXLSX = getWorkbook(arquivo, file)) {

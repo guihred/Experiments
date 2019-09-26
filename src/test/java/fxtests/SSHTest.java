@@ -2,13 +2,14 @@ package fxtests;
 
 import ethical.hacker.ssh.BaseTestSupport;
 import ethical.hacker.ssh.SSHClientUtils;
+import ethical.hacker.ssh.SSHSessionApp;
 import org.apache.sshd.server.SshServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import utils.CrawlerTask;
 
-public class SSHTest {
+public class SSHTest extends AbstractTestExecution {
     private SshServer sshd;
 
     @Before
@@ -21,6 +22,11 @@ public class SSHTest {
     @After
     public void tearDown() throws Exception {
         sshd.stop(true);
+    }
+
+    @Test
+    public void testApp() throws Exception {
+        show(SSHSessionApp.class);
     }
 
     @Test

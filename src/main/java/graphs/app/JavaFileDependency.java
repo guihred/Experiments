@@ -88,7 +88,6 @@ public class JavaFileDependency {
         }
         if (!path.isEmpty()) {
             path.add(this);
-            return true;
         }
 
         boolean anyMatch = getDependents().stream().filter(t -> !visited.contains(t))
@@ -109,14 +108,12 @@ public class JavaFileDependency {
         return getPackage() + "." + getName() + " " + getClasses();
     }
 
-    public static void displayTestsToBeRun() {
+    public static Set<String> displayTestsToBeRun(Collection<String> asList) {
         List<JavaFileDependency> allFileDependencies = getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
         }
 
-        List<String> asList = Arrays.asList("SSHSessionApp", "ExcelService", "TronLauncher", "JavaFileDependency",
-            "PackageTopology", "ProjectTopology", "ConsoleUtils");
         Set<String> testClasses = new HashSet<>();
 
         for (JavaFileDependency dependecy : allFileDependencies) {
@@ -131,8 +128,8 @@ public class JavaFileDependency {
                     .map(JavaFileDependency::getName).collect(Collectors.toList()));
             }
         }
-        String tests = testClasses.stream().collect(Collectors.joining(",*"));
-        HasLogging.log().info("tests {}", tests);
+
+        return testClasses;
     }
 
     public static List<JavaFileDependency> getAllFileDependencies() {
@@ -147,7 +144,8 @@ public class JavaFileDependency {
     }
 
     public static void main(String[] args) {
-        displayTestsToBeRun();
+        displayTestsToBeRun(
+            Arrays.asList("SSHSessionApp", "EWSTest", "StatsLogAccess", "LeitorArquivos", "JavaFileDependency"));
     }
 
     private static List<String> linesMatches(String line) {
