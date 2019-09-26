@@ -5,11 +5,17 @@
 <?import javafx.beans.property.*?>
 <?import javafx.scene.shape.*?>
 <?import paintexp.tool.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" spacing="5.0">
-  <fx:define>
-        <ToggleGroup fx:id="optionGroup"
-            onSelectedToggleChange="#onOptionChange" />
-    </fx:define>
+<VBox xmlns:fx="http://javafx.com/fxml" spacing="5.0" alignment="CENTER">
+	<fx:define>
+		<ToggleGroup fx:id="optionGroup" onSelectedToggleChange="#onOptionChange" />
+		<Circle fx:id="circle" radius="${lengthSlider.value}" managed="false" />
+		<Rectangle fx:id="rectangle" width="${lengthSlider.value}"
+			height="${lengthSlider.value}" managed="false" />
+		<Line fx:id="swne" startY="${lengthSlider.value}" endX="${lengthSlider.value}"
+			managed="false" />
+		<Line fx:id="nwse" endY="${lengthSlider.value}" endX="${lengthSlider.value}"
+			managed="false" />
+	</fx:define>
 	<children>
 		<Text fx:id="text0" text="Length" />
 		<Slider blockIncrement="0.49" fx:id="lengthSlider" max="50.0"
@@ -31,8 +37,8 @@
 				<BrushOption fx:value="CIRCLE" />
 			</userData>
 		</ToggleButton>
-		<ToggleButton fx:id="toggleButton4"
-			styleClass="toggle-button square" toggleGroup="$optionGroup">
+		<ToggleButton fx:id="toggleButton4" styleClass="toggle-button square"
+			toggleGroup="$optionGroup">
 			<graphic>
 				<Rectangle height="10.0" width="10.0" />
 			</graphic>
@@ -43,8 +49,8 @@
 				<BrushOption fx:value="SQUARE" />
 			</userData>
 		</ToggleButton>
-		<ToggleButton fx:id="toggleButton5"
-			styleClass="toggle-button line_nw_se" toggleGroup="$optionGroup">
+		<ToggleButton fx:id="toggleButton5" styleClass="toggle-button line_nw_se"
+			toggleGroup="$optionGroup">
 			<graphic>
 				<Line endX="10.0" endY="10.0" />
 			</graphic>
@@ -55,8 +61,8 @@
 				<BrushOption fx:value="LINE_NW_SE" />
 			</userData>
 		</ToggleButton>
-		<ToggleButton fx:id="toggleButton6"
-			styleClass="toggle-button line_sw_ne" toggleGroup="$optionGroup">
+		<ToggleButton fx:id="toggleButton6" styleClass="toggle-button line_sw_ne"
+			toggleGroup="$optionGroup">
 			<graphic>
 				<Line endX="10.0" startY="10.0" />
 			</graphic>
@@ -68,5 +74,5 @@
 			</userData>
 		</ToggleButton>
 	</children>
-  
+
 </VBox>

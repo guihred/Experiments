@@ -18,9 +18,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
@@ -35,7 +32,6 @@ public class BrushTool extends PaintTool {
 
     private BrushOption option = BrushOption.CIRCLE;
 
-
     private Map<BrushOption, Shape> mouseCursor;
     @FXML
     private Slider lengthSlider;
@@ -43,37 +39,31 @@ public class BrushTool extends PaintTool {
     private Slider opacitySlider;
     @FXML
     private ToggleGroup optionGroup;
+    @FXML
+	private Shape circle;
+    @FXML
+	private Shape rectangle;
+	@FXML
+	private Shape swne;
+	@FXML
+	private Shape nwse;
 
-    @Override
-    public Node createIcon() {
-        return PaintToolHelper.getIconByURL("brush.png");
-    }
+	@Override
+	public Node createIcon() {
+		return PaintToolHelper.getIconByURL("brush.png");
+	}
 
-    @Override
+	@Override
     public Cursor getMouseCursor() {
         return Cursor.NONE;
     }
-
     public Map<BrushOption, Shape> getMouseCursorMap() {
         if (mouseCursor == null) {
-            mouseCursor = new EnumMap<>(BrushOption.class);
-            Circle circle = new Circle(10);
-            circle.radiusProperty().bind(lengthSlider.valueProperty());
+			mouseCursor = new EnumMap<>(BrushOption.class);
             mouseCursor.put(BrushOption.CIRCLE, circle);
-            Rectangle square = new Rectangle(10, 10);
-            square.widthProperty().bind(lengthSlider.valueProperty());
-            square.heightProperty().bind(lengthSlider.valueProperty());
-            mouseCursor.put(BrushOption.SQUARE, square);
-            Line line1 = new Line(0, 10, 10, 0);
-            line1.startYProperty().bind(lengthSlider.valueProperty());
-            line1.endXProperty().bind(lengthSlider.valueProperty());
-            mouseCursor.put(BrushOption.LINE_SW_NE, line1);
-            Line line2 = new Line(0, 0, 10, 10);
-            line2.endXProperty().bind(lengthSlider.valueProperty());
-            line2.endYProperty().bind(lengthSlider.valueProperty());
-            mouseCursor.put(BrushOption.LINE_NW_SE, line2);
-            mouseCursor.values().forEach(n -> n.setManaged(false));
-
+			mouseCursor.put(BrushOption.SQUARE, rectangle);
+			mouseCursor.put(BrushOption.LINE_SW_NE, swne);
+			mouseCursor.put(BrushOption.LINE_NW_SE, nwse);
         }
 
         return mouseCursor;
@@ -115,10 +105,9 @@ public class BrushTool extends PaintTool {
 
     @Override
     public void onSelected(final PaintModel model) {
+		mouseCursor = null;
         model.getToolOptions().getChildren().clear();
         Parent loadParent = CommonsFX.loadParent(ResourceFXUtils.toFile("BrushTool.fxml"), this);
-
-
         model.getToolOptions().getChildren().add(loadParent);
 
     }
