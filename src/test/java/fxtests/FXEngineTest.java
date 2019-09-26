@@ -202,7 +202,7 @@ public class FXEngineTest extends AbstractTestExecution {
         interactNoWait(() -> currentStage.setMaximized(true));
         List<Node> queryAll = lookup(e -> e instanceof PuzzlePiece).queryAll().stream().filter(e -> e.isVisible())
             .collect(Collectors.toList());
-        int squareSize = DotsSquare.SQUARE_SIZE;
+		double squareSize = DotsSquare.SQUARE_SIZE;
         for (int i = 0; i < queryAll.size() / 5; i++) {
             Node next = queryAll.get(i);
             RunnableEx.ignore(() -> drag(next, MouseButton.PRIMARY));

@@ -10,7 +10,7 @@ import utils.StringSigaUtils;
 
 class EchoShell extends CommandExecutionHelper {
 
-    public static final ObservableList<String> COMMANDS = FXCollections.observableArrayList();
+    private static final ObservableList<String> COMMANDS = FXCollections.observableArrayList();
 
     public EchoShell() {
         super();
@@ -30,4 +30,8 @@ class EchoShell extends CommandExecutionHelper {
 		return !"exit".equals(command1);
 
     }
+
+	public static ObservableList<String> getCommands() {
+		return COMMANDS;
+	}
 }

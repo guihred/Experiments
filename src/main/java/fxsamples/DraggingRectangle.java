@@ -10,7 +10,7 @@ import utils.RotateUtils;
 
 public class DraggingRectangle extends Application {
 
-    private static final int SIZE = 800;
+	private static final double SIZE = 800;
 
     @Override
     public void start(final Stage primaryStage) {

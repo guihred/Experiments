@@ -47,7 +47,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                     }
                     if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() != 0) {
                         String w = currentWord.toString();
-                        LOG.trace("{}={}", w, getReading(w, currentLetter));
+						log(w, getReading(w, currentLetter));
                         currentWord.delete(0, currentWord.length());
                     }
                     currentBlock = of;
@@ -57,16 +57,16 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             LOG.error("", e);
         }
     }
-    public String getReading(String currentWord, char currentLetter) {
+
+	public String getReading(String currentWord, char currentLetter) {
 		String key = currentWord + currentLetter;
 		boolean notContains = !mapReading.containsKey(key);
         String reading = getReading(currentWord, currentLetter, 0);
 		if (notContains) {
-            LOG.info("{}={}", key, reading);
+			log(key, reading);
 		}
 		return reading;
     }
-
     public String getReading(String currentWord, char currentLetter, int recursive) {
         String key = currentWord + currentLetter;
         if (mapReading.containsKey(key)) {
@@ -195,7 +195,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return "Completed at " + LocalTime.now();
     }
 
-    private StringBuilder placeFurigana(String line) {
+	private StringBuilder placeFurigana(String line) {
         String[] split = line.split("");
         StringBuilder currentWord = new StringBuilder();
         StringBuilder currentLine = new StringBuilder();
@@ -213,7 +213,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 } else {
                     currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
                 }
-                LOG.trace("{}={}", currentWord, reading);
+                log( currentWord, reading);
                 currentWord.delete(0, currentWord.length());
             }
             if (!KANJI_BLOCK.contains(of)) {
@@ -237,6 +237,10 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         }
         return lines;
     }
+
+    private static void log(Object a, Object b) {
+		LOG.trace("{}={}", a, b);
+	}
 
     private static boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {
         return link.text().equals(currentWord) || link.text().equals(currentWord + currentLetter);

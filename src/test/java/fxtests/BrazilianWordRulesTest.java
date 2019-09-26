@@ -5,7 +5,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,19 +64,11 @@ public class BrazilianWordRulesTest {
                 .map(e -> e.replaceAll(".+\t\\[(\\$\\.+\\$)*(.+)\\]", "$2")).flatMap(e -> Stream.of(e.split(",")))
                 .collect(Collectors.groupingBy(e -> e.split("=")[0].replaceAll("\\$.+\\$", ""),
                     Collectors.mapping(e -> e.split("=")[1].replaceAll("\\$[A-Z]+", ""), Collectors.toSet())));
-            wordAttributes.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue().size())).forEach(e -> {
-                // System.out.println(e.getKey());
-                // System.out.println("\t" + e.getValue());
-                // e.getValue().forEach(v -> System.out.println("\t" + v));
-            });
             // T
             // [inf, ppa, pp, c, f, ip, i, pic, p, pmp, pc, pi, fc]
-            List<String> a = Arrays.asList("inf", "ppa", "pp", "c", "f", "ip", "i", "pic", "p", "pmp", "pc", "pi",
-                "fc");
-            for (String s : a) {
-                getWords(ResourceFXUtils.toURI("pt_PT.dic")).filter(e -> e.contains("T=" + s))
-                    .map(e -> e.split("\t")[0].replaceAll("/\\w+", "")).forEach(e -> System.out.print(e + " "));
-            }
+			List<String> a = Arrays.asList("inf", "ppa", "pp", "c", "f", "ip", "i", "pic", "p", "pmp", "pc", "pi",
+					"fc");
+			Assert.assertTrue("Deve conter todos os tempos", wordAttributes.get("T").containsAll(a));
         } catch (IOException e) {
             LOG.error("", e);
         }

@@ -122,7 +122,7 @@ public class Ch3 {
     }
 
     public static void tasks() {
-        StringBuffer s = new StringBuffer();
+		StringBuilder s = new StringBuilder();
         Runnable[] array = IntStream.range(1, 12).mapToObj(r -> (Runnable) () -> s.append(r + " "))
             .toArray(Runnable[]::new);
 

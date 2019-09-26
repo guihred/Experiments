@@ -24,7 +24,7 @@ public interface SupplierEx<T> {
             }
             return a;
         } catch (Throwable e) {
-            HasLogging.log(1).trace("", e);
+			HasLogging.log(1).info("", e);
             return orElse;
         }
     }

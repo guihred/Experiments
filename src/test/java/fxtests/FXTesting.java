@@ -98,6 +98,7 @@ public final class FXTesting implements HasLogging {
             runnable.run();
         } catch (Exception e) {
             log.error("Exception in " + name, e);
+			Assert.fail("Exception in " + name);
         }
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;

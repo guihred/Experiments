@@ -26,7 +26,9 @@ import utils.HasLogging;
 import utils.StringSigaUtils;
 
 public class ContestApplicationController {
-    private static final Logger LOG = HasLogging.log();
+    private static final String ERRADO0 = "errado0";
+	private static final String CERTO0 = "certo0";
+	private static final Logger LOG = HasLogging.log();
     @FXML
     private ScrollPane scrollPane2;
     @FXML
@@ -64,10 +66,10 @@ public class ContestApplicationController {
             Integer number = contestTexts.get(current.get()).getNumber();
             LOG.info("Question {} Answer {}", number, correct);
             splitPane0.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
-                if (e.contains("certo0")) {
+                if (e.contains(CERTO0)) {
                     e.add("certo");
                 }
-                if (e.contains("errado0")) {
+                if (e.contains(ERRADO0)) {
                     e.add("errado");
                 }
             });
@@ -76,8 +78,8 @@ public class ContestApplicationController {
             Text text1 = new Text(el.getAnswer());
             text1.wrappingWidthProperty().bind(scrollPane3.widthProperty().add(-10));
             cell.setGraphic(text1);
-            cell.getStyleClass().removeAll("certo", "errado", "certo0", "errado0");
-            cell.getStyleClass().add(el.getCorrect() ? "certo0" : "errado0");
+            cell.getStyleClass().removeAll("certo", "errado", CERTO0, ERRADO0);
+            cell.getStyleClass().add(el.getCorrect() ? CERTO0 : ERRADO0);
         }));
         current.addListener((ob, old, value) -> {
             int cur = value.intValue();

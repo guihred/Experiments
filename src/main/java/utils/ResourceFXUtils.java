@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 public final class ResourceFXUtils {
 
     private static final Logger LOGGER = HasLogging.log();
-    public static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
+    private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
     "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
     "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
     "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
@@ -203,5 +203,9 @@ public final class ResourceFXUtils {
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
         return (value - min) * (newMax - newMin) / (max - min) + newMin;
     }
+
+	public static List<String> getJavaKeywords() {
+		return JAVA_KEYWORDS;
+	}
 
 }

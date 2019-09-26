@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 
 public final class TermFrequency {
     private static final Logger LOGGER = HasLogging.log();
@@ -54,7 +55,7 @@ public final class TermFrequency {
                     Stream.of(readLine.split(REGEX)).parallel()
                         .map(String::toLowerCase)
                         .filter(e -> !StringUtils.isNumeric(e))
-                        .filter(t -> !TermFrequencyIndex.getJavaKeywords().contains(t))
+                        .filter(t -> !ResourceFXUtils.getJavaKeywords().contains(t))
                         .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
                 }
             } while (readLine != null);

@@ -151,10 +151,6 @@ public final class TermFrequencyIndex {
         }
     }
 
-    public static List<String> getJavaKeywords() {
-        return ResourceFXUtils.JAVA_KEYWORDS;
-    }
-
     public static void identifyKeyWordsInSourceFiles() {
         try {
 
@@ -200,7 +196,7 @@ public final class TermFrequencyIndex {
         try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
 
             entrySet.forEach(e -> {
-                if (!ResourceFXUtils.JAVA_KEYWORDS.contains(e.getKey())) {
+                if (!ResourceFXUtils.getJavaKeywords().contains(e.getKey())) {
                     out.println(e.getKey() + "={");
                     e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
                     out.println("}");

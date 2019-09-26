@@ -26,8 +26,7 @@ public class EthicalHackApp extends Application {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        double[] size = { 500, 500 };
-        CommonsFX.loadFXML("Ethical Hack App", toFile("EthicalHackApp.fxml"), primaryStage, size);
+		CommonsFX.loadFXML("Ethical Hack App", toFile("EthicalHackApp.fxml"), primaryStage, 500, 500);
     }
 
     public static void main(final String[] args) {

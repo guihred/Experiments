@@ -3,9 +3,7 @@ package extract;
 import static java.util.Comparator.comparing;
 
 import java.io.File;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -13,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.TableView;
 
 public final class FilesComparatorHelper {
+	private static final List<String> STYLE_CLASSES = Arrays.asList("", "vermelho", "amarelo");
     private FilesComparatorHelper() {
     }
 
@@ -23,7 +22,7 @@ public final class FilesComparatorHelper {
     public static String getItemClass(ObservableList<File> items2, File s, ObservableList<String> classes,
         Map<File, Music> fileMap) {
         String fileString = toFileString(s);
-        classes.removeAll("", "vermelho", "amarelo");
+		classes.removeAll(STYLE_CLASSES);
         Optional<File> findFirst = items2.stream().filter(m -> toFileString(m).equals(fileString)).findFirst();
         if (!findFirst.isPresent()) {
             return "vermelho";
@@ -54,7 +53,7 @@ public final class FilesComparatorHelper {
         Platform.runLater(() -> {
             Parent root = table1.getScene().getRoot();
             for (Node cell : root.lookupAll(".cell")) {
-                cell.getStyleClass().removeAll("", "vermelho", "amarelo");
+				cell.getStyleClass().removeAll(STYLE_CLASSES);
             }
             File selectedItem = table1.getSelectionModel().getSelectedItem();
 

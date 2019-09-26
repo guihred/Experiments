@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import sun.misc.Unsafe;
 import utils.HasLogging;
 
+@SuppressWarnings("restriction")
 public final class ControllerCompiler {
 
     private static final String JAVA_HOME = "java.home";

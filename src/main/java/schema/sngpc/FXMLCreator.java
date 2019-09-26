@@ -159,7 +159,7 @@ public final class FXMLCreator {
                     return changeCase(f.getClass().getSimpleName()) + string;
                 }
                 if (referencedNodes.values().stream().anyMatch(string::equals)
-                    || ResourceFXUtils.JAVA_KEYWORDS.contains(string)) {
+                    || ResourceFXUtils.getJavaKeywords().contains(string)) {
                     return string + referencedNodes.size();
                 }
                 return string;

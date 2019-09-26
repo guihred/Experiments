@@ -4,10 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.ToDoubleFunction;
@@ -22,7 +19,7 @@ import org.slf4j.Logger;
 
 public final class ConsoleUtils {
     private static final int WAIT_INTERVAL_MILLIS = 5_000; // 5 SECONDS
-    private static final int PROCESS_MAX_TIME_LIMIT = 120_000; // 2 MINUTES
+	public static final int PROCESS_MAX_TIME_LIMIT = 120_000; // 2 MINUTES
     private static final String ACTIVE_FLAG = "active";
     private static final Logger LOGGER = HasLogging.log();
     private static final String EXECUTING = "Executing \"{}\"";
@@ -157,8 +154,34 @@ public final class ConsoleUtils {
         return execution;
     }
 
-    public static Process newUnmappedProcess(final String cmd) {
-        return SupplierEx.remap(() -> Runtime.getRuntime().exec(cmd), "ERROR CREATING PROCESS");
+	public static Process startProcessAndWait(final String cmd, String regex) {
+		return SupplierEx.remap(() -> {
+			List<String> response = Collections.synchronizedList(new ArrayList<>(Arrays.asList(regex)));
+			Process exec = Runtime.getRuntime().exec(cmd);
+			Thread mainThread = new Thread(RunnableEx.make(() -> {
+				try (BufferedReader in = new BufferedReader(
+						new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
+					String line;
+					while ((line = in.readLine()) != null) {
+						LOGGER.info(line);
+						String line0 = line;
+						if (response.stream().anyMatch(line0::matches)) {
+							response.clear();
+							return;
+						}
+
+					}
+				}
+			}), "Unmapped Thread " + cmd);
+			mainThread.start();
+			long currentTimeMillis = System.currentTimeMillis();
+			while (!response.isEmpty()) {
+				if (System.currentTimeMillis() - currentTimeMillis > ConsoleUtils.PROCESS_MAX_TIME_LIMIT) {
+					break;
+				}
+			}
+			return exec;
+		}, "ERROR CREATING PROCESS");
     }
 
     public static void waitAllProcesses() {

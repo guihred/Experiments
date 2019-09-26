@@ -11,7 +11,7 @@ import javafx.scene.shape.Circle;
 
 public class DotsSquare extends Region {
 
-    public static final int SQUARE_SIZE = 40;
+	public static final double SQUARE_SIZE = 40;
 
     private final int i;
     private final int j;
@@ -22,7 +22,7 @@ public class DotsSquare extends Region {
         this.i = i;
         this.j = j;
         setLayoutX(i * SQUARE_SIZE);
-        setLayoutY(j * SQUARE_SIZE);
+		setLayoutY(j * SQUARE_SIZE);
 
         final Circle circle = new Circle(SQUARE_SIZE / 2, SQUARE_SIZE / 2, 2, Color.BLACK);
         circle.fillProperty().bind(Bindings.when(hoverProperty()).then(Color.WHITE).otherwise(Color.BLACK));

@@ -2,6 +2,7 @@ package election;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,10 +17,6 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
     private static final Logger LOG = HasLogging.log();
 
     private CandidatoDAO candidatoDAO = new CandidatoDAO();
-    private List<String> estados = Arrays.asList("acre", "alagoas", "amazonas", "amapa", "bahia", "ceara",
-        "distrito-federal", "espirito-santo", "goias", "maranhao", "minas-gerais", "mato-grosso-sul", "mato-grosso",
-        "para", "paraiba", "pernambuco", "piaui", "parana", "rio-janeiro", "rio-grande-norte", "rondonia", "roraima",
-        "rio-grande-sul", "santa-catarina", "sergipe", "sao-paulo", "tocantins");
     private Map<String, String> estadosMap = ImmutableMap.<String, String>builder().put("acre", "AC")
         .put("alagoas", "AL").put("amazonas", "AM").put("amapa", "AP").put("bahia", "BA").put("ceara", "CE")
         .put("distrito-federal", "DF").put("espirito-santo", "ES").put("goias", "GO").put("maranhao", "MA")
@@ -27,6 +24,7 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
         .put("paraiba", "PB").put("pernambuco", "PE").put("piaui", "PI").put("parana", "PR").put("rio-janeiro", "RJ")
         .put("rio-grande-norte", "RN").put("rondonia", "RO").put("roraima", "RR").put("rio-grande-sul", "RS")
         .put("santa-catarina", "SC").put("sergipe", "SE").put("sao-paulo", "SP").put("tocantins", "TO").build();
+	private List<String> estados = estadosMap.keySet().stream().collect(Collectors.toList());
 
     private List<String> cargos = Arrays.asList("senador", "governador", "deputado-federal", "deputado-estadual");
 

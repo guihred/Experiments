@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import utils.HasLogging;
 import utils.SupplierEx;
 
 public class JavaFileDependecy {
@@ -112,19 +113,8 @@ public class JavaFileDependecy {
         return getPackage() + "." + getName() + " " + getClasses();
     }
 
-    public static List<JavaFileDependecy> getAllFileDependencies() {
-        return SupplierEx.get(() -> {
-            File file = new File("src");
-            try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
-                return walk.filter(e -> e.toFile().getName().endsWith(".java")).map(JavaFileDependecy::new)
-                    .collect(Collectors.toList());
-            }
-        }, new ArrayList<>());
-
-    }
-
-    public static void main(String[] args) {
-        List<JavaFileDependecy> allFileDependencies = getAllFileDependencies();
+    public static void displayTestsToBeRun() {
+		List<JavaFileDependecy> allFileDependencies = getAllFileDependencies();
         for (JavaFileDependecy dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
         }
@@ -136,12 +126,26 @@ public class JavaFileDependecy {
                 List<JavaFileDependecy> visited= new ArrayList<>();
                 List<JavaFileDependecy> path = new ArrayList<>();
                 if (dependecy.search("fxtests", visited, path)) {
-                    System.out.println(dependecy.getFullName() + " "
-                        + path.stream().map(e -> e.getFullName()).collect(Collectors.toList()));
+					HasLogging.log().info("{} {}", dependecy.getFullName(),
+							path.stream().map(JavaFileDependecy::getFullName).collect(Collectors.toList()));
                 }
             }
         }
-//        System.out.println(allFileDependencies.stream().map(Objects::toString).collect(Collectors.joining("\n")));
+	}
+
+    public static List<JavaFileDependecy> getAllFileDependencies() {
+        return SupplierEx.get(() -> {
+            File file = new File("src");
+            try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
+                return walk.filter(e -> e.toFile().getName().endsWith(".java")).map(JavaFileDependecy::new)
+                    .collect(Collectors.toList());
+            }
+        }, new ArrayList<>());
+
+    }
+
+	public static void main(String[] args) {
+		displayTestsToBeRun();
     }
 
     private static List<String> linesMatches(String line) {
