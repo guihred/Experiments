@@ -18,7 +18,7 @@ import ex.j9.ch4.Rectangle;
 import extract.ExcelService;
 import gaming.ex16.MadEdge;
 import graphs.EdgeElement;
-import graphs.app.JavaFileDependecy;
+import graphs.app.JavaFileDependency;
 import graphs.app.PackageTopology;
 import graphs.entities.EdgeDistancePack;
 import graphs.entities.Linha;
@@ -172,9 +172,9 @@ public class FXFileReadersTest extends ApplicationTest {
     @Test
     public void testPackageTopology() {
         measureTime("PackageTopology.main", () -> {
-            List<JavaFileDependecy> javaFiles = PackageTopology.getJavaFileDependencies(null);
-            Map<String, List<JavaFileDependecy>> filesByPackage = javaFiles.stream()
-                .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
+            List<JavaFileDependency> javaFiles = PackageTopology.getJavaFileDependencies(null);
+            Map<String, List<JavaFileDependency>> filesByPackage = javaFiles.stream()
+                .collect(Collectors.groupingBy(JavaFileDependency::getPackage));
             filesByPackage.forEach((pack, files) -> {
                 LOG.trace(pack);
                 Map<String, Map<String, Long>> packageDependencyMap = PackageTopology.createFileDependencyMap(files);

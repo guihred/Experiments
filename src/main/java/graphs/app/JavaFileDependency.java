@@ -4,10 +4,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -15,7 +12,7 @@ import java.util.stream.Stream;
 import utils.HasLogging;
 import utils.SupplierEx;
 
-public class JavaFileDependecy {
+public class JavaFileDependency {
     private static final String IMPORT_REGEX = "import ([\\w\\.]+)\\.[\\w\\*]+;"
         + "|import static ([\\w\\.]+)\\.\\w+\\.\\w+;";
     private static final String CLASS_REGEX = "\\W+([A-Z]\\w+)\\W";
@@ -23,11 +20,11 @@ public class JavaFileDependecy {
     private Path javaPath;
     private List<String> dependencies;
     private List<String> classes;
-    private List<JavaFileDependecy> dependents;
+    private List<JavaFileDependency> dependents;
     private String name;
     private String packageName;
 
-    public JavaFileDependecy(Path javaPath) {
+    public JavaFileDependency(Path javaPath) {
         this.javaPath = javaPath;
     }
 
@@ -35,8 +32,8 @@ public class JavaFileDependecy {
         if (classes == null) {
             classes = SupplierEx.get(() -> {
                 try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
-                    return lines.map(JavaFileDependecy::linesMatches).flatMap(List<String>::stream)
-                        .filter(e -> !getName().equals(e)).collect(Collectors.toList());
+                    return lines.map(s -> s.replaceAll("\"[^\"]+\"", "")).map(JavaFileDependency::linesMatches)
+                        .flatMap(List<String>::stream).filter(e -> !getName().equals(e)).collect(Collectors.toList());
                 }
             });
         }
@@ -55,12 +52,12 @@ public class JavaFileDependecy {
         return dependencies;
     }
 
-    public List<JavaFileDependecy> getDependents() {
+    public List<JavaFileDependency> getDependents() {
         return dependents;
     }
 
     public String getFullName() {
-        return getPackage()+"."+getName();
+        return getPackage() + "." + getName();
     }
 
     public String getName() {
@@ -82,9 +79,9 @@ public class JavaFileDependecy {
         return packageName;
     }
 
-    public boolean search(String name1, List<JavaFileDependecy> visited, List<JavaFileDependecy> path) {
+    public boolean search(String name1, List<JavaFileDependency> visited, List<JavaFileDependency> path) {
         visited.add(this);
-        for(JavaFileDependecy d:getDependents()){
+        for (JavaFileDependency d : getDependents()) {
             if (d.getFullName().contains(name1)) {
                 path.add(d);
             }
@@ -102,9 +99,8 @@ public class JavaFileDependecy {
         return anyMatch;
     }
 
-    public void setDependents(List<JavaFileDependecy> dependents) {
-        this.dependents = dependents.stream()
-            .filter(d->d.getClasses().contains(getName()))
+    public void setDependents(Collection<JavaFileDependency> dependents) {
+        this.dependents = dependents.stream().filter(d -> d.getClasses().contains(getName()))
             .collect(Collectors.toList());
     }
 
@@ -114,38 +110,44 @@ public class JavaFileDependecy {
     }
 
     public static void displayTestsToBeRun() {
-		List<JavaFileDependecy> allFileDependencies = getAllFileDependencies();
-        for (JavaFileDependecy dependecy : allFileDependencies) {
+        List<JavaFileDependency> allFileDependencies = getAllFileDependencies();
+        for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
         }
 
-        List<String> asList = Arrays.asList("IadesHelper", "Cidade", "CrawlerCandidates2018Task", "WordService",
-            "EWSTest", "StatsLogAccess", "LeitorArquivos");
-        for (JavaFileDependecy dependecy : allFileDependencies) {
-            if(asList.contains(dependecy.getName())) {
-                List<JavaFileDependecy> visited= new ArrayList<>();
-                List<JavaFileDependecy> path = new ArrayList<>();
-                if (dependecy.search("fxtests", visited, path)) {
-					HasLogging.log().info("{} {}", dependecy.getFullName(),
-							path.stream().map(JavaFileDependecy::getFullName).collect(Collectors.toList()));
-                }
+        List<String> asList = Arrays.asList("SSHSessionApp", "ExcelService", "TronLauncher", "JavaFileDependency",
+            "PackageTopology", "ProjectTopology", "ConsoleUtils");
+        Set<String> testClasses = new HashSet<>();
+
+        for (JavaFileDependency dependecy : allFileDependencies) {
+            if (asList.contains(dependecy.getName())) {
+                List<JavaFileDependency> visited = new ArrayList<>();
+                List<JavaFileDependency> path = new ArrayList<>();
+                String name1 = "fxtests";
+                dependecy.search(name1, visited, path);
+                HasLogging.log().info("{} {}", dependecy.getFullName(),
+                    path.stream().map(JavaFileDependency::getFullName).collect(Collectors.toList()));
+                testClasses.addAll(path.stream().filter(e -> e.getFullName().contains(name1))
+                    .map(JavaFileDependency::getName).collect(Collectors.toList()));
             }
         }
-	}
+        String tests = testClasses.stream().collect(Collectors.joining(",*"));
+        HasLogging.log().info("tests {}", tests);
+    }
 
-    public static List<JavaFileDependecy> getAllFileDependencies() {
+    public static List<JavaFileDependency> getAllFileDependencies() {
         return SupplierEx.get(() -> {
             File file = new File("src");
             try (Stream<Path> walk = Files.walk(file.toPath(), 20)) {
-                return walk.filter(e -> e.toFile().getName().endsWith(".java")).map(JavaFileDependecy::new)
+                return walk.filter(e -> e.toFile().getName().endsWith(".java")).map(JavaFileDependency::new)
                     .collect(Collectors.toList());
             }
         }, new ArrayList<>());
 
     }
 
-	public static void main(String[] args) {
-		displayTestsToBeRun();
+    public static void main(String[] args) {
+        displayTestsToBeRun();
     }
 
     private static List<String> linesMatches(String line) {

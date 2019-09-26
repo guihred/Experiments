@@ -46,9 +46,9 @@ public class ProjectTopology extends BaseTopology {
     }
 
     private static Map<String, Map<String, Long>> createProjectDependencyMap() {
-        List<JavaFileDependecy> javaFileDependencies = JavaFileDependecy.getAllFileDependencies();
-        Map<String, List<JavaFileDependecy>> filesByPackage = javaFileDependencies.stream()
-            .collect(Collectors.groupingBy(JavaFileDependecy::getPackage));
+        List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getAllFileDependencies();
+        Map<String, List<JavaFileDependency>> filesByPackage = javaFileDependencies.stream()
+            .collect(Collectors.groupingBy(JavaFileDependency::getPackage));
 
         Map<String, Map<String, Long>> packageDependencyMap = new HashMap<>();
         filesByPackage

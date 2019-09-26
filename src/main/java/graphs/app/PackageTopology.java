@@ -19,7 +19,7 @@ public class PackageTopology extends BaseTopology {
 
     private static final Logger LOG = HasLogging.log();
     private String chosenPackageName;
-    private ObservableList<String> packages = getJavaFileDependencies(null).stream().map(JavaFileDependecy::getPackage)
+    private ObservableList<String> packages = getJavaFileDependencies(null).stream().map(JavaFileDependency::getPackage)
         .distinct().collect(Collectors.toCollection(FXCollections::observableArrayList));
 
     public PackageTopology(@NamedArg("graph") Graph graph) {
@@ -41,11 +41,11 @@ public class PackageTopology extends BaseTopology {
         this.chosenPackageName = chosenPackageName;
     }
 
-    private List<JavaFileDependecy> createGraph() {
+    private List<JavaFileDependency> createGraph() {
         graph.clean();
         graph.getModel().removeAllCells();
         graph.getModel().removeAllEdges();
-        List<JavaFileDependecy> javaFiles = getJavaFileDependencies(chosenPackageName);
+        List<JavaFileDependency> javaFiles = getJavaFileDependencies(chosenPackageName);
         Map<String, Map<String, Long>> packageDependencyMap = createFileDependencyMap(javaFiles);
         for (String packageName : packageDependencyMap.keySet()) {
             graph.getModel().addCell(packageName, CellType.RECTANGLE);
@@ -62,22 +62,22 @@ public class PackageTopology extends BaseTopology {
         return javaFiles;
     }
 
-    public static Map<String, Map<String, Long>> createFileDependencyMap(Collection<JavaFileDependecy> javaFiles) {
-        List<String> classesNames = javaFiles.stream().map(JavaFileDependecy::getName).sorted()
+    public static Map<String, Map<String, Long>> createFileDependencyMap(Collection<JavaFileDependency> javaFiles) {
+        List<String> classesNames = javaFiles.stream().map(JavaFileDependency::getName).sorted()
             .collect(Collectors.toList());
-        return javaFiles.stream().collect(Collectors.toMap(JavaFileDependecy::getName, k -> k.getClasses().stream()
+        return javaFiles.stream().collect(Collectors.toMap(JavaFileDependency::getName, k -> k.getClasses().stream()
             .filter(classesNames::contains).collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
     }
 
-    public static List<JavaFileDependecy> getJavaFileDependencies(String packName) {
-        return JavaFileDependecy.getAllFileDependencies().stream()
+    public static List<JavaFileDependency> getJavaFileDependencies(String packName) {
+        return JavaFileDependency.getAllFileDependencies().stream()
 					.filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
 					.collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
 
-        List<JavaFileDependecy> javaFiles = getJavaFileDependencies(null);
+        List<JavaFileDependency> javaFiles = getJavaFileDependencies(null);
         Map<String, Map<String, Long>> packageDependencyMap = createFileDependencyMap(javaFiles);
         printDependencyMap(packageDependencyMap);
 
