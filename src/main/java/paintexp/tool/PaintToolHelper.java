@@ -19,6 +19,15 @@ public final class PaintToolHelper {
     private PaintToolHelper() {
     }
 
+    public static void drawSquare(final PaintModel model, final int x2, final int y2, final boolean fill, double r,
+        Color color, double op) {
+        drawSquareLine(model.getImage(), model.getImageVersions(), x2, y2, (int) r, color, op);
+        if (fill) {
+            RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op, model.getImage(),
+                model.getImageVersions());
+        }
+    }
+
     public static void drawCircle(WritableImage image, int centerX, int centerY, double radiusX, double radiusY,
         Color color) {
         double nPoints = Math.max(radiusX, radiusY) * N_POINTS_MULTIPLIER;

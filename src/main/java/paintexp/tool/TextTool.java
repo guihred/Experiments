@@ -11,10 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.FillRule;
@@ -189,22 +186,8 @@ public class TextTool extends PaintTool {
     }
 
     private void takeSnapshot(final PaintModel model) {
-        int width = (int) getArea().getWidth();
-        int height = (int) getArea().getHeight();
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
-        WritableImage textImage = text.snapshot(params,
-            new WritableImage(Math.max(Math.abs(width), 1), Math.max(Math.abs(height), 1)));
-        int x = (int) getArea().getLayoutX();
-        int y = (int) getArea().getLayoutY();
-        RectBuilder.build().width(width).height(height).endX(x).endY(y).copyImagePart(textImage, model.getImage(),
-            Color.TRANSPARENT);
-        model.getImageStack().getChildren().clear();
-        ImageView imageView = new ImageView(model.getImage());
-        model.getImageStack().getChildren().add(model.getRectangleBorder(imageView));
-        model.getImageStack().getChildren().add(imageView);
+        model.takeSnapshotFill(text);
         textArea.setText("");
-        model.createImageVersion();
     }
 
 }

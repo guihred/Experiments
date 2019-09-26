@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.beans.property.*?>
+<?import javafx.scene.shape.*?>
+<?import paintexp.tool.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" spacing="5.0">
+  <fx:define>
+        <ToggleGroup fx:id="optionGroup"
+            onSelectedToggleChange="#onOptionChange" />
+    </fx:define>
+	<children>
+		<Text fx:id="text0" text="Length" />
+		<Slider blockIncrement="0.49" fx:id="lengthSlider" max="50.0"
+			min="1.0" prefWidth="50.0" value="10" />
+
+		<Text fx:id="text7" text="Opacity" />
+		<Slider blockIncrement="0.01" fx:id="opacitySlider" max="1.0"
+			min="0" value="1" />
+
+		<ToggleButton fx:id="toggleButton3" selected="true"
+			styleClass="toggle-button circle" toggleGroup="$optionGroup">
+			<graphic>
+				<Circle radius="5.0" />
+			</graphic>
+			<tooltip>
+				<Tooltip text="CIRCLE" />
+			</tooltip>
+			<userData>
+				<BrushOption fx:value="CIRCLE" />
+			</userData>
+		</ToggleButton>
+		<ToggleButton fx:id="toggleButton4"
+			styleClass="toggle-button square" toggleGroup="$optionGroup">
+			<graphic>
+				<Rectangle height="10.0" width="10.0" />
+			</graphic>
+			<tooltip>
+				<Tooltip text="SQUARE" />
+			</tooltip>
+			<userData>
+				<BrushOption fx:value="SQUARE" />
+			</userData>
+		</ToggleButton>
+		<ToggleButton fx:id="toggleButton5"
+			styleClass="toggle-button line_nw_se" toggleGroup="$optionGroup">
+			<graphic>
+				<Line endX="10.0" endY="10.0" />
+			</graphic>
+			<tooltip>
+				<Tooltip text="LINE_NW_SE" />
+			</tooltip>
+			<userData>
+				<BrushOption fx:value="LINE_NW_SE" />
+			</userData>
+		</ToggleButton>
+		<ToggleButton fx:id="toggleButton6"
+			styleClass="toggle-button line_sw_ne" toggleGroup="$optionGroup">
+			<graphic>
+				<Line endX="10.0" startY="10.0" />
+			</graphic>
+			<tooltip>
+				<Tooltip text="LINE_SW_NE" />
+			</tooltip>
+			<userData>
+				<BrushOption fx:value="LINE_SW_NE" />
+			</userData>
+		</ToggleButton>
+	</children>
+  
+</VBox>

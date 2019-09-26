@@ -66,27 +66,13 @@ public class RubiksModel {
 		Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(p -> setPivot(p, pieces[1][1][1]));
 	}
 
-	public void setPivot(RubiksPiece pivot0, RubiksPiece pivot1) {
-		if (pivot0.getRotations().isEmpty()) {
-			RubiksCubeFaces[] values = RubiksCubeFaces.values();
-			for (RubiksCubeFaces face : values) {
-				Rotate rotate = new Rotate(0, face.getAxis());
-				rotate.setPivotX(pivot1.getTranslateX() - pivot0.getTranslateX() - RubiksPiece.RUBIKS_CUBE_SIZE / 2.0);
-				rotate.setPivotY(pivot1.getTranslateY() - pivot0.getTranslateY() - RubiksPiece.RUBIKS_CUBE_SIZE / 2.0);
-				rotate.setPivotZ(pivot1.getTranslateZ() - pivot0.getTranslateZ());
-				pivot0.getTransforms().add(rotate);
-				pivot0.getRotations().put(face.getAxis(), rotate);
-			}
-		}
-		pivot0.getTransforms().add(new Rotate(0));
-	}
-
-	private List<RubiksPiece> getFacePieces(RubiksCubeFaces face) {
+    private List<RubiksPiece> getFacePieces(RubiksCubeFaces face) {
 		return IntStream
 				.range(0, CUBE_COMPLEXITY).boxed().flatMap(i -> IntStream.range(0, CUBE_COMPLEXITY)
 						.mapToObj(j -> face.get(pieces, i, j)).map(RubiksPiece.class::cast))
 				.collect(Collectors.toList());
 	}
+
 	private void unbindAll() {
 		Stream.of(pieces).flatMap(Stream::of).flatMap(Stream::of).forEach(RubiksPiece::unbindAngle);
 		if (RubiksPiece.DEBUG && LOGGER.isInfoEnabled()) {
@@ -103,12 +89,26 @@ public class RubiksModel {
 			LOGGER.info(s.toString());
 		}
 	}
-
 	public static int rotateAntiClockWise(int i) {
 		return 6 - i % 3 * 3 + i / 3;
 	}
+
 	public static int rotateClockWise(int j) {
 		return j % 3 * 3 + 2 - j / 3;
+	}
+	public static void setPivot(RubiksPiece pivot0, RubiksPiece pivot1) {
+		if (pivot0.getRotations().isEmpty()) {
+			RubiksCubeFaces[] values = RubiksCubeFaces.values();
+			for (RubiksCubeFaces face : values) {
+				Rotate rotate = new Rotate(0, face.getAxis());
+				rotate.setPivotX(pivot1.getTranslateX() - pivot0.getTranslateX() - RubiksPiece.RUBIKS_CUBE_SIZE / 2.0);
+				rotate.setPivotY(pivot1.getTranslateY() - pivot0.getTranslateY() - RubiksPiece.RUBIKS_CUBE_SIZE / 2.0);
+				rotate.setPivotZ(pivot1.getTranslateZ() - pivot0.getTranslateZ());
+				pivot0.getTransforms().add(rotate);
+				pivot0.getRotations().put(face.getAxis(), rotate);
+			}
+		}
+		pivot0.getTransforms().add(new Rotate(0));
 	}
 
 }

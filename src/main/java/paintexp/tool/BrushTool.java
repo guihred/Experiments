@@ -3,14 +3,17 @@ package paintexp.tool;
 import static utils.DrawOnPoint.withinImage;
 
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
-import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
+import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -19,9 +22,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import simplebuilder.SimpleSliderBuilder;
-import simplebuilder.SimpleToggleGroupBuilder;
+import utils.CommonsFX;
+import utils.ResourceFXUtils;
 
 public class BrushTool extends PaintTool {
 
@@ -33,13 +35,14 @@ public class BrushTool extends PaintTool {
 
     private BrushOption option = BrushOption.CIRCLE;
 
-    private IntegerProperty length = new SimpleIntegerProperty(10);
 
     private Map<BrushOption, Shape> mouseCursor;
-
+    @FXML
     private Slider lengthSlider;
-
-    private DoubleProperty opacity = new SimpleDoubleProperty(1);
+    @FXML
+    private Slider opacitySlider;
+    @FXML
+    private ToggleGroup optionGroup;
 
     @Override
     public Node createIcon() {
@@ -55,19 +58,19 @@ public class BrushTool extends PaintTool {
         if (mouseCursor == null) {
             mouseCursor = new EnumMap<>(BrushOption.class);
             Circle circle = new Circle(10);
-            circle.radiusProperty().bind(length);
+            circle.radiusProperty().bind(lengthSlider.valueProperty());
             mouseCursor.put(BrushOption.CIRCLE, circle);
             Rectangle square = new Rectangle(10, 10);
-            square.widthProperty().bind(length);
-            square.heightProperty().bind(length);
+            square.widthProperty().bind(lengthSlider.valueProperty());
+            square.heightProperty().bind(lengthSlider.valueProperty());
             mouseCursor.put(BrushOption.SQUARE, square);
             Line line1 = new Line(0, 10, 10, 0);
-            line1.startYProperty().bind(length);
-            line1.endXProperty().bind(length);
+            line1.startYProperty().bind(lengthSlider.valueProperty());
+            line1.endXProperty().bind(lengthSlider.valueProperty());
             mouseCursor.put(BrushOption.LINE_SW_NE, line1);
             Line line2 = new Line(0, 0, 10, 10);
-            line2.endXProperty().bind(length);
-            line2.endYProperty().bind(length);
+            line2.endXProperty().bind(lengthSlider.valueProperty());
+            line2.endYProperty().bind(lengthSlider.valueProperty());
             mouseCursor.put(BrushOption.LINE_NW_SE, line2);
             mouseCursor.values().forEach(n -> n.setManaged(false));
 
@@ -102,25 +105,21 @@ public class BrushTool extends PaintTool {
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        PaintToolHelper.handleSlider(e, length, lengthSlider);
+        PaintToolHelper.handleSlider(e, lengthSlider.valueProperty(), lengthSlider);
+    }
+
+    @SuppressWarnings("unused")
+    public void onOptionChange(ObservableValue<? extends Toggle> v, Toggle old, Toggle newV) {
+        option = newV == null ? BrushOption.CIRCLE : (BrushOption) newV.getUserData();
     }
 
     @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
-        model.getToolOptions().setSpacing(5);
-        model.getToolOptions().getChildren().add(new Text("Length"));
-        model.getToolOptions().getChildren().add(getLengthSlider());
-        final Property<Number> radius = opacity;
-        model.getToolOptions().getChildren().add(SimpleSliderBuilder.newSlider("Opacity", 0, 1, radius));
-        List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(new Circle(5), BrushOption.CIRCLE)
-            .addToggle(new Rectangle(10, 10), BrushOption.SQUARE)
-            .addToggle(new Line(0, 0, 10, 10), BrushOption.LINE_NW_SE)
-            .addToggle(new Line(0, 10, 10, 0), BrushOption.LINE_SW_NE)
-            .onChange((v, old, newV) -> option = newV == null ? BrushOption.CIRCLE : (BrushOption) newV.getUserData())
-            .select(option).getTogglesAs(Node.class);
+        Parent loadParent = CommonsFX.loadParent(ResourceFXUtils.toFile("BrushTool.fxml"), this);
 
-        model.getToolOptions().getChildren().addAll(togglesAs);
+
+        model.getToolOptions().getChildren().add(loadParent);
 
     }
 
@@ -142,7 +141,7 @@ public class BrushTool extends PaintTool {
         getMouseCursorMap().get(option).setLayoutX(e.getX());
         getMouseCursorMap().get(option).setLayoutY(e.getY());
         if (option == BrushOption.LINE_SW_NE) {
-            getMouseCursorMap().get(option).setLayoutY(e.getY() - length.get());
+            getMouseCursorMap().get(option).setLayoutY(e.getY() - lengthSlider.valueProperty().get());
         }
     }
 
@@ -164,15 +163,15 @@ public class BrushTool extends PaintTool {
     private void drawCircleOption(final PaintModel model, final int x2, final int y2, final double r, final Color color,
         final boolean fill) {
         RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawCircle(model.getImage(),
-            model.getImageVersions(), color, opacity.get());
+            model.getImageVersions(), color, opacitySlider.valueProperty().get());
         RectBuilder.build().startX(x2).startY(y2).width(r).height(r - 1).drawCircle(model.getImage(),
-            model.getImageVersions(), color, opacity.get());
+            model.getImageVersions(), color, opacitySlider.valueProperty().get());
         if (fill) {
-            PaintToolHelper.drawPointTransparency(x2, y2, color, opacity.get(), model.getImage(),
+            PaintToolHelper.drawPointTransparency(x2, y2, color, opacitySlider.valueProperty().get(), model.getImage(),
                 model.getImageVersions());
             for (double i = 1; i < r; i++) {
                 RectBuilder.build().startX(x2).startY(y2).width(i).height(i).drawCircle(model.getImage(),
-                    model.getImageVersions(), color, opacity.get());
+                    model.getImageVersions(), color, opacitySlider.valueProperty().get());
             }
         }
     }
@@ -181,15 +180,15 @@ public class BrushTool extends PaintTool {
         final boolean fill) {
 
         if (withinImage(x2, y2, model.getImage())) {
-            double r = length.getValue().doubleValue();
+            double r = lengthSlider.valueProperty().doubleValue();
             Color color = e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor();
-            double op = opacity.get();
+            double op = opacitySlider.valueProperty().get();
             switch (option) {
                 case CIRCLE:
                     drawCircleOption(model, x2, y2, r, color, fill);
                     break;
                 case SQUARE:
-                    drawSquare(model, x2, y2, fill, r, color, op);
+                    PaintToolHelper.drawSquare(model, x2, y2, fill, r, color, op);
                     break;
                 case LINE_NW_SE:
                     RectBuilder.build().startX(x2).startY(y2).endX(x2 + r).endY(y2 + r).drawLine(model.getImage(),
@@ -205,13 +204,6 @@ public class BrushTool extends PaintTool {
         }
     }
 
-    private Slider getLengthSlider() {
-        if (lengthSlider == null) {
-            lengthSlider = new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
-        }
-        return lengthSlider;
-    }
-
     private void onMouseEntered(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         children.removeAll(getMouseCursorMap().values());
@@ -220,22 +212,6 @@ public class BrushTool extends PaintTool {
         getMouseCursorMap().get(option).setVisible(true);
         getMouseCursorMap().get(option).setFill(model.getFrontColor());
         getMouseCursorMap().get(option).setStroke(model.getFrontColor());
-        getMouseCursorMap().get(option).setOpacity(opacity.get());
-    }
-
-    private static void drawSquare(final PaintModel model, final int x2, final int y2, final boolean fill, double r,
-        Color color, double op) {
-        PaintToolHelper.drawSquareLine(model.getImage(), model.getImageVersions(), x2, y2, (int) r, color, op);
-        if (fill) {
-            RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op, model.getImage(),
-                model.getImageVersions());
-        }
-    }
-
-    enum BrushOption {
-        SQUARE,
-        CIRCLE,
-        LINE_SW_NE,
-        LINE_NW_SE;
+        getMouseCursorMap().get(option).setOpacity(opacitySlider.valueProperty().get());
     }
 }
