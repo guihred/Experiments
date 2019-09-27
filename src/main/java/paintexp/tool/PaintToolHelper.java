@@ -14,18 +14,9 @@ import javafx.scene.shape.Rectangle;
 import utils.ResourceFXUtils;
 
 public final class PaintToolHelper {
-    static final int N_POINTS_MULTIPLIER = 16;
+	public static final int N_POINTS_MULTIPLIER = 16;
 
     private PaintToolHelper() {
-    }
-
-    public static void drawSquare(final PaintModel model, final int x2, final int y2, final boolean fill, double r,
-        Color color, double op) {
-        drawSquareLine(model.getImage(), model.getImageVersions(), x2, y2, (int) r, color, op);
-        if (fill) {
-            RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op, model.getImage(),
-                model.getImageVersions());
-        }
     }
 
     public static void drawCircle(WritableImage image, int centerX, int centerY, double radiusX, double radiusY,
@@ -71,6 +62,15 @@ public final class PaintToolHelper {
             Color color = imageVersions.get(index).getPixelReader().getColor(x2, y2);
             Color color2 = color.interpolate(frontColor, opacity);
             image.getPixelWriter().setColor(x2, y2, color2);
+        }
+    }
+
+    public static void drawSquare(final PaintModel model, final int x2, final int y2, final boolean fill, double r,
+        Color color, double op) {
+        drawSquareLine(model.getImage(), model.getImageVersions(), x2, y2, (int) r, color, op);
+        if (fill) {
+            RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op, model.getImage(),
+                model.getImageVersions());
         }
     }
 

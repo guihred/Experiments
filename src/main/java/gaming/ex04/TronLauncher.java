@@ -45,6 +45,7 @@ public class TronLauncher extends Application {
         stage.setScene(scene);
         stage.setWidth(WIDTH);
         stage.setHeight(WIDTH);
+		stage.setOnCloseRequest(e -> timeline.stop());
         stage.show();
     }
 

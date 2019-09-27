@@ -150,7 +150,7 @@ public final class StageHelper {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(title);
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
-        chooser.setInitialDirectory(musicsDirectory.getParentFile());
+		chooser.setInitialDirectory(musicsDirectory);
         final String nome1 = nome;
         return newButton(nome1, e -> {
             Node target = (Node) e.getTarget();

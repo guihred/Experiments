@@ -27,9 +27,9 @@ import utils.HasLogging;
 
 public final class RosarioCommons {
     private static final Logger LOG = HasLogging.log();
-    static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
-    static boolean openAtExport = true;
-    static final Map<String, FileChooser> FILE_CHOOSE = new HashMap<>();
+	private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
+	private static boolean openAtExport = true;
+	private static final Map<String, FileChooser> FILE_CHOOSE = new HashMap<>();
 
     private RosarioCommons() {
     }

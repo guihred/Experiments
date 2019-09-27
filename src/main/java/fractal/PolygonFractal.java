@@ -22,7 +22,7 @@ public class PolygonFractal extends Canvas {
         drawPolygon();
     }
 
-    public void drawPolygon() {
+	public final void drawPolygon() {
         GraphicsContext gc = getGraphicsContext2D();
         gc.clearRect(0, 0, SIZE, SIZE);
         final double radius = SIZE / 2;

@@ -77,7 +77,7 @@ public class TracerouteScanner {
 
     private static String getIPtoScan() {
         if (CrawlerTask.isNotProxied()) {
-            return Stream.of("169", "254", "29", "121").collect(joining("."));
+			return Stream.of("192", "168", "0", "1").collect(joining("."));
         }
 
         return Stream.of("10", "69", "64", "31").collect(joining("."));

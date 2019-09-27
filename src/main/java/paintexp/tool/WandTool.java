@@ -30,8 +30,7 @@ public class WandTool extends AreaTool {
     private int height;
     private IntegerProperty threshold = new SimpleIntegerProperty(PixelHelper.MAX_BYTE / 20);
     private Slider thresholdSlider;
-
-    List<KeyCode> exceptionKeys = Arrays.asList(KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN, KeyCode.UP);
+	private List<KeyCode> exceptionKeys = Arrays.asList(KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN, KeyCode.UP);
 
     @Override
     public Node createIcon() {

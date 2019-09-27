@@ -301,7 +301,6 @@ public class CatanModel {
         ResourceType wantedType = deal.getWantedType();
         Optional<CatanCard> currentUserCard = list.stream().filter(e -> e.getResource() == wantedType).findFirst();
         if (currentUserCard.isPresent()) {
-            CatanCard catanCard = currentUserCard.get();
             List<ResourceType> dealTypes = deal.getDealTypes();
             List<CatanCard> cardsGiven = new ArrayList<>();
             for (ResourceType resourceType : dealTypes) {
@@ -312,6 +311,7 @@ public class CatanModel {
                 }
                 cardsGiven.add(first.get());
             }
+			CatanCard catanCard = currentUserCard.get();
             list.remove(catanCard);
             listProposer.add(catanCard);
             list.addAll(cardsGiven);

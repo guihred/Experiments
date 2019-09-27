@@ -16,9 +16,8 @@ public class RandomLayout extends Layout {
     @Override
     public void execute() {
         List<Cell> cells = graph.getModel().getAllCells();
-        List<Edge> allEdges = graph.getModel().getAllEdges();
         graph.clean();
-        layoutRandom(cells, allEdges, graph.getScrollPane().getWidth());
+		layoutRandomly(cells, graph.getScrollPane().getViewportBounds().getWidth());
     }
 
     public static void layoutRandom(List<Cell> cells, List<Edge> allEdges, double width) {
@@ -48,5 +47,15 @@ public class RandomLayout extends Layout {
             cell.relocate(minx, miny);
         }
     }
+
+	public static void layoutRandomly(Iterable<Cell> cells, double width) {
+		double bound = width;
+
+		for (Cell cell : cells) {
+			double x = BaseTopology.rndPositive(bound);
+			double y = BaseTopology.rndPositive(bound);
+			cell.relocate(x, y);
+		}
+	}
 
 }

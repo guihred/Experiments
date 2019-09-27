@@ -8,7 +8,7 @@ public enum GhostColor {
     ORANGE(Color.ORANGE),
     GREEN(Color.GREEN);
 
-    final transient Color color;
+	private final transient Color color;
 
     GhostColor(Color color) {
         this.color = color;

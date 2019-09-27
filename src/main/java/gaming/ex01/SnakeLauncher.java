@@ -41,7 +41,8 @@ public class SnakeLauncher extends Application {
             .cycleCount(Animation.INDEFINITE).build();
         timeline.play();
         stage.setScene(scene);
-        stage.show();
+		stage.setOnCloseRequest(e -> timeline.stop());
+		stage.show();
     }
 
     private void gameLoop() {

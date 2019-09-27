@@ -228,7 +228,6 @@ public abstract class AreaTool extends PaintTool {
 		double hvalue = model.getScrollPane().getHvalue();
 		double vvalue = model.getScrollPane().getVvalue();
 		ObservableList<Node> children = model.getImageStack().getChildren();
-
 		if (children.contains(getArea())) {
 			if (containsPoint(getArea(), e.getX(), e.getY())) {
 				createSelectedImage(model);

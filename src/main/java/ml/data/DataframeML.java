@@ -6,8 +6,7 @@ import java.util.stream.Collectors;
 
 public class DataframeML {
 
-	private static final int FRAME_MAX_SIZE = Integer.MAX_VALUE;
-	protected int maxSize = FRAME_MAX_SIZE;
+	protected int maxSize = Integer.MAX_VALUE;
 
 	private final Map<String, List<Object>> dataframe = new LinkedHashMap<>();
 	protected Map<String, Set<String>> categories = new LinkedHashMap<>();

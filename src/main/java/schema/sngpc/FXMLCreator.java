@@ -441,10 +441,9 @@ public final class FXMLCreator {
     }
 
     private static String nodeValue(Object node2) {
-        String nodeString = Objects.toString(node2, "");
         if (node2.getClass().isEnum()) {
             return ((Enum<?>) node2).name();
         }
-        return nodeString;
+        return Objects.toString(node2, "");
     }
 }

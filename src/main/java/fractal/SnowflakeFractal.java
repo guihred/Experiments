@@ -18,7 +18,7 @@ public class SnowflakeFractal extends Canvas {
         drawSnowflake();
     }
 
-    public void drawSnowflake() {
+	public final void drawSnowflake() {
         GraphicsContext gc = getGraphicsContext2D();
         gc.clearRect(0, 0, getWidth(), getHeight());
         double radius = size.get() / 3;

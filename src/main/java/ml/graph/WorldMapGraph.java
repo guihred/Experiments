@@ -47,28 +47,16 @@ public class WorldMapGraph extends Canvas {
 
     public WorldMapGraph() {
         super(WIDTH, HEIGHT);
-        gc = getGraphicsContext2D();
-        valueHeader.addListener(s -> {
-            summary = null;
-            categoryMap.clear();
-            drawGraph();
-        });
-        bins.addListener(ob -> drawGraph());
-        fontSize.addListener(ob -> drawGraph());
-        pattern.addListener(ob -> drawGraph());
-        drawGraph();
-        scale = RotateUtils.setZoomable(this);
-        scale.setX(0.5);
-        scale.setY(0.5);
+		linkListeners();
 
-    }
+	}
 
-
-    public IntegerProperty binsProperty() {
+	public IntegerProperty binsProperty() {
         return bins;
     }
 
-    public void drawGraph() {
+
+	public void drawGraph() {
 
         gc.clearRect(0, 0, getWidth(), getHeight());
         gc.setStroke(Color.BLACK);
@@ -97,7 +85,7 @@ public class WorldMapGraph extends Canvas {
         }
     }
 
-    public void filter(String h, Predicate<Object> pred) {
+	public void filter(String h, Predicate<Object> pred) {
         filters.put(h, pred);
     }
 
@@ -128,7 +116,7 @@ public class WorldMapGraph extends Canvas {
         return valueHeader;
     }
 
-	protected void createCategoryLabels(double x, double y0, double step) {
+    protected void createCategoryLabels(double x, double y0, double step) {
 		double y = y0;
         gc.setFill(Color.GRAY);
         gc.setStroke(Color.BLACK);
@@ -150,7 +138,7 @@ public class WorldMapGraph extends Canvas {
         }
     }
 
-    protected void createCategoryMap() {
+	protected void createCategoryMap() {
 
         if (dataframeML == null) {
             categoryMap.put(NO_INFO, Color.GRAY);
@@ -294,4 +282,20 @@ public class WorldMapGraph extends Canvas {
     private boolean isSuitableForSummary() {
         return summary == null && dataframeML != null && dataframeML.getFormat(valueHeader.get()) != String.class;
     }
+
+    private final void linkListeners() {
+		gc = getGraphicsContext2D();
+        valueHeader.addListener(s -> {
+            summary = null;
+            categoryMap.clear();
+            drawGraph();
+        });
+        bins.addListener(ob -> drawGraph());
+        fontSize.addListener(ob -> drawGraph());
+        pattern.addListener(ob -> drawGraph());
+        drawGraph();
+        scale = RotateUtils.setZoomable(this);
+        scale.setX(0.5);
+        scale.setY(0.5);
+	}
 }

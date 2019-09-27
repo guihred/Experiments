@@ -104,9 +104,8 @@ public class BoundsPlayground extends Application {
         instructions.setMinSize(prefSize, prefSize);
         // add the ability to set a translate value for the circles.
         final CheckBox translateNodes = new CheckBox("Translate circles");
-        translateNodes.selectedProperty()
-            .addListener((observableValue, oldValue, doTranslate) -> Stream.of(transformableShapes)
-                .peek(s -> s.setTranslateY(doTranslate ? 100 : 0)).forEach(s -> testIntersections()));
+		translateNodes.selectedProperty().addListener((ob, oldValue, translate) -> Stream.of(transformableShapes)
+						.peek(s -> s.setTranslateY(translate ? 100 : 0)).forEach(s -> testIntersections()));
         translateNodes.selectedProperty().set(false);
         // add the ability to add an effect to the circles.
         final Label modifyInstructions = new Label("Modify visual display aspects.");

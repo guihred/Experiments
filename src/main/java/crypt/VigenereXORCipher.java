@@ -15,7 +15,7 @@ import utils.ResourceFXUtils;
 
 public class VigenereXORCipher {
 
-    public static final Logger LOGGER = HasLogging.log();
+	private static final Logger LOGGER = HasLogging.log();
     private static final Map<Integer, Double> MAPA_FREQUENCIA = ImmutableMap.<Integer, Double>builder()
         .put('e' + 0, 12.702D).put('t' + 0, 9.056D).put('a' + 0, 8.167D).put('o' + 0, 7.507D).put('i' + 0, 6.966D)
         .put('n' + 0, 6.749D).put('s' + 0, 6.327D).put('h' + 0, 6.094D).put('r' + 0, 5.987D).put('d' + 0, 4.253D)
@@ -117,7 +117,7 @@ public class VigenereXORCipher {
     }
 
     public long findKeySize() {
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("ctext.txt"));) {
+		try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("ctext.txt"))) {
             String line = lines.findFirst().orElse("");
             String[] split = line.split("(?<=\\G..)");
             List<Integer> keySizeList = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());

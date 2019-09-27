@@ -81,8 +81,7 @@ public final class CommonsFX {
         return SupplierEx.remap(() -> {
         FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
         fxmlLoader.setController(controller);
-        Parent content = fxmlLoader.load();
-        return content;
+        return fxmlLoader.load();
         }, "ERROR IN " + file);
     }
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {

@@ -16,7 +16,7 @@ import org.junit.Test;
 
 public class FXEngineCatanTest extends AbstractTestExecution {
 
-    private static final int MAX_TRIES = 300;
+	private static final int MAX_TRIES = 100;
 
     private Random random = new Random();
 

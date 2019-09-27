@@ -26,7 +26,7 @@ public class ShellFractal extends Canvas {
 		return deltaAngle;
 	}
 
-	public void drawSnowflake() {
+	public final void drawSnowflake() {
 		GraphicsContext gc = getGraphicsContext2D();
 		gc.clearRect(0, 0, SIZE, SIZE);
 		final double radius = 0.01;

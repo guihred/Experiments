@@ -12,9 +12,9 @@ public class Vertex {
 
     public static final boolean NAMED = true;
 
-    Map<Vertex, Integer> edges = new HashMap<>();
+    private Map<Vertex, Integer> edges = new HashMap<>();
 
-    final int id;
+    private final int id;
 
     private String name;
 
@@ -101,7 +101,7 @@ public class Vertex {
                     Integer cvw = v.edges.get(w);
                     if (distance.get(v) + cvw < distance.get(w)) {
                         distance.put(w, distance.get(v) + cvw);
-                        w.path.put(id, v);
+                        w.path.put(getId(), v);
                     }
                 }
             }
@@ -115,12 +115,12 @@ public class Vertex {
             return false;
         }
         Vertex other = (Vertex) obj;
-        return id == other.id;
+        return getId() == other.getId();
     }
 
     public String getName() {
         if (!NAMED) {
-            return Integer.toString(id);
+            return Integer.toString(getId());
         }
 
         return name;
@@ -132,7 +132,7 @@ public class Vertex {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getId());
     }
 
     public Vertex pathTo(Vertex v, List<Vertex> graph) {
@@ -140,7 +140,7 @@ public class Vertex {
             v.dijkstra(graph);
             dijkstra(graph);
         }
-        return path.get(v.id);
+        return path.get(v.getId());
     }
 
     public void put(Vertex... vertices) {
@@ -217,7 +217,7 @@ public class Vertex {
             }
 
         }
-        vertices.forEach(v -> LOG.info("{}={}", v.id, v.topNum));
+        vertices.forEach(v -> LOG.info("{}={}", v.getId(), v.topNum));
 
         if (counter != vertices.size()) {
             LOG.info("CYCLE FOUND");
@@ -244,7 +244,7 @@ public class Vertex {
                 for (Vertex w : v.adjacents()) {
                     if (distance.get(w) == Integer.MAX_VALUE) {
                         distance.put(w, i + 1);
-                        w.path.put(vertex.id, v);
+                        w.path.put(vertex.getId(), v);
                     }
 
                 }
@@ -272,7 +272,7 @@ public class Vertex {
                 Integer cvw = v.edges.get(w);
                 if (distance.get(v) + cvw < distance.get(w)) {
                     distance.put(w, distance.get(v) + cvw);
-                    w.path.put(vertex.id, v);
+                    w.path.put(vertex.getId(), v);
                     if (!q.contains(w)) {
                         q.add(w);
                     }
@@ -288,4 +288,16 @@ public class Vertex {
             .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
             .orElseThrow(() -> new Exception("There should be something")).getKey();
     }
+
+	public Map<Vertex, Integer> getEdges() {
+		return edges;
+	}
+
+	public void setEdges(Map<Vertex, Integer> edges) {
+		this.edges = edges;
+	}
+
+	public int getId() {
+		return id;
+	}
 }

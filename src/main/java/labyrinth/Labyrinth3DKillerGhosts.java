@@ -70,8 +70,8 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
             for (int j = mapa[i].length - 1; j >= 0; j--) {
                 String string = mapa[i][j];
                 LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
-                rectangle.setTranslateZ(j * (double) SIZE);
-                rectangle.setTranslateX(i * (double) SIZE);
+				rectangle.setTranslateZ(j * SIZE);
+				rectangle.setTranslateX(i * SIZE);
                 if ("_".equals(string)) {
                     rectangle.getRy().setAngle(90);
                 }

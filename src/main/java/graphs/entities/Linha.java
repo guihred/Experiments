@@ -6,8 +6,8 @@ public class Linha {
 	private Ponto b;
 
 	public Linha(Ponto a, Ponto b) {
-		this.setA(a);
-		this.setB(b);
+		this.a = a;
+		this.b = b;
 	}
 
     public Ponto getA() {

@@ -56,7 +56,17 @@ public class DotsModel {
         return line;
     }
 
-    private void addPolygonOnFinished(Polygon polygon, EventHandler<ActionEvent> onFinished, ActionEvent f) {
+    private void addBlueSquare(List<Set<DotsSquare>> squaresFilled) {
+		for (Set<DotsSquare> collect2 : squaresFilled) {
+		    double[] toArray = collect2.stream().flatMap(a -> Stream.of(a.getCenter()))
+		        .mapToDouble(Double::valueOf).toArray();
+		    Polygon polygon = new Polygon(toArray);
+		    polygon.setFill(colors[currentPlayer]);
+		    gridPane.getChildren().add(polygon);
+		}
+	}
+
+	private void addPolygonOnFinished(Polygon polygon, EventHandler<ActionEvent> onFinished, ActionEvent f) {
         if (onFinished != null) {
             onFinished.handle(f);
         }
@@ -65,6 +75,10 @@ public class DotsModel {
 
     }
 
+    private void changeTurn() {
+		currentPlayer = (currentPlayer + 1) % jogadores.length;
+	}
+
     private void handleMouseDragged(MouseEvent e) {
         if (e.getTarget() instanceof DotsSquare) {
             line.setEndX(e.getX());
@@ -72,7 +86,7 @@ public class DotsModel {
         }
     }
 
-    private void handleMousePressed(MouseEvent e) {
+	private void handleMousePressed(MouseEvent e) {
         if (e.getTarget() instanceof DotsSquare) {
             DotsSquare a = (DotsSquare) e.getTarget();
             line.setStartY(a.getLayoutY() + a.getHeight() / 2);
@@ -93,7 +107,7 @@ public class DotsModel {
         }
     }
 
-    private void handleMouseReleased(MouseEvent e) {
+	private void handleMouseReleased(MouseEvent e) {
         DotsSquare over = Stream.of(maze).flatMap(Stream::of)
             .filter(m -> m.getBoundsInParent().contains(e.getX(), e.getY())).findFirst().orElse(null);
         if (squareOverNotSuitable(over)) {
@@ -108,66 +122,9 @@ public class DotsModel {
             Set<Set<DotsSquare>> check = over.check();
             Set<Set<DotsSquare>> collect = points.values().stream().flatMap(ObservableSet<Set<DotsSquare>>::stream)
                 .collect(Collectors.toSet());
-            List<Set<DotsSquare>> collect1 = check.stream().filter(s -> !collect.contains(s))
+            List<Set<DotsSquare>> squaresFilled = check.stream().filter(s -> !collect.contains(s))
                 .collect(Collectors.toList());
-            if (!collect1.isEmpty()) {
-                points.get(jogadores[currentPlayer]).addAll(collect1);
-                for (Set<DotsSquare> collect2 : collect1) {
-                    double[] toArray = collect2.stream().flatMap(a -> Stream.of(a.getCenter()))
-                        .mapToDouble(Double::valueOf).toArray();
-                    Polygon polygon = new Polygon(toArray);
-                    polygon.setFill(colors[currentPlayer]);
-                    gridPane.getChildren().add(polygon);
-                }
-            } else {
-                currentPlayer = (currentPlayer + 1) % jogadores.length;
-                int nplayed = 0;
-                while (currentPlayer == 0) {
-                    List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getBestPossibilities(maze);
-                    possibilities = notEmpty(possibilities, getBestPossibilities2(maze));
-                    possibilities = notEmpty(possibilities, getBestPossibilities3(maze));
-                    possibilities = notEmpty(possibilities, getPossibilities(maze));
-                    if (possibilities.isEmpty()) {
-                        currentPlayer = (currentPlayer + 1) % jogadores.length;
-                        break;
-                    }
-                    Map.Entry<DotsSquare, DotsSquare> get = possibilities.remove(0);
-                    Double[] center = get.getKey().getCenter();
-                    Double[] center2 = get.getValue().getCenter();
-                    Line line2 = new Line(center[0], center[1], center[0], center[1]);
-                    gridPane.getChildren().add(line2);
-
-                    get.getKey().addAdj(get.getValue());
-
-                    Set<Set<DotsSquare>> check2 = get.getKey().check();
-                    Set<Set<DotsSquare>> collect2 = points.values().stream()
-                        .flatMap(ObservableSet<Set<DotsSquare>>::stream).collect(Collectors.toSet());
-                    List<Set<DotsSquare>> collect3 = check2.stream().filter(s -> !collect2.contains(s))
-                        .collect(Collectors.toList());
-
-                    Timeline timeline = new SimpleTimelineBuilder()
-                        .addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endXProperty(), center[0])
-                        .addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endXProperty(), center2[0])
-                        .addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endYProperty(), center[1])
-                        .addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endYProperty(), center2[1]).build();
-
-                    nplayed++;
-                    timeline.play();
-                    if (!collect3.isEmpty()) {
-                        points.get(jogadores[currentPlayer]).addAll(collect3);
-                        collect3.forEach((Set<DotsSquare> q) -> {
-                            double[] toArray = q.stream().flatMap((DotsSquare a) -> Stream.of(a.getCenter()))
-                                .mapToDouble(Double::valueOf).toArray();
-                            Polygon polygon = new Polygon(toArray);
-                            polygon.setFill(colors[currentPlayer]);
-                            EventHandler<ActionEvent> onFinished = timeline.getOnFinished();
-                            timeline.setOnFinished(f -> addPolygonOnFinished(polygon, onFinished, f));
-                        });
-                    } else {
-                        currentPlayer = (currentPlayer + 1) % jogadores.length;
-                    }
-                }
-            }
+            processNextTurn(squaresFilled);
         }
         line.setEndX(0);
         line.setStartX(0);
@@ -177,7 +134,7 @@ public class DotsModel {
         verifyEnd();
     }
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
     private void initialize(BorderPane borderPane) {
         points.put("EU", FXCollections.observableSet());
         points.put("TU", FXCollections.observableSet());
@@ -191,6 +148,61 @@ public class DotsModel {
         borderPane.setTop(new HBox(text2, tuPoints));
     }
 
+	private void processNextTurn(List<Set<DotsSquare>> squaresFilled) {
+		if (!squaresFilled.isEmpty()) {
+			points.get(jogadores[currentPlayer]).addAll(squaresFilled);
+			addBlueSquare(squaresFilled);
+			return;
+		}
+		changeTurn();
+		int nplayed = 0;
+		while (currentPlayer == 0) {
+			List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getBestPossibilities(maze);
+			possibilities = notEmpty(possibilities, getBestPossibilities2(maze));
+			possibilities = notEmpty(possibilities, getBestPossibilities3(maze));
+			possibilities = notEmpty(possibilities, getPossibilities(maze));
+			if (possibilities.isEmpty()) {
+				changeTurn();
+				break;
+			}
+			Map.Entry<DotsSquare, DotsSquare> get = possibilities.remove(0);
+			Double[] center = get.getKey().getCenter();
+			Double[] center2 = get.getValue().getCenter();
+			Line line2 = new Line(center[0], center[1], center[0], center[1]);
+			gridPane.getChildren().add(line2);
+
+			get.getKey().addAdj(get.getValue());
+
+			Set<Set<DotsSquare>> anySquares = get.getKey().check();
+			Set<Set<DotsSquare>> collect2 = points.values().stream().flatMap(ObservableSet<Set<DotsSquare>>::stream)
+					.collect(Collectors.toSet());
+			List<Set<DotsSquare>> squaresClosed = anySquares.stream().filter(s -> !collect2.contains(s))
+					.collect(Collectors.toList());
+
+			Timeline timeline = new SimpleTimelineBuilder()
+					.addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endXProperty(), center[0])
+					.addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endXProperty(), center2[0])
+					.addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endYProperty(), center[1])
+					.addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endYProperty(), center2[1]).build();
+
+			nplayed++;
+			timeline.play();
+			// RED PLAYER COULDN'T CLOSE A SQUARE
+			if (squaresClosed.isEmpty()) {
+				changeTurn();
+				return;// Change turn
+			}
+			points.get(jogadores[currentPlayer]).addAll(squaresClosed);
+			squaresClosed.forEach((Set<DotsSquare> q) -> {
+				double[] toArray = q.stream().flatMap((DotsSquare a) -> Stream.of(a.getCenter()))
+						.mapToDouble(Double::valueOf).toArray();
+				Polygon polygon = new Polygon(toArray);
+				polygon.setFill(colors[currentPlayer]);
+				EventHandler<ActionEvent> onFinished = timeline.getOnFinished();
+				timeline.setOnFinished(f -> addPolygonOnFinished(polygon, onFinished, f));
+			});
+		}
+	}
 
     private boolean squareOverNotSuitable(DotsSquare over) {
         return selected == null || over == null || Objects.equals(selected, over);

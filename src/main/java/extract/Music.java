@@ -29,9 +29,9 @@ public class Music {
     }
 
     public Music(File file) {
-        setArquivo(file);
-        setTitulo(file.getName());
-        setPasta(file.getParentFile().getName());
+        this.arquivo = file;
+        this.titulo.set(file.getName());
+        this.pasta.set(file.getParentFile().getName());
     }
 
     public StringProperty albumProperty() {

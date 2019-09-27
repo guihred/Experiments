@@ -123,7 +123,7 @@ public final class CatanLogger {
 			}
 		}
 
-        try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true);) {
+		try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true)) {
 			if (!exists) {
 				fw.append(collect + "\n");
 			}

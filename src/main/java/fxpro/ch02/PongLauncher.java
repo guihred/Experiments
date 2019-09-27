@@ -170,6 +170,7 @@ public class PongLauncher extends Application {
         stage.setWidth(WIDTH + 8);
         stage.setHeight(WIDTH + 30);
         stage.setTitle("ZenPong Example");
+		stage.setOnCloseRequest(e -> pongAnimation.stop());
         stage.show();
     }
 

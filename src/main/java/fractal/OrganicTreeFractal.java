@@ -34,7 +34,7 @@ public class OrganicTreeFractal extends Canvas {
         return deltaAngle;
     }
 
-    public void drawTree() {
+	public final void drawTree() {
         GraphicsContext gc = getGraphicsContext2D();
         gc.clearRect(0, 0, SIZE, SIZE);
 

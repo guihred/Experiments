@@ -1,7 +1,6 @@
 package gaming.ex16;
 
 import com.aspose.imaging.internal.Exceptions.Exception;
-import gaming.ex16.MadTriangle.MadEdgeDistance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

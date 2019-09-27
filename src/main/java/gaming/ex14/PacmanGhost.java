@@ -48,10 +48,10 @@ public class PacmanGhost extends Group {
             double y = Math.sin(Math.toRadians(i)) * radius;
             polygon.getPoints().addAll(x, y);
         }
-        getCircle().setFill(color.color);
-        polygon.setFill(color.color);
+		getCircle().setFill(color.getColor());
+		polygon.setFill(color.getColor());
         polygon.fillProperty()
-                .bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.color)
+				.bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.getColor())
                         .otherwise(Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.BLUEVIOLET)
                                 .otherwise(Color.TRANSPARENT)));
         polygon.getPoints().addAll(-radius, 0D, -radius, 20D, -8D, 10D, -4D, 20D, 0D, 10D, 4D, 20D, 8D, 10D, radius,

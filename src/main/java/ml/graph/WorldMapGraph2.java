@@ -31,28 +31,17 @@ public class WorldMapGraph2 extends WorldMapGraph {
 
     public WorldMapGraph2() {
 
-        InvalidationListener listener = observable -> drawGraph();
-        valueHeader.addListener(s -> {
-            summary = null;
-            getCategoryMap().clear();
-            drawGraph();
-        });
-        radius.addListener(listener);
-        xScale.addListener(listener);
-        yScale.addListener(listener);
-        bins.addListener(listener);
-        drawGraph();
-        RotateUtils.setZoomable(this);
+		addListeners();
 
     }
 
-    @Override
+	@Override
     public IntegerProperty binsProperty() {
         return bins;
     }
 
     @Override
-    public final void drawGraph() {
+	public final void drawGraph() {
         getGc().clearRect(0, 0, getWidth(), getHeight());
         Country[] countries = Country.values();
         getGc().setFill(Color.BLACK);
@@ -149,6 +138,21 @@ public class WorldMapGraph2 extends WorldMapGraph {
         getGc().stroke();
         getGc().closePath();
     }
+
+    private final void addListeners() {
+		InvalidationListener listener = observable -> drawGraph();
+        valueHeader.addListener(s -> {
+            summary = null;
+            getCategoryMap().clear();
+            drawGraph();
+        });
+        radius.addListener(listener);
+        xScale.addListener(listener);
+        yScale.addListener(listener);
+        bins.addListener(listener);
+        drawGraph();
+        RotateUtils.setZoomable(this);
+	}
 
     private void drawNeighbors(Country[] values) {
         getGc().setStroke(Color.RED);

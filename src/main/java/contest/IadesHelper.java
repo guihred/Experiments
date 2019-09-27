@@ -112,7 +112,7 @@ public final class IadesHelper {
     }
 
     public static Path getFirstPDF(File file, String number) throws IOException {
-        try (Stream<Path> find = Files.find(file.toPath(), 3, (path, info) -> nameMatches(number, path));) {
+		try (Stream<Path> find = Files.find(file.toPath(), 3, (path, info) -> nameMatches(number, path))) {
             Optional<Path> findFirst = find.findFirst();
             if (findFirst.isPresent()) {
                 return findFirst.get();
@@ -120,7 +120,7 @@ public final class IadesHelper {
             }
         }
         try (Stream<Path> find = Files.find(file.toPath(), 3,
-            (path, info) -> path.toFile().getName().endsWith(".pdf"));) {
+				(path, info) -> path.toFile().getName().endsWith(".pdf"))) {
             Optional<Path> findFirst = find.findFirst();
             if (findFirst.isPresent()) {
                 return findFirst.get();

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?import javafx.scene.layout.*?><?import javafx.scene.text.*?><?import javafx.scene.control.*?><?import javafx.collections.*?><?import java.lang.*?><?import javafx.event.*?><?import javafx.scene.*?><?import javafx.scene.shape.*?>
+<?import java.lang.Double?>
 <VBox xmlns:fx="http://javafx.com/fxml">
 	<fx:define>
 		<ToggleGroup fx:id="alignments"
 			onSelectedToggleChange="#onAlignmentChange" />
+			<Rectangle fill="#00000000" fx:id="area" stroke="#000000" height="10" width="10" style="-fx-stroke-dash-array:2,1,2,1;"/>
+			<Text fx:id="text" managed="false"/>
 	</fx:define>
 	<children>
 		<VBox>

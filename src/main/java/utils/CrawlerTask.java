@@ -18,11 +18,8 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.slf4j.Logger;
 
 public abstract class CrawlerTask extends Task<String> {
-
-    static final Logger LOG = HasLogging.log();
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "14-juuYON";

@@ -88,7 +88,11 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return toggleGroup;
     }
 
-    public <T>List<T> getTogglesAs(final Class<T> cl) {
+    public Node[] getToggles() {
+    	return toggleGroup.getToggles().stream().map(Node.class::cast).toArray(Node[]::new);
+    }
+
+	public <T>List<T> getTogglesAs(final Class<T> cl) {
         return toggleGroup.getToggles().stream().map(cl::cast).collect(Collectors.toList());
     }
 

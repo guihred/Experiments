@@ -26,16 +26,16 @@ public class CatanCard extends Rectangle {
     public CatanCard(DevelopmentType type, Consumer<CatanCard> object) {
         development = type;
         setStandard(type.getImage());
-        setOnMouseClicked(e -> object.accept(this));
+		mouseClicked(object);
     }
 
 	public CatanCard(ResourceType type, Consumer<CatanCard> object) {
         resource = type;
         setStandard(type.getResource());
-        setOnMouseClicked(e -> object.accept(this));
+        mouseClicked(object);
     }
 
-    public DevelopmentType getDevelopment() {
+	public DevelopmentType getDevelopment() {
         return development;
     }
 
@@ -63,6 +63,10 @@ public class CatanCard extends Rectangle {
     public String toString() {
         return Objects.toString(resource, Objects.toString(development, ""));
     }
+
+	private final void mouseClicked(Consumer<CatanCard> object) {
+		setOnMouseClicked(e -> object.accept(this));
+	}
 
     private void setStandard(final String type) {
         setManaged(false);

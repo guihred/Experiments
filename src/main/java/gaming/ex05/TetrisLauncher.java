@@ -31,6 +31,7 @@ public class TetrisLauncher extends Application {
         timeline.play();
 		scene.setOnKeyPressed(this::handleKeyPressed);
         stage.setScene(scene);
+		stage.setOnCloseRequest(e -> timeline.stop());
         stage.show();
     }
 

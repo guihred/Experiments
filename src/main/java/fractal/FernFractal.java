@@ -66,7 +66,7 @@ public class FernFractal extends Canvas {
     // creating canvas
     /* iterate the plotting and calculation
     functions over a loop */
-    public void draw() {
+	public final void draw() {
         gc.clearRect(0, 0, getWidth(), getHeight());
         for (int i = 0; i < limit.get(); i++) {
             drawPoint();

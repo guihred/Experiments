@@ -38,7 +38,7 @@ public final class WordService {
 
         try (InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
             XWPFDocument document1 = new XWPFDocument(resourceAsStream);
-            FileOutputStream stream = new FileOutputStream(outStream);) {
+				FileOutputStream stream = new FileOutputStream(outStream)) {
             for (XWPFHeader p : document1.getHeaderList()) {
                 List<XWPFParagraph> paragraphs = p.getParagraphs();
                 for (XWPFParagraph paragraph : paragraphs) {

@@ -14,10 +14,10 @@ import utils.ResourceFXUtils;
 public abstract class CatanResource extends Group {
 
     public static final String CATAN = "catan/";
+    public static final int RADIUS = 70;
     private final ObjectProperty<PlayerColor> player = new SimpleObjectProperty<>();
     private final Image image;
     protected final ImageView view;
-    public static final int RADIUS = 70;
 
     public CatanResource(final String url) {
         image = new Image(ResourceFXUtils.toExternalForm(CATAN + url));
@@ -41,7 +41,7 @@ public abstract class CatanResource extends Group {
         return player;
     }
 
-    public void setPlayer(final PlayerColor color) {
+	public final void setPlayer(final PlayerColor color) {
         player.set(color);
     }
 

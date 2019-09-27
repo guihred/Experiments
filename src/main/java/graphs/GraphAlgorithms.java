@@ -12,7 +12,7 @@ import utils.DisjSets;
 import utils.HasLogging;
 
 public final class GraphAlgorithms {
-    public static final Logger LOGGER = HasLogging.log();
+	private static final Logger LOGGER = HasLogging.log();
 
     private GraphAlgorithms() {
     }
@@ -173,7 +173,7 @@ public final class GraphAlgorithms {
 
         int numVertices = totalVertices.size();
         List<EdgeElement> totalEdges = totalVertices.stream()
-            .flatMap((Vertex v) -> v.edges.entrySet().stream()
+            .flatMap((Vertex v) -> v.getEdges().entrySet().stream()
                 .map((Entry<Vertex, Integer> e) -> new EdgeElement(v, e.getKey(), e.getValue())))
             .collect(Collectors.toList());
         DisjSets ds = new DisjSets(numVertices);
@@ -181,8 +181,8 @@ public final class GraphAlgorithms {
         List<EdgeElement> mst = new ArrayList<>();
         while (mst.size() != numVertices - 1) {
             EdgeElement e1 = pq.poll();
-            int uset = ds.find(e1.getU().id - 1);
-            int vset = ds.find(e1.getV().id - 1);
+            int uset = ds.find(e1.getU().getId() - 1);
+            int vset = ds.find(e1.getV().getId() - 1);
             if (uset != vset) {
                 mst.add(e1);
                 ds.union(uset, vset);
@@ -239,7 +239,7 @@ public final class GraphAlgorithms {
                 .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
                 .orElseThrow(() -> new Exception("There should be someone"));
             heap.remove(minVertex.getKey());
-            Set<Entry<Vertex, Integer>> entrySet = minVertex.getKey().edges.entrySet();
+            Set<Entry<Vertex, Integer>> entrySet = minVertex.getKey().getEdges().entrySet();
             for (Entry<Vertex, Integer> edge : entrySet) {
                 if (heap.containsKey(edge.getKey()) && heap.get(edge.getKey()) > edge.getValue()) {
                     heap.put(edge.getKey(), edge.getValue());

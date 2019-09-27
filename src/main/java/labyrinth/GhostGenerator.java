@@ -8,8 +8,8 @@ import javafx.scene.shape.MeshView;
 import utils.ResourceFXUtils;
 
 public final class GhostGenerator {
-    static final int SIZE = 60;
-    static final Color LIGHT_COLOR = Color.grayRgb(125);
+	public static final double SIZE = 60;
+	public static final Color LIGHT_COLOR = Color.grayRgb(125);
     private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
 
     private static final SecureRandom random = new SecureRandom();
@@ -51,10 +51,8 @@ public final class GhostGenerator {
         animal.setMaterial(sample);
         animal.setTranslateY(15);
 
-        int posicaoInicialZ = rnd(mapa[0].length * SIZE);
-        animal.setTranslateZ(posicaoInicialZ);
-        int posicaoInicialX = rnd(mapa.length * SIZE);
-        animal.setTranslateX(posicaoInicialX);
+        animal.setTranslateZ(rnd(mapa[0].length * SIZE));
+        animal.setTranslateX(rnd(mapa.length * SIZE));
 
         animal.setScaleX(4. / 10);
         animal.setScaleZ(4. / 10);
@@ -63,8 +61,8 @@ public final class GhostGenerator {
         return animal;
     }
 
-    private static int rnd(int bound) {
-        return random.nextInt(bound);
+	private static double rnd(double bound) {
+		return random.nextDouble() * bound;
     }
 
 }
