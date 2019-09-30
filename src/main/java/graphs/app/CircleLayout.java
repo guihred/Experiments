@@ -17,11 +17,9 @@ public class CircleLayout extends Layout {
         GraphModel model = graph.getModel();
         graph.clean();
         List<Cell> cells = model.getAllCells();
-        generateCircle(cells, model.getAllEdges());
-    }
-
-    public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges) {
-		generateCircle(cells, allEdges, 0, 0, 0, 2);
+		double width = graph.getScrollPane().getViewportBounds().getWidth();
+		double height = graph.getScrollPane().getViewportBounds().getHeight();
+		generateCircle(cells, model.getAllEdges(), width / 2, height / 2, 0, 2);
     }
 
     public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges, double centerX, double centerY,

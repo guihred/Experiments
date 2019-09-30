@@ -14,7 +14,7 @@ public final class GhostGenerator {
 
     private static final SecureRandom random = new SecureRandom();
 
-    static String[][] mapa = { 
+    private static String[][] mapa = { 
         { "_", "_", "_", "_", "_", "|" }, 
         { "|", "_", "_", "_", "_", "|" },
         { "|", "|", "_", "|", "_", "|" }, 
@@ -64,5 +64,13 @@ public final class GhostGenerator {
 	private static double rnd(double bound) {
 		return random.nextDouble() * bound;
     }
+
+	public static String[][] getMapa() {
+		return mapa;
+	}
+
+	public static void setMapa(String[][] mapa) {
+		GhostGenerator.mapa = mapa;
+	}
 
 }

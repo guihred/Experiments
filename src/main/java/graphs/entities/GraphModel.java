@@ -233,8 +233,7 @@ public class GraphModel {
     private void bindCellsId() {
         allCells.addListener((Change<? extends Cell> c) -> {
             while (c.next()) {
-                cellIds.addAll(c.getAddedSubList().stream().map(Cell::getCellId).collect(Collectors.toList()));
-                cellIds.removeAll(c.getRemoved().stream().map(Cell::getCellId).collect(Collectors.toList()));
+				cellIds.setAll(c.getList().stream().map(Cell::getCellId).collect(Collectors.toList()));
             }
         });
     }

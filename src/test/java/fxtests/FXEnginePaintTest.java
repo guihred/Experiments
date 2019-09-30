@@ -136,6 +136,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 if (i == 0 && items.size() == j + 1) {
                     new Thread(() -> typeInParallel()).start();
                 }
+				getLogger().info("FIRING {}", menu.getId());
                 interact(menu::fire);
                 lookup(".text-field").queryAll().forEach(e -> {
                     clickOn(e);

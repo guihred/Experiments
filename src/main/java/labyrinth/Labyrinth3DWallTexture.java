@@ -1,7 +1,7 @@
 package labyrinth;
 
 import static labyrinth.GhostGenerator.generateGhost;
-import static labyrinth.GhostGenerator.mapa;
+import static labyrinth.GhostGenerator.getMapa;
 import static labyrinth.LabyrinthWall.SIZE;
 import static utils.ResourceFXUtils.toExternalForm;
 
@@ -33,9 +33,9 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
 
     private static final Image WALL_IMAGE2 = new Image(toExternalForm("wall2.jpg"));
 
-    private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
+    private Sphere[][] balls = new Sphere[getMapa().length][getMapa()[0].length];
 
-    private final SimpleIntegerProperty ballsCount = new SimpleIntegerProperty(mapa.length * mapa[0].length);
+    private final SimpleIntegerProperty ballsCount = new SimpleIntegerProperty(getMapa().length * getMapa()[0].length);
 
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
 
@@ -138,9 +138,9 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
     }
 
     private void createLabyrinth(Group root1) {
-        for (int i = 0; i < mapa.length; i++) {
-            for (int j = mapa[i].length - 1; j >= 0; j--) {
-                String string = mapa[i][j];
+        for (int i = 0; i < getMapa().length; i++) {
+            for (int j = getMapa()[i].length - 1; j >= 0; j--) {
+                String string = getMapa()[i][j];
                 LabyrinthWall wall = new LabyrinthWall(SIZE, Color.BLUE, WALL_IMAGE, WALL_IMAGE2);
                 wall.setTranslateX(i * SIZE);
                 wall.setTranslateZ(j * SIZE);

@@ -1,6 +1,6 @@
 package labyrinth;
 
-import static labyrinth.GhostGenerator.mapa;
+import static labyrinth.GhostGenerator.getMapa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +63,7 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 	}
 
 	private void handleMouseClick() {
-		String string = mapa[i][j];
+		String string = getMapa()[i][j];
 		LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
 		rectangle.setTranslateX(i * SIZE);
 		rectangle.setTranslateZ(j * SIZE);
@@ -72,11 +72,11 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 		}
 		root.getChildren().add(rectangle);
 		j++;
-		if (j >= mapa[i].length) {
+		if (j >= getMapa()[i].length) {
 			j = 0;
 			i++;
 		}
-		if (i >= mapa.length) {
+		if (i >= getMapa().length) {
 			i = 0;
 			j = 0;
 			color = color == Color.RED ? Color.BLACK : Color.RED;
@@ -84,9 +84,9 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 	}
 
 	private void initializeLabyrinth(Group root1) {
-		for (int k = mapa.length - 1; k >= 0; k--) {
-			for (int l = mapa[k].length - 1; l >= 0; l--) {
-				String string = mapa[k][l];
+		for (int k = getMapa().length - 1; k >= 0; k--) {
+			for (int l = getMapa()[k].length - 1; l >= 0; l--) {
+				String string = getMapa()[k][l];
 				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 				rectangle.setTranslateX(k * SIZE);
 				rectangle.setTranslateZ(l * SIZE);

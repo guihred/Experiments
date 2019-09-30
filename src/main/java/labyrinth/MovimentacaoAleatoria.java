@@ -1,6 +1,6 @@
 package labyrinth;
 
-import static labyrinth.GhostGenerator.mapa;
+import static labyrinth.GhostGenerator.getMapa;
 
 import java.security.SecureRandom;
 import javafx.animation.AnimationTimer;
@@ -47,8 +47,8 @@ class MovimentacaoAleatoria extends AnimationTimer {
 
     private boolean checkCollision(MeshView enemy) {
         return labyrinth3dWallTexture.checkColision(enemy.getBoundsInParent())
-            || notWithinRange(enemy.getTranslateZ(), mapa[0].length * LabyrinthWall.SIZE)
-            || notWithinRange(enemy.getTranslateX(), mapa.length * LabyrinthWall.SIZE);
+            || notWithinRange(enemy.getTranslateZ(), getMapa()[0].length * LabyrinthWall.SIZE)
+            || notWithinRange(enemy.getTranslateX(), getMapa().length * LabyrinthWall.SIZE);
     }
 
     private static void goToDirection(int dir, MeshView enemy, final int step) {

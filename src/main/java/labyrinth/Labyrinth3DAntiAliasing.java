@@ -1,6 +1,6 @@
 package labyrinth;
 
-import static labyrinth.GhostGenerator.mapa;
+import static labyrinth.GhostGenerator.getMapa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +57,9 @@ public class Labyrinth3DAntiAliasing extends Application implements CommomLabyri
 	}
 
 	private void initializeLabyrinth(Group root) {
-        for (int k = mapa.length - 1; k >= 0; k--) {
-			for (int l = mapa[k].length - 1; l >= 0; l--) {
-				String string = mapa[k][l];
+        for (int k = getMapa().length - 1; k >= 0; k--) {
+			for (int l = getMapa()[k].length - 1; l >= 0; l--) {
+				String string = getMapa()[k][l];
 				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 				rectangle.setTranslateX(k * SIZE);
 				rectangle.setTranslateZ(l * SIZE);

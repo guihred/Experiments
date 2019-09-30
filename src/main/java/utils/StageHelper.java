@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 
 public final class StageHelper {
 
-    private static final Logger LOG = HasLogging.log();
+	private static final Logger LOG = HasLogging.log();
 
     private StageHelper() {
     }
@@ -31,8 +31,7 @@ public final class StageHelper {
     public static Button chooseFile(String nome, String title, ConsumerEx<File> onSelect) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(title);
-        final String nome1 = nome;
-        return newButton(nome1, e -> {
+        return newButton(nome, e -> {
             Node target = (Node) e.getTarget();
             File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
             if (showOpenDialog != null) {
@@ -76,18 +75,18 @@ public final class StageHelper {
 
         if (scene.getWindow() != null) {
             Window window = scene.getWindow();
-            final EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
+			EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
             window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
         }
         scene.windowProperty().addListener((ob, o, n) -> {
-            final EventHandler<WindowEvent> closeRequest = n.getOnCloseRequest();
+			EventHandler<WindowEvent> closeRequest = n.getOnCloseRequest();
             n.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
         });
     }
 
-    public static Stage displayDialog(final String text, Node button) {
-        final Stage stage1 = new Stage();
-        final VBox group = new VBox(new Text(text), button);
+	public static Stage displayDialog(String text, Node button) {
+		Stage stage1 = new Stage();
+		VBox group = new VBox(new Text(text), button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -95,13 +94,13 @@ public final class StageHelper {
         return stage1;
     }
 
-    public static void displayDialog(final String text, final String buttonMsg, final Runnable c) {
-        final Stage stage1 = new Stage();
-        final Button button = newButton(buttonMsg, a -> {
+	public static void displayDialog(String text, String buttonMsg, Runnable c) {
+		Stage stage1 = new Stage();
+		Button button = newButton(buttonMsg, a -> {
             c.run();
             stage1.close();
         });
-        final VBox group = new VBox(new Text(text), button);
+		VBox group = new VBox(new Text(text), button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -109,11 +108,11 @@ public final class StageHelper {
     }
 
     public static void displayDialog(String text, String buttonMsg, Supplier<DoubleProperty> c, RunnableEx run) {
-        final Stage stage1 = new Stage();
+		Stage stage1 = new Stage();
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
-        final String nome = buttonMsg;
+		String nome = buttonMsg;
 
-        final Button button = newButton(nome, a -> {
+		Button button = newButton(nome, a -> {
             DoubleProperty progress = c.get();
             progressIndicator.progressProperty().bind(progress);
             progress.addListener((v, o, n) -> {
@@ -126,7 +125,7 @@ public final class StageHelper {
                 }
             });
         });
-        final VBox group = new VBox(new Text(text), progressIndicator, button);
+		VBox group = new VBox(new Text(text), progressIndicator, button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -146,12 +145,27 @@ public final class StageHelper {
         };
     }
 
+	public static EventHandler<ActionEvent> fileAction(String title, File initialDir, ConsumerEx<File> onSelect,
+			String filter, String... extensions) {
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle(title);
+		chooser.setInitialDirectory(initialDir);
+		chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
+		return e -> {
+			Node target = (Node) e.getTarget();
+			File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
+			if (showOpenDialog != null) {
+				ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
+			}
+		};
+	}
+
     public static Button selectDirectory(String nome, String title, ConsumerEx<File> onSelect) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(title);
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
 		chooser.setInitialDirectory(musicsDirectory);
-        final String nome1 = nome;
+		String nome1 = nome;
         return newButton(nome1, e -> {
             Node target = (Node) e.getTarget();
             Window window = target.getScene().getWindow();
@@ -180,7 +194,7 @@ public final class StageHelper {
         return "";
     }
 
-    private static Button newButton(final String nome, final EventHandler<ActionEvent> onAction) {
+	private static Button newButton(String nome, EventHandler<ActionEvent> onAction) {
         Button button = new Button(nome);
         button.setId(nome);
         button.setOnAction(onAction);

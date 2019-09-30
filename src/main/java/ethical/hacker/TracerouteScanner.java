@@ -119,8 +119,11 @@ public class TracerouteScanner {
                     return Stream.empty();
                 }
                 String hops = line.replaceAll(REUSED_ROUTE_REGEX_1, "$1");
-                String subList = hostsPorts.get(host).get(Integer.parseInt(hops) - 1);
-                return Stream.of(subList).map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
+                int index = Integer.parseInt(hops) - 1;
+				if (index < hostsPorts.get(host).size()) {
+					String subList = hostsPorts.get(host).get(index);
+					return Stream.of(subList).map(ml -> ml.replaceAll(HOP_REGEX, "$1$2"));
+				}
             }
             return Stream.of(line.replaceAll(HOP_REGEX, "$1$2"));
         } catch (Exception e) {

@@ -1,7 +1,7 @@
 package labyrinth;
 
 import static labyrinth.GhostGenerator.generateGhost;
-import static labyrinth.GhostGenerator.mapa;
+import static labyrinth.GhostGenerator.getMapa;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,12 +24,12 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
     private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
 
 
-    private Sphere[][] balls = new Sphere[mapa.length][mapa[0].length];
+    private Sphere[][] balls = new Sphere[getMapa().length][getMapa()[0].length];
 
 	private PerspectiveCamera camera;
 
     private final SimpleIntegerProperty ghostCount = new SimpleIntegerProperty(
-        mapa.length * mapa[0].length);
+        getMapa().length * getMapa()[0].length);
 
 	private final List<LabyrinthWall> labyrinthWalls = new ArrayList<>();
 	private MovimentacaoAleatoria movimentacao;
@@ -53,7 +53,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-        Labyrinth3DKillerGhostsAndBalls.createLabyrinth(root, labyrinthWalls, balls, mapa);
+        Labyrinth3DKillerGhostsAndBalls.createLabyrinth(root, labyrinthWalls, balls, getMapa());
         SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);
 		subScene.heightProperty().bind(primaryStage.heightProperty());

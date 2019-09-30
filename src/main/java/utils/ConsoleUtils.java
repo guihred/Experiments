@@ -88,13 +88,15 @@ public final class ConsoleUtils {
             }
             exec.waitFor();
             PROCESSES.put(cmd, true);
+			logProcesses();
+
         } catch (Exception e) {
             LOGGER.error("", e);
         }
         return result;
     }
 
-    public static Map<String, ObservableList<String>> executeInConsoleAsync(final String cmd,
+	public static Map<String, ObservableList<String>> executeInConsoleAsync(final String cmd,
         final Map<String, String> responses) {
         Map<String, ObservableList<String>> result = new HashMap<>();
         result.put(ACTIVE_FLAG, FXCollections.observableArrayList());
@@ -121,6 +123,7 @@ public final class ConsoleUtils {
 
             p.waitFor();
             PROCESSES.put(cmd, true);
+			logProcesses();
 
         } catch (Exception e) {
             LOGGER.error("", e);
@@ -139,7 +142,7 @@ public final class ConsoleUtils {
                 new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in2.readLine()) != null) {
-                    LOGGER.info("{}", line);
+					LOGGER.trace("{}", line);
                     execution.add(line);
                 }
                 p.waitFor();
@@ -147,6 +150,8 @@ public final class ConsoleUtils {
                     onFinish[i].run();
                 }
                 PROCESSES.put(cmd, true);
+				logProcesses();
+
             } catch (Exception e) {
                 LOGGER.error("", e);
             }
@@ -179,6 +184,11 @@ public final class ConsoleUtils {
         }
     }
 
+    private static void logProcesses() {
+		long count = PROCESSES.values().stream().filter(e -> e).count();
+		LOGGER.info("{}/{} Completed ", count, PROCESSES.size());
+	}
+
     private static Process makeProcessAndWait(final String cmd, String regex) throws IOException {
         List<String> response = Collections.synchronizedList(new ArrayList<>(Arrays.asList(regex)));
         Process exec = Runtime.getRuntime().exec(cmd);
@@ -187,7 +197,7 @@ public final class ConsoleUtils {
                 new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in.readLine()) != null) {
-                    LOGGER.info(line);
+					LOGGER.trace(line);
                     String line0 = line;
                     if (response.stream().anyMatch(line0::matches)) {
                         response.clear();
@@ -233,6 +243,8 @@ public final class ConsoleUtils {
             exec.waitFor();
             result.get(ACTIVE_FLAG).add("");
             PROCESSES.put(cmd, true);
+			logProcesses();
+
         } catch (Exception e) {
             LOGGER.error("", e);
         }
