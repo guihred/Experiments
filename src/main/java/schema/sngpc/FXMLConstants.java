@@ -29,7 +29,7 @@ import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
 public final class FXMLConstants {
-	public static final Map<String, String> PROPERTY_REMAP = ImmutableMap.<String, String>builder()
+    protected static final Map<String, String> PROPERTY_REMAP = ImmutableMap.<String, String>builder()
         .put("gridpane-column", "GridPane.columnIndex").put("gridpane-row", "GridPane.rowIndex")
         .put("hbox-hgrow", "HBox.hgrow").put("vbox-vgrow", "VBox.vgrow").put("tilepane-alignment", "TilePane.alignment")
         .put("stackpane-alignment", "StackPane.alignment").put("pane-bottom-anchor", "AnchorPane.bottomAnchor")
@@ -37,22 +37,23 @@ public final class FXMLConstants {
         .put("pane-top-anchor", "AnchorPane.topAnchor").put("borderpane-alignment", "BorderPane.alignment")
         .put("gridpane-halignment", "GridPane.halignment").put("gridpane-valignment", "GridPane.valignment")
         .put("gridpane-column-span", "GridPane.columnSpan").put("gridpane-row-span", "GridPane.rowSpan").build();
-	public static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class, Font.class, Point3D.class,
+    protected static final List<Class<?>> CONDITIONAL_TAG_CLASSES = Arrays.asList(Insets.class, Font.class,
+        Point3D.class,
         Material.class, PropertyValueFactory.class, ConstraintsBase.class, EventTarget.class, Effect.class,
         StringConverter.class, SelectionModel.class, Paint.class, Enum.class, Number.class);
-	public static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
+    protected static final Map<String, Function<Collection<?>, String>> FORMAT_LIST = ImmutableMap
         .<String, Function<Collection<?>, String>>builder()
         .put("styleClass", l -> l.stream().map(Object::toString).collect(joining(" ")))
         .put("stylesheets", FXMLConstants::mapStylesheet).build();
-	public static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class,
+    protected static final List<Class<?>> NEW_TAG_CLASSES = Arrays.asList(ConstraintsBase.class, EventTarget.class,
         PathElement.class);
-	public static final List<Class<?>> REFERENCE_CLASSES = Arrays.asList(ToggleGroup.class, Image.class);
-	public static final List<Class<?>> NECESSARY_REFERENCE = Arrays.asList(Control.class, Text.class);
-	public static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
+    protected static final List<Class<?>> REFERENCE_CLASSES = Arrays.asList(ToggleGroup.class, Image.class);
+    protected static final List<Class<?>> NECESSARY_REFERENCE = Arrays.asList(Control.class, Text.class);
+    protected static final List<Class<?>> ATTRIBUTE_CLASSES = Arrays.asList(Double.class, String.class, Color.class,
         LinearGradient.class, RadialGradient.class, Long.class, Integer.class, Boolean.class, Enum.class,
         KeyCombination.class);
-	public static final List<Class<?>> METHOD_CLASSES = Arrays.asList(EventHandler.class);
-	public static final List<String> IGNORE = Arrays.asList("needsLayout", "layoutBounds", "baselineOffset",
+    protected static final List<Class<?>> METHOD_CLASSES = Arrays.asList(EventHandler.class);
+    protected static final List<String> IGNORE = Arrays.asList("needsLayout", "layoutBounds", "baselineOffset",
         "localToParentTransform", "eventDispatcher", "skin", "background", "controlCssMetaData", "pseudoClassStates",
         "localToSceneTransform", "parentPopup", "cssMetaData", "classCssMetaData", "boundsInParent", "boundsInLocal",
         "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");

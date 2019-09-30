@@ -177,7 +177,7 @@ public class BrushTool extends PaintTool {
                     drawCircleOption(model, x2, y2, r, color, fill);
                     break;
                 case SQUARE:
-                    PaintToolHelper.drawSquare(model, x2, y2, fill, r, color, op);
+                    drawSquare(model, x2, y2, fill, r, color, op);
                     break;
                 case LINE_NW_SE:
                     RectBuilder.build().startX(x2).startY(y2).endX(x2 + r).endY(y2 + r).drawLine(model.getImage(),
@@ -202,5 +202,13 @@ public class BrushTool extends PaintTool {
         getMouseCursorMap().get(option).setFill(model.getFrontColor());
         getMouseCursorMap().get(option).setStroke(model.getFrontColor());
         getMouseCursorMap().get(option).setOpacity(opacitySlider.valueProperty().get());
+    }
+
+    private static void drawSquare(final PaintModel model, final int x2, final int y2, final boolean fill, double r,
+        Color color, double op) {
+        PaintToolHelper.drawSquareLine(model.getImage(), model.getImageVersions(), x2, y2, (int) r, color, op);
+        if (fill) {
+            PaintToolHelper.drawAndFillSquare(model, x2, y2, r, color, op);
+        }
     }
 }

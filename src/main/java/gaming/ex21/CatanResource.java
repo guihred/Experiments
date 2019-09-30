@@ -14,7 +14,7 @@ import utils.ResourceFXUtils;
 public abstract class CatanResource extends Group {
 
     public static final String CATAN = "catan/";
-    public static final int RADIUS = 70;
+    public static final double RADIUS = 70;
     private final ObjectProperty<PlayerColor> player = new SimpleObjectProperty<>();
     private final Image image;
     protected final ImageView view;

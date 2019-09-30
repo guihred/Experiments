@@ -69,6 +69,7 @@ public final class CommonsFX {
             primaryStage.show();
         }, "ERROR in file " + file);
     }
+
     public static void loadFXML(String title, String file, Object controller, Stage primaryStage, double... size) {
         loadFXML(title, ResourceFXUtils.toFile(file), controller, primaryStage, size);
     }
@@ -79,11 +80,12 @@ public final class CommonsFX {
 
     public static Parent loadParent(File file, Object controller) {
         return SupplierEx.remap(() -> {
-        FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
-        fxmlLoader.setController(controller);
-        return fxmlLoader.load();
+            FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
+            fxmlLoader.setController(controller);
+            return fxmlLoader.load();
         }, "ERROR IN " + file);
     }
+
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
         CheckBox checkBox = new CheckBox(name);
         checkBox.setSelected(showWeight.get());

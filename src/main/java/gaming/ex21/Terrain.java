@@ -33,7 +33,7 @@ public class Terrain extends Group {
     private final Circle circle;
     private final FillTransition highlightTransition;
 
-    public Terrain(@NamedArg("type") final ResourceType type) {
+    public Terrain(@NamedArg("type") ResourceType type) {
         this.type = type;
         circle = new SimpleCircleBuilder().radius(CatanResource.RADIUS / 5.).fill(Color.BEIGE)
             .visible(type != ResourceType.DESERT).stroke(Color.BLACK).build();
@@ -45,16 +45,15 @@ public class Terrain extends Group {
     }
 
     public void createSettlePoints(final double x, final double y, List<SettlePoint> settlePoints2) {
-        Terrain cell = this;
         for (SettlePoint p : Terrain.getSettlePoints(x, y)) {
             if (settlePoints2.stream().noneMatch(e -> intersects(p, e))) {
                 settlePoints2.add(p);
-                p.addTerrain(cell);
+                p.addTerrain(this);
             } else {
                 p.removeNeighbors();
             }
             settlePoints2.stream().filter(e -> intersects(p, e)).findFirst()
-                .ifPresent(e -> e.addTerrain(cell).addAllNeighbors(p));
+                .ifPresent(e -> e.addTerrain(this).addAllNeighbors(p));
         }
     }
 
@@ -190,17 +189,15 @@ public class Terrain extends Group {
             double d = Math.PI / 3;
             double x = Math.cos(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
             double y = Math.sin(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
-            double centerX = xOff + x - CatanResource.RADIUS / 10.;
-            double centerY = yOff + y;
+            final double centerX = xOff + x - CatanResource.RADIUS / 2.5;
+            final double centerY = yOff + y - CatanResource.RADIUS / 4;
             SettlePoint e = new SettlePoint();
             e.relocate(centerX, centerY);
             points.add(e);
-            if (points.size() > 1) {
-                e.addNeighbor(points.get(i - 1));
-            }
-            if (points.size() == 6) {
-                e.addNeighbor(points.get(0));
-            }
+        }
+        for (int i = 0; i < points.size(); i++) {
+            SettlePoint e = points.get(i);
+            e.addNeighbor(points.get((i + 1) % points.size()));
         }
         return points;
     }

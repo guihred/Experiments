@@ -95,8 +95,8 @@ public class TableVisualizationExampleApp extends Application {
             }
         });
         final int standardSize = 200;
-		Slider slider = new SimpleSliderBuilder().prefWidth(standardSize).min(-1).max(MAX_RPM).bindBidirectional(RPM)
-				.build();
+        Slider slider = new SimpleSliderBuilder().prefWidth(standardSize).min(-1).max(MAX_RPM).bindBidirectional(RPM)
+            .build();
         ProgressIndicator progressIndicator = new ProgressIndicator();
         progressIndicator.setPrefWidth(standardSize);
         progressIndicator.progressProperty().bind(RPM.divide(MAX_RPM));
@@ -115,26 +115,27 @@ public class TableVisualizationExampleApp extends Application {
         });
         final Hyperlink hyperlink = new Hyperlink("Hyperlink");
         hyperlink.setOnAction(e -> LOG.info("{} occurred on Hyperlink", e.getEventType()));
-        final Button button = SimpleButtonBuilder.newButton("Button",e -> LOG.info("{} occurred on Button", e.getEventType()));
+        final Button button = SimpleButtonBuilder.newButton("Button",
+            e -> LOG.info("{} occurred on Button", e.getEventType()));
         final MenuItem menItemA = new MenuItem(MENU_ITEM_A);
         menItemA.setOnAction(e -> LOG.info("{} occurred on Menu Item A ", e.getEventType()));
         final MenuButton menuButton = new MenuButton("MenuButton");
         menuButton.getItems().addAll(menItemA, new MenuItem(MENU_ITEM_B));
-		final SimpleToggleGroupBuilder radioToggleGroup = new SimpleToggleGroupBuilder().addRadioToggle("RadioButton1")
+        final SimpleToggleGroupBuilder radioToggleGroup = new SimpleToggleGroupBuilder().addRadioToggle("RadioButton1")
             .addRadioToggle("RadioButton2").select(0).onChange((ov, oldValue, newValue) -> {
                 Labeled rb = (Labeled) newValue;
                 if (rb != null) {
                     LOG.info("{} selected", rb.getText());
                 }
-				});
+            });
         final MenuItem menuItem = new MenuItem(MENU_ITEM_A);
         menuItem.setOnAction(e -> LOG.info("{} occurred on Menu Item A", e.getEventType()));
         final SplitMenuButton splitMenu = new SplitMenuButton(menuItem, new MenuItem(MENU_ITEM_B));
         splitMenu.setText("SplitMenuButton");
         splitMenu.setOnAction(e -> LOG.info("{} occurred on SplitMenuButton", e.getEventType()));
-		VBox variousControls = new VBox(10, button, checkBox, new HBox(10, radioToggleGroup.getToggles()), hyperlink,
-				choiceBox, menuButton, splitMenu, textField, passwordField,
-				new HBox(10, new Label("TextArea:"), textArea), progressIndicator, slider, progressBar, scrollBar);
+        VBox variousControls = new VBox(10, button, checkBox, new HBox(10, radioToggleGroup.getToggles()), hyperlink,
+            choiceBox, menuButton, splitMenu, textField, passwordField, new HBox(10, new Label("TextArea:"), textArea),
+            progressIndicator, slider, progressBar, scrollBar);
         variousControls.setPadding(new Insets(10, 10, 10, 10));
         final MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
         menuItemA.setOnAction(e -> LOG.info("{} occurred on Menu Item A", e.getEventType()));
