@@ -21,6 +21,7 @@ public class JavaFileDependency {
     private static final String PACKAGE_REGEX = "package ([\\w\\.]+);";
     private Path javaPath;
     private List<String> dependencies;
+    private List<JavaFileDependency> dependsOn;
     private List<String> publicMethods;
     private List<String> classes;
     private List<JavaFileDependency> dependents;
@@ -65,12 +66,15 @@ public class JavaFileDependency {
     }
 
     public List<String> getInvocationsMethods() {
-        if (invocations == null && getDependents() != null) {
+        if (invocations == null && dependsOn != null) {
             invocations = SupplierEx.get(() -> {
-                List<JavaFileDependency> collect = getDependents();
                 try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
-                    return lines.map(s -> s.replaceAll("\"[^\"]+\"", "")).map(t -> matches(t, INVOKE_METHOD_REGEX))
-                        .flatMap(List<String>::stream).filter(t -> collect.contains(t)).collect(Collectors.toList());
+                    return lines.map(s -> s.replaceAll("\"[^\"]+\"", "")).filter(t -> !t.matches(PUBLIC_METHOD_REGEX))
+                        .map(t -> matches(t, INVOKE_METHOD_REGEX))
+                        .flatMap(List<String>::stream)
+                        .flatMap(d -> dependsOn.stream().flatMap(
+                            e -> e.getPublicMethods().stream().filter(d::equals).map(g -> e.getFullName() + "." + g)))
+                        .distinct().collect(Collectors.toList());
                 }
             });
         }
@@ -130,6 +134,7 @@ public class JavaFileDependency {
     public void setDependents(Collection<JavaFileDependency> dependents) {
         this.dependents = dependents.stream().filter(d -> d.getClasses().contains(getName()))
             .collect(Collectors.toList());
+        dependsOn = dependents.stream().filter(d -> getClasses().contains(d.getName())).collect(Collectors.toList());
     }
 
     @Override
