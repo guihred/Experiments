@@ -11,7 +11,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -31,16 +30,14 @@ public class JapaneseLessonApplication extends Application {
         final int height = 250;
         Scene scene = new Scene(root, width, height, Color.WHITE);
         // create a grid pane
-        FlowPane gridpane = new FlowPane();
+		VBox gridpane = new VBox();
         gridpane.setPadding(new Insets(5));
-        gridpane.setHgap(10);
-        gridpane.setVgap(10);
         root.setCenter(gridpane);
         TableView<JapaneseLesson> tabelaJapaneseLessons = tabelaJapaneseLessons();
         Label estoqueRosario = new Label("Lessons");
         Button button = new Button("Start");
         button.setOnAction(e -> new JapaneseLessonDisplayer(tabelaJapaneseLessons.getItems()).show());
-        gridpane.getChildren().add(new VBox(estoqueRosario, tabelaJapaneseLessons, button));
+		gridpane.getChildren().addAll(estoqueRosario, tabelaJapaneseLessons, button);
         GridPane.setHalignment(estoqueRosario, HPos.CENTER);
         tabelaJapaneseLessons.setItems(getLessons());
         scene.setOnKeyPressed(e -> {

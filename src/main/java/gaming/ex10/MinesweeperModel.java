@@ -91,23 +91,29 @@ public class MinesweeperModel {
             if (mem.getMinesweeperImage() == MinesweeperImage.BOMB) {
                 if (nPlayed.get() == 0) {
                     reset();
-                }
-                StageHelper.displayDialog("You exploded!", "Reset", this::reset);
+				}
+				if (mem.getScene().getWindow().isShowing()) {
+					StageHelper.displayDialog("You exploded!", "Reset", this::reset);
+				}
             }
             if (mem.getMinesweeperImage() == MinesweeperImage.BLANK) {
                 showNeighbours(mem.getI(), mem.getJ());
             }
             if (verifyEnd()) {
                 String text2 = "You won in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds! ";
-                final String text = text2;
-                StageHelper.displayDialog(text, "Reset", this::reset);
+				if (mem.getScene().getWindow().isShowing()) {
+					StageHelper.displayDialog(text2, "Reset", this::reset);
+				}
             }
 
         }
     }
 
     private void reset() {
-        nPlayed.set(0);
+		if (!gridPane.getScene().getWindow().isShowing()) {
+			return;
+		}
+		nPlayed.set(0);
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 map[i][j].setFinalShape(null);

@@ -22,9 +22,6 @@ import gaming.ex10.MinesweeperLauncher;
 import gaming.ex10.MinesweeperSquare;
 import gaming.ex11.DotsLauncher;
 import gaming.ex11.DotsSquare;
-import gaming.ex13.CardStack;
-import gaming.ex13.SolitaireCard;
-import gaming.ex13.SolitaireLauncher;
 import gaming.ex14.PacmanLauncher;
 import gaming.ex15.RubiksCubeLauncher;
 import gaming.ex17.PuzzleLauncher;
@@ -35,7 +32,6 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -145,7 +141,7 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyMinesweeper() throws Exception {
-        show(MinesweeperLauncher.class);
+		show(MinesweeperLauncher.class);
         List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll().parallelStream()
             .collect(Collectors.toList());
         Collections.shuffle(queryAll);
@@ -199,7 +195,6 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyPuzzle() throws Exception {
         show(PuzzleLauncher.class);
-        interactNoWait(() -> currentStage.setMaximized(true));
         List<Node> queryAll = lookup(e -> e instanceof PuzzlePiece).queryAll().stream().filter(e -> e.isVisible())
             .collect(Collectors.toList());
 		double squareSize = DotsSquare.SQUARE_SIZE;
@@ -209,7 +204,6 @@ public class FXEngineTest extends AbstractTestExecution {
             moveBy(Math.random() * squareSize - squareSize / 2, Math.random() * squareSize - squareSize / 2);
             drop();
         }
-        interactNoWait(() -> currentStage.setMaximized(false));
     }
 
     @Test
@@ -239,34 +233,7 @@ public class FXEngineTest extends AbstractTestExecution {
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
     }
 
-    @Test
-    public void verifySolitaire() throws Exception {
-        show(SolitaireLauncher.class);
-        List<CardStack> cardStacks = lookup(".cardstack").queryAllAs(CardStack.class).stream()
-            .collect(Collectors.toList());
-        Collections.shuffle(cardStacks);
-        targetPos(Pos.TOP_CENTER);
-        for (CardStack cardStack : cardStacks) {
-            if (cardStack.getCards().isEmpty()) {
-                continue;
-            }
-            Node card = getLastCard(cardStack);
-            clickOn(cardStack);
-            for (CardStack stack : cardStacks) {
-                drag(card, MouseButton.PRIMARY);
-                moveTo(stack);
-                drop();
-                if (!cardStack.getCards().contains(card)) {
-                    if (cardStack.getCards().size() <= 1) {
-                        continue;
-                    }
-                    card = getLastCard(cardStack);
-                    clickOn(cardStack);
-                }
-            }
-        }
-        targetPos(Pos.CENTER);
-    }
+	// @Test
 
     @Test
     public void verifySquare() throws Exception {
@@ -283,11 +250,5 @@ public class FXEngineTest extends AbstractTestExecution {
         }));
     }
 
-    private static Node getLastCard(CardStack cardStack) {
-
-        ObservableList<SolitaireCard> children = cardStack.getCards();
-        Optional<SolitaireCard> findFirst = children.stream().filter(e -> e.isShown()).findFirst();
-        return findFirst.orElseGet(() -> children.get(children.size() - 1));
-    }
 
 }

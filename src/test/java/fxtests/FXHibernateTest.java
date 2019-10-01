@@ -15,6 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import utils.CrawlerTask;
 import utils.HibernateUtil;
+import utils.RunnableEx;
 
 
 public class FXHibernateTest extends AbstractTestExecution {
@@ -30,7 +31,6 @@ public class FXHibernateTest extends AbstractTestExecution {
     @Test
     public void verify() throws Exception {
         measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
-        currentStage.setHeight(1000);
         show(new JapaneseLessonApplication());
         clickAllButtons();
         closeCurrentWindow();
@@ -69,9 +69,7 @@ public class FXHibernateTest extends AbstractTestExecution {
     private void clickAllButtons() {
         Set<Node> queryButtons = lookup(".button").queryAll();
         for (Node e : queryButtons) {
-            if (e.isVisible()) {
-                clickOn(e);
-            }
+			RunnableEx.run(() -> clickOn(e));
             sleep(WAIT_TIME);
         }
     }

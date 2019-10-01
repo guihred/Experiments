@@ -235,7 +235,7 @@ public class SolitaireModel {
         return new SolitaireModel(gridPane, scene);
     }
 
-    private static boolean isCardNotCompatibleWithStack(CardStack cardStack, SolitaireCard solitaireCard) {
+	public static boolean isCardNotCompatibleWithStack(CardStack cardStack, SolitaireCard solitaireCard) {
         if (cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.KING) {
             return true;
         }
@@ -245,12 +245,12 @@ public class SolitaireModel {
                 || solitaireCard.getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1);
     }
 
-    private static boolean isDoubleClicked(MouseEvent event) {
-        return event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2;
+    public static boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {
+        return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard) || isNotNextCardInStack(cardStack, solitaireCard);
     }
 
-    private static boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {
-        return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard) || isNotNextCardInStack(cardStack, solitaireCard);
+	private static boolean isDoubleClicked(MouseEvent event) {
+        return event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2;
     }
 
     private static boolean isNotNextCardInStack(CardStack cardStack, SolitaireCard solitaireCard) {

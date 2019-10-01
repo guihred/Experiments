@@ -17,21 +17,21 @@ public class CardStack extends Region {
 	private ObservableList<SolitaireCard> cards = FXCollections.observableArrayList();
 
 	public CardStack() {
-        setPrefSize(SolitaireCard.PREF_WIDTH, SolitaireCard.PREF_HEIGHT);
-        setMinSize(SolitaireCard.PREF_WIDTH, SolitaireCard.PREF_HEIGHT);
+		setPrefSize(SolitaireCard.PREF_WIDTH, SolitaireCard.PREF_HEIGHT);
+		setMinSize(SolitaireCard.PREF_WIDTH, SolitaireCard.PREF_HEIGHT);
 		setPadding(new Insets(10));
-        setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), new Insets(1))));
-        setManaged(false);
-        getStyleClass().add("cardstack");
-        setWidth(SolitaireCard.PREF_WIDTH);
-        setHeight(SolitaireCard.PREF_HEIGHT);
-        prefHeight(SolitaireCard.PREF_HEIGHT);
-        setBorder(new Border(
-            new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT)));
-        setShape(addRegion());
+		setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), new Insets(1))));
+		setManaged(false);
+		getStyleClass().add("cardstack");
+		setWidth(SolitaireCard.PREF_WIDTH);
+		setHeight(SolitaireCard.PREF_HEIGHT);
+		prefHeight(SolitaireCard.PREF_HEIGHT);
+		setBorder(new Border(
+				new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT)));
+		setShape(addRegion());
 	}
 
-    public void addCards(List<SolitaireCard> cards1) {
+	public void addCards(List<SolitaireCard> cards1) {
 		addCards(cards1.toArray(new SolitaireCard[0]));
 	}
 
@@ -49,6 +49,7 @@ public class CardStack extends Region {
 	public void addCardsVertically(List<SolitaireCard> cards1) {
 		addCardsVertically(cards1.toArray(new SolitaireCard[0]));
 	}
+
 	public void addCardsVertically(SolitaireCard... cards1) {
 		for (SolitaireCard solitaireCard : cards1) {
 			if (!cards.contains(solitaireCard)) {
@@ -70,7 +71,7 @@ public class CardStack extends Region {
 		return cards;
 	}
 
-    public SolitaireCard getLastCards() {
+	public SolitaireCard getLastCards() {
 		if (cards.isEmpty()) {
 			return null;
 		}
@@ -79,9 +80,9 @@ public class CardStack extends Region {
 
 	public List<SolitaireCard> removeAllCards() {
 		getChildren().clear();
-        List<SolitaireCard> cardsCopy = cards.stream().collect(Collectors.toList());
+		List<SolitaireCard> cardsCopy = cards.stream().collect(Collectors.toList());
 		cards.clear();
-        return cardsCopy;
+		return cardsCopy;
 	}
 
 	public void removeCards(List<SolitaireCard> cards1) {
@@ -108,7 +109,7 @@ public class CardStack extends Region {
 
 	public List<SolitaireCard> removeLastCards(int n) {
 		if (cards.isEmpty()) {
-            return Collections.emptyList();
+			return Collections.emptyList();
 		}
 		List<SolitaireCard> lastCards = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
@@ -119,13 +120,12 @@ public class CardStack extends Region {
 		return lastCards;
 	}
 
-	public void  setCards(ObservableList<SolitaireCard> value) {
-        addCards(value);
+	public void setCards(ObservableList<SolitaireCard> value) {
+		addCards(value);
 	}
 
-    private static Rectangle addRegion() {
-        return new SimpleRectangleBuilder().styleClass("cardStack").width(SolitaireCard.PREF_WIDTH)
-            .arcHeight(10).arcWidth(10)
-            .height(SolitaireCard.PREF_HEIGHT).build();
-    }
+	private static Rectangle addRegion() {
+		return new SimpleRectangleBuilder().styleClass("cardStack").width(SolitaireCard.PREF_WIDTH).arcHeight(10)
+				.arcWidth(10).height(SolitaireCard.PREF_HEIGHT).build();
+	}
 }
