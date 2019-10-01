@@ -2,6 +2,7 @@ package contest.db;
 
 import java.util.Objects;
 import javax.persistence.*;
+import org.junit.Ignore;
 import utils.BaseEntity;
 
 @Entity
@@ -43,6 +44,7 @@ public class ContestQuestionAnswer extends BaseEntity {
     }
 
     @Override
+    @Ignore
     public Integer getKey() {
         return key;
     }

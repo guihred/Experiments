@@ -4,9 +4,8 @@ import java.util.function.Consumer;
 import org.assertj.core.api.exception.RuntimeIOException;
 
 @FunctionalInterface
-public
-interface RunnableEx {
-	void run() throws Exception;
+public interface RunnableEx {
+    void run() throws Exception;
 
     static void ignore(RunnableEx run) {
         try {
@@ -21,7 +20,7 @@ interface RunnableEx {
             try {
                 run.run();
             } catch (Exception e) {
-				HasLogging.log(1).error("", e);
+                HasLogging.log(1).error("", e);
             }
         };
     }
@@ -30,19 +29,29 @@ interface RunnableEx {
         return () -> {
             try {
                 run.run();
-			} catch (Throwable e) {
+            } catch (Throwable e) {
                 HasLogging.log(1).trace("", e);
                 onError.accept(e);
             }
         };
     }
-    static void remap(RunnableEx run, String onError) {
-        make(run, e -> {
-            throw new RuntimeIOException(onError, e);
-        }).run();
+
+    static RuntimeIOException newException(String onError, Throwable e) {
+
+        return new RuntimeIOException(onError, e);
     }
 
-	static void run(RunnableEx run) {
+    static void remap(RunnableEx run, String onError) {
+        rethrow(run, onError).run();
+    }
+
+    static Runnable rethrow(RunnableEx run, String onError) {
+        return make(run, e -> {
+            throw newException(onError, e);
+        });
+    }
+
+    static void run(RunnableEx run) {
         try {
             run.run();
         } catch (Exception e) {

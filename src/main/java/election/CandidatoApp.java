@@ -11,7 +11,6 @@ import javafx.application.Application;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -75,7 +74,7 @@ public class CandidatoApp extends Application {
         bindTextToMap(text18, fieldMap);
         fieldMap.addListener(
             (Observable e) -> updateTable(first, maxResult.get(), column.get(), pieGraph, candidates, fieldMap));
-        fieldMap.put(relevantFields.get(0), FXCollections.observableSet());
+        column.set(relevantFields.get(0));
     }
 
     @Override

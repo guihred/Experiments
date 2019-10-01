@@ -3,7 +3,6 @@ package gaming.ex07;
 import java.util.*;
 import java.util.Map.Entry;
 import javafx.beans.NamedArg;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.BoundingBox;
@@ -17,6 +16,7 @@ public class MazeSquare extends BorderPane {
     private static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
 
     private static final Logger LOG = HasLogging.log();
+    public static final int MAZE_SIZE = 24;
     private final BooleanProperty visited = new SimpleBooleanProperty(false);
     private final BooleanProperty west = new SimpleBooleanProperty(false);
     private final BooleanProperty east = new SimpleBooleanProperty(false);
@@ -24,17 +24,15 @@ public class MazeSquare extends BorderPane {
     private final BooleanProperty south = new SimpleBooleanProperty(false);
     public final int i;
     public final int j;
-    private List<BoundingBox> bounds;
 
+    private List<BoundingBox> bounds;
     private List<MazeSquare> adjacents;
-    public static final int MAZE_SIZE = 24;
 
     public MazeSquare(@NamedArg("i") int i, @NamedArg("j") int j) {
         this.i = i;
         this.j = j;
         setStyle("-fx-background-color:green;");
-        styleProperty()
-            .bind(Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
+        visited.addListener((ob, old, n) -> setStyle(n ? "-fx-background-color:green;" : "-fx-background-color:gray;"));
         setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
         final Line line = new Line(0, 0, 0, SQUARE_SIZE);
         line.visibleProperty().bind(east.not());

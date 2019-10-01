@@ -16,13 +16,17 @@ public class JavaFileDependency {
     private static final String IMPORT_REGEX = "import ([\\w\\.]+)\\.[\\w\\*]+;"
         + "|import static ([\\w\\.]+)\\.\\w+\\.\\w+;";
     private static final String CLASS_REGEX = "\\W+([A-Z]\\w+)\\W";
+    private static final String PUBLIC_METHOD_REGEX = "\\W+public .+ (\\w+)\\(";
+    private static final String INVOKE_METHOD_REGEX = "\\W+(\\w+)\\(";
     private static final String PACKAGE_REGEX = "package ([\\w\\.]+);";
     private Path javaPath;
     private List<String> dependencies;
+    private List<String> publicMethods;
     private List<String> classes;
     private List<JavaFileDependency> dependents;
     private String name;
     private String packageName;
+    private List<String> invocations;
 
     public JavaFileDependency(Path javaPath) {
         this.javaPath = javaPath;
@@ -60,6 +64,19 @@ public class JavaFileDependency {
         return getPackage() + "." + getName();
     }
 
+    public List<String> getInvocationsMethods() {
+        if (invocations == null && getDependents() != null) {
+            invocations = SupplierEx.get(() -> {
+                List<JavaFileDependency> collect = getDependents();
+                try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
+                    return lines.map(s -> s.replaceAll("\"[^\"]+\"", "")).map(t -> matches(t, INVOKE_METHOD_REGEX))
+                        .flatMap(List<String>::stream).filter(t -> collect.contains(t)).collect(Collectors.toList());
+                }
+            });
+        }
+        return invocations;
+    }
+
     public String getName() {
         if (name == null) {
             name = javaPath.toFile().getName().replaceAll(".java", "");
@@ -77,6 +94,18 @@ public class JavaFileDependency {
             }, "");
         }
         return packageName;
+    }
+
+    public List<String> getPublicMethods() {
+        if (publicMethods == null) {
+            publicMethods = SupplierEx.get(() -> {
+                try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
+                    return lines.map(s -> s.replaceAll("\"[^\"]+\"", "")).map(t -> matches(t, PUBLIC_METHOD_REGEX))
+                        .flatMap(List<String>::stream).collect(Collectors.toList());
+                }
+            });
+        }
+        return publicMethods;
     }
 
     public boolean search(String name1, List<JavaFileDependency> visited, List<JavaFileDependency> path) {
@@ -143,13 +172,12 @@ public class JavaFileDependency {
 
     }
 
-    public static void main(String[] args) {
-        displayTestsToBeRun(
-            Arrays.asList("SSHSessionApp", "EWSTest", "StatsLogAccess", "LeitorArquivos", "JavaFileDependency"));
+    private static List<String> linesMatches(String line) {
+        return matches(line, CLASS_REGEX);
     }
 
-    private static List<String> linesMatches(String line) {
-        Matcher matcher = Pattern.compile(CLASS_REGEX).matcher(line);
+    private static List<String> matches(String line, String classRegex) {
+        Matcher matcher = Pattern.compile(classRegex).matcher(line);
         List<String> linkedList = new LinkedList<>();
         while (matcher.find()) {
             linkedList.add(matcher.group(1));

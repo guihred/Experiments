@@ -1,6 +1,5 @@
 package gaming.ex09;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.BorderPane;
@@ -18,8 +17,7 @@ public class Maze3DSquare extends BorderPane {
 	private BooleanProperty south = new SimpleBooleanProperty(false);
 
     public Maze3DSquare() {
-        styleProperty()
-            .bind(Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
+        visited.addListener((ob, old, n) -> setStyle(n ? "-fx-background-color:green;" : "-fx-background-color:gray;"));
         setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
         final PhongMaterial phongMaterial = new PhongMaterial(Color.ROYALBLUE);
 

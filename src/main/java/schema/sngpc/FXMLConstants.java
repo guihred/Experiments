@@ -28,7 +28,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
-public final class FXMLConstants {
+public class FXMLConstants {
     protected static final Map<String, String> PROPERTY_REMAP = ImmutableMap.<String, String>builder()
         .put("gridpane-column", "GridPane.columnIndex").put("gridpane-row", "GridPane.rowIndex")
         .put("hbox-hgrow", "HBox.hgrow").put("vbox-vgrow", "VBox.vgrow").put("tilepane-alignment", "TilePane.alignment")
