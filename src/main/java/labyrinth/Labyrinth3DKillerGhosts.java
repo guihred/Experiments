@@ -2,7 +2,7 @@ package labyrinth;
 
 import static labyrinth.GhostGenerator.SIZE;
 import static labyrinth.GhostGenerator.generateGhost;
-import static labyrinth.GhostGenerator.mapa;
+import static labyrinth.GhostGenerator.getMapa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,9 +66,9 @@ public class Labyrinth3DKillerGhosts extends Application implements CommomLabyri
     }
 
     private void criarLabirinto(Group root) {
-        for (int i = mapa.length - 1; i >= 0; i--) {
-            for (int j = mapa[i].length - 1; j >= 0; j--) {
-                String string = mapa[i][j];
+        for (int i = getMapa().length - 1; i >= 0; i--) {
+            for (int j = getMapa()[i].length - 1; j >= 0; j--) {
+                String string = getMapa()[i][j];
                 LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 				rectangle.setTranslateZ(j * SIZE);
 				rectangle.setTranslateX(i * SIZE);

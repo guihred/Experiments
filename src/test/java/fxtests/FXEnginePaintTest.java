@@ -32,7 +32,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     public void testaToolsVerify() throws Exception {
         show(PaintMain.class);
         Node stack = lookup(e -> e instanceof ZoomableScrollPane).queryAs(ZoomableScrollPane.class).getContent();
-        testTools(stack);
+		testTools(stack);
         testMenus(stack);
     }
 
@@ -136,6 +136,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 if (i == 0 && items.size() == j + 1) {
                     new Thread(() -> typeInParallel()).start();
                 }
+				getLogger().info("FIRING {}", menu.getId());
                 interact(menu::fire);
                 lookup(".text-field").queryAll().forEach(e -> {
                     clickOn(e);

@@ -65,7 +65,8 @@ public class EthicalHackController {
                 tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
 
         servicesTable.setItems(CommonsFX.newFastFilter(filterField, tcpItems.filtered(e -> true)));
-
+		address.setText(TracerouteScanner.IP_TO_SCAN);
+		networkAddress.setText(TracerouteScanner.NETWORK_ADDRESS);
         Map<Integer, CheckBox> portChecks = new HashMap<>();
         portColumn.setCellFactory(newCellFactory((item, cell) -> {
             cell.setGraphic(getCheckBox(portsSelected, portChecks, item));

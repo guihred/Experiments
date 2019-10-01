@@ -1,6 +1,6 @@
 package labyrinth;
 
-import static labyrinth.GhostGenerator.mapa;
+import static labyrinth.GhostGenerator.getMapa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +89,8 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 		sample.setSpecularPower(16);
         animal.setTranslateY(15);
 
-        animal.setTranslateZ(Math.random() * mapa[0].length * SIZE);
-        animal.setTranslateX(Math.random() * mapa.length * SIZE);
+        animal.setTranslateZ(Math.random() * getMapa()[0].length * SIZE);
+        animal.setTranslateX(Math.random() * getMapa().length * SIZE);
 		while (checkColision(animal.getBoundsInParent())) {
 			animal.setTranslateZ(animal.getTranslateZ() + 1);
 			animal.setTranslateX(animal.getTranslateX() + 1);
@@ -105,9 +105,9 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	}
 
 	private void initializeLabyrinth(Group root) {
-		for (int i = mapa.length - 1; i >= 0; i--) {
-			for (int j = mapa[i].length - 1; j >= 0; j--) {
-				String string = mapa[i][j];
+		for (int i = getMapa().length - 1; i >= 0; i--) {
+			for (int j = getMapa()[i].length - 1; j >= 0; j--) {
+				String string = getMapa()[i][j];
 				LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
                 rectangle.setTranslateX(i * (double) SIZE);
                 rectangle.setTranslateZ(j * (double) SIZE);

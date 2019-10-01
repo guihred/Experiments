@@ -61,8 +61,9 @@ public class NetworkTopology extends BaseTopology {
         }
         scanPossibleOSes.forEach(this::addDescription);
         graph.endUpdate();
-        ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
-            graph.getScrollPane().getWidth() / 3);
+		LayerLayout.layoutInLayers(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
+				graph.getScrollPane().getViewportBounds().getWidth() / 2,
+				graph.getScrollPane().getViewportBounds().getHeight());
 
     }
 

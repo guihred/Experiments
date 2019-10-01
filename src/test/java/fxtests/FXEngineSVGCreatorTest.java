@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import org.junit.Test;
@@ -41,12 +42,14 @@ public class FXEngineSVGCreatorTest extends AbstractTestExecution {
             drop();
 
 		}
+		tryClickButtons();
+		type(typeText("fb.jpg"));
+		type(KeyCode.ENTER);
 		lookup(".slider").queryAll().forEach(m -> {
 			drag(m, MouseButton.PRIMARY);
 			moveBy(randomMove(10), 0);
 			drop();
 		});
-		tryClickButtons();
 	}
 
     private int randomMove(final int bound) {

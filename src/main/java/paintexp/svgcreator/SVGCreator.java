@@ -103,7 +103,8 @@ public class SVGCreator extends Application {
 
     public void onActionBackground(ActionEvent event) {
         StageHelper
-            .fileAction("Imagem", f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())),
+				.fileAction("Imagem", ResourceFXUtils.getOutFile().getParentFile(),
+						f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())),
                 "Imagens", "*.jpg", "*.png", "*.bmp", "*.jpg")
             .handle(event);
     }

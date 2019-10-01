@@ -1,6 +1,6 @@
 package labyrinth;
 
-import static labyrinth.GhostGenerator.mapa;
+import static labyrinth.GhostGenerator.getMapa;
 
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -11,12 +11,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class Labyrinth2D extends Application {
-
-
 	private static final int SIZE = 50;
 
 	private Color color = Color.RED;
-
 	private int i;
 	private int j;
 	@Override
@@ -37,7 +34,7 @@ public class Labyrinth2D extends Application {
 	}
 
 	private void handleMouseClick(Group root) {
-		String string = mapa[i][j];
+		String string = getMapa()[i][j];
 		if ("_".equals(string)) {
 			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
 					SIZE / 2, SIZE);
@@ -50,11 +47,11 @@ public class Labyrinth2D extends Application {
 			root.getChildren().add(rectangle);
 		}
 		j++;
-		if (j >= mapa[i].length) {
+		if (j >= getMapa()[i].length) {
 			j = 0;
 			i++;
 		}
-		if (i >= mapa.length) {
+		if (i >= getMapa().length) {
 			i = 0;
 			j = 0;
 			color = color == Color.RED ? Color.BLACK : Color.RED;
@@ -66,9 +63,9 @@ public class Labyrinth2D extends Application {
 	}
 
 	private static void initializeLabyrinth(Group root) {
-		for (int k = 0; k < mapa.length; k++) {
-			for (int l = 0; l < mapa[k].length; l++) {
-				String string = mapa[k][l];
+		for (int k = 0; k < getMapa().length; k++) {
+			for (int l = 0; l < getMapa()[k].length; l++) {
+				String string = getMapa()[k][l];
 				if ("_".equals(string)) {
 					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
 							SIZE / 2, SIZE);

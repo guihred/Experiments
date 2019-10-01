@@ -58,7 +58,8 @@ public class PackageTopology extends BaseTopology {
         }
         graph.endUpdate();
 		LayerLayout.layoutInLayers(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
-				graph.getScrollPane().getViewportBounds().getWidth() / 2);
+				graph.getScrollPane().getViewportBounds().getWidth() / 2,
+				graph.getScrollPane().getHeight() / 2);
         return javaFiles;
     }
 
