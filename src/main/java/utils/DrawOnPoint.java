@@ -9,7 +9,15 @@ public interface DrawOnPoint {
 
     static WritableImage drawTransparentPattern(int size) {
         WritableImage transparentPattern = new WritableImage(size, size);
-        return transparentImage(size, transparentPattern);
+
+		WritableImage pattern = transparentImage(size, transparentPattern);
+		for (int i = 0; i < pattern.getWidth(); i++) {
+			pattern.getPixelWriter().setColor(i, (int) pattern.getHeight() - 1, Color.BLACK);
+		}
+		for (int j = 0; j < pattern.getHeight(); j++) {
+			pattern.getPixelWriter().setColor((int) pattern.getWidth() - 1, j, Color.BLACK);
+		}
+		return pattern;
     }
 	
     static double getWithinRange(final double num, final double min, final double max) {

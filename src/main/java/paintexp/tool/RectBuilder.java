@@ -12,7 +12,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.image.*;
 import javafx.scene.image.PixelFormat.Type;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
 
@@ -257,7 +256,7 @@ public final class RectBuilder {
     }
 
     public static void takeSnapshotFill(Node line2, WritableImage image, Group imageStack, ImageView imageView,
-        Rectangle rectangleBorder) {
+			Node rectangleBorder) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;

@@ -11,12 +11,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class Labyrinth2D extends Application {
-
-
 	private static final int SIZE = 50;
 
 	private Color color = Color.RED;
-
 	private int i;
 	private int j;
 	@Override

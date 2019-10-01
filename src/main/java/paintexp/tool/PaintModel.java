@@ -12,7 +12,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import utils.DrawOnPoint;
@@ -31,7 +30,7 @@ public class PaintModel {
     private VBox toolOptions;
     private File currentFile;
     private final ObservableList<WritableImage> imageVersions = FXCollections.observableArrayList();
-    private Rectangle rectangleBorder;
+	private PixelatedImageView rectangleBorder;
     private ZoomableScrollPane scrollPane;
 
     public ObjectProperty<Color> backColorProperty() {
@@ -103,16 +102,18 @@ public class PaintModel {
         return mousePosition;
     }
 
-    public Rectangle getRectangleBorder(final ImageView imageView) {
+	public PixelatedImageView getRectangleBorder(final ImageView imageView) {
         if (rectangleBorder == null) {
-            rectangleBorder = new Rectangle(10, 10, new ImagePattern(DrawOnPoint.drawTransparentPattern(100)));
-            rectangleBorder.setStroke(Color.BLACK);
+			WritableImage pattern = DrawOnPoint.drawTransparentPattern(500);
+
+
+			rectangleBorder = new PixelatedImageView(pattern);
+			rectangleBorder.setManaged(false);
         }
-        rectangleBorder.setManaged(false);
         rectangleBorder.layoutXProperty().bind(imageView.layoutXProperty());
         rectangleBorder.layoutYProperty().bind(imageView.layoutYProperty());
-        rectangleBorder.widthProperty().bind(image.widthProperty().add(1));
-        rectangleBorder.heightProperty().bind(image.heightProperty().add(1));
+        rectangleBorder.fitWidthProperty().bind(image.widthProperty().add(1));
+        rectangleBorder.fitHeightProperty().bind(image.heightProperty().add(1));
         return rectangleBorder;
     }
 
