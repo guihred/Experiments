@@ -19,7 +19,7 @@ public class CircleLayout extends Layout {
         List<Cell> cells = model.getAllCells();
 		double width = graph.getScrollPane().getViewportBounds().getWidth();
 		double height = graph.getScrollPane().getViewportBounds().getHeight();
-		generateCircle(cells, model.getAllEdges(), width / 2, height / 2, 0, 2);
+        generateCircle(cells, model.getAllEdges(), width / 2, height / 2, 2);
     }
 
     public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges, double centerX, double centerY,
@@ -44,10 +44,10 @@ public class CircleLayout extends Layout {
     }
 
     public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges, double centerX, double centerY,
-        double startAngle, int mul) {
+        int mul) {
         int bound = radius(cells.size(), mul == 1 && cells.size() == 1 ? 0 : mul,
             cells.stream().mapToDouble(Cell::getWidth).max().orElse(20));
-        generateCircle(cells, allEdges, centerX, centerY, startAngle, (double) bound);
+        generateCircle(cells, allEdges, centerX, centerY, 0, bound);
     }
 
     public static int radius(int size2) {

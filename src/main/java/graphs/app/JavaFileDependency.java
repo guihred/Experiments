@@ -70,16 +70,21 @@ public class JavaFileDependency {
         return getPackage() + "." + getName();
     }
 
+    public  List<String> getInvocations(Stream<String> lines, List<JavaFileDependency> dependsOn2) {
+        return lines.map(JavaFileDependency::removeStrings).filter(t -> !t.matches(PUBLIC_METHOD_REGEX))
+            .map(t -> matches(t, INVOKE_METHOD_REGEX)).flatMap(List<String>::stream)
+            .flatMap(
+                invocation -> Stream.concat(dependsOn2.stream(), Stream.of(this))
+                    .flatMap(e -> e.getPublicMethods().stream().filter(invocation::equals)
+                        .map(publicMethod -> e.getName() + "." + publicMethod)))
+            .distinct().collect(Collectors.toList());
+    }
+
     public List<String> getInvocationsMethods() {
         if (invocations == null && dependsOn != null) {
             invocations = SupplierEx.get(() -> {
                 try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
-                    return lines.map(JavaFileDependency::removeStrings).filter(t -> !t.matches(PUBLIC_METHOD_REGEX))
-                        .map(t -> matches(t, INVOKE_METHOD_REGEX))
-                        .flatMap(List<String>::stream)
-                        .flatMap(d -> dependsOn.stream().flatMap(
-                            e -> e.getPublicMethods().stream().filter(d::equals).map(g -> e.getFullName() + "." + g)))
-                        .distinct().collect(Collectors.toList());
+                    return getInvocations(lines, dependsOn);
                 }
             });
         }
@@ -117,6 +122,11 @@ public class JavaFileDependency {
         return publicMethods;
     }
 
+    public Map<String, List<String>> getPublicMethodsFullName() {
+        return getPublicMethodsMap().entrySet().stream().collect(Collectors.toMap(e -> getName() + "." + e.getKey(),
+            e -> getInvocations(e.getValue().stream(), dependsOn)));
+    }
+
     public Map<String, List<String>> getPublicMethodsMap() {
         if (methodsMap == null) {
             methodsMap = SupplierEx.get(() -> {
@@ -124,8 +134,7 @@ public class JavaFileDependency {
                     Map<String, List<String>> methodMap = new HashMap<>();
                     AtomicReference<String> method = Atomics.newReference();
                     AtomicInteger stackSize = new AtomicInteger(0);
-                    lines.map(JavaFileDependency::removeStrings)
-                        .filter(StringUtils::isNotBlank)
+                    lines.map(JavaFileDependency::removeStrings).filter(StringUtils::isNotBlank)
                         .forEach(line -> appendToMap(methodMap, method, stackSize, line));
                     return methodMap;
                 }
@@ -193,6 +202,11 @@ public class JavaFileDependency {
             }
         }, new ArrayList<>());
 
+    }
+    public static List<JavaFileDependency> getJavaFileDependencies(String packName) {
+        return JavaFileDependency.getAllFileDependencies().stream()
+                    .filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
+                    .collect(Collectors.toList());
     }
 
     private static void appendToMap(Map<String, List<String>> methodMap, AtomicReference<String> method,

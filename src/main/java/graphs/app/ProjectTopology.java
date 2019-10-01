@@ -13,7 +13,7 @@ import javafx.beans.NamedArg;
 public class ProjectTopology extends BaseTopology {
 
     public ProjectTopology(@NamedArg("graph") Graph graph) {
-        super(graph, "Project");
+        super(graph);
     }
 
     @Override

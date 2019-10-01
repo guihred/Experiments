@@ -178,8 +178,8 @@ public class FXFileReadersTest extends ApplicationTest {
 
     @Test
     public void testPackageTopology() {
-        measureTime("PackageTopology.main", () -> {
-            List<JavaFileDependency> javaFiles = PackageTopology.getJavaFileDependencies(null);
+        measureTime("JavaFileDependency.getJavaFileDependencies", () -> {
+            List<JavaFileDependency> javaFiles = JavaFileDependency.getJavaFileDependencies(null);
             Map<String, List<JavaFileDependency>> filesByPackage = javaFiles.stream()
                 .collect(Collectors.groupingBy(JavaFileDependency::getPackage));
             filesByPackage.forEach((pack, files) -> {

@@ -1,5 +1,7 @@
 package graphs.app;
 
+import static graphs.app.JavaFileDependency.getJavaFileDependencies;
+
 import graphs.entities.Cell;
 import graphs.entities.CellType;
 import graphs.entities.Graph;
@@ -11,7 +13,6 @@ import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
@@ -23,7 +24,7 @@ public class PackageTopology extends BaseTopology {
         .distinct().collect(Collectors.toCollection(FXCollections::observableArrayList));
 
     public PackageTopology(@NamedArg("graph") Graph graph) {
-        super(graph, "Package");
+        super(graph);
 		packages.add("");
     }
 
@@ -70,11 +71,6 @@ public class PackageTopology extends BaseTopology {
             .filter(classesNames::contains).collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
     }
 
-    public static List<JavaFileDependency> getJavaFileDependencies(String packName) {
-        return JavaFileDependency.getAllFileDependencies().stream()
-					.filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
-					.collect(Collectors.toList());
-    }
 
     public static void main(String[] args) {
 

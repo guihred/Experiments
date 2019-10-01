@@ -177,15 +177,20 @@ public class GraphModelLauncher extends Application {
         final int netSize = 30;
         PackageTopology packageTopology = new PackageTopology(graph);
         NetworkTopology networkTopology = new NetworkTopology(graph);
+        MethodsTopology methodsTopology = new MethodsTopology(graph);
         ObservableList<BaseTopology> topologies = FXCollections
             .observableArrayList(delaunayTopology, new RandomTopology(netSize, graph), new TreeTopology(netSize, graph),
                 new CircleTopology(netSize, graph), new GabrielTopology(netSize, graph),
-                new WordTopology(netSize * 3, graph), packageTopology, networkTopology, new ProjectTopology(graph))
+                new WordTopology(netSize * 3, graph), packageTopology, methodsTopology, networkTopology,
+                new ProjectTopology(graph))
             .sorted(Comparator.comparing(BaseTopology::getName));
         TextField networkField = new TextField(networkTopology.getNetworkAddress());
         networkTopology.networkAddressProperty().bind(networkField.textProperty());
         ComboBox<String> packageSelect = new SimpleComboBoxBuilder<String>().items(packageTopology.getPackages())
-            .tooltip("Package").onChange((old, newV) -> packageTopology.setChosenPackageName(newV)).select(0).build();
+            .tooltip("Package").onChange((old, newV) -> {
+                packageTopology.setChosenPackageName(newV);
+                methodsTopology.setChosenPackageName(newV);
+            }).select(0).build();
         ComboBox<BaseTopology> topologySelect = new SimpleComboBoxBuilder<BaseTopology>().items(topologies)
             .tooltip("Select Topology").converter("name").build();
 
@@ -194,7 +199,8 @@ public class GraphModelLauncher extends Application {
         networkField.managedProperty().bind(networkField.visibleProperty());
 
         packageSelect.visibleProperty()
-            .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(packageTopology));
+            .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(packageTopology)
+                .or(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(methodsTopology)));
         packageSelect.managedProperty().bind(packageSelect.visibleProperty());
 
         topologySelect.getSelectionModel().select(0);

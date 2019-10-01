@@ -28,7 +28,7 @@ public class NetworkTopology extends BaseTopology {
     private final StringProperty networkAddress = new SimpleStringProperty(TracerouteScanner.NETWORK_ADDRESS);
 
     public NetworkTopology(@NamedArg("graph") Graph graph) {
-        super(graph, "Network");
+        super(graph);
         networkAddress.addListener(o -> scanNetworkRoutes = null);
     }
 

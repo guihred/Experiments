@@ -16,7 +16,7 @@ public final class FXMLCreatorTest {
 
 	static final Logger LOG = HasLogging.log();
 
-//    @Test
+    @Test
     public void testAllClasses() {
 		List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
         testApplications(classes);

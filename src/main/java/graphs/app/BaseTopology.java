@@ -15,8 +15,10 @@ public abstract class BaseTopology implements EventTarget {
 
     private int size;
 
-    public BaseTopology(Graph graph, String name) {
-        this(graph, name, 0);
+    public BaseTopology(Graph graph) {
+        this.graph = graph;
+        name = getClass().getSimpleName().replaceAll("Topology", "");
+        size = 0;
     }
 	public BaseTopology(Graph graph, String name, int size) {
 		this.graph = graph;

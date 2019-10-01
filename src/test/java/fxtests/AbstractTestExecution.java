@@ -7,12 +7,15 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.apache.commons.lang.SystemUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
 import utils.ConsumerEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
     protected Stage currentStage;
     protected boolean isLinux = SystemUtils.IS_OS_LINUX;
