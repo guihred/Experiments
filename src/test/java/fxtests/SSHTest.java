@@ -3,6 +3,7 @@ package fxtests;
 import ethical.hacker.ssh.BaseTestSupport;
 import ethical.hacker.ssh.SSHClientUtils;
 import ethical.hacker.ssh.SSHSessionApp;
+import java.io.PrintStream;
 import org.apache.sshd.server.SshServer;
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +25,7 @@ public class SSHTest extends AbstractTestExecution {
         sshd.stop(true);
     }
 
-    @Test
+	@Test
     public void testApp() throws Exception {
         show(SSHSessionApp.class);
     }
@@ -33,7 +34,7 @@ public class SSHTest extends AbstractTestExecution {
     public void testMessages() throws Exception {
 		String name = BaseTestSupport.getCurrentTestName();
 		SSHClientUtils.sendMessage("ipconfig", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(),
-            name, name, System.out);
+				name, name, new PrintStream(System.out));
     }
 
 }
