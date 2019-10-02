@@ -45,7 +45,7 @@ public class CircleLayout extends Layout {
     public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges, double centerX, double centerY,
         int mul) {
         int bound = radius(cells.size(), mul == 1 && cells.size() == 1 ? 0 : mul,
-            cells.stream().mapToDouble(Cell::getWidth).max().orElse(20));
+            cells.stream().mapToDouble(value -> value.getBoundsInLocal().getWidth()).max().orElse(20));
         generateCircle(cells, allEdges, centerX, centerY, 0, bound);
     }
 
