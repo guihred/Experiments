@@ -39,7 +39,8 @@ public class GraphModelLauncher extends Application {
             new LayerLayout(graph), new RandomLayout(graph), new CustomLayout(graph), convergeLayout)
         .sorted(Comparator.comparing(Layout::getName));
 
-    private ComboBox<Layout> selectLayout = new SimpleComboBoxBuilder<Layout>().items(layouts).tooltip("Select Layout")
+    private ComboBox<Layout> selectLayout = new SimpleComboBoxBuilder<Layout>().id("selectLayout").items(layouts)
+        .tooltip("Select Layout")
         .converter("name").select(0).build();
     private Timeline timeline = new SimpleTimelineBuilder().addKeyFrame(50.0, convergeLayout.getEventHandler())
         .cycleCount(Animation.INDEFINITE).build();
@@ -143,8 +144,8 @@ public class GraphModelLauncher extends Application {
     private Node getShortestPathOptions() {
 
         ObservableList<String> cells = graph.getModel().getCellIds();
-        ComboBox<String> c1 = new SimpleComboBoxBuilder<String>().items(cells).build();
-        ComboBox<String> c2 = new SimpleComboBoxBuilder<String>().items(cells).build();
+        ComboBox<String> c1 = new SimpleComboBoxBuilder<String>().id("c1").items(cells).build();
+        ComboBox<String> c2 = new SimpleComboBoxBuilder<String>().id("c2").items(cells).build();
         cells.addListener((Observable observable) -> {
             if (!cells.isEmpty()) {
                 c1.selectionModelProperty().get().select(0);
@@ -186,12 +187,14 @@ public class GraphModelLauncher extends Application {
             .sorted(Comparator.comparing(BaseTopology::getName));
         TextField networkField = new TextField(networkTopology.getNetworkAddress());
         networkTopology.networkAddressProperty().bind(networkField.textProperty());
-        ComboBox<String> packageSelect = new SimpleComboBoxBuilder<String>().items(packageTopology.getPackages())
+        ComboBox<String> packageSelect = new SimpleComboBoxBuilder<String>().id("packageSelect")
+            .items(packageTopology.getPackages())
             .tooltip("Package").onChange((old, newV) -> {
                 packageTopology.setChosenPackageName(newV);
                 methodsTopology.setChosenPackageName(newV);
             }).select(0).build();
-        ComboBox<BaseTopology> topologySelect = new SimpleComboBoxBuilder<BaseTopology>().items(topologies)
+        ComboBox<BaseTopology> topologySelect = new SimpleComboBoxBuilder<BaseTopology>().id("topologySelect")
+            .items(topologies)
             .tooltip("Select Topology").converter("name").build();
 
         networkField.visibleProperty()

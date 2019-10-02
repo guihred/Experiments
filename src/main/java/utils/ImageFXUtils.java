@@ -7,6 +7,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.transform.Scale;
 import javax.imageio.ImageIO;
@@ -15,6 +16,10 @@ public final class ImageFXUtils {
     private static boolean showImage = true;
 
     private ImageFXUtils() {
+    }
+
+    public static WritableImage imageCopy(Image image) {
+        return new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
     }
 
     public static void setShowImage(boolean showImage) {

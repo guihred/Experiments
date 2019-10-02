@@ -73,17 +73,17 @@ public class SngpcViewer extends Application {
             list.add(newValue.getValue());
         } else if (newValue != null
             && newValue.getChildren().stream().anyMatch(TreeItem<Map<String, String>>::isLeaf)) {
-            List<String> keySet = newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
-                .flatMap(m -> m.keySet().stream()).collect(Collectors.toList());
-            keySet.addAll(newValue.getValue().keySet());
-            addColumns(sideTable, keySet);
+            addColumns(sideTable, newValue.getValue().keySet());
             Map<String, String> newItem = new HashMap<>();
             newItem.putAll(newValue.getValue());
             list.add(newItem);
+            List<String> keySet = newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
+                .flatMap(m -> m.keySet().stream()).collect(Collectors.toList());
             if (keySet.size() - 1 == newValue.getChildren().size()) {
+                keySet.addAll(newValue.getValue().keySet());
+                sideTable.getColumns().clear();
+                addColumns(sideTable, keySet);
                 newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue).forEach(newItem::putAll);
-            } else {
-                newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue).forEach(list::add);
             }
         }
     }

@@ -1,11 +1,17 @@
 package others;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.LongSummaryStatistics;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.function.ToLongFunction;
@@ -43,23 +49,8 @@ public class StatsLogAccess {
 
 	}
 
-    public static void main(String[] args) throws IOException {
-//			statisticaDemoraArquivo();
-        File file = new File("target/jacoco.exec");
-        try (Scanner scanner = new Scanner(file.toPath(), "utf-8");) {
-            System.out.println(scanner.hasNext() ? scanner.next() : "");
-            System.out.println(scanner.hasNextBigDecimal() ? scanner.nextBigDecimal() : "");
-            System.out.println(scanner.hasNextBigInteger() ? scanner.nextBigInteger() : "");
-            System.out.println(scanner.hasNextBoolean() ? scanner.nextBoolean() : "");
-            System.out.println(scanner.hasNextByte() ? scanner.nextByte() : "");
-            System.out.println(scanner.hasNextDouble() ? scanner.nextDouble() : "");
-            System.out.println(scanner.hasNextFloat() ? scanner.nextFloat() : "");
-            System.out.println(scanner.hasNextInt() ? scanner.nextInt() : "");
-            System.out.println(scanner.hasNextLine() ? scanner.nextLine() : "");
-            System.out.println(scanner.hasNextLong() ? scanner.nextLong() : "");
-            System.out.println(scanner.hasNextShort() ? scanner.nextShort() : "");
-        }
-
+    public static void main(String[] args) {
+        statisticaDemoraArquivo();
 	}
 
 	public static void statisticaDemoraArquivo() {

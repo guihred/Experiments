@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import utils.*?><?import javafx.scene.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.geometry.*?><?import javafx.scene.text.*?><?import javafx.collections.*?><?import java.lang.*?><?import javafx.scene.transform.*?><?import graphs.entities.*?><?import simplebuilder.*?><?import graphs.app.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+	styleClass="root" fx:id="borderPane">
+	<fx:define>
+		<Graph fx:id="graph" />
+
+	</fx:define>
+	<left>
+		<VBox>
+			<children>
+				<Button alignment="CENTER" fx:id="color" id="Color"
+					onAction="#onActionColor" text="Color" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="kruskal" id="Kruskal"
+					onAction="#onActionKruskal" text="Kruskal" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="voronoi" id="Voronoi"
+					onAction="#onActionVoronoi" text="Voronoi" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="triangulate"
+					id="Triangulate" onAction="#onActionTriangulate" text="Triangulate"
+					textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="articulations"
+					id="Articulations" onAction="#onActionArticulations"
+					text="Articulations" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="sortTopology"
+					id="Sort Topology" onAction="#onActionSortTopology"
+					text="Sort Topology" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="pageRank" id="Page Rank"
+					onAction="#onActionPageRank" text="Page Rank" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="takeSnap" id="Take Snap"
+					onAction="#onActionTakeSnap" text="Snapshot" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<VBox>
+					<children>
+						<Text fx:id="text12" text="Layout" />
+						<HBox>
+							<children>
+								<ComboBox fx:id="selectLayout" id="selectLayout">
+									<converter>
+										<SimpleConverter name="name" />
+									</converter>
+									<items>
+										<FXCollections fx:factory="observableArrayList">
+											<CircleLayout graph="$graph" />
+											<ConcentricLayout graph="$graph" />
+											<ConvergeLayout fx:id="convergeLayout"
+												graph="$graph" />
+											<CustomLayout graph="$graph" />
+											<GridLayout graph="$graph" />
+											<LayerLayout graph="$graph" />
+											<RandomLayout graph="$graph" />
+										</FXCollections>
+									</items>
+									<tooltip>
+										<Tooltip text="Select Layout" />
+									</tooltip>
+								</ComboBox>
+								<Button alignment="CENTER" fx:id="go" id="Go"
+									onAction="#onActionGo" text="Go" textFill="0x333333ff">
+									<padding>
+										<Insets bottom="4.0" fx:id="insets28" left="8.0"
+											right="8.0" top="4.0" />
+									</padding>
+								</Button>
+							</children>
+						</HBox>
+					</children>
+				</VBox>
+				<FlowPane maxWidth="160.0">
+					<children>
+						<VBox>
+							<children>
+								<Text fx:id="text19" text="Source" />
+								<ComboBox fx:id="c1" id="c1" value="A">
+								</ComboBox>
+							</children>
+						</VBox>
+						<VBox>
+							<children>
+								<Text fx:id="text21" text="Target" />
+								<ComboBox fx:id="c2" id="c2" value="G">
+								</ComboBox>
+							</children>
+						</VBox>
+						<VBox>
+							<children>
+								<Text fx:id="text23" />
+								<Button alignment="CENTER" fx:id="path" id="_Path"
+									onAction="#onActionPath" text="_Path" textFill="0x333333ff">
+									<padding>
+										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+									</padding>
+								</Button>
+							</children>
+						</VBox>
+					</children>
+				</FlowPane>
+				<VBox>
+					<children>
+						<Text fx:id="text13" text="Topology" />
+						<HBox>
+							<children>
+								<ComboBox fx:id="topologySelect" id="topologySelect">
+									<converter>
+										<SimpleConverter name="name" />
+									</converter>
+									<items>
+										<FXCollections fx:factory="observableArrayList">
+											<CircleTopology fx:id="circleTopology"
+												graph="$graph" size="30" />
+											<DelaunayTopology graph="$graph"
+												fx:id="delaunayTopology" size="10" />
+											<GabrielTopology graph="$graph"
+												fx:id="gabrielTopology" size="30" />
+											<MethodsTopology graph="$graph"
+												fx:id="methodsTopology" />
+											<NetworkTopology graph="$graph"
+												fx:id="networkTopology" />
+											<PackageTopology graph="$graph"
+												fx:id="packageTopology" />
+											<ProjectTopology graph="$graph"
+												fx:id="projectTopology" />
+											<RandomTopology graph="$graph"
+												fx:id="randomTopology" size="30" />
+											<TreeTopology graph="$graph"
+												fx:id="treeTopology" size="30" />
+											<WordTopology graph="$graph"
+												fx:id="wordTopology" size="90" />
+										</FXCollections>
+									</items>
+									<tooltip>
+										<Tooltip text="Select Topology" />
+									</tooltip>
+								</ComboBox>
+								<Button alignment="CENTER" fx:id="go27" id="Go"
+									onAction="#onActionGo27" padding="$insets28" text="Go"
+									textFill="0x333333ff" />
+							</children>
+						</HBox>
+						<ComboBox fx:id="packageSelect" id="packageSelect"
+							managed="false" visible="false">
+							<tooltip>
+								<Tooltip text="Package" />
+							</tooltip>
+						</ComboBox>
+						<TextField fx:id="networkField" managed="false" visible="false">
+							<padding>
+								<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
+							</padding>
+						</TextField>
+					</children>
+				</VBox>
+				<Button alignment="CENTER" fx:id="pausePlay" id="Pause/Play"
+					onAction="#onActionPausePlay" text="Pause/Play"
+					textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<CheckBox fx:id="showHeight" selected="true"
+					text="Show Weight" textFill="0x333333ff" />
+			</children>
+		</VBox>
+	</left>
+</BorderPane>

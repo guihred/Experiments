@@ -18,6 +18,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,7 +38,8 @@ public final class MusicReader {
                 ID3v2 tag = mp31.getId3v2Tag();
                 byte[] albumImage = tag.getAlbumImage();
                 if (albumImage != null) {
-                    return new Image(new ByteArrayInputStream(albumImage));
+                    Image image = new Image(new ByteArrayInputStream(albumImage));
+                    return imageCopy(image);
                 }
 
             }
@@ -172,6 +174,10 @@ public final class MusicReader {
         } catch (IOException e1) {
             LOG.error("ERROR COPYING", e1);
         }
+    }
+
+    private static WritableImage imageCopy(Image image) {
+        return new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
     }
 
     @SuppressWarnings("unchecked")

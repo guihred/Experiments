@@ -69,6 +69,17 @@ public final class FXMLCreatorHelper {
         return errorClasses;
     }
 
+    private static void compareElements(Class<? extends Application> appClass,
+        Collection<Class<? extends Application>> differentTree, Parent root, Parent root2) {
+        if (!compareTree(root, root2)) {
+            LOG.info("{} has different tree", appClass.getSimpleName());
+            String displayMissingElement2 = displayMissingElement(root, root2).stream()
+                .collect(joining("\n", "\n", ""));
+            LOG.info("MISSING {}", displayMissingElement2);
+            differentTree.add(appClass);
+        }
+    }
+
     private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close,
         Collection<Class<? extends Application>> differentTree) {
         CrawlerTask.insertProxyConfig();
@@ -85,7 +96,7 @@ public final class FXMLCreatorHelper {
             remap(() -> a.start(primaryStage), "ERROR IN " + appClass);
             primaryStage.toBack();
             reference.getAndSet(primaryStage);
-        }, e -> thrownEx.set(e)));
+        }, thrownEx::set));
         while (reference.get() == null) {
             // DOES NOTHING
             if (thrownEx.get() != null) {
@@ -110,15 +121,8 @@ public final class FXMLCreatorHelper {
             if (close) {
                 stages.forEach(Stage::close);
             }
-            Parent root2 = duplicateStage.getScene().getRoot();
-            if (!compareTree(root, root2)) {
-                LOG.info("{} has different tree", appClass.getSimpleName());
-                String displayMissingElement2 = displayMissingElement(root, root2).stream()
-                    .collect(joining("\n", "\n", ""));
-                LOG.info("MISSING {}", displayMissingElement2);
-                differentTree.add(appClass);
-            }
-        }, e -> thrownEx.set(e)));
+            compareElements(appClass, differentTree, root,  duplicateStage.getScene().getRoot());
+        }, thrownEx::set));
         while (reference.get() == null) {
             if (thrownEx.get() != null) {
                 throw RunnableEx.newException("", thrownEx.get());

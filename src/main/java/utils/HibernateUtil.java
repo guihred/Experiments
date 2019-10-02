@@ -45,7 +45,6 @@ public final class HibernateUtil {
 			Process newUnmappedProcess = ConsoleUtils.startProcessAndWait(".\\runHibernate.bat",
 					"Web Console server running at .+");
 			try {
-
 				return new Configuration().configure().buildSessionFactory();
 			} catch (Exception ex2) {
 				newUnmappedProcess.destroy();

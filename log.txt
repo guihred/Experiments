@@ -1,190 +1,49 @@
- INFO: FXMLCreator:220 - INITIALIZING MediaPlayerExample 
-ERROR: FXMLCreator:238 - ERROR IN class fxpro.ch08.MediaPlayerExample  
-ERROR: FXMLCreator:239 -  
-java.lang.NullPointerException: null
-	at schema.sngpc.FXMLCreator.lambda$13(FXMLCreator.java:228)
-	at utils.RunnableEx.lambda$make$1(RunnableEx.java:31)
-	at com.sun.javafx.application.PlatformImpl.lambda$null$172(PlatformImpl.java:295)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at com.sun.javafx.application.PlatformImpl.lambda$runLater$173(PlatformImpl.java:294)
-	at com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
-	at com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
-	at com.sun.glass.ui.win.WinApplication.lambda$null$147(WinApplication.java:177)
-	at java.lang.Thread.run(Thread.java:748)
- INFO: FXMLCreator:220 - INITIALIZING BoundsPlayground 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$89/1178389064, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseDragged 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$90/2069080692, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseEntered 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$91/85109727, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseExited 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$87/2034089467, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMousePressed 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$88/1587490871, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseReleased 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$89/1178389064, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseDragged 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$90/2069080692, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseEntered 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$91/85109727, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseExited 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$87/2034089467, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMousePressed 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$88/1587490871, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.shape.Circle does have onMouseReleased 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$89/1178389064, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseDragged 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$90/2069080692, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseEntered 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$91/85109727, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseExited 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$87/2034089467, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMousePressed 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$88/1587490871, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseReleased 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$89/1178389064, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseDragged 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$90/2069080692, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseEntered 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$91/85109727, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseExited 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$87/2034089467, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMousePressed 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground$$Lambda$88/1587490871, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.Anchor does have onMouseReleased 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground, class javafx.application.Application] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.BoundsDisplay does have boundsPlayground 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground, class javafx.application.Application] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.BoundsDisplay does have boundsPlayground 
- INFO: FXMLCreator:402 -  [class fxsamples.bounds.BoundsPlayground, class javafx.application.Application] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class fxsamples.bounds.BoundsDisplay does have boundsPlayground 
- INFO: FXMLCreator:236 - BoundsPlayground successfull 
- INFO: FXMLCreator:220 - INITIALIZING SVGCreator 
- INFO: FXMLCreator:402 -  [class java.lang.StringBuilder, interface java.io.Serializable, interface java.lang.CharSequence, class java.lang.AbstractStringBuilder, interface java.lang.Appendable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:402 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:402 -  [class javafx.scene.Cursor$StandardCursor, class javafx.scene.Cursor] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.TextField does have cursor 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.TextInputControlSkin$11, interface com.sun.javafx.scene.input.ExtendedInputMethodRequests] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.TextField does have inputMethodRequests 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.TextInputControlSkin$$Lambda$406/776917041, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.TextField does have onInputMethodTextChanged 
- INFO: FXMLCreator:402 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Move To NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@2995b4b8 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Close Path NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@7e157f29 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Horizontal Line To NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@62ec0de1 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Vertical Line To NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@7940135e NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Line To NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@4f67b82 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Smooth Quadratic Bezier Curve To NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@34b915d1 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Quadratic Bezier Curve To NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@67fb2ff1 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Smooth Curve To NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@1652e844 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Curve To NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@33138c56 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
- INFO: FXMLCreator:375 - property java.lang.Object@13420957 value Elliptical Arc NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:375 - property javafx.scene.control.Tooltip value javafx.scene.control.Tooltip@2873bd24 NOT IN PROPERTY_REMAP 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ColorPicker does have impl_traversalEngine 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.ComboBoxPopupControl$$Lambda$384/1454831252, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ColorPicker does have onInputMethodTextChanged 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ColorPicker does have impl_traversalEngine 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.ComboBoxPopupControl$$Lambda$384/1454831252, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ColorPicker does have onInputMethodTextChanged 
- INFO: FXMLCreator:402 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ComboBox does have converter 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.ComboBoxPopupControl$FakeFocusTextField, class javafx.scene.control.TextField, class javafx.scene.control.TextInputControl, class javafx.scene.control.Control, interface javafx.scene.control.Skinnable, class javafx.scene.layout.Region, class javafx.scene.Parent, class javafx.scene.Node, interface javafx.event.EventTarget, interface javafx.css.Styleable] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:402 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ComboBox does have selectionModel 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
- INFO: FXMLCreator:402 -  [class com.sun.javafx.scene.control.skin.ComboBoxPopupControl$$Lambda$384/1454831252, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.ComboBox does have onInputMethodTextChanged 
- INFO: FXMLCreator:402 -  [class paintexp.svgcreator.SVGModel$$Lambda$374/1245446945, interface javafx.event.EventHandler] not in ATTRIBUTE_CLASSES 
- INFO: FXMLCreator:405 - class javafx.scene.control.Button does have onAction 
- INFO: FXMLCreator:402 -  [class javafx.geometry.Insets] not in ATTRIBUTE_CLASSES 
-ERROR: FXMLCreator:238 - ERROR IN class paintexp.svgcreator.SVGCreator  
-ERROR: FXMLCreator:239 -  
-org.assertj.core.api.exception.RuntimeIOException: ERROR in file C:\Users\guilherme.hmedeiros\Documents\Dev\FXperiments\target\classes\out\SVGCreator.fxml
-	at schema.sngpc.FXMLCreator.duplicateStage(FXMLCreator.java:190)
-	at schema.sngpc.FXMLCreator.lambda$13(FXMLCreator.java:231)
-	at utils.RunnableEx.lambda$make$1(RunnableEx.java:31)
-	at com.sun.javafx.application.PlatformImpl.lambda$null$172(PlatformImpl.java:295)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at com.sun.javafx.application.PlatformImpl.lambda$runLater$173(PlatformImpl.java:294)
-	at com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
-	at com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
-	at com.sun.glass.ui.win.WinApplication.lambda$null$147(WinApplication.java:177)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassCastException: java.lang.String cannot be cast to javafx.scene.paint.Paint
-	at com.sun.javafx.scene.control.skin.ColorPickerSkin.updateColor(ColorPickerSkin.java:492)
-	at com.sun.javafx.scene.control.skin.ColorPickerSkin.<init>(ColorPickerSkin.java:199)
-	at javafx.scene.control.ColorPicker.createDefaultSkin(ColorPicker.java:127)
-	at javafx.scene.control.Control.impl_processCSS(Control.java:872)
-	at javafx.scene.Parent.impl_processCSS(Parent.java:1280)
-	at javafx.scene.Parent.impl_processCSS(Parent.java:1280)
-	at javafx.scene.Node.processCSS(Node.java:9056)
-	at javafx.scene.Scene.doCSSPass(Scene.java:545)
-	at javafx.scene.Scene.preferredSize(Scene.java:1643)
-	at javafx.scene.Scene.impl_preferredSize(Scene.java:1720)
-	at javafx.stage.Window$9.invalidated(Window.java:864)
-	at javafx.beans.property.BooleanPropertyBase.markInvalid(BooleanPropertyBase.java:109)
-	at javafx.beans.property.BooleanPropertyBase.set(BooleanPropertyBase.java:144)
-	at javafx.stage.Window.setShowing(Window.java:940)
-	at javafx.stage.Window.show(Window.java:955)
-	at javafx.stage.Stage.show(Stage.java:259)
-	at schema.sngpc.FXMLCreator.duplicateStage(FXMLCreator.java:188)
-	... 9 common frames omitted
---- Exception in Async Thread ---
-java.lang.ClassCastException: java.lang.String cannot be cast to javafx.scene.paint.Paint
-	com.sun.javafx.scene.control.skin.ColorPickerSkin.updateColor(ColorPickerSkin.java:492)
-	com.sun.javafx.scene.control.skin.ColorPickerSkin.<init>(ColorPickerSkin.java:199)
-	javafx.scene.control.ColorPicker.createDefaultSkin(ColorPicker.java:127)
-	javafx.scene.control.Control.impl_processCSS(Control.java:872)
-	javafx.scene.Node.processCSS(Node.java:9056)
-	javafx.scene.Node.processCSS(Node.java:9049)
-	javafx.scene.Node.processCSS(Node.java:9049)
-	javafx.scene.Scene.doCSSPass(Scene.java:545)
-	javafx.scene.Scene.access$3600(Scene.java:159)
-	javafx.scene.Scene$ScenePulseListener.pulse(Scene.java:2392)
-	com.sun.javafx.tk.Toolkit.lambda$runPulse$29(Toolkit.java:398)
-	java.security.AccessController.doPrivileged(Native Method)
-	com.sun.javafx.tk.Toolkit.runPulse(Toolkit.java:397)
-	com.sun.javafx.tk.Toolkit.firePulse(Toolkit.java:424)
-	com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:518)
-	com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:498)
-	com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:491)
-	com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$403(QuantumToolkit.java:319)
-	com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
-	com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
-	com.sun.glass.ui.win.WinApplication.lambda$null$147(WinApplication.java:177)
-	java.lang.Thread.run(Thread.java:748)
-
-ERROR: FXEngineFXMLTest:29 - classes fxpro.ch08.MediaPlayerExample.class,paintexp.svgcreator.SVGCreator.class with errors 
+ INFO: schema.sngpc.FXMLCreatorHelper:86 - INITIALIZING GraphModelLauncher 
+ INFO: schema.sngpc.FXMLCreatorHelper:92 - New instance GraphModelLauncher 
+ INFO: schema.sngpc.FXMLCreatorHelper:95 - Starting GraphModelLauncher 
+ INFO: schema.sngpc.FXMLCreatorHelper:106 - Started GraphModelLauncher 
+ INFO: schema.sngpc.FXMLCreatorHelper:110 - CREATING GraphModelLauncher.fxml 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have converter 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.Cursor$StandardCursor, class javafx.scene.Cursor] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.TextField does have cursor 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.control.skin.TextInputControlSkin$11, interface com.sun.javafx.scene.input.ExtendedInputMethodRequests] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.TextField does have inputMethodRequests 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have converter 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have converter 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
+ INFO: schema.sngpc.FXMLCreator:216 - class graphs.entities.Graph added to referenceClasses 
+ INFO: schema.sngpc.FXMLCreatorHelper:132 - GraphModelLauncher successfull 
+ INFO: schema.sngpc.FXMLCreatorHelper:75 - GraphModelLauncher has different tree 
+ INFO: schema.sngpc.FXMLCreatorHelper:78 - MISSING 
+utils.ZoomableScrollPane
+-com.sun.javafx.scene.control.skin.ScrollPaneSkin$3
+--com.sun.javafx.scene.control.skin.ScrollPaneSkin$4
+---javafx.scene.Group
+----javafx.scene.Group
+-----javafx.scene.Group
+------graphs.entities.CellLayer 
+ INFO: fxtests.FXMLCreatorTest:48 - All classes successfull 
+ERROR: fxtests.FXMLCreatorTest:54 - classes 1/1 with different trees 
+ERROR: fxtests.FXMLCreatorTest:55 - classes graphs.app.GraphModelLauncher.class with different trees 

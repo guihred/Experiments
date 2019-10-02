@@ -17,6 +17,8 @@ public abstract class Layout implements EventTarget {
         return null;
     }
 
+    public abstract void execute();
+
     public final Graph getGraph() {
         return graph;
     }
@@ -24,6 +26,4 @@ public abstract class Layout implements EventTarget {
     public String getName() {
         return getClass().getSimpleName().replace("Layout", "");
     }
-
-    abstract void execute();
 }

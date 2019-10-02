@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 
 public final class StageHelper {
 
-	private static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     private StageHelper() {
     }
@@ -39,6 +39,7 @@ public final class StageHelper {
             }
         });
     }
+
     public static Button chooseFile(String nome, String title, ConsumerEx<File> onSelect, String filter,
         String... extensions) {
         return newButton(nome, fileAction(title, onSelect, filter, extensions));
@@ -46,7 +47,7 @@ public final class StageHelper {
 
     public static void closeStage(EventTarget button) {
         Node button2 = (Node) button;
-        ((Stage) button2.getScene().getWindow()).close();        
+        ((Stage) button2.getScene().getWindow()).close();
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {
@@ -75,18 +76,18 @@ public final class StageHelper {
 
         if (scene.getWindow() != null) {
             Window window = scene.getWindow();
-			EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
+            EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
             window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
         }
         scene.windowProperty().addListener((ob, o, n) -> {
-			EventHandler<WindowEvent> closeRequest = n.getOnCloseRequest();
+            EventHandler<WindowEvent> closeRequest = n.getOnCloseRequest();
             n.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
         });
     }
 
-	public static Stage displayDialog(String text, Node button) {
-		Stage stage1 = new Stage();
-		VBox group = new VBox(new Text(text), button);
+    public static Stage displayDialog(String text, Node button) {
+        Stage stage1 = new Stage();
+        VBox group = new VBox(new Text(text), button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -94,13 +95,13 @@ public final class StageHelper {
         return stage1;
     }
 
-	public static void displayDialog(String text, String buttonMsg, Runnable c) {
-		Stage stage1 = new Stage();
-		Button button = newButton(buttonMsg, a -> {
+    public static void displayDialog(String text, String buttonMsg, Runnable c) {
+        Stage stage1 = new Stage();
+        Button button = newButton(buttonMsg, a -> {
             c.run();
             stage1.close();
         });
-		VBox group = new VBox(new Text(text), button);
+        VBox group = new VBox(new Text(text), button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -108,24 +109,25 @@ public final class StageHelper {
     }
 
     public static void displayDialog(String text, String buttonMsg, Supplier<DoubleProperty> c, RunnableEx run) {
-		Stage stage1 = new Stage();
+        Stage stage1 = new Stage();
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
-		String nome = buttonMsg;
+        String nome = buttonMsg;
 
-		Button button = newButton(nome, a -> {
+        Button button = newButton(nome, a -> {
             DoubleProperty progress = c.get();
             progressIndicator.progressProperty().bind(progress);
             progress.addListener((v, o, n) -> {
                 if (n.intValue() == 1) {
                     Platform.runLater(stage1::close);
                     RunnableEx.make(() -> {
-                        Thread.sleep(3000);
+                        final int millis = 3000;
+                        Thread.sleep(millis);
                         run.run();
                     }).run();
                 }
             });
         });
-		VBox group = new VBox(new Text(text), progressIndicator, button);
+        VBox group = new VBox(new Text(text), progressIndicator, button);
         group.setAlignment(Pos.CENTER);
         stage1.setScene(new Scene(group));
         stage1.show();
@@ -145,27 +147,27 @@ public final class StageHelper {
         };
     }
 
-	public static EventHandler<ActionEvent> fileAction(String title, File initialDir, ConsumerEx<File> onSelect,
-			String filter, String... extensions) {
-		FileChooser chooser = new FileChooser();
-		chooser.setTitle(title);
-		chooser.setInitialDirectory(initialDir);
-		chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
-		return e -> {
-			Node target = (Node) e.getTarget();
-			File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
-			if (showOpenDialog != null) {
-				ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
-			}
-		};
-	}
+    public static EventHandler<ActionEvent> fileAction(String title, File initialDir, ConsumerEx<File> onSelect,
+        String filter, String... extensions) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(title);
+        chooser.setInitialDirectory(initialDir);
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
+        return e -> {
+            Node target = (Node) e.getTarget();
+            File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
+            if (showOpenDialog != null) {
+                ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
+            }
+        };
+    }
 
     public static Button selectDirectory(String nome, String title, ConsumerEx<File> onSelect) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(title);
         File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
-		chooser.setInitialDirectory(musicsDirectory);
-		String nome1 = nome;
+        chooser.setInitialDirectory(musicsDirectory);
+        String nome1 = nome;
         return newButton(nome1, e -> {
             Node target = (Node) e.getTarget();
             Window window = target.getScene().getWindow();
@@ -194,7 +196,7 @@ public final class StageHelper {
         return "";
     }
 
-	private static Button newButton(String nome, EventHandler<ActionEvent> onAction) {
+    private static Button newButton(String nome, EventHandler<ActionEvent> onAction) {
         Button button = new Button(nome);
         button.setId(nome);
         button.setOnAction(onAction);

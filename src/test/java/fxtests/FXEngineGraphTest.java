@@ -40,7 +40,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 		Set<Node> queryAll = lookup("Go").queryAll();
 		for (ComboBox e : queryButtons) {
 			ObservableList<?> items = e.getItems();
-			if (items.size() < 10) {
+            if (items.size() <= 10) {
 				for (int i = 0; i < items.size() ; i++) {
 					int j = i;
 					interact(() -> e.getSelectionModel().select(j));

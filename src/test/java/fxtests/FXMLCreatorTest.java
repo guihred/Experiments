@@ -1,5 +1,7 @@
 package fxtests;
 
+import fxsamples.PlayingAudio;
+import graphs.app.GraphModelLauncher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,17 +18,21 @@ public final class FXMLCreatorTest {
 
 	static final Logger LOG = HasLogging.log();
 
-    @Test
+//    @Test
     public void testAllClasses() {
 		List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
         testApplications(classes);
     }
 
-	@Test
-    public void testErrorClasses() {
+//    @Test
+	public  void testClassesNotClose() {
+        List<Class<? extends Application>> classes = Arrays.asList(PlayingAudio.class);
+        FXMLCreatorHelper.testApplications(classes, false);
+    }
 
-        List<Class<? extends Application>> classes = Arrays.asList(gaming.ex07.MazeLauncher.class,
-            gaming.ex09.Maze3DLauncher.class);
+    @Test
+    public void testErrorClasses() {
+        List<Class<? extends Application>> classes = Arrays.asList(GraphModelLauncher.class);
         testApplications(classes);
 	}
 

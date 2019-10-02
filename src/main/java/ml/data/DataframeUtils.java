@@ -168,7 +168,7 @@ public final class DataframeUtils extends DataframeML {
             });
             str.append("\n");
         }
-        if (dataframe.size > 5) {
+        if (dataframe.size > 10) {
             str.append("...\n");
         }
         str.append("Size=" + dataframe.size + " \n");

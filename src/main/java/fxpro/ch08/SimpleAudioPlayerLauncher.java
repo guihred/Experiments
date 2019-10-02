@@ -24,6 +24,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ImageFXUtils;
 
 public class SimpleAudioPlayerLauncher extends Application {
     private static final Logger LOGGER = HasLogging.log();
@@ -118,8 +119,8 @@ public class SimpleAudioPlayerLauncher extends Application {
         if ("year".equals(key)) {
             year.setText(value.toString());
         }
-        if ("image".equals(key)) {
-            albumCover.setImage((Image) value);
+        if ("image".equals(key) && value instanceof Image) {
+            albumCover.setImage(ImageFXUtils.imageCopy((Image) value));
         }
     }
 

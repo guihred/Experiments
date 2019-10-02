@@ -32,7 +32,6 @@ public class CircleLayout extends Layout {
             .sorted(Comparator.comparing(e -> GraphModelAlgorithms.edgesNumber(e, allEdges, cells)))
             .collect(Collectors.toList());
         for (Cell cell : orderedCell) {
-
             if (!visited.contains(cell)) {
                 double x = Math.cos(Math.toRadians(angle)) * bound;
                 double y = Math.sin(Math.toRadians(angle)) * bound;

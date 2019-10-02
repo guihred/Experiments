@@ -70,7 +70,7 @@ public class JavaFileDependency {
         return getPackage() + "." + getName();
     }
 
-    public  List<String> getInvocations(Stream<String> lines, List<JavaFileDependency> dependsOn2) {
+    public List<String> getInvocations(Stream<String> lines, Collection<JavaFileDependency> dependsOn2) {
         return lines.map(JavaFileDependency::removeStrings).filter(t -> !t.matches(PUBLIC_METHOD_REGEX))
             .map(t -> matches(t, INVOKE_METHOD_REGEX)).flatMap(List<String>::stream)
             .flatMap(
@@ -184,7 +184,7 @@ public class JavaFileDependency {
                 List<JavaFileDependency> visited = new ArrayList<>();
                 List<JavaFileDependency> path = new ArrayList<>();
                 dependecy.search(name1, visited, path);
-                HasLogging.log().info("{} {}", dependecy.getFullName(),
+                HasLogging.log().trace("{} {}", dependecy.getFullName(),
                     path.stream().map(JavaFileDependency::getFullName).collect(Collectors.toList()));
                 testClasses.addAll(path.stream().filter(e -> e.getFullName().contains(name1))
                     .map(JavaFileDependency::getName).collect(Collectors.toList()));

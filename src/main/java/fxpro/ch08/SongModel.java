@@ -17,6 +17,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ImageFXUtils;
 
 public final class SongModel {
 
@@ -110,8 +111,8 @@ public final class SongModel {
 		if ("year".equals(key)) {
             setYear(value.toString());
         }
-		if ("image".equals(key)) {
-            setAlbumCover((Image) value);
+        if ("image".equals(key) && value instanceof Image) {
+            setAlbumCover(ImageFXUtils.imageCopy((Image) value));
         }
 
     }
