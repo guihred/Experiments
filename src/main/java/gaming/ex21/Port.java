@@ -23,6 +23,7 @@ import simplebuilder.SimpleTextBuilder;
 
 public class Port extends Group {
 
+    private static final String BOAT_PNG = "boat.png";
     public static final double SIZE = CatanResource.RADIUS * 0.9;
     private final ResourceType type;
     private final ObservableList<SettlePoint> points = FXCollections.observableArrayList();
@@ -152,7 +153,7 @@ public class Port extends Group {
             }
         }
     }private static ImageView newBoat() {
-        return CatanResource.newImage("boat.png", SIZE);
+        return CatanResource.newImage(BOAT_PNG, SIZE);
     }
 
     private static Text newInterrogation() {

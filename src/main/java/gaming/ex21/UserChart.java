@@ -17,15 +17,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import simplebuilder.SimpleTextBuilder;
 import utils.StageHelper;
 
 public class UserChart extends VBox {
-    private static final String USER_PNG = "user.png";
-    private final ImageView userImage = CatanResource.newImage(USER_PNG, Color.BLUE, 100);
+    private final ImageView userImage = CatanResource.newImage(CatanResource.USER_PNG, PlayerColor.BLUE, 100);
     private final Text userPoints = new SimpleTextBuilder().text("0").wrappingWidth(userImage.fitWidthProperty())
         .textAlignment(TextAlignment.CENTER).build();
     private final Dice dice1 = new Dice();
@@ -44,8 +42,10 @@ public class UserChart extends VBox {
         for (PlayerColor playerColor : PlayerColor.values()) {
             SimpleLongProperty value = new SimpleLongProperty(0);
             playersPoints.put(playerColor, value);
-            ImageView newImage = CatanResource.newImage(USER_PNG, playerColor.getColor(), 30);
-            Text build = new SimpleTextBuilder().text(value.asString()).textOrigin(VPos.CENTER).build();
+            ImageView newImage = CatanResource.newImage(CatanResource.USER_PNG, playerColor, 30);
+            Text build = new SimpleTextBuilder().id(playerColor.name().toLowerCase() + "Points").text(value.asString())
+                .textOrigin(VPos.CENTER).build();
+            newImage.setId(playerColor.name().toLowerCase() + "Image");
             HBox e = new HBox(newImage, build);
             e.visibleProperty().bind(color.isEqualTo(playerColor).not());
             e.managedProperty().bind(e.visibleProperty());
@@ -112,7 +112,7 @@ public class UserChart extends VBox {
     }
 
     public void setColor(PlayerColor newV) {
-        userImage.setImage(CatanResource.newImage(USER_PNG, newV.getColor()));
+        userImage.setImage(CatanResource.newImage(CatanResource.USER_PNG, newV));
         color.setValue(newV);
     }
 

@@ -10,11 +10,14 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 
 public abstract class CatanResource extends Group {
 
     public static final String CATAN = "catan/";
     public static final double RADIUS = 70;
+    public static final String USER_PNG = "user.png";
+
     private final ObjectProperty<PlayerColor> player = new SimpleObjectProperty<>();
     private final Image image;
     protected final ImageView view;
@@ -72,14 +75,6 @@ public abstract class CatanResource extends Group {
     public static WritableImage newImage(String url, Color color) {
         return CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm(CATAN + url)), color);
     }
-
-    public static ImageView newImage(String url, Color color, int width) {
-        ImageView newImage = new ImageView(newImage(url, color));
-        newImage.setFitWidth(width);
-        newImage.setPreserveRatio(true);
-        return newImage;
-    }
-
     public static ImageView newImage(String url, double width) {
         ImageView newImage = new ImageView(ResourceFXUtils.toExternalForm(CATAN + url));
         newImage.setPreserveRatio(true);
@@ -93,6 +88,18 @@ public abstract class CatanResource extends Group {
         view.setFitWidth(width);
         view.setFitHeight(height);
         return view;
+    }
+
+    public static WritableImage newImage(String url, PlayerColor color) {
+        return CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm(CATAN + url)), color.getColor());
+    }
+
+    public static ImageView newImage(String url, PlayerColor color, double width) {
+        ImageView newImage = new ImageView(newImage(url, color));
+        newImage.setId(color.name().toLowerCase() + StringSigaUtils.changeCase(url) + (int) width);
+        newImage.setFitWidth(width);
+        newImage.setPreserveRatio(true);
+        return newImage;
     }
 
     public static ImagePattern newPattern(String terrain) {

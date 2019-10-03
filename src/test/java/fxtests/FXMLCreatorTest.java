@@ -1,6 +1,6 @@
 package fxtests;
 
-import fxsamples.PlayingAudio;
+import gaming.ex21.CatanApp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ public final class FXMLCreatorTest {
 
 	static final Logger LOG = HasLogging.log();
 
-    @Test
+//    @Test
     public void testAllClasses() {
 		List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
         testApplications(classes);
@@ -25,7 +25,7 @@ public final class FXMLCreatorTest {
 
     @Test
 	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(PlayingAudio.class);
+        List<Class<? extends Application>> classes = Arrays.asList(CatanApp.class);
         FXMLCreatorHelper.testApplications(classes, false);
     }
 

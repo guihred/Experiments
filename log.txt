@@ -1,49 +1,16 @@
- INFO: schema.sngpc.FXMLCreatorHelper:86 - INITIALIZING GraphModelLauncher 
- INFO: schema.sngpc.FXMLCreatorHelper:92 - New instance GraphModelLauncher 
- INFO: schema.sngpc.FXMLCreatorHelper:95 - Starting GraphModelLauncher 
- INFO: schema.sngpc.FXMLCreatorHelper:106 - Started GraphModelLauncher 
- INFO: schema.sngpc.FXMLCreatorHelper:110 - CREATING GraphModelLauncher.fxml 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have converter 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreatorHelper:89 - INITIALIZING CatanApp 
+ INFO: schema.sngpc.FXMLCreatorHelper:95 - New instance CatanApp 
+ INFO: schema.sngpc.FXMLCreatorHelper:98 - Starting CatanApp 
+ INFO: schema.sngpc.FXMLCreatorHelper:109 - Started CatanApp 
+ INFO: schema.sngpc.FXMLCreatorHelper:113 - CREATING CatanApp.fxml 
  INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.Cursor$StandardCursor, class javafx.scene.Cursor] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.TextField does have cursor 
- INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.control.skin.TextInputControlSkin$11, interface com.sun.javafx.scene.input.ExtendedInputMethodRequests] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.TextField does have inputMethodRequests 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
  INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have converter 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
  INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have converter 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
  INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
  INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
- INFO: schema.sngpc.FXMLCreator:216 - class graphs.entities.Graph added to referenceClasses 
- INFO: schema.sngpc.FXMLCreatorHelper:132 - GraphModelLauncher successfull 
- INFO: schema.sngpc.FXMLCreatorHelper:75 - GraphModelLauncher has different tree 
- INFO: schema.sngpc.FXMLCreatorHelper:78 - MISSING 
-utils.ZoomableScrollPane
--com.sun.javafx.scene.control.skin.ScrollPaneSkin$3
---com.sun.javafx.scene.control.skin.ScrollPaneSkin$4
----javafx.scene.Group
-----javafx.scene.Group
------javafx.scene.Group
-------graphs.entities.CellLayer 
- INFO: fxtests.FXMLCreatorTest:48 - All classes successfull 
-ERROR: fxtests.FXMLCreatorTest:54 - classes 1/1 with different trees 
-ERROR: fxtests.FXMLCreatorTest:55 - classes graphs.app.GraphModelLauncher.class with different trees 
+ INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ToggleButton does have impl_traversalEngine 
+ INFO: schema.sngpc.FXMLCreatorHelper:135 - CatanApp successfull 

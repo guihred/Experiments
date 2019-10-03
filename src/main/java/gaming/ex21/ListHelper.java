@@ -20,6 +20,11 @@ public final class ListHelper {
     public static VBox newDeal(ObservableList<Deal> deal, Predicate<? super Deal> disableIf, Consumer<Deal> onAction,
         Observable... a) {
         VBox vBox = new VBox();
+        return newDeal(vBox, deal, disableIf, onAction, a);
+    }
+
+    public static VBox newDeal(VBox vBox, ObservableList<Deal> deal, Predicate<? super Deal> disableIf,
+        Consumer<Deal> onAction, Observable... a) {
         deal.addListener((ListChangeListener<Deal>) c -> {
             while (c.next()) {
                 List<? extends Deal> addedSubList = c.getAddedSubList();

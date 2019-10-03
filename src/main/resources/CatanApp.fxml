@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import gaming.ex21.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+	styleClass="root">
+	<fx:define>
+
+		<ToggleGroup fx:id="toggleGroup55" />
+        <Image backgroundLoading="false" fx:id="wood"
+            preserveRatio="false" requestedHeight="0" requestedWidth="0"
+            smooth="false" url="@/catan/purewood.png" />
+		<Image backgroundLoading="false" fx:id="brick"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/purebricks.png" />
+		<Image backgroundLoading="false" fx:id="wheat"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/purewheat.png" />
+		<Image backgroundLoading="false" fx:id="sheep"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/puresheep.png" />
+    	<Image backgroundLoading="false" fx:id="rock"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/purerock.png" />
+		<Image backgroundLoading="false" fx:id="rock"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/purerock.png" />
+		<Image backgroundLoading="false" fx:id="rock"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/purerock.png" />
+		<Image backgroundLoading="false" fx:id="rock"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/purerock.png" />
+		<Image backgroundLoading="false" fx:id="sheep"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/puresheep.png" />
+    	<Image backgroundLoading="false" fx:id="rock"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/purerock.png" />
+		<Image backgroundLoading="false" fx:id="sheep"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/puresheep.png" />
+		<Image backgroundLoading="false" fx:id="road"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/road.png" />
+		<Image backgroundLoading="false" fx:id="village"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/village.png" />
+		<Image backgroundLoading="false" fx:id="city"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/city.png" />
+		<Image backgroundLoading="false" fx:id="development"
+			preserveRatio="false" requestedHeight="0" requestedWidth="0"
+			smooth="false" url="@/catan/development.png" />
+	</fx:define>
+	<center>
+		<StackPane fx:id="center" layoutX="146.0"
+			onMouseDragged="#onMouseDraggedStackPane0"
+			onMousePressed="#onMousePressedStackPane0"
+			onMouseReleased="#onMouseReleasedStackPane0">
+
+		</StackPane>
+	</center>
+	<left>
+		<VBox fx:id="left">
+			<children>
+				<UserChart fx:id="userChart" color="GREEN" />
+				<HBox layoutY="167.0">
+					<children>
+						<VBox>
+							<children>
+								<Button alignment="CENTER" disable="true"
+									fx:id="skipTurn" id="Skip Turn" onAction="#onActionSkipTurn"
+									opacity="0.4" text="Skip Turn" textFill="0x333333ff">
+									<padding>
+										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+									</padding>
+								</Button>
+								<Button alignment="CENTER" disable="true"
+									fx:id="throwDices" id="Throw Dices" layoutY="25.0"
+									onAction="#onActionThrowDices" opacity="0.4" text="Throw Dices"
+									textFill="0x333333ff">
+									<padding>
+										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+									</padding>
+								</Button>
+								<Button alignment="CENTER" disable="true"
+									fx:id="exchange" id="Exchange" layoutY="50.0"
+									onAction="#onActionExchange" opacity="0.4" text="Exchange"
+									textFill="0x333333ff">
+									<padding>
+										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+									</padding>
+								</Button>
+								<Button alignment="CENTER" disable="true"
+									fx:id="makeDeal" id="Make Deal" layoutY="75.0"
+									onAction="#onActionMakeDeal" opacity="0.4" text="Make Deal"
+									textFill="0x333333ff">
+									<padding>
+										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+									</padding>
+								</Button>
+							</children>
+						</VBox>
+						<VBox fx:id="dealsBox" layoutX="81.0" />
+					</children>
+				</HBox>
+				<HBox managed="false" visible="false" fx:id="resourceChoices">
+					<children>
+						<ToggleButton fx:id="toggleButton56"
+							styleClass="toggle-button wood" textFill="0x333333ff"
+							toggleGroup="$toggleGroup55">
+							<graphic>
+								<ImageView fitWidth="20.0" image="$wood"
+									layoutX="8.0" layoutY="4.0" mouseTransparent="true"
+									preserveRatio="true" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="WOOD" />
+							</tooltip>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+							<userData>
+								<ResourceType fx:value="WOOD" />
+							</userData>
+						</ToggleButton>
+						<ToggleButton fx:id="toggleButton57" layoutX="36.0"
+							styleClass="toggle-button brick" textFill="0x333333ff"
+							toggleGroup="$toggleGroup55">
+							<graphic>
+								<ImageView fitWidth="20.0" image="$brick"
+									layoutX="8.0" layoutY="6.0" mouseTransparent="true"
+									preserveRatio="true" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="BRICK" />
+							</tooltip>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+							<userData>
+								<ResourceType fx:value="BRICK" />
+							</userData>
+						</ToggleButton>
+						<ToggleButton fx:id="toggleButton58" layoutX="72.0"
+							styleClass="toggle-button rock" textFill="0x333333ff"
+							toggleGroup="$toggleGroup55">
+							<graphic>
+								<ImageView fitWidth="20.0" image="$rock"
+									layoutX="8.0" layoutY="4.0" mouseTransparent="true"
+									preserveRatio="true" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="ROCK" />
+							</tooltip>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+							<userData>
+								<ResourceType fx:value="ROCK" />
+							</userData>
+						</ToggleButton>
+						<ToggleButton fx:id="toggleButton59" layoutX="108.0"
+							styleClass="toggle-button sheep" textFill="0x333333ff"
+							toggleGroup="$toggleGroup55">
+							<graphic>
+								<ImageView fitWidth="20.0" image="$sheep"
+									layoutX="8.0" layoutY="4.0" mouseTransparent="true"
+									preserveRatio="true" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="SHEEP" />
+							</tooltip>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+							<userData>
+								<ResourceType fx:value="SHEEP" />
+							</userData>
+						</ToggleButton>
+						<ToggleButton fx:id="toggleButton60" layoutX="144.0"
+							styleClass="toggle-button wheat" textFill="0x333333ff"
+							toggleGroup="$toggleGroup55">
+							<graphic>
+								<ImageView fitWidth="20.0" image="$wheat"
+									layoutX="8.0" layoutY="4.0" mouseTransparent="true"
+									preserveRatio="true" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="WHEAT" />
+							</tooltip>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+							<userData>
+								<ResourceType fx:value="WHEAT" />
+							</userData>
+						</ToggleButton>
+					</children>
+				</HBox>
+				<GridPane layoutY="267.0">
+					<children>
+						<Button GridPane.columnIndex="0" GridPane.rowIndex="0"
+							alignment="CENTER" disable="true" fx:id="rOAD" id="ROAD"
+							onAction="#onActionROAD" opacity="0.4" textFill="0x333333ff">
+							<graphic>
+								<ImageView fitHeight="30.0" fitWidth="30.0"
+									image="$road" layoutX="8.0" layoutY="4.0"
+									mouseTransparent="true" preserveRatio="true" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</Button>
+						<ImageView GridPane.columnIndex="1"
+							GridPane.rowIndex="0" fitWidth="20.0" image="$wood"
+							layoutX="46.0" layoutY="11.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="2"
+							GridPane.rowIndex="0" fitWidth="20.0" image="$brick"
+							layoutX="66.0" layoutY="13.0" preserveRatio="true" />
+						<Button GridPane.columnIndex="0" GridPane.rowIndex="1"
+							alignment="CENTER" disable="true" fx:id="vILLAGE" id="VILLAGE"
+							layoutY="38.0" onAction="#onActionROAD" opacity="0.4"
+							textFill="0x333333ff">
+							<graphic>
+								<ImageView fitHeight="30.0" fitWidth="30.0"
+									image="$village" layoutX="8.0" layoutY="4.0"
+									mouseTransparent="true" preserveRatio="true" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</Button>
+						<ImageView GridPane.columnIndex="1"
+							GridPane.rowIndex="1" fitWidth="20.0" image="$wheat"
+							layoutX="46.0" layoutY="41.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="2"
+							GridPane.rowIndex="1" fitWidth="20.0" image="$wood"
+							layoutX="66.0" layoutY="44.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="3"
+							GridPane.rowIndex="1" fitWidth="20.0" image="$sheep"
+							layoutX="86.0" layoutY="42.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="4"
+							GridPane.rowIndex="1" fitWidth="20.0" image="$brick"
+							layoutX="106.0" layoutY="46.0" preserveRatio="true" />
+						<Button GridPane.columnIndex="0" GridPane.rowIndex="2"
+							alignment="CENTER" disable="true" fx:id="cITY" id="CITY"
+							layoutY="66.0" onAction="#onActionROAD" opacity="0.4"
+							textFill="0x333333ff">
+							<graphic>
+								<ImageView fitHeight="30.0" fitWidth="30.0"
+									image="$city" layoutX="8.0" layoutY="4.0"
+									mouseTransparent="true" preserveRatio="true" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</Button>
+						<ImageView GridPane.columnIndex="1"
+							GridPane.rowIndex="2" fitWidth="20.0" image="$wheat"
+							layoutX="46.0" layoutY="74.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="2"
+							GridPane.rowIndex="2" fitWidth="20.0" image="$wheat"
+							layoutX="66.0" layoutY="74.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="3"
+							GridPane.rowIndex="2" fitWidth="20.0" image="$rock"
+							layoutX="86.0" layoutY="77.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="4"
+							GridPane.rowIndex="2" fitWidth="20.0" image="$rock"
+							layoutX="106.0" layoutY="77.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="5"
+							GridPane.rowIndex="2" fitWidth="20.0" image="$rock"
+							layoutX="126.0" layoutY="77.0" preserveRatio="true" />
+						<Button GridPane.columnIndex="0" GridPane.rowIndex="3"
+							alignment="CENTER" disable="true" fx:id="dEVELOPMENT"
+							id="DEVELOPMENT" layoutY="104.0" onAction="#onActionROAD"
+							opacity="0.4" textFill="0x333333ff">
+							<graphic>
+								<ImageView fitHeight="30.0" fitWidth="30.0"
+									image="$development" layoutX="8.0" layoutY="4.0"
+									mouseTransparent="true" preserveRatio="true" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</Button>
+						<ImageView GridPane.columnIndex="1"
+							GridPane.rowIndex="3" fitWidth="20.0" image="$wheat"
+							layoutX="46.0" layoutY="112.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="2"
+							GridPane.rowIndex="3" fitWidth="20.0" image="$rock"
+							layoutX="66.0" layoutY="115.0" preserveRatio="true" />
+						<ImageView GridPane.columnIndex="3"
+							GridPane.rowIndex="3" fitWidth="20.0" image="$sheep"
+							layoutX="86.0" layoutY="113.0" preserveRatio="true" />
+					</children>
+				</GridPane>
+			</children>
+		</VBox>
+	</left>
+</BorderPane>

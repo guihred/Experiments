@@ -142,6 +142,7 @@ public class Terrain extends Group {
 
     public static List<EdgeCatan> addTerrains(Pane root, List<SettlePoint> settlePoints, Collection<Terrain> terrains,
         List<Port> ports) {
+        root.getChildren().clear();
         List<Integer> numbers = Terrain.getNumbers();
         List<ResourceType> cells = ResourceType.createResources();
         final double radius = CatanResource.RADIUS * Math.sqrt(3);

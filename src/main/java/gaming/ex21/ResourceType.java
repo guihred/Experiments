@@ -1,6 +1,8 @@
 package gaming.ex21;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +46,11 @@ public enum ResourceType {
     }
 
     public static HBox createResourceChoices(Consumer<ResourceType> onSelect) {
+        HBox res = new HBox();
+        return createResourceChoices(onSelect, res);
+    }
+
+    public static HBox createResourceChoices(Consumer<ResourceType> onSelect, HBox res) {
         SimpleToggleGroupBuilder group = new SimpleToggleGroupBuilder();
         for (ResourceType type : ResourceType.values()) {
             if (type.getPure() != null) {
@@ -51,7 +58,7 @@ public enum ResourceType {
                 group.addToggle(node, type);
             }
         }
-        HBox res = new HBox(group.getTogglesAs(Node.class).toArray(new Node[0]));
+        res.getChildren().addAll(group.getTogglesAs(Node.class).toArray(new Node[0]));
         res.setVisible(false);
         res.managedProperty().bind(res.visibleProperty());
         group.onChange((ob, old, n) -> {

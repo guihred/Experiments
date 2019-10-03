@@ -34,8 +34,7 @@ public class Deal extends HBox {
 	}
 
 	private ImageView newUserImage() {
-		return CatanResource.newImage(CatanResource.newImage("user.png", getProposer().getColor()),
-				Port.SIZE / 4.);
+        return CatanResource.newImage(CatanResource.USER_PNG, getProposer(), Port.SIZE / 4.);
 	}
 
     public static boolean isDealUnfeasible(Deal deal, ObjectProperty<PlayerColor> currentPlayer2,
@@ -47,7 +46,6 @@ public class Deal extends HBox {
     }
 
     private static ImageView newResource(final ResourceType type) {
-		String pure = type.getPure();
-		return CatanResource.newImage(pure, Port.SIZE / 4.);
+		return CatanResource.newImage(type.getPure(), Port.SIZE / 4.);
 	}
 }
