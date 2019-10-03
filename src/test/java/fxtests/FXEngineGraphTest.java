@@ -1,6 +1,6 @@
 package fxtests;
 
-import graphs.app.GraphModelLauncher;
+import graphs.app.GraphMain;
 import graphs.entities.Cell;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 	@Override
 	public void start(final Stage stage) throws Exception {
 		super.start(stage);
-		show(GraphModelLauncher.class);
+        show(GraphMain.class);
 	}
 	@Test
 	public void verify() throws Exception {

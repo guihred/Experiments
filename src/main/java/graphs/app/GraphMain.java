@@ -4,7 +4,7 @@ import graphs.entities.CellType;
 import graphs.entities.Edge;
 import graphs.entities.Graph;
 import java.util.List;
-import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.Observable;
@@ -16,7 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import simplebuilder.SimpleTimelineBuilder;
+import javafx.util.Duration;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 
@@ -56,11 +56,11 @@ public class GraphMain extends Application {
     @FXML
     private BorderPane borderPane;
 
+    @FXML
     private Timeline timeline;
 
     public void initialize() {
-        timeline = new SimpleTimelineBuilder().addKeyFrame(50.0, convergeLayout.getEventHandler())
-            .cycleCount(Animation.INDEFINITE).build();
+        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(50), convergeLayout.getEventHandler()));
         borderPane.setCenter(graph.getScrollPane());
         networkField.setText(networkTopology.getNetworkAddress());
         networkField.visibleProperty()
@@ -73,14 +73,12 @@ public class GraphMain extends Application {
                 .or(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(methodsTopology)));
         networkTopology.networkAddressProperty().bind(networkField.textProperty());
         ObservableList<String> cells = graph.getModel().getCellIds();
-        topologySelect.getSelectionModel().select(0);
-        selectLayout.getSelectionModel().select(0);
         c1.setItems(cells);
         c2.setItems(cells);
         cells.addListener((Observable observable) -> {
             if (!cells.isEmpty()) {
-                c1.selectionModelProperty().get().select(0);
-                c2.selectionModelProperty().get().select(cells.size() - 1);
+                c1.getSelectionModel().selectFirst();
+                c2.getSelectionModel().selectLast();
             }
         });
         packageSelect.getSelectionModel().selectedItemProperty().addListener((ob, old, newV) -> {
@@ -89,6 +87,9 @@ public class GraphMain extends Application {
         });
         Edge.SHOW_WEIGHT.bind(showHeight.selectedProperty());
         addGraphComponents();
+        topologySelect.getSelectionModel().selectFirst();
+        selectLayout.getSelectionModel().selectFirst();
+        packageSelect.getSelectionModel().selectFirst();
         selectLayout.getSelectionModel().getSelectedItem().execute();
     }
 
@@ -179,13 +180,11 @@ public class GraphMain extends Application {
 
     @Override
     public void start(final Stage primaryStage) {
-        CommonsFX.loadFXML("Graph Application", "GraphModelLauncher.fxml", this, primaryStage, 800, 800);
-//        
-//        new CircleLayout(graph).execute();
+        final int width = 800;
+        CommonsFX.loadFXML("Graph Application", "GraphModelLauncher.fxml", this, primaryStage, width, width);
     }
 
     private void addGraphComponents() {
-
         graph.getModel().addCell("A", CellType.CIRCLE);
         graph.getModel().addCell("B", CellType.CIRCLE);
         graph.getModel().addCell("C", CellType.CIRCLE);

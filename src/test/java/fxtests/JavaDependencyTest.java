@@ -75,8 +75,7 @@ public class JavaDependencyTest {
     public void testEJavaDependency() {
 
         measureTime("JavaFileDependency.displayTestsToBeRun", () -> {
-            List<String> asList = Arrays.asList("MusicHandler", "MethodsTopology", "NetworkTopology", "ProjectTopology",
-                "RandomTopology", "EWSTest", "StatsLogAccess");
+            List<String> asList = Arrays.asList("EWSTest", "StatsLogAccess", "ConsoleUtils");
 
             Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(asList, "fxtests");
             String tests = displayTestsToBeRun.stream().collect(Collectors.joining(",*", "*", ""));

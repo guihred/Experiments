@@ -55,7 +55,9 @@ public class Edge extends Group implements Comparable<Edge> {
             () -> line.getEndX() + Math.cos(getAngulo()) * getModulo() * 5 / 11, line.endYProperty(),
             line.startYProperty(), line.endXProperty(), line.startXProperty());
         DoubleBinding halfWayY = Bindings.createDoubleBinding(
-            () -> line.getEndY() + Math.sin(getAngulo()) * getModulo() * 5 / 11, line.endYProperty(),
+            () -> line.getEndX() == line.getStartX() ? line.getStartY() + (line.getEndY() - line.getStartY()) * 5 / 11
+                : line.getEndY() + Math.sin(getAngulo()) * getModulo() * 5 / 11,
+            line.endYProperty(),
             line.startYProperty(), line.endXProperty(), line.startXProperty());
         if (directed) {
             Polygon view1 = new Polygon(-Math.sqrt(3) * ARROW_SIZE / 2, 0, Math.sqrt(3) * ARROW_SIZE / 2, ARROW_SIZE,

@@ -42,11 +42,11 @@ public class CircleTopology extends BaseTopology {
 				}
 			} while (graph.getModel().addedCost(sourceId, targetId) != null || sourceId.equals(targetId));
 		}
-		double width = graph.getScrollPane().getViewportBounds().getWidth();
-		double height = graph.getScrollPane().getViewportBounds().getHeight();
+        graph.endUpdate();
+        double width = graph.getScrollPane().getViewportBounds().getWidth();
+        double height = graph.getScrollPane().getViewportBounds().getHeight();
 		CircleLayout.generateCircle(graph.getModel().getAllCells(), graph.getModel().getAllEdges(), width / 2,
             height / 2, 2);
-		graph.endUpdate();
 	}
 
 

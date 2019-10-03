@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?import javafx.scene.layout.*?><?import utils.*?><?import javafx.scene.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.geometry.*?><?import javafx.scene.text.*?><?import javafx.collections.*?><?import java.lang.*?><?import javafx.scene.transform.*?><?import graphs.entities.*?><?import simplebuilder.*?><?import graphs.app.*?>
+<?import javafx.scene.layout.*?>
+<?import utils.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.collections.*?>
+<?import javafx.animation.*?>
+<?import java.lang.*?>
+<?import javafx.scene.transform.*?>
+<?import graphs.entities.*?>
+<?import simplebuilder.*?>
+<?import graphs.app.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
 	styleClass="root" fx:id="borderPane">
 	<fx:define>
 		<Graph fx:id="graph" />
+		<Timeline fx:id="timeline" cycleCount="-1" />
 
 	</fx:define>
 	<left>
@@ -100,21 +115,19 @@
 					<children>
 						<VBox>
 							<children>
-								<Text fx:id="text19" text="Source" />
-								<ComboBox fx:id="c1" id="c1" value="A">
-								</ComboBox>
+								<Text text="Source" />
+								<ComboBox fx:id="c1" id="c1" value="A" />
 							</children>
 						</VBox>
 						<VBox>
 							<children>
-								<Text fx:id="text21" text="Target" />
-								<ComboBox fx:id="c2" id="c2" value="G">
-								</ComboBox>
+								<Text text="Target" />
+								<ComboBox fx:id="c2" id="c2" value="G" />
 							</children>
 						</VBox>
 						<VBox>
 							<children>
-								<Text fx:id="text23" />
+								<Text />
 								<Button alignment="CENTER" fx:id="path" id="_Path"
 									onAction="#onActionPath" text="_Path" textFill="0x333333ff">
 									<padding>
@@ -137,7 +150,7 @@
 									<items>
 										<FXCollections fx:factory="observableArrayList">
 											<CircleTopology fx:id="circleTopology"
-												graph="$graph" size="30" />
+												graph="$graph" size="20" />
 											<DelaunayTopology graph="$graph"
 												fx:id="delaunayTopology" size="10" />
 											<GabrielTopology graph="$graph"
@@ -173,7 +186,8 @@
 								<Tooltip text="Package" />
 							</tooltip>
 						</ComboBox>
-						<TextField fx:id="networkField" managed="false" visible="false">
+						<TextField fx:id="networkField" managed="false"
+							visible="false">
 							<padding>
 								<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
 							</padding>

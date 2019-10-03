@@ -4,8 +4,6 @@ import static fxtests.FXTesting.measureTime;
 import static javafx.scene.input.KeyCode.*;
 import static utils.RunnableEx.ignore;
 
-import audio.mp3.EditSongController;
-import audio.mp3.FilesComparator;
 import cubesystem.DeathStar;
 import ethical.hacker.EthicalHackApp;
 import ethical.hacker.ImageCrackerApp;
@@ -28,7 +26,6 @@ import gaming.ex17.PuzzleLauncher;
 import gaming.ex17.PuzzlePiece;
 import gaming.ex18.Square2048Launcher;
 import gaming.ex20.RoundMazeLauncher;
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -36,7 +33,6 @@ import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -104,18 +100,6 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyEditSong() throws Exception {
-        EditSongController show = show(EditSongController.class);
-        show.setClose(false);
-        List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
-        for (int i = 0; i < queryAll.size(); i++) {
-            Node node = queryAll.get(i);
-            RunnableEx.ignore(() -> clickOn(node));
-            RunnableEx.ignore(() -> sleep(1000));
-        }
-    }
-
-    @Test
     public void verifyEthicalHack() throws Exception {
         show(EthicalHackApp.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
@@ -123,13 +107,7 @@ public class FXEngineTest extends AbstractTestExecution {
         ConsoleUtils.waitAllProcesses();
     }
 
-    @Test
-    public void verifyFileComparator() throws Exception {
-        FilesComparator application = show(FilesComparator.class);
-        TableView<File> query = lookup(e -> e instanceof TableView).query();
-        File[] listFiles = ResourceFXUtils.getUserFolder("Music").listFiles(File::isDirectory);
-        application.addSongsToTable(query, listFiles[0]);
-    }
+
 
     @Test
     public void verifyImageCracker() throws Exception {

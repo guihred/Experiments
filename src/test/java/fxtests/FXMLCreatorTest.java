@@ -1,7 +1,6 @@
 package fxtests;
 
 import fxsamples.PlayingAudio;
-import graphs.app.GraphModelLauncher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,23 +17,17 @@ public final class FXMLCreatorTest {
 
 	static final Logger LOG = HasLogging.log();
 
-//    @Test
+    @Test
     public void testAllClasses() {
 		List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
         testApplications(classes);
     }
 
-//    @Test
+    @Test
 	public  void testClassesNotClose() {
         List<Class<? extends Application>> classes = Arrays.asList(PlayingAudio.class);
         FXMLCreatorHelper.testApplications(classes, false);
     }
-
-    @Test
-    public void testErrorClasses() {
-        List<Class<? extends Application>> classes = Arrays.asList(GraphModelLauncher.class);
-        testApplications(classes);
-	}
 
     private static <T> String classNames(List<Class<? extends T>> testApplications) {
         return testApplications.stream().map(e -> e.getName() + ".class").collect(Collectors.joining(","));

@@ -71,7 +71,7 @@ public class LayerSplitter {
             if (stack.contains(edge.getTarget())) {
                 edges.remove(edge);
                 edge.setSelected(true);
-				LOG.info("{} goes back", edge);
+                LOG.trace("{} goes back", edge);
             } else if (!marked.contains(edge.getTarget())) {
                 dfsRemove(edge.getTarget());
             }
