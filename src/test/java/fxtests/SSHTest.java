@@ -2,7 +2,6 @@ package fxtests;
 
 import ethical.hacker.ssh.BaseTestSupport;
 import ethical.hacker.ssh.SSHClientUtils;
-import ethical.hacker.ssh.SSHSessionApp;
 import java.io.PrintStream;
 import org.apache.sshd.server.SshServer;
 import org.junit.After;
@@ -23,11 +22,6 @@ public class SSHTest extends AbstractTestExecution {
     @After
     public void tearDown() throws Exception {
         sshd.stop(true);
-    }
-
-	@Test
-    public void testApp() throws Exception {
-        show(SSHSessionApp.class);
     }
 
     @Test
