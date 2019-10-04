@@ -7,7 +7,6 @@ import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -15,8 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.CommonsFX;
 import utils.StageHelper;
 
 public class UserChart extends VBox {
@@ -33,15 +31,14 @@ public class UserChart extends VBox {
     @FXML
     private Text userPoints;
     @FXML
-    private Dice dice1 = new Dice();
+    private Dice dice1;
     @FXML
-    private Dice dice2 = new Dice();
-    private EnumMap<PlayerColor, LongProperty> playersPoints = new EnumMap<>(PlayerColor.class);
+    private Dice dice2;
     @FXML
     private ObjectProperty<PlayerColor> color;
 
     @FXML
-    private VBox availablePorts = new VBox();
+    private VBox availablePorts;
     @FXML
     private ExtraPoint largestArmy;
     @FXML
@@ -56,13 +53,11 @@ public class UserChart extends VBox {
     private Text yellowPoints;
     @FXML
     private Group cardGroup;
+    private EnumMap<PlayerColor, LongProperty> playersPoints = new EnumMap<>(PlayerColor.class);
     private BiConsumer<Pane, Pane> onWin;
 
     public UserChart() {
-        FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL("UserChart.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-        RunnableEx.remap(() -> fxmlLoader.load(), "ERROR LOADING UserChart");
+        CommonsFX.loadRoot("UserChart.fxml", this);
         for (PlayerColor playerColor : PlayerColor.values()) {
             playersPoints.put(playerColor, new SimpleLongProperty(0));
         }
@@ -70,10 +65,8 @@ public class UserChart extends VBox {
         bindText(PlayerColor.GREEN, greenPoints, greenImage);
         bindText(PlayerColor.BLUE, bluePoints, blueImage);
         bindText(PlayerColor.YELLOW, yellowPoints, yellowImage);
-
         largestArmy.visibleProperty().bind(color.isEqualTo(largestArmy.playerProperty()));
         longestRoad.visibleProperty().bind(color.isEqualTo(longestRoad.playerProperty()));
-
         userImage.setImage(CatanResource.newImage(CatanResource.USER_PNG, PlayerColor.BLUE));
     }
 
