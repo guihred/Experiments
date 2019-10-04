@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import gaming.ex21.*?><?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.*?>
+<?import javafx.beans.property.*?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml">
+	<fx:define>
+	    <SimpleObjectProperty fx:id="color"  >
+	        <value>
+	            <PlayerColor fx:value="BLUE"/>
+	        </value>
+	    </SimpleObjectProperty>
+	</fx:define>
+	<children>
+		<HBox>
+			<children>
+				<VBox>
+					<children>
+						<HBox managed="${yellowPoints.visible}" visible="${yellowPoints.visible}">
+							<children>
+								<ImageView fitWidth="30.0" fx:id="yellowImage"
+									 preserveRatio="true" />
+								<Text fx:id="yellowPoints" id="yellowPoints" layoutX="30.0"
+									layoutY="7.98046875" text="0" textOrigin="CENTER" />
+							</children>
+						</HBox>
+						<HBox managed="${redPoints.visible}" visible="${redPoints.visible}">
+							<children>
+								<ImageView fitWidth="30.0" fx:id="redImage"
+									 preserveRatio="true" />
+								<Text fx:id="redPoints" id="redPoints" layoutX="30.0"
+									layoutY="7.98046875" text="0" textOrigin="CENTER" />
+							</children>
+						</HBox>
+						<HBox managed="${bluePoints.visible}" visible="${bluePoints.visible}">
+							<children>
+								<ImageView fitWidth="30.0" fx:id="blueImage"
+									 preserveRatio="true" />
+								<Text fx:id="bluePoints" id="bluePoints" layoutX="30.0"
+									layoutY="7.98046875" text="0" textOrigin="CENTER" />
+							</children>
+						</HBox>
+						<HBox managed="${greenPoints.visible}" visible="${greenPoints.visible}">
+							<children>
+								<ImageView fitWidth="30.0" fx:id="greenImage"
+									 preserveRatio="true" />
+								<Text fx:id="greenPoints" id="greenPoints" layoutX="30.0"
+									layoutY="7.98046875" text="0" textOrigin="CENTER" />
+							</children>
+						</HBox>
+					</children>
+				</VBox>
+				<VBox>
+					<children>
+						<ImageView fitWidth="100.0" fx:id="userImage"
+							 preserveRatio="true" />
+						<Text fx:id="userPoints" layoutY="112.94921875"
+							text="0 Points" textAlignment="CENTER" wrappingWidth="100.0" />
+						<HBox layoutY="116.0">
+							<children>
+								<Dice fx:id="dice1" layoutX="0.5" layoutY="0.5" />
+								<Dice fx:id="dice2" layoutX="51.5" layoutY="0.5" />
+							</children>
+						</HBox>
+					</children>
+				</VBox>
+				<VBox fx:id="availablePorts" />
+				<ExtraPoint fx:id="largestArmy" url="largestarmy.png" />
+				<ExtraPoint fx:id="longestRoad" url="longestroad.png" />
+			</children>
+		</HBox>
+		<Group fx:id="cardGroup"/>
+	</children>
+</fx:root> 
