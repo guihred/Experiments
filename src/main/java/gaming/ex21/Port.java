@@ -142,14 +142,14 @@ public class Port extends Group {
                 double x = neighbors.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
                 double y = neighbors.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
                 port.relocate(x - CatanResource.RADIUS / 2., y - CatanResource.RADIUS / 2.);
-            } else {
-                final double radius = CatanResource.RADIUS * Math.sqrt(3) / 4;
-                double x = points.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
-                double y = points.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
-                double angulo = Math.PI / 2 - Edge.getAngulo(radius * 3, radius * 3 * 9 / 10, x, y);
-                double m = Math.sin(angulo) * radius;
-                double n = Math.cos(angulo) * radius;
-                port.relocate(x + m - CatanResource.RADIUS / 2., y + n - CatanResource.RADIUS / 2.);
+			} else {
+				final double radius = CatanResource.RADIUS * Math.sqrt(3) / 4;
+				double x = points.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
+				double y = points.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
+				double angulo = Math.PI / 2 - Edge.getAngulo(radius * 3, radius * 3 * 9 / 10, x, y);
+				double m = Math.sin(angulo) * radius;
+				double n = Math.cos(angulo) * radius;
+				port.relocate(x + m - CatanResource.RADIUS / 2., y + n - CatanResource.RADIUS / 2.);
             }
         }
     }private static ImageView newBoat() {

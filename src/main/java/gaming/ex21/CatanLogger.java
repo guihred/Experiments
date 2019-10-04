@@ -29,40 +29,41 @@ public final class CatanLogger {
 	private CatanLogger() {
 	}
 
-	public static void log(CatanModel model, CatanAction action) {
-        Map<String, Object> row = row(model);
-        row.put(ACTION, action);
+	public static void log(Map<String, Object> row, CatanAction action) {
+		row.put(ACTION, action);
         DATAFRAME_ML.add(row);
         LOG.trace("{}", row);
         appendLine(row);
 	}
 
-    public static void log(CatanModel model, CatanCard catanCard) {
+    public static void log(Map<String, Object> model, CatanCard catanCard) {
 		if (catanCard.getDevelopment() != null) {
 			log(model, action(catanCard.getDevelopment()));
 		} else {
 			log(model, action(catanCard.getResource()));
 		}
 	}
-	public static void log(CatanModel model, Combination combination) {
+
+	public static void log(Map<String, Object> model, Combination combination) {
 		log(model, action(combination));
 	}
 
 
-	public static void log(CatanModel model, ResourceType catanCard) {
-	    log(model, actionResource(catanCard));
+	public static void log(Map<String, Object> model, ResourceType catanCard) {
+		log(model, actionResource(catanCard));
 	}
 
 	public static Map<String, Object> row(CatanModel model) {
-		PlayerColor playerColor = model.currentPlayer.get();
+		PlayerColor playerColor = model.getCurrentPlayer();
 		Map<String, Object> currentState = new LinkedHashMap<>();
-		List<CatanCard> cards = model.cards.get(playerColor);
+		List<CatanCard> cards = model.getCards().get(playerColor);
 		Map<String, Long> resourceCount = cards.stream()
 				.map(e -> Objects.toString(e.getResource(), Objects.toString(e.getDevelopment())))
 				.collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 		currentState.put(PLAYER, playerColor.toString());
         currentState.put(POINTS,
-            model.getUserChart().countPoints(playerColor, model.settlePoints, model.usedCards, model.edges));
+				model.getUserChart().countPoints(playerColor, model.getSettlePoints(), model.getUsedCards(),
+						model.getEdges()));
 		for (ResourceType r : ResourceType.getResources()) {
 			currentState.put(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
 		}
@@ -70,16 +71,17 @@ public final class CatanLogger {
 			currentState.put(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
 		}
 		PlayerColor currentWinner = PlayerColor.vals().parallelStream().max(Comparator.comparing(
-				(PlayerColor e) -> model.getUserChart().countPoints(e, model.settlePoints, model.usedCards, model.edges))
-				.thenComparing((PlayerColor e) -> model.cards.get(e).size())).orElse(playerColor);
+				(PlayerColor e) -> model.getUserChart().countPoints(e, model.getSettlePoints(), model.getUsedCards(),
+						model.getEdges()))
+				.thenComparing((PlayerColor e) -> model.getCards().get(e).size())).orElse(playerColor);
 		currentState.put(WINNER, currentWinner);
-		boolean anyMatch = model.deals.stream().anyMatch(m -> !model.isDealUnfeasible(m));
+		boolean anyMatch = model.getDeals().stream().anyMatch(m -> !model.isDealUnfeasible(m));
 		currentState.put(HAS_DEAL, Objects.toString(anyMatch));
-		currentState.put(SELECT_RESOURCE, Objects.toString(model.resourcesToSelect));
+		currentState.put(SELECT_RESOURCE, Objects.toString(model.getResourcesToSelect()));
 		
 		for (Class<? extends CatanResource> class1 : HAS_CLASSES) {
 			currentState.put("HAS_" + class1.getSimpleName().toUpperCase(),
-					Objects.toString(model.elements.stream().anyMatch(class1::isInstance)));
+					Objects.toString(model.getElements().stream().anyMatch(class1::isInstance)));
 		}
 		return currentState;
 	}

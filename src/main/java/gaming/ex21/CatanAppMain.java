@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.CommonsFX;
 
-public class CatanAppController extends Application {
+public class CatanAppMain extends Application {
     @FXML
     private StackPane center;
 
@@ -45,21 +45,24 @@ public class CatanAppController extends Application {
 	public void initialize() {
         catanModel = new CatanModel(center);
         catanModel
-            .setEdges(Terrain.addTerrains(center, catanModel.settlePoints, catanModel.terrains, catanModel.ports));
-		catanModel.userChart = userChart;
-		catanModel.resourceChoices = ResourceType.createResourceChoices(catanModel::onSelectResource, resourceChoices);
-		catanModel.exchangeButton = exchange;
-		catanModel.makeDeal = makeDeal;
-        catanModel.elements.addListener(ListHelper.onChangeElement(center));
-        catanModel.currentPlayer.addListener((ob, old, newV) -> catanModel.onChangePlayer(newV));
-        skipTurn.disableProperty().bind(Bindings.createBooleanBinding(catanModel::isSkippable, catanModel.diceThrown,
-            catanModel.resourceChoices.visibleProperty(), catanModel.currentPlayer, catanModel.elements));
-        throwDices.disableProperty().bind(catanModel.diceThrown);
-        ListHelper.newDeal(dealsBox, catanModel.deals,
-            t -> Deal.isDealUnfeasible(t, catanModel.currentPlayer, catanModel.cards), catanModel::onMakeDeal,
-            catanModel.currentPlayer, catanModel.diceThrown);
+				.setEdges(Terrain.addTerrains(center, catanModel.getSettlePoints(), catanModel.getTerrains(),
+						catanModel.getPorts()));
+		catanModel.setUserChart(userChart);
+		catanModel.setResourceChoices(ResourceType.createResourceChoices(catanModel::onSelectResource, resourceChoices));
+		catanModel.setExchangeButton(exchange);
+		catanModel.setMakeDeal(makeDeal);
+        catanModel.getElements().addListener(ListHelper.onChangeElement(center));
+		catanModel.currentPlayerProperty().addListener((ob, old, newV) -> catanModel.onChangePlayer(newV));
+        skipTurn.disableProperty().bind(Bindings.createBooleanBinding(catanModel::isSkippable, catanModel.getDiceThrown(),
+						catanModel.getResourceChoices().visibleProperty(), catanModel.currentPlayerProperty(),
+						catanModel.getElements()));
+        throwDices.disableProperty().bind(catanModel.getDiceThrown());
+		ListHelper.newDeal(dealsBox, catanModel.getDeals(),
+				t -> Deal.isDealUnfeasible(t, catanModel.currentPlayerProperty(), catanModel.getCards()),
+				catanModel::onMakeDeal,
+				catanModel.currentPlayerProperty(), catanModel.getDiceThrown());
         makeDeal.setDisable(true);
-        catanModel.currentPlayer.set(PlayerColor.BLUE);
+		catanModel.setCurrentPlayer(PlayerColor.BLUE);
         catanModel.onSkipTurn();
         userChart.setOnWin((t, u) -> initialize());
         catanModel.combinationGrid(combinationGrid) ;

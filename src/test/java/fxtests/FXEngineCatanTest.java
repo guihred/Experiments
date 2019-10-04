@@ -22,7 +22,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 
     @Test
     public void testDecisions() throws Exception {
-		CatanAppController newInstance = show(CatanAppController.class);
+		CatanAppMain newInstance = show(CatanAppMain.class);
         DataframeML build = DataframeBuilder.builder("out/catan_log.txt").build();
         build.removeCol("WINNER", "PLAYER");
         List<Object> list = build.list("ACTION");
@@ -51,7 +51,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             // while (model.getCurrentPlayer() == PlayerColor.GREEN) {
             // sleep(1000);
             // }
-            if (model.anyPlayerPoints(9, model)) {
+            if (model.anyPlayerPoints(9)) {
                 break;
             }
 
@@ -81,7 +81,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 
 	@Test
     public void testToolsVerify() throws Exception {
-		show(CatanAppController.class);
+		show(CatanAppMain.class);
         List<EdgeCatan> allEdge = lookup(EdgeCatan.class::isInstance).queryAllAs(EdgeCatan.class).stream()
             .collect(Collectors.toList());
         Collections.shuffle(allEdge);

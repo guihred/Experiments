@@ -1,9 +1,6 @@
 package gaming.ex21;
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javafx.beans.property.LongProperty;
@@ -59,7 +56,7 @@ public class UserChart extends VBox {
 
     }
 
-    public long countPoints(final PlayerColor newPlayer, List<SettlePoint> settlePoints,
+	public long countPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
         Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
         long pointsCount = settlePoints.stream().filter(s -> s.getElement() instanceof Village)
             .filter(e -> e.getElement().getPlayer() == newPlayer).count();
@@ -87,6 +84,12 @@ public class UserChart extends VBox {
 
     public PlayerColor getColor() {
         return color.get();
+    }
+
+    public PlayerColor getWinner(List<SettlePoint> settlePoints2,
+    		Map<PlayerColor, List<DevelopmentType>> usedCards2, List<EdgeCatan> edges2,
+    		Map<PlayerColor, List<CatanCard>> cards2) {
+    	return getWinner(this, settlePoints2, usedCards2, edges2, cards2);
     }
 
     public void setCards(List<CatanCard> currentCards) {
@@ -146,7 +149,7 @@ public class UserChart extends VBox {
         return dice1.throwDice() + dice2.throwDice();
     }
 
-    public void updatePorts(final PlayerColor newV, List<Port> ports, List<SettlePoint> settlePoints,
+	public void updatePorts(final PlayerColor newV, List<Port> ports, List<SettlePoint> settlePoints,
         ObjectProperty<PlayerColor> currentPlayer) {
         ports.stream().filter(p -> !availablePorts.getChildren().contains(p.getStatus()))
             .filter(p -> settlePoints.stream().filter(s -> s.getElement() != null)
@@ -157,4 +160,13 @@ public class UserChart extends VBox {
                 newStatus.visibleProperty().bind(currentPlayer.isEqualTo(newV));
             });
     }
+	public static PlayerColor getWinner(UserChart userChart2, List<SettlePoint> settlePoints2,
+			Map<PlayerColor, List<DevelopmentType>> usedCards2, List<EdgeCatan> edges2,
+			Map<PlayerColor, List<CatanCard>> cards2) {
+		return PlayerColor.vals().stream()
+				.max(Comparator.comparing(
+						(PlayerColor e) -> userChart2.countPoints(e, settlePoints2, usedCards2, edges2))
+						.thenComparing(e -> cards2.get(e).size()))
+				.orElse(userChart2.getColor());
+	}
 }
