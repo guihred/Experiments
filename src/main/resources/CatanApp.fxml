@@ -50,7 +50,7 @@
 	<left>
 		<VBox fx:id="left">
 			<children>
-				<UserChartController fx:id="userChart"
+				<UserChart fx:id="userChart"
 					color="GREEN" />
 				<HBox>
 					<children>
