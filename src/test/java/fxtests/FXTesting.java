@@ -57,7 +57,7 @@ public final class FXTesting implements HasLogging {
                 getLogger().info("{}/{} done", testedApps.size() + exceptionMap.size(), applicationClasses.size());
                 size = testedApps.size();
             }
-            if (System.currentTimeMillis() - currentTimeMillis > 2 * 60 * 1000) {// 2 minutes
+			if (System.currentTimeMillis() - currentTimeMillis > 5 * 60 * 1000) {// 2 minutes
                 List<Class<? extends Application>> notExecutedApps = applicationClasses.stream()
                     .collect(Collectors.toList());
                 notExecutedApps.removeAll(testedApps);

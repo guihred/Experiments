@@ -13,6 +13,7 @@
 		<downloadJavadocs>true</downloadJavadocs>
 		<jacoco.version>0.6.4.201312101107</jacoco.version>
 		<skip.jacoco>false</skip.jacoco>
+      <maven.test.failure.ignore>true</maven.test.failure.ignore>
 	</properties>
 	<!-- mvn org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false -->
 	<build>

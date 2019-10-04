@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -34,10 +35,21 @@ public class CatanAppController extends Application {
 
     private CatanModel catanModel;
 
-    public void initialize() {
+	@FXML
+	private GridPane combinationGrid;
+
+    public CatanModel getModel() {
+		return catanModel;
+	}
+
+	public void initialize() {
         catanModel = new CatanModel(center);
         catanModel
             .setEdges(Terrain.addTerrains(center, catanModel.settlePoints, catanModel.terrains, catanModel.ports));
+		catanModel.userChart = userChart;
+		catanModel.resourceChoices = ResourceType.createResourceChoices(catanModel::onSelectResource, resourceChoices);
+		catanModel.exchangeButton = exchange;
+		catanModel.makeDeal = makeDeal;
         catanModel.elements.addListener(ListHelper.onChangeElement(center));
         catanModel.currentPlayer.addListener((ob, old, newV) -> catanModel.onChangePlayer(newV));
         skipTurn.disableProperty().bind(Bindings.createBooleanBinding(catanModel::isSkippable, catanModel.diceThrown,
@@ -49,13 +61,9 @@ public class CatanAppController extends Application {
         makeDeal.setDisable(true);
         catanModel.currentPlayer.set(PlayerColor.BLUE);
         catanModel.onSkipTurn();
-        catanModel.userChart = userChart;
-        catanModel.resourceChoices = ResourceType.createResourceChoices(catanModel::onSelectResource, resourceChoices);
-        catanModel.exchangeButton = exchange;
-        catanModel.makeDeal = makeDeal;
         userChart.setOnWin((t, u) -> initialize());
+        catanModel.combinationGrid(combinationGrid) ;
     }
-
     public void onActionExchange() {
         catanModel.setResourceSelect(SelectResourceType.EXCHANGE);
     }
@@ -95,7 +103,7 @@ public class CatanAppController extends Application {
         CommonsFX.loadFXML("Settlers of Catan", "CatanApp.fxml", this, primaryStage, size * 3 / 2, size);
     }
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         launch(args);
     }
 }

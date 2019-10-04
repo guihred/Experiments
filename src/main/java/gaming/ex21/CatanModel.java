@@ -85,6 +85,23 @@ public class CatanModel {
             .orElse(0) >= i;
     }
 
+    public void combinationGrid(GridPane value) {
+		Combination[] combinations = Combination.values();
+        for (int i = 0; i < combinations.length; i++) {
+            Combination combination = combinations[i];
+            List<ResourceType> resources = combination.getResources();
+            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), 30, 30), "" + combination,
+                e -> onCombinationClicked(combination));
+			button.setUserData(combination);
+            button.disableProperty()
+                .bind(Bindings.createBooleanBinding(() -> disableCombination(combination), currentPlayer, diceThrown));
+            value.addRow(i, button);
+            for (ResourceType resourceType : resources) {
+                value.addRow(i, newImage(resourceType.getPure(), 20));
+            }
+        }
+	}
+
     public PlayerColor getCurrentPlayer() {
         return currentPlayer.get();
     }
@@ -328,21 +345,9 @@ public class CatanModel {
         CatanLogger.log(this, CatanAction.THROW_DICE);
     }
 
-    private Node addCombinations() {
+	private Node addCombinations() {
         GridPane value = new GridPane();
-        Combination[] combinations = Combination.values();
-        for (int i = 0; i < combinations.length; i++) {
-            Combination combination = combinations[i];
-            List<ResourceType> resources = combination.getResources();
-            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), 30, 30), "" + combination,
-                e -> onCombinationClicked(combination));
-            button.disableProperty()
-                .bind(Bindings.createBooleanBinding(() -> disableCombination(combination), currentPlayer, diceThrown));
-            value.addRow(i, button);
-            for (ResourceType resourceType : resources) {
-                value.addRow(i, newImage(resourceType.getPure(), 20));
-            }
-        }
+		combinationGrid(value);
         return value;
     }
 

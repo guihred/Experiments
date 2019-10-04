@@ -75,7 +75,37 @@ public class JavaDependencyTest {
     public void testEJavaDependency() {
 
         measureTime("JavaFileDependency.displayTestsToBeRun", () -> {
-            List<String> asList = Arrays.asList("EWSTest", "StatsLogAccess", "ConsoleUtils");
+			List<String> asList = Arrays.asList("EditSongHelper", "FilesComparator", "MusicOrganizer",
+					"ContestApplicationController", "ContestQuestionEditingDisplay", "IadesHelper", "ContestQuestion",
+					"ContestQuestionAnswer", "ContestText", "VigenereXORCipher", "CandidatoDAO", "CandidatoHelper",
+					"CommonCrawlerTask", "AlarmClock", "EthicalHackApp", "ImageCrackerApp", "NetworkInformationScanner",
+					"PingTraceRoute", "PortScanner", "PortServices", "BogusPasswordAuthenticator",
+					"CommonTestSupportUtils", "SSHClientUtils", "Chapter4", "Point", "Anagram", "FilesComparatorHelper",
+					"Music", "PdfImage", "SongUtils", "UnRar", "WordService", "LeafFractalApp", "PongLauncher",
+					"StageControlExample", "JavaFXBeanController", "ReversiPiece", "ReversiSquare",
+					"TableVisualizationExampleApp", "TableVisualizationModel", "ResponsiveUIView",
+					"ThreadInformationView", "BasicAudioPlayerWithControlLauncher", "PlayerControlView", "CubeNode",
+					"AnchorCircle", "BackgroundProcesses", "GlobeSphereApp", "InlineModelViewer", "JewelViewer",
+					"MoleculeSampleApp", "PhotoViewer", "PlayingAudio", "SimpleScene3D", "WorkingListsViews",
+					"BoundsDisplay", "ShapePair", "FormValidation", "PersonTableController", "WorkingWithTableView",
+					"SnakeLauncher", "SnakeModel", "SnakeSquare", "MemoryModel", "SlidingPuzzleModel",
+					"SlidingPuzzleSquare", "TronModel", "TronSquare", "QuartoLauncher", "QuartoModel", "Maze3DSquare",
+					"Dog", "Leopard", "PlatformMain", "SolitaireCard", "PacmanBall", "MadEdgeDistance", "PuzzlePiece",
+					"Square2048Model", "CatanResource", "EdgeElement", "JavaExercise19", "Link", "CircleLayout",
+					"GraphMain", "JavaFileDependency", "LayerSplitter", "RandomLayout", "EdgeDistancePack",
+					"MouseGestures", "ImageLoading", "JapaneseAudio", "JapaneseLesson", "JapaneseLessonApplication",
+					"JapaneseLessonAudioSplitDisplay", "JapaneseLessonDisplay", "JapaneseLessonDisplayer", "LessonPK",
+					"Labyrinth2D", "Labyrinth3D", "Labyrinth3DCollisions", "Labyrinth3DKillerGhostsAndBalls",
+					"Labyrinth3DWallTexture", "HeatGraphExample", "MapCallback", "PointsExample",
+					"PopulacionalPyramidExample", "WordSearchApp", "WorldMapExample", "Country",
+					"DataframeStatisticAccumulator", "DataframeUtils", "DecisionNode", "Question", "ColorPattern",
+					"MapGraph", "WorldMapGraph2", "OthersTests", "StatsLogAccess", "PaintEditUtils", "PaintFileUtils",
+					"SimplePixelReader", "LineTool", "PaintTools", "PencilTool", "PictureOption", "TextTool",
+					"PdfController", "Speaker", "LeitorArquivos", "RosarioCommons", "ControllerCompiler",
+					"FXMLCreatorHelper", "SimpleComboBoxBuilder", "SimpleListViewBuilder", "SimpleMenuBarBuilder",
+					"BaseDAO", "BaseEntity", "CommonsFX", "HibernateUtil", "ImageFXUtils", "ImageTableCell",
+					"PixelHelper", "RotateUtils", "StageHelper", "StringSigaUtils", "TaskProgressView",
+					"ZoomableScrollPane");
 
             Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(asList, "fxtests");
             String tests = displayTestsToBeRun.stream().collect(Collectors.joining(",*", "*", ""));
