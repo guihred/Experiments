@@ -7,7 +7,7 @@ import javafx.scene.input.MouseEvent;
 
 public class MouseGestures {
 
-    private final DragContext dragContext = new DragContext();
+    private final MouseDragContext dragContext = new MouseDragContext();
 
     private DoubleProperty scale;
 
@@ -64,7 +64,7 @@ public class MouseGestures {
     }
 
 
-    private static class DragContext {
+    private static class MouseDragContext {
         protected boolean dragged;
         protected double x;
         protected double y;

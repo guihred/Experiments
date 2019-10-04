@@ -113,6 +113,7 @@ public class GraphMain extends Application {
         BaseTopology selectedItem = topologySelect.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             selectedItem.execute();
+            onActionGo();
         }
     }
 

@@ -34,7 +34,7 @@ public class ContestApplicationController {
     @FXML
     private ListView<ContestQuestionAnswer> options;
     @FXML
-    private SplitPane splitPane0;
+    private SplitPane splitPane;
     @FXML
     private Text text;
     @FXML
@@ -53,9 +53,9 @@ public class ContestApplicationController {
         allContests.setItems(allContests2);
         if (!allContests2.isEmpty()) {
             contestQuestions = allContests2.get(0);
-            splitPane0.setDividerPositions(1. / 5, 3. / 5);
+            splitPane.setDividerPositions(1. / 5, 3. / 5);
         } else {
-            splitPane0.getItems().remove(0);
+            splitPane.getItems().remove(0);
         }
         options.getSelectionModel().selectedItemProperty().addListener((observable, old, value) -> {
             if (value == null) {
@@ -65,7 +65,7 @@ public class ContestApplicationController {
             ObservableList<ContestQuestion> contestTexts = contestQuestions.getListQuestions();
             Integer number = contestTexts.get(current.get()).getNumber();
             LOG.info("Question {} Answer {}", number, correct);
-            splitPane0.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
+            splitPane.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
                 if (e.contains(CERTO0)) {
                     e.add("certo");
                 }

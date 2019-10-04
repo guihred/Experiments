@@ -2,7 +2,6 @@ package graphs.app;
 
 import graphs.entities.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
 
 public class CircleLayout extends Layout {
@@ -22,16 +21,13 @@ public class CircleLayout extends Layout {
         generateCircle(cells, model.getAllEdges(), width / 2, height / 2, 2);
     }
 
-    public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges, double centerX, double centerY,
-        double startAngle, double bound) {
+    public static void generateCircle(Collection<Cell> cells, double centerX, double centerY, double startAngle,
+        double bound) {
         Set<Cell> visited = new HashSet<>();
         int size = cells.size();
         double step = 360.0 / size;
         double angle = startAngle;
-        List<Cell> orderedCell = cells.stream()
-            .sorted(Comparator.comparing(e -> GraphModelAlgorithms.edgesNumber(e, allEdges, cells)))
-            .collect(Collectors.toList());
-        for (Cell cell : orderedCell) {
+        for (Cell cell : cells) {
             if (!visited.contains(cell)) {
                 double x = Math.cos(Math.toRadians(angle)) * bound;
                 double y = Math.sin(Math.toRadians(angle)) * bound;
@@ -42,11 +38,12 @@ public class CircleLayout extends Layout {
         }
     }
 
-    public static void generateCircle(Collection<Cell> cells, List<Edge> allEdges, double centerX, double centerY,
+    public static void generateCircle(List<Cell> cells, List<Edge> allEdges, double centerX, double centerY,
         int mul) {
         int bound = radius(cells.size(), mul == 1 && cells.size() == 1 ? 0 : mul,
             cells.stream().mapToDouble(value -> value.getBoundsInLocal().getWidth()).max().orElse(20));
-        generateCircle(cells, allEdges, centerX, centerY, 0, bound);
+        cells.sort(Comparator.comparing(e -> GraphModelAlgorithms.edgesNumber(e, allEdges, cells)));
+        generateCircle(cells, centerX, centerY, 0, bound);
     }
 
     public static int radius(int size2) {

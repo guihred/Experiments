@@ -51,9 +51,9 @@ public class UserChart extends VBox {
         VBox currentStatus = new VBox(userImage, userPoints, new HBox(dice1, dice2));
         largestArmy.visibleProperty().bind(color.isEqualTo(largestArmy.playerProperty()));
         longestRoad.visibleProperty().bind(color.isEqualTo(longestRoad.playerProperty()));
-        getChildren().addAll(new HBox(otherPlayers, currentStatus, availablePorts, largestArmy, longestRoad),
+        HBox hBox = new HBox(otherPlayers, currentStatus, availablePorts, largestArmy, longestRoad);
+        getChildren().addAll(hBox,
             cardGroup);
-
     }
 
 	public long countPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,

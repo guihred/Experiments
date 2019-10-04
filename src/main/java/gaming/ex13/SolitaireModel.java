@@ -26,7 +26,7 @@ import utils.StageHelper;
 public class SolitaireModel {
     private CardStack[] ascendingStacks = new CardStack[4];
 
-    private DragContext dragContext = new DragContext();
+    private CardDragContext dragContext = new CardDragContext();
     private Pane gridPane;
     private CardStack[] simpleStacks = new CardStack[7];
 
@@ -270,7 +270,7 @@ public class SolitaireModel {
         return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.ACE;
     }
 
-    private static class DragContext {
+    private static class CardDragContext {
         protected List<SolitaireCard> cards;
         protected CardStack stack;
         protected double x;

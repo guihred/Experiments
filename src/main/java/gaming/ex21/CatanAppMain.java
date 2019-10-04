@@ -2,7 +2,6 @@ package gaming.ex21;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -32,52 +31,49 @@ public class CatanAppMain extends Application {
     private HBox resourceChoices;
     @FXML
     private Button throwDices;
+    @FXML
+    private GridPane combinationGrid;
 
-    private CatanModel catanModel;
-
-	@FXML
-	private GridPane combinationGrid;
+    private CatanModel catanModel = new CatanModel();
 
     public CatanModel getModel() {
-		return catanModel;
-	}
+        return catanModel;
+    }
 
-	public void initialize() {
-        catanModel = new CatanModel(center);
+    public void initialize() {
+        catanModel.setEdges(CatanHelper.addTerrains(center, catanModel.getSettlePoints(), catanModel.getTerrains(),
+            catanModel.getPorts()));
+        catanModel.setUserChart(userChart);
         catanModel
-				.setEdges(Terrain.addTerrains(center, catanModel.getSettlePoints(), catanModel.getTerrains(),
-						catanModel.getPorts()));
-		catanModel.setUserChart(userChart);
-		catanModel.setResourceChoices(ResourceType.createResourceChoices(catanModel::onSelectResource, resourceChoices));
-		catanModel.setExchangeButton(exchange);
-		catanModel.setMakeDeal(makeDeal);
+            .setResourceChoices(ResourceType.createResourceChoices(catanModel::onSelectResource, resourceChoices));
+        catanModel.setExchangeButton(exchange);
+        catanModel.setMakeDeal(makeDeal);
         catanModel.getElements().addListener(ListHelper.onChangeElement(center));
-		catanModel.currentPlayerProperty().addListener((ob, old, newV) -> catanModel.onChangePlayer(newV));
-        skipTurn.disableProperty().bind(Bindings.createBooleanBinding(catanModel::isSkippable, catanModel.getDiceThrown(),
-						catanModel.getResourceChoices().visibleProperty(), catanModel.currentPlayerProperty(),
-						catanModel.getElements()));
+        catanModel.currentPlayerProperty().addListener((ob, old, newV) -> catanModel.onChangePlayer(newV));
+        skipTurn.disableProperty()
+            .bind(Bindings.createBooleanBinding(
+                () -> CatanHelper.isSkippable(catanModel.getDiceThrown(), catanModel.getResourceChoices(),
+                    catanModel.getElements(), catanModel.currentPlayerProperty()),
+                catanModel.getDiceThrown(), catanModel.getResourceChoices().visibleProperty(),
+                catanModel.currentPlayerProperty(), catanModel.getElements()));
         throwDices.disableProperty().bind(catanModel.getDiceThrown());
-		ListHelper.newDeal(dealsBox, catanModel.getDeals(),
-				t -> Deal.isDealUnfeasible(t, catanModel.currentPlayerProperty(), catanModel.getCards()),
-				catanModel::onMakeDeal,
-				catanModel.currentPlayerProperty(), catanModel.getDiceThrown());
+        ListHelper.newDeal(dealsBox, catanModel.getDeals(),
+            t -> Deal.isDealUnfeasible(t, catanModel.getCurrentPlayer(), catanModel.getCards()), catanModel::onMakeDeal,
+            catanModel.currentPlayerProperty(), catanModel.getDiceThrown());
         makeDeal.setDisable(true);
-		catanModel.setCurrentPlayer(PlayerColor.BLUE);
+        catanModel.setCurrentPlayer(PlayerColor.BLUE);
         catanModel.onSkipTurn();
         userChart.setOnWin((t, u) -> initialize());
-        catanModel.combinationGrid(combinationGrid) ;
+        CatanHelper.combinationGrid(combinationGrid, catanModel::onCombinationClicked, catanModel::disableCombination,
+            catanModel.currentPlayerProperty(), catanModel.getDiceThrown());
     }
+
     public void onActionExchange() {
         catanModel.setResourceSelect(SelectResourceType.EXCHANGE);
     }
 
     public void onActionMakeDeal() {
         catanModel.setResourceSelect(SelectResourceType.MAKE_DEAL);
-    }
-
-    public void onActionROAD(ActionEvent e) {
-        Combination combination = Combination.valueOf(((Button) e.getSource()).getId());
-        catanModel.onCombinationClicked(combination);
     }
 
     public void onActionSkipTurn() {
@@ -89,15 +85,16 @@ public class CatanAppMain extends Application {
     }
 
     public void onMouseDraggedStackPane0(MouseEvent e) {
-        catanModel.handleMouseDragged(e);
+        catanModel.getDragContext().dragElement(e, catanModel.getSettlePoints(), catanModel.getTerrains(),
+            catanModel.getEdges());
     }
 
     public void onMousePressedStackPane0(MouseEvent e) {
-        catanModel.handleMousePressed(e);
+        catanModel.getDragContext().pressElement(e, center, catanModel.getElements());
     }
 
     public void onMouseReleasedStackPane0(MouseEvent e) {
-        catanModel.handleMouseReleased(e);
+        catanModel.handleMouseReleased(e.getX(), e.getY());
     }
 
     @Override
@@ -106,7 +103,7 @@ public class CatanAppMain extends Application {
         CommonsFX.loadFXML("Settlers of Catan", "CatanApp.fxml", this, primaryStage, size * 3 / 2, size);
     }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         launch(args);
     }
 }

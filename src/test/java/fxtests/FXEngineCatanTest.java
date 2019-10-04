@@ -297,7 +297,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     }
 
     private static CatanAction chooseAction(DecisionNode buildTree, CatanModel model) {
-        Map<String, Object> row = CatanLogger.row(model);
         if (model.getElements().stream().anyMatch(Village.class::isInstance)) {
             return CatanAction.PLACE_VILLAGE;
         }
@@ -310,7 +309,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         if (model.getElements().stream().anyMatch(Road.class::isInstance)) {
             return CatanAction.PLACE_ROAD;
         }
-        return CatanAction.valueOf(Objects.toString(buildTree.predict(row)));
+        return CatanAction.valueOf(Objects.toString(buildTree.predict(model.row())));
     }
 
     private static String getCardClass(CatanAction predict) {

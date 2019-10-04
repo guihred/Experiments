@@ -41,9 +41,9 @@ public class MethodsTopology extends BaseTopology {
                 .forEach((id, weight) -> graph.getModel().addEdge(cellId, id, weight.intValue()));
         }
         graph.endUpdate();
-        ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
-            Math.min(graph.getScrollPane().getViewportBounds().getWidth() / 4,
-                graph.getScrollPane().getViewportBounds().getHeight() / 4));
+        double min = Math.max(graph.getScrollPane().getViewportBounds().getWidth(),
+            graph.getScrollPane().getViewportBounds().getWidth() / 2 / graph.getScrollPane().getScaleValue());
+        ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges(), min);
         return javaFiles;
     }
 

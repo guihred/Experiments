@@ -18,8 +18,6 @@ import ex.j9.ch4.Rectangle;
 import extract.ExcelService;
 import gaming.ex16.MadEdge;
 import graphs.EdgeElement;
-import graphs.app.JavaFileDependency;
-import graphs.app.PackageTopology;
 import graphs.entities.EdgeDistancePack;
 import graphs.entities.Linha;
 import graphs.entities.Ponto;
@@ -30,7 +28,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -38,19 +35,15 @@ import ml.Word2VecExample;
 import ml.data.CSVUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
 import utils.FunctionEx;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
 public class FXFileReadersTest extends ApplicationTest {
-    private static final Logger LOG = HasLogging.log();
-
     @Override
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
@@ -176,19 +169,6 @@ public class FXFileReadersTest extends ApplicationTest {
         });
     }
 
-    @Test
-    public void testPackageTopology() {
-        measureTime("JavaFileDependency.getJavaFileDependencies", () -> {
-            List<JavaFileDependency> javaFiles = JavaFileDependency.getJavaFileDependencies(null);
-            Map<String, List<JavaFileDependency>> filesByPackage = javaFiles.stream()
-                .collect(Collectors.groupingBy(JavaFileDependency::getPackage));
-            filesByPackage.forEach((pack, files) -> {
-                LOG.trace(pack);
-                Map<String, Map<String, Long>> packageDependencyMap = PackageTopology.createFileDependencyMap(files);
-                PackageTopology.printDependencyMap(packageDependencyMap);
-            });
-        });
-    }
 
     @Test
     public void testPoints() {

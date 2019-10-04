@@ -1,16 +1,11 @@
 package gaming.ex21;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.Node;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -77,21 +72,5 @@ public class CatanCard extends Rectangle {
             Objects.toString(development, Objects.toString(resource)).toLowerCase().replaceAll("_", "-") + "-card");
         InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
         effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
-    }
-
-    public static boolean containsEnough(Collection<CatanCard> list, Collection<ResourceType> resourcesNeeded) {
-        List<ResourceType> resources = list.stream().map(CatanCard::getResource).filter(Objects::nonNull)
-            .collect(Collectors.toList());
-        List<ResourceType> resourcesNecessary = resourcesNeeded.stream().collect(Collectors.toList());
-        for (int i = 0; i < resourcesNecessary.size(); i++) {
-            if (!resources.remove(resourcesNecessary.get(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean inArea(MouseEvent event, Node e) {
-        return e.getBoundsInParent().contains(event.getX(), event.getY());
     }
 }

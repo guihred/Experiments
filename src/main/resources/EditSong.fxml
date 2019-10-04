@@ -14,17 +14,17 @@
 		<Label fx:id="label4" text="Álbum" />
 		<TextField fx:id="albumField" />
 		<ImageView fx:id="imageView" fitWidth="300" preserveRatio="true"/> 
-		<Label fx:id="label6" text="00:00" />
+		<Label fx:id="currentLabel" text="00:00" />
 		<Slider blockIncrement="1.0E-5" fx:id="currentSlider" max="1.0" onValueChangingChange="#update"/>
 		
-		<Label fx:id="label8" text="00:00" />
+		<Label fx:id="initialLabel" text="00:00" />
 		<Slider blockIncrement="1.0E-5" fx:id="initialSlider" max="1.0" value="0"/>
 		
-		<Label fx:id="label10" text="00:00" />
+		<Label fx:id="finalLabel" text="00:00" />
 		<Slider blockIncrement="1.0E-5" fx:id="finalSlider" max="1.0"
 			value="0.999" />
-		<ProgressIndicator fx:id="progressIndicator12"
-			managed="${progressIndicator12.visible}" progress="0.0" visible="false" />
+		<ProgressIndicator fx:id="progressIndicator"
+			managed="${progressIndicator.visible}" progress="0.0" visible="false" />
 		<HBox>
 			<children>
 				<Button fx:id="playPause" id="_Play/Pause"

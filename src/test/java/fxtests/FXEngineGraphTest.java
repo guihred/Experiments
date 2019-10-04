@@ -1,7 +1,13 @@
 package fxtests;
 
+import static fxtests.FXTesting.measureTime;
+
 import graphs.app.GraphMain;
+import graphs.app.JavaFileDependency;
+import graphs.app.PackageTopology;
 import graphs.entities.Cell;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
@@ -24,6 +30,20 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 		super.start(stage);
         show(GraphMain.class);
 	}
+	@Test
+    public void testPackageTopology() {
+        measureTime("JavaFileDependency.getJavaFileDependencies", () -> {
+            List<JavaFileDependency> javaFiles = JavaFileDependency.getJavaFileDependencies(null);
+            Map<String, List<JavaFileDependency>> filesByPackage = javaFiles.stream()
+                .collect(Collectors.groupingBy(JavaFileDependency::getPackage));
+            filesByPackage.forEach((pack, files) -> {
+                getLogger().trace(pack);
+                Map<String, Map<String, Long>> packageDependencyMap = PackageTopology.createFileDependencyMap(files);
+                PackageTopology.printDependencyMap(packageDependencyMap);
+            });
+        });
+    }
+
 	@Test
 	public void verify() throws Exception {
         ImageFXUtils.setShowImage(false);
@@ -53,7 +73,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 		}
 	}
 
-	@Test
+    @Test
 	public void verifyZoomable() throws Exception {
 		Set<Node> queryButtons = lookup(Cell.class::isInstance).queryAll();
 		queryButtons.forEach(e -> {
@@ -65,5 +85,4 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 		scroll(2, VerticalDirection.UP);
 		scroll(2, VerticalDirection.DOWN);
 	}
-
 }

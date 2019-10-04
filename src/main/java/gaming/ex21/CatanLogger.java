@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.collections.ObservableList;
 import ml.data.DataframeML;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.assertj.core.util.Files;
@@ -53,39 +54,6 @@ public final class CatanLogger {
 		log(model, actionResource(catanCard));
 	}
 
-	public static Map<String, Object> row(CatanModel model) {
-		PlayerColor playerColor = model.getCurrentPlayer();
-		Map<String, Object> currentState = new LinkedHashMap<>();
-		List<CatanCard> cards = model.getCards().get(playerColor);
-		Map<String, Long> resourceCount = cards.stream()
-				.map(e -> Objects.toString(e.getResource(), Objects.toString(e.getDevelopment())))
-				.collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-		currentState.put(PLAYER, playerColor.toString());
-        currentState.put(POINTS,
-				model.getUserChart().countPoints(playerColor, model.getSettlePoints(), model.getUsedCards(),
-						model.getEdges()));
-		for (ResourceType r : ResourceType.getResources()) {
-			currentState.put(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
-		}
-		for (DevelopmentType r : DevelopmentType.values()) {
-			currentState.put(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
-		}
-		PlayerColor currentWinner = PlayerColor.vals().parallelStream().max(Comparator.comparing(
-				(PlayerColor e) -> model.getUserChart().countPoints(e, model.getSettlePoints(), model.getUsedCards(),
-						model.getEdges()))
-				.thenComparing((PlayerColor e) -> model.getCards().get(e).size())).orElse(playerColor);
-		currentState.put(WINNER, currentWinner);
-		boolean anyMatch = model.getDeals().stream().anyMatch(m -> !model.isDealUnfeasible(m));
-		currentState.put(HAS_DEAL, Objects.toString(anyMatch));
-		currentState.put(SELECT_RESOURCE, Objects.toString(model.getResourcesToSelect()));
-		
-		for (Class<? extends CatanResource> class1 : HAS_CLASSES) {
-			currentState.put("HAS_" + class1.getSimpleName().toUpperCase(),
-					Objects.toString(model.getElements().stream().anyMatch(class1::isInstance)));
-		}
-		return currentState;
-	}
-
 	public static void winner(PlayerColor playerWinner) {
 		DATAFRAME_ML.filter(PLAYER, c->c.equals(playerWinner.toString()));
 		DATAFRAME_ML.forEachRow(CatanLogger::appendLine);
@@ -99,11 +67,11 @@ public final class CatanLogger {
         return CatanAction.getAction("SELECT_", development);
 	}
 
-    private static CatanAction action(ResourceType resource) {
+	private static CatanAction action(ResourceType resource) {
         return CatanAction.getAction("SELECT_", resource);
 	}
 
-	private static CatanAction actionResource(ResourceType resource) {
+    private static CatanAction actionResource(ResourceType resource) {
         return CatanAction.getAction("RESOURCE_", resource);
     }
 
@@ -158,5 +126,38 @@ public final class CatanLogger {
 
 		return dataframeML;
 	}
+
+	static Map<String, Object> row(PlayerColor playerColor, Map<PlayerColor, List<CatanCard>> cards2,
+        UserChart userChart, Map<PlayerColor, List<DevelopmentType>> usedCards, List<SettlePoint> settlePoints,
+        List<EdgeCatan> edges, ObservableList<Deal> deals, SelectResourceType resourcesToSelect,
+        ObservableList<CatanResource> elements) {
+        Map<String, Object> currentState = new LinkedHashMap<>();
+        List<CatanCard> cards = cards2.get(playerColor);
+		Map<String, Long> resourceCount = cards.stream()
+				.map(e -> Objects.toString(e.getResource(), Objects.toString(e.getDevelopment())))
+				.collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+		currentState.put(PLAYER, playerColor.toString());
+        currentState.put(POINTS,
+            userChart.countPoints(playerColor, settlePoints, usedCards, edges));
+		for (ResourceType r : ResourceType.getResources()) {
+			currentState.put(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
+		}
+		for (DevelopmentType r : DevelopmentType.values()) {
+			currentState.put(r.toString(), resourceCount.getOrDefault(r.toString(), 0L));
+		}
+		PlayerColor currentWinner = PlayerColor.vals().parallelStream().max(Comparator.comparing(
+            (PlayerColor e) -> userChart.countPoints(e, settlePoints, usedCards, edges))
+				.thenComparing((PlayerColor e) -> cards2.get(e).size())).orElse(playerColor);
+		currentState.put(WINNER, currentWinner);
+        boolean anyMatch = deals.stream().anyMatch(m -> !Deal.isDealUnfeasible(m, playerColor, cards2));
+		currentState.put(HAS_DEAL, Objects.toString(anyMatch));
+        currentState.put(SELECT_RESOURCE, Objects.toString(resourcesToSelect));
+		
+		for (Class<? extends CatanResource> class1 : HAS_CLASSES) {
+            currentState.put("HAS_" + class1.getSimpleName().toUpperCase(),
+                Objects.toString(elements.stream().anyMatch(class1::isInstance)));
+		}
+		return currentState;
+    }
 
 }

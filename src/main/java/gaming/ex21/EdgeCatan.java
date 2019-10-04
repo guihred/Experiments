@@ -132,6 +132,7 @@ public class EdgeCatan extends Group {
     }
 
     public static boolean edgeAcceptRoad(final EdgeCatan edge, final Road road) {
+
         if (edge == null) {
             return false;
         }

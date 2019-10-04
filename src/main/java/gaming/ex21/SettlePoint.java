@@ -14,7 +14,7 @@ import org.junit.Ignore;
 import simplebuilder.SimpleFadeTransitionBuilder;
 
 public class SettlePoint extends Group {
-    private static int i = 1;
+    private static int pointsCount = 1;
 
     private CatanResource element;
     private final List<EdgeCatan> edges = new ArrayList<>();
@@ -29,7 +29,7 @@ public class SettlePoint extends Group {
         highlightTransition.play();
 
         getChildren().add(circle);
-        id = i++;
+        id = pointsCount++;
         setManaged(false);
 
     }

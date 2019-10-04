@@ -30,27 +30,27 @@ public class EditSongController extends Application {
     @FXML
     private TextField albumField;
     @FXML
-    private Label label10;
+    private Label finalLabel;
     @FXML
     private Slider finalSlider;
     @FXML
     private TextField tituloField;
     @FXML
-    private Label label8;
+    private Label initialLabel;
     @FXML
     private Slider initialSlider;
     @FXML
     private TextField artistaField;
 
     @FXML
-    private Label label6;
+    private Label currentLabel;
     @FXML
     private Slider currentSlider;
 
     @FXML
     private ImageView imageView;
     @FXML
-    private ProgressIndicator progressIndicator12;
+    private ProgressIndicator progressIndicator;
     private final Music selectedItem;
     private final ObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
     private final ObjectProperty<Duration> startTime = new SimpleObjectProperty<>(Duration.ZERO);
@@ -68,9 +68,9 @@ public class EditSongController extends Application {
         Media media = new Media(selectedItem.getArquivo().toURI().toString());
         mediaPlayer.set(new MediaPlayer(media));
 
-        SongUtils.bindSlider(mediaPlayer.get(), currentSlider, label6);
-        SongUtils.bindSlider(mediaPlayer.get(), initialSlider, label8);
-        SongUtils.bindSlider(mediaPlayer.get(), finalSlider, label10);
+        SongUtils.bindSlider(mediaPlayer.get(), currentSlider, currentLabel);
+        SongUtils.bindSlider(mediaPlayer.get(), initialSlider, initialLabel);
+        SongUtils.bindSlider(mediaPlayer.get(), finalSlider, finalLabel);
         bind(albumField, selectedItem.albumProperty());
         bind(tituloField, selectedItem.tituloProperty());
         bind(artistaField, selectedItem.artistaProperty());
@@ -103,7 +103,7 @@ public class EditSongController extends Application {
     public void onActionSplit(ActionEvent e) {
         File outFile = ResourceFXUtils.getOutFile(selectedItem.getArquivo().getName());
         if (initialSlider.getValue() != 0 || finalSlider.getValue() != 1) {
-            EditSongHelper.splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator12,
+            EditSongHelper.splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator,
                 mediaPlayer);
             return;
         }

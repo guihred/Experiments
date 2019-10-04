@@ -1,7 +1,5 @@
 package gaming.ex21;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +10,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -42,19 +39,6 @@ public class Terrain extends Group {
         highlightTransition = new SimpleFillTransitionBuilder().shape(circle).duration(Duration.millis(200))
             .fromValue(Color.BEIGE).toValue(Color.GREEN).build();
         setManaged(false);
-    }
-
-    public void createSettlePoints(final double x, final double y, List<SettlePoint> settlePoints2) {
-        for (SettlePoint p : Terrain.getSettlePoints(x, y)) {
-            if (settlePoints2.stream().noneMatch(e -> intersects(p, e))) {
-                settlePoints2.add(p);
-                p.addTerrain(this);
-            } else {
-                p.removeNeighbors();
-            }
-            settlePoints2.stream().filter(e -> intersects(p, e)).findFirst()
-                .ifPresent(e -> e.addTerrain(this).addAllNeighbors(p));
-        }
     }
 
     public Terrain fadeIn() {
@@ -140,67 +124,11 @@ public class Terrain extends Group {
         return polygon;
     }
 
-    public static List<EdgeCatan> addTerrains(Pane root, List<SettlePoint> settlePoints, Collection<Terrain> terrains,
-        List<Port> ports) {
-        root.getChildren().clear();
-        List<Integer> numbers = Terrain.getNumbers();
-        List<ResourceType> cells = ResourceType.createResources();
-        final double radius = CatanResource.RADIUS * Math.sqrt(3);
-        for (int i = 3, j = 0, l = 0; j < cells.size(); j += i, i += j > 11 ? -1 : 1, l++) {
-            List<ResourceType> resources = cells.subList(j, j + i);
-            for (int k = 0; k < resources.size(); k++) {
-                Terrain terrain = new Terrain(resources.get(k));
-                double f = -radius / 2 * (i - 3);
-                double x = radius * k + f + radius * 3 / 2;
-                double y = radius * l * Math.sqrt(3) / 2 + radius / 3;
-                terrain.relocate(x, y);
-                if (resources.get(k) != ResourceType.DESERT) {
-                    terrain.setNumber(numbers.remove(0));
-                }
-                terrain.createSettlePoints(x, y, settlePoints);
-                terrains.add(terrain);
-                root.getChildren().add(terrain);
-            }
-        }
-
-        List<EdgeCatan> catanEdges = settlePoints.stream()
-            .flatMap(s -> s.getNeighbors().stream().map(t -> new EdgeCatan(s, t))).distinct()
-            .collect(Collectors.toList());
-        catanEdges.forEach(e -> e.getPoints().forEach(p -> p.getEdges().add(e)));
-        Collections.shuffle(ports);
-        Port.relocatePorts(settlePoints, ports);
-        root.getChildren().addAll(catanEdges);
-        root.getChildren().addAll(ports);
-        root.getChildren().addAll(settlePoints);
-        return catanEdges;
-
-    }
-
     public static List<Integer> getNumbers() {
         List<Integer> numbers = IntStream.rangeClosed(2, 12)
             .flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e))).boxed().collect(Collectors.toList());
         Collections.shuffle(numbers);
         return numbers;
-    }
-
-    public static List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
-        List<SettlePoint> points = new ArrayList<>();
-        double off = Math.PI / 6;
-        for (int i = 0; i < 6; i++) {
-            double d = Math.PI / 3;
-            double x = Math.cos(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
-            double y = Math.sin(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
-            final double centerX = xOff + x - CatanResource.RADIUS / 2.5;
-            final double centerY = yOff + y - CatanResource.RADIUS / 4;
-            SettlePoint e = new SettlePoint();
-            e.relocate(centerX, centerY);
-            points.add(e);
-        }
-        for (int i = 0; i < points.size(); i++) {
-            SettlePoint e = points.get(i);
-            e.addNeighbor(points.get((i + 1) % points.size()));
-        }
-        return points;
     }
 
     private static int getLimit(final int e) {
@@ -211,10 +139,6 @@ public class Terrain extends Group {
             return 1;
         }
         return 2;
-    }
-
-    private static boolean intersects(final SettlePoint p, final SettlePoint e) {
-        return e.getBoundsInParent().intersects(p.getBoundsInParent());
     }
 
 }
