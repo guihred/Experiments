@@ -1,5 +1,6 @@
 package gaming.ex21;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,8 +9,10 @@ import javafx.animation.FillTransition;
 import javafx.beans.NamedArg;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ObservableList;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -122,6 +125,19 @@ public class Terrain extends Group {
             polygon.setFill(CatanResource.newPattern(type.getTerrain()));
         }
         return polygon;
+    }
+
+    public static void replaceThief(Collection<Terrain> terrains2, Thief thief2,
+        ObservableList<CatanResource> elements2, PlayerColor currentPlayer2) {
+        terrains2.stream().filter(t -> t.getThief() != null).forEach(Terrain::fadeOut);
+        Parent parent = thief2.getParent();
+        if (parent instanceof Group) {
+            ((Group) parent).getChildren().remove(thief2);
+        }
+        thief2.setPlayer(currentPlayer2);
+        if (!elements2.contains(thief2)) {
+            elements2.add(thief2);
+        }
     }
 
     public static List<Integer> getNumbers() {

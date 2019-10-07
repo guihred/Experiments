@@ -52,9 +52,9 @@ public class CatanAppMain extends Application {
         catanModel.currentPlayerProperty().addListener((ob, old, newV) -> catanModel.onChangePlayer(newV));
         skipTurn.disableProperty()
             .bind(Bindings.createBooleanBinding(
-                () -> CatanHelper.isSkippable(catanModel.getDiceThrown(), catanModel.getResourceChoices(),
+                () -> CatanHelper.isSkippable(catanModel.getDiceThrown(), resourceChoices,
                     catanModel.getElements(), catanModel.currentPlayerProperty()),
-                catanModel.getDiceThrown(), catanModel.getResourceChoices().visibleProperty(),
+                catanModel.getDiceThrown(), resourceChoices.visibleProperty(),
                 catanModel.currentPlayerProperty(), catanModel.getElements()));
         throwDices.disableProperty().bind(catanModel.getDiceThrown());
         ListHelper.newDeal(dealsBox, catanModel.getDeals(),

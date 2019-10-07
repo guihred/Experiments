@@ -28,13 +28,6 @@ public final class CommonsFX {
     private CommonsFX() {
     }
 
-    public static void loadRoot(String arquivo, Object root) {
-        FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL(arquivo));
-        fxmlLoader.setRoot(root);
-        fxmlLoader.setController(root);
-        RunnableEx.remap(() -> fxmlLoader.load(), "ERROR LOADING "+arquivo);
-    }
-
     public static Node[] createField(String nome, StringProperty propriedade) {
         TextField textField = new TextField();
         textField.textProperty().bindBidirectional(propriedade);
@@ -91,6 +84,13 @@ public final class CommonsFX {
             fxmlLoader.setController(controller);
             return fxmlLoader.load();
         }, "ERROR IN " + file);
+    }
+
+    public static void loadRoot(String arquivo, Object root) {
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL(arquivo));
+        fxmlLoader.setRoot(root);
+        fxmlLoader.setController(root);
+        RunnableEx.remap(fxmlLoader::load, "ERROR LOADING "+arquivo);
     }
 
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {

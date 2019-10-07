@@ -10,9 +10,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -77,18 +75,6 @@ public final class CatanHelper {
         }
     }
 
-    public static boolean containsEnough(Collection<CatanCard> list, Collection<ResourceType> resourcesNeeded) {
-        List<ResourceType> resources = list.stream().map(CatanCard::getResource).filter(Objects::nonNull)
-            .collect(Collectors.toList());
-        List<ResourceType> resourcesNecessary = resourcesNeeded.stream().collect(Collectors.toList());
-        for (int i = 0; i < resourcesNecessary.size(); i++) {
-            if (!resources.remove(resourcesNecessary.get(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static void createSettlePoints(Terrain terrain, final double x, final double y,
         Collection<SettlePoint> points) {
         for (SettlePoint p : CatanHelper.getSettlePoints(x, y)) {
@@ -139,19 +125,6 @@ public final class CatanHelper {
 
     public static ImageView newResource(final ResourceType type) {
         return CatanResource.newImage(type.getPure(), Port.SIZE / 4.);
-    }
-
-    public static void replaceThief(Collection<Terrain> terrains2, Thief thief2,
-        ObservableList<CatanResource> elements2, PlayerColor currentPlayer2) {
-        terrains2.stream().filter(t -> t.getThief() != null).forEach(Terrain::fadeOut);
-        Parent parent = thief2.getParent();
-        if (parent instanceof Group) {
-            ((Group) parent).getChildren().remove(thief2);
-        }
-        thief2.setPlayer(currentPlayer2);
-        if (!elements2.contains(thief2)) {
-            elements2.add(thief2);
-        }
     }
 
     static int getDirection(int turnCount2) {

@@ -6,84 +6,42 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-	styleClass="root">
+<BorderPane xmlns:fx="http://javafx.com/fxml" styleClass="root">
 	<fx:define>
-
 		<ToggleGroup fx:id="toggleGroup55" />
-		<Image backgroundLoading="false" fx:id="wood"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/purewood.png" />
-		<Image backgroundLoading="false" fx:id="brick"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/purebricks.png" />
-		<Image backgroundLoading="false" fx:id="wheat"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/purewheat.png" />
-		<Image backgroundLoading="false" fx:id="rock"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/purerock.png" />
-		<Image backgroundLoading="false" fx:id="sheep"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/puresheep.png" />
-		<Image backgroundLoading="false" fx:id="road"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/road.png" />
-		<Image backgroundLoading="false" fx:id="village"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/village.png" />
-		<Image backgroundLoading="false" fx:id="city"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/city.png" />
-		<Image backgroundLoading="false" fx:id="development"
-			preserveRatio="false" requestedHeight="0" requestedWidth="0"
-			smooth="false" url="@/catan/development.png" />
+		<Image fx:id="wood" url="@/catan/purewood.png" />
+		<Image fx:id="brick" url="@/catan/purebricks.png" />
+		<Image fx:id="wheat" url="@/catan/purewheat.png" />
+		<Image fx:id="rock" url="@/catan/purerock.png" />
+		<Image fx:id="sheep" url="@/catan/puresheep.png" />
+		<Image fx:id="road" url="@/catan/road.png" />
+		<Image fx:id="village" url="@/catan/village.png" />
+		<Image fx:id="city" url="@/catan/city.png" />
+		<Image fx:id="development" url="@/catan/development.png" />
 	</fx:define>
 	<center>
 		<StackPane fx:id="center"
 			onMouseDragged="#onMouseDraggedStackPane0"
 			onMousePressed="#onMousePressedStackPane0"
-			onMouseReleased="#onMouseReleasedStackPane0">
-
-		</StackPane>
+			onMouseReleased="#onMouseReleasedStackPane0" />
 	</center>
 	<left>
 		<VBox fx:id="left">
 			<children>
-				<UserChart fx:id="userChart"
-					color="GREEN" />
+				<UserChart fx:id="userChart" color="GREEN" />
 				<HBox>
 					<children>
 						<VBox>
 							<children>
 								<Button alignment="CENTER" fx:id="skipTurn"
-									id="Skip Turn" onAction="#onActionSkipTurn" text="Skip Turn"
-									textFill="0x333333ff">
-									<padding>
-										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
-									</padding>
-								</Button>
+									id="Skip Turn" onAction="#onActionSkipTurn" text="Skip Turn" />
 								<Button alignment="CENTER" fx:id="throwDices"
 									id="Throw Dices" onAction="#onActionThrowDices"
-									text="Throw Dices" textFill="0x333333ff">
-									<padding>
-										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
-									</padding>
-								</Button>
+									text="Throw Dices" />
 								<Button alignment="CENTER" fx:id="exchange" id="Exchange"
-									onAction="#onActionExchange" text="Exchange"
-									textFill="0x333333ff">
-									<padding>
-										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
-									</padding>
-								</Button>
+									onAction="#onActionExchange" text="Exchange" />
 								<Button alignment="CENTER" fx:id="makeDeal"
-									id="Make Deal" onAction="#onActionMakeDeal" text="Make Deal"
-									textFill="0x333333ff">
-									<padding>
-										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
-									</padding>
-								</Button>
+									id="Make Deal" onAction="#onActionMakeDeal" text="Make Deal" />
 							</children>
 						</VBox>
 						<VBox fx:id="dealsBox" />

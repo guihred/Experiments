@@ -1,9 +1,12 @@
 package gaming.ex21;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.collections.ObservableList;
 
 public enum DevelopmentType {
     KNIGHT("knight.png", 14),
@@ -23,6 +26,29 @@ public enum DevelopmentType {
 	public String getImage() {
 		return image;
 	}
+
+    public void onSelect(Collection<Terrain> terrains, Thief thief, ObservableList<CatanResource> elements,
+        PlayerColor player, Consumer<SelectResourceType> onSelect) {
+        switch (this) {
+            case KNIGHT:
+                Terrain.replaceThief(terrains, thief, elements, player);
+                break;
+            case MONOPOLY:
+                onSelect.accept(SelectResourceType.MONOPOLY);
+                break;
+            case ROAD_BUILDING:
+                elements.add(new Road(player));
+                elements.add(new Road(player));
+                break;
+            case UNIVERSITY:
+                break;
+            case YEAR_OF_PLENTY:
+                onSelect.accept(SelectResourceType.YEAR_OF_PLENTY);
+                break;
+            default:
+                break;
+        }
+    }
 
 	public static List<DevelopmentType> getDevelopmentCards() {
         List<DevelopmentType> developments = Stream.of(DevelopmentType.values())

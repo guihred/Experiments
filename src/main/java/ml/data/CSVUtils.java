@@ -10,10 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 import utils.SupplierEx;
 
 public class CSVUtils {
@@ -21,6 +24,36 @@ public class CSVUtils {
     private static final Logger LOGGER = HasLogging.log();
     private static final char DEFAULT_SEPARATOR = ',';
     private static final char DEFAULT_QUOTE = '"';
+
+    public static void appendLine(File file, Map<String, Object> rowMap) {
+    	boolean exists = file.exists();
+        String collect = rowMap.keySet().stream().collect(Collectors.joining(",", "", ""));
+    	if (exists) {
+    		try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
+    			String nextLine = scanner.nextLine();
+    			if (!collect.equals(nextLine)) {
+    				exists = false;
+    			}
+    		} catch (Exception e) {
+                LOGGER.error("{}", e);
+    		}
+    		if (!exists) {
+                RunnableEx.run(() -> Files.deleteIfExists(file.toPath()));
+    		}
+    	}
+    
+    	try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true)) {
+    		if (!exists) {
+    			fw.append(collect + "\n");
+    		}
+            List<String> cols = rowMap.keySet().stream().collect(Collectors.toList());
+    
+            fw.append(rowMap.entrySet().stream().sorted(Comparator.comparing(t -> cols.indexOf(t.getKey())))
+                .map(Entry<String, Object>::getValue).map(Object::toString).collect(Collectors.joining(",", "", "\n")));
+    	} catch (Exception e1) {
+            LOGGER.error("{}", e1);
+    	}
+    }
 
     public static void main(String[] args) {
         splitFile(ResourceFXUtils.getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3);

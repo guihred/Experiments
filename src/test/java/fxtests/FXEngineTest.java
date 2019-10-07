@@ -60,7 +60,7 @@ public class FXEngineTest extends AbstractTestExecution {
                 sleep(1000);
                 RunnableEx.ignore(() -> clickOn(t));
                 type(KeyCode.ESCAPE);
-            }), Chapter4.Ex9.class, PdfReader.class));
+            }), Chapter4.Ex9.class, Chapter4.Ex10.class, PdfReader.class));
 
     }
 
@@ -211,7 +211,6 @@ public class FXEngineTest extends AbstractTestExecution {
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
     }
 
-	// @Test
 
     @Test
     public void verifySquare() throws Exception {

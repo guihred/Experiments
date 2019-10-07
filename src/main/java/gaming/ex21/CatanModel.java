@@ -7,12 +7,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
+import javafx.scene.Node;
 
 public class CatanModel {
-    private final List<Terrain> terrains = new ArrayList<>();
-    private final List<SettlePoint> settlePoints = new ArrayList<>();
+    private final List<Terrain> terrains = FXCollections.observableArrayList();
+    private final List<SettlePoint> settlePoints = FXCollections.observableArrayList();
     private List<EdgeCatan> edges;
     private final Map<PlayerColor, List<CatanCard>> cards = PlayerColor.newMapList();
     private final Map<PlayerColor, List<DevelopmentType>> usedCards = PlayerColor.newMapList();
@@ -26,9 +25,9 @@ public class CatanModel {
     private final Thief thief = new Thief();
     private final List<Port> ports = Port.getPorts();
     private final List<DevelopmentType> developmentCards = DevelopmentType.getDevelopmentCards();
-    private HBox resourceChoices;
-    private Button exchangeButton;
-    private Button makeDeal;
+    private Node resourceChoices;
+    private Node exchangeButton;
+    private Node makeDeal;
     private UserChart userChart;
 
     public boolean anyPlayerPoints(int minPoints) {
@@ -41,33 +40,7 @@ public class CatanModel {
     }
 
     public boolean disableCombination(Combination combination) {
-        PlayerColor key = getCurrentPlayer();
-        List<CatanCard> list = cards.get(key);
-        if (list == null) {
-            return true;
-        }
-        if (!CatanHelper.containsEnough(list, combination.getResources())) {
-            return true;
-        }
-        Map<Class<?>, Long> elementCount = settlePoints.stream()
-            .filter(s -> s.getElement() != null && s.getElement().getPlayer() == key).map(SettlePoint::getElement)
-            .collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting()));
-
-        elementCount.putAll(edges.stream().filter(s -> s.getElement() != null && s.getElement().getPlayer() == key)
-            .map(EdgeCatan::getElement).collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting())));
-        if (combination == Combination.CITY) {
-            return elementCount.getOrDefault(City.class, 0L) >= 4
-                || settlePoints.stream().noneMatch(s -> s.acceptCity(key));
-        }
-        if (combination == Combination.VILLAGE) {
-            return elementCount.getOrDefault(Village.class, 0L) >= 5
-                || settlePoints.stream().noneMatch(s -> s.acceptVillage(key));
-        }
-        if (combination == Combination.ROAD) {
-            return elementCount.getOrDefault(Road.class, 0L) >= 15;
-        }
-
-        return developmentCards.isEmpty();
+        return combination.disableCombination(getCurrentPlayer(), cards, settlePoints, edges, developmentCards);
     }
 
     public Map<PlayerColor, List<CatanCard>> getCards() {
@@ -110,10 +83,6 @@ public class CatanModel {
         return ports;
     }
 
-    public HBox getResourceChoices() {
-        return resourceChoices;
-    }
-
     public List<SettlePoint> getSettlePoints() {
         return settlePoints;
     }
@@ -147,21 +116,9 @@ public class CatanModel {
 
     public void onCombinationClicked(Combination combination) {
         List<CatanCard> currentCards = cards.get(getCurrentPlayer());
-        if (CatanHelper.containsEnough(currentCards, combination.getResources())) {
-            List<ResourceType> resources = combination.getResources().stream().collect(Collectors.toList());
-            for (int i = 0; i < resources.size(); i++) {
-                ResourceType r = resources.get(i);
-                currentCards.remove(currentCards.stream().filter(e -> e.getResource() == r).findFirst().orElse(null));
-            }
-            if (Combination.VILLAGE == combination) {
-                elements.add(new Village(getCurrentPlayer()));
-            } else if (Combination.CITY == combination) {
-                elements.add(new City(getCurrentPlayer()));
-            } else if (Combination.ROAD == combination) {
-                elements.add(new Road(getCurrentPlayer()));
-            } else if (Combination.DEVELOPMENT == combination) {
-                currentCards.add(new CatanCard(developmentCards.remove(0), this::onSelectCard));
-            }
+        if (Combination.containsEnough(currentCards, combination.getResources())) {
+            combination.onSelectCombination(getCurrentPlayer(), currentCards, elements, developmentCards,
+                this::onSelectCard);
             CatanLogger.log(row(), combination);
         }
         invalidateDice();
@@ -260,15 +217,15 @@ public class CatanModel {
         edges = addTerrains;
     }
 
-    public void setExchangeButton(Button exchangeButton) {
+    public void setExchangeButton(Node exchangeButton) {
         this.exchangeButton = exchangeButton;
     }
 
-    public void setMakeDeal(Button makeDeal) {
+    public void setMakeDeal(Node makeDeal) {
         this.makeDeal = makeDeal;
     }
 
-    public void setResourceChoices(HBox resourceChoices) {
+    public void setResourceChoices(Node resourceChoices) {
         this.resourceChoices = resourceChoices;
     }
 
@@ -297,7 +254,7 @@ public class CatanModel {
 
         diceThrown.set(true);
         if (diceValue == 7) {
-            CatanHelper.replaceThief(terrains, thief, elements, getCurrentPlayer());
+            Terrain.replaceThief(terrains, thief, elements, getCurrentPlayer());
             Thief.removeHalfOfCards(cards);
         }
         onChangePlayer(getCurrentPlayer());
@@ -425,25 +382,8 @@ public class CatanModel {
     private void onSelectDevelopment(CatanCard catanCard, DevelopmentType development) {
         cards.get(getCurrentPlayer()).remove(catanCard);
         usedCards.get(getCurrentPlayer()).add(development);
-        switch (development) {
-            case KNIGHT:
-                CatanHelper.replaceThief(terrains, thief, elements, getCurrentPlayer());
-                break;
-            case MONOPOLY:
-                setResourceSelect(SelectResourceType.MONOPOLY);
-                break;
-            case ROAD_BUILDING:
-                elements.add(new Road(getCurrentPlayer()));
-                elements.add(new Road(getCurrentPlayer()));
-                break;
-            case UNIVERSITY:
-                break;
-            case YEAR_OF_PLENTY:
-                setResourceSelect(SelectResourceType.YEAR_OF_PLENTY);
-                break;
-            default:
-                break;
-        }
+
+        development.onSelect(terrains, thief, elements, getCurrentPlayer(), this::setResourceSelect);
         onChangePlayer(getCurrentPlayer());
         invalidateDice();
     }

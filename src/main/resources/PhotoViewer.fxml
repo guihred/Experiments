@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.*?><?import javafx.scene.image.*?><?import javafx.scene.control.*?><?import javafx.scene.shape.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.scene.layout.*?><?import javafx.scene.text.*?>
+<Group xmlns:fx="http://javafx.com/fxml" styleClass="root">
+	<children>
+		<ImageView fx:id="currentImageView"
+			fitWidth="${currentImageView.scene.width}" preserveRatio="true" />
+		<Group translateX="434.0" translateY="464.0" fx:id="buttonGroup">
+			<children>
+				<Rectangle height="30.0" styleClass="button-panel"
+					fx:id="buttonArea" width="60.0" />
+				<Button fx:id="button1"
+					onMousePressed="#onMousePressedButton1" styleClass="left-arrow" />
+				<Button fx:id="button2"
+					onMousePressed="#onMousePressedButton2" styleClass="right-arrow" />
+			</children>
+		</Group>
+		<ProgressIndicator fx:id="progressIndicator"
+			layoutX="250.0" layoutY="250.0" />
+		<Group translateX="6.0" fx:id="tickerArea">
+			<children>
+				<Rectangle height="30.0" styleClass="ticker-border"
+					fx:id="tickerRect" />
+				<FlowPane fx:id="tickerContent" translateX="500">
+					<children>
+						<Text fx:id="news" text="Drag in some Images" />
+					</children>
+				</FlowPane>
+			</children>
+			<clip>
+				<Rectangle height="30.0" styleClass="ticker-clip-region"
+					fx:id="clipRegion" />
+			</clip>
+		</Group>
+	</children>
+</Group>

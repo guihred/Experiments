@@ -41,6 +41,6 @@ public class Deal extends HBox {
         PlayerColor proposer = deal.getProposer();
         return currentPlayer2 == proposer
             || cards2.get(currentPlayer2).stream().noneMatch(e -> e.getResource() == deal.getWantedType())
-            || !CatanHelper.containsEnough(cards2.get(proposer), deal.getDealTypes());
+            || !Combination.containsEnough(cards2.get(proposer), deal.getDealTypes());
     }
 }

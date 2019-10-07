@@ -30,6 +30,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.*;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 public final class Chapter4 {
     private Chapter4() {
@@ -156,12 +157,11 @@ public final class Chapter4 {
             WebView browser = new WebView();
             WebEngine engine = browser.getEngine();
             Button backButton = SimpleButtonBuilder.newButton("Back",
-                event -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
+                event -> RunnableEx.ignore(() -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1)));
             Button loadButton = new Button("Go");
             loadButton.setOnAction(event -> engine.load(textField.getText()));
-
             HBox top = new HBox();
-            top.getChildren().addAll(backButton, textField, loadButton);
+            top.getChildren().addAll(textField, loadButton, backButton);
             BorderPane pane = new BorderPane();
             pane.setTop(top);
             pane.setCenter(browser);
