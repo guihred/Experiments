@@ -3,8 +3,6 @@ package graphs.app;
 import graphs.entities.CellType;
 import graphs.entities.Edge;
 import graphs.entities.Graph;
-import java.util.List;
-import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.Observable;
@@ -16,7 +14,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 
@@ -60,7 +57,7 @@ public class GraphMain extends Application {
     private Timeline timeline;
 
     public void initialize() {
-        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(50), convergeLayout.getEventHandler()));
+        convergeLayout.addEventHandler(timeline);
         borderPane.setCenter(graph.getScrollPane());
         networkField.setText(networkTopology.getNetworkAddress());
         networkField.visibleProperty()
@@ -118,8 +115,7 @@ public class GraphMain extends Application {
 
     public void onActionKruskal() {
         graph.getModel().clearSelected();
-        List<Edge> prim = graph.getModel().kruskal();
-        prim.forEach(e -> e.setSelected(true));
+        graph.getModel().kruskal().forEach(e -> e.setSelected(true));
     }
 
     public void onActionPageRank() {
@@ -130,8 +126,7 @@ public class GraphMain extends Application {
     public void onActionPath() {
         graph.getModel().clearSelected();
         if (c1.getValue() != null && c2.getValue() != null) {
-            List<Edge> chain = graph.getModel().chainEdges(c1.getValue(), c2.getValue());
-            chain.forEach(e -> {
+            graph.getModel().chainEdges(c1.getValue(), c2.getValue()).forEach(e -> {
                 e.setSelected(true);
                 e.getTarget().setSelected(true);
                 e.getSource().setSelected(true);

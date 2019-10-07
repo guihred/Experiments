@@ -6,9 +6,12 @@ import graphs.entities.Graph;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.NamedArg;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.util.Duration;
 
 public class ConvergeLayout extends Layout {
 
@@ -17,6 +20,10 @@ public class ConvergeLayout extends Layout {
     public ConvergeLayout(@NamedArg("graph") Graph graph) {
         super(graph);
         eventHandler = t1 -> convergeLayoutLoop(this.graph);
+    }
+
+    public void addEventHandler(Timeline timeline) {
+        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(50), getEventHandler()));
     }
 
     @Override

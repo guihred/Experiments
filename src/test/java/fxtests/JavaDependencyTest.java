@@ -80,7 +80,7 @@ public class JavaDependencyTest {
                 "ZoomableScrollPane");
 
             Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(asList, "fxtests");
-            String tests = displayTestsToBeRun.stream().collect(Collectors.joining(",*", "*", ""));
+            String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
             LOG.info("TestsToBeRun ={}", tests);
         });
     }
@@ -96,7 +96,7 @@ public class JavaDependencyTest {
                 List<String> uncovered = b.list("CLASS");
                 LOG.info("Uncovered classes ={}", uncovered);
                 Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
-                String tests = displayTestsToBeRun.stream().collect(Collectors.joining(",*", "*", ""));
+                String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
                 LOG.info("TestsToBeRun ={}", tests);
             }
         });

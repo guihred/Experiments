@@ -63,7 +63,7 @@ public class CatanAppMain extends Application {
         makeDeal.setDisable(true);
         catanModel.setCurrentPlayer(PlayerColor.BLUE);
         catanModel.onSkipTurn();
-        userChart.setOnWin((t, u) -> initialize());
+        userChart.setOnWin((t, u) -> start((Stage) userChart.getScene().getWindow()));
         CatanHelper.combinationGrid(combinationGrid, catanModel::onCombinationClicked, catanModel::disableCombination,
             catanModel.currentPlayerProperty(), catanModel.getDiceThrown());
     }

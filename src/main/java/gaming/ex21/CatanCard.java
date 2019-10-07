@@ -1,10 +1,14 @@
 package gaming.ex21;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Group;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -72,5 +76,27 @@ public class CatanCard extends Rectangle {
             Objects.toString(development, Objects.toString(resource)).toLowerCase().replaceAll("_", "-") + "-card");
         InnerShadow innerShadow = new InnerShadow(20, Color.DODGERBLUE);
         effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
+    }
+
+    public static void placeCards(List<CatanCard> currentCards,Group cardGroup) {
+        cardGroup.getChildren().clear();
+        for (CatanCard type : currentCards) {
+            cardGroup.getChildren().add(type);
+        }
+        Collection<List<CatanCard>> values = currentCards.stream().filter(e -> e.getResource() != null)
+            .collect(Collectors.groupingBy(CatanCard::getResource)).values().stream().collect(Collectors.toList());
+        double layoutX = 0;
+        double layoutY = 0;
+        List<CatanCard> collect = currentCards.stream().filter(e -> e.getResource() == null)
+            .collect(Collectors.toList());
+        values.add(collect);
+        for (List<CatanCard> list : values) {
+            for (CatanCard catanCard : list) {
+                catanCard.relocate(layoutY, layoutX);
+                layoutX += 10;
+            }
+            layoutX = 0;
+            layoutY += PREF_WIDTH;
+        }
     }
 }

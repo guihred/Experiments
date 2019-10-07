@@ -1,8 +1,10 @@
 package gaming.ex21;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -106,25 +108,7 @@ public class UserChart extends VBox {
     }
 
     public void setCards(List<CatanCard> currentCards) {
-        cardGroup.getChildren().clear();
-        for (CatanCard type : currentCards) {
-            cardGroup.getChildren().add(type);
-        }
-        Collection<List<CatanCard>> values = currentCards.stream().filter(e -> e.getResource() != null)
-            .collect(Collectors.groupingBy(CatanCard::getResource)).values().stream().collect(Collectors.toList());
-        double layoutX = 0;
-        double layoutY = 0;
-        List<CatanCard> collect = currentCards.stream().filter(e -> e.getResource() == null)
-            .collect(Collectors.toList());
-        values.add(collect);
-        for (List<CatanCard> list : values) {
-            for (CatanCard catanCard : list) {
-                catanCard.relocate(layoutY, layoutX);
-                layoutX += 10;
-            }
-            layoutX = 0;
-            layoutY += CatanCard.PREF_WIDTH;
-        }
+        CatanCard.placeCards(currentCards, cardGroup);
     }
 
     public void setColor(PlayerColor newV) {

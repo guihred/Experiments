@@ -14,7 +14,7 @@ public class DataframeML {
 	protected Map<String, Function<Object, Object>> mapping = new LinkedHashMap<>();
 	protected int size;
 	protected Map<String, DataframeStatisticAccumulator> stats;
-	protected Map<String, Predicate<Object>> filters = new HashMap<>();
+    protected Map<String, Predicate<Object>> filters = new LinkedHashMap<>();
 
 	public DataframeML() {
 	}
@@ -24,11 +24,11 @@ public class DataframeML {
 		formatMap = new LinkedHashMap<>(frame.formatMap);
 		mapping = new LinkedHashMap<>(frame.mapping);
 		size = frame.size;
-		stats = new HashMap<>();
+        stats = new LinkedHashMap<>();
 		if (frame.stats != null) {
 			stats.putAll(frame.stats);
 		}
-		filters = new HashMap<>(frame.filters);
+        filters = new LinkedHashMap<>(frame.filters);
 	}
 
 	public void add(Map<String, Object> row) {
