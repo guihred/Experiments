@@ -41,7 +41,7 @@
 					<runOrder>alphabetical</runOrder>
 					<append>true</append>
 					<includes>
-						<include>*Test</include>
+						<include>*JavaDependencyTest</include>
 					</includes>
 				</configuration>
 			</plugin>
