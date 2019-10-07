@@ -36,6 +36,21 @@ public final class ClassReflectionUtils {
         return classes.parallelStream().distinct().collect(Collectors.toList());
     }
 
+    public static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
+        Class<?> a = targetClass;
+        List<Method> getters = new ArrayList<>();
+        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
+            List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
+            getters.addAll(getters2);
+            Class<?>[] interfaces = a.getInterfaces();
+            for (Class<?> class1 : interfaces) {
+                getters.addAll(Arrays.asList(class1.getDeclaredMethods()));
+            }
+
+        }
+        return getters;
+    }
+
     public static String getDescription(Object i) {
         if (i == null) {
             return null;
@@ -164,7 +179,7 @@ public final class ClassReflectionUtils {
             .anyMatch(e -> e.getParameterCount() == 0 && Modifier.isPublic(e.getModifiers()));
     }
 
-    public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
+	public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
         Map<String, Class<?>> namedArgsMap = ClassReflectionUtils.getNamedArgsMap(parent.getClass());
         if (namedArgsMap.containsKey(fieldName)) {
             return typesFit(fieldValue, namedArgsMap.get(fieldName));
@@ -172,21 +187,6 @@ public final class ClassReflectionUtils {
         return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
             .stream().filter(m -> m.getParameterCount() == 1)
             .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(fieldName);
-    }
-
-    private static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
-        Class<?> a = targetClass;
-        List<Method> getters = new ArrayList<>();
-        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
-            List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
-            getters.addAll(getters2);
-            Class<?>[] interfaces = a.getInterfaces();
-            for (Class<?> class1 : interfaces) {
-                getters.addAll(Arrays.asList(class1.getDeclaredMethods()));
-            }
-
-        }
-        return getters;
     }
 
     private static <T> String getDescription(T obj, Class<?> class1,

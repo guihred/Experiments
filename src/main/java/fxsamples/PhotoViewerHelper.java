@@ -23,8 +23,8 @@ import simplebuilder.SimpleSequentialTransitionBuilder;
 import utils.HasLogging;
 
 public class PhotoViewerHelper {
-    static final int DURATION_MILLIS = 500;
-    static final Logger LOGGER = HasLogging.log();
+	private static final int DURATION_MILLIS = 500;
+	private static final Logger LOGGER = HasLogging.log();
 
     static void addImage(String url, List<String> imageFiles, AtomicInteger currentIndex) {
         if (isValidImageFile(url)) {

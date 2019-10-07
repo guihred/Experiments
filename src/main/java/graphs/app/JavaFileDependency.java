@@ -176,7 +176,7 @@ public class JavaFileDependency {
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
         }
-        Set<String> testClasses = new HashSet<>();
+        Set<String> testClasses = new LinkedHashSet<>();
         for (JavaFileDependency dependecy : allFileDependencies) {
             if (asList.contains(dependecy.getName())) {
                 List<JavaFileDependency> visited = new ArrayList<>();
