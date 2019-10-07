@@ -59,20 +59,10 @@ public class UserChart extends VBox {
     private BiConsumer<Pane, Pane> onWin;
 
     public UserChart() {
-        CommonsFX.loadRoot("UserChart.fxml", this);
-        for (PlayerColor playerColor : PlayerColor.values()) {
-            playersPoints.put(playerColor, new SimpleLongProperty(0));
-        }
-        bindText(PlayerColor.RED, redPoints, redImage);
-        bindText(PlayerColor.GREEN, greenPoints, greenImage);
-        bindText(PlayerColor.BLUE, bluePoints, blueImage);
-        bindText(PlayerColor.YELLOW, yellowPoints, yellowImage);
-        largestArmy.visibleProperty().bind(color.isEqualTo(largestArmy.playerProperty()));
-        longestRoad.visibleProperty().bind(color.isEqualTo(longestRoad.playerProperty()));
-        userImage.setImage(CatanResource.newImage(CatanResource.USER_PNG, PlayerColor.BLUE));
+		load();
     }
 
-    public long countPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
+	public long countPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
         Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
         long pointsCount = settlePoints.stream().filter(s -> s.getElement() instanceof Village)
             .filter(e -> e.getElement().getPlayer() == newPlayer).count();
@@ -163,6 +153,20 @@ public class UserChart extends VBox {
         points.visibleProperty().bind(color.isEqualTo(player).not());
         image.setImage(CatanResource.newImage(CatanResource.USER_PNG, player));
     }
+
+    private final void load() {
+		CommonsFX.loadRoot("UserChart.fxml", this);
+        for (PlayerColor playerColor : PlayerColor.values()) {
+            playersPoints.put(playerColor, new SimpleLongProperty(0));
+        }
+        bindText(PlayerColor.RED, redPoints, redImage);
+        bindText(PlayerColor.GREEN, greenPoints, greenImage);
+        bindText(PlayerColor.BLUE, bluePoints, blueImage);
+        bindText(PlayerColor.YELLOW, yellowPoints, yellowImage);
+        largestArmy.visibleProperty().bind(color.isEqualTo(largestArmy.playerProperty()));
+        longestRoad.visibleProperty().bind(color.isEqualTo(longestRoad.playerProperty()));
+        userImage.setImage(CatanResource.newImage(CatanResource.USER_PNG, PlayerColor.BLUE));
+	}
 
     public static PlayerColor getWinner(UserChart userChart2, List<SettlePoint> settlePoints2,
         Map<PlayerColor, List<DevelopmentType>> usedCards2, List<EdgeCatan> edges2,

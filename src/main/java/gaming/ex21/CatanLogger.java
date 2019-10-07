@@ -12,7 +12,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class CatanLogger {
-    public static final Logger LOGGER = HasLogging.log();
+	private static final Logger LOGGER = HasLogging.log();
     private static final String CATAN_LOG = "catan_log.txt";
     private static final String SELECT_RESOURCE = "SELECT_RESOURCE";
     private static final String HAS_DEAL = "HAS_DEAL";

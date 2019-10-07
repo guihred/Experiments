@@ -78,7 +78,7 @@ public class CatanCard extends Rectangle {
         effectProperty().bind(Bindings.when(selected).then(innerShadow).otherwise((InnerShadow) null));
     }
 
-    public static void placeCards(List<CatanCard> currentCards,Group cardGroup) {
+	public static void placeCards(Collection<CatanCard> currentCards, Group cardGroup) {
         cardGroup.getChildren().clear();
         for (CatanCard type : currentCards) {
             cardGroup.getChildren().add(type);
