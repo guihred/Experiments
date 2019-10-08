@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javafx.application.Application;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
+import ml.data.DataframeUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -26,9 +27,9 @@ import utils.HasLogging;
 @SuppressWarnings("static-method")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JavaDependencyTest {
-    private static final Logger LOG = HasLogging.log();
+	private static final Logger LOG = HasLogging.log();
 
-	// @Test
+	@Test
     public void testAGetJavaMethods() {
         measureTime("JavaFileDependency.getPublicMethods", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
@@ -37,11 +38,11 @@ public class JavaDependencyTest {
                 LOG.trace("{} ={}", dependency.getFullName(), tests);
             }
         });
-    }
+	}
 
-	// @Test
+	@Test
     public void testBGraphMethodMap() {
-        measureTime("JavaFileDependency.getInvocationsMethods", () -> {
+		measureTime("JavaFileDependency.getPublicMethodsFullName", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
                 dependency.setDependents(displayTestsToBeRun);
@@ -50,9 +51,9 @@ public class JavaDependencyTest {
 
             }
         });
-    }
+	}
 
-	// @Test
+	@Test
     public void testCInvocations() {
         measureTime("JavaFileDependency.getInvocationsMethods", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
@@ -62,11 +63,11 @@ public class JavaDependencyTest {
                 LOG.trace("{} ={}", dependency.getFullName(), tests);
             }
         });
-    }
+	}
 
-	// @Test
+	@Test
     public void testDMethodMap() {
-        measureTime("JavaFileDependency.getInvocationsMethods", () -> {
+		measureTime("JavaFileDependency.getPublicMethodsMap", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
                 Map<String, List<String>> tests = dependency.getPublicMethodsMap();
@@ -75,9 +76,9 @@ public class JavaDependencyTest {
 
             }
         });
-    }
+	}
 
-	// @Test
+	@Test
     public void testEJavaDependency() {
 
         measureTime("JavaFileDependency.displayTestsToBeRun", () -> {
@@ -93,16 +94,18 @@ public class JavaDependencyTest {
             String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
             LOG.info("TestsToBeRun ={}", tests);
         });
-    }
+	}
 
-	// @Test
+	@Test
     public void testFJavaCoverage() {
 
         measureTime("JavaFileDependency.javaCoverage", () -> {
             File csvFile = new File("target/site/jacoco/jacoco.csv");
             if (csvFile.exists()) {
-                DataframeML b = DataframeBuilder.build(csvFile);
-                b.filter("INSTRUCTION_COVERED", v -> ((Number) v).intValue() == 0);
+				DataframeML b = DataframeBuilder.build(csvFile);
+				DataframeUtils.crossFeature(b, "PERCENTAGE", arr -> arr[1] / (arr[0] + arr[1]) * 100, "LINE_MISSED",
+						"LINE_COVERED");
+				b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 35);
                 List<String> uncovered = b.list("CLASS");
                 LOG.info("Uncovered classes ={}", uncovered);
                 Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
@@ -118,13 +121,20 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncovered", () -> {
             File csvFile = new File("target/site/jacoco/jacoco.csv");
             if (csvFile.exists()) {
-                DataframeML b = DataframeBuilder.build(csvFile);
-                b.filter("INSTRUCTION_COVERED", v -> ((Number) v).intValue() == 0);
+				DataframeML b = DataframeBuilder.build(csvFile);
+				DataframeUtils.crossFeature(b, "PERCENTAGE", arr -> arr[1] / (arr[0] + arr[1]) * 100, "LINE_MISSED",
+						"LINE_COVERED");
+				b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 35);
                 List<String> uncovered = b.list("CLASS");
-				List<String> collect = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream()
+
+				List<String> collect = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream().distinct()
+						.sorted()
 						.collect(Collectors.toList());
 				for (int i = 0; i < collect.size(); i++) {
 					String className = collect.get(i);
+					if (className.equals("JavaDependencyTest")) {
+						continue;
+					}
 					LOG.info("RUNNING TEST {} {}/{}", className, i + 1, collect.size());
 					Class<?> forName = Class.forName("fxtests." + className);
 					Object ob = forName.newInstance();
@@ -140,16 +150,19 @@ public class JavaDependencyTest {
 
             }
         });
-    }
+	}
 
-	// @Test
+	@Test
 	public void testHTestUncovered() {
 
 		measureTime("JavaFileDependency.testUncovered", () -> {
 			File csvFile = new File("target/site/jacoco/jacoco.csv");
 			if (csvFile.exists()) {
 				DataframeML b = DataframeBuilder.build(csvFile);
-				b.filter("INSTRUCTION_COVERED", v -> ((Number) v).intValue() == 0);
+				DataframeUtils.crossFeature(b, "PERCENTAGE", arr -> arr[1] / (arr[0] + arr[1]) * 100, "LINE_MISSED",
+						"LINE_COVERED");
+				b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 35);
+
 				List<String> uncovered = b.list("CLASS");
 				List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
 				List<Class<? extends Application>> collect = classes.stream()

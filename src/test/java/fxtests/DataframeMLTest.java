@@ -2,6 +2,7 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import java.io.File;
 import java.util.Map;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
@@ -15,6 +16,16 @@ public class DataframeMLTest {
 
 
     @Test
+	public void testCoverageFile() {
+    	File csvFile = new File("target/site/jacoco/jacoco.csv");
+		if (csvFile.exists()) {
+			DataframeML b = DataframeBuilder.build(csvFile);
+			b.filter("INSTRUCTION_COVERED", v -> ((Number) v).intValue() == 0);
+			DataframeUtils.describe(b);
+		}
+    }
+
+	@Test
     public void testTransformOneValue() {
         DataframeBuilder b = DataframeBuilder.builder("california_housing_train.csv");
         DataframeML x = measureTime("DataframeML.build", () -> b.build());
